@@ -77,21 +77,24 @@ function toggleList() {
 <mt:if name="missing_db">
     <mtapp:statusmsg
         id="missing_db"
-        class="error">
+        class="error"
+        can_close="0">
         <__trans phrase="Missing Database Modules">
     </mtapp:statusmsg>
 </mt:if>
 <mt:if name="optional">
     <mtapp:statusmsg
         id="optional"
-        class="info">
+        class="info"
+        can_close="0">
         <__trans phrase="Missing Optional Modules">
     </mtapp:statusmsg>
 </mt:if>
 <mt:if name="required">
     <mtapp:statusmsg
         id="required"
-        class="error">
+        class="error"
+        can_close="0">
         <__trans phrase="Missing Required Modules">
     </mtapp:statusmsg>
 </mt:if>

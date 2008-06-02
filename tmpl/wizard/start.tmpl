@@ -71,11 +71,7 @@
         }
         .no-static-path,
         fieldset {
-/*            border: 1px solid #C60;*/
-/*            color: #C60;*/
-/*            background: #feffb4;*/
             border: 1px solid #cfdde5;
-/*            color: #666;*/
             background: #fff;
             padding: 10px;
             margin-bottom: 1em;
@@ -107,56 +103,50 @@
         }
         </style>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-function getByID(n, d) {
-    if (!d) d = document;
-    if (d.getElementById)
-        return d.getElementById(n);
-    else if (d.all)
-        return d.all[n];
-}
-
-function hide(id, d) {
-    var el = getByID(id, d);
-    if (!el) return;
-    el.style.display = 'none';
-}
-/* ]]> */
-</script>
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        function getByID(n, d) {
+            if (!d) d = document;
+            if (d.getElementById)
+                return d.getElementById(n);
+            else if (d.all)
+                return d.all[n];
+        }
+        /* ]]> */
+        </script>
     </mt:setvarblock>
 <mt:else>
-<mt:setvarblock name="js_include" append="1">
-<style type="text/css">
-.msg {
-    margin: 0 0 10px 0;
-    padding: 16px 10px 16px 10px;
-}
-.msg-error {
-    background-color: #FF9;
-}
-#container  div.no-static-path,
-#container #static_webpath_config {
-    display: none;
-}
-#container.bad-static-path div.no-static-path,
-#container.bad-static-path #static_webpath_config {
-    display: block;
-}
-</style>
-<script type="text/javascript">
-/* <![CDATA[ */
-function js_check() {
-    if (! openManual ) {
-        // mt.js not loading properly; static path incorrect
-        var c = getByID("container");
-        c.className = "bad-static-path";
-    }
-}
-window.onload = js_check;
-/* ]]> */
-</script>
-</mt:setvarblock>
+    <mt:setvarblock name="js_include" append="1">
+        <style type="text/css">
+        .msg {
+            margin: 0 0 10px 0;
+            padding: 16px 10px 16px 10px;
+        }
+        .msg-error {
+            background-color: #FF9;
+        }
+        #container  div.no-static-path,
+        #container #static_webpath_config {
+            display: none;
+        }
+        #container.bad-static-path div.no-static-path,
+        #container.bad-static-path #static_webpath_config {
+            display: block;
+        }
+        </style>
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        function js_check() {
+            if (! openManual ) {
+                // mt.js not loading properly; static path incorrect
+                var c = getByID("container");
+                c.className = "bad-static-path";
+            }
+        }
+        window.onload = js_check;
+        /* ]]> */
+        </script>
+    </mt:setvarblock>
 </mt:unless>
 
 <mt:include name="../cms/include/chromeless_header.tmpl">
