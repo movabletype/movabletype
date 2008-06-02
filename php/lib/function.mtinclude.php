@@ -230,7 +230,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     if ($ssi_enable) {
         $include_dir = dirname($include_file);
         if (!file_exists($include_dir) && !is_dir($include_dir)) {
-            mkdir($include_dir, 0777, true);
+            mkpath($include_dir, 0777);
         }
         if (is_writable($include_dir)) {
             if ($h_file = fopen($include_file, 'w')) {

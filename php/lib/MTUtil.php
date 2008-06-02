@@ -1355,7 +1355,7 @@ function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_typ
     if(!file_exists($dest)) {
         $dir_name = dirname($dest);
         if (!file_exists($dir_name)) {
-          mkdir($dir_name, 0777, true);
+          mkpath($dir_name, 0777);
         }
         if (!is_writable($dir_name)) {
             imagedestroy($src_img);
@@ -1621,6 +1621,16 @@ function get_page_column ($layout) {
          $columns = $columns_map[$layout];
 
     return $columns;
+}
+
+function mkpath($path, $mode = 0777) {
+    // PHP5 supports recursive param
+    if (version_compare(PHP_VERSION, '5.0.0', ">="))
+        return mkdir($path, $mode, true);
+
+    // for php4
+    is_dir(dirname($path)) || mkpath(dirname($path), $mode);
+    return is_dir($path) || @mkdir($path, $mode);
 }
 
 ?>
