@@ -45,3 +45,7 @@
 .msg {
     height: 1%;
 }
+
+.widget-close-link {
+    margin-right: 5px; /* http://www.jaymeblackmon.com/ie6-double-margin-bug-fix */
+}
