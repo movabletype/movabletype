@@ -200,6 +200,15 @@ sub _do_group_by {
     }
     my $i = 0;
     return sub {
+        if (@_ && ($_[0] eq 'finish')) {
+            if ($sth) {
+                $sth->finish;
+                $driver->end_query($sth);
+            }
+            undef $sth;
+            return;
+        }
+
         unless ($sth->fetch && defined $count && (!defined $limit || ($i < $limit))) {
             $sth->finish;
             $driver->end_query($sth);

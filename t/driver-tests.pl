@@ -403,7 +403,8 @@ my $cgb_iter = Bar->count_group_by({
         status => '0',
     }, {
         group => [ 'foo_id' ],
-        sort => 'foo_id desc',
+        sort => 'foo_id',
+        direction => 'descend',
     });
 my ($count, $bfid, $month);
 isa_ok($cgb_iter, 'CODE');
@@ -417,7 +418,8 @@ ok(!$cgb_iter->(), 'no $iter');
 
 $cgb_iter = Bar->count_group_by(undef, {
         group => [ 'extract(month from created_on)' ],
-        sort => 'extract(month from created_on) desc',
+        sort => 'extract(month from created_on)',
+        direction => 'descend',
     });
 isa_ok($cgb_iter, 'CODE');
 ok(($count, $month) = $cgb_iter->(), 'set');
