@@ -603,7 +603,11 @@ function mtReplyCommentOnClick(parent_id, author) {
 
     checkbox.value = parent_id; 
     checkbox.checked = true;
-    text.focus();
+    try {
+        // text field may be hidden
+        text.focus();
+    } catch(e) {
+    }
 
     mtSetCommentParentID();
 }
