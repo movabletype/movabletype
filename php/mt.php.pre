@@ -167,11 +167,11 @@ class MT {
         $servers  = $this->config['MemcachedServers'];
         if (isset($servers)) {
             if (extension_loaded('memcache')) {
-                require_once("MTCache_memcached.php");
+                require_once("mtcache_memcached.php");
                 $this->cache_driver = new MTCache_memcached($servers);
             }
         } else {
-            require_once("MTCache_session.php");
+            require_once("mtcache_session.php");
             $this->cache_driver = new MTCache_session();
         }
         return $this->cache_driver;
