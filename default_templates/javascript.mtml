@@ -83,31 +83,31 @@ function mtRelativeDate(ts, fds) {
 
     var str;
     if (delta < 60) {
-        str = '<__trans phrase="moments ago">';
+        str = '<__trans phrase="moments ago" escape="js">';
     } else if (delta <= 86400) {
         // less than 1 day
         var hours = Math.floor(delta / 3600);
         var min = Math.floor((delta % 3600) / 60);
         if (hours == 1)
-            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="1">';
+            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="1" escape="js">';
         else if (hours > 1)
-            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="2">'.replace(/2/, hours);
+            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="2" escape="js">'.replace(/2/, hours);
         else if (min == 1)
-            str = '<__trans phrase="[quant,_1,minute,minutes] ago" params="1">';
+            str = '<__trans phrase="[quant,_1,minute,minutes] ago" params="1" escape="js">';
         else
-            str = '<__trans phrase="[quant,_1,minute,minutes] ago" params="2">'.replace(/2/, min);
+            str = '<__trans phrase="[quant,_1,minute,minutes] ago" params="2" escape="js">'.replace(/2/, min);
     } else if (delta <= 604800) {
         // less than 1 week
         var days = Math.floor(delta / 86400);
         var hours = Math.floor((delta % 86400) / 3600);
         if (days == 1)
-            str = '<__trans phrase="[quant,_1,day,days] ago" params="1">';
+            str = '<__trans phrase="[quant,_1,day,days] ago" params="1" escape="js">';
         else if (days > 1)
-            str = '<__trans phrase="[quant,_1,day,days] ago" params="2">'.replace(/2/, days);
+            str = '<__trans phrase="[quant,_1,day,days] ago" params="2" escape="js">'.replace(/2/, days);
         else if (hours == 1)
-            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="1">';
+            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="1" escape="js">';
         else
-            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="2">'.replace(/2/, hours);
+            str = '<__trans phrase="[quant,_1,hour,hours] ago" params="2" escape="js">'.replace(/2/, hours);
     }
     return str ? str : fds;
 }
@@ -123,7 +123,7 @@ function mtEditLink(entry_id, author_id) {
     if (! entry_id) return;
     if (! author_id) return;
     if (u.id != author_id) return;
-    var link = '<__trans phrase='<a href="[_1]">Edit</a>' params="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '">';
+    var link = '<__trans phrase='<a href="[_1]">Edit</a>' params="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '" escape="js">';
     document.write(link);
 }
 
@@ -476,7 +476,7 @@ function mtSignInOnClick(sign_in_element) {
             el = document.getElementById('comment-form-external-auth');
     }
     if (el)
-        el.innerHTML = '<__trans phrase="Signing in..."> <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
+        el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <img src="<$mt:StaticWebPath$>images/indicator.white.gif" height="16" width="16" alt="" />';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
     mtFetchUser('mtSetUserOrLogin');
@@ -554,7 +554,7 @@ function mtShowGreeting() {
 
     if ( u && u.is_authenticated ) {
         if ( u.is_banned ) {
-            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="return mtSignOutOnClick();">%%</a>">';
+            phrase = '<__trans phrase="You do not have permission to comment on this blog. ([_1]sign out[_2])" params="<a href="javascript:void(0);" onclick="return mtSignOutOnClick();">%%</a>" escape="js">';
         } else {
             var user_link;
             if ( u.is_author ) {
@@ -570,13 +570,13 @@ function mtShowGreeting() {
                     user_link = u.name;
             }
             // TBD: supplement phrase with userpic if one is available.
-            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="return mtSignOutOnClick();">%%</a>">';
+            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="return mtSignOutOnClick();">%%</a>" escape="js">';
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>" escape="js">';
         } else {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>" escape="js">';
         }
     }
     el.innerHTML = phrase;
@@ -598,7 +598,7 @@ function mtReplyCommentOnClick(parent_id, author) {
     var text = document.getElementById('comment-text');
 
     // Populate label with new values
-    var reply_text = '<__trans phrase="Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>" params="#comment-'+ parent_id +'%%location.href=this.href; return false%%'+ author +'">';
+    var reply_text = '<__trans phrase="Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>" params="#comment-'+ parent_id +'%%location.href=this.href; return false%%'+ author +'" escape="js">';
     label.innerHTML = reply_text;
 
     checkbox.value = parent_id; 
