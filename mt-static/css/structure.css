@@ -3091,6 +3091,7 @@ body.preview-screen {
 }
 
 #template-options #template-options-header h3 {
+    float: left;
     margin: 0;
 }
 
@@ -3104,10 +3105,10 @@ body.preview-screen {
 }
 
 #template-options .template-options-summary {
-    position: absolute;
-    top: 12px;
-    right: 0;
+    float: right;
     color: #888;
+    text-align: right;
+    width: 400px;
 }
 
 #template-options.active .template-options-summary {
