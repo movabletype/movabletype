@@ -709,6 +709,19 @@ sub avg_group_by   { shift->_proxy('avg_group_by',   @_) }
 sub max_group_by   { shift->_proxy('max_group_by',   @_) }
 sub remove_all     { shift->_proxy('remove_all',     @_) }
 
+sub save {
+    my $obj = shift;
+    my $res = eval {
+        my $dbh = $obj->driver->rw_handle;
+        local $dbh->{RaiseError} = 1;
+        $obj->SUPER::save(@_);
+    };
+    if (my $err = $@) {
+        return $obj->error($err);
+    }
+    return $res;
+}
+
 sub remove {
     my $obj = shift;
     my(@args) = @_;
