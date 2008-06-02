@@ -283,6 +283,9 @@ sub create_default_templates {
         }
     }
 
+    $blog->custom_dynamic_templates('none');
+    $blog->save;
+
     MT->run_callbacks(
         ref($blog). '::post_create_default_templates',
         $blog, 
