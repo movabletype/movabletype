@@ -156,8 +156,11 @@ sub _mk_term {
             elsif (exists $val->{not}) {
                 my $v = $val->{not};
                 if ('ARRAY' eq ref($v)) {
-                    my $v = 'NOT IN (' . join(',', @$v) . ')';
-                    $val = \$v;
+                    if(my $transformed_column = $stmt->transform->{$col}) {
+                        $col = $transformed_column;
+                    }
+                    my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$v ) . ')';
+                    return ($term, $v, $col);
                 } elsif (ref $v) {
                     die "Unsupported value in 'not' column";
                 } else {
@@ -260,8 +263,11 @@ sub _mk_term {
 
         if ($stmt->not->{$col}) {
             if ('ARRAY' eq ref($val)) {
-                my $v = 'NOT IN (' . join(',', @$val) . ')';
-                $val = \$v;
+                if(my $transformed_column = $stmt->transform->{$col}) {
+                    $col = $transformed_column;
+                }
+                my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$val ) . ')';
+                return ($term, $val, $col);
             }
             elsif (ref $val) {
                 die "Unsupported value in 'not' column";
