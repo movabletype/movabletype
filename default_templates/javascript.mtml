@@ -123,7 +123,7 @@ function mtEditLink(entry_id, author_id) {
     if (! entry_id) return;
     if (! author_id) return;
     if (u.id != author_id) return;
-    var link = '<__trans phrase='<a href="[_1]">Edit</a>' params="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '" escape="js">';
+    var link = '<a href="<$mt:AdminScript$>?__mode=view&amp;_type=entry&amp;id=' + entry_id + '"><__trans phrase="Edit" escape="js"></a>';
     document.write(link);
 }
 
@@ -570,13 +570,14 @@ function mtShowGreeting() {
                     user_link = u.name;
             }
             // TBD: supplement phrase with userpic if one is available.
-            phrase = '<__trans phrase="Thanks for signing in, [_1]. ([_2]sign out[_3])" params="' + user_link + '%%<a href="javascript:void(0)" onclick="return mtSignOutOnClick();">%%</a>" escape="js">';
+            phrase = '<__trans phrase="Thanks for signing in, __NAME__. ([_1]sign out[_2])" params="<a href="javascript:void(0)" onclick="return mtSignOutOnClick();">%%</a>" escape="js">';
+            phrase = phrase.replace(/__NAME__/, user_link);
         }
     } else {
         if (reg_reqd) {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>" escape="js">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick('comment-greeting')">%%</a>" escape="js">';
         } else {
-            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'comment-greeting\')">%%</a>" escape="js">';
+            phrase = '<__trans phrase="[_1]Sign in[_2] to comment, or comment anonymously." params="<a href="javascript:void(0)" onclick="return mtSignInOnClick('comment-greeting')">%%</a>" escape="js">';
         }
     }
     el.innerHTML = phrase;
@@ -598,7 +599,9 @@ function mtReplyCommentOnClick(parent_id, author) {
     var text = document.getElementById('comment-text');
 
     // Populate label with new values
-    var reply_text = '<__trans phrase="Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>" params="#comment-'+ parent_id +'%%location.href=this.href; return false%%'+ author +'" escape="js">';
+    var reply_text = '<__trans phrase="Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>" params="#comment-__PARENT__%%location.href=this.href; return false%%__AUTHOR__" escape="js">';
+    reply_text = reply_text.replace(/__PARENT__/, parent_id);
+    reply_text = reply_text.replace(/__AUTHOR__/, author);
     label.innerHTML = reply_text;
 
     checkbox.value = parent_id; 
