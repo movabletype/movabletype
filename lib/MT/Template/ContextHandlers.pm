@@ -7537,10 +7537,29 @@ sub _hdlr_entries {
         my $entry = @$entries[0];
         $entries = undef if $entry->class ne $class_type;
 
-        foreach my $args_key ('category', 'categories', 'tag', 'tags', 'author', 'id', 'days', 'recently_commented_on', 'include_subcategories', 'include_blogs', 'exclude_blogs', 'blog_ids') {
-            if (exists($args->{$args_key})) {
-                $entries = undef;
-                last;
+        # For the stock Entries/Pages tags, clear any prepopulated
+        # entries list (placed by archive publishing) if we're invoked
+        # with any of the following attributes. A plugin tag may
+        # prepopulate the entries stash and then invoke this handler
+        # to permit further filtering of the entries.
+        my $tag = lc $ctx->stash('tag');
+        if ($entries && (($tag eq 'entries') || ($tag eq 'pages'))) {
+            foreach my $args_key ('category', 'categories', 'tag', 'tags',
+                'author') {
+                if (exists($args->{$args_key})) {
+                    $entries = undef;
+                    last;
+                }
+            }
+        }
+        if ( $entries ) {
+            foreach my $args_key ('id', 'days', 'recently_commented_on',
+                'include_subcategories', 'include_blogs', 'exclude_blogs',
+                'blog_ids') {
+                if (exists($args->{$args_key})) {
+                    $entries = undef;
+                    last;
+                }
             }
         }
         if ( $entries && %fields ) {

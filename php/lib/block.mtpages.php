@@ -46,4 +46,3 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
 
     return $out;
 }
-?>

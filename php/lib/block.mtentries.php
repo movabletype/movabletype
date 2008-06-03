@@ -16,11 +16,16 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         // but the user has specified attributes that effectively
         // break that context, clear the stashed entries so fetch_entries
         // can reselect.
-        if ($ctx->stash('entries') &&
-            (isset($args['category']) || isset($args['categories']) ||
-             isset($args['tag']) || isset($args['tags']) ||
-             isset($args['id']) ||
-             isset($args['author']) ||
+        $this_tag = strtolower($ctx->this_tag());
+        if (($this_tag == 'mtentries') || ($this_tag == 'mtpages')) {
+            if ($ctx->stash('entries') &&
+                (isset($args['category']) || isset($args['categories']) ||
+                 isset($args['tag']) || isset($args['tags']) ||
+                 isset($args['author']) ))
+                $ctx->__stash['entries'] = null;
+        }
+        if ($ctx->__stash['entries'] &&
+            (isset($args['id']) ||
              isset($args['recently_commented_on']) ||
              isset($args['include_subcategories']) ||
              isset($args['days']) ))
