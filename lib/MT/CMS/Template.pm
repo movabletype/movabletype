@@ -968,6 +968,7 @@ sub preview {
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
+    $q->param( 'build_dynamic', $tmpl->build_dynamic );
     my $cols = $tmpl->column_names;
     for my $col (@$cols) {
         push @data,
