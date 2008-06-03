@@ -1699,7 +1699,8 @@ fieldset h3 {
 .edit-author #main-content .field .field-content,
 .edit-folder #main-content .field .field-content,
 .edit-category #main-content .field .field-content,
- #main-content .field-left-label .field-content {
+#adjust-sitepath .field-left-label .field-content,
+#main-content .field-left-label .field-content {
     margin-left: 130px;
 }
 
@@ -4579,7 +4580,7 @@ body.dialog {
     padding: 10px;
     background-color: #fafafa;
     height: 258px;
-    width: 738px;
+    width: 718px;
 }
 .dialog .import-process {
     height: 288px;

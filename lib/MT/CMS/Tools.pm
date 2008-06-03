@@ -1429,6 +1429,7 @@ sub dialog_adjust_sitepath {
         $param->{$key} = $q->param($key) if $q->param($key);
     }
     $param->{name} = $q->param('current_file');
+    $param->{screen_id} = "adjust-sitepath";
     $app->load_tmpl( 'dialog/adjust_sitepath.tmpl', $param );
 }
 
