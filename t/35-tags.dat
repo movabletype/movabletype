@@ -455,5 +455,17 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTTags glue=',' sort_by='rank'><MTTagLabel> <MTTagRank></MTTags>", "e" : "verse 1,rain 2,anemones 4,grandpa 6,strolling 6"}, #403
 { "r" : "1", "t" : "<MTSubCategories category='foo'><MTCategoryLabel></MTSubCategories>", "e" : "subfoo"}, #404
 { "r" : "1", "t" : "<MTCategories sort_by='label' sort_order='ascend' show_empty='1'><MTCategoryLabel>'<MTSubCategories><MTCategoryLabel></MTSubCategories>'</MTCategories>", "e" : "bar''foo'subfoo'subfoo''"}, #405
-{ "r" : "1", "t" : "<MTEntries recently_commented_on='3' glue=','><MTEntryTitle></MTEntries>", "e" : "Verse 2,Verse 3,A Rainy Day"} #406
+{ "r" : "1", "t" : "<MTEntries recently_commented_on='3' glue=','><MTEntryTitle></MTEntries>", "e" : "Verse 2,Verse 3,A Rainy Day"}, #406
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:elseif name='foo' eq='moge'>moge<mt:else>false</mt:if>", "e" : "value is false"}, #407
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:else name='foo' eq='moge'>moge<mt:else>false</mt:if>", "e" : "value is false"}, #408
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:elseif eq='moge'>moge<mt:else>false</mt:if>", "e" : "value is false"}, #409
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:else eq='moge'>moge<mt:else>false</mt:if>", "e" : "value is false"}, #410
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:elseif eq='poge'>poge<mt:else>false</mt:if>", "e" : "value is poge"}, #411
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>hoge<mt:else eq='poge'>poge<mt:else>false</mt:if>", "e" : "value is poge"}, #412
+{ "r" : "1", "t" : "<mt:var name='ar[0]' value='A'><mt:var name='ar[1]' value='B'><mt:var name='ar[2]' value='C'><mt:loop name='ar'><mt:if name='__value__' eq='A'><mt:var name='__counter__'><mt:elseif eq='B'><mt:var name='__counter__'><mt:else><mt:var name='__counter__'></mt:if></mt:loop>", "e" : "123"}, #413
+{ "r" : "1", "t" : "<mt:var name='ar[0]' value='A'><mt:var name='ar[1]' value='B'><mt:var name='ar[2]' value='C'><mt:loop name='ar'><mt:if name='__value__' eq='A'><mt:var name='__counter__'><mt:else eq='B'><mt:var name='__counter__'><mt:else><mt:var name='__counter__'></mt:if></mt:loop>", "e" : "123"}, #414
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='fuga'><mt:if name='foo' eq='hoge'>hoge<mt:elseif eq='poge'>poge<mt:elseif eq='fuga'>fuga<mt:else>false</mt:if>", "e" : "value is poge"}, #415
+{ "r" : "1", "t" : "value is <mt:setvar name='foo' value='fuga'><mt:if name='foo' eq='hoge'>hoge<mt:else eq='poge'>poge<mt:else eq='fuga'>fuga<mt:else>false</mt:if>", "e" : "value is poge"}, #416
+{ "r" : "1", "t" : "<mt:var name='ar[0]' value='A'><mt:var name='ar[1]' value='B'><mt:var name='ar[2]' value='C'><mt:loop name='ar'><mt:if name='__value__' eq='A'><mt:var name='__counter__'><mt:elseif eq='B'><mt:var name='__counter__'><mt:elseif eq='C'>hoge!<mt:else><mt:var name='__counter__'></mt:if></mt:loop>", "e" : "12hoge!"}, #417
+{ "r" : "1", "t" : "<mt:var name='ar[0]' value='A'><mt:var name='ar[1]' value='B'><mt:var name='ar[2]' value='C'><mt:loop name='ar'><mt:if name='__value__' eq='A'><mt:var name='__counter__'><mt:else eq='B'><mt:var name='__counter__'><mt:else eq='C'>hoge!<mt:else><mt:var name='__counter__'></mt:if></mt:loop>", "e" : "12hoge!"} #418
 ]
