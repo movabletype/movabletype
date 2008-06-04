@@ -1843,11 +1843,14 @@ sub seed_database {
     $self->create_default_roles(%param);
 
     require MT::Blog;
-    my $blog = MT::Blog->create_default_blog(MT->translate('First Blog'), $param{blog_template_set})
-        or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Blog->errstr));
+    my $blog = MT::Blog->create_default_blog(
+        exists $param{blog_name}
+          ? uri_unescape($param{blog_name})
+          : MT->translate('First Blog'),
+        $param{blog_template_set})
+            or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Blog->errstr));
     $blog->site_path(exists $param{blog_path} ? uri_unescape($param{blog_path}) : '');
     $blog->site_url(exists $param{blog_url} ? uri_unescape($param{blog_url}) : '');
-    $blog->name(exists $param{blog_name} ? uri_unescape($param{blog_name}) : '');
     $blog->server_offset(exists $param{blog_timezone} ? ($param{blog_timezone} || 0) : 0);
     $blog->template_set($param{blog_template_set});
     $blog->save;
