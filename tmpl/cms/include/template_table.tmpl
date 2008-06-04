@@ -112,11 +112,11 @@
                 <mt:loop name="archive_tmpl_loop">
                     <mt:if name="selected">
                         <li>
-                    <mt:if name="build_type" eq="0"><__trans phrase="Disabled">
-                    <mt:elseif name="build_type" eq="2"><__trans phrase="Manual">
-                    <mt:elseif name="build_type" eq="3"><__trans phrase="Dynamic">
-                    <mt:elseif name="build_type" eq="4"><__trans phrase="Publish Queue">
-                    <mt:elseif name="build_type" eq="5"><__trans phrase="Scheduled">
+                    <mt:if name="map_build_type" eq="0"><__trans phrase="Disabled">
+                    <mt:elseif name="map_build_type" eq="2"><__trans phrase="Manual">
+                    <mt:elseif name="map_build_type" eq="3"><__trans phrase="Dynamic">
+                    <mt:elseif name="map_build_type" eq="4"><__trans phrase="Publish Queue">
+                    <mt:elseif name="map_build_type" eq="5"><__trans phrase="Scheduled">
                     <mt:else><__trans phrase="Static"></mt:if>
                         </li>
                     </mt:if>
