@@ -160,7 +160,7 @@
         ><__trans phrase="Preview"></button>
     </mt:if>
     <mt:unless name="build_type_0">
-    <mt:unless name="build_dynamic">
+    <mt:if name="static_maps">
         <mt:if name="can_rebuild">
             <mt:if name="template_group" like="/^(archive|index)$/">
     <button
@@ -172,7 +172,7 @@
         ><__trans phrase="Save &amp; Publish"></button>
             </mt:if>
         </mt:if>
-    </mt:unless>
+    </mt:if>
     </mt:unless>
     <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>

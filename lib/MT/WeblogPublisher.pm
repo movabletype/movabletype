@@ -987,8 +987,7 @@ sub rebuild_file {
     # we move the file that might be there so that the custom
     # 404 will be triggered.
     require MT::PublishOption;
-    if ( $tmpl->build_dynamic
-      || ( $map->build_type == MT::PublishOption::DYNAMIC() ) )
+    if ( $map->build_type == MT::PublishOption::DYNAMIC() ) 
     {
         rename(
             $finfo->file_path,    # is this just $file ?
@@ -1002,10 +1001,9 @@ sub rebuild_file {
         }
     }
 
-    return 1 if ( $tmpl->build_dynamic )
-        || ( $map->build_type == MT::PublishOption::DYNAMIC() );
+    return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
-    return 1 unless ( $tmpl->build_type );
+    return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
     if ($timer) {
