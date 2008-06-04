@@ -2268,6 +2268,8 @@ sub edit_widget {
                 $tmpl_class->errstr || $app->translate("(no reason given)")
             )
           );
+        return $app->return_to_dashboard( redirect => 1 )
+            if $wtmpl->blog_id ne $blog_id;
         $param->{name} = $wtmpl->name;
         $param->{include_with_ssi} = $wtmpl->include_with_ssi
           if defined $wtmpl->include_with_ssi;
