@@ -172,7 +172,10 @@ sub init_cache_driver {
         });
         return;
     }
-    $app->{cache_driver} = $cache_driver->new( ttl => $app->config->SearchCacheTTL );
+    $app->{cache_driver} = $cache_driver->new(
+        ttl => $app->config->SearchCacheTTL,
+        kind => 'CS',
+    );
 }
 
 sub create_blog_list {
@@ -876,6 +879,9 @@ sub _default_throttle {
 sub _default_takedown {
     my ( $cb, $app ) = @_;
     alarm(0) if $app->{__have_throttle};
+    if ( my $cache_driver = $app->{cache_driver} ) {
+        $cache_driver->purge_stale( 2 * $app->config->SearchCacheTTL );
+    }
     1;
 }
 

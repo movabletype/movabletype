@@ -773,6 +773,13 @@ sub load_core_tasks {
                 MT::Core->remove_expired_sessions;
             },
         },
+        'RemoveExpiredSearchCaches' => {
+            label => 'Remove Expired Search Caches',
+            frequency => 60 * 60 * 24,   # once a day
+            code => sub {
+                MT::Core->remove_expired_search_caches;
+            },
+        },
     };
 }
 
@@ -802,6 +809,15 @@ sub remove_expired_sessions {
     foreach my $s (@sesss) {
         $s->remove if !$s->get('remember');
     }
+    return '';
+}
+
+sub remove_expired_search_caches {
+    require MT::Session;
+
+    MT::Session->remove(
+        { kind => 'CS', start => [ undef, time - 60 * 60 ] },
+        { range => { start => 1 } } );
     return '';
 }
 

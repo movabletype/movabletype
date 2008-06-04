@@ -52,6 +52,11 @@ sub cleanup {
     }
 }
 
+# method for MT::Cache interface
+sub purge_stale {
+    1;
+}
+
 sub DESTROY { }
 
 sub AUTOLOAD {

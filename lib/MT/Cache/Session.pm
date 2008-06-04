@@ -13,6 +13,7 @@ sub new {
     my $class = shift;
     my (%param) = @_;
     $param{'ttl'} ||= 0;
+    $param{'kind'} ||= 'CO';
     my $self = bless \%param, $class;
     return $self;
 }
@@ -24,10 +25,10 @@ sub get {
     my $record;
     if ( $self->{ttl} ) {
         $record = MT::Session::get_unexpired_value(
-            $self->{ttl}, { id => $key, kind => 'CO' } );
+            $self->{ttl}, { id => $key, kind => $self->{kind} } );
     }
     else {
-        $record = MT::Session->load( { id => $key, kind => 'CO' } );
+        $record = MT::Session->load( { id => $key, kind => $self->{kind} } );
     }
     return unless $record;
     return $record->data;
@@ -37,7 +38,7 @@ sub get_multi {
     my MT::Cache::Session $self = shift;
     my @keys = @_;
 
-    my @tmp = MT::Session->load( { id => \@keys, kind => 'CO' } )
+    my @tmp = MT::Session->load( { id => \@keys, kind => $self->{kind} } )
         or return;
 
     my @records;
@@ -60,7 +61,7 @@ sub get_multi {
 sub delete {
     my MT::Cache::Session $self = shift;
     my ($key, $time) = @_;
-    MT::Session->remove( { id => $key, kind => 'CO' } )
+    MT::Session->remove( { id => $key, kind => $self->{kind} } )
         or return 0;
     1;
 }
@@ -85,13 +86,13 @@ sub _set {
 
     my $cache = MT::Session->load({
         id   => $key,
-        kind => 'CO',
+        kind => $self->{kind},
     });
     $cache->remove() if $cache;
     $cache = MT::Session->new;
     $cache->set_values({
         id    => $key,
-        kind  => 'CO',
+        kind  => $self->{kind},
         start => time,
         data  => $val,
     });
@@ -100,7 +101,17 @@ sub _set {
 
 sub flush_all {
     my MT::Cache::Session $self = shift;
-    MT::Session->remove({ kind => 'CO' });
+    MT::Session->remove({ kind => $self->{kind} });
+}
+
+sub purge_stale {
+    my MT::Cache::Session $self = shift;
+    my ( $ttl ) = @_;
+    MT::Session->remove(
+        { kind => $self->{kind}, start => [ undef, time - $ttl ] },
+        { range => { start => 1 } }
+    );
+    1;
 }
 
 sub DESTROY {}
@@ -148,6 +159,11 @@ so MT::Cache::Session looks like the L<Cache::Cache> API.
 =head2 $cache->flush_all
 
 Empty all the caches.
+
+=head2 $cache->purge_stale
+
+Deletes all the cached objects that are already too old.
+Takes one argument: $ttl specifies the duration that is considered stale.
 
 =head1 AUTHOR & COPYRIGHT
 

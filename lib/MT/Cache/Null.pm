@@ -53,6 +53,11 @@ sub _set {
     return;
 }
 
+sub purge_stale {
+    my MT::Cache::Null $self = shift;
+    return;
+}
+
 sub flush_all {
     my MT::Cache::Null $self = shift;
     return;
