@@ -239,7 +239,9 @@ sub save_config {
     }
 
     $config->data($data);
-    $config->save or die $config->errstr;
+    # Ignore any error returned for the sake of MT-Wizard,
+    # where the mt_config table doesn't actually exist yet.
+    $config->save;
     $mgr->clear_dirty;
     1;
 }
