@@ -82,6 +82,7 @@ mt-view.cgi
 ^schemas
 \bknown-issues
 ^t/
+.*/t/
 ^db
 ^ToDo$
 ^README
