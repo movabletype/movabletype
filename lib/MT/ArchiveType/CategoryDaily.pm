@@ -126,9 +126,11 @@ sub archive_group_iter {
                     "extract(month from authored_on)",
                     "extract(day from authored_on)"
                 ],
-                sort => "extract(year from authored_on) $order,
-                              extract(month from authored_on) $order,
-                              extract(day from authored_on) $order",
+                sort => [
+                    { column => "extract(year from authored_on)", desc => $order },
+                    { column => "extract(month from authored_on)", desc => $order },
+                    { column => "extract(day from authored_on)", desc => $order },
+                ],
                 'join' =>
                   [ 'MT::Placement', 'entry_id', { category_id => $c->id } ]
             }

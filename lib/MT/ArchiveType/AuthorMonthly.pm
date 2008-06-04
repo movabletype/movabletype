@@ -129,8 +129,10 @@ sub archive_group_iter {
                     "extract(year from authored_on)",
                     "extract(month from authored_on)"
                 ],
-                'sort' => "extract(year from authored_on) $order,
-                         extract(month from authored_on) $order"
+                'sort' => [
+                    { column => "extract(year from authored_on)", desc => $order },
+                    { column => "extract(month from authored_on)", desc => $order }
+                ],
             }
         ) or return $ctx->error("Couldn't get monthly archive list");
 

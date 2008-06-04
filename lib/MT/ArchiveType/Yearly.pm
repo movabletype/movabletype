@@ -102,7 +102,7 @@ sub archive_group_iter {
         {
             group => ["extract(year from authored_on)"],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
-            sort => "extract(year from authored_on) $order"
+            sort => [ { column => "extract(year from authored_on)", desc => $order } ],
         }
     ) or return $ctx->error("Couldn't get yearly archive list");
 

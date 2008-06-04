@@ -136,6 +136,13 @@ sub _do_group_by {
     $class->call_trigger('pre_search', $terms, $args);
     my $order = delete $args->{sort};
     my $direction = delete $args->{direction};
+    if ( $order =~ /\sdesc|asc/i ) {
+        my @new_order;
+        while ($order =~ /(?:\s*([\w\s\(\)]+?)\s(desc|asc))/ig) {
+            push @new_order, { column => $1, desc => $2 };
+        }
+        $order = \@new_order if @new_order;
+    }
     my $limit = exists $args->{limit} ? delete $args->{limit} : undef;
     my $offset = exists $args->{offset} ? delete $args->{offset} : undef;
     my $stmt = $driver->prepare_statement($class, $terms, $args);

@@ -32,7 +32,7 @@ BEGIN {
         if !-r $ENV{MT_CONFIG};
 }
 
-plan tests => 184;
+plan tests => 197;
 
 package Zot;
 use base 'MT::Object';
@@ -399,12 +399,12 @@ $bar[2]->status(0);
 ok($bar[2]->save, 'saved');
 sleep(2);  ## Sleep to ensure created_on timestamps are unique
 
+# legacy way of specifying sort direction
 my $cgb_iter = Bar->count_group_by({
         status => '0',
     }, {
         group => [ 'foo_id' ],
-        sort => 'foo_id',
-        direction => 'descend',
+        sort => 'foo_id desc',
     });
 my ($count, $bfid, $month);
 isa_ok($cgb_iter, 'CODE');
@@ -416,17 +416,47 @@ is($bfid, $bar[0]->id, 'id');
 is($count, 1, 'count5');
 ok(!$cgb_iter->(), 'no $iter');
 
-$cgb_iter = Bar->count_group_by(undef, {
-        group => [ 'extract(month from created_on)' ],
-        sort => 'extract(month from created_on)',
-        direction => 'descend',
+# new way of specifying sort direction
+my $cgb_iter2 = Bar->count_group_by({
+        status => '0',
+    }, {
+        group => [ 'foo_id' ],
+        sort => 'foo_id',
+        direction => 'descend'
     });
-isa_ok($cgb_iter, 'CODE');
-ok(($count, $month) = $cgb_iter->(), 'set');
+
+isa_ok($cgb_iter2, 'CODE');
+ok(($count, $bfid) = $cgb_iter2->(), 'set');
+is($bfid, $bar[1]->id, 'id');
+is($count, 1, 'count4');
+ok(($count, $bfid) = $cgb_iter2->(), 'set');
+is($bfid, $bar[0]->id, 'id');
+is($count, 1, 'count5');
+ok(!$cgb_iter2->(), 'no $iter');
+
+# legacy way of specifying sort direction
+my $cgb_iter3 = Bar->count_group_by(undef, {
+        group => [ 'extract(month from created_on)' ],
+        sort => 'extract(month from created_on) desc',
+    });
+isa_ok($cgb_iter3, 'CODE');
+ok(($count, $month) = $cgb_iter3->(), 'set');
 use POSIX qw(strftime);
 is(int($month), int(strftime("%m", localtime)), 'month');
 is($count, 3, 'count6');
-ok(!$cgb_iter->(), 'no $iter');
+ok(!$cgb_iter3->(), 'no $iter');
+
+# new way of specifying sort direction
+my $cgb_iter4 = Bar->count_group_by(undef, {
+        group => [ 'extract(month from created_on)' ],
+        sort => [{ column => 'extract(month from created_on)',
+            desc => 'desc' }]
+    });
+isa_ok($cgb_iter4, 'CODE');
+ok(($count, $month) = $cgb_iter4->(), 'set');
+is(int($month), int(strftime("%m", localtime)), 'month');
+is($count, 3, 'count6');
+ok(!$cgb_iter4->(), 'no $iter');
 
 ## Get a count of all Foo objects in order of most recently
 ## created Bar object. No uniqueness requirement. This tests

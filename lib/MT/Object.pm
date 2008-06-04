@@ -1780,7 +1780,7 @@ Sort may also be specified as an arrayref of multiple columns to sort on.
 For example:
 
     sort => [
-        { column => "column_1", desc => "descend" },
+        { column => "column_1", desc => "DESC" },
         { column => "column_2", }   # default direction is 'ascend'
     ]
 

@@ -100,7 +100,7 @@ sub archive_group_iter {
             ( $ts && $tsend ? ( range_incl => { authored_on => 1 } ) : () ),
             group => [ "week_number" ],
             $args->{lastn} ? ( limit => $args->{lastn} ) : (),
-            sort => "week_number $order"
+            sort => [ { column => "week_number", desc => $order } ],
         }
     ) or return $ctx->error("Couldn't get weekly archive list");
 
