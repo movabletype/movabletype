@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -272,7 +272,7 @@ use vars qw( @ISA %Lexicon );
 	'Your session has expired. Please sign in again to comment.' => 'セッションの有効期限が切れています。再度サインインしてください。',
 	'Signing in...' => 'サインインします...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'このブログにコメントする権限を持っていません。([_2]サインアウトする[_3])',
-	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => '[_1]としてサインインしています。([_2]サインアウト[_3])',
+	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => '__NAME__としてサインインしています。([_2]サインアウト[_3])',
 	'[_1]Sign in[_2] to comment.' => 'コメントするにはまず[_1]サインイン[_2]してください。',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => 'コメントする前に[_1]サインイン[_2]することもできます。',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => '<a href="[_1]" onclick="[_2]">[_3]からのコメント</a>に返信',
@@ -656,6 +656,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Remove Expired User Sessions' => '期限切れのユーザーセッションを削除',
+	'Remove Expired Search Caches' => '期限切れの検索キャッシュを削除',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => '[_1]は[_2]に直してください。',
