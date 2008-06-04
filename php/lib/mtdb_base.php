@@ -1408,8 +1408,6 @@ class MTDatabaseBase extends ezsql {
         if (isset($this->_author_id_cache[$author_id])) {
             return $this->_author_id_cache[$author_id];
         }
-        global $mt;
-        $args['blog_id'] = $mt->blog_id;
         $args['author_id'] = $author_id;
         $args['any_type'] = 1;
         $result = $this->fetch_authors($args);

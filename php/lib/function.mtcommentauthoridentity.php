@@ -16,8 +16,6 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
         }
     }
     if (!$cmntr) return "";
-    if (is_array($cmntr))
-        $cmntr = $cmntr[0];
     if (isset($cmntr['author_url']))
         $link = $cmntr['author_url'];
     require_once "function.mtstaticwebpath.php";

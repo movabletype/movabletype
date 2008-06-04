@@ -25,8 +25,6 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         $show_url = 1;
 
     $cmntr = $ctx->stash('commenter');
-    if (is_array($cmntr))
-        $cmntr = $cmntr[0];
     if (!isset($cmntr)) {
         if (isset($comment['comment_commenter_id'])) {
             $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
