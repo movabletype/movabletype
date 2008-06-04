@@ -19,7 +19,6 @@ sub init {
     $app->set_no_cache;
     $app->{default_mode} = 'default';
 
-    $app->mode('tag') if $app->param('tag');
     ## process pathinfo
     #if ( my $pi = $app->path_info ) {
     #    $pi =~ s!^/!!;
@@ -79,6 +78,9 @@ sub core_parameters {
 sub init_request{
     my $app = shift;
     $app->SUPER::init_request(@_);
+
+    $app->mode('tag') if $app->param('tag');
+
     my $q = $app->param;
 
     my $params = $app->registry( $app->mode, 'params' );
