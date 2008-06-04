@@ -365,22 +365,28 @@ sub save {
             || $obj->type eq 'page'
             || $obj->type eq 'individual' )
         {
+            my $static_maps = delete $app->{static_dynamic_maps};
             require MT::TemplateMap;
-            my @maps = MT::TemplateMap->load(
-                {
-                    template_id => $obj->id,
-                    build_type  => MT::PublishOption::DYNAMIC()
+            my $terms = {};
+            if ( $static_maps && @$static_maps ) {
+                $terms->{id} = $static_maps;
+            }
+            else {
+                # all existing maps have been dynamic
+                # do nothing
+            }
+            if ( %$terms ) {
+                my @maps = MT::TemplateMap->load($terms);
+                my @ats = map { $_->archive_type } @maps;
+                if ($#ats >= 0) {
+                    $q->param( 'type', join( ',', @ats ) );
+                    $q->param( 'with_indexes', 1 );
+                    $q->param( 'no_static', 1 );
+                    $q->param( 'template_id', $obj->id );
+                    $q->param( 'single_template', 1 );
+                    require MT::CMS::Blog;
+                    return MT::CMS::Blog::start_rebuild_pages($app);
                 }
-            );
-            my @ats = map { $_->archive_type } @maps;
-            if ($#ats >= 0) {
-                $q->param( 'type', join( ',', @ats ) );
-                $q->param( 'with_indexes', 1 );
-                $q->param( 'no_static', 1 );
-                $q->param( 'template_id', $obj->id );
-                $q->param( 'single_template', 1 );
-                require MT::CMS::Blog;
-                return MT::CMS::Blog::start_rebuild_pages($app);
             }
         }
     }

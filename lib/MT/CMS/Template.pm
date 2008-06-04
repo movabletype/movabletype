@@ -1396,6 +1396,7 @@ sub post_save {
         # archive template specific post_save tasks
         require MT::TemplateMap;
         my @p = $q->param;
+        my @static_maps;
         for my $p (@p) {
             my $map;
             if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
@@ -1418,6 +1419,11 @@ sub post_save {
                     or next;
                 my $build_type = $q->param($p);
                 require MT::PublishOption;
+                # Populate maps that are changed from static to dynamic
+                # This should capture new map as well
+                push @static_maps, $map->id
+                    if ( ( $build_type ne $map->build_type )
+                      && ( MT::PublishOption::DYNAMIC() eq $build_type ) );
                 $map->build_type($build_type);
                 if ( $build_type == MT::PublishOption::SCHEDULED() ) {
                     my $period   = $q->param( 'map_schedule_period_' . $map_id );
@@ -1433,6 +1439,7 @@ sub post_save {
                 $dynamic = 1;
             }
         }
+        $app->{static_dynamic_maps} = @static_maps ? \@static_maps : 0;
     }
 
     if ( !$original->id ) {
