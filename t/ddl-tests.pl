@@ -156,6 +156,21 @@ sub _02_create_indexes : Tests(5) {
     }
 }
 
+sub _03_create_sequence : Tests(2) {
+    my $self = shift;
+
+    my $driver    = MT::Object->dbi_driver;
+    my $dbh       = $driver->rw_handle;
+    my $ddl_class = $driver->dbd->ddl_class;
+
+    $ddl_class->create_sequence('Ddltest');
+    pass('Created Ddltest sequence without dying');
+
+    $ddl_class->drop_sequence('Ddltest');
+    $ddl_class->create_sequence('Ddltest');
+    pass('Recreated Ddltest sequence after drop without dying');
+}
+
 sub _def {
     my ($auto, $not_null, $type, $size) = @_;
     my $def = {
