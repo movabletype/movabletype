@@ -254,6 +254,22 @@ sub invalid_type : Tests(3) {
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
 }
 
+sub _00_drop_table_test : Test(shutdown => 3) {
+    my $self = shift;
+
+    my $driver    = MT::Object->dbi_driver;
+    my $dbh       = $driver->rw_handle;
+    my $ddl_class = $driver->dbd->ddl_class;
+
+    my $drop_sql = $ddl_class->drop_table_sql('Ddltest');
+    ok($drop_sql, 'Drop Table SQL for Ddltest is available');
+    my $res = $dbh->do($drop_sql);
+    ok($res, 'Driver could perform Drop Table SQL for Ddltest');
+    diag($dbh->errstr || $DBI::errstr) if !$res;
+
+    ok(!defined $ddl_class->column_defs('Ddltest'), 'Ddltest table no longer exists');
+}
+
 package main;
 
 Test::DDL->runtests();
