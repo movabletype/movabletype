@@ -405,6 +405,11 @@ sub do_search_replace {
         ## we need to search all user/group for 'grant permissions',
         ## if $blog_id is specified. it affects the setup_terms_args.
         if ( $app->param('__mode') eq 'dialog_grant_role' ) {
+            if ($blog_id) {
+                my $perm = $author->permissions($blog_id);
+                return $app->errtrans('Permission denied.')
+                    unless $perm->can_administer_blog;
+            }
             $blog_id = 0;
         }
         if (exists $api->{setup_terms_args}) {
@@ -445,7 +450,10 @@ sub do_search_replace {
                 }
             };
         } else {
-            if ( $blog_id || ($type eq 'blog') ) {
+            if ( $blog_id
+              || ( $type eq 'blog' )
+              || ( $app->mode eq 'dialog_grant_role' ) )
+            {
                 $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
             }
             else {
