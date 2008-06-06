@@ -487,12 +487,15 @@ class MTDatabaseBase extends ezsql {
         if ($args['limit'] > 0) {
             $args['lastn'] = $args['limit'];
         } elseif (!isset($args['days']) && !isset($args['lastn'])) {
-            if ($days = $blog['blog_days_on_index']) {
-                if (!isset($args['recently_commented_on'])) {
-                    $args['days'] = $days;
-                }
-            } elseif ($posts = $blog['blog_entries_on_index']) {
-                $args['lastn'] = $posts;
+        #    if ($days = $blog['blog_days_on_index']) {
+        #        if (!isset($args['recently_commented_on'])) {
+        #            $args['days'] = $days;
+        #        }
+        #    } elseif ($posts = $blog['blog_entries_on_index']) {
+        #        $args['lastn'] = $posts;
+        #    }
+            if ($posts = $blog['blog_entries_on_index']) {
+                $limit = $posts;
             }
         }
         if ($args['limit'] == 'auto') {
@@ -720,12 +723,26 @@ class MTDatabaseBase extends ezsql {
         } elseif (isset($args['days']) && !$date_filter) {
             $day_filter = 'and ' . $this->limit_by_day_sql('entry_authored_on', intval($args['days']));
         } else {
+            $found_valid_args = 0;
+            foreach ( array(
+                'lastn', 'days',
+                'category', 'categories', 'category_id',
+                'tag', 'tags',
+                'author',
+                'min_score',  'max_score',
+                'min_rate',    'max_rate',
+                'min_count',  'max_count'
+              ) as $valid_key )
+            {
+                if (array_key_exists($valid_key, $args)) {
+                    $found_valid_args = 1;
+                    break;
+                }
+            }
             if ((!isset($args['current_timestamp']) &&
                 !isset($args['current_timestamp_end'])) &&
                 ($limit <= 0) &&
-                (!isset($args['category'])) &&
-                (!isset($args['categories'])) &&
-                (!isset($args['category_id'])) &&
+                (!$found_valid_args) &&
                 (isset($blog))) {
                 if ($days = $blog['blog_days_on_index']) {
                     if (!isset($args['recently_commented_on'])) {
