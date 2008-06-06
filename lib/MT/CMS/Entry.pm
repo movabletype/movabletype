@@ -1331,10 +1331,13 @@ $ao
         }
         $place->category_id($cat_id);
         $place->save;
+        my $cat = $cat_class->load($cat_id);
+        $obj->cache_property( 'category', undef, $cat );
     }
     else {
         if ( $place ) {
             $place->remove;
+            $obj->cache_property( 'category', undef, undef );
         }
     }
 
@@ -1367,6 +1370,10 @@ $ao
             $app->translate( "Saving placement failed: [_1]", $place->errstr )
           );
         $placements_updated = 1;
+    }
+    if ($placements_updated) {
+        $obj->cache_property( 'categories', undef, [] );
+        $obj->cache_property( 'categories', undef, \@add_cat );
     }
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
