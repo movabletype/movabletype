@@ -12,9 +12,9 @@ use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
 
-@WXRImporter::WXRHandler::ISA = qw(XML::SAX::Base);
+use base qw(XML::SAX::Base);
 
-use constant POST_SEPARATOR => '<!--more-->'; # WordPress's separator string
+sub POST_SEPARATOR { '<!--more-->'; } # WordPress's separator string
 
 sub new {
     my $class = shift;
@@ -459,6 +459,7 @@ sub _create_post {
     my $post = $class->new;
     $post->blog_id($blog->id);
     $post->convert_breaks($self->{convert_breaks});
+    $post->status($blog->status_default);
     for my $hash (@$hashes) {
         my @hash_array = %$hash;
         my $key = $hash_array[0];
