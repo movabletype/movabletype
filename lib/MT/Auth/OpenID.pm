@@ -40,16 +40,10 @@ sub login {
         return $app->error($app->translate("Could not verify the OpenID provided: [_1]", $err_msg));
     }
 
-    my $root = $class->_get_root($blog);
-    my $return_to = $app->base . $app->uri . '?__mode=handle_sign_in'
-        . '&blog_id=' . $q->param('blog_id')
-        . '&static=' . $q->param('static')
-        . '&key=' . $q->param('key');
-    $return_to .= '&entry_id=' . $q->param('entry_id') if $q->param('entry_id');
+    my %params = $class->check_url_params( $app, $blog );
 
     my $check_url = $claimed_identity->check_url(
-        return_to => $return_to,
-        trust_root => $root,
+        %params
     );
 
     return $app->redirect($check_url);
@@ -378,9 +372,11 @@ sub _url_hash {
     return substr $url, 0, 255;
 }
 
-sub _get_root {
+sub check_url_params {
     my $class = shift;
-    my ($blog) = @_;
+    my ( $app, $blog ) = @_;
+    my $q = $app->{query};
+
     my $path = MT->config->CGIPath;
     if ($path =~ m!^/!) {
         # relative path, prepend blog domain
@@ -388,7 +384,95 @@ sub _get_root {
         $path = $blog_domain . $path;
     }
     $path .= '/' unless $path =~ m!/$!;
-    $path;
+    $path .= MT->config->CommentScript;
+
+    my $return_to = $path . '?__mode=handle_sign_in'
+        . '&blog_id=' . $q->param('blog_id')
+        . '&static=' . $q->param('static')
+        . '&key=' . $q->param('key');
+    $return_to .= '&entry_id=' . $q->param('entry_id') if $q->param('entry_id');
+    ( trust_root => $path, return_to => $return_to );
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::Auth::OpenID
+
+Movable Type commenter authentication module via OpenID
+
+=head1 METHODS
+
+=head2 login
+
+This method is called from MT::App::Comments::login_external,
+to initiate process of logging in to a website other than 
+Movable Type itself.  You should not have to modify the
+behavior of this method.
+
+=head2 handle_sign_in
+
+This method is called from MT::App::Comments::handle_sign_in
+to accept the result of logging in to an external website.
+You should not have to modify the behavior of this method.
+
+=head2 url_for_userid
+
+This method is called in login method when it needs to construct
+OpenID for the login request.  By default the module accepts
+the identifier entered by the user as OpenID, thus does nothing
+in this method.
+
+You can inherit this class, create your own authentication
+module and override this method to generate OpenID out of
+what user entered in the login form, so it can provide more
+user friendly way of specifying their OpenID.  See MT::Auth::Vox
+and MT::Auth::LiveJournal for examples.
+
+=head2 get_nickname
+
+This method is called in handle_sign_in method, in which it
+tries to grab the user's nickname.  By default, a user who
+is authenticated via OpenID has his/her nickname as the OpenID
+(thus, URL).  It tends to get ugly when it is displayed.
+
+By default, this class tries to load FOAF or Atom from the
+verified OpenID to see if it is able to get more semantic information.
+If it was able to load the semantic info from one of them,
+it uses the information as the user's nickname.
+
+You can inherit this class, create your own authentication
+module and override this method to generate more user friendly
+nickname for a user from the OpenID that does not support
+FOAF or Atom retrieval from the URL.
+
+=head2 get_userpic_asset
+
+This method is called in handle_sign_in method, in which it
+tries to retrieve the user's userpic or avatar.  By default,
+the method sees if the FOAF retrieved from OpenID has the URL
+for userpic.  If it does, the method downloads the userpic and
+saves it as an userpic asset for the user.
+
+You can inherit this class, create your own authentication
+module and override this method to associate a userpic to the user.
+
+=head2 check_url_params
+
+This method is called in login method.  This method must return
+a hash which is passed to I<Net::OpenID::ClaimedIdentity>::check_url.
+Consult I<Net::OpenID::ClaimedIdentity> about what can be specified.
+By default, the class specifies trust_root and return_to parameters.
+
+You can inherit this class, create your own authentication
+module and override this method to specify more parameters, or
+change how to construct trust_root and return_to arguments.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut
