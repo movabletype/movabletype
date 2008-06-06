@@ -1,5 +1,8 @@
 <mt:setvar name="page_title" value="<__trans phrase="Create Blog">">
 <$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvarblock name="related_content">
+    <$mtapp:PageActions$>
+</mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg

@@ -13,6 +13,9 @@
 <mt:setvarblock name="content_nav">
     <mt:include name="include/users_content_nav.tmpl">
 </mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <$mtapp:PageActions$>
+</mt:setvarblock>
 <mt:setvarblock name="system_msg" id="system_msg">
 <mt:if name="saved">
     <mtapp:statusmsg
