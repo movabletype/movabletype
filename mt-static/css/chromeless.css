@@ -566,3 +566,11 @@ ul#profile-data li {
 .mt-profile-edit form {
     margin-bottom: .75em;
 }
+
+.custom-field-radio-list {
+    margin-bottom: .25em;
+}
+.custom-field-radio-list li {
+    list-style: none;
+    margin-left: 0;
+}
