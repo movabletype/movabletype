@@ -131,6 +131,21 @@ MT.App.Editor.Textarea = new Class( Editor.Textarea, {
     currentTextMode: "_DEFAULT_",
     
 
+    getHTML: function() {
+        /* we can refocus the last selected element,
+         * because the superClass getHTML will focus the editor (if IE) */
+        var refocus;
+        if ( document.activeElement )
+            refocus = document.activeElement;
+        
+        var html = arguments.callee.applySuper( this, arguments );
+        
+        try { if ( refocus ) refocus.focus(); } catch(e) { };
+
+        return html;
+    },
+
+
     setTextMode: function( mode ) {
         var editorContent = DOM.getElement( "editor-content" );
         DOM.removeClassName( editorContent, /^editor-textmode-.*/ );
