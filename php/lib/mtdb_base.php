@@ -468,6 +468,11 @@ class MTDatabaseBase extends ezsql {
             $blog = $this->fetch_blog($blog_id);
         }
 
+        if ( !$blog ) {
+            global $mt;
+            $blog = $this->fetch_blog($mt->blog_id);
+        }
+
         // determine any custom fields that we should filter on
         $fields = array();
         foreach ($args as $name => $v)
@@ -494,9 +499,6 @@ class MTDatabaseBase extends ezsql {
         #    } elseif ($posts = $blog['blog_entries_on_index']) {
         #        $args['lastn'] = $posts;
         #    }
-            if ($posts = $blog['blog_entries_on_index']) {
-                $limit = $posts;
-            }
         }
         if ($args['limit'] == 'auto') {
             if (($_REQUEST['limit'] > 0) && ($_REQUEST['limit'] < $args['lastn'])) {
