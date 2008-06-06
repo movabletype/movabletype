@@ -88,6 +88,22 @@ __PACKAGE__->install_properties({
 });
 
 
+package Ddltest::Fixable;
+use base qw( MT::Object );
+
+__PACKAGE__->install_properties({
+    column_defs => {
+        id  => 'integer not null auto_increment',
+        foo => 'string(10)',
+        bar => 'string(10)',
+        baz => 'string(10)',
+    },
+    datasource  => 'ddltest_fixable',
+    primary_key => 'id',
+    cacheable   => 0,
+});
+
+
 package Test::DDL;
 use base qw( Test::Class MT::Test );
 use Test::More;
@@ -267,6 +283,67 @@ sub invalid_type : Tests(3) {
     ok(!defined $ddl_class->column_defs('Ddltest::InvalidType'), 'Ddltest::InvalidType table has no column defs');
 
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
+}
+
+sub fixable : Tests(12) {
+    my $self = shift;
+
+    my $driver    = MT::Object->dbi_driver;
+    my $dbh       = $driver->rw_handle;
+    my $ddl_class = $driver->dbd->ddl_class;
+
+    eval {
+        if ($driver->table_exists('Ddltest::Fixable')) {
+            my $sql = $driver->dbd->ddl_class->drop_table_sql('Ddltest::Fixable');
+            $driver->rw_handle->do($sql);
+        }
+    };
+    eval {
+        my $sql = $ddl_class->create_table_sql('Ddltest::Fixable');
+        $dbh->do($sql);
+    };
+    for my $i (1..5) {
+        my $obj = Ddltest::Fixable->new;
+        $obj->foo($i);
+        $obj->save;
+    }
+
+    my $defs = $ddl_class->column_defs('Ddltest::Fixable');
+    ok($defs->{baz}, 'Ddltest::Fixable table has baz column after creation');
+
+    my $sql = $ddl_class->drop_column_sql('Ddltest::Fixable', 'baz');
+    ok($sql, 'Ddltest::Fixable can have column dropping sql');
+    my $res = $dbh->do($sql);
+    ok($res, 'Ddltest::Fixable could have its column dropped');
+
+    {
+        local Ddltest::Fixable->properties->{column_defs}->{borf} = 'string(10)';
+        $sql = $ddl_class->add_column_sql('Ddltest::Fixable', 'borf');
+        ok($sql, 'Ddltest::Fixable can have column adding sql');
+        $res = $dbh->do($sql);
+        ok($res, 'Ddltest::Fixable could have a column added');
+        diag(($dbh->errstr || $DBI::errstr) . "( sql $sql)") if !$res;
+    }
+
+    $defs = $ddl_class->column_defs('Ddltest::Fixable');
+    ok(!$defs->{baz},  'Ddltest::Fixable did indeed have a column dropped');
+    ok( $defs->{borf}, 'Ddltest::Fixable did indeed have a column added');
+
+    STMT: for my $stmt ($ddl_class->fix_class('Ddltest::Fixable')) {
+        $res = $dbh->do($stmt);
+        if (!$res) {
+            diag($dbh->errstr || $DBI::errstr);
+            last STMT;
+        }
+    }
+    ok($res, q{All Ddltest::Fixable's table-fixing statements were performed});
+    $defs = $ddl_class->column_defs('Ddltest::Fixable');
+    ok( $defs->{baz},  'Ddltest::Fixable regrew its dropped column after a fix_class');
+    ok(!$defs->{borf}, 'Ddltest::Fixable lost its extra column after a fix_class');
+
+    my @objs = Ddltest::Fixable->load();
+    is(scalar @objs, 5, 'There are still 5 Ddltest::Fixable records');
+    is_deeply([ sort map { $_->foo } @objs ], [ 1..5 ], 'Ddltest::Fixable records survived with values intact');
 }
 
 sub _00_drop_table_test : Test(shutdown => 3) {
