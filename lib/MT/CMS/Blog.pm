@@ -454,10 +454,6 @@ sub cfg_archives {
     $param{no_writecache}       = $q->param('no_writecache');
     $param{include_system}      = $blog->include_system || '';
 
-    if ( $app->config->ObjectDriver =~ qr/(db[id]::)?sqlite/i ) {
-        $param{hide_build_option} = 1
-          unless $app->config->UseSQLite2;
-    }
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
 
     if ( -f $mtview_path ) {
