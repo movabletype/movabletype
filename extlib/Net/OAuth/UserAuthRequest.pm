@@ -1,40 +1,26 @@
-package Net::OAuth::Request;
+package Net::OAuth::UserAuthRequest;
 use warnings;
 use strict;
 use base qw/Net::OAuth::Message/;
 
-our $VERSION = '0.1';
-
 __PACKAGE__->mk_classdata(required_message_params => [qw/
-    consumer_key
-    signature_method
-    timestamp
-    nonce
     /]);
 
 __PACKAGE__->mk_classdata(optional_message_params => [qw/
-    version
-	signature
+	token
+    callback
     /]);
 
 __PACKAGE__->mk_classdata(required_api_params => [qw/
-    request_method
-    request_url
-    consumer_secret
     /]);
 
 __PACKAGE__->mk_classdata(optional_api_params => [qw/
-    signature_key
-    token_secret
     extra_params
     /]);
 
 __PACKAGE__->mk_classdata(signature_elements => [qw/
-    request_method
-    request_url
-    normalized_message_parameters
     /]);
-
+    
 __PACKAGE__->mk_classdata(all_message_params => [
     @{__PACKAGE__->required_message_params},
     @{__PACKAGE__->optional_message_params},
@@ -54,20 +40,9 @@ __PACKAGE__->mk_accessors(
     @{__PACKAGE__->all_params},
     );
 
-sub signature_key {
-    my $self = shift;
-    # For some sig methods (I.e. RSA), users will pass in their own key
-    my $key = $self->get('signature_key');
-    unless (defined $key) {
-        $key = Net::OAuth::Message::encode($self->consumer_secret) . '&';
-        $key .= Net::OAuth::Message::encode($self->token_secret) if $self->can('token_secret');
-    }
-    return $key;
-}
-
 =head1 NAME
 
-Net::OAuth::Request - base class for OAuth requests
+Net::OAuth::UserAuthRequest - request for OAuth User Authentication
 
 =head1 SEE ALSO
 

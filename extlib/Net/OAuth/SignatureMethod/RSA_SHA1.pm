@@ -6,9 +6,10 @@ use MIME::Base64;
 sub sign {
     my $self = shift;
     my $request = shift;
+	my $key = shift || $request->signature_key;
     die '$request->signature_key must be an RSA key object (e.g. Crypt::OpenSSL::RSA) that can sign($text)'
-        unless UNIVERSAL::can($request->signature_key, 'sign');
-    return encode_base64($request->signature_key->sign($request->signature_base_string), "");
+        unless UNIVERSAL::can($key, 'sign');
+    return encode_base64($key->sign($request->signature_base_string), "");
 }
 
 sub verify {
@@ -16,7 +17,7 @@ sub verify {
     my $request = shift;
     my $key = shift || $request->signature_key;
     die 'You must pass an RSA key object (e.g. Crypt::OpenSSL::RSA) that can verify($text,$sig)'
-        unless UNIVERSAL::can($request->signature_key, 'verify');
+        unless UNIVERSAL::can($key, 'verify');
     return $key->verify($request->signature_base_string, decode_base64($request->signature));
 }
 
