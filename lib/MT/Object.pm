@@ -1237,12 +1237,18 @@ sub cache_property {
 sub clear_cache {
     my $obj = shift;
     my $oc = MT->request('object_cache') or return;
+
+    my $pk = $obj->primary_key;
+    $pk = join ":", @$pk if ref $pk;
+    my $key = ref($obj). ':' . $pk;
+
     if (@_) {
-        $oc = $oc->{"$obj"};
+        $oc = $oc->{$key};
         delete $oc->{shift} if $oc;
     } else {
-        delete $oc->{"$obj"};
+        delete $oc->{$key};
     }
+    1;
 }
 
 sub to_hash {

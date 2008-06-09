@@ -199,6 +199,7 @@ sub init_data {
     $blog->id(1);
     $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: ". $blog->errstr;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
     diag "Saved blog";
 
     require MT::Entry;
@@ -315,6 +316,7 @@ sub init_data {
         $entry->save() or die "Couldn't save entry record 1: ".$entry->errstr;
         diag "Saved entry #1";
     }
+    $entry->clear_cache();
 
     $entry = MT::Entry->load(2);
     if (!$entry) {
@@ -336,6 +338,7 @@ sub init_data {
         $entry->save() or die "Couldn't save entry record 2: ".$entry->errstr;
         diag "Saved entry #2";
     }
+    $entry->clear_cache();
 
     $entry = MT::Entry->load(3);
     if (!$entry) {
@@ -359,6 +362,7 @@ sub init_data {
         $entry->save() or die "Couldn't save entry record 3: ".$entry->errstr;
         diag "Saved entry #3";
     }
+    $entry->clear_cache();
 
     require MT::Trackback;
     my $tb = MT::Trackback->load(1);

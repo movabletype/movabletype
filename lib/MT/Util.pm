@@ -922,7 +922,7 @@ my %DynamicURIs = (
 # until we get a non-existent basename
 sub make_unique_basename {
     my ($entry) = @_;
-    my $blog = $entry->blog;
+    my $blog = MT::Blog->load($entry->blog_id);
     my $title = $entry->title;
     $title = '' if !defined $title;
     $title =~ s/^\s+|\s+$//gs;

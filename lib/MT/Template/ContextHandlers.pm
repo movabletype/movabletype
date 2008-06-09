@@ -10036,6 +10036,7 @@ sub _hdlr_comments {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
             if ($args->{lastn} || $args->{offset}) {
                 $args{'direction'} =  'descend';
+                $so = 'descend';
             } else {
                 $args{'direction'} =  'ascend';
                 $no_resort = 1

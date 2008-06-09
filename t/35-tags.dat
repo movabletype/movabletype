@@ -162,9 +162,9 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "2"}, #111
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntryID></MTComments>", "e" : "5"}, #112
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
-{ "r" : "1", "t" : "<MTComments lastn=\"3\" glue=\",\"><MTCommentAuthorLink></MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://localhost/cgi-bin/mt-comments.cgi?__mode=red;id=14\">Chucky Dee</a>"}, #114
+{ "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"/cgi-bin/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://localhost/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -252,7 +252,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTCategories show_empty=\"1\" glue=\",\"><MTCategoryLabel>-<MTCategoryPrevious show_empty=\"1\"><MTCategoryLabel></MTCategoryPrevious></MTCategories>", "e" : "bar-,foo-bar,subfoo-"}, #200
 { "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"3\"><MTIfCategory name=\"foo\">in category</MTIfCategory></MTEntries>", "e" : "in category"}, #201
 { "r" : "1", "t" : "", "e" : ""}, #202
-{ "r" : "1", "t" : "<MTIndexList><MTIndexName>-<MTIndexLink>-<MTIndexBasename>;</MTIndexList>", "e" : "Archive Index-http://narnia.na/nana/archives.html-index;Atom-http://narnia.na/nana/atom.xml-index;JavaScript-http://narnia.na/nana/mt.js-index;Main Index-http://narnia.na/nana/-index;RSD-http://narnia.na/nana/rsd.xml-index;RSS-http://narnia.na/nana/rss.xml-index;Stylesheet-http://narnia.na/nana/styles.css-index;"}, #203
+{ "r" : "1", "t" : "<MTIndexList><MTIndexName>-<MTIndexLink>-<MTIndexBasename>;</MTIndexList>", "e" : "Archive Index-http://narnia.na/nana/archives.html-index;Feed - Recent Entries-http://narnia.na/nana/atom.xml-index;JavaScript-http://narnia.na/nana/mt.js-index;Main Index-http://narnia.na/nana/-index;RSD-http://narnia.na/nana/rsd.xml-index;Stylesheet-http://narnia.na/nana/styles.css-index;"}, #203
 { "r" : "1", "t" : "<MTIfNeedEmail>email needed</MTIfNeedEmail>", "e" : ""}, #204
 { "r" : "1", "t" : "<MTIfAllowCommentHTML>comment html allowed</MTIfAllowCommentHTML>", "e" : "comment html allowed"}, #205
 { "r" : "1", "t" : "<MTIfCommentsAllowed>comments allowed</MTIfCommentsAllowed>", "e" : "comments allowed"}, #206
@@ -272,8 +272,8 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTArchiveList archive_type='Monthly'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #220
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
-{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,0,1.5,"}, #223
-{ "r" : "1", "t" : "<MTComments lastn='3'>,<MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : ",Chucky Dee: trusted,Comment 3,John Doe: trusted"}, #224
+{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "1.5,0,0,"}, #223
+{ "r" : "1", "t" : "<MTComments lastn='3'>,<MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : ",John Doe: trusted,Comment 3,Chucky Dee: trusted"}, #224
 { "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
 { "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
@@ -405,13 +405,13 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
 { "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "EntryMonthlyWeeklyDailyCategoryPage"}, #355
-{ "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"}, #356
+{ "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:1;2;0;5:0;4:"}, #356
 { "r" : "1", "t" : "<MTPages id='20'><$MTPageMore$></MTPages>", "e" : "<p>I don't have much to say,</p>"}, #357
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
 { "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;:;TypeKey:http://localhost/mt-static/images/comment/typekey_logo.png;:;"}, #362
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;:;TypeKey:http://localhost/mt-static/images/comment/typekey_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Melody;Chuck D;Bob D;"}, #363
 { "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Melody;Chuck D;Bob D;Hiro Nakamura;"}, #365
