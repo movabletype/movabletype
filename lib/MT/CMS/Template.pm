@@ -112,6 +112,7 @@ sub edit {
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
         $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        require MT::PublishOption;
         $param->{static_maps} = $obj->build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
 
         my $filter = $app->param('filter_key');
