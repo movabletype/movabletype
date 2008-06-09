@@ -152,6 +152,26 @@ my @apis = (
         },
     },
     {
+        api    => 'mt.getRecentPostTitles',
+        params => [ 1, $username, $password, 3 ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            is(scalar(@$result), 3);
+            my @entries = MT::Entry->load({
+                blog_id => 1,
+            }, {
+                'sort' => 'authored_on',
+                'direction' => 'descend',
+                limit => 3,
+            });
+            for ( my $i = 0; $i < 3; ++$i ) {
+                is( $entries[$i]->id, $result->[$i]->{postid} );
+                is( $entries[$i]->title, $result->[$i]->{title} );
+            }
+        },
+    },
+    {
         api    => 'blogger.editPost',
         params => [ '', 3, $username, $password, 'Foo Bar', 0 ],
         result => sub {
@@ -363,7 +383,27 @@ my @apis = (
         },
     },
     {
-        api    => 'blogger.deletePost',
+        api    => 'metaWeblog.getPost',
+        params => [ 24, $username, $password ],
+        pre    => sub {
+            my ( $e2 ) = MT::Entry->load(undef,
+                { sort => 'created_on', direction => 'descend', limit => 1 }
+            );
+            is( $e2->id, 24 );
+            return $e2;
+        },
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my $entry = MT::Entry->load(24);
+            ok($entry);
+            is($entry->permalink, $result->{permaLink});
+            is($entry->basename, $result->{mt_basename});
+            is($entry->text, $result->{description});
+        },
+    },
+    {
+        api    => 'metaWeblog.deletePost',
         params => [ '', 24, $username, $password, 0 ],
         pre    => sub {
             my ( $e2 ) = MT::Entry->load(undef,
@@ -411,16 +451,93 @@ my @apis = (
             $asset->remove();
         }
     },
+    {
+        api    => 'metaWeblog.getCategories',
+        params => [ 1, $username, $password ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my @cats = MT::Category->load({blog_id=>1});
+            for ( my $i = 0; $i <= $#cats; ++$i ) {
+                is($cats[$i]->id, $result->[$i]->{categoryId});
+                is($cats[$i]->label, $result->[$i]->{categoryName});
+                is($cats[$i]->description, $result->[$i]->{description});
+                if ( my $parent = $cats[$i]->parent_category ) {
+                    is($parent->id, $result->[$i]->{parentId});
+                }
+                else { 
+                    ok(!($result->[$i]->{parentId}));
+                }
+            }
+            is(scalar(@$result), scalar(@cats));
+        },
+    },
+    {
+        api    => 'mt.getTrackbackPings',
+        params => [ 1, $username, $password ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my @pings = MT::TBPing->load( undef, {
+                'join' => MT::Trackback->join_on( undef, {
+                    id => \'= tbping_tb_id',
+                }, {
+                    'join' => MT::Entry->join_on( undef, {
+                        id => \'= trackback_entry_id',
+                        class => 'entry',
+                    }
+                ) }
+            ) } );
+            for ( my $i = 0; $i <= $#pings; ++$i ) {
+                is($pings[$i]->ip, $result->[$i]->{pingIP});
+                is($pings[$i]->source_url, $result->[$i]->{pingURL});
+                is($pings[$i]->title, $result->[$i]->{pingTitle});
+            }
+            is(scalar(@$result), scalar(@pings));
+        },
+    },
+    {
+        api    => 'mt.supportedTextFilters',
+        params => [ $username, $password ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my %tf = (
+                '__default__' => 1,
+                'richtext' => 1,
+                'markdown' => 1,
+                'markdown_with_smartypants' => 1,
+                'textile_2' => 1,
+            );
+            foreach my $res ( @$result ) {
+                is(1, delete( $tf{$res->{key}} ), $res->{key});
+            }
+            ok(!%tf);
+        },
+    },
+    {
+        api    => 'mt.getTagList',
+        params => [ 1, $username, $password ],
+        result => sub {
+            my ( $som ) = @_;
+            my $result = $som->result;
+            my @tags = MT::Tag->load(undef, {
+                'join' => MT::ObjectTag->join_on(undef, {
+                    tag_id => \'= tag_id',
+                    blog_id => 1
+                }, { unique => 1 })
+            });
+            for ( my $i = 0; $i <= $#tags; ++$i ) {
+                is($tags[$i]->id, $result->[$i]->{tagId});
+                is($tags[$i]->name, $result->[$i]->{tagName});
+            }
+            is(scalar(@$result), scalar(@tags));
+        },
+    },
     #TODO Add these tests
-    #'blogger.deletePost',
-    #'metaWeblog.getPost',
-    #'metaWeblog.newPost',
-    #'metaWeblog.getCategories',
-    #'metaWeblog.deletePost',
-    #'metaWeblog.getUsersBlogs',
     #'wp.newPage', 'wp.getPages', 'wp.getPage', 'wp.editPage', 'wp.deletePage',
-    #'mt.getTrackbackPings', 'mt.supportedTextFilters',
-    #'mt.getRecentPostTitles', 'mt.publishPost', 'mt.getTagList'
+    # 'mt.publishPost',
+    # newPost with mt_tags
 );
 
 my $uri = new URI();
