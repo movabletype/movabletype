@@ -3,7 +3,15 @@
 use strict;
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 4;
+use Test::More;
+
+BEGIN {
+    plan $ENV{MT_TEST_SPIDER}
+        ? (tests => 4)
+        : (skip_all => 'Enable spider test with MT_TEST_SPIDER environment variable')
+        ;
+}
+
 use LWP::UserAgent::Local;
 use URI;
 use MT::Test qw(:db :data);
