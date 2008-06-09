@@ -1,15 +1,25 @@
 <mt:Ignore>
-/* The following functions are here to support legacy MT templates.
-   If you have refreshed your JavaScript template but still use older
-   MT comment templates, you may need to uncomment this block in order
-   for those templates to work properly. Simply remove the wrapping
-   'mt:Ignore' tag to do so. */
-function hideDocumentElement(id) { return mtHide(id) }
-function showDocumentElement(id) { return mtShow(id) }
-function individualArchivesOnLoad() { return mtEntryOnLoad() }
-function writeCommenterGreeting() { return mtShowGreeting() }
-function rememberMe(f) { return mtRememberMe(f) }
-function forgetMe(f) { return mtForgetMe(f) }
+/*  The following functions and variables are here to support legacy MT templates.
+    If you have refreshed your JavaScript template but still use older MT comment
+    templates, you may need to uncomment this block in order for those templates 
+    to work properly. To use, simply remove the 'mt:Ignore' tags wrapping this
+    block of code.
+*/
+    function hideDocumentElement(id) { return mtHide(id) }
+    function showDocumentElement(id) { return mtShow(id) }
+    function individualArchivesOnLoad() { return mtEntryOnLoad() }
+    function writeCommenterGreeting() { return mtShowGreeting() }
+    function rememberMe(f) { return mtRememberMe(f) }
+    function forgetMe(f) { return mtForgetMe(f) }
+    var commenter_name;
+    var commenter_id;
+    var commenter_url;
+    var commenter_blog_ids;
+    var is_preview;
+    var mtcmtmail;
+    var mtcmtauth;
+    var mtcmthome;
+    var captcha_timer;
 </mt:Ignore>
 
 // The cookie name to use for storing the blog-side comment session cookie.
