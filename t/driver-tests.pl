@@ -47,7 +47,7 @@ __PACKAGE__->install_properties({
 
 package main;
 
-my(@foo, @bar);
+my($foo, @foo, @bar);
 my($tmp, @tmp);
 
 # Test for existing table
@@ -57,19 +57,19 @@ ok(!MT::Object->driver->dbd->ddl_class->column_defs('Zot'), "table mt_zot does n
 
 ## Test creating object with new
 ##     test column access through column, then through AUTOLOAD
-$foo[0] = Foo->new;
-isa_ok($foo[0], 'Foo', 'New Foo');
-$foo[0]->column('name', 'foo');
-is($foo[0]->column('name'), 'foo', 'Setting name field with column() persists through access');
-$foo[0]->name('foo');
-is($foo[0]->name, 'foo', 'Setting name field with mutator method persists through access');
-$foo[0]->status(2);
-$foo[0]->text('bar');
+$foo = Foo->new;
+isa_ok($foo, 'Foo', 'New Foo could be created');
+$foo->column('name', 'foo');
+is($foo->column('name'), 'foo', 'Setting name field with column() persists through access');
+$foo->name('foo');
+is($foo->name, 'foo', 'Setting name field with mutator method persists through access');
+$foo->status(2);
+$foo->text('bar');
 
 ## Test saving created object
-ok($foo[0]->save, 'A Foo could be saved');
-is($foo[0]->id, 1, 'First Foo was given an id of 1, says accessor method');
-is($foo[0]->column('id'), $foo[0]->id, 'First Foo was given an id of 1, says column()');
+ok($foo->save, 'A Foo could be saved');
+is($foo->id, 1, 'First Foo was given an id of 1, says accessor method');
+is($foo->column('id'), 1, 'First Foo was given an id of 1, says column()');
 
 sub _is_object {
     my ($got, $expected, $name) = @_;
@@ -131,27 +131,28 @@ sub are_objects {
     pass($name);
 }
 
-is_object(scalar Foo->load(1), $foo[0], 'Foo #1 by id is Foo #1');
-is_object(scalar Foo->load({ id => 1 }), $foo[0], 'Foo #1 by id hash is Foo #1');
-is_object(scalar Foo->load({ id => 1, name => 'foo' }), $foo[0], 'Foo #1 by id-name hash is Foo #1');
-is_object(scalar Foo->load({ name => 'foo' }), $foo[0], 'Foo #1 by name hash is Foo #1');
-is_object(scalar Foo->load({ created_on => $foo[0]->created_on }), $foo[0], 'Foo #1 by created_on hash is Foo #1');
-is_object(scalar Foo->load({ status => 2 }), $foo[0], 'Foo #1 by status hash is Foo #1');
+is_object(scalar Foo->load(1), $foo, 'Foo #1 by id is Foo #1');
+is_object(scalar Foo->load({ id => 1 }), $foo, 'Foo #1 by id hash is Foo #1');
+is_object(scalar Foo->load({ id => 1, name => 'foo' }), $foo, 'Foo #1 by id-name hash is Foo #1');
+is_object(scalar Foo->load({ name => 'foo' }), $foo, 'Foo #1 by name hash is Foo #1');
+is_object(scalar Foo->load({ created_on => $foo->created_on }), $foo, 'Foo #1 by created_on hash is Foo #1');
+is_object(scalar Foo->load({ status => 2 }), $foo, 'Foo #1 by status hash is Foo #1');
 
 ##     Change column value, save, try to load using old value (fail?),
 ##     then load again using new value
-$foo[0]->status(0);
-ok($foo[0]->save, 'Foo #1 saved with new status (0)');
+$foo->status(0);
+ok($foo->save, 'Foo #1 saved with new status (0)');
 $tmp = Foo->load({ status => 2 });
 ok(!$tmp, 'Foo #1 no longer loads with old status (2)');
 $tmp = Foo->load({ status => 0 });
-is_object($tmp, $foo[0], 'Foo #1 by new status (0) is Foo #1');
+is_object($tmp, $foo, 'Foo #1 by new status (0) is Foo #1');
 
 ## Create a new object so we can do range and last/first lookups.
 ## Sleep first so that they get different created_on timestamps.
 sleep(3);
 
 ## Create new object for iterator testing
+$foo[0] = $foo;
 $foo[1] = Foo->new;
 $foo[1]->name('baz');
 $foo[1]->text('quux');
