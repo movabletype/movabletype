@@ -1354,6 +1354,7 @@ $ao
         $place->remove;
         $placements_updated = 1;
     }
+    my @add_cat_obj;
     for my $cat_id (@add_cat) {
         my $cat = $cat_class->load($cat_id);
 
@@ -1370,10 +1371,13 @@ $ao
             $app->translate( "Saving placement failed: [_1]", $place->errstr )
           );
         $placements_updated = 1;
+        push @add_cat_obj, $cat;
     }
     if ($placements_updated) {
+        unshift @add_cat_obj, $obj->cache_property('category')
+          if $obj->cache_property('category');
         $obj->cache_property( 'categories', undef, [] );
-        $obj->cache_property( 'categories', undef, \@add_cat );
+        $obj->cache_property( 'categories', undef, \@add_cat_obj );
     }
 
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $orig_obj );
