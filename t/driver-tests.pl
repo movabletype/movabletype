@@ -567,11 +567,11 @@ is($props1->{audit}, 1, 'audit');
 is(scalar keys %{ $props1->{indexes} }, 3, 'indexes');
 is($props1->{primary_key}, 'id', 'id');
 is(scalar @{ $props1->{columns} }, 9, 'columns');
-my $props2 = $foo[0]->properties;
+my $props2 = $foo->properties;
 is($props1, $props2, "$props1 is $props2");  ## Same address, because same hashref
 
 ##     * column_names
-my $cols = $foo[0]->column_names;
+my $cols = $foo->column_names;
 isa_ok($cols, 'ARRAY');
 my %cols = map { $_ => 1 } @$cols;
 for (qw(id name status text data created_on created_by modified_on modified_by)) {
@@ -579,16 +579,16 @@ for (qw(id name status text data created_on created_by modified_on modified_by))
 }
 
 ##     * column_values
-my $vals = $foo[0]->column_values;
+my $vals = $foo->column_values;
 isa_ok($vals, 'HASH');
-is($vals->{id}, $foo[0]->id, 'id');
-is($vals->{name}, $foo[0]->name, 'name');
-is($vals->{status}, $foo[0]->status, 'status');
-is($vals->{text}, $foo[0]->text, 'text');
-is($vals->{created_on}, $foo[0]->created_on, 'created_on');
-is($vals->{created_by}, $foo[0]->created_by, 'created_by');
-is($vals->{modified_on}, $foo[0]->modified_on, 'modified_on');
-is($vals->{modified_by}, $foo[0]->modified_by, 'modified_by');
+is($vals->{id}, $foo->id, 'id');
+is($vals->{name}, $foo->name, 'name');
+is($vals->{status}, $foo->status, 'status');
+is($vals->{text}, $foo->text, 'text');
+is($vals->{created_on}, $foo->created_on, 'created_on');
+is($vals->{created_by}, $foo->created_by, 'created_by');
+is($vals->{modified_on}, $foo->modified_on, 'modified_on');
+is($vals->{modified_by}, $foo->modified_by, 'modified_by');
 
 ##     * set_values
 $vals = {
@@ -601,9 +601,9 @@ $vals = {
     #modified_on => 39023, modified_by auto-set modified_on in our new code.
     modified_by => 'foo',
 };
-$foo[0]->set_values($vals);
+$foo->set_values($vals);
 for my $col (keys %$vals) {
-    is($vals->{$col}, $foo[0]->column($col), $col);
+    is($vals->{$col}, $foo->column($col), $col);
 }
 
 ##     * binary data
@@ -637,12 +637,12 @@ if ($chk) {
 }
 
 ##     * datasource
-is($foo[0]->table_name, 'mt_' . $foo[0]->datasource, 'datasource');
+is($foo->table_name, 'mt_' . $foo->datasource, 'datasource');
 
 ##     * clone
-my $clone = $foo[0]->clone_all;
+my $clone = $foo->clone_all;
 for my $col (@$cols) {
-    is($clone->column($col), $foo[0]->column($col), $col);
+    is($clone->column($col), $foo->column($col), $col);
 }
 
 ## Sleep first so that they get different created_on timestamps.
