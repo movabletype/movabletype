@@ -32,7 +32,7 @@ BEGIN {
         if !-r $ENV{MT_CONFIG};
 }
 
-plan tests => 197;
+plan tests => 186;
 
 package Zot;
 use base 'MT::Object';
@@ -468,7 +468,7 @@ is(Foo->count(undef,
                 undef,
                 { unique => 1,
                   sort => 'created_on',
-                  direction => 'descend', } ] }), 2, 'count7');
+                  direction => 'descend', } ] }), 2, 'There are 2 unique Foos associated with Bars');
 
 ## Now load all Foo objects in order of most recently
 ## created Bar object. Make sure they are unique.
@@ -478,9 +478,7 @@ is(Foo->count(undef,
                 { sort => 'created_on',
                   direction => 'descend',
                   unique => 1 } ] });
-is(@tmp, 2, 'array length 2');
-is($tmp[0]->id, $foo[0]->id, 'id');
-is($tmp[1]->id, $foo[1]->id, 'id');
+are_objects(\@tmp, \@foo, 'unique Foos associated with Bars, oldest first');
 
 ## Load all Foo objects in order of most recently
 ## created Bar object. No uniqueness requirement.
@@ -489,10 +487,7 @@ is($tmp[1]->id, $foo[1]->id, 'id');
                 undef,
                 { sort => 'created_on',
                   direction => 'descend', } ] });
-is(@tmp, 3, 'array length 3');
-is($tmp[0]->id, $foo[0]->id, 'id');
-is($tmp[1]->id, $foo[1]->id, 'id');
-is($tmp[2]->id, $foo[1]->id, 'id');
+are_objects(\@tmp, [ @foo, $foo[1] ], 'Foos associated with Bars, oldest first');
 
 ## Load last 1 Foo object in order of most recently
 ## created Bar object.
@@ -503,8 +498,7 @@ is($tmp[2]->id, $foo[1]->id, 'id');
                   direction => 'descend',
                   unique => 1,
                   limit => 1, } ] });
-is(@tmp, 1, 'array length 1 with join');
-is($tmp[0]->id, $foo[0]->id, 'id');
+are_objects(\@tmp, [ $foo[0] ], 'Foos associated with oldest Bar');
 
 ## Load all Foo objects where Bar.name = 'bar0'
 @tmp = Foo->load(undef,
@@ -513,33 +507,28 @@ is($tmp[0]->id, $foo[0]->id, 'id');
                 { sort => 'created_on',
                   direction => 'descend',
                   unique => 1, } ] });
-is(@tmp, 1, 'array length 1 with join, limit by name');
-is($tmp[0]->id, $foo[1]->id, 'id');
+are_objects(\@tmp, [ $foo[1] ], 'Foos associated with Bars named bar0');
 
 ## foo[1] is older than foo[0] because we overrode the timestamp,
 ## so this should load foo[0]
 @tmp = Foo->load(undef,
     { sort => 'created_on', direction => 'descend', limit => 1,
     join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
-is(@tmp, 1, 'array length 1');
-is($tmp[0]->id, $foo[0]->id, 'id');
+are_objects(\@tmp, [ $foo[0] ], 'One Foo associated with Bars of status=0');
 
 ## This is the same join as the last one, but without the limit--so
 ## we should get both Foo objects this time, in descending order.
 @tmp = Foo->load(undef,
     { sort => 'created_on', direction => 'descend',
       join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
-is(@tmp, 2, 'array length 2');
-is($tmp[0]->id, $foo[0]->id, 'id');
-is($tmp[1]->id, $foo[1]->id, 'id');
+are_objects(\@tmp, \@foo, 'All Foos associated with Bars of status=0');
 
 ## Filter join results by providing a value for 'status'; only Foo[0]
 ## has a 'status' == 2, so only that record should be returned.
 @tmp = Foo->load({ status => 2 },
     { sort => 'created_on', direction => 'descend',
       join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
-is(@tmp, 1, 'array length 1');
-is($tmp[0]->id, $foo[0]->id, 'id');
+are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 associated with Bars of status=0');
 
 # Join across a column.
 @tmp = Foo->load({},
@@ -553,11 +542,11 @@ are_objects(\@tmp, \@foo, 'Foos loaded by explicit join across columns');
 are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 loaded by explicit join across columns');
 
 ## TEST EXISTS METHOD
-ok($foo[0]->exists, 'exists');
+ok($foo->exists, 'First Foo long saved exists in db');
 $tmp = Foo->new;
-ok(!$tmp->exists, 'does not exist');
+ok(!$tmp->exists, 'New Foo just created does not exist in db');
 $tmp->id(5);
-ok(!$tmp->exists, 'does not exist');
+ok(!$tmp->exists, 'New Foo just created with fake id does not exist in db');
 
 ## Change foo[1]->status so that its value is unique (for index)
 $foo[1]->status(5);
