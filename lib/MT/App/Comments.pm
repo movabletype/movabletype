@@ -218,7 +218,7 @@ sub do_login {
                 category => 'login_commenter',
             }
         );
-        return $app->login( error => $app->translate('Invalid login.') );
+        return $app->login_form( error => $app->translate('Invalid login.') );
     }
 
     require MT::Auth;
@@ -236,13 +236,13 @@ sub do_login {
             if ( MT::Auth::NEW_USER() == $result ) {
                 $commenter =
                   $app->_create_commenter_assign_role( $q->param('blog_id') );
-                return $app->login( error => $app->translate('Invalid login') )
+                return $app->login_form( error => $app->translate('Invalid login') )
                   unless $commenter;
             }
             elsif ( MT::Auth::NEW_LOGIN() == $result ) {
                 my $registration = $app->config->CommenterRegistration;
                 unless ( $registration && $registration->{Allow} && $blog->allow_commenter_regist ) {
-                    return $app->login( error => $app->translate('Successfully authenticated but signing up is not allowed.  Please contact system administrator.') )
+                    return $app->login_form( error => $app->translate('Successfully authenticated but signing up is not allowed.  Please contact system administrator.') )
                       unless $commenter;
                 }
                 else {
@@ -285,7 +285,7 @@ sub do_login {
     );
     $ctx->{app} ||= $app;
     MT::Auth->invalidate_credentials($ctx);
-    return $app->login( error => $error || $app->translate("Invalid login") );
+    return $app->login_form( error => $error || $app->translate("Invalid login") );
 }
 
 sub signup {
@@ -334,7 +334,7 @@ sub do_signup {
     MT::Util::start_background_task(
         sub {
             $app->_send_signup_confirmation( $user->id, $user->email,
-                $param->{entry_id}, $param->{blog_id}, $param->{static} );
+                $param->{entry_id}, $param->{blog_id}, $param->{static} || $param->{return_url} );
         }
     );
 
@@ -531,7 +531,7 @@ sub do_register {
         }
     }
 
-    $app->login(
+    $app->login_form(
         message => $app->translate(
             'Thanks for the confirmation.  Please sign in to comment.')
     );
