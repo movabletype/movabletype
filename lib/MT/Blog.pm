@@ -82,7 +82,7 @@ __PACKAGE__->install_properties({
         'image_default_align' => 'string meta',
         'image_default_thumb' => 'integer meta',
         'image_default_width' => 'integer meta',
-        'image_default_wunits' => 'integer meta',
+        'image_default_wunits' => 'string meta',
         'image_default_constrain' => 'integer meta',
         'image_default_popup' => 'integer meta',
         'commenter_authenticators' => 'string meta',
