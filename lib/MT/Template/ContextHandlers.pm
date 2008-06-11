@@ -9275,6 +9275,7 @@ sub _hdlr_entry_categories {
     my $tokens = $ctx->stash('tokens');
     my $res = '';
     my $glue = $args->{glue};
+    local $ctx->{inside_mt_categories} = 1;
     for my $cat (@$cats) {
         local $ctx->{__stash}->{category} = $cat;
         defined(my $out = $builder->build($ctx, $tokens, $cond))
