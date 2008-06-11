@@ -578,7 +578,7 @@ sub discover_tb_from_entry {
         if ($send_tb eq 'selected') {
             @tb_domains = $cfg->OutboundTrackbackDomains;
         } elsif ($send_tb eq 'local') {
-            my $iter = MT::Blog->load_iter();
+            my $iter = MT::Blog->load_iter(undef, { fetchonly => ['site_url'], no_triggers => 1 });
             while (my $b = $iter->()) {
                 next if $b->id == $blog->id;
                 push @tb_domains, extract_domain($b->site_url);
@@ -740,12 +740,8 @@ sub remove {
 
         # Remove MT::ObjectAsset records
         my $class = MT->model('objectasset');
-        my $iter = $class->load_iter({ object_id => $entry->id, object_ds => $entry->class_type });
-        while (my $o = $iter->()) {
-            $o->remove;
-        }
+        $class->remove({ object_id => $entry->id, object_ds => $entry->class_type });
     }
-
 
     $entry->SUPER::remove(@_);
 }
