@@ -726,18 +726,23 @@ sub list {
         elsif ( $tmpl_type eq 'module' ) {
             $app->param( 'filter_key', 'module_templates' );
         }
-        $terms->{type} = $types{$tmpl_type}->{type};
-        my $tmpl_param = $app->listing(
-            {
-                type     => 'template',
-                terms    => $terms,
-                args     => $args,
-                no_limit => 1,
-                no_html  => 1,
-                code     => $hasher,
-            }
-        );
-
+        my $tmpl_param = {};
+        unless ( exists($types{$tmpl_type}->{type})
+          && 'ARRAY' eq ref($types{$tmpl_type}->{type})
+          && 0 == scalar(@{$types{$tmpl_type}->{type}}) )
+        {
+            $terms->{type} = $types{$tmpl_type}->{type};
+            $tmpl_param = $app->listing(
+                {
+                    type     => 'template',
+                    terms    => $terms,
+                    args     => $args,
+                    no_limit => 1,
+                    no_html  => 1,
+                    code     => $hasher,
+                }
+            );
+        }
         my $template_type_label = $types{$tmpl_type}->{label};
         $tmpl_param->{template_type} = $tmpl_type;
         $tmpl_param->{template_type_label} = $template_type_label;
