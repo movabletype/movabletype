@@ -160,6 +160,7 @@ sub _nextprev {
         'sort' => 'created_on',
         'direction' => $next ? 'ascend' : 'descend',
         'range_incl' => { 'created_on' => 1 },
+        'limit' => 10,
     });
 
     # This selection should always succeed, but handle situation if
