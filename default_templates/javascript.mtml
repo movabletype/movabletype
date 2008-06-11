@@ -567,9 +567,7 @@ function mtShowGreeting() {
         } else {
             var user_link;
             if ( u.is_author ) {
-                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
-                if (entry_id)
-                    user_link += '&entry_id=' + entry_id;
+                user_link = '<a href="<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&return_url=' + encodeURIComponent( location.href );
                 user_link += '">' + u.name + '</a>';
             } else {
                 // registered user, but not a user with posting rights

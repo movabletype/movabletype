@@ -1627,8 +1627,10 @@ sub do_preview {
 sub edit_commenter_profile {
     my $app = shift;
 
-    my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
+    my ( $sess_obj, $commenter ) = $app->get_commenter_session();
     if ($commenter) {
+        $app->{session} = $sess_obj;
+
         my $url;
         my $entry_id = $app->param('entry_id');
         if ($entry_id) {
@@ -1638,11 +1640,11 @@ sub edit_commenter_profile {
             $url = $entry->permalink;
         }
         else {
-            $url = is_valid_url( $app->param('static') );
+            $url = is_valid_url( $app->param('static') || $app->param('return_url') );
         }
 
         my $blog_id = $app->param('blog_id');
-        $app->{session} = $sess_obj;
+
         $app->user($commenter);
         my $param = {
             id       => $commenter->id,
@@ -1665,7 +1667,7 @@ sub save_commenter_profile {
     my $app = shift;
     my $q   = $app->param;
 
-    my ( $sess_obj, $cmntr ) = $app->_get_commenter_session();
+    my ( $sess_obj, $cmntr ) = $app->get_commenter_session();
     return $app->handle_error( $app->translate('Invalid login') )
         unless $cmntr;
 

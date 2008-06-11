@@ -23,8 +23,8 @@ function mtUpdateSignInWidget(u) {
         var url;
         if (u.is_authenticated) {
             if (u.is_author) {
-                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile&blog_id=<$mt:BlogID$>';
-                url += '&static=' + escape( location.href );
+                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';
+                url += '&return_url=' + encodeURIComponent( location.href );
             } else {
                 url = u.url;
             }
