@@ -648,6 +648,7 @@ sub remove_html {
 
 sub iso_dirify {
     my $s = $_[0];
+    return '' unless defined $s;
     my $sep;
     if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
@@ -665,6 +666,7 @@ sub iso_dirify {
 
 sub utf8_dirify {
     my $s = $_[0];
+    return '' unless defined $s;
     my $sep;
     if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
@@ -976,7 +978,7 @@ sub make_unique_category_basename {
 
 sub make_unique_author_basename {
     my ($author) = @_;
-    my $name = MT::Util::dirify($author->nickname);
+    my $name = MT::Util::dirify($author->nickname || '');
     return "author" . $author->id if $name !~ /\w/;
 
     my $limit = MT->instance->config('AuthorBasenameLimit');
@@ -1785,14 +1787,13 @@ sub multi_iter {
         my $head = $iter->();
         push @streams, { iter => $iter, head => $head };
     }
-    sub {
-        my ($f) = @_;
-        if ($f && ($f eq 'finish')) {
-            foreach my $iter (@streams) {
-                $iter->{iter}->('finish');
-            }
-            return;
+    my $finish = sub {
+        foreach my $iter (@streams) {
+            $iter->{iter}->end;
         }
+    };
+    my $iter = sub {
+        my ($f) = @_;
         # find the head with greatest created_on
         my $which;
         foreach my $iter (@streams) {
@@ -1815,6 +1816,7 @@ sub multi_iter {
         }
         $result;
     };
+    return Data::ObjectDriver::Iterator->new($iter, $finish);
 }
 
 sub trim {

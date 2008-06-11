@@ -261,6 +261,7 @@ foreach my $i (1..@verses) {
                              title => "Verse $i",
                              text => $verses[$i],
                              author_id => ($i == 3 ? $bobd->id : $chuckd->id),
+                             authored_on => sprintf("%04d0131074501", $i + 1960),
                              created_on => sprintf("%04d0131074501", $i + 1960),
                              modified_on => sprintf("%04d0131074601", $i + 1960),
                              allow_comments => ($i <= 2 ? 0 : 1),

@@ -631,7 +631,7 @@ sub list {
         };
         push @authors, $row;
         if ( @authors == 50 ) {
-            $iter->('finish');
+            $iter->end;
             last;
         }
     }
@@ -660,7 +660,7 @@ sub list {
     #     };
     #     push @assets, $row;
     #     if ( @assets == 50 ) {
-    #         $iter->('finish');
+    #         $iter->end;
     #         last;
     #     }
     # }

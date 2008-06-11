@@ -5563,7 +5563,7 @@ sub _hdlr_set_var {
             unless defined $name;
     }
 
-    my $val;
+    my $val = '';
     my $data = $ctx->var($name);
     if (($tag eq 'setvar') || ($tag eq 'var')) {
         $val = defined $args->{value} ? $args->{value} : '';
@@ -6289,7 +6289,7 @@ sub _hdlr_authors {
         push @authors, $author;
         $count++;
         if ($n && ($count > $n)) {
-            $iter->('finish');
+            $iter->end;
             last;
         }
     }
@@ -6312,9 +6312,9 @@ sub _hdlr_authors {
             while (my ($score, $object_id) = $scores->()) {
                 next if $score_offset && ($i + 1) < $score_offset;
                 push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
-                $scores->('finish'), last unless %a;
+                $scores->end, last unless %a;
                 $i++;
-                $scores->('finish'), last if $score_limit && $i >= $score_limit;
+                $scores->end, last if $score_limit && $i >= $score_limit;
             }
             @authors = @tmp;
         } elsif ('rate' eq $col) {
@@ -6332,9 +6332,9 @@ sub _hdlr_authors {
             while (my ($score, $object_id) = $scores->()) {
                 next if $score_offset && ($i + 1) < $score_offset;
                 push @tmp, delete $a{ $object_id } if exists $a{ $object_id };
-                $scores->('finish'), last unless %a;
+                $scores->end, last unless %a;
                 $i++;
-                $scores->('finish'), last if $score_limit && $i >= $score_limit;
+                $scores->end, last if $score_limit && $i >= $score_limit;
             }
             @authors = @tmp;
         }
@@ -7665,14 +7665,17 @@ sub _hdlr_entries {
         if ($cexpr) {
             my %map;
             require MT::Placement;
-            my @cat_ids;
-            for my $cat (@$cats) {
-                push @cat_ids, $cat->id;
-                my $iter = MT::Placement->load_iter({ category_id => $cat->id });
-                while (my $p = $iter->()) {
-                    $map{$p->entry_id}{$cat->id}++;
-                }
-            }
+            my @cat_ids = map { $_->id } @$cats;
+            my $preloader = sub {
+                my ($id) = @_;
+                my @c_ids = MT::Placement->load(
+                    { category_id => \@cat_ids, entry_id => $id },
+                    { fetchonly => ['category_id'], no_triggers => 1 }
+                );
+                my %map;
+                $map{$_->category_id} = 1 for @c_ids;
+                \%map;
+            };
             if ( !$entries ) {
                 if ($category_arg !~ m/\bNOT\b/i) {
                     $args{join} = MT::Placement->join_on( 'entry_id', {
@@ -7680,7 +7683,7 @@ sub _hdlr_entries {
                         }, { %blog_args, unique => 1 } );
                 }
             }
-            push @filters, sub { $cexpr->($_[0]->id, \%map) };
+            push @filters, sub { $cexpr->( $preloader->($_[0]->id) ) };
         } else {
             return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $class_type eq 'entry' ? 'category' : 'folder'));
         }
@@ -7714,8 +7717,11 @@ sub _hdlr_entries {
                     object_datasource => $class->datasource,
                     %blog_terms,
                 };
-                my $args = { %blog_args,
-                    fetchonly => ['tag_id'] };
+                my $args = {
+                    %blog_args,
+                    fetchonly => ['tag_id'],
+                    no_triggers => 1
+                };
                 my @ot_ids = MT::ObjectTag->load($terms, $args);
                 my %map;
                 $map{$_->tag_id} = 1 for @ot_ids;
@@ -7964,7 +7970,7 @@ sub _hdlr_entries {
                 next if $off && $j++ < $off;
                 push @entries, $e;
                 $i++;
-                $iter->('finish'), last if $n && $i >= $n;
+                $iter->end, last if $n && $i >= $n;
             }
         }
     } else {
@@ -8058,9 +8064,9 @@ sub _hdlr_entries {
             while (my ($score, $object_id) = $scores->()) {
                 $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
-                $scores->('finish'), last unless %e;
+                $scores->end, last unless %e;
                 $i++;
-                $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
+                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
             }
 
             if (!$score_limit || (scalar @tmp) < $score_limit) {
@@ -8089,9 +8095,9 @@ sub _hdlr_entries {
             while (my ($score, $object_id) = $scores->()) {
                 $i++, next if $score_offset && $i < $score_offset;
                 push @tmp, delete $e{ $object_id } if exists $e{ $object_id };
-                $scores->('finish'), last unless %e;
+                $scores->end, last unless %e;
                 $i++;
-                $scores->('finish'), last if $score_limit && (scalar @tmp) >= $score_limit;
+                $scores->end, last if $score_limit && (scalar @tmp) >= $score_limit;
             }
             if (!$score_limit || (scalar @tmp) < $score_limit) {
                 foreach (values %e) {
@@ -8196,9 +8202,6 @@ sub _rco_entries_iter {
         if exists $entry_args->{sort};
 
     my $rco_iter = sub {
-        if (@_ && ($_[0] eq 'finish')) {
-            return undef;
-        }
         if (! @entries) {
             require MT::Comment;
             my $iter = MT::Comment->max_group_by({
@@ -8235,7 +8238,7 @@ sub _rco_entries_iter {
             return undef;
         }
     };
-    return $rco_iter;
+    return Data::ObjectDriver::Iterator->new($rco_iter);
 }
 
 ###########################################################################
@@ -10070,7 +10073,7 @@ sub _hdlr_comments {
                     next if $offset && $j++ < $offset;
                     push @comments, $c;
                     if ($n && (scalar @comments == $n)) {
-                        $iter->('finish');
+                        $iter->end;
                         last;
                     }
                 }
@@ -10100,7 +10103,7 @@ sub _hdlr_comments {
                 my @tmp;
                 while (my ($score, $object_id) = $scores->()) {
                     push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                    $scores->('finish'), last unless %m;
+                    $scores->end, last unless %m;
                 }
                 @comments = @tmp;
             } elsif ('rate' eq $col) {
@@ -10115,7 +10118,7 @@ sub _hdlr_comments {
                 my @tmp;
                 while (my ($score, $object_id) = $scores->()) {
                     push @tmp, delete $m{ $object_id } if exists $m{ $object_id };
-                    $scores->('finish'), last unless %m;
+                    $scores->end, last unless %m;
                 }
                 @comments = @tmp;
             }
@@ -10768,7 +10771,7 @@ sub _hdlr_comment_replies {
     while (my $c = $iter->()) {
         push @comments, $c;
         if ($n && (scalar @comments == $n)) {
-            $iter->('finish');
+            $iter->end;
             last;
         }
     }
@@ -10843,7 +10846,7 @@ sub _hdlr_comment_replies_recurse {
     while (my $c = $iter->()) {
         push @comments, $c;
         if ($n && (scalar @comments == $n)) {
-            $iter->('finish');
+            $iter->end;
             last;
         }
     }
@@ -13811,7 +13814,7 @@ sub _hdlr_is_ancestor {
                                          label => $args->{'child'} }) || undef;
     while (my $child = $iter->()) {
         if ($cat->is_ancestor($child)) {
-            $iter->('finish');
+            $iter->end;
             return 1;
         }
     }
@@ -13839,7 +13842,7 @@ sub _hdlr_is_descendant {
                                          label => $args->{'parent'} });
     while (my $parent = $iter->()) {
         if ($cat->is_descendant($parent)) {
-            $iter->('finish');
+            $iter->end;
             return 1;
         }
     }
@@ -14120,7 +14123,11 @@ sub _hdlr_assets {
                     object_datasource => $class->datasource,
                     %blog_terms,
                 };
-                my $args = { %blog_args, fetchonly => ['tag_id'] };
+                my $args = {
+                    %blog_args,
+                    fetchonly => ['tag_id'],
+                    no_triggers => 1,
+                };
                 my @ot_ids = MT::ObjectTag->load( $terms, $args );
                 my %map;
                 $map{ $_->tag_id } = 1 for @ot_ids;

@@ -5,6 +5,7 @@ use strict;
 use warnings;
 
 use lib 'lib', 'extlib';
+
 use Test::More tests => 181;
 
 use_ok('MT::Bootstrap');

@@ -689,7 +689,7 @@ sub core_upgrade_functions {
                 label => 'Removing unused template maps...',
                 condition => sub {
                     my $blog = shift;
-                    my @blog_at = map { "'$_'" } split ',', $blog->archive_type;
+                    my @blog_at = split /,/, $blog->archive_type;
                     require MT::TemplateMap;
                     MT::TemplateMap->remove(
                       { blog_id => $blog->id, archive_type => \@blog_at },
@@ -2204,6 +2204,7 @@ sub post_upgrade_class {
     # to prioritize migration of meta column data before the schema
     # for that class is updated and the meta column winds up getting
     # dropped as a result.
+    return unless MT->config->SchemaVersion;
     if (MT->config->SchemaVersion < 4.0057) {
         return 1 unless $class =~ m/::Meta$/;
 
@@ -2825,7 +2826,7 @@ sub core_create_template_maps {
         $continue = 1, last if time > $start + $MAX_TIME;
     }
     if ($continue) {
-        $iter->('finish');
+        $iter->end;
         return $offset;
     } else {
         $self->progress("$msg (100%)", 1);
@@ -2881,7 +2882,7 @@ sub core_update_records {
             push @list, $obj;
             $continue = 1, last if scalar @list == $MAX_ROWS;
         }
-        $iter->('finish') if $continue;
+        $iter->end if $continue;
         for my $obj (@list) {
             $offset++;
             if ($cond) {

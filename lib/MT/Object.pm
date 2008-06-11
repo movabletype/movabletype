@@ -745,67 +745,23 @@ sub load {
             return $self->search(@_);
         } else {
             ## MT::Object::load returns the first result in scalar context.
-            my $iter = $self->search(@_);
+            my ($terms, $args) = @_;
+            $args ||= {};
+            local $args->{limit} = 1;
+            my $iter = $self->search($terms, $args);
             return if !defined $iter;
             return $iter->();
         }
     }
 }
 
-# More or less replacing Data::ObjectDriver::Driver::DBI::search here
-# to provide an 'early-finish' iterator as MT::ObjectDriver had provided.
-
-sub load_iter   {
+sub load_iter {
     my $class = shift;
     my($terms, $args) = @_;
-
-    my $driver = $class->driver;
-    my $dbi_driver = $driver;
-
-    while ( $dbi_driver->isa('Data::ObjectDriver::Driver::BaseCache') ) {
-        $dbi_driver = $dbi_driver->fallback;
-    }
-
-    if ($dbi_driver->dbd eq 'MT::ObjectDriver::Driver::DBD::SQLite') {
-        # for SQLite, use search method, since this technique
-        # will cause it to lock the table
-        return scalar $class->search(@_);
-    }
-
-    my $rec = {};
-    my $sth = $dbi_driver->fetch($rec, $class, $terms, $args);
-
-    my $iter = sub {
-        ## This is kind of a hack--we need $driver to stay in scope,
-        ## so that the DESTROY method isn't called. So we include it
-        ## in the scope of the closure.
-        my $d = $dbi_driver;
-        my $d2 = $driver;
-
-        if (@_ && ($_[0] eq 'finish')) {
-            if ($sth) {
-                $sth->finish;
-                $dbi_driver->end_query($sth);
-            }
-            undef $sth;
-            return;
-        }
-
-        unless ($sth->fetch) {
-            $sth->finish;
-            $dbi_driver->end_query($sth);
-            return;
-        }
-        my $obj;
-        $obj = $class->new;
-        $obj->set_values_internal($rec);
-        ## Don't need a duplicate as there's no previous version in memory
-        ## to preserve.
-        $obj->call_trigger('post_load') unless $args->{no_triggers};
-        $driver->cache_object($obj) if $obj && (!$args->{fetchonly});
-        $obj;
-    };
-    return $iter;
+    $args ||= {};
+    local $args->{window_size} = 100
+        unless defined($args->{window_size});
+    return scalar $class->search($terms, $args);
 }
 
 ## Callbacks
@@ -1221,6 +1177,7 @@ sub cache_property {
     }
 
     my $pk = $obj->primary_key;
+    return $code->($obj, @_) unless defined $pk;
     $pk = join ":", @$pk if ref $pk;
     $oc = $oc->{ref($obj). ':' . $pk} ||= {};
 
@@ -1874,11 +1831,21 @@ entry.
 
 =item * unique
 
-Ensures that the objects being returned are unique.
+Boolean flag that ensures that the objects being returned are unique.
 
 This is really only useful when used within a I<join>, because when loading
 data out of a single object datastore, the objects are always going to be
 unique.
+
+=item * window_size => "N"
+
+An optional attribute used only with the load_iter method. This attribute
+is used when requesting a result set of large or unknown size. If the
+load_iter method is called without any I<limit> attribute, this is set to
+a default value of 100 (meaning, load 100 objects per SELECT). The iterator
+will yield the specified number of objects and then issue an additional
+select operation, using the same terms and attributes, adjusting for
+a new offset for the next set of objects.
 
 =back
 
@@ -1958,6 +1925,17 @@ The 'key' parameter specified here lets you identify the field name used by
 the children classes to relate back to the parent class. If unspecified,
 C<remove_children> will assume the key to be the datasource name of the
 current class with an '_id' suffix.
+
+=over 4
+
+=item * $obj->remove_scores( \%terms, \%args );
+
+=back
+
+For object classes that also have the L<MT::Scorable> class in their
+C<@ISA> list, this method will remove any related score objects they
+are associated with. This method is invoked automatically when
+C<Class-E<gt>remove> or C<$obj-E<gt>remove> is invoked.
 
 =head2 Getting the count of a number of objects
 

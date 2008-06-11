@@ -133,8 +133,9 @@ sub _do_group_by {
     my $driver = shift;
     my ($agg_func, $class, $terms, $args) = @_;
     my $props = $class->properties;
+    $terms ||= {}; $args ||= {}; # declare these for pre_search to work
     $class->call_trigger('pre_search', $terms, $args);
-    my $order = delete $args->{sort};
+    my $order = delete $args->{sort} || '';
     my $direction = delete $args->{direction};
     if ( $order =~ /\sdesc|asc/i ) {
         my @new_order;
@@ -206,16 +207,13 @@ sub _do_group_by {
         }
     }
     my $i = 0;
-    return sub {
-        if (@_ && ($_[0] eq 'finish')) {
-            if ($sth) {
-                $sth->finish;
-                $driver->end_query($sth);
-            }
-            undef $sth;
-            return;
-        }
-
+    my $finish = sub {
+        return unless $sth;
+        $sth->finish;
+        $driver->end_query($sth);
+        undef $sth;
+    };
+    my $iter = sub {
         unless ($sth->fetch && defined $count && (!defined $limit || ($i < $limit))) {
             $sth->finish;
             $driver->end_query($sth);
@@ -224,7 +222,8 @@ sub _do_group_by {
         my @returnvals = map { $$_ } @bindvars;
         $i++;
         return($count, @returnvals);
-    }
+    };
+    return Data::ObjectDriver::Iterator->new($iter, $finish);
 }
 
 sub _select_aggregate {
@@ -241,13 +240,13 @@ sub _select_aggregate {
     }
 
     ## Convert $terms and $args like we would for a search.
-    my $terms;
+    my $terms = {};
     if (ref($orig_terms) eq 'HASH') {
         $terms = { %$orig_terms };
     } elsif (ref($orig_terms) eq 'ARRAY') {
         $terms = [ @$orig_terms ];
     }
-    my $args  = $orig_args  ? { %$orig_args  } : undef;
+    my $args  = $orig_args  ? { %$orig_args  } : {};
     $class->call_trigger('pre_search', $terms, $args);
 
     my $stmt = $driver->prepare_statement($class, $terms, $args);

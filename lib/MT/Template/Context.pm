@@ -428,8 +428,8 @@ sub compile_category_filter {
         @$cats = values %cats_used;
     }
 
-    $cat_expr =~ s/#(\d+)/(exists \$p->{\$e}{$1})/g;
-    my $expr = 'sub{my($e,$p)=@_;'.$cat_expr.';}';
+    $cat_expr =~ s/#(\d+)/(exists \$p->{$1})/g;
+    my $expr = 'sub{my($p)=@_;'.$cat_expr.';}';
     my $cexpr = eval($expr);
     $@ ? undef : $cexpr;
 }

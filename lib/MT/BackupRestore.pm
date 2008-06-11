@@ -283,7 +283,7 @@ sub _loop_through_objects {
             my $next  = 0;
             while ( my $object = $iter->() ) {
                 if ( $count == $limit ) {
-                    $iter->('finish');
+                    $iter->end;
                     $next = 1;
                     $offset += $count;
                     last;

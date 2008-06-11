@@ -4,11 +4,10 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use lib 'textlib';
+use lib 't/extlib';
 use lib 'lib';
 
 use Test::More tests => 14;
-use Test::MockObject;
 
 use HTTP::Response;
 use Net::Ping;

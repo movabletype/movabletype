@@ -415,7 +415,7 @@ COMMENT:
     #$p->reset;
     #print "$_\n" foreach @{$p->query_log};
     my ( $count, $eid ) = $iter->();
-    $iter->('finish');
+    $iter->end;
 
     my $entry = MT::Entry->load($eid);
 
@@ -573,7 +573,7 @@ sub _test_limit_offset {
             last;
         }
     }
-    $iter->('finish');
+    $iter->end;
     die unless $eid;
 
     $url = "/mt-atom.cgi/comments/blog_id=1/entry_id=$eid/limit=$limit";
