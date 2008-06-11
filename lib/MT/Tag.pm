@@ -246,6 +246,7 @@ sub cache {
     if (ref($data) ne 'ARRAY') {
         my $private = $param{private};
         my $class_column = $class->properties->{class_column};
+        # FIXME: this should be a parameter; breaks MVC model
         my $limit = MT->config->MaxTagAutoCompletionItems;
         require MT::ObjectTag;
         my @tags = map { $_->name } MT::Tag->load(
@@ -268,7 +269,9 @@ sub cache {
                     })
                 }),
                 limit => $limit,
-                fetchonly => [ 'name' ]
+                fetchonly => [ 'name' ],
+                # prevent any callbacks, as we're only fetching name column anyway
+                no_triggers => 1,
             }
         );
         if (@tags) {
