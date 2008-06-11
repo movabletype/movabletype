@@ -675,6 +675,12 @@ sub init_request {
     return if $app->{init_request};
 
     if ($MT::DebugMode) {
+        if ($MT::DebugMode & 4) {  # SQL profile reporting is enabled
+            my $h = MT::Object->driver->r_handle;
+            if (my $Profile = $h->{Profile}) { # if DBI profiling is enabled
+                $Profile->{Data} = {}; # reset the profile data
+            }
+        }
         require Time::HiRes;
         $app->{start_request_time} = Time::HiRes::time();
     }
