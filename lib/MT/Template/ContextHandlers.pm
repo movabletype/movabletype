@@ -1962,7 +1962,7 @@ sub _hdlr_app_statusmsg {
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id');">%%</a>">} if $rebuild eq 'all';
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild('$blog_id', 'prompt=index');">%%</a>">} if $rebuild eq 'index';
     my $close = '';
-    if ($args->{can_close} || (!exists $args->{can_close})) {
+    if ($id && ($args->{can_close} || (!exists $args->{can_close}))) {
         $close = qq{<a href="javascript:void(0)" onclick="javascript:hide('$id');return false;" class="close-me"><span>close</span></a>};
     }
     $id = defined $id ? qq{ id="$id"} : "";
