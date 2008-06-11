@@ -39,7 +39,14 @@ function init() {
     }
     var blog = getByID("blog_name");
     if (blog) {
+        dirify_blog_name(blog);
         blog.focus();
+    }
+    var tz = getByID("blog_timezone");
+    if (tz) {
+        // The options ignore DST, so check at a specific time when no one was on DST.
+        var offset = (new Date(2008, 0, 1, 0, 0, 0, 0)).getTimezoneOffset();
+        tz.value = 0 - offset / 60;
     }
 }
 
