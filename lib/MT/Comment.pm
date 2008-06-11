@@ -34,7 +34,7 @@ __PACKAGE__->install_properties({
     indexes => {
         created_on => 1,
         entry_visible => {
-            columns => [ 'entry_id', 'visible' ],
+            columns => [ 'entry_id', 'visible', 'created_on' ],
         },
         email => 1,
         commenter_id => 1,

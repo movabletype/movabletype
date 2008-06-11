@@ -31,7 +31,7 @@ __PACKAGE__->install_properties({
     indexes => {
         created_on => 1,
         tb_visible => {
-            columns => [ 'tb_id', 'visible' ],
+            columns => [ 'tb_id', 'visible', 'created_on' ],
         },
         ip => 1,
         last_moved_on => 1, # used for junk expiration
@@ -190,10 +190,10 @@ sub _nextprev {
                 # has entries adjacent to _it_ that have the same timestamp.
                 while (my $e = $iter->()) {
                     push(@same, $e), next if $e->created_on eq $e_ts;
-                    $iter->('finish'), last;
+                    $iter->end, last;
                 }
             } else {
-                $iter->('finish');
+                $iter->end;
             }
             return $obj->{$label} = $e unless @same;
             last;
