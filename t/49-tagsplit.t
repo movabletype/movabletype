@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
+use MT::Test;
 use JSON qw(jsonToObj);
 use MT::Tag;
 

@@ -6,6 +6,7 @@ use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 13;
 
 use MT;
+use MT::Test;
 use MT::FileMgr;
 
 my $File = 'test.file';

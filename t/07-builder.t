@@ -5,6 +5,8 @@ use lib 'lib';
 use lib 't/lib';
 use lib 'extlib';
 
+use MT::Test;
+
 use Test::More tests => 116;
 use MT;
 use MT::Builder;

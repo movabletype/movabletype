@@ -7,6 +7,8 @@ use lib 'lib';
 use lib 'extlib';
 use lib 't/lib';
 
+use MT::Test;
+
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );

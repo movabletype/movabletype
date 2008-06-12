@@ -9,6 +9,7 @@ use lib 'extlib';
 use Test::More tests => 53;
 
 use MT;
+use MT::Test;
 use MT::Sanitize;
 
 my($atts, $str);

@@ -25,12 +25,12 @@ isa_ok($mt, 'MT', 'Is MT');
     # method validation\
 #    is($asset->class, 'Image', 'class');
     is($asset->class_label, 'Image', 'class_label');
-    is($asset->thumbnail_file({Height => 100, Width => 100}), 't/site/assets_c/1.3b30679660d0d018c5c8b061f4280f3f5cb318ca.jpg', 'thumbnail');
+    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], 't/site/assets_c/2008/06/test-thumb-640x480.jpg', 'thumbnail');
     is($asset->image_width, 640, 'image_width'); 
     is($asset->image_height, 480, 'height');
-    is($asset->as_html, '<span mt:asset-id="1" class="mt-enclosure mt-enclosure-image"><a href="http://narnia.na/nana/images/test.jpg">View image</a></span>', 'as_html');
-    is($asset->as_html({popup => 1, include => 1}), qq(<span mt:asset-id="1" class="mt-enclosure mt-enclosure-image"><a href="http://narnia.na/nana/images/test.jpg" onclick="window.open('http://narnia.na/nana/images/test.jpg','popup','width=640,height=480,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">View image</a></span>), 'as_html_popup');
-    is($asset->as_html({include => 1, wrap_text => 1, align => 'right'}), '<span mt:asset-id="1" class="mt-enclosure mt-enclosure-image"><img alt="test.jpg" src="http://narnia.na/nana/images/test.jpg" width="640" height="480" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;"/></span>', 'as_html_include');
+    is($asset->as_html, '<form mt:asset-id="1" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://narnia.na/nana/images/test.jpg">View image</a></form>', 'as_html');
+    is($asset->as_html({popup => 1, popup_asset_id => $asset->id, include => 1}), qq(<form mt:asset-id="1" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://narnia.na/nana/images/test.jpg" onclick="window.open('http://narnia.na/nana/images/test.jpg','popup','width=640,height=480,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">View image</a></form>), 'as_html_popup');
+    is($asset->as_html({include => 1, wrap_text => 1, align => 'right'}), '<form mt:asset-id="1" class="mt-enclosure mt-enclosure-image" style="display: inline;"><img alt="Image photo" src="http://narnia.na/nana/images/test.jpg" width="640" height="480" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;" /></form>', 'as_html_include');
 
     #metadata validation
     my $meta = $asset->metadata;
@@ -42,7 +42,7 @@ isa_ok($mt, 'MT', 'Is MT');
     is($meta->{ext}, 'jpg', 'metadata - ext');
     is($meta->{mime_type}, 'image/jpeg', 'metadata - mime_type');
     is($meta->{duration}, undef, 'metadata - duration');
-    is($meta->{'Actual Dimensions'}, '640 wide, 480 high', 'metadata - Actual Dimensions');
+    is($meta->{'Actual Dimensions'}, '640 x 480 pixels', 'metadata - Actual Dimensions');
 
     # copy original image file
     my $orig_file = File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg');
@@ -52,6 +52,7 @@ isa_ok($mt, 'MT', 'Is MT');
     # Object creation
     use Data::Dumper;
     my $img_pkg = MT::Asset->class_handler('image');
+    $asset = new $img_pkg;
     isa_ok($asset, 'MT::Asset::Image', 'New object is MT::Asset::Image');
     $asset->blog_id(1);
     $asset->url('http://narnia.na/nana/images/test_.jpg');
@@ -98,8 +99,8 @@ isa_ok($mt, 'MT', 'Is MT');
 
     # method validation\
     is($asset_f->class, 'file', 'class');
-    is($asset_f->class_label, 'File', 'class_label');
-    is($asset_f->as_html, '<span mt:asset-id="2" class="mt-enclosure mt-enclosure-file"><a href="http://narnia.na/nana/files/test.tmpl">test.tmpl</a></span>', 'as_html');
+    is($asset_f->class_label, 'Asset', 'class_label');
+    is($asset_f->as_html, '<form mt:asset-id="2" class="mt-enclosure mt-enclosure-file" style="display: inline;"><a href="http://narnia.na/nana/files/test.tmpl">test.tmpl</a></form>', 'as_html');
 
     #metadata validation
     my $meta_f = $asset_f->metadata;

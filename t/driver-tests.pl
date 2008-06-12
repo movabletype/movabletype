@@ -25,13 +25,13 @@ BEGIN {
 use Test::More;
 use Test::Deep;
 use lib 't/lib';
-use MT::Test qw(:testdb :time);
 
 BEGIN {
     plan skip_all => "Configuration file $ENV{MT_CONFIG} not found"
-        if !-r $ENV{MT_CONFIG};
+        if !-r "t/$ENV{MT_CONFIG}";
 }
 
+use MT::Test qw(:testdb :time);
 plan tests => 186;
 
 package Zot;

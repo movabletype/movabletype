@@ -11,6 +11,7 @@ use lib 'extlib';
 use Test::More qw(no_plan);
 
 use MT;
+use MT::Test;
 use MT::Author;
 use MT::Blog;
 use MT::Category;

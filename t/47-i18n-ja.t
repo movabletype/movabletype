@@ -21,8 +21,8 @@ use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 35;
 
 use Encode;
-use MT::Bootstrap;
 use MT;
+use MT::Test;
 my $mt = new MT;
 
 my ($utf8_str, $sjis_str, $euc_str, $utf8_substr, $euc_substr, $sjis_substr, $iso2022_str, $iso2022_substr);

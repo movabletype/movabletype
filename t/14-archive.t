@@ -4,6 +4,7 @@ use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 38;
 use Cwd;
 use MT;
+use MT::Test;
 use strict;
 
 my $mt = MT->new;

@@ -8,6 +8,7 @@ use lib 'lib';
 use lib 'extlib';
 
 use MT;
+use MT::Test;
 use MT::Util;
 
 my @tests = (

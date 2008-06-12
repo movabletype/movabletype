@@ -1,11 +1,13 @@
 #!/usr/bin/perl
 
 use strict;
-use lib 'extlib', 'lib';
+use lib 't/lib', 'extlib', 'lib';
 use Test::More tests => 11;
-use MT::Object;
 
-package MT::Asset;
+use MT::Test;
+my $mt = new MT;
+
+package MT::TestAsset;
 
 our @ISA = qw( MT::Object );
 
@@ -18,17 +20,17 @@ __PACKAGE__->install_properties({
     class_type => 'file',
 });
 
-package MT::Asset::Image;
+package MT::TestAsset::Image;
 
-our @ISA = qw( MT::Asset );
+our @ISA = qw( MT::TestAsset );
 
 __PACKAGE__->install_properties({
     class_type => 'image',
 });
 
-package MT::Asset::Audio;
+package MT::TestAsset::Audio;
 
-our @ISA = qw( MT::Asset );
+our @ISA = qw( MT::TestAsset );
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -39,18 +41,18 @@ __PACKAGE__->install_properties({
 
 package main;
 
-my $file = new MT::Asset;
-my $image = new MT::Asset::Image;
-my $audio = new MT::Asset::Audio;
+my $file = new MT::TestAsset;
+my $image = new MT::TestAsset::Image;
+my $audio = new MT::TestAsset::Audio;
 
-ok($file->has_column('title'));
-ok($image->has_column('title'));
-ok($audio->has_column('title'));
-ok(!$file->has_column('duration'));
-ok(!$image->has_column('duration'));
-ok($audio->has_column('duration'));
-ok($file->class_type eq 'file');
-ok($image->class_type eq 'image');
-ok($audio->class_type eq 'audio');
-ok(MT::Asset->class_type eq 'file');
-ok(MT::Asset::Image->class_type eq 'image');
+ok($file->has_column('title'), 'file has title column');
+ok($image->has_column('title'), 'image has title column');
+ok($audio->has_column('title'), 'audio has title column');
+ok(!$file->has_column('duration'), 'file doesn\'t have column duration');
+ok(!$image->has_column('duration'), 'image doesn\'t have column duration');
+ok($audio->has_column('duration'), 'audio has column duration');
+ok($file->class_type eq 'file', 'file class_type is file');
+ok($image->class_type eq 'image', 'image class_type is image');
+ok($audio->class_type eq 'audio', 'audio class_type is audio');
+ok(MT::TestAsset->class_type eq 'file', 'generic asset class_type is file');
+ok(MT::TestAsset::Image->class_type eq 'image', 'generic image asset class type is image');

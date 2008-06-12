@@ -7,6 +7,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
+use MT::Test;
 use Test::More;
 use File::Spec;
 
@@ -47,7 +48,7 @@ for my $rec (@Img) {
         $cfg->ImageDriver($driver);
         my $img = MT::Image->new( Filename => $img_file );
 SKIP : {
-        skip("no $driver image", 17) unless $img;
+        skip("no $driver image", 18) unless $img;
         isa_ok($img, 'MT::Image::' . $driver, "driver $driver with image $img_file is an MT::Image::$driver");
 #        diag( MT::Image->errstr ) if MT::Image->errstr;
 

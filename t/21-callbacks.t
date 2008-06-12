@@ -5,13 +5,13 @@ use warnings;
 
 use Test::More tests => 5;
 use CGI;
-use DB_File;
 
 use lib 'extlib';
 use lib 't/lib';
 use lib 'lib';
 
 use MT;
+use MT::Test;
 use MT::Plugin;
 use MT::Entry;
 use MT::App::CMS;
@@ -75,22 +75,4 @@ ok($id, 'new entry has an id');
 my $entry2 = MT::Entry->load($id);
 ok($post_load_called, 'post-load callback was called');
 is($entry2->text, $TEST_TEXT, 'on-disk obj altered');
-
-=pod
-
-# TBD: generalize this
-my $driver = MT::ObjectDriver->new('DBI::SQLite');
-
-#my %entries;
-#tie %entries, "DB_File", $mt->{cfg}->DataSource . "/entry.db",
-#                         O_RDWR, 0400, $DB_BTREE
-#    || die $!;
-#my $rec = $entries{$id};
-#$rec = $driver->{serializer}->unserialize($rec);
-#is($$rec->{text}, rot13($TEST_TEXT), 'text rotated');
-
-#is($entry2->text_more, $TEST_TEXT_MORE, '$entry2->text_more()');
-#is($$rec->{text_more}, $TEST_TEXT_MORE, '$$rec->{text_more}');
-
-=cut
 

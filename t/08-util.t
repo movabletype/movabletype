@@ -3,6 +3,7 @@
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test;
 use MT;
+use MT::Test;
 use MT::Util qw( encode_html decode_html wday_from_ts format_ts dirify
                  convert_high_ascii encode_xml decode_xml substr_wref
                  trim ltrim rtrim );

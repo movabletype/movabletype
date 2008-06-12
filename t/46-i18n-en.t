@@ -22,6 +22,7 @@ use Test::More tests => 16;
 
 use Encode;
 use MT;
+use MT::Test;
 use MT::Util;
 my $mt = new MT;
 
