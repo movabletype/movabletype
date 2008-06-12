@@ -427,13 +427,14 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
         html = html.replace(/<(br|img|input|param)([^>]+)?([^\/])?>/g, "<$1$2$3 />");
 
         // #4 - get absolute path and delete from converted URL 
-        this.document.body.innerHTML = '<a href="dummy.html"></a>';
-        var path = this.document.body.innerHTML;
+        var d = this.document.createElement('div');
+        d.innerHTML = '<a href="dummy.html"></a>';
+        var path = d.innerHTML;
         path = path.toLowerCase();
         path = path.replace(/<a href="(.*)dummy.html"><\/a>/, "$1");
         var regex = new RegExp(path, "g");
         html = html.replace(regex, "");
-        this.document.body.innerHTML = html;
+
         return html;
     }
 } );
