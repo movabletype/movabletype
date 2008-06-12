@@ -294,7 +294,7 @@ sub as_html {
             }
         }
 
-        if ( $param->{popup} ) {
+        if ( $param->{popup} && $param->{popup_asset_id} ) {
             my $popup = MT::Asset->load( $param->{popup_asset_id} )
               || return $asset->error(
                 MT->translate(
