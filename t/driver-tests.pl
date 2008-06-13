@@ -167,10 +167,33 @@ sub sum_group_by : Tests(7) {
     ($status, $id) = $sgb->();
     ok($status && $id, 'sum_group_by results had a second result');
     is($status, 2, q{sum_group_by result #2's status is 2});
-    is($id, 1, 'sum-group_by result #2 was for Foo #1');
+    is($id, 1, 'sum_group_by result #2 was for Foo #1');
     
     ($status, $id) = $sgb->();
     ok(!$status, 'sum_group_by only had two results');
+}
+
+sub avg_group_by : Tests(7) {
+    my $agb = Foo->avg_group_by(undef, {
+        avg => 'status',
+        group => ['id'],
+        direction => 'ascend',
+    });
+    
+    my ($status, $id) = $agb->();
+    ok($status && $id, 'avg_group_by results had a first result');
+    # Compare numerically; is() will compare stringwise.
+    ok($status == 1, q{avg_group_by result #1's status is 1});
+    is($id, 2, 'avg_group_by result #1 was for Foo #2');
+    
+    ($status, $id) = $agb->();
+    ok($status && $id, 'avg_group_by results had a second result');
+    # Compare numerically; is() will compare stringwise.
+    ok($status == 2, q{avg_group_by result #2's status is 2});
+    is($id, 1, 'avg_group_by result #2 was for Foo #1');
+    
+    ($status, $id) = $agb->();
+    ok(!$status, 'avg_group_by only had two results');
 }
 
 sub clean_db : Test(teardown) {
