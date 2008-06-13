@@ -333,7 +333,9 @@ sub restore_file {
         $fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback
     ); };
 
-    MT->run_callbacks('restore', $objects, $deferred, $errors, $callback);
+    unless ( $@ ) {
+        MT->run_callbacks('restore', $objects, $deferred, $errors, $callback);
+    }
     $$errormsg = join('; ', @$errors);
     ($deferred, $blog_ids);
 }
@@ -432,7 +434,9 @@ sub restore_directory {
         push @asset_ids, @$tmp_asset_ids if defined $tmp_asset_ids;
     }
 
-    MT->run_callbacks('restore', \%objects, $deferred, $errors, $callback);
+    unless ( $@ ) {
+        MT->run_callbacks('restore', \%objects, $deferred, $errors, $callback);
+    }
     my $blog_ids = scalar(@blog_ids) ? \@blog_ids : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
     ($deferred, $blog_ids, $asset_ids);

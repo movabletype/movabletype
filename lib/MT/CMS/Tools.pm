@@ -1596,10 +1596,11 @@ sub restore_file {
     my $app = shift;
     my ( $fh, $errormsg ) = @_;
     my $q = $app->param;
-    my $schema_version =
-      $q->param('ignore_schema_conflict')
-      ? 'ignore'
-      : $app->config('SchemaVersion');
+    my $schema_version = $app->config->SchemaVersion;
+    #my $schema_version =
+    #  $q->param('ignore_schema_conflict')
+    #  ? 'ignore'
+    #  : $app->config('SchemaVersion');
     my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
 
     require MT::BackupRestore;
@@ -1654,10 +1655,11 @@ sub restore_directory {
     }
 
     my $q = $app->param;
-    my $schema_version =
-      $q->param('ignore_schema_conflict')
-      ? 'ignore'
-      : $app->config('SchemaVersion');
+    my $schema_version = $app->config->SchemaVersion;
+    #my $schema_version =
+    #  $q->param('ignore_schema_conflict')
+    #  ? 'ignore'
+    #  : $app->config('SchemaVersion');
 
     my $overwrite_template = $q->param('overwrite_global_templates') ? 1 : 0;
 
@@ -1763,10 +1765,11 @@ sub restore_upload_manifest {
     $param->{filename}    = $file_next;
     $param->{last}        = scalar(@$files) ? 0 : ( scalar(@$assets) ? 0 : 1 );
     $param->{open_dialog} = 1;
-    $param->{schema_version} =
-      $q->param('ignore_schema_conflict')
-      ? 'ignore'
-      : $app->config('SchemaVersion');
+    $param->{schema_version} = $app->config->SchemaVersion;
+    #$param->{schema_version} =
+    #  $q->param('ignore_schema_conflict')
+    #  ? 'ignore'
+    #  : $app->config('SchemaVersion');
     $param->{overwrite_templates} = $q->param('overwrite_global_templates') ? 1 : 0;
 
     $param->{dialog_mode} = 'dialog_restore_upload';

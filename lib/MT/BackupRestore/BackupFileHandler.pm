@@ -41,11 +41,12 @@ sub start_element {
     if ($self->{start}) {
         die MT->translate('Uploaded file was not a valid Movable Type backup manifest file.')
             if !(('movabletype' eq $name) && (MT::BackupRestore::NS_MOVABLETYPE() eq $ns));
-        unless ($self->{ignore_schema_conflicts}) {
+        #unless ($self->{ignore_schema_conflicts}) {
             my $schema = $attrs->{'{}schema_version'}->{Value};
-            if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
+            #if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
+            if ( $schema != $self->{schema_version} ) {
                 $self->{critical} = 1;
-                my $message = MT->translate('Uploaded file was backed up from Movable Type with the newer schema version ([_1]) than the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', MT::I18N::encode_text(MT::I18N::utf8_off($schema), 'utf-8'), $self->{schema_version});
+                my $message = MT->translate('Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', MT::I18N::encode_text(MT::I18N::utf8_off($schema), 'utf-8'), $self->{schema_version});
                 MT->log({ 
                     message => $message,
                     level => MT::Log::ERROR(),
@@ -54,7 +55,7 @@ sub start_element {
                 });
                 die $message;
             }
-        }
+        #}
         $self->{start} = 0;
         return 1;
     }

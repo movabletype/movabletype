@@ -748,7 +748,7 @@ use vars qw( @ISA %Lexicon );
 	'Uploaded file was not a valid Movable Type backup manifest file.' => 'アップロードされたファイルはMovable Typeバックアップで作成されたマニフェストファイルではありません。',
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was backed up from Movable Type with the newer schema version ([_1]) than the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'アップロードされたファイルはこのシステムのバージョン([_2])より新しいバージョン([_1])でバックアップされています。このファイルを使って復元することは推奨されません。',
+	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'アップロードされたファイルはこのシステムのバージョン([_2])とは異なるバージョン([_1])でバックアップされています。このファイルを使って復元することはできません。',
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1]はMovable Typeで復元する対象には含まれていません。',
 	'[_1] records restored.' => '[_1]件復元されました。',
 	'Restoring [_1] records:' => '[_1]を復元しています:',

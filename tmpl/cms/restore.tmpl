@@ -34,6 +34,7 @@
             help_section="source_file">
                 <input name="file" type="file" size="50" />
         </mtapp:setting>
+        <mt:ignore><!-- disable the feature to ignore schema conflict.
         <mtapp:setting
             id="ignore_schema_conflict"
             label="<__trans phrase="Options">"
@@ -42,6 +43,7 @@
                 <input name="ignore_schema_conflict" id="ignore_schema_conflict" type="checkbox" />
                 <label for="ignore_schema_conflict"><__trans phrase="Ignore schema version conflicts"></label>
         </mtapp:setting>
+        --></mt:ignore>
         <mtapp:setting
             id="overwrite_global_templates"
             label="<__trans phrase="Options">"
