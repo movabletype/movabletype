@@ -1524,8 +1524,10 @@ sub post_save {
         # If either of the publishing paths changed, rebuild the fileinfos.
         my $path_changed = 0;
         for my $path_field (qw( site_path archive_path site_url archive_url )) {
-            $path_changed = 1 && last if $app->param($path_field)
-                && $app->param($path_field) ne $original->$path_field();
+            if ( $obj->$path_field() ne $original->$path_field() ) {
+                $path_changed = 1;
+                last;
+            }
         }
 
         if ($path_changed) {
