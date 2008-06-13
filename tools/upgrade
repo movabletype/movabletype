@@ -83,6 +83,7 @@ sub main {
         Install   => $install,
         SuperUser => $author_id,
         CLI       => 1,
+        User      => { user_nickname => 'Melody Nelson' },
     );
 
     if ($install) {
