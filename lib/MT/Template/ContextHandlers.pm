@@ -12641,14 +12641,15 @@ sub _hdlr_category_tb_count {
 }
 
 sub _load_sibling_categories {
-    my ($ctx, $cat) = @_;
+    my ($ctx, $cat, $class_type) = @_;
     my $blog_id = $cat->blog_id;
     my $r = MT::Request->instance;
     my $cats = $r->stash('__cat_cache_'.$blog_id.'_'.$cat->parent);
     return $cats if $cats;
 
-    my @cats = MT::Category->load({blog_id => $blog_id, parent => $cat->parent},
-                                  {'sort' => 'label', direction => 'ascend'});
+    my $class = MT->model($class_type);
+    my @cats = $class->load({blog_id => $blog_id, parent => $cat->parent},
+                            {'sort' => 'label', direction => 'ascend'});
     $r->stash('__cat_cache_'.$blog_id.'_'.$cat->parent, \@cats);
     \@cats;
 }
@@ -12686,7 +12687,7 @@ sub _hdlr_category_prevnext {
         (($uncompiled =~ /<MT:?Entries/i) ? 1 : 0) :
         (($uncompiled =~ /<MT:?Pages/i) ? 1 : 0);
     my $blog_id = $cat->blog_id;
-    my $cats = _load_sibling_categories($ctx, $cat);
+    my $cats = _load_sibling_categories($ctx, $cat, $class_type);
     my ($pos, $idx);
     $idx = 0;
     foreach (@$cats) {
