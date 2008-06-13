@@ -294,8 +294,8 @@ sub fixable : Tests(12) {
 
     eval {
         if ($driver->table_exists('Ddltest::Fixable')) {
-            my $sql = $driver->dbd->ddl_class->drop_table_sql('Ddltest::Fixable');
-            $driver->rw_handle->do($sql);
+            my $sql = $ddl_class->drop_table_sql('Ddltest::Fixable');
+            $dbh->do($sql);
         }
     };
     eval {
