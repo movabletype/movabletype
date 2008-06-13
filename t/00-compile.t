@@ -4,7 +4,8 @@
 use strict;
 use warnings;
 
-use lib 'lib', 'extlib';
+use lib 't/lib', 'lib', 'extlib';
+use MT::Test;
 
 use Test::More tests => 181;
 

@@ -171,10 +171,10 @@ tags:
 	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
 
 test: code
-	MT_CONFIG=t/mt.cfg perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
+	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
 
 quick-test: code
-	MT_CONFIG=t/mt.cfg perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
+	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
 		t/00-compile.t t/01-serialize.t t/04-config.t \
 		t/05-errorhandler.t t/07-builder.t t/08-util.t           \
 		t/09-image.t t/10-filemgr.t t/11-sanitize.t t/12-dsa.t   \

@@ -53,7 +53,8 @@ my $server = "192.168.1.104";
 my $p = Net::Ping->new();
 SKIP: {
     skip("Test update server $server is unreachable", 5)
-        unless ok($p->ping($server), 'ping');
+        unless $p->ping($server);
+    ok(1, "ping");
 
 {
 my $res = MT::XMLRPC->ping_update('foo.ping', $blog,

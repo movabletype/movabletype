@@ -5,19 +5,17 @@ use warnings;
 
 use Test::More tests => 3;
 use CGI;
-use DB_File;
 
 use lib 'extlib';
 use lib 't/lib';
 use lib 'lib';
 
+use MT::Test;
 use MT;
 use MT::Plugin;
 use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
-
-use vars qw($T_CFG);
 
 use lib 't';
 require 'test-common.pl';
@@ -26,7 +24,7 @@ require 'test-common.pl';
 
 my @result_cats = ();
 
-my $cms = MT::App::CMS->new(Config => $T_CFG);
+my $cms = MT::App::CMS->new();
 
 my $plugin = MT::Plugin->new({name => "21-callbacks.t"});
 
@@ -47,6 +45,8 @@ my $q = CGI->new();
 #$q->param(id => $entry2->id);
 $q->param(blog_id => $entry2->blog_id);
 $q->param(category_ids => 17);
+$q->param(author_id => 1);
+$q->param(status => 1);
 # $q->param(username => 'Chuck D');
 # $q->param(password => 'bass');
 $q->param(text => "Buddha blessed and boo-ya blasted; 
