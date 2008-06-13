@@ -934,6 +934,21 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_assign_all_permisssions_blog_admin' => {
+            version_limit => 4.0063,
+            priority => 3.4,
+            updater => {
+                type => 'permission',
+                label => 'Assigning all permissions to blog administrator...',
+                condition => sub {
+                    $_[0]->can_administer_blog;
+                },
+                code => sub {
+                    my ($perm) = shift;
+                    $perm->set_full_permissions;
+                },
+            },
+        },
     };
 }
 
