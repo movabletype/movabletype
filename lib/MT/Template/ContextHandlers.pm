@@ -14042,7 +14042,7 @@ sub _hdlr_assets {
             or return $ctx->_no_entry_error();
 
         require MT::ObjectAsset;
-        my @assets = MT::Asset->load(undef, { join => MT::ObjectAsset->join_on(undef, {
+        my @assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
             asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
         return '' unless @assets;
         $assets = \@assets;

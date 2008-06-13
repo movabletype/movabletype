@@ -36,7 +36,7 @@ BEGIN {
 # test scripts wait for real wall seconds to pass.
 our $CORE_TIME;
 BEGIN {
-    *CORE::GLOBAL::time  = sub { CORE::time };
+    *CORE::GLOBAL::time  = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
     *CORE::GLOBAL::sleep = sub { CORE::sleep };
 }
 
@@ -594,12 +594,14 @@ It\'s a hard rain\'s a-gonna fall',
         $cmt->text("All your comments are belonged to me.");
         $cmt->commenter_id($chuckd->id);
         $cmt->visible(1);
+        $cmt->created_on('20040910183000');
         $cmt->id(14);
         $cmt->save or die "Couldn't save comment record 1: ".$cmt->errstr;
 
         $cmt->text("All your comments are belonged to us MT Authors.");
         $cmt->commenter_id($bobd->id);
         $cmt->visible(1);
+        $cmt->created_on('20040910182800');
         $cmt->id(15);
         $cmt->save or die "Couldn't save comment record 1: ".$cmt->errstr;
     }

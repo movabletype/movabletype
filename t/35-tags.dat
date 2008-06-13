@@ -405,7 +405,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
 { "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "EntryMonthlyWeeklyDailyCategoryPage"}, #355
-{ "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:1;2;0;5:0;4:"}, #356
+{ "r" : "1", "t" : "<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>", "e" : "1:0;0;0;8:0;7:6:2;1;0;5:0;4:"}, #356
 { "r" : "1", "t" : "<MTPages id='20'><$MTPageMore$></MTPages>", "e" : "<p>I don't have much to say,</p>"}, #357
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
