@@ -24,6 +24,7 @@ class MTDatabase_mysql extends MTDatabaseBase {
         return $sql;
     }
     function limit_by_day_sql($column, $days) {
+        $days -= 1;
         return 'date_add(' . $column .', interval ' . 
             $days . ' day) >= current_date()';
     }
