@@ -3173,7 +3173,7 @@ sub publish_error {
     if (defined $app->errstr) {
         require MT::Log;
         $app->log({
-            message => $app->translate("Error during publishing: [_1]", (defined $msg ? $msg : $app->errstr)),
+            message => (defined $msg ? $msg : $app->translate("Error during publishing: [_1]", $app->errstr)),
             class => "system",
             level => MT::Log::ERROR(),
             category => "publish",

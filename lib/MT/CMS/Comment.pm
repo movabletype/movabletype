@@ -1459,11 +1459,19 @@ sub pre_save {
 sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
+
     if ( $obj->visible
         || ( ( $obj->visible || 0 ) != ( $original->visible || 0 ) ) )
     {
-        $app->rebuild_entry( Entry => $obj->entry_id, BuildIndexes => 1 )
-            or return $app->publish_error();
+        return MT::Util::start_background_task(
+            sub {
+                my $app = MT->instance;
+                if ( !$app->rebuild_entry( Entry => $obj->entry_id, BuildIndexes => 1 ) ) {
+                    $app->publish_error(); # logs error as well.
+                    return $eh->error( MT->translate( "Publish failed: [_1]", $app->errstr ) );
+                }
+            }
+        );
     }
     1;
 }
