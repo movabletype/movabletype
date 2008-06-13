@@ -32,7 +32,7 @@ BEGIN {
 }
 
 use MT::Test qw(:testdb :time);
-plan tests => 186;
+
 
 package Zot;
 use base 'MT::Object';
@@ -45,7 +45,150 @@ __PACKAGE__->install_properties({
     datasource => 'zot',
 });
 
+
+package Test::GroupBy;
+use base qw( Test::Class MT::Test );
+use Test::More;
+use POSIX qw(strftime);
+
+sub reset_db : Test(setup) {
+    my $self = shift;
+    $self->clean_db();
+
+    my @obj_data = (
+        { class => 'Foo',
+          id => 1,
+          name => 'foo',
+          text => 'bar',
+          status => 2, },
+        { class => 'Foo',
+          id => 2,
+          name => 'baz',
+          text => 'quux',
+          status => 1, },
+        { class => 'Bar',
+          id => 1,
+          foo_id => 2,
+          name => 'bar0',
+          status => 0, },
+        { class => 'Bar',
+          id => 2,
+          foo_id => 2,
+          name => 'bar1',
+          status => 1, },
+        { class => 'Bar',
+          id => 3,
+          foo_id => 1,
+          name => 'bar2',
+          status => 0, },
+    );
+
+    for my $data (@obj_data) {
+        my $class = delete $data->{class};
+        my $obj = $class->new;
+        $obj->set_values($data);
+        $obj->save();
+    }
+}
+
+sub count_group_by : Tests(26) {
+    # legacy way of specifying sort direction
+    my $cgb_iter = Bar->count_group_by({
+            status => '0',
+        }, {
+            group => [ 'foo_id' ],
+            sort => 'foo_id desc',
+        });
+    my ($count, $bfid, $month);
+    isa_ok($cgb_iter, 'CODE');
+    ok(($count, $bfid) = $cgb_iter->(), 'set');
+    is($bfid, 2, 'id');
+    is($count, 1, 'count4');
+    ok(($count, $bfid) = $cgb_iter->(), 'set');
+    is($bfid, 1, 'id');
+    is($count, 1, 'count5');
+    ok(!$cgb_iter->(), 'no $iter');
+
+    # new way of specifying sort direction
+    my $cgb_iter2 = Bar->count_group_by({
+            status => '0',
+        }, {
+            group => [ 'foo_id' ],
+            sort => 'foo_id',
+            direction => 'descend'
+        });
+
+    isa_ok($cgb_iter2, 'CODE');
+    ok(($count, $bfid) = $cgb_iter2->(), 'set');
+    is($bfid, 2, 'id');
+    is($count, 1, 'count4');
+    ok(($count, $bfid) = $cgb_iter2->(), 'set');
+    is($bfid, 1, 'id');
+    is($count, 1, 'count5');
+    ok(!$cgb_iter2->(), 'no $iter');
+
+    # legacy way of specifying sort direction
+    my $cgb_iter3 = Bar->count_group_by(undef, {
+            group => [ 'extract(month from created_on)' ],
+            sort => 'extract(month from created_on) desc',
+        });
+    isa_ok($cgb_iter3, 'CODE');
+    ok(($count, $month) = $cgb_iter3->(), 'set');
+    is(int($month), int(strftime("%m", localtime)), 'month');
+    is($count, 3, 'count6');
+    ok(!$cgb_iter3->(), 'no $iter');
+
+    # new way of specifying sort direction
+    my $cgb_iter4 = Bar->count_group_by(undef, {
+            group => [ 'extract(month from created_on)' ],
+            sort => [{ column => 'extract(month from created_on)',
+                desc => 'desc' }]
+        });
+    isa_ok($cgb_iter4, 'CODE');
+    ok(($count, $month) = $cgb_iter4->(), 'set');
+    is(int($month), int(strftime("%m", localtime)), 'month');
+    is($count, 3, 'count6');
+    ok(!$cgb_iter4->(), 'no $iter');
+}
+
+sub sum_group_by : Tests(7) {
+    # Sum status values across groups of ids (that is, a group for each Foo).
+    my $sgb = Foo->sum_group_by(undef, {
+        sum       => 'status',
+        group     => ['id'],
+        direction => 'ascend',
+    });
+
+    my ($status, $id) = $sgb->();
+    ok($status && $id, 'sum_group_by results had a first result');
+    is($status, 1, q{sum_group_by result #1's status is 1});
+    is($id, 2, 'sum_group_by result #1 was for Foo #2');
+    
+    ($status, $id) = $sgb->();
+    ok($status && $id, 'sum_group_by results had a second result');
+    is($status, 2, q{sum_group_by result #2's status is 2});
+    is($id, 1, 'sum-group_by result #2 was for Foo #1');
+    
+    ($status, $id) = $sgb->();
+    ok(!$status, 'sum_group_by only had two results');
+}
+
+sub clean_db : Test(teardown) {
+    for my $class (qw( Foo Bar )) {
+        my $driver    = $class->dbi_driver;
+        my $dbh       = $driver->rw_handle;
+        my $ddl_class = $driver->dbd->ddl_class;
+        
+        $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr;
+        $dbh->do($ddl_class->create_table_sql($class)) or die $dbh->errstr;
+        $dbh->do($_) or die $dbh->errstr for $ddl_class->index_table_sql($class);
+        $ddl_class->create_sequence($class);  # may do nothing
+    }
+}
+
 package main;
+
+Test::GroupBy->runtests( +152 );
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -400,65 +543,6 @@ $bar[2]->status(0);
 ok($bar[2]->save, 'saved');
 sleep(2);  ## Sleep to ensure created_on timestamps are unique
 
-# legacy way of specifying sort direction
-my $cgb_iter = Bar->count_group_by({
-        status => '0',
-    }, {
-        group => [ 'foo_id' ],
-        sort => 'foo_id desc',
-    });
-my ($count, $bfid, $month);
-isa_ok($cgb_iter, 'CODE');
-ok(($count, $bfid) = $cgb_iter->(), 'set');
-is($bfid, $bar[1]->id, 'id');
-is($count, 1, 'count4');
-ok(($count, $bfid) = $cgb_iter->(), 'set');
-is($bfid, $bar[0]->id, 'id');
-is($count, 1, 'count5');
-ok(!$cgb_iter->(), 'no $iter');
-
-# new way of specifying sort direction
-my $cgb_iter2 = Bar->count_group_by({
-        status => '0',
-    }, {
-        group => [ 'foo_id' ],
-        sort => 'foo_id',
-        direction => 'descend'
-    });
-
-isa_ok($cgb_iter2, 'CODE');
-ok(($count, $bfid) = $cgb_iter2->(), 'set');
-is($bfid, $bar[1]->id, 'id');
-is($count, 1, 'count4');
-ok(($count, $bfid) = $cgb_iter2->(), 'set');
-is($bfid, $bar[0]->id, 'id');
-is($count, 1, 'count5');
-ok(!$cgb_iter2->(), 'no $iter');
-
-# legacy way of specifying sort direction
-my $cgb_iter3 = Bar->count_group_by(undef, {
-        group => [ 'extract(month from created_on)' ],
-        sort => 'extract(month from created_on) desc',
-    });
-isa_ok($cgb_iter3, 'CODE');
-ok(($count, $month) = $cgb_iter3->(), 'set');
-use POSIX qw(strftime);
-is(int($month), int(strftime("%m", localtime)), 'month');
-is($count, 3, 'count6');
-ok(!$cgb_iter3->(), 'no $iter');
-
-# new way of specifying sort direction
-my $cgb_iter4 = Bar->count_group_by(undef, {
-        group => [ 'extract(month from created_on)' ],
-        sort => [{ column => 'extract(month from created_on)',
-            desc => 'desc' }]
-    });
-isa_ok($cgb_iter4, 'CODE');
-ok(($count, $month) = $cgb_iter4->(), 'set');
-is(int($month), int(strftime("%m", localtime)), 'month');
-is($count, 3, 'count6');
-ok(!$cgb_iter4->(), 'no $iter');
-
 ## Get a count of all Foo objects in order of most recently
 ## created Bar object. No uniqueness requirement. This tests
 ## the on_load_complete temporary table stuff with count.
@@ -706,24 +790,7 @@ is($offs[1]->id, $binmonster->id, 'id');
 isa_ok($offs[2], 'Foo');
 is($offs[2]->id, $foo1->id, 'id');
 
-#sum_group_by
-my $cnt = 0;
-my @data = Foo->load(undef, {direction => 'ascend'});
-my @foos;
-foreach my $f (@data) {
-    $f->status($cnt + 1);
-    $f->save;
-    unshift @foos, $f;
-    $cnt++;
-}
-
-my $sgb = Foo->sum_group_by(undef, { sum => 'status', group => ['id'], direction => 'ascend' });
-while (my ($status, $id2) = $sgb->()) {
-    my $f = pop @foos;
-    is($f->id, $id2, 'id sgb');
-    is($f->status, $status, 'status sgb');
-}
-
+# TODO: what are these even about?
 SKIP: {
     skip(1, '$tmp[0] undefined') unless $tmp[0];
     ok($tmp[0] && ($tmp[0]->name eq 'foo'), 'name')
@@ -760,7 +827,7 @@ $newdata->name('Apple');
 $newdata->text('iBook');
 $newdata->save;
 
-$count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
+my $count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
 # ==> select count(*) from mt_foo where foo_status = 10 or foo_name = 'Apple'
 is($count, 3, '-or count');
 
