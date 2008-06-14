@@ -65,7 +65,7 @@
     function init()
     {
         // setup
-        tableSelect = new TC.TableSelect( "author-listing-table" );
+        tableSelect = new TC.TableSelect( "user-listing-table" );
         tableSelect.rowSelect = true;
         setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
         setFilterVal('<mt:var name="filter_val">');
@@ -74,12 +74,13 @@
 
     function removeMemberRole(author_id,role_id) {
         if (confirm("<__trans phrase="Are you sure you want to remove this role?" escape="js">")) {
-            var f = document.forms['author-listing-form'];
+            var f = document.forms['user-listing-form'];
             f['__mode'].value = "revoke_role";
             f['author_id'].value = author_id;
             f['role_id'].value = role_id;
             f.submit();
         }
+        return false;
     }
     TC.attachLoadEvent( init );
     /* ]]> */
