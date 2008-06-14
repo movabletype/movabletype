@@ -301,6 +301,7 @@ EOT
     my $blog = MT->model('blog')->load($blog_id)    
       or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
     $blog->page_layout($layout);
+    $blog->touch();
     $blog->save();
 
     # rebuild only the stylesheet! forcibly. with prejudice.
