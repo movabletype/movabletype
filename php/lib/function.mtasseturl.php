@@ -8,7 +8,7 @@
 function smarty_function_mtasseturl($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
-    $blog =& $ctx->stash('blog');
+    $blog = $ct_->stash('blog');
 
     $url = $asset['asset_url'];
 
