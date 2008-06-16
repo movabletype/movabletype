@@ -1,4 +1,7 @@
 package MT::Test;
+use base qw( Exporter );
+
+our @EXPORT = qw( is_object are_objects );
 
 use strict;
 # Handle cwd = MT_DIR, MT_DIR/t
@@ -7,6 +10,7 @@ use File::Spec;
 use MT;
 
 use Test::More;
+use Test::Deep qw( eq_deeply );
 
 BEGIN {
     # if MT_HOME is not set, set it
@@ -42,12 +46,19 @@ BEGIN {
 
 sub import {
     my $pkg = shift;
+    my @to_export;
+    # TODO: only use these init_* calls as calls, not as import args, now that we have real functions to export.
     foreach my $opt (@_) {
         if ($opt =~ m{ \A : (.+) \z }xms) {
             my $command = "init_$1";
             $pkg->$command() if $pkg->can($command);
         }
+        else {
+            push @to_export, $opt;
+        }
     }
+    # Export requested or all exportable functions.
+    $pkg->export_to_level(1, @to_export || qw( :DEFAULT ));
 }
 
 sub init_cms {
@@ -923,6 +934,80 @@ It\'s a hard rain\'s a-gonna fall',
     }
 
     1;
+}
+
+sub _is_object {
+    my ($got, $expected, $name) = @_;
+
+    if (!defined $got) {
+        fail($name);
+        diag('    got undef, not an object');
+        return;
+    }
+
+    if (!$got->isa(ref $expected)) {
+        fail($name);
+        diag('    got a ', ref($got), ' but expected a ', ref $expected);
+        return;
+    }
+
+    if ($got == $expected) {
+        fail($name);
+        diag('    got the exact same instance as expected, when really expected a different but equivalent object');
+        return;
+    }
+
+    # Ignore object columns that have undefined values.
+    my (%got_values, %expected_values);
+    while (my ($field, $value) = each %{ $got->{column_values} }) {
+        $got_values{$field} = $value if defined $value;
+    }
+    while (my ($field, $value) = each %{ $expected->{column_values} }) {
+        $expected_values{$field} = $value if defined $value;
+    }
+
+    if (!eq_deeply(\%got_values, \%expected_values)) {
+        # 'Test' again so the helpful failure diagnostics are output.
+        is_deeply(\%got_values, \%expected_values, $name);
+        return;
+    }
+
+    return 1;
+}
+
+sub is_object {
+    my ($got, $expected, $name) = @_;
+    pass($name) if _is_object(@_);
+}
+
+sub are_objects {
+    my ($got, $expected, $name) = @_;
+
+    my $count = scalar @$expected;
+    if ($count != scalar @$got) {
+        fail($name);
+        diag('    got ', scalar(@$got), ' objects but expected ', $count);
+        return;
+    }
+
+    for my $i (0..$count-1) {
+        return if !_is_object($$got[$i], $$expected[$i], "$name (#$i)");
+    }
+    pass($name);
+}
+
+sub reset_table_for {
+    my $self = shift;
+    for my $class (@_) {
+        my $driver    = $class->dbi_driver;
+        my $dbh       = $driver->rw_handle;
+        my $ddl_class = $driver->dbd->ddl_class;
+
+        $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr;
+        $dbh->do($ddl_class->create_table_sql($class)) or die $dbh->errstr;
+        $dbh->do($_) or die $dbh->errstr for $ddl_class->index_table_sql($class);
+        $ddl_class->create_sequence($class);  # may do nothing        
+    }
 }
 
 1;

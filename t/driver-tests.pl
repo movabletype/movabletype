@@ -23,7 +23,6 @@ BEGIN {
 }
 
 use Test::More;
-use Test::Deep;
 use lib 't/lib';
 
 BEGIN {
@@ -197,21 +196,45 @@ sub avg_group_by : Tests(7) {
 }
 
 sub clean_db : Test(teardown) {
-    for my $class (qw( Foo Bar )) {
-        my $driver    = $class->dbi_driver;
-        my $dbh       = $driver->rw_handle;
-        my $ddl_class = $driver->dbd->ddl_class;
-        
-        $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr;
-        $dbh->do($ddl_class->create_table_sql($class)) or die $dbh->errstr;
-        $dbh->do($_) or die $dbh->errstr for $ddl_class->index_table_sql($class);
-        $ddl_class->create_sequence($class);  # may do nothing
-    }
+    MT::Test->reset_table_for(qw( Foo Bar ));
 }
 
-package main;
 
-Test::GroupBy->runtests( +152 );
+package Test::Search;
+use MT::Test;
+use base qw( Test::Class MT::Test );
+
+sub make_foos : Test(setup) {
+    MT::Test->reset_table_for('Foo');
+
+    my $foo = Foo->new;
+    $foo->set_values({
+        name => 'foo',
+        status => 2,
+        text => 'bar',
+    });
+    $foo->save or die "Could not save test Foo: ", $foo->errstr, "\n";
+}
+
+sub basic : Tests(5) {
+    my $foo = Foo->load(1);  # not a search
+    
+    is_object(scalar Foo->load({ id => 1 }), $foo, 'Foo #1 by id hash is Foo #1');
+    is_object(scalar Foo->load({ id => 1, name => 'foo' }), $foo, 'Foo #1 by id-name hash is Foo #1');
+    is_object(scalar Foo->load({ name => 'foo' }), $foo, 'Foo #1 by name hash is Foo #1');
+    is_object(scalar Foo->load({ created_on => $foo->created_on }), $foo, 'Foo #1 by created_on hash is Foo #1');
+    is_object(scalar Foo->load({ status => 2 }), $foo, 'Foo #1 by status hash is Foo #1');
+}
+
+sub unmake_foos : Test(teardown) {
+    MT::Test->reset_table_for('Foo');
+}
+
+
+package main;
+use MT::Test;
+
+Test::Class->runtests(qw( Test::GroupBy Test::Search +147 ));
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -237,72 +260,7 @@ ok($foo->save, 'A Foo could be saved');
 is($foo->id, 1, 'First Foo was given an id of 1, says accessor method');
 is($foo->column('id'), 1, 'First Foo was given an id of 1, says column()');
 
-sub _is_object {
-    my ($got, $expected, $name) = @_;
-
-    if (!defined $got) {
-        fail($name);
-        diag('    got undef, not an object');
-        return;
-    }
-
-    if (!$got->isa(ref $expected)) {
-        fail($name);
-        diag('    got a ', ref($got), ' but expected a ', ref $expected);
-        return;
-    }
-
-    if ($got == $expected) {
-        fail($name);
-        diag('    got the exact same instance as expected, when really expected a different but equivalent object');
-        return;
-    }
-
-    # Ignore object columns that have undefined values.
-    my (%got_values, %expected_values);
-    while (my ($field, $value) = each %{ $got->{column_values} }) {
-        $got_values{$field} = $value if defined $value;
-    }
-    while (my ($field, $value) = each %{ $expected->{column_values} }) {
-        $expected_values{$field} = $value if defined $value;
-    }
-
-    if (!eq_deeply(\%got_values, \%expected_values)) {
-        # 'Test' again so the helpful failure diagnostics are output.
-        is_deeply(\%got_values, \%expected_values, $name);
-        return;
-    }
-
-    return 1;
-}
-
-sub is_object {
-    my ($got, $expected, $name) = @_;
-    pass($name) if _is_object(@_);
-}
-
-sub are_objects {
-    my ($got, $expected, $name) = @_;
-
-    my $count = scalar @$expected;
-    if ($count != scalar @$got) {
-        fail($name);
-        diag('    got ', scalar(@$got), ' objects but expected ', $count);
-        return;
-    }
-
-    for my $i (0..$count-1) {
-        return if !_is_object($$got[$i], $$expected[$i], "$name (#$i)");
-    }
-    pass($name);
-}
-
 is_object(scalar Foo->load(1), $foo, 'Foo #1 by id is Foo #1');
-is_object(scalar Foo->load({ id => 1 }), $foo, 'Foo #1 by id hash is Foo #1');
-is_object(scalar Foo->load({ id => 1, name => 'foo' }), $foo, 'Foo #1 by id-name hash is Foo #1');
-is_object(scalar Foo->load({ name => 'foo' }), $foo, 'Foo #1 by name hash is Foo #1');
-is_object(scalar Foo->load({ created_on => $foo->created_on }), $foo, 'Foo #1 by created_on hash is Foo #1');
-is_object(scalar Foo->load({ status => 2 }), $foo, 'Foo #1 by status hash is Foo #1');
 
 ##     Change column value, save, try to load using old value (fail?),
 ##     then load again using new value
