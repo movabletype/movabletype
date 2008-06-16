@@ -195,6 +195,10 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Digest-MD5',
                 label => 'This module is used by the Markdown text filter.',
             },
+            'Text::Balanced' => {
+                link => 'http://search.cpan.org/dist/Text-Balanced',
+                label => 'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.',
+            },
         },
         required_packages => {
             'Image::Size' => {
