@@ -201,19 +201,30 @@ sub clean_db : Test(teardown) {
 
 
 package Test::Search;
+use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
 
 sub make_foos : Test(setup) {
     MT::Test->reset_table_for('Foo');
 
+    sleep(1);
     my $foo = Foo->new;
     $foo->set_values({
-        name => 'foo',
+        name   => 'foo',
         status => 2,
-        text => 'bar',
+        text   => 'bar',
     });
     $foo->save or die "Could not save test Foo: ", $foo->errstr, "\n";
+    
+    sleep(3);
+    $foo = Foo->new;
+    $foo->set_values({
+        name   => 'baz',
+        status => 1,
+        text   => 'quux',
+    });
+    $foo->save or die "Could not save test Foo #2: ", $foo->errstr, "\n";
 }
 
 sub basic : Tests(5) {
@@ -226,6 +237,99 @@ sub basic : Tests(5) {
     is_object(scalar Foo->load({ status => 2 }), $foo, 'Foo #1 by status hash is Foo #1');
 }
 
+sub sorting : Tests(6) {
+    my ($tmp, @tmp);
+    my @foo = map { Foo->load($_) } (1..2);
+
+    ## Load using descending sort (newest)
+    $tmp = Foo->load(undef, {
+        sort => 'created_on',
+        direction => 'descend',
+        limit => 1 });
+    is_object($tmp, $foo[1], 'Newest Foo is Foo #2');
+
+    ## Load using ascending sort (oldest)
+    $tmp = Foo->load(undef, {
+        sort => 'created_on',
+        direction => 'ascend',
+        limit => 1 });
+    is_object($tmp, $foo[0], 'Oldest Foo is Foo #1');
+
+    ## Load using descending sort with limit = 2
+    @tmp = Foo->load(undef, {
+        sort => 'created_on',
+        direction => 'descend',
+        limit => 2 });
+    are_objects(\@tmp, [ reverse @foo ], 'Two Foos newest-first load() finds Foos #2 and #1');
+
+    ## Load using descending sort by created_on, no limit
+    @tmp = Foo->load(undef, {
+        sort => 'created_on',
+        direction => 'descend' });
+    are_objects(\@tmp, [ reverse @foo ], 'All Foos newest-first load() finds Foos #2 and #1');
+
+    ## Load using ascending sort by status, no limit
+    @tmp = Foo->load(undef, { sort => 'status', });
+    are_objects(\@tmp, [ reverse @foo ], 'All Foos lowest-status-first load() finds Foos #2 and #1');
+
+    ## Load using 'last' where status == 2
+    $tmp = Foo->load({ status => 2 }, {
+        sort => 'created_on',
+        direction => 'descend',
+        limit => 1 });
+    is_object($tmp, $foo[0], 'Newest status=2 Foo is Foo #1');
+}
+
+sub ranges : Tests(9) {
+    my $tmp;
+    my @foo = map { Foo->load($_) } (1..2);
+    
+    ## Load using range search, one less than foo[1]->created_on and newer
+    $tmp = Foo->load(
+        { created_on => [ $foo[1]->column('created_on')-1 ] },
+        { range => { created_on => 1 } });
+    is_object($tmp, $foo[1], 'Foo from open-ended date range before Foo #2 is Foo #2');
+
+    ## Load using EXCLUSIVE range search, up through the momment $foo[1] created
+    $tmp = Foo->load(
+        { created_on => [ $foo[1]->column('created_on')-1, 
+                          $foo[1]->column('created_on') ] },
+        { range => { created_on => 1 } });
+    ok(!$tmp, "Exclusive date range load() ending at Foo #1's date found no Foos");
+
+    $tmp = Foo->load(
+        { created_on => [ $foo[1]->column('created_on'), 
+                          $foo[1]->column('created_on')+1 ] },
+        { range => { created_on => 1 } });
+    ok(!$tmp, "Exclusive date range load() starting at Foo #1's date found no Foos");
+
+    ## Load using INCLUSIVE range search, up through the momment $foo[1] created
+    $tmp = Foo->load(
+        { created_on => [ $foo[1]->column('created_on')-1, 
+                          $foo[1]->column('created_on') ] },
+        { range_incl => { created_on => 1 } });
+    ok($tmp, 'Loaded an object based on range_incl (ts-1 to ts)');
+    is_object($tmp, $foo[1], "Foo from inclusive date-range load() ending at Foo #1's date is Foo #2");
+
+    $tmp = Foo->load(
+        { created_on => [ $foo[1]->column('created_on'), 
+                          $foo[1]->column('created_on')+1 ] },
+        { range_incl => { created_on => 1 } });
+    ok($tmp, 'Loaded an object based on range_incl (ts to ts+1)');
+    is_object($tmp, $foo[1], "Foo from inclusive date-range load() starting at Foo #1's date is Foo #2");
+
+    ## Check that range searches return nothing when nothing is in the range.
+    $tmp = Foo->load( { created_on => [ undef, '19690101000000' ] },
+    		  { range => { created_on => 1 } });
+    ok(!$tmp, 'Prehistoric date range load() found no Foos');
+
+    ## Range search, all items with created_on less than foo[1]->created_on
+    $tmp = Foo->load(
+        { created_on => [ undef, $foo[1]->column('created_on')-1 ] },
+        { range => { created_on => 1 } });
+    is_object($tmp, $foo[0], "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1");
+}
+
 sub unmake_foos : Test(teardown) {
     MT::Test->reset_table_for('Foo');
 }
@@ -234,7 +338,7 @@ sub unmake_foos : Test(teardown) {
 package main;
 use MT::Test;
 
-Test::Class->runtests(qw( Test::GroupBy Test::Search +147 ));
+Test::Class->runtests('Test::GroupBy', 'Test::Search', +132);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -305,88 +409,6 @@ ok(!$iter->(), "Iterator for our status=1 Foos did not have a second object");
 $tmp = Foo->load(3);
 ok(!$tmp, 'There is no Foo #3');
 
-## Load using descending sort (newest)
-$tmp = Foo->load(undef, {
-    sort => 'created_on',
-    direction => 'descend',
-    limit => 1 });
-is_object($tmp, $foo[1], 'Newest Foo is Foo #2');
-
-## Load using ascending sort (oldest)
-$tmp = Foo->load(undef, {
-    sort => 'created_on',
-    direction => 'ascend',
-    limit => 1 });
-is_object($tmp, $foo[0], 'Oldest Foo is Foo #1');
-
-## Load using descending sort with limit = 2
-@tmp = Foo->load(undef, {
-    sort => 'created_on',
-    direction => 'descend',
-    limit => 2 });
-are_objects(\@tmp, [ reverse @foo ], 'Two Foos newest-first load() finds Foos #2 and #1');
-
-## Load using descending sort by created_on, no limit
-@tmp = Foo->load(undef, {
-    sort => 'created_on',
-    direction => 'descend' });
-are_objects(\@tmp, [ reverse @foo ], 'All Foos newest-first load() finds Foos #2 and #1');
-
-## Load using ascending sort by status, no limit
-@tmp = Foo->load(undef, { sort => 'status', });
-are_objects(\@tmp, \@foo, 'All Foos lowest-status-first load() finds Foos #1 and #2');
-
-## Load using 'last' where status == 0
-$tmp = Foo->load({ status => 0 }, {
-    sort => 'created_on',
-    direction => 'descend',
-    limit => 1 });
-is_object($tmp, $foo[0], 'Newest status=0 Foo is Foo #1');
-
-## Load using range search, one less than foo[1]->created_on and newer
-$tmp = Foo->load(
-    { created_on => [ $foo[1]->column('created_on')-1 ] },
-    { range => { created_on => 1 } });
-is_object($tmp, $foo[1], 'Foo from open-ended date range before Foo #2 is Foo #2');
-
-## Load using EXCLUSIVE range search, up through the momment $foo[1] created
-$tmp = Foo->load(
-    { created_on => [ $foo[1]->column('created_on')-1, 
-                      $foo[1]->column('created_on') ] },
-    { range => { created_on => 1 } });
-ok(!$tmp, "Exclusive date range load() ending at Foo #1's date found no Foos");
-
-$tmp = Foo->load(
-    { created_on => [ $foo[1]->column('created_on'), 
-                      $foo[1]->column('created_on')+1 ] },
-    { range => { created_on => 1 } });
-ok(!$tmp, "Exclusive date range load() starting at Foo #1's date found no Foos");
-
-## Load using INCLUSIVE range search, up through the momment $foo[1] created
-$tmp = Foo->load(
-    { created_on => [ $foo[1]->column('created_on')-1, 
-                      $foo[1]->column('created_on') ] },
-    { range_incl => { created_on => 1 } });
-ok($tmp, 'Loaded an object based on range_incl (ts-1 to ts)');
-is_object($tmp, $foo[1], "Foo from inclusive date-range load() ending at Foo #1's date is Foo #2");
-
-$tmp = Foo->load(
-    { created_on => [ $foo[1]->column('created_on'), 
-                      $foo[1]->column('created_on')+1 ] },
-    { range_incl => { created_on => 1 } });
-ok($tmp, 'Loaded an object based on range_incl (ts to ts+1)');
-is_object($tmp, $foo[1], "Foo from inclusive date-range load() starting at Foo #1's date is Foo #2");
-
-## Check that range searches return nothing when nothing is in the range.
-$tmp = Foo->load( { created_on => [ undef, '19690101000000' ] },
-		  { range => { created_on => 1 } });
-ok(!$tmp, 'Prehistoric date range load() found no Foos');
-
-## Range search, all items with created_on less than foo[1]->created_on
-$tmp = Foo->load(
-    { created_on => [ undef, $foo[1]->column('created_on')-1 ] },
-    { range => { created_on => 1 } });
-is_object($tmp, $foo[0], "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1");
 
 ## Get count of objects
 is(Foo->count(), 2, 'Count of all Foos finds both');
