@@ -396,11 +396,11 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>", "e" : "page;entry;entry;entry;entry;entry;entry;entry;entry;"}, #344
 { "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "page;entry;"}, #345
 { "r" : "1", "t" : "<MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>", "e" : "1961.01.31.07.45.01;1962.01.31.07.45.01;1963.01.31.07.45.01;1964.01.31.07.45.01;1965.01.31.07.45.01;1978.01.31.07.45.00;"}, #346
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' lastn=\"2\"><MTAuthorID>;</MTAuthors>", "e" : "2;3;"}, #347
-{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;"}, #348
-{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorDisplayName>;</MTAuthors>", "e" : "Chucky Dee;Dylan;"}, #349
-{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorEmail>;</MTAuthors>", "e" : "chuckd@example.com;bobd@example.com;"}, #350
-{ "r" : "1", "t" : "<MTAuthors sort_by='id'><MTAuthorURL>;</MTAuthors>", "e" : "http://chuckd.com/;;"}, #351
+{ "r" : "1", "t" : "<MTAuthors lastn=\"2\"><MTAuthorID>;</MTAuthors>", "e" : "2;3;"}, #347
+{ "r" : "1", "t" : "<MTAuthors sort_by='name'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;"}, #348
+{ "r" : "1", "t" : "<MTAuthors sort_by='nickname'><MTAuthorDisplayName>;</MTAuthors>", "e" : "Chucky Dee;Dylan;"}, #349
+{ "r" : "1", "t" : "<MTAuthors sort_by='email'><MTAuthorEmail>;</MTAuthors>", "e" : "chuckd@example.com;bobd@example.com;"}, #350
+{ "r" : "1", "t" : "<MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>", "e" : "http://chuckd.com/;;"}, #351
 { "r" : "1", "t" : "<MTAuthors display_name=\"Chucky Dee\"><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #352
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
@@ -412,11 +412,11 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
 { "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;"}, #361
 { "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;:;TypeKey:http://localhost/mt-static/images/comment/typekey_logo.png;"}, #362
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Melody;Chuck D;Bob D;"}, #363
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Melody;Chuck D;Bob D;Hiro Nakamura;"}, #365
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' role='Author'><MTAuthorName>;</MTAuthors>", "e" : "Bob D;"}, #366
-{ "r" : "1", "t" : "<MTAuthors sort_by='id' need_entry='0' role='Author or Designer'><MTAuthorName>;</MTAuthors>", "e" : "Bob D;"}, #367
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' role='Author'><MTAuthorName>;</MTAuthors>", "e" : "Bob D;"}, #366
+{ "r" : "1", "t" : "<MTAuthors need_entry='0' role='Author or Designer'><MTAuthorName>;</MTAuthors>", "e" : "Bob D;"}, #367
 { "r" : "1", "t" : "<MTSetVar name='offices' value='San Francisco' index='0'><MTSetVar name='offices' value='Tokyo' function='unshift'><MTSetVarBlock name='offices' index='2'>Paris</MTSetVarBlock>--<MTGetVar name='offices' function='count'>;<MTGetVar name='offices' index='1'>;<MTGetVar name='offices' function='shift'>;<MTGetVar name='offices' function='count'>;<MTGetVar name='offices' index='1'>", "e" : "--3;San Francisco;Tokyo;2;Paris"}, #368
 { "r" : "1", "t" : "<MTSetVar name='MTVersions' key='4.0' value='Athena'><MTSetVarBlock name='MTVersions' key='4.01'>Enterprise Solution</MTSetVarBlock><MTSetVarBlock name='MTVersions' key='4.1'>Boomer<MTSetVar name='4.2' value='Cal'></MTSetVarBlock><MTGetVar name='MTVersions' key='4.0'>;<MTGetVar name='MTVersions' key='4.01'>;<MTGetVar name='MTVersions' key='4.1'>;<MTGetVar name='MTVersions' key='4.2'>;", "e" : "Athena;Enterprise Solution;Boomer;;"}, #369
 { "r" : "1", "t" : "<MTVar name='object1' key='name' value='foo'><MTVar name='object1' key='price' value='1.00'><MTVar name='object2' key='name' value='bar'><MTVar name='object2' key='price' value='1.13'><MTSetVar name='array1' function='push' value='$object1'><MTSetVar name='array1' function='push' value='$object2'><MTLoop name='array1'><MTVar name='name'>(<MTVar name='price'>)<br /></MTLoop>", "e" : "foo(1.00)<br />bar(1.13)<br />"}, #370

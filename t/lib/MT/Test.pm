@@ -212,6 +212,7 @@ sub init_data {
         url => 'http://chuckd.com/',
         api_password => 'seecret',
         auth_type => 'MT',
+        created_on => '19780131074500',
     });
     $chuckd->set_password("bass");
     $chuckd->type(MT::Author::AUTHOR());
@@ -227,6 +228,7 @@ sub init_data {
         nickname => 'Dylan', 
         email => 'bobd@example.com',
         auth_type => 'MT',
+        created_on => '19780131075000',
     });
     $bobd->set_password("flute");
     $bobd->type(MT::Author::AUTHOR());
@@ -240,6 +242,7 @@ sub init_data {
         nickname => 'John Doe',
         email => 'jdoe@doe.com',
         auth_type => 'TypeKey',
+        created_on => '19780131080000',
     });
     $johnd->type(MT::Author::COMMENTER());
     $johnd->password('(none)');
@@ -253,6 +256,7 @@ sub init_data {
         nickname => 'Hiro',
         email => 'hiro@heroes.com',
         auth_type => 'MT',
+        created_on => '19780131081000',
     });
     $hiro->type(MT::Author::AUTHOR());
     $hiro->password('time');
