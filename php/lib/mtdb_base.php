@@ -492,17 +492,25 @@ class MTDatabaseBase extends ezsql {
         if ($args['limit'] > 0) {
             $args['lastn'] = $args['limit'];
         } elseif (!isset($args['days']) && !isset($args['lastn'])) {
-            if ($days = $blog['blog_days_on_index']) {
-                if (!isset($args['recently_commented_on'])) {
-                    $args['days'] = $days;
-                }
-            } elseif ($posts = $blog['blog_entries_on_index']) {
-                $args['lastn'] = $posts;
-            }
+#            if ($days = $blog['blog_days_on_index']) {
+#                if (!isset($args['recently_commented_on'])) {
+#                    $args['days'] = $days;
+#                }
+#            } elseif ($posts = $blog['blog_entries_on_index']) {
+#                $args['lastn'] = $posts;
+#            }
         }
         if ($args['limit'] == 'auto') {
             if (($_REQUEST['limit'] > 0) && ($_REQUEST['limit'] < $args['lastn'])) {
                 $args['lastn'] = intval($_REQUEST['limit']);
+            } elseif (!isset($args['days']) && !isset($args['lastn'])) {
+               if ($days = $blog['blog_days_on_index']) {
+                    if (!isset($args['recently_commented_on'])) {
+                        $args['days'] = $days;
+                    }
+                } elseif ($posts = $blog['blog_entries_on_index']) {
+                    $args['lastn'] = $posts;
+                }            
             }
         }
 
