@@ -492,13 +492,13 @@ class MTDatabaseBase extends ezsql {
         if ($args['limit'] > 0) {
             $args['lastn'] = $args['limit'];
         } elseif (!isset($args['days']) && !isset($args['lastn'])) {
-        #    if ($days = $blog['blog_days_on_index']) {
-        #        if (!isset($args['recently_commented_on'])) {
-        #            $args['days'] = $days;
-        #        }
-        #    } elseif ($posts = $blog['blog_entries_on_index']) {
-        #        $args['lastn'] = $posts;
-        #    }
+            if ($days = $blog['blog_days_on_index']) {
+                if (!isset($args['recently_commented_on'])) {
+                    $args['days'] = $days;
+                }
+            } elseif ($posts = $blog['blog_entries_on_index']) {
+                $args['lastn'] = $posts;
+            }
         }
         if ($args['limit'] == 'auto') {
             if (($_REQUEST['limit'] > 0) && ($_REQUEST['limit'] < $args['lastn'])) {
@@ -897,8 +897,8 @@ class MTDatabaseBase extends ezsql {
             $post_select_limit = $rco;
             $no_resort = 1;
         } elseif ( !is_null($total_count) ) {
-            $orig_limit = $limit;
-            $orig_offset = $offset;
+            $orig_offset = $post_select_offset ? $post_select_offset : $orig_offset;
+            $orig_limit = $post_select_limit ? $post_select_limit : $limit;
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
         }
