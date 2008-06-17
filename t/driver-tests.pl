@@ -205,31 +205,71 @@ use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
 
-sub make_foos : Test(setup) {
-    MT::Test->reset_table_for('Foo');
+sub reset_db : Test(setup) {
+    MT::Test->reset_table_for(qw( Foo Bar ));
+}
 
-    sleep(1);
-    my $foo = Foo->new;
-    $foo->set_values({
-        name   => 'foo',
-        status => 2,
-        text   => 'bar',
-    });
-    $foo->save or die "Could not save test Foo: ", $foo->errstr, "\n";
-    
-    sleep(3);
-    $foo = Foo->new;
-    $foo->set_values({
-        name   => 'baz',
-        status => 1,
-        text   => 'quux',
-    });
-    $foo->save or die "Could not save test Foo #2: ", $foo->errstr, "\n";
+sub make_basic_data {
+    my $self = shift;
+    $self->make_objects(
+        { __class  => 'Foo',
+          __wait   => 1,
+          name     => 'foo',
+          text     => 'bar',
+          status   => 2,     },
+        { __class  => 'Foo',
+          __wait   => 3,
+          name     => 'baz',
+          text     => 'quux',
+          status   => 1,      },
+    );
+}
+
+sub make_pc_data {
+    my $self = shift;
+    $self->make_objects(
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'MacBook',
+          status  => 11,        },
+        { __class => 'Foo',
+          name    => 'Linux',
+          text    => 'Ubuntu',
+          status  => 12,       },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'Vista',
+          status  => 13,          },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'XP',
+          status  => 10,          },
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'iBook',
+          status  => 10,      },
+
+        { __class => 'Bar',
+          name    => 'Silverlight',
+          status  => 2,
+          foo_id  => 3,             },
+        { __class => 'Bar',
+          name    => 'IronPython',
+          status  => 3,
+          foo_id  => 3,            },
+        { __class => 'Bar',
+          name    => 'IronRuby',
+          status  => 0,
+          foo_id  => 1,          },
+    );
 }
 
 sub basic : Tests(5) {
+    my $self = shift;
+    $self->make_basic_data();
+
     my $foo = Foo->load(1);  # not a search
-    
+
     is_object(scalar Foo->load({ id => 1 }), $foo, 'Foo #1 by id hash is Foo #1');
     is_object(scalar Foo->load({ id => 1, name => 'foo' }), $foo, 'Foo #1 by id-name hash is Foo #1');
     is_object(scalar Foo->load({ name => 'foo' }), $foo, 'Foo #1 by name hash is Foo #1');
@@ -238,6 +278,9 @@ sub basic : Tests(5) {
 }
 
 sub sorting : Tests(6) {
+    my $self = shift;
+    $self->make_basic_data();
+    
     my ($tmp, @tmp);
     my @foo = map { Foo->load($_) } (1..2);
 
@@ -281,6 +324,9 @@ sub sorting : Tests(6) {
 }
 
 sub ranges : Tests(9) {
+    my $self = shift;
+    $self->make_basic_data();
+
     my $tmp;
     my @foo = map { Foo->load($_) } (1..2);
     
@@ -330,15 +376,75 @@ sub ranges : Tests(9) {
     is_object($tmp, $foo[0], "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1");
 }
 
-sub unmake_foos : Test(teardown) {
-    MT::Test->reset_table_for('Foo');
+sub alias : Tests(2) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $vista = Foo->load(3);  # not a search
+
+    # select * from foo, bar bar1, bar bar2
+    # where bar1.bar_foo_id = foo_id
+    # and bar2.bar_foo_id = bar1.bar_foo_id
+    # and bar1.status = 2
+    # and bar2.status = 3
+    my @a_foos = Foo->load(
+        undef,
+        { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
+            { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 3 },
+                { alias => 'bar2' } ],
+              alias => 'bar1'
+            }
+          ],
+          sort => 'created_on', direction => 'descend',
+        }
+    );
+    are_objects(\@a_foos, [ $vista ], 'Has Bars with status=2 and status=3 (alias)');
+
+    @a_foos = Foo->load(
+        undef,
+        { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
+            { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 0 },
+                { alias => 'bar2' } ],
+              alias => 'bar1'
+            }
+          ],
+          sort => 'created_on', direction => 'descend',
+        }
+    );
+    is_deeply(\@a_foos, [], 'No Foo has Bars with status=2 and status=0 (alias)');
+} 
+
+sub conjunctions : Tests(3) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
+    # ==> select count(*) from mt_foo where foo_status = 10 or foo_name = 'Apple'
+    is($count, 3, '-or count');
+
+    $count = Foo->count( [ { status => { '<=' => 20 }, name => 'Apple' }, -and_not => { status => 11 } ] );
+    # ==> select count(*) from mt_foo where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
+    is($count, 1, '-and_not count');
+
+    $count = Foo->count( [
+        { status => 10 },
+        -or => { name => 'Apple' },
+        -or => { name => { like => '%nux' } },
+    ] );
+    # ==> select count(*) from mt_foo where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
+    # (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
+    is($count, 4, '-or count, 3 clauses');
+}
+
+sub clean_db : Test(teardown) {
+    MT::Test->reset_table_for(qw( Foo Bar ));
 }
 
 
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', +132);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', +126);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -802,103 +908,5 @@ SKIP: {
     skip(1, '$tmp[1] undefined') unless $tmp[1];
     ok($tmp[1] && ($tmp[1]->name eq 'this'), 'name');
 }
-
-# -or
-my $newdata = Foo->new;
-$newdata->status(11);
-$newdata->name('Apple');
-$newdata->text('MacBook');
-$newdata->save;
-$newdata = Foo->new;
-$newdata->status(12);
-$newdata->name('Linux');
-$newdata->text('Ubuntu');
-$newdata->save;
-$newdata = Foo->new;
-$newdata->status(13);
-$newdata->name('Microsoft');
-$newdata->text('Vista');
-$newdata->save;
-$newdata = Foo->new;
-$newdata->status(10);
-$newdata->name('Microsoft');
-$newdata->text('XP');
-$newdata->save;
-$newdata = Foo->new;
-$newdata->status(10);
-$newdata->name('Apple');
-$newdata->text('iBook');
-$newdata->save;
-
-my $count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
-# ==> select count(*) from mt_foo where foo_status = 10 or foo_name = 'Apple'
-is($count, 3, '-or count');
-
-$count = Foo->count( [ { status => { '<=' => 20 }, name => 'Apple' }, -and_not => { status => 11 } ] );
-# ==> select count(*) from mt_foo where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
-is($count, 1, '-and_not count');
-
-$count = Foo->count( [
-    { status => 10 },
-    -or => { name => 'Apple' },
-    -or => { name => { like => '%nux' } },
-] );
-# ==> select count(*) from mt_foo where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
-# (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
-is($count, 4, '-or count, 3 clauses');
-
-# alias support
-my $vista = Foo->load({name=>'Microsoft', status=>13});
-my $newbar = Bar->new;
-$newbar->foo_id($vista->id);
-$newbar->name('Silverlight');
-$newbar->status(2);
-$newbar->save;
-sleep(3);
-$newbar = Bar->new;
-$newbar->foo_id($vista->id);
-$newbar->name('IronPython');
-$newbar->status(3);
-$newbar->save;
-sleep(3);
-my $mb = Foo->load({name=>'Apple', status=>11});
-$newbar = Bar->new;
-$newbar->foo_id($mb->id);
-$newbar->name('IronRuby');
-$newbar->status(0);
-$newbar->save;
-
-# select * from foo, bar bar1, bar bar2
-# where bar1.bar_foo_id = foo_id
-# and bar2.bar_foo_id = bar1.bar_foo_id
-# and bar1.status = 2
-# and bar2.status = 3
-my @a_foos = Foo->load(
-    undef,
-    { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
-        { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 3 },
-            { alias => 'bar2' } ],
-          alias => 'bar1'
-        }
-      ],
-      sort => 'created_on', direction => 'descend',
-    }
-);
-is(scalar(@a_foos), 1, 'join the same table using alias 1');
-is($a_foos[0]->id, $vista->id, 'join the same table using alias 2');
-
-@a_foos = Foo->load(
-    undef,
-    { join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 },
-        { join => [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 0 },
-            { alias => 'bar2' } ],
-          alias => 'bar1'
-        }
-      ],
-      sort => 'created_on', direction => 'descend',
-    }
-);
-is(scalar(@a_foos), 0, 'join the same table using alias 3');
- 
 
 1;

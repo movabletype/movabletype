@@ -1010,4 +1010,19 @@ sub reset_table_for {
     }
 }
 
+sub make_objects {
+    my $self = shift;
+    my @obj_data = @_;
+
+    for my $data (@obj_data) {
+        if (my $wait = delete $data->{__wait}) {
+            sleep($wait);
+        }
+        my $class = delete $data->{__class};
+        my $obj = $class->new;
+        $obj->set_values($data);
+        $obj->save() or die "Could not save test Foo: ", $obj->errstr, "\n";
+    }
+}
+
 1;
