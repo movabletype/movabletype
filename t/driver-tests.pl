@@ -417,23 +417,34 @@ sub alias : Tests(2) {
 sub conjunctions : Tests(3) {
     my $self = shift;
     $self->make_pc_data();
+    my @foos = map { Foo->load($_) } (1..5);  # not a search
 
-    my $count = Foo->count( [{status => 10}, -or => {name => 'Apple'}] );
-    # ==> select count(*) from mt_foo where foo_status = 10 or foo_name = 'Apple'
-    is($count, 3, '-or count');
+    my @res = Foo->load([
+        {status => 10},
+        -or => {name => 'Apple'},
+    ]);
+    @res = sort { $a->id <=> $b->id } @res;
+    # where foo_status = 10 or foo_name = 'Apple'
+    are_objects(\@res, [ @foos[0,3,4] ], '-or results');
 
-    $count = Foo->count( [ { status => { '<=' => 20 }, name => 'Apple' }, -and_not => { status => 11 } ] );
-    # ==> select count(*) from mt_foo where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
-    is($count, 1, '-and_not count');
+    @res = Foo->load([
+        { status => { '<=' => 20 },
+          name => 'Apple' },
+        -and_not => { status => 11 },
+    ]);
+    @res = sort { $a->id <=> $b->id } @res;
+    # where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
+    are_objects(\@res, [ $foos[4] ], '-and_not results');
 
-    $count = Foo->count( [
+    @res = Foo->load([
         { status => 10 },
         -or => { name => 'Apple' },
         -or => { name => { like => '%nux' } },
-    ] );
-    # ==> select count(*) from mt_foo where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
+    ]);
+    @res = sort { $a->id <=> $b->id } @res;
+    # where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
     # (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
-    is($count, 4, '-or count, 3 clauses');
+    are_objects(\@res, [ @foos[0,1,3,4] ], 'big -or results');
 }
 
 sub clean_db : Test(teardown) {
