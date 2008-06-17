@@ -414,25 +414,29 @@ sub alias : Tests(2) {
     is_deeply(\@a_foos, [], 'No Foo has Bars with status=2 and status=0 (alias)');
 } 
 
-sub conjunctions : Tests(3) {
+sub conjunctions : Tests(4) {
     my $self = shift;
     $self->make_pc_data();
     my @foos = map { Foo->load($_) } (1..5);  # not a search
 
     my @res = Foo->load([
-        {status => 10},
-        -or => {name => 'Apple'},
+        { status => 10 },
+        -or => { name => 'Apple' },
     ]);
     @res = sort { $a->id <=> $b->id } @res;
-    # where foo_status = 10 or foo_name = 'Apple'
     are_objects(\@res, [ @foos[0,3,4] ], '-or results');
+
+    @res = Foo->load([
+        { name => 'Microsoft' },
+        -and => { status => 10 },
+    ]);
+    are_objects(\@res, [ $foos[3] ], '-and results');
 
     @res = Foo->load([
         { status => { '<=' => 20 },
           name => 'Apple' },
         -and_not => { status => 11 },
     ]);
-    @res = sort { $a->id <=> $b->id } @res;
     # where (foo_status <= 20 and foo_name = 'Apple') and not (foo_status = 11)
     are_objects(\@res, [ $foos[4] ], '-and_not results');
 
