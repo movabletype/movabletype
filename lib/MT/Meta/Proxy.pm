@@ -264,11 +264,24 @@ sub load_objects {
         my $type  = $field->{type};
 
         my $meta_col_def = $meta_obj->column_def($type);
-        my $meta_is_blob = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
-
-        unserialize_blob($meta_obj) if $meta_is_blob;
+        if ( $meta_col_def ) {
+            if ( $meta_col_def->{type} eq 'blob' ) {
+                unserialize_blob($meta_obj);
+            }
+            elsif ( $meta_col_def->{type} eq 'datetime' ) {
+                $meta_obj->$type( _db2ts( $meta_obj->$type ) );
+            }
+        }
         $proxy->{__objects}->{$name} = $meta_obj;
     }
+}
+
+# FIXME: copied from MT::Object
+sub _db2ts {  
+    my $ts = $_[0];
+    $ts =~ s/(?:\+|-)\d{2}$//;
+    $ts =~ tr/\- ://d;
+    return $ts;
 }
 
 # This expose our unserialization just in case someone needs it
