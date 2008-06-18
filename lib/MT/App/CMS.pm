@@ -1059,8 +1059,7 @@ sub core_list_filters {
                     $to = undef unless $to =~ m/^\d{8}$/;
                     $to .= '235959';
                     $terms->{junk_status} = MT::Comment::NOT_JUNK();
-                    $terms->{created_on} =
-                      [ MT::Object::ts2db($from), MT::Object::ts2db($to) ];
+                    $terms->{created_on} = [ $from, $to ];
                     $args->{range_incl}{created_on} = 1;
                 },
             },
