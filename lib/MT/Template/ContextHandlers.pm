@@ -9854,8 +9854,6 @@ B<Attributes:>
 Display the last N comments in context where N is a positive integer.
 B<NOTE: lastn required in a blog context.>
 
-=item limit
-
 =item offset
 
 =item sort_by
