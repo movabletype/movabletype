@@ -1348,7 +1348,11 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
 
     # make url
     $basename = basename($dest);
-    $thumb_url = $blog['blog_site_url'] . $cache_path . '/' . $date_stamp . '/' . $basename;
+    $site_url = $blog['blog_site_url'];
+    if (!preg_match('!/$!', $site_url))
+        $site_url .= '/';
+
+    $thumb_url = $site_url . $cache_path . '/' . $date_stamp . '/' . $basename;
 
     return array($thumb_url, $thumb_w, $thumb_h, $thumb_name);
 }
