@@ -816,7 +816,6 @@ sub restore {
         else {
             require MT::Util::Archive;
             my $arc;
-            my $error;
             if ( $uploaded_filename =~ /^.+\.tar(\.gz)?$/i ) {
                 $arc = MT::Util::Archive->new('tgz', $fh);
             }
