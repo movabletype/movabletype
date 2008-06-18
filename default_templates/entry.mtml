@@ -56,14 +56,16 @@
 </MTIfNonEmpty>
                                 </div>
                                 <div class="asset-footer">
-<MTIfNonEmpty tag="EntryCategory">
+<mt:IfArchiveTypeEnabled archive_type="Category">
+    <mt:If tag="MTEntryCategories">
                                     <div class="entry-categories">
                                         <h4 class="entry-categories-header"><__trans phrase="Categories"><span class="delimiter">:</span></h4>
                                         <ul class="entry-categories-list">
                                             <li class="entry-category"><MTEntryCategories glue='<span class="delimiter">,</span></li> <li class="entry-category">'><a href="<$MTCategoryArchiveLink$>" rel="tag"><$MTCategoryLabel$></a></MTEntryCategories></li>
                                         </ul>
                                     </div>
-</MTIfNonEmpty>
+    </mt:If>
+</mt:IfArchiveTypeEnabled>
 <MTEntryIfTagged>
                                     <div class="entry-tags">
                                         <h4 class="entry-tags-header"><__trans phrase="Tags"><span class="delimiter">:</span></h4>
