@@ -1,5 +1,5 @@
 
-# Time-stamp: "2002-02-02 20:43:03 MST"
+# Time-stamp: "2004-10-06 23:26:33 ADT"
 # Sean M. Burke <sburke@cpan.org>
 
 require 5.000;
@@ -14,10 +14,15 @@ require Exporter;
                 similarity_language_tag is_dialect_of
                 locale2language_tag alternate_language_tags
                 encode_language_tag panic_languages
+                implicate_supers
+                implicate_supers_strictly
                );
 %EXPORT_TAGS = ('ALL' => \@EXPORT_OK);
 
-$VERSION = "0.27";
+$VERSION = "0.35";
+
+sub uniq { my %seen; return grep(!($seen{$_}++), @_); } # a util function
+
 
 =head1 NAME
 
@@ -25,16 +30,15 @@ I18N::LangTags - functions for dealing with RFC3066-style language tags
 
 =head1 SYNOPSIS
 
-    use I18N::LangTags qw(is_language_tag same_language_tag
-                          extract_language_tags super_languages
-                          similarity_language_tag is_dialect_of
-                          locale2language_tag alternate_language_tags
-                          encode_language_tag panic_languages
-                         );
+  use I18N::LangTags();
 
-...or whatever of those functions you want to import.  Those are
-all the exportable functions -- you're free to import only some,
-or none at all.  By default, none are imported.  If you say:
+...or specify whichever of those functions you want to import, like so:
+
+  use I18N::LangTags qw(implicate_supers similarity_language_tag);
+
+All the exportable functions are listed below -- you're free to import
+only some, or none at all.  By default, none are imported.  If you
+say:
 
     use I18N::LangTags qw(:ALL)
 
@@ -399,7 +403,8 @@ sub locale2language_tag {
   return $lang if &is_language_tag($lang); # like "en"
 
   $lang =~ tr<_><->;  # "en_US" -> en-US
-  $lang =~ s<\.[-_a-zA-Z0-9\.]*><>s;  # "en_US.ISO8859-1" -> en-US
+  $lang =~ s<(?:[\.\@][-_a-zA-Z0-9]+)+$><>s;  # "en_US.ISO8859-1" -> en-US
+   # it_IT.utf8@euro => it-IT
 
   return $lang if &is_language_tag($lang);
 
@@ -529,9 +534,16 @@ sub encode_language_tag {
   #  we can just handle them here with regexps.
   $tag =~ s/^iw\b/he/i; # Hebrew
   $tag =~ s/^in\b/id/i; # Indonesian
+  $tag =~ s/^cre\b/cr/i; # Cree
+  $tag =~ s/^jw\b/jv/i; # Javanese
   $tag =~ s/^[ix]-lux\b/lb/i;  # Luxemburger
   $tag =~ s/^[ix]-navajo\b/nv/i;  # Navajo
   $tag =~ s/^ji\b/yi/i;  # Yiddish
+  # SMB 2003 -- Hm.  There's a bunch of new XXX->YY variances now,
+  #  but maybe they're all so obscure I can ignore them.   "Obscure"
+  #  meaning either that the language is obscure, and/or that the
+  #  XXX form was extant so briefly that it's unlikely it was ever
+  #  used.  I hope.
   #
   # These go FROM the simplex to complex form, to get
   #  similarity-comparison right.  And that's okay, since
@@ -730,6 +742,84 @@ sub panic_languages {
   return grep !$seen{$_}++,  @out, 'en';
 }
 
+#---------------------------------------------------------------------------
+#---------------------------------------------------------------------------
+
+=item * the function implicate_supers( ...languages... )
+
+This takes a list of strings (which are presumed to be language-tags;
+strings that aren't, are ignored); and after each one, this function
+inserts super-ordinate forms that don't already appear in the list.
+The original list, plus these insertions, is returned.
+
+In other words, it takes this:
+
+  pt-br de-DE en-US fr pt-br-janeiro
+
+and returns this:
+
+  pt-br pt de-DE de en-US en fr pt-br-janeiro
+
+This function is most useful in the idiom
+
+  implicate_supers( I18N::LangTags::Detect::detect() );
+
+(See L<I18N::LangTags::Detect>.)
+
+
+=item * the function implicate_supers_strictly( ...languages... )
+
+This works like C<implicate_supers> except that the implicated
+forms are added to the end of the return list.
+
+In other words, implicate_supers_strictly takes a list of strings
+(which are presumed to be language-tags; strings that aren't, are
+ignored) and after the whole given list, it inserts the super-ordinate forms 
+of all given tags, minus any tags that already appear in the input list.
+
+In other words, it takes this:
+
+  pt-br de-DE en-US fr pt-br-janeiro
+
+and returns this:
+
+  pt-br de-DE en-US fr pt-br-janeiro pt de en
+
+The reason this function has "_strictly" in its name is that when
+you're processing an Accept-Language list according to the RFCs, if
+you interpret the RFCs quite strictly, then you would use
+implicate_supers_strictly, but for normal use (i.e., common-sense use,
+as far as I'm concerned) you'd use implicate_supers.
+
+=cut
+
+sub implicate_supers {
+  my @languages = grep is_language_tag($_), @_;
+  my %seen_encoded;
+  foreach my $lang (@languages) {
+    $seen_encoded{ I18N::LangTags::encode_language_tag($lang) } = 1
+  }
+
+  my(@output_languages);
+  foreach my $lang (@languages) {
+    push @output_languages, $lang;
+    foreach my $s ( I18N::LangTags::super_languages($lang) ) {
+      # Note that super_languages returns the longest first.
+      last if $seen_encoded{ I18N::LangTags::encode_language_tag($s) };
+      push @output_languages, $s;
+    }
+  }
+  return uniq( @output_languages );
+
+}
+
+sub implicate_supers_strictly {
+  my @tags = grep is_language_tag($_), @_;
+  return uniq( @_,   map super_languages($_), @_ );
+}
+
+
+
 ###########################################################################
 1;
 __END__
@@ -770,19 +860,16 @@ Continuations".
 * Locale::Codes, in
 C<http://www.perl.com/CPAN/modules/by-module/Locale/>
 
-* ISO 639, "Code for the representation of names of languages",
-C<http://www.indigo.ie/egt/standards/iso639/iso639-1-en.html>
-
 * ISO 639-2, "Codes for the representation of names of languages",
-including three-letter codes,
-C<http://lcweb.loc.gov/standards/iso639-2/bibcodes.html>
+including two-letter and three-letter codes,
+C<http://www.loc.gov/standards/iso639-2/langcodes.html>
 
 * The IANA list of registered languages (hopefully up-to-date),
-C<ftp://ftp.isi.edu/in-notes/iana/assignments/languages/>
+C<http://www.iana.org/assignments/language-tags>
 
 =head1 COPYRIGHT
 
-Copyright (c) 1998-2001 Sean M. Burke. All rights reserved.
+Copyright (c) 1998+ Sean M. Burke. All rights reserved.
 
 This library is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself.
