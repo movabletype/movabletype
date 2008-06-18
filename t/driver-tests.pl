@@ -216,11 +216,13 @@ sub make_basic_data {
           __wait   => 1,
           name     => 'foo',
           text     => 'bar',
+          id => 1,
           status   => 2,     },
         { __class  => 'Foo',
           __wait   => 3,
           name     => 'baz',
           text     => 'quux',
+          id => 2,
           status   => 1,      },
     );
 }

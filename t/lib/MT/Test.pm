@@ -1006,6 +1006,7 @@ sub reset_table_for {
         $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr;
         $dbh->do($ddl_class->create_table_sql($class)) or die $dbh->errstr;
         $dbh->do($_) or die $dbh->errstr for $ddl_class->index_table_sql($class);
+        $ddl_class->drop_sequence($class),
         $ddl_class->create_sequence($class);  # may do nothing        
     }
 }
