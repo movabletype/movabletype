@@ -143,6 +143,10 @@ sub init_core_registry {
                 link => 'http://www.imagemagick.org/script/perl-magick.php',
                 label => 'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
+            'GD' => {
+                link => 'http://search.cpan.org/dist/GD',
+                label => 'This module is needed if you would like to be able to create thumbnails of uploaded images.',
+            },
             'Storable' => {
                 link => 'http://search.cpan.org/dist/Storable',
                 label => 'This module is required by certain MT plugins available from third parties.',

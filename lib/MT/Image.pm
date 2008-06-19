@@ -365,6 +365,75 @@ sub _find_pbm {
     $image->{__pbm_path} = $pbm;
 }
 
+package MT::Image::GD;
+@MT::Image::GD::ISA = qw( MT::Image );
+
+sub load_driver {
+    my $image = shift;
+    eval { require GD };
+    if (my $err = $@) {
+        return $image->error(MT->translate("Can't load GD: [_1]", $err));
+    }
+    1;
+}
+
+sub init {
+    my $image = shift;
+    my %param = @_;
+
+    if ((!defined $param{Type}) && (my $file = $param{Filename})) {
+    (my $ext = $file) =~ s/.*\.//;
+    $param{Type} = lc $ext;
+    }
+    my %Types = (jpg => 'jpeg', jpeg => 'jpeg', gif => 'gif', 'png' => 'png');
+    $image->{type} = $Types{ lc $param{Type} }
+        or return $image->error(MT->translate("Unsupported image file type: [_1]", $param{Type}));
+
+    if (my $file = $param{Filename}) {
+    $image->{gd} = GD::Image->new($file)
+        or return $image->error(MT->translate("Reading file '[_1]' failed: [_2]", $file, $@));
+    } elsif (my $blob = $param{Data}) {
+    $image->{gd} = GD::Image->new($blob)
+        or return $image->error(MT->translate("Reading image failed: [_2]", $@));
+    }
+    ($image->{width}, $image->{height}) = $image->{gd}->getBounds();
+    $image;
+}
+
+sub blob {
+    my $image = shift;
+    my $type = $image->{type};
+    $image->{gd}->$type;
+}
+
+sub scale {
+    my $image = shift;
+    my($w, $h) = $image->get_dimensions(@_);
+    my $src = $image->{gd};
+    my $gd = GD::Image->new($w, $h);
+    $gd->copyResampled($src, 0, 0, 0, 0, $w, $h, $image->{width}, $image->{height});
+    ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $w, $h);
+    wantarray ? ($image->blob, $w, $h) : $image->blob;
+}
+
+sub crop {
+    my $image = shift;
+    my %param = @_;
+    my ($size, $x, $y) = @param{qw( Size X Y )};
+    my $src = $image->{gd};
+    my $gd = GD::Image->new($size, $size);
+    $gd->copy($src, 0, 0, $x, $y, $size, $size);
+    ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $size, $size);
+    wantarray ? ($image->blob, $size, $size) : $image->blob;
+}
+
+sub convert {
+    my $image = shift;
+    my %param = @_;
+    $image->{type} = lc $param{Type};
+    $image->blob;
+}
+
 1;
 __END__
 
@@ -386,8 +455,9 @@ MT::Image - Movable Type image manipulation routines
 =head1 DESCRIPTION
 
 I<MT::Image> contains image manipulation routines using either the
-I<NetPBM> tools or the I<ImageMagick> and I<Image::Magick> Perl module.
-The backend framework used (NetPBM or ImageMagick) depends on the value of
+I<NetPBM> tools, the I<ImageMagick> and I<Image::Magick> Perl module,
+or the I<GD> and I<GD> Perl module.
+The backend framework used (NetPBM, ImageMagick, GD) depends on the value of
 the I<ImageDriver> setting in the F<mt.cfg> file (or, correspondingly, set
 on an instance of the I<MT::ConfigMgr> class).
 
