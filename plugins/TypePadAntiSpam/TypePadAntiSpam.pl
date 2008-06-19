@@ -70,6 +70,8 @@ MT->add_plugin($plugin);
 if (MT->version_number < 4) {
     MT->add_callback('HandleJunk',    5, $plugin, \&handle_junk);
     MT->add_callback('HandleNotJunk', 5, $plugin, \&handle_not_junk);
+    MT->add_callback('MT::Comment::pre_save', 5, $plugin, \&pre_save_obj);
+    MT->add_callback('MT::TBPing::pre_save', 5, $plugin, \&pre_save_obj);
     MT->register_junk_filter({
         name => 'TypePadAntiSpam',
         code => \&typepadantispam_score
@@ -106,7 +108,11 @@ sub description {
 sub _hdlr_tpas_counter {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
-    return $ctx->count_format($plugin->blocked($blog), $args);
+    if ($ctx->can('count_format')) {
+        return $ctx->count_format($plugin->blocked($blog), $args);
+    } else {
+        return $plugin->blocked($blog) || 0;
+    }
 }
 
 sub save_config {
