@@ -6,11 +6,11 @@
         <mt:SubCatIsFirst>
         <ul class="widget-list">
         </mt:SubCatIsFirst>
-        <mt:IfNonZero tag="mt:CategoryCount">
-            <li class="widget-list-item"><a href="<$mt:CategoryArchiveLink$>"<mt:IfNonEmpty tag="mt:CategoryDescription"> title="<$mt:CategoryDescription$>"</mt:IfNonEmpty>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
+        <mt:If tag="CategoryCount">
+            <li class="widget-list-item"><a href="<$mt:CategoryArchiveLink$>"<mt:If tag="CategoryDescription"> title="<$mt:CategoryDescription$>"</mt:If>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
         <mt:Else>
             <li class="widget-list-item"><$mt:CategoryLabel$>
-        </mt:IfNonZero>
+        </mt:If>
         <$mt:SubCatsRecurse$>
             </li>
         <mt:SubCatIsLast>

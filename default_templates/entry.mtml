@@ -29,11 +29,11 @@
                                     <h1 id="page-title" class="asset-name entry-title"><$mt:EntryTitle$></h1>
                                     <div class="asset-meta">
                                         <span class="byline">
-<mt:IfNonEmpty tag="EntryAuthorDisplayName">
+<mt:If tag="EntryAuthorDisplayName">
                                             <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$mt:EntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%x %X"$></abbr>">
 <mt:Else>
                                             <abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%x %X"$></abbr>
-</mt:IfNonEmpty>
+</mt:If>
                                         </span>
 <mt:IfCommentsActive>
                                         <span class="separator">|</span> <a href="<$mt:EntryPermalink$>#comments"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></a>
@@ -44,20 +44,20 @@
                                     </div>
                                 </div>
                                 <div class="asset-content entry-content">
-<mt:IfNonEmpty tag="EntryBody">
+<mt:If tag="EntryBody">
                                     <div class="asset-body">
                                         <$mt:EntryBody$>
                                     </div>
-</mt:IfNonEmpty>
-<mt:IfNonEmpty tag="EntryMore" convert_breaks="0">
+</mt:If>
+<mt:If tag="EntryMore" convert_breaks="0">
                                     <div id="more" class="asset-more">
                                         <$mt:EntryMore$>
                                     </div>
-</mt:IfNonEmpty>
+</mt:If>
                                 </div>
                                 <div class="asset-footer">
 <mt:IfArchiveTypeEnabled archive_type="Category">
-    <mt:If tag="MTEntryCategories">
+    <mt:If tag="EntryCategories">
                                     <div class="entry-categories">
                                         <h4 class="entry-categories-header"><__trans phrase="Categories"><span class="delimiter">:</span></h4>
                                         <ul class="entry-categories-list">

@@ -11,9 +11,9 @@
 <mt:If name="state_editable"><mt:If name="unapproved"><__trans phrase="Approve TrackBack">: 
   <<$mt:Var name="approve_url"$>>
 </mt:If></mt:If>
-<mt:If name="entry"><mt:IfNonEmpty tag="EntryPermalink"><__trans phrase="View TrackBack">: 
+<mt:If name="entry"><mt:If tag="EntryPermalink"><__trans phrase="View TrackBack">: 
   <<$mt:EntryPermalink$>>
-</mt:IfNonEmpty></mt:If>
+</mt:If></mt:If>
 <mt:If name="state_editable"><__trans phrase="Report TrackBack as spam">: 
   <<$mt:Var name="spam_url"$>>
 </mt:If>

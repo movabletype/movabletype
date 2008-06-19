@@ -11,6 +11,6 @@
 <__trans phrase="Thank you very much for your understanding.">
 
 <__trans phrase="Sincerely,">
-<mt:IfNonEmpty tag="AuthorDisplayName"><$mt:AuthorDisplayName$><mt:Else>Movable Type</mt:IfNonEmpty>
+<mt:If tag="AuthorDisplayName"><$mt:AuthorDisplayName$><mt:Else>Movable Type</mt:If>
 
 <$mt:Include module="<__trans phrase="Mail Footer">"$>

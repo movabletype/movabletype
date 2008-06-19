@@ -54,11 +54,11 @@
         <mt:SubCatIsFirst>
                                     <ul class="archive-list">
         </mt:SubCatIsFirst>
-        <mt:IfNonZero tag="MTCategoryCount">
+        <mt:If tag="CategoryCount">
                                         <li class="archive-list-item"><a href="<$mt:CategoryArchiveLink$>" title="<$mt:CategoryDescription$>"><$mt:CategoryLabel$></a>
         <mt:Else>
                                         <li class="archive-list-item"><$mt:CategoryLabel$>
-        </mt:IfNonZero>
+        </mt:If>
         <$mt:SubCatsRecurse$>
                                         </li>
         <mt:SubCatIsLast>

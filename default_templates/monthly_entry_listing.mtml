@@ -32,7 +32,7 @@
 
 
 <mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>
-<mt:Unless name="datebased_archive"><$mt:SetVar name="limit" value="auto"$></mt:Unless>
+<mt:Unless name="datebased_archive"><$mt:Var name="limit" value="auto"$></mt:Unless>
 <mt:Entries limit="$limit">
                             <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>
                             <$mt:Include module="<__trans phrase="Entry Summary">"$>
