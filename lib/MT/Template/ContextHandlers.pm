@@ -389,7 +389,7 @@ sub core_tags {
             CommentOrderNumber => \&_hdlr_comment_order_num,
             CommentDate => \&_hdlr_comment_date,
             CommentParentID => \&_hdlr_comment_parent_id,
-            CommentReplyLink => \&_hdlr_comment_reply_link,
+            CommentReplyToLink => \&_hdlr_comment_reply_link,
             CommentPreviewAuthor => \&_hdlr_comment_author,
             CommentPreviewIP => \&_hdlr_comment_ip,
             CommentPreviewAuthorLink => \&_hdlr_comment_author_link,
@@ -10671,7 +10671,7 @@ sub _hdlr_comment_parent {
 
 ###########################################################################
 
-=head2 CommentReplyLink
+=head2 CommentReplyToLink
 
 Produces the "Reply" link for the current comment in context.
 By default, this relies on using the MT "Javascript" default template,

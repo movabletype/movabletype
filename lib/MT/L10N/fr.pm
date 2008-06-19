@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::fr;
 use strict;
@@ -54,7 +54,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Daily' => 'Par catégories et jours',
 	'Category Weekly' => 'Par catégories et semaines',
 
-## php/lib/function.mtcommentreplylink.php
+## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Répondre',
 
 ## php/lib/block.mtsethashvar.php

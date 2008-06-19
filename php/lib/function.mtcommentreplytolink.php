@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentreplylink($args, &$ctx) {
+function smarty_function_mtcommentreplytolink($args, &$ctx) {
     $comment = $ctx->stash('comment');
     if (!$comment) return '';
 

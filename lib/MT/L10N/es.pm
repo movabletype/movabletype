@@ -57,7 +57,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
 
-## php/lib/function.mtcommentreplylink.php
+## php/lib/function.mtcommentreplytolink.php
 	'Reply' => 'Responder',
 
 ## php/lib/block.mtsethashvar.php

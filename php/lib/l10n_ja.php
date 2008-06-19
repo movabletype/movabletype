@@ -64,7 +64,7 @@ $Lexicon_ja = array(
 
 ## php/lib/function.mtcommentauthor.php
 
-## php/lib/function.mtcommentreplylink.php
+## php/lib/function.mtcommentreplytolink.php
 	'Reply' => '返信',
 
 ## php/lib/block.mtauthorhasentry.php
