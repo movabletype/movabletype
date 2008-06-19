@@ -4299,7 +4299,7 @@ B<Example:>
 sub _hdlr_archive_type_enabled {
     my ($ctx, $args) = @_;
     my $blog = $ctx->stash('blog');
-    my $at = lc ($args->{type} || $args->{archive_type});
+    my $at = ($args->{type} || $args->{archive_type});
     return $blog->has_archive_type($at);
 }
 
@@ -11699,9 +11699,11 @@ sub _hdlr_archives {
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
+    my $map_class = MT->model('templatemap');
+    my $map = $map_class->load({ archive_type => $at, blog_id => $blog->id });
+    return '' unless $map;
 
     my $save_stamps;
-
     if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
         $save_stamps = 1;
     }

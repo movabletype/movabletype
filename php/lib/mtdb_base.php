@@ -153,6 +153,23 @@ class MTDatabaseBase extends ezsql {
         return $result;
     }
 
+    function fetch_templatemap($args) {
+        if (isset($args['type'])) {
+            $type_filter = 'and templatemap_archive_type = \'' . $this->escape($args['type']) . '\'';
+        }
+        if (isset($args['blog_id'])) {
+            $blog_filter = 'and templatemap_blog_id = ' . intval($args['blog_id']);
+        }
+        $sql = "select *
+                  from mt_templatemap
+                 where 1 = 1
+                       $blog_filter
+                       $type_filter
+              order by templatemap_archive_type";
+        $result = $this->get_results($sql, ARRAY_A);
+        return $result;
+    }
+
     function fetch_template_meta($type, $name, $blog_id, $global) {
         if ($type === 'identifier') {
             $col = 'template_identifier';

@@ -25,6 +25,12 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
           $repeat = false;
           return '';
         }
+        $map = $ctx->mt->db->fetch_templatemap(
+            array('type' => $at, 'blog_id' => $blog['blog_id']));
+        if (empty($map)) {
+            $repeat = false;
+            return '';
+        }
         $ctx->localize($localvars);
         $ctx->stash('current_archive_type', $at);
         ## If we are producing a Category archive list, don't bother to

@@ -485,7 +485,13 @@ sub has_archive_type {
     my $blog = shift;
     my ($type) = @_;
     my %at = map { lc $_ => 1 } split(/,/, $blog->archive_type);
-    return exists $at{lc $type} ? 1 : 0;
+    my $has = exists $at{lc $type} ? 1 : 0;
+    if ($has) {
+        my $map_class = MT->model('templatemap');
+        my $map = $map_class->load({ archive_type => $type, blog_id => $blog->id });
+        $has = defined $map ? 1 : 0;
+    }
+    return $has;
 }
 
 sub accepts_registered_comments {

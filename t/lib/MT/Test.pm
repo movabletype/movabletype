@@ -681,6 +681,26 @@ It\'s a hard rain\'s a-gonna fall',
     $tmpl->save or die "Couldn't save template record 1: ".$tmpl->errstr;
     diag "Saved blog-name template";
 
+    my $tmpl_map = new MT::TemplateMap;
+    $tmpl_map->blog_id(1);
+    $tmpl_map->template_id($tmpl->id);
+    $tmpl_map->archive_type('Daily');
+    $tmpl_map->is_preferred(1);
+    $tmpl_map->build_type(1);
+    $tmpl_map->save or die "Couldn't save template map record (Daily): ".$tmpl_map->errstr;
+
+    my $tmpl_map = new MT::TemplateMap;
+    $tmpl_map->blog_id(1);
+    $tmpl_map->template_id($tmpl->id);
+    $tmpl_map->archive_type('Weekly');
+    $tmpl_map->is_preferred(1);
+    $tmpl_map->build_type(1);
+    $tmpl_map->save or die "Couldn't save template map record (Weekly): ".$tmpl_map->errstr;
+
+    # Revert into default for test...
+    $blog->archive_type('Individual,Monthly,Weekly,Daily,Category,Page');
+    $blog->save;
+
     ### Asset
     use MT::Asset;
 
