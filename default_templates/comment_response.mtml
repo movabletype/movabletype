@@ -4,30 +4,30 @@
 <head>
 
 
-<MTIf name="comment_confirmation">
-    <mt:ignore><!-- Success message when comment has been submitted --></mt:ignore>
-    <MTSetVar name="page_title" value="<__trans phrase="Confirmation...">">
-    <MTSetVar name="message" value="<p><__trans phrase="Your comment has been submitted!"></p>">
-<MTElse name="comment_pending">
-    <mt:ignore><!-- Pending message when comment is being held for review --></mt:ignore>
-    <MTSetVar name="page_title" value="<__trans phrase="Thank you for commenting.">">
-    <MTSetVar name="message" value="<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>">
-<MTElse name="comment_error">
-    <mt:ignore><!-- Error message when comment submission fails --></mt:ignore>
-    <MTSetVar name="page_title" value="<__trans phrase="Comment Submission Error">">
-    <MTSetVarBlock name="message"><p><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$MTErrorMessage$>"></p></MTSetVarBlock>
-</MTIf>
+<mt:If name="comment_confirmation">
+    <mt:Ignore><!-- Success message when comment has been submitted --></mt:Ignore>
+    <$mt:SetVar name="page_title" value="<__trans phrase="Confirmation...">"$>
+    <$mt:SetVar name="message" value="<p><__trans phrase="Your comment has been submitted!"></p>"$>
+<mt:Else name="comment_pending">
+    <mt:Ignore><!-- Pending message when comment is being held for review --></mt:Ignore>
+    <$mt:SetVar name="page_title" value="<__trans phrase="Thank you for commenting.">"$>
+    <$mt:SetVar name="message" value="<p><__trans phrase="Your comment has been received and held for approval by the blog owner."></p>"$>
+<mt:Else name="comment_error">
+    <mt:Ignore><!-- Error message when comment submission fails --></mt:Ignore>
+    <$mt:SetVar name="page_title" value="<__trans phrase="Comment Submission Error">"$>
+    <mt:SetVarBlock name="message"><p><__trans phrase="Your comment submission failed for the following reasons: [_1]" params="<$mt:ErrorMessage$>"></p></mt:SetVarBlock>
+</mt:If>
 
 
-    <$mt:include module="<__trans phrase="HTML Head">"$>
-    <title><$MTBlogName encode_html="1"$>: <$MTVar name="page_title"$></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <title><$mt:BlogName encode_html="1"$>: <$mt:Var name="page_title"$></title>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="<$mt:var name="body_class"$> <$MTVar name="page_layout"$>">
+<body id="<$mt:BlogTemplateSetID$>" class="<$mt:Var name="body_class"$> <$mt:Var name="page_layout"$>">
     <div id="container">
         <div id="container-inner">
 
 
-            <$mt:include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
 
 
             <div id="content">
@@ -36,21 +36,21 @@
 
                     <div id="alpha">
                         <div id="alpha-inner">
-                            <h1 id="page-title"><$MTVar name="page_title"$></h1>
-                            <$MTVar name="message"$>
-                            <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$MTEntryLink$>"></p>
+                            <h1 id="page-title"><$mt:Var name="page_title"$></h1>
+                            <$mt:Var name="message"$>
+                            <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<$mt:EntryLink$>"></p>
                         </div>
                     </div>
 
 
-                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
 
 
                 </div>
             </div>
 
 
-            <$mt:include module="<__trans phrase="Banner Footer">"$>
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
 
 
         </div>

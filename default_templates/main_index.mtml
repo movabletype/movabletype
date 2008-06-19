@@ -2,16 +2,16 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
-    <$mt:include module="<__trans phrase="HTML Head">"$>
-    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="<$MTLink template="rsd"$>" />
-    <title><$MTBlogName encode_html="1"$></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <link rel="EditURI" type="application/rsd+xml" title="RSD" href="<$mt:Link template="rsd"$>" />
+    <title><$mt:BlogName encode_html="1"$></title>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="mt-main-index <$MTVar name="page_layout"$>">
+<body id="<$mt:BlogTemplateSetID$>" class="mt-main-index <$mt:Var name="page_layout"$>">
     <div id="container">
         <div id="container-inner">
 
 
-            <$mt:include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
 
 
             <div id="content">
@@ -20,14 +20,14 @@
 
                     <div id="alpha">
                         <div id="alpha-inner">
-<MTEntries>
-                            <mt:ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:ignore>
-                            <$mt:include module="<__trans phrase="Entry Summary">"$>
-</MTEntries>
+<mt:Entries>
+                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>
+                            <$mt:Include module="<__trans phrase="Entry Summary">"$>
+</mt:Entries>
 
 
                             <div class="content-nav">
-                                <a href="<$MTLink template="archive_index"$>"><__trans phrase="Archives"></a>
+                                <a href="<$mt:Link template="archive_index"$>"><__trans phrase="Archives"></a>
                             </div>
 
 
@@ -35,14 +35,14 @@
                     </div>
 
 
-                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
 
 
                 </div>
             </div>
 
 
-            <$mt:include module="<__trans phrase="Banner Footer">"$>
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
 
 
         </div>

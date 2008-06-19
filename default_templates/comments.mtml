@@ -1,65 +1,65 @@
-<mt:ignore>
+<mt:Ignore>
 <!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->
-</mt:ignore>
-<MTIfCommentsActive>
+</mt:Ignore>
+<mt:IfCommentsActive>
 <div id="comments" class="comments">
 
 
-    <mt:ignore>
+    <mt:Ignore>
     <!-- Display comments -->
-    </mt:ignore>
-    <MTComments>
-        <MTCommentsHeader>
-    <h2 class="comments-header"><$MTEntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
+    </mt:Ignore>
+    <mt:Comments>
+        <mt:CommentsHeader>
+    <h2 class="comments-header"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
     <div class="comments-content">
-        </MTCommentsHeader>
-        <div id="comment-<$MTCommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>">
+        </mt:CommentsHeader>
+        <div id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>">
             <div class="inner">
                 <div class="comment-header">
                     <div class="asset-meta">
                         <span class="byline">
-                            <$MTCommentAuthorIdentity$>
+                            <$mt:CommentAuthorIdentity$>
         <mt:IfCommentParent>
-                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$MTCommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$MTCommentAuthor$></mt:CommentParent>">
-        <mt:else>
-                            <span class="vcard author"><$MTCommentAuthorLink$></span>
+                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>">
+        <mt:Else>
+                            <span class="vcard author"><$mt:CommentAuthorLink$></span>
         </mt:IfCommentParent>
-                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>
-        <MTIfCommentsAccepted>
-                            | <$MTCommentReplyLink$>
-        </MTIfCommentsAccepted>
+                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
+        <mt:IfCommentsAccepted>
+                            | <$mt:CommentReplyLink$>
+        </mt:IfCommentsAccepted>
                         </span>
                     </div>
                 </div>
                 <div class="comment-content">
-                    <$MTCommentBody$>
+                    <$mt:CommentBody$>
                 </div>
             </div>
         </div>
-        <MTCommentsFooter>
+        <mt:CommentsFooter>
     </div>
-        </MTCommentsFooter>
-    </MTComments>
+        </mt:CommentsFooter>
+    </mt:Comments>
 
 
-    <mt:ignore>
+    <mt:Ignore>
     <!-- Display commenting form if entry/page is accepting comments -->
-    </mt:ignore>
-    <MTIfCommentsAccepted>
+    </mt:Ignore>
+    <mt:IfCommentsAccepted>
     <div class="comments-open" id="comments-open">
         <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
         <div class="comments-open-content">
 
-        <mt:ignore>
+        <mt:Ignore>
         <!-- Display greeting for users if blog allows users to register locally -->
-        </mt:ignore>
+        </mt:Ignore>
             <div id="comment-greeting"></div>
 
-            <form method="post" action="<$MTCGIPath$><$MTCommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+            <form method="post" action="<$mt:CGIPath$><$mt:CommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
                 <input type="hidden" name="static" value="1" />
-                <input type="hidden" name="entry_id" value="<$MTEntryID$>" />
-                <input type="hidden" name="__lang" value="<$MTBlogLanguage$>" />
-                <input type="hidden" name="parent_id" value="<$MTCommentParentID$>" id="comment-parent-id" />
+                <input type="hidden" name="entry_id" value="<$mt:EntryID$>" />
+                <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>" />
+                <input type="hidden" name="parent_id" value="<$mt:CommentParentID$>" id="comment-parent-id" />
                 <input type="hidden" name="armor" value="1" />
                 <input type="hidden" name="preview" value="" />
                 <input type="hidden" name="sid" value="" />
@@ -87,7 +87,7 @@
                 </div>
                 <div id="comments-open-text">
                     <label for="comment-text"><__trans phrase="Comments">
-                    <MTIfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></MTIfAllowCommentHTML></label>
+                    <mt:IfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></mt:IfAllowCommentHTML></label>
                     <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
                 </div>
                 <div id="comments-open-captcha"></div>
@@ -100,8 +100,8 @@
 
         </div>
     </div>
-    </MTIfCommentsAccepted>
+    </mt:IfCommentsAccepted>
 
 
 </div>
-</MTIfCommentsActive>
+</mt:IfCommentsActive>

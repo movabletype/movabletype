@@ -5,17 +5,17 @@
             <input type="text" id="search" class="ti" name="search" value="<$mt:SearchString$>" />
 <mt:If name="search_results">
             <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>" />
-            <MTIgnore>
+            <mt:Ignore>
             <!-- use these options only with MT::App::Search::Legacy -->
             <ul class="search-options">
                 <li><input type="checkbox" name="CaseSearch" /> <__trans phrase="Case sensitive"></li>
                 <li><input type="checkbox" name="RegexSearch" /> <__trans phrase="Regex search"></li>
             </ul>
-            </MTIgnore>
-<mt:else>
+            </mt:Ignore>
+<mt:Else>
             <input type="hidden" name="IncludeBlogs" value="<$mt:BlogID$>" />
-</mt:if>
-            <input type="hidden" name="limit" value="<MTSearchMaxResults>" />
+</mt:If>
+            <input type="hidden" name="limit" value="<$mt:SearchMaxResults$>" />
             <input type="submit" accesskey="4" value="<__trans phrase="Search">" />
         </form>
     </div>
@@ -27,7 +27,7 @@
     <div class="widget-content">
         <ul class="widget-list">
         <mt:Tags>
-            <li class="widget-list-item"><a href="javascript:void(0)" onclick="location.href='<$MTTagSearchLink encode_js="1"$>';return false;"><__trans phrase="[_1] ([_2])" params="<$mt:TagName$>%%<$mt:TagCount$>"></a></li>
+            <li class="widget-list-item"><a href="javascript:void(0)" onclick="location.href='<$mt:TagSearchLink encode_js="1"$>';return false;"><__trans phrase="[_1] ([_2])" params="<$mt:TagName$>%%<$mt:TagCount$>"></a></li>
         </mt:Tags>
         </ul>
     </div>

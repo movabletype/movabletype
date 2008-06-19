@@ -1,14 +1,14 @@
-<$MTHTTPContentType type="application/rsd+xml"$><?xml version="1.0"?>
+<$mt:HTTPContentType type="application/rsd+xml"$><?xml version="1.0"?>
 <rsd version="1.0" xmlns="http://archipelago.phrasewise.com/rsd">
 <service>
-<engineName><$MTProductName version="1"$></engineName>
+<engineName><$mt:ProductName version="1"$></engineName>
 <engineLink>http://www.sixapart.com/movabletype/</engineLink>
-<homePageLink><$MTBlogURL$></homePageLink>
+<homePageLink><$mt:BlogURL$></homePageLink>
 <apis>
-<api name="MetaWeblog" preferred="true" apiLink="<$MTCGIPath$><$MTXMLRPCScript$>" blogID="<$MTBlogID$>" />
-<api name="MovableType" preferred="false" apiLink="<$MTCGIPath$><$MTXMLRPCScript$>" blogID="<$MTBlogID$>" />
-<api name="Blogger" preferred="false" apiLink="<$MTCGIPath$><$MTXMLRPCScript$>" blogID="<$MTBlogID$>" />
-<api name="Atom" preferred="false" apiLink="<$MTCGIPath$><$MTAtomScript$>/weblog" blogID="<$MTBlogID$>" />
+<api name="MetaWeblog" preferred="true" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="MovableType" preferred="false" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="Blogger" preferred="false" apiLink="<$mt:CGIPath$><$mt:XMLRPCScript$>" blogID="<$mt:BlogID$>" />
+<api name="Atom" preferred="false" apiLink="<$mt:CGIPath$><$mt:AtomScript$>/weblog" blogID="<$mt:BlogID$>" />
 </apis>
 </service>
 </rsd>

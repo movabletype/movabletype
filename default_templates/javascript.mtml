@@ -476,7 +476,7 @@ function mtSignIn() {
             var entry_id = document['comments_form'].entry_id.value;
             url += '&entry_id=' + entry_id;
         } else {
-            url += '&return_url=<$MTBlogURL encode_url="1"$>';
+            url += '&return_url=<$mt:BlogURL encode_url="1"$>';
         }
     } else {
         url += '&return_url=' + encodeURIComponent(doc_url);
@@ -527,7 +527,7 @@ function mtSignOut(entry_id) {
             var entry_id = document['comments_form'].entry_id.value;
             url += '&entry_id=' + entry_id;
         } else {
-            url += '&return_url=<$MTBlogURL encode_url="1"$>';
+            url += '&return_url=<$mt:BlogURL encode_url="1"$>';
         }
     } else {
         url += '&return_url=' + encodeURIComponent(doc_url);

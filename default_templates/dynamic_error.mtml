@@ -2,15 +2,15 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
-    <$mt:include module="<__trans phrase="HTML Head">"$>
-    <title><$MTBlogName encode_html="1"$>: <__trans phrase="Page Not Found"></title>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <title><$mt:BlogName encode_html="1"$>: <__trans phrase="Page Not Found"></title>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="mt-dynamic-error <$MTVar name="page_layout"$>">
+<body id="<$mt:BlogTemplateSetID$>" class="mt-dynamic-error <$mt:Var name="page_layout"$>">
     <div id="container">
         <div id="container-inner">
 
 
-            <$mt:include module="<__trans phrase="Banner Header">"$>
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
 
 
             <div id="content">
@@ -21,20 +21,20 @@
                         <div id="alpha-inner">
                             <h1 id="page-title"><__trans phrase="Page Not Found"></h1>
                             <blockquote>
-                                <strong><$MTErrorMessage$></strong>
+                                <strong><$mt:ErrorMessage$></strong>
                             </blockquote>
                         </div>
                     </div>
 
 
-                    <$MTInclude module="<__trans phrase="Sidebar">"$>
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
 
 
                 </div>
             </div>
 
 
-            <$mt:include module="<__trans phrase="Banner Footer">"$>
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
 
 
         </div>
