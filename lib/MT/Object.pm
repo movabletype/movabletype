@@ -497,7 +497,6 @@ sub meta_args {
             vclob
         ) ],
         indexes => {
-            $id_field => 1,
             id_type    => { columns => [ $id_field, 'type' ] },
             type_vchar => { columns => [ 'type', 'vchar_idx'     ] },
             type_vdt   => { columns => [ 'type', 'vdatetime_idx' ] },
