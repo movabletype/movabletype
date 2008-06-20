@@ -882,6 +882,20 @@ sub core_upgrade_functions {
                 sql => 'update mt_objectasset set objectasset_embedded=1',
             },
         },
+        'core_set_template_build_type' => {
+            version_limit => 4.0053,
+            priority => 3.2,
+            updater => {
+                type  => 'blog',
+                label => 'Updateing template build types...',
+                code  => sub {
+                    my ($blog) = @_;
+                    require MT::CMS::Blog;
+                    MT::CMS::Blog::update_publishing_profile( $App, $blog );
+                    return 0;
+                },
+            },
+        },
         'core_enable_address_book' => {
             version_limit => 4.0054,
             priority => 3.2,
