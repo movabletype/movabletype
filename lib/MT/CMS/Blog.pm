@@ -1212,7 +1212,8 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
     return ( $id
-          && ( $perms->can_edit_config || $perms->can_set_publish_paths ) )
+          && (( $perms->can_edit_config || $perms->can_set_publish_paths )
+          || ( $app->param('cfg_screen') && $app->param('cfg_screen') eq 'cfg_publish_profile' )))
       || ( !$id && $app->user->can_create_blog );
 }
 
