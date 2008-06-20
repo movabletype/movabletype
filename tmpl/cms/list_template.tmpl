@@ -33,16 +33,18 @@
     </mtapp:widget>
     <$MTApp:PageActions from="list_template"$>
 </mt:setvarblock>
-<mt:unless name="filter_key" eq="backup_templates">
-    <mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */
-<mt:if name="blog_id">
+    <mt:unless name="filter_key" eq="backup_templates">
+        <mt:if name="blog_id">
 var tableList = ["index", "archive", "module", "system"];
-<mt:else>
+        <mt:else>
 var tableList = ["module", "email", "system"];
-</mt:if>
-var tableSelect = [];
+        </mt:if>
+    <mt:else>
+var tableList = ["backup"];
+    </mt:unless>
 function showTable(name) {
     for (var i=0, len=tableList.length; i<len; i++) {
         var el = tableList[i] + "-listing"
@@ -64,6 +66,7 @@ function showTable(name) {
         }
     }
 }
+var tableSelect = [];
 function init() {
 <mt:loop name="template_type_loop">
     tableSelect.push(new TC.TableSelect( '<mt:var name="template_type">-listing-table' ));
@@ -75,8 +78,7 @@ function init() {
 TC.attachLoadEvent(init);
 /* ]]> */
 </script>
-    </mt:setvarblock>
-</mt:unless>
+</mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
