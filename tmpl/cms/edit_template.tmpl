@@ -506,7 +506,7 @@ TC.attachLoadEvent( init );
     <input name="name" id="title" tabindex="1" value="<mt:var name="name" escape="html">" maxlength="255" mt:watch-change="1" />
     <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="template_name" escape="html"$>" />
-    <input type="text" id="title" name="name_display" value="<$mt:var name="template_name_label" escape="html">" disabled="disabled" />
+    <input type="text" id="title" name="name_display" value="<$mt:var name="template_name" escape="html">" disabled="disabled" />
     </mt:if>
 </mtapp:setting>
 
