@@ -11,7 +11,7 @@
     <$mt:Include module="<__trans phrase="HTML Head">"$>
     <title><$mt:BlogName encode_html="1"$>: <__trans phrase="Previewing your Comment"></title>
 </head>
-<body id="<$mt:BlogTemplateSetID$>" class="mt-comment-preview <$mt:Var name="page_layout"$>" onload="mtEntryOnLoad()">
+<body id="<$mt:BlogTemplateSetID$>" class="mt-comment-preview <$mt:Var name="page_layout"$>" onload="mtEntryOnLoad()" onunload="mtEntryOnUnload()">
     <div id="container">
         <div id="container-inner">
 
