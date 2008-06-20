@@ -161,7 +161,8 @@ window.onload = function() {
     </mtapp:setting>
 
 <mt:unless name="success">
-<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>." params="http://www.movabletype.org/documentation/installation/setting-up-your-database.html%%reTest();"></p>
+<mt:setvarblock name="db_setup_url"><__trans phrase="http://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
+<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>." params="<mt:var name="db_setup_url">%%reTest();"></p>
 </mt:unless>
 
 <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>

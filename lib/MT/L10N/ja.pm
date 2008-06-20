@@ -2110,6 +2110,7 @@ use vars qw( @ISA %Lexicon );
 	'Show Current Settings' => '現在の設定を表示',
 	'Database Type' => 'データベースの種類',
 	'Select One...' => '選択してください',
+    'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
 	'If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>.' => 'お使いになるデータベースの種類が一覧に表示されていない場合、<a target="help" href="[_1]">データベース接続に必要なPerlモジュールをインストールしてください</a>。',
 	'Database Path' => 'データベースのパス',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
