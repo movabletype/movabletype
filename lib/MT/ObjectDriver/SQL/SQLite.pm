@@ -29,9 +29,11 @@ sub as_sql {
     return $stmt->SUPER::as_sql(@_) unless exists $stmt->{count_distinct};
     my $cd  = delete $stmt->{count_distinct};
     my ($col) = each %$cd;
+    my @select = @{$stmt->select};
     $stmt->select([$col]);
     my $class = ref $stmt;
     my $main_stmt = $class->new;
+    $main_stmt->select(\@select);
     $main_stmt->from_stmt($stmt);
     $main_stmt->as_sql(@_);
 }

@@ -256,7 +256,10 @@ sub _select_aggregate {
         $stmt->$clause($value);
     }
     $stmt->select([]);
-    my $sql = "SELECT $select\n" . $stmt->as_sql;
+    $stmt->select_map({});
+    $stmt->select_map_reverse({});
+    $stmt->add_select($select => $select);
+    my $sql = $stmt->as_sql;
     $driver->select_one($sql, $stmt->bind);
 }
 
