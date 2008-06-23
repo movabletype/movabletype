@@ -533,6 +533,14 @@ ul { list-style: disc outside; }
     background-color: #9AAEC2;
 }
 
+.status-indicator {
+    display: inline;
+    height: 20px;
+    width: 20px;
+    background: url(../images/indicator-login.gif) no-repeat 0 0;
+    padding: 2px 7px;
+}
+
 @media print {
     * {
         position: static ! important;
