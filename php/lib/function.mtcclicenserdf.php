@@ -29,7 +29,7 @@ RDF;
         $permalink = $ctx->tag('EntryPermalink');
         $title = encode_xml(strip_hyphen($entry['entry_title']));
         $desc = encode_xml(strip_hyphen($ctx->tag('EntryExcerpt')));
-        $creator = encode_xml(strip_hyphen($entry['entry_author_id'] ? $entry['author_name'] : ''));
+        $creator = encode_xml(strip_hyphen($entry['entry_author_id'] ? $entry['author_nickname'] : ''));
         $date = $ctx->_hdlr_date(array('format' => "%Y-%m-%dT%H:%M:%S"), $ctx) . $ctx->tag('BlogTimezone');
         $rdf .= <<<RDF
 <Work rdf:about="$permalink">
