@@ -383,11 +383,15 @@ sub prepare_statement {
         }
 
         if (defined($terms)) {
+            my $mutator = $stmt->column_mutator;
             $stmt->column_mutator(sub {
                 my ($col) = @_;
                 my $db_col = $dbd->db_column_name($tbl, $col);
                 if ( my $alias = $orig_args->{alias} ) {
                     $db_col = "$alias.$db_col";
+                }
+                if ( $mutator && 'CODE' eq ref($mutator) ) {
+                    $db_col = $mutator->($db_col);
                 }
                 return $db_col;
             });
