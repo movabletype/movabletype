@@ -374,6 +374,7 @@ sub build_dynamic {
     return $tmpl->SUPER::build_dynamic($_[0]) if @_;
     require MT::PublishOption;
     return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
+    return $tmpl->SUPER::build_dynamic;
 }
 
 sub blog {

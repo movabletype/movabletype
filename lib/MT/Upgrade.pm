@@ -892,6 +892,24 @@ sub core_upgrade_functions {
                     my ($blog) = @_;
                     require MT::CMS::Blog;
                     MT::CMS::Blog::update_publishing_profile( $App, $blog );
+                    require MT::Template;
+                    my @tmpls = MT::Template->load( { blog_id => $blog->id } );
+                    foreach my $tmpl (@tmpls) {
+
+                        if ( $tmpl->build_dynamic ) {
+                            require MT::TemplateMap;
+                            require MT::PublishOption;
+                            $tmpl->build_type( MT::PublishOption::DYNAMIC() );
+                            $tmpl->save;
+                            my @maps = MT::TemplateMap->load(
+                                { template_id => $tmpl->id } );
+                            foreach my $map (@maps) {
+                                $map->build_type(
+                                    MT::PublishOption::DYNAMIC() );
+                                $map->save;
+                            }
+                        }
+                    }
                     return 0;
                 },
             },
