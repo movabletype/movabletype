@@ -269,9 +269,7 @@ sub cache {
                     })
                 }),
                 limit => $limit,
-                fetchonly => [ 'name' ],
-                # prevent any callbacks, as we're only fetching name column anyway
-                no_triggers => 1,
+                fetchonly => [ 'name' ]
             }
         );
         if (@tags) {
