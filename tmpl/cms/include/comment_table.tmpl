@@ -123,7 +123,11 @@
                         </mt:if>
                     </mt:if>
                         <mt:if name="auth_icon_url"><img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" /></mt:if>
+                        <mt:if name="can_edit_commenter">
                         <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">"><mt:var name="author" escape="html"></a>
+                        <mt:else>
+                        <span class="icon-right-wide icon-<mt:if name="commenter_approved">trusted<mt:else><mt:if name="commenter_banned">banned<mt:else>authenticated</mt:if></mt:if>"><mt:var name="author" escape="html"></span>
+                        </mt:if>
                 <mt:else>
                     <mt:if name="author">
                         <mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" /></mt:if><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">"><mt:var name="author_display" escape="html"></a>
@@ -138,7 +142,11 @@
             </mt:if>
                     <td class="entry">
                 <mt:if name="entry_title">
-                    <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
+                    <mt:if name="can_edit_entry">
+                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
+                    <mt:else>
+                        <mt:var name="entry_title" escape="html">
+                    </mt:if>
                 <mt:else>
                         &nbsp;
                 </mt:if>

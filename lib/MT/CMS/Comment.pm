@@ -176,8 +176,14 @@ sub list {
       ? 1 : 0;
     my $state_editable = $admin
       || ( $perms
-        && ( $perms->can_publish_post
-          || $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
+        && ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
+      ? 1 : 0;
+    my $state_entry_editable = $admin
+      || ( $perms && $perms->can_edit_all_posts )
+      ? 1 : 0;
+    my $state_commenter_editable = $perms
+      && ( $perms->can_publish_post
+        || $perms->can_edit_all_posts || $perms->can_manage_feedback )
       ? 1 : 0;
     my $entry_pkg = $app->model('entry');
     my $code      = sub {
@@ -250,8 +256,20 @@ sub list {
             $row->{created_on_relative} = relative_date( $ts, time, $blog );
         }
 
+        # Permissions
         $row->{has_edit_access} = $state_editable
           || ( $entry && ( $user->id == $entry->author_id ) );
+        $row->{can_edit_entry} = $state_entry_editable
+          || ( $entry && ($user->id == $entry->author_id ) );
+        $row->{can_edit_commenter} = $user->is_superuser ? 1 : 0;
+        if ( !$row->{can_edit_commenter} && $row->{commenter_id} ) {
+            my $cmntr = $cmntrs{ $row->{commenter_id} };
+            if ($cmntr) {
+                $row->{can_edit_commenter} = $cmntr->type eq MT::Author::COMMENTER
+                  && $state_commenter_editable
+                  ? 1 : 0;
+            }
+        }
 
         # Blog column
         if ($blog) {
