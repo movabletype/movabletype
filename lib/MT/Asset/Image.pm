@@ -450,29 +450,15 @@ sub on_upload {
     }
 
     require MT::Util;
-    my $extra_path = undef;
-    my $extra_url = '';
-    if (defined $param->{middle_path} || defined $param->{extra_path}) {
-        my $middle_path = $param->{middle_path} || '';
-        my @split_path = split( '/', $middle_path );
-        $extra_path = '';
-
-        for my $middle (@split_path) {
-            $extra_path = File::Spec->catfile( $extra_path, $middle );
-        }
-        $extra_path = File::Spec->catfile( $extra_path, $param->{extra_path} ) if ($param->{extra_path});
-        $extra_url = MT::Util::caturl($middle_path, ($param->{extra_path} || ''));
-    }
-
     # Thumbnail creation
     if ( $thumb = $param->{thumb} ) {
         require MT::Image;
         my $image_type = scalar $param->{image_type};
         my ( $w, $h ) = map $param->{$_}, qw( thumb_width thumb_height );
         my ($pseudo_thumbnail_url) =
-          $asset->thumbnail_url( Height => $h, Width => $w, Path => $extra_path, Pseudo => 1 );
+          $asset->thumbnail_url( Height => $h, Width => $w, Pseudo => 1 );
         my $thumbnail = $asset->thumbnail_filename( Height => $h, Width => $w );
-        my $pseudo_thumbnail_path = File::Spec->catfile($asset->_make_cache_path($extra_path, 1), $thumbnail);
+        my $pseudo_thumbnail_path = File::Spec->catfile( $asset->_make_cache_path( undef, 1 ), $thumbnail );
         my ( $base, $path, $ext ) =
           File::Basename::fileparse( $thumbnail, qr/[A-Za-z0-9]+$/ );
         my $img_pkg         = MT::Asset->handler_for_file($thumbnail);
@@ -575,12 +561,8 @@ sub on_upload {
             $ctx->stash( 'image_height', $height );
             my $popup = $tmpl->build($ctx) or die $tmpl->errstr;
             my $fmgr = $blog->file_mgr;
-            my $root_path =
-              $param->{site_path} ? $blog->site_path : $blog->archive_path;
-            my $pseudo_path = $param->{site_path} ? '%r' : '%a';
-            $root_path =
-              File::Spec->catfile( $root_path, ($extra_path || '') );
-            $pseudo_path = File::Spec->catfile( $pseudo_path, ($extra_path || '') );
+            my $root_path = $asset->_make_cache_path;
+            my $pseudo_path = $asset->_make_cache_path( undef, 1 );
             my $abs_file_path =
               File::Spec->catfile( $root_path, $rel_path . $ext );
 
@@ -596,9 +578,6 @@ sub on_upload {
             $pseudo_path = File::Spec->catfile( $pseudo_path, $rel_path_ext );
             my ( $vol, $dirs, $basename ) =
               File::Spec->splitpath($rel_path_ext);
-            my $rel_url_ext =
-              File::Spec->catpath( $vol, $dirs,
-                MT::Util::encode_url($basename) );
 
             ## Untaint. We have checked for security holes above, so we
             ## should be safe.
@@ -610,9 +589,6 @@ sub on_upload {
                     $fmgr->errstr
                 )
               );
-            $url = $param->{site_path} ? '%r' : '%a';
-            $rel_url_ext =~ s!^/!!;
-            $url = MT::Util::caturl($url, $extra_url, $rel_url_ext);
 
             my $html_pkg   = MT::Asset->handler_for_file($abs_file_path);
             my $original;
@@ -623,7 +599,7 @@ sub on_upload {
                 $asset_html = new $html_pkg;
                 $original   = $asset_html->clone;
                 $asset_html->blog_id($blog_id);
-                $asset_html->url($url);
+                $asset_html->url($pseudo_path);
                 $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
                 $asset_html->file_path($pseudo_path);
                 $asset_html->file_name($basename);
