@@ -413,14 +413,16 @@ EOT;
             if (!$hdlr) {
                 $fntag = 'smarty_function_mt'.$tag;
                 if (!function_exists($fntag))
-                    @include_once("function.mt$tag.php");
+                  if (file_exists($this->mt->config['phplibdir']."/function.mt$tag.php"))
+                        @include_once("function.mt$tag.php");
                 if (function_exists($fntag))
                     $hdlr = $fntag;
             }
             if (!$hdlr) { // try block tags
                 $fntag = 'smarty_block_mt'.$tag;
                 if (!function_exists($fntag))
-                    @include_once("block.mt$tag.php");
+                    if (file_exists($this->mt->config['phplibdir']."/block.mt$tag.php"))
+                        @include_once("block.mt$tag.php");
                 if (function_exists($fntag)) {
                     $hdlr = $fntag;
                     $block_tag = true;
