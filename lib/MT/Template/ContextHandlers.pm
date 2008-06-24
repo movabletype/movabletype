@@ -15376,6 +15376,7 @@ sub _check_page {
     1;
 }
 
+# FIXME: should this routine return an empty string?
 sub _object_score_for {
     my ($stash_key, $ctx, $args, $cond) = @_;
     my $key = $args->{namespace};
@@ -15386,8 +15387,7 @@ sub _object_score_for {
     if ( !$score && exists($args->{default}) ) {
         return $args->{default};
     }
-    $score;
-      
+    return $ctx->count_format($score, $args);
 }
 
 ###########################################################################
@@ -15588,13 +15588,15 @@ sub _hdlr_author_score_low {
     return _object_score_low('author', @_);
 }
 
+# FIXME: should this routine return an empty string?
 sub _object_score_avg {
     my ($stash_key, $ctx, $args, $cond) = @_;
     my $key = $args->{namespace};
     return '' unless $key;
     my $object = $ctx->stash($stash_key);
     return '' unless $object;
-    return $object->score_avg($key);
+    my $avg = $object->score_avg($key);
+    return $ctx->count_format($avg, $args);
 }
 
 ###########################################################################
