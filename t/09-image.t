@@ -15,18 +15,16 @@ use MT::Image;
 use MT::ConfigMgr;
 use MT;
 
-use vars qw( $BASE @Img @drivers );
-
-require 't/test-common.pl';
+use vars qw( @Img @drivers );
 
 BEGIN {
     @Img = (
         [ 'test.gif', 233, 68 ],
         [ 'test.jpg', 640, 480 ],
     );
-    @drivers = qw( ImageMagick NetPBM );
+    @drivers = qw( ImageMagick NetPBM GD );
     plan tests => scalar @Img                           # file exists
-                + (scalar @Img * scalar @drivers * 18)  # 18 tests each for every image and driver
+                + (scalar @Img * scalar @drivers * 19)  # 19 tests each for every image and driver
                 ;
 }
 
@@ -37,18 +35,20 @@ my $String = "testing";
 my $netpbm = '/usr/local/netpbm/bin';
 
 my $cfg = MT::ConfigMgr->instance;
-$cfg->NetPBMPath($netpbm) if -x $netpbm;
+if (!$cfg->NetPBMPath) {
+    $cfg->NetPBMPath($netpbm) if -x $netpbm;
+}
 
 for my $rec (@Img) {
     my ($img_filename, $img_width, $img_height) = @$rec;
-    my $img_file = File::Spec->catfile($BASE, 't', 'images', $img_filename);
+    my $img_file = File::Spec->catfile($ENV{MT_HOME}, 't', 'images', $img_filename);
     ok(-B $img_file, "$img_file looks like a binary file");
 
     for my $driver (@drivers) {
         $cfg->ImageDriver($driver);
         my $img = MT::Image->new( Filename => $img_file );
 SKIP : {
-        skip("no $driver image", 18) unless $img;
+        skip("no $driver image", 19) unless $img;
         isa_ok($img, 'MT::Image::' . $driver, "driver $driver with image $img_file is an MT::Image::$driver");
 #        diag( MT::Image->errstr ) if MT::Image->errstr;
 
