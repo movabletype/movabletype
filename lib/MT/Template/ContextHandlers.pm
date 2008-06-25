@@ -7711,6 +7711,8 @@ sub _hdlr_entries {
             my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
             my $preloader = sub {
                 my ($entry_id) = @_;
+                my %map;
+                return \%map unless @tag_ids;
                 my $terms = { 
                     tag_id => \@tag_ids,
                     object_id => $entry_id,
@@ -7723,11 +7725,10 @@ sub _hdlr_entries {
                     no_triggers => 1
                 };
                 my @ot_ids = MT::ObjectTag->load($terms, $args);
-                my %map;
                 $map{$_->tag_id} = 1 for @ot_ids;
                 \%map;
             };
-            if (!$entries) {
+            if (!$entries && @tag_ids) {
                 if ($tag_arg !~ m/\bNOT\b/i) {
                     $args{join} = MT::ObjectTag->join_on( 'object_id', {
                             tag_id => \@tag_ids, object_datasource => 'entry',
