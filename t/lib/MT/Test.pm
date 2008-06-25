@@ -689,7 +689,7 @@ It\'s a hard rain\'s a-gonna fall',
     $tmpl_map->build_type(1);
     $tmpl_map->save or die "Couldn't save template map record (Daily): ".$tmpl_map->errstr;
 
-    my $tmpl_map = new MT::TemplateMap;
+    $tmpl_map = new MT::TemplateMap;
     $tmpl_map->blog_id(1);
     $tmpl_map->template_id($tmpl->id);
     $tmpl_map->archive_type('Weekly');
