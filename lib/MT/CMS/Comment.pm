@@ -265,7 +265,7 @@ sub list {
         if ( !$row->{can_edit_commenter} && $row->{commenter_id} ) {
             my $cmntr = $cmntrs{ $row->{commenter_id} };
             if ($cmntr) {
-                $row->{can_edit_commenter} = $cmntr->type eq MT::Author::COMMENTER
+                $row->{can_edit_commenter} = $cmntr->type eq MT::Author::COMMENTER()
                   && $state_commenter_editable
                   ? 1 : 0;
             }
