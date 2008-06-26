@@ -13,8 +13,7 @@ sub edit {
     my $perms = $app->permissions;
     my $blog = $app->blog;
     my $type = $q->param('_type');
-    use Data::Dumper;
-    print STDERR "########".Dumper(\$param);
+
     if ($id) {
         $param->{nav_comments} = 1;
         $app->add_breadcrumb(
