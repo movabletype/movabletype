@@ -940,9 +940,8 @@ The status of the entry, either Publish (C<2>) or Draft (C<1>).
 
 An integer flag specifying whether comments are allowed on this entry. This
 setting determines whether C<E<lt>MTEntryIfAllowCommentsE<gt>> containers are
-displayed for this entry. Possible values are 0 for no comments, 1 for open
-comments and 2 for closed comments (that is, display the comments on this
-entry but do not allow new comments to be added).
+displayed for this entry. Possible values are 0 for not allowing any additional 
+comments and 1 for allowing new comments to be made on the entry.
 
 =item * convert_breaks
 
