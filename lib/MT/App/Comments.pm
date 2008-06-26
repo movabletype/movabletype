@@ -1403,7 +1403,7 @@ sub session_js {
     $jsonp = undef if $jsonp !~ m/^\w+$/;
     return $app->error("Invalid request.") unless $jsonp;
 
-    my $state = $app->session_state;
+    my ( $state, $commenter ) = $app->session_state;
 
     require JSON;
     $app->{no_print_body} = 1;

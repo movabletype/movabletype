@@ -10996,7 +10996,7 @@ sub _hdlr_user_session_state {
     my $app = MT->app;
     return 'null' unless $app->can('session_state');
 
-    my $state = $app->session_state();
+    my ( $state, $commenter ) = $app->session_state();
     require JSON;
     my $json = JSON::objToJson($state);
     return $json;

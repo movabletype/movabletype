@@ -965,9 +965,9 @@ sub session_state {
     my $blog = $app->blog;
     my $blog_id = $blog->id if $blog;
 
-    my $c;
+    my ( $c, $commenter );
     if ( $blog_id && $blog ) {
-        my ( $sessobj, $commenter ) = $app->get_commenter_session();
+        ( my $sessobj, $commenter ) = $app->get_commenter_session();
         if ( $sessobj && $commenter ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
@@ -1016,7 +1016,7 @@ sub session_state {
         };
     }
 
-    return $c;
+    return ( $c, $commenter );
 }
 
 sub session {
