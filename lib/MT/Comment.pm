@@ -192,6 +192,7 @@ sub junk {
 sub moderate {
     my ($comment) = @_;
     $comment->visible(0);
+    $comment->junk_status(NOT_JUNK);
 }
 
 sub approve {
