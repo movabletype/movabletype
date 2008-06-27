@@ -2,35 +2,25 @@
 <div class="widget-pages widget">
     <h3 class="widget-header"><__trans phrase="Pages"></h3>
     <div class="widget-content">
+        <ul>
     <mt:Pages no_folder="1" sort_by="title" sort_order="ascend">
-        <mt:PagesHeader>
-        <ul class="widget-list">
-        </mt:PagesHeader>
-            <li class="widget-list-item"><a href="<$mt:PagePermalink$>" title="<$mt:PageTitle$>"><$mt:PageTitle$></a></li>
-        <mt:PagesFooter>
-        </ul>
-        </mt:PagesFooter>
+            <li class="page page-<$mt:PageID$>"><a href="<$mt:PagePermalink$>"><$mt:PageTitle$></a></li>
     </mt:Pages>
     <mt:TopLevelFolders>
-        <mt:FolderHeader>
-        <ul class="widget-list">
-        </mt:FolderHeader>
-            <li class="widget-list-item"><b><$mt:FolderLabel$></b>
+            <li class="folder folder-<$mt:FolderID$>"><strong><a href="<$mt:BlogURL$><$mt:FolderPath$>/"><$mt:FolderLabel$></a></strong>
         <mt:Pages sort_by="title" sort_order="ascend">
             <mt:PagesHeader>
-                <ul class="widget-list">
+                <ul>
             </mt:PagesHeader>
-                    <li class="widget-list-item"><a href="<$mt:PagePermalink$>" title="<$mt:PageTitle$>"><$mt:PageTitle$></a></li>
+                    <li class="page page-<$mt:PageID$>"><a href="<$mt:PagePermalink$>"><$mt:PageTitle$></a></li>
             <mt:PagesFooter>
                 </ul>
             </mt:PagesFooter>
         </mt:Pages>
         <$mt:SubFolderRecurse$>
             </li>
-        <mt:FolderFooter>
-        </ul>
-        </mt:FolderFooter>
     </mt:TopLevelFolders>
-   </div>
+        </ul>
+    </div>
 </div>
 </mt:IfArchiveTypeEnabled>

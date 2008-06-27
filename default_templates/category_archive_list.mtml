@@ -4,12 +4,12 @@
     <div class="widget-content">
     <mt:TopLevelCategories>
         <mt:SubCatIsFirst>
-        <ul class="widget-list">
+        <ul>
         </mt:SubCatIsFirst>
         <mt:If tag="CategoryCount">
-            <li class="widget-list-item"><a href="<$mt:CategoryArchiveLink$>"<mt:If tag="CategoryDescription"> title="<$mt:CategoryDescription$>"</mt:If>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
+            <li><a href="<$mt:CategoryArchiveLink$>"<mt:If tag="CategoryDescription"> title="<$mt:CategoryDescription$>"</mt:If>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
         <mt:Else>
-            <li class="widget-list-item"><$mt:CategoryLabel$>
+            <li><$mt:CategoryLabel$>
         </mt:If>
         <$mt:SubCatsRecurse$>
             </li>
