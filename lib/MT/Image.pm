@@ -394,7 +394,7 @@ sub init {
         or return $image->error(MT->translate("Reading file '[_1]' failed: [_2]", $file, $@));
     } elsif (my $blob = $param{Data}) {
     $image->{gd} = GD::Image->new($blob)
-        or return $image->error(MT->translate("Reading image failed: [_2]", $@));
+        or return $image->error(MT->translate("Reading image failed: [_1]", $@));
     }
     ($image->{width}, $image->{height}) = $image->{gd}->getBounds();
     $image;
