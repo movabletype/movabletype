@@ -7,6 +7,7 @@
 /* <![CDATA[ */
 function mtUpdateSignInWidget(u) {
     var el = document.getElementById('signin-widget-content');
+    var content = '';
     if (!el) return;
     if (u) {
         if (u && u.is_authenticated) {
@@ -19,7 +20,7 @@ function mtUpdateSignInWidget(u) {
     } else {
         u = mtGetUser();
     }
-    if (u) {
+    if (u && u.name) {
         var url;
         if (u.is_authenticated) {
             if (u.is_author) {

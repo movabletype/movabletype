@@ -307,6 +307,7 @@ function mtGetUser() {
  */
 </mt:Ignore>
 var mtFetchedUser = false;
+<mt:IfBlog>
 function mtFetchUser(cb) {
     if (!cb) cb = 'mtSetUser';
     if ( ( cb == 'mtSetUser' ) && mtGetUser() ) {
@@ -323,6 +324,7 @@ function mtFetchUser(cb) {
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
 }
+</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -346,6 +348,7 @@ function mtRememberMeOnClick(b) {
  * a token that is checked by the comment script.
  */
 </mt:Ignore>
+<mt:IfBlog>
 var mtRequestSubmitted = false;
 function mtCommentOnSubmit(f) {
     if (!mtRequestSubmitted) {
@@ -428,9 +431,15 @@ function mtUserOnLoad() {
                 if (u && u.sid && cf.sid)
                     cf.sid.value = u.sid;
             }
+            if (cf.post.disabled)
+                cf.post.disabled = false;
+            if (cf.preview_button.disabled)
+                cf.preview_button.disabled = false;
+            mtRequestSubmitted = false;
         }
     }
 }
+</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -439,6 +448,7 @@ function mtUserOnLoad() {
  * or hidden, depending on commenter type and blog configuration.
  */
 </mt:Ignore>
+<mt:IfBlog>
 function mtEntryOnLoad() {
     <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
     <mt:Unless tag="IfCommentsAccepted">mtHide('comments-open');</mt:Unless>
@@ -460,6 +470,7 @@ function mtEntryOnUnload() {
 }
 
 mtAttachEvent('usersignin', mtUserOnLoad);
+</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -551,6 +562,7 @@ function mtSignOutOnClick() {
  * user is logged in and blog comment policy.
  */
 </mt:Ignore>
+<mt:IfBlog>
 function mtShowGreeting() {
 <mt:IfRegistrationAllowed>
     var reg_reqd = <mt:IfRegistrationRequired>true<mt:Else>false</mt:IfRegistrationRequired>;
@@ -601,6 +613,7 @@ function mtShowGreeting() {
     mtShowCaptcha();
 </mt:IfRegistrationAllowed>
 }
+</mt:IfBlog>
 
 <mt:Ignore>
 /***
@@ -841,6 +854,7 @@ window.onload = mtInit;
 
 // END: fast browser onload init
 
+<mt:IfBlog>
 <mt:IfRegistrationAllowed>
 /***
  * If request contains a '#_login' or '#_logout' hash, use this to
@@ -866,3 +880,4 @@ if (clearCookie) {
         mtFetchUser();
 }
 </mt:IfRegistrationAllowed>
+</mt:IfBlog>
