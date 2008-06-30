@@ -892,8 +892,8 @@ sub rebuild_pages {
 
 sub rebuild_new_phase {
     my ($app) = @_;
-    my %reb_set = map { $_ => 1 } $app->param('id');
-    $app->rebuild_these( \%reb_set, how => MT::App::CMS::NEW_PHASE() );
+    require MT::CMS::Entry;
+    MT::CMS::Entry::publish_entries($app);
 }
 
 sub start_rebuild_pages {
