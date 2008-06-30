@@ -8140,7 +8140,7 @@ sub _hdlr_entries {
     }
     my($last_day, $next_day) = ('00000000') x 2;
     my $i = 0;
-    local $ctx->{__stash}{entries} = \@entries;
+    local $ctx->{__stash}{entries} = (@entries && defined $entries[0]) ? \@entries: undef;
     my $glue = $args->{glue};
     my $vars = $ctx->{__stash}{vars} ||= {};
     for my $e (@entries) {
