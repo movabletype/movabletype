@@ -1036,6 +1036,7 @@ sub core_upgrade_meta {
         $step_param{meta_column} = $class->properties->{meta_column}
             if $class->properties->{meta_column};
         $self->add_step('core_upgrade_meta_for_table', %step_param);
+        # TODO: wait, then we set it based on the class? we're adding a step for every object_types entry then!!
         $added_step{$class} = 1;
     }
     return 0;
