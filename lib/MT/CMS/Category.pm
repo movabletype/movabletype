@@ -434,6 +434,18 @@ sub post_delete {
     );
 }
 
+sub _adjust_ancestry {
+    my ( $cat, $ancestor ) = @_;
+    return unless $cat && $ancestor;
+    if ( $ancestor->parent && ( $ancestor->parent != $cat->id ) ) {
+        _adjust_ancestry($cat, $ancestor->parent_category);
+    }
+    else {
+        $ancestor->parent($cat->parent);
+        $ancestor->save;
+    }
+}
+
 sub move_category {
     my $app   = shift;
     my $type  = $app->param('_type');
@@ -443,11 +455,19 @@ sub move_category {
 
     my $cat        = $class->load( $app->param('move_cat_id') )
         or return;
-    my $new_parent = $app->param('move-radio');
 
-    return 1 if ( $new_parent == $cat->parent );
+    my $new_parent_id = $app->param('move-radio');
 
-    $cat->parent($new_parent);
+    return 1 if ( $new_parent_id == $cat->parent );
+
+    if ( $new_parent_id ) {
+        my $new_parent = $class->load( $new_parent_id )
+            or return;
+       if ( $cat->is_ancestor( $new_parent ) ) {
+            _adjust_ancestry( $cat, $new_parent );
+        }
+    }
+    $cat->parent($new_parent_id);
     my @siblings = $class->load(
         {
             parent  => $cat->parent,
