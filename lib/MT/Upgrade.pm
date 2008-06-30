@@ -1010,6 +1010,7 @@ sub core_upgrade_meta {
         my $class = MT->model($type);
         next TYPE if !$class->has_meta();  # nothing to upgrade
 
+        # TODO: what is this supposed to mean?
         my $t = $type;
         my $class_type = $class->properties->{class_type};
         if ($class_type && $class_type ne $class->datasource) {
@@ -1020,13 +1021,16 @@ sub core_upgrade_meta {
             }
             # If there's no appropriate superclass, go to update with the class
             # we have, not the class we want.
+            # TODO: if we're checking against the registry type without modifying it, why are we looking for a better object class first?
             next TYPE if $added_step{$type};  # already got that one
         }
         else {
             next TYPE if $added_step{$class->datasource};  # already got that one
         }
 
+        # TODO: why is this no longer the representative type for a table? that makes us upgrade tables multiple times
         my %step_param = ( type => $t );
+        # TODO: can't we just make this a different upgrade step?
         $step_param{plugindata} = 1
             if ( $class eq 'MT::Category' ) || ( $class eq 'MT::Folder' );
         $step_param{meta_column} = $class->properties->{meta_column}
@@ -1124,8 +1128,6 @@ sub core_upgrade_meta_for_table {
     my $dbd = $driver->dbd;
     my $stmt = $dbd->sql_class->new;
 
-    # assumes 'meta' is the meta column name; should be for all core types
-    # we are processing
     my $meta_col = $param{meta_column} || 'meta';
 
     my $ddl = $driver->dbd->ddl_class;
