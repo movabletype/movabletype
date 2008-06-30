@@ -922,7 +922,7 @@ class MTDatabaseBase extends ezsql {
             $post_select_limit = $rco;
             $no_resort = 1;
         } elseif ( !is_null($total_count) ) {
-            $orig_offset = $post_select_offset ? $post_select_offset : $orig_offset;
+            $orig_offset = $post_select_offset ? $post_select_offset : $offset;
             $orig_limit = $post_select_limit ? $post_select_limit : $limit;
         } else {
             $sql = $this->apply_limit_sql($sql . " <LIMIT>", $limit, $offset);
