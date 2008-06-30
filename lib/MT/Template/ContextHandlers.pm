@@ -11104,7 +11104,9 @@ sub _hdlr_user_session_cookie_name {
 sub _hdlr_commenter_name {
     my ($ctx) = @_;
     my $a = $ctx->stash('commenter');
-    return $a ? $a->nickname || '' : '';
+    my $name = $a ? $a->nickname || '' : '';
+    $name = _hdlr_comment_author($ctx) unless $name;
+    return $name;
 }
 
 ###########################################################################
