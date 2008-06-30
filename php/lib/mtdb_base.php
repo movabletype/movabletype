@@ -3075,7 +3075,9 @@ class MTDatabaseBase extends ezsql {
                 // take that value and store for meta row
                 foreach ($cfrow as $cffield => $cfvalue) {
                     if (preg_match("/^${field_prefix}v/", $cffield)) {
-                        if (isset($cfvalue)) {
+                        // FIXME: Some DBMS can't distinguish NULL from empty string.
+                        // Treat custom field that has empty string the same as field with no data.
+                        if (isset($cfvalue) && $cfvalue) {
                             $value = $cfvalue;
                             $field = $cffield;
                             break;
