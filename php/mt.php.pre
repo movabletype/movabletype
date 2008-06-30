@@ -29,6 +29,7 @@ class MT {
     var $caching = false;
     var $conditional = false;
     var $log = array();
+    var $warning = array();
     var $id;
     var $request;
     var $http_error;
@@ -596,6 +597,11 @@ class MT {
         $output = preg_replace('/^\s*/', '', $output);
         echo $output;
 
+        // if warnings found, show it.
+        if (!empty($this->warning)) {
+            $this->_dump($this->warning);
+        }
+
         if ($this->debugging) {
             $this->log("Queries: ".$mtdb->num_queries);
             $this->log("Queries executed:");
@@ -687,19 +693,23 @@ class MT {
         return $ctx->fetch($tpl, $cid);
     }
 
-    function log_dump() {
+    function _dump($dump) {
         if ($_SERVER['REMOTE_ADDR']) {
             // web view...
             echo "<div class=\"debug\" style=\"border:1px solid red; margin:0.5em; padding: 0 1em; text-align:left; background-color:#ddd; color:#000\"><pre>";
-            echo implode("\n", $this->log);
+            echo implode("\n", $dump);
             echo "</pre></div>\n\n";
         } else {
             // console view...
             $stderr = fopen('php://stderr', 'w'); 
-            fwrite($stderr,implode("\n", $this->log)); 
-            echo (implode("\n", $this->log)); 
+            fwrite($stderr,implode("\n", $dump)); 
+            echo (implode("\n", $dump)); 
             fclose($stderr);
         }
+    }
+
+    function log_dump() {
+        $this->_dump($this->log);
     }
 
     function error_handler($errno, $errstr, $errfile, $errline) {
@@ -791,6 +801,10 @@ class MT {
         $cb = array($this, 'translate_templatized_item');
         $out = preg_replace_callback('/<(?:_|mt)_trans phrase="(.+?)".*?>/i', $cb, $tmpl);
         return $out;
+    }
+
+    function warning_log($str) {
+        $this->warning[] = $str;
     }
 }
 

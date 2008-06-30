@@ -17,6 +17,11 @@ class Thumbnail {
         $this->src_file = $src;
     }
 
+    # Can we use function of GD?
+    function is_available () {
+        return extension_loaded('gd');
+    }
+
     # Calculate image size
     # This function returns array object.
     #   [0] thumbnail width
@@ -89,6 +94,11 @@ class Thumbnail {
     function get_thumbnail (&$dest, &$width, &$height, $scale = 0, $format = '%f-thumb-%wx%h%x', $dest_type = 'auto') {
         if (empty($this->src_file)) return false;
         if (!file_exists($this->src_file)) return false;
+        if (!$this->is_available()) {
+            global $mt;
+            $mt->warning_log($mt->translate('GD support has not been available. Please install GD support.'));
+            return false;
+        }
 
         # Get source image information
         list($this->src_w, $this->src_h, $this->src_type, $src_attr) = getimagesize($this->src_file);

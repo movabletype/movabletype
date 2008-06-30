@@ -27,6 +27,10 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
         $scale = $args['scale'];
 
     list($thumb, $thumb_w, $thumb_h) = get_thumbnail_file($asset, $blog, $width, $height, $scale);
+    if (empty($thumb)) {
+        return '';
+    }
+
     $target = "";
     if (isset($args['new_window']))
         $target = " target=\"_blank\"";

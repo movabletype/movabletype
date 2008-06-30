@@ -1300,7 +1300,9 @@ function userpic_url($asset, $blog, $author) {
     $thumb_h = $max_dim;
     $dest;
     $thumb_name = $static_file_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$format;
-    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name, 'png');
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name, 'png')) {
+        return '';
+    }
     $basename = basename($dest);
 
     $static_path = $mt->config('StaticWebPath');
@@ -1344,7 +1346,9 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $thumb_w = $width;
     $thumb_h = $height;
     $dest;
-    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name);
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name)) {
+        return '';
+    }
 
     # make url
     $basename = basename($dest);

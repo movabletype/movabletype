@@ -21,6 +21,9 @@ function smarty_function_mtcommenteruserpic($args, &$ctx) {
 
     require_once("MTUtil.php");
     $userpic_url = userpic_url($asset[0], $blog, $cmntr);
+    if (empty($userpic_url))
+        return '';
+
     $asset_path = asset_path($asset[0]['asset_file_path'], $blog);
     list($src_w, $src_h, $src_type, $src_attr) = getimagesize($asset_path);
     $dimensions = sprintf('width="%s" height="%s"', $src_w, $src_h);
