@@ -934,6 +934,11 @@ sub core_upgrade_functions {
             priority => 3.2,
             code => \&core_upgrade_meta,
         },
+        'core_upgrade_category_meta' => {
+            version_limit => 4.0057,
+            priority => 3.2,
+            code => \&core_upgrade_category_meta,
+        },
 
         # Helper upgrade routines for core_upgrade_meta
         # and possibly other object types that require
@@ -943,6 +948,10 @@ sub core_upgrade_functions {
         'core_upgrade_meta_for_table' => {
             priority => 1.5,
             code => \&core_upgrade_meta_for_table,
+        },
+        'core_upgrade_plugindata_meta_for_table' => {
+            priority => 1.5,
+            code => \&core_upgrade_plugindata_meta_for_table,
         },
         'core_drop_meta_for_table' => {
             priority => 3.4,
@@ -1004,40 +1013,38 @@ sub core_upgrade_meta {
 
     my $types = MT->registry('object_types');
     my %added_step;
-    TYPE: while (my ($type, $reg_class) = each %$types) {
-        next TYPE if $type eq 'plugin' && ref $reg_class;  # plugin reference
+    TYPE: while (my ($registry_type, $reg_class) = each %$types) {
+        next TYPE if $registry_type eq 'plugin' && ref $reg_class;  # plugin reference
 
-        my $class = MT->model($type);
+        my $class = MT->model($registry_type);
         next TYPE if !$class->has_meta();  # nothing to upgrade
 
-        # TODO: what is this supposed to mean?
-        my $t = $type;
+        # If this is a class-based package, find its super-most superclass with the same table.
         my $class_type = $class->properties->{class_type};
         if ($class_type && $class_type ne $class->datasource) {
-            $t = $class_type;
             if (my $super_class = MT->model($class->datasource)) {
                 $class = $super_class
                     if $super_class->datasource eq $class->datasource;
             }
             # If there's no appropriate superclass, go to update with the class
             # we have, not the class we want.
-            # TODO: if we're checking against the registry type without modifying it, why are we looking for a better object class first?
-            next TYPE if $added_step{$type};  # already got that one
-        }
-        else {
-            next TYPE if $added_step{$class->datasource};  # already got that one
         }
 
-        # TODO: why is this no longer the representative type for a table? that makes us upgrade tables multiple times
-        my %step_param = ( type => $t );
-        # TODO: can't we just make this a different upgrade step?
-        $step_param{plugindata} = 1
-            if ( $class eq 'MT::Category' ) || ( $class eq 'MT::Folder' );
+        # Don't add another step for this table if we already made one.
+        next TYPE if $added_step{$class->datasource};
+
+        # Categories' and Folders' metadata are only custom fields, which are stored
+        # in plugindata anyway. They're converted in their own upgrade step. So don't
+        # handle them here.
+        next TYPE if $class->isa('MT::Category');
+
+        my %step_param = ( type => $registry_type );
         $step_param{meta_column} = $class->properties->{meta_column}
             if $class->properties->{meta_column};
         $self->add_step('core_upgrade_meta_for_table', %step_param);
-        # TODO: wait, then we set it based on the class? we're adding a step for every object_types entry then!!
-        $added_step{$class} = 1;
+
+        # Yay, we added a step for this table.
+        $added_step{$class->datasource} = 1;
     }
     return 0;
 }
@@ -1077,6 +1084,41 @@ sub _save_meta {
     MT::Meta::Proxy::unserialize_blob($meta_obj) if $meta_is_blob;
 }
 
+sub core_upgrade_category_meta {
+    my $self = shift;
+    $self->add_step('core_upgrade_plugindata_meta_for_table', type => 'category');
+    $self->add_step('core_upgrade_plugindata_meta_for_table', type => 'folder');
+    return 0;
+}
+
+sub core_upgrade_plugindata_meta_for_table {
+    my $self = shift;
+    return 0 if $Installing;
+    my (%param) = @_;
+    my $type = $param{type};
+    return 0 unless $type;
+    my $class = MT->model($type);
+    return 0 unless $class;
+
+    my $cfclass = MT->model('field');
+    return 0 if !$cfclass;
+
+    # this looks weird, but it winds up invoking
+    # the loading of custom field types and the
+    # installation of their meta properties
+    MT->registry('tags');
+
+    # special case for types that use CustomField plugindata
+    # for storing their custom field metadata instead of a 'meta'
+    # column.
+    require CustomFields::Upgrade;
+    # TODO: really this should vary on $type but it's already translated for "categories"
+    $self->progress($self->translate_escape('Moving metadata storage for categories...'));
+    CustomFields::Upgrade::customfields_move_meta($self, $type);
+
+    return 0;
+}
+
 sub core_upgrade_meta_for_table {
     my $self = shift;
     return 0 if $Installing;
@@ -1085,28 +1127,6 @@ sub core_upgrade_meta_for_table {
     return 0 unless $type;
     my $class = MT->model($type);
     return 0 unless $class;
-    my $cfclass = MT->model('field');
-    my $plugindata = $param{plugindata} || 0;
-
-    if ($cfclass) {
-        # this looks weird, but it winds up invoking
-        # the loading of custom field types and the
-        # installation of their meta properties
-        MT->registry('tags');
-    }
-
-    # special case for types that use CustomField plugindata
-    # for storing their custom field metadata instead of a 'meta'
-    # column.
-    if ($cfclass && $plugindata) {
-        require CustomFields::Upgrade;
-        $self->progress($self->translate_escape('Moving metadata storage for categories...'));
-        CustomFields::Upgrade::customfields_move_meta($self, $type);
-        return 0;
-    }
-    if ($plugindata) {
-        return 0;
-    }
 
     my $offset = int($param{offset} || 0);
     my $count = int($param{count} || 0);
@@ -1186,6 +1206,7 @@ sub core_upgrade_meta_for_table {
                         foreach my $metaname (keys %$metadata) {
                             my $metavalue = $metadata->{$metaname};
                             if ($metaname eq 'customfields') {
+                                my $cfclass = MT->model('field');
                                 next unless $cfclass;
 
                                 # extra work for custom fields;
