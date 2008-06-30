@@ -505,7 +505,7 @@ function mtSignInOnClick(sign_in_element) {
             el = document.getElementById('comment-form-external-auth');
     }
     if (el)
-        el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <div class="status-indicator">&nbsp;</div>';
+        el.innerHTML = '<__trans phrase="Signing in..." escape="js"> <span class="status-indicator">&nbsp;</span>';
 
     mtClearUser(); // clear any 'anonymous' user cookie to allow sign in
     mtFetchUser('mtSetUserOrLogin');
