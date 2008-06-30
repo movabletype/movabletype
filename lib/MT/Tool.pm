@@ -63,7 +63,7 @@ sub main {
 
         $class->options(),
     );
-    usage(), exit if !$opts_good;
+    $class->show_usage(), exit if !$opts_good;
 
     return $verbose;
 }
