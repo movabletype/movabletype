@@ -12,7 +12,7 @@ function smarty_function_mtentriescount($args, &$ctx) {
         # $count is set
     } else {
         $entries = $ctx->stash('entries');
-        if (!is_array($entries)){
+        if (empty($entries) || !is_array($entries)){
             $blog = $ctx->stash('blog');
             $args['blog_id'] = $blog['blog_id'];
             $entries =& $ctx->mt->db->fetch_entries($args);
