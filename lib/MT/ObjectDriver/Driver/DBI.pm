@@ -221,6 +221,8 @@ sub _do_group_by {
         }
         my @returnvals = map { $$_ } @bindvars;
         $i++;
+        $class->call_trigger('post_group_by', \$count, \@returnvals)
+            unless $args->{no_triggers};
         return($count, @returnvals);
     };
     return Data::ObjectDriver::Iterator->new($iter, $finish);
@@ -260,7 +262,10 @@ sub _select_aggregate {
     $stmt->select_map_reverse({});
     $stmt->add_select($select => $select);
     my $sql = $stmt->as_sql;
-    $driver->select_one($sql, $stmt->bind);
+    my $value = $driver->select_one($sql, $stmt->bind);
+    $class->call_trigger('post_select_aggregate', \$value)
+        unless $orig_args->{no_triggers};
+    return $value;
 }
 
 sub _decorate_column_names_in {
@@ -557,6 +562,31 @@ MT::ObjectDriver::Driver::DBI
 =head1 METHODS
 
 TODO
+
+=head1 Callbacks
+
+MT::ObjectDriver::Driver::DBI fires the following callbacks,
+or "triggers" when it loads data from the database.
+
+=over 4
+
+=item * post_select_aggregate
+
+    callback($class, \$value)
+
+Callback issued prior to returning the value that is retrieved
+as the result of select_one method.
+
+=item * post_group_by
+
+    callback($class, \$value, \@retrunvals)
+
+Callback issued prior to returning the number and additional return
+values that are retrieved as the result of grouping query.  The value
+in the $value parameter is what was calculated from the database.
+For example, in count_group_by method, $value holds the count for each
+group, while in sum_group_by method, $value holds the sum for each group.
+@returnvals parameter holds the additional data that wiil be retured.
 
 =head1 AUTHOR & COPYRIGHT
 
