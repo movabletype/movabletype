@@ -1187,6 +1187,7 @@ sub core_upgrade_meta_for_table {
     my %fields;
 
     my @ids;
+    my $cfclass = MT->model('field');
     while (my $row = $sth->fetchrow_arrayref) {
         $rows++;
         my ($rawmeta, $id) = @$row;
@@ -1206,7 +1207,6 @@ sub core_upgrade_meta_for_table {
                         foreach my $metaname (keys %$metadata) {
                             my $metavalue = $metadata->{$metaname};
                             if ($metaname eq 'customfields') {
-                                my $cfclass = MT->model('field');
                                 next unless $cfclass;
 
                                 # extra work for custom fields;
