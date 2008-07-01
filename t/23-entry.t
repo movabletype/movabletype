@@ -57,6 +57,7 @@ $entry->excerpt('');
 is($entry->excerpt, '', 'excerpt empty');
 is($entry->get_excerpt, $entry->text . '...', 'get_excerpt');
 $blog->words_in_excerpt(3);
+$entry->cache_property('blog', undef, $blog);
 is($entry->get_excerpt, 'On a drizzly...', 'get_excerpt');
 $entry->convert_breaks('textile_2');
 $entry->text("Foo _bar_ baz");
