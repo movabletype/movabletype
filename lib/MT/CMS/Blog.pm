@@ -413,6 +413,10 @@ sub list {
     $param{screen_class} = "list-blog";
     $param{screen_id} = "list-blog";
     $param{listing_screen} = 1;
+    if ( my $blog_name = $app->param('blog_name') ) {
+        $param{error}     = 1;
+        $param{blog_name} = $blog_name;
+    }
     return $app->load_tmpl( 'list_blog.tmpl', \%param );
 }
 

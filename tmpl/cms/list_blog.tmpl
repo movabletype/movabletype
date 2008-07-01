@@ -14,6 +14,13 @@
             <__trans phrase="You have successfully refreshed your templates.">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <__trans phrase="You can not refresh templates: [_1]" params="<mt:var name="blog_name" escape="html">">
+        </mtapp:statusmsg>
+    </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:if name="can_create_blog">
