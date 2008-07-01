@@ -137,7 +137,7 @@ sub init_callbacks {
         }
     }
     if (my $init = _getset( $c, 'init' )) {
-        if ( $init && !ref($init) ) {
+        if ( !ref($init) ) {
             $init = MT->handler_to_coderef($init);
         }
         return $init->($c);
