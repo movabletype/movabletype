@@ -22,10 +22,12 @@ isa_ok($mt, 'MT', 'Is MT');
     my $asset = MT::Asset->load({id => 1});
     isa_ok($asset, 'MT::Asset::Image', 'Is MT::Asset::Image');
 
-    # method validation\
+    # method validation
+    my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time);
+    my $cache_path = sprintf("%04d/%02d", $year + 1900, $mon + 1);
 #    is($asset->class, 'Image', 'class');
     is($asset->class_label, 'Image', 'class_label');
-    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], 't/site/assets_c/2008/06/test-thumb-640x480.jpg', 'thumbnail');
+    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], "t/site/assets_c/$cache_path/test-thumb-640x480.jpg", 'thumbnail');
     is($asset->image_width, 640, 'image_width'); 
     is($asset->image_height, 480, 'height');
     is($asset->as_html, '<form mt:asset-id="1" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://narnia.na/nana/images/test.jpg">View image</a></form>', 'as_html');
