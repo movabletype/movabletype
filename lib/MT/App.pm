@@ -2102,7 +2102,8 @@ sub show_error {
     $tmpl->param( $param );
     my $out = $tmpl->output;
     if (!defined $out) {
-        return $tmpl->errstr;
+        return "Can't build error template; got error '" . $tmpl->errstr
+            . "'. Giving up. Original error was <pre>$param->{error}</pre>";
     }
     return $app->l10n_filter($out);
 }
