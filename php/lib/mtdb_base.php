@@ -3069,7 +3069,7 @@ class MTDatabaseBase extends ezsql {
             $field_prefix = "${datasource}_meta_";
             $meta = array();
             foreach ($result as $cfrow) {
-                unset($value);
+                $value = '';
                 unset($field);
                 // need to test for each v* column to see which is populated
                 // take that value and store for meta row
