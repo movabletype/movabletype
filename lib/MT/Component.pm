@@ -136,6 +136,13 @@ sub init_callbacks {
             }
         }
     }
+    if (my $init = _getset( $c, 'init' )) {
+        if ( $init && !ref($init) ) {
+            $init = MT->handler_to_coderef($init);
+        }
+        return $init->($c);
+    }
+    return 1;
 }
 
 sub load_registry {
