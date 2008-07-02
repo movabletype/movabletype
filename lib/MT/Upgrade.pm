@@ -991,7 +991,7 @@ sub core_upgrade_functions {
             },
         },
         'core_recover_sysadmin_permissions' => {
-            version_limit => 4.0067,
+            version_limit => 4.0066,
             priority => 3.5,
             updater => {
                 type => 'permission',

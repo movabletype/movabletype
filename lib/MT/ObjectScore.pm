@@ -20,10 +20,22 @@ __PACKAGE__->install_properties({
         'ip'           => 'string(16)',
     },
     indexes => {
-        namespace => 1,
-        object_id => 1,
-        author_id => 1,
-        ip        => 1,
+        # usually used to remove all scores for a given object
+        ds_obj => {
+            columns => ['object_ds', 'object_id'],
+        },
+        # common requests for scoring
+        ns_user_ds_obj => {
+            columns => ['namespace', 'author_id', 'object_ds', 'object_id'],
+        },
+        # common requests for anonymous scoring (ip-based)
+        ns_ip_ds_obj => {
+            columns => ['namespace', 'ip', 'object_ds', 'object_id'],
+        },
+        # for scored_by method
+        user_ns => {
+            columns => ['author_id', 'namespace'],
+        },
     },
     defaults => {
         object_id => 0,
