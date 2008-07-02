@@ -745,8 +745,8 @@ sub userpic_html {
     my $author = shift;
     my ($thumb_url, $w, $h) = $author->userpic_url(@_) or return;
     return unless $thumb_url;
-    sprintf q{<img src="%s" width="%d" height="%d" alt="" />},
-        MT::Util::encode_html($thumb_url), $w, $h;
+    sprintf q{<img src="%s?%d" width="%d" height="%d" alt="" />},
+      MT::Util::encode_html($thumb_url), $author->userpic->id, $w, $h;
 }
 
 1;
