@@ -27,7 +27,7 @@ BEGIN {
             $ENV{MT_CONFIG} = File::Spec->catfile($ENV{MT_HOME}, "t", $ENV{MT_CONFIG});
         }
     } else {
-        $ENV{MT_CONFIG} = File::Spec->catfile($ENV{MT_HOME}, "t", "mt.cfg");
+        $ENV{MT_CONFIG} = File::Spec->catfile($ENV{MT_HOME}, "t", "sqlite-test.cfg");
     }
     chdir $ENV{MT_HOME};
     my $ds_dir = File::Spec->catdir($ENV{MT_HOME}, "t", "db");
