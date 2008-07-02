@@ -1691,7 +1691,7 @@ sub refresh_all_templates {
     require MT::Permission;
     require MT::Util;
 
-    my @blogs;
+    my @blog_ids;
     my $refreshed;
     foreach my $blog_id (@id) {
         my $blog;
@@ -1708,7 +1708,7 @@ sub refresh_all_templates {
                     && !$perms->can_administer_blog() )
               )
             {
-                push @blogs, $blog->name;
+                push @blog_ids, $blog->id;
                 next;
             }
         }
@@ -1883,8 +1883,8 @@ sub refresh_all_templates {
         }
         $refreshed = 1;
     }
-    if (@blogs) {
-        $app->add_return_arg( 'blog_name' => join( ',', @blogs ) );
+    if (@blog_ids) {
+        $app->add_return_arg( 'error_id' => join( ',', @blog_ids ) );
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
     $app->call_return;

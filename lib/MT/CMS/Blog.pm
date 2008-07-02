@@ -413,9 +413,14 @@ sub list {
     $param{screen_class} = "list-blog";
     $param{screen_id} = "list-blog";
     $param{listing_screen} = 1;
-    if ( my $blog_name = $app->param('blog_name') ) {
-        $param{error}     = 1;
-        $param{blog_name} = $blog_name;
+    if ( my @blog_ids = split ',', $app->param('error_id') ) {
+        $param{error} = 1;
+        my @names;
+        foreach my $blog_id (@blog_ids) {
+            my ($blog) = grep { $_->{id} eq $blog_id } @$blog_loop;
+            push @names, $blog->{name} if $blog;
+        }
+        $param{blog_name} = join ',', @names;
     }
     return $app->load_tmpl( 'list_blog.tmpl', \%param );
 }
