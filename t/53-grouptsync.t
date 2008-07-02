@@ -1,20 +1,22 @@
 # $Id$
 
 use strict;
-use MT::Author;
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT;
-use strict;
-use MT::Auth;
+use Test::More;
 
 my $number = 25;
 
-use Test::More tests => 25;
-
-use MT;
-
 use vars qw( $DB_DIR $T_CFG );
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+use MT::Test;
+
+my $mt = MT->instance;
+
+if ( !$mt->component('enterprise') ) {
+    plan skip_all => "Enterprise pack is not installed.";
+} else {
+    plan tests => $number;
+}
 
 SKIP: {
 eval "require Net::LDAP;";
@@ -26,7 +28,12 @@ if ($@) {
     skip "MT::LDAP is not found.  Did you enable Enterprise Pack?", $number;
 }
 
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+MT::Test->import( qw(:db :data) );
+
+require MT::Author;
+require MT::Auth;
+require MT::Auth::LDAP;
+
 if (!MT::ConfigMgr->instance->LDAPUserIdAttribute) {
     print "Set LDAPUserIdAttribute directive or this test will fail.\n";
 }
@@ -179,9 +186,6 @@ sub _ldapbind {
     1;
 }
     
-use MT::Auth;
-use MT::Auth::LDAP;
-
 sub ldapadd_user {
     my (%opt) = @_;
     my $auth = MT::LDAP->new;
