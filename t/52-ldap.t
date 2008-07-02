@@ -3,15 +3,21 @@
 use strict;
 my $number = 15;
 
-use Test::More tests => 15;
+use Test::More;
 
-use MT;
-
-use vars qw( $DB_DIR $T_CFG );
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use MT::Test qw(:db :data);
+use MT;
+use vars qw( $DB_DIR $T_CFG );
+use MT::Test;
 
+my $mt = MT->instance or die MT->errstr;
 SKIP: {
+if ( !$mt->component('enterprise') ) {
+    plan skip_all => "Enterprise pack is not installed";
+} else {
+    plan tests => $number;
+}
+
 eval "require Net::LDAP;";
 if ($@) {
     skip "Net::LDAP is not installed.", $number;
@@ -22,7 +28,8 @@ if ($@) {
 }
 {
 # @test create MT object
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
+MT::Test->import( qw(:db :data) );
+
 ok($mt);
 
 # @test create MT::LDAP object
