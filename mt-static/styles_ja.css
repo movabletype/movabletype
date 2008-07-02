@@ -40,6 +40,10 @@
   margin-left: 95px;
 }
 
+#category-field .field-content {
+    width: 185px;
+}
+
 #calendar #calendar-content {
   overflow: auto;
 }
