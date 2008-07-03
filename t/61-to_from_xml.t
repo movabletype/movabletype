@@ -57,12 +57,38 @@ foreach my $key (keys %$types) {
     $oldies{$key} = \@data;
 }
 
-MT::BackupRestore->backup(undef, $printer, sub {}, sub {}, sub { print $_[0], "\n"; }, 0, 'UTF-8');
+my @tsnow    = gmtime(time);
+my $metadata = {
+    backup_by => $chuck->name . '(ID: ' . $chuck->id . ')',
+    backup_on => sprintf(
+        "%04d-%02d-%02dT%02d:%02d:%02d",
+        $tsnow[5] + 1900,
+        $tsnow[4] + 1,
+        @tsnow[ 3, 2, 1, 0 ]
+    ),
+    #backup_what    => join( ',', @blog_ids ),
+    schema_version => MT->config->SchemaVersion,
+};
+
+MT::BackupRestore->backup(
+    undef, # no blog_ids
+    $printer, sub {}, sub {}, sub { print $_[0], "\n"; }, 
+    0, 'UTF-8',
+    $metadata
+);
 
 use IO::String;
 my $h = IO::String->new(\$backup_data);
 my (%objects, %deferred, @errors);
-MT::BackupRestore->restore_process_single_file($h, \%objects, \%deferred, \@errors, "4.0", 0, sub { print $_[0], "\n"; });
+MT::BackupRestore->restore_process_single_file(
+    $h, 
+    \%objects, 
+    \%deferred, 
+    \@errors, 
+    MT->config->SchemaVersion, 
+    0, 
+    sub { print $_[0], "\n"; }
+);
 
 is(scalar(keys %deferred), 0, 'no deferred objects remain');
 warn join "\n", @errors if @errors;
