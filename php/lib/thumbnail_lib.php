@@ -169,6 +169,7 @@ class Thumbnail {
         }
         imagedestroy($src_img);
 
+        return true;
     }
 }
 ?>
