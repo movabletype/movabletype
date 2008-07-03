@@ -668,6 +668,10 @@ sub auth_icon_url {
 
 sub userpic {
     my $author = shift;
+    my (%param) = @_;
+
+    my $asset = $param{Asset};
+    return $asset if $asset;
 
     my $asset_id = $author->userpic_asset_id or return;
     require MT::Asset;
@@ -746,7 +750,7 @@ sub userpic_html {
     my ($thumb_url, $w, $h) = $author->userpic_url(@_) or return;
     return unless $thumb_url;
     sprintf q{<img src="%s?%d" width="%d" height="%d" alt="" />},
-      MT::Util::encode_html($thumb_url), $author->userpic->id, $w, $h;
+      MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
 }
 
 1;
