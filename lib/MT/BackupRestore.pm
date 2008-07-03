@@ -35,7 +35,7 @@ sub core_backup_instructions {
             'order' => 400
         },
         'author'        => {
-            'order' => 400
+            'order' => 420
         },
         # These 'association' classes should be backed up
         # after the object classes.
