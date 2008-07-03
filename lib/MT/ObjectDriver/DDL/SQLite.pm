@@ -89,53 +89,40 @@ sub column_defs {
     my $dbh = $driver->r_handle;
     my $table_name = $class->table_name;
     my $field_prefix = $class->datasource;
-    my $props = $class->properties;
-    my $obj_defs = $class->column_defs;
 
     return undef unless $dbh;
 
     # Disable RaiseError if set, since the table we're about to describe
     # may not actually exist (in which case, the return value is undef,
     # signalling an nonexistent table to the caller).
-    local $dbh->{RaiseError} = 0;
-    my $sth = $dbh->prepare('SELECT * FROM ' . $table_name . ' LIMIT 1')
+    local $dbh->{RaiseError} = 1;
+    my $sth = $dbh->prepare('PRAGMA table_info("' . $table_name . '")')
         or return undef;
     $sth->execute or return undef;
-    my $fields = $sth->{'NUM_OF_FIELDS'};
-    my $coltypes = $sth->{'TYPE'};
-    my $name = $sth->{'NAME'};
-    my $null = $sth->{'NULLABLE'};
-    #my $skip_null_checks;
-    #if (!$null || !@$null) {
-    #    $skip_null_checks = 1;
-    #}
     my $defs = {};
-    foreach (my $col = 0; $col < $fields; $col++) {
-        my $colname = lc $name->[$col];
+    while (my $row = $sth->fetchrow_hashref) {
+        my $colname = lc $row->{name};
         $colname =~ s/^\Q$field_prefix\E_//i;
-        my $coltype = $ddl->db2type($coltypes->[$col]);
-        if ($coltypes->[$col] =~ m/\((\d+)\)/) {
+        my $coltype = $ddl->db2type($row->{type});
+        if ($row->{type} =~ m/\((\d+)\)/) {
             $defs->{$colname}{size} = $1;
         }
         $defs->{$colname}{type} = $coltype;
         if ($colname =~ m/_id$/) {
             $defs->{$colname}{key} = 1;
         }
-        if ( $coltype eq 'integer' && $defs->{$colname}{key} ) {
+        if ( ($coltype eq 'integer') && $row->{pk} ) {
             # with sqlite, integer primary keys auto increment. always.
+            $defs->{$colname}{key} = 1;
             $defs->{$colname}{auto} = 1;
         }
-        #if ($skip_null_checks) {
-        if ( exists $obj_defs->{$colname} ) {
-            $defs->{$colname}{not_null} = $obj_defs->{$colname}{not_null};
-        }
-        #} else {
-        #    if ( (defined $null->[$col]) && ($null->[$col] == 0) ) {
-        #        $defs->{$colname}{not_null} = 1;
-        #    }
-        #}
+        $defs->{$colname}{not_null} = 1
+            if $row->{notnull};
+        $defs->{$colname}{default} = $row->{dflt_value}
+            if defined $row->{dflt_value};
     }
     $sth->finish;
+    return undef unless %$defs;
     return $defs;
 }
 
@@ -152,11 +139,31 @@ sub db2type {
 sub type2db {
     my $ddl = shift;
     my ($def) = @_;
+    return undef if !defined $def;
     my $type = (ref($def) eq 'HASH') ? $def->{type} : $def;
+    $type = $def->{type};
     if ($type eq 'string') {
-        $type = 'varchar(' . $def->{size} . ')';
+        return 'varchar(' . $def->{size} . ')';
+    } elsif ($type eq 'smallint' ) {
+        return 'smallint';
+    } elsif ($type eq 'bigint' ) {
+        return 'bigint';
+    } elsif ($type eq 'boolean') {
+        return 'boolean';
+    } elsif ($type eq 'datetime') {
+        return 'datetime';
+    } elsif ($type eq 'timestamp') {
+        return 'timestamp';
+    } elsif ($type eq 'integer') {
+        return 'integer';
+    } elsif ($type eq 'blob') {
+        return 'blob';
+    } elsif ($type eq 'text') {
+        return 'text';
+    } elsif ($type eq 'float') {
+        return 'float';
     }
-    return $type;
+    Carp::croak("undefined type: ". $type);
 }
 
 sub can_add_constraint { 0 }

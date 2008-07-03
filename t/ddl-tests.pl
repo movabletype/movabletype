@@ -111,8 +111,6 @@ use Test::More;
 sub startup : Test(startup) {
     my $self = shift;
 
-    $self->init_testdb();
-
     my $driver    = MT::Object->dbi_driver;
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
@@ -311,10 +309,16 @@ sub fixable : Tests(12) {
     my $defs = $ddl_class->column_defs('Ddltest::Fixable');
     ok($defs->{baz}, 'Ddltest::Fixable table has baz column after creation');
 
-    my $sql = $ddl_class->drop_column_sql('Ddltest::Fixable', 'baz');
-    ok($sql, 'Ddltest::Fixable can have column dropping sql');
-    my $res = $dbh->do($sql);
-    ok($res, 'Ddltest::Fixable could have its column dropped');
+    my $sql;
+    my $res;
+
+    SKIP: {
+        skip("Driver cannot drop columns", 2) unless $ddl_class->can_drop_column;
+        $sql = $ddl_class->drop_column_sql('Ddltest::Fixable', 'baz');
+        ok($sql, 'Ddltest::Fixable can have column dropping sql');
+        $res = $dbh->do($sql);
+        ok($res, 'Ddltest::Fixable could have its column dropped');
+    }
 
     {
         local Ddltest::Fixable->properties->{column_defs}->{borf} = 'string(10)';
@@ -326,7 +330,10 @@ sub fixable : Tests(12) {
     }
 
     $defs = $ddl_class->column_defs('Ddltest::Fixable');
-    ok(!$defs->{baz},  'Ddltest::Fixable did indeed have a column dropped');
+    SKIP: {
+        skip("Driver cannot drop columns", 1) unless $ddl_class->can_drop_column;
+        ok(!$defs->{baz},  'Ddltest::Fixable did indeed have a column dropped');
+    }
     ok( $defs->{borf}, 'Ddltest::Fixable did indeed have a column added');
 
     STMT: for my $stmt ($ddl_class->fix_class('Ddltest::Fixable')) {
