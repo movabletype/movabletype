@@ -1,8 +1,8 @@
 [
 { "r" : "1", "t" : "", "e" : ""}, #1
-{ "r" : "1", "t" : "<MTCGIPath>", "e" : "http://localhost/cgi-bin/"}, #2
+{ "r" : "1", "t" : "<MTCGIPath>", "e" : "http://narnia.na/cgi-bin/"}, #2
 { "r" : "1", "t" : "<MTCGIRelativeURL>", "e" : "/cgi-bin/"}, #3
-{ "r" : "1", "t" : "<MTStaticWebPath>", "e" : "http://localhost/mt-static/"}, #4
+{ "r" : "1", "t" : "<MTStaticWebPath>", "e" : "http://narnia.na/cgi-bin/mt-static/"}, #4
 { "r" : "1", "t" : "<MTCommentScript>", "e" : "mt-comments.cgi"}, #5
 { "r" : "1", "t" : "<MTTrackbackScript>", "e" : "mt-tb.cgi"}, #6
 { "r" : "1", "t" : "<MTSearchScript>", "e" : "mt-search.cgi"}, #7
@@ -16,7 +16,7 @@
 { "r" : "1", "t" : "<MTIfNonEmpty tag=\"MTDate\">nonempty</MTIfNonEmpty>", "e" : "nonempty"}, #15
 { "r" : "1", "t" : "", "e" : ""}, #16
 { "r" : "1", "t" : "<MTIfNonZero tag=\"MTBlogEntryCount\">nonzero</MTIfNonZero>", "e" : "nonzero"}, #17
-{ "r" : "1", "t" : "<MTCommenterNameThunk>", "e" : "<script type='text/javascript' src='http://localhost/cgi-bin/mt-comments.cgi?__mode=cmtr_name_js'></script>"}, #18
+{ "r" : "1", "t" : "<MTCommenterNameThunk>", "e" : "<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>"}, #18
 { "r" : "0", "t" : "<MTCommenterName>", "e" : ""}, #19 TBD
 { "r" : "0", "t" : "<MTCommenterEmail>", "e" : ""}, #20 TBD
 { "r" : "1", "t" : "<MTBlogs><MTBlogID></MTBlogs>", "e" : "1"}, #21
@@ -98,14 +98,14 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorURL></MTEntries>", "e" : "http://chuckd.com/"}, #65
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink></MTEntries>", "e" : "<a href=\"http://chuckd.com/\">Chucky Dee</a>"}, #66
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryID></MTEntries>", "e" : "1"}, #67
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackLink></MTEntries>", "e" : "http://localhost/cgi-bin/mt-tb.cgi/1"}, #68
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackLink></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-tb.cgi/1"}, #68
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--
 <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
          xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"
          xmlns:dc=\"http://purl.org/dc/elements/1.1/\">
 <rdf:Description
     rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
-    trackback:ping=\"http://localhost/cgi-bin/mt-tb.cgi/1\"
+    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"
     dc:title=\"A Rainy Day\"
     dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
     dc:subject=\"\"
@@ -120,8 +120,8 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategory></MTEntries>", "e" : ""}, #72
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategories><MTCategoryLabel></MTEntryCategories></MTEntries>", "e" : ""}, #73
 { "r" : "0", "t" : "<MTTypeKeyToken>", "e" : "token"}, #74 TBD
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignInLink></MTEntries>", "e" : "https://www.typekey.com/t/typekey/login?&amp;lang=en_US&amp;t=token&amp;v=1.1&amp;_return=http://localhost/cgi-bin/mt-comments.cgi%3f__mode=handle_sign_in%26key=TypeKey%26static=0%26entry_id=1"}, #75
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignOutLink></MTEntries>", "e" : "http://localhost/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;logout=1&amp;entry_id=1"}, #76
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignInLink></MTEntries>", "e" : "https://www.typekey.com/t/typekey/login?&amp;lang=en_US&amp;t=token&amp;v=1.1&amp;_return=http://narnia.na/cgi-bin/mt-comments.cgi%3f__mode=handle_sign_in%26key=TypeKey%26static=0%26entry_id=1"}, #75
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignOutLink></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;logout=1&amp;entry_id=1"}, #76
 { "r" : "0", "t" : "<MTEntries lastn=\"1\"></MTEntries>", "e" : ""}, #77 TBD -- CommentFields
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthor></MTComments>", "e" : "John Doe"}, #78
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackCount></MTEntries>", "e" : "1"}, #79
@@ -164,7 +164,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
 { "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://localhost/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -177,7 +177,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingBlogName></MTPings>", "e" : "Example Blog"}, #126
 { "r" : "1", "t" : "<MTCategories><MTCategoryLabel>: <MTCategoryCount>; </MTCategories>", "e" : "foo: 1; subfoo: 1; "}, #127
 { "r" : "1", "t" : "<MTCategories><MTCategoryArchiveLink>; </MTCategories>", "e" : "http://narnia.na/nana/archives/foo/; http://narnia.na/nana/archives/foo/subfoo/; "}, #128
-{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTCategoryLabel>: <MTCategoryTrackbackLink> </MTCategories>", "e" : "bar: http://localhost/cgi-bin/mt-tb.cgi/2 foo:  subfoo:  "}, #129
+{ "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTCategoryLabel>: <MTCategoryTrackbackLink> </MTCategories>", "e" : "bar: http://narnia.na/cgi-bin/mt-tb.cgi/2 foo:  subfoo:  "}, #129
 { "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTCategoryLabel></MTSubCategories>", "e" : "barfoo"}, #130
 { "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\"><MTSubCatIsFirst>First: <MTCategoryLabel></MTSubCatIsFirst></MTSubCategories>", "e" : "First: bar"}, #131
 { "r" : "1", "t" : "<MTSubCategories show_empty=\"1\" top=\"1\">[[<MTCategoryLabel><MTSubCatsRecurse>]]</MTSubCategories>", "e" : "[[bar]][[foo[[subfoo]]]]"}, #132
@@ -231,18 +231,18 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\",\"><MTTagID></MTEntryTags></MTEntries>", "e" : "1,2,3"}, #179
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged>has tags</MTEntryIfTagged></MTEntries>", "e" : "has tags"}, #180
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryIfTagged tag=\"grandpa\">tagged</MTEntryIfTagged></MTEntries>", "e" : "tagged"}, #181
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://localhost/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=grandpa&amp;limit=20 http://localhost/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=rain&amp;limit=20 http://localhost/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=strolling&amp;limit=20"}, #182
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTags glue=\" \"><MTTagSearchLink></MTEntryTags></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=grandpa&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=rain&amp;limit=20 http://narnia.na/cgi-bin/mt-search.cgi?blog_id=1&amp;tag=strolling&amp;limit=20"}, #182
 { "r" : "1", "t" : "<MTTags glue=':'><MTTagCount></MTTags>", "e" : "2:1:4:1:5"}, #183
 { "r" : "1", "t" : "<MTIfTypeKeyToken>tokened</MTIfTypeKeyToken>", "e" : "tokened"}, #184
 { "r" : "1", "t" : "<MTIfCommentsModerated>moderated</MTIfCommentsModerated>", "e" : "moderated"}, #185
 { "r" : "1", "t" : "<MTIfRegistrationAllowed>allowed</MTIfRegistrationAllowed>", "e" : "allowed"}, #186
 { "r" : "1", "t" : "<MTIfArchiveTypeEnabled type=\"Category\">enabled</MTIfArchiveTypeEnabled>", "e" : "enabled"}, #187
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTFileTemplate format=\"%y/%m/%d/%b\"></MTEntries>", "e" : "1978/01/31/a_rainy_day"}, #188
-{ "r" : "1", "t" : "<MTAdminCGIPath>", "e" : "http://localhost/cgi-bin/"}, #189
+{ "r" : "1", "t" : "<MTAdminCGIPath>", "e" : "http://narnia.na/cgi-bin/"}, #189
 { "r" : "1", "t" : "<MTConfigFile>", "e" : "CFG_FILE"}, #190
 { "r" : "1", "t" : "<MTAdminScript>", "e" : "mt.cgi"}, #191
 { "r" : "1", "t" : "<MTAtomScript>", "e" : "mt-atom.cgi"}, #192
-{ "r" : "1", "t" : "<MTCGIHost>", "e" : "localhost"}, #193
+{ "r" : "1", "t" : "<MTCGIHost>", "e" : "narnia.na"}, #193
 { "r" : "1", "t" : "<MTBlogFileExtension>", "e" : ".html"}, #194
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUsername></MTEntries>", "e" : "Chuck D"}, #195
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorDisplayName></MTEntries>", "e" : "Chucky Dee"}, #196
@@ -273,7 +273,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
 { "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "1.5,0,0,"}, #223
-{ "r" : "1", "t" : "<MTComments lastn='3'>,<MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : ",John Doe: trusted,Comment 3,Chucky Dee: trusted"}, #224
+{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted,Comment 3: untrusted,Chucky Dee: trusted"}, #224
 { "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
 { "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
@@ -397,10 +397,10 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>", "e" : "page;entry;"}, #345
 { "r" : "1", "t" : "<MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>", "e" : "1961.01.31.07.45.01;1962.01.31.07.45.01;1963.01.31.07.45.01;1964.01.31.07.45.01;1965.01.31.07.45.01;1978.01.31.07.45.00;"}, #346
 { "r" : "1", "t" : "<MTAuthors lastn=\"2\"><MTAuthorID>;</MTAuthors>", "e" : "2;3;"}, #347
-{ "r" : "1", "t" : "<MTAuthors sort_by='name'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;"}, #348
+{ "r" : "1", "t" : "<MTAuthors sort_by='name'><MTAuthorName>;</MTAuthors>", "e" : "Bob D;Chuck D;"}, #348
 { "r" : "1", "t" : "<MTAuthors sort_by='nickname'><MTAuthorDisplayName>;</MTAuthors>", "e" : "Chucky Dee;Dylan;"}, #349
-{ "r" : "1", "t" : "<MTAuthors sort_by='email'><MTAuthorEmail>;</MTAuthors>", "e" : "chuckd@example.com;bobd@example.com;"}, #350
-{ "r" : "1", "t" : "<MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>", "e" : "http://chuckd.com/;;"}, #351
+{ "r" : "1", "t" : "<MTAuthors sort_by='email'><MTAuthorEmail>;</MTAuthors>", "e" : "bobd@example.com;chuckd@example.com;"}, #350
+{ "r" : "1", "t" : "<MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>", "e" : ";http://chuckd.com/;"}, #351
 { "r" : "1", "t" : "<MTAuthors display_name=\"Chucky Dee\"><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #352
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
@@ -410,8 +410,8 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetlabel$></MTAssets>", "e" : "Image photo"}, #358
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
-{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://localhost/mt-static/images/comment/mt_logo.png;MT:http://localhost/mt-static/images/comment/mt_logo.png;:;TypeKey:http://localhost/mt-static/images/comment/typekey_logo.png;"}, #362
+{ "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;"}, #361
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
@@ -445,11 +445,11 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetLabel$></MTAssets>", "e" : "Image photo"}, #393
 { "r" : "1", "t" : "<MTAssets lastn='1'><$MTAssetDescription$></MTAssets>", "e" : "This is a test photo."}, #394
 { "r" : "1", "t" : "<MTSetVar name='val' value='0'><MTIfNonEmpty name=\"val\">zero</MTIfNonEmpty>", "e" : "zero"}, #395
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='hoge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is hoge."}, #396
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='koge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is koge."}, #397
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='joge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is joge."}, #398
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='moge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is moge."}, #399
-{ "r" : "1", "t" : "<mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='__value__'></mt:if>", "e" : "value is poge"}, #400
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='hoge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='foo'>.</mt:if>", "e" : "value is hoge."}, #396
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='koge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='foo'>.</mt:if>", "e" : "value is koge."}, #397
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='joge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='foo'>.</mt:if>", "e" : "value is joge."}, #398
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='moge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='foo'>.</mt:if>", "e" : "value is moge."}, #399
+{ "r" : "1", "t" : "<mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'>value is hoge.<mt:elseif name='foo' eq='koge'>value is koge.<mt:else eq='joge'>value is joge.<mt:elseif eq='moge'>value is moge.<mt:else>value is <mt:getvar name='foo'>.</mt:if>", "e" : "value is poge."}, #400
 { "r" : "1", "t" : "<mt:setvar name='foo' value='poge'><mt:if name='foo' eq='hoge'><mt:else>value is <mt:var name='foo'></mt:if>", "e" : "value is poge"}, #401
 { "r" : "1", "t" : "<mt:setvar name='foo' value='1'><mt:if name='bar'>true<mt:else>false</mt:if>", "e" : "false"}, #402
 { "r" : "1", "t" : "<MTTags glue=',' sort_by='rank'><MTTagLabel> <MTTagRank></MTTags>", "e" : "verse 1,rain 2,anemones 4,grandpa 6,strolling 6"}, #403
