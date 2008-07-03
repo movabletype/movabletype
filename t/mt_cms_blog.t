@@ -9,27 +9,46 @@ use MT::Test qw(:db :data);
 use Test::More;
 
 
-plan tests => 17;
+plan tests => 25;
 
 {
     diag('test MT::CMS::Blog::_update_finfos');
 
     ok(MT->model('blog')->load(1), 'have a blog #1');
+    # This test blog has:
+    #   6 index templates
+    #   6 published entries across 6 different years
+    #   4 pages
+    #   2 placements (entry-category mappings)
+    #   individual, monthly, weekly, daily, category and page archives
+
+    sub finfos_of_type {
+        return MT->model('fileinfo')->count({ blog_id => 1, archive_type => shift });
+    }
+
+    is(finfos_of_type('index'),      6, 'blog #1 has 6 index template fileinfos');
+    is(finfos_of_type('Individual'), 6, 'blog #1 has 6 individual fileinfos');
+    is(finfos_of_type('Daily'),      6, 'blog #1 has 6 daily fileinfos');
+    is(finfos_of_type('Monthly'),    6, 'blog #1 has 6 monthly fileinfos');
+    is(finfos_of_type('Weekly'),     6, 'blog #1 has 6 weekly fileinfos');
+    is(finfos_of_type('Yearly'),     0, 'blog #1 has 0 yearly fileinfos');
+    is(finfos_of_type('Page'),       4, 'blog #1 has 4 page fileinfos');
+    is(finfos_of_type('Category'),   2, 'blog #1 has 2 category fileinfos');
 
     my $total_fileinfos = MT->model('fileinfo')->count({ blog_id => 1 });
-    is($total_fileinfos, 24, 'blog #1 has 24 fileinfos');
+    is($total_fileinfos, 36, 'blog #1 has 36 fileinfos');
 
     my $static_fileinfos = MT->model('fileinfo')->count({
         blog_id => 1, 
         virtual => [ \"= 0", \"is null" ],
     });
-    is($static_fileinfos, 24, "all blog #1's fileinfos are static");
+    is($static_fileinfos, 36, "all blog #1's fileinfos are static");
 
     my $mapped_fileinfos = MT->model('fileinfo')->count({
         blog_id => 1,
         templatemap_id => \"is not null",
     });
-    is($mapped_fileinfos, 18, "blog #1 has 18 fileinfos for archive pages (fileinfos with template maps)");
+    is($mapped_fileinfos, 30, "blog #1 has 30 fileinfos for archive pages (fileinfos with template maps)");
 
     require MT::CMS::Blog;
     my $ret = MT::CMS::Blog::_update_finfos(MT->instance, 1);
@@ -91,7 +110,7 @@ plan tests => 17;
     is(MT->model('fileinfo')->count({
         blog_id => 1,
         virtual => 1,
-    }), 18, '18 other fileinfos are virtual');
+    }), 30, '18 other fileinfos are virtual');
 }
 
 1;
