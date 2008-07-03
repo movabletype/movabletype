@@ -7,7 +7,11 @@ use lib 't/lib';
 use lib 't/extlib';
 use lib 'lib';
 
-use Test::More tests => 14;
+use Test::More;
+
+# plan tests => 14;
+plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
+exit;
 
 use HTTP::Response;
 use Net::Ping;
@@ -16,7 +20,8 @@ use MT;
 use MT::XMLRPC;
 use vars qw( $DB_DIR $T_CFG );
 
-use MT::Test qw(:db :data);
+use MT::Test;
+MT::Test->import( qw(:db :data) );
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
 isa_ok($mt, 'MT');
