@@ -76,6 +76,7 @@ TBLSQL
 
     }
     $sth->finish;
+    return undef unless %$defs;
 
     return $defs;
 }
