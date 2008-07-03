@@ -2195,12 +2195,12 @@ class MTDatabaseBase extends ezsql {
             if ($args['sort_order'] == 'ascend') {
                 $order = $query_order = 'asc';
             }
-        } elseif (isset($blog) && isset($blog['blog_sort_order_comments'])) {
+        } elseif ((isset($blog) && isset($blog['blog_sort_order_comments'])) && !isset($args['lastn'])) {
             if ($blog['blog_sort_order_comments'] == 'ascend') {
                 $order = $query_order = 'asc';
             }
         }
-        if ($order == 'asc' && (isset($args['lastn']) || isset($args['offset']))) {
+        if (($order == 'asc') && (isset($args['lastn']) || isset($args['offset']))) {
             $reorder = 1;
             $query_order = 'desc';
         }
