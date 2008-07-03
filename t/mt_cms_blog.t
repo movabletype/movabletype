@@ -110,7 +110,7 @@ plan tests => 25;
     is(MT->model('fileinfo')->count({
         blog_id => 1,
         virtual => 1,
-    }), 30, '18 other fileinfos are virtual');
+    }), 30, '30 other fileinfos are virtual');
 }
 
 1;
