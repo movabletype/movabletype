@@ -1,11 +1,5 @@
-<mt:unless name="cfg_exists">
-    <mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock>
-<mt:else>
-    <mt:setvarblock name="page_title"><__trans phrase="Configuration File Exists"></mt:setvarblock>
-</mt:unless>
-<mt:unless name="valid_static_path">
-    <mt:setvarblock name="html_head" append="1">
-        <style type="text/css" media="screen">
+<mt:setvarblock name="inline_styles">
+    <style type="text/css" media="screen">
         body {
             font-family: Candara, "Helvetica Neue", Arial, sans-serif;
             font-size: 12px;
@@ -75,6 +69,7 @@
             background: #fff;
             padding: 10px;
             margin-bottom: 1em;
+            height: 1%;  /*IE6 Hack*/
         }
         .no-static-path h3 {
             margin-top: 0;
@@ -96,14 +91,17 @@
         }
         .msg {
             margin: 0 0 10px 0;
-            padding: 16px 10px 16px 46px;
+            padding: 16px 10px;
         }
         .msg-error {
             background-color: #FF9;
         }
+        .msg, .no-static-path, fieldset {
+            height: 1%;  /* IE6 Hack */
+        }
         </style>
 
-        <script type="text/javascript">
+    <script type="text/javascript">
         /* <![CDATA[ */
         function getByID(n, d) {
             if (!d) d = document;
@@ -113,40 +111,52 @@
                 return d.all[n];
         }
         /* ]]> */
-        </script>
-    </mt:setvarblock>
-<mt:else>
-    <mt:setvarblock name="js_include" append="1">
+    </script>
+</mt:setvarblock>
+<mt:unless name="cfg_exists">
+    <mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock>
+    <mt:unless name="valid_static_path">
+        <mt:unless name="file_invalid">
+            <mt:setvarblock name="html_head" append="1">
+                <$mt:var name="inline_styles"$>
+            </mt:setvarblock>
+        </mt:unless>
+    <mt:else>
+        <mt:setvarblock name="js_include" append="1">
         <style type="text/css">
-        .msg {
-            margin: 0 0 10px 0;
-            padding: 16px 10px 16px 10px;
-        }
-        .msg-error {
-            background-color: #FF9;
-        }
-        #container  div.no-static-path,
-        #container #static_webpath_config {
-            display: none;
-        }
-        #container.bad-static-path div.no-static-path,
-        #container.bad-static-path #static_webpath_config {
-            display: block;
-        }
-        </style>
-        <script type="text/javascript">
-        /* <![CDATA[ */
-        function js_check() {
-            if (! openManual ) {
-                // mt.js not loading properly; static path incorrect
-                var c = getByID("container");
-                c.className = "bad-static-path";
+            .msg {
+                margin: 0 0 10px 0;
+                padding: 16px 10px 16px 10px;
             }
-        }
-        window.onload = js_check;
-        /* ]]> */
+            .msg-error {
+                background-color: #FF9;
+            }
+            #container  div.no-static-path,
+            #container #static_webpath_config {
+                display: none;
+            }
+            #container.bad-static-path div.no-static-path,
+            #container.bad-static-path #static_webpath_config {
+                display: block;
+            }
+            </style>
+            <script type="text/javascript">
+            /* <![CDATA[ */
+            function js_check() {
+                if (! openManual ) {
+                    // mt.js not loading properly; static path incorrect
+                    var c = getByID("container");
+                    c.className = "bad-static-path";
+                }
+            }
+            window.onload = js_check;
+            /* ]]> */
         </script>
-    </mt:setvarblock>
+        </mt:setvarblock>
+    </mt:unless>
+<mt:else>
+    <mt:setvarblock name="page_title"><__trans phrase="Configuration File Exists"></mt:setvarblock>
+    <$mt:var name="inline_styles"$>
 </mt:unless>
 
 <mt:include name="../cms/include/chromeless_header.tmpl">
@@ -226,9 +236,9 @@
             </mtapp:setting>
         </fieldset>
     </div>
-
-    <div class="right"><input type="submit" class="sb" value="<__trans phrase="Begin">" /></div>
-
+    <div class="action-buttons">
+        <div class="right"><input type="submit" class="sb" value="<__trans phrase="Begin">" /></div>
+    </div>
 </form>
 
 </mt:if>

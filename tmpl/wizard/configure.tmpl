@@ -162,7 +162,12 @@ window.onload = function() {
 
 <mt:unless name="success">
 <mt:setvarblock name="db_setup_url"><__trans phrase="http://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
-<p id="db_hint" class="hint"><__trans phrase="If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>." params="<mt:var name="db_setup_url">%%reTest();"></p>
+    <div id="db_hint">
+        <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
+        <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_2]">click here refresh this screen</a>." params="reTest();"></p>
+        <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
+    </div>
+    
 </mt:unless>
 
 <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
@@ -261,7 +266,7 @@ window.onload = function() {
 
 
 <mt:unless name="success">
-<div id="submit" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+<div id="submit" class="action-buttons" <mt:unless name="dbtype">style="display: none"</mt:unless>>
 <div class="right">
 <input name="test" type="submit" class="sb" value="<__trans phrase="Test Connection">" onclick="go('test');" />
 </div>
@@ -278,7 +283,7 @@ window.onload = function() {
 </mt:unless>
 
 <mt:if name="success">
-<div id="continue">
+<div id="continue" class="action-buttons">
 <div class="right">
 <input name="test" type="submit" class="sb" value="<__trans phrase="Test Connection">" onclick="go('test');" />
 <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />

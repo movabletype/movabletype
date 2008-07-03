@@ -63,6 +63,10 @@ p.intro {
 }
 #db_hint {
     margin-top: -10px;
+    margin-bottom: 10px;
+}
+#db_hint p {
+    margin-bottom: 3px;
 }
 #error_more {
     margin: 10px 0 15px;
@@ -354,6 +358,10 @@ table.show-admin td {
     width: 100%;
 }
 
+.action-buttons {
+    height: 1%;  /*IE6 Hack*/
+}
+
 /* Buttons ---------------------------------------------------------------------------------- */
 
 /* Buttons */
@@ -547,7 +555,8 @@ table.show-admin td {
     overflow: auto;
     overflow-x: auto;
     overflow-y: hidden;
-    height: 2.75em
+    height: 2.75em;
+    font-weight:bold;
 }
 
 /* Profile ---------------------------------------------------------------------------------- */
