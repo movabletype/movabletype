@@ -3,12 +3,16 @@
         <div class="comment-header">
             <div class="asset-meta">
                <span class="byline">
-                   <__trans phrase="By [_1]" params='<span class="vcard author"><$MTCommentAuthorLink default_name="Anonymous" show_email="0"$></span><MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>'>
-                   <MTCommentParent>
-                   <__trans phrase="replied to [_1]" params='<a href="#comment-<$MTCommentID$>"><MTCommentAuthor></a>'>
-                   </MTCommentParent>
-                   <__trans phrase="on [_1]" params='<a href="#comment-<$MTCommentID$>"><abbr class="published" title="<$MTCommentDate format_name="iso8601"$>"><$MTCommentDate$></abbr></a>'>
-                   <MTIfCommentsAccepted> | <$MTCommentReplyToLink$></MTIfCommentsAccepted>
+                            <$mt:CommentAuthorIdentity$>
+        <mt:IfCommentParent>
+                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>">
+        <mt:Else>
+                            <span class="vcard author"><$mt:CommentAuthorLink$></span>
+        </mt:IfCommentParent>
+                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
+        <mt:IfCommentsAccepted>
+                            | <$mt:CommentReplyToLink$>
+        </mt:IfCommentsAccepted>
                </span>
             </div>
         </div>

@@ -1289,17 +1289,12 @@ sub reply_preview {
     $comment->commenter_id( $app->user->id );
     $param->{'comment'} = $comment;
 
-    require MT::Serialize;
-    my $ser   = MT::Serialize->new( $cfg->Serializer );
-    my $state = $comment->column_values;
-    $state->{static} = $q->param('static');
-    $param->{'comment_state'} = unpack 'H*', $ser->serialize( \$state );
-    $param->{'comment_is_static'} = 1;
-    $param->{'entry'} = $entry;
-    $param->{'current_timestamp'} = $ts;
-    $param->{'commenter'} = $app->user;
-    $param->{'blog_id'} = $parent->blog_id;
-    $param->{'blog'} = $parent->blog;
+    my $tmpl = $app->load_tmpl('include/comment_detail.tmpl');
+    my $ctx  = $tmpl->context;
+    $ctx->stash( 'comment', $comment );
+    $ctx->stash( 'entry',   $entry );
+    $ctx->stash( 'blog',    $parent->blog );
+    $param->{'preview_html'} = $tmpl->output;
 
     return $app->build_page( 'dialog/comment_reply.tmpl',
         { %$param, text => $q->param('text') } );
@@ -1766,6 +1761,7 @@ sub _prepare_reply {
     $comment->commenter_id( $app->user->id );
     $comment->blog_id( $entry->blog_id );
     $comment->entry_id( $entry->id );
+    $comment->parent_id( $parent->id );
     $comment->author( remove_html($nick) );
     $comment->email( remove_html( $app->user->email ) );
     $comment->text($text);
