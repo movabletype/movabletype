@@ -317,6 +317,8 @@ class MT {
     function config_defaults() {
         $cfg =& $this->config;
         // assign defaults:
+        isset($cfg['cgipath']) or
+            $cfg['cgipath'] = '/cgi-bin/';
         if (substr($cfg['cgipath'], strlen($cfg['cgipath']) - 1, 1) != '/')
             $cfg['cgipath'] .= '/'; 
         isset($cfg['staticwebpath']) or
