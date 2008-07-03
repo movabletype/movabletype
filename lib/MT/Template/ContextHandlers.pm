@@ -6543,7 +6543,16 @@ sub _hdlr_author_auth_icon_url {
     }
     return $ctx->_no_author_error() unless $author;
     my $size = $args->{size} || 'logo_small';
-    return $author->auth_icon_url($size);
+    my $url = $author->auth_icon_url($size);
+    if ($url =~ m!^/!) {
+        # relative path, prepend blog domain
+        my $blog = $ctx->stash('blog');
+        if ($blog) {
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $url = $blog_domain . $url;
+        }
+    }
+    return $url;
 }
 
 ###########################################################################
@@ -11163,7 +11172,16 @@ sub _hdlr_commenter_auth_icon_url {
     my $a = $ctx->stash('commenter');
     return q() unless $a;
     my $size = $args->{size} || 'logo_small';
-    return $a->auth_icon_url($size);
+    my $url = $a->auth_icon_url($size);
+    if ($url =~ m!^/!) {
+        # relative path, prepend blog domain
+        my $blog = $ctx->stash('blog');
+        if ($blog) {
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $url = $blog_domain . $url;
+        }
+    }
+    return $url;
 }
 
 ###########################################################################

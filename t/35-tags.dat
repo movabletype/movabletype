@@ -345,7 +345,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryScoreCount namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 2; 5 3; 4 2; "}, #293
 { "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryRank namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 6; 5 1; 4 4; "}, #294
 { "r" : "1", "t" : "<MTEntries lastn=\"10\"><MTIfNonZero tag=\"MTEntryScoreCount\" namespace=\"unit test\"><MTEntryID> <MTEntryRank max=\"10\" namespace=\"unit test\">; </MTIfNonZero></MTEntries>", "e" : "6 10; 5 1; 4 5; "}, #295
-{ "r" : "1", "t" : "<MTEntries sort_by=\"score\" namespace=\"unit test\"><MTEntryID>; </MTEntries>", "e" : "5; 4; 6; 8; 1; 7; "}, #296
+{ "r" : "1", "t" : "<MTEntries glue=\"; \" sort_by=\"score\" namespace=\"unit test\" min_score=\"1\"><MTEntryID>-<MTEntryScore namespace=\"unit test\"></MTEntries>", "e" : "5-12; 4-5; 6-2"}, #296
 { "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScore namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 12; 2 5; "}, #297
 { "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreHigh namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 5; 2 3; "}, #298
 { "r" : "1", "t" : "<MTAssets lastn=\"10\"><MTIfNonZero tag=\"MTAssetScoreCount\" namespace=\"unit test\"><MTAssetID> <MTAssetScoreLow namespace=\"unit test\">; </MTIfNonZero></MTAssets>", "e" : "1 3; 2 2; "}, #299
