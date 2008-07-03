@@ -6266,6 +6266,8 @@ sub _hdlr_authors {
             $score_limit = delete($args->{lastn}) || 0;
             $score_offset = delete($args->{offset}) || 0;
             $re_sort = 1;
+        } elsif (MT::Author->has_column($args->{sort_by})) {
+            $args{'sort'} = $args->{sort_by};
         }
     }
 
@@ -10132,6 +10134,7 @@ sub _hdlr_comments {
 
     local $ctx->{__stash}{commenter} = $ctx->{__stash}{commenter};
     my $vars = $ctx->{__stash}{vars} ||= {};
+    my $glue = $args->{glue};
     for my $c (@comments) {
         local $vars->{__first__} = $i == 1;
         local $vars->{__last__} = ($i == scalar @comments);
@@ -10152,6 +10155,7 @@ sub _hdlr_comments {
             { CommentsHeader => $i == 1,
               CommentsFooter => ($i == scalar @comments), %$cond } );
         return $ctx->error( $builder->errstr ) unless defined $out;
+        $html .= $glue if defined $glue && length($html) && length($out);
         $html .= $out;
         $i++;
     }
@@ -10453,6 +10457,14 @@ sub _hdlr_comment_author_identity {
     unless ($logo) {
         my $root_url = $static_path . "images";
         $logo = "$root_url/nav-commenters.gif";
+    }
+    if ($logo =~ m!^/!) {
+        # relative path, prepend blog domain
+        my $blog = $ctx->stash('blog');
+        if ($blog) {
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $logo = $blog_domain . $logo;
+        }
     }
     my $result = qq{<img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" />};
     if ($link) {

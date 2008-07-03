@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
-    $localvars = array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content');
+    $localvars = array('comments', 'comment_order_num','comment','current_timestamp', 'commenter', 'blog', 'blog_id', 'conditional', 'else_content', '_comments_glue', '_comments_out');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
@@ -18,9 +18,13 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         $comments = $ctx->mt->db->fetch_comments($args);
         $ctx->stash('comments', $comments);
         $counter = 0;
+        $out = false;
+        $ctx->stash('_comments_glue', $args['glue']);
+        $ctx->stash('_comments_out', false);
     } else {
         $comments = $ctx->stash('comments');
         $counter = $ctx->stash('comment_order_num');
+        $out = $ctx->stash('_comments_out');
     }
 
     if (empty($comments)) {
@@ -62,10 +66,20 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
         $ctx->__stash['vars']['__first__'] = $count == 1;
         $ctx->__stash['vars']['__last__'] = ($count == count($comments));
+
+        $glue = $ctx->stash('_comments_glue');
+        if (isset($glue) && !empty($content)) {
+            if ($out)
+                $content = $glue . $content;
+            else
+                $ctx->stash('_comments_out', true);
+        }
     } else {
+        $glue = $ctx->stash('_comments_glue');
+        if (isset($glue) && $out && !empty($content))
+            $content = $glue . $content;
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>
