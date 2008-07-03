@@ -675,7 +675,7 @@ sub userpic {
 
     my $asset_id = $author->userpic_asset_id or return;
     require MT::Asset;
-    my $asset = MT->model('asset.image')->load($asset_id) or return;
+    $asset = MT->model('asset.image')->load($asset_id) or return;
 
     $asset;
 }
