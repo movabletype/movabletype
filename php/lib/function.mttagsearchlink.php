@@ -28,12 +28,11 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
         $param = 'blog_id=' . $blog_id;
     }
 
-    if ( $param )
-        $param .= '&amp;';
-    $param .= 'limit=' . $ctx->mt->config('MaxResults');
     require_once "function.mtcgipath.php";
     $search = smarty_function_mtcgipath($args, $ctx);
     $search .= $ctx->mt->config('SearchScript');
-    return $search . '?tag=' . urlencode($name) . ($param ? '&amp;' . $param : '');
+    $link = $search . '?' . $param . ($param ? '&amp;' : '')
+        . 'tag=' . urlencode($name);
+    $link .= '&amp;limit=' . $ctx->mt->config('MaxResults');
+    return $link;
 }
-?>
