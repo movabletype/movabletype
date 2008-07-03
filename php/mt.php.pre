@@ -101,7 +101,7 @@ class MT {
         $ctx =& $this->context();
 
         foreach ($plugin_paths as $path) {
-            if ($dh = opendir($path)) {
+            if ($dh = @opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
