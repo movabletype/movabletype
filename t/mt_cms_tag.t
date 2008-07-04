@@ -31,10 +31,10 @@ plan tests => 10;
     isa_ok($loop, 'ARRAY', 'result object_loop is really a loop');
     isa_ok($loop->[0], 'HASH', 'result object_loop is a loop of hashrefs');
 
-    is(scalar @$loop, 3, 'result object_loop has four objects');
+    is(scalar @$loop, 5, 'result object_loop has six objects');
     is($loop->[0]->{tag_name}, 'anemones', 'first tag in loop is anemones');
-    is($loop->[1]->{tag_name}, 'rain', 'third tag in loop is rain');
-    is($loop->[2]->{tag_name}, 'verse', 'fourth tag in loop is verse');
+    is($loop->[1]->{tag_name}, 'grandpa', 'third tag in loop is grandpa');
+    is($loop->[2]->{tag_name}, 'rain', 'fourth tag in loop is rain');
 }
 
 1;
