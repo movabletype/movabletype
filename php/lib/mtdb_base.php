@@ -2700,8 +2700,10 @@ class MTDatabaseBase extends ezsql {
         }
 
         # Adds an ID filter
-        if (isset($args['id']))
+        if ( isset($args['id']) ) {
+            if ( $args['id'] == '' ) return null;
             $id_filter = 'and asset_id = '.$args['id'];
+        }
 
         # Adds a days filter
         if (isset($args['days'])) {
