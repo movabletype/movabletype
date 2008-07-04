@@ -1413,7 +1413,7 @@ sub post_save {
         # archive template specific post_save tasks
         require MT::TemplateMap;
         my @p = $q->param;
-        my @static_maps;
+        my %static_maps;
         for my $p (@p) {
             my $map;
             if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
@@ -1427,7 +1427,14 @@ sub post_save {
                 my $map_id = $1;
                 $map    = MT::TemplateMap->load($map_id)
                     or next;
-                $map->file_template( $q->param($p) );
+                my $file_template = $q->param($p);
+                my $build_type_1  = $q->param("map_build_type_$map_id");
+                # Populate maps whose build type is dynamic
+                # and file template are changed
+                $static_maps{ $map->id } = 1
+                    if ( ( $file_template ne $map->file_template )
+                      && ( MT::PublishOption::DYNAMIC() eq $build_type_1 ) );
+                $map->file_template( $file_template );
                 $map->save;
             }
             elsif ( $p =~ /^map_build_type_(\d+)$/ ) {
@@ -1438,7 +1445,7 @@ sub post_save {
                 require MT::PublishOption;
                 # Populate maps that are changed from static to dynamic
                 # This should capture new map as well
-                push @static_maps, $map->id
+                $static_maps{ $map->id } = 1
                     if ( ( $build_type ne $map->build_type )
                       && ( MT::PublishOption::DYNAMIC() eq $build_type ) );
                 $map->build_type($build_type);
@@ -1456,7 +1463,7 @@ sub post_save {
                 $dynamic = 1;
             }
         }
-        $app->{static_dynamic_maps} = @static_maps ? \@static_maps : 0;
+        $app->{static_dynamic_maps} = %static_maps ? [ keys %static_maps ] : 0;
     }
 
     if ( !$original->id ) {
