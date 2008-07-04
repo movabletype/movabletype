@@ -13,11 +13,9 @@ use MIME::Base64;
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
 
-use vars qw( $DB_DIR $T_CFG );
-my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
-isa_ok($mt, 'MT');
-
 use MT::Test qw(:db :data);
+my $mt = MT->new() or die MT->errstr;
+isa_ok($mt, 'MT');
 
 my $base_uri = '/mt-xmlrpc.cgi';
 my $username = 'Chuck D';
@@ -435,7 +433,7 @@ my @apis = (
             my $result = $som->result;
             my $url = $result->{url};
             is( $url, 'http://narnia.na/nana/movable-type-logo.gif' );
-            my $asset = MT::Asset->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
+            my $asset = MT::Asset::Image->load(undef, { sort => 'created_on', direction => 'descend', limit => 1 });
             ok($asset, 'asset loaded');
             is( $asset->mime_type, 'image/gif' );
             is( $asset->file_name, 'movable-type-logo.gif' );

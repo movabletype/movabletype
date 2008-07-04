@@ -13,7 +13,7 @@ use MT::I18N qw( encode_text first_n_text const );
 sub mt_new {
     my $cfg = $ENV{MOD_PERL} ?
         Apache->request->dir_config('MTConfig') :
-        $MT::XMLRPCServer::MT_DIR . '/mt-config.cgi';
+        ($ENV{MT_CONFIG} || $MT::XMLRPCServer::MT_DIR . '/mt-config.cgi');
     my $mt = MT->new( Config => $cfg )
         or die MT::XMLRPCServer::_fault(MT->errstr);
     # we need to be UTF-8 here no matter which PublishCharset
