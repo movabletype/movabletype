@@ -3013,6 +3013,13 @@ class MTDatabaseBase extends ezsql {
         return sprintf("%04d-%02d-%02d %02d:%02d:%02d", $y, $mo, $d, $h, $m, $s);
     }
 
+    function get_row($query=null,$output=OBJECT,$y=0) {
+        $row = parent::get_row($query, $output, $y);
+        if (is_array($row))
+            $row = array_map(array($this,"convert_fieldname"), array($row));
+        return $row[0];
+    }
+
     function get_results($query = null, $output = ARRAY_A) {
         $old_result = $this->result;
         $rows = parent::get_results($query, $output);
