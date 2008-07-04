@@ -68,8 +68,13 @@ sub start_element {
 
     $self->{in_wp_comment_content} = 1 if ('wp' eq $prefix) && ('comment_content' eq $name);
 
-    push @{$self->{'bucket'}}, \%values if scalar(%values);
-    push @{$self->{'bucket'}}, $prefix . '_' . $name;
+    if ( scalar(%values) ) {
+        push @{ $self->{'bucket'} },
+          { $prefix . '_' . $name => undef, _a => \%values };
+    }
+    else {
+        push @{ $self->{'bucket'} }, $prefix . '_' . $name;
+    }
     1;
 }
 
@@ -85,7 +90,7 @@ sub characters {
 
     my $chars = MT::I18N::utf8_off($data->{Data});
     if ('HASH' eq ref($element)) {
-        my @hash_array = %$element;
+        my @hash_array = grep { $_ ne '_a' } keys %$element;
         return unless $hash_array[0];
         my $val = $element->{$hash_array[0]};
         $val .= $chars;
@@ -118,7 +123,6 @@ sub end_element {
                 if exists $element->{$prefix . '_' . $name};
     }
     push @{$self->{'bucket'}}, $element;
-
     my $name_element = $prefix . '_' . $name;
     if ('_item' eq $name_element) {
         $self->_create_item($data);
@@ -126,6 +130,8 @@ sub end_element {
         $self->_setup_metadata($data);
     } elsif ('wp_category' eq $name_element) {
         $self->_create_category($data);
+    } elsif ('wp_tag' eq $name_element) {
+        $self->_create_tag($data);
     } elsif ('wp_comment' eq $name_element) {
         $self->_create_feedback($data);
     } elsif ('_channel' eq $name_element) {
@@ -252,6 +258,40 @@ sub _create_category {
             $cb->(MT->translate("failed") . "\n");
             return die MT->translate(
                  "Saving category failed: [_1]", $cat->errstr);
+        }
+    }
+}
+
+sub _create_tag {
+    my $self = shift;
+    my $data = shift;
+
+    my $cb   = $self->{callback};
+    my $blog = $self->{blog};
+
+    require MT::Tag;
+    my $tag = MT::Tag->new;
+    my $set_name;
+    while ( my $hash = pop @{ $self->{'bucket'} } ) {
+        last if 'wp_tag' eq $hash;
+        next if 'HASH' ne ref $hash;
+        my @hash_array = %$hash;
+        my $key        = $hash_array[0];
+        my $value      = $hash_array[1];
+        if ( 'wp_tag_name' eq $key ) {
+            return if ( MT::Tag->load( { name => $value } ) );
+            $tag->name($value);
+            $set_name = 1;
+        }
+    }
+    if ($set_name) {
+        $cb->( MT->translate( "Creating new tag ('[_1]')...", $tag->name ) );
+        if ( $tag->save ) {
+            $cb->( MT->translate("ok") . "\n" );
+        }
+        else {
+            $cb->( MT->translate("failed") . "\n" );
+            return die MT->translate( "Saving tag failed: [_1]", $tag->errstr );
         }
     }
 }
@@ -450,6 +490,7 @@ sub _create_post {
         'trackbacks' => [],
     };
     my %meta_hash;
+    my @tags;
 
     my $class = MT->model($class_type);
     require MT::Comment;
@@ -461,9 +502,9 @@ sub _create_post {
     $post->convert_breaks($self->{convert_breaks});
     $post->status($blog->status_default);
     for my $hash (@$hashes) {
-        my @hash_array = %$hash;
+        my @hash_array = grep { $_ ne '_a' } keys %$hash;
         my $key = $hash_array[0];
-        my $value = $hash_array[1];
+        my $value = $hash->{ $hash_array[0] };
         if ('_title' eq $key) {
             $post->title($value);
         } elsif ('_link' eq $key) {
@@ -481,6 +522,11 @@ sub _create_post {
             if (defined $cat) {
                 $cat_ids{$cat->id} = 1;
                 $primary_cat_id = $cat->id unless $primary_cat_id;
+            }
+            if ( $hash->{_a} ) {
+                if ( $hash->{_a}->{domain} eq 'tag' ) {
+                    push @tags, $value;
+                }
             }
         } elsif ('_guid' eq $key) {
             # skip;
@@ -586,6 +632,11 @@ sub _create_post {
         $cb->(MT->translate("Duplicate entry ('[_1]') found.  Skipping.", $post->title));
         $cb->("\n");
         return 1;
+    }
+
+    # Associate tags to the entry.
+    if (@tags) {
+        $post->set_tags(@tags);
     }
 
     # Now save the entry/page.
