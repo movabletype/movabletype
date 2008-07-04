@@ -2389,7 +2389,10 @@ sub list_widget {
         exists($opt{error}) ? ( error => $opt{error} ) : (),
         exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()
     };
-
+    my $widget_actions = {};
+    $app->load_list_actions( 'template', $widget_actions );
+    $param->{'widget_' . $_} = $widget_actions->{$_}
+        for keys %$widget_actions;
     $app->load_tmpl('list_widget.tmpl', $param);
 }
 

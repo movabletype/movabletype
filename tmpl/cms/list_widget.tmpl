@@ -87,15 +87,19 @@ TC.attachLoadEvent( init );
     </div>
 </mtapp:listing>
 
-<mt:setvarblock name="create_link">
+<mt:SetVarBlock name="create_link">
 <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create widget template"></a></p>
-</mt:setvarblock>
-
+</mt:SetVarBlock>
+<mt:SetVarBlock name="label_singular"><__trans phrase='Widget Template'></mt:SetVarBlock>
+<mt:SetVarBlock name="label_plural"><__trans phrase='Widget Templates'></mt:SetVarBlock>
 <mt:include name="include/template_table.tmpl"
     object_loop="$widget_table"
     template_type="widget"
-    object_label="<__trans phrase="Widget Template">"
-    object_label_plural="<__trans phrase="Widget Templates">"
-    template_type_label="<__trans phrase="Widget Templates">">
+    has_list_actions="$widget_has_list_actions"
+    list_actions="$widget_list_actions"
+    more_list_actions="$widget_more_list_actions"
+    object_label="$label_singular"
+    object_label_plural="$label_plural"
+    template_type_label="$label_plural">
 
 <mt:include name="include/footer.tmpl">
