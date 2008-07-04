@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;
@@ -15,6 +15,7 @@ use vars qw( @ISA %Lexicon );
 ## The following is the translation table.
 
 %Lexicon = (
+
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
@@ -74,6 +75,9 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/block.mtif.php
 
 ## php/lib/block.mtassets.php
+
+## php/lib/thumbnail_lib.php
+	'GD support has not been available. Please install GD support.' => 'GDを利用できないようです。インストールしてください。',
 
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'ウェブページ',
@@ -362,14 +366,14 @@ use vars qw( @ISA %Lexicon );
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'このページは、[_1]が[_2]に書いたブログ記事です。',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => 'ひとつ前のブログ記事は「<a href="[_1]">[_2]</a>」です。',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '次のブログ記事は「<a href="[_1]">[_2]</a>」です。',
-	'This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'このページには、<strong>[_2]</strong>以降に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
+	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'このページには、<strong>[_2]</strong>以降に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '前のアーカイブは<a href="[_1]">[_2]</a>です。',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '次のアーカイブは<a href="[_1]">[_2]</a>です。',
-	'This page is a archive of recent entries in the <strong>[_1]</strong> category.' => 'このページには、過去に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
+	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'このページには、過去に書かれたブログ記事のうち<strong>[_1]</strong>カテゴリに属しているものが含まれています。',
 	'<a href="[_1]">[_2]</a> is the previous category.' => '前のカテゴリは<a href="[_1]">[_2]</a>です。',
 	'<a href="[_1]">[_2]</a> is the next category.' => '次のカテゴリは<a href="[_1]">[_2]</a>です。',
-	'This page is a archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'このページには、<strong>[_1]</strong>が<strong>[_2]</strong>に書いたブログ記事が含まれています。',
-	'This page is a archive of recent entries written by <strong>[_1]</strong>.' => 'このページには、<strong>[_1]</strong>が最近書いたブログ記事が含まれています。',
+	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'このページには、<strong>[_1]</strong>が<strong>[_2]</strong>に書いたブログ記事が含まれています。',
+	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'このページには、<strong>[_1]</strong>が最近書いたブログ記事が含まれています。',
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'このページには、<strong>[_2]</strong>に書かれたブログ記事が新しい順に公開されています。',
 	'Find recent content on the <a href="[_1]">main index</a>.' => '最近のコンテンツは<a href="[_1]">インデックスページ</a>で見られます。',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => '最近のコンテンツは<a href="[_1]">インデックスページ</a>で見られます。過去に書かれたものは<a href="[_2]">アーカイブのページ</a>で見られます。',
@@ -1026,7 +1030,7 @@ use vars qw( @ISA %Lexicon );
 	'Select Roles' => 'ロールを選択',
 	'Role Name' => 'ロール名',
 	'Roles Selected' => '選択されたロール',
-	'' => '',
+	'' => '', # Translate - New
 	'Grant Permissions' => '権限の付与',
 	'You cannot delete your own association.' => '自分の関連付けは削除できません。',
 	'You cannot delete your own user record.' => '自分のデータは削除できません。',
@@ -2244,7 +2248,9 @@ use vars qw( @ISA %Lexicon );
 	'Show Current Settings' => '現在の設定を表示',
 	'Database Type' => 'データベースの種類',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
-	'If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>.' => 'お使いになるデータベースの種類が一覧に表示されていない場合、<a target="help" href="[_1]">データベース接続に必要なPerlモジュールをインストールしてください</a>。',
+	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => '<a href="[_1]" target="_blank">Movable Type システムチェック</a>を実行して、必要なモジュールを確認してください。',
+	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'モジュールをインストールしたら<a href="javascript:void(0)" onclick="[_1]">ここをクリック</a>して表示を更新してください。',
+	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => '詳しくは<a href="[_1]" target="_blank">こちら</a>を参照してください。',
 	'Database Path' => 'データベースのパス',
 	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
 	'A default location of \'./db/mt.db\' will store the database file underneath your Movable Type directory.' => '既定のデータベースファイルへのパスは「./db/mt.db」です。',
@@ -2272,7 +2278,7 @@ use vars qw( @ISA %Lexicon );
 	'Your configuration settings have been written to the following file:' => '設定内容を以下のファイルに書き込みました。',
 	'To reconfigure the settings, click the \'Back\' button below.' => '再設定する場合には、戻るボタンをクリックしてください。',
 	'Show the mt-config.cgi file generated by the wizard' => 'ウィザードで作成されたmt-config.cgiを表示する',
-	'I will create the mt-config.cgi file manually.' => 'mt-config.cgiを手動で作成する',
+	'The mt-config.cgi file has been created manually.' => 'mt-config.cgiを手動で作成します。',
 
 ## tmpl/wizard/cfg_dir.tmpl
 	'Temporary Directory Configuration' => 'テンポラリディレクトリの設定',
@@ -2911,9 +2917,6 @@ use vars qw( @ISA %Lexicon );
 	'HTML Mode' => 'HTMLモード',
 
 ## tmpl/cms/include/comment_detail.tmpl
-	'By [_1]' => '[_1]',
-	'replied to [_1]' => 'から[_1]への返信',
-	'on [_1]' => '([_1])',
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
@@ -2932,7 +2935,6 @@ use vars qw( @ISA %Lexicon );
 	'Republish selected pages (r)' => '選択されたウェブページを再構築 (r)',
 	'Delete selected pages (x)' => '選択されたウェブページを削除 (x)',
 	'to republish' => '再構築',
-	'Republish' => '再構築',
 	'Last Modified' => '最終更新',
 	'Created' => '作成',
 	'Only show unpublished entries' => '未公開のブログ記事を表示',
@@ -3648,6 +3650,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'システムからブログを削除しました。',
 	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
+	'You can not refresh templates: [_1]' => 'テンプレートを初期化できません: [_1]',
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'ウェブサービス設定',

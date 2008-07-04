@@ -8,30 +8,8 @@
 global $Lexicon_ja;
 $Lexicon_ja = array(
 
-## php/lib/function.mtproductname.php
-	'[_1] [_2]' => '[_1] [_2]',
-
-## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'ウィジェットセット[_1]に中身がありません。',
-	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
-
-## php/lib/function.mtsetvar.php
-	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
-	'\'[_1]\' is not a hash.' => '[_1]はハッシュではありません。',
-	'Invalid index.' => '不正なインデックスです。',
-	'\'[_1]\' is not an array.' => '[_1]は配列ではありません。',
-	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
-	'\'[_1]\' is not a valid function.' => '[_1]という関数はサポートされていません。',
-
-## php/lib/block.mtentries.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
-
-## php/lib/captcha_lib.php
-	'Captcha' => 'Captcha',
-	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
-
-## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => '匿名',
+## php/mt.php
+	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
 ## php/lib/archive_lib.php
 	'Page' => 'ウェブページ',
@@ -51,40 +29,63 @@ $Lexicon_ja = array(
 	'Category Daily' => 'カテゴリ 日別',
 	'Category Weekly' => 'カテゴリ 週別',
 
-## php/lib/function.mtauthordisplayname.php
+## php/lib/function.mtsetvar.php
+	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
+	'\'[_1]\' is not a hash.' => '[_1]はハッシュではありません。',
+	'Invalid index.' => '不正なインデックスです。',
+	'\'[_1]\' is not an array.' => '[_1]は配列ではありません。',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
+	'\'[_1]\' is not a valid function.' => '[_1]という関数はサポートされていません。',
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
+
+## php/lib/function.mtcommentauthor.php
+	'Anonymous' => '匿名',
+
+## php/lib/block.mtsetvarblock.php
+
+## php/lib/block.mtsethashvar.php
+
+## php/lib/function.mtcommentauthorlink.php
 
 ## php/lib/function.mtvar.php
 	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
 	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
 
-## php/lib/block.mtsetvarblock.php
+## php/lib/function.mtwidgetmanager.php
+	'Error: widgetset [_1] is empty.' => 'ウィジェットセット[_1]に中身がありません。',
+	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
 
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
-
-## php/lib/function.mtcommentauthor.php
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => '返信',
-
-## php/lib/block.mtauthorhasentry.php
+## php/lib/block.mtauthorhaspage.php
 	'No author available' => 'ユーザーが見つかりません。',
 
-## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
+## php/lib/block.mtentries.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
+
+## php/lib/block.mtif.php
+
+## php/lib/block.mtassets.php
+
+## php/lib/thumbnail_lib.php
+	'GD support has not been available. Please install GD support.' => '処理にGDが必要ですが利用できないようです。',
 
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'ウェブページ',
 	'entry' => 'ブログ記事',
 	'Entry' => 'ブログ記事',
 
-## php/lib/block.mtassets.php
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
-## php/lib/block.mtsethashvar.php
+## php/lib/function.mtauthordisplayname.php
 
-## php/lib/block.mtauthorhaspage.php
+## php/lib/function.mtremotesigninlink.php
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
 
-## php/lib/block.mtif.php
+## php/lib/captcha_lib.php
+	'Captcha' => 'Captcha',
+	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
 
 ## php/lib/function.mtassettype.php
 	'image' => '画像',
@@ -96,8 +97,10 @@ $Lexicon_ja = array(
 	'video' => 'ビデオ',
 	'Video' => 'ビデオ',
 
-## php/mt.php
-	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+## php/lib/block.mtauthorhasentry.php
+
+## php/lib/function.mtcommentreplytolink.php
+	'Reply' => '返信',
 
 ## php/mt.php.pre
 );
