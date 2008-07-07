@@ -124,6 +124,7 @@ sub end_element {
     }
     push @{$self->{'bucket'}}, $element;
     my $name_element = $prefix . '_' . $name;
+
     if ('_item' eq $name_element) {
         $self->_create_item($data);
     } elsif ('wp_postmeta' eq $name_element) {
@@ -271,20 +272,23 @@ sub _create_tag {
 
     require MT::Tag;
     my $tag = MT::Tag->new;
-    my $set_name;
+    my $name;
     while ( my $hash = pop @{ $self->{'bucket'} } ) {
         last if 'wp_tag' eq $hash;
         next if 'HASH' ne ref $hash;
         my @hash_array = %$hash;
         my $key        = $hash_array[0];
         my $value      = $hash_array[1];
+        if ( 'wp_tag_slug' eq $key ) {
+            $name = MT::Util::decode_url($value);
+        }
         if ( 'wp_tag_name' eq $key ) {
-            return if ( MT::Tag->load( { name => $value } ) );
-            $tag->name($value);
-            $set_name = 1;
+            $name = $value;
         }
     }
-    if ($set_name) {
+    if ($name) {
+        return if ( MT::Tag->load( { name => $name } ) );
+        $tag->name($name);
         $cb->( MT->translate( "Creating new tag ('[_1]')...", $tag->name ) );
         if ( $tag->save ) {
             $cb->( MT->translate("ok") . "\n" );
@@ -514,18 +518,28 @@ sub _create_post {
         } elsif ('dc_creator' eq $key) {
             $post->author_id($self->_get_author_id($cb, $value));
         } elsif ('_category' eq $key) {
-            my $cat_class = MT->model(
-                $class_type eq 'entry' ? 'category' : 'folder');
-            my $cat = $cat_class->load(
-                { label => $value,
-                  blog_id => $self->{blog}->id });
-            if (defined $cat) {
-                $cat_ids{$cat->id} = 1;
-                $primary_cat_id = $cat->id unless $primary_cat_id;
-            }
             if ( $hash->{_a} ) {
-                if ( $hash->{_a}->{domain} eq 'tag' ) {
+                if ( $hash->{_a}->{domain} eq 'tag' && $hash->{_a}->{nicename} )
+                {
+                    $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
+                      if !$value;
                     push @tags, $value;
+                }
+            }
+            else {
+
+                # previous category definition
+                my $cat_class =
+                  MT->model( $class_type eq 'entry' ? 'category' : 'folder' );
+                my $cat = $cat_class->load(
+                    {
+                        label   => $value,
+                        blog_id => $self->{blog}->id
+                    }
+                );
+                if ( defined $cat ) {
+                    $cat_ids{ $cat->id } = 1;
+                    $primary_cat_id = $cat->id unless $primary_cat_id;
                 }
             }
         } elsif ('_guid' eq $key) {
