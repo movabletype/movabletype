@@ -1646,18 +1646,20 @@ sub dialog_refresh_templates {
 
         no warnings; # some sets may not define an order
         @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
-        $param->{'template_set_loop'} = $sets;
 
         my $existing_set = $blog->template_set || 'mt_blog';
+        my @sets;
         foreach (@$sets) {
-            if ($_->{key} eq $existing_set) {
-                $_->{selected} = 1;
+            my %set = %{$_};
+            if ($set{key} eq $existing_set) {
+                $set{selected} = 1;
             }
+            push @sets, \%set;
         }
-        $param->{'template_set_index'} = $#$sets;
-        $param->{'template_set_count'} = scalar @$sets;
+        $param->{'template_set_index'} = $#sets;
+        $param->{'template_set_count'} = scalar @sets;
+        $param->{'template_set_loop'} = \@sets;
 
-        $param->{template_sets} = $sets;
         $param->{screen_id} = "refresh-templates-dialog";
     }
 
