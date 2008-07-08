@@ -519,11 +519,10 @@ sub _create_post {
             $post->author_id($self->_get_author_id($cb, $value));
         } elsif ('_category' eq $key) {
             if ( $hash->{_a} ) {
-                if ( $hash->{_a}->{domain} eq 'tag' && $hash->{_a}->{nicename} )
-                {
+                if ( $hash->{_a}->{domain} eq 'tag' ) {
                     $value = MT::Util::decode_url( $hash->{_a}->{nicename} )
                       if !$value;
-                    push @tags, $value;
+                    push @tags, $value if $value;
                 }
             }
             else {
