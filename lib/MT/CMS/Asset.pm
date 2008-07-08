@@ -229,13 +229,20 @@ sub insert {
     my $app  = shift;
     my $text = _process_post_upload( $app );
     return unless defined $text;
-    $app->load_tmpl(
+    my $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {
+            
             upload_html => $text || '',
             edit_field => scalar $app->param('edit_field') || '',
         },
     );
+    my $ctx = $tmpl->context;
+    my $id = $app->param('id')
+        or return $app->errtrans("Invalid request.");
+    my $asset = MT::Asset->load( $id );
+    $ctx->stash('asset', $asset);
+    return $tmpl;
 }
 
 sub asset_userpic {
@@ -335,6 +342,9 @@ sub complete_insert {
       return $app->errtrans( "Can't load blog #[_1].", $app->param('blog_id') );
     my $perms = $app->permissions
       or return $app->errtrans('No permissions');
+
+    # caller wants asset without any option step, so insert immediately
+    return insert($app) if $app->param('asset_select');
 
     my $param = {
         asset_id            => $asset->id,
