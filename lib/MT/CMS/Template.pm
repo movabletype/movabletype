@@ -2009,6 +2009,7 @@ sub refresh_individual_templates {
     my @msg_loop;
     push @msg_loop, { message => $_ } foreach @msg;
 
+    $app->mode('view');    # set mode for blog selector
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
 }
