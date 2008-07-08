@@ -677,11 +677,10 @@ function show(id, d, style) {
 function hide(id, d) {
     var el = getByID(id, d);
     if (!el) return;
-    if ( DOM.hasClassName( el, "hidden" ) ) return;
-    if ( !DOM.hasClassName( el, "hidden" ) ) {
-        DOM.addClassName ( el, "hidden");
+    if ( DOM.hasClassName( el, "hidden" ) ) {
+        return false;
     } else {
-        el.style.display = 'none';
+        DOM.addClassName ( el, "hidden");
     }
     if ( window.app )
         app.reflow();
