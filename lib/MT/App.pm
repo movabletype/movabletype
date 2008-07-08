@@ -1305,6 +1305,9 @@ sub external_authenticators {
     my @auths = split ',', $blog->commenter_authenticators;
     my %otherauths;
     foreach my $key (@auths) {
+        next
+            if exists( $ca_reg->{$key}->{condition} )
+            && !( $ca_reg->{$key}->{condition}->() );
         if ( $key eq 'MovableType' ) {
             $param->{enabled_MovableType} = 1;
             $param->{default_signin} = 'MovableType';
