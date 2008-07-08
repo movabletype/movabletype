@@ -14736,7 +14736,7 @@ sub _hdlr_asset_thumbnail_url {
 
     my %arg;
     foreach (keys %$args) {
-    $arg{$_} = $args->{$_};
+        $arg{$_} = $args->{$_};
     }
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
