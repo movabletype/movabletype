@@ -348,23 +348,23 @@ ul { list-style: disc outside; }
     text-align: center;
 }
 
-.entry-tags-header,
-.entry-categories-header {
+.entry-tags h4,
+.entry-categories h4 {
     margin-bottom: 0;
     margin-right: .25em;
     display: inline;
     font-weight: bold;
 }
 
-.entry-tags-list,
-.entry-categories-list {
+.entry-tags ul,
+.entry-categories ul {
     display: inline;
     list-style: none;
     margin-left: 0;
     padding-left: 0;
 }
-.entry-tags-list .entry-tag,
-.entry-categories-list .entry-category {
+.entry-tags ul li,
+.entry-categories ul li {
     display: inline;
 }
 
@@ -458,34 +458,28 @@ ul { list-style: disc outside; }
     margin: 5px 0 20px;
 }
 
-.widget-list,  /*legacy selector*/
-.archive-list,  /*legacy selector*/
 .archive-content ul,
-.widget .widget-content ul {
+.widget-content ul {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.widget .widget-content ul ul,
-.widget .widget-list .widget-list {  /*legacy selector*/
+.widget-content ul ul {
     margin-left: 15px;
 }
 
-.widget-content li,
-.widget-list-item {  /*legacy selector*/
+.widget-content li {
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
-.widget-tag-cloud .widget-content ul,
-.widget-tag-cloud .widget-list {  /*legacy selector*/
+.widget-tag-cloud .widget-content ul {
     margin-right: 0;
     margin-left: 0;
 }
 
-.widget-tag-cloud .widget-content li,
-.widget-tag-cloud .widget-list-item {  /*legacy selector*/
+.widget-tag-cloud .widget-content li {
     display: inline;
     margin: 0 5px 0 0;
     padding: 0;
@@ -509,8 +503,7 @@ ul { list-style: disc outside; }
     margin-bottom: 0;
 }
 
-.widget-recent-assets .widget-content ul,
-.widget-recent-assets .widget-content .widget-list {  /*legacy selector*/
+.widget-recent-assets .widget-content ul {
     overflow: auto;
     margin-right: 0;
 }
