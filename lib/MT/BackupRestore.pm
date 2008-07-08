@@ -67,6 +67,12 @@ sub core_backup_instructions {
         'ping_cat'      => {
             'order' => 520
         },
+        # Comment should be backed up after TBPing
+        # because saving a comment ultimately triggers
+        # MT::TBPing::save.
+        'comment'        => {
+            'order' => 530
+        },
         # Session, config and TheSchwartz packages are never backed up.
         'session'       => {
             'skip' => 1

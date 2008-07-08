@@ -156,13 +156,20 @@ sub checkthemout {
                     }
                     isnt(undef, $parent, "parent object(" . $old->id . ") of $class pointed to by $col should not be undef");
                 } else {
-                    next if $col eq 'modified_on';
                     next if (
                         (defined($old->column($col)) && ($old->column($col) eq '')) &&
                         (!defined($obj->column($col)))
                     );
-                    next if ($name eq 'category' && ($col eq 'parent'));
-                    next if ($name eq 'folder' && ($col eq 'parent'));
+                    if ($name eq 'category' && ($col eq 'parent') && $old->parent) {
+                        my $parent = $objects->{'MT::Category#' . $old->parent};
+                        is( $obj->$col, $parent->id, 'Category parent restored');
+                        next;
+                    }
+                    if ($name eq 'folder' && ($col eq 'parent') && $old->parent) {
+                        my $parent = $objects->{'MT::Folder#' . $old->parent};
+                        is( $obj->$col, $parent->id, 'Folder parent restored');
+                        next;
+                    }
                     if ( ($name eq 'trackback') && ($col eq 'is_disabled') ) {
                         if ( defined($obj->is_disabled) && $obj->is_disabled
                           && (!defined($obj->entry->allow_pings) || ($obj->entry->allow_pings == 0)) )
