@@ -110,6 +110,23 @@ sub post_entry_save {
     }
 }
 
+sub post_entry_pub {
+    my $plugin = shift;
+    my ( $eh, $app, $entry ) = @_;
+    my $blog_id = $entry->blog_id;
+
+    foreach my $scope ("blog:$blog_id", "system") {
+        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+        require MT::Entry;
+        if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
+            while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
+                next if $id == $blog_id;
+                perform_mb_action( $app, $id, $_ ) foreach keys %$a;
+            }
+        }
+    }
+}
+
 sub perform_mb_action {
     my ( $app, $blog_id, $action ) = @_;
 

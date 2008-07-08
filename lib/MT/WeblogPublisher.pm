@@ -1575,6 +1575,8 @@ sub publish_future_posts {
             $entry->save
               or die $entry->errstr;
 
+            MT->run_callbacks( 'scheduled_post_published', $mt, $entry );
+
             $rebuild_queue{ $entry->id } = $entry;
             $ping_queue{ $entry->id }    = 1;
             my $n = $entry->next(1);
