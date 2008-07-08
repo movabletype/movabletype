@@ -458,9 +458,10 @@ ul { list-style: disc outside; }
     margin: 5px 0 20px;
 }
 
-.widget .widget-content ul,
 .widget-list,  /*legacy selector*/
-.archive-list {
+.archive-list,  /*legacy selector*/
+.archive-content ul,
+.widget .widget-content ul {
     margin: 0;
     padding: 0;
     list-style: none;

@@ -31,9 +31,9 @@
         <mt:ArchiveListHeader>
                                 <h2 class="archive-header"><__trans phrase="Monthly Archives"></h2>
                                 <div class="archive-content">
-                                    <ul class="archive-list">
+                                    <ul>
         </mt:ArchiveListHeader>
-                                        <li class="archive-list-item"><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
+                                        <li><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
         <mt:ArchiveListFooter>
                                     </ul>
                                 </div>
@@ -52,12 +52,12 @@
                                 <div class="archive-content">
     <mt:TopLevelCategories>
         <mt:SubCatIsFirst>
-                                    <ul class="archive-list">
+                                    <ul>
         </mt:SubCatIsFirst>
         <mt:If tag="CategoryCount">
-                                        <li class="archive-list-item"><a href="<$mt:CategoryArchiveLink$>" title="<$mt:CategoryDescription$>"><$mt:CategoryLabel$></a>
+                                        <li><a href="<$mt:CategoryArchiveLink$>" title="<$mt:CategoryDescription$>"><$mt:CategoryLabel$></a>
         <mt:Else>
-                                        <li class="archive-list-item"><$mt:CategoryLabel$>
+                                        <li><$mt:CategoryLabel$>
         </mt:If>
         <$mt:SubCatsRecurse$>
                                         </li>
@@ -78,9 +78,9 @@
             <mt:ArchiveListHeader>
                                     <h2 class="archive-header"><__trans phrase="Author Archives"></h2>
                                     <div class="archive-content">
-                                        <ul class="archive-list">
+                                        <ul>
             </mt:ArchiveListHeader>
-                                            <li class="archive-list-item"><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
+                                            <li><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
             <mt:ArchiveListFooter>
                                         </ul>
                                     </div>
@@ -99,9 +99,9 @@
             <mt:ArchiveListHeader>
                                     <h2 class="archive-header"><__trans phrase="Category Monthly Archives"></h2>
                                     <div class="archive-content">
-                                        <ul class="archive-list">
+                                        <ul>
             </mt:ArchiveListHeader>
-                                            <li class="archive-list-item"><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
+                                            <li><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
             <mt:ArchiveListFooter>
                                         </ul>
                                     </div>
@@ -120,9 +120,9 @@
             <mt:ArchiveListHeader>
                                     <h2 class="archive-header"><__trans phrase="Author Monthly Archives"></h2>
                                     <div class="archive-content">
-                                        <ul class="archive-list">
+                                        <ul>
             </mt:ArchiveListHeader>
-                                            <li class="archive-list-item"><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
+                                            <li><a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
             <mt:ArchiveListFooter>
                                         </ul>
                                     </div>
@@ -140,9 +140,9 @@
     <mt:ArchiveList archive_type="Individual">
         <mt:ArchiveListHeader>
                                 <div class="archive-content">
-                                    <ul class="archive-list">
+                                    <ul>
         </mt:ArchiveListHeader>
-                                        <li class="archive-list-item"><$mt:ArchiveDate format="%Y.%m.%d"$>: <a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
+                                        <li><$mt:ArchiveDate format="%Y.%m.%d"$>: <a href="<$mt:ArchiveLink$>"><$mt:ArchiveTitle$></a></li>
         <mt:ArchiveListFooter>
                                     </ul>
                                 </div>
