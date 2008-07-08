@@ -4540,7 +4540,11 @@ body.dialog {
 #edit-author #name-field .textarea-wrapper,
 #edit-author #nickname-field .textarea-wrapper,
 #edit-author #email-field .textarea-wrapper,
-#edit-author #url-field .textarea-wrapper {
+#edit-author #url-field .textarea-wrapper,
+#edit-author #old_pass-field .textarea-wrapper,
+#edit-author #pass-field .textarea-wrapper,
+#edit-author #pass_verify-field .textarea-wrapper,
+#edit-author #hint-field .textarea-wrapper {
     width: 50%;
 }
 
