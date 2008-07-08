@@ -887,7 +887,7 @@ sub core_upgrade_functions {
             priority => 3.2,
             updater => {
                 type  => 'blog',
-                label => 'Updateing template build types...',
+                label => 'Updating template build types...',
                 code  => sub {
                     my ($blog) = @_;
                     require MT::CMS::Blog;
