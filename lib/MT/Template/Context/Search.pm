@@ -38,6 +38,54 @@ sub load_core_tags {
 
 ###########################################################################
 
+=head2 IfStraightSearch
+
+A conditional block which outputs its contents if the search in progress
+is a regular (or "straight") search.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 IfTagSearch
+
+A conditional block which outputs its contents if the search in progress
+is a search of entries by tag.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 NoSearch
+
+A container tag whose contents are displayed only if there is no search
+performed.
+
+This tag is only recognized in search templates.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
+=head2 NoSearchResults
+
+A container tag whose contents are displayed if a search is performed
+but no results are found.
+
+This tag is only recognized in search templates.
+
+=for tags search
+
+=cut
+
+###########################################################################
+
 =head2 SearchResultsHeader
 
 The content of this block tag is rendered when the item in context
@@ -46,6 +94,12 @@ use the block to render headings and titles of the result table,
 for example.
 
 This tag is only recognized in SearchResults block.
+
+B<Example:>
+
+    <mt:SearchResultsHeader>
+    <h3>Look what we found!</h3>
+    </mt:SearchResultsHeader>
 
 =for tags search
 
@@ -60,6 +114,13 @@ from search results are the last item of the result set.  You can
 use the block to render closeing tags of a HTML element, for example.
 
 This tag is only recognized in SearchResults block.
+
+B<Example:>
+
+    <mt:SearchResultsFooter>
+    <p>If you didn't find what you were looking for, you can also peruse
+    the <a href="<mt:Link identifier="archive_index">">site archives</a>.</p>
+    </mt:SearchResultsFooter>
 
 =for tags search
 
@@ -109,6 +170,8 @@ directive.
 
 This tag is only recognized in search templates.
 
+=for tags search
+
 =cut
 
 ###########################################################################
@@ -123,15 +186,89 @@ This tag is only recognized in search templates.
 
 =cut
 
+###########################################################################
+
+=head2 SearchIncludeBlogs
+
+Used in the search result template to pass the IncludeBlogs parameters
+through from the search form keeping the context of any followup search
+the same as the initial search.
+
+B<Example:>
+
+    <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>" />
+
+=cut
+
 sub _hdlr_include_blogs { $_[0]->stash('include_blogs') || '' }
+
+###########################################################################
+
+=head2 SearchString
+
+An HTML-encoded search query. This tag is only recognized in search templates.
+
+B<Example:>
+
+    <$mt:SearchString$>
+
+=for tags search
+
+=cut
+
 sub _hdlr_search_string { $_[0]->stash('search_string') || '' }
+
+###########################################################################
+
+=head2 SearchTemplateID
+
+Returns the identifier of the search template (ie, "feed" or
+"nomorepizzaplease").
+
+B<Example:>
+
+    <$mt:SearchTemplateID$>
+
+=for tags search
+
+=cut
+
 sub _hdlr_template_id { $_[0]->stash('template_id') || '' }
 sub _hdlr_max_results { $_[0]->stash('maxresults') || '' }
+
+###########################################################################
+
+=head2 SearchResultCount
+
+The number of results found across all of the blogs searched. This tag
+is only recognized in search templates.
+
+B<Example:>
+
+    <$mt:SearchResultCount$>
+
+=for tags search, count
+
+=cut
 
 sub _hdlr_result_count {
     my $results = $_[0]->stash('count');
     $results ? $results : 0;
 }
+
+###########################################################################
+
+=head2 SearchResults
+
+A container tag that creates a list of search results. This tag
+creates an entry and blog context that all Entry* and Blog* tags
+can be used.
+
+This tag is only recognized in search templates.
+
+=for tags search
+
+=cut
 
 sub _hdlr_results {
     my($ctx, $args, $cond) = @_;

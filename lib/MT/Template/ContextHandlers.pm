@@ -1074,6 +1074,14 @@ sub _fltr_zero_pad {
 
 ###########################################################################
 
+=head2 string_format
+
+An alias for the 'sprintf' modifier.
+
+=cut
+
+###########################################################################
+
 =head2 sprintf
 
 Formats the input text using the Perl 'sprintf' function. The value of
@@ -1227,23 +1235,23 @@ the 'escape' attribute. The following modes are recognized:
 
 =over 4
 
-=item html
+=item * html
 
 Similar to the 'encode_html' modifier. Escapes special characters as
 HTML entities.
 
-=item url
+=item * url
 
 Similar to the 'encode_url' modifier. Escapes special characters using
 a URL-encoded format (ie, " " becomes "%20").
 
-=item javascript or js
+=item * javascript or js
 
 Similar to the 'encode_js' modifier. Escapes special characters such
 as quotes, newline characters, etc., so that the input can be placed
 in a JavaScript string.
 
-=item mail
+=item * mail
 
 A very simple email obfuscation technique.
 
@@ -1454,6 +1462,61 @@ sub _fltr_wrap_text {
 
 ###########################################################################
 
+=head2 TemplateNote
+
+A function tag that always returns an empty string. This tag is useful
+for placing simple notes in your templates, since it produces nothing.
+
+B<Example:>
+
+    <$mt:TemplateNote note="Hi, mom!"$>
+
+=for tags templating
+
+=cut
+
+###########################################################################
+
+=head2 Ignore
+
+A block tag that always produces an empty string. This tag is useful
+for wrapping template code you wish to disable, or perhaps annotating
+sections of your template.
+
+B<Example:>
+
+    <mt:Ignore>
+        The API key for the following tag is D3ADB33F.
+    </mt:Ignore>
+
+=for tags templating
+
+=cut
+
+###########################################################################
+
+=head2 IfStatic
+
+Returns true if the current publishing context is static publishing,
+and false otherwise.
+
+=for tags templating, utility
+
+=cut
+
+###########################################################################
+
+=head2 IfDynamic
+
+Returns true if the current publishing context is dynamic publishing,
+and false otherwise.
+
+=for tags templating, utility
+
+=cut
+
+###########################################################################
+
 =head2 App:Listing
 
 This application tag is used in MT application templates to produce
@@ -1525,47 +1588,47 @@ B<Attributes:>
 
 =over 4
 
-=item type (optional)
+=item * type (optional)
 
 The C<MT::Object> object type the listing is processing. If unset,
 will use the contents of the C<object_type> variable.
 
-=item loop (optional)
+=item * loop (optional)
 
 The source of data to process. This is an array of hashes, similar
 to the kind used with the L<Loop> tag. If unset, the C<object_loop>
 variable is used instead.
 
-=item empty_message (optional)
+=item * empty_message (optional)
 
 Used when there are no rows to output for the listing. If not set,
 it will process any 'else' block that is available instead, or, failing
 that, will output an L<App:StatusMsg> tag saying that no data could be
 found.
 
-=item id (optional)
+=item * id (optional)
 
 Used to construct the DOM id for the listing. The outer C<div> tag
 will use this value. If unset, it will be assigned C<type-listing> (where
 'type' is the object type determined for the listing; see 'type'
 attribute).
 
-=item listing_class (optional)
+=item * listing_class (optional)
 
 Provides a custom class name that can be applied to the main
 C<div> tag produced (this is in addition to the 'listing' class
 that is always applied).
 
-=item action (optional; default 'script_url' variable)
+=item * action (optional; default 'script_url' variable)
 
 Supplies the 'action' attribute of the C<form> tag produced.
 
-=item hide_pager (optional; default '0')
+=item * hide_pager (optional; default '0')
 
 Controls whether the pagination controls are shown or not.
 If unspecified, pagination is shown.
 
-=item show_actions (optional; default '1')
+=item * show_actions (optional; default '1')
 
 Controls whether the actions associated with the object type
 processed are shown or not. If unspecified, actions are shown.
@@ -1676,11 +1739,11 @@ B<Attributes:>
 
 =over 4
 
-=item mode
+=item * mode
 
 Maps to a '__mode' argument.
 
-=item type
+=item * type
 
 Maps to a '_type' argument.
 
@@ -1740,17 +1803,17 @@ B<Attributes:>
 
 =over 4
 
-=item bar_position (optional; default "top")
+=item * bar_position (optional; default "top")
 
 Assigns a CSS class name indicating whether the control is above or
 below the listing or edit form it is associated with.
 
-=item hide_pager
+=item * hide_pager
 
 Assign either 1 or 0 to control whether the pagination controls are
 displayed or not.
 
-=item form_id
+=item * form_id
 
 Associates the pagition controls and item action widget with the
 given form element.
@@ -1792,37 +1855,37 @@ B<Attributes:>
 
 =over 4
 
-=item id (optional)
+=item * id (optional)
 
 If specified, will be used as the 'id' attribute for the outermost C<div>
 tag for the widget. If unspecified, will use the 'widget_id' template
 variable instead.
 
-=item label (required)
+=item * label (required)
 
 The label to display above the widget.
 
-=item label_link (optional)
+=item * label_link (optional)
 
 If specified, this link will wrap the label for the widget.
 
-=item label_onclick
+=item * label_onclick
 
 If specified, this JavaScript code will be assigned to the 'onclick'
 attribute of a link tag wrapping the widget label.
 
-=item class (optional)
+=item * class (optional)
 
 If unspecified, will use the id of the widget. This class is included in the
 'class' attribute of the outermost C<div> tag for the widget.
 
-=item header_action
+=item * header_action
 
-=item can_close (optional; default "0")
+=item * can_close (optional; default "0")
 
 Identifies whether widget may be closed or not.
 
-=item tabbed (optional; default "0")
+=item * tabbed (optional; default "0")
 
 If specified, the widget will be assigned an attribute that gives it
 a tabbed interface.
@@ -1931,15 +1994,15 @@ B<Attributes:>
 
 =over 4
 
-=item id (optional)
+=item * id (optional)
 
-=item class (optional; default "info")
+=item * class (optional; default "info")
 
-=item rebuild (optional)
+=item * rebuild (optional)
 
 Accepted values: "all", "index".
 
-=item can_close (optional; default "1")
+=item * can_close (optional; default "1")
 
 =back
 
@@ -2062,43 +2125,43 @@ B<Attributes:>
 
 =over 4
 
-=item action (optional)
+=item * action (optional)
 
 Identifies the URL to submit the form to. If not given, will use
 the current application URI.
 
-=item method (optional; default "POST")
+=item * method (optional; default "POST")
 
 Supplies the C<form> method. "GET" or "POST" are the typical values
 for this, but will accept any HTTP-compatible method (ie: "PUT", "DELETE").
 
-=item object_id (optional)
+=item * object_id (optional)
 
 Populates a hidden 'id' field in the form. If not given, will also use any
 'id' template variable defined.
 
-=item blog_id (optional)
+=item * blog_id (optional)
 
 Populates a hidden 'blog_id' field in the form. If not given, will also use
 any 'blog_id' template variable defined.
 
-=item object_type (optional)
+=item * object_type (optional)
 
 Populates a hidden '_type' field in the form. If not given, will also use
 any 'type' template variable defined.
 
-=item id (optional)
+=item * id (optional)
 
 Used to form the 'id' element of the HTML C<form> tag. If not specified,
 the C<form> tag 'id' element will be assigned TYPE-form, where TYPE is the
 determined object_type.
 
-=item name (optional)
+=item * name (optional)
 
 Supplies the C<form> name attribute. If unspecified, will use the C<id>
 attribute, if available.
 
-=item enctype (optional)
+=item * enctype (optional)
 
 If assigned, sets an 'enctype' attribute on the C<form> tag using the value
 supplied. This is typically used to create a form that is capable of
@@ -2174,15 +2237,15 @@ B<Attributes:>
 
 =over 4
 
-=item id (required)
+=item * id (required)
 
 A unique identifier for this group of settings.
 
-=item class (optional)
+=item * class (optional)
 
 If specified, applies this CSS class to the C<fieldset> tag produced.
 
-=item shown (optional; default "1")
+=item * shown (optional; default "1")
 
 Controls whether the C<fieldset> is initially shown or not. If hidden,
 a CSS "hidden" class is applied to the C<fieldset> tag.
@@ -2229,63 +2292,63 @@ B<Attributes:>
 
 =over 4
 
-=item id (required)
+=item * id (required)
 
 Each application setting tag requires a unique 'id' attribute. This id
 should not be re-used within the template.
 
-=item required (optional; default "0")
+=item * required (optional; default "0")
 
 Controls whether the field is displayed with visual cues that the
 field is a required field or not.
 
-=item label
+=item * label
 
 Supplies the label phrase for the setting.
 
-=item show_label (optional; default "1")
+=item * show_label (optional; default "1")
 
 Controls whether the label portion of the setting is shown or not.
 
-=item shown (optional; default "1")
+=item * shown (optional; default "1")
 
 Controls whether the setting is visible or not. If specified, adds
 a "hidden" class to the outermost C<div> tag produced for the
 setting.
 
-=item label_class (optional)
+=item * label_class (optional)
 
 Allows an additional CSS class to be applied to the label of the
 setting.
 
-=item content_class (optional)
+=item * content_class (optional)
 
 Allows an addtional CSS class to be applied to the contents of the
 setting.
 
-=item hint (optional)
+=item * hint (optional)
 
 Supplies a "hint" phrase that provides inline instruction to the user.
 By default, this hint is hidden, unless the 'show_hint' attribute
 forces it to display.
 
-=item show_hint (optional; default "0")
+=item * show_hint (optional; default "0")
 
 Controls whether the inline help 'hint' label is shown or not.
 
-=item warning
+=item * warning
 
 Supplies a warning message to the user regarding the use of this setting.
 
-=item show_warning
+=item * show_warning
 
 Controls whether the warning message is shown or not.
 
-=item help_page
+=item * help_page
 
 Identifies a specific page of the MT help documentation for this setting.
 
-=item help_section
+=item * help_section
 
 Identifies a section name of the MT help documentation for this setting.
 
@@ -2407,31 +2470,31 @@ B<Attributes:>
 
 =over 4
 
-=item var (optional)
+=item * var (optional)
 
 If assigned, the current 'index' of the loop is assigned to this template
 variable.
 
-=item from (optional; default "0")
+=item * from (optional; default "0")
 
-=item start
+=item * start
 
 Identifies the starting number for the loop.
 
-=item to
+=item * to
 
-=item end
+=item * end
 
 Identifies the ending number for the loop. Either 'to' or 'end' must
 be specified.
 
-=item step (optional; default "1")
+=item * step (optional; default "1")
 
-=item increment
+=item * increment
 
 Provides the amount to increment the loop counter.
 
-=item glue (optional)
+=item * glue (optional)
 
 If specified, this string is added inbetween each block of the loop.
 
@@ -2441,28 +2504,28 @@ Within the tag, the following variables are assigned:
 
 =over 4
 
-=item __first__
+=item * __first__
 
 Assigned 1 when the loop is in the first iteration.
 
-=item __last__
+=item * __last__
 
 Assigned 1 when the loop is in the last iteration.
 
-=item __odd__
+=item * __odd__
 
 Assigned 1 when the loop index is odd, 0 when it is even.
 
-=item __even__
+=item * __even__
 
 Assigned 1 when the loop index is even, 0 when it is odd.
 
-=item __index__
+=item * __index__
 
 Holds the current loop index value, even if the 'var' attribute has
 been given.
 
-=item __counter__
+=item * __counter__
 
 Tracks the number of times the loop has run (starts at 1).
 
@@ -2596,15 +2659,15 @@ B<Attributes:>
 
 =over 4
 
-=item name
+=item * name
 
-=item var
+=item * var
 
 Declares a variable to test. When none of the comparison attributes are
 present ("eq", "ne", "lt", etc.) the If tag tests if the variable has
 a "true" value, meaning if it is assigned a non-empty, non-zero value.
 
-=item tag
+=item * tag
 
 Declares a MT tag to execute; the value of which is used for testing.
 When none of the comparison attributes are present ("eq", "ne", "lt", etc.)
@@ -2612,7 +2675,7 @@ the If tag tests if the specified tag produces a "true" value, meaning if
 it produces a non-empty, non-zero value. For MT conditional tags, the
 If tag passes through the logical result of that conditional tag.
 
-=item op
+=item * op
 
 If specified, applies the specified mathematical operator to the value
 being tested. 'op' may be one of the following (those that require a
@@ -2620,72 +2683,72 @@ second value use the 'value' attribute):
 
 =over 4
 
-=item + or add
+=item * + or add
 
 Addition.
 
-=item - or sub
+=item * - or sub
 
 Subtraction.
 
-=item ++ or inc
+=item * ++ or inc
 
 Adds 1 to the given value.
 
-=item -- or dec
+=item * -- or dec
 
 Subtracts 1 from the given value.
 
-=item * or mul
+=item * * or mul
 
 Multiplication.
 
-=item / or div
+=item * / or div
 
 Division.
 
-=item % or mod
+=item * % or mod
 
 Issues a modulus operator.
 
 =back
 
-=item value
+=item * value
 
 Used in conjunction with the 'op' attribute.
 
-=item eq
+=item * eq
 
 Tests whether the given value is equal to the value of the 'eq' attribute.
 
-=item ne
+=item * ne
 
 Tests whether the given value is not equal to the value of the 'ne' attribute.
 
-=item gt
+=item * gt
 
 Tests whether the given value is greater than the value of the 'gt' attribute.
 
-=item lt
+=item * lt
 
 Tests whether the given value is less than the value of the 'lt' attribute.
 
-=item ge
+=item * ge
 
 Tests whether the given value is greater than or equal to the value of the
 'ge' attribute.
 
-=item le
+=item * le
 
 Tests whether the given value is less than or equal to the value of the
 'le' attribute.
 
-=item like
+=item * like
 
 Tests whether the given value matches the regex pattern in the 'like'
 attribute.
 
-=item test
+=item * test
 
 Uses a Perl (or PHP under Dynamic Publishing) expression. For Perl, this
 requires the "Safe" Perl module to be installed.
@@ -2968,6 +3031,17 @@ sub _hdlr_if {
 
 ###########################################################################
 
+=head2 Unless
+
+A conditional tag that is the logical opposite of the L<If> tag. All
+attributes supported by the L<If> tag are also supported for this tag.
+
+=for tags templating
+
+=cut
+
+###########################################################################
+
 =head2 Loop
 
 This tag is primarily used for MT application templates, for processing
@@ -2980,14 +3054,14 @@ B<Attributes:>
 
 =over 4
 
-=item name
+=item * name
 
-=item var
+=item * var
 
 The template variable that contains the array of hashref data to
 process.
 
-=item sort_by (optional)
+=item * sort_by (optional)
 
 Causes the data in the given array to be resorted in the manner
 specified. The 'sort_by' attribute may specify "key" or "value"
@@ -2999,7 +3073,7 @@ B<Example:>
 
     sort_by="key reverse"; sort_by="value numeric"
 
-=item glue (optional)
+=item * glue (optional)
 
 If specified, this string will be placed inbetween each "row"
 of data produced by the loop tag.
@@ -3011,28 +3085,28 @@ be used:
 
 =over 4
 
-=item __first__
+=item * __first__
 
 Assigned when the loop is in the first iteration.
 
-=item __last__
+=item * __last__
 
 Assigned when the loop is in the last iteration.
 
-=item __odd__
+=item * __odd__
 
 Assigned 1 when the loop is on odd numbered rows, 0 when even.
 
-=item __even__
+=item * __even__
 
 Assigned 1 when the loop is on even numbered rows, 0 when odd.
 
-=item __key__
+=item * __key__
 
 When looping over a hashref template variable, this variable is
 assigned the key currently in context.
 
-=item __value__
+=item * __value__
 
 This variable holds the value of the array or hashref element
 currently in context.
@@ -3137,6 +3211,8 @@ sub _hdlr_loop {
 
 An alias for the 'Var' tag, and considered deprecated in favor of 'Var'.
 
+=for tags deprecated
+
 =cut
 
 ###########################################################################
@@ -3149,7 +3225,7 @@ B<Attributes:>
 
 =over 4
 
-=item name (or var)
+=item * name (or var)
 
 Identifies the template variable. The 'name' attribute supports a variety
 of expressions. The typical case is a simple variable name:
@@ -3174,13 +3250,13 @@ number of elements in the 'foo' array:
 
     <mt:Var name="count(foo)">
 
-=item op
+=item * op
 
 Along with the 'value' attribute, this allows the application of
 a number of mathematical operators (see the L<If> tag for which
 are supported).
 
-=item value
+=item * value
 
 If provided with the 'op' attribute, provides the operand for the
 specified mathematical operation.
@@ -3189,21 +3265,21 @@ If provided without the 'op' attribute, this causes the variable
 to be I<assigned> the value specified. In this way, this tag
 is useful for setting variables as well.
 
-=item function
+=item * function
 
 For array template variables, this attribute supports:
 
 =over 4
 
-=item pop
+=item * pop
 
 Takes an element from the end of the array (last element).
 
-=item shift
+=item * shift
 
 Takes an element from the front of the array (index 0).
 
-=item count
+=item * count
 
 Returns the number of elements in the array template variable.
 
@@ -3213,34 +3289,34 @@ For hash template variables, this attribute supports:
 
 =over 4
 
-=item delete
+=item * delete
 
 Only valid when used with the 'key' attribute, or if a key is present
 in the variable name.
 
-=item count
+=item * count
 
 Returns the number of keys present in the hash template variable.
 
 =back
 
-=item index
+=item * index
 
 Identifies an element of an array template variable.
 
-=item key
+=item * key
 
 Identifies a key of a hash template variable.
 
-=item default
+=item * default
 
 If the variable is undefined or empty, this value will be output instead.
 
-=item to_json
+=item * to_json
 
 Formats the variable in JSON notation.
 
-=item glue
+=item * glue
 
 For array template variables, this attribute is used in joining the
 values of the array together.
@@ -3436,7 +3512,7 @@ B<Attributes:>
 
 =over 4
 
-=item tag or name
+=item * tag or name
 
 If either 'name' or 'tag' are specified, tests the entry in context
 for whether it has a tag association by that name.
@@ -3552,7 +3628,7 @@ B<Attributes:>
 
 =over 4
 
-=item glue
+=item * glue
 
 A text string that is used to join each of the items together. For example
 
@@ -3560,27 +3636,27 @@ A text string that is used to join each of the items together. For example
     
 would print out each tag name separated by a comma and a space.
 
-=item type
+=item * type
 
 The kind of object for which to show tags. By default the entry tags are shown.
 
-=item sort_by
+=item * sort_by
 
 The tag object column on which to order the tags. Common values are name and
 rank. By default tags are sorted by name.
 
-=item sort_order
+=item * sort_order
 
 The direction in which to sort tags by the sort_by field. Possible values
 are ascend and descend. By default, tags are shown in ascending order
 when sorted by name and descending order when sorted by other columns.
 
-=item limit
+=item * limit
 
 A number of tags to show. If given, only the first tags as ordered by
 sort_by and sort_order are shown.
 
-=item top
+=item * top
 
 A number of tags to show. If given, only the given number of tags with
 the most uses are shown. For example:
@@ -3816,7 +3892,7 @@ B<Attributes:>
 
 =over 4
 
-=item max (optional; default "6")
+=item * max (optional; default "6")
 
 Allows a user to specify the upper bound of the scale.
 
@@ -3930,19 +4006,19 @@ A container tag used to output infomation about the entry tags assigned
 to the entry in context.
 
 To avoid printing out the leading text when no entry tags are assigned you
-can use the EntryIfTagged conditional block to first test for entry tags
-on the entry. You can also use the EntryIfTagged conditional block with
+can use the L<EntryIfTagged> conditional block to first test for entry tags
+on the entry. You can also use the L<EntryIfTagged> conditional block with
 the tag attribute to test for the assignment of a particular entry tag.
 
 B<Attributes:>
 
 =over 4
 
-=item glue
+=item * glue
 
 A text string that is used to join each of the items together. For example:
 
-    <mt:EntryTags glue=", "><$MTTagName$></mt:EntryTags>
+    <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
 
 would print out each tag name separated by a comma and a space.
 
@@ -3950,7 +4026,7 @@ would print out each tag name separated by a comma and a space.
 
 B<Example:>
 
-The following code can be used anywhere MTEntries can be used. It prints
+The following code can be used anywhere L<Entries> can be used. It prints
 a list of all of the tags assigned to each entry returned by L<Entries>
 glued together by a comma and a space.
 
@@ -3994,6 +4070,14 @@ sub _hdlr_entry_tags {
 
 ###########################################################################
 
+=head2 TagLabel
+
+An alias for the 'TagName' tag.
+
+=cut
+
+###########################################################################
+
 =head2 TagName
 
 Outputs the name of the current tag in context.
@@ -4002,7 +4086,7 @@ B<Attributes:>
 
 =over 4
 
-=item normalize (optional; default "0")
+=item * normalize (optional; default "0")
 
 If specified, outputs the "normalized" form of the tag. A normalized
 tag has been stripped of any spaces and punctuation and is only
@@ -4010,7 +4094,7 @@ lowercase.
 
 =over 4
 
-=item quote (optional; default "0")
+=item * quote (optional; default "0")
 
 If specified, causes any tag with spaces in it to be wrapped in quote
 marks.
@@ -4228,9 +4312,9 @@ B<Attributes:>
 
 =over 4
 
-=item type
+=item * type
 
-=item archive_type
+=item * archive_type
 
 The archive type to test for, case-insensitively. See L<ArchiveType> for
 acceptable values but note that plugins may also provide others.
@@ -4275,7 +4359,7 @@ B<Attributes:>
 
 =over 4
 
-=item type or archive_type
+=item * type or archive_type
 
 Specifies the name of the archive type you wish to check to see if it is enabled.
 
@@ -4353,7 +4437,7 @@ B<Attributes:>
 
 =over 4
 
-=item var (optional)
+=item * var (optional)
 
 Supplies a variable name to use for assigning the contents of the
 L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
@@ -4386,22 +4470,22 @@ B<Attributes:>
 
 =over 4
 
-=item module
+=item * module
 
 The name of a template module in the current blog.
 
-=item widget
+=item * widget
 
 The name of the widget in the current blog to include.
 
-=item file
+=item * file
 
 The path to an external file on the system. The path can be absolute or
 relative to the Local Site Path. This file is included at the time your
 page is built. It should not be confused with dynamic server side
 includes like that found in PHP.
 
-=item identifier
+=item * identifier
 
 For selecting Index templates by their unique identifier.
 
@@ -4410,18 +4494,18 @@ For selecting Index templates by their unique identifier.
 For application template use: identifies an application template by
 filename to load.
 
-=item blog_id (optional)
+=item * blog_id (optional)
 
 Used to include a template from another blog in the system. Use in
 conjunction with the module, widget or identifier attributes.
 
-=item global (optional; default "0")
+=item * global (optional; default "0")
 
 Forces an Include of a globally defined template even if the
 template is also available in the blog currently in context.
 (For module, widget and identifier includes.)
 
-=item ssi (optional; default "0")
+=item * ssi (optional; default "0")
 
 If specified, causes the include to be handled as a server-side
 include. The value of the 'ssi' attribute determines the type of
@@ -4442,17 +4526,17 @@ tag would look like this:
 
 Suitable for module, widget or identifier includes.
 
-=item cache (optional; default "0")
+=item * cache (optional; default "0")
 
 Enables caching of the contents of the include. Suitable for module,
 widget or identifier includes.
 
-=item key or cache_key (optional)
+=item * key or cache_key (optional)
 
 Used to cache the template module. Used in conjunction with the 'cache'
 attribute. Suitable for module, widget or identifier includes.
 
-=item ttl (optional)
+=item * ttl (optional)
 
 Specifies the lifetime in seconds of a cached template module. Suitable
 for module, widget or identifier includes.
@@ -4790,7 +4874,7 @@ B<Attributes:>
 
 =over 4
 
-=item format
+=item * format
 
 A required attribute that defines the template with a string of specifiers.
 The supported specifiers are (B<NOTE:> do not confuse the following
@@ -4800,117 +4884,117 @@ tuned for publishing filenames and paths for various contexts.)
 
 =over 4
 
-=item %a
+=item * %a
 
 The entry's author's display name passed through the dirify global filter. Example: melody_nelson
 
-=item %-a
+=item * %-a
 
 The same as above except using dashes. Example: melody-nelson
 
-=item %b
+=item * %b
 
 For individual archive mappings, this returns the basename of the entry. By
 default, this is the first thirty characters of an entry dirified with
 underscores. It can be specified by using the basename field on the edit
 entry screen. Example: my_summer_vacation
 
-=item %-b
+=item * %-b
 
 Same as above but using dashes. Example: my-summer-vacation
 
-=item %c
+=item * %c
 
 The entry's primary category/subcategory path, built using the category
 basename field. Example: arts_and_entertainment/tv_and_movies
 
-=item %-c
+=item * %-c
 
 Same as above but using dashes. Example: arts-and-entertainment/tv-and-movies
 
-=item %C
+=item * %C
 
 The entry's primary category label passed through the dirify global filter. Example: arts_and_entertainment
 
-=item %-C
+=item * %-C
 
 Same as above but using dashes. Example: arts-and-entertainment
 
-=item %d
+=item * %d
 
 2-digit day of the month. Example: 09
 
-=item %D
+=item * %D
 
 3-letter language-dependent abbreviation of the week day. Example: Tue
 
-=item %e
+=item * %e
 
 A numeric entry ID padded with leading zeroes to six digits. Example: 000040
 
-=item %E
+=item * %E
 
 The entry's numeric ID. Example: 40
 
-=item %f
+=item * %f
 
 Archive filename with the specified extension. This can be used instead of
 %b or %i and will do the right thing based on the context.
 Example: entry_basename.html or index.html
 
-=item %F
+=item * %F
 
 Same as above but without the file extension. Example: filename
 
-=item %h
+=item * %h
 
 2-digit hour on a 24-hour clock with a leading zero if applicable.
 Example: 09 for 9am, 16 for 4pm
 
-=item %H
+=item * %H
 
 2-digit hour on a 24-hour clock without a leading zero if applicable.
 Example: 9 for 9am, 16 for 4pm
 
-=item %i
+=item * %i
 
 The setting of the IndexBasename configuration directive with the default
 file extension appended. Example: index.html
 
-=item %I
+=item * %I
 
 Same as above but without the file extension. Example: index
 
-=item %j
+=item * %j
 
 3-digit day of year, zero-padded. Example: 040
 
-=item %m
+=item * %m
 
 2-digit month, zero-padded. Example: 07
 
-=item %M
+=item * %M
 
 3-letter language-dependent abbreviation of the month. Example: Sep
 
-=item %n
+=item * %n
 
 2-digit minute, zero-padded. Example: 04
 
-=item %s
+=item * %s
 
 2-digit second, zero-padded. Example: 01
 
-=item %x
+=item * %x
 
 File extension with a leading dot (.). If a file extension has not
 been specified a blank string is returned. Example: .html
 
-=item %y
+=item * %y
 
 4-digit year. Example: 2005
 
-=item %Y
+=item * %Y
 
 2-digit year with zero-padding. Example: 05
 
@@ -5027,19 +5111,19 @@ attributes can be specified at a time.
 
 B<Attributes:>
 
-=item template
+=item * template
 
 The name of the index template.
 
-=item identifier
+=item * identifier
 
 A template identifier.
 
-=item entry_id
+=item * entry_id
 
 The numeric system ID of the entry.
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If not set to 1, remove index filenames (by default, index.html)
 from resulting links.
@@ -5117,7 +5201,7 @@ B<Attributes:>
 
 =over 4
 
-=item version (optional; default "0")
+=item * version (optional; default "0")
 
 If specified, also outputs the version (same as L<Version>).
 
@@ -5213,11 +5297,11 @@ B<Attributes:>
 
 =over 4
 
-=item tag
+=item * tag
 
 A tag which is evaluated and tested for non-emptiness.
 
-=item name or var
+=item * name or var
 
 A variable whose contents are tested for non-emptiness.
 
@@ -5263,11 +5347,11 @@ B<Attributes:>
 
 =over 4
 
-=item tag
+=item * tag
 
 A tag which is evaluated and tested for non-zeroness.
 
-=item name or var
+=item * name or var
 
 A variable whose contents are tested for non-zeroness.
 
@@ -5424,32 +5508,32 @@ B<Attributes:>
 
 =over 4
 
-=item var or name
+=item * var or name
 
 Identifies the name of the template variable. See L<Var> for more
 information on the format of this attribute.
 
-=item value
+=item * value
 
 The value to assign to the variable.
 
-=item op (optional)
+=item * op (optional)
 
 See the L<Var> tag for more information about this attribute.
 
-=item prepend (optional)
+=item * prepend (optional)
 
 If specified, places the contents at the front of any existing value
 for the template variable.
 
-=item append (optional)
+=item * append (optional)
 
 If specified, places the contents at the end of any existing value
 for the template variable.
 
 =back
 
-=for tags templating
+=for tags deprecated
 
 =cut
 
@@ -5465,21 +5549,21 @@ B<Attributes:>
 
 =over 4
 
-=item var or name (required)
+=item * var or name (required)
 
 Identifies the name of the template variable. See L<Var> for more
 information on the format of this attribute.
 
-=item op (optional)
+=item * op (optional)
 
 See the L<Var> tag for more information about this attribute.
 
-=item prepend (optional)
+=item * prepend (optional)
 
 If specified, places the contents at the front of any existing value
 for the template variable.
 
-=item append (optional)
+=item * append (optional)
 
 If specified, places the contents at the end of any existing value
 for the template variable.
@@ -5503,7 +5587,7 @@ B<Attributes:>
 
 =over 4
 
-=item var or name (required)
+=item * var or name (required)
 
 Identifies the name of the template variable. See L<Var> for more
 information on the format of this attribute.
@@ -5895,14 +5979,22 @@ sub _hdlr_search_script {
     return $ctx->{config}->SearchScript;
 }
 
-=for tags search
+###########################################################################
+
+=head2 MaxResults
+
+Deprecated in favor of L<SearchMaxResults>.
+
+=for tags deprecated
+
+=cut
 
 ###########################################################################
 
 =head2 SearchMaxResults
 
 Returns the value of the C<SearchMaxResults> or C<MaxResults> configuration
-setting.  Use C<SearchMaxResults> because MaxResults is considered deprecated.
+setting. Use C<SearchMaxResults> because MaxResults is considered deprecated.
 
 =for tags search, configuration
 
@@ -6047,72 +6139,72 @@ B<Attributes:>
 
 =over 4
 
-=item display_name
+=item * display_name
 
 Specifies a particular author to select.
 
-=item lastn
+=item * lastn
 
 Limits the selection of authors to the specified number.
 
-=item sort_by (optional)
+=item * sort_by (optional)
 
 Supported values: display_name, name, created_on.
 
-=item sort_order (optional; default "ascend")
+=item * sort_order (optional; default "ascend")
 
 Supported values: ascend, descend.
 
-=item roles
+=item * roles
 
 A comma separated list of roles used to select users by.
 eg: "Author, Commenter".
 
-=item need_entry (optional; default "1")
+=item * need_entry (optional; default "1")
 
 Identifies whether the author(s) must have published an entry
 to be included or not.
 
-=item status (optional; default "enabled")
+=item * status (optional; default "enabled")
 
 Supported values: enabled, disabled.
 
-=item namespace
+=item * namespace
 
 Used in conjunction with the "min*", "max*" attributes to
 select authors based on a particular scoring mechanism.
 
-=item min_score
+=item * min_score
 
 If 'namespace' is also specified, filters the authors based on
 the score within that namespace. This specifies the minimum score
 to consider the author for inclusion.
 
-=item max_score
+=item * max_score
 
 If 'namespace' is also specified, filters the authors based on
 the score within that namespace. This specifies the maximum score
 to consider the author for inclusion.
 
-=item min_rank
+=item * min_rank
 
 If 'namespace' is also specified, filters the authors based on
 the rank within that namespace. This specifies the minimum rank
 to consider the author for inclusion.
 
-=item max_rate
+=item * max_rate
 
 If 'namespace' is also specified, filters the authors based on
 the rank within that namespace. This specifies the maximum rank
 to consider the author for inclusion.
 
-=item min_count
+=item * min_count
 
 If 'namespace' is also specified, filters the authors based on
 the count within that namespace. This specifies the minimum count
 to consider the author for inclusion.
 
-=item max_count
+=item * max_count
 
 If 'namespace' is also specified, filters the authors based on
 the count within that namespace. This specifies the maximum count
@@ -6503,7 +6595,7 @@ sub _hdlr_author_auth_type {
 
 ###########################################################################
 
-=head2 AuthorIconURL
+=head2 AuthorAuthIconURL
 
 Returns URL to a small (16x16) image represents in what authentication
 provider the author in context is authenticated. For most of users it will
@@ -6515,7 +6607,7 @@ B<Attributes:>
 
 =over 4
 
-=item size (optional; default "logo_small")
+=item * size (optional; default "logo_small")
 
 Identifies the requested size of the logo. This is an identifier,
 not a dimension in pixels. And, currently, "logo_small" is the only
@@ -6675,7 +6767,7 @@ B<Attributes:>
 
 =over 4
 
-=item blog_ids
+=item * blog_ids
 
 This attribute allows you to limit the set of blogs iterated over by
 L<Blogs>. Multiple blogs are specified in a comma-delimited fashion.
@@ -6737,6 +6829,27 @@ sub _hdlr_blogs {
     }
     $res;
 }
+
+###########################################################################
+
+=head2 IfBlog
+
+A conditional tag that produces its contents when there is a blog in
+context. This tag is useful for situations where a blog may or may not
+be in context, such as the search template, when a search is conducted
+across all blogs.
+
+B<Example:>
+
+    <mt:IfBlog>
+        <h1>Search results for <$mt:BlogName$>:</h1>
+    <mt:Else>
+        <h1>Search results from all blogs:</h1>
+    </mt:IfBlog>
+
+=for tags blogs
+
+=cut
 
 ###########################################################################
 
@@ -6888,7 +7001,7 @@ B<Attributes:>
 
 =over 4
 
-=item no_colon (optional; default "0")
+=item * no_colon (optional; default "0")
 
 If specified, will produce the timezone without the ":" character
 ("+|-hhmm" only).
@@ -6924,11 +7037,11 @@ B<Attributes:>
 
 =over 4
 
-=item locale (optional; default "0")
+=item * locale (optional; default "0")
 
 If assigned, will format the language in the style "language_LOCALE" (ie: "en_US", "de_DE", etc).
 
-=item ietf (optional; default "0")
+=item * ietf (optional; default "0")
 
 If assigned, will change any '_' in the language code to a '-', conforming
 it to the IETF RFC # 3066.
@@ -6964,13 +7077,13 @@ B<Attributes:>
 
 =over 4
 
-=item exclude_port (optional; default "0")
+=item * exclude_port (optional; default "0")
 
 Removes any specified port number if this attribute is set to true (1),
 otherwise it will return the hostname and port number (e.g.
 www.somedomain.com:8080).
 
-=item signature (optional; default "0")
+=item * signature (optional; default "0")
 
 If set to 1, then this template tag will instead return a unique signature
 for the hostname, by replacing all occurrences of decimals (".") with
@@ -7013,7 +7126,7 @@ B<Attributes:>
 
 =over 4
 
-=item exclude_port (optional; default "0")
+=item * exclude_port (optional; default "0")
 
 If set, exclude the port number from the CGIHost.
 
@@ -7037,7 +7150,18 @@ sub _hdlr_cgi_host {
 
 =head2 BlogCategoryCount
 
-=for tags multiblog, count, blogs
+Returns the number of categories associated with a blog. This
+template tag supports the multiblog template tags.
+
+This template tag also supports all of the same filtering mechanisms
+defined by the mt:Categories tag allowing users to retrieve a count
+of the number of comments on a blog that meet a certain criteria.
+
+B<Example:>
+
+    <$mt:BlogCategoryCount$>
+
+=for tags multiblog, count, blogs, categories
 
 =cut
 
@@ -7178,7 +7302,7 @@ B<Attributes:>
 
 =over 4
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If specified, forces the trailing "index" filename to be left on any
 entry permalink published in the RDF block.
@@ -7308,7 +7432,7 @@ B<Attributes:>
 
 =over 4
 
-=item lastn (optional)
+=item * lastn (optional)
 
 Allows you to limit the number of entries output. This attribute
 always implies selection of entries based on their 'authored' date, in
@@ -7318,12 +7442,12 @@ reverse chronological order.
 
 This would publish the 5 most recent entries, ordered by their titles.
 
-=item limit (optional)
+=item * limit (optional)
 
 Similar to the C<lastn> attribute, but limits output based on whichever
 sort order is in use.
 
-=item sort_by (optional; default "authored_on")
+=item * sort_by (optional; default "authored_on")
 
 Accepted values are: C<authored_on>, C<title>, C<ping_count>,
 C<comment_count>, C<author_id>, C<excerpt>, C<status>, C<created_on>,
@@ -7334,13 +7458,13 @@ may specify a custom field basename to sort the listing, by giving
 a C<sort_by> value of C<field:I<basename>> (where 'basename' is the custom
 field basename you wish to sort on).
 
-=item sort_order (optional)
+=item * sort_order (optional)
 
 Accepted values are 'ascend' and 'descend'. The default is the order
 specified for publishing entries, set on the blog entry preferences
 screen.
 
-=item field:I<basename>
+=item * field:I<basename>
 
 Permits filtering entries based on a custom field defined (available
 when the Commercial Pack is installed).
@@ -7353,7 +7477,7 @@ B<Example:>
 This selects the last 5 entries that have a "special" custom field
 (checkbox field) checked.
 
-=item namespace (optional)
+=item * namespace (optional)
 
 The namespace attribute is used to specify which scoring namespace
 to use when applying the C<sort_by="score"> attribute, or filtering
@@ -7363,18 +7487,18 @@ The MT Community Pack provides a 'community_pack_recommend' namespace,
 for instance, which can be used to select entries, sorting by number
 of recommend/favorite votes that have been made.
 
-=item class_type (optional; default 'entry')
+=item * class_type (optional; default 'entry')
 
 Accepted values are 'entry' and 'page'.
 
-=item offset (optional)
+=item * offset (optional)
 
 Accepted values are any non-zero positive integers, or the keyword
 "auto" which is used under dynamic publishing to automatically
 determine the offset based on the C<offset> query parameter for
 the request.
 
-=item category or categories (optional)
+=item * category or categories (optional)
 
 This attribute allows you to filter the entries based on category
 assignment. The simple case is to filter for a single category,
@@ -7400,19 +7524,19 @@ or
 
     <mt:Entries categories="NOT Family">
 
-=item include_subcategories (optional)
+=item * include_subcategories (optional)
 
 If this attribute is specified in conjunction with the category (or
 categories) attribute, it will cause any entries assigned to subcategories
 of the identified category/categories to be included as well.
 
-=item tag or tags (optional)
+=item * tag or tags (optional)
 
 This attribute functions similarly to the C<category> attribute, but
 filters based on tag assignments. It also supports the logical operators
 described for category selection.
 
-=item author (optional)
+=item * author (optional)
 
 Accepts an author's username to filter entry selection.
 
@@ -7420,33 +7544,33 @@ B<Example:>
 
     <mt:Entries author="Melody">
 
-=item id (optional)
+=item * id (optional)
 
 If specified, selects a single entry matching the given entry ID.
 
     <mt:Entries id="10">
 
-=item min_score (optional)
+=item * min_score (optional)
 
-=item max_score (optional)
+=item * max_score (optional)
 
-=item min_rate (optional)
+=item * min_rate (optional)
 
-=item max_rate (optional)
+=item * max_rate (optional)
 
-=item min_count (optional)
+=item * min_count (optional)
 
-=item max_count (optional)
+=item * max_count (optional)
 
 Allows filtering of entries based on score, rating or count. Each of
 the attributes require the C<namespace> attribute.
 
-=item scored_by (optional)
+=item * scored_by (optional)
 
 Allows filtering of entries that were scored by a particular user,
 specified by username. Requires the C<namespace> attribute.
 
-=item days (optional)
+=item * days (optional)
 
 Limits the selection of entries to a specified number of days,
 based on the current date. For instance, if you specify:
@@ -7456,7 +7580,7 @@ based on the current date. For instance, if you specify:
 only entries that were authored within the last 10 days will be
 published.
 
-=item recently_commented_on (optional)
+=item * recently_commented_on (optional)
 
 Selects the list of entries that have received published comments
 recently. The value of this attribute is the number of days to use
@@ -7468,7 +7592,7 @@ will select entries that received published comments within the last
 10 days. The order of the entries is the date of the most recently
 received comment.
 
-=item unique
+=item * unique
 
 If specified, this flag will cause MT to keep track of which entries
 are being published for a given page. It will also prevent the publishing
@@ -7490,7 +7614,7 @@ of entries that follow, you can do this:
 The second Entries tag will exclude any entries that were output
 from the first Entries tag.
 
-=item glue (optional)
+=item * glue (optional)
 
 Specifies a string that is output inbetween published entries.
 
@@ -7651,6 +7775,7 @@ sub _hdlr_entries {
                     $cats = [ $cat_class->load(\%blog_terms, \%blog_args) ];
                 } else {
                     my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $class_type);
+use Data::Dumper; die Dumper({ terms => \%blog_terms, args => \%blog_args, cats => \@cats, arg => $category_arg });
                     if (@cats) {
                         $cats = \@cats;
                         $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => 0 });
@@ -8200,6 +8325,99 @@ sub _hdlr_entries {
     $res;
 }
 
+###########################################################################
+
+=head2 DateHeader
+
+A container tag whose contents will be displayed if the entry in context
+was posted on a new day in the list.
+
+B<Example:>
+
+    <mt:Entries>
+        <mt:DateHeader>
+            <h2><$mt:EntryDate format="%A, %B %e, %Y"$></h2>
+        </mt:DateHeader>
+        <!-- display entry here -->
+    </mt:Entries>
+
+=for tags entries
+
+=cut
+
+###########################################################################
+
+=head2 DateFooter
+
+A container tag whose contents will be displayed if the entry in context
+is the last entry in the group of entries for a given day.
+
+B<Example:>
+
+    <mt:Entries>
+        <!-- display entry here -->
+        <mt:DateFooter>
+            <hr />
+        </mt:DateFooter>
+    </mt:Entries>
+
+=for tags entries
+
+=cut
+
+###########################################################################
+
+=head2 EntriesHeader
+
+The contents of this container tag will be displayed when the first
+entry listed by a L<Entries> tag is reached.
+
+=for tags entries
+
+=cut
+
+###########################################################################
+
+=head2 EntriesFooter
+
+The contents of this container tag will be displayed when the last
+entry listed by a L<Entries> tag is reached.
+
+=for tags entries
+
+=cut
+
+###########################################################################
+
+=head2 PagesHeader
+
+The contents of this container tag will be displayed when the first page
+listed by a L<Pages> tag is reached.
+
+B<Example:>
+
+    <mt:Pages glue=", ">
+        <mt:PagesHeader>
+            The following pages are available:
+        </mt:PagesHeader>
+        <a href="<$mt:PagePermalink$>"><$mt:PageTitle$></a>
+    </mt:Pages>
+
+=for tags pages
+
+=cut
+
+###########################################################################
+
+=head2 PagesFooter
+
+The contents of this container tag will be displayed when the last page
+listed by a L<Pages> tag is reached.
+
+=for tags pages
+
+=cut
+
 # returns an iterator that supplies entries, in the order of last comment
 # date (descending)
 sub _rco_entries_iter {
@@ -8325,13 +8543,13 @@ B<Attributes:>
 
 =over 4
 
-=item convert_breaks (optional; default "1")
+=item * convert_breaks (optional; default "1")
 
 Accepted values are '0' and '1'. Typically, this attribute is
 used to disable (with a value of '0') the processing of the entry
 text based on the text formatting option for the entry.
 
-=item words (optional)
+=item * words (optional)
 
 Accepts any positive integer to limit the number of words
 that are output.
@@ -8413,7 +8631,7 @@ B<Attributes:>
 
 =over 4
 
-=item generate (optional)
+=item * generate (optional)
 
 If specified, will draw content from the "main" text field of
 the entry if the title is empty.
@@ -8517,7 +8735,7 @@ B<Attributes:>
 
 =over 4
 
-=item flag (required)
+=item * flag (required)
 
 Accepts one of: 'allow_pings', 'allow_comments'.
 
@@ -8559,17 +8777,17 @@ B<Attributes:>
 
 =over 4
 
-=item no_generate (optional)
+=item * no_generate (optional)
 
 If the excerpt field is empty, this flag will prevent the generation
 of an excerpt using the main text of the entry.
 
-=item words (optional; default "40")
+=item * words (optional; default "40")
 
 Controls the length of the auto-generated entry excerpt. Does B<not>
 limit the content when the excerpt field contains content.
 
-=item convert_breaks (optional; default "0")
+=item * convert_breaks (optional; default "0")
 
 When set to '1', applies the text formatting filters on the excerpt
 content.
@@ -8621,6 +8839,8 @@ B<This tag is considered deprecated in favor of
 L<EntryAuthorDisplayName>. It is not recommended to publish MT
 usernames.>
 
+=for tags deprecated
+
 =cut
 
 # FIXME: This should be a container tag providing an author
@@ -8657,6 +8877,8 @@ sub _hdlr_entry_author_display_name {
 
 An alias of L<EntryAuthorDisplayName>. B<This tag is deprecated in
 favor of L<EntryAuthorDisplayName>.>
+
+=for tags deprecated
 
 =cut
 
@@ -8696,7 +8918,7 @@ B<Attributes:>
 
 =over 4
 
-=item spam_protect (optional; default "0")
+=item * spam_protect (optional; default "0")
 
 If specified, this will apply a light obfuscation of the email address,
 by encoding any characters that will identify it as an email address
@@ -8743,27 +8965,27 @@ B<Attributes:>
 
 =over 4
 
-=item new_window
+=item * new_window
 
 If specified, the published link is given a C<target> attribute of '_blank'.
 
-=item show_email (optional; default "0")
+=item * show_email (optional; default "0")
 
 If set, will allow publishing of an email address if the URL field
 for the author is empty.
 
-=item spam_protect (optional)
+=item * spam_protect (optional)
 
 If specified, this will apply a light obfuscation of any email address
 published, by encoding any characters that will identify it as an email
 address (C<:>, C<@>, and C<.>) into HTML entities.
 
-=item type (optional)
+=item * type (optional)
 
 Accepted values: C<url>, C<email>, C<archive>. Note: an 'archive' type
 requires publishing of "Author" archives.
 
-=item show_hcard (optional; default "0")
+=item * show_hcard (optional; default "0")
 
 If present, adds additional CSS class names to the link tag published,
 identifying the link as a url or email address depending on the type of
@@ -8934,7 +9156,7 @@ sub _hdlr_entry_tb_link {
 
 ###########################################################################
 
-=head2 EntryTrackbackLink
+=head2 EntryTrackbackData
 
 Outputs the TrackBack RDF block that allows for TrackBack
 autodiscovery to take place. If TrackBack is not enabled
@@ -8944,12 +9166,12 @@ B<Attributes:>
 
 =over 4
 
-=item comment_wrap (optional; default "1")
+=item * comment_wrap (optional; default "1")
 
 If enabled, will enclose the RDF markup inside an HTML
 comment tag.
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If specified, will leave any "index.html" (or appropriate index
 page filename) in the permalink of the entry in context. By default
@@ -9040,9 +9262,9 @@ B<Attributes:>
 
 =over 4
 
-=item type (optional)
+=item * type (optional)
 
-=item archive_type (optional)
+=item * archive_type (optional)
 
 Identifies the archive type to use when creating the link. For instance,
 to link to the appropriate Monthly archive for the current entry (assuming
@@ -9093,7 +9315,7 @@ B<Attributes:>
 
 =over 4
 
-=item separator (optional)
+=item * separator (optional)
 
 Accepts either "-" or "_". If unspecified, the raw basename value is
 returned.
@@ -9149,12 +9371,12 @@ B<Attributes:>
 
 =over 4
 
-=item type or archive_type (optional)
+=item * type or archive_type (optional)
 
 Specifies an alternative archive type to use instead of the individual
 archive.
 
-=item valid_html (optional; default "0")
+=item * valid_html (optional; default "0")
 
 When publishing entry permalinks for non-individual archive templates, an
 anchor must be appended to the URL for the link to point to the
@@ -9163,7 +9385,7 @@ the anchor name is simply a number-- the ID of the entry. If specified,
 an 'a' is prepended to the number so the anchor name is considered
 valid HTML.
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If assigned, will retain any index filename at the end of the permalink.
 
@@ -9269,7 +9491,7 @@ B<Attributes:>
 
 =over 4
 
-=item glue (optional)
+=item * glue (optional)
 
 If specified, this string is placed in between each result from the loop.
 
@@ -9381,6 +9603,8 @@ sub _hdlr_sign_out_link {
 Outputs a link to the MT Comment script to allow signing in to a TypeKey
 configured blog. B<NOTE: This is deprecated in favor of L<SignInLink>.>
 
+=for tags deprecated
+
 =cut
 
 sub _hdlr_remote_sign_in_link {
@@ -9416,6 +9640,8 @@ sub _hdlr_remote_sign_in_link {
 Outputs a link to the MT Comment script to allow a user to sign out from
 a blog. B<NOTE: This tag is deprecated in favor of L<SignOutLink>.>
 
+=for tags deprecated
+
 =cut
 
 sub _hdlr_remote_sign_out_link {
@@ -9440,6 +9666,16 @@ sub _hdlr_remote_sign_out_link {
     "$path$comment_script?__mode=handle_sign_in$static_arg&amp;logout=1" .
         ($e ? "&amp;entry_id=" . $e->id : '');
 }
+
+###########################################################################
+
+=head2 CommentFields
+
+A deprecated tag that formerly published an entry comment form.
+
+=for tags deprecated
+
+=cut
 
 sub _hdlr_comment_fields {
     my ($ctx, $args, $cond) = @_;
@@ -9564,12 +9800,12 @@ B<Attributes:>
 
 =over 4
 
-=item ts (optional)
+=item * ts (optional)
 
 If specified, will use the given date as the date to publish. Must be
 in the format of "YYYYMMDDhhmmss".
 
-=item relative (optional)
+=item * relative (optional)
 
 If specified, will publish the date using a phrase, if the date is
 less than a week from the current date. Accepted values are "1", "2", "3"
@@ -9577,27 +9813,27 @@ and "js". The options for "1", "2" and "3" affect the style of the phrase.
 
 =over 4
 
-=item relative="1"
+=item * relative="1"
 
 Supports display of one duration: moments ago; N minutes ago; N hours ago; N days ago. For older dates in the same year, the date is shown as the abbreviated month and day of the month ("Jan 3"). For older dates, the year is added to that ("Jan 3 2005").
 
-=item relative="2"
+=item * relative="2"
 
 Supports display of two durations: less than 1 minute ago; N seconds, N minutes ago; N minutes ago; N hours, N minutes ago; N hours ago; N days, N hours ago; N days ago.
 
-=item relative="3"
+=item * relative="3"
 
 Supports display of two durations: N seconds ago; N seconds, N minutes ago;
 N minutes ago; N hours, N minutes ago; N hours ago; N days, N hours ago; N days ago.
 
-=item relative="js"
+=item * relative="js"
 
 When specified, publishes the date using JavaScript, which relies on a
 MT JavaScript function 'mtRelativeDate' to format the date.
 
 =back
 
-=item format (optional)
+=item * format (optional)
 
 A string that provides the format in which to publish the date. If
 unspecified, the default that is appropriate for the language of the blog
@@ -9606,110 +9842,110 @@ supported are:
 
 =over 4
 
-=item %Y
+=item * %Y
 
 The 4-digit year. Example: "1999".
 
-=item %m
+=item * %m
 
 The 2-digit month (zero-padded). Example: for a date in September, this would output "09".
 
-=item %d
+=item * %d
 
 The 2-digit day of the month (zero-padded). Example: "05".
 
-=item %H
+=item * %H
 
 The 2-digit hour of the day (24-hour clock, zero-padded). Example: "18".
 
-=item %M
+=item * %M
 
 The 2-digit minute of the hour (zero-padded). Example: "09".
 
-=item %S
+=item * %S
 
 The 2-digit second of the minute (zero-padded). Example: "04".
 
-=item %w
+=item * %w
 
 The numeric day of the week, in the range C<0>-C<6>, where C<0> is
 C<Sunday>. Example: "3".
 
-=item %j
+=item * %j
 
 The numeric day of the year, in the range C<0>-C<365>. Zero-padded to
 three digits. Example: "040".
 
-=item %y
+=item * %y
 
 The two-digit year, zero-padded. Example: %y for a date in 2008 would
 output "08".
 
-=item %b
+=item * %b
 
 The abbreviated month name. Example: %b for a date in January would
 output "Jan".
 
-=item %B
+=item * %B
 
 The full month name. Example: "January".
 
-=item %a
+=item * %a
 
 The abbreviated day of the week. Example: %a for a date on a Monday would
 output "Mon".
 
-=item %A
+=item * %A
 
 The full day of the week. Example: "Friday".
 
-=item %e
+=item * %e
 
-The numeric day of the month (space-padded). Example: "08".
+The numeric day of the month (space-padded). Example: " 8".
 
-=item %I
+=item * %I
 
 The two-digit hour on a 12-hour clock padded with a zero if applicable.
 Example: "04".
 
-=item %k
+=item * %k
 
 The two-digit military time hour padded with a space if applicable.
 Example: " 9".
 
-=item %l
+=item * %l
 
 The hour on a 12-hour clock padded with a space if applicable.
 Example: " 4".
 
 =back
 
-=item format_name (optional)
+=item * format_name (optional)
 
 Supports date formatting for particular standards.
 
 =over 4
 
-=item rfc822
+=item * rfc822
 
 Outputs the date in the format: "%a, %d %b %Y %H:%M:%S Z".
 
-=item iso8601
+=item * iso8601
 
 Outputs the date in the format: "%Y-%m-%dT%H:%M:%SZ".
 
 =back
 
-=item utc (optional)
+=item * utc (optional)
 
 Converts the date into UTC time.
 
-=item offset_blog_id (optional)
+=item * offset_blog_id (optional)
 
 Identifies the ID of the blog to use for adjusting the time to
 blog time. Will default to the current blog in context if unset.
 
-=item language (optional)
+=item * language (optional)
 
 Used to force localization of the date to a specific language.
 Accepted values: "cz" (Czechoslovakian), "dk" (Scandinavian),
@@ -9850,10 +10086,10 @@ sub _comment_follow {
 
 ###########################################################################
 
-=head2 Comments TBD
+=head2 Comments
 
 A container tag which iterates over a list of comments on an entry or for a
-blog. By default, all comments in context (e.g on an entry or in a blog) are
+blog. By default, all comments in context (e.g. on an entry or in a blog) are
 returned. When used in a blog context, only comments on published entries are
 returned.
 
@@ -9861,35 +10097,64 @@ B<Attributes:>
 
 =over 4
 
-=item lastn
+=item * lastn
 
 Display the last N comments in context where N is a positive integer.
 B<NOTE: lastn required in a blog context.>
 
-=item offset
+=item * offset (optional; default "0")
 
-=item sort_by
+Specifies a number of comments to skip.
 
-=item sort_order
+=item * sort_by (optional)
+
+Specifies a sort column.
+
+=item * sort_order (optional)
 
 Specifies the sort order and overrides the General Settings. Recognized
 values are "ascend" and "descend."
 
-=item namespace
+=item * namespace
 
-=item min_score
+Used in conjunction with the "min*", "max*" attributes to
+select comments based on a particular scoring mechanism.
 
-=item max_score
+=item * min_score
 
-=item min_rate
+If 'namespace' is also specified, filters the comments based on
+the score within that namespace. This specifies the minimum score
+to consider the comment for inclusion.
 
-=item max_rate
+=item * max_score
 
-=item min_count
+If 'namespace' is also specified, filters the comments based on
+the score within that namespace. This specifies the maximum score
+to consider the comment for inclusion.
 
-=item max_count
+=item * min_rank
 
-=item scored_by
+If 'namespace' is also specified, filters the comments based on
+the rank within that namespace. This specifies the minimum rank
+to consider the comment for inclusion.
+
+=item * max_rate
+
+If 'namespace' is also specified, filters the comments based on
+the rank within that namespace. This specifies the maximum rank
+to consider the comment for inclusion.
+
+=item * min_count
+
+If 'namespace' is also specified, filters the comments based on
+the count within that namespace. This specifies the minimum count
+to consider the comment for inclusion.
+
+=item * max_count
+
+If 'namespace' is also specified, filters the comments based on
+the count within that namespace. This specifies the maximum count
+to consider the comment for inclusion.
 
 =back
 
@@ -10268,6 +10533,16 @@ sub _hdlr_comment_if_moderated {
 
 ###########################################################################
 
+=head2 CommentName
+
+Deprecated in favor of the L<CommentAuthor> tag.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
 =head2 CommentAuthor
 
 Outputs the name field of the current comment in context (for
@@ -10320,30 +10595,30 @@ B<Attributes:>
 
 =over 4
 
-=item show_email (optional; default "0")
+=item * show_email (optional; default "0")
 
 Specifies if the comment author's email can be displayed.
 
-=item show_url (optional; default "1")
+=item * show_url (optional; default "1")
 
 Specifies if the comment author's URL can be displayed.
 
-=item new_window (optional; default "0")
+=item * new_window (optional; default "0")
 
 Specifies to open the link in a new window by adding C<target="_blank">
 to the anchor tag. See example below.
 
-=item default_name (optional; default "Anonymous")
+=item * default_name (optional; default "Anonymous")
 
 Used in the event that the commenter did not provide a value for their
 name.
 
-=item no_redirect (optional; default "0")
+=item * no_redirect (optional; default "0")
 
 Prevents use of the mt-comments.cgi script to handle the comment author
 link.
 
-=item nofollowfy (optional)
+=item * nofollowfy (optional)
 
 If assigned, applies a C<rel="nofollow"> link relation to the link.
 
@@ -10415,7 +10690,7 @@ B<Attributes:>
 
 =over 4
 
-=item spam_protect (optional; default "0")
+=item * spam_protect (optional; default "0")
 
 =back
 
@@ -10527,27 +10802,97 @@ sub _hdlr_comment_url {
 
 ###########################################################################
 
+=head2 CommentPreviewEmail
+
+A deprecated tag, replaced with L<CommentEmail>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewBody
+
+A deprecated tag, replaced with L<CommentBody>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewAuthorLink
+
+A deprecated tag, replaced with L<CommentAuthorLink>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewURL
+
+A deprecated tag, replaced with L<CommentURL>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewDate
+
+A deprecated tag, replaced with L<CommentDate>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewAuthor
+
+A deprecated tag, replaced with L<CommentAuthor>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 CommentPreviewIP
+
+A deprecated tag, replaced with L<CommentIP>.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
 =head2 CommentBody
 
 B<Attributes:>
 
 =over 4
 
-=item autolink (optional)
+=item * autolink (optional)
 
 If unspecified, any plaintext links in the comment body will be
 automatically linked if the blog is configured to do that on the
 comment preferences screen. If this attribute is specified, it will
 override the blog preference.
 
-=item convert_breaks (optional)
+=item * convert_breaks (optional)
 
 By default, the comment text is formatted according to the comment text
 formatting choice in the blog preferences. If convert_breaks is disabled,
 the raw content of the comment body is output without any re-formatting
 applied.
 
-=item words (optional)
+=item * words (optional)
 
 Limits the length of the comment body to the specified number of words.
 This is useful for producing a list of recent comments with an excerpt
@@ -10703,11 +11048,11 @@ B<Attributes:>
 
 =over 4
 
-=item label or text (optional)
+=item * label or text (optional)
 
 A custom phrase for the link (default is "Reply").
 
-=item onclick (optional)
+=item * onclick (optional)
 
 Custom JavaScript code for the onclick attribute. By default, this
 value is "mtReplyCommentOnClick(%d, '%s')" (note that %d is replaced
@@ -10743,7 +11088,7 @@ B<Attributes:>
 
 =over 4
 
-=item pad
+=item * pad
 
 If specified, zero-pads the ID to 6 digits. Example: 001234.
 
@@ -10763,6 +11108,18 @@ sub _hdlr_comment_parent_id {
 ###########################################################################
 
 =head2 CommentReplies
+
+A block tag which iterates over a list of reply comments to the 
+in context.
+
+B<Example:>
+
+    <mt:Comment>
+      <mt:CommentReplies>
+        <mt:CommentsHeader>Replies to the comment:</mt:CommentsHeader>
+        <$mt:CommentBody$>
+      </mt:CommentReplies>
+    </mt:Comment>
 
 =for tags comments, loop
 
@@ -10841,6 +11198,24 @@ sub _hdlr_comment_replies {
 
 =head2 CommentRepliesRecurse
 
+Recursively call the block with the replies to the comment in context. This
+tag, when placed at the end of loop controlled by MTCommentReplies tag will
+cause them to recursively descend into any replies to comments that exist
+during the loop.
+
+B<Example:>
+
+    <mt:Comments>
+      <$mt:CommentBody$>
+      <mt:CommentReplies>
+        <mt:CommentsHeader><ul></MTCommentsHeader>
+        <li><$mt:CommentID$>
+        <$mt:CommentRepliesRecurse$>
+        </li>
+        <mt:CommentsFooter></ul></mt:CommentsFooter>
+      </mt:CommentReplies>
+    </mt:Comments>
+
 =for tags comments
 
 =cut
@@ -10914,6 +11289,28 @@ sub _hdlr_comment_replies_recurse {
 
 ###########################################################################
 
+=head2 CommentsHeader
+
+The contents of this container tag will be displayed when the first
+comment listed by a L<Comments> or L<CommentReplies> tag is reached.
+
+=for tags comments
+
+=cut
+
+###########################################################################
+
+=head2 CommentsFooter
+
+The contents of this container tag will be displayed when the last
+comment listed by a L<Comments> or L<CommentReplies> tag is reached.
+
+=for tags comments
+
+=cut
+
+###########################################################################
+
 =head2 IfCommentParent
 
 A conditional tag that is true when the comment currently in context
@@ -10966,7 +11363,10 @@ sub _hdlr_if_comment_replies {
 
 =head2 CommenterNameThunk
 
-=for tags comments
+Used to populate the commenter_name Javascript variable. Deprecated in
+favor of the L<UserSessionState> tag.
+
+=for tags deprecated
 
 =cut
 
@@ -10991,6 +11391,20 @@ sub _hdlr_commenter_name_thunk {
 
 =head2 CommenterUsername
 
+This template tag returns the username of the current commenter in context.
+If no name exists, then it returns an empty string.
+
+B<Example:>
+
+    <mt:Entries>
+        <h1><$mt:EntryTitle$></h1>
+        <mt:Comments>
+            <a name="comment-<$mt:CommentID$>"></a>
+            <p><$mt:CommentBody$></p>
+            <cite><a href="/profiles/<$mt:CommenterID$>"><$mt:CommenterUsername$></a></cite>
+        </mt:Comments>
+    </mt:Entries>
+
 =for tags comments
 
 =cut
@@ -11003,12 +11417,12 @@ sub _hdlr_commenter_username {
 
 ###########################################################################
 
-=head2 UserSessionCookieTimeout
+=head2 UserSessionState
 
 Returns a JSON-formatted data structure that represents the user that is
 currently logged in.
 
-=for tags comments
+=for tags comments, authentication
 
 =cut
 
@@ -11027,7 +11441,9 @@ sub _hdlr_user_session_state {
 
 =head2 UserSessionCookieTimeout
 
-=for tags comments
+Returns the value of the C<UserSessionCookieTimeout> configuration setting.
+
+=for tags comments, configuration, authentication
 
 =cut
 
@@ -11040,7 +11456,12 @@ sub _hdlr_user_session_cookie_timeout {
 
 =head2 UserSessionCookiePath
 
-=for tags comments
+Returns the value of the C<UserSessionCookiePath> configuration setting.
+
+The C<UserSessionCookiePath> may also use MT tags. If it does, they will
+be evaluated for the blog in context.
+
+=for tags comments, configuration, authentication
 
 =cut
 
@@ -11067,7 +11488,14 @@ sub _hdlr_user_session_cookie_path {
 
 =head2 UserSessionCookieDomain
 
-=for tags comments
+Returns the value of the C<UserSessionCookieDomain> configuration setting,
+or the domain name of the blog currently in context. Any "www" subdomain
+will be ignored (ie, "www.sixapart.com" becomes ".sixapart.com").
+
+The C<UserSessionCookieDomain> may also use MT tags. If it does, they will
+be evaluated for the blog in context.
+
+=for tags comments, configuration, authentication
 
 =cut
 
@@ -11095,9 +11523,17 @@ sub _hdlr_user_session_cookie_domain {
 
 ###########################################################################
 
-=head2 UserSessionCookie
+=head2 UserSessionCookieName
 
-=for tags comments
+Returns the value of the C<UserSessionCookieName> configuration setting.
+If the setting contains the C<%b> string, it will replaced with the blog ID
+of the blog currently in context.
+
+B<Example:>
+
+    <$mt:UserSessionCookieName$>
+
+=for tags comments, configuration
 
 =cut
 
@@ -11118,6 +11554,12 @@ sub _hdlr_user_session_cookie_name {
 
 =head2 CommenterName
 
+The name of the commenter for the comment currently in context.
+
+B<Example:>
+
+    <$mt:CommenterName$>
+
 =for tags comments
 
 =cut
@@ -11134,6 +11576,13 @@ sub _hdlr_commenter_name {
 
 =head2 CommenterEmail
 
+The email address of the commenter. The spam_protect global filter may
+be used.
+
+B<Example:>
+
+    <$mt:CommenterEmail$>
+
 =for tags comments
 
 =cut
@@ -11149,7 +11598,20 @@ sub _hdlr_commenter_email {
 
 =head2 CommenterAuthType
 
-=for tags comments
+Returns a string which identifies what authentication provider the commenter
+in context used to authenticate him/herself. Commenter context is created by
+either MTComments or MTCommentReplies template tag. For example, 'MT' will be
+returned when the commenter in context is authenticated by Movable Type. When
+the commenter in context is authenticated by Vox, 'Vox' will be returned.
+
+B<Example:>
+
+    <mt:Comments>
+      <$mt:CommenterName$> (<$mt:CommenterAuthType$>) said:
+      <$mt:CommentBody$>
+    </mt:Comments>
+
+=for tags comments, authentication
 
 =cut
 
@@ -11163,7 +11625,22 @@ sub _hdlr_commenter_auth_type {
 
 =head2 CommenterAuthIconURL
 
-=for tags comments
+Returns URL to a small (16x16) image represents in what authentication
+provider the commenter in context is authenticated. Commenter context
+is created by either a L<Comments> or L<CommentReplies> block tag. For
+commenters authenticated by Movable Type, it will be a small spanner
+logo of Movable Type. Otherwise, icon image is provided by each of
+authentication provider. Movable Type provides images for Vox,
+LiveJournal and OpenID out of the box.
+
+B<Example:>
+
+    <mt:Comments>
+        <$mt:CommenterName$><$mt:CommenterAuthIconURL$>:
+        <$mt:CommentBody$>
+    </mt:Comments>
+
+=for tags comments, authentication
 
 =cut
 
@@ -11186,9 +11663,22 @@ sub _hdlr_commenter_auth_icon_url {
 
 ###########################################################################
 
+=head2 CommenterIfTrusted
+
+Deprecated in favor of the L<IfCommenterTrusted> tag.
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
 =head2 IfCommenterTrusted
 
-=for tags comments
+A conditional tag that displays its contents if the commenter in context
+has been marked as trusted.
+
+=for tags comments, authentication
 
 =cut
 
@@ -11284,6 +11774,18 @@ sub _hdlr_commenter_url {
 
 =head2 CommenterUserpic
 
+This template tag returns a complete HTML C<img> tag for the current
+commenter's userpic. For example:
+
+    <img src="http://yourblog.com/userpics/1.jpg" width="100" height="100" />
+
+B<Example:>
+
+    <h2>Recent Commenters</h2>
+    <mt:Entries recently_commented_on="10">
+        <div class="userpic" style="float: left; padding: 5px;"><$mt:CommenterUserpic$></div>
+    </mt:Entries>
+
 =for tags comments
 
 =cut
@@ -11300,6 +11802,13 @@ sub _hdlr_commenter_userpic {
 
 =head2 CommenterUserpicURL
 
+This template tag returns the URL to the image of the current
+commenter's userpic.
+
+B<Example:>
+
+    <img src="<$mt:CommenterUserpicURL$>" />
+
 =for tags comments
 
 =cut
@@ -11314,7 +11823,19 @@ sub _hdlr_commenter_userpic_url {
 
 =head2 CommenterUserpicAsset
 
-=for tags comments
+This template tag is a container tag that puts the current commenter's
+userpic asset in context. Because userpics are stored as assets within
+Movable Type, this allows you to utilize all of the asset-related
+template tags when displaying a user's userpic.
+
+B<Example:>
+
+     <mt:CommenterUserpicAsset>
+        <img src="<$mt:AssetThumbnailURL width="20" height="20"$>"
+            width="20" height="20"  />
+     </mt:CommenterUserpicAsset>
+
+=for tags comments, assets
 
 =cut
 
@@ -11356,13 +11877,8 @@ sub _hdlr_feedback_score {
 
 =head2 ArchivePrevious
 
-
-=cut
-
-=head2 ArchiveNext
-
-A container tag that creates a context to the "next" archive relative to
-the current archive context.
+A container tag that creates a context to the "previous" archive
+relative to the current archive context.
 
 This tag also works with the else tag to produce content if there is no
 "previous" archive.
@@ -11371,7 +11887,41 @@ B<Attributes:>
 
 =over 4
 
-=item type or archive_type (optional)
+=item * type or archive_type (optional)
+
+Specifies the "previous" archive type the context is for. See
+the L<ArchiveList> tag for supported values for this attribute.
+
+=back
+
+B<Example:>
+
+    <mt:ArchivePrevious>
+      <a href="<$mt:ArchiveLink$>"
+        title="<$mt:ArchiveTitle escape="html"$>">Next</a>
+    <mt:Else>
+       <!-- output when no previous archive is available -->
+    </mt:ArchivePrevious>
+
+=for tags archiving
+
+=cut
+
+###########################################################################
+
+=head2 ArchiveNext
+
+A container tag that creates a context to the "next" archive relative to
+the current archive context.
+
+This tag also works with the else tag to produce content if there is no
+"next" archive.
+
+B<Attributes:>
+
+=over 4
+
+=item * type or archive_type (optional)
 
 Specifies the "next" archive type the context is for. See the L<ArchiveList>
 tag for supported values for this attribute.
@@ -11383,9 +11933,11 @@ B<Example:>
     <mt:ArchiveNext>
       <a href="<$mt:ArchiveLink$>"
         title="<$mt:ArchiveTitle escape="html"$>">Next</a>
-    <mt:else>
-       <!-- output when no previous archive is available -->
+    <mt:Else>
+       <!-- output when no next archive is available -->
     </mt:ArchiveNext>
+
+=for tags archiving
 
 =cut
 
@@ -11503,7 +12055,7 @@ B<Attributes:>
 
 =over 4
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If enabled, will retain the "index.html" (or similar index filename)
 in the link.
@@ -11550,7 +12102,7 @@ B<Attributes:>
 
 =over 4
 
-=item extension (optional; default "0")
+=item * extension (optional; default "0")
 
 If specified, will append the blog's configured file extension.
 
@@ -11582,7 +12134,7 @@ B<Attributes:>
 
 =over 4
 
-=item type or archive_type (optional)
+=item * type or archive_type (optional)
 
 Specify a comma-delimited list of archive types to loop over. If you
 only wish to publish a list of Individual and Category archives, you
@@ -11636,7 +12188,7 @@ B<Attributes:>
 
 =over 4
 
-=item type or archive_type
+=item * type or archive_type
 
 An optional attribute that specifies the type of archives to list.
 Recognized values are "Yearly", "Monthly", "Weekly", "Daily",
@@ -11647,12 +12199,12 @@ others, if custom archive types are provided through third-party
 plugins). The default is to list the Preferred Archive Type specified
 in the blog settings.
 
-=item lastn (optional)
+=item * lastn (optional)
 
 An optional attribute that can be used to limit the number of archives
 in the list.
 
-=item sort_order (optional; default "descend")
+=item * sort_order (optional; default "descend")
 
 An optional attribute that specifies the sort order of the archives
 in the list. It is effective within any of the date-based and
@@ -11828,7 +12380,62 @@ sub _hdlr_archives {
 
 ###########################################################################
 
+=head2 ArchiveListHeader
+
+The contents of this container tag will be displayed when the first
+entry listed by a L<ArchiveList> tag is reached.
+
+=for tags archiving
+
+=cut
+
+###########################################################################
+
+=head2 ArchiveListFooter
+
+The contents of this container tag will be displayed when the last
+entry listed by a L<ArchiveList> tag is reached.
+
+=for tags archiving
+
+=cut
+
+###########################################################################
+
 =head2 ArchiveTitle
+
+A descriptive title of the current archive. The value returned from this
+tag will vary based on the archive type:
+
+=over 4
+
+=item * Category
+
+The label of the category.
+
+=item * Daily
+
+The date in "Month, Day YYYY" form.
+
+=item * Weekly
+
+The range of dates in the week in "Month, Day YYYY - Month, Day YYYY"
+
+=item * Monthly
+
+The range of dates in the week in "Month YYYY" form.
+
+=item * Individual
+
+The title of the entry.
+
+=back
+
+B<Example:>
+
+    <$mt:ArchiveTitle$>
+
+=for tags archives
 
 =cut
 
@@ -11888,6 +12495,38 @@ and Daily archive types only. Date format tags may be applied with the format
 attribute along with the language attribute. See L<Date> tag for supported
 attributes.
 
+B<Attributes:>
+
+=over 4
+
+=item * format (optional)
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). See the L<Date>
+tag for the supported formats.
+
+=item * language (optional; defaults to blog language)
+
+Forces the date to the format associated with the specified language.
+
+=item * utc (optional; default "0")
+
+Forces the date to UTC time zone.
+
+=item * relative (optional; default "0")
+
+Produces a relative date (relative to current date and time). Suitable for
+dynamic publishing (for instance, from PHP or search result templates). If
+a relative date cannot be produced (the archive date is sufficiently old),
+the 'format' attribute will govern the output of the date.
+
+=back
+
+B<Example:>
+
+    <$mt:ArchiveDateEnd$>
+
 =for tags date
 
 =cut
@@ -11924,6 +12563,20 @@ sub _hdlr_archive_type {
 
 =head2 ArchiveLabel
 
+An alias for the L<ArchiveTypeLabel> tag.
+
+B<Notes:>
+
+Deprecated in favor of the more specific tag: L<ArchiveTypeLabel>
+
+=for tags deprecated
+
+=cut
+
+###########################################################################
+
+=head2 ArchiveTypeLabel
+
 A descriptive label of the current archive type.
 
 The value returned from this tag will vary based on the archive type:
@@ -11934,21 +12587,17 @@ Category Monthly, Category Yearly
 
 B<Example:>
 
-    <$mt:ArchiveLabel$>
+    <$mt:ArchiveTypeLabel$>
 
 Related Tags: L<ArchiveType>
 
-Notes:
-
-May be deprecated in exchange for the more specific tag: L<ArchiveTypeLabel>
-
-=for tags archive
+=for tags archives
 
 =cut
 
 sub _hdlr_archive_label {
     my ($ctx, $args, $cond) = @_;
-    
+
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
     $at = 'Category' if $ctx->{inside_mt_categories};
     return q() unless defined $at;
@@ -11957,7 +12606,7 @@ sub _hdlr_archive_label {
     if ( 'CODE' eq ref($al) ) {
         $al = $al->();
     }
-    $al;
+    return $al;
 }
 
 ###########################################################################
@@ -11975,12 +12624,12 @@ B<Attributes:>
 
 =over 4
 
-=item extension
+=item * extension
 
 set to '0' to exclude the file extension (ie, produce "politics" instead of
 "politics.html")
 
-=item separator
+=item * separator
 
 set to '-' to force any underscore characters in the filename to dashes
 
@@ -12033,15 +12682,15 @@ B<Attributes:>
 
 =over 4
 
-=item type (optional)
+=item * type (optional)
 
-=item archive_type (optional)
+=item * archive_type (optional)
 
 Identifies the specific archive type to generate a link for. If unspecified,
 uses the current archive type in context, when publishing an archive
 template.
 
-=item with_index (optional; default "0")
+=item * with_index (optional; default "0")
 
 If specified, forces any index filename to be included in the link to
 the archive page.
@@ -12154,7 +12803,7 @@ B<Example:>
 
     <$mt:ArchiveCategory$>
 
-=for tags deprecated, category, archive
+=for tags deprecated
 
 =cut
 
@@ -12207,6 +12856,42 @@ sub _hdlr_image_height {
 ###########################################################################
 
 =head2 Calendar
+
+A container tag representing a calendar month that lists a single
+calendar "cell" in the calendar display.
+
+B<Attributes:>
+
+=over 4
+
+=item * month
+
+An optional attribute that specifies the calendar month and year the
+tagset is to generate. The value must be in YYYYMM format. The month
+attribute also recognizes two special values. Given a value of "last",
+the calendar will be generated for the previous month from the current
+date. Using a value of "this" will generate a calendar for the
+current month.
+
+The default behavior is to generate a monthly calendar based on the
+archive in context. When used in the context of an archive type
+other then "Category," the calendar will be generated for the month
+in which the archive falls.
+
+=item * category
+
+An optional attribute that specifies the name of a category from which
+to return entries.
+
+=back
+
+B<Example:>
+
+To produce a calendar for January, 2002 of entries in the category "Foo":
+
+    <mt:Calendar month="200201" category="Foo">
+        ...
+    </mt:Calendar>
 
 =for tags calendar
 
@@ -12328,7 +13013,119 @@ sub _hdlr_calendar {
 
 ###########################################################################
 
+=head2 CalendarIfBlank
+
+A conditional tag that will display its contents if the current calendar
+cell is for a day in another month.
+
+B<Example:>
+
+    <mt:CalendarIfBlank>&nbsp;</mt:CalendarIfBlank>
+
+=for tags calendar
+
+=cut
+
+###########################################################################
+
+=head2 CalendarIfEntries
+
+A conditional tag that will display its contents if there are any
+entries for this day in the blog.
+
+B<Example:>
+
+    <mt:CalendarIfEntries>
+        <mt:Entries limit="1">
+        <a href="<$mt:ArchiveLink type="Daily"$>">
+            <$mt:CalendarDay$>
+        </a>
+        </mt:Entries>
+    </mt:CalendarIfEntries>
+
+=for tags calendar, entries
+
+=cut
+
+###########################################################################
+
+=head2 CalendarIfNoEntries
+
+A conditional tag that will display its contents if there are not entries
+for this day in the blog. This tag predates the introduction of L<Else>,
+a tag that could be used with L<CalendarIfEntries> to replace
+C<CalendarIfNoEntries>.
+
+=for tags calendar, entries
+
+=cut
+
+###########################################################################
+
+=head2 CalendarDate
+
+The timestamp of the current day of the month. Date format tags may be
+applied with the format attribute along with the language attribute.
+
+B<Example:>
+
+    <$mt:CalendarDate$>
+
+=for tags calendar, date
+
+=cut
+
+###########################################################################
+
+=head2 CalendarIfToday
+
+A conditional tag that will display its contents if the current cell
+is for the current day.
+
+=for tags calendar
+
+=cut
+
+###########################################################################
+
+=head2 CalendarWeekHeader
+
+A conditional tag that will display its contents before a calendar
+week is started.
+
+B<Example:>
+
+    <mt:CalendarWeekHeader><tr></mt:CalendarWeekHeader>
+
+=for tags calendar
+
+=cut
+
+###########################################################################
+
+=head2 CalendarWeekFooter
+
+A conditional tag that will display its contents before a calendar
+week is ended.
+
+B<Example:>
+
+    <mt:CalendarWeekFooter></tr></mt:CalendarWeekFooter>
+
+=for tags calendar
+
+=cut
+
+###########################################################################
+
 =head2 CalendarDay
+
+The numeric day of the month for the cell of the calendar being published.
+This tag may only be used inside a L<Calendar> tag.
+
+B<Example:>
+
+    <$mt:CalendarDay$>
 
 =for tags calendar
 
@@ -12346,6 +13143,14 @@ sub _hdlr_calendar_day {
 ###########################################################################
 
 =head2 CalendarCellNumber
+
+The number of the "cell" in the calendar, beginning with 1. The count
+begins with the first cell regardless of whether a day of the month
+falls on it. This tag may only be used inside a L<Calendar> tag.
+
+B<Example:>
+
+    <$mt:CalendarCellNumber$>
 
 =for tags calendar
 
@@ -12453,6 +13258,14 @@ sub _hdlr_categories {
 
 =head2 CategoryID
 
+The numeric system ID of the category.
+
+B<Example:>
+
+    <$mt:CategoryID$>
+
+=for tags categories
+
 =cut
 
 sub _hdlr_category_id {
@@ -12467,6 +13280,25 @@ sub _hdlr_category_id {
 ###########################################################################
 
 =head2 CategoryLabel
+
+The label of the category in context. The current category in context can be
+placed there by either the following contexts (in order of precedence):
+
+=over 4
+
+=item * the current category you might be by looping through a list of categories
+
+=item * the current category archive template/mapping you are in
+
+=item * the primary category of the current entry in context
+
+=back
+
+B<Example:>
+
+    <$mt:CategoryLabel$>
+
+=for tags categories
 
 =cut
 
@@ -12488,6 +13320,28 @@ sub _hdlr_category_label {
 ###########################################################################
 
 =head2 CategoryBasename
+
+Produces the dirified basename defined for the category in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * default
+
+A value to use in the event that no category is in context.
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying an
+underscore will convert any dashes to underscores. Specifying a dash will
+convert any underscores to dashes.
+
+=back
+
+B<Example:>
+
+    <$mt:CategoryBasename$>
 
 =cut
 
@@ -12516,6 +13370,12 @@ sub _hdlr_category_basename {
 
 =head2 CategoryDescription
 
+The description for the category in context.
+
+B<Example:>
+
+    <$mt:CategoryDescription$>
+
 =cut
 
 sub _hdlr_category_desc {
@@ -12530,6 +13390,14 @@ sub _hdlr_category_desc {
 ###########################################################################
 
 =head2 CategoryCount
+
+The number of published entries for the category in context.
+
+B<Example:>
+
+    Entries in this category: <$mt:CategoryCount$>
+
+=for tags categories, count
 
 =cut
 
@@ -12557,6 +13425,16 @@ sub _hdlr_category_count {
 
 =head2 CategoryCommentCount
 
+This template tag returns the number of comments found within a category.
+
+B<Example:>
+
+    <ul><mt:Categories>
+        <li><$mt:CategoryLabel$> (<$mt:CategoryCommentCount$>)</li>
+    </mt:Categories></ul>
+
+=for tags categories, comments
+
 =cut
 
 sub _hdlr_category_comment_count {
@@ -12583,6 +13461,12 @@ sub _hdlr_category_comment_count {
 ###########################################################################
 
 =head2 CategoryArchiveLink
+
+A link to the archive page of the category.
+
+B<Example:>
+
+    <$mt:CategoryArchiveLink$>
 
 =cut
 
@@ -12623,6 +13507,12 @@ sub _hdlr_category_archive {
 
 =head2 CategoryTrackbackLink
 
+The URL that TrackBack pings can be sent for the category in context.
+
+B<Example:>
+
+    <$mt:CategoryTrackbackLink$>
+
 =cut
 
 sub _hdlr_category_tb_link {
@@ -12647,6 +13537,11 @@ sub _hdlr_category_tb_link {
 
 =head2 CategoryIfAllowPings
 
+A conditional tag that displays its contents if pings are enabled for
+the category in context.
+
+=for tags categories, pings
+
 =cut
 
 sub _hdlr_category_allow_pings {
@@ -12658,6 +13553,14 @@ sub _hdlr_category_allow_pings {
 ###########################################################################
 
 =head2 CategoryTrackbackCount
+
+The number of published TrackBack pings for the category in context.
+
+B<Example:>
+
+    <$mt:CategoryTrackbackCount$>
+
+=for tags categories, pings, count
 
 =cut
 
@@ -12691,11 +13594,90 @@ sub _load_sibling_categories {
 
 =head2 CategoryPrevious
 
+A container tag which creates a category context of the previous
+category relative to the current entry category or archived category.
+
+If the current category has sub-categories, then CategoryPrevious
+will generate a link to the previous sibling category. For example,
+in the following category hierarchy:
+
+    News
+        Gossip
+        Politics
+        Sports
+    Events
+        Oakland
+        Palo Alto
+        San Francisco
+    Sports
+        Local College
+        MBA
+        NFL
+
+If the current category is "Events" then CategoryPrevious will link to
+"News". If the current category is "San Francisco" then CategoryPrevious
+will link to "Palo Alto".
+
+B<Attributes:>
+
+=over 4
+
+=item * show_empty
+
+Specifies whether categories with no entries assigned should be counted.
+
+=back
+
+B<Example:>
+
+    <mt:CategoryPrevious>
+        <a href="<$mt:ArchiveLink archive_type="Category"$>"><$mt:CategoryLabel$></a>
+    </mt:CategoryPrevious>
+
+=for tags category, archiving
+
 =cut
 
 ###########################################################################
 
 =head2 CategoryNext
+
+A container tag which creates a category context of the next category
+relative to the current entry category or archived category.
+
+If the current category has sub-categories, then CategoryNext will
+generate a link to the next sibling category. For example, in the
+following category hierarchy:
+
+    News
+        Gossip
+        Politics
+        Sports
+    Events
+        Oakland
+        Palo Alto
+        San Francisco
+    Sports
+        Local College
+        MBA
+        NFL
+
+If the current category is "News" then CategoryNext will link to
+"Events". If the current category is "Oakland" then CategoryNext will
+link to "Palo Alto".
+
+B<Attributes:>
+
+=over 4
+
+=item * show_empty
+
+Specifies whether categories with no entries assigned should be
+counted and displayed.
+
+=back
+
+=for tags categories, archiving
 
 =cut
 
@@ -12760,11 +13742,56 @@ sub _hdlr_category_prevnext {
 
 =head2 IfCategory
 
+A conditional tag used to test for category assignments for the entry
+in context, or generically to test for which category is in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (or label; optional)
+
+The name of a category. If given, tests the category in context (or
+categories of an entry in context) to see if it matches with the given
+category name.
+
+=item * type (optional)
+
+Either the keyword "primary" or "secondary". Used to test whether the
+specified category (specified by the name or label attribute) is a
+primary or secondary category assignment for the entry in context.
+
+=back
+
+B<Examples:>
+
+    <mt:IfCategory>
+        (current entry in context has a category assignment)
+    </mt:IfCategory>
+
+    <mt:IfCategory type="secondary">
+        (current entry in context has one or more secondary category)
+    </mt:IfCategory>
+
+    <mt:IfCategory name="News">
+        (current entry in context is assigned to the "News" category)
+    </mt:IfCategory>
+
+    <mt:IfCategory name="News" type="primary">
+        (current entry in context has a "News" category as its primary category)
+    </mt:IfCategory>
+
+=for tags entries, categories
+
 =cut
 
 ###########################################################################
 
 =head2 EntryIfCategory
+
+This tag has been deprecated in favor of L<IfCategory>.
+
+=for tags deprecated
 
 =cut
 
@@ -12804,6 +13831,13 @@ sub _hdlr_if_category {
 
 =head2 EntryAdditionalCategories
 
+This block tag iterates over all secondary categories for the entry in
+context. Must be used in an entry context (entry archive or L<Entries> loop).
+
+All categories can be listed using L<EntryCategories> loop tag.
+
+=for tags entries, categories
+
 =cut
 
 sub _hdlr_entry_additional_categories {
@@ -12831,7 +13865,33 @@ sub _hdlr_entry_additional_categories {
 
 =head2 Pings
 
-=for tags multiblog
+A context-sensitive container tag that lists all of the pings sent
+to a particular entry, category or blog. If used in an entry context
+the tagset will list all pings for the entry. Likewise for a
+TrackBack-enabled category in context. If not in an entry or category
+context, a blog context is assumed and all associated pings are listed.
+
+B<Attributes:>
+
+=over 4
+
+=item * category
+
+This attribute creates a specific category context regardless of
+its placement.
+
+=item * lastn
+
+Display the last N pings in context. N is a positive integer.
+
+=item * sort_order
+
+Specifies the sort order. Recognized values are "ascend" (default) and
+"descend."
+
+=back
+
+=for tags pings, multiblog
 
 =cut
 
@@ -12895,7 +13955,43 @@ sub _hdlr_pings {
 
 ###########################################################################
 
+=head2 PingsHeader
+
+The contents of this container tag will be displayed when the first
+ping listed by a L<Pings> tag is reached.
+
+=for tags pings
+
+=cut
+
+###########################################################################
+
+=head2 PingsFooter
+
+The contents of this container tag will be displayed when the last
+ping listed by a L<Pings> tag is reached.
+
+=for tags pings
+
+=cut
+
+###########################################################################
+
 =head2 PingsSent
+
+A container tag representing a list of TrackBack pings sent from an
+entry. Use the L<PingsSentURL> tag to display the URL pinged.
+
+B<Example:>
+
+    <h4>Ping'd</h4>
+    <ul>
+    <mt:PingsSent>
+        <li><$mt:PingsSentURL$></li>
+    </mt:PingsSent>
+    </ul>
+
+=for tags pings, entries
 
 =cut
 
@@ -12920,6 +14016,15 @@ sub _hdlr_pings_sent {
 
 =head2 PingsSentURL
 
+The URL of the TrackBack ping was sent to. This is the TrackBack Ping URL
+and not a permalink.
+
+B<Example:>
+
+    <$mt:PingsSentURL$>
+
+=for tags pings
+
 =cut
 
 sub _hdlr_pings_sent_url {
@@ -12931,7 +14036,42 @@ sub _hdlr_pings_sent_url {
 
 =head2 PingDate
 
-=for tags date
+The timestamp of when the ping was submitted. Date format tags may be
+applied with the format attribute along with the language attribute.
+
+B<Attributes:>
+
+=over 4
+
+=item * format (optional)
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). See the L<Date>
+tag for the supported formats.
+
+=item * language (optional; defaults to blog language)
+
+Forces the date to the format associated with the specified language.
+
+=item * utc (optional; default "0")
+
+Forces the date to UTC time zone.
+
+=item * relative (optional; default "0")
+
+Produces a relative date (relative to current date and time). Suitable for
+dynamic publishing (for instance, from PHP or search result templates). If
+a relative date cannot be produced (the archive date is sufficiently old),
+the 'format' attribute will govern the output of the date.
+
+=back
+
+B<Example:>
+
+    <$mt:PingDate$>
+
+=for tags pings, date
 
 =cut
 
@@ -12947,6 +14087,14 @@ sub _hdlr_ping_date {
 
 =head2 PingID
 
+A numeric system ID of the TrackBack ping in context.
+
+B<Example:>
+
+    <$mt:PingID$>
+
+=for tags pings
+
 =cut
 
 sub _hdlr_ping_id {
@@ -12959,6 +14107,14 @@ sub _hdlr_ping_id {
 ###########################################################################
 
 =head2 PingTitle
+
+The title of the remote resource that the TrackBack ping sent.
+
+B<Example:>
+
+    <$mt:PingTitle$>
+
+=for tags pings
 
 =cut
 
@@ -12974,6 +14130,14 @@ sub _hdlr_ping_title {
 
 =head2 PingURL
 
+The URL of the remote resource that the TrackBack ping sent.
+
+B<Example:>
+
+    <$mt:PingURL$>
+
+=for tags pings
+
 =cut
 
 sub _hdlr_ping_url {
@@ -12987,6 +14151,14 @@ sub _hdlr_ping_url {
 ###########################################################################
 
 =head2 PingExcerpt
+
+An excerpt describing the URL of the ping sent.
+
+B<Example:>
+
+    <$mt:PingExcerpt$>
+
+=for tags pings
 
 =cut
 
@@ -13002,6 +14174,15 @@ sub _hdlr_ping_excerpt {
 
 =head2 PingIP
 
+The IP (Internet Protocol) network address the TrackBack ping was sent
+from.
+
+B<Example:>
+
+    <$mt:PingIP$>
+
+=for tags pings
+
 =cut
 
 sub _hdlr_ping_ip {
@@ -13014,6 +14195,14 @@ sub _hdlr_ping_ip {
 ###########################################################################
 
 =head2 PingBlogName
+
+The site name that sent the TrackBack ping.
+
+B<Example:>
+
+    <$mt:BlogName$>
+
+=for tags pings
 
 =cut
 
@@ -13028,6 +14217,21 @@ sub _hdlr_ping_blog_name {
 ###########################################################################
 
 =head2 PingEntry
+
+Provides an entry context for the parent entry of the TrackBack ping
+in context.
+
+B<Example:>
+
+    Last TrackBack received was for the entry
+    titled:
+    <mt:Pings lastn="1">
+        <mt:PingEntry>
+            <$mt:EntryTitle$>
+        </mt:PingEntry>
+    </mt:Pings>
+
+=for tags pings, entries
 
 =cut
 
@@ -13050,6 +14254,11 @@ sub _hdlr_ping_entry {
 
 =head2 IfAllowCommentHTML
 
+Conditional block that is true when the blog has been configured to
+permit HTML in comments.
+
+=for tags comments
+
 =cut
 
 sub _hdlr_if_allow_comment_html {
@@ -13066,6 +14275,13 @@ sub _hdlr_if_allow_comment_html {
 ###########################################################################
 
 =head2 IfCommentsAllowed
+
+Conditional block that is true when the blog is configured to accept
+comments, and comments are accepted on a system-wide basis. This tag
+does not take the current entry context into account; use the
+L<IfCommentsAccepted> tag for this.
+
+=for tags comments, configuration
 
 =cut
 
@@ -13086,6 +14302,11 @@ sub _hdlr_if_comments_allowed {
 ###########################################################################
 
 =head2 IfCommentsActive
+
+Conditional tag that displays its contents if comments are enabled or
+comments exist for the entry in context.
+
+=for tags comments, entries
 
 =cut
 
@@ -13113,6 +14334,18 @@ sub _hdlr_if_comments_active {
 
 =head2 IfCommentsAccepted
 
+Conditional tag that displays its contents if commenting is enabled for
+the entry in context.
+
+B<Example:>
+
+    <mt:IfCommentsAccepted>
+        <h3>What do you think?</h3>
+        (comment form)
+    </mt:IfCommentsAccepted>
+
+=for tags comments, entries, configuration
+
 =cut
 
 sub _hdlr_if_comments_accepted {
@@ -13133,6 +14366,11 @@ sub _hdlr_if_comments_accepted {
 ###########################################################################
 
 =head2 IfPingsActive
+
+Conditional tag that displays its contents if TrackBack pings are
+enabled or pings exist for the entry in context.
+
+=for tags entries, pings
 
 =cut
 
@@ -13271,7 +14509,9 @@ sub _hdlr_entry_if_allow_comments {
 
 =head2 EntryIfCommentsOpen
 
-Conditional tag
+Deprecated in favor of L<EntryIfCommentsActive>.
+
+=for tags deprecated
 
 =cut
 
@@ -13291,6 +14531,10 @@ sub _hdlr_entry_if_comments_open {
 ###########################################################################
 
 =head2 EntryIfAllowPings
+
+Deprecated in favor of L<IfPingsAccepted>.
+
+=for tags deprecated
 
 =cut
 
@@ -13348,6 +14592,11 @@ sub _hdlr_if_commenter_pending {
 
 =head2 SubCatIsFirst
 
+The contents of this container tag will be displayed when the first
+category listed by a L<SubCategories> tag is reached.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_sub_cat_is_first {
@@ -13359,6 +14608,11 @@ sub _hdlr_sub_cat_is_first {
 
 =head2 SubCatIsLast
 
+The contents of this container tag will be displayed when the last
+category listed by a L<SubCategories> tag is reached.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_sub_cat_is_last {
@@ -13369,6 +14623,48 @@ sub _hdlr_sub_cat_is_last {
 ###########################################################################
 
 =head2 SubCatsRecurse
+
+Recursively call the L<SubCategories> or L<TopLevelCategories> container
+with the subcategories of the category in context. This tag, when placed
+at the end of loop controlled by one of the tags above will cause them
+to recursively descend into any subcategories that exist during the loop.
+
+B<Attributes:>
+
+=over 4
+
+=item * max_depth (optional)
+
+An optional attribute that specifies the maximum number of times the system
+should recurse. The default is infinite depth.
+
+=back
+
+B<Examples:>
+
+The following code prints out a recursive list of categories/subcategories, linking those with entries assigned to their category archive pages.
+
+    <mt:TopLevelCategories>
+      <mt:SubCatIsFirst><ul></mt:SubCatIsFirst>
+        <mt:If tag="CategoryCount">
+            <li><a href="<$mt:CategoryArchiveLink$>"
+            title="<$mt:CategoryDescription$>"><mt:CategoryLabel></a>
+        <mt:Else>
+            <li><$mt:CategoryLabel$>
+        </mt:If>
+        <$mt:SubCatsRecurse$>
+        </li>
+    <mt:SubCatIsLast></ul></mt:SubCatIsLast>
+    </mt:TopLevelCategories>
+
+Or more simply:
+
+    <mt:TopLevelCategories>
+        <$mt:CategoryLabel$>
+        <$mt:SubCatsRecurse$>
+    </mt:TopLevelCategories>
+
+=for tags categories
 
 =cut
 
@@ -13451,6 +14747,12 @@ sub _hdlr_sub_cats_recurse {
 
 =head2 TopLevelCategories
 
+A block tag listing the categories that do not have a parent and exist at
+"the top" of the category hierarchy. Same as using
+C<E<lt>mt:SubCategories top="1"E<gt>>.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_top_level_categories {
@@ -13469,6 +14771,44 @@ sub _hdlr_top_level_categories {
 ###########################################################################
 
 =head2 SubCategories
+
+A specialized version of the L<Categories> container tag that respects the
+hierarchical structure of categories.
+
+B<Attributes:>
+
+=over 4
+
+=item * include_current
+
+An optional boolean attribute that controls the inclusion of the
+current category in the list.
+
+=item * sort_method
+
+An optional and advanced usage attribute. A fully qualified Perl method
+name to be used to sort the categories.
+
+=item * sort_order
+
+Specifies the sort order of the category labels. Recognized values
+are "ascend" and "descend." The default is "ascend." This attribute is
+ignored if sort_method has been set.
+
+=item * top
+
+If set to 1, displays only top level categories. Same as using
+L<TopLevelCategories>.
+
+=item * category
+
+Specifies a specific category by name for which to return subcategories.
+
+=item * glue
+
+=back
+
+=for tags categories
 
 =cut
 
@@ -13574,6 +14914,16 @@ sub _hdlr_sub_categories {
 
 =head2 ParentCategory
 
+A container tag that creates a context to the current category's parent.
+
+B<Example:>
+
+    <mt:ParentCategory>
+        Up: <a href="<mt:ArchiveLink>"><mt:CategoryLabel></a>
+    </mt:ParentCategory>
+
+=for tags categories
+
 =cut
 
 sub _hdlr_parent_category {
@@ -13601,6 +14951,27 @@ sub _hdlr_parent_category {
 ###########################################################################
 
 =head2 ParentCategories
+
+A block tag that lists all the ancestors of the current category.
+
+B<Attributes:>
+
+=over 4
+
+=item * glue
+
+This optional attribute is a shortcut for connecting each category
+label with its value. Single and double quotes are not permitted in
+the string.
+
+=item * exclude_current
+
+This optional boolean attribute controls the exclusion of the
+current category in the list.
+
+=back
+
+=for tags categories
 
 =cut
 
@@ -13643,6 +15014,11 @@ sub _hdlr_parent_categories {
 ###########################################################################
 
 =head2 TopLevelParent
+
+A container tag that creates a context to the top-level ancestor of
+the current category.
+
+=for tags categories
 
 =cut
 
@@ -13721,6 +15097,37 @@ sub cat_path_to_category {
 
 =head2 EntriesWithSubCategories
 
+A specialized version of L<Entries> that is aware of subcategories. The
+difference between the two tags is the behavior of the category attribute.
+
+B<Attributes:>
+
+=over 4
+
+=item * category
+
+The value of this attribute is a category label. This will include
+any entries to that category and any of its subcategories. Since it
+is possible for two categories to have the same label, you can specify
+one particular category by including its ancestors, separated by
+slashes. For instance if you have a category "Flies" and within it
+a subcategory labeled "Fruit", you can ask for that category with
+category="Flies/Fruit". This would distinguish it from a category
+labeled "Fruit" within another called "Food Groups", for example,
+which could be identified using category="Food Groups/Fruit".
+
+If any category in the ancestor chain has a slash in its label, the
+label must be quoted using square brackets:
+category="Beverages/[Coffee/Tea]" identifies a category labeled
+Coffee/Tea within a category labeled Beverages.
+
+=back
+
+You can also use any of the other attributes available to L<Entries>;
+and they should behave just as they do with the original tag.
+
+=for tags entries, categories
+
 =cut
 
 sub _hdlr_entries_with_sub_categories {
@@ -13749,6 +15156,20 @@ sub _hdlr_entries_with_sub_categories {
 
 =head2 SubCategoryPath
 
+The path to the category relative to L<BlogURL>.
+
+In other words, this tag returns a string that is a concatenation of the
+current category and its ancestors. This tag is provided for convenience
+and is the equivalent of the following template tags:
+
+    <mt:ParentCategories glue="/"><mt:CategoryBasename /></mt:ParentCategories>
+
+B<Example:>
+
+The category "Bar" in a category "Foo" C<E<lt>$mt:SubCategoryPath$E<gt>> becomes C<foo/bar>.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_sub_category_path {
@@ -13776,6 +15197,10 @@ sub _hdlr_sub_category_path {
 
 =head2 HasSubCategories
 
+Returns true if the current category has a sub-category.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_has_sub_categories {
@@ -13795,6 +15220,10 @@ sub _hdlr_has_sub_categories {
 
 =head2 HasNoSubCategories
 
+Returns true if the current category has no sub-categories.
+
+=for tags categories
+
 =cut
 
 sub _hdlr_has_no_sub_categories {
@@ -13804,6 +15233,11 @@ sub _hdlr_has_no_sub_categories {
 ###########################################################################
 
 =head2 HasParentCategory
+
+Returns true if the current category has a parent category other than
+the root.
+
+=for tags categories
 
 =cut
 
@@ -13823,6 +15257,21 @@ sub _hdlr_has_parent_category {
 
 =head2 HasNoParentCategory
 
+Returns true if the current category does not have a parent category
+other than the root.
+
+B<Example:>
+
+    <mt:Categories>
+      <mt:HasNoParentCategory>
+        <mt:CategoryLabel> is but an orphan and has no parents.
+      <mt:else>
+        <mt:CategoryLabel> has a parent category!
+      </mt:HasNoParentCategory>
+    </mt:Categories>
+
+=for tags categories
+
 =cut
 
 sub _hdlr_has_no_parent_category {
@@ -13832,6 +15281,28 @@ sub _hdlr_has_no_parent_category {
 ###########################################################################
 
 =head2 IfIsAncestor
+
+Conditional tag that is true when the category in context is an ancestor
+category of the specified 'child' attribute.
+
+B<Attributes:>
+
+=over 4
+
+=item * child (required)
+
+The label of a category in the current blog.
+
+=back
+
+B<Example:>
+
+    <mt:IfIsAncestor child="Featured">
+        (category in context is a parent category
+        to a subcategory named "Featured".)
+    </mt:IfIsDescendant>
+
+=for tags categories
 
 =cut
 
@@ -13860,6 +15331,28 @@ sub _hdlr_is_ancestor {
 ###########################################################################
 
 =head2 IfIsDescendant
+
+Conditional tag that is true when the category in context is a child
+category of the specified 'parent' attribute.
+
+B<Attributes:>
+
+=over 4
+
+=item * parent (required)
+
+The label of a category in the current blog.
+
+=back
+
+B<Example:>
+
+    <mt:IfIsDescendant parent="Featured">
+        (category in context is a child category
+        to the 'Featured' category.)
+    </mt:IfIsDescendant>
+
+=for tags categories
 
 =cut
 
@@ -13954,6 +15447,15 @@ sub _sort_cats {
 
 =head2 EntryBlogID
 
+The numeric system ID of the blog that is parent to the entry currently
+in context.
+
+B<Example:>
+
+    <$mt:EntryBlogID$>
+
+=for tags entries, blogs
+
 =cut
 
 sub _hdlr_entry_blog_id {
@@ -13966,6 +15468,15 @@ sub _hdlr_entry_blog_id {
 ###########################################################################
 
 =head2 EntryBlogName
+
+Returns the blog name of the blog to which the entry in context belongs.
+The blog name is set in the General Blog Settings.
+
+B<Example:>
+
+    <$mt:EntryBlogName$>
+
+=for tags entries, blogs
 
 =cut
 
@@ -13981,6 +15492,15 @@ sub _hdlr_entry_blog_name {
 ###########################################################################
 
 =head2 EntryBlogDescription
+
+Returns the blog description of the blog to which the entry in context
+belongs. The blog description is set in the General Blog Settings.
+
+B<Example:>
+
+    <$mt:EntryBlogDescription$>
+
+=for tags blogs, entries
 
 =cut
 
@@ -13998,6 +15518,14 @@ sub _hdlr_entry_blog_description {
 
 =head2 EntryBlogURL
 
+Returns the blog URL for the blog to which the entry in context belongs.
+
+B<Example:>
+
+    <$mt:EntryBlogURL$>
+
+=for tags blogs, entries
+
 =cut
 
 sub _hdlr_entry_blog_url {
@@ -14012,6 +15540,26 @@ sub _hdlr_entry_blog_url {
 ###########################################################################
 
 =head2 EntryEditLink
+
+A link to edit the entry in context from the Movable Type CMS. This tag is
+only recognized in system templates where an authenticated user is
+logged-in.
+
+B<Attributes:>
+
+=over 4
+
+=item * text (optional; default "Edit")
+
+A phrase to use for the edit link.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryEditLink$>
+
+=for tags search
 
 =cut
 
@@ -14045,6 +15593,36 @@ sub _hdlr_entry_edit_link {
 
 =head2 HTTPContentType
 
+When this tag is used in a dynamically published index template, the value
+specified to the type attribute will be returned in the Content-Type HTTP
+header sent to web browser. This content is never displayed directly to the
+user but is instead used to signal to the browser the data type of the
+response.
+
+When this tag is used in a system template, such as the search results
+template, mt-search.cgi will use the value specified to "type" attribute and
+returns it in Content-Type HTTP header to web browser.
+
+When this tag is used in statically published template, this template tag
+outputs nothing.
+
+B<Attributes:>
+
+=over 4
+
+=item * type
+
+A valid HTTP Content-Type value, for example 'application/xml'. Note that you
+must not specify charset portion of Content-Type header value in this
+attribute. MT will set the portion automatically by using PublishCharset
+configuration directive.
+
+=back
+
+B<Example:>
+
+    <$mt:HTTPContentType type="application/xml"$>
+
 =cut
 
 sub _hdlr_http_content_type {
@@ -14057,6 +15635,87 @@ sub _hdlr_http_content_type {
 ###########################################################################
 
 =head2 Assets
+
+A container tag which iterates over a list of assets.
+
+B<Attributes:>
+
+=over 4
+
+=item * type
+
+Specifies a particular type(s) of asset to select. This may be
+one of image, audio, video (if unspecified, will select all asset
+types). Supports a comma-delimited list.
+
+=item * file_ext
+
+Specifies a particular file extension to select. For instance, gif, mp3,
+pdf, etc. Supports a comma-delimited list.
+
+=item * days
+
+Selects assets created in the last number of days specified.
+
+=item * author
+
+Selects assets uploaded by a particular author (where the author's
+username is given).
+
+=item * lastn
+
+Limits the selection of assets to the specified number.
+
+=item * limit
+
+a positive integer to limit results.
+
+=item * offset
+
+Used in coordination with lastn, starts N assets from the start of the
+list. N is a positive integer.
+
+=item * tag
+
+Selects assets with particular tags (supports expressions such as
+"interesting AND featured").
+
+=item * sort_by
+
+Supported values: file_name, created_by, created_on, score.
+
+=item * sort_order
+
+Supported values: ascend, descend.
+
+=item * namespace
+
+Used in conjunction with the sort_by attribute when sorting in
+"score" order. The namespace identifies the method of scoring to use
+in sorting assets.
+
+=item * assets_per_row
+
+When publishing a grid of thumbnails, this attribute sets how many
+iterations the Assets tag publishes before setting the state that
+enables the L<AssetIsLastInRow> tag. Supported values: numbers between 1
+and 100. Also supported is the keyword "auto" which selects the
+most aesthetically pleasing number of items per row based on the
+total number of assets. For example, if you had 18 total assets, three
+rows of six would publish, but for 16 assets, four rows of four
+would publish.
+
+=back
+
+B<Example:>
+
+    <mt:Assets lastn="10" type="image" tag="favorite">
+       <a href="<mt:AssetURL>">
+          <img src="<mt:AssetThumbnailURL height="70">"
+               alt="<mt:AssetLabel escape="html">"
+               title="<mt:AssetLabel escape="html">" />
+       </a>
+    </mt:Assets>
 
 =for tags multiblog, asset
 
@@ -14426,9 +16085,127 @@ sub _hdlr_assets {
 
 ###########################################################################
 
+=head2 EntryAssets
+
+A container tag which iterates over a list of assets for the current
+entry in context. Supports all the attributes provided by the L<Assets>
+tag.
+
+=for tags entries, assets
+
+=cut
+
+###########################################################################
+
+=head2 PageAssets
+
+A container tag which iterates over a list of assets for the current
+page in context. Supports all the attributes provided by the L<Assets>
+tag.
+
+=for tags pages, assets
+
+=cut
+
+###########################################################################
+
+=head2 AssetsHeader
+
+The contents of this container tag will be displayed when the first
+entry listed by a L<Assets> tag is reached.
+
+=for tags assets
+
+=cut
+
+###########################################################################
+
+=head2 AssetsFooter
+
+The contents of this container tag will be displayed when the last
+entry listed by a L<Assets> tag is reached.
+
+=for tags assets
+
+=cut
+
+###########################################################################
+
+=head2 AssetIsFirstInRow
+
+A conditional tag that displays its contents if the asset in context is
+the first item in the row in context when publishing a grid of
+assets (e.g. thumbnails). Grid of assets can be created by specifying
+assets_per_row attribute value to L<Assets> block tag.
+
+For example, the first, the fourth and the seventh asset are the
+first assets in row when L<Assets> iterates eight assets and
+assets_per_row is set to "3".
+
+B<Example:>
+
+    <table>
+      <mt:Assets type="image" assets_per_row="4">
+        <mt:AssetIsFirstInRow><tr></mt:AssetIsFirstInRow>
+          <td><$mt:AssetThumbnailLink$></td>
+        <mt:AssetIsLastInRow></tr></mt:AssetIsLastInRow>
+      </mt:Assets>
+    </table>
+
+=cut
+
+###########################################################################
+
+=head2 AssetIsLastInRow
+
+A conditional tag that displays its contents if the asset in context
+is the last item in the row in context when publishing a grid of
+assets (e.g. thumbnails). Grid of assets can be created by specifying
+assets_per_row attribute value to L<Assets> block tag.
+
+For example, the third, the sixth and the eighth asset are the last
+assets in row when L<Assets> iterates eight assets and assets_per_row is
+set to "3".
+
+B<Example:>
+
+    <table>
+      <mt:Assets type="image" assets_per_row="4">
+        <mt:AssetIsFirstInRow><tr></mt:AssetIsFirstInRow>
+          <td><$mt:AssetThumbnailLink$></td>
+        <mt:AssetIsLastInRow></tr></mt:AssetIsLastInRow>
+      </mt:Assets>
+    </table>
+
+=for tags assets
+
+=cut
+
+###########################################################################
+
 =head2 Asset
 
-=for tags asset
+Container tag that provides an asset context for a specific asset,
+from which all asset variable tags can be used to retreive metadata
+about that asset.
+
+B<Attributes:>
+
+=over 4
+
+=item * id
+
+The unique numeric id of the asset.
+
+=back
+
+B<Example:>
+
+    <mt:Asset id="10">
+        <$mt:AssetLabel$>
+    </mt:Asset>
+
+=for tags assets
 
 =cut
 
@@ -14459,7 +16236,40 @@ sub _hdlr_asset {
 
 =head2 AssetTags
 
-=for tags asset
+A container tag used to output infomation about the asset tags assigned
+to the asset in context.
+
+To avoid printing out the leading text when no asset tags are assigned you
+can use the L<AssetIfTagged> conditional block to first test for asset tags
+on the asset. You can also use the L<AssetIfTagged> conditional block with
+the tag attribute to test for the assignment of a particular entry tag.
+
+B<Attributes:>
+
+=over 4
+
+=item * glue
+
+A text string that is used to join each of the items together. For example:
+
+    <mt:AssetTags glue=", "><$mt:TagName$></mt:AssetTags>
+
+would print out each tag name separated by a comma and a space.
+
+=back
+
+B<Example:>
+
+The following code can be used anywhere L<Assets> can be used. It prints
+a list of all of the tags assigned to each asset returned by L<Assets>
+glued together by a comma and a space.
+
+    <mt:If tag="AssetTags">
+        The asset "<$mt:AssetLabel$>" is tagged:
+        <mt:AssetTags glue=", "><$mt:TagName$></mt:AssetTags>
+    </mt:If>
+
+=for tags tags, assets
 
 =cut
 
@@ -14504,7 +16314,13 @@ sub _hdlr_asset_tags {
 
 =head2 AssetID
 
-=for tags asset
+A numeric system ID of the Asset currently in context.
+
+B<Example:>
+
+    <$mt:AssetID$>
+
+=for tags assets
 
 =cut
 
@@ -14519,7 +16335,15 @@ sub _hdlr_asset_id {
 
 =head2 AssetFileName
 
-=for tags asset
+The file name of the asset in context. For file-based assets only. Returns
+the file name without the path (i.e. file.jpg, not
+/home/user/public_html/images/file.jpg).
+
+B<Example:>
+
+    <$mt:AssetFileName$>
+
+=for tags assets
 
 =cut
 
@@ -14534,7 +16358,14 @@ sub _hdlr_asset_file_name {
 
 =head2 AssetLabel
 
-=for tags asset
+Returns the label of the asset in context. Label can be specified upon
+uploading a file.
+
+B<Example:>
+
+    <$mt:AssetLabel$>
+
+=for tags assets
 
 =cut
 
@@ -14549,7 +16380,13 @@ sub _hdlr_asset_label {
 
 =head2 AssetDescription
 
-=for tags asset
+This tag returns the description text of the asset currently in context.
+
+B<Example:>
+
+    <$mt:AssetDescription$>
+
+=for tags assets
 
 =cut
 
@@ -14564,7 +16401,13 @@ sub _hdlr_asset_description {
 
 =head2 AssetURL
 
-=for tags asset
+Produces a permalink for the uploaded asset.
+
+B<Example:>
+
+    <$mt:AssetURL$>
+
+=for tags assets
 
 =cut
 
@@ -14579,7 +16422,15 @@ sub _hdlr_asset_url {
 
 =head2 AssetType
 
-=for tags asset
+Returns the localized name for the type of asset currently in context.
+For instance, for an image asset, this will tag will output (for English
+blogs), "image".
+
+B<Example:>
+
+    <$mt:AssetType$>
+
+=for tags assets
 
 =cut
 
@@ -14594,7 +16445,14 @@ sub _hdlr_asset_type {
 
 =head2 AssetMimeType
 
-=for tags asset
+Returns MIME type of the asset in context. MIME type of a file is typically
+provided by web browser upon uploading.
+
+B<Example:>
+
+    <$mt:AssetMimeType$>
+
+=for tags assets
 
 =cut
 
@@ -14609,7 +16467,15 @@ sub _hdlr_asset_mime_type {
 
 =head2 AssetFilePath
 
-=for tags asset
+Path information of the asset in context. For file-based assets only.
+Returns the local file path with the name of the file (i.e.
+/home/user/public_html/images/file.jpg).
+
+B<Example:>
+
+    <$mt:AssetFilePath$>
+
+=for tags assets
 
 =cut
 
@@ -14623,6 +16489,33 @@ sub _hdlr_asset_file_path {
 ###########################################################################
 
 =head2 AssetDateAdded
+
+The date the asset in context was added to Movable Type.
+
+B<Attributes:>
+
+=over 4
+
+=item * format
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). See the L<Date>
+tag for the supported formats.
+
+=item * language
+
+Forces the date to the format associated with the specified language.
+
+=item * utc
+
+Forces the date to UTC format.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetDateAdded$>
 
 =for tags date, asset
 
@@ -14640,7 +16533,14 @@ sub _hdlr_asset_date_added {
 
 =head2 AssetAddedBy
 
-=for tags asset
+Display name (or username if display name isn't assigned) of the user
+who added the asset to the system.
+
+B<Example:>
+
+    <$mt:AssetAddedBy$>
+
+=for tags assets
 
 =cut
 
@@ -14659,7 +16559,65 @@ sub _hdlr_asset_added_by {
 
 =head2 AssetProperty
 
-=for tags asset
+Returns the additional metadata of the asset in context. Some of these
+properties only make sense for certain file types. For example, image_width
+and image_height apply only to images.
+
+B<Attributes:>
+
+=over 4
+
+=item * property (required)
+
+Specifies what property to return from the tag. B<Supported attribute values:>
+
+=over 4
+
+=item * file_size
+
+asset's file size
+
+=item * image_width
+
+asset's width (for image only; otherwise returns 0)
+
+=item * image_height
+
+asset's height (for image only; otherwise returns 0)
+
+=item * description
+
+asset's description
+
+=back
+
+=item * format
+
+Used in conjunction with file_size property. B<Supported attribute values:>
+
+=over 4
+
+=item * 0
+
+return raw size
+
+=item * 1 (default)
+
+auto format depending on the size
+
+=item * k
+
+size expressed in kilobytes
+
+=item * m
+
+size expressed in megabytes
+
+=back
+
+=back
+
+=for tags assets
 
 =cut
 
@@ -14709,7 +16667,14 @@ sub _hdlr_asset_property {
 
 =head2 AssetFileExt
 
-=for tags asset
+The file extension of the asset in context. For file-based assets only.
+Returns the file extension without the leading period (ie: "jpg").
+
+B<Example:>
+
+    <$mt:AssetFileExt$>
+
+=for tags assets
 
 =cut
 
@@ -14724,7 +16689,51 @@ sub _hdlr_asset_file_ext {
 
 =head2 AssetThumbnailURL
 
-=for tags asset
+Returns the URL for a thumbnail you wish to generate for the current
+asset in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * height
+
+The height of the thumbnail to generate. If this is the only parameter
+specified then the thumbnail's width will be scaled proportionally to
+the height.
+
+=item * width
+
+The width of the thumbnail to generate. If this is the only parameter
+specified then the thumbnail's height will be scaled proportionally
+to the width.
+
+=item * scale
+
+The percentage by which to reduce or increase the size of the current
+asset.
+
+=item * square
+
+If set to 1 (one) then the thumbnail generated will be square, where
+the length of each side of the square will be equal to the shortest
+side of the image.
+
+=back
+
+B<Example:>
+
+The following will output thumbnails for all of the assets embedded in all
+of the entries on the system. Each thumbnail will be square and have a
+max height/width of 100 pixels.
+
+    <mt:Entries>
+        <mt:EntryAssets>
+            <$mt:AssetThumbnailURL width="100" square="1"$>
+        </mt:EntryAssets>
+    </mt:Entries>
+
+=for tags assets
 
 =cut
 
@@ -14750,7 +16759,26 @@ sub _hdlr_asset_thumbnail_url {
 
 =head2 AssetLink
 
-=for tags asset
+Returns HTML anchor tag for the asset in context. For example, if the URL
+of the asset is C<http://example.com/image.jpg>, the tag returns
+C<E<lt>a href="http://example.com/image.jpg"E<gt>image.jpgE<lt>/aE<gt>>.
+
+B<Attributes:>
+
+=over 4
+
+=item * new_window (optional; default "0")
+
+Specifies if the tag generates 'target="_blank"' attribute to the anchor
+tag.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetLink$>
+
+=for tags assets
 
 =cut
 
@@ -14771,7 +16799,37 @@ sub _hdlr_asset_link {
 
 =head2 AssetThumbnailLink
 
-=for tags asset
+Produces a thumbnail image, linked to the image asset currently in
+context.
+
+B<Attributes:>
+
+=over 4
+
+=item * height
+
+The height of the thumbnail to generate. If this is the only parameter
+specified then the thumbnail's width will be scaled proportionally to
+the height.
+
+=item * width
+
+The width of the thumbnail to generate. If this is the only parameter
+specified then the thumbnail's height will be scaled proportionally
+to the width.
+
+=item * scale
+
+The percentage by which to reduce or increase the size of the current
+asset.
+
+=item * new_window (optional; default "0")
+
+If set to '1', causes the link to open a new window to the linked asset.
+
+=back
+
+=for tags assets
 
 =cut
 
@@ -14805,7 +16863,24 @@ sub _hdlr_asset_thumbnail_link {
 
 =head2 AssetCount
 
-=for tags asset
+Returns the number of assets associated with the active blog.
+
+B<Attributes:>
+
+=over 4
+
+=item type
+
+Allows for filtering by file type. Built-in types supported are "image",
+"audio", "video". These types can be extended by plugins.
+
+=back
+
+B<Example:>
+
+    Images available: <$mt:AssetCount type="image"$>
+
+=for tags assets
 
 =cut
 
@@ -14822,7 +16897,21 @@ sub _hdlr_asset_count {
 
 =head2 AssetIfTagged
 
-=for tags asset
+A conditional tag whose contents will be displayed if the asset in
+context has tags.
+
+B<Attributes:>
+
+=over 4
+
+=item * tag or name
+
+If either 'name' or 'tag' are specified, tests the asset in context
+for whether it has a tag association by that name.
+
+=back
+
+=for tags assets, tags
 
 =cut
  
@@ -14845,6 +16934,16 @@ sub _hdlr_asset_if_tagged {
 
 =head2 CaptchaFields
 
+Returns the HTML markup necessary to display the CAPTCHA on the published
+blog. The value returned is escaped for assignment to a JavaScript string,
+since the CAPTCHA field is displayed through the MT JavaScript code.
+
+B<Example:>
+
+    var captcha = '<$mt:CaptchaFields$>';
+
+=for tags comments
+
 =cut
 
 sub _hdlr_captcha_fields {
@@ -14864,6 +16963,30 @@ sub _hdlr_captcha_fields {
 ###########################################################################
 
 =head2 Pages
+
+A container tag which iterates over a list of pages--which pages depends
+on the context the tag is being used in. Within each iteration, you can
+use any of the page variable tags.
+
+Because pages are basically non-date-based entries, the the C<Pages>
+tag is very similar to L<Entries>.
+
+B<Attributes unique to the Pages tag:>
+
+=over 4
+
+=item * folder
+
+Use folder label, not basename.
+
+=item * include_subfolders
+
+Specify '1' to cause all pages that may exist within subfolders to the
+folder in context to be included.
+
+=back
+
+=for tags pages, multiblog
 
 =cut
 
@@ -14903,12 +17026,16 @@ sub _hdlr_pages {
 
 =head2 PagePrevious
 
+A container tag that create a context to the previous page.
+
+=for tags pages, archiving
+
 =cut
 
 sub _hdlr_page_previous {
     my($ctx, $args, $cond) = @_;
 
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     &_hdlr_entry_previous(@_); 
@@ -14918,6 +17045,10 @@ sub _hdlr_page_previous {
 
 =head2 PageNext
 
+A container tag that create a context to the next page.
+
+=for tags pages, archiving
+
 =cut
 
 sub _hdlr_page_next {
@@ -14925,7 +17056,7 @@ sub _hdlr_page_next {
 
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_next(@_); 
 }
 
@@ -14933,12 +17064,34 @@ sub _hdlr_page_next {
 
 =head2 PageTags
 
+A container tag which create a context about the assigned tags. Analogous
+to L<EntryTags>.
+
+B<Attributes:>
+
+=over 4
+
+=item * glue
+
+A string used to join the output of the separate iterations of
+this tag.
+
+=back
+
+B<Example:>
+
+Listing out the page's tags, separated by commas:
+
+    <mt:PageTags glue=", "><$mt:TagName$></mt:PageTags>
+
+=for tags pages, tags
+
 =cut
 
 sub _hdlr_page_tags {
     my($ctx, $args, $cond) = @_;
 
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     local $ctx->{__stash}{class_type} = $args->{class_type};
@@ -14949,12 +17102,35 @@ sub _hdlr_page_tags {
 
 =head2 PageIfTagged
 
+This template tag evaluates a block of code if a tag has been assigned
+to the current entry in context. If the tag attribute is not assigned,
+then the template tag will evaluate if any tag is present.
+
+B<Attributes:>
+
+=over 4
+
+=item * tag
+
+If present, the template tag will evaluate if the specified tag is
+assigned to the current page.
+
+=back
+
+B<Example:>
+
+    <mt:PageIfTagged tag="Foo">
+      <!-- do something -->
+    <mt:Else>
+      <!-- do something else -->
+    </mt:PageIfTagged>
+
 =cut
 
 sub _hdlr_page_if_tagged {
     my($ctx, $args, $cond) = @_;
 
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     &_hdlr_entry_if_tagged(@_); 
@@ -14964,12 +17140,16 @@ sub _hdlr_page_if_tagged {
 
 =head2 PageFolder
 
+A container tag which holds folder context relating to the page.
+
+=for tags pages, folders
+
 =cut
 
 sub _hdlr_page_folder {
     my($ctx, $args, $cond) = @_;
 
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     require MT::Page;
     $args->{class_type} = MT::Page->properties->{class_type};
     local $ctx->{inside_mt_categories} = 1;
@@ -14980,10 +17160,16 @@ sub _hdlr_page_folder {
 
 =head2 PageID
 
+A numeric system ID of the Page currently in context.
+
+B<Example:>
+
+    <$mt:PageID$>
+
 =cut
 
 sub _hdlr_page_id {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_id(@_); 
 }
 
@@ -14991,10 +17177,18 @@ sub _hdlr_page_id {
 
 =head2 PageTitle
 
+The title of the page in context.
+
+B<Example:>
+
+    <$mt:PageTitle$>
+
+=for tags pages
+
 =cut
 
 sub _hdlr_page_title {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_title(@_); 
 }
 
@@ -15002,10 +17196,36 @@ sub _hdlr_page_title {
 
 =head2 PageBody
 
+This tag outputs the contents of the page's Body field.
+
+If a text formatting filter has been specified, it will automatically applied.
+
+B<Attributes:>
+
+=over 4
+
+=item * words
+
+Trims the number of words to display. By default all are displayed.
+
+=item * convert_breaks
+
+Controls the application of text formatting. By default convert_breaks is 0
+(false). This should only be used if text formatting is set to "none" in the
+Entry/Page editor.
+
+=back
+
+B<Example:>
+
+    <$mt:PageBody$>
+
+=for tags pages
+
 =cut
 
 sub _hdlr_page_body {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_body(@_); 
 }
 
@@ -15013,10 +17233,32 @@ sub _hdlr_page_body {
 
 =head2 PageMore
 
+This tag outputs the contents of the page's Extended field.
+
+If a text formatting filter has been specified it will automatically applied.
+
+B<Attributes:>
+
+=over 4
+
+=item * convert_breaks (optional)
+
+Controls the application of text formatting. By default convert_breaks is 0
+(false). This should only be used if text formatting is set to "none" in the
+Entry/Page editor.
+
+=back
+
+B<Example:>
+
+    <$mt:PageMore$>
+
+=for tags pages
+
 =cut
 
 sub _hdlr_page_more {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_more(@_); 
 }
 
@@ -15024,12 +17266,39 @@ sub _hdlr_page_more {
 
 =head2 PageDate
 
-=for tags date
+The authored on timestamp for the page.
+
+B<Attributes:>
+
+=over 4
+
+=item * format
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). See the L<Date>
+tag for the supported formats.
+
+=item * language
+
+Forces the date to the format associated with the specified language.
+
+=item * utc
+
+Forces the date to UTC format.
+
+=back
+
+B<Example:>
+
+    <$mt:PageDate$>
+
+=for tags pages, date
 
 =cut
 
 sub _hdlr_page_date {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_date(@_); 
 }
 
@@ -15037,12 +17306,39 @@ sub _hdlr_page_date {
 
 =head2 PageModifiedDate
 
-=for tags date
+The last modified timestamp for the page.
+
+B<Attributes:>
+
+=over 4
+
+=item * format
+
+A string that provides the format in which to publish the date. If
+unspecified, the default that is appropriate for the language of the blog
+is used (for English, this is "%B %e, %Y %l:%M %p"). See the L<Date>
+tag for the supported formats.
+
+=item * language
+
+Forces the date to the format associated with the specified language.
+
+=item * utc
+
+Forces the date to UTC format.
+
+=back
+
+B<Example:>
+
+    <$mt:PageModifiedDate$>
+
+=for tags pages, date
 
 =cut
 
 sub _hdlr_page_modified_date {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_mod_date(@_); 
 }
 
@@ -15050,10 +17346,16 @@ sub _hdlr_page_modified_date {
 
 =head2 PageKeywords
 
+The specified keywords of the page in context.
+
+B<Example:>
+
+    <$mt:PageKeywords$>
+
 =cut
 
 sub _hdlr_page_keywords {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_keywords(@_); 
 }
 
@@ -15061,10 +17363,44 @@ sub _hdlr_page_keywords {
 
 =head2 PageBasename
 
+By default, the page basename is a constant and unique identifier for
+an page which is used as part of the individual pages's archive filename.
+
+The basename is created by dirifiying the page title when the page is
+first saved (regardless of the page status). From then on, barring direct
+manipulation, the page basename stays constant even when you change the
+page's title. In this way, Movable Type ensures that changes you make
+to an page after saving it don't change the URL to the page, subsequently
+breaking incoming links.
+
+The page basename can be modified by anyone who can edit the page. If it
+is modified after it is created, it is up to the user to ensure uniqueness
+and no incrementing will occur. This allows you to have complete and
+total control over your URLs when you want to as well as effortless
+simplicity when you don't care.
+
+B<Attributes:>
+
+=over 4
+
+=item * separator (optional)
+
+Valid values are "_" and "-", dash is the default value. Specifying
+an underscore will convert any dashes to underscores. Specifying a dash
+will convert any underscores to dashes.
+
+=back
+
+B<Example:>
+
+    <$mt:PageBasename$>
+
+=for tags pages
+
 =cut
 
 sub _hdlr_page_basename {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_basename(@_);
 }
 
@@ -15072,10 +17408,20 @@ sub _hdlr_page_basename {
 
 =head2 PagePermalink
 
+An absolute URL pointing to the archive page containing this entry. An
+anchor (#) is included if the permalink is not pointing to an
+Individual Archive page.
+
+B<Example:>
+
+    <$mt:PagePermalink$>
+
+=for tags pages, archives
+
 =cut
 
 sub _hdlr_page_permalink {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_permalink(@_);
 }
 
@@ -15083,10 +17429,20 @@ sub _hdlr_page_permalink {
 
 =head2 PageAuthorEmail
 
+The email address of the page's author.
+
+B<Note:> It is not recommended to publish email addresses.
+
+B<Example:>
+
+    <$mt:PageAuthorEmail$>
+
+=for tags pages, authors
+
 =cut
 
 sub _hdlr_page_author_email {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_author_email(@_);
 }
 
@@ -15094,10 +17450,42 @@ sub _hdlr_page_author_email {
 
 =head2 PageAuthorLink
 
+A linked version of the author's user name, using the author URL if provided
+in the author's profile. Otherwise, the author name is unlinked. This tag uses
+the author URL if available and the author email otherwise. If neither are on
+record the author name is unlinked.
+
+B<Attributes:>
+
+=over 4
+
+=item * show_email
+
+Specifies if the author's email can be displayed. The default is false (0).
+
+=item * show_url
+
+Specifies if the author's URL can be displayed. The default is true (1).
+
+=item * new_window
+
+Specifies to open the link in a new window by adding "target=_blank" to the
+anchor tag. See example below. The default is false (0).
+
+=back
+
+B<Examples:>
+
+    <$mt:PageAuthorLink$>
+
+    <$mt:PageAuthorLink new_window="1"$>
+
+=for tags pages, authors
+
 =cut
 
 sub _hdlr_page_author_link {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_author_link(@_);
 }
 
@@ -15105,10 +17493,16 @@ sub _hdlr_page_author_link {
 
 =head2 PageAuthorURL
 
+The URL of the page's author.
+
+B<Example:>
+
+    <$mt:PageAuthorURL$>
+
 =cut
 
 sub _hdlr_page_author_url {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_author_url(@_);
 }
 
@@ -15116,16 +17510,53 @@ sub _hdlr_page_author_url {
 
 =head2 PageExcerpt
 
+This tag outputs the contents of the page Excerpt field if one is specified
+or, if not, an auto-generated excerpt from the page Body field followed by an
+ellipsis ("...").
+
+The length of the auto-generated output of this tag can be set in the blog's
+Entry Settings.
+
+B<Attributes:>
+
+=over 4
+
+=item no_generate (optional; default "0")
+
+When set to 1, the system will not auto-generate an excerpt if the excerpt
+field of the page is left blank. Instead it will output nothing.
+
+=item * convert_breaks (optional; default "0")
+
+When set to 1, the page's specified text formatting filter will be applied. By
+default, the text formatting is not applied and the excerpt is published
+either as input or auto-generated by the system.
+
+=back
+
+B<Example:>
+
+    <$mt:PageExcerpt$>
+
 =cut
 
 sub _hdlr_page_excerpt {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_excerpt(@_);
 }
 
 ###########################################################################
 
 =head2 BlogPageCount
+
+The number of published pages in the blog. This template tag supports the
+multiblog template tags.
+
+B<Example:>
+
+    <$mt:BlogPageCount$>
+
+=for tags blogs, pages, multiblog, count
 
 =cut
 
@@ -15141,16 +17572,41 @@ sub _hdlr_blog_page_count {
 
 =head2 PageAuthorDisplayName
 
+The display name of the author of the page in context. If no display name is
+specified, returns an empty string, and no name is displayed.
+
+B<Example:>
+
+    <$mt:PageAuthorDisplayName$>
+
+=for tags authors
+
 =cut
 
 sub _hdlr_page_author_display_name {
-    return $_ unless &_check_page(@_);
+    return undef unless &_check_page(@_);
     &_hdlr_entry_author_display_name(@_);
 }
 
 ###########################################################################
 
 =head2 Folders
+
+A container tags which iterates over a list of all folders and subfolders.
+
+B<Attributes:>
+
+=over 4
+
+=item * show_empty
+
+Setting this optional attribute to true (1) will include folders with no
+pages assigned. The default is false (0), where only folders with pages
+assigned.
+
+=back
+
+=for tags folders
 
 =cut
 
@@ -15166,11 +17622,21 @@ sub _hdlr_folders {
 
 =head2 FolderPrevious
 
+A container tag which creates a folder context of the previous folder
+relative to the current page folder or archived folder.
+
+=for tags folders, archiving
+
 =cut
 
 ###########################################################################
 
 =head2 FolderNext
+
+A container tag which creates a folder context of the next folder
+relative to the current page folder or archived folder.
+
+=for tags folders, archiving
 
 =cut
 
@@ -15186,6 +17652,38 @@ sub _hdlr_folder_prevnext {
 
 =head2 SubFolders
 
+A specialized version of the L<Folders> container tag that respects
+the hierarchical structure of folders.
+
+B<Attributes:>
+
+=over 4
+
+=item * include_current
+
+An optional boolean attribute that controls the inclusion of the
+current folder in the list.
+
+=item * sort_method
+
+An optional and advanced usage attribute. A fully qualified Perl method
+name to be used to sort the folders.
+
+=item * sort_order
+
+Specifies the sort order of the folder labels. Recognized values
+are "ascend" and "descend." The default is "ascend." This attribute
+is ignored if C<sort_method> is unspecified.
+
+=item * top
+
+If set to 1, displays only top level folders. Same as using
+L<TopLevelFolders>.
+
+=back
+
+=for tags folders
+
 =cut
 
 sub _hdlr_sub_folders {
@@ -15199,6 +17697,49 @@ sub _hdlr_sub_folders {
 ###########################################################################
 
 =head2 SubFolderRecurse
+
+Recursively call the L<SubFolders> or L<TopLevelFolders> container
+with the subfolders of the folder in context. This tag, when placed at the
+end of loop controlled by one of the tags above will cause them to
+recursively descend into any subfolders that exist during the loop.
+
+B<Attributes:>
+
+=over 4
+
+=item * max_depth (optional)
+
+Specifies the maximum number of times the system should recurse. The default
+is infinite depth.
+
+=back
+
+B<Examples:>
+
+The following code prints out a recursive list of folders/subfolders, linking
+those with entries assigned to their folder archive pages.
+
+    <mt:TopLevelFolders>
+      <mt:SubFolderIsFirst><ul></mt:SubFolderIsFirst>
+        <mt:If tag="FolderCount">
+            <li><a href="<$mt:FolderArchiveLink$>"
+            title="<$mt:FolderDescription$>"><$mt:FolderLabel$></a>
+        <mt:Else>
+            <li><$mt:FolderLabel$>
+        </mt:If>
+        <$mt:SubFolderRecurse$>
+        </li>
+    <mt:SubFolderIsLast></ul></mt:SubFolderIsLast>
+    </mt:TopLevelFolders>
+
+Or more simply:
+
+    <mt:TopLevelFolders>
+        <$mt:FolderLabel$>
+        <$mt:SubFolderRecurse$>
+    </mt:TopLevelFolders>
+
+=for tags folders
 
 =cut
 
@@ -15214,6 +17755,26 @@ sub _hdlr_sub_folder_recurse {
 
 =head2 ParentFolders
 
+A block tag that lists all the ancestors of the current folder.
+
+B<Attributes:>
+
+=over 4
+
+=item * glue
+
+This optional attribute is a shortcut for connecting each folder label
+with its value. Single and double quotes are not permitted in the string.
+
+=item * exclude_current
+
+This optional boolean attribute controls the exclusion of the current
+folder in the list.
+
+=back
+
+=for tags folders
+
 =cut
 
 sub _hdlr_parent_folders {
@@ -15227,6 +17788,16 @@ sub _hdlr_parent_folders {
 ###########################################################################
 
 =head2 ParentFolder
+
+A container tag that creates a context to the current folder's parent.
+
+B<Example:>
+
+    <mt:ParentFolder>
+        Up: <a href="<mt:ArchiveLink>"><mt:FolderLabel></a>
+    </mt:ParentFolder>
+
+=for tags folders
 
 =cut
 
@@ -15242,6 +17813,15 @@ sub _hdlr_parent_folder {
 
 =head2 TopLevelFolders
 
+A block tag listing the folders that do not have a parent and exist at "the
+top" of the folder hierarchy. Same as using C<E<lt>mt:SubFolders top="1"E<gt>>.
+
+B<Example:>
+
+    <mt:TopLevelFolders>
+        <!-- do something -->
+    </mt:TopLevelFolders>
+
 =cut
 
 sub _hdlr_top_level_folders {
@@ -15255,6 +17835,11 @@ sub _hdlr_top_level_folders {
 ###########################################################################
 
 =head2 TopLevelFolder
+
+A container tag that creates a context to the top-level ancestor of
+the current folder.
+
+=for tags folders
 
 =cut
 
@@ -15270,10 +17855,34 @@ sub _hdlr_top_level_folder {
 
 =head2 FolderBasename
 
+Produces the dirified basename defined for the folder in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * default
+
+A value to use in the event that no folder is in context.
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying
+an underscore will convert any dashes to underscores. Specifying a
+dash will convert any underscores to dashes.
+
+=back
+
+B<Example:>
+
+    <$mt:FolderBasename$>
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_basename {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_category_basename(@_);
 }
 
@@ -15281,10 +17890,18 @@ sub _hdlr_folder_basename {
 
 =head2 FolderDescription
 
+The description for the folder in context.
+
+B<Example:>
+
+    <$mt:FolderDescription$>
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_description {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_category_desc(@_);
 }
 
@@ -15292,10 +17909,18 @@ sub _hdlr_folder_description {
 
 =head2 FolderID
 
+The numeric system ID of the folder.
+
+B<Example:>
+
+    <$mt:FolderID$>
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_id {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_category_id(@_);
 }
 
@@ -15303,10 +17928,18 @@ sub _hdlr_folder_id {
 
 =head2 FolderLabel
 
+The label of the folder in context.
+
+B<Example:>
+
+    <$mt:FolderLabel$>
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_label {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_category_label(@_);
 }
 
@@ -15314,10 +17947,18 @@ sub _hdlr_folder_label {
 
 =head2 FolderCount
 
+The number published pages in the folder.
+
+B<Example:>
+
+    <$mt:FolderCount$>
+
+=for tags folders, pages
+
 =cut
 
 sub _hdlr_folder_count {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_category_count(@_);
 }
 
@@ -15325,10 +17966,19 @@ sub _hdlr_folder_count {
 
 =head2 FolderPath
 
+The path to the folder, relative to the L<BlogURL>.
+
+B<Example:>
+
+For the folder "Bar" in a folder "Foo" C<E<lt>$mt:FolderPath$E<gt>>
+becomes foo/bar.
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_path {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_sub_category_path(@_);
 }
 
@@ -15336,10 +17986,33 @@ sub _hdlr_folder_path {
 
 =head2 IfFolder
 
+A conditional tag used to test for the folder assignment for the page
+in context, or generically to test for which folder is in context.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (or label; optional)
+
+The name of a folder. If given, tests the folder in context (or
+folder of an entry in context) to see if it matches with the given
+folder name.
+
+=back
+
+B<Example:>
+
+    <mt:IfFolder name="News">
+        (current page in context is in the "News" folder)
+    </mt:IfFolder>
+
+=for tags pages, folders
+
 =cut
 
 sub _hdlr_if_folder {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     return _hdlr_if_category(@_);
 }
 
@@ -15347,10 +18020,13 @@ sub _hdlr_if_folder {
 
 =head2 FolderHeader
 
+The contents of this container tag will be displayed when the first
+folder listed by a L<Folders> tag is reached.
+
 =cut
 
 sub _hdlr_folder_header {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     my ($ctx) = @_;
     $ctx->stash('folder_header');
 }
@@ -15359,10 +18035,15 @@ sub _hdlr_folder_header {
 
 =head2 FolderFooter
 
+The contents of this container tag will be displayed when the last
+folder listed by a L<Folders> tag is reached.
+
+=for tags folders
+
 =cut
 
 sub _hdlr_folder_footer {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     my ($ctx) = @_;
     $ctx->stash('folder_footer');
 }
@@ -15371,10 +18052,14 @@ sub _hdlr_folder_footer {
 
 =head2 HasSubFolders
 
+Returns true if the current folder has a sub-folder.
+
+=for tags folders
+
 =cut
 
 sub _hdlr_has_sub_folders {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     &_hdlr_has_sub_categories(@_);
 }
 
@@ -15382,10 +18067,15 @@ sub _hdlr_has_sub_folders {
 
 =head2 HasParentFolder
 
+Returns true if the current folder has a parent folder other than the
+root.
+
+=for tags folders
+
 =cut
 
 sub _hdlr_has_parent_folder {
-    return $_ unless &_check_folder(@_);
+    return undef unless &_check_folder(@_);
     &_hdlr_has_parent_category(@_);
 }
 
@@ -15394,9 +18084,9 @@ sub _check_folder {
     my $e = $ctx->stash('entry');
     my $cat = ($ctx->stash('category'))
         || (($e = $ctx->stash('entry')) && $e->category)
-        or return MT->translate(
+        or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
-            'MT' . $ctx->stash('tag') );
+            'MT' . $ctx->stash('tag') ));
     1;
 }
 
@@ -15404,7 +18094,7 @@ sub _check_page {
     my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_page_error();
-    return $ctx->_no_page_error('MT'.$ctx->stash('tag'))
+    return $ctx->_no_page_error()
         if ref $e ne 'MT::Page';
     1;
 }
@@ -15427,7 +18117,26 @@ sub _object_score_for {
 
 =head2 EntryScore
 
-=for tags entry, scoring
+A function tag that provides total score of the entry in context. Scores
+grouped by namespace of a plugin are summed to calculate total score of an
+entry.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for score to be calculated. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryScore namespace="FiveStarRating"$>
+
+=for tags entries, scoring
 
 =cut
 
@@ -15438,6 +18147,25 @@ sub _hdlr_entry_score {
 ###########################################################################
 
 =head2 CommentScore
+
+A function tag that provides total score of the comment in context. Scores
+grouped by namespace of a plugin are summed to calculate total score of a
+comment.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for score to be calculated. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentScore namespace="FiveStarRating"$>
 
 =for tags comments, scoring
 
@@ -15451,6 +18179,25 @@ sub _hdlr_comment_score {
 
 =head2 PingScore
 
+A function tag that provides total score of the TrackBack ping in context.
+Scores grouped by namespace of a plugin are summed to calculate total
+score of a TrackBack ping.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:PingScore namespace="FiveStarRating"$>
+
 =for tags pings, scoring
 
 =cut
@@ -15463,6 +18210,25 @@ sub _hdlr_ping_score {
 
 =head2 AssetScore
 
+A function tag that provides total score of the asset in context. Scores
+grouped by namespace of a plugin are summed to calculate total score of an
+asset.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for score to be calculated. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetScore namespace="FiveStarRating"$>
+
 =for tags assets, scoring
 
 =cut
@@ -15474,6 +18240,25 @@ sub _hdlr_asset_score {
 ###########################################################################
 
 =head2 AuthorScore
+
+A function tag that provides total score of the author in context. Scores
+grouped by namespace of a plugin are summed to calculate total score of an
+author.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for score to be calculated. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorScore namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15496,6 +18281,25 @@ sub _object_score_high {
 
 =head2 EntryScoreHigh
 
+A function tag that provides the highest score of the entry in context.
+Scorings grouped by namespace of a plugin are sorted to find the highest
+score of an entry.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for score to be calculated. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryScoreHigh namespace="FiveStarRating"$>
+
 =for tags entries, scoring
 
 =cut
@@ -15507,6 +18311,25 @@ sub _hdlr_entry_score_high {
 ###########################################################################
 
 =head2 CommentScoreHigh
+
+A function tag that provides the highest score of the comment in context.
+Scorings grouped by namespace of a plugin are sorted to find the
+highest score of a comment.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentScoreHigh namespace="FiveStarRating"$>
 
 =for tags comments, scoring
 
@@ -15520,6 +18343,25 @@ sub _hdlr_comment_score_high {
 
 =head2 PingScoreHigh
 
+A function tag that provides the highest score of the TrackBack ping
+in context. Scorings grouped by namespace of a plugin are sorted to
+find the highest score of a TrackBack ping.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:PingScoreHigh namespace="FiveStarRating"$>
+
 =for tags pings, scoring
 
 =cut
@@ -15532,6 +18374,25 @@ sub _hdlr_ping_score_high {
 
 =head2 AssetScoreHigh
 
+A function tag that provides the highest score of the asset in context.
+Scorings grouped by namespace of a plugin are sorted to find the
+highest score of an asset.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetScoreHigh namespace="FiveStarRating"$>
+
 =for tags assets, scoring
 
 =cut
@@ -15543,6 +18404,25 @@ sub _hdlr_asset_score_high {
 ###########################################################################
 
 =head2 AuthorScoreHigh
+
+A function tag that provides the highest score of the author in context.
+Scorings grouped by namespace of a plugin are sorted to find the
+highest score of an author.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorScoreHigh namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15565,6 +18445,25 @@ sub _object_score_low {
 
 =head2 EntryScoreLow
 
+A function tag that provides the lowest score of the entry in context.
+Scorings grouped by namespace of a plugin are sorted to find the
+lowest score of an entry.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryScoreLow namespace="FiveStarRating"$>
+
 =for tags entries, scoring
 
 =cut
@@ -15576,6 +18475,25 @@ sub _hdlr_entry_score_low {
 ###########################################################################
 
 =head2 CommentScoreLow
+
+A function tag that provides the lowest score of the comment in context.
+Scorings grouped by namespace of a plugin are sorted to find the lowest score
+of a comment.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentScoreLow namespace="FiveStarRating"$>
 
 =for tags comments, scoring
 
@@ -15589,6 +18507,23 @@ sub _hdlr_comment_score_low {
 
 =head2 PingScoreLow
 
+A function tag that provides the lowest score of the TrackBack ping in context. Scorings grouped by namespace of a plugin are sorted to find the lowest score of a TrackBack ping.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:PingScoreLow namespace="FiveStarRating"$>
+
 =for tags pings, scoring
 
 =cut
@@ -15601,6 +18536,25 @@ sub _hdlr_ping_score_low {
 
 =head2 AssetScoreLow
 
+A function tag that provides the lowest score of the asset in context.
+Scorings grouped by namespace of a plugin are sorted to find the lowest
+score of an asset.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetScoreLow namespace="FiveStarRating"$>
+
 =for tags assets, scoring
 
 =cut
@@ -15612,6 +18566,25 @@ sub _hdlr_asset_score_low {
 ###########################################################################
 
 =head2 AuthorScoreLow
+
+A function tag that provides the lowest score of the author in context.
+Scorings grouped by namespace of a plugin are sorted to find the lowest
+score of an author.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the score to be sorted. Namespace is defined by each
+plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorScoreLow namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15636,6 +18609,26 @@ sub _object_score_avg {
 
 =head2 EntryScoreAvg
 
+A function tag that provides the avarage score of the entry in context. Scores
+grouped by namespace of a plugin are summed to calculate total score of an
+entry, and average is calculated by dividing the total score by the number of
+scorings or 'votes'.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for avarage score to be calculated. Namespace is defined by
+each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryScoreAvg namespace="FiveStarRating"$>
+
 =for tags entries, scoring
 
 =cut
@@ -15647,6 +18640,26 @@ sub _hdlr_entry_score_avg {
 ###########################################################################
 
 =head2 CommentScoreAvg
+
+A function tag that provides the avarage score of the comment in context.
+Scores grouped by namespace of a plugin are summed to calculate total
+score of a comment, and average is calculated by dividing the total
+score by the number of scorings or 'votes'.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for avarage score to be calculated. Namespace is defined by
+each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentScoreAvg namespace="FiveStarRating"$>
 
 =for tags comments, scoring
 
@@ -15660,6 +18673,26 @@ sub _hdlr_comment_score_avg {
 
 =head2 PingScoreAvg
 
+A function tag that provides the avarage score of the TrackBack ping in
+context. Scores grouped by namespace of a plugin are summed to calculate
+total score of a TrackBack ping, and average is calculated by dividing the
+total score by the number of scorings or 'votes'.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for avarage score to be calculated. Namespace is defined by
+each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:PingScoreAvg namespace="FiveStarRating"$>
+
 =for tags pings, scoring
 
 =cut
@@ -15672,6 +18705,26 @@ sub _hdlr_ping_score_avg {
 
 =head2 AssetScoreAvg
 
+A function tag that provides the avarage score of the asset in context.
+Scores grouped by namespace of a plugin are summed to calculate total
+score of an asset, and average is calculated by dividing the total
+score by the number of scorings or 'votes'.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for avarage score to be calculated. Namespace is defined by
+each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetScoreAvg namespace="FiveStarRating"$>
+
 =for tags assets, scoring
 
 =cut
@@ -15683,6 +18736,26 @@ sub _hdlr_asset_score_avg {
 ###########################################################################
 
 =head2 AuthorScoreAvg
+
+A function tag that provides the avarage score of the author in context.
+Scores grouped by namespace of a plugin are summed to calculate total score of
+an author, and average is calculated by dividing the total score by the number
+of scorings or 'votes'.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for avarage score to be calculated. Namespace is defined by
+each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorScoreAvg namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15707,7 +18780,25 @@ sub _object_score_count {
 
 =head2 EntryScoreCount
 
-=for tags entry, scoring
+A function tag that provides the number of scorings or 'votes' made to the
+entry in context. Scorings grouped by namespace of a plugin are summed.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the number of scorings to be calculated. Namespace is
+defined by each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryScoreCount namespace="FiveStarRating"$>
+
+=for tags entries, scoring
 
 =cut
 
@@ -15718,6 +18809,25 @@ sub _hdlr_entry_score_count {
 ###########################################################################
 
 =head2 CommentScoreCount
+
+A function tag that provides the number of scorings or 'votes' made to
+the comment in context. Scorings grouped by namespace of a plugin are
+summed.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the number of scorings to be calculated. Namespace is
+defined by each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentScoreCount namespace="FiveStarRating"$>
 
 =for tags comments, scoring
 
@@ -15731,6 +18841,25 @@ sub _hdlr_comment_score_count {
 
 =head2 PingScoreCount
 
+A function tag that provides the number of scorings or 'votes' made to the
+TrackBack ping in context. Scorings grouped by namespace of a plugin are
+summed.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the number of scorings to be calculated. Namespace is
+defined by each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:PingScoreCount namespace="FiveStarRating"$>
+
 =for tags pings, scoring
 
 =cut
@@ -15743,7 +18872,25 @@ sub _hdlr_ping_score_count {
 
 =head2 AssetScoreCount
 
-pings assets, scoring
+A function tag that provides the number of scorings or 'votes' made to the
+asset in context. Scorings grouped by namespace of a plugin are summed.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the number of scorings to be calculated. Namespace is
+defined by each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetScoreCount namespace="FiveStarRating"$>
+
+=for tags assets, scoring
 
 =cut
 
@@ -15754,6 +18901,24 @@ sub _hdlr_asset_score_count {
 ###########################################################################
 
 =head2 AuthorScoreCount
+
+A function tag that provides the number of scorings or 'votes' made to the
+author in context. Scorings grouped by namespace of a plugin are summed.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for the number of scorings to be calculated. Namespace is
+defined by each plugin which leverages rating API.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorScoreCount namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15775,6 +18940,28 @@ sub _object_rank {
 ###########################################################################
 
 =head2 EntryRank
+
+A function tag which returns a number from 1 to 6 (by default) which
+represents the rating of the entry in context in terms of total
+score where '1' is used for the highest score, '6' for the lowest score.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for rank to be calculated. Namespace is defined by each plugin which leverages rating API.
+
+=item * max (optional; default "6")
+
+Allows a user to specify the upper bound of the scale.
+
+=back
+
+B<Example:>
+
+    <$mt:EntryRank namespace="FiveStarRating"$>
 
 =for tags entries, scoring
 
@@ -15800,6 +18987,28 @@ sub _hdlr_entry_rank {
 
 =head2 CommentRank
 
+A function tag which returns a number from 1 to 6 (by default) which
+represents the rating of the comment in context in terms of total score
+where '1' is used for the highest score, '6' for the lowest score.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for rank to be calculated. Namespace is defined by each plugin which leverages rating API.
+
+=item * max (optional; default "6")
+
+Allows a user to specify the upper bound of the scale.
+
+=back
+
+B<Example:>
+
+    <$mt:CommentRank namespace="FiveStarRating"$>
+
 =for tags comments, scoring
 
 =cut
@@ -15819,6 +19028,28 @@ sub _hdlr_comment_rank {
 ###########################################################################
 
 =head2 PingRank
+
+A function tag which returns a number from 1 to 6 (by default) which
+represents the rating of the TrackBack ping in context in terms of total score
+where '1' is used for the highest score, '6' for the lowest score.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for rank to be calculated. Namespace is defined by each plugin which leverages rating API.
+
+=item * max (optional; default "6")
+
+Allows a user to specify the upper bound of the scale.
+
+=back
+
+B<Example:>
+
+    <$mt:PingRank namespace="FiveStarRating"$>
 
 =for tags pings, scoring
 
@@ -15840,6 +19071,28 @@ sub _hdlr_ping_rank {
 
 =head2 AssetRank
 
+A function tag which returns a number from 1 to 6 (by default) which
+represents the rating of the asset in context in terms of total score where
+'1' is used for the highest score, '6' for the lowest score.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for rank to be calculated. Namespace is defined by each plugin which leverages rating API.
+
+=item * max (optional; default "6")
+
+Allows a user to specify the upper bound of the scale.
+
+=back
+
+B<Example:>
+
+    <$mt:AssetRank namespace="FiveStarRating"$>
+
 =for tags assets, scoring
 
 =cut
@@ -15851,6 +19104,28 @@ sub _hdlr_asset_rank {
 ###########################################################################
 
 =head2 AuthorRank
+
+A function tag which returns a number from 1 to 6 (by default) which
+represents the rating of the author in context in terms of total score where
+'1' is used for the highest score, '6' for the lowest score.
+
+B<Attributes:>
+
+=over 4
+
+=item * namespace (required)
+
+Specify namespace for rank to be calculated. Namespace is defined by each plugin which leverages rating API.
+
+=item * max (optional; default "6")
+
+Allows a user to specify the upper bound of the scale.
+
+=back
+
+B<Example:>
+
+    <$mt:AuthorRank namespace="FiveStarRating"$>
 
 =for tags authors, scoring
 
@@ -15864,7 +19139,17 @@ sub _hdlr_author_rank {
 
 =head2 AuthorNext
 
-=for tags authors
+A container tag which creates a author context of the next author. The
+order of authors is determined by author's login name. Authors who have
+at least a published entry will be considered in finding the next author.
+
+B<Example:>
+
+    <mt:AuthorNext>
+        <a href="<$mt:ArchiveLink archive_type="Author"$>"><$mt:AuthorDisplayName$></a>
+    </mt:AuthorNext>
+
+=for tags authors, archiving
 
 =cut
 
@@ -15872,7 +19157,17 @@ sub _hdlr_author_rank {
 
 =head2 AuthorPrevious
 
-=for tags authors
+A container tag which creates a author context of the previous author. The
+order of authors is determined by author's login name. Authors who have
+at least a published entry will be considered in finding the previous author.
+
+B<Example:>
+
+    <mt:AuthorPrevious>
+        <a href="<$mt:ArchiveLink archive_type="Author"$>"><$mt:AuthorDisplayName$></a>
+    </mt:AuthorPrevious>
+
+=for tags authors, archiving
 
 =cut
 
@@ -15922,7 +19217,57 @@ sub _get_author {
 
 =head2 Section
 
-=for tags utility
+A utility block tag that is used to wrap content that can be cached,
+or merely manipulated by any of Movable Type's tag modifiers.
+
+B<Attributes:>
+
+=over 4
+
+=item * cache_prefix (optional)
+
+When specified, causes the contents of the section tag to be cached
+for some period of time. The 'period' attribute can specify the
+cache duration (in seconds), or will use the C<DashboardCachePeriod>
+configuration setting as a default (this feature was initially added
+to support cacheable portions of the Movable Type Dashboard).
+
+=item * period (optional)
+
+A number in seconds defining the duration to cache the content produced
+by the tag. Use in combination with the 'cache_prefix' attribute.
+
+=item * by_blog (optional)
+
+When using the 'cache_prefix' attribute, specifying '1' for this
+attribute will cause the content to be cached on a per-blog basis
+(otherwise, the default is system-wide).
+
+=item * by_user (optional)
+
+When using the 'cache_prefix' attribute, specifying '1' for this
+attribute will cause the content to be cached on a per-user basis
+(otherwise, the default is system-wide).
+
+=item * html_tag (optional)
+
+If specified, causes the content of the tag to be enclosed in a
+the HTML tag identified. Example:
+
+    <mt:Section html_tag="p">Lorem ipsum...</mt:Section>
+
+Which would output:
+
+    <p>Lorem ipsum...</p>
+
+=item * id (optional)
+
+If specified in combination with the 'html_tag' attribute, this 'id'
+is added to the wrapping HTML tag.
+
+=back
+
+=for tags utility, templating
 
 =cut
 
@@ -16284,11 +19629,39 @@ sub _hdlr_next_link {
 
 =head2 WidgetManager
 
+An alias for the L<WidgetSet> tag, and considered deprecated.
+
+=for tags deprecated
+
 =cut
 
 ###########################################################################
 
 =head2 WidgetSet
+
+Publishes the widget set identified by the C<name> attribute.
+
+B<Attributes:>
+
+=over 4
+
+=item * name (required)
+
+The name of the widget set to publish.
+
+=item * blog_id (optional)
+
+The target blog to use as a context for loading the widget set. This only
+affects the loading of the widget set: it does not set the blog context
+for the widgets that are published. By default, the blog in context is
+used. You may specify a value of "0" for blog_id to target a global
+widget set.
+
+=back
+
+B<Example:>
+
+    <$mt:WidgetSet name="Sidebar"$>
 
 =for tags widgets
 
