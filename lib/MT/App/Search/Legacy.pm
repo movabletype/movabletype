@@ -644,7 +644,7 @@ sub _new_comments {
              $app->{searchparam}{MaxResults} != 9999999) {
         $args{limit} = $app->{searchparam}{MaxResults};
     }
-    my %terms = { status => MT::Entry::RELEASE() };
+    my %terms = ( status => MT::Entry::RELEASE() );
     $terms{class} = $app->{searchparam}{entry_type} || '*';
     my $iter = MT::Entry->load_iter(\%terms, \%args);
     my %blogs;
