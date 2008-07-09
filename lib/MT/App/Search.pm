@@ -485,7 +485,7 @@ sub prepare_context {
         $ctx->stash('mode', $app->mode);
     }
     if ( my $template = $q->param('Template') ) {
-        $template =~ s/[\w\-\.]//g;
+        $template =~ s/[^\w\-\.]//g;
         $ctx->stash('template_id', $template);
     }
     $ctx->stash('stash_key'  , $app->{searchparam}{Type} );
