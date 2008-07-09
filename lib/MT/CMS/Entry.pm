@@ -2125,7 +2125,6 @@ sub ping_continuation {
 sub delete {
     my $app = shift;
     $app->validate_magic() or return;
-
     require MT::Blog;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
@@ -2137,13 +2136,6 @@ sub delete {
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
     my %rebuild_recip;
-    my $at = $blog->archive_type;
-    my @at;
-    if ( $at && $at ne 'None' ) {
-        my @at_orig = split( /,/, $at );
-        @at = grep { $_ ne 'Individual' && $_ ne 'Page' } @at_orig;
-    }
-
     for my $id ( $q->param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
@@ -2153,96 +2145,9 @@ sub delete {
           || return $app->error(
             $app->translate( "Permission denied: [_1]", $app->errstr() ) );
 
-        # Remove Individual archive file.
-        if ( $app->config('DeleteFilesAtRebuild') ) {
-            $app->publisher->remove_entry_archive_file( Entry => $obj, );
-        }
-        if (   $app->config('RebuildAtDelete')
-            || $app->config('DeleteFilesAtRebuild') )
-        {
-            for my $at (@at) {
-                my $archiver = $app->publisher->archiver($at);
-                next unless $archiver;
-
-                # Remove archive file if archive file has not entries.
-                my $to_delete =
-                    ( $archiver->archive_entries_count( $blog, $at, $obj ) == 1 ) ? 1 : 0
-                    if $archiver->can('archive_entries_count');
-                if ( $to_delete && $app->config('DeleteFilesAtRebuild') ) {
-                     $app->publisher->remove_entry_archive_file(
-                         Entry       => $obj,
-                         ArchiveType => $at
-                     );
-                }
-                next if $to_delete;
-
-                # Make rebuild recip
-                if ( $app->config('RebuildAtDelete') ) {
-                    my ( $start, $end ) = $archiver->date_range( $obj->authored_on )
-                        if $archiver->date_based() && $archiver->can('date_range');
-
-                    if ( $archiver->category_based() ) {
-                        my $categories = $obj->categories();
-                        for my $cat (@$categories) {
-                            if ( $archiver->date_based() ) {
-                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
-                                  {'Start'} = $start;
-                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
-                                  {'End'} = $end;
-                                $rebuild_recip{$at}{ $cat->id }{ $start . $end }
-                                  {'File'} =
-                                  MT::Util::archive_file_for( $obj, $blog, $at,
-                                    $cat, undef, undef, undef );
-                            }
-                            else {
-                                $rebuild_recip{$at}{ $cat->id }{id} = $cat->id;
-                                $rebuild_recip{$at}{ $cat->id }{'File'} =
-                                  MT::Util::archive_file_for( $obj, $blog, $at,
-                                    $cat, undef, undef, undef );
-                            }
-                        }
-                    }
-                    elsif ( $archiver->author_based() ) {
-                        if ( $archiver->date_based() ) {
-                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
-                              {'Start'} = $start;
-                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
-                              {'End'} = $end;
-                            $rebuild_recip{$at}{ $obj->author->id }{ $start . $end }
-                              {'File'} =
-                              MT::Util::archive_file_for( $obj, $blog, $at, undef,
-                                undef, undef, $obj->author );
-                        }
-                        else {
-                            $rebuild_recip{$at}{ $obj->author->id }{id} =
-                              $obj->author->id;
-                            $rebuild_recip{$at}{ $obj->author->id }{'File'} =
-                              MT::Util::archive_file_for( $obj, $blog, $at, undef,
-                                undef, undef, $obj->author );
-                        }
-                    }
-                    elsif ( $archiver->date_based() ) {
-                        $rebuild_recip{$at}{ $start . $end }{'Start'} = $start;
-                        $rebuild_recip{$at}{ $start . $end }{'End'}   = $end;
-                        $rebuild_recip{$at}{ $start . $end }{'File'} =
-                          MT::Util::archive_file_for( $obj, $blog, $at, undef,
-                            undef, undef, undef );
-                    }
-                    if ( my $prev = $obj->previous(1) ) {
-                        $rebuild_recip{Individual}{ $prev->id }{id} = $prev->id;
-                        $rebuild_recip{Individual}{ $prev->id }{'File'} =
-                          MT::Util::archive_file_for( $prev, $blog, 'Individual',
-                            undef, undef, undef, undef );
-                    }
-                    if ( my $next = $obj->next(1) ) {
-                        $rebuild_recip{Individual}{ $next->id }{id} = $next->id;
-                        $rebuild_recip{Individual}{ $next->id }{'File'} =
-                          MT::Util::archive_file_for( $next, $blog, 'Individual',
-                            undef, undef, undef, undef );
-                    }
-                }
-            }
-        }
+        my %recip = $app->publisher->rebuild_deleted_entry(
+            Entry => $obj,
+            Blog  => $blog);
 
         # Remove object from database
         $obj->remove()

@@ -686,6 +686,20 @@ sub _delete_entry {
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
         unless $perms && $perms->can_edit_entry($entry, $author);
+
+    # Delete archive file
+    my $blog = MT::Blog->load($entry->blog_id);
+    my %recip = $mt->publisher->rebuild_deleted_entry(
+        Entry => $entry,
+        Blog  => $blog);
+
+    # Rebuild archives
+    $mt->rebuild_archives(
+        Blog             => $blog,
+        Recip            => \%recip,
+    ) or die _fault($class->errstr);
+
+    # Remove object
     $entry->remove;
 
     $mt->log({
@@ -695,9 +709,6 @@ sub _delete_entry {
         category => 'delete' 
     });
 
-    if ($publish) {
-        $class->_publish($mt, $entry, 1) or die _fault($class->errstr);
-    }
     SOAP::Data->type(boolean => 1);
 }
 

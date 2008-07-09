@@ -785,9 +785,22 @@ sub delete_post {
         or return $app->error(400, "Invalid entry_id");
     return $app->error(403, "Access denied")
         unless $app->{perms}->can_edit_entry($entry, $app->{user});
+
+    # Delete archive file
+    my $blog = MT::Blog->load($entry->blog_id);
+    my %recip = $app->publisher->rebuild_deleted_entry(
+        Entry => $entry,
+        Blog  => $blog);
+
+    # Rebuild archives
+    $app->rebuild_archives(
+        Blog             => $blog,
+        Recip            => \%recip,
+    ) or die _fault($app->errstr);
+
+    # Remove object
     $entry->remove
         or return $app->error(500, $entry->errstr);
-    $app->publish($entry, 1) or return $app->error(500, $app->errstr);
     '';
 }
 

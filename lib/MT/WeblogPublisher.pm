@@ -350,6 +350,221 @@ sub rebuild_authors {
     1;
 }
 
+sub remove_fileinfo {
+    my $mt    = shift;
+    my %param = @_;
+    my $at    = $param{ArchiveType}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
+    my $blog_id = $param{Blog}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
+    my $entry_id = $param{Entry}, my $author_id = $param{Author};
+    my $start    = $param{StartDate};
+    my $cat_id   = $param{Category};
+
+    require MT::FileInfo;
+    my @finfo = MT::FileInfo->load(
+        {
+            archive_type => $at,
+            blog_id      => $blog_id,
+            ( $entry_id ? ( entry_id    => $entry_id ) : () ),
+            ( $cat_id   ? ( category_id => $cat_id )   : () ),
+            ( $start    ? ( startdate   => $start )    : () ),
+        }
+    );
+
+    for my $f (@finfo) {
+        $f->remove;
+    }
+    1;
+}
+
+# rebuild_deleted_entry
+#
+# $mt->rebuild_deleted_entry(
+#                    Entry => $entry | $entry_id,
+#                    Blog => [ $blog | $blog_id ],
+#                    );
+sub rebuild_deleted_entry {
+    my $mt    = shift;
+    my $app   = MT->instance;
+    my %param = @_;
+    my $entry = $param{Entry}
+      or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
+    require MT::Entry;
+    $entry = MT::Entry->load($entry) unless ref $entry;
+    return unless $entry;
+
+    my $blog;
+    unless ( $blog = $param{Blog} ) {
+        require MT::Blog;
+        my $blog_id = $entry->blog_id;
+        $blog = MT::Blog->load($blog_id)
+          or return $mt->error(
+            MT->translate(
+                "Load of blog '[_1]' failed: [_2]", $blog_id,
+                MT::Blog->errstr
+            )
+          );
+    }
+
+    my %rebuild_recip;
+    my $at = $blog->archive_type;
+    my @at;
+    if ( $at && $at ne 'None' ) {
+        my @at_orig = split( /,/, $at );
+        @at = grep { $_ ne 'Individual' && $_ ne 'Page' } @at_orig;
+    }
+
+    # Remove Individual archive file.
+    if ( $app->config('DeleteFilesAtRebuild') ) {
+        $mt->remove_entry_archive_file( Entry => $entry, );
+    }
+
+    # Remove Individual fileinfo records.
+    $mt->remove_fileinfo(
+        ArchiveType => 'Individual',
+        Blog        => $blog->id,
+        Entry       => $entry->id
+    );
+
+    require MT::Util;
+    for my $at (@at) {
+        my $archiver = $mt->archiver($at);
+        next unless $archiver;
+
+        my ( $start, $end ) = $archiver->date_range( $entry->authored_on )
+          if $archiver->date_based() && $archiver->can('date_range');
+
+        # Remove archive file if archive file has not entries.
+        if ( $archiver->category_based() ) {
+            my $categories = $entry->categories();
+            for my $cat (@$categories) {
+                if (
+                    ( $archiver->can('archive_entries_count') )
+                    && (
+                        $archiver->archive_entries_count( $blog, $at, $entry,
+                            $cat ) == 1
+                    )
+                  )
+                {
+                    $mt->remove_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        Category    => $cat->id,
+                        (
+                            $archiver->date_based()
+                            ? ( startdate => $start )
+                            : ()
+                        ),
+                    );
+                    if ( $app->config('DeleteFilesAtRebuild') ) {
+                        $mt->remove_entry_archive_file(
+                            Entry       => $entry,
+                            ArchiveType => $at,
+                            Category    => $cat,
+                        );
+                    }
+                }
+                else {
+                    if ( $app->config('RebuildAtDelete') ) {
+                        if ( $archiver->date_based() ) {
+                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                              {'Start'} = $start;
+                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                              {'End'} = $end;
+                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                              {'File'} = MT::Util::archive_file_for(
+                                $entry, $blog, $at, $cat,
+                                undef,  undef, undef
+                              );
+                        }
+                        else {
+                            $rebuild_recip{$at}{ $cat->id }{id} = $cat->id;
+                            $rebuild_recip{$at}{ $cat->id }{'File'} =
+                              MT::Util::archive_file_for(
+                                $entry, $blog, $at, $cat,
+                                undef,  undef, undef
+                              );
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            if ( ( $archiver->can('archive_entries_count') )
+                && ( $archiver->archive_entries_count( $blog, $at, $entry ) ==
+                    1 ) )
+            {
+
+                # Remove archives fileinfo records.
+                $mt->remove_fileinfo(
+                    ArchiveType => $at,
+                    Blog        => $blog->id,
+                    (
+                        $archiver->author_based()
+                        ? ( author_id => $entry->author->id )
+                        : ()
+                    ),
+                    ( $archiver->date_based() ? ( startdate => $start ) : () ),
+                );
+                if ( $app->config('DeleteFilesAtRebuild') ) {
+                    $mt->remove_entry_archive_file(
+                        Entry       => $entry,
+                        ArchiveType => $at
+                    );
+                }
+            }
+            else {
+                if ( $app->config('RebuildAtDelete') ) {
+                    if ( $archiver->author_based() ) {
+                        if ( $archiver->date_based() ) {
+                            $rebuild_recip{$at}{ $entry->author->id }
+                              { $start . $end }{'Start'} = $start;
+                            $rebuild_recip{$at}{ $entry->author->id }
+                              { $start . $end }{'End'} = $end;
+                            $rebuild_recip{$at}{ $entry->author->id }
+                              { $start . $end }{'File'} =
+                              MT::Util::archive_file_for( $entry, $blog, $at,
+                                undef, undef, undef, $entry->author );
+                        }
+                        else {
+                            $rebuild_recip{$at}{ $entry->author->id }{id} =
+                              $entry->author->id;
+                            $rebuild_recip{$at}{ $entry->author->id }{'File'} =
+                              MT::Util::archive_file_for( $entry, $blog, $at,
+                                undef, undef, undef, $entry->author );
+                        }
+                    }
+                    elsif ( $archiver->date_based() ) {
+                        $rebuild_recip{$at}{ $start . $end }{'Start'} = $start;
+                        $rebuild_recip{$at}{ $start . $end }{'End'}   = $end;
+                        $rebuild_recip{$at}{ $start . $end }{'File'} =
+                          MT::Util::archive_file_for( $entry, $blog, $at, undef,
+                            undef, undef, undef );
+                    }
+                    if ( my $prev = $entry->previous(1) ) {
+                        $rebuild_recip{Individual}{ $prev->id }{id} = $prev->id;
+                        $rebuild_recip{Individual}{ $prev->id }{'File'} =
+                          MT::Util::archive_file_for( $prev, $blog,
+                            'Individual', undef, undef, undef, undef );
+                    }
+                    if ( my $next = $entry->next(1) ) {
+                        $rebuild_recip{Individual}{ $next->id }{id} = $next->id;
+                        $rebuild_recip{Individual}{ $next->id }{'File'} =
+                          MT::Util::archive_file_for( $next, $blog,
+                            'Individual', undef, undef, undef, undef );
+                    }
+                }
+            }
+        }
+    }
+
+    return %rebuild_recip;
+}
+
 #   rebuild_entry
 #
 # $mt->rebuild_entry(Entry => $entry_id,
@@ -551,17 +766,19 @@ sub rebuild_entry {
 }
 
 ### Recip hash
-### {ArchiveType - {Category-id} - {Date key} - {Start}
-###                                           - {End}
-###                                           - {File}
-###                              - {File}
-###              - {Author-id}   - {Date key} - {Start}
-###                                           - {End}
-###                                           - {File}
-###                              - {File}
-###              - {Date key}    - {Start}
-###                              - {End}
-###                              - {File}
+### {ArchiveType} - {Category-id} - {Date key} - {Start}
+###                                            - {End}
+###                                            - {File}
+###                               - {File}
+###               - {Author-id}   - {Date key} - {Start}
+###                                            - {End}
+###                                            - {File}
+###                               - {File}
+###               - {Date key}    - {Start}
+###                               - {End}
+###                               - {File}
+###               - {entry-id}    - {id}
+###                               - {File}
 ###
 sub rebuild_archives {
     my $mt = shift;

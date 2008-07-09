@@ -206,8 +206,8 @@ sub archive_group_entries {
 
 sub archive_entries_count {
     my $obj = shift;
-    my ( $blog, $at, $entry ) = @_;
-    my $cat = $entry->category;
+    my ( $blog, $at, $entry, $cat ) = @_;
+    $cat = $entry->category unless $cat;
     return 0 unless $cat;
     return $obj->SUPER::archive_entries_count(
         {
