@@ -253,8 +253,11 @@ sub apply {
         $url = "$webthemeroot$basename/$basename.css";
     }
     
+    my $blog = MT->model('blog')->load($blog_id)    
+      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
 
-    my $url2 = $mtthemebase . "blog.css";
+    my $r = MT->registry;
+    my $base_css = $r->{"template_sets"}{$blog->template_set}{"base_css"};
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text  = $tmpl->text();
@@ -262,10 +265,12 @@ sub apply {
     my $header =
 '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
-    my $styles = $header . "\n" . <<"EOT" . $footer;
-\@import url($url2);
-\@import url($url);
-EOT
+    my $styles = $header . "\n";
+    $styles .= "\@import url(".File::Spec->catfile($app->static_path, $base_css).");\n" if $base_css;
+    $styles .= "\@import url($url);\n";
+    $styles .= $footer;
+    print STDERR "styles=$styles\n";
+
     if ($template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s) {
         $tmpl->text( $template_text );
         $replaced = 1;
@@ -298,8 +303,6 @@ EOT
     # Putting the stylesheet back together again
     $tmpl->save or return $app->json_error( $tmpl->errstr );
 
-    my $blog = MT->model('blog')->load($blog_id)    
-      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
     $blog->page_layout($layout);
     $blog->touch();
     $blog->save();
