@@ -529,6 +529,39 @@ ul { list-style: disc outside; }
     margin: 5px 0;
 }
 
+.widget-openid {
+    width: 160px;
+    margin: 10px auto;
+    border: none !important;
+}
+.widget-openid .widget-content {
+    border: 1px solid #ccc;
+    background: #fff url(../images/openid-accepted.gif) no-repeat 7px 3px;
+    font-size: 12px;
+    font-family: arial;
+    color: #666;
+    margin: 0;
+    padding: 0 !important;
+}
+.widget-openid .widget-content em {
+    display: block;
+    font-style: normal;
+    padding: 34px 9px 9px 68px;
+}
+.widget-openid .widget-content strong {
+    left: -9999px;
+    position: absolute;
+}
+.widget-openid .widget-content a {
+    display: block;
+    background: #eee;
+    text-align: center;
+    padding: 5px 3px;
+    color: #666;
+    text-decoration: underline;
+    font-weight: normal;
+}
+
 .input-default {
     background-color: #9AAEC2;
 }

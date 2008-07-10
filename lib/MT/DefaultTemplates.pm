@@ -211,7 +211,10 @@ BEGIN {
             },
             'date_based_category_archives' => {
                 label => 'Date-Based Category Archives',
-            }
+            },
+            'openid' => {
+                label => 'OpenID Accepted',
+            },
         },
         'widgetset' => {
             '2column_layout_sidebar' => {
@@ -224,6 +227,7 @@ BEGIN {
                     'Archive Widgets Group',
                     'Page Listing',
                     'Syndication',
+                    'OpenID Accepted',
                     'Powered By',
                 ],
             },
@@ -234,6 +238,7 @@ BEGIN {
                     'Archive Widgets Group',
                     'Page Listing',
                     'Syndication',
+                    'OpenID Accepted',
                     'Powered By',
                 ],
             },
