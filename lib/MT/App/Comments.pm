@@ -241,7 +241,7 @@ sub do_login {
             }
             elsif ( MT::Auth::NEW_LOGIN() == $result ) {
                 my $registration = $app->config->CommenterRegistration;
-                unless ( $registration && $registration->{Allow} && $blog->allow_commenter_regist ) {
+                unless ( $registration && $registration->{Allow} && ( $app->config->ExternalUserManagement || $blog->allow_commenter_regist ) ) {
                     return $app->login_form( error => $app->translate('Successfully authenticated but signing up is not allowed.  Please contact system administrator.') )
                       unless $commenter;
                 }
@@ -1147,7 +1147,7 @@ sub _check_commenter_author {
         if ( my $registration = $app->config->CommenterRegistration ) {
             my $blog = MT::Blog->load($blog_id)
                 or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
-            if ( $registration->{Allow} && $blog->allow_commenter_regist ) {
+            if ( $registration->{Allow} && ( $app->config->ExternalUserManagement || $blog->allow_commenter_regist ) ) {
                 # By policy, this blog permits this type of user
                 # and they are not banned (as they have no blog perms/
                 # restrictions, so permit this comment)
