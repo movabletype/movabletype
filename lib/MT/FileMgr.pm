@@ -151,9 +151,14 @@ Renames the file or directory I<$src> to I<$dest>. Returns true on success.
 
 On error, returns C<undef>; see L<ERROR HANDLING>, below.
 
-=head2 content_is_updated()
+=head2 content_is_updated($file, $content)
 
-Return one (1).
+Returns true if the contents of I<$file> differs from the value in
+I<$content>.
+
+=head2 $fmgr->file_mod_time($file)
+
+Returns the modification timestamp for I<$file>.
 
 =head2 $fmgr->is_handle($file)
 

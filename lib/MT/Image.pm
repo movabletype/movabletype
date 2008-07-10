@@ -465,7 +465,7 @@ Currently all this is used for is to create thumbnails from uploaded images.
 
 =head1 USAGE
 
-=head2 MT::Image->new(%arg)
+=head2 MT::Image->new( %arg )
 
 Constructs a new I<MT::Image> object. Returns the new object on success; on
 error, returns C<undef>, and the error message is in C<MT::Image-E<gt>errstr>.
@@ -490,7 +490,7 @@ I<GIF>.
 
 =back
 
-=head2 $img->scale(%arg)
+=head2 $img->scale( %arg )
 
 Creates a thumbnail from the image represented by I<$img>; on success, returns
 a list containing the binary contents of the thumbnail image, the width of the
@@ -519,6 +519,47 @@ width and height will be scaled equally.
 
 =back
 
+=head2 MT::Image->inscribe_square( %arg )
+
+Calculates a square of dimensions that are capable of holding an image
+of the height and width indicated. This method receives I<%arg>, which
+may contain:
+
+=over 4
+
+=item * Height
+
+=item * Width
+
+=back
+
+The square will be the smaller value of the Height and Width parameter.
+
+The method returns a hash containing the following information:
+
+=over 4
+
+=item * Size
+
+The size of the calculated square, in pixels.
+
+=item * X
+
+The horizontal space to crop from the image, in pixels.
+
+=item * Y
+
+The vertical space to crop from the image, in pixels.
+
+=back
+
+This information is suited for the L<crop> method.
+
+=head2 $img->make_square()
+
+Takes an image which may or may not be a square in dimension and forces
+it into a square shape (trimming the longer side, as necesary).
+
 =head2 $img->get_dimensions(%arg)
 
 This utility method returns a width and height value pair after applying
@@ -527,6 +568,67 @@ If 'Width' is given, a proportionate height will be calculated. If a
 'Height' is given, the width will be calculated. If 'Scale' is given
 the height and width will be calculated based on that scale (a value
 between 1 to 100).
+
+=head2 MT::Image->check_upload( %arg )
+
+Utility method used to handle image upload and storage, along with some
+constraining factors. The I<%arg> hash may contain the following elements:
+
+=over 4
+
+=item * Fh
+
+A filehandle for the uploaded file.
+
+=item * Fmgr
+
+A handle to a L<MT::FileMgr> object that will be used for writing the
+file into place.
+
+=item * Local
+
+A path and filename for the location to write the uploaded file.
+
+=item * Max (optional)
+
+A number that specifies the maximum physical file size for the uploaded
+image (specified in bytes).
+
+=item * MaxDim (optional)
+
+A number that specifies the maximum dimension allowed for the uploaded
+image (specified in pixels).
+
+=back
+
+If the uploaded image is valid and passes the file size and image
+dimension requirements (assuming those parameters are given),
+the return value is a list consisting of the following elements:
+
+=over 4
+
+=item * $width
+
+The width of the uploaded image, in pixels.
+
+=item * $height
+
+The height of the uploaded image, in pixels.
+
+=item * $id
+
+A string identifying the type of image file (returned by L<Image::Size>,
+so typically "GIF", "JPG", "PNG").
+
+=item * $write_coderef
+
+A Perl coderef that, when invoked writes the image to the specified
+location.
+
+=back
+
+If any error occurs from this routine, it will return 'undef', and
+assign the error message, accessible using the L<errstr> class method.
 
 =head1 AUTHOR & COPYRIGHT
 

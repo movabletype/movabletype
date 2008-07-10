@@ -244,23 +244,124 @@ __END__
 
 =head1 NAME
 
-MT::DateTime
+MT::DateTime - A utility package for handling date/time values for Movable
+Type.
 
 =head1 METHODS
 
+=head2 MT::DateTime->new(%attr)
+
+Constructs a new C<MT::DateTime> object using the values in C<%attr>.
+C<%attr> may contain:
+
+=over 4
+
+=item * year
+
+A 4-digit year.
+
+=item * month
+
+Month number, where January is 0.
+
+=item * day
+
+Day number, from 1 to 31.
+
+=item * hour
+
+Hour in 24 hour notation (0-23).
+
+=item * minute
+
+Minutes (0-59).
+
+=item * second
+
+Seconds (0-59).
+
+=item * time_zone
+
+Timezone, in '+HH:MM', '-HH:MM', '+HH', or '-HH' notation.
+
+=back
+
 =head2 compare( a => $a, b => $b, blog => $blog )
 
-Compares two timestamp strings and returns negative valye, 0, or positive value
-depending on whether the "a" argument is less than, equal to, or greater than
-the "b" argument.
+Compares two timestamp strings and returns negative valye, 0, or
+positive value depending on whether the "a" argument is less than,
+equal to, or greater than the "b" argument.
 
-You can specify scalar value to "a" and "b".  They are treated as timestamp values
-(e.g. 20080405123456).  You can also specify either epoch string (e.g the string
-returned from time method), or MT::DateTime object.  In those cases, you must
-specify both value and type in a hash, for example:
+You can specify scalar value to "a" and "b".  They are treated as
+timestamp values (e.g. 20080405123456).  You can also specify either
+epoch string (e.g the string returned from time method), or C<MT::DateTime>
+object.  In those cases, you must specify both value and type in a hash,
+for example:
 
-MT::DateTime->compare( blog => $blog,
-    a => '20041231123456', b => { value => time(), type => 'epoch' } );
+    MT::DateTime->compare( blog => $blog,
+        a => '20041231123456', b => { value => time(), type => 'epoch' } );
+
+=head2 $datetime->week_year()
+
+Returns the year for the start of the week for the object.
+
+=head2 $datetime->week_number()
+
+Returns the week number calculated for the object.
+
+=head2 $datetime->year()
+
+Returns the year component of the object.
+
+=head2 $datetime->month()
+
+Returns the month component of the object.
+
+=head2 $datetime->day()
+
+Returns the day component of the object.
+
+=head2 $datetime->hour()
+
+Returns the hours component of the object.
+
+=head2 $datetime->minute()
+
+Returns the minutes component of the object.
+
+=head2 $datetime->second()
+
+Returns the seconds component of the object.
+
+=head2 $datetime->time_zone()
+
+Returns the time zone component of the object.
+
+=head2 $datetime->day_of_year()
+
+Returns the day number of the year of the object.
+
+=head2 $datetime->week()
+
+Returns a list containing the year of the week (C<week_year>) and
+the week number (C<week_number>).
+
+=head2 MT::DateTime->weeks_in_year($year)
+
+Returns the number of weeks that are in the specified C<$year>. Returns
+either 52 or 53, depending on the year.
+
+=head2 $datetime->ymd2rd( [ $year, $month, $day ])
+
+Converts the given C<$year>, C<$month>, C<$day> (or, if unspecified,
+uses the year, month, day elements from C<$datetime>) into a 'Rata Die'
+days value.
+
+=head2 $datetime->tz_offset_as_seconds( [$offset] )
+
+Converts the given C<$offset> (or, if absent, uses the time_zone
+component of C<$datetime>) into an expression of seconds. I.e.,
+an C<$offset> of '-1:30' would yield -5400.
 
 =head1 AUTHOR & COPYRIGHT
 

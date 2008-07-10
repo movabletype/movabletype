@@ -41,3 +41,28 @@ sub block_these {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+MT::Blocklist - MT object class for storing rules for filtering content.
+
+=head1 METHODS
+
+=head2 MT::Blocklist->block_these($blog_id, $action, @urls)
+
+Adds the specified URLs to the blocklist table with the specified I<$action>
+and for the specified I<$blog_id>.
+
+=head1 LICENSE
+
+The license that applies is the one you agreed to when downloading
+Movable Type.
+
+=head1 AUTHOR & COPYRIGHT
+
+Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
+All rights reserved.
+
+=cut

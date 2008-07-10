@@ -177,6 +177,22 @@ implementation to parse your options and handle the standard options such as
 C<--help>. MT::Tool's implementation will return the level of verbosity
 requested by the user (that is, how many times the C<-v> option was used).
 
+=head2 $tool-E<gt>set_up_app()
+
+This helper method creates a MT instance and configures it to look like
+a L<MT::App> instance (although, it isn't), and invokes the 'init_app'
+callback using this instance.
+
+=head2 $class-E<gt>show_help
+
+Displays command-line help provided by the C<MT::Tool> subclass L<help>
+method.
+
+=head2 $class-E<gt>show_usage
+
+Displays commnad-line usage instructions provided by the C<MT::Tool>
+subclass L<usage> method.
+
 =head1 SEE ALSO
 
 Getopt::Long

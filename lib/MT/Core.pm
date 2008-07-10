@@ -1002,3 +1002,148 @@ sub UserSessionCookiePath {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Core - Core component for Movable Type functionality.
+
+=head1 METHODS
+
+=head2 MT::Core::trans($phrase)
+
+Stub method that returns the phrase it is given.
+
+=head2 MT::Core->name()
+
+Returns a string identifying this component.
+
+=head2 MT::Core->id()
+
+Returns the identifier for this component.
+
+=head2 MT::Core::load_junk_filters()
+
+Routine that returns the core junk filter registry elements (these
+live in the L<MT::JunkFilter> package).
+
+=head2 MT::Core::load_core_tasks()
+
+Routine that returns the core L<MT::TaskMgr> registry elements.
+
+=head2 MT::Core->remove_temporary_files()
+
+Utility method for removing any temporary files that MT generates.
+
+=head2 MT::Core->remove_expired_sessions()
+
+Utility method for clearing expired MT user session records.
+
+=head2 MT::Core->remove_expired_search_caches()
+
+Utility method for removing expired search cache records.
+
+=head2 MT::Core::load_default_templates()
+
+Routine that returns the default template set registry elements.
+
+=head2 MT::Core::load_captcha_providers()
+
+Routine that returns the CAPTCHA provider registry elements.
+
+=head2 MT::Core::load_core_commenter_auth()
+
+Routine that returns the core registry elements for commenter
+authentication methods.
+
+=head2 MT::Core::load_core_tags()
+
+Routine that returns the core registry elements for the MT
+template tags are enabled for the entire system (excludes
+application-specific tags).
+
+=head2 MT::Core::load_upgrade_fns()
+
+Routine that returns the core registry elements for the MT
+schema upgrade framework.
+
+=head2 MT::Core::load_backup_instructions
+
+Routine that returns the core registry elements for the MT
+Backup/Restore framework.
+
+=head2 MT::Core->l10n_class
+
+Returns the localization package for the core component.
+
+=head2 $core->init_registry()
+
+=head2 MT::Core::load_archive_types()
+
+Routine that returns the core registry elements for the
+publishable archive types. See L<MT::ArchiveType>.
+
+=head2 MT::Core::PerformanceLoggingPath
+
+A L<MT::ConfigMgr> get/set method for the C<PerformanceLoggingPath>
+configuration setting. If the user has not designated a path, this
+will return a default location, which is programatically determined.
+
+=head2 MT::Core::ProcessMemoryCommand
+
+A L<MT::ConfigMgr> get/set method for the C<ProcessMemoryCommand>
+configuration setting. If the user has not assigned this themselves,
+it will return a default command, determined by the operating system
+Movable Type is running on.
+
+=head2 MT::Core::SecretToken
+
+A L<MT::ConfigMgr> get/set method for the C<SecretToken>
+configuration setting. If the user has not assigned this themselves,
+it will return a random token value, and save it to the database for
+future use.
+
+=head2 MT::Core::DefaultUserTagDelimiter
+
+A L<MT::ConfigMgr> get/set method for the C<DefaultUserTagDelimiter>
+configuration setting. Translates the keyword values 'comma' and
+'space' to the ASCII code for those characters.
+
+=head2 MT::Core::NewUserAutoProvisioning
+
+A L<MT::ConfigMgr> get/set method for the C<NewUserAutoProvisioning>
+configuration setting. Even if the user has enabled this setting,
+it will force a value of '0' unless the C<DefaultSiteRoot> and
+C<DefaultSiteURL> configuration settings are also assigned.
+
+=head2 MT::Core::UserSessionCookieName
+
+A L<MT::ConfigMgr> get/set method for the C<UserSessionCookieName>
+configuration setting. If the user has not specifically assigned
+this setting, a default value is returned, affected by the
+C<SingleCommunity> setting. If C<SingleCommunity> is enabled, it
+returns a cookie name that is the same for all blogs. If it is
+off, it returns a cookie name that is blog-specific (contains the
+blog id in the cookie name).
+
+=head2 UserSessionCookiePath
+
+A L<MT::ConfigMgr> get/set method for the C<UserSessionCookiePath>
+configuration setting. If the user has not specifically assigned
+this setting, a default value is returned, affected by the
+C<SingleCommunity> setting. If C<SingleCommunity> is enabled, it
+returns a path that is the same for all blogs ('/'). If it is
+off, it returns a value that will yield the blog's relative
+URL path.
+
+=head1 LICENSE
+
+The license that applies is the one you agreed to when downloading
+Movable Type.
+
+=head1 AUTHOR & COPYRIGHT
+
+Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
+All rights reserved.
+
+=cut
