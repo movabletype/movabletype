@@ -4213,14 +4213,31 @@ sub _hdlr_comments_moderated {
 A conditional tag that is true when the blog has been configured to
 permit user registration.
 
+B<Attributes:>
+
+=over 4
+
+=item * type (optional)
+
+If specified, can be used to test if a particular type of registration
+is enabled. The core types include "OpenID", "Vox", "LiveJournal", "TypeKey"
+and "MovableType". The identifier is case-insensitive.
+
+=back
+
 =for tags comments
 
 =cut
 
 sub _hdlr_reg_allowed {
-    my ($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $blog = $ctx->stash('blog');
     if ($blog->allow_reg_comments && $blog->commenter_authenticators) {
+        if (my $type = $args->{type}) {
+            my %types = map { lc($_) => 1 }
+                split /,/, $blog->commenter_authenticators;
+            return $types{lc $type} ? 1 : 0;
+        }
         return 1;
     } else {
         return 0;
