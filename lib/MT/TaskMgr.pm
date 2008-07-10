@@ -199,8 +199,6 @@ MT::TaskMgr - MT class for controlling the execution of system tasks.
 
 =head1 SYNOPSIS
 
-    MT::TaskMgr->add_task($task);
-
     MT::TaskMgr->run_tasks;
 
 =head1 DESCRIPTION
@@ -253,12 +251,15 @@ up to date using a registered task.
 
 =head1 METHODS
 
-=head2 MT::TaskMgr->add_task($task_obj)
+=head2 MT::TaskMgr->new
 
-=head2 MT::TaskMgr->add_task(\%task)
+Constructs the MT::TaskMgr singleton instance.
 
-Registers a new I<MT::Task> object. If this method is called with a hashref,
-a I<MT::Task> will be constructed using that data.
+=head2 MT::TaskMgr->init
+
+Initializes the MT::TaskMgr instance, pulling tasks are defined in
+the MT registry. It also runs a callback 'tasks' after gathering
+this list.
 
 =head2 MT::TaskMgr->run_tasks
 
@@ -279,6 +280,13 @@ any registered MT plugins to add additional tasks to the list or simply
 as a way to signal tasks are about to start. This callback sends no
 parameters, but it is possible to retrieve the active I<MT::TaskMgr>
 instance using the I<instance> method.
+
+=head2 tasks(\%tasks)
+
+Upon initialization of the TaskMgr instance, the list of MT tasks are
+gathered from the MT registry. This hashref of tasks is then passed to
+the 'tasks' callback, giving plugins a chance to manipulate the task
+metadata before being used.
 
 =head1 AUTHOR & COPYRIGHTS
 

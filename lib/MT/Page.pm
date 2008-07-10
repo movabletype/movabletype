@@ -65,3 +65,67 @@ sub all_permalinks {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Page - Movable Type page record
+
+=head1 SYNOPSIS
+
+    use MT::Page;
+    my $page = MT::Page->new;
+    $page->blog_id($blog->id);
+    $page->author_id($author->id);
+    $page->title('Page title');
+    $page->text('Some text');
+    $page->save
+        or die $page->errstr;
+
+=head1 DESCRIPTION
+
+The C<MT::Page> class is a subclass of L<MT::Entry>. Pages are very similar
+to entries, except that they are not published in a reverse-chronological
+listing, typically. Pages are published into folders, represented by
+L<MT::Folder> instead of categories.
+
+=head2 MT::Page->class_label
+
+Returns the localized descriptive name for this class.
+
+=head2 MT::Page->class_label_plural
+
+Returns the localized, plural descriptive name for this class.
+
+=head2 MT::Page->container_label
+
+Returns the localized phrase identifying the "container" type for
+pages (ie: "Folder").
+
+=head2 MT::Page->container_type
+
+Returns the string "folder", which is the MT type identifier for
+the L<MT::Folder> class.
+
+=head2 $page->folder
+
+Returns the L<MT::Folder> the page is assigned to.
+
+=head2 $page->archive_file
+
+Returns the filename for the published page.
+
+=head2 $page->archive_url
+
+Returns the permalink for the page, based on the site_url of the
+blog, and folder assignment for the page.
+
+=head2 $page->permalink
+
+Returns the permalink for the page.
+
+=head2 $page->all_permalinks
+
+Returns the permalink for the page.
+
+=cut
