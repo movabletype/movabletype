@@ -3345,34 +3345,6 @@ with the C<validate_magic> method.
 Creates a new "magic token" string which is a random set of characters.
 The 
 
-=head2 $app->template_paths
-
-Returns an array of directory paths where application templates exist.
-
-=head2 $app->find_file(\@paths, $filename)
-
-Returns the path and filename for a file found in any of the given paths.
-If the file cannot be found, it returns undef.
-
-=head2 $app->load_tmpl($file[, @params])
-
-Loads a L<MT::Template> template using the filename specified. See the
-documentation for the C<build_page> method to learn about how templates
-are located. The optional C<@params> are passed to the L<MT::Template>
-constructor.
-
-=head2 $app->set_default_tmpl_params($tmpl)
-
-Assigns standard parameters to the given L<MT::Template> C<$tmpl> object.
-Refer to the L<STANDARD APPLICATION TEMPLATE PARAMETERS> section for a
-complete list of these parameters.
-
-=head2 $app->charset
-
-Gets or sets the application's character set based on the "PublishCharset"
-configuration setting or the encoding of the active language
-(C<$app-E<gt>current_language>).
-
 =head2 $app->add_return_arg(%param)
 
 Adds one or more arguments to the list of 'return' arguments that are
@@ -3470,10 +3442,6 @@ Handles the display of an application error.
 =head2 $app->envelope
 
 This method is deprecated.
-
-=head2 $app->static_path
-
-Returns the application's static web path.
 
 =head2 $app->takedown
 
@@ -3586,99 +3554,6 @@ parameter identifies this blog.
 An internal routine that is used during the end of an application
 request to update each L<MT::Blog> object's timestamp if any of it's
 child objects were changed during the application request.
-
-=head2 $app->build_page($tmpl_name, \%param)
-
-Builds an application page to be sent to the client; the page name is specified
-in C<$tmpl_name>, which should be the name of a template containing valid
-L<MT::Template> markup. C<\%param> is a hash ref whose keys and values will
-be passed to L<MT::Template::param> for use in the template.
-
-On success, returns a scalar containing the page to be sent to the client. On
-failure, returns C<undef>, and the error message can be obtained from
-C<$app-E<gt>errstr>.
-
-=head3 How does build_page find a template?
-
-The C<build_page> function looks in several places for an app
-template. Two configuration directives can modify these search paths,
-and application and plugin code can also affect them.
-
-The I<TemplatePath> config directive is an absolute path to the directory
-where MT's core application templates live. It defaults to the I<mt_dir>
-plus an additional path segment of 'tmpl'.
-
-The optional I<AltTemplatePath> config directive is a path (absolute
-or relative) to a directory where some 'override templates' may
-live. An override template takes the place of one of MT's core
-application templates, and is used interchangeably with the core
-template. This allows power users to customize the look and feel of
-the MT application. If I<AltTemplatePath> is relative, its base path
-is the value of the Movable Type configuration file.
-
-Next, any application built on the C<MT::App> foundation can define
-its own I<template_dir> parameter, which identifies a subdirectory of
-TemplatePath (or AltTemplatePath) where that application's templates
-can be found. I<template_dir> defaults to C<cms>. Most templates will
-be found in this directory, but sometimes the template search will
-fall through to the parent directory, where a default error template
-is found, for example. I<template_dir> should rightly have been named
-I<application_template_dir>, since it is application-specific.
-
-Finally, a plugin can specify its I<plugin_template_path>, which
-locates a directory where the templates for that plugin's own
-interface are found. If the I<plugin_template_path> is relative, it
-may be relative to either the I<app_dir>, or the I<mt_dir>; the former
-takes precedence if it exists. (for a definition of I<app_dir> and
-I<mt_dir>, see L<MT>)
-
-Given these values, the order of search is as follows:
-
-=over 4
-
-=item * I<plugin_template_path>
-
-=item * I<AltTemplatePath>
-
-=item * I<AltTemplatePath>F</>I<template_dir>
-
-=item * I<TemplatePath>/I<template_dir>
-
-=item * I<TemplatePath>
-
-=back
-
-If a template with the given name is not found in any of these
-locations, an ugly error is thrown to the user.
-
-=head2 $app->build_page_in_mem($tmpl, \%param)
-
-Used internally by the L<build_page> method to render the output
-of a L<MT::Template> object (the first parameter) using the parameter
-data (the second parameter). It additionally calls the L<process_mt_template>
-method (to process any E<lt>MT_ACTIONE<gt> and E<lt>MT_X:YE<gt> marker tags)
-and then L<translate_templatized> (to process any E<lt>MT_TRANSE<gt> tags).
-
-=head2 $app->process_mt_template($str)
-
-Processes the E<lt>MT_ACTIONE<gt> tags that are present in C<$str>. These tags
-are in the following format:
-
-    <MT_ACTION mode="mode_name" parameter="value">
-
-The mode parameter is required (and must be the first attribute). The
-following attributes are appended as regular query parameters.
-
-The MT_ACTION tag is a preferred way to specify application links rather
-than using this syntax:
-
-    <TMPL_VAR NAME=SCRIPT_URL>?__mode=mode_name&parameter=value
-
-C<process_mt_templates> also strips the C<$str> variable of any tags in
-the format of C<E<lt>MT_\w+:\w+E<gt>>. These are 'marker' tags that are
-used to identify specific portions of the template page and used in
-conjunction with the transformer callback helper methods C<tmpl_prepend>,
-C<tmpl_append>, C<tmpl_replace>, C<tmpl_select>.
 
 =head2 $app->tmpl_prepend(\$str, $section, $id, $content)
 
