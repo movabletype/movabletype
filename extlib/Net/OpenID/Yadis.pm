@@ -221,6 +221,7 @@ sub _pack_array { wantarray ? ref($_[0]) eq 'ARRAY' ? @{$_[0]} : ($_[0]) : $_[0]
 sub services {
     my $self = shift;
     my %protocols;
+    my @protocols;
     my $code_ref;
     my $protocol = undef;
     
@@ -236,12 +237,13 @@ sub services {
 
             $protocols{$option} = $default;
             $protocol = $option;
+            push @protocols, $option;
         }
     }
 
     my @servers;
     @servers = $self->xrd_objects if (keys %protocols == 0);
-    foreach my $key (keys %protocols) {
+    foreach my $key (@protocols) {
         my $regex = $protocols{$key}->{urlregex} || $key; 
         my @ver = @{$protocols{$key}->{versionarray}};
         my $ver_regex = @ver ? '('.join('|',map { $_ =~ s/\./\\./g; $_ } @ver).')' : '.+' ;

@@ -108,28 +108,16 @@ sub args {
     my Net::OpenID::Consumer $self = shift;
 
     if (my $what = shift) {
-        Carp::croak("Too many parameters") if @_;
-        my $getter;
-        if (! ref $what){
-            Carp::croak("No args defined") unless $self->{args};
-            return $self->{args}->($what);
-        } elsif (ref $what eq "HASH") {
-            $getter = sub { $what->{$_[0]}; };
-        } elsif (UNIVERSAL::isa($what, "CGI")) {
-            $getter = sub { scalar $what->param($_[0]); };
-        } elsif (ref $what eq "Apache") {
-            my %get = $what->args;
-            $getter = sub { $get{$_[0]}; };
-        } elsif (ref $what eq "Apache::Request") {
-            $getter = sub { scalar $what->param($_[0]); };
-        } elsif (ref $what eq "CODE") {
-            $getter = $what;
-        } else {
-            Carp::croak("Unknown parameter type ($what)");
+        unless (ref $what) {
+            return $self->{args} ? $self->{args}->($what) : Carp::croak("No args defined");
         }
-        if ($getter) {
-            $self->{args} = $getter;
-            $self->{message} = Net::OpenID::IndirectMessage->new($what, minimum_version => $self->minimum_version);
+        else {
+            Carp::croak("Too many parameters") if @_;
+            my $message = Net::OpenID::IndirectMessage->new($what, (
+                minimum_version => $self->minimum_version,
+            ));
+            $self->{message} = $message;
+            $self->{args} = $message ? $message->getter : sub { undef };
         }
     }
     $self->{args};
@@ -404,6 +392,170 @@ sub handle_server_response {
 
 }
 
+sub _discover_acceptable_endpoints {
+    my Net::OpenID::Consumer $self = shift;
+    my $url = shift;
+    my %opts = @_;
+
+    # if return_early is set, we'll return as soon as we have enough
+    # information to determine the "primary" endpoint, and return
+    # that as the first (and possibly only) item in our response.
+    my $primary_only = delete $opts{primary_only} ? 1 : 0;
+
+    Carp::croak("Unknown option(s) ".join(', ', keys(%opts))) if %opts;
+
+    # trim whitespace
+    $url =~ s/^\s+//;
+    $url =~ s/\s+$//;
+    return $self->_fail("empty_url", "Empty URL") unless $url;
+
+    # do basic canonicalization
+    $url = "http://$url" if $url && $url !~ m!^\w+://!;
+    return $self->_fail("bogus_url", "Invalid URL") unless $url =~ m!^https?://!i;
+    # add a slash, if none exists
+    $url .= "/" unless $url =~ m!^https?://.+/!i;
+
+    my @discovered_endpoints = ();
+    my $result = sub {
+        # We always prefer 2.0 endpoints to 1.1 ones, regardless of
+        # the priority chosen by the identifier.
+        return [
+            (grep { $_->{version} == 2 } @discovered_endpoints),
+            (grep { $_->{version} == 1 } @discovered_endpoints),
+        ];
+    };
+
+    # TODO: Support XRI too?
+
+    # First we Yadis service discovery
+    my $yadis = Net::OpenID::Yadis->new(ua => $self->{ua});
+    if ($yadis->discover($url)) {
+        # FIXME: Currently we don't ever do _find_semantic_info in the Yadis
+        # code path, so an extra redundant HTTP request is done later
+        # when the semantic info is accessed.
+
+        my $final_url = $yadis->identity_url;
+        my @services = $yadis->services(
+            OpenID::util::version_2_xrds_service_url(),
+            OpenID::util::version_2_xrds_directed_service_url(),
+            OpenID::util::version_1_xrds_service_url(),
+        );
+        my $version2 = OpenID::util::version_2_xrds_service_url();
+        my $version1 = OpenID::util::version_1_xrds_service_url();
+        my $version2_directed = OpenID::util::version_2_xrds_directed_service_url();
+
+        foreach my $service (@services) {
+            my $service_uris = $service->URI;
+
+            # Service->URI seems to return all sorts of bizarre things, so let's
+            # normalize it to always be an arrayref.
+            if (ref($service_uris) eq 'ARRAY') {
+                my @sorted_id_servers = sort {
+                    my $pa = $a->{priority};
+                    my $pb = $b->{priority};
+                    return 0 unless defined($pa) || defined($pb);
+                    return -1 unless defined ($pb);
+                    return 1 unless defined ($pa);
+                    return $a->{priority} <=> $b->{priority}
+                } @$service_uris;
+                $service_uris = \@sorted_id_servers;
+            }
+            if (ref($service_uris) eq 'HASH') {
+                $service_uris = [ $service_uris->{content} ];
+            }
+            unless (ref($service_uris)) {
+                $service_uris = [ $service_uris ];
+            }
+
+            my $delegate = undef;
+            my @versions = ();
+
+            if (grep(/^${version2}$/, $service->Type)) {
+                # We have an OpenID 2.0 end-user identifier
+                $delegate = $service->extra_field("LocalID");
+                push @versions, 2;
+            }
+            if (grep(/^${version1}$/, $service->Type)) {
+                # We have an OpenID 1.1 end-user identifier
+                $delegate = $service->extra_field("Delegate", "http://openid.net/xmlns/1.0");
+                push @versions, 1;
+            }
+
+            if (@versions) {
+                foreach my $version (@versions) {
+                    foreach my $uri (@$service_uris) {
+                        push @discovered_endpoints, {
+                            uri => $uri,
+                            version => $version,
+                            final_url => $final_url,
+                            delegate => $delegate,
+                            sem_info => undef,
+                            mechanism => "Yadis",
+                        };
+                    }
+                }
+            }
+
+            if (grep(/^${version2_directed}$/, $service->Type)) {
+                # We have an OpenID 2.0 OP identifier (i.e. we're doing directed identity)
+                my $version = 2;
+                # In this case, the user's claimed identifier is a magic value
+                # and the actual identifier will be determined by the provider.
+                my $final_url = OpenID::util::version_2_identifier_select_url();
+                my $delegate = OpenID::util::version_2_identifier_select_url();
+
+                foreach my $uri (@$service_uris) {
+                    push @discovered_endpoints, {
+                        uri => $uri,
+                        version => $version,
+                        final_url => $final_url,
+                        delegate => $delegate,
+                        sem_info => undef,
+                        mechanism => "Yadis",
+                    };
+                }
+            }
+
+            if ($primary_only && scalar(@discovered_endpoints)) {
+                # We've got at least one endpoint now, so return early
+                return $result->();
+            }
+        }
+    }
+
+    # Now HTML-based discovery, both 2.0- and 1.1-style.
+    {
+        my $final_url = undef;
+        my $sem_info = $self->_find_semantic_info($url, \$final_url);
+
+        if ($sem_info) {
+            if ($sem_info->{"openid2.provider"}) {
+                push @discovered_endpoints, {
+                    uri => $sem_info->{"openid2.provider"},
+                    version => 2,
+                    final_url => $final_url,
+                    delegate => $sem_info->{"openid2.local_id"},
+                    sem_info => $sem_info,
+                    mechanism => "HTML",
+                };
+            }
+            if ($sem_info->{"openid.server"}) {
+                push @discovered_endpoints, {
+                    uri => $sem_info->{"openid.server"},
+                    version => 1,
+                    final_url => $final_url,
+                    delegate => $sem_info->{"openid.delegate"},
+                    sem_info => $sem_info,
+                    mechanism => "HTML",
+                };
+            }
+        }
+    }
+
+    return $result->();
+
+}
+
 # returns Net::OpenID::ClaimedIdentity
 sub claimed_identity {
     my Net::OpenID::Consumer $self = shift;
@@ -421,105 +573,35 @@ sub claimed_identity {
     # add a slash, if none exists
     $url .= "/" unless $url =~ m!^https?://.+/!i;
 
-    my $final_url;
+    my $endpoints = $self->_discover_acceptable_endpoints($url, primary_only => 1);
 
-    my $id_server;
-    my $delegate;
-    my $version;
-    my $sem_info = undef;
-    my $discovery_mechanism;
+    if (ref($endpoints) && @$endpoints) {
+        foreach my $endpoint (@$endpoints) {
 
-    # TODO: Support XRI too?
+            next unless $endpoint->{version} >= $self->minimum_version;
 
-    # First we try Yadis service discovery
-    my $yadis = Net::OpenID::Yadis->new(ua => $self->{ua});
-    if ($yadis->discover($url)) {
-        # FIXME: Currently we don't ever do _find_semantic_info in the Yadis
-        # code path, so an extra redundant HTTP request is done later
-        # when the semantic info is accessed.
+            $self->_debug("Discovered version $endpoint->{version} endpoint at $endpoint->{uri} via $endpoint->{mechanism}");
+            $self->_debug("Delegate is $endpoint->{delegate}") if $endpoint->{delegate};
 
-        $final_url = $yadis->identity_url;
-        my @services = $yadis->services(
-            OpenID::util::version_2_xrds_service_url(),
-            OpenID::util::version_2_xrds_directed_service_url(),
-            OpenID::util::version_1_xrds_service_url(),
-        );
-        my $version2 = OpenID::util::version_2_xrds_service_url();
-        my $version1 = OpenID::util::version_1_xrds_service_url();
-        my $version2_directed = OpenID::util::version_2_xrds_directed_service_url();
+            return Net::OpenID::ClaimedIdentity->new(
+                identity         => $endpoint->{final_url},
+                server           => $endpoint->{uri},
+                consumer         => $self,
+                delegate         => $endpoint->{delegate},
+                protocol_version => $endpoint->{version},
+                semantic_info    => $endpoint->{sem_info},
+            );
 
-        foreach my $service (@services) {
-            my $service_uri = $service->URI;
-
-            # Service->URI seems to return all sorts of bizarre things, so let's
-            # normalize it to always be a string.
-            if (ref($service_uri) eq 'ARRAY') {
-                my @sorted_id_servers = sort { $b->{priority} <=> $a->{priority} } @$service_uri;
-                $service_uri = $sorted_id_servers[0];
-            }
-            if (ref($service_uri) eq 'HASH') {
-                $service_uri = $service_uri->{content};
-            }
-
-            if (grep(/^${version2}$/, $service->Type)) {
-                # We have an OpenID 2.0 end-user identifier
-                $id_server = $service_uri;
-                $delegate = $service->extra_field("LocalID");
-                $version = 2;
-                $discovery_mechanism = "Yadis";
-            }
-            elsif (grep(/^${version1}$/, $service->Type)) {
-                # We have an OpenID 1.1 end-user identifier
-                $id_server = $service_uri;
-                $delegate = $service->extra_field("Delegate", "http://openid.net/xmlns/1.0");
-                $version = 1;
-                $discovery_mechanism = "Yadis";
-            }
-            elsif (grep(/^${version2_directed}$/, $service->Type)) {
-                # We have an OpenID 2.0 OP identifier (i.e. we're doing directed identity)
-                $id_server = $service_uri;
-                $version = 2;
-                # In this case, the user's claimed identifier is a magic value
-                # and the actual identifier will be determined by the provider.
-                $final_url = OpenID::util::version_2_identifier_select_url();
-                $delegate = OpenID::util::version_2_identifier_select_url();
-                $discovery_mechanism = "Yadis";
-            }
         }
+
+        # If we've fallen out here, then none of the available services are of the required version.
+        return $self->_fail("protocol_version_incorrect");
+
+    }
+    else {
+        return $self->_fail("no_identity_server");
     }
 
-    # If Yadis didn't work out, we need to fall back on HTML-based discovery
-    unless ($id_server) {
-        $sem_info = $self->_find_semantic_info($url, \$final_url) or return;
-
-        if ($sem_info->{"openid2.provider"}) {
-            $id_server = $sem_info->{"openid2.provider"};
-            $delegate = $sem_info->{"openid2.local_id"};
-            $version = 2;
-            $discovery_mechanism = "HTML";
-        }
-        elsif ($sem_info->{"openid.server"}) {
-            $id_server = $sem_info->{"openid.server"};
-            $delegate = $sem_info->{"openid.delegate"};
-            $version = 1;
-            $discovery_mechanism = "HTML";
-        }
-    }
-
-    return $self->_fail("no_identity_server") unless $id_server;
-    return $self->_fail("protocol_version_incorrect") unless $version >= $self->minimum_version;
-
-    $self->_debug("Discovered version $version endpoint at $id_server via $discovery_mechanism");
-    $self->_debug("Delegate is $delegate") if $delegate;
-
-    return Net::OpenID::ClaimedIdentity->new(
-        identity         => $final_url,
-        server           => $id_server,
-        consumer         => $self,
-        delegate         => $delegate,
-        protocol_version => $version,
-        semantic_info    => $sem_info,
-    );
 }
 
 sub user_cancel {
@@ -629,10 +711,7 @@ sub verified_identity {
         my $a_ident_nofragment = $a_ident;
         $a_ident_nofragment =~ s/\#.*$//;
         $self->_debug("verified_identity: verifying delegate $delegate for $a_ident_nofragment");
-        #return $self->_fail("bogus_delegation") unless $delegate eq $a_ident_nofragment;
-        if ($claimed_identity->protocol_version < 2) {
-            return $self->_fail("bogus_delegation") unless $delegate eq $a_ident;
-        }
+        return $self->_fail("bogus_delegation") unless $delegate eq $a_ident;
     }
 
     my $assoc_handle = $self->message("assoc_handle");
@@ -1095,6 +1174,10 @@ $csr->args( $reference )
 Where $reference is either a HASH ref, CODE ref, Apache $r,
 Apache::Request $apreq, or CGI.pm $cgi.  If a CODE ref, the subref
 must return the value given one argument (the parameter to retrieve)
+
+If you pass in an Apache $r object, you must not have already called
+$r->content as the consumer module will want to get the request
+arguments out of here in the case of a POST request.
 
 2. Get a paramater:
 
