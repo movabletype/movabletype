@@ -323,6 +323,7 @@ iframe {
     padding: 6px 10px;
     text-decoration: none;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 #selector-nav ul ul a,
@@ -358,6 +359,8 @@ iframe {
     padding: 6px 10px 5px 10px;
     background: #fff url('../images/blog-selector-control.gif') repeat-x left bottom;
     margin-left: 1px;
+    max-width: 500px;
+    overflow: hidden;
 }
 #blog-selector-control.show-nav #current-blog-title {
     background-image: none;
