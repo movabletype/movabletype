@@ -2,7 +2,7 @@ package MT::CMS::User;
 
 use strict;
 
-use MT::Util qw( format_ts relative_date is_url );
+use MT::Util qw( format_ts relative_date is_url encode_url );
 use MT::Author;
 
 sub edit {
