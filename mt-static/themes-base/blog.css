@@ -538,7 +538,7 @@ ul { list-style: disc outside; }
     border: 1px solid #ccc;
     background: #fff url(../images/openid-accepted.gif) no-repeat 7px 3px;
     font-size: 12px;
-    font-family: arial;
+    font-family: Arial, Verdana, sans-serif;
     color: #666;
     margin: 0;
     padding: 0 !important;
