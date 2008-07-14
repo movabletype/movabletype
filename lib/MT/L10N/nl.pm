@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::nl;
 use strict;
@@ -57,9 +57,6 @@ use vars qw( @ISA %Lexicon );
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
 
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Antwoorden',
-
 ## php/lib/block.mtsethashvar.php
 
 ## php/lib/block.mtif.php
@@ -98,6 +95,9 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/block.mtentries.php
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcommentreplytolink.php
+	'Reply' => 'Antwoorden',
 
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'pagina',
@@ -144,8 +144,10 @@ use vars qw( @ISA %Lexicon );
 	'By [_1] on [_2]' => 'Door [_1] op [_2]',
 	'1 Comment' => '1 reactie',
 	'# Comments' => '# reacties',
+	'No Comments' => 'Geen reacties',
 	'1 TrackBack' => '1 Trackback',
 	'# TrackBacks' => '# TrackBacks',
+	'No TrackBacks' => 'Geen TrackBacks',
 	'Tags' => 'Tags',
 	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => '<a href="[_1]" rel="bookmark">[_2]</a> verder lezen.',
 
@@ -213,7 +215,10 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/syndication.mtml
 	'Subscribe to feed' => 'Inschrijven op feed',
 	'Subscribe to this blog\'s feed' => 'Inschrijven op de feed van deze weblog',
-	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$mt:SearchString$>&rdquo;',
+	'Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten getagd als &ldquo;[_1]&ldquo;', # Translate - New
+	'Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten die overeen komen met &ldquo;[_1]&ldquo;', # Translate - New
+	'Feed of results tagged &ldquo;[_1]&ldquo;' => 'Feed met resultaten getagd als &ldquo;[_1]&ldquo;', # Translate - New
+	'Feed of results matching &ldquo;[_1]&ldquo;' => 'Feed met resultaten die overeen komen met &ldquo;[_1]&ldquo;', # Translate - New
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => 'Archieven per auteur per jaar',
@@ -286,8 +291,7 @@ use vars qw( @ISA %Lexicon );
 	'Mail Footer' => 'Footer voor e-mail',
 
 ## default_templates/trackbacks.mtml
-	'No TrackBacks' => 'Geen TrackBacks',
-	'TrackBack URL: [_1]' => 'TrackBack URL: [_1]', # Translate - New
+	'TrackBack URL: [_1]' => 'TrackBack URL: [_1]',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> van [_3] op <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Meer lezen</a>',
 
@@ -296,11 +300,11 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,hour,hours] ago' => '[quant,_1,uur,uur] geleden',
 	'[quant,_1,minute,minutes] ago' => '[quant,_1,minuut,minuten] geleden',
 	'[quant,_1,day,days] ago' => '[quant,_1,dag,dagen] geleden',
-	'<a href="[_1]">Edit</a>' => '<a href="[_1]">Bewerken</a>',
-	'Your session has expired. Please sign in again to comment.' => 'Uw sessie is verlopen.  Gelieve opnieuw aan te melden om te kunnen reageren.', # Translate - New
+	'Edit' => 'Bewerken',
+	'Your session has expired. Please sign in again to comment.' => 'Uw sessie is verlopen.  Gelieve opnieuw aan te melden om te kunnen reageren.',
 	'Signing in...' => 'Aanmelden...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'U heeft geen permissie om te reageren op deze weblog. ([_1]afmelden[_2])',
-	'Thanks for signing in, [_1]. ([_2]sign out[_3])' => 'Bedankt om u aan te melden, [_1]. ([_2]afmelden[_3])',
+	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => 'Bedankt om u aan te melden, __NAME__. ([_1]afmelden[_2])', # Translate - New
 	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>',
@@ -340,7 +344,6 @@ use vars qw( @ISA %Lexicon );
 	'_POWERED_BY' => 'Aangedreven  door<br /><a href=\"http://www.sixapart.com/movabletype/\"><$MTProductName$></a>',
 
 ## default_templates/comments.mtml
-	'No Comments' => 'Geen reacties',
 	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] reageerde op <a href="[_2]">reactie van [_3]</a>',
 	'Leave a comment' => 'Laat een reactie achter',
 	'Name' => 'Naam',
@@ -474,6 +477,8 @@ use vars qw( @ISA %Lexicon );
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Bijsnijden naar [_1]x[_1] mislukt: [_2]',
 	'Converting to [_1] failed: [_2]' => 'Converteren naar [_1] mislukt: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'U hebt geen geldig pad naar de NetPBM tools op uw machine.',
+	'Can\'t load GD: [_1]' => 'Kan GD niet laden: [_1]', # Translate - New
+	'Reading image failed: [_2]' => 'Afbeelding lezen mislukt [_2]', # Translate - New
 
 ## lib/MT/Trackback.pm
 	'TrackBack' => 'TrackBack',
@@ -606,7 +611,10 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Basisnaam auteur aan het toekennen...',
 	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...',
 	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...',
+	'Updateing template build types...' => 'Publicatietypes van sjablonen aan het aanpassen...', # Translate - New
 	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...',
+	'Assigning all permissions to blog administrator...' => 'Alle permissies aan het toekennen aan blogadministrators...', # Translate - New
+	'Recover permissions of system administrators...' => 'Permissies aan het terugzetten van systeembeheerders...', # Translate - New
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Systeembeheerder',
@@ -670,6 +678,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'Vervaldatum spam-map',
 	'Remove Temporary Files' => 'Tijdelijke bestanden verwijderen',
 	'Remove Expired User Sessions' => 'Verlopen gebruikerssessies verwijderen',
+	'Remove Expired Search Caches' => 'Verlopen zoekopdrachtencache verwijderen', # Translate - New
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
@@ -704,8 +713,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/getoonde-auteursnaam/jjjj/mm/dd/index.html', # Translate - New
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/getoonde_auteursnaam/jjjj/mm/dd/index.html', # Translate - New
+	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/getoonde-auteursnaam/jjjj/mm/dd/index.html',
+	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/getoonde_auteursnaam/jjjj/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/Individual.pm
 	'INDIVIDUAL_ADV' => 'per bericht',
@@ -1275,6 +1284,7 @@ use vars qw( @ISA %Lexicon );
 	'Parent comment id was not specified.' => 'ID van ouder-reactie werd niet opgegeven.',
 	'Parent comment was not found.' => 'Ouder-reactie werd niet gevonden.',
 	'You can\'t reply to unapproved comment.' => 'U kunt niet antwoorden op een niet-gekeurde reactie.',
+	'Publish failed: [_1]' => 'Publicatie mislukt: [_1]',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Reactie (ID:[_1]) door \'[_2]\' verwijderd door \'[_3]\' van bericht \'[_4]\'',
 	'You don\'t have permission to approve this comment.' => 'U heeft geen toestemming om deze reactie goed te keuren.',
 	'Comment on missing entry!' => 'Reactie op ontbrekend bericht!',
@@ -1313,7 +1323,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was backed up from Movable Type with the newer schema version ([_1]) than the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Het opgeladen bestand werd gebackupt vanuit Movable Type met een nieuwere schemaversie ([_1]) dan die van dit systeem ([_2]).  Het is niet veilig dit bestand terug te zetten op deze versie van Movable Type.',
+	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Het geuploade bestand is een backup van Movable Type maar het databaseschema ([_1]) verschilt van dat in dit systeem ([_2]).  Het is niet veilig om dit bestand terug te zetten op deze versie van Movable Type.', # Translate - New
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] is geen item dat door Movable Type teruggezet moet worden.',
 	'[_1] records restored.' => '[_1] records teruggezet.',
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
@@ -1443,7 +1453,6 @@ use vars qw( @ISA %Lexicon );
 	'MT[_1] must be used in a [_2] context' => 'MT[_1] moet gebruikt worden in een [_2] context',
 	'Cannot find package [_1]: [_2]' => 'Kan package [_1] niet vinden: [_2]',
 	'Error sorting [_2]: [_1]' => 'Fout bij sorteren [_2]: [_1]',
-	'Edit' => 'Bewerken',
 	'You used an [_1] without a author context set up.' => 'U gebruikte een [_1] zonder een auteurscontext op te zetten.',
 	'Can\'t load user.' => 'Kan gebruiker niet laden.',
 	'Division by zero.' => 'Deling door nul.',
@@ -1502,7 +1511,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid URL \'[_1]\'' => 'Ongeldige URL \'[_1]\'',
 	'Comment save failed with [_1]' => 'Opslaan van reactie mislukt met [_1]',
 	'Comment on "[_1]" by [_2].' => 'Reactie op "[_1]" door [_2].',
-	'Publish failed: [_1]' => 'Publicatie mislukt: [_1]',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Mislukte poging om een reactie achter te laten van op registratie wachtende gebruiker \'[_1]\'',
 	'The sign-in attempt was not successful; please try again.' => 'Aanmeldingspoging mislukt; gelieve opnieuw te proberen.',
 	'No entry was specified; perhaps there is a template problem?' => 'Geen bericht opgegeven; misschien is er een sjabloonprobleem?',
@@ -1576,7 +1584,8 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Deze module en de modules waar ze van afhangt zijn nodig om reageerders zichzelf te laten authenticeren via OpenID providers zoals o.a. Vox en LiveJournal.',
 	'This module is required for sending mail via SMTP Server.' => 'Deze module is vereist om mail te versturen via een SMTP server.',
 	'This module is used in test attribute of MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut van de MTIf conditionele tag.',
-	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.', # Translate - New
+	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.',
+	'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8', # Translate - New
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
@@ -2103,6 +2112,7 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Show Current Settings' => 'Huidige instellingen tonen',
 	'Database Type' => 'Databasetype',
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]', # Translate - New
 	'If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>.' => 'Als uw databasetype niet voorkomt in het menu hierboven dan moet u <a target="help" href="[_1]">de Perl module installeren die nodig is om naar uw database te connecteren</a>.  Als dit het al geval is, gelieve dan uw installatie na te kijken en <a href="javascript:void(0)" onclick="[_2]">voor de test opnieuw uit</a>.',
 	'Database Path' => 'Databasepad',
 	'The physical file path for your SQLite database. ' => 'Het fysieke bestandspad voor uw SQLite database',
@@ -2171,7 +2181,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Link to File' => 'Koppelen aan bestand',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publishing settings</a>' => 'Meer leren over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html">publicatie-instellingen</a>',
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Meer lezen over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publicatie-instellingen</a>', # Translate - New
 	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Type' => 'Type',
 	'Add' => 'Toevoegen',
@@ -3037,8 +3047,8 @@ use vars qw( @ISA %Lexicon );
 	'Warning: Changing this entry\'s basename may break inbound links.' => 'Waarschuwing: de basisnaam van het bericht aanpassen kan inkomende links breken.',
 	'close' => 'Sluiten',
 	'Accept' => 'Aanvaarden',
-	'Outbound TrackBack URLs' => 'Uitgaande TrackBack URLs',
 	'View Previously Sent TrackBacks' => 'Eerder verzonden TrackBacks bekijken',
+	'Outbound TrackBack URLs' => 'Uitgaande TrackBack URLs',
 	'You have unsaved changes to this entry that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit bericht die verloren zullen gaan.',
 	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan deze pagina die verloren zullen gaan.',
 	'Enter the link address:' => 'Vul het adres van de link in:',
@@ -3471,7 +3481,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/popup/rebuilt.tmpl
 	'Success' => 'Succes',
-	'All of your files have been published.' => 'Al uw bestanden zijn gepubliceerd.',
+	'The files for [_1] have been published.' => 'De bestanden voor [_1] werden gepubliceerd.', # Translate - New
 	'Your [_1] archives have been published.' => 'Uw [_1] archieven zijn gepubliceerd.',
 	'Your [_1] templates have been published.' => 'Uw [_1] sjablonen zijn gepubliceerd.',
 	'Publish time: [_1].' => 'Publicatietijd: [_1].',
@@ -4022,6 +4032,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/lib/MT/Community/CMS.pm
 	'Users followed by [_1]' => 'Gebruikers gevolgd door [_1]',
 	'Users following [_1]' => 'Gebruikers die [_1] volgen',
+	'Following' => 'Volgt',
+	'Followers' => 'Volgers',
 	'Friends' => 'Vrienden',
 	'Friends Of' => 'Vrienden van',
 	'Welcome to the Movable Type Community Solution' => 'Welkom op de Movable Type Community Solution',
@@ -4056,8 +4068,8 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to blog (s)' => 'Wijzigingen aan blog opslaan (s)',
 
 ## addons/Community.pack/config.yaml
-	'Many Friends' => 'Veel vrienden',
-	'Many Friends Of' => 'Veel vrienden van',
+	'Following Users' => 'Gevolgde gebruikers', # Translate - New
+	'Being Followed' => 'Wordt gevolgd door', # Translate - New
 	'Login Form' => 'Aanmeldformulier',
 	'Password Reset Form' => 'Recuperatieformulier wachtwoorden',
 	'Registration Form' => 'Registratieformulier',
@@ -4065,8 +4077,7 @@ use vars qw( @ISA %Lexicon );
 	'Profile Error' => 'Profielfout',
 	'Profile View' => 'Profiel bekijken',
 	'Profile Edit Form' => 'Bewerkingsformulier profiel',
-	'Profile Feed (Atom)' => 'Profielfeed (Atom)',
-	'Profile Feed (RSS)' => 'Profielfeed (RSS)',
+	'Profile Feed' => 'Profielfeed', # Translate - New
 	'Form Field' => 'Veld in formulier',
 	'Status Message' => 'Statusboodschap',
 	'Simple Header' => 'Eenvoudige hoofding',
@@ -4074,27 +4085,24 @@ use vars qw( @ISA %Lexicon );
 	'Navigation' => 'Navigatie',
 	'Header' => 'Hoofding',
 	'Footer' => 'Voettekst',
-	'User Navigation' => 'Gebruikersnavigatie',
 	'GlobalJavaScript' => 'GlobaalJavaScript',
 	'Email verification' => 'E-mail verificatie',
 	'Registration notification' => 'Registratienotificatie',
 	'New entry notification' => 'Notificatie nieuw bericht',
 	'Community Blog' => 'Community-blog',
-	'Atom' => 'Atom',
-	'RSS' => 'RSS',
+	'Atom ' => 'Atom', # Translate - New
 	'Entry Response' => 'Antwoord op bericht',
 	'Displays error, pending or confirmation message when submitting an entry.' => 'Toont foutboodschappen, \'even geduld\' berichten of bevestigingen bij het indienen van een bericht.',
 	'Comment Detail' => 'Details reactie',
 	'Entry Detail' => 'Berichtdetails',
 	'Entry Metadata' => 'Metadata bericht',
-	'Sidebar - 2 Column Layout' => 'Zijkolom - Tweekolomslay-out',
-	'Sidebar - 3 Column Layout' => 'Zijkolom - Driekolomslay-out',
 	'Page Detail' => 'Pagina detail',
 	'Entry Form' => 'Berichtenformulier',
 	'Content Navigation' => 'Navigatie inhoud',
+	'Activity Widgets' => 'Activiteit widgets', # Translate - New
+	'Archive Widgets' => 'Archiefwidgets', # Translate - New
 	'Community Forum' => 'Community forum',
-	'Entry Feed (Atom)' => 'Berichtfeed (Atom)',
-	'Entry Feed (RSS)' => 'Berichtfeed (RSS)',
+	'Entry Feed' => 'Berichtenfeed', # Translate - New
 	'Displays error, pending or confirmation message when submitting a entry.' => 'Toont foutboodschappen, \'even geduld\' berichten of bevestigingen bij het indienen van een bericht.',
 	'Category Groups' => 'Categoriegroepen',
 	'Popular Entry' => 'Populair bericht',
@@ -4103,8 +4111,12 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/login_form.mtml
 
-## addons/Community.pack/templates/global/header.mtml
-	'Blog Description' => 'Blogbeschrijving',
+## addons/Community.pack/templates/global/signin.mtml
+	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>', # Translate - New
+	'You are signed in as [_1]' => 'U bent aangemeld als [_1]', # Translate - New
+	'Edit profile' => 'Profiel bewerken', # Translate - Case
+	'Sign out' => 'Afmelden',
+	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
 
 ## addons/Community.pack/templates/global/register_form.mtml
 	'Sign up' => 'Registreer',
@@ -4114,13 +4126,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/profile_error.mtml
 	'ERROR MSG HERE' => 'FOUTBOODSCHAP HIER',
 
-## addons/Community.pack/templates/global/register_confirmation.mtml
-	'Authentication Email Sent' => 'Authenticatiemail verzonden',
-	'Profile Created' => 'Profiel aangemaakt',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
-
-## addons/Community.pack/templates/global/profile_feed_rss.mtml
-	'Copyright [_1]' => 'Copyright [_1]',
+## addons/Community.pack/templates/global/password_reset_form.mtml
+	'Reset Password' => 'Wachtwoord opnieuw instellen',
+	'Back to the original page' => 'Terug naar de oorspronkelijke pagina',
 
 ## addons/Community.pack/templates/global/new_entry_email.mtml
 	'A new entry \'[_1]([_2])\' has been posted on your blog [_3].' => 'Een nieuw bericht  \'[_1]([_2])\' werd gepubliceerd op uw blog [_3].',
@@ -4129,14 +4137,19 @@ use vars qw( @ISA %Lexicon );
 	'Title: [_1]' => 'Titel: [_1]',
 	'Edit entry:' => 'Bewerk bericht:',
 
-## addons/Community.pack/templates/global/password_reset_form.mtml
-	'Reset Password' => 'Wachtwoord opnieuw instellen',
-	'Back to the original page' => 'Terug naar de oorspronkelijke pagina',
-
 ## addons/Community.pack/templates/global/profile_edit_form.mtml
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Ga <a href="[_1]">terug naar de vorige pagina</a> of <a href="[_2]">bekijk uw profiel</a>.',
-	'User Name' => 'Naam gebruiker',
 	'Upload New Userpic' => 'Nieuwe gebruikersafbeelding uploaden',
+
+## addons/Community.pack/templates/global/header.mtml
+	'Blog Description' => 'Blogbeschrijving',
+
+## addons/Community.pack/templates/global/navigation.mtml
+	'Home' => 'Hoofdpagina',
+
+## addons/Community.pack/templates/global/footer.mtml
+
+## addons/Community.pack/templates/global/search.mtml
 
 ## addons/Community.pack/templates/global/profile_view.mtml
 	'User Profile' => 'Gebruikersprofiel',
@@ -4155,61 +4168,46 @@ use vars qw( @ISA %Lexicon );
 	'No recent actions.' => 'Geen recente acties.',
 	'[_1] commented on ' => '[_1] reageerde op ',
 	'No responses to comments.' => 'Geen antwoorden op reacties.',
-	'Following' => 'Volgt',
 	'Not following anyone' => 'Volgt niemand',
-	'Followers' => 'Volgers',
 	'Not being followed' => 'Wordt niet gevolgd',
-
-## addons/Community.pack/templates/global/user_navigation.mtml
-	'Logged in as <a href="[_1]">[_2]</a>' => 'Aangemeld als <a href="[_1]">[_2]</a>',
-	'Sign out' => 'Afmelden',
-	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
-
-## addons/Community.pack/templates/global/footer.mtml
-
-## addons/Community.pack/templates/global/navigation.mtml
-	'Home' => 'Hoofdpagina',
-
-## addons/Community.pack/templates/global/login_form_module.mtml
-	'Hello [_1]' => 'Hallo [_1]',
-	'Forgot Password' => 'Wachtwoord vergeten',
-
-## addons/Community.pack/templates/global/search.mtml
-
-## addons/Community.pack/templates/global/register_notification_email.mtml
 
 ## addons/Community.pack/templates/global/email_verification_email.mtml
 	'Thank you registering for an account to [_1].' => 'Bedankt om een account te registreren op [_1]',
 	'For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to sign in to [_1].' => 'Voor uw eigen veiligheid en om fraude te voorkomen, vragen we om uw account en e-mail adres te bevestigen vooraleer verder te gaan.  Zodra u bevestigd heeft, kunt u onmiddellijk aanmelden bij [_1].',
 	'If you did not make this request, or you don\'t want to register for an account to [_1], then no further action is required.' => 'Als u hier niet zelf om gevraagd heeft, of u wenst geen account te registreren op [_1], dan is er niets dat u verder hoeft te doen.',
 
-## addons/Community.pack/templates/blog/page.mtml
+## addons/Community.pack/templates/global/register_confirmation.mtml
+	'Authentication Email Sent' => 'Authenticatiemail verzonden',
+	'Profile Created' => 'Profiel aangemaakt',
+	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
 
-## addons/Community.pack/templates/blog/rss.mtml
+## addons/Community.pack/templates/global/login_form_module.mtml
+	'Logged in as <a href="[_1]">[_2]</a>' => 'Aangemeld als <a href="[_1]">[_2]</a>',
+	'Hello [_1]' => 'Hallo [_1]',
+	'Forgot Password' => 'Wachtwoord vergeten',
 
-## addons/Community.pack/templates/blog/comment_response.mtml
-	'Comment Submitted' => 'Reactie achtergelaten',
+## addons/Community.pack/templates/global/javascript.mtml
+	'votes' => 'stemmen', # Translate - New
+	'vote' => 'stem', # Translate - New
 
-## addons/Community.pack/templates/blog/archive_index.mtml
+## addons/Community.pack/templates/global/register_notification_email.mtml
 
-## addons/Community.pack/templates/blog/trackbacks.mtml
-	'[_1] TrackBacks' => '[_1] TrackBacks',
-	'Listed below are links to blogs that reference this entry: <a href="[_1]">[_2]</a>.' => 'Hieronder ziet u links naar blogs die verwijzen naar het bericht: <a href="[_1]">[_2]</a>.',
-	'TrackBack URL for this entry: <span id="trackbacks-link">[_1]</span>' => 'TrackBack URL voor dit bericht: <span id="trackbacks-link">[_1]</span>',
-	'&raquo; <a href="[_1]">[_2]</a> from [_3]' => '&raquo; <a href="[_1]">[_2]</a> van [_3]',
-	'Tracked on <a href="[_1]">[_2]</a>' => 'Getracked op <a href="[_1]">[_2]</a>',
+## addons/Community.pack/templates/blog/main_index_widgets_group.mtml
+
+## addons/Community.pack/templates/blog/category_archive_list.mtml
 
 ## addons/Community.pack/templates/blog/main_index.mtml
+
+## addons/Community.pack/templates/blog/page.mtml
+
+## addons/Community.pack/templates/blog/comment_response.mtml
+
+## addons/Community.pack/templates/blog/entry_summary.mtml
 
 ## addons/Community.pack/templates/blog/content_nav.mtml
 	'Blog Home' => 'Hoofdpagina blog',
 
-## addons/Community.pack/templates/blog/entry_summary.mtml
-	'A favorite' => 'Een favoriet',
-	'Favorite' => 'Favoriet',
-	'Continue reading <a rel="bookmark" href="[_1]">[_2]</a>.' => '<a rel="bookmark" href="[_1]">[_2]</a> verder lezen.',
-
-## addons/Community.pack/templates/blog/tags.mtml
+## addons/Community.pack/templates/blog/archive_widgets_group.mtml
 
 ## addons/Community.pack/templates/blog/entry_response.mtml
 	'Thank you for posting an entry.' => 'Bedankt om uw bericht in te sturen.',
@@ -4222,118 +4220,78 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/blog/entry_detail.mtml
 
-## addons/Community.pack/templates/blog/entry_create.mtml
+## addons/Community.pack/templates/blog/comment_detail.mtml
 
 ## addons/Community.pack/templates/blog/entry_form.mtml
 	'You don\'t have permission to post.' => 'U heeft geen permissie om een bericht te publiceren.',
-	'<a href="[_1]">Sign in</a> to create an entry.' => '<a href="[_1]">Aanmelden</a> om een bericht aan te maken.',
+	'Sign in to create an entry.' => 'Meld u aan om een bericht te kunnen schrijven.', # Translate - New
 	'Select Category...' => 'Selecteer categorie...',
 
-## addons/Community.pack/templates/blog/comment_detail.mtml
+## addons/Community.pack/templates/blog/entry_create.mtml
 
-## addons/Community.pack/templates/blog/comments.mtml
-	'[_1] Comments' => '[_1] reacties',
+## addons/Community.pack/templates/blog/syndication.mtml
+	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$mt:SearchString$>&rdquo;',
+
+## addons/Community.pack/templates/blog/recent_comments.mtml
 
 ## addons/Community.pack/templates/blog/comment_form.mtml
 
-## addons/Community.pack/templates/blog/categories.mtml
+## addons/Community.pack/templates/blog/current_category_monthly_archive_list.mtml
 
-## addons/Community.pack/templates/blog/search_results.mtml
-	'Results matching &ldquo;[_1]&rdquo; from [_2]' => 'Resultaten die overeenkomen met &ldquo;[_1]&rdquo; uit [_2]',
-	'Results tagged &ldquo;[_1]&rdquo; from [_2]' => 'Resultaten getagd als &ldquo;[_1]&rdquo; uit [_2]',
+## addons/Community.pack/templates/blog/pages_list.mtml
 
-## addons/Community.pack/templates/blog/sidebar_2col.mtml
-	'Photos' => 'Foto\'s',
-	'Subscribe icon' => 'Icoon om in te schrijven',
-	'Search results matching &ldquo;<$MTSearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$MTSearchString$>&rdquo;',
-
-## addons/Community.pack/templates/blog/sidebar_3col.mtml
+## addons/Community.pack/templates/blog/monthly_archive_list.mtml
 
 ## addons/Community.pack/templates/blog/entry_listing.mtml
 	'Recently by <em>[_1]</em>' => 'Recent door <em>[_1]</em>',
 
-## addons/Community.pack/templates/blog/dynamic_error.mtml
+## addons/Community.pack/templates/blog/about_this_page.mtml
+
+## addons/Community.pack/templates/blog/tags.mtml
 
 ## addons/Community.pack/templates/blog/entry_metadata.mtml
+	'Vote' => 'Stem', # Translate - New
+	'Votes' => 'Stemmen', # Translate - New
 
 ## addons/Community.pack/templates/blog/entry.mtml
+
+## addons/Community.pack/templates/blog/javascript.mtml
+
+## addons/Community.pack/templates/blog/archive_index.mtml
+
+## addons/Community.pack/templates/blog/trackbacks.mtml
+
+## addons/Community.pack/templates/blog/recent_entries.mtml
+
+## addons/Community.pack/templates/blog/sidebar.mtml
+
+## addons/Community.pack/templates/blog/categories.mtml
+
+## addons/Community.pack/templates/blog/comments.mtml
+
+## addons/Community.pack/templates/blog/search_results.mtml
+
+## addons/Community.pack/templates/blog/dynamic_error.mtml
+
+## addons/Community.pack/templates/blog/powered_by.mtml
+
+## addons/Community.pack/templates/blog/tag_cloud.mtml
+
+## addons/Community.pack/templates/blog/recent_assets.mtml
 
 ## addons/Community.pack/templates/blog/comment_preview.mtml
 	'Comment on [_1]' => 'Reactie op [_1]',
 
-## addons/Community.pack/templates/blog/javascript.mtml
-	'Thanks for signing in,' => 'Bedankt om u aan te melden,',
-	'. Now you can comment.' => '. U kunt hieronder reageren.',
-	'You do not have permission to comment on this blog.' => 'U heeft geen toestemming om reacties achter te laten op deze weblog',
-	' to comment on this entry.' => ' om te reageren op dit bericht.',
-	' to comment on this entry,' => ' om te reageren op dit bericht,',
-	'or ' => 'of ',
-	'comment anonymously.' => 'reageer anoniem',
-
-## addons/Community.pack/templates/forum/entry_summary.mtml
-
-## addons/Community.pack/templates/forum/main_index.mtml
-	'Forum Home' => 'Forum hoofdpagina',
-
-## addons/Community.pack/templates/forum/page.mtml
-
-## addons/Community.pack/templates/forum/entry_response.mtml
-	'Thank you for posting a new topic to the forums.' => 'Bedankt om een nieuw onderwerp te publiceren in de forums.',
-	'Topic Pending' => 'Onderwerp wacht op goedkeuring',
-	'The topic you posted has been received and held for approval by the forum administrators.' => 'Het onderwerp dat u instuurde werd ontvangen en wordt bewaard tot de administratoren van het forum goedkeuren.',
-	'Topic Posted' => 'Onderwerp gepubliceerd',
-	'The topic you posted has been received and published. Thank you for your submission.' => 'Het onderwerp dat u instuurde werd ontvangen en gepubliceerd.  Bedankt voor uw bijdrage.',
-	'Return to the <a href="[_1]">forum\'s homepage</a>.' => 'Terugkeren naar de <a href="[_1]">hoofdpagina van het forum</a>.',
-
-## addons/Community.pack/templates/forum/content_nav.mtml
-	'Start Topic' => 'Onderwerp beginnen',
-
-## addons/Community.pack/templates/forum/sidebar.mtml
-	'All Forums' => 'Alle forums',
-	'[_1] Forum' => 'Forum [_1]',
-
-## addons/Community.pack/templates/forum/rss.mtml
+## addons/Community.pack/templates/blog/search.mtml
 
 ## addons/Community.pack/templates/forum/comment_response.mtml
 	'Reply Submitted' => 'Antwoord ingediend',
-	'Your reply has been accepted' => 'Uw antwoord is ontvangen',
-	'Thank you for your reply. It has been accepted and should appear momentarily.' => 'Bedankt voor uw antwoord.  Het is ontvangen en zou zodadelijk moeten verschijnen.',
-	'Reply Pending' => 'Antwoord wordt beoordeeld',
-	'Your reply has been received' => 'Uw antwoord  werd ontvangen',
-	'Thank you for your reply. However, your reply is currently being held for approval by the forum\'s administrator.' => 'Bedankt voor uw antwoord.  Het wordt momenteel bewaard tot een administrator van het forum het kan beoordelen.',
+	'Your reply has been accepted.' => 'Uw antwoord werd aanvaard.', # Translate - New
+	'Thank you for replying.' => 'Bedankt om te antwoorden.', # Translate - New
+	'Your reply has been received and held for approval by the forum administrator.' => 'Uw antwoord werd ontvangen en wacht op goedkeuring van de forumadministrator.', # Translate - New
 	'Reply Submission Error' => 'Fout bij indienen antwoord',
-	'Your reply submission failed for the following reasons:' => 'Het indienen van uw antwoord mislukte wegens volgende redenen:',
+	'Your reply submission failed for the following reasons: [_1]' => 'Het indienen van uw antwoord mislukte wegens: [_1]', # Translate - New
 	'Return to the <a href="[_1]">original topic</a>.' => 'Terugkeren naar <a href="[_1]">het oorspronkelijke onderwerp</a>.',
-
-## addons/Community.pack/templates/forum/content_header.mtml
-
-## addons/Community.pack/templates/forum/entry_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_form.mtml
-	'<a href="[_1]">Sign in</a> to create a topic.' => '<a href="[_1]">Aanmelden</a> om een onderwerp te starten.',
-	'Topic' => 'Onderwerp',
-	'Select Forum...' => 'Selecteer forum...',
-	'Forum' => 'Forum',
-
-## addons/Community.pack/templates/forum/comment_detail.mtml
-
-## addons/Community.pack/templates/forum/entry_create.mtml
-	'Start a Topic' => 'Begin een onderwerp',
-
-## addons/Community.pack/templates/forum/comment_form.mtml
-
-## addons/Community.pack/templates/forum/entry_listing.mtml
-
-## addons/Community.pack/templates/forum/entry_metadata.mtml
-	'Permalink' => 'Permalink',
-	'Replies ([_1])' => 'Antwoorden ([_1])',
-
-## addons/Community.pack/templates/forum/entry.mtml
-
-## addons/Community.pack/templates/forum/javascript.mtml
-	'. Now you can reply to this topic.' => '. Nu kunt u antwoorden op dit onderwerp.',
-	' to comment on this topic.' => ' om te reageren op dit onderwerp.',
-	' to comment on this topic,' => ' om te reageren op dit onderwerp,',
 
 ## addons/Community.pack/templates/forum/archive_index.mtml
 
@@ -4345,26 +4303,85 @@ use vars qw( @ISA %Lexicon );
 	'Closed' => 'Gesloten',
 	'Post the first topic in this forum.' => 'Plaats het eerste onderwerp in dit forum',
 
+## addons/Community.pack/templates/forum/sidebar.mtml
+	'All Forums' => 'Alle forums',
+	'[_1] Forum' => 'Forum [_1]',
+
+## addons/Community.pack/templates/forum/main_index.mtml
+	'Forum Home' => 'Forum hoofdpagina',
+
 ## addons/Community.pack/templates/forum/category_groups.mtml
 	'Forum Groups' => 'Forum groepen',
 	'Last Topic: [_1] by [_2] on [_3]' => 'Laatste onderwerp: [_1] door [_2] op [_3]',
+	'Be the first to <a href="[_1]">post a topic in this forum</a>' => 'Wees de eerste om <a href="[_1]">een onderwerp te starten in dit forum</a>', # Translate - New
+
+## addons/Community.pack/templates/forum/page.mtml
+
+## addons/Community.pack/templates/forum/content_nav.mtml
+	'Start Topic' => 'Onderwerp beginnen',
+
+## addons/Community.pack/templates/forum/entry_summary.mtml
+
+## addons/Community.pack/templates/forum/entry_response.mtml
+	'Thank you for posting a new topic to the forums.' => 'Bedankt om een nieuw onderwerp te publiceren in de forums.',
+	'Topic Pending' => 'Onderwerp wacht op goedkeuring',
+	'The topic you posted has been received and held for approval by the forum administrators.' => 'Het onderwerp dat u instuurde werd ontvangen en wordt bewaard tot de administratoren van het forum goedkeuren.',
+	'Topic Posted' => 'Onderwerp gepubliceerd',
+	'The topic you posted has been received and published. Thank you for your submission.' => 'Het onderwerp dat u instuurde werd ontvangen en gepubliceerd.  Bedankt voor uw bijdrage.',
+	'Return to the <a href="[_1]">forum\'s homepage</a>.' => 'Terugkeren naar de <a href="[_1]">hoofdpagina van het forum</a>.',
+
+## addons/Community.pack/templates/forum/content_header.mtml
+
+## addons/Community.pack/templates/forum/entry_detail.mtml
+
+## addons/Community.pack/templates/forum/entry_form.mtml
+	'Sign in to create a topic.' => 'Meld u aan op een onderwerp te starten.', # Translate - New
+	'Topic' => 'Onderwerp',
+	'Select Forum...' => 'Selecteer forum...',
+	'Forum' => 'Forum',
+
+## addons/Community.pack/templates/forum/entry_create.mtml
+	'Start a Topic' => 'Begin een onderwerp',
+
+## addons/Community.pack/templates/forum/comment_detail.mtml
+	'[_1] replied to <a href="[_2]">[_3]</a>' => '[_1] gaf antwoord op <a href="[_2]">[_3]</a>', # Translate - New
 
 ## addons/Community.pack/templates/forum/comments.mtml
-	'[_1] Replies' => '[_1] antwoorden',
-	'_NUM_FAVORITES' => 'Favoriet',
-	'Favorite This' => 'Maak favoriet!',
+	'1 Reply' => '1 Antwoord', # Translate - New
+	'# Replies' => '# Antwoorden', # Translate - New
+	'No Replies' => 'Geen antwoorden', # Translate - New
+	'Add a Reply' => 'Antwoord toevoegen', # Translate - New
+
+## addons/Community.pack/templates/forum/comment_form.mtml
 
 ## addons/Community.pack/templates/forum/search_results.mtml
+	'Topics matching &ldquo;[_1]&rdquo;' => 'Onderwerpen die overeen komen met &ldquo;[_1]&rdquo;', # Translate - New
+	'Topics tagged &ldquo;[_1]&rdquo;' => 'Onderwerpen getagd als &ldquo;[_1]&rdquo;', # Translate - New
+	'Topics' => 'Onderwerpen', # Translate - New
+
+## addons/Community.pack/templates/forum/entry_listing.mtml
 
 ## addons/Community.pack/templates/forum/dynamic_error.mtml
 
-## addons/Community.pack/templates/forum/entry_popular.mtml
-	'Popular topics' => 'Populaire onderwerpen',
-	'No Reply' => 'Geen antwoord',
+## addons/Community.pack/templates/forum/entry.mtml
+
+## addons/Community.pack/templates/forum/entry_metadata.mtml
 
 ## addons/Community.pack/templates/forum/comment_preview.mtml
-	'Reply on [_1]' => 'Antwoord op [_1]',
+	'Reply to [_1]' => 'Antwoorden op [_1]', # Translate - New
 	'Previewing your Reply' => 'Voorbeeld van antwoord aan het bekijken',
+
+## addons/Community.pack/templates/forum/entry_popular.mtml
+	'Popular topics' => 'Populaire onderwerpen',
+
+## addons/Community.pack/templates/forum/javascript.mtml
+	'Thanks for signing in,' => 'Bedankt om u aan te melden,',
+	'. Now you can reply to this topic.' => '. Nu kunt u antwoorden op dit onderwerp.',
+	'You do not have permission to comment on this blog.' => 'U heeft geen toestemming om reacties achter te laten op deze weblog',
+	' to reply to this topic.' => ' om te antwoorden op dit onderwerp.', # Translate - New
+	' to reply to this topic,' => ' om te antwoorden op dit onderwerp,', # Translate - New
+	'or ' => 'of ',
+	'reply anonymously.' => ' reageer anoniem.', # Translate - New
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
 	'About' => 'Over',
@@ -4377,7 +4394,7 @@ use vars qw( @ISA %Lexicon );
 	'_UTS_EDIT_LINK' => '
 <!-- verwijder deze link na het bewerken -->
 <p class="admin-edit-link">
-<script type="text/javascript">document.write(\'<a href="\' + adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id + \'" target="_blank">Deze tekst aanpassen</a>\')</script>
+<a href="#" onclick="location.href=adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id; return false">Deze tekst aanpassen</a>
 </p>
 ',
 	'_UTS_CONTACT' => 'Contact',
@@ -4396,6 +4413,8 @@ use vars qw( @ISA %Lexicon );
 	'_UTS_SAMPLE_NEWDESIGN' => '
 <p>Onze website zit in een volledig nieuw kleedje dankzij <a href="http://www.movabletype.com/">Movable Type</a> en de Universele Set Sjablonen. Met de Universele Set Sjablonen kan iedereen in een paar minuten van start gaan met een nieuwe website op Movable Type. Dit alles in slechts een paar klikken. Maak een nieuwe blog aan, selecteer de Universele Set Sjablonen en publiceer de site.  Voila: on nieuwe website!. Bedankt Movable Type!</p>
 ',
+	'John Doe' => 'Jan Janssens', # Translate - New
+	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Geweldige nieuwe site.  Ik kan niet wachten om Movable Type zelf te proberen.  Proficiat!', # Translate - New
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Toon',
@@ -4416,7 +4435,7 @@ use vars qw( @ISA %Lexicon );
 	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
 	'Default value must be valid URL.' => 'Standaardwaarde moet een geldige URL zijn.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Pas de formulieren en velden aan voor berichten, pagina\'s, mappen, categoriën en gebruikers aan en sla exact die informatie op die u nodig heeft.',
-	' ' => ' ', # Translate - Case
+	' ' => ' ',
 	'Single-Line Text' => 'Een regel tekst',
 	'Multi-Line Text' => 'Meerdere regels tekst',
 	'Checkbox' => 'Checkbox',
@@ -4932,6 +4951,36 @@ use vars qw( @ISA %Lexicon );
 	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
 	'Download WP attachments via HTTP.' => 'WP attachments downloaden via HTTP.',
 
+## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
+	'API key is a required parameter.' => 'API sleutel is een vereiste parameter',
+
+## plugins/TypePadAntiSpam/tmpl/system.tmpl
+	'API Key' => 'API sleutel',
+	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Om deze plugin te kunnen inschakelen heeft u een gratis TypePad AntiSpam API sleutel nodig.  U kunt uw <strong>gratis API sleutel afhalen op [_1]antispam.typepad.com[_2]</strong>.  Zodra u uw sleutel heeft, moet u terugkeren naar deze pagina en hem hieronder invullen.',
+	'Service Host' => 'Service host',
+	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'De standaard host voor TypePad AntiSpam is api.antispam.com.  U moet dit alleen veranderen als u een andere service gebruikt die compatibel is met de TypePad AntiSpam API.',
+
+## plugins/TypePadAntiSpam/tmpl/config.tmpl
+	'Junk Score Weight' => 'Spamscoregewicht',
+	'Least Weight' => 'Laagste gewicht',
+	'Most Weight' => 'Hoogste gewicht',
+	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Reacties en TrackBacks krijgen een spamscore tussen -10 (zeker spam) en +10 (zeker geen spam).  Deze instelling geeft u de mogelijkheid het gewicht van het oordeel van TypePad AntiSpam in te stellen relatief tot de andere filters die u misschien geïnstalleerd heeft om reacties en TrackBacks te filteren.',
+
+## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
+	'widget_label_width' => 'widget_label_width',
+	'widget_totals_width' => 'widget_totals_width',
+	'TypePad AntiSpam' => 'TypePad AntiSpam',
+	'Spam Blocked' => 'Spams gestopt',
+	'on this blog' => 'op deze blog',
+	'on this system' => 'op dit systeem',
+
+## plugins/TypePadAntiSpam/TypePadAntiSpam.pl
+	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam is een gratis service van Six Apart die helpt uw blog te beschermen tegen spam in uw reacties en TrackBacks.  De TypePad AntiSpam plugin verstuurt elke reactie of TrackBack die ontvangen wordt op uw blog door naar de service waar ze dan beoordeeld worden.  Movable Type zal items filteren als TypePad AntiSpam bepaalt dat ze spam zijn.  Als u merkt dat TypePad AntiSpam items niet correct classificeert dan kunt u de classificatie eenvoudigweg aanpassen door ze als "Spam" of "Geen Spam" te markeren vanop het scherm voor reactiebeheer.  TypePad AntiSpam zal dan leren uit uw acties.  Na verloop van tijd wordt de service dus altijd maar beter, gebaseerd op rapporten van gebruikers, dus let op voor u iets als "Spam" of "Geen Spam" markeert!',
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd voor deze weblog, en [quant,_2,bericht,berichten] over het hele systeem.',
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd over het hele systeem.',
+	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Verificatie van uw TypePad AntiSpam API sleutel mislukt:',
+	'The TypePad AntiSpam API key provided is invalid.' => 'De TypePad AntiSpam API sleutel die u opgaf was ongeldig.',
+
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
@@ -5112,36 +5161,6 @@ use vars qw( @ISA %Lexicon );
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
 	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...',
 
-## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
-	'API key is a required parameter.' => 'API sleutel is een vereiste parameter', # Translate - New
-
-## plugins/TypePadAntiSpam/tmpl/system.tmpl
-	'API Key' => 'API sleutel', # Translate - New
-	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Om deze plugin te kunnen inschakelen heeft u een gratis TypePad AntiSpam API sleutel nodig.  U kunt uw <strong>gratis API sleutel afhalen op [_1]antispam.typepad.com[_2]</strong>.  Zodra u uw sleutel heeft, moet u terugkeren naar deze pagina en hem hieronder invullen.', # Translate - New
-	'Service Host' => 'Service host', # Translate - New
-	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'De standaard host voor TypePad AntiSpam is api.antispam.com.  U moet dit alleen veranderen als u een andere service gebruikt die compatibel is met de TypePad AntiSpam API.', # Translate - New
-
-## plugins/TypePadAntiSpam/tmpl/config.tmpl
-	'Junk Score Weight' => 'Spamscoregewicht', # Translate - New
-	'Least Weight' => 'Laagste gewicht', # Translate - New
-	'Most Weight' => 'Hoogste gewicht', # Translate - New
-	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Reacties en TrackBacks krijgen een spamscore tussen -10 (zeker spam) en +10 (zeker geen spam).  Deze instelling geeft u de mogelijkheid het gewicht van het oordeel van TypePad AntiSpam in te stellen relatief tot de andere filters die u misschien geïnstalleerd heeft om reacties en TrackBacks te filteren.', # Translate - New
-
-## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
-	'widget_label_width' => 'widget_label_width', # Translate - New
-	'widget_totals_width' => 'widget_totals_width', # Translate - New
-	'TypePad AntiSpam' => 'TypePad AntiSpam', # Translate - New
-	'Spam Blocked' => 'Spams gestopt', # Translate - New
-	'on this blog' => 'op deze blog', # Translate - New
-	'on this system' => 'op dit systeem', # Translate - New
-
-## plugins/TypePadAntiSpam/TypePadAntiSpam.pl
-	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam is een gratis service van Six Apart die helpt uw blog te beschermen tegen spam in uw reacties en TrackBacks.  De TypePad AntiSpam plugin verstuurt elke reactie of TrackBack die ontvangen wordt op uw blog door naar de service waar ze dan beoordeeld worden.  Movable Type zal items filteren als TypePad AntiSpam bepaalt dat ze spam zijn.  Als u merkt dat TypePad AntiSpam items niet correct classificeert dan kunt u de classificatie eenvoudigweg aanpassen door ze als "Spam" of "Geen Spam" te markeren vanop het scherm voor reactiebeheer.  TypePad AntiSpam zal dan leren uit uw acties.  Na verloop van tijd wordt de service dus altijd maar beter, gebaseerd op rapporten van gebruikers, dus let op voor u iets als "Spam" of "Geen Spam" markeert!', # Translate - New
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd voor deze weblog, en [quant,_2,bericht,berichten] over het hele systeem.', # Translate - New
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Tot nu toe heeft TypePad AntiSpam [quant,_1,bericht,berichten] geblokkeerd over het hele systeem.', # Translate - New
-	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Verificatie van uw TypePad AntiSpam API sleutel mislukt:', # Translate - New
-	'The TypePad AntiSpam API key provided is invalid.' => 'De TypePad AntiSpam API sleutel die u opgaf was ongeldig.', # Translate - New
-
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
@@ -5187,6 +5206,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 365
+## New words: 330
 
 1;
