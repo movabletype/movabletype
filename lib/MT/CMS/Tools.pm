@@ -1016,7 +1016,7 @@ sub adjust_sitepath {
             $app->print(
                 $app->translate(
                     "Changing Site Path for the blog '[_1]' (ID:[_2])...",
-                    $blog->name, $blog->id
+                    encode_html( $blog->name ), $blog->id
                 )
             );
         }
@@ -1024,7 +1024,7 @@ sub adjust_sitepath {
             $app->print(
                 $app->translate(
                     "Removing Site Path for the blog '[_1]' (ID:[_2])...",
-                    $blog->name, $blog->id
+                    encode_html( $blog->name ), $blog->id
                 )
             );
         }
@@ -1041,7 +1041,7 @@ sub adjust_sitepath {
                 "\n"
                   . $app->translate(
                     "Changing Archive Path for the blog '[_1]' (ID:[_2])...",
-                    $blog->name, $blog->id
+                    encode_html( $blog->name ), $blog->id
                   )
             );
         }
@@ -1050,7 +1050,7 @@ sub adjust_sitepath {
                 "\n"
                   . $app->translate(
                     "Removing Archive Path for the blog '[_1]' (ID:[_2])...",
-                    $blog->name, $blog->id
+                    encode_html( $blog->name ), $blog->id
                   )
             );
         }
@@ -1096,7 +1096,7 @@ sub adjust_sitepath {
             $app->print(
                 $app->translate(
                     "Changing file path for the asset '[_1]' (ID:[_2])...",
-                    $asset->label, $asset->id
+                    encode_html( $asset->label ), $asset->id
                 )
             );
             $asset->save
