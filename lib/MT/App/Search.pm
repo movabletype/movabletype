@@ -102,6 +102,8 @@ sub init_request{
         $app->{searchparam}{$key} = $no_override{$key} ?
             $app->config->$key() : ($q->param($key) || $app->config->$key());
     }
+    $app->{searchparam}{SearchMaxResults} =~ s/\D//g
+        if defined ($app->{searchparam}{SearchMaxResults});
 
     $app->{searchparam}{Type} = 'entry';
     if ( my $type = $q->param('type') ) {
