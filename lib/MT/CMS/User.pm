@@ -2,7 +2,7 @@ package MT::CMS::User;
 
 use strict;
 
-use MT::Util qw( format_ts relative_date is_url encode_url );
+use MT::Util qw( format_ts relative_date is_url encode_url encode_html );
 use MT::Author;
 
 sub edit {
@@ -294,7 +294,7 @@ sub list {
     $param{saved}             = $app->param('saved');
     my $status = $app->param('saved_status');
     $param{"saved_status_$status"} = 1 if $status;
-    $param{unchanged} = $app->param('unchanged');
+    $param{unchanged} = encode_html( $app->param('unchanged') );
     $app->load_list_actions( 'author', \%param );
     $param{page_actions} =
       $app->page_actions('list_authors');

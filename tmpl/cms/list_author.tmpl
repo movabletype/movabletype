@@ -36,7 +36,7 @@
         <mtapp:statusmsg
             id="unchanged"
             class="success">
-            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory." params="<mt:var name="unchanged">">
+            <__trans phrase="Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory." params="<mt:var name="unchanged">" escape="html">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="error">
@@ -130,8 +130,8 @@
         // setup
         tableSelect = new TC.TableSelect( "author-listing-table" );
         tableSelect.rowSelect = true;
-        setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-        setFilterVal('<mt:var name="filter_val">');
+        setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+        setFilterVal('<mt:var name="filter_val" escape="js">');
     </mt:if>
     }
 
