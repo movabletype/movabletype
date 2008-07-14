@@ -2090,7 +2090,7 @@ sub show_error {
         $param->{error} =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
     }
     $tmpl = $app->load_tmpl('error.tmpl') or
-        return "Can't load error template; got error '" . $app->errstr .
+        return "Can't load error template; got error '" . encode_html( $app->errstr ) .
                "'. Giving up. Original error was <pre>$param->{error}</pre>";
     my $type = $app->param('__type') || '';
     if ($type eq 'dialog') {
@@ -2105,7 +2105,7 @@ sub show_error {
     $tmpl->param( $param );
     my $out = $tmpl->output;
     if (!defined $out) {
-        return "Can't build error template; got error '" . $tmpl->errstr
+        return "Can't build error template; got error '" . encode_html( $tmpl->errstr )
             . "'. Giving up. Original error was <pre>$param->{error}</pre>";
     }
     return $app->l10n_filter($out);
@@ -2315,7 +2315,7 @@ sub run {
     }
 
     if (ref($body) && ($body->isa('MT::Template'))) {
-        $body = $@ || $app->errstr;
+        $body = $app->show_error( { error => $@ || $app->errstr } );
     }
 
     if (my $url = $app->{redirect}) {
