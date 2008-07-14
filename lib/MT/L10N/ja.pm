@@ -190,7 +190,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/openid.mtml
-	'[_1] accepted here' => '[_1]使えます',
+	'[_1] accepted here' => '[_1]対応しています',
 	'http://www.movabletype.com/openid/' => 'http://www.movabletype.jp/openid/',
 	'Learn more about OpenID' => 'OpenIDについて',
 
