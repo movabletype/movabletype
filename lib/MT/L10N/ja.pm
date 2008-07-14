@@ -16,7 +16,6 @@ use vars qw( @ISA %Lexicon );
 
 %Lexicon = (
 
-
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
@@ -189,6 +188,11 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/current_author_monthly_archive_list.mtml
 	'[_1]: Monthly Archives' => '[_1]: 月別アーカイブ',
 	'[_1] ([_2])' => '[_1] ([_2])',
+
+## default_templates/openid.mtml
+	'[_1] accepted here' => '[_1]に対応しています', # Translate - New
+	'http://www.movabletype.com/openid/' => 'http://www.movabletype.jp/openid/', # Translate - New
+	'Learn more about OpenID' => 'OpenIDについて詳しくはこちら', # Translate - New
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => '年別ユーザーアーカイブ',
@@ -1299,6 +1303,7 @@ use vars qw( @ISA %Lexicon );
 	'Technorati Search' => 'Technorati Search',
 	'Date-Based Author Archives' => '日付ベースのユーザーアーカイブ',
 	'Date-Based Category Archives' => '日付ベースのカテゴリアーカイブ',
+	'OpenID Accepted' => 'OpenID対応', # Translate - New
 	'Comment throttle' => 'コメントスロットル',
 	'Commenter Confirm' => 'コメントの確認',
 	'Commenter Notify' => 'コメントの通知',
@@ -1670,7 +1675,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'ユーザーにベースネームを設定しています...',
 	'Assigning entry comment and TrackBack counts...' => 'コメントとトラックバックの件数を設定しています....',
 	'Assigning embedded flag to asset placements...' => 'アイテムの関連付けの有無を設定しています...',
-	'Updateing template build types...' => 'テンプレートのビルドオプションを設定しています...',
+	'Updating template build types...' => 'テンプレートのビルドオプションを設定しています...', # Translate - New
 	'Replacing file formats to use CategoryLabel tag...' => 'ファイルフォーマットをMTCategoryLabelに変換しています...',
 	'Assigning all permissions to blog administrator...' => 'ブログ管理者に権限を設定しています...',
 	'Recover permissions of system administrators...' => 'システム管理者の権限を復元しています...',
@@ -3908,7 +3913,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'ファイルオプション',
-	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'ファイル\'[_1]\'をアップロードしました。サイズ: [quant,_2,バイト,バイト]',
 	'Create entry using this uploaded file' => 'アップロードしたファイルを使ってブログ記事を作成する',
 	'Create a new entry using this uploaded file.' => 'アップロードしたファイルを使ってブログ記事を作成する',
 	'Finish (s)' => '完了 (s)',

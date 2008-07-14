@@ -16,10 +16,12 @@ use vars qw( %Lexicon );
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'WXRフォーマットではありません。',
-	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アイテム「[_1]」は既にインポートされているのでスキップします。', # Translate - New
+	'Creating new tag (\'[_1]\')...' => 'タグ(\'[_1]\')を作成しています...',
+	'Saving tag failed: [_1]' => 'タグを保存できませんでした: [_1]',
+	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'アイテム「[_1]」は既にインポートされているのでスキップします。',
 	'Saving asset (\'[_1]\')...' => 'アイテム(\'[_1]\')を保存しています...',
 	' and asset will be tagged (\'[_1]\')...' => 'アイテムにタグ([_1])を付けています...',
-	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。', # Translate - New
+	'Duplicate entry (\'[_1]\') found.  Skipping.' => 'ブログ記事「[_1]」は既にインポートされているのでスキップします。',
 	'Saving page (\'[_1]\')...' => 'ウェブページ(\'[_1]\')を保存しています...',
 
 ## plugins/WXRImporter/WXRImporter.pl
