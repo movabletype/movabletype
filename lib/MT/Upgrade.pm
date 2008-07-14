@@ -3228,6 +3228,76 @@ issue all the upgrade progress messages without doing the upgrade itself.
 
 =back
 
+=head2 MT::Upgrade->add_step( $function[, %params ] )
+
+Adds an additional upgrade function to the upgrade pipeline. The
+parameters given will be given to the upgrade function when invoked.
+Note that all values in the C<%params> hash should be simple scalar
+values, as they have to be represented in JSON notation.
+
+=head2 MT::Upgrade->check_schema()
+
+Run during the upgrade process to verify all object types are
+up-to-date. Calls the L<check_type> method which does the work
+for an individual object type. Returns '1' for success, or
+undef for failure.
+
+=head2 MT::Upgrade->check_type($type)
+
+Issues schema checks for the specified C<$type>. If schema differences
+exist, upgrade steps are added to bring the object type up to date.
+
+=head2 MT::Upgrade->core_column_action($action, %params)
+
+Upgrade function to process an object type in a specific
+way. C<$action> may be one of C<add>, C<drop>, C<alter>, C<index>.
+C<%params> should contain a C<type> parameter identifying the object
+type to process.
+
+=head2 MT::Upgrade->core_create_config_table
+
+Upgrade function to handle the creation of the initial
+L<MT::Config> object.
+
+=head2 MT::Upgrade->core_create_template_maps
+
+Upgrade function to handle the creation of L<MT::TemplateMap> records
+for upgrading pre-2.0 MT schemas.
+
+=head2 MT::Upgrade->core_drop_meta_for_table
+
+Upgrade function to handle the removal of "meta" blob columns for
+pre-MT 4.2 schemas.
+
+=head2 MT::Upgrade->core_finish
+
+Upgrade function that finalizes an upgrade operation. This routine
+is always run at the end of the upgrade process.
+
+=head2 MT::Upgrade->core_fix_type
+
+Upgrade function that handles a table "overhaul", where it is necessary
+to create a new temporary table, drop the existing one, then rebuild it
+from scratch. This is necessary when an object driver (SQLite, for instance)
+does not support a kind of table manipulation that is required to upgrade
+it.
+
+=head2 MT::Upgrade->core_populate_author_auth_type
+
+Upgrade function to handle the assignment of the authentication type
+(specifically, the 'auth_type' column) for upgraded L<MT::Author> records.
+
+=head2 MT::Upgrade->core_remove_unique_constraints
+
+Upgrade function that removes some old table constraints for pre-3.2
+MT schemas.
+
+=head2 MT::Upgrade->core_set_enable_archive_paths
+
+Upgrade function that enables the C<EnableArchivePaths> configuration
+setting, if the existing schema version is 3.2 or earlier (preserves
+'archive path', 'archive url' blog settings fields).
+
 =head1 CALLBACKS
 
 The upgrade module defines the following MT callbacks:
