@@ -254,3 +254,56 @@ sub _grab_a_job {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::TheSchwartz - Movable Type
+
+=head1 SYNOPSIS
+
+    use MT;
+    use MT::TheSchwartz;
+    my $mt = MT->new;
+    my $schwartz = MT::TheSchwartz->new(%cfg);
+    $schwartz->work_until_done;
+
+=head1 DESCRIPTION
+
+A subclass of C<TheSchwartz>, a job queue system. The MT subclass is
+responsible for configuring TheSchwartz to work with the MT database
+configuration and supplies TheSchwartz worker classes from the MT
+registry.
+
+=head1 METHODS
+
+=head2 MT::TheSchwartz->instance
+
+Returns the singleton instance for the C<MT::TheSchwartz> class.
+
+=head2 MT::TheSchwartz->debug
+
+Static (or instance) method that simply forwards the parameters given on
+to the singleton instance.
+
+=head2 MT::TheSchwartz->insert
+
+Static (or instance) method that simply forwards the parameters given on
+to the singleton instance.
+
+=head2 $schwartz->default_logger($msg, $job)
+
+Handles logging messages for C<TheSchwartz>. When a log message is issued,
+this method takes over. In this case, this subclass suppresses the
+"job completed" messages issued by C<TheSchwartz>.
+
+=head2 $schwartz->work_periodically([$delay])
+
+Invokes C<TheSchwartz> to process available jobs, then queries the MT
+session table for available MT registered tasks that may be ready to
+run. MT tasks such as publishing scheduled posts, expiration of
+spam comments and trackbacks, etc. This routine runs in an infinite
+loop-- after scheduled tasks are run, it will delay C<$delay> seconds
+(default of 5 seconds), then checks for more Schwartz jobs to process.
+
+=cut

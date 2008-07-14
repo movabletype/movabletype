@@ -62,3 +62,39 @@ sub touch {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Touch - Object class for recording object type modification times
+
+=head1 SYNOPSIS
+
+    # record that an entry object was modified for blog # $blog_id
+    use MT::Touch;
+    MT::Touch->touch( $blog_id, 'entry');
+
+    my $ts = MT::Touch->latest_touch($blog_id, 'entry');
+
+=head1 DESCRIPTION
+
+This module is used to store and retrieve the last modification timestamp
+for any registered object type. This is primarily utilized by the
+module caching layer of Movable Type, where caches can expire based on
+changes to entries, pages, categories, etc. Timestamps stored to the
+'modified_on' column are in UTC time.
+
+=head1 METHODS
+
+=head2 MT::Touch->touch( $blog_id, @types )
+
+Records a MT::Touch object for each type given, for the blog ID specified.
+For non-blog objects, feel free to pass a '0' for blog_id.
+
+=head2 MT::Touch->latest_touch( $blog_id, @types )
+
+Returns the ltest timestamp recorded for any of the object types requested
+for the blog ID specified. The timestamp is returned (YYYYMMDDHHMISS format),
+in UTC time. If no touches exist, C<undef> is the return value.
+
+=cut
