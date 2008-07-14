@@ -742,15 +742,14 @@ sub init_query {
     # CGI.pm has this terrible flaw in that if a POST is in effect,
     # it totally ignores any query parameters.
     if ($app->request_method eq 'POST') {
-        my $query_string;
-        if ($ENV{MOD_PERL}) {
-            $query_string = $q->r->args;
-        } else {
-            $query_string = $ENV{'QUERY_STRING'} if defined $ENV{'QUERY_STRING'};
-            $query_string ||= $ENV{'REDIRECT_QUERY_STRING'} if defined $ENV{'REDIRECT_QUERY_STRING'};
-        }
-        if (defined($query_string) and $query_string ne '') {
-            $q->parse_params($query_string);
+        if (! $ENV{MOD_PERL}) {
+            my $query_string = $ENV{'QUERY_STRING'}
+                if defined $ENV{'QUERY_STRING'};
+            $query_string ||= $ENV{'REDIRECT_QUERY_STRING'}
+                if defined $ENV{'REDIRECT_QUERY_STRING'};
+            if (defined($query_string) and $query_string ne '') {
+                $q->parse_params($query_string);
+            }
         }
     }
 }
