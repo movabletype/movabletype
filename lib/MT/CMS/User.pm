@@ -1585,6 +1585,21 @@ sub save_filter {
             $app->translate("A user with the same name already exists.") );
     }
 
+    require MT::Auth;
+    my $error = MT::Auth->sanity_check($app);
+    if ($error) {
+        require MT::Log;
+        $app->log(
+            {
+                message  => $error,
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'save_author_profile'
+            }
+        );
+        return $eh->error($error);
+    }
+
     return 1 if ( $pref ne 'MT' );
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
@@ -1600,20 +1615,6 @@ sub save_filter {
         my $url = $app->param('url');
         return $eh->error( MT->translate("Website URL is imperfect") )
           unless is_url($url);
-    }
-    require MT::Auth;
-    my $error = MT::Auth->sanity_check($app);
-    if ($error) {
-        require MT::Log;
-        $app->log(
-            {
-                message  => $error,
-                level    => MT::Log::ERROR(),
-                class    => 'system',
-                category => 'save_author_profile'
-            }
-        );
-        return $eh->error($error);
     }
     1;
 }
