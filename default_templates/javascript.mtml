@@ -320,7 +320,8 @@ function mtFetchUser(cb) {
         // from a different domain. JSONP to the rescue.
         mtFetchedUser = true;
         var script = document.createElement('script');
-        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb;
+        var ts = new Date().getTime();
+        script.src = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=session_js&blog_id=<$mt:BlogID$>&jsonp=' + cb + '&ts=' + ts;
         (document.getElementsByTagName('head'))[0].appendChild(script);
     }
 }
