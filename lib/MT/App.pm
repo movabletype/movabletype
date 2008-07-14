@@ -1163,7 +1163,12 @@ sub make_commenter_session {
 
     my $timeout;
     if ( $user->auth_type eq 'MT' ) {
-        $timeout = '+' . $app->config->UserSessionTimeout . 's';
+        if ($app->param('remember')) {
+            # 10 years, same as app sign-in 'remember me'
+            $timeout = '+3650d';
+        } else {
+            $timeout = '+' . $app->config->UserSessionTimeout . 's';
+        }
     } else {
         $timeout = '+' . $app->config->CommentSessionTimeout . 's';
     }
