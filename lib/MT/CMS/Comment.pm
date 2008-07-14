@@ -1214,6 +1214,11 @@ SPINNER
 
 sub do_reply {
     my $app = shift;
+
+    # Save requires POST
+    return $app->error( $app->translate("Invalid request") )
+      if $app->request_method() ne 'POST';
+
     my $q   = $app->param;
 
     my $param = {
@@ -1254,12 +1259,19 @@ sub do_reply {
 
 sub reply_preview {
     my $app = shift;
+
+    # Preview requires POST
+    return $app->error( $app->translate("Invalid request") )
+      if $app->request_method() ne 'POST';
+
+    $app->validate_magic or return;
+
     my $q   = $app->param;
     my $cfg = $app->config;
 
     my $param = {
         reply_to    => $q->param('reply_to'),
-        magic_token => $q->param('magic_token'),
+        magic_token => $app->current_magic,
         blog_id     => $q->param('blog_id'),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
