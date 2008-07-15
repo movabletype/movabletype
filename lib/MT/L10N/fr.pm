@@ -36,6 +36,9 @@ use vars qw( @ISA %Lexicon );
 	'Error: widgetset [_1] is empty.' => 'Erreur: le groupe de widget [_1] est vide.',
 	'Error compiling widgetset [_1]' => 'Erreur de compilation du groupe de widget [_1]',
 
+## php/lib/thumbnail_lib.php
+	'GD support has not been available. Please install GD support.' => 'Le support GP n\'est pas disponible. Veuillez installer le support GD.', # Translate - New
+
 ## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anonyme',
 
@@ -157,7 +160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recent_comments.mtml
 	'Recent Comments' => 'Commentaires récents',
-	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
+	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1] :</strong> [_2] <a href="[_3]" title="commentaire complet sur : [_4]">lire la suite</a>', # Translate - New
 
 ## default_templates/new-ping.mtml
 	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Un Trackback non-approuvé a été déposé sur votre blog [_1], pour la note #[_2] ([_3]). Vous devez approuver ce Trackback pour qu\'il apparaisse sur votre site.',
@@ -215,10 +218,10 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/syndication.mtml
 	'Subscribe to feed' => 'S\'abonner au flux',
 	'Subscribe to this blog\'s feed' => 'S\'abonner au flux de ce blog',
-	'Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;' => 'S\'abonner au flux de toutes les futurs notes tagguées &ldquo;[_1]&ldquo;', # Translate - New
-	'Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;' => 'S\'abonner au flux de toutes les futurs notes contenant &ldquo;[_1]&ldquo;', # Translate - New
-	'Feed of results tagged &ldquo;[_1]&ldquo;' => 'Flux des résultats taggés &ldquo;[_1]&ldquo;', # Translate - New
-	'Feed of results matching &ldquo;[_1]&ldquo;' => 'Flux des résultats pour &ldquo;[_1]&ldquo;', # Translate - New
+	'Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;' => 'S\'abonner au flux de toutes les futurs notes tagguées &ldquo;[_1]&ldquo;',
+	'Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;' => 'S\'abonner au flux de toutes les futurs notes contenant &ldquo;[_1]&ldquo;',
+	'Feed of results tagged &ldquo;[_1]&ldquo;' => 'Flux des résultats taggés &ldquo;[_1]&ldquo;',
+	'Feed of results matching &ldquo;[_1]&ldquo;' => 'Flux des résultats pour &ldquo;[_1]&ldquo;',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => 'Archives Annuelles par Auteurs',
@@ -268,14 +271,14 @@ use vars qw( @ISA %Lexicon );
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Cette page contient une unique note de [_1] publiée le <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> est la note précédente de ce blog.',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> est la note suivante de ce blog.',
-	'This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Cette page est une archive des notes dans la catégorie <strong>[_1]</strong> par <strong>[_2]</strong>.',
+	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Cette page est une archive des notes dans la catégorie <strong>[_1]</strong> de <strong>[_2]</strong>.', # Translate - New
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> est l\'archive précédente.',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> est l\'archive suivante.',
-	'This page is a archive of recent entries in the <strong>[_1]</strong> category.' => 'Cette page est une archive des notes récentes dans la catégorie <strong>[_1]</strong>.',
+	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'Cette page est une archive des notes récentes dans la catégorie <strong>[_1]</strong>.', # Translate - New
 	'<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> est la catégorie précédente.',
 	'<a href="[_1]">[_2]</a> is the next category.' => '<a href="[_1]">[_2]</a> est la catégorie suivante.',
-	'This page is a archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong> dans <strong>[_2]</strong>.',
-	'This page is a archive of recent entries written by <strong>[_1]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong>.',
+	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong> dans <strong>[_2]</strong>.', # Translate - New
+	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong>.', # Translate - New
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'Cette page est une archive des notes de <strong>[_2]</strong> listées de la plus récente à la plus ancienne.',
 	'Find recent content on the <a href="[_1]">main index</a>.' => 'Retrouvez le contenu récent sur <a href="[_1]">l\'index principal</a>.',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => 'Retrouvez le contenu récent sur <a href="[_1]">l\'index principal</a> ou allez dans les <a href="[_2]">archives</a> pour retrouver tout le contenu.',
@@ -291,7 +294,7 @@ use vars qw( @ISA %Lexicon );
 	'Mail Footer' => 'Pied des mails',
 
 ## default_templates/trackbacks.mtml
-	'TrackBack URL: [_1]' => 'URL de Trackback : [_1]', # Translate - New
+	'TrackBack URL: [_1]' => 'URL de Trackback : [_1]',
 	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> depuis [_3] sur <a href="[_4]">[_5]</a>',
 	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Lire la suite</a>',
 
@@ -301,10 +304,10 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,minute,minutes] ago' => 'il y a [quant,_1,minute,minutes]',
 	'[quant,_1,day,days] ago' => 'il y a [quant,_1,jour,jours]',
 	'Edit' => 'Editer',
-	'Your session has expired. Please sign in again to comment.' => 'Votre session a expiré. Veuillez vous identifier à nouveau pour commenter.', # Translate - New
+	'Your session has expired. Please sign in again to comment.' => 'Votre session a expiré. Veuillez vous identifier à nouveau pour commenter.',
 	'Signing in...' => 'Identification ...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'Vous n\'avez pas la permission de commenter sur ce blog. ([_1]déconnexion[_2])',
-	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => 'Merci de vous être identifié(e) en tant que __NAME__. ([_1]fermer la session[_2])', # Translate - New
+	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => 'Merci de vous être identifié(e) en tant que __NAME__. ([_1]fermer la session[_2])',
 	'[_1]Sign in[_2] to comment.' => '[_1]Identifiez-vous[_2] pour commenter.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Identifiez-vous[_2] pour commenter, ou laissez un commentaire anonyme.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'En réponse au <a href="[_1]" onclick="[_2]">commentaire de [_3]</a>',
@@ -336,6 +339,11 @@ use vars qw( @ISA %Lexicon );
 	'2-column layout - Sidebar' => 'Mise en page à 2 colonnes - Barre latérale',
 	'3-column layout - Primary Sidebar' => 'Mise en page à 3 colonnes - Première barre latérale',
 	'3-column layout - Secondary Sidebar' => 'Mise en page à 3 colonnes - Seconde barre latérale',
+
+## default_templates/openid.mtml
+	'[_1] accepted here' => '[_1] est accepté', # Translate - New
+	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/', # Translate - New
+	'Learn more about OpenID' => 'Apprenez-en plus à propos d\'OpenID', # Translate - New
 
 ## default_templates/creative_commons.mtml
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Ce blog possède une licence <a href="[_1]">Creative Commons</a>.',
@@ -477,8 +485,7 @@ use vars qw( @ISA %Lexicon );
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Rognage vers [_1]x[_1] échoué: [_2]',
 	'Converting to [_1] failed: [_2]' => 'Conversion vers [_1] a échoué: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'Votre chemin d\'accès vers les outils NetPBM n\'est pas valide sur votre machine.',
-	'Can\'t load GD: [_1]' => 'Impossible de charger GD: [_1]', # Translate - New
-	'Reading image failed: [_2]' => 'La lecture de l\'image a échouhé : [_2]', # Translate - New
+	'Can\'t load GD: [_1]' => 'Impossible de charger GD: [_1]',
 
 ## lib/MT/Trackback.pm
 	'TrackBack' => 'Trackback',
@@ -611,10 +618,10 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Attribution du nom de base de l\'auteur...',
 	'Assigning entry comment and TrackBack counts...' => 'Attribution des nombres de commentaires et trackbacks...',
 	'Assigning embedded flag to asset placements...' => 'Attribution des drapeaux embarqués vers la gestion d\'éléments...',
-	'Updateing template build types...' => 'Mise à jour des types de construction...', # Translate - New
+	'Updating template build types...' => 'Mise à jour des types de construction de gabarits...', # Translate - New
 	'Replacing file formats to use CategoryLabel tag...' => 'Remplacement des formats de fichiers pour utiliser le tag CategoryLabel...',
-	'Assigning all permissions to blog administrator...' => 'Attribution de toutes les permissions à l\'administrateur du blog...', # Translate - New
-	'Recover permissions of system administrators...' => 'Récupération des permissions des administrateurs système...', # Translate - New
+	'Assigning all permissions to blog administrator...' => 'Attribution de toutes les permissions à l\'administrateur du blog...',
+	'Recover permissions of system administrators...' => 'Récupération des permissions des administrateurs système...',
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Administrateur Système',
@@ -678,7 +685,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'Expiration du répertoire de spam',
 	'Remove Temporary Files' => 'Supprimer les fichiers temporaires',
 	'Remove Expired User Sessions' => 'Supprimer les sessions utilisateur expirées',
-	'Remove Expired Search Caches' => 'Supprimer les caches des recherches expirées', # Translate - New
+	'Remove Expired Search Caches' => 'Supprimer les caches des recherches expirées',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'par auteurs et semaines',
@@ -713,8 +720,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'par auteurs et jours',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/afficher-nom-auteur/aaaa/mm/jj/index.html', # Translate - New
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/afficher_nom_auteur/aaaa/mm/jj/index.html', # Translate - New
+	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/afficher-nom-auteur/aaaa/mm/jj/index.html',
+	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/afficher_nom_auteur/aaaa/mm/jj/index.html',
 
 ## lib/MT/ArchiveType/Individual.pm
 	'INDIVIDUAL_ADV' => 'par notes',
@@ -1323,7 +1330,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Le fichier téléchargé a été sauvegardé depuis Movable Type mais la version du schéma ([_1]) est différente de celle du système ([_2]). Il n\'est pas conseillé de restaurer le fichier vers cette version de Movable Type.', # Translate - New
+	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Le fichier téléchargé a été sauvegardé depuis Movable Type mais la version du schéma ([_1]) est différente de celle du système ([_2]). Il n\'est pas conseillé de restaurer le fichier vers cette version de Movable Type.',
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] n\'est pas un sujet qui peut être restauré par Movable Type.',
 	'[_1] records restored.' => '[_1] enregistrements restaurés.',
 	'Restoring [_1] records:' => 'Restauration de [_1] enregistrements:',
@@ -1584,8 +1591,8 @@ use vars qw( @ISA %Lexicon );
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including Vox and LiveJournal.' => 'Ce module et ses dépendances sont obligatoires pour permettre aux auteurs de commentaires d\'être authentifiés par des fournisseurs OpenID comme Vox et LiveJournal.',
 	'This module is required for sending mail via SMTP Server.' => 'Ce module est nécessaire pour envoyer des emails via un serveur SMTP.',
 	'This module is used in test attribute of MTIf conditional tag.' => 'Ce module est utilisé dans l\'attribut de test du tag conditionnel MTIf.',
-	'This module is used by the Markdown text filter.' => 'Ce module est utilisé par le filtre de texte Markdown', # Translate - New
-	'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.' => 'Ce module est nécessaire pour mt-search.cgi si vous utilisez Movable Type sur une version de Perl supérieur à 5.8.', # Translate - New
+	'This module is used by the Markdown text filter.' => 'Ce module est utilisé par le filtre de texte Markdown',
+	'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.' => 'Ce module est nécessaire pour mt-search.cgi si vous utilisez Movable Type sur une version de Perl supérieur à 5.8.',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Ce module est nécessaire pour les envois de fichiers (pour déterminer la taille des images dans différents formats).',
 	'This module is required for cookie authentication.' => 'Ce module est nécessaire pour l\'authentification par cookies.',
 	'DBI is required to store data in database.' => 'DBI est nécessaire pour enregistrer les données en base de données.',
@@ -1893,6 +1900,7 @@ use vars qw( @ISA %Lexicon );
 	'Technorati Search' => 'Recherche Technorati',
 	'Date-Based Author Archives' => 'Archives des Auteurs par Dates',
 	'Date-Based Category Archives' => 'Archives des Catégories par Dates',
+	'OpenID Accepted' => 'OpenID Accepté', # Translate - New
 	'Comment throttle' => 'Limitation des commentaires',
 	'Commenter Confirm' => 'Confirmation du commentateur',
 	'Commenter Notify' => 'Notification du commentateur',
@@ -2053,7 +2061,7 @@ use vars qw( @ISA %Lexicon );
 	'Your configuration settings have been written to the following file:' => 'Vos paramètres de configuration ont été écrits dans le fichier suivant:',
 	'To reconfigure the settings, click the \'Back\' button below.' => 'Pour reconfigurer vos paramètres, cliquez sur le bouton \'Retour\' ci-dessous. Sinon, cliquez sur Continuer.',
 	'Show the mt-config.cgi file generated by the wizard' => 'Afficher le fichier mt-config.cgi généré par l\'assistant',
-	'I will create the mt-config.cgi file manually.' => 'Je vais créer le fichier mt-config.cgi manuellement.',
+	'The mt-config.cgi file has been created manually.' => 'Le fichier mt-config.cgi a été créé manuellement.', # Translate - New
 	'Retry' => 'Recommencer',
 
 ## tmpl/wizard/cfg_dir.tmpl
@@ -2112,8 +2120,10 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Merci de saisir les paramètres nécessaires pour se connecter à votre base de données.',
 	'Show Current Settings' => 'Montrer les paramètres actuels',
 	'Database Type' => 'Type de base de données',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]', # Translate - New
-	'If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>.' => 'Si le type de votre base de données n\'est pas listé dans le menu ci-dessus, vous devez <a target="help" href="[_1]">installer le module Perl nécessaire pour se connecter à votre base</a>. Si c\'est déjà le cas, merci de vérifier votre installation et <a href="javascript:void(0)" onclick="[_2]">testez-la à nouveau</a>.',
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Votre base de données préférée n\'est pas listée ? Regardez <a href="[_1]" target="_blank">Movable Type System Check</a> pour voir s\'il y a des modules additionnels nécessaires pour permettre son utilisation.', # Translate - New
+	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Une fois installé, <a href="javascript:void(0)" onclick="[_1]">cliquez ici pour réactualiser cette page</a>.', # Translate - New
+	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Apprenez-en plus : <a href="[_1]" target="_blank">Configurez votre base de données</a>', # Translate - New
 	'Database Path' => 'Chemin de la Base de Données',
 	'The physical file path for your SQLite database. ' => 'Le chemin du fichier physique de votre base de données SQLite. ',
 	'A default location of \'./db/mt.db\' will store the database file underneath your Movable Type directory.' => 'Un endroit par défaut \'./db/mt.db\' stockera le fichier de base de données dans votre répertoire Movable Type.',
@@ -2181,7 +2191,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Type de gabarit',
 	'Custom Index Template' => 'Gabarit d\'index personnalisé',
 	'Link to File' => 'Lien vers le fichier',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Apprennez en plus à propos des <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">paramètres de publication</a>', # Translate - New
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Apprennez en plus à propos des <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">paramètres de publication</a>',
 	'Create Archive Mapping' => 'Créer une nouvelle table de correspondance des archives',
 	'Type' => 'Type',
 	'Add' => 'Ajouter',
@@ -2281,6 +2291,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'Le blog a été correctement supprimé du système Movable Type.',
 	'You have successfully refreshed your templates.' => 'Vous avez réactualisé avec succès vos gabarits.',
+	'You can not refresh templates: [_1]' => 'Vous ne pouvez pas réactualiser le(s) gabarit(s) : [_1]', # Translate - New
 	'Create Blog' => 'Créer un blog',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2476,9 +2487,6 @@ use vars qw( @ISA %Lexicon );
 	'Show Activity Log' => 'Afficher le journal (logs)',
 
 ## tmpl/cms/include/comment_detail.tmpl
-	'By [_1]' => 'Par [_1]',
-	'replied to [_1]' => 'a répondu à [_1]',
-	'on [_1]' => 'le [_1]',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
 
@@ -2555,7 +2563,6 @@ use vars qw( @ISA %Lexicon );
 	'Republish selected pages (r)' => 'Republier les pages sélectionnées (r)',
 	'Delete selected pages (x)' => 'Supprimer les pages sélectionnées (x)',
 	'to republish' => 'pour republier',
-	'Republish' => 'Republier',
 	'Last Modified' => 'Dernière modification',
 	'Created' => 'Créé',
 	'Unpublished (Draft)' => 'Non publié (Brouillon)',
@@ -2580,7 +2587,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/calendar.tmpl
 	'_LOCALE_WEEK_START' => '1',
-	'S|M|T|W|T|F|S' => 'D|L|M|M|J|V|S',
+	'S|M|T|W|T|F|S' => 'L|M|M|J|V|S|D',
 	'January' => 'Janvier',
 	'Febuary' => 'Février',
 	'March' => 'Mars',
@@ -2818,7 +2825,7 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Profile' => 'Profil de publication',
 	'Choose the profile that best matches the requirements for this blog.' => 'Choisir le profil qui correspond le mieux aux besoins de ce blog',
 	'Static Publishing' => 'Publication statique',
-	'Immediately publish all templates statically.' => 'Publier immédiatement tous les gabarits de manière statique.', # Translate - Case
+	'Immediately publish all templates statically.' => 'Publier immédiatement tous les gabarits de manière statique.',
 	'Background Publishing' => 'Publication en arrière-plan',
 	'All templates published statically via Publish Que.' => 'Tous les gabarits sont publiés en statique via une publication en mode file d\'attente',
 	'High Priority Static Publishing' => 'Publication statique prioritaire',
@@ -2861,7 +2868,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Options fichier',
-	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'Le fichier nommé \'[_1]\' a été téléchargé. Taille : [quant,_2,octet,octets].',
 	'Create entry using this uploaded file' => 'Créer une note à l\'aide de ce fichier',
 	'Create a new entry using this uploaded file.' => 'Créer une nouvelle note avec ce fichier envoyé.',
 	'Finish (s)' => 'Terminer (s)',
@@ -3481,7 +3487,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/popup/rebuilt.tmpl
 	'Success' => 'Succès',
-	'The files for [_1] have been published.' => 'Les fichiers pour [_1] ont été publiés.', # Translate - New
+	'The files for [_1] have been published.' => 'Les fichiers pour [_1] ont été publiés.',
 	'Your [_1] archives have been published.' => 'Vos archives [_1]  ont été publiées.',
 	'Your [_1] templates have been published.' => 'Vos gabarites [_1] ont été publiées.',
 	'Publish time: [_1].' => 'Temps de publication : [_1].',
@@ -4056,8 +4062,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/tmpl/widget/recent_submissions.mtml
 	'Recent Submissions' => 'Soumissions récentes',
 
-## addons/Community.pack/tmpl/widget/recent_favorites.mtml
-	'Recent Favorites' => 'Favoris récents',
+## addons/Community.pack/tmpl/widget/recently_scored.mtml
+	'Recently Scored' => 'Noté récemment', # Translate - New
 	'There are no recently favorited entries.' => 'Il n\'y a pas de notes favorites récentes.',
 
 ## addons/Community.pack/tmpl/cfg_community_prefs.tmpl
@@ -4068,8 +4074,8 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to blog (s)' => 'Sauvegarder les modifications du blog (s)',
 
 ## addons/Community.pack/config.yaml
-	'Following Users' => 'Utilisateurs suiveurs', # Translate - New
-	'Being Followed' => 'Être suivi', # Translate - New
+	'Following Users' => 'Utilisateurs suiveurs',
+	'Being Followed' => 'Être suivi',
 	'Login Form' => 'Formulaire d\'identification',
 	'Password Reset Form' => 'Formulaire de réinitialisation du mot de passe',
 	'Registration Form' => 'Formulaire d\'enregistrement',
@@ -4077,7 +4083,7 @@ use vars qw( @ISA %Lexicon );
 	'Profile Error' => 'Erreur de profil',
 	'Profile View' => 'Vue du profil',
 	'Profile Edit Form' => 'Formulaire de modification du profil',
-	'Profile Feed' => 'Flux du profil', # Translate - New
+	'Profile Feed' => 'Flux du profil',
 	'Form Field' => 'Champ de formulaire',
 	'Status Message' => 'Message de statut',
 	'Simple Header' => 'Tête de page simple',
@@ -4090,7 +4096,7 @@ use vars qw( @ISA %Lexicon );
 	'Registration notification' => 'Notification enregistrement',
 	'New entry notification' => 'Notification de nouvelle note',
 	'Community Blog' => 'Blog de la communauté',
-	'Atom ' => 'Atom', # Translate - New
+	'Atom ' => 'Atom',
 	'Entry Response' => 'Réponse à la note',
 	'Displays error, pending or confirmation message when submitting an entry.' => 'Afficher les erreurs et les messages de confirmation quand une note est écrite.',
 	'Comment Detail' => 'Détail du Commentaire',
@@ -4099,22 +4105,23 @@ use vars qw( @ISA %Lexicon );
 	'Page Detail' => 'Détails de la page',
 	'Entry Form' => 'Formulaire de note',
 	'Content Navigation' => 'Navigation du contenu',
-	'Activity Widgets' => 'Widgets d\'activité', # Translate - New
-	'Archive Widgets' => 'Widgets d\'archive', # Translate - New
+	'Activity Widgets' => 'Widgets d\'activité',
+	'Archive Widgets' => 'Widgets d\'archive',
 	'Community Forum' => 'Forum de la communauté',
-	'Entry Feed' => 'Flux de la note', # Translate - New
+	'Entry Feed' => 'Flux de la note',
 	'Displays error, pending or confirmation message when submitting a entry.' => 'Affiche les messages d\'erreur, de validation et de confirmation quand une nouvelle note est créée.',
-	'Category Groups' => 'Groupes de catégorie',
 	'Popular Entry' => 'Note populaire',
 	'Entry Table' => 'Tableau de note',
 	'Content Header' => 'Entête du contenu',
+	'Category Groups' => 'Groupes de catégorie',
+	'Default Widgets' => 'Widgets par défaut', # Translate - New
 
 ## addons/Community.pack/templates/global/login_form.mtml
 
 ## addons/Community.pack/templates/global/signin.mtml
-	'You are signed in as <a href="[_1]">[_2]</a>' => 'Vous êtes identifié(e) comme étant <a href="[_1]">[_2]</a>', # Translate - New
-	'You are signed in as [_1]' => 'Vous êtes identifié(e) comme étant [_1]', # Translate - New
-	'Edit profile' => 'Editer le profil', # Translate - Case
+	'You are signed in as <a href="[_1]">[_2]</a>' => 'Vous êtes identifié(e) comme étant <a href="[_1]">[_2]</a>',
+	'You are signed in as [_1]' => 'Vous êtes identifié(e) comme étant [_1]',
+	'Edit profile' => 'Editer le profil',
 	'Sign out' => 'déconnexion',
 	'Not a member? <a href="[_1]">Register</a>' => 'Pas encore membre? <a href="[_1]">Enregistrez-vous</a>',
 
@@ -4141,6 +4148,12 @@ use vars qw( @ISA %Lexicon );
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Retourner à  <a href="[_1]">la page précédente</a> ou <a href="[_2]">voir votre profil</a>.',
 	'Upload New Userpic' => 'Charger une nouvelle photo utilisateur',
 
+## addons/Community.pack/templates/global/profile_feed.mtml
+	'Posted [_1] to [_2]' => 'A posté [_1] sur [_2]',
+	'Commented on [_1] in [_2]' => 'A commenté sur [_1] dans [_2]', # Translate - New
+	'Voted on [_1] in [_2]' => 'A voté sur [_1] dans [_2]', # Translate - New
+	'[_1] voted on <a href="[_2]">[_3]</a> in [_4]' => '[_1] a voté sur <a href="[_2]">[_3]</a> dans [_4]', # Translate - New
+
 ## addons/Community.pack/templates/global/header.mtml
 	'Blog Description' => 'Description du blog',
 
@@ -4162,7 +4175,6 @@ use vars qw( @ISA %Lexicon );
 	'Website:' => 'Site Web:',
 	'Recent Actions' => 'Actions récentes',
 	'Comment Threads' => 'Fils de discussion',
-	'Posted [_1] to [_2]' => 'A posté [_1] sur [_2]',
 	'Commented on [_1]' => 'A commenté sur [_1]',
 	'Favorited [_1] on [_2]' => 'A mis comme favori [_1] dans [_2]',
 	'No recent actions.' => 'Plus d\'actions récentes.',
@@ -4187,8 +4199,8 @@ use vars qw( @ISA %Lexicon );
 	'Forgot Password' => 'Mot de passe oublié?',
 
 ## addons/Community.pack/templates/global/javascript.mtml
-	'votes' => 'votes', # Translate - New
-	'vote' => 'vote', # Translate - New
+	'Vote' => 'Vote',
+	'Votes' => 'Votes',
 
 ## addons/Community.pack/templates/global/register_notification_email.mtml
 
@@ -4223,8 +4235,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/comment_detail.mtml
 
 ## addons/Community.pack/templates/blog/entry_form.mtml
+	'In order to create an entry on this blog you must first register.' => 'Avant de créer une note sur ce blog, vous devez vous enregistrer.', # Translate - New
 	'You don\'t have permission to post.' => 'Vous n\'avez pas la permission de poster.',
-	'Sign in to create an entry.' => 'Identifiez-vous pour créer une note.', # Translate - New
+	'Sign in to create an entry.' => 'Identifiez-vous pour créer une note.',
 	'Select Category...' => 'Sélectionner la catégorie...',
 
 ## addons/Community.pack/templates/blog/entry_create.mtml
@@ -4233,6 +4246,7 @@ use vars qw( @ISA %Lexicon );
 	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Résultats de la recherche pour la requête &ldquo;<$mt:SearchString$>&rdquo;',
 
 ## addons/Community.pack/templates/blog/recent_comments.mtml
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
 
 ## addons/Community.pack/templates/blog/comment_form.mtml
 
@@ -4250,8 +4264,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/tags.mtml
 
 ## addons/Community.pack/templates/blog/entry_metadata.mtml
-	'Vote' => 'Vote', # Translate - New
-	'Votes' => 'Votes', # Translate - New
 
 ## addons/Community.pack/templates/blog/entry.mtml
 
@@ -4264,6 +4276,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/recent_entries.mtml
 
 ## addons/Community.pack/templates/blog/sidebar.mtml
+
+## addons/Community.pack/templates/blog/openid.mtml
 
 ## addons/Community.pack/templates/blog/categories.mtml
 
@@ -4284,43 +4298,12 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/blog/search.mtml
 
-## addons/Community.pack/templates/forum/comment_response.mtml
-	'Reply Submitted' => 'Réponse envoyée',
-	'Your reply has been accepted.' => 'Votre réponse a été acceptée.', # Translate - New
-	'Thank you for replying.' => 'Merci pour votre réponse.', # Translate - New
-	'Your reply has been received and held for approval by the forum administrator.' => 'Votre réponse a bien été reçue et est en attente d\'approbation par un administrateur du forum.', # Translate - New
-	'Reply Submission Error' => 'Erreur lors de l\'envoi de la réponse',
-	'Your reply submission failed for the following reasons: [_1]' => 'L\'envoi de la réponse a échoué pour les raisons suivantes : [_1]', # Translate - New
-	'Return to the <a href="[_1]">original topic</a>.' => 'Retour au <a href="[_1]">sujet d\'origine</a>.',
-
-## addons/Community.pack/templates/forum/archive_index.mtml
-
-## addons/Community.pack/templates/forum/entry_table.mtml
-	'Recent Topics' => 'Sujets récents',
-	'Replies' => 'Réponses',
-	'Last Reply' => 'Dernière réponse',
-	'Permalink to this Reply' => 'Lien permanent vers cette réponse',
-	'Closed' => 'Fermé',
-	'Post the first topic in this forum.' => 'Créez le premier sujet de ce forum.',
-
-## addons/Community.pack/templates/forum/sidebar.mtml
-	'All Forums' => 'Tous les forums',
-	'[_1] Forum' => 'Forum [_1]',
+## addons/Community.pack/templates/forum/entry_summary.mtml
 
 ## addons/Community.pack/templates/forum/main_index.mtml
 	'Forum Home' => 'Accueil du forum',
 
-## addons/Community.pack/templates/forum/category_groups.mtml
-	'Forum Groups' => 'Groupes de forums',
-	'Last Topic: [_1] by [_2] on [_3]' => 'Dernier sujet: [_1] par [_2] sur [_3]',
-	'Be the first to <a href="[_1]">post a topic in this forum</a>' => 'Soyez le premier à <a href="[_1]">créer un sujet dans ce forum</a>', # Translate - New
-
 ## addons/Community.pack/templates/forum/page.mtml
-
-## addons/Community.pack/templates/forum/content_nav.mtml
-	'Start Topic' => 'Débuter un sujet',
-
-## addons/Community.pack/templates/forum/entry_summary.mtml
 
 ## addons/Community.pack/templates/forum/entry_response.mtml
 	'Thank you for posting a new topic to the forums.' => 'Merci d\'avoir créé un nouveau sujet dans le forum.',
@@ -4330,58 +4313,93 @@ use vars qw( @ISA %Lexicon );
 	'The topic you posted has been received and published. Thank you for your submission.' => 'Le sujet que vous avez créé a bien été reçu et publié. Merci.',
 	'Return to the <a href="[_1]">forum\'s homepage</a>.' => 'Retour à la <a href="[_1]">page d\'accueil du forum</a>.',
 
+## addons/Community.pack/templates/forum/content_nav.mtml
+	'Start Topic' => 'Débuter un sujet',
+
+## addons/Community.pack/templates/forum/comment_response.mtml
+	'Reply Submitted' => 'Réponse envoyée',
+	'Your reply has been accepted.' => 'Votre réponse a été acceptée.',
+	'Thank you for replying.' => 'Merci pour votre réponse.',
+	'Your reply has been received and held for approval by the forum administrator.' => 'Votre réponse a bien été reçue et est en attente d\'approbation par un administrateur du forum.',
+	'Reply Submission Error' => 'Erreur lors de l\'envoi de la réponse',
+	'Your reply submission failed for the following reasons: [_1]' => 'L\'envoi de la réponse a échoué pour les raisons suivantes : [_1]',
+	'Return to the <a href="[_1]">original topic</a>.' => 'Retour au <a href="[_1]">sujet d\'origine</a>.',
+
 ## addons/Community.pack/templates/forum/content_header.mtml
 
 ## addons/Community.pack/templates/forum/entry_detail.mtml
 
-## addons/Community.pack/templates/forum/entry_form.mtml
-	'Sign in to create a topic.' => 'S\'identifier pour créer un sujet.', # Translate - New
-	'Topic' => 'Sujet',
-	'Select Forum...' => 'Sélectionner un forum...',
-	'Forum' => 'Forum',
+## addons/Community.pack/templates/forum/comment_detail.mtml
+	'[_1] replied to <a href="[_2]">[_3]</a>' => '[_1] a répondu à <a href="[_2]">[_3]</a>',
 
 ## addons/Community.pack/templates/forum/entry_create.mtml
 	'Start a Topic' => 'Créer un nouveau sujet',
 
-## addons/Community.pack/templates/forum/comment_detail.mtml
-	'[_1] replied to <a href="[_2]">[_3]</a>' => '[_1] a répondu à <a href="[_2]">[_3]</a>', # Translate - New
+## addons/Community.pack/templates/forum/entry_form.mtml
+	'Topic' => 'Sujet',
+	'Select Forum...' => 'Sélectionner un forum...',
+	'Forum' => 'Forum',
 
-## addons/Community.pack/templates/forum/comments.mtml
-	'1 Reply' => '1 Réponse', # Translate - New
-	'# Replies' => '# Réponses', # Translate - New
-	'No Replies' => 'Pas de Réponses', # Translate - New
-	'Add a Reply' => 'Ajouter une Réponse', # Translate - New
+## addons/Community.pack/templates/forum/syndication.mtml
+	'All Forums' => 'Tous les forums',
+	'[_1] Forum' => 'Forum [_1]',
 
 ## addons/Community.pack/templates/forum/comment_form.mtml
-
-## addons/Community.pack/templates/forum/search_results.mtml
-	'Topics matching &ldquo;[_1]&rdquo;' => 'Sujets correspondants à &ldquo;[_1]&rdquo;', # Translate - New
-	'Topics tagged &ldquo;[_1]&rdquo;' => 'Sujets taggués &ldquo;[_1]&rdquo;', # Translate - New
-	'Topics' => 'Sujets', # Translate - New
+	'Add a Reply' => 'Ajouter une Réponse',
 
 ## addons/Community.pack/templates/forum/entry_listing.mtml
 
-## addons/Community.pack/templates/forum/dynamic_error.mtml
+## addons/Community.pack/templates/forum/entry_metadata.mtml
+	'1 Reply' => '1 Réponse',
+	'# Replies' => '# Réponses',
 
 ## addons/Community.pack/templates/forum/entry.mtml
-
-## addons/Community.pack/templates/forum/entry_metadata.mtml
-
-## addons/Community.pack/templates/forum/comment_preview.mtml
-	'Reply to [_1]' => 'Répondre à [_1]', # Translate - New
-	'Previewing your Reply' => 'Prévisualiser votre réponse',
-
-## addons/Community.pack/templates/forum/entry_popular.mtml
-	'Popular topics' => 'Sujets populaires',
 
 ## addons/Community.pack/templates/forum/javascript.mtml
 	'Thanks for signing in,' => 'Merci de vous être identifié,',
 	'. Now you can reply to this topic.' => '. Maintenant vous pouvez répondre à ce sujet.',
 	'You do not have permission to comment on this blog.' => 'Vous n\'avez pas la permission de commenter sur ce blog.',
-	' to reply to this topic.' => ' pour répondre à ce sujet.', # Translate - New
-	' to reply to this topic,' => ' pour répondre à ce sujet,', # Translate - New
+	' to reply to this topic.' => ' pour répondre à ce sujet.',
+	' to reply to this topic,' => ' pour répondre à ce sujet,',
 	'or ' => 'ou ',
-	'reply anonymously.' => 'répondre anonymement.', # Translate - New
+	'reply anonymously.' => 'répondre anonymement.',
+
+## addons/Community.pack/templates/forum/entry_table.mtml
+	'Recent Topics' => 'Sujets récents',
+	'Replies' => 'Réponses',
+	'Last Reply' => 'Dernière réponse',
+	'Permalink to this Reply' => 'Lien permanent vers cette réponse',
+	'By [_1]' => 'Par [_1]',
+	'Closed' => 'Fermé',
+	'Post the first topic in this forum.' => 'Créez le premier sujet de ce forum.',
+
+## addons/Community.pack/templates/forum/archive_index.mtml
+
+## addons/Community.pack/templates/forum/sidebar.mtml
+
+## addons/Community.pack/templates/forum/category_groups.mtml
+	'Forum Groups' => 'Groupes de forums',
+	'Last Topic: [_1] by [_2] on [_3]' => 'Dernier sujet: [_1] par [_2] sur [_3]',
+	'Be the first to <a href="[_1]">post a topic in this forum</a>' => 'Soyez le premier à <a href="[_1]">créer un sujet dans ce forum</a>',
+
+## addons/Community.pack/templates/forum/openid.mtml
+
+## addons/Community.pack/templates/forum/comments.mtml
+	'No Replies' => 'Pas de Réponses',
+
+## addons/Community.pack/templates/forum/search_results.mtml
+	'Topics matching &ldquo;[_1]&rdquo;' => 'Sujets correspondants à &ldquo;[_1]&rdquo;',
+	'Topics tagged &ldquo;[_1]&rdquo;' => 'Sujets taggués &ldquo;[_1]&rdquo;',
+	'Topics' => 'Sujets',
+
+## addons/Community.pack/templates/forum/dynamic_error.mtml
+
+## addons/Community.pack/templates/forum/entry_popular.mtml
+	'Popular topics' => 'Sujets populaires',
+
+## addons/Community.pack/templates/forum/comment_preview.mtml
+	'Reply to [_1]' => 'Répondre à [_1]',
+	'Previewing your Reply' => 'Prévisualiser votre réponse',
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
 	'About' => 'A propos de',
@@ -4413,8 +4431,8 @@ use vars qw( @ISA %Lexicon );
 	'_UTS_SAMPLE_NEWDESIGN' => '
 <p>Notre nouveau site internet est habillé d\'un nouvel habillage grâce à <a href="http://www.movabletype.com/">Movable Type</a> et les Groupes d\'Habillages Universels. Les Groupes d\'Habillages Universels rendent facile et accessible à n\'importe qui la mise en place et l\'animation d\'un site internet utilisant Movable Type. Et cela ne vous prendra que quelques instants#160;! Sélectionnez-en un simplement pour votre nouveau site web et publiez. Voilà#160;! Merci Movable Type#160;!</p> 
 ',
-	'John Doe' => 'John Doe', # Translate - New
-	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Super nouveau site. Je suis impatient d\'essayer Movable Type. Félicitations !', # Translate - New
+	'John Doe' => 'John Doe',
+	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Super nouveau site. Je suis impatient d\'essayer Movable Type. Félicitations !',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Afficher',
@@ -4433,7 +4451,6 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is an invalid tag name.' => 'Le tag de gabarit \'[_1]\' est un nom de tag invalide',
 	'The template tag \'[_1]\' is already in use.' => 'Le tag de gabarit \'[_1]\' est déjà utilisé.',
 	'The basename \'[_1]\' is already in use.' => 'Le nom de base \'[_1]\' est déjà utilisé.',
-	'Default value must be valid URL.' => 'La valeur par défaut doit être une URL valide.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Personnalisez les champs des notes, pages, répertoires, catégories et auteurs pour stocker toutes les informations dont vous avez besoin.',
 	' ' => ' ',
 	'Single-Line Text' => 'Texte sur une ligne',
@@ -4452,7 +4469,7 @@ use vars qw( @ISA %Lexicon );
 	'Moving metadata storage for pages...' => 'Déplacement de l\'emplacement des métadonnées des pages en cours ...',
 
 ## addons/Commercial.pack/lib/CustomFields/Template/ContextHandlers.pm
-	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => 'Êtes-vous sûr d\'avoir utilisé un tag \'[_1]\' dans le contexte approprié ? Impossible de trouver le [_2]',
+	'Are you sure you have used a \'[_1]\' tag in the correct context? We could not find the [_2]' => 'Etes-vous sûr d\'avoir utilisé un tag \'[_1]\' dans le contexte approprié ? Impossible de trouver le [_2]',
 	'You used an \'[_1]\' tag outside of the context of the correct content; ' => 'Vous avez utilisé un tag \'[_1]\' en dehors du contexte du contenu correct; ',
 
 ## addons/Commercial.pack/lib/CustomFields/Util.pm
@@ -4561,6 +4578,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/universal/comment_form.mtml
 
 ## addons/Commercial.pack/templates/universal/recent_comments.mtml
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
 
 ## addons/Commercial.pack/templates/universal/monthly_archive_list.mtml
 
@@ -4593,6 +4611,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/universal/sidebar.mtml
 
 ## addons/Commercial.pack/templates/universal/powered_by_footer.mtml
+
+## addons/Commercial.pack/templates/universal/openid.mtml
 
 ## addons/Commercial.pack/templates/universal/categories.mtml
 
@@ -4774,8 +4794,8 @@ Base de recherche : [_2]",
 	'Add [_1] to another group' => 'Ajouter [_1] à un autre groupe',
 	'Create Group' => 'Créer un groupe',
 	'You did not select any [_1] to remove.' => 'Vous n\'avez sélectionné aucun [_1] à supprimer.',
-	'Are you sure you want to remove this [_1]?' => 'Êtes-vous sûr de vouloir supprimer ce [_1]?',
-	'Are you sure you want to remove the [_1] selected [_2]?' => 'Êtes-vous sûr de vouloir supprimer le [_1] sélectionné [_2]?',
+	'Are you sure you want to remove this [_1]?' => 'Etes-vous sûr de vouloir supprimer ce [_1]?',
+	'Are you sure you want to remove the [_1] selected [_2]?' => 'Etes-vous sûr de vouloir supprimer le [_1] sélectionné [_2]?',
 	'to remove' => 'à supprimer',
 
 ## addons/Enterprise.pack/tmpl/create_author_bulk_end.tmpl
@@ -4815,8 +4835,8 @@ Base de recherche : [_2]",
 	'No members in group' => 'Aucun membre dans ce groupe',
 	'Only show enabled users' => 'Afficher seulement les utilisateurs actifs',
 	'Only show disabled users' => 'Afficher seulement les utilisateurs désactivés.',
-	'Are you sure you want to remove this [_1] from this group?' => 'Êtes-vous sûr des vouloir supprimer ce [_1] de ce groupe?',
-	'Are you sure you want to remove the [_1] selected [_2] from this group?' => 'Êtes-vous sûr des vouloir supprimer le [_1] sélectionné [_2] de ce groupe?',
+	'Are you sure you want to remove this [_1] from this group?' => 'Etes-vous sûr des vouloir supprimer ce [_1] de ce groupe?',
+	'Are you sure you want to remove the [_1] selected [_2] from this group?' => 'Etes-vous sûr des vouloir supprimer le [_1] sélectionné [_2] de ce groupe?',
 
 ## addons/Enterprise.pack/tmpl/edit_group.tmpl
 	'Edit Group' => 'Modifier le groupe',
@@ -4900,7 +4920,7 @@ Base de recherche : [_2]",
 	'This module is required in order to use SSL/TLS connection with the LDAP Authentication.' => 'Ce module est nécessaire pour utiliser les connections SSL/TLS avec l\'identification LDAP.',
 
 ## addons/Enterprise.pack/app-cms.yaml
-	'Are you sure you want to delete the selected group(s)?' => 'Êtes-vous sûr de vouloir effacer les groupes sélectionnés?',
+	'Are you sure you want to delete the selected group(s)?' => 'Etes-vous sûr de vouloir effacer les groupes sélectionnés?',
 	'Bulk Author Export' => 'Export auteurs en masse',
 	'Synchronize Users' => 'Synchroniser les utilisateurs',
 	'Synchronize Groups' => 'Synchroniser les groupes',
@@ -4934,6 +4954,8 @@ Base de recherche : [_2]",
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Le fichier n\'est pas dans le format WXR.',
+	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...', # Translate - New
+	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]', # Translate - New
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Abandon.',
 	'Saving asset (\'[_1]\')...' => 'Enregistrement de l\'élément (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
@@ -4954,34 +4976,34 @@ Base de recherche : [_2]",
 	'Download WP attachments via HTTP.' => 'Télécharger tous les fichiers attachés à un blog WordPress par HTTP',
 
 ## plugins/TypePadAntiSpam/lib/MT/TypePadAntiSpam.pm
-	'API key is a required parameter.' => 'La clé API est requise.', # Translate - New
+	'API key is a required parameter.' => 'La clé API est requise.',
 
 ## plugins/TypePadAntiSpam/tmpl/system.tmpl
-	'API Key' => 'Clé API', # Translate - New
-	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Pour activer ce plugin, vous devez obtenir une clé API gratuite TypePad AntiSpam. Vous pouvez <strong>obtenir votre clé API gratuite sur [_1]antispam.typepad.com[_2]</strong>. Une fois votre clé obtenue, retournez sur cette page et entrez-là dans le champs ci-dessous.', # Translate - New
-	'Service Host' => 'Hébergeur de service', # Translate - New
-	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'L\'hébergeur de service par défaut pour TypePad AntiSpam est api.antispam.typepad.com. Vous ne devriez changer cela uniquement si vous utilisez un autre service compatible avec l\'API TypePad AntiSpam.', # Translate - New
+	'API Key' => 'Clé API',
+	'To enable this plugin, you\'ll need a free TypePad AntiSpam API key. You can <strong>get your free API key at [_1]antispam.typepad.com[_2]</strong>. Once you have your key, return to this page and enter it in the field below.' => 'Pour activer ce plugin, vous devez obtenir une clé API gratuite TypePad AntiSpam. Vous pouvez <strong>obtenir votre clé API gratuite sur [_1]antispam.typepad.com[_2]</strong>. Une fois votre clé obtenue, retournez sur cette page et entrez-là dans le champs ci-dessous.',
+	'Service Host' => 'Hébergeur de service',
+	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'L\'hébergeur de service par défaut pour TypePad AntiSpam est api.antispam.typepad.com. Vous ne devriez changer cela uniquement si vous utilisez un autre service compatible avec l\'API TypePad AntiSpam.',
 
 ## plugins/TypePadAntiSpam/tmpl/config.tmpl
-	'Junk Score Weight' => 'Niveau du filtrage', # Translate - New
-	'Least Weight' => 'Moins agressif', # Translate - New
-	'Most Weight' => 'Plus agressif', # Translate - New
-	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Les commentaires et trackbakcs reçoivent une note de spam entre - 10 (très forte probabilité d\'être du spam) et +10 (très forte probabilité de n\'être pas du spam). Ces paramètres vous permettent de contrôler la pondération du filtre de TypePad AntiSpam vis-à-vis des autres filtres que vous pouvez avoir installé pour vous aider à filtrer les commentaires et trackbacks.', # Translate - New
+	'Junk Score Weight' => 'Niveau du filtrage',
+	'Least Weight' => 'Moins agressif',
+	'Most Weight' => 'Plus agressif',
+	'Comments and TrackBacks receive a junk score between -10 (definitely spam) and +10 (definitely not spam). This setting allows you to control the weight of the TypePad AntiSpam rating relative to other filters you may have installed to help you filter comments and TrackBacks.' => 'Les commentaires et trackbakcs reçoivent une note de spam entre - 10 (très forte probabilité d\'être du spam) et +10 (très forte probabilité de n\'être pas du spam). Ces paramètres vous permettent de contrôler la pondération du filtre de TypePad AntiSpam vis-à-vis des autres filtres que vous pouvez avoir installé pour vous aider à filtrer les commentaires et trackbacks.',
 
 ## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
-	'widget_label_width' => 'widget_label_width', # Translate - New
-	'widget_totals_width' => 'widget_totals_width', # Translate - New
-	'TypePad AntiSpam' => 'TypePad AntiSpam', # Translate - New
-	'Spam Blocked' => 'Spam bloqué', # Translate - New
-	'on this blog' => 'sur ce blog', # Translate - New
-	'on this system' => 'sur ce système', # Translate - New
+	'widget_label_width' => 'widget_label_width',
+	'widget_totals_width' => 'widget_totals_width',
+	'TypePad AntiSpam' => 'TypePad AntiSpam',
+	'Spam Blocked' => 'Spam bloqué',
+	'on this blog' => 'sur ce blog',
+	'on this system' => 'sur ce système',
 
 ## plugins/TypePadAntiSpam/TypePadAntiSpam.pl
-	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam est un service gratuit de Six Apart vous aidant à protéger votre blog des commentaires et trackbacks de spam. Le plugin TypePad AntiSpam enverra chaque commentaire ou trackback reçu sur votre blog au service pour un évaluation et Movable Type filtrera les éléments si TypePad AntiSpam considère ces éléments comme étant du spam. Si vous découvrez un élément que TypePad AntiSpam a mal filtré, changez simplement sa classification en le marquant comme "Spam" ou "Non-spam" dans la page Gérer les commentaires et TypePad AntiSpam apprendra de vos actions. Le service s\'améliorera au fur et à mesure des notifications de ses utilisateurs, usez donc d\'une attention particulière lorsque vous marquez un élément comme étant du "spam" ou "non-spam".', # Translate - New
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Depuis le début, TypePad AntiSpam a bloqué [quant,_1,message,messages] sur ce blog et [quant,_2,message,messages] sur tout le système.', # Translate - New
-	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Depuis le début, TypePad AntiSpam a bloqué [quant,_1,message,messages] sur tout le système.', # Translate - New
-	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Erreur lors de la vérification de votre clé API TypePad AntiSpam : [_1]', # Translate - New
-	'The TypePad AntiSpam API key provided is invalid.' => 'La clé API TypePad AntiSpam entrée n\'est pas valide.', # Translate - New
+	'TypePad AntiSpam is a free service from Six Apart that helps protect your blog from comment and TrackBack spam. The TypePad AntiSpam plugin will send every comment or TrackBack submitted to your blog to the service for evaluation, and Movable Type will filter items if TypePad AntiSpam determines it is spam. If you discover that TypePad AntiSpam incorrectly classifies an item, simply change its classification by marking it as "Spam" or "Not Spam" from the Manage Comments screen, and TypePad AntiSpam will learn from your actions. Over time the service will improve based on reports from its users, so take care when marking items as "Spam" or "Not Spam."' => 'TypePad AntiSpam est un service gratuit de Six Apart vous aidant à protéger votre blog des commentaires et trackbacks de spam. Le plugin TypePad AntiSpam enverra chaque commentaire ou trackback reçu sur votre blog au service pour un évaluation et Movable Type filtrera les éléments si TypePad AntiSpam considère ces éléments comme étant du spam. Si vous découvrez un élément que TypePad AntiSpam a mal filtré, changez simplement sa classification en le marquant comme "Spam" ou "Non-spam" dans la page Gérer les commentaires et TypePad AntiSpam apprendra de vos actions. Le service s\'améliorera au fur et à mesure des notifications de ses utilisateurs, usez donc d\'une attention particulière lorsque vous marquez un élément comme étant du "spam" ou "non-spam".',
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] for this blog, and [quant,_2,message,messages] system-wide.' => 'Depuis le début, TypePad AntiSpam a bloqué [quant,_1,message,messages] sur ce blog et [quant,_2,message,messages] sur tout le système.',
+	'So far, TypePad AntiSpam has blocked [quant,_1,message,messages] system-wide.' => 'Depuis le début, TypePad AntiSpam a bloqué [quant,_1,message,messages] sur tout le système.',
+	'Failed to verify your TypePad AntiSpam API key: [_1]' => 'Erreur lors de la vérification de votre clé API TypePad AntiSpam : [_1]',
+	'The TypePad AntiSpam API key provided is invalid.' => 'La clé API TypePad AntiSpam entrée n\'est pas valide.',
 
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Le répertoire mt-static n\'a pas pu être trouvé. Veuillez configurer le \'StaticFilePath\' pour continuer.',
@@ -5018,12 +5040,9 @@ Base de recherche : [_2]",
 	'Selected Design' => 'Habillage sélectionné',
 	'Layout' => 'Mise en page',
 
-## plugins/StyleCatcher/stylecatcher.pl
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcher vous permet de naviguer facilement à travers des styles et de les appliquer à votre blog en quelques clics seulement. Pour en savoir plus à propos des styles Movable Type, ou pour avoir de nouvelles sources de styles, visitez la page <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a>.',
+## plugins/StyleCatcher/config.yaml
 	'MT 4 Style Library' => 'Bibliothèque MT4',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Une gamme de styles compatibles avec les gabarits MT4 par défaut',
-	'MT 3 Style Library' => 'Bibliothèque MT3',
-	'A collection of styles compatible with Movable Type 3.3+ default templates.' => 'Une gamme de styles compatibles avec les gabarits MT3.3+ par défaut',
 	'Styles' => 'Habillages',
 
 ## plugins/spamlookup/lib/spamlookup.pm
@@ -5208,6 +5227,6 @@ Base de recherche : [_2]",
 
 );
 
-## New words: 659
+## New words: 217
 
 1;

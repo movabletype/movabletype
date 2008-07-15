@@ -36,6 +36,9 @@ use vars qw( @ISA %Lexicon );
 	'Error: widgetset [_1] is empty.' => 'Fout: widgetset [_1] is leeg',
 	'Error compiling widgetset [_1]' => 'Fout bij het compileren van widgetset [_1]',
 
+## php/lib/thumbnail_lib.php
+	'GD support has not been available. Please install GD support.' => 'GD ondersteuning niet beschikbaar.  Gelieve GD ondersteuning te installeren.', # Translate - New
+
 ## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anonieme',
 
@@ -157,7 +160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recent_comments.mtml
 	'Recent Comments' => 'Recente reacties',
-	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] reageerde op [_3]</a>: [_4]',
+	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1]:</strong> [_2] <a href="[_3]" title="volledige reactie op: [_4]">meer lezen</a>', # Translate - New
 
 ## default_templates/new-ping.mtml
 	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Er is een niet-gekeurde TrackBack binnengekomen op uw blog [_1], op bericht #[_2] ([_3]).  U moet deze TrackBack goedkeuren voor hij op uw site zal verschijnen.',
@@ -215,10 +218,10 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/syndication.mtml
 	'Subscribe to feed' => 'Inschrijven op feed',
 	'Subscribe to this blog\'s feed' => 'Inschrijven op de feed van deze weblog',
-	'Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten getagd als &ldquo;[_1]&ldquo;', # Translate - New
-	'Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten die overeen komen met &ldquo;[_1]&ldquo;', # Translate - New
-	'Feed of results tagged &ldquo;[_1]&ldquo;' => 'Feed met resultaten getagd als &ldquo;[_1]&ldquo;', # Translate - New
-	'Feed of results matching &ldquo;[_1]&ldquo;' => 'Feed met resultaten die overeen komen met &ldquo;[_1]&ldquo;', # Translate - New
+	'Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten getagd als &ldquo;[_1]&ldquo;',
+	'Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;' => 'Inschrijven op een feed met alle toekomstige berichten die overeen komen met &ldquo;[_1]&ldquo;',
+	'Feed of results tagged &ldquo;[_1]&ldquo;' => 'Feed met resultaten getagd als &ldquo;[_1]&ldquo;',
+	'Feed of results matching &ldquo;[_1]&ldquo;' => 'Feed met resultaten die overeen komen met &ldquo;[_1]&ldquo;',
 
 ## default_templates/date_based_author_archives.mtml
 	'Author Yearly Archives' => 'Archieven per auteur per jaar',
@@ -268,14 +271,14 @@ use vars qw( @ISA %Lexicon );
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Deze pagina bevat één bericht door [_1] gepubliceerd op <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> was het vorige bericht op deze weblog.',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> is het volgende bericht op deze weblog.',
-	'This page is a archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Deze pagina is een archief met berichten in de categorie <strong>[_1]</strong> op <strong>[_2]</strong>.',
+	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Dese pagina is een archief van de berichten in de <strong>[_1]</strong> categorie van <strong>[_2]</strong>.', # Translate - New
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> is het vorige archief.',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> is het volgende archief.',
-	'This page is a archive of recent entries in the <strong>[_1]</strong> category.' => 'Deze pagina is een archief van recente berichten in de categorie <strong>[_1]</strong>.',
+	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'Deze pagina is een archief van recente berichten in de <strong>[_1]</strong> categorie.', # Translate - New
 	'<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> is de vorige categorie.',
 	'<a href="[_1]">[_2]</a> is the next category.' => '<a href="[_1]">[_2]</a> is de volgende categorie.',
-	'This page is a archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Deze pagina is een archief van recente berichten geschreven door <strong>[_1]</strong> op <strong>[_2]</strong>',
-	'This page is a archive of recent entries written by <strong>[_1]</strong>.' => 'Deze pagina is een archief van recente berichten geschreven door <strong>[_1]</strong>.',
+	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Deze pagina is een archief van recente berichten geschreven door <strong>[_1]</strong> op <strong>[_2]</strong>.', # Translate - New
+	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'Deze pagina is een archief van recente berichten geschreven door <strong>[_1]</strong>.', # Translate - New
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'Deze pagina is een archief van berichten op <strong>[_2]</strong> gerangschikt van nieuw naar oud',
 	'Find recent content on the <a href="[_1]">main index</a>.' => 'De nieuwste berichten zijn te vinden op de <a href="[_1]">hoofdpagina</a>.',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => 'De nieuwste berichten zijn te vinden op de <a href="[_1]">hoofdpagina</a> of kijk in de <a href="[_2]">archieven</a> om alle berichten te zien.',
@@ -304,7 +307,7 @@ use vars qw( @ISA %Lexicon );
 	'Your session has expired. Please sign in again to comment.' => 'Uw sessie is verlopen.  Gelieve opnieuw aan te melden om te kunnen reageren.',
 	'Signing in...' => 'Aanmelden...',
 	'You do not have permission to comment on this blog. ([_1]sign out[_2])' => 'U heeft geen permissie om te reageren op deze weblog. ([_1]afmelden[_2])',
-	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => 'Bedankt om u aan te melden, __NAME__. ([_1]afmelden[_2])', # Translate - New
+	'Thanks for signing in, __NAME__. ([_1]sign out[_2])' => 'Bedankt om u aan te melden, __NAME__. ([_1]afmelden[_2])',
 	'[_1]Sign in[_2] to comment.' => '[_1]Meld u aan[_2] om te reageren.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Meld u aan[_2] om te reageren, of reageer anoniem.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'Als antwoord op <a href="[_1]" onclick="[_2]">reactie van [_3]</a>',
@@ -336,6 +339,11 @@ use vars qw( @ISA %Lexicon );
 	'2-column layout - Sidebar' => 'layout twee kolommen - Zijkolom',
 	'3-column layout - Primary Sidebar' => 'layout drie kolommen - Primaire zijkolom',
 	'3-column layout - Secondary Sidebar' => 'layout drie kolommen - Secundaire zijkolom',
+
+## default_templates/openid.mtml
+	'[_1] accepted here' => '[_1] hier geaccepteerd', # Translate - New
+	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/', # Translate - New
+	'Learn more about OpenID' => 'Meer weten over OpenID', # Translate - New
 
 ## default_templates/creative_commons.mtml
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Deze weblog valt onder een <a href="[_1]">Creative Commons Licentie</a>.',
@@ -477,8 +485,7 @@ use vars qw( @ISA %Lexicon );
 	'Cropping to [_1]x[_1] failed: [_2]' => 'Bijsnijden naar [_1]x[_1] mislukt: [_2]',
 	'Converting to [_1] failed: [_2]' => 'Converteren naar [_1] mislukt: [_2]',
 	'You do not have a valid path to the NetPBM tools on your machine.' => 'U hebt geen geldig pad naar de NetPBM tools op uw machine.',
-	'Can\'t load GD: [_1]' => 'Kan GD niet laden: [_1]', # Translate - New
-	'Reading image failed: [_2]' => 'Afbeelding lezen mislukt [_2]', # Translate - New
+	'Can\'t load GD: [_1]' => 'Kan GD niet laden: [_1]',
 
 ## lib/MT/Trackback.pm
 	'TrackBack' => 'TrackBack',
@@ -611,10 +618,10 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Basisnaam auteur aan het toekennen...',
 	'Assigning entry comment and TrackBack counts...' => 'Tellingen aantal reacties en TrackBacks bericht aan het toekennen...',
 	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...',
-	'Updateing template build types...' => 'Publicatietypes van sjablonen aan het aanpassen...', # Translate - New
+	'Updating template build types...' => 'Publicatietype sjablonen bij aan het werken...', # Translate - New
 	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...',
-	'Assigning all permissions to blog administrator...' => 'Alle permissies aan het toekennen aan blogadministrators...', # Translate - New
-	'Recover permissions of system administrators...' => 'Permissies aan het terugzetten van systeembeheerders...', # Translate - New
+	'Assigning all permissions to blog administrator...' => 'Alle permissies aan het toekennen aan blogadministrators...',
+	'Recover permissions of system administrators...' => 'Permissies aan het terugzetten van systeembeheerders...',
 
 ## lib/MT/Core.pm
 	'System Administrator' => 'Systeembeheerder',
@@ -678,7 +685,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk Folder Expiration' => 'Vervaldatum spam-map',
 	'Remove Temporary Files' => 'Tijdelijke bestanden verwijderen',
 	'Remove Expired User Sessions' => 'Verlopen gebruikerssessies verwijderen',
-	'Remove Expired Search Caches' => 'Verlopen zoekopdrachtencache verwijderen', # Translate - New
+	'Remove Expired Search Caches' => 'Verlopen zoekopdrachtencache verwijderen',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
@@ -1323,7 +1330,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/BackupRestore/ManifestFileHandler.pm
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
-	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Het geuploade bestand is een backup van Movable Type maar het databaseschema ([_1]) verschilt van dat in dit systeem ([_2]).  Het is niet veilig om dit bestand terug te zetten op deze versie van Movable Type.', # Translate - New
+	'Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.' => 'Het geuploade bestand is een backup van Movable Type maar het databaseschema ([_1]) verschilt van dat in dit systeem ([_2]).  Het is niet veilig om dit bestand terug te zetten op deze versie van Movable Type.',
 	'[_1] is not a subject to be restored by Movable Type.' => '[_1] is geen item dat door Movable Type teruggezet moet worden.',
 	'[_1] records restored.' => '[_1] records teruggezet.',
 	'Restoring [_1] records:' => '[_1] records aan het terugzetten:',
@@ -1585,7 +1592,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for sending mail via SMTP Server.' => 'Deze module is vereist om mail te versturen via een SMTP server.',
 	'This module is used in test attribute of MTIf conditional tag.' => 'Deze module wordt gebruikt in een testattribuut van de MTIf conditionele tag.',
 	'This module is used by the Markdown text filter.' => 'Deze module is vereist voor de Markdown tekstfilter.',
-	'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8', # Translate - New
+	'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.' => 'Deze module wordt vereist door mt-search.cgi als u Movable Type draait op een Perl versie ouder dan 5.8',
 	'This module is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Deze module is vereist om bestande te kunnen opladen (om het formaat van afbeeldingen in vele verschillende formaten te kunnen bepalen).',
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 	'DBI is required to store data in database.' => 'DBI is vereist om gegevens te kunnen opslaan in een database',
@@ -1893,6 +1900,7 @@ use vars qw( @ISA %Lexicon );
 	'Technorati Search' => 'Technorati zoekformulier',
 	'Date-Based Author Archives' => 'Datum-gebaseerde auteursactieven',
 	'Date-Based Category Archives' => 'Datum-gebaseerde categorie-archieven',
+	'OpenID Accepted' => 'OpenID welkom', # Translate - New
 	'Comment throttle' => 'Beperking reacties',
 	'Commenter Confirm' => 'Bevestiging reageerder',
 	'Commenter Notify' => 'Notificatie reageerder',
@@ -2053,7 +2061,7 @@ use vars qw( @ISA %Lexicon );
 	'Your configuration settings have been written to the following file:' => 'Uw configuratie-instellingen zijn opgeslagen in volgend bestand:',
 	'To reconfigure the settings, click the \'Back\' button below.' => 'Om de instellingen opnieuw aan te passen, klik op de \'Terug\' knop hieronder.',
 	'Show the mt-config.cgi file generated by the wizard' => 'Toon het mt-config.cgi bestand dat door de wizard is aangemaakt',
-	'I will create the mt-config.cgi file manually.' => 'Ik zal het mt-config.cgi bestand met de hand aanmaken.',
+	'The mt-config.cgi file has been created manually.' => 'Het mt-config.cgi bestand werd met de hand aangemaakt.', # Translate - New
 	'Retry' => 'Opnieuw',
 
 ## tmpl/wizard/cfg_dir.tmpl
@@ -2112,8 +2120,10 @@ use vars qw( @ISA %Lexicon );
 	'Please enter the parameters necessary for connecting to your database.' => 'Gelieve de parameters in te vullen die nodig zijn om met uw database te verbinden.',
 	'Show Current Settings' => 'Huidige instellingen tonen',
 	'Database Type' => 'Databasetype',
-	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]', # Translate - New
-	'If your database type is not listed in the menu above, then you need to <a target="help" href="[_1]">install the Perl module necessary to connect to your database</a>.  If this is the case, please check your installation and <a href="javascript:void(0)" onclick="[_2]">re-test your installation</a>.' => 'Als uw databasetype niet voorkomt in het menu hierboven dan moet u <a target="help" href="[_1]">de Perl module installeren die nodig is om naar uw database te connecteren</a>.  Als dit het al geval is, gelieve dan uw installatie na te kijken en <a href="javascript:void(0)" onclick="[_2]">voor de test opnieuw uit</a>.',
+	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
+	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Staat uw gewenste database er niet bij?  Kijk bij de <a href="[_1]" target="_blank">Movable Type systeemcontrole</a> of er bijkomende modules nodig zijn.', # Translate - New
+	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => '<a href="javascript:void(0)" onclick="[_1]">Klik hier om dit scherm te vernieuwen</a> zodra de installatie voltooid is.', # Translate - New
+	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Meer weten over: <a href="[_1]" target="_blank">Database instellen</a>', # Translate - New
 	'Database Path' => 'Databasepad',
 	'The physical file path for your SQLite database. ' => 'Het fysieke bestandspad voor uw SQLite database',
 	'A default location of \'./db/mt.db\' will store the database file underneath your Movable Type directory.' => 'Een standaardlocatie van \'./db/mt.db\' zal het databasebestadn opslaan onder uw Movable Type map.',
@@ -2181,7 +2191,7 @@ use vars qw( @ISA %Lexicon );
 	'Template Type' => 'Sjabloontype',
 	'Custom Index Template' => 'Gepersonaliseerd indexsjabloon',
 	'Link to File' => 'Koppelen aan bestand',
-	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Meer lezen over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publicatie-instellingen</a>', # Translate - New
+	'Learn more about <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publishing settings</a>' => 'Meer lezen over <a href="http://www.movabletype.org/documentation/administrator/publishing/settings.html" target="_blank">publicatie-instellingen</a>',
 	'Create Archive Mapping' => 'Nieuwe archiefkoppeling aanmaken',
 	'Type' => 'Type',
 	'Add' => 'Toevoegen',
@@ -2281,6 +2291,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'U heeft met succes de blogs verwijderd uit het Movable Type systeem.',
 	'You have successfully refreshed your templates.' => 'U heeft met succes uw sjablonen ververst.',
+	'You can not refresh templates: [_1]' => 'U kunt de sjablonen niet verversen: [_1]', # Translate - New
 	'Create Blog' => 'Blog aanmaken',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2476,9 +2487,6 @@ use vars qw( @ISA %Lexicon );
 	'Show Activity Log' => 'Activiteitenlog bekijken',
 
 ## tmpl/cms/include/comment_detail.tmpl
-	'By [_1]' => 'Door [_1]',
-	'replied to [_1]' => 'Reageerde op [_1]',
-	'on [_1]' => 'op [_1]',
 
 ## tmpl/cms/include/cfg_content_nav.tmpl
 
@@ -2555,7 +2563,6 @@ use vars qw( @ISA %Lexicon );
 	'Republish selected pages (r)' => 'Geselecteerde pagina\'s opnieuw publiceren (r)',
 	'Delete selected pages (x)' => 'Geselecteerde pagina\'s verwijderen (x)',
 	'to republish' => 'om opnieuw te publiceren',
-	'Republish' => 'Herpubliceren',
 	'Last Modified' => 'Laatst aangepast',
 	'Created' => 'Aangemaakt',
 	'Unpublished (Draft)' => 'Niet gepubliceerd (klad)',
@@ -2580,7 +2587,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/calendar.tmpl
 	'_LOCALE_WEEK_START' => '1',
-	'S|M|T|W|T|F|S' => 'Z|M|D|W|D|V|Z',
+	'S|M|T|W|T|F|S' => 'M|D|W|D|V|Z|Z',
 	'January' => 'Januari',
 	'Febuary' => 'Februari',
 	'March' => 'Maart',
@@ -2861,7 +2868,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/asset_options.tmpl
 	'File Options' => 'Bestandsopties',
-	'The file named \'[_1]\' has been uploaded. Size: [quant,_2,byte,bytes].' => 'Het bestand met de naam \'[_1]\' is opgeladen.  Grootte: [quant,_2,byte,bytes].',
 	'Create entry using this uploaded file' => 'Bericht aanmaken met dit opgeladen bestand',
 	'Create a new entry using this uploaded file.' => 'Maak een nieuw bericht aan met dit opgeladen bestand',
 	'Finish (s)' => 'Klaar (s)',
@@ -3481,7 +3487,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/popup/rebuilt.tmpl
 	'Success' => 'Succes',
-	'The files for [_1] have been published.' => 'De bestanden voor [_1] werden gepubliceerd.', # Translate - New
+	'The files for [_1] have been published.' => 'De bestanden voor [_1] werden gepubliceerd.',
 	'Your [_1] archives have been published.' => 'Uw [_1] archieven zijn gepubliceerd.',
 	'Your [_1] templates have been published.' => 'Uw [_1] sjablonen zijn gepubliceerd.',
 	'Publish time: [_1].' => 'Publicatietijd: [_1].',
@@ -4056,8 +4062,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/tmpl/widget/recent_submissions.mtml
 	'Recent Submissions' => 'Recente inzendingen',
 
-## addons/Community.pack/tmpl/widget/recent_favorites.mtml
-	'Recent Favorites' => 'Recente favorieten',
+## addons/Community.pack/tmpl/widget/recently_scored.mtml
+	'Recently Scored' => 'Recent beoordeeld', # Translate - New
 	'There are no recently favorited entries.' => 'Er zijn geen recente favoriete berichten.',
 
 ## addons/Community.pack/tmpl/cfg_community_prefs.tmpl
@@ -4068,8 +4074,8 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to blog (s)' => 'Wijzigingen aan blog opslaan (s)',
 
 ## addons/Community.pack/config.yaml
-	'Following Users' => 'Gevolgde gebruikers', # Translate - New
-	'Being Followed' => 'Wordt gevolgd door', # Translate - New
+	'Following Users' => 'Gevolgde gebruikers',
+	'Being Followed' => 'Wordt gevolgd door',
 	'Login Form' => 'Aanmeldformulier',
 	'Password Reset Form' => 'Recuperatieformulier wachtwoorden',
 	'Registration Form' => 'Registratieformulier',
@@ -4077,7 +4083,7 @@ use vars qw( @ISA %Lexicon );
 	'Profile Error' => 'Profielfout',
 	'Profile View' => 'Profiel bekijken',
 	'Profile Edit Form' => 'Bewerkingsformulier profiel',
-	'Profile Feed' => 'Profielfeed', # Translate - New
+	'Profile Feed' => 'Profielfeed',
 	'Form Field' => 'Veld in formulier',
 	'Status Message' => 'Statusboodschap',
 	'Simple Header' => 'Eenvoudige hoofding',
@@ -4090,7 +4096,7 @@ use vars qw( @ISA %Lexicon );
 	'Registration notification' => 'Registratienotificatie',
 	'New entry notification' => 'Notificatie nieuw bericht',
 	'Community Blog' => 'Community-blog',
-	'Atom ' => 'Atom', # Translate - New
+	'Atom ' => 'Atom',
 	'Entry Response' => 'Antwoord op bericht',
 	'Displays error, pending or confirmation message when submitting an entry.' => 'Toont foutboodschappen, \'even geduld\' berichten of bevestigingen bij het indienen van een bericht.',
 	'Comment Detail' => 'Details reactie',
@@ -4099,22 +4105,23 @@ use vars qw( @ISA %Lexicon );
 	'Page Detail' => 'Pagina detail',
 	'Entry Form' => 'Berichtenformulier',
 	'Content Navigation' => 'Navigatie inhoud',
-	'Activity Widgets' => 'Activiteit widgets', # Translate - New
-	'Archive Widgets' => 'Archiefwidgets', # Translate - New
+	'Activity Widgets' => 'Activiteit widgets',
+	'Archive Widgets' => 'Archiefwidgets',
 	'Community Forum' => 'Community forum',
-	'Entry Feed' => 'Berichtenfeed', # Translate - New
+	'Entry Feed' => 'Berichtenfeed',
 	'Displays error, pending or confirmation message when submitting a entry.' => 'Toont foutboodschappen, \'even geduld\' berichten of bevestigingen bij het indienen van een bericht.',
-	'Category Groups' => 'Categoriegroepen',
 	'Popular Entry' => 'Populair bericht',
 	'Entry Table' => 'Berichttabel',
 	'Content Header' => 'Hoofding inhoud',
+	'Category Groups' => 'Categoriegroepen',
+	'Default Widgets' => 'Standaardwidgets', # Translate - New
 
 ## addons/Community.pack/templates/global/login_form.mtml
 
 ## addons/Community.pack/templates/global/signin.mtml
-	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>', # Translate - New
-	'You are signed in as [_1]' => 'U bent aangemeld als [_1]', # Translate - New
-	'Edit profile' => 'Profiel bewerken', # Translate - Case
+	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>',
+	'You are signed in as [_1]' => 'U bent aangemeld als [_1]',
+	'Edit profile' => 'Profiel bewerken',
 	'Sign out' => 'Afmelden',
 	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
 
@@ -4141,6 +4148,12 @@ use vars qw( @ISA %Lexicon );
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Ga <a href="[_1]">terug naar de vorige pagina</a> of <a href="[_2]">bekijk uw profiel</a>.',
 	'Upload New Userpic' => 'Nieuwe gebruikersafbeelding uploaden',
 
+## addons/Community.pack/templates/global/profile_feed.mtml
+	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
+	'Commented on [_1] in [_2]' => 'Reageerde op [_1] op [_2]', # Translate - New
+	'Voted on [_1] in [_2]' => 'Stemde op [_1] op [_2]', # Translate - New
+	'[_1] voted on <a href="[_2]">[_3]</a> in [_4]' => '[_1] stemde op <a href="[_2]">[_3]</a> op [_4]', # Translate - New
+
 ## addons/Community.pack/templates/global/header.mtml
 	'Blog Description' => 'Blogbeschrijving',
 
@@ -4162,7 +4175,6 @@ use vars qw( @ISA %Lexicon );
 	'Website:' => 'Website:',
 	'Recent Actions' => 'Recente acties',
 	'Comment Threads' => 'Reactie threads',
-	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
 	'Commented on [_1]' => 'Reageerde op [_1]',
 	'Favorited [_1] on [_2]' => 'Maakte [_1] favoriet op [_2]',
 	'No recent actions.' => 'Geen recente acties.',
@@ -4187,8 +4199,8 @@ use vars qw( @ISA %Lexicon );
 	'Forgot Password' => 'Wachtwoord vergeten',
 
 ## addons/Community.pack/templates/global/javascript.mtml
-	'votes' => 'stemmen', # Translate - New
-	'vote' => 'stem', # Translate - New
+	'Vote' => 'Stem',
+	'Votes' => 'Stemmen',
 
 ## addons/Community.pack/templates/global/register_notification_email.mtml
 
@@ -4223,8 +4235,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/comment_detail.mtml
 
 ## addons/Community.pack/templates/blog/entry_form.mtml
+	'In order to create an entry on this blog you must first register.' => 'Om een bericht te kunnen aanmaken op deze weblog moet u zich eerst registreren.', # Translate - New
 	'You don\'t have permission to post.' => 'U heeft geen permissie om een bericht te publiceren.',
-	'Sign in to create an entry.' => 'Meld u aan om een bericht te kunnen schrijven.', # Translate - New
+	'Sign in to create an entry.' => 'Meld u aan om een bericht te kunnen schrijven.',
 	'Select Category...' => 'Selecteer categorie...',
 
 ## addons/Community.pack/templates/blog/entry_create.mtml
@@ -4233,6 +4246,7 @@ use vars qw( @ISA %Lexicon );
 	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Zoekresultaten die overeen komen met &ldquo;<$mt:SearchString$>&rdquo;',
 
 ## addons/Community.pack/templates/blog/recent_comments.mtml
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] reageerde op [_3]</a>: [_4]',
 
 ## addons/Community.pack/templates/blog/comment_form.mtml
 
@@ -4250,8 +4264,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/tags.mtml
 
 ## addons/Community.pack/templates/blog/entry_metadata.mtml
-	'Vote' => 'Stem', # Translate - New
-	'Votes' => 'Stemmen', # Translate - New
 
 ## addons/Community.pack/templates/blog/entry.mtml
 
@@ -4264,6 +4276,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/recent_entries.mtml
 
 ## addons/Community.pack/templates/blog/sidebar.mtml
+
+## addons/Community.pack/templates/blog/openid.mtml
 
 ## addons/Community.pack/templates/blog/categories.mtml
 
@@ -4284,43 +4298,12 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/blog/search.mtml
 
-## addons/Community.pack/templates/forum/comment_response.mtml
-	'Reply Submitted' => 'Antwoord ingediend',
-	'Your reply has been accepted.' => 'Uw antwoord werd aanvaard.', # Translate - New
-	'Thank you for replying.' => 'Bedankt om te antwoorden.', # Translate - New
-	'Your reply has been received and held for approval by the forum administrator.' => 'Uw antwoord werd ontvangen en wacht op goedkeuring van de forumadministrator.', # Translate - New
-	'Reply Submission Error' => 'Fout bij indienen antwoord',
-	'Your reply submission failed for the following reasons: [_1]' => 'Het indienen van uw antwoord mislukte wegens: [_1]', # Translate - New
-	'Return to the <a href="[_1]">original topic</a>.' => 'Terugkeren naar <a href="[_1]">het oorspronkelijke onderwerp</a>.',
-
-## addons/Community.pack/templates/forum/archive_index.mtml
-
-## addons/Community.pack/templates/forum/entry_table.mtml
-	'Recent Topics' => 'Recente onderwerpen',
-	'Replies' => 'Antwoorden',
-	'Last Reply' => 'Laatste antwoord',
-	'Permalink to this Reply' => 'Permanente link naar dit antwoord',
-	'Closed' => 'Gesloten',
-	'Post the first topic in this forum.' => 'Plaats het eerste onderwerp in dit forum',
-
-## addons/Community.pack/templates/forum/sidebar.mtml
-	'All Forums' => 'Alle forums',
-	'[_1] Forum' => 'Forum [_1]',
+## addons/Community.pack/templates/forum/entry_summary.mtml
 
 ## addons/Community.pack/templates/forum/main_index.mtml
 	'Forum Home' => 'Forum hoofdpagina',
 
-## addons/Community.pack/templates/forum/category_groups.mtml
-	'Forum Groups' => 'Forum groepen',
-	'Last Topic: [_1] by [_2] on [_3]' => 'Laatste onderwerp: [_1] door [_2] op [_3]',
-	'Be the first to <a href="[_1]">post a topic in this forum</a>' => 'Wees de eerste om <a href="[_1]">een onderwerp te starten in dit forum</a>', # Translate - New
-
 ## addons/Community.pack/templates/forum/page.mtml
-
-## addons/Community.pack/templates/forum/content_nav.mtml
-	'Start Topic' => 'Onderwerp beginnen',
-
-## addons/Community.pack/templates/forum/entry_summary.mtml
 
 ## addons/Community.pack/templates/forum/entry_response.mtml
 	'Thank you for posting a new topic to the forums.' => 'Bedankt om een nieuw onderwerp te publiceren in de forums.',
@@ -4330,58 +4313,93 @@ use vars qw( @ISA %Lexicon );
 	'The topic you posted has been received and published. Thank you for your submission.' => 'Het onderwerp dat u instuurde werd ontvangen en gepubliceerd.  Bedankt voor uw bijdrage.',
 	'Return to the <a href="[_1]">forum\'s homepage</a>.' => 'Terugkeren naar de <a href="[_1]">hoofdpagina van het forum</a>.',
 
+## addons/Community.pack/templates/forum/content_nav.mtml
+	'Start Topic' => 'Onderwerp beginnen',
+
+## addons/Community.pack/templates/forum/comment_response.mtml
+	'Reply Submitted' => 'Antwoord ingediend',
+	'Your reply has been accepted.' => 'Uw antwoord werd aanvaard.',
+	'Thank you for replying.' => 'Bedankt om te antwoorden.',
+	'Your reply has been received and held for approval by the forum administrator.' => 'Uw antwoord werd ontvangen en wacht op goedkeuring van de forumadministrator.',
+	'Reply Submission Error' => 'Fout bij indienen antwoord',
+	'Your reply submission failed for the following reasons: [_1]' => 'Het indienen van uw antwoord mislukte wegens: [_1]',
+	'Return to the <a href="[_1]">original topic</a>.' => 'Terugkeren naar <a href="[_1]">het oorspronkelijke onderwerp</a>.',
+
 ## addons/Community.pack/templates/forum/content_header.mtml
 
 ## addons/Community.pack/templates/forum/entry_detail.mtml
 
-## addons/Community.pack/templates/forum/entry_form.mtml
-	'Sign in to create a topic.' => 'Meld u aan op een onderwerp te starten.', # Translate - New
-	'Topic' => 'Onderwerp',
-	'Select Forum...' => 'Selecteer forum...',
-	'Forum' => 'Forum',
+## addons/Community.pack/templates/forum/comment_detail.mtml
+	'[_1] replied to <a href="[_2]">[_3]</a>' => '[_1] gaf antwoord op <a href="[_2]">[_3]</a>',
 
 ## addons/Community.pack/templates/forum/entry_create.mtml
 	'Start a Topic' => 'Begin een onderwerp',
 
-## addons/Community.pack/templates/forum/comment_detail.mtml
-	'[_1] replied to <a href="[_2]">[_3]</a>' => '[_1] gaf antwoord op <a href="[_2]">[_3]</a>', # Translate - New
+## addons/Community.pack/templates/forum/entry_form.mtml
+	'Topic' => 'Onderwerp',
+	'Select Forum...' => 'Selecteer forum...',
+	'Forum' => 'Forum',
 
-## addons/Community.pack/templates/forum/comments.mtml
-	'1 Reply' => '1 Antwoord', # Translate - New
-	'# Replies' => '# Antwoorden', # Translate - New
-	'No Replies' => 'Geen antwoorden', # Translate - New
-	'Add a Reply' => 'Antwoord toevoegen', # Translate - New
+## addons/Community.pack/templates/forum/syndication.mtml
+	'All Forums' => 'Alle forums',
+	'[_1] Forum' => 'Forum [_1]',
 
 ## addons/Community.pack/templates/forum/comment_form.mtml
-
-## addons/Community.pack/templates/forum/search_results.mtml
-	'Topics matching &ldquo;[_1]&rdquo;' => 'Onderwerpen die overeen komen met &ldquo;[_1]&rdquo;', # Translate - New
-	'Topics tagged &ldquo;[_1]&rdquo;' => 'Onderwerpen getagd als &ldquo;[_1]&rdquo;', # Translate - New
-	'Topics' => 'Onderwerpen', # Translate - New
+	'Add a Reply' => 'Antwoord toevoegen',
 
 ## addons/Community.pack/templates/forum/entry_listing.mtml
 
-## addons/Community.pack/templates/forum/dynamic_error.mtml
+## addons/Community.pack/templates/forum/entry_metadata.mtml
+	'1 Reply' => '1 Antwoord',
+	'# Replies' => '# Antwoorden',
 
 ## addons/Community.pack/templates/forum/entry.mtml
-
-## addons/Community.pack/templates/forum/entry_metadata.mtml
-
-## addons/Community.pack/templates/forum/comment_preview.mtml
-	'Reply to [_1]' => 'Antwoorden op [_1]', # Translate - New
-	'Previewing your Reply' => 'Voorbeeld van antwoord aan het bekijken',
-
-## addons/Community.pack/templates/forum/entry_popular.mtml
-	'Popular topics' => 'Populaire onderwerpen',
 
 ## addons/Community.pack/templates/forum/javascript.mtml
 	'Thanks for signing in,' => 'Bedankt om u aan te melden,',
 	'. Now you can reply to this topic.' => '. Nu kunt u antwoorden op dit onderwerp.',
 	'You do not have permission to comment on this blog.' => 'U heeft geen toestemming om reacties achter te laten op deze weblog',
-	' to reply to this topic.' => ' om te antwoorden op dit onderwerp.', # Translate - New
-	' to reply to this topic,' => ' om te antwoorden op dit onderwerp,', # Translate - New
+	' to reply to this topic.' => ' om te antwoorden op dit onderwerp.',
+	' to reply to this topic,' => ' om te antwoorden op dit onderwerp,',
 	'or ' => 'of ',
-	'reply anonymously.' => ' reageer anoniem.', # Translate - New
+	'reply anonymously.' => ' reageer anoniem.',
+
+## addons/Community.pack/templates/forum/entry_table.mtml
+	'Recent Topics' => 'Recente onderwerpen',
+	'Replies' => 'Antwoorden',
+	'Last Reply' => 'Laatste antwoord',
+	'Permalink to this Reply' => 'Permanente link naar dit antwoord',
+	'By [_1]' => 'Door [_1]',
+	'Closed' => 'Gesloten',
+	'Post the first topic in this forum.' => 'Plaats het eerste onderwerp in dit forum',
+
+## addons/Community.pack/templates/forum/archive_index.mtml
+
+## addons/Community.pack/templates/forum/sidebar.mtml
+
+## addons/Community.pack/templates/forum/category_groups.mtml
+	'Forum Groups' => 'Forum groepen',
+	'Last Topic: [_1] by [_2] on [_3]' => 'Laatste onderwerp: [_1] door [_2] op [_3]',
+	'Be the first to <a href="[_1]">post a topic in this forum</a>' => 'Wees de eerste om <a href="[_1]">een onderwerp te starten in dit forum</a>',
+
+## addons/Community.pack/templates/forum/openid.mtml
+
+## addons/Community.pack/templates/forum/comments.mtml
+	'No Replies' => 'Geen antwoorden',
+
+## addons/Community.pack/templates/forum/search_results.mtml
+	'Topics matching &ldquo;[_1]&rdquo;' => 'Onderwerpen die overeen komen met &ldquo;[_1]&rdquo;',
+	'Topics tagged &ldquo;[_1]&rdquo;' => 'Onderwerpen getagd als &ldquo;[_1]&rdquo;',
+	'Topics' => 'Onderwerpen',
+
+## addons/Community.pack/templates/forum/dynamic_error.mtml
+
+## addons/Community.pack/templates/forum/entry_popular.mtml
+	'Popular topics' => 'Populaire onderwerpen',
+
+## addons/Community.pack/templates/forum/comment_preview.mtml
+	'Reply to [_1]' => 'Antwoorden op [_1]',
+	'Previewing your Reply' => 'Voorbeeld van antwoord aan het bekijken',
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
 	'About' => 'Over',
@@ -4413,8 +4431,8 @@ use vars qw( @ISA %Lexicon );
 	'_UTS_SAMPLE_NEWDESIGN' => '
 <p>Onze website zit in een volledig nieuw kleedje dankzij <a href="http://www.movabletype.com/">Movable Type</a> en de Universele Set Sjablonen. Met de Universele Set Sjablonen kan iedereen in een paar minuten van start gaan met een nieuwe website op Movable Type. Dit alles in slechts een paar klikken. Maak een nieuwe blog aan, selecteer de Universele Set Sjablonen en publiceer de site.  Voila: on nieuwe website!. Bedankt Movable Type!</p>
 ',
-	'John Doe' => 'Jan Janssens', # Translate - New
-	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Geweldige nieuwe site.  Ik kan niet wachten om Movable Type zelf te proberen.  Proficiat!', # Translate - New
+	'John Doe' => 'Jan Janssens',
+	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Geweldige nieuwe site.  Ik kan niet wachten om Movable Type zelf te proberen.  Proficiat!',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Toon',
@@ -4433,7 +4451,6 @@ use vars qw( @ISA %Lexicon );
 	'The template tag \'[_1]\' is an invalid tag name.' => 'Sjabloontag \'[_1]\' is een ongeldige tagnaam.',
 	'The template tag \'[_1]\' is already in use.' => 'De sjabloontag \'[_1]\' is al in gebruik.',
 	'The basename \'[_1]\' is already in use.' => 'De basisnaam \'[_1]\' is al in gebruik',
-	'Default value must be valid URL.' => 'Standaardwaarde moet een geldige URL zijn.',
 	'Customize the forms and fields for entries, pages, folders, categories, and users, storing exactly the information you need.' => 'Pas de formulieren en velden aan voor berichten, pagina\'s, mappen, categoriën en gebruikers aan en sla exact die informatie op die u nodig heeft.',
 	' ' => ' ',
 	'Single-Line Text' => 'Een regel tekst',
@@ -4561,6 +4578,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/universal/comment_form.mtml
 
 ## addons/Commercial.pack/templates/universal/recent_comments.mtml
+	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] reageerde op [_3]</a>: [_4]',
 
 ## addons/Commercial.pack/templates/universal/monthly_archive_list.mtml
 
@@ -4593,6 +4611,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/universal/sidebar.mtml
 
 ## addons/Commercial.pack/templates/universal/powered_by_footer.mtml
+
+## addons/Commercial.pack/templates/universal/openid.mtml
 
 ## addons/Commercial.pack/templates/universal/categories.mtml
 
@@ -4932,6 +4952,8 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Bestand is niet in WXR formaat.',
+	'Creating new tag (\'[_1]\')...' => 'Nieuwe tag aan het aanmaken (\'[_1]\')...', # Translate - New
+	'Saving tag failed: [_1]' => 'Tag opslaan mislukt: [_1]', # Translate - New
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'Dubbel mediabestand (\'[_1]\') gevonden.  Wordt overgeslagen.',
 	'Saving asset (\'[_1]\')...' => 'Bezig met opslaan mediabestand (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' en mediabestand zal getagd worden als (\'[_1]\')...',
@@ -5016,12 +5038,9 @@ use vars qw( @ISA %Lexicon );
 	'Selected Design' => 'Geselecteerde designs',
 	'Layout' => 'Lay-out',
 
-## plugins/StyleCatcher/stylecatcher.pl
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'Met StyleCatcher kunt u makkelijk een keuze maken tussen stijlen om ze daarna op uw blog toe te passen in een paar klikken.  Om meer te weten over Movable Type stijlen, of om een bron te vinden van nog meer stijlen, bezoek de <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> pagina.',
+## plugins/StyleCatcher/config.yaml
 	'MT 4 Style Library' => 'MT 4 Stijlenbibliotheek',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 4.',
-	'MT 3 Style Library' => 'MT 3 Stijlenbibliotheek',
-	'A collection of styles compatible with Movable Type 3.3+ default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 3.3+.',
 	'Styles' => 'Stijlen',
 
 ## plugins/spamlookup/lib/spamlookup.pm
@@ -5206,6 +5225,6 @@ use vars qw( @ISA %Lexicon );
 
 );
 
-## New words: 330
+## New words: 235
 
 1;
