@@ -1228,8 +1228,16 @@ sub do_reply {
     };
 
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
+    return unless $comment;
 
-    $param->{commenter_name} = $parent->author;
+    my $blog = $parent->blog
+            || $app->model('blog')->load($q->param('blog_id'));
+    return $app->error($app->translate('Can\'t load blog #[_1].', $q->param('blog_id'))) unless $blog;
+
+    require MT::Sanitize;
+    my $spec = $blog->sanitize_spec
+            || $app->config->GlobalSanitizeSpec;
+    $param->{commenter_name} = MT::Sanitize->sanitize($parent->author, $spec);
     $param->{entry_title}    = $entry->title;
     $param->{comment_created_on} =
       format_ts( "%Y-%m-%d %H:%M:%S", $parent->created_on, undef, $app->user ? $app->user->preferred_language : undef );
@@ -1275,6 +1283,7 @@ sub reply_preview {
         blog_id     => $q->param('blog_id'),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
+    return unless $comment;
 
     my $blog = $parent->blog
             || $app->model('blog')->load($q->param('blog_id'));
