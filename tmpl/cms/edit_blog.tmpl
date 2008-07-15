@@ -119,11 +119,11 @@ TC.attachLoadEvent(init);
 
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <mt:unless name="new_object">
-    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 </mt:unless>
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="blog" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 

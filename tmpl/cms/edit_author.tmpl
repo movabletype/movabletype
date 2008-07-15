@@ -108,7 +108,7 @@ function togglePerms(c) {
 
 function removeUserpic() {
     var param = '__mode=remove_userpic'
-        + '&user_id=<mt:var name="id">'
+        + '&user_id=<mt:var name="id" escape="url">'
         + '&magic_token=<mt:var name="magic_token">';
     var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: removedUserpic };
     TC.Client.call(params);
@@ -148,7 +148,7 @@ TC.attachLoadEvent(init);
             <input type="hidden" name="_type" value="author" />
 </mt:if>
 <mt:if name="id">
-            <input type="hidden" name="id" value="<mt:var name="id">" />
+            <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 </mt:if>
 <mt:if name="new_object">
             <input type="hidden" id="status" name="status" value="1" />
@@ -239,7 +239,7 @@ TC.attachLoadEvent(init);
             <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
             <br />
         </span>
-        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="html">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
+        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
         <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />
@@ -331,7 +331,7 @@ TC.attachLoadEvent(init);
         hint="<__trans phrase="Preferred text format option.">">
         <select name="text_format" id="text_format" class="se">
         <mt:loop name="text_filters">
-            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label"></mt:if></option>
+            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
         </mt:loop>
         </select>
     </mtapp:setting>
@@ -415,7 +415,7 @@ TC.attachLoadEvent(init);
         <mt:unless name="new_object">
         <form name="recover" method="post" action="<mt:var name="script_url">">
             <input type="hidden" name="__mode" value="recover_profile_password" />
-            <input type="hidden" name="author_id" value="<mt:var name="id">" />
+            <input type="hidden" name="author_id" value="<mt:var name="id" escape="html">" />
             <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
             <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 

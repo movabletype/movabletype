@@ -30,7 +30,7 @@
     </mt:unless>
     <mt:if name="is_ip_filter">
         <a href="javascript:void(0)"
-            onclick="doBanIP('<mt:var name="filter_val">'); return false;"
+            onclick="doBanIP('<mt:var name="filter_val" escape="js">'); return false;"
             ><__trans phrase="Ban This IP"></a>
     </mt:if>
 </mt:setvarblock>
@@ -62,10 +62,10 @@
             </thead>
             <tbody>
     </mt:if>
-                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="showReply('replyto_<mt:var name="id">',document,'visible');" onmouseout="hideReply('replyto_<mt:var name="id">');"</mt:if>>
+                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="showReply('replyto_<mt:var name="id" escape="js">',document,'visible');" onmouseout="hideReply('replyto_<mt:var name="id escape="js"">');"</mt:if>>
                     <td class="cb">
             <mt:if name="has_edit_access">
-                        <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
+                        <input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" />
             <mt:else>
                         &nbsp;
             </mt:if>
@@ -84,27 +84,27 @@
                 <mt:var name="comment_long" escape="html">
             <mt:else>
                 <mt:if name="has_edit_access">
-                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Edit this comment">"><mt:var name="comment_short" escape="html"></a>
+                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">"><mt:var name="comment_short" escape="html"></a>
                 <mt:else>
                     <mt:var name="comment_short" escape="html">
                 </mt:if>
             </mt:if>
             <mt:if name="reply_count"><__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">"></mt:if>
             <mt:unless name="view_expanded">
-            <mt:if name="has_edit_access"><mt:if name="visible"><span id="replyto_<mt:var name="id">" style="visibility: hidden; margin-left: 10px"><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></span></mt:if></mt:if>
+            <mt:if name="has_edit_access"><mt:if name="visible"><span id="replyto_<mt:var name="id" escape="html">" style="visibility: hidden; margin-left: 10px"><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></span></mt:if></mt:if>
             </mt:unless>
                     </td>
             <mt:if name="view_expanded">
                 </tr>
-                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave" <mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id">');" onmouseout="hide('replyto_<mt:var name="id">');"</mt:if>>
+                <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave" <mt:if name="visible"> onmouseover="show('replyto_<mt:var name="id" escape="js">');" onmouseout="hide('replyto_<mt:var name="id" escape="js">');"</mt:if>>
                     <td>&nbsp;</td>
                 <mt:unless name="tab_junk">
                     <td>&nbsp;</td>
                 </mt:unless>
                     <td>
                 <mt:if name="has_edit_access">
-                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Edit this comment">"><__trans phrase="Edit"></a>
-                        <mt:if name="visible">| <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></mt:if>
+                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">"><__trans phrase="Edit"></a>
+                        <mt:if name="visible">| <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" encode="url">&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>')"><__trans phrase="Reply"></a></mt:if>
                 <mt:else>
                         &nbsp;
                 </mt:if>
@@ -143,7 +143,7 @@
                     <td class="entry">
                 <mt:if name="entry_title">
                     <mt:if name="can_edit_entry">
-                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
+                        <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id" escape="url">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
                     <mt:else>
                         <mt:var name="entry_title" escape="html">
                     </mt:if>

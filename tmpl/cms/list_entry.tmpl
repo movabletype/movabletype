@@ -57,7 +57,7 @@
         <mt:if name="feed_url">
                 <a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>"><$mt:var name="object_type_feed"$></a>
         <mt:else>
-                <a href="<$mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
+                <a href="<$mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
         </mt:if>
             </li>
         </ul>
@@ -148,8 +148,8 @@ function init()
     tableSelect.rowSelect = true;
 </mt:unless>
 
-    setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-    setFilterVal('<mt:var name="filter_val">');
+    setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    setFilterVal('<mt:var name="filter_val" escape="js">');
 </mt:if>
 }
 
@@ -163,9 +163,9 @@ TC.attachLoadEvent( init );
     <div class="listing-filter">
         <div class="listing-filter-inner inner pkg">
 <form id="filter-form" method="get" action="<mt:var name="mt_url">">
-    <input type="hidden" name="__mode" value="<mt:var name="mode">" />
+    <input type="hidden" name="__mode" value="<mt:var name="mode" escape="html">" />
     <mt:if name="blog_id">
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     </mt:if>
     <mt:if name="is_power_edit">
     <input type="hidden" name="is_power_edit" value="1" />
@@ -178,14 +178,14 @@ TC.attachLoadEvent( init );
         <div id="filter-title">
         <mt:if name="filter_key">
             <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
-            <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+            <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode" escape="url"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
         <mt:else>
             <mt:unless name="filter">
             <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
             <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
             <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
-            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>" class="filter-link">[ <__trans phrase="Remove filter"> ]</a>
+            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode" escape="url"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>" class="filter-link">[ <__trans phrase="Remove filter"> ]</a>
             </mt:unless>
         </mt:if>
         </div>
@@ -237,7 +237,7 @@ TC.attachLoadEvent( init );
                         <option id="filter-user-search" value=""><__trans phrase='User Search...'></option>
                         <optgroup label="<__trans phrase='Recent Users...'>" value="">
     <mt:loop name="entry_author_loop">
-                            <option value="<mt:var name="author_id">"><mt:var name="author_name" escape="html"></option>
+                            <option value="<mt:var name="author_id" escape="html">"><mt:var name="author_name" escape="html"></option>
     </mt:loop>
                         </optgroup>
                     </select>

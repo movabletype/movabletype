@@ -23,7 +23,7 @@
         label="<__trans phrase="Useful links">">
         <ul>
             <li><a href="<mt:var name="script_url">?__mode=list_cat&amp;_type=category&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Categories"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id"$>"><__trans phrase="Manage entries in this category"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage entries in this category"></a></li>
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions$>
@@ -70,10 +70,10 @@ TC.attachLoadEvent( init );
 
 <div id="category-details-content">
 <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="category_parent" value="<mt:var name="parent">" />
@@ -127,7 +127,7 @@ TC.attachLoadEvent( init );
     <mtapp:setting
         id="view_trackbacks"
         label="<__trans phrase="TrackBacks">">
-        <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list_pings&amp;filter=category_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View TrackBacks"></a></strong></div>
+        <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list_pings&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="View TrackBacks"></a></strong></div>
     </mtapp:setting>
 </mt:if>
         <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">

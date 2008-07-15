@@ -53,7 +53,7 @@ function setLicense() {
 </script>
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
-<input type="hidden" name="id" value="<mt:var name="id">" />
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="blog" />
 <input type="hidden" name="cfg_screen" value="cfg_prefs" />

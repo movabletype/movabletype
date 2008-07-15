@@ -93,7 +93,7 @@
     <mt:loop name="template_loop">
                 <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
     </mt:loop>
-                <input type="hidden" name="return_args" value="__mode=view&amp;_type=template<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="id">&amp;id=<mt:var name="id"></mt:if>">
+                <input type="hidden" name="return_args" value="__mode=view&amp;_type=template<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>">
             </form>
         </td>
     </tr>

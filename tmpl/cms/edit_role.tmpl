@@ -22,7 +22,7 @@
         <li>
             <a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a>
     <mt:if name="id">
-            - <a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a>
+            - <a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id" escape="url">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a>
     </mt:if>
         </li>
     </ul>
@@ -228,7 +228,7 @@ TC.attachLoadEvent( rectifyAll );
 </mt:if>
 
 <mt:if name="id">
-    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 </mt:if>
     <input type="hidden" name="__mode" value="save_role" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
@@ -341,7 +341,7 @@ TC.attachLoadEvent( rectifyAll );
         hint="<__trans phrase="These roles have the same privileges as this role">">
         <div class="static">
         <mt:loop name="same_perm_loop">
-        <a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id">"><mt:var name="name" escape="html"></a> 
+        <a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a> 
         </mt:loop>
         </div>
     </mtapp:setting>

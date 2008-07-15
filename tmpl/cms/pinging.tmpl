@@ -5,7 +5,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 function doRedirect () {
-    window.location.replace('<mt:var name="script_url">?__mode=ping&blog_id=<mt:var name="blog_id">&entry_id=<mt:var name="entry_id">&is_new=<mt:var name="is_new">&old_status=<mt:var name="old_status">&magic_token=<mt:var name="magic_token">');
+    window.location.replace('<mt:var name="script_url">?__mode=ping&blog_id=<mt:var name="blog_id" escape="url">&entry_id=<mt:var name="entry_id" escape="url">&is_new=<mt:var name="is_new" escape="url">&old_status=<mt:var name="old_status" escape="url">&magic_token=<mt:var name="magic_token">');
 }
 setTimeout('doRedirect()', 1000);
 /* ]]> */

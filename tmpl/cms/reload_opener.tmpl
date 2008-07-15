@@ -4,7 +4,7 @@
 /* <![CDATA[ */
 var o = window.opener;
 if (o && o.location) {
-    <mt:if name="url">o.location = '<mt:var name="url">';</mt:if>
+    <mt:if name="url">o.location = '<mt:var name="url" escape="js">';</mt:if>
 <mt:var name="javascript">
     window.close();
 }

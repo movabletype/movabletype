@@ -230,7 +230,7 @@ TC.attachLoadEvent( init );
                     <a href="javascript:void(0)" onclick="return doExpand(<mt:var name="category_id">)" title="<__trans phrase="Expand">"><img alt="<__trans phrase="Expand">" src="<mt:var name="static_uri">images/status_icons/expand.gif" width="9" height="9" class="expcol" /></a>
     </mt:if>
 </mt:if>
-                    <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><mt:var name="category_label_full"></a></div>
+                    <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="category_id" escape="url">"><mt:var name="category_label_full"></a></div>
                 </td>
                 <td id="action-<mt:var name="category_id">" class="actions">
                     <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create Subcategory">"><__trans phrase="Create"></a>
@@ -239,7 +239,7 @@ TC.attachLoadEvent( init );
                 <td class="entry">
 <mt:if name="category_entrycount">
     <mt:if name="can_edit_entries">
-                    <a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">"></a>
+                    <a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=<mt:var name="entry_type" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id" escape="url">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">"></a>
     <mt:else>
                     <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="category_entrycount">">
     </mt:if>
@@ -249,7 +249,7 @@ TC.attachLoadEvent( init );
 <mt:if name="has_tb">
     <mt:if name="category_tbcount">
         <mt:if name="can_edit_entries">
-                    <a href="<mt:var name="script_url">?__mode=list_pings&amp;filter=<$mt:var name="object_type"$>_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="category_id">">
+                    <a href="<mt:var name="script_url">?__mode=list_pings&amp;filter=<mt:var name="object_type" escape="url">_id&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter_val=<mt:var name="category_id" escape="url">">
                         <__trans phrase="[quant,_1,TrackBack,TrackBacks]" params="<mt:var name="category_tbcount">">
                     </a>
         </mt:if>
@@ -272,7 +272,7 @@ TC.attachLoadEvent( init );
                             label_class="inline field-no-header"
                             hint=""
                             show_hint="0">
-                            <input type="text" name="category-new-parent-<mt:var name="category_id">" id="category-new-parent-<mt:var name="category_id">" value="" maxlength="100"/>
+                            <input type="text" name="category-new-parent-<mt:var name="category_id" escape="html">" id="category-new-parent-<mt:var name="category_id" escape="html">" value="" maxlength="100"/>
                         </mtapp:setting>
                         <mtapp:setting
                             id="actions"
@@ -303,7 +303,7 @@ TC.attachLoadEvent( init );
         <input type="hidden" name="__mode" value="save_cat" />
         <input type="hidden" name="_type" value="category" />
         <input type="hidden" name="return_args" value="<$mt:var name="return_args" escape="html"$>" />
-        <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+        <input type="hidden" name="blog_id" value="<$mt:var name="blog_id" escape="html"$>" />
         <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
         <table width="100%">
             <tr id="create-0" class="create-row create-inline">

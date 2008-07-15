@@ -28,7 +28,7 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html">"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html">"></a></li>
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions$>
@@ -103,8 +103,8 @@ TC.attachLoadEvent(init);
 </mt:unless>
 
 <form method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="id" value="<mt:var name="id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="_type" value="commenter" />
     <input type="hidden" name="action_name" value="" />
@@ -130,7 +130,7 @@ TC.attachLoadEvent(init);
             label="<__trans phrase="Identity">"
             hint="<__trans phrase="The Identity of the commenter">"
             show_hint="0">
-            <mt:if name="url"><a href="<mt:var name="url">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
+            <mt:if name="url"><a href="<mt:var name="url" escape="html">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
         </mtapp:setting>
     
         <mtapp:setting
@@ -142,7 +142,7 @@ TC.attachLoadEvent(init);
             <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=email&amp;search=<mt:var name="email" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
     
         <mtapp:setting
-            id="url5122"
+            id="url"
             label="<__trans phrase="URL">"
             hint="<__trans phrase="The URL of the commenter">"
             show_hint="0">

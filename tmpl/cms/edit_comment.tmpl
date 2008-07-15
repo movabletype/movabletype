@@ -32,7 +32,7 @@
     <mt:if name="is_ip_filter">
         <mt:if name="blog_id">
     <button
-        onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
+        onclick="doBanIP('<mt:var name="filter_val" escape="js">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
         ><__trans phrase="Ban This IP"></button>
         </mt:if>
     </mt:if>
@@ -43,15 +43,15 @@
         label="<__trans phrase="Useful links">">
         <ul>
         <mt:if name="previous_comment_id">
-            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Previous Comment"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Previous Comment"></a></li>
         </mt:if>
         <mt:if name="next_comment_id">
-            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id">&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Next Comment"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Next Comment"></a></li>
         </mt:if>
-            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Manage Comments"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Manage Comments"></a></li>
             <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View entry comment was left on"></a></mt:if></li>            
         <mt:if name="comment_approved">
-            <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id">&amp;magic_token=<mt:var name="magic_token">&amp;blog_id=<mt:var name="blog_id">&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Reply to this comment"></a></li>
+            <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_post_comment', 'reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">')"><__trans phrase="Reply to this comment"></a></li>
         </mt:if>
         </ul>
     </mtapp:widget>
@@ -60,8 +60,8 @@
 <mt:include name="include/header.tmpl">
 
 <form method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="id" value="<mt:var name="id">" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="action_name" value="" />
     <input type="hidden" name="itemset_action_input" value="" />
@@ -223,7 +223,7 @@
         <mt:if name="url">
             <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/link.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a>
         </mt:if>
-        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">&amp;_type=comment&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
     
     <mtapp:setting
@@ -232,10 +232,10 @@
         content_class="field-content-text"
         hint="<__trans phrase="[_1] this comment was made on" params="$entry_class_label">"
         show_hint="0">
-        <mt:if name="no_entry">[<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class">&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="entry_title" escape="html"></a></mt:if>
-        <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="entry_id" escape="html">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <mt:if name="no_entry">[<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]<mt:else><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:var name="entry_title" escape="html"></a></mt:if>
+        <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="entry_id" escape="url">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
-    
+
     <mtapp:setting
         id="date"
         label="<__trans phrase="Date">"

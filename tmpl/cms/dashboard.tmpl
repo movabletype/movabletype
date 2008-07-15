@@ -16,16 +16,16 @@
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <input type="hidden" name="widget_action" value="add" />
-    <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope">" />
+    <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
     <input type="hidden" name="widget_set" value="<mt:var name="set">" />
     <div class="actions-bar buttons">
         <div class="actions-bar-inner pkg actions">
             <select name="widget_id">
                 <option value=""><__trans phrase="Select a Widget..."></option>
 <mt:loop name="all_widget_loop"><mt:if name="widget_set"><mt:if name="widget_set" eq="$set"><mt:var name="widget_options" value="1">
-                <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
+                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
 </mt:if><mt:else><mt:var name="widget_options" value="1">
-                <option value="<mt:var name="widget_id">"><mt:var name="widget_label"></option>
+                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
 </mt:if></mt:loop>
             </select>
             <button

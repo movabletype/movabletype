@@ -30,7 +30,7 @@
     </mt:unless>
     <mt:if name="is_ip_filter">
         <a href="javascript:void(0)"
-            onclick="doBanIP('<mt:var name="filter_val">'); return false;"
+            onclick="doBanIP('<mt:var name="filter_val" escape="js">'); return false;"
             ><__trans phrase="Ban This IP"></a>
     </mt:if>
 </mt:setvarblock>

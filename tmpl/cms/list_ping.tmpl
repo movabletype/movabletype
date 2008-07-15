@@ -72,7 +72,7 @@
         <mt:if name="feed_url">
                 <a href="<mt:var name="feed_url" escape="html">" class="icon-feed icon-left" title="<mt:var name="feed_name" escape="html">"><__trans phrase="[_1] Feed" params="<$mt:var name="object_label_plural"$>"></a>
         <mt:else><mt:unless name="tab_junk">
-                <a href="<mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id">" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
+                <a href="<mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id" escape="url">" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
         </mt:unless></mt:if>
             </li>
         </ul>
@@ -125,8 +125,8 @@ function init() {
     // setup
     tableSelect = new TC.TableSelect( "ping-listing-table" );
     tableSelect.rowSelect = true;
-    setFilterCol(<mt:if name="filter">'<mt:var name="filter">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-    setFilterVal('<mt:var name="filter_val">');
+    setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    setFilterVal('<mt:var name="filter_val" escape="js">');
 </mt:if>
 }
 TC.attachLoadEvent( init );
@@ -161,7 +161,7 @@ TC.attachLoadEvent( init );
                 <strong><a href="javascript:void(0)" onclick="toggleFilter()">
                     <__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>
                 </a></strong>
-                <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+                <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode" escape="url"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
                 </mt:if></mt:if>
             </mt:unless>
             </div>

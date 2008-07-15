@@ -40,14 +40,14 @@ function setExtraPath(sel) {
     <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
-    <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert">" />
-    <input type="hidden" name="asset_select" value="<mt:var name="asset_select">" />
-    <input type="hidden" name="edit_field" value="<mt:var name="edit_field">" />
-    <input type="hidden" name="require_type" value="<mt:var name="require_type">" />
+    <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert" escape="html">" />
+    <input type="hidden" name="asset_select" value="<mt:var name="asset_select" escape="html">" />
+    <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+    <input type="hidden" name="require_type" value="<mt:var name="require_type" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <mt:if name="user_id">
-    <input type="hidden" name="user_id" value="<mt:var name="user_id">" />
-    </mt:if>        
+    <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+    </mt:if>
 
     <mtapp:setting
         id="file"

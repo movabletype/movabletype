@@ -6,7 +6,7 @@
         <mtapp:statusmsg
             id="generic-error"
             class="error">
-            <mt:var name="error">
+            <mt:var name="error" escape="html">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="saved">
@@ -130,7 +130,7 @@ function clearNotifyUsers() {
         <input type="hidden" id="new_user_template_blog_id" name="new_user_template_blog_id" size="5" value="<mt:var name="new_user_template_blog_id" escape="html">" />
         <div id="new_user_template_blog_name">
         <mt:if name="new_user_template_blog_id">
-            <strong><mt:var name="new_user_template_blog_name" escape="html"> (<mt:var name="new_user_template_blog_id">)</strong>
+            <strong><mt:var name="new_user_template_blog_name" escape="html"> (<mt:var name="new_user_template_blog_id" escape="html">)</strong>
             <mt:unless name="new_user_template_blog_id_readonly">
             <a href="javascript:void(0)" onclick="return clearWeblogCloneSource()"><__trans phrase="Clear"></a>
             </mt:unless>

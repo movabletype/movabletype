@@ -80,8 +80,8 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
     <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     </mt:if><mt:if name="edit_author_id"><input type="hidden" name="author_id" value="<mt:var name="edit_author_id">" />
-    </mt:if><mt:if name="group_id"><input type="hidden" name="group_id" value="<mt:var name="group_id">" />
-    </mt:if><mt:if name="role_id"><input type="hidden" name="role_id" value="<mt:var name="role_id">" />
+    </mt:if><mt:if name="group_id"><input type="hidden" name="group_id" value="<mt:var name="group_id" escape="html">" />
+    </mt:if><mt:if name="role_id"><input type="hidden" name="role_id" value="<mt:var name="role_id" escape="html">" />
     </mt:if><mt:loop name="panel_loop">
     <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
 </form>

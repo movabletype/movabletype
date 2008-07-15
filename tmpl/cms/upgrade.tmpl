@@ -77,7 +77,7 @@ function show(id) {
 
         <ul>
         <mt:loop name="plugin_upgrades">
-            <li><p><mt:var name="name"><mt:if name="version"> <__trans phrase="Version [_1]" params="<mt:var name="version">"></mt:if></p></li>
+            <li><p><mt:var name="name" escape="html"><mt:if name="version"> <__trans phrase="Version [_1]" params="<mt:var name="version">"></mt:if></p></li>
         </mt:loop>
         </ul>
     </mt:if>

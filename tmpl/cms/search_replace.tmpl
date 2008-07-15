@@ -140,7 +140,7 @@
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 </mt:if>
 <mt:if name="entry_type">
-    <input type="hidden" name="entry_type" value="<mt:var name="entry_type">" />
+    <input type="hidden" name="entry_type" value="<mt:var name="entry_type" escape="html">" />
 </mt:if>
 <mt:if name="searched"><mt:if name="search">
     <input type="hidden" name="orig_search" value="<mt:var name="search" escape="html">" /></mt:if>
@@ -153,7 +153,7 @@
 
 <div class="tabs">
     <ul><mt:loop name="search_tabs">
-        <li<mt:if name="object_type" eq="$key"> class="yah"</mt:if> id="results-<mt:var name="key">-tab"><a href="javascript:void(0)" onclick="reSearch('<mt:var name="key">'); return false"><span><mt:var name="label"></span></a></li>
+        <li<mt:if name="object_type" eq="$key"> class="yah"</mt:if> id="results-<mt:var name="key" escape="html">-tab"><a href="javascript:void(0)" onclick="reSearch('<mt:var name="key" escape="js">'); return false"><span><mt:var name="label" escape="html"></span></a></li>
     </mt:loop></ul>
 </div>
 
@@ -247,7 +247,7 @@
         <ul>
         <mt:loop name="search_cols">
             <mt:if name="__first__"><li class="first"><__trans phrase="Search Fields:"></li></mt:if>
-            <li><label for="search_cols-<mt:var name="field">"><input type="checkbox" id="search_cols-<mt:var name="field">" name="search_cols" value="<mt:var name="field">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label"></label></li>
+            <li><label for="search_cols-<mt:var name="field" escape="html">"><input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label" escape="html"></label></li>
         </mt:loop>
         </ul>
     </div>
@@ -258,8 +258,8 @@
     <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
     <ul>
         <li class="first"><__trans phrase="Date Range">:</li>
-        <li><label for="datefrom_year"><__trans phrase="_DATE_FROM">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
-        <li><label for="dateto_year"><__trans phrase="_DATE_TO">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="datefrom_year"><__trans phrase="_DATE_FROM">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year" escape="html"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month" escape="html"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day" escape="html"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="dateto_year"><__trans phrase="_DATE_TO">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year" escape="html"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month" escape="html"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day" escape="html"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
     </ul>
 </div>
 
@@ -289,7 +289,7 @@
     <mtapp:statusmsg
         id="generic-error"
         class="error">
-        <mt:var name="error">
+        <mt:var name="error" escape="html">
     </mtapp:statusmsg>
 </mt:if>
 

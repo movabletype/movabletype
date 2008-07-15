@@ -70,13 +70,13 @@
     <input type="hidden" name="id" value="<mt:var name="asset_id">" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
-    <input type="hidden" name="edit_field" value="<mt:var name="edit_field">" />
+    <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
     <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
     <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
     <mt:unless name="direct_asset_insert">
-    <input type="hidden" name="middle_path" value="<mt:var name="middle_path">" />
-    <input type="hidden" name="extra_path" value="<mt:var name="extra_path">" />
+    <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+    <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
     </mt:unless>
     <mt:if name="entry_insert">
     <input type="hidden" name="new_entry" value="1" />

@@ -42,7 +42,7 @@
     </mt:if>
     <mt:if name="role_view">
         <mt:if name="can_create_association">
-        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id">')" class="icon-left icon-create"><__trans phrase="Assign Role to User"></a></li>
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id" escape="url">')" class="icon-left icon-create"><__trans phrase="Assign Role to User"></a></li>
         </mt:if>
     </mt:if>
     <mt:if name="usergroup_view">
@@ -118,7 +118,7 @@
     <tbody>
     </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-        <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+        <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
     <mt:if name="usergroup_view">
         <td>
         <mt:include name="include/list_associations/table_user_view.tmpl" id="table_usergroup_view">
@@ -134,7 +134,7 @@
     </tr>
     <mt:if name="view_expanded">
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
-        <td class="cb"<mt:if name="usergroup_view"> colspan="2"</mt:if>>&nbsp;</td><td colspan="3"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
+        <td class="cb"<mt:if name="usergroup_view"> colspan="2"</mt:if>>&nbsp;</td><td colspan="3"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
     </tr>
     </mt:if>
     <mt:if name="__last__">

@@ -87,9 +87,9 @@ TC.attachLoadEvent( init );
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
-            <td><mt:var name="ip"></td>
-            <td><mt:var name="created_on_formatted"></td>
+            <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id" escape="html">" /></td>
+            <td><mt:var name="ip" escape="html"></td>
+            <td><mt:var name="created_on_formatted" escape="html"></td>
         </tr>
     <mt:if name="__last__">
     </tbody>
@@ -109,7 +109,7 @@ TC.attachLoadEvent( init );
             label_class="inline"
             hint=""
             show_hint="0">
-            <input name="ip" id="ip-address" value="<mt:var name="ip">" maxlength="15" />
+            <input name="ip" id="ip-address" value="<mt:var name="ip" escape="html">" maxlength="15" />
         </mtapp:setting>
         <mtapp:setting
             id="actions"

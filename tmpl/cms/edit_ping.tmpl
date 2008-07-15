@@ -49,7 +49,7 @@
     <mt:if name="is_ip_filter">
         <mt:if name="blog_id">
     <button
-        onclick="doBanIP('<mt:var name="filter_val">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
+        onclick="doBanIP('<mt:var name="filter_val" escape="js">', '<mt:var name="blog_id">', '<mt:var name="magic_token">')"
         ><__trans phrase="Ban This IP"></button>
         </mt:if>
     </mt:if>
@@ -57,8 +57,8 @@
 <mt:include name="include/header.tmpl">
 
 <form method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="id" value="<mt:var name="id">" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     <input type="hidden" name="__mode" value="save" />
     <input type="hidden" name="action_name" value="save" />
     <input type="hidden" name="itemset_action_input" value="" />
@@ -176,9 +176,9 @@
         <mt:if name="no_entry">
             [<__trans phrase="Entry no longer exists">]
         <mt:else>
-            <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id">&amp;blog_id=<mt:var name="blog_id">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
+            <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
         </mt:if>
-        <a href="<$mt:var name="script_url"$>?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<__trans phrase="View all TrackBacks on this entry">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a href="<$mt:var name="script_url"$>?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<__trans phrase="View all TrackBacks on this entry">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>
 </mt:if>
 

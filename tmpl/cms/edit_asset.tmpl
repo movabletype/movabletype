@@ -38,14 +38,14 @@
                 <mt:if name="__first__">
         <ul>
                 </mt:if>
-            <li><a href="<mt:var name="script_url">?__mode=edit&amp;_type=<mt:var name="class">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="id">" title="<__trans phrase="Published on [_1]" params="<mt:var name="created_on_formatted">">" class="icon-left icon-<mt:var name="class" lower_case="1">"><mt:var name="title" default="<__trans phrase="...">"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=edit&amp;_type=<mt:var name="class">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="id" escape="url">" title="<__trans phrase="Published on [_1]" params="<mt:var name="created_on_formatted">">" class="icon-left icon-<mt:var name="class" lower_case="1">"><mt:var name="title" escape="html" default="<__trans phrase="...">"></a></li>
                 <mt:if name="__last__">
         </ul>
                 </mt:if>
             </mt:loop>
             <mt:if name="appears_in_more">
-                <p><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id">&amp;filter=asset_id&amp;filter_val=<mt:var name="id">"><__trans phrase="Show all entries"></a></p>
-                <p><a href="<mt:var name="script_url">?__mode=list_pages&amp;blog_id=<mt:var name="blog_id">&amp;filter=asset_id&amp;filter_val=<mt:var name="id">"><__trans phrase="Show all pages"></a></p>
+                <p><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all entries"></a></p>
+                <p><a href="<mt:var name="script_url">?__mode=list_pages&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all pages"></a></p>
             </mt:if>
         <mt:else>
             <span class="hint"><__trans phrase="This asset has not been used."></span>
@@ -59,7 +59,7 @@
             <mt:loop name="related">
                 <li class="asset asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if> pkg">
                     <div class="asset-thumb">
-                        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>">
+                        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<$mt:var name="file_name" escape="html"$>">
                 <mt:if name="has_thumbnail">
                             <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
                 <mt:else>
@@ -68,7 +68,7 @@
                         </a>
                     </div>
                     <div class="asset-metadata">
-                        <h3 class="asset-label"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><mt:var name="label"></a></h3>
+                        <h3 class="asset-label"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name" escape="html"$>"><mt:var name="label" escape="html"></a></h3>
                         <div class="asset-size">
                             <mt:var name="created_on_formatted"><br />
                             <mt:if name="class" eq="image"><mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">px</mt:if><br />
@@ -102,7 +102,7 @@
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="__mode" value="save" />
         <input type="hidden" name="_type" value="<mt:var name="object_type">" />
-        <input type="hidden" name="id" value="<mt:var name="id">" />
+        <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
         <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 

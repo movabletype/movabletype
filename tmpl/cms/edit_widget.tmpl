@@ -39,13 +39,13 @@ function init () {
     gCols[0] = new Column('installed-column', 0, 0);
 
 <mt:loop name="installed">
-    gCols[0].addModule('<mt:var name="id">');
+    gCols[0].addModule('<mt:var name="id" escape="js">');
 </mt:loop>
 
     gCols[1] = new Column('available-column', 1, 322);
 
 <mt:loop name="available">
-    gCols[1].addModule('<mt:var name="id">');
+    gCols[1].addModule('<mt:var name="id" escape="js">');
 </mt:loop>
 
     calculateHeight();
@@ -314,8 +314,8 @@ TC.attachLoadEvent( init );
 
     <form onsubmit="this.modules.value = moduleListStr(); return checkName();" id="manager" name="manager" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="save_widget" />
-      <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id">" /></mt:if>
-      <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+      <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id" escape="html">" /></mt:if>
+      <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <input type="hidden" name="modules" value="" />
 
@@ -324,7 +324,7 @@ TC.attachLoadEvent( init );
           id="name"
           label="<__trans phrase="Set Name">">
           <div class="textarea-wrapper">
-              <input name="name" id="name" class="full-width" value="<mt:var name="name">" />
+              <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" />
           </div>
       </mtapp:setting>
 
@@ -335,9 +335,9 @@ TC.attachLoadEvent( init );
               <div id="installed-column" class="pkg">
                   <p><__trans phrase="Installed Widgets"></p>
               <mt:loop name="installed">
-                  <div id="module-<mt:var name="id">" class="module pkg">
-                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                  <div id="module-<mt:var name="id" escape="html">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
                   </div>
               </mt:loop>
               </div>
@@ -345,9 +345,9 @@ TC.attachLoadEvent( init );
               <div id="available-column" class="pkg">
                   <p><__trans phrase="Available Widgets"></p>
               <mt:loop name="available">
-                  <div id="module-<mt:var name="id">" class="module pkg">
-                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name"></a></div>
-                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" target="_new"><__trans phrase="edit"></a></div>
+                  <div id="module-<mt:var name="id" escape="html">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
                   </div>
               </mt:loop>
               </div>

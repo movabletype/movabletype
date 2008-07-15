@@ -44,7 +44,7 @@ function selectBlog() {
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
 <input type="hidden" name="__mode" value="import" />
-<input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset style="margin-top: 0px;">
@@ -55,7 +55,7 @@ function selectBlog() {
         hint="<__trans phrase="Select a blog to import.">"
         content_class="field-content-text">
         <mt:if name="blog_id">
-            <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)
+            <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id" escape="html">)
         <mt:else>
             <a href="javascript:void(0)" onclick="return selectBlog()"><__trans phrase="Select blog"></a>
         </mt:if>
@@ -67,12 +67,12 @@ function selectBlog() {
         label="<__trans phrase="Importing from">">
 <select name="import_type" onchange="return toggleDisplay(this)">
 <mt:loop name="importer_loop">
-<option value="<mt:var name="key">"><mt:var name="label"></option>
+<option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
 </mt:loop>
 </select>
     </mtapp:setting>
 <mt:loop name="importer_loop">
-<div class="config" id="config-<mt:var name="key">" style="display:none;">
+<div class="config" id="config-<mt:var name="key" escape="html">" style="display:none;">
 <mt:var name="importer_options_html">
 </div>
 </mt:loop>
@@ -130,7 +130,7 @@ function selectBlog() {
         label="<__trans phrase="Text Formatting">">
 <select name="convert_breaks" id="convert_breaks">
 <mt:loop name="text_filters">
-<option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label"></option>
+<option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
 </mt:loop>
 </select>
     </mtapp:setting>
@@ -143,7 +143,7 @@ function selectBlog() {
         help_section="source_file_encoding">
 <p><select name="encoding" id="encoding">
 <mt:loop name="encoding_names">
-<option value="<mt:var name="name">"><__trans phrase="<mt:var name="display_name">"></option>
+<option value="<mt:var name="name" escape="html">"><__trans phrase="<mt:var name="display_name" escape="html">"></option>
 </mt:loop></select></p>
     </mtapp:setting>
 
@@ -156,7 +156,7 @@ function selectBlog() {
 <select name="default_cat_id" id="default_cat_id">
 <option value=""><__trans phrase="Select a category"></option>
 <mt:loop name="category_loop">
-<option value="<mt:var name="category_id">"><mt:var name="category_label"></option>
+<option value="<mt:var name="category_id" escape="html">"><mt:var name="category_label" escape="html"></option>
 </mt:loop>
 </select>
     </mtapp:setting>

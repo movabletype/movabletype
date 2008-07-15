@@ -116,8 +116,8 @@
         <input type="checkbox" name="thumb" id="create_thumbnail" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
         <label for="create_thumbnail"><__trans phrase="Use thumbnail"></label>
         (<label for="thumb_width"><__trans phrase="width:"></label>
-        <input name="thumb_width" id="thumb_width" value="<mt:var name="thumb_width">" onkeypress="widthKeyPress(event)" onchange="adjustWidthHeight(this.form, 1)" size="4" /> <__trans phrase="pixels">)
-        <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height">" />
+        <input name="thumb_width" id="thumb_width" value="<mt:var name="thumb_width" escape="html">" onkeypress="widthKeyPress(event)" onchange="adjustWidthHeight(this.form, 1)" size="4" /> <__trans phrase="pixels">)
+        <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
         <img onload="checkThumbs('now');" src="<mt:var name="static_uri">images/spacer.gif" alt="" width="1" height="1" />
     </mtapp:setting>
 </mt:if>

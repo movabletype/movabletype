@@ -13,7 +13,7 @@
         </mt:if>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="system_msg">
     <mt:unless name="recovered_object">
@@ -22,7 +22,7 @@
                 id="autosaved-object-exists"
                 can_close="1"
                 class="info">
-                <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id"><mt:if name="id">&amp;id=<mt:var name="id"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>">">
+                <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>">">
             </mtapp:statusmsg>
         </mt:if>
     </mt:unless>
@@ -57,7 +57,7 @@
                 <mt:unless name="build_type_0">
                     <mt:if name="has_rebuild">
                         <mt:if name="can_rebuild">
-                            <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id">&amp;next=0&amp;type=index-<mt:var name="id">&amp;tmpl_id=<mt:var name="id">&amp;single_template=1'"></a>
+                            <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1'"></a>
                         </mt:if>
                     </mt:if>
                 </mt:unless>
@@ -84,7 +84,7 @@
         <mtapp:statusmsg
             id="saved-rebuild"
             class="success">
-            <__trans phrase="Your [_1] has been published." params="<mt:var name="name">">
+            <__trans phrase="Your [_1] has been published." params="<mt:var name="name" escape="html">">
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
@@ -174,7 +174,7 @@
         </mt:if>
     </mt:if>
     </mt:unless>
-    <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
+    <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
@@ -376,9 +376,9 @@ function deleteMap(mapid) {
     if (!frm) return false;
     var param = '__mode=delete_map'
         + '&blog_id=' + frm['blog_id'].value
-        + '&template_id=<mt:var name="id">'
+        + '&template_id=<mt:var name="id" escape="url">'
         + '&id=' + mapid
-        + '&magic_token=<mt:var name="magic_token">';
+        + '&magic_token=<mt:var name="magic_token" escape="url">';
     saveArchiveMapChange(param);
 }
 function setCreateMode () {
@@ -399,9 +399,9 @@ function addMap() {
     if (!frm) return false;
     var param = '__mode=add_map'
         + '&blog_id=' + frm['blog_id'].value
-        + '&template_id=<mt:var name="id">'
+        + '&template_id=<mt:var name="id" escape="url">'
         + '&new_archive_type=' + f['new_archive_type'].value
-        + '&magic_token=<mt:var name="magic_token">';
+        + '&magic_token=<mt:var name="magic_token" escape="url">';
     saveArchiveMapChange(param);
 }
 
@@ -483,8 +483,8 @@ TC.attachLoadEvent( init );
 <mt:include name="include/header.tmpl">
 
 <form name="template-listing-form" id="template-listing-form" method="post" action="<mt:var name="script_url">" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
-<input type="hidden" name="id" value="<mt:var name="id">" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id" default="0">" />
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html" default="0">" />
 <input type="hidden" name="type" value="<mt:var name="type" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="template" />
@@ -530,7 +530,7 @@ TC.attachLoadEvent( init );
         <select id="tag-insert" tabindex="2" name="tag-insert" onchange="insertSnippet(this)">
             <option value=""><__trans phrase="Insert..."></option>
             <mt:loop name="template_snippets">
-            <option value="<mt:var name="id">"><mt:var name="label" escape="html"><mt:if name="trigger"> (<mt:var name="trigger" escape="html">)</mt:if></option>
+            <option value="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"><mt:if name="trigger"> (<mt:var name="trigger" escape="html">)</mt:if></option>
             </mt:loop>
         </select>
         </mt:if>
@@ -684,7 +684,7 @@ TC.attachLoadEvent( init );
                 label="<__trans phrase="Include cache path">"
                 shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
                 <div class="textarea-wrapper">
-                    <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path">" maxlength="255" class="full-width" mt:watch-change="1" />
+                    <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
                 </div>
             </mtapp:setting>
         </mt:ignore>
@@ -701,7 +701,7 @@ TC.attachLoadEvent( init );
             <ul id="cache-options">
                 <li><input type="radio" value="0" name="cache_expire_type" id="no-cache" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>> <label for="no-cache"><__trans phrase="No caching"></label></li>
                 <li><input type="radio" value="1" name="cache_expire_type" id="expire-time" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
-                    <input type="text" id="cache-time-value" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
+                    <input type="text" id="cache-time-value" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
                     <select id="cache-time-unit" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
                         <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
                         <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>

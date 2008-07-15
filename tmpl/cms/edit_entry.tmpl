@@ -76,7 +76,7 @@
         title="<mt:var name="delete_button_title">"
         ><__trans phrase="Delete"></button>
     </mt:if>
-    <div id="autosave-notification-<$mt:var name="bar_position" default="top"$>" class="autosave-notification"></div>
+    <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
 <mt:setvarblock name="system_msg">
     <div id="msg-block">
@@ -87,9 +87,9 @@
                 id="recovered-object"
                 class="info">
                 <mt:if name="object_type" eq="entry">
-                    <__trans phrase="A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+                    <__trans phrase="A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
                 <mt:else>
-                    <__trans phrase="A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
+                    <__trans phrase="A saved version of this page was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>" params="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;_recover=1<mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>%%<mt:date ts="$autosaved_object_ts" relative="1">">
                 </mt:if>
             </mtapp:statusmsg>
             </mt:unless>
@@ -192,11 +192,11 @@
 <mt:setvarblock name="form_header">
     <form name="entry_form" id="entry_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1" mt:auto-save="1" mt:auto-save-delay="<$mt:var name="autosave_frequency"$>000">
     <mt:if name="new_object">
-        <input type="hidden" name="author_id" value="<$mt:var name="author_id"$>" />
+        <input type="hidden" name="author_id" value="<$mt:var name="author_id" escape="html"$>" />
     <mt:else>
-        <input type="hidden" name="id" value="<$mt:var name="id"$>" />
+        <input type="hidden" name="id" value="<$mt:var name="id" escape="html"$>" />
     </mt:if>
-        <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" id="blog-id" />
+        <input type="hidden" name="blog_id" value="<$mt:var name="blog_id" escape="html"$>" id="blog-id" />
         <input type="hidden" name="__mode" value="save_entry" />
         <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
         <input type="hidden" name="return_args" value="<$mt:var name="return_args" escape="html"$>" />
@@ -295,14 +295,14 @@
                     <li class="view-entry-link"><a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">" class="icon-left-wide icon-view"><__trans phrase="View"></a></li>
                         </mt:if>
                         <mt:if name="can_send_notifications">
-                    <li><a href="javascript:void(0)" onclick="openDialog(null,'entry_notify','blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="id">');return false;" class="icon-left-wide icon-share"><__trans phrase="Share"></a></li>
+                    <li><a href="javascript:void(0)" onclick="openDialog(null,'entry_notify','blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">');return false;" class="icon-left-wide icon-share"><__trans phrase="Share"></a></li>
                         </mt:if>
                     </mt:if>
                 </ul>
             </div>
             <ul class="object-stats">
-                <li class="comments-link"><__trans phrase="<a href="[_2]">[quant,_1,comment,comments]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></li>
-                <li class="pings-link"><__trans phrase="<a href="[_2]">[quant,_1,trackback,trackbacks]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"></li>
+                <li class="comments-link"><__trans phrase="<a href="[_2]">[quant,_1,comment,comments]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></li>
+                <li class="pings-link"><__trans phrase="<a href="[_2]">[quant,_1,trackback,trackbacks]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></li>
             </ul>
         </mtapp:widget>
     </mt:unless>
@@ -390,9 +390,9 @@
             help_page="entries"
             help_section="basename">
                 <input type="hidden" name="basename_old" id="basename_old" value="<$mt:var name="basename_old" escape="html"$>" />
-                <input type="text" <mt:if name="object_type" eq="entry">disabled="disabled"</mt:if> name="basename" id="basename" value="<$mt:var name="basename"$>" onchange="setElementValue('basename', dirify(this.value))" tabindex="12" />
+                <input type="text" <mt:if name="object_type" eq="entry">disabled="disabled"</mt:if> name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" onchange="setElementValue('basename', dirify(this.value))" tabindex="12" />
             <mt:if name="object_type" eq="page">
-            <span class="file-extension"><$mt:var name="file_extension"$></span>
+            <span class="file-extension"><$mt:var name="file_extension" escape="html"$></span>
             </mt:if>
             <mt:if name="object_type" eq="entry">
                 <mt:if name="can_publish_post">
@@ -726,7 +726,7 @@ var tagList;
 function rebasename(title) {
     if (!orig_basename) {
         dir_title = dirify(title.value);
-        dir_title = dir_title.substring(0, <$mt:var name="basename_limit"$>);
+        dir_title = dir_title.substring(0, <$mt:var name="basename_limit" escape="js"$>);
         trimmed = dir_title.match(/^(.*[^_])/);
         if (trimmed && trimmed.length) {
             setElementValue('basename', trimmed[0]);
@@ -784,7 +784,7 @@ document.onkeyup = function(e) {
 
 var docs = new Array();
 <mt:loop name="text_filters">
-docs['<$mt:var name="filter_key"$>'] = '<$mt:var name="filter_docs"$>';
+docs['<$mt:var name="filter_key" escape="js"$>'] = '<$mt:var name="filter_docs" escape="js"$>';
 </mt:loop>
 function openTFDocs() {
     var s = document.forms['entry_form'].convert_breaks;
@@ -1005,7 +1005,7 @@ function listPreviousPings () {
                     <__trans phrase="Format:">
                     <select name="convert_breaks" id="convert_breaks" tabindex="2" onchange="changedTextFormat(this)">
     <mt:loop name="text_filters">
-                        <option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label"></option>
+                        <option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label" escape="html"></option>
     </mt:loop>
                     </select>
                     <$mt:setvar name="show_formatting_help" value="1"$>

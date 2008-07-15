@@ -74,11 +74,11 @@ function scoreNudge(amount) {
 </script>
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
-<input type="hidden" name="id" value="<mt:var name="id">" />
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="blog" />
 <input type="hidden" name="cfg_screen" value="cfg_spam" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
@@ -98,7 +98,7 @@ function scoreNudge(amount) {
         hint="<__trans phrase="When an item has been reported as spam for this many days, it is automatically deleted.">"
         help_page="blog_settings_feedback"
         help_section="delete_junk_after">
-<input type="text" id="junk_folder_expiry" name="junk_folder_expiry" value="<mt:var name="junk_folder_expiry">" size="5" /> <__trans phrase="days">
+<input type="text" id="junk_folder_expiry" name="junk_folder_expiry" value="<mt:var name="junk_folder_expiry" escape="html">" size="5" /> <__trans phrase="days">
     </mtapp:setting>
 </div>
 
@@ -109,7 +109,7 @@ function scoreNudge(amount) {
         help_page="blog_settings_feedback"
         help_section="junk_score_threshold">
 <a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)"><__trans phrase="Less Aggressive"> <img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" width="12" height="8" /></a>
-<input type="text" id="junk_score_threshold" name="junk_score_threshold" value="<mt:var name="junk_score_threshold">" size="3" style="text-align: center" />
+<input type="text" id="junk_score_threshold" name="junk_score_threshold" value="<mt:var name="junk_score_threshold" escape="html">" size="3" style="text-align: center" />
 <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)"><img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /> <__trans phrase="More Aggressive"></a>
     </mtapp:setting>
 

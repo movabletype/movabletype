@@ -24,11 +24,11 @@
 <mt:include name="include/header.tmpl">
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
-<input type="hidden" name="id" value="<mt:var name="id">" />
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
 <input type="hidden" name="_type" value="blog" />
 <input type="hidden" name="cfg_screen" value="cfg_web_services" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
@@ -87,7 +87,7 @@
             <ul>
             <mt:if name="pings_loop">
             <mt:loop name="pings_loop">
-                <li><input type="checkbox" name="ping_<mt:var name="key">" id="ping_<mt:var name="key">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key">"><mt:var name="label"></label></li>
+                <li><input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></li>
             </mt:loop>
             </mt:if>
                 <li><label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span></label>

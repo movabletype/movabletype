@@ -193,7 +193,7 @@
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="email" id="email" value="<mt:var name="email">" />
+    <input name="email" id="email" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 <mtapp:setting
     id="website"
@@ -201,7 +201,7 @@
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="url" id="url" value="<mt:var name="url">">
+    <input name="url" id="url" value="<mt:var name="url" escape="html">">
 </mtapp:setting>
 <mtapp:setting
     id="actions"

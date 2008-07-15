@@ -3,7 +3,7 @@
 <mt:if name="closing">
 <script type="text/javascript">
 /* <![CDATA[ */
-closeDialog('<mt:var name="return_url">');
+closeDialog('<mt:var name="return_url" escape="js">');
 /* ]]> */
 </script>
 </mt:if>
@@ -11,15 +11,15 @@ closeDialog('<mt:var name="return_url">');
     <mtapp:statusmsg
         id="generic-error"
         class="error">
-        <mt:var name="error">
+        <mt:var name="error" escape="html">
     </mtapp:statusmsg>
 </mt:if>
 <form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
     <input type="hidden" name="__mode" value="" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="reply_to" value="<mt:var name="reply_to">" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url"><mt:else><mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id"></mt:if>" />
+    <input type="hidden" name="reply_to" value="<mt:var name="reply_to" escape="html">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url" escape="html"><mt:else><mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>" />
     <div id="comment">
         <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html"$></span>"></p>
         <div class="comment-body">
@@ -36,7 +36,7 @@ closeDialog('<mt:var name="return_url">');
 </mt:if>
     <div id="comment-reply">
         <div class="intro"><__trans phrase="Your reply:"></div>
-        <textarea id="reply-body" name="text" rows="" cols="" class="full-width medium"><$mt:var name="text"$></textarea>
+        <textarea id="reply-body" name="text" rows="" cols="" class="full-width medium"><$mt:var name="text" escape="html"$></textarea>
     </div>
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions">

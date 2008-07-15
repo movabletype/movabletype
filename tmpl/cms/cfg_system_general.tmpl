@@ -43,7 +43,7 @@ function validate (f) {
         hint="<__trans phrase="The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification and a few other minor events.">"
         show_hint="1">
         <div class="textarea-wrapper">
-            <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address">"</mt:if> class="full-width" />
+            <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> class="full-width" />
         </div>
     </mt:app:setting>
 

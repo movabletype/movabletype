@@ -22,7 +22,7 @@ function doValidateNotifyRecips(f) {
 
 <form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
     <input type="hidden" name="__mode" value="send_notify" />
-    <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
     <mtapp:setting

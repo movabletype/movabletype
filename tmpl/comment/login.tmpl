@@ -3,7 +3,7 @@
     <script type="text/javascript">
     /* <![CDATA[ */
     function signinToggle(choice) {
-        var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name">',</mt:loop>'');
+        var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name" escape="js">',</mt:loop>'');
 
         for (var i = 0; i < auths.length - 1; i++) {
             var signinObject = getByID('signin_with_' + auths[i]);
@@ -36,7 +36,7 @@
         </mt:if>
 
         <mt:loop name="auth_loop">
-        <li id="signin_option_<mt:var name="name">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26" border="0" alt="" /></a></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name">');"><mt:var name="name"></a></div></li>
+        <li id="signin_option_<mt:var name="name" escape="html">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name" escape="js">');"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26" border="0" alt="" /></a></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name" escape="js">');"><mt:var name="name" escape="html"></a></div></li>
         </mt:loop>
 
         </ul>
@@ -64,8 +64,8 @@
 <div id="signin_with_mt"<mt:unless name="enabled_MovableType"> style="display: none"</mt:unless>>
 <form method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="do_login" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
     <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
     <input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
     <mt:unless name="auth_mode_mt"><input type="hidden" name="external_auth" value="1" /></mt:unless>
@@ -95,7 +95,7 @@
         </div>
     </div>
     <mt:if name="registration_allowed">
-    <div class="right"><__trans phrase="Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>"></div>
+    <div class="right"><__trans phrase="Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id" escape="js"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>"></div>
     </mt:if>
 </form>
 
@@ -106,7 +106,7 @@
 <dl>
 <mt:loop name="auth_loop">
 <dd>
-<div id="signin_with_<mt:var name="name">"<mt:if name="name" ne="$default_signin"> style="display: none"</mt:if>>
+<div id="signin_with_<mt:var name="name" escape="html">"<mt:if name="name" ne="$default_signin"> style="display: none"</mt:if>>
 <mt:var name="login_form">
 </div>
 </dd>

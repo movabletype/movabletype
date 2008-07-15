@@ -6,11 +6,11 @@
 
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="start_rebuild" />
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-<input type="hidden" name="next" value="<mt:var name="build_next">" />
-<input type="hidden" name="total_entries" value="<mt:var name="total_entries">" />
-<input type="hidden" name="total_pages" value="<mt:var name="total_pages">" />
-<input type="hidden" name="total_cats" value="<mt:var name="total_cats">" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="next" value="<mt:var name="build_next" escape="html">" />
+<input type="hidden" name="total_entries" value="<mt:var name="total_entries" escape="html">" />
+<input type="hidden" name="total_pages" value="<mt:var name="total_pages" escape="html">" />
+<input type="hidden" name="total_cats" value="<mt:var name="total_cats" escape="html">" />
 
     <mtapp:setting
         id="dbtype"

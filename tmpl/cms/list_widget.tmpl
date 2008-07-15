@@ -67,8 +67,8 @@ TC.attachLoadEvent( init );
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
-            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id">"><mt:var name="widgetmanager"></a></td>
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
+            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager"></a></td>
             <td class="widgetmanager-widgets"><mt:var name="names"></td>
         </tr>
     <mt:if name="__last__">

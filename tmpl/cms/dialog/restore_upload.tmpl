@@ -31,13 +31,13 @@
         dialog = new Dialog.MultiPanel("restore");
         panels = [];
         var panel;
-        panel = new ListingPanel("<mt:var name="name">");
-        panel.label = "<mt:var name="name">";
+        panel = new ListingPanel("<mt:var name="name" escape="js">");
+        panel.label = "<mt:var name="name" escape="js">";
         panels[panels.length] = panel;
         dialog.setPanels(panels);
         dialog.open({}, dialog_closed);
 
-        var next = TC.getElementsByTagAndClassName("input", "next", getByID('<mt:var name="name">-panel'));
+        var next = TC.getElementsByTagAndClassName("input", "next", getByID('<mt:var name="name" escape="js">-panel'));
         if (next) {
             this.nextButton = next[0];
             this.nextButton.onclick = function() {
@@ -58,23 +58,23 @@
     <mt:var name="error">
 </mtapp:statusmsg>
 </mt:if>
-<div id="<mt:var name="name">-panel" class="hidden panel">
+<div id="<mt:var name="name" escape="html">-panel" class="hidden panel">
 
 <form name="restore_form" id="restore_form" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="dialog_restore_upload" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="files" value="<mt:var name="files">" />
+    <input type="hidden" name="files" value="<mt:var name="files" escape="html">" />
     <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
-    <input type="hidden" name="current_file" value="<mt:var name="name">" />
-    <input type="hidden" name="last" value="<mt:var name="last">" />
-    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty">" />
-    <input type="hidden" name="is_asset" value="<mt:var name="is_asset">" />
-    <input type="hidden" name="schema_version" value="<mt:var name="schema_version">" />
-    <input type="hidden" name="overwrite_templates" value="<mt:var name="overwrite_templates">" />
+    <input type="hidden" name="current_file" value="<mt:var name="name" escape="html">" />
+    <input type="hidden" name="last" value="<mt:var name="last" escape="html">" />
+    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty" escape="html">" />
+    <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
+    <input type="hidden" name="schema_version" value="<mt:var name="schema_version" escape="html">" />
+    <input type="hidden" name="overwrite_templates" value="<mt:var name="overwrite_templates" escape="html">" />
     <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
     <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
 <mt:setvarblock name="restore_file_label">
-    <__trans phrase="Please upload the file [_1]" params="<em class="upload-file"><$mt:var name="name"$></em>">
+    <__trans phrase="Please upload the file [_1]" params="<em class="upload-file"><$mt:var name="name" escape="html"$></em>">
 </mt:setvarblock>
 <mtapp:setting
     id="restore_file"
