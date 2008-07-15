@@ -2580,7 +2580,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/calendar.tmpl
 	'_LOCALE_WEEK_START' => '1',
-	'S|M|T|W|T|F|S' => 'M|D|W|D|V|Z|Z',
+	'S|M|T|W|T|F|S' => 'Z|M|D|W|D|V|Z',
 	'January' => 'Januari',
 	'Febuary' => 'Februari',
 	'March' => 'Maart',
