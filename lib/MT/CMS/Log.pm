@@ -210,6 +210,7 @@ sub reset {
     $app->validate_magic() or return;
     my $author = $app->user;
     my $log_class = $app->model('log');
+    my $args = { 'reset' => 1 };
     if ( my $blog_id = $app->param('blog_id') ) {
         my $perms = $app->permissions;
         return $app->error( $app->translate("Permission denied.") )
@@ -230,6 +231,7 @@ sub reset {
                 }
             );
         }
+        $args->{ 'blog_id' } = $blog_id;
     }
     else {
         return $app->error( $app->translate("Permission denied.") )
@@ -248,8 +250,8 @@ sub reset {
             );
         }
     }
-    $app->add_return_arg( 'reset' => 1 );
-    $app->call_return;
+    my $log_url = $app->uri( mode => 'view_log', args => $args );
+    $app->redirect( $log_url );
 }
 
 sub export {
