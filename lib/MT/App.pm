@@ -992,7 +992,8 @@ sub session_state {
                 email => $commenter->email,
                 userpic => scalar $commenter->userpic_url,
                 profile => "", # profile link url
-                is_authenticated => ($commenter->auth_type eq 'MT' ? "1" : "2"),
+                auth_type => ($commenter->auth_type eq 'MT' ? "1" : "0"),
+                is_authenticated => "1",
                 is_trusted => ($commenter->is_trusted($blog_id) ? "1" : "0"),
                 is_author => ($commenter->type == MT::Author::AUTHOR() ? "1" : "0"),
                 is_anonymous => "0",
