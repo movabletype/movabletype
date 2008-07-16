@@ -344,7 +344,10 @@ sub complete_insert {
       or return $app->errtrans('No permissions');
 
     # caller wants asset without any option step, so insert immediately
-    return insert($app) if $app->param('asset_select');
+    if ($app->param('asset_select')) {
+        $app->param( 'id', $asset->id );
+        return insert($app);
+    }
 
     my $param = {
         asset_id            => $asset->id,
