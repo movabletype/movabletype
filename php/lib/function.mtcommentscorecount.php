@@ -8,6 +8,5 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtcommentscorecount($args, &$ctx) {
-    $count = hdlr_score_count($ctx, 'comment', $args['namespace']);
-    return $ctx->count_format($count, $args);
+    return hdlr_score_count($ctx, 'comment', $args['namespace'], $args);
 }

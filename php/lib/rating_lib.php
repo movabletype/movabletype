@@ -134,7 +134,7 @@ function rank_for(&$ctx, $obj_id, $datasource, $namespace, $max, $filter) {
     return $max - $level;
 }
 
-function hdlr_score($ctx, $datasource, $namespace, $default) {
+function hdlr_score($ctx, $datasource, $namespace, $default, $args = null) {
     if (!isset($namespace)) {
         return '';
     }
@@ -150,10 +150,12 @@ function hdlr_score($ctx, $datasource, $namespace, $default) {
     $score = score_for($ctx, $object[$datasource . '_id'], $datasource, $namespace);
     if ( !$score && isset($default) )
         return $default;
+    if ( $score ) 
+        return $ctx->count_format($score, $args);
     return $score;
 }
 
-function hdlr_score_high($ctx, $datasource, $namespace) {
+function hdlr_score_high($ctx, $datasource, $namespace, $args = null) {
     if (!isset($namespace)) {
         return '';
     }
@@ -169,7 +171,7 @@ function hdlr_score_high($ctx, $datasource, $namespace) {
     return score_high($ctx, $object[$datasource . '_id'], $datasource, $namespace);
 }
 
-function hdlr_score_low($ctx, $datasource, $namespace) {
+function hdlr_score_low($ctx, $datasource, $namespace, $args = null) {
     if (!isset($namespace)) {
         return '';
     }
@@ -185,7 +187,7 @@ function hdlr_score_low($ctx, $datasource, $namespace) {
     return score_low($ctx, $object[$datasource . '_id'], $datasource, $namespace);
 }
 
-function hdlr_score_avg($ctx, $datasource, $namespace) {
+function hdlr_score_avg($ctx, $datasource, $namespace, $args = null) {
     if (!isset($namespace)) {
         return '';
     }
@@ -198,10 +200,13 @@ function hdlr_score_avg($ctx, $datasource, $namespace) {
     if (!isset($object)) {
         return '';
     }
-    return score_avg($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $avg = score_avg($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    if ( $avg ) 
+        return $ctx->count_format($avg, $args);
+    return $avg;
 }
 
-function hdlr_score_count($ctx, $datasource, $namespace) {
+function hdlr_score_count($ctx, $datasource, $namespace, $args = null) {
     if (!isset($namespace)) {
         return '';
     }
@@ -214,10 +219,13 @@ function hdlr_score_count($ctx, $datasource, $namespace) {
     if (!isset($object)) {
         return '';
     }
-    return score_count($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $count = score_count($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    if ( $count ) 
+        return $ctx->count_format($count, $args);
+    return $count;
 }
 
-function hdlr_rank($ctx, $datasource, $namespace, $max, $filter) {
+function hdlr_rank($ctx, $datasource, $namespace, $max, $filter, $args = null) {
     if (!isset($namespace)) {
         return '';
     }

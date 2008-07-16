@@ -8,6 +8,5 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtpingscorecount($args, &$ctx) {
-    $count = hdlr_score_count($ctx, 'tbping', $args['namespace']);
-    return $ctx->count_format($count, $args);
+    return hdlr_score_count($ctx, 'tbping', $args['namespace'], $args);
 }

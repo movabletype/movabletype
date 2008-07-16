@@ -8,6 +8,5 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtentryscorecount($args, &$ctx) {
-    $count = hdlr_score_count($ctx, 'entry', $args['namespace']);
-    return $ctx->count_format($count, $args);
+    return hdlr_score_count($ctx, 'entry', $args['namespace'], $args);
 }
