@@ -48,7 +48,11 @@
             <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <TMPL_ELSE>
+            <mt:If name="log.comment.junk_status" eq="-1">
+            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=not_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            <mt:Else>
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            </mt:If>
             </TMPL_IF>
             &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
 
