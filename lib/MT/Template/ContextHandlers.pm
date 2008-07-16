@@ -7792,7 +7792,6 @@ sub _hdlr_entries {
                     $cats = [ $cat_class->load(\%blog_terms, \%blog_args) ];
                 } else {
                     my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $class_type);
-use Data::Dumper; die Dumper({ terms => \%blog_terms, args => \%blog_args, cats => \@cats, arg => $category_arg });
                     if (@cats) {
                         $cats = \@cats;
                         $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => 0 });
