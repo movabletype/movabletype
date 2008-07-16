@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time );
+                 weaken log_time make_string_csv );
 
 {
 my $Has_Weaken;
@@ -1962,6 +1962,17 @@ sub log_time {
 *Fh::read = sub {
     read($_[0], $_[1], $_[2], $_[3] || 0);
 };
+
+sub make_string_csv {
+    my ( $value, $enc ) = @_;
+    $value =~ s/\r|\r\n/\n/gs;
+    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) )
+        && !( $value =~ m/^".*"$/gs ) )
+    {
+        $value = "\"$value\"";
+    }
+    return MT::I18N::encode_text( $value, undef, $enc );
+}
 
 1;
 
