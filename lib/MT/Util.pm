@@ -559,7 +559,7 @@ sub decode_url {
         $html =~ tr!\cM!!d;
         unless (defined($Have_Entities)) {
             $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
-            $Have_Entities = 0 if $Have_Entities && !MT->config->NoHTMLEntities;
+            $Have_Entities = 0 unless $Have_Entities && !MT->config->NoHTMLEntities;
         }
         if ($Have_Entities) {
             $html = HTML::Entities::encode_entities($html);
@@ -584,7 +584,7 @@ sub decode_url {
         $html =~ tr!\cM!!d;
         unless (defined($Have_Entities)) {
             $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
-            $Have_Entities = 0 if $Have_Entities && !MT->config->NoHTMLEntities;
+            $Have_Entities = 0 unless $Have_Entities && !MT->config->NoHTMLEntities;
         }
         if ($Have_Entities) {
             $html = HTML::Entities::decode_entities($html);
