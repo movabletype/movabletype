@@ -18,8 +18,6 @@ stylecatcher_libraries:
 template_sets:
     mt_blog:
         base_css: themes-base/blog.css 
-    universal_website:
-        base_css: themes-base/blog.css 
 
 applications:
     cms:
