@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-
 #
 # SmartyPants  -  A Plug-In for Movable Type, Blosxom, and BBEdit
 # by John Gruber
@@ -30,104 +28,30 @@ my $smartypants_attr = "1";  # Blosxom and BBEdit users: change this to configur
 my $tags_to_skip = qr!<(/?)(?:pre|code|kbd|script|math)[\s>]!;
 
 
-# Blosxom plug-in interface:
-sub start { 1; }
-sub story {
-    my($pkg, $path, $filename, $story_ref, $title_ref, $body_ref) = @_;
-
-    $$title_ref = SmartyPants($$title_ref, $smartypants_attr, undef);
-    $$body_ref  = SmartyPants($$body_ref,  $smartypants_attr, undef);
-    1;
-}
-
-
 # Movable Type plug-in interface:
-eval {require MT::Plugin};  # Test to see if we're running in MT.
-unless ($@) {
-    require MT;
-    MT->add_plugin({
-        name => "SmartyPants",
-        description => q(<MT_TRANS phrase="Easily translates plain punctuation characters into 'smart' typographic punctuation.">),
-        version => $VERSION,
-        author_name => "John Gruber",
-        author_link => "http://daringfireball.net/",
-        plugin_link => "http://daringfireball.net/projects/smartypants/",
-        registry => {
-            tags => {
-                modifier => {
-                    smarty_pants => \&SmartyPants,
-                    smart_quotes => \&SmartQuotes,
-                    smart_dashes => \&SmartDashes,
-                    smart_ellipses => \&SmartEllipses,
-                },
-                function => {
-                    SmartyPantsVersion => \&SmartyPantsVersion,
-                },
+
+require MT;
+MT->add_plugin({
+    name => "SmartyPants",
+    description => q(<MT_TRANS phrase="Easily translates plain punctuation characters into 'smart' typographic punctuation.">),
+    version => $VERSION,
+    author_name => "John Gruber",
+    author_link => "http://daringfireball.net/",
+    plugin_link => "http://daringfireball.net/projects/smartypants/",
+    registry => {
+        tags => {
+            modifier => {
+                smarty_pants => \&SmartyPants,
+                smart_quotes => \&SmartQuotes,
+                smart_dashes => \&SmartDashes,
+                smart_ellipses => \&SmartEllipses,
+            },
+            function => {
+                SmartyPantsVersion => \&SmartyPantsVersion,
             },
         },
-    });
-
-    # # If Markdown is loaded, add a combo Markdown/SmartyPants text filter:
-    # my $filters = MT->all_text_filters();
-    # if (exists( $filters->{'markdown'} )) {
-    #     my $markdown_ref = $filters->{'markdown'}{on_format};
-    #     if ($markdown_ref) {
-    #         MT->add_text_filter('markdown_with_smartypants' => {
-    #             label => 'Markdown With SmartyPants',
-    #             on_format => sub {
-    #                 my $text = shift;
-    #                 $text = &$markdown_ref($text);
-    #                 $text = SmartyPants($text, $smartypants_attr);
-    #             },
-    #             docs => 'http://daringfireball.net/projects/markdown/'
-    #         });
-    #     }
-    # }
-}
-else {
-    # BBEdit text filter interface; needs to be hidden from MT
-    # (and Blosxom when running in static mode).
-
-    # Set up a do-nothing variable to keep Perl from warning us that
-    # we're only using $blosxom::version once. The right way to do this
-    # is to use "no warnings", but that doesn't work in Perl 5.005.
-    my $in_blosxom = defined($blosxom::version);
-
-    unless ( defined($blosxom::version) ) {
-        #### Check for command-line switches: ###########################
-        my %cli_opts;
-        use Getopt::Long;
-        Getopt::Long::Configure('pass_through');
-        GetOptions(\%cli_opts,
-            'version',
-            'shortversion',
-            '1',
-            '2',
-            '3',
-        );
-        if ($cli_opts{'version'}) {     # Version info
-            print "\nThis is Markdown, version $VERSION.\n";
-            print "Copyright 2004 John Gruber\n";
-            print "http://daringfireball.net/projects/markdown/\n";
-            exit 0;
-        }
-        if ($cli_opts{'shortversion'}) {        # Just the version number string.
-            print $VERSION;
-            exit 0;
-        }
-        if ($cli_opts{'1'}) { $smartypants_attr = 1 };
-        if ($cli_opts{'2'}) { $smartypants_attr = 2 };
-        if ($cli_opts{'3'}) { $smartypants_attr = 3 };
-
-
-        #### Process incoming text: #####################################
-        my $old = $/;
-        undef $/;               # slurp the whole file
-        my $text = <>;
-        $/ = $old;
-        print SmartyPants($text, $smartypants_attr, undef);
-    }
-}
+    },
+});
 
 
 sub SmartyPants {

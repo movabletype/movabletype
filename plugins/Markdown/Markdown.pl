@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-
 #
 # Markdown -- A text-to-HTML conversion tool for web writers
 #
@@ -65,164 +63,92 @@ my %g_html_blocks;
 my $g_list_level = 0;
 
 
-#### Blosxom plug-in interface ##########################################
-
-# Set $g_blosxom_use_meta to 1 to use Blosxom's meta plug-in to determine
-# which posts Markdown should process, using a "meta-markup: markdown"
-# header. If it's set to 0 (the default), Markdown will process all
-# entries.
-my $g_blosxom_use_meta = 0;
-
-sub start { 1; }
-sub story {
-    my($pkg, $path, $filename, $story_ref, $title_ref, $body_ref) = @_;
-
-    if ( (! $g_blosxom_use_meta) or
-         (defined($meta::markup) and ($meta::markup =~ /^\s*markdown\s*$/i))
-         ){
-            $$body_ref  = Markdown($$body_ref);
-     }
-     1;
-}
-
-
 #### Movable Type plug-in interface #####################################
-eval {require MT};  # Test to see if we're running in MT.
-unless ($@) {
-    require MT;
-    import  MT;
-    require MT::Template::Context;
-    import  MT::Template::Context;
 
-    eval {require MT::Plugin};  # Test to see if we're running >= MT 3.0.
-    unless ($@) {
-        require MT::Plugin;
-        import  MT::Plugin;
+require MT;
+require MT::Plugin;
 
-        my $plugin = new MT::Plugin({
-            name => "Markdown",
-            author_name => "John Gruber",
-            author_link => "http://daringfireball.net/",
-            plugin_link => "http://daringfireball.net/projects/markdown/",
-            version => $VERSION,
-            description => '<MT_TRANS phrase="A plain-text-to-HTML formatting plugin.">',
-            doc_link => 'http://daringfireball.net/projects/markdown/',
-            registry => {
-                tags => {
-                    block => {
-                        MarkdownOptions => sub {
-                            my $ctx  = shift;
-                            my $args = shift;
-                            my $builder = $ctx->stash('builder');
-                            my $tokens = $ctx->stash('tokens');
+my $plugin = new MT::Plugin({
+    name => "Markdown",
+    author_name => "John Gruber",
+    author_link => "http://daringfireball.net/",
+    plugin_link => "http://daringfireball.net/projects/markdown/",
+    version => $VERSION,
+    description => '<MT_TRANS phrase="A plain-text-to-HTML formatting plugin.">',
+    doc_link => 'http://daringfireball.net/projects/markdown/',
+    registry => {
+        tags => {
+            block => {
+                MarkdownOptions => sub {
+                    my $ctx  = shift;
+                    my $args = shift;
+                    my $builder = $ctx->stash('builder');
+                    my $tokens = $ctx->stash('tokens');
 
-                            if (defined ($args->{'output'}) ) {
-                                $ctx->stash('markdown_output', lc $args->{'output'});
-                            }
+                    if (defined ($args->{'output'}) ) {
+                        $ctx->stash('markdown_output', lc $args->{'output'});
+                    }
 
-                            defined (my $str = $builder->build($ctx, $tokens) )
-                                or return $ctx->error($builder->errstr);
-                            $str;       # return value
-                        },
-                    },
-                },
-                text_filters => {
-                    markdown => {
-                        label => 'Markdown',
-                        docs => 'http://daringfireball.net/projects/markdown/',
-                        code => sub {
-                            my $text = shift;
-                            my $ctx  = shift;
-                            my $raw  = 0;
-                            if (defined $ctx) {
-                                my $output = $ctx->stash('markdown_output'); 
-                                if (defined $output  &&  $output =~ m/^html/i) {
-                                    $g_empty_element_suffix = ">";
-                                    $ctx->stash('markdown_output', '');
-                                }
-                                elsif (defined $output  &&  $output eq 'raw') {
-                                    $raw = 1;
-                                    $ctx->stash('markdown_output', '');
-                                }
-                                else {
-                                    $raw = 0;
-                                    $g_empty_element_suffix = " />";
-                                }
-                            }
-                            $text = $raw ? $text : Markdown($text);
-                            $text;
-                        },
-                    },
-                    'markdown_with_smartypants' => {
-                        label     => 'Markdown With SmartyPants',
-                        docs      => 'http://daringfireball.net/projects/markdown/',
-                        code => sub {
-                            my $text = shift;
-                            my $ctx  = shift;
-                            if (defined $ctx) {
-                                my $output = $ctx->stash('markdown_output'); 
-                                if (defined $output  &&  $output eq 'html') {
-                                    $g_empty_element_suffix = ">";
-                                }
-                                else {
-                                    $g_empty_element_suffix = " />";
-                                }
-                            }
-                            $text = Markdown($text);
-                            if (defined &SmartyPants::SmartyPants) {
-                                $text = SmartyPants::SmartyPants($text, '1');
-                            }
-                            return $text;
-                        },
-                    },
+                    defined (my $str = $builder->build($ctx, $tokens) )
+                        or return $ctx->error($builder->errstr);
+                    $str;       # return value
                 },
             },
-        });
-        MT->add_plugin( $plugin );
-    }
-}
-else {
-#### BBEdit/command-line text filter interface ##########################
-# Needs to be hidden from MT (and Blosxom when running in static mode).
+        },
+        text_filters => {
+            markdown => {
+                label => 'Markdown',
+                docs => 'http://daringfireball.net/projects/markdown/',
+                code => sub {
+                    my $text = shift;
+                    my $ctx  = shift;
+                    my $raw  = 0;
+                    if (defined $ctx) {
+                        my $output = $ctx->stash('markdown_output'); 
+                        if (defined $output  &&  $output =~ m/^html/i) {
+                            $g_empty_element_suffix = ">";
+                            $ctx->stash('markdown_output', '');
+                        }
+                        elsif (defined $output  &&  $output eq 'raw') {
+                            $raw = 1;
+                            $ctx->stash('markdown_output', '');
+                        }
+                        else {
+                            $raw = 0;
+                            $g_empty_element_suffix = " />";
+                        }
+                    }
+                    $text = $raw ? $text : Markdown($text);
+                    $text;
+                },
+            },
+            'markdown_with_smartypants' => {
+                label     => 'Markdown With SmartyPants',
+                docs      => 'http://daringfireball.net/projects/markdown/',
+                code => sub {
+                    my $text = shift;
+                    my $ctx  = shift;
+                    if (defined $ctx) {
+                        my $output = $ctx->stash('markdown_output'); 
+                        if (defined $output  &&  $output eq 'html') {
+                            $g_empty_element_suffix = ">";
+                        }
+                        else {
+                            $g_empty_element_suffix = " />";
+                        }
+                    }
+                    $text = Markdown($text);
+                    if (defined &SmartyPants::SmartyPants) {
+                        $text = SmartyPants::SmartyPants($text, '1');
+                    }
+                    return $text;
+                },
+            },
+        },
+    },
+});
+MT->add_plugin( $plugin );
 
-    # We're only using $blosxom::version once; tell Perl not to warn us:
-    no warnings 'once';
-    unless ( defined($blosxom::version) ) {
-        use warnings;
-
-        #### Check for command-line switches: #################
-        my %cli_opts;
-        use Getopt::Long;
-        Getopt::Long::Configure('pass_through');
-        GetOptions(\%cli_opts,
-            'version',
-            'shortversion',
-            'html4tags',
-        );
-        if ($cli_opts{'version'}) {     # Version info
-            print "\nThis is Markdown, version $VERSION.\n";
-            print "Copyright 2004 John Gruber\n";
-            print "http://daringfireball.net/projects/markdown/\n\n";
-            exit 0;
-        }
-        if ($cli_opts{'shortversion'}) {        # Just the version number string.
-            print $VERSION;
-            exit 0;
-        }
-        if ($cli_opts{'html4tags'}) {           # Use HTML tag style instead of XHTML
-            $g_empty_element_suffix = ">";
-        }
-
-
-        #### Process incoming text: ###########################
-        my $text;
-        {
-            local $/;               # Slurp the whole file
-            $text = <>;
-        }
-        print Markdown($text);
-    }
-}
 
 sub Markdown {
 #
