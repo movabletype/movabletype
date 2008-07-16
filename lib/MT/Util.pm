@@ -30,8 +30,9 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
 {
 my $Has_Weaken;
 sub weaken {
-    $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0
-        unless defined $Has_Weaken;
+    no warnings;
+    return Scalar::Util::weaken($_[0]) if $Has_Weaken;
+    $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0;
     Scalar::Util::weaken($_[0]) if $Has_Weaken;
 }
 }
@@ -260,7 +261,7 @@ sub relative_date {
     return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
-use vars qw( %Languages );
+our %Languages;
 sub format_ts {
     my($format, $ts, $blog, $lang, $is_mail) = @_;
     return '' unless defined $ts;
@@ -556,11 +557,11 @@ sub decode_url {
         my($html, $can_double_encode) = @_;
         return '' unless defined $html;
         $html =~ tr!\cM!!d;
-        #Encode::_utf8_on($html) if MT->instance->charset eq 'utf-8';
         unless (defined($Have_Entities)) {
             $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
+            $Have_Entities = 0 if $Have_Entities && !MT->config->NoHTMLEntities;
         }
-        if ($Have_Entities && !MT->config->NoHTMLEntities) {
+        if ($Have_Entities) {
             $html = HTML::Entities::encode_entities($html);
         } else {
             if ($can_double_encode) {
@@ -574,8 +575,7 @@ sub decode_url {
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
-        #Encode::_utf8_off($html) if MT->instance->charset eq 'utf-8';
-        $html;
+        return $html;
     }
 
     sub decode_html {
@@ -584,8 +584,9 @@ sub decode_url {
         $html =~ tr!\cM!!d;
         unless (defined($Have_Entities)) {
             $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
+            $Have_Entities = 0 if $Have_Entities && !MT->config->NoHTMLEntities;
         }
-        if ($Have_Entities && !MT->config->NoHTMLEntities) {
+        if ($Have_Entities) {
             $html = HTML::Entities::decode_entities($html);
         } else {
             $html =~ s!&quot;!"!g;  #"
@@ -593,7 +594,7 @@ sub decode_url {
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
         }
-        $html;
+        return $html;
     }
 }
 
