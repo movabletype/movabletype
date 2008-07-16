@@ -812,7 +812,7 @@ sub _set_start_upload_params {
         $date_stamp =~ s!^(\d\d\d\d)(\d\d)(\d\d).*!$1/$2/$3!;
         my $path_hash = {
             path  => $date_stamp,
-            label => '<' . $app->translate($label_path) . '>' . '/' . $date_stamp,
+            label => '<' . $label_path . '>' . '/' . $date_stamp,
         };
 
         if ( exists( $param->{middle_path} )
