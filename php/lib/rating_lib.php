@@ -85,6 +85,8 @@ function score_avg(&$ctx, $obj_id, $datasource, $namespace) {
         return 0;
     }
     $sum = score_for($ctx, $obj_id, $datasource, $namespace);
+    if ( isset($sum) && ( $sum == '' ) )
+        return 0;
     return sprintf("%.2f", ($sum / $count));
 }
 
@@ -148,11 +150,13 @@ function hdlr_score($ctx, $datasource, $namespace, $default, $args = null) {
         return '';
     }
     $score = score_for($ctx, $object[$datasource . '_id'], $datasource, $namespace);
-    if ( !$score && isset($default) )
-        return $default;
-    if ( $score ) 
-        return $ctx->count_format($score, $args);
-    return $score;
+    if ( !isset($score) || ( $score == '' ) ) {
+        if ( isset($default) )
+            return $default;
+        else
+            $score = 0;
+    }
+    return $ctx->count_format($score, $args);
 }
 
 function hdlr_score_high($ctx, $datasource, $namespace, $args = null) {
@@ -201,7 +205,7 @@ function hdlr_score_avg($ctx, $datasource, $namespace, $args = null) {
         return '';
     }
     $avg = score_avg($ctx, $object[$datasource . '_id'], $datasource, $namespace);
-    if ( $avg ) 
+    if ( isset($avg) && ( $avg != '') ) 
         return $ctx->count_format($avg, $args);
     return $avg;
 }
@@ -220,7 +224,7 @@ function hdlr_score_count($ctx, $datasource, $namespace, $args = null) {
         return '';
     }
     $count = score_count($ctx, $object[$datasource . '_id'], $datasource, $namespace);
-    if ( $count ) 
+    if ( isset($count) && ( $count != '') ) 
         return $ctx->count_format($count, $args);
     return $count;
 }
