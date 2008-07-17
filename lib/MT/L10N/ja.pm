@@ -1800,7 +1800,7 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワードはランダムに生成され、直接それぞれのメールアドレスに送られます。
 
 実行しますか?',
-	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？\nLDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
+	'_WARNING_DELETE_USER_EUM' => "ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？\nLDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。",
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'Published [_1]' => '公開されている[_1]',
 	'Unpublished [_1]' => '未公開の[_1]',
@@ -3822,7 +3822,7 @@ use vars qw( @ISA %Lexicon );
 	'More options' => 'その他のオプション',
 	'Import File Encoding' => 'インポートするファイルの文字コード',
 	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Movable Typeはインポートするファイルの文字コードを自動的に検出します。問題が起きたときには、明示的に文字コードを指定することもできます。',
-	'<mt:var name="display_name">' => '<mt:var name="display_name">',
+	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',
 	'Default category for entries (optional)' => 'ブログ記事の既定カテゴリ（オプション）',
 	'You can specify a default category for imported entries which have none assigned.' => 'カテゴリが設定されていないブログ記事に既定のカテゴリを設定できます。',
 	'Select a category' => 'カテゴリを選択',
