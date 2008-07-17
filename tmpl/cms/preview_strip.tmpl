@@ -56,7 +56,6 @@
         HelpBaseURI = '<$mt:var name="help_url"$>';
         /* ]]> */
     </script>
-</mt:setvarblock>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:if name="local_lang_id" ne="en-us">
@@ -69,7 +68,7 @@
 <table id="preview-layout">
     <tr>
         <td id="entry-preview-control-strip">
-            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" escape="html"$>"><mt:else><__trans phrase="You are previewing the page titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" escape="html"$>"></mt:if></div>
+            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></div>
             <form method="post" action="<$mt:var name="script_url"$>">
                 <div class="actions-bar">
                     <div class="actions-bar-inner pkg actions">
