@@ -626,6 +626,9 @@ sub core_list_actions {
         'blog' => {
             refresh_blog_templates => {
                 label => "Refresh Template(s)",
+                continue_prompt_handler => sub {
+                    MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
+                },
                 code => sub {
                     my $app = MT->app;
                     $app->param('backup', 1);
