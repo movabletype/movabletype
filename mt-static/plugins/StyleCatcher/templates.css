@@ -371,16 +371,6 @@ h2
 #display-details .url { margin-bottom: 4px; }
 #display-details .url .content { display: inline; height: auto; }
 
-#display-details .props_url { margin-bottom: 4px; }
-#display-details .props_url .content { display: block; height: auto; }
-#display-details .props_url .content a {
-    display: block;
-    background-image: url(https://www.paypal.com/en_US/i/btn/btn_donate_SM.gif);
-    width: 74px;
-    height: 21px;
-}
-#display-details .props_url .content a * { display: none }
-
 /*#display-details .tags .label { display: inline; height: auto; }
 #display-details .tags .content { display: inline; height: auto; word-spacing: 0.5em; }*/
 
