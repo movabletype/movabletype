@@ -708,7 +708,9 @@ sub do_search_replace {
         $search_field{selected} = 1 if exists($cols{$field});
         $search_field{label}    = 'CODE' eq ref($search_cols->{$field})
           ? $search_cols->{$field}->()
-          : $app->translate($search_cols->{$field});
+          : exists( $search_api->{$type}{plugin} )
+            ? $search_api->{$type}{plugin}->translate($search_cols->{$field})
+            : $app->translate($search_cols->{$field});
         push @search_cols, \%search_field;
     }
     $res{'search_cols'} = \@search_cols;
