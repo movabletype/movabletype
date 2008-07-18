@@ -316,41 +316,46 @@ MT::Scorable - An interface for any MT::Object that wishes to rated.
 
 =head1 METHODS
 
-=head2 get_score($plugin_key, $user)
+=head2 get_score($namespace, $user)
 
 Return the score of the object, scored by the user specified.
 This is not for total score of an object.  This is to get a score
 specified by a user to an object.
 
-=head2 set_score($plugin_key, $user, $score, $overwrite)
+=head2 set_score($namespace, $user, $score, $overwrite)
 
 Set specified score to the object by the user.  If $overwrite argument
 is false and the user has already scored the object before, error results.
 
-=head2 score_for($plugin_key)
+=head2 score_for($namespace)
 
 Return the total score of the object.
 
-=head2 vote_for($plugin_key)
+=head2 vote_for($namespace)
 
 Return how many users scored to the object.
 
-=head2 score_high($plugin_key)
+=head2 score_high($namespace)
 
 Return the highest score to the object.
 
-=head2 score_low($plugin_key)
+=head2 score_low($namespace)
 
 Return the lowest score to the object.
 
-=head2 score_avg($plugin_key)
+=head2 score_avg($namespace)
 
 Return the average score of the object.
 
-=head2 rank_for($plugin_key, $max)
+=head2 rank_for($namespace, $max, $dbd_args)
 
 Return the rank of the object based on its score among other objects
 of the same type.  The smaller the number is, the higher the object's rank is.
+
+$max is the maximum number of rank.
+
+You can pass "join" argument to $dbd_args parameter to narrow
+the data loaded from the database that is loaded from the database.
 
 =head1 AUTHOR & COPYRIGHT
 
