@@ -330,12 +330,11 @@ sub core_page_actions {
             },
             refresh_global_templates => {
                 label => "Refresh Global Templates",
-                handler => '$Core::MT::CMS::Template::refresh_all_templates',
+                dialog => 'dialog_refresh_templates',
                 condition => sub {
                     ! MT->app->blog,
                 },
                 order => 1000,
-                continue_prompt => MT->translate('This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.'),
             },
             publishing_profile => {
                 label => "Use Publishing Profile",

@@ -1,6 +1,12 @@
-<mt:var
-    name="page_title"
-    value="<__trans phrase="Refresh Template Set">">
+<mt:if name="blog_id">
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Template Set">">
+<mt:else>
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Global Templates">">
+</mt:if>
 
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
@@ -53,7 +59,13 @@ TC.attachLoadEvent(init);
 
     <div id="refresh-panel" class="hidden panel">
 
-    <mt:setvarblock name="refresh_label"><mt:loop name="template_set_loop"><mt:if name="selected"><__trans phrase="Refresh [_1] template set" params="<mt:var name="label" escape="html">"></mt:if></mt:loop></mt:setvarblock>
+    <mt:setvarblock name="refresh_label">
+        <mt:if name="blog_id">
+            <mt:loop name="template_set_loop"><mt:if name="selected"><__trans phrase="Refresh [_1] template set" params="<mt:var name="label" escape="html">"></mt:if></mt:loop>
+        <mt:else>
+            <__trans phrase="Refresh global templates">
+        </mt:if>
+    </mt:setvarblock>
 
     <mtapp:setting
         id="refresh_templates"
@@ -128,22 +140,35 @@ TC.attachLoadEvent(init);
 
     <div id="confirm-panel" class="hidden panel">
         <div id="confirm-refresh">
-            <p><__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:"></p>
+            <mt:if name="blog_id">
+                <p><__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:"></p>
+            <mt:else>
+                <p><__trans phrase="You have requested to <strong>refresh the global templates</strong>. This action will:"></p>
+            </mt:if>
 
             <ul>
+                <li id="backups-message-refresh"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
                 <li><__trans phrase="potentially install new templates"></li>
                 <li><__trans phrase="overwrite some existing templates with new template code"></li>
-                <li id="backups-message-refresh"><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
             </ul>
         </div>
 
         <div id="confirm-clean" class="hidden">
-            <p><__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:"></p>
+            <mt:if name="blog_id">
+                <p><__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:"></p>
+            <mt:else>
+                <p><__trans phrase="You have requested to <strong>reset to the default global templates</strong>. This action will:"></p>
+            </mt:if>
 
             <ul>
-                <li><__trans phrase="delete all of the templates in your blog"></li>
-                <li><__trans phrase="install new templates from the selected template set"></li>
-                <li id="backups-message-clean"><__trans phrase="backups will be made of your templates and can be accessed through your backup filter"></li>
+                <li id="backups-message-clean"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
+                <mt:if name="blog_id">
+                    <li><__trans phrase="delete all of the templates in your blog"></li>
+                    <li><__trans phrase="install new templates from the selected template set"></li>
+                <mt:else>
+                    <li><__trans phrase="delete all of your global templates"></li>
+                    <li><__trans phrase="install new templates from the default global templates"></li>
+                </mt:if>
             </ul>
         </div>
 
