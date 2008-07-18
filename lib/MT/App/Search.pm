@@ -349,7 +349,7 @@ sub search_terms {
     my %def_terms = exists( $params->{terms} )
           ? %{ $params->{terms} }
           : ();
-    delete $def_terms{'plugin'}; #FIXME: why is this in here?
+    delete $def_terms{'plugin'};
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
         $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
@@ -371,7 +371,7 @@ sub search_terms {
     }
 
     my $columns = $params->{columns};
-    delete $columns->{'plugin'}; #FIXME: why is this in here?
+    delete $columns->{'plugin'};
     return $app->errtrans('No column was specified to search for [_1].', $app->{searchparam}{Type})
         unless $columns && %$columns;
 
