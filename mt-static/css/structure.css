@@ -1495,7 +1495,7 @@ li#config-menu {
 /* General Widget */
 
 .dashboard .widget-inner {
-    position: relative;
+    position: static;
 }
 
 .corners b, .corners u, .corners s, .corners i {
