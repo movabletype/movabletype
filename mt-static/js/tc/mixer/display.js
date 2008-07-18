@@ -52,8 +52,9 @@ TC.Mixer.Display.prototype.entryProperties =
 	"title" : "Title:",
 	"description" : "Description:",
 	"author" : "Author:",
-	"tags" : "Tags:"
-	,"url" : "URL:"
+	"tags" : "Tags:",
+	"url" : "CSS File",
+	"props_url" : "Donate"
 };
 
 
@@ -226,37 +227,41 @@ TC.Mixer.Display.prototype.makeEntryElement = function( entry )
 		{
 			// get natural language label
 			var epLabel = this.entryProperties[ ep ];
-			var epValue = entry[ ep ] || " ";
+			var epValue = entry[ ep ];
+
+			if( epValue == null ) 
+			    continue;
 			
 			// fix array values
 			if( epValue.join )
-				epValue = epValue.join( ", " );
+			    epValue = epValue.join( ", " );
 			
 			// only handle strings
 			if( typeof( epValue ) != "string" )
-				continue;
+			    continue;
 			
 			// property
 			var prop = this.document.createElement( "div" );
 			prop.className = ep;
 			props.appendChild( prop );
 			
-			// label
-			var label = this.document.createElement( "span" );
-			label.className = "label";
-			label.appendChild( this.document.createTextNode( epLabel ) );
-			prop.appendChild( label );
-			
 			// content
 			var content = this.document.createElement( "span" );
 			content.className = "content";
-			if ( epLabel == "URL:") {
+			if ( ep.match(/(_|^)url$/) ) {
 			   var link = this.document.createElement( "a" );
 			   link.href = epValue;
-			   link.appendChild( this.document.createTextNode( "CSS File" ));
+			   var link_text = this.document.createElement( "span" );
+			   link_text.appendChild( this.document.createTextNode( epLabel ) );
+			   link.appendChild( link_text );
 			   content.appendChild( link );
 			} else {
-            content.appendChild( this.document.createTextNode( epValue ) );
+			    // label
+			    var label = this.document.createElement( "span" );
+			    label.className = "label";
+			    label.appendChild( this.document.createTextNode( epLabel ) );
+			    prop.appendChild( label );
+			    content.appendChild( this.document.createTextNode( epValue ) );
 			}
 			prop.appendChild( content );
 		}

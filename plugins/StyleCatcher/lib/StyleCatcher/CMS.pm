@@ -8,6 +8,7 @@ package StyleCatcher::CMS;
 
 use strict;
 use File::Basename qw(basename);
+use MT::Util qw( caturl );
 
 our $DEFAULT_STYLE_LIBRARY;
 
@@ -154,15 +155,14 @@ sub apply {
 
     $app->validate_magic or return $app->json_error($app->translate("Invalid request"));
     return $app->json_error($app->translate("Invalid request"))
-      unless $blog_id && $url && $tmpl;
+	unless $blog_id && $url && $tmpl;
 
     my $static_path = $app->static_file_path;
     if (! -d $static_path ) {
         return $app->json_error($app->translate("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue."));
     }
 
-    my $themeroot =
-      File::Spec->catdir( $static_path, 'support', 'themes' );
+    my $themeroot =  File::Spec->catdir( $static_path, 'support', 'themes' );
     my $webthemeroot = $app->static_path . 'support/themes/';
     my $mtthemeroot  = $app->static_path . 'themes/';
     my $mtthemebase  = $app->static_path . 'themes-base/';
@@ -173,14 +173,15 @@ sub apply {
     # if this isn't a local url, then we have to grab some files from
     # yonder...
     my $filemgr = file_mgr()
-      or return $app->json_error( MT::FileMgr->errstr );
+	or return $app->json_error( MT::FileMgr->errstr );
+    print STDERR "Applying theme... ($url)\n";
 
     if ( $url !~ m/^(\Q$webthemeroot\E|\Q$mtthemeroot\E)/ ) {
         my $new_url = '';
-
         for (0..(scalar(@url)-2)) {
             $new_url .= $url[$_] . '/';
         }
+	print STDERR "Processing for application: $url\n";
         my ( $basename, $extension ) = split( /\./, $url[-1] );
         if ($basename eq 'screen') {
             $basename = $url[-2];
@@ -205,7 +206,7 @@ sub apply {
         my $content = $response->content;
         $content =~ s!/\*.*?\*/!!gs;    # strip all comments first
         my @images = $content =~
-          m/\b(?:url\(\s*)([a-zA-Z0-9_.-]+\.(?:gif|jpe?g|png))(?:\s*?\))/gi;
+          m/\b(?:url\(\s*)([a-zA-Z0-9_.-]+\.(?:gif|jpe?g|png|css))(?:\s*?\))/gi;
         $filemgr->mkpath( File::Spec->catdir( $themeroot, $basename ) )
           or return $app->json_error(
             $app->translate(
@@ -232,7 +233,7 @@ sub apply {
             return $app->json_error($app->translate("Error downloading image: [_1]", $new_url . 'thumbnail-large.gif'))
         }
 
-       # Pick up the images we parsed earlier and write them to the theme folder
+        # Pick up the images we parsed earlier and write them to the theme folder
         for my $image_url (@images) {
             my $image_request =
               HTTP::Request->new( GET => $new_url . $image_url );
@@ -252,6 +253,7 @@ sub apply {
         }
         $url = "$webthemeroot$basename/$basename.css";
     }
+    print STDERR "url: $url\n";
     
     my $blog = MT->model('blog')->load($blog_id)    
       or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
@@ -266,10 +268,9 @@ sub apply {
 '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
     my $styles = $header . "\n";
-    $styles .= "\@import url(".File::Spec->catfile($app->static_path, $base_css).");\n" if $base_css;
+    $styles .= "\@import url(".caturl($app->static_path, $base_css).");\n" if $base_css;
     $styles .= "\@import url($url);\n";
     $styles .= $footer;
-    print STDERR "styles=$styles\n";
 
     if ($template_text =~ s/\Q$header\E.*\Q$footer\E/$styles/s) {
         $tmpl->text( $template_text );
@@ -425,7 +426,7 @@ sub fetch_themes {
     my $blog_id = $app->param('blog_id');
     my $data    = {};
 
-  # If we have a url then we're specifying a specific theme (css) or repo (html)
+    # If we have a url then we're specifying a specific theme (css) or repo (html)
     # Pick up the file (html with <link>s or a css file with metadata)
     my $user_agent = $app->new_ua;
     my $request    = HTTP::Request->new( GET => $url );
@@ -592,7 +593,7 @@ sub fetch_theme {
         $stylesheet = $response->content if ($response->code >= 200) && ($response->code < 400);
         return unless $stylesheet;
 
-# Break up the css url in to a couple useful pieces (generalize and break me out)
+        # Break up the css url in to a couple useful pieces (generalize and break me out)
         $theme = $url;
         # discard any generic 'screen.css' filename
         $theme =~ s!/screen.css$!!;
@@ -601,6 +602,7 @@ sub fetch_theme {
         for ( 0 .. ( scalar(@url) - 2 ) ) {
             $new_url .= $url[$_] . '/';
         }
+	# note: this stripped off the css file and left a path only
     }
     else {
         $themeroot = $basepath
@@ -650,7 +652,6 @@ sub fetch_theme {
 
     # Trim me white space, yarr
     for (@comments) {
-
         # TBD: strip any "risky" content; we don't want any
         # XSS in this content.
         # Strip any null bytes
@@ -662,27 +663,51 @@ sub fetch_theme {
         $metadata{ lc $key } = $value;
     }
 
+#    for my $line (@comments) {
+#        # TBD: strip any "risky" content; we don't want any
+#        # XSS in this content.
+#        # Strip any null bytes
+#        $line =~ tr/\x00//d;
+#        $line =~ s/^\s+|\s+$//g;
+#	if ($line =~ m{ \A (\w+) : \s* (.*) \z }xmsg) {
+#	    my ( $key, $value ) = ($1, $2);
+#	    print STDERR "$key => $value\n";# if (lc $key eq 'theme name' || lc $key eq 'name');
+#	    next if !$value;
+#	    $metadata{ lc $key } = $value;
+#	}
+#    }
+
     my $thumbnail_link;
     $thumbnail_link = $new_url . 'thumbnail.gif';
     my $thumbnail_large_link;
     $thumbnail_large_link = $new_url . 'thumbnail-large.gif';
 
     require MT::Util;
+    my $name = delete $metadata{'name'} || delete $metadata{'theme name'};
+    print STDERR "name = $name\n";
     my $data = {
-        name        => $theme,
-        description => $metadata{description} || '',
-        title       => $metadata{name} || '(Untitled)',
+#        name        => $theme,
+        name        => $name,
+#        description => $metadata{'description'} || $metadata{'description'} || '',
+        title       => $name || '(Untitled)',
         url         => $url,
         imageSmall  => $thumbnail_link,
         imageBig    => $thumbnail_large_link,
-        author      => $metadata{designer} || $metadata{author} || '',
-        author_url  => $metadata{designer_url} || $metadata{author_url} || '',
-        author_affiliation => $metadata{author_affiliation} || '',
-        layouts            => $metadata{layouts} || '',
-        'sort'             => $metadata{name} || '',
+        author      => delete $metadata{'designer'} || delete $metadata{'author'} || '',
+        author_url  => delete $metadata{'designer_url'} || delete $metadata{'author_url'} || delete $metadata{'author uri'} || '',
+#        author_affiliation => $metadata{'author_affiliation'} || '',
+#        layouts            => $metadata{'layouts'} || '',
+        'sort'             => $name || '',
         tags               => $tags,
         blogs              => [],
     };
+    for my $field (qw( author_affiliation layouts description )) {
+	$data->{$field} = delete $metadata{$field} || '';
+    }
+    # Toss in all the other metadata too.
+    @$data{keys %metadata} = values %metadata;
+    require Data::Dumper;
+    MT->log('YAY THEME DATA: ' . Data::Dumper::Dumper($data));
     $data;
 }
 

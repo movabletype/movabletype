@@ -78,17 +78,22 @@ sub new_version_widget {
     push @{ $param->{feature_loop} ||= [] },
       {
         feature_label => MT->translate('Better, Stronger, Faster'),
-        feature_url  => $app->help_url('mt415/known-issues.html'),
-        feature_description => MT->translate('A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.'),
+        feature_url  => $app->help_url('mt42/performance.html'),
+        feature_description => MT->translate('Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!'),
       },
       {
-        feature_label => MT->translate('Improved Template Management'),
-        feature_url  => $app->help_url('mt415/whats-new.html#design-changes'),
-        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.'),
+        feature_label => MT->translate('Module Caching'),
+        feature_url  => $app->help_url('mt42/module-caching.html'),
+        feature_description => MT->translate('Template module and widget content can now be cached in the database to dramatically speed up publishing.'),
+      },
+      {
+        feature_label => MT->translate('Improved Template and Design Management'),
+        feature_url  => $app->help_url('mt42/design-enhancements.html'),
+        feature_description => MT->translate('The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.'),
       },
       {
         feature_label => MT->translate('Threaded Comments'),
-        feature_url  => $app->help_url('mt415/threaded-comments.html'),
+        feature_url  => $app->help_url('mt42/threading.html'),
         feature_description => MT->translate('Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.'),
       };
 }
