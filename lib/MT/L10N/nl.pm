@@ -1098,7 +1098,7 @@ use vars qw( @ISA %Lexicon );
 	'User requires password' => 'Gebruiker vereist wachtwoord',
 	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
 	'Email Address is required for password recovery' => 'E-mail adres is vereist voor het terugvinden van een wachtwoord',
-	'Website URL is imperfect' => 'Website URL is imperfect',
+	'Website URL is invalid' => 'Website URL is imperfect',
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) aangemaakt door \'[_3]\'',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
 

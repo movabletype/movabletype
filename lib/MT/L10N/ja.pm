@@ -1044,7 +1044,7 @@ use vars qw( @ISA %Lexicon );
 	'User requires password' => 'パスワードは必須です。',
 	'User requires password recovery word/phrase' => 'パスワード再設定用のフレーズは必須です。',
 	'Email Address is required for password recovery' => 'メールアドレスはパスワードを再設定できるようにするために必要です。',
-	'Website URL is imperfect' => 'URLが不完全です。',
+	'Website URL is invalid' => 'URLが不完全です。',
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を作成しました。',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を削除しました。',
 

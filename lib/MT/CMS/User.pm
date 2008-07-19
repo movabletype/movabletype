@@ -1556,6 +1556,7 @@ sub save_filter {
 
     my $name     = $app->param('name');
     my $nickname = $app->param('nickname');
+
     if ( $pref eq 'MT' ) {
         if ( defined $name ) {
             $name =~ s/(^\s+|\s+$)//g;
@@ -1563,13 +1564,16 @@ sub save_filter {
         }
         return $eh->error( $app->translate("User requires username") )
           if ( !$name );
+    }
 
-        if ( defined $nickname ) {
-            $nickname =~ s/(^\s+|\s+$)//g;
-            $app->param( 'nickname', $nickname );
-        }
+    # Display name is required for all auth types; for new users
+    # under external auth, the field is not shown, so the value is
+    # undefined. Only check requirement if the value is defined.
+    if ( defined $nickname ) {
+        $nickname =~ s/(^\s+|\s+$)//g;
+        $app->param( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
-          if ( !$nickname );
+          if ( !length( $nickname ) );
     }
 
     require MT::Author;
@@ -1613,7 +1617,7 @@ sub save_filter {
       unless $app->param('email');
     if ( $app->param('url') ) {
         my $url = $app->param('url');
-        return $eh->error( MT->translate("Website URL is imperfect") )
+        return $eh->error( MT->translate("Website URL is invalid") )
           unless is_url($url);
     }
     1;
