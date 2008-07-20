@@ -86,6 +86,26 @@
         <input type="text" name="url" id="url" class="ti" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
+    <mt:Loop name="field_loop">
+        <mt:If name="__first__">
+        <input type="hidden" name="_type" value="author" id="obj_type" />
+        <input type="hidden" name="customfield_beacon" value="1" id="customfield_beacon" />
+        </mt:If>
+        <!-- start-customfield_<$mt:Var name="basename"$> -->
+        <mtapp:setting
+            id="$field_id"
+            label="$name"
+            hint="$description"
+            shown="$show_field"
+            show_hint="$show_hint"
+            required="$required">
+
+        <$mt:Var name="field_html"$>
+
+        </mtapp:setting>
+        <!-- end-customfield_<$mt:Var name="basename"$> -->
+    </mt:Loop>
+
     <div class="actions-bar">
         <div class="actions-bar-inner pkg actions">
             <button

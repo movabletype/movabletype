@@ -28,7 +28,7 @@ sub init {
         do_login         => \&do_login,
         signup           => \&signup,
         do_signup        => \&do_signup,
-        register         => \&register,
+        # register         => \&register,
         do_register      => \&do_register,
         preview          => \&preview,
         post             => \&post,
@@ -293,7 +293,7 @@ sub signup {
     my %opt   = @_;
     my $param = {};
     $param->{$_} = $app->param($_) foreach qw(blog_id entry_id static username return_url );
-    my $blog = $app->model('blog')->load( $param->{blog_id} )
+    my $blog = $app->model('blog')->load( $param->{blog_id} || 0 )
         or return $app->error($app->translate('Can\'t load blog #[_1].', $param->{blog_id}));
     my $cfg  = $app->config;
     if ( my $registration = $cfg->CommenterRegistration ) {
@@ -314,12 +314,18 @@ sub do_signup {
     my $app = shift;
     my $q   = $app->param;
 
+    return $app->error( $app->translate("Invalid request") )
+      if $app->request_method() ne 'POST';
+
     my $param = {};
     $param->{$_} = $q->param($_)
       foreach
       qw(blog_id entry_id static email url username nickname email hint return_url );
 
-    my $user = $app->create_user_pending($param);
+    my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
+
+    my $user;
+    $user = $app->create_user_pending($param) if $filter_result;
     unless ($user) {
         my $blog = $app->model('blog')->load( $param->{blog_id} )
             or return $app->error($app->translate('Can\'t load blog #[_1].', $param->{blog_id}));
@@ -327,8 +333,15 @@ sub do_signup {
             $param->{captcha_fields} = $provider->form_fields( $blog->id );
         }
         $param->{error} = $app->errstr;
+        $param->{ 'auth_mode_' . $app->config->AuthenticationModule } = 1;
         return $app->build_page( 'signup.tmpl', $param );
     }
+
+    ## Assign default role
+    $user->add_default_roles;
+
+    my $original = $user->clone();
+    $app->run_callbacks( 'api_post_save.author', $app, $user, $original );
 
     ## Send confirmation email in the background.
     MT::Util::start_background_task(
@@ -1667,6 +1680,9 @@ sub save_commenter_profile {
     my $app = shift;
     my $q   = $app->param;
 
+    return $app->error( $app->translate("Invalid request") )
+      if $app->request_method() ne 'POST';
+
     my ( $sess_obj, $cmntr ) = $app->get_commenter_session();
     return $app->handle_error( $app->translate('Invalid login') )
         unless $cmntr;
@@ -1679,6 +1695,7 @@ sub save_commenter_profile {
 
     $app->user($cmntr);
     $app->{session} = $sess_obj;
+    my $original = $cmntr->clone();
 
     $app->validate_magic
       or return $app->handle_error( $app->translate('Invalid request') );
@@ -1712,6 +1729,8 @@ sub save_commenter_profile {
     $cmntr->set_password( $param{password} )
       if $param{password} && !$param{external_auth};
     if ( $cmntr->save ) {
+        $app->run_callbacks( 'api_post_save.author', $app, $cmntr, $original );
+
         $param{saved} =
           $app->translate('Commenter profile has successfully been updated.');
     }
