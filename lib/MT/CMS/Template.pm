@@ -1705,11 +1705,11 @@ sub refresh_all_templates {
     my @blogs_not_refreshed;
     my $refreshed;
     my $can_refresh_system = $user->is_superuser() ? 1 : 0;
-    foreach my $blog_id (@id) {
+    BLOG: for my $blog_id (@id) {
         my $blog;
         if ($blog_id) {
             $blog = MT::Blog->load($blog_id);
-            next unless $blog;
+            next BLOG unless $blog;
         }
 
         if (!$can_refresh_system) {  # system refreshers can refresh all blogs
@@ -1722,47 +1722,48 @@ sub refresh_all_templates {
                                  ;
             if (!$can_refresh_blog) {
                 push @blogs_not_refreshed, $blog->id;
-                next;
+                next BLOG;
             }
         }
 
         my $tmpl_list;
-        if ($blog_id) {
 
-            if ($refresh_type eq 'clean') {
-                # the user wants to back up all templates and
-                # install the new ones
+        if ($refresh_type eq 'clean') {
+            # the user wants to back up all templates and
+            # install the new ones
 
-                my @ts = MT::Util::offset_time_list( $t, $blog_id );
-                my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
-                    $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
+            my @ts = MT::Util::offset_time_list( $t, $blog_id );
+            my $ts = sprintf "%04d-%02d-%02d %02d:%02d:%02d",
+                $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
 
-                my $tmpl_iter = MT::Template->load_iter({
-                    blog_id => $blog_id,
-                    type => { not => 'backup' },
-                });
-
-                while (my $tmpl = $tmpl_iter->()) {
-                    if ($backup) {
-                        # zap all template maps
-                        require MT::TemplateMap;
-                        MT::TemplateMap->remove({
-                            template_id => $tmpl->id,
-                        });
-                        $tmpl->type('backup');
-                        $tmpl->name(
-                            $tmpl->name . ' (Backup from ' . $ts . ')' );
-                        $tmpl->identifier(undef);
-                        $tmpl->rebuild_me(0);
-                        $tmpl->linked_file(undef);
-                        $tmpl->outfile('');
-                        $tmpl->save;
-                    } else {
-                        $tmpl->remove;
-                    }
+            # Backup/delete all the existing templates.
+            my $tmpl_iter = MT::Template->load_iter({
+                blog_id => $blog_id,
+                type => { not => 'backup' },
+            });
+            while (my $tmpl = $tmpl_iter->()) {
+                if ($backup) {
+                    # zap all template maps
+                    require MT::TemplateMap;
+                    MT::TemplateMap->remove({
+                        template_id => $tmpl->id,
+                    });
+                    $tmpl->type('backup');
+                    $tmpl->name(
+                        $tmpl->name . ' (Backup from ' . $ts . ')' );
+                    $tmpl->identifier(undef);
+                    $tmpl->rebuild_me(0);
+                    $tmpl->linked_file(undef);
+                    $tmpl->outfile('');
+                    $tmpl->save;
+                } else {
+                    $tmpl->remove;
                 }
+            }
 
-                # This also creates our template mappings
+            if ($blog_id) {
+                # Create the default templates and mappings for the selected
+                # set here, instead of below.
                 $blog->create_default_templates( $template_set ||
                     $blog->template_set || 'mt_blog' );
 
@@ -1772,24 +1773,25 @@ sub refresh_all_templates {
                     $app->run_callbacks( 'blog_template_set_change', { blog => $blog } );
                 }
 
-                next;
+                next BLOG;
             }
-
-            $tmpl_list = MT::DefaultTemplates->templates($template_set || $blog->template_set) || MT::DefaultTemplates->templates();
-        }
-        else {
-            $tmpl_list = MT::DefaultTemplates->templates();
         }
 
-        foreach my $val (@$tmpl_list) {
+        # Load default templates for the given template set, if any.
+        if ($blog_id) {
+            $tmpl_list = MT::DefaultTemplates->templates($template_set || $blog->template_set);            
+        }
+        $tmpl_list ||= MT::DefaultTemplates->templates();
+
+        TEMPLATE: for my $val (@$tmpl_list) {
             if ($blog_id) {
                 # when refreshing blog templates,
                 # skip over global templates which
                 # specify a blog_id of 0...
-                next if $val->{global};
+                next TEMPLATE if $val->{global};
             }
             else {
-                next unless exists $val->{global};
+                next TEMPLATE unless exists $val->{global};
             }
 
             if ( !$val->{orig_name} ) {
