@@ -1701,24 +1701,27 @@ sub refresh_all_templates {
     require MT::Permission;
     require MT::Util;
 
-    my @blog_ids;
+    my $user = $app->user;
+    my @blogs_not_refreshed;
     my $refreshed;
+    my $can_refresh_system = $user->is_superuser() ? 1 : 0;
     foreach my $blog_id (@id) {
         my $blog;
         if ($blog_id) {
             $blog = MT::Blog->load($blog_id);
             next unless $blog;
         }
-        if ( !$app->user->is_superuser() ) {
+
+        if (!$can_refresh_system) {  # system refreshers can refresh all blogs
             my $perms = MT::Permission->load(
-                { blog_id => $blog_id, author_id => $app->user->id } );
-            if (
-                !$perms
-                || (   !$perms->can_edit_templates()
-                    && !$perms->can_administer_blog() )
-              )
-            {
-                push @blog_ids, $blog->id;
+                { blog_id => $blog_id, author_id => $user->id } );
+            my $can_refresh_blog = !$perms                       ? 0
+                                 : $perms->can_edit_templates()  ? 1
+                                 : $perms->can_administer_blog() ? 1
+                                 :                                 0
+                                 ;
+            if (!$can_refresh_blog) {
+                push @blogs_not_refreshed, $blog->id;
                 next;
             }
         }
@@ -1893,8 +1896,8 @@ sub refresh_all_templates {
         }
         $refreshed = 1;
     }
-    if (@blog_ids) {
-        $app->add_return_arg( 'error_id' => join( ',', @blog_ids ) );
+    if (@blogs_not_refreshed) {
+        $app->add_return_arg( 'error_id' => join( ',', @blogs_not_refreshed ) );
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
     $app->call_return;
