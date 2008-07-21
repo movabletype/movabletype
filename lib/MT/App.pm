@@ -1368,6 +1368,8 @@ sub _is_commenter {
     my $app = shift;
     my ($author) = @_;
 
+    return 0 if $author->is_superuser;
+
     # Check if the user is a commenter and keep them from logging in to the app
     my @author_perms = $app->model('permission')->load(
         { author_id => $author->id, blog_id => '0' },
@@ -1411,7 +1413,9 @@ sub commenter_loggedin {
     my ($commenter, $commenter_blog_id) = @_;
     my $blog = $app->model('blog')->load($commenter_blog_id)
         or return $app->error($app->translate("Can\'t load blog #[_1].", $commenter_blog_id));
-    my $url = $app->config('CGIPath') . $app->config('CommentScript');
+    my $path = $app->config('CGIPath');
+    $path .= '/' unless $path =~ m!/$!;
+    my $url = $path . $app->config('CommentScript');
     $url .= '?__mode=edit_profile';
     $url .= '&commenter=' . $commenter->id;
     $url .= '&blog_id=' . $commenter_blog_id;
