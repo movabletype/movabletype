@@ -1629,9 +1629,10 @@ sub dialog_refresh_templates {
     # permission check
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $app->user->is_superuser ||
-            $perms->can_administer_blog ||
-            $perms->can_edit_templates;
+        unless $app->user->is_superuser()
+            || $app->user->can_edit_templates()
+            || ( $perms && (    $perms->can_edit_templates()
+                             || $perms->can_administer_blog() ) );
 
     my $param = {};
     my $blog = $app->blog;
