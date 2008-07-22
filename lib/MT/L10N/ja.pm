@@ -823,9 +823,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Dashboard.pm
 	'Better, Stronger, Faster' => 'よりよく、よりたくましく、より速く',
-	'A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.' => 'Movable Typeのパフォーマンスと信頼性を高め、サーバーサイドインクルードやテンプレートモジュールのキャッシュ機能などの機能を追加することに力を注ぎました。',
-	'Improved Template Management' => 'テンプレートの管理機能を向上',
-	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.' => 'テンプレートの編集画面を見直して、より効率よくサイトのデザインを編集できるようにしました。',
+	'Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!' => 'あらゆる側面においてパフォーマンスを向上させるためのオーバーホールを施しました。メモリ利用量を減らし、再構築にかかる時間を大きく削減しました。検索は100倍も速くなっています！',
+	'Module Caching' => 'モジュールのキャッシュ',
+	'Template module and widget content can now be cached in the database to dramatically speed up publishing.' => 'モジュールテンプレートとウィジェットのコンテンツをデータベースにキャッシュすることで、再構築の速度を劇的に改善できます。',
+	'Improved Template and Design Management' => 'テンプレートとデザイン管理機能の向上',
+	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.' => 'テンプレートの編集画面を改良してデザイナがより効率よくサイトのデザインを更新できるようにしました。デフォルトテンプレートもシンプルにして、サイトをより簡単に作成、編集できるようにしました。',
 	'Threaded Comments' => 'コメントのスレッド化',
 	'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.' => 'ブログ上でコメントに返信できるようになりました。より参加しやすい、ダイナミックな議論を行うことができます。',
 
@@ -1101,6 +1103,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' unbanned commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'を保留にしました。',
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'の承認を取り消しました。',
 	'Feedback Settings' => 'コミュニケーション設定',
+	'Invalid request' => '不正な要求です。',
 	'Parent comment id was not specified.' => '返信先のコメントが指定されていません。',
 	'Parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You can\'t reply to unapproved comment.' => '未公開のコメントには返信できません。',
@@ -1795,13 +1798,12 @@ use vars qw( @ISA %Lexicon );
 	'Invalid category ID \'[_1]\'' => 'Invalid category ID \'[_1]\'',
 
 ## lib/MT/App/CMS.pm
-	'This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.' => 'グローバルテンプレートを初期化します。バックアップは作成されません。よろしければOKを、中止する場合はキャンセルしてください。',
-	'Invalid request' => '不正な要求です。',
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワードはランダムに生成され、直接それぞれのメールアドレスに送られます。
 
 実行しますか?',
 	'_WARNING_DELETE_USER_EUM' => "ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？\nLDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。",
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを製品出荷時の状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'Published [_1]' => '公開されている[_1]',
 	'Unpublished [_1]' => '未公開の[_1]',
 	'Scheduled [_1]' => '日時指定されている[_1]',
@@ -3100,7 +3102,6 @@ use vars qw( @ISA %Lexicon );
 	'Server Side Include' => 'サーバーサイドインクルード',
 	'Process as <strong>[_1]</strong> include' => '<strong>[_1]</strong>のインクルードとして処理する',
 	'Include cache path' => 'キャッシュのパス',
-	'Module Caching' => 'モジュールのキャッシュ',
 	'Disabled (<a href="[_1]">change publishing settings</a>)' => '無効(<a href="[_1]">変更する</a>)',
 	'No caching' => 'キャッシュしない',
 	'Expire after' => 'キャッシュを消すタイミング',
@@ -3937,6 +3938,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Template Set' => 'テンプレートセットの初期化',
 	'Refresh [_1] template set' => 'テンプレートセット「[_1]」の初期化',
+	'Refresh global templates' => 'グローバルテンプレートを初期化',
 	'Updates current templates while retaining any user-created or user-modified templates.' => 'テンプレートを初期化します。ユーザーが作成またはカスタマイズしたテンプレートは初期化しません。',
 	'Apply a new template set' => '新しいテンプレートセットを適用',
 	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。',
@@ -3944,12 +3946,16 @@ use vars qw( @ISA %Lexicon );
 	'Deletes all existing templates and installs factory default template set.' => '既存のテンプレートをすべて削除して、製品既定のテンプレートセットをインストールします。',
 	'Make backups of existing templates first' => '既存のテンプレートのバックアップを作成する',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => '<strong>現在のテンプレートセットを初期化</strong>しようとしています。この操作では以下の作業を行います。',
+	'You have requested to <strong>refresh the global templates</strong>. This action will:' => '<strong>グローバルテンプレート</strong>を初期化しようとしています。この操作では以下の作業を行います。',
+	'make backups of your templates that can be accessed through your backup filter' => 'テンプレートのバックアップを作成します。バックアップにはクイックフィルタからアクセスできます。',
 	'potentially install new templates' => '(もしあれば)新しいテンプレートをインストールします。',
 	'overwrite some existing templates with new template code' => '既存のテンプレートを新しいテンプレートで置き換えます。',
-	'backups will be made of your templates and can be accessed through your backup filter' => 'バックアップテンプレートのフィルタから、バックアップされたテンプレートにアクセスできます。',
 	'You have requested to <strong>apply a new template set</strong>. This action will:' => '<strong>新しいテンプレートセットを適用</strong>しようとしています。この操作では以下の作業を行います。',
+	'You have requested to <strong>reset to the default global templates</strong>. This action will:' => '<strong>グローバルテンプレートを既定の状態に</strong>リセットしようとしています。この操作では以下の作業を行います。',
 	'delete all of the templates in your blog' => 'ブログのテンプレートはすべて削除されます。',
 	'install new templates from the selected template set' => 'テンプレートセットのテンプレートを新規にインストールします。',
+	'delete all of your global templates' => 'グローバルテンプレートをすべて削除します。',
+	'install new templates from the default global templates' => '既定のグローバルテンプレートを新しくインストールします。',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry' => 'ブログ記事に画像を表示',
