@@ -1198,20 +1198,24 @@ sub _invalidate_commenter_session {
     require MT::Session;
     my $sess_obj = MT::Session->load({id => $session });
     $sess_obj->remove() if ($sess_obj);
+    
+    my $timeout = $app->{cfg}->CommentSessionTimeout;
 
-    $app->logout();
-
-    # need to clear commenter_name for writeCommenterGreeting
-    my %name_kookee = (-name => 'commenter_name',
-                       -value => '',
-                       -path => '/',
-                       -expires => "Thu, 01-Jan-70 00:00:01 GMT");
-    $app->bake_cookie(%name_kookee);
     my %kookee = (-name => COMMENTER_COOKIE_NAME(),
                   -value => '',
                   -path => '/',
-                  -expires => "Thu, 01-Jan-70 00:00:01 GMT");
+                  -expires => "+${timeout}s");
     $app->bake_cookie(%kookee);
+    my %name_kookee = (-name => 'commenter_name',
+                       -value => '',
+                       -path => '/',
+                       -expires => "+${timeout}s");
+    $app->bake_cookie(%name_kookee);
+    my %id_kookee = (-name => 'commenter_id',
+                       -value => '',
+                       -path => '/',
+                       -expires => "+${timeout}s");
+    $app->bake_cookie(%id_kookee);
 }
 
 sub start_session {
@@ -1632,8 +1636,8 @@ sub logout {
     }
 
     MT::Auth->invalidate_credentials({ app => $app });
-    # my %cookies = $app->cookies();
-    # $app->_invalidate_commenter_session(\%cookies);
+    my %cookies = $app->cookies();
+    $app->_invalidate_commenter_session(\%cookies);
 
     # The login box should only be displayed in the event of non-delegated auth
     # right?
