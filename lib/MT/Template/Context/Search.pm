@@ -156,7 +156,7 @@ This tag is only recognized in search templates.
 
 ###########################################################################
 
-=head2 IfMaxResultsCutOff
+=head2 IfMaxResultsCutoff
 
 NOTE: this tag only applies if you are using older Movable Type than
 version 4.15, or you set up your search script so it instantiates
@@ -184,6 +184,8 @@ parameter in the URL.
 
 This tag is only recognized in search templates.
 
+=for tags search
+
 =cut
 
 ###########################################################################
@@ -197,6 +199,8 @@ the same as the initial search.
 B<Example:>
 
     <input type="hidden" name="IncludeBlogs" value="<$mt:SearchIncludeBlogs$>" />
+
+=for tags search
 
 =cut
 

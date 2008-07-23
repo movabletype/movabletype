@@ -5998,16 +5998,6 @@ sub _hdlr_search_script {
 
 ###########################################################################
 
-=head2 MaxResults
-
-Deprecated in favor of L<SearchMaxResults>.
-
-=for tags deprecated
-
-=cut
-
-###########################################################################
-
 =head2 SearchMaxResults
 
 Returns the value of the C<SearchMaxResults> or C<MaxResults> configuration
@@ -9802,7 +9792,7 @@ and Daily archive types only. Date format tags may be applied with the format
 attribute along with the language attribute. See L<Date> for attributes
 that are supported.
 
-=for tags date, archive
+=for tags date, archives
 
 =cut
 
@@ -11919,7 +11909,7 @@ B<Example:>
        <!-- output when no previous archive is available -->
     </mt:ArchivePrevious>
 
-=for tags archiving
+=for tags archives
 
 =cut
 
@@ -11953,7 +11943,7 @@ B<Example:>
        <!-- output when no next archive is available -->
     </mt:ArchiveNext>
 
-=for tags archiving
+=for tags archives
 
 =cut
 
@@ -12401,7 +12391,7 @@ sub _hdlr_archives {
 The contents of this container tag will be displayed when the first
 entry listed by a L<ArchiveList> tag is reached.
 
-=for tags archiving
+=for tags archives
 
 =cut
 
@@ -12412,7 +12402,7 @@ entry listed by a L<ArchiveList> tag is reached.
 The contents of this container tag will be displayed when the last
 entry listed by a L<ArchiveList> tag is reached.
 
-=for tags archiving
+=for tags archives
 
 =cut
 
@@ -13650,7 +13640,7 @@ B<Example:>
         <a href="<$mt:ArchiveLink archive_type="Category"$>"><$mt:CategoryLabel$></a>
     </mt:CategoryPrevious>
 
-=for tags category, archiving
+=for tags categories, archives
 
 =cut
 
@@ -13693,7 +13683,7 @@ counted and displayed.
 
 =back
 
-=for tags categories, archiving
+=for tags categories, archives
 
 =cut
 
@@ -15733,7 +15723,7 @@ B<Example:>
        </a>
     </mt:Assets>
 
-=for tags multiblog, asset
+=for tags multiblog, assets
 
 =cut
 
@@ -16533,7 +16523,7 @@ B<Example:>
 
     <$mt:AssetDateAdded$>
 
-=for tags date, asset
+=for tags date, assets
 
 =cut
 
@@ -17044,7 +17034,7 @@ sub _hdlr_pages {
 
 A container tag that create a context to the previous page.
 
-=for tags pages, archiving
+=for tags pages, archives
 
 =cut
 
@@ -17063,7 +17053,7 @@ sub _hdlr_page_previous {
 
 A container tag that create a context to the next page.
 
-=for tags pages, archiving
+=for tags pages, archives
 
 =cut
 
@@ -17641,7 +17631,7 @@ sub _hdlr_folders {
 A container tag which creates a folder context of the previous folder
 relative to the current page folder or archived folder.
 
-=for tags folders, archiving
+=for tags folders, archives
 
 =cut
 
@@ -17652,7 +17642,7 @@ relative to the current page folder or archived folder.
 A container tag which creates a folder context of the next folder
 relative to the current page folder or archived folder.
 
-=for tags folders, archiving
+=for tags folders, archives
 
 =cut
 
@@ -19165,7 +19155,7 @@ B<Example:>
         <a href="<$mt:ArchiveLink archive_type="Author"$>"><$mt:AuthorDisplayName$></a>
     </mt:AuthorNext>
 
-=for tags authors, archiving
+=for tags authors, archives
 
 =cut
 
@@ -19183,7 +19173,7 @@ B<Example:>
         <a href="<$mt:ArchiveLink archive_type="Author"$>"><$mt:AuthorDisplayName$></a>
     </mt:AuthorPrevious>
 
-=for tags authors, archiving
+=for tags authors, archives
 
 =cut
 
