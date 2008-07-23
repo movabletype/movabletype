@@ -36,6 +36,7 @@ sub start_document {
 sub start_element {
     my $self = shift;
     my $data = shift;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
 
     my $name = $data->{LocalName};
     my $prefix = $data->{Prefix};
@@ -55,7 +56,7 @@ sub start_element {
     }
 
     if ($self->{start}) {
-        die MT->translate("File is not in WXR format.")
+        die $plugin->translate("File is not in WXR format.")
             unless (('rss' eq $name) && ('2.0' eq $attrs->{'{}version'}->{Value})); ## FIXME: This is checking RSS2.
         $self->{start} = 0;
         $self->{'bucket'} = [];
@@ -203,6 +204,7 @@ sub _update_blog {
 sub _create_category {
     my $self = shift;
     my $data = shift;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
     
     my $cb = $self->{callback};
     my $blog = $self->{blog};
@@ -252,12 +254,12 @@ sub _create_category {
         } elsif (exists $self->{parent}) {
             $cat->author_id($self->{parent}->id);
         }
-        $cb->(MT->translate("Creating new category ('[_1]')...", $cat->label));
+        $cb->($plugin->translate("Creating new category ('[_1]')...", $cat->label));
         if ($cat->save) {
-            $cb->(MT->translate("ok") . "\n");
+            $cb->($plugin->translate("ok") . "\n");
         } else {
-            $cb->(MT->translate("failed") . "\n");
-            return die MT->translate(
+            $cb->($plugin->translate("failed") . "\n");
+            return die $plugin->translate(
                  "Saving category failed: [_1]", $cat->errstr);
         }
     }
@@ -266,6 +268,7 @@ sub _create_category {
 sub _create_tag {
     my $self = shift;
     my $data = shift;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
 
     my $cb   = $self->{callback};
     my $blog = $self->{blog};
@@ -289,13 +292,13 @@ sub _create_tag {
     if ($name) {
         return if ( MT::Tag->load( { name => $name } ) );
         $tag->name($name);
-        $cb->( MT->translate( "Creating new tag ('[_1]')...", $tag->name ) );
+        $cb->( $plugin->translate( "Creating new tag ('[_1]')...", $tag->name ) );
         if ( $tag->save ) {
-            $cb->( MT->translate("ok") . "\n" );
+            $cb->( $plugin->translate("ok") . "\n" );
         }
         else {
-            $cb->( MT->translate("failed") . "\n" );
-            return die MT->translate( "Saving tag failed: [_1]", $tag->errstr );
+            $cb->( $plugin->translate("failed") . "\n" );
+            return die $plugin->translate( "Saving tag failed: [_1]", $tag->errstr );
         }
     }
 }
@@ -353,6 +356,7 @@ sub _create_item {
 sub _create_asset {
     my $self = shift;
     my ($hashes) = @_;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
 
     my $blog = $self->{blog};
     my $cb = $self->{callback};
@@ -444,7 +448,7 @@ sub _create_asset {
       }
     ))
     {
-        $cb->(MT->translate("Duplicate asset ('[_1]') found.  Skipping.", $asset_values->{label}));
+        $cb->($plugin->translate("Duplicate asset ('[_1]') found.  Skipping.", $asset_values->{label}));
         $cb->("\n");
         return 1;
     }
@@ -465,17 +469,17 @@ sub _create_asset {
         $asset->image_width($w);
         $asset->image_height($h);
     }
-    $cb->(MT->translate("Saving asset ('[_1]')...", $asset->label));
+    $cb->($plugin->translate("Saving asset ('[_1]')...", $asset->label));
     $asset->add_tags(@tags) if 0 < scalar(@tags);
-    $cb->(MT->translate(" and asset will be tagged ('[_1]')...", join(',', @tags)));
+    $cb->($plugin->translate(" and asset will be tagged ('[_1]')...", join(',', @tags)));
     if ($asset->save) {
-        $cb->(MT->translate("ok (ID [_1])", $asset->id) . "\n");
+        $cb->($plugin->translate("ok (ID [_1])", $asset->id) . "\n");
         if ( exists($self->{'wp_download'}) && $self->{'wp_download'} ) {
             _get_item_via_http($asset->id, $old_url);
         }
     } else {
-        $cb->(MT->translate("failed") . "\n");
-        die MT->translate(
+        $cb->($plugin->translate("failed") . "\n");
+        die $plugin->translate(
             "Saving entry failed: [_1]", $asset->errstr);
     }
 }
@@ -483,6 +487,7 @@ sub _create_asset {
 sub _create_post {
     my $self = shift;
     my ($class_type, $hashes) = @_;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
 
     my $blog = $self->{blog};
     my $cb = $self->{callback};
@@ -642,7 +647,7 @@ sub _create_post {
       }
     ))
     {
-        $cb->(MT->translate("Duplicate entry ('[_1]') found.  Skipping.", $post->title));
+        $cb->($plugin->translate("Duplicate entry ('[_1]') found.  Skipping.", $post->title));
         $cb->("\n");
         return 1;
     }
@@ -654,15 +659,15 @@ sub _create_post {
 
     # Now save the entry/page.
     if ('entry' eq $class_type) {
-        $cb->(MT->translate("Saving entry ('[_1]')...", $post->title));
+        $cb->($plugin->translate("Saving entry ('[_1]')...", $post->title));
     } elsif ('page' eq $class_type) {
-        $cb->(MT->translate("Saving page ('[_1]')...", $post->title));
+        $cb->($plugin->translate("Saving page ('[_1]')...", $post->title));
     }
     if ($post->save) {
-        $cb->(MT->translate("ok (ID [_1])", $post->id) . "\n");
+        $cb->($plugin->translate("ok (ID [_1])", $post->id) . "\n");
     } else {
-        $cb->(MT->translate("failed") . "\n");
-        die MT->translate(
+        $cb->($plugin->translate("failed") . "\n");
+        die $plugin->translate(
             "Save failed: [_1]", $post->errstr);
     }
 
@@ -675,7 +680,7 @@ sub _create_post {
         $place->blog_id($self->{blog}->id);
         $place->category_id($primary_cat_id);
         $place->save
-            or die MT->translate(
+            or die $plugin->translate(
                 "Saving placement failed: [_1]", $place->errstr);
         delete $cat_ids{$primary_cat_id};
     }
@@ -687,19 +692,19 @@ sub _create_post {
         $place->blog_id($self->{blog}->id);
         $place->category_id($cat_id);
         $place->save
-            or die MT->translate(
+            or die $plugin->translate(
                 "Saving placement failed: [_1]", $place->errstr);
     }
 
     # Associate comments to the entry.
     for my $comment (@{$feedbacks->{comments}}) {
         $comment->entry_id($post->id);
-        $cb->(MT->translate("Creating new comment (from '[_1]')...", $comment->author));
+        $cb->($plugin->translate("Creating new comment (from '[_1]')...", $comment->author));
         if ($comment->save) {
-            $cb->(MT->translate("ok (ID [_1])", $comment->id) . "\n");
+            $cb->($plugin->translate("ok (ID [_1])", $comment->id) . "\n");
         } else {
-            $cb->(MT->translate("failed") . "\n");
-            die MT->translate(
+            $cb->($plugin->translate("failed") . "\n");
+            die $plugin->translate(
                 "Saving comment failed: [_1]", $comment->errstr);
         }
     }
@@ -719,17 +724,17 @@ sub _create_post {
         $tb->is_disabled($post->allow_pings);
         $tb->save;
         unless ($tb) {
-            die MT->translate("Entry has no MT::Trackback object!");
+            die $plugin->translate("Entry has no MT::Trackback object!");
         }
         $post->trackback($tb);
         for my $ping (@{$feedbacks->{trackbacks}}) {
             $ping->tb_id($tb->id);
-            $cb->(MT->translate("Creating new ping ('[_1]')...", $ping->title));
+            $cb->($plugin->translate("Creating new ping ('[_1]')...", $ping->title));
             if ($ping->save) {
-                $cb->(MT->translate("ok (ID [_1])", $ping->id) . "\n");
+                $cb->($plugin->translate("ok (ID [_1])", $ping->id) . "\n");
             } else {
-                $cb->(MT->translate("failed") . "\n");
-                die MT->translate(
+                $cb->($plugin->translate("failed") . "\n");
+                die $plugin->translate(
                     "Saving ping failed: [_1]", $ping->errstr);
             }
         }
@@ -740,6 +745,7 @@ sub _create_post {
 sub _get_author_id {
     my $self = shift;
     my ($cb, $value) = @_;
+    my $plugin = MT->component('WXRImporter/WXRImporter.pl');
 
     my $author = $self->{author};
     unless ($author) {
@@ -758,25 +764,25 @@ sub _get_author_id {
             } else {
                 $author->password('(none)');
             }
-            $cb->(MT->translate("Creating new user ('[_1]')...", $value));
+            $cb->($plugin->translate("Creating new user ('[_1]')...", $value));
             if ($author->save) {
-                $cb->(MT->translate("ok") . "\n");
+                $cb->($plugin->translate("ok") . "\n");
             } else {
-                $cb->(MT->translate("failed") . "\n");
-                die MT->translate(
+                $cb->($plugin->translate("failed") . "\n");
+                die $plugin->translate(
                     "Saving user failed: [_1]", $author->errstr);
             }
-            $cb->(MT->translate("Assigning permissions for new user..."));
+            $cb->($plugin->translate("Assigning permissions for new user..."));
             require MT::Role;
             require MT::Association;
             my $role = MT::Role->load_by_permission('post');
             if ($role) {
                 my $assoc;
                 if ($assoc = MT::Association->link($author => $role => $self->{blog})) {
-                    $cb->(MT->translate("ok") . "\n");
+                    $cb->($plugin->translate("ok") . "\n");
                 } else {
-                    $cb->(MT->translate("failed") . "\n");
-                    die MT->translate(
+                    $cb->($plugin->translate("failed") . "\n");
+                    die $plugin->translate(
                          "Saving permission failed: [_1]", $assoc->errstr);
                 }
             }
