@@ -2162,7 +2162,7 @@ use vars qw( @ISA %Lexicon );
 	'Useful Links' => 'Nuttige links',
 	'List [_1] templates' => 'Toon [_1] sjablonen',
 	'List all templates' => 'Alle sjablonen tonen',
-	'_external_link_target' => '_new',
+	'_external_link_target' => '_blank',
 	'View Published Template' => 'Gepubliceerd sjabloon bekijken',
 	'Included Templates' => 'Geïncludeerde sjablonen',
 	'create' => 'aanmaken',

@@ -2152,7 +2152,7 @@ use vars qw( @ISA %Lexicon );
 	'Useful Links' => 'Nützliche Links',
 	'List [_1] templates' => 'Zeige [_1]-Vorlagen',
 	'List all templates' => 'Zeige alle Vorlagen',
-	'_external_link_target' => '_new',
+	'_external_link_target' => '_blank',
 	'View Published Template' => 'Veröffentlichte Vorlage ansehen',
 	'Included Templates' => 'Eingebundene Vorlagen',
 	'create' => 'anlegen',

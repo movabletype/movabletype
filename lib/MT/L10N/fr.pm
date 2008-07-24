@@ -2162,7 +2162,7 @@ use vars qw( @ISA %Lexicon );
 	'Useful Links' => 'Liens utiles',
 	'List [_1] templates' => 'Lister des gabarits de type [_1]',
 	'List all templates' => 'Lister tous les gabarits',
-	'_external_link_target' => '_haut',
+	'_external_link_target' => '_blank',
 	'View Published Template' => 'Voir le gabarit publié',
 	'Included Templates' => 'Gabarits inclus',
 	'create' => 'créer',
