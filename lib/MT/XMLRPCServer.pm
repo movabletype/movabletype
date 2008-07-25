@@ -346,6 +346,7 @@ sub _new_entry {
     $entry->excerpt($item->{mt_excerpt}) if $item->{mt_excerpt};
     $entry->text_more($item->{mt_text_more}) if $item->{mt_text_more};
     $entry->keywords($item->{mt_keywords}) if $item->{mt_keywords};
+    $entry->created_by($author->id);
 
     if (my $tags = $item->{mt_tags}) {
         require MT::Tag;
@@ -475,6 +476,7 @@ sub _edit_entry {
     $entry->excerpt($item->{mt_excerpt}) if defined $item->{mt_excerpt};
     $entry->text_more($item->{mt_text_more}) if defined $item->{mt_text_more};
     $entry->keywords($item->{mt_keywords}) if defined $item->{mt_keywords};
+    $entry->modified_by($author->id);
     if (my $tags = $item->{mt_tags}) {
         require MT::Tag;
         my $tag_delim = chr($author->entry_prefs->{tag_delim});
