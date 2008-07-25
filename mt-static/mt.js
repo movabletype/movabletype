@@ -1481,15 +1481,17 @@ MT.App = new Class( App, {
 
 
     eventSubmit: function( event ) {
+        this.eventSubmitForm = undefined;
+
         var form = DOM.getFirstAncestorByTagName( event.target, "form", true );
         if ( !form )
             return;
-            
+
         if ( form.getAttribute( "mt:once" ) ) {
-        
             if ( form.submitted )
                 return event.stop();
-        
+
+            this.eventSubmitForm = form;
             this.toggleSubmit( form, true );
         }
 
@@ -1501,6 +1503,13 @@ MT.App = new Class( App, {
 
 
     eventBeforeUnload: function( event ) {
+        /* re-enables disabled controls onunload, so they are enabled
+           if the user navigates back */
+        if ( this.eventSubmitForm ) {
+            this.toggleSubmit( this.eventSubmitForm, false );
+            this.submitted = false;
+        }
+
         if ( this.changed ) {
             if ( this.constructor.Editor )
                 return event.returnValue = Editor.strings.unsavedChanges;
