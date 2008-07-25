@@ -787,7 +787,7 @@ sub delete_post {
         unless $app->{perms}->can_edit_entry($entry, $app->{user});
 
     # Delete archive file
-    my $blog = MT::Blog->load($entry->blog_id);
+    $blog = MT::Blog->load($entry->blog_id);
     my %recip = $app->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog);
