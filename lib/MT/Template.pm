@@ -56,6 +56,7 @@ __PACKAGE__->install_properties({
         'rebuild_me' => 1,
         'build_dynamic' => 0,
         'build_type' => 1,
+        'build_interval' => 0,
     },
     meta => 1,
     child_of => 'MT::Blog',
