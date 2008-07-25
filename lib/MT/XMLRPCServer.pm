@@ -493,8 +493,9 @@ sub _edit_entry {
         require MT::DateTime;
         $entry->status(MT::Entry::FUTURE())
             if MT::DateTime->compare(
-                a => $entry->authored_on,
-                b => { value => time(), type => 'epoch' } ) > 0;
+                blog => $blog,
+                a    => $entry->authored_on,
+                b    => { value => time(), type => 'epoch' } ) > 0;
     }
     $entry->discover_tb_from_entry();
 
