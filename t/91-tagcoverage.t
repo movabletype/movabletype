@@ -59,6 +59,9 @@ foreach my $c (keys %$components) {
     diag("Checking for tag documentation for component $c");
     my $all_docs = '';
     my $tags = $mt->component($c)->registry('tags');
+    my $core_tags = $mt->component('core')->registry('tags')
+        unless $c eq 'core';
+
     my $paths = $components->{$c}{paths};
     {
         local $/ = undef;
@@ -101,18 +104,30 @@ foreach my $c (keys %$components) {
 
     foreach my $tag ( keys %{ $tags->{function} } ) {
         next if $tag eq 'plugin';
-        ok(exists $doc_names->{$tag}, "component $c, function tag $tag");
+        if ($core_tags && $core_tags->{function}{$tag}) {
+            ok(1, "component $c, function tag $tag (extends core tag)");
+        } else {
+            ok(exists $doc_names->{$tag}, "component $c, function tag $tag");
+        }
     }
 
     foreach my $tag ( keys %{ $tags->{block} } ) {
         next if $tag eq 'plugin';
         $tag =~ s/\?$//;
-        ok(exists $doc_names->{$tag}, "component $c, block tag $tag");
+        if ($core_tags && $core_tags->{block}{$tag}) {
+            ok(1, "component $c, block tag $tag (extends core tag)");
+        } else {
+            ok(exists $doc_names->{$tag}, "component $c, block tag $tag");
+        }
     }
 
     foreach my $tag ( keys %{ $tags->{modifier} } ) {
         next if $tag eq 'plugin';
-        ok(exists $doc_names->{$tag}, "component $c, modifier $tag");
+        if ($core_tags && $core_tags->{modifier}{$tag}) {
+            ok(1, "component $c, modifier $tag (extends core tag)");
+        } else {
+            ok(exists $doc_names->{$tag}, "component $c, modifier $tag");
+        }
     }
 }
 
