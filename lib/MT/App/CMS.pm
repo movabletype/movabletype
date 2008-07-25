@@ -40,8 +40,8 @@ sub core_methods {
     return {
         'tools'     => "${pkg}Tools::system_check",
         'dashboard' => "${pkg}Dashboard::dashboard",
-        'menu'      => '${pkg}Dashboard::dashboard',
-        'admin'     => '${pkg}Dashboard::dashboard',
+        'menu'      => "${pkg}Dashboard::dashboard",
+        'admin'     => "${pkg}Dashboard::dashboard",
 
         ## Generic handlers
         'save'           => "${pkg}Common::save",
