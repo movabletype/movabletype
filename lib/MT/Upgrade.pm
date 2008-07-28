@@ -1147,7 +1147,6 @@ sub core_upgrade_meta_for_table {
     my $driver = $db_class->dbi_driver;
     my $dbh = $driver->rw_handle;
     my $dbd = $driver->dbd;
-    my $stmt = $dbd->sql_class->new;
 
     my $meta_col = $param{meta_column} || 'meta';
 
@@ -1155,16 +1154,20 @@ sub core_upgrade_meta_for_table {
     my $db_defs = $ddl->column_defs($db_class);
     return 0 unless $db_defs && exists($db_defs->{$meta_col});
 
-    my $id_col = $dbd->db_column_name($class->datasource, 'id');
-    $meta_col = $dbd->db_column_name($class->datasource, $meta_col);
-    $stmt->add_where( $meta_col => { not_null => 1 } );
-    $stmt->limit( 101 );
-
-    my $sql = join ' ', 'SELECT', $meta_col, ',', $id_col, 'FROM',
-        $driver->table_for($class),
-        $stmt->as_sql_where(),
-        $stmt->as_limit;
-
+    my $terms = {
+        $meta_col => { not_null => 1 }
+    };
+    my $args = {
+        'limit'      => 101,
+        'fetchonly' => [ 'id' ],  # meta is added to the select list separately
+        $offset ? ( 'offset' => $offset ) : ()
+    };
+    my $stmt = $driver->prepare_statement( $class, $terms, $args );
+    my $db_meta_col = $dbd->db_column_name($class->datasource, $meta_col);
+    ## Meta column has to be added in here because it's already
+    ## gone from the column_names - something fetchonly relies on
+    $stmt->add_select( $db_meta_col => $db_meta_col );
+    my $sql = $stmt->as_sql;
     my $sth = $dbh->prepare($sql);
     return 0 if !$sth; # ignore this operation if _meta column doesn't exist
     $sth->execute
@@ -1190,7 +1193,7 @@ sub core_upgrade_meta_for_table {
     my $cfclass = MT->model('field');
     while (my $row = $sth->fetchrow_arrayref) {
         $rows++;
-        my ($rawmeta, $id) = @$row;
+        my ($id, $rawmeta) = @$row;  ## add_select pushes the column - it should be in this order
         if (defined $rawmeta) {
             push @ids, $id;
             if ($rawmeta =~ m/^SERG/) {
@@ -1246,9 +1249,10 @@ sub core_upgrade_meta_for_table {
 
     # now, clear the meta column for each of the objects touched
     if (@ids) {
+        my $id_col = $dbd->db_column_name($class->datasource, 'id');
         my $list = join ",", @ids;
         my $sql = join " ", "UPDATE", $driver->table_for($class),
-            "SET", $meta_col, "=NULL WHERE", $id_col, " IN ($list)";
+            "SET", $db_meta_col, "=NULL WHERE", $id_col, " IN ($list)";
         $dbh->do($sql);
     }
 
@@ -1260,8 +1264,7 @@ sub core_upgrade_meta_for_table {
             # if the driver cannot drop a column, it is likely
             # to get dropped as the table is updated for other
             # new columns anyway.
-            $sql = $dbd->ddl_class->drop_column_sql($class,
-                $param{meta_column} || 'meta');
+            $sql = $dbd->ddl_class->drop_column_sql($class, $meta_col);
             $self->add_step('core_drop_meta_for_table', class => $db_class, sql => $sql);
         }
         $self->progress($msg . ' (100%)', $pid);
@@ -1279,7 +1282,15 @@ sub core_drop_meta_for_table {
     eval "require $class;";
     my $driver = $class->dbi_driver;
     my $dbh = $driver->rw_handle;
-    $dbh->do($sql);
+    my $err;
+    eval {
+        $dbh->do($sql) or $err = $dbh->errstr;
+    };
+    # ignore drop errors; the column has probably been
+    # removed already
+    #if ($err) {
+    #    print STDERR "$err: $sql\n";
+    #}
 
     return 0;
 }
