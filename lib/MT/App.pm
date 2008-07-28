@@ -992,7 +992,6 @@ sub session_state {
                 email => $commenter->email,
                 userpic => scalar $commenter->userpic_url,
                 profile => "", # profile link url
-                auth_type => ($commenter->auth_type eq 'MT' ? "1" : "0"),
                 is_authenticated => "1",
                 is_trusted => ($commenter->is_trusted($blog_id) ? "1" : "0"),
                 is_author => ($commenter->type == MT::Author::AUTHOR() ? "1" : "0"),
@@ -1162,7 +1161,7 @@ sub make_commenter_session {
     my $nick_escaped = MT::Util::escape_unicode( $nick );
 
     my $timeout;
-    if ( $user->auth_type eq 'MT' ) {
+    if ( $user->type == MT::Author::AUTHOR() ) {
         if ($app->param('remember')) {
             # 10 years, same as app sign-in 'remember me'
             $timeout = '+3650d';
