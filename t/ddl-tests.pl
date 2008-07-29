@@ -186,20 +186,19 @@ sub _03_create_sequence : Tests(2) {
 }
 
 sub _def {
-    my ($auto, $not_null, $type, $size) = @_;
+    my ($not_null, $type, %param) = @_;
     my $def = {
-        auto => $auto,
         not_null => $not_null,
         type => $type,
+        %param,
     };
-    $def->{size} = $size if defined $size;
     return $def;
 }
 
 sub is_def {
     my ($got, $expected, $reason) = @_;
 
-    for my $field (qw( not_null auto )) {
+    for my $field (qw( not_null auto key )) {
         if ($expected->{$field} xor $got->{$field}) {
             fail($reason);
             diag($expected->{$field}
@@ -224,38 +223,74 @@ sub is_def {
     pass($reason);
 }
 
-sub table_defs : Tests(26) {
-    my $defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest');
-    ok($defs, 'Ddltest DDL settings are defined');
+sub class_defs : Tests(26) {
+    my $defs = Ddltest->column_defs();
+    ok($defs, 'Ddltest class DDL settings are defined');
 
-    is_def($defs->{id}, _def(1, 1, 'integer'), 'Ddltest id column def is correct');
+    is_def($defs->{id}, _def(1, 'integer', auto => 1, key => 1), 'Ddltest id column def is correct');
 
-    is_def($defs->{string_25},    _def(0, 0, 'string', 25),   'Ddltest string_25 column def is correct');
-    is_def($defs->{string_25_nn}, _def(0, 1, 'string', 25),   'Ddltest string_25_nn column def is correct');
-    is_def($defs->{string_255},   _def(0, 0, 'string', 255),  'Ddltest string_255 column def is correct');
-    is_def($defs->{string_1024},  _def(0, 0, 'string', 1024), 'Ddltest string_1024 column def is correct');
-    is_def($defs->{int_bool},     _def(0, 0, 'boolean'),      'Ddltest int_bool column def is correct');
-    is_def($defs->{int_bool_nn},  _def(0, 1, 'boolean'),      'Ddltest int_bool_nn column def is correct');
-    is_def($defs->{int_small},    _def(0, 0, 'smallint'),     'Ddltest int_small column def is correct');
-    is_def($defs->{int_small_nn}, _def(0, 1, 'smallint'),     'Ddltest int_small_nn column def is correct');
-    is_def($defs->{int_med},      _def(0, 0, 'integer'),      'Ddltest int_med column def is correct');
-    is_def($defs->{int_med_nn},   _def(0, 1, 'integer'),      'Ddltest int_med_nn column def is correct');
-    is_def($defs->{int_big},      _def(0, 0, 'bigint'),       'Ddltest int_big column def is correct');
-    is_def($defs->{int_big_nn},   _def(0, 1, 'bigint'),       'Ddltest int_big_nn column def is correct');
-    is_def($defs->{float},        _def(0, 0, 'float'),        'Ddltest float column def is correct');
-    is_def($defs->{float_nn},     _def(0, 1, 'float'),        'Ddltest float_nn column def is correct');
-    is_def($defs->{text},         _def(0, 0, 'text'),         'Ddltest text column def is correct');
-    is_def($defs->{text_nn},      _def(0, 1, 'text'),         'Ddltest text_nn column def is correct');
-    is_def($defs->{blob},         _def(0, 0, 'blob'),         'Ddltest blob column def is correct');
-    is_def($defs->{blob_nn},      _def(0, 1, 'blob'),         'Ddltest blob_nn column def is correct');
-    is_def($defs->{datetime},     _def(0, 0, 'datetime'),     'Ddltest datetime column def is correct');
-    is_def($defs->{datetime_nn},  _def(0, 1, 'datetime'),     'Ddltest datetime_nn column def is correct');
+    is_def($defs->{string_25},    _def(0, 'string', size => 25),   'Ddltest string_25 column def is correct');
+    is_def($defs->{string_25_nn}, _def(1, 'string', size => 25),   'Ddltest string_25_nn column def is correct');
+    is_def($defs->{string_255},   _def(0, 'string', size => 255),  'Ddltest string_255 column def is correct');
+    is_def($defs->{string_1024},  _def(0, 'string', size => 1024), 'Ddltest string_1024 column def is correct');
+
+    is_def($defs->{int_bool},     _def(0, 'boolean'),  'Ddltest int_bool column def is correct');
+    is_def($defs->{int_bool_nn},  _def(1, 'boolean'),  'Ddltest int_bool_nn column def is correct');
+    is_def($defs->{int_small},    _def(0, 'smallint'), 'Ddltest int_small column def is correct');
+    is_def($defs->{int_small_nn}, _def(1, 'smallint'), 'Ddltest int_small_nn column def is correct');
+    is_def($defs->{int_med},      _def(0, 'integer'),  'Ddltest int_med column def is correct');
+    is_def($defs->{int_med_nn},   _def(1, 'integer'),  'Ddltest int_med_nn column def is correct');
+    is_def($defs->{int_big},      _def(0, 'bigint'),   'Ddltest int_big column def is correct');
+    is_def($defs->{int_big_nn},   _def(1, 'bigint'),   'Ddltest int_big_nn column def is correct');
+    is_def($defs->{float},        _def(0, 'float'),    'Ddltest float column def is correct');
+    is_def($defs->{float_nn},     _def(1, 'float'),    'Ddltest float_nn column def is correct');
+    is_def($defs->{text},         _def(0, 'text'),     'Ddltest text column def is correct');
+    is_def($defs->{text_nn},      _def(1, 'text'),     'Ddltest text_nn column def is correct');
+    is_def($defs->{blob},         _def(0, 'blob'),     'Ddltest blob column def is correct');
+    is_def($defs->{blob_nn},      _def(1, 'blob'),     'Ddltest blob_nn column def is correct');
+    is_def($defs->{datetime},     _def(0, 'datetime'), 'Ddltest datetime column def is correct');
+    is_def($defs->{datetime_nn},  _def(1, 'datetime'), 'Ddltest datetime_nn column def is correct');
 
     # audit fields
-    is_def($defs->{created_on},  _def(0, 0, 'datetime'), 'Ddltest created_on column def is correct');
-    is_def($defs->{created_by},  _def(0, 0, 'integer'),  'Ddltest created_by column def is correct');
-    is_def($defs->{modified_on}, _def(0, 0, 'datetime'), 'Ddltest modified_on column def is correct');
-    is_def($defs->{modified_by}, _def(0, 0, 'integer'),  'Ddltest modified_by column def is correct');
+    is_def($defs->{created_on},  _def(0, 'datetime'), 'Ddltest created_on column def is correct');
+    is_def($defs->{created_by},  _def(0, 'integer'),  'Ddltest created_by column def is correct');
+    is_def($defs->{modified_on}, _def(0, 'datetime'), 'Ddltest modified_on column def is correct');
+    is_def($defs->{modified_by}, _def(0, 'integer'),  'Ddltest modified_by column def is correct');
+}
+
+sub table_defs : Tests(26) {
+    my $defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest');
+    ok($defs, 'Ddltest table DDL settings are defined');
+
+    is_def($defs->{id}, _def(1, 'integer', auto => 1), 'Ddltest id column def is correct');
+
+    is_def($defs->{string_25},    _def(0, 'string', size => 25),   'Ddltest string_25 column def is correct');
+    is_def($defs->{string_25_nn}, _def(1, 'string', size => 25),   'Ddltest string_25_nn column def is correct');
+    is_def($defs->{string_255},   _def(0, 'string', size => 255),  'Ddltest string_255 column def is correct');
+    is_def($defs->{string_1024},  _def(0, 'string', size => 1024), 'Ddltest string_1024 column def is correct');
+
+    is_def($defs->{int_bool},     _def(0, 'boolean'),  'Ddltest int_bool column def is correct');
+    is_def($defs->{int_bool_nn},  _def(1, 'boolean'),  'Ddltest int_bool_nn column def is correct');
+    is_def($defs->{int_small},    _def(0, 'smallint'), 'Ddltest int_small column def is correct');
+    is_def($defs->{int_small_nn}, _def(1, 'smallint'), 'Ddltest int_small_nn column def is correct');
+    is_def($defs->{int_med},      _def(0, 'integer'),  'Ddltest int_med column def is correct');
+    is_def($defs->{int_med_nn},   _def(1, 'integer'),  'Ddltest int_med_nn column def is correct');
+    is_def($defs->{int_big},      _def(0, 'bigint'),   'Ddltest int_big column def is correct');
+    is_def($defs->{int_big_nn},   _def(1, 'bigint'),   'Ddltest int_big_nn column def is correct');
+    is_def($defs->{float},        _def(0, 'float'),    'Ddltest float column def is correct');
+    is_def($defs->{float_nn},     _def(1, 'float'),    'Ddltest float_nn column def is correct');
+    is_def($defs->{text},         _def(0, 'text'),     'Ddltest text column def is correct');
+    is_def($defs->{text_nn},      _def(1, 'text'),     'Ddltest text_nn column def is correct');
+    is_def($defs->{blob},         _def(0, 'blob'),     'Ddltest blob column def is correct');
+    is_def($defs->{blob_nn},      _def(1, 'blob'),     'Ddltest blob_nn column def is correct');
+    is_def($defs->{datetime},     _def(0, 'datetime'), 'Ddltest datetime column def is correct');
+    is_def($defs->{datetime_nn},  _def(1, 'datetime'), 'Ddltest datetime_nn column def is correct');
+
+    # audit fields
+    is_def($defs->{created_on},  _def(0, 'datetime'), 'Ddltest created_on column def is correct');
+    is_def($defs->{created_by},  _def(0, 'integer'),  'Ddltest created_by column def is correct');
+    is_def($defs->{modified_on}, _def(0, 'datetime'), 'Ddltest modified_on column def is correct');
+    is_def($defs->{modified_by}, _def(0, 'integer'),  'Ddltest modified_by column def is correct');
 }
 
 sub index_defs : Tests(5) {
