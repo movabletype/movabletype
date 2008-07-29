@@ -74,6 +74,21 @@ __PACKAGE__->install_properties({
 });
 
 
+package Ddltest::Multikey;
+use base qw( MT::Object );
+
+__PACKAGE__->install_properties({
+    column_defs => {
+        fkey  => 'integer not null',
+        type  => 'string(255) not null',
+        value => 'string(1024)',
+    },
+    datasource  => 'multikey',
+    primary_key => [ qw( fkey type ) ],
+    cacheable   => 0,
+});
+
+
 package Ddltest::InvalidType;
 use base qw( MT::Object );
 
@@ -208,7 +223,7 @@ sub is_def {
         }
     }
 
-    if ($expected->{type} ne $got->{type}) {
+    if (!defined $got->{type} || $expected->{type} ne $got->{type}) {
         fail($reason);
         diag("Expected type ", $expected->{type}, " but got ", $got->{type});
         return;
@@ -305,6 +320,26 @@ sub index_defs : Tests(5) {
     }, 'Ddltest table has multi-column string_dt index');
 }
 
+sub multikey_defs : Tests(8) {
+    my $self = shift;
+
+    my $class_defs = Ddltest::Multikey->column_defs();
+    ok($class_defs, 'Multikey class DDL settings are defined');
+
+    # TODO: multikeys aren't reported as keys.
+    is_def($class_defs->{fkey},  _def(1, 'integer', auto => 0,    key => 0), 'Multikey id column def is correct');
+    is_def($class_defs->{type},  _def(1, 'string',  size => 255,  key => 0), 'Multikey type column def is correct');
+    is_def($class_defs->{value}, _def(0, 'string',  size => 1024, key => 0), 'Multikey value column def is correct');
+
+    $self->_setup_table('Ddltest::Multikey');
+    my $table_defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest::Multikey');
+    ok($table_defs, 'Multikey table DDL settings are defined');
+
+    is_def($table_defs->{fkey},  _def(1, 'integer', auto => 0),    'Multikey id column def is correct');
+    is_def($table_defs->{type},  _def(1, 'string',  size => 255),  'Multikey type column def is correct');
+    is_def($table_defs->{value}, _def(0, 'string',  size => 1024), 'Multikey value column def is correct');
+}
+
 sub invalid_type : Tests(3) {
     my $self = shift;
 
@@ -318,6 +353,26 @@ sub invalid_type : Tests(3) {
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
 }
 
+sub _setup_table {
+    my $self = shift;
+    my ($class) = @_;
+
+    my $driver    = MT::Object->dbi_driver;
+    my $dbh       = $driver->rw_handle;
+    my $ddl_class = $driver->dbd->ddl_class;
+
+    eval {
+        if ($driver->table_exists($class)) {
+            my $sql = $ddl_class->drop_table_sql($class);
+            $dbh->do($sql);
+        }
+    };
+    eval {
+        my $sql = $ddl_class->create_table_sql($class);
+        $dbh->do($sql);
+    };
+}
+
 sub fixable : Tests(12) {
     my $self = shift;
 
@@ -325,16 +380,7 @@ sub fixable : Tests(12) {
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
 
-    eval {
-        if ($driver->table_exists('Ddltest::Fixable')) {
-            my $sql = $ddl_class->drop_table_sql('Ddltest::Fixable');
-            $dbh->do($sql);
-        }
-    };
-    eval {
-        my $sql = $ddl_class->create_table_sql('Ddltest::Fixable');
-        $dbh->do($sql);
-    };
+    $self->_setup_table('Ddltest::Fixable');
     for my $i (1..5) {
         my $obj = Ddltest::Fixable->new;
         $obj->foo($i);
