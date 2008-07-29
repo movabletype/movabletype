@@ -331,7 +331,7 @@ sub multikey_defs : Tests(8) {
     is_def($class_defs->{type},  _def(1, 'string',  size => 255,  key => 0), 'Multikey type column def is correct');
     is_def($class_defs->{value}, _def(0, 'string',  size => 1024, key => 0), 'Multikey value column def is correct');
 
-    $self->_setup_table('Ddltest::Multikey');
+    $self->reset_table_for('Ddltest::Multikey');
     my $table_defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest::Multikey');
     ok($table_defs, 'Multikey table DDL settings are defined');
 
@@ -342,7 +342,7 @@ sub multikey_defs : Tests(8) {
 
 sub multikey_unique : Tests(1) {
     my $self = shift;
-    $self->_setup_table('Ddltest::Multikey');
+    $self->reset_table_for('Ddltest::Multikey');
 
     my $orig = Ddltest::Multikey->new();
     $orig->set_values({
@@ -384,26 +384,6 @@ sub invalid_type : Tests(3) {
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
 }
 
-sub _setup_table {
-    my $self = shift;
-    my ($class) = @_;
-
-    my $driver    = MT::Object->dbi_driver;
-    my $dbh       = $driver->rw_handle;
-    my $ddl_class = $driver->dbd->ddl_class;
-
-    eval {
-        if ($driver->table_exists($class)) {
-            my $sql = $ddl_class->drop_table_sql($class);
-            $dbh->do($sql);
-        }
-    };
-    eval {
-        my $sql = $ddl_class->create_table_sql($class);
-        $dbh->do($sql);
-    };
-}
-
 sub fixable : Tests(12) {
     my $self = shift;
 
@@ -411,7 +391,7 @@ sub fixable : Tests(12) {
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
 
-    $self->_setup_table('Ddltest::Fixable');
+    $self->reset_table_for('Ddltest::Fixable');
     for my $i (1..5) {
         my $obj = Ddltest::Fixable->new;
         $obj->foo($i);
