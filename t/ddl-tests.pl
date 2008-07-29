@@ -340,6 +340,37 @@ sub multikey_defs : Tests(8) {
     is_def($table_defs->{value}, _def(0, 'string',  size => 1024), 'Multikey value column def is correct');
 }
 
+sub multikey_unique : Tests(1) {
+    my $self = shift;
+    $self->_setup_table('Ddltest::Multikey');
+
+    my $orig = Ddltest::Multikey->new();
+    $orig->set_values({
+        fkey => 7,
+        type => 'awesome',
+        value => 'these truths',
+    });
+    $orig->save or die "Could not save original multikey instance: ", $orig->errstr;
+
+    # Test empirically if the multifield primary key is uniquely constrained
+    # by trying to insert another.
+    my $driver = MT::Object->dbi_driver;
+    my $dbh    = $driver->rw_handle;
+    my $dbd    = $driver->dbd;
+
+    my $table_name = Ddltest::Multikey->table_name;
+    my $sql = join q{ }, 'INSERT INTO', $table_name, '(',
+        join(q{, }, map { $dbd->db_column_name($table_name, $_) } qw( fkey type value )),
+        ') VALUES (?, ?, ?)';
+    my $ret = eval { $dbh->do($sql, {}, 7, 'awesome', 'self-evident') ? 1 : 0 };
+    my $err = $ret         ? q{}
+            : defined $ret ? $dbh->errstr
+            :                $@
+            ;
+    ok(!$ret, q{Duplicate multikey instance wouldn't insert});
+    diag('Saving error: ', $err) if !$ret;
+}
+
 sub invalid_type : Tests(3) {
     my $self = shift;
 
