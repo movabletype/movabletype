@@ -277,7 +277,7 @@ sub table_defs : Tests(26) {
     my $defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest');
     ok($defs, 'Ddltest table DDL settings are defined');
 
-    is_def($defs->{id}, _def(1, 'integer', auto => 1), 'Ddltest id column def is correct');
+    is_def($defs->{id}, _def(1, 'integer', auto => 1, key => 1), 'Ddltest id column def is correct');
 
     is_def($defs->{string_25},    _def(0, 'string', size => 25),   'Ddltest string_25 column def is correct');
     is_def($defs->{string_25_nn}, _def(1, 'string', size => 25),   'Ddltest string_25_nn column def is correct');
@@ -335,9 +335,9 @@ sub multikey_defs : Tests(8) {
     my $table_defs = MT::Object->driver->dbd->ddl_class->column_defs('Ddltest::Multikey');
     ok($table_defs, 'Multikey table DDL settings are defined');
 
-    is_def($table_defs->{fkey},  _def(1, 'integer', auto => 0),    'Multikey id column def is correct');
-    is_def($table_defs->{type},  _def(1, 'string',  size => 255),  'Multikey type column def is correct');
-    is_def($table_defs->{value}, _def(0, 'string',  size => 1024), 'Multikey value column def is correct');
+    is_def($table_defs->{fkey},  _def(1, 'integer', auto => 0,   key => 1), 'Multikey id column def is correct');
+    is_def($table_defs->{type},  _def(1, 'string',  size => 255, key => 1), 'Multikey type column def is correct');
+    is_def($table_defs->{value}, _def(0, 'string',  size => 1024),          'Multikey value column def is correct');
 }
 
 sub multikey_unique : Tests(1) {
