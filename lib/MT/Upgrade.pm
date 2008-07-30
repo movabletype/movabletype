@@ -739,6 +739,34 @@ sub core_upgrade_functions {
                             };
                         }
                     }
+                    else {
+                        # FIXME: copied from MT::CMS::Dashboard
+                        my %default_widgets = (
+                            'new_version'   => {
+                                order => -1,
+                                set => 'main',
+                                template => 'widget/new_version.tmpl',
+                                singular => 1
+                            },
+                            'blog_stats' => {
+                                param => { tab => 'entry' },
+                                order => 1,
+                                set => 'main'
+                            },
+                            'this_is_you-1' => { order => 1, set => 'sidebar' },
+                            'mt_shortcuts'  => { order => 2, set => 'sidebar' },
+                            'mt_news'       => { order => 3, set => 'sidebar' },
+                        );
+                        my $blog_iter = MT->model('blog')->load_iter(
+                            undef,
+                            { fetchonly => ['id'] }
+                        );
+                        while ( my $blog = $blog_iter->() ) {
+                            my $set = 'dashboard:blog:' . $blog->id;
+                            $widget_store->{$set} = \%default_widgets;
+                        }
+                        $widget_store->{'dashboard:system'} = \%default_widgets;
+                    }
                     $user->widgets($widget_store);
                 },
             },
