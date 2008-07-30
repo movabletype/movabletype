@@ -1023,7 +1023,8 @@ sub reset_table_for {
         my $dbh       = $driver->rw_handle;
         my $ddl_class = $driver->dbd->ddl_class;
 
-        $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr;
+        $dbh->do($ddl_class->drop_table_sql($class)) or die $dbh->errstr
+            if $driver->table_exists($class);
         $dbh->do($ddl_class->create_table_sql($class)) or die $dbh->errstr;
         $dbh->do($_) or die $dbh->errstr for $ddl_class->index_table_sql($class);
         $ddl_class->drop_sequence($class),
