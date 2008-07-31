@@ -4450,7 +4450,9 @@ tag used to include this "Some Module" template module, like so:
     <$mt:Var name="contents"$>
     (footer stuff)
 
-B<Attributes:>
+B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached
+
+=head4 Attributes:
 
 =over 4
 
