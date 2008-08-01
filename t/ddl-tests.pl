@@ -398,7 +398,7 @@ sub fixable : Tests(12) {
     for my $i (1..5) {
         my $obj = Ddltest::Fixable->new;
         $obj->foo($i);
-        $obj->save;
+        $obj->save or die "Could not add test Fixable record: " . $obj->errstr;
     }
 
     my $defs = $ddl_class->column_defs('Ddltest::Fixable');

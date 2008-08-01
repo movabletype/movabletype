@@ -57,6 +57,11 @@ sub import {
             push @to_export, $opt;
         }
     }
+
+    # We need *some* instance created up front, to initialize the database
+    # factory etc properly, so do so now.
+    MT->instance;
+
     # Export requested or all exportable functions.
     $pkg->export_to_level(1, @to_export || qw( :DEFAULT ));
 }
