@@ -148,7 +148,10 @@ sub _00_table_does_not_exist : Tests(3) {
 
     ok(!$driver->table_exists('Ddltest'), 'Ddltest table does not yet exist');
     ok(!defined $ddl_class->column_defs('Ddltest'), 'Ddltest table has no column defs');
-    ok(!defined $ddl_class->index_defs('Ddltest'), 'Ddltest table has no index defs');
+
+    # postgres might return an empty set of indexes, but I guess that's okay.
+    my $index_defs = $ddl_class->index_defs('Ddltest');
+    ok(!defined $index_defs || !%$index_defs, 'Ddltest table has no index defs');
 }
 
 sub _01_create_table : Tests(2) {
@@ -401,24 +404,30 @@ sub fixable : Tests(12) {
     my $defs = $ddl_class->column_defs('Ddltest::Fixable');
     ok($defs->{baz}, 'Ddltest::Fixable table has baz column after creation');
 
-    my $sql;
+    my @sql;
     my $res;
 
     SKIP: {
         skip("Driver cannot drop columns", 2) unless $ddl_class->can_drop_column;
-        $sql = $ddl_class->drop_column_sql('Ddltest::Fixable', 'baz');
-        ok($sql, 'Ddltest::Fixable can have column dropping sql');
-        $res = $dbh->do($sql);
+        @sql = $ddl_class->drop_column_sql('Ddltest::Fixable', 'baz');
+        ok(@sql, 'Ddltest::Fixable can have column dropping sql');
+        SQL: for my $sql (@sql) {
+            $res = $dbh->do($sql);
+            last SQL if !$res;
+        }
         ok($res, 'Ddltest::Fixable could have its column dropped');
     }
 
     {
         local Ddltest::Fixable->properties->{column_defs}->{borf} = 'string(10)';
-        $sql = $ddl_class->add_column_sql('Ddltest::Fixable', 'borf');
-        ok($sql, 'Ddltest::Fixable can have column adding sql');
-        $res = $dbh->do($sql);
+        @sql = $ddl_class->add_column_sql('Ddltest::Fixable', 'borf');
+        ok(@sql, 'Ddltest::Fixable can have column adding sql');
+        SQL: for my $sql (@sql) {
+            $res = $dbh->do($sql);
+            diag(($dbh->errstr || $DBI::errstr) . "( sql $sql)") if !$res;
+            last SQL if !$res;
+        }
         ok($res, 'Ddltest::Fixable could have a column added');
-        diag(($dbh->errstr || $DBI::errstr) . "( sql $sql)") if !$res;
     }
 
     $defs = $ddl_class->column_defs('Ddltest::Fixable');
