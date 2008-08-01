@@ -1023,6 +1023,7 @@ sub preview {
         return $app->load_tmpl( 'preview_entry.tmpl', \%param );
     }
     else {
+        $app->request('preview_object', $entry);
         return $app->load_tmpl( 'preview_strip.tmpl', \%param );
     }
 }

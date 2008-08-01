@@ -996,6 +996,7 @@ sub preview {
     }
     $param{template_loop} = \@data;
     $param{object_type}  = $type;
+    $app->request('preview_object', $tmpl);
     return $app->load_tmpl( 'preview_template_strip.tmpl', \%param );
 }
 
