@@ -13,12 +13,12 @@ use File::Spec;
 use MT::TBPing;
 use MT::Trackback;
 use MT::Util qw( first_n_words encode_xml is_valid_url
-  start_background_task );
+    start_background_task );
 use MT::JunkFilter qw(:constants);
 use MT::I18N
-  qw( encode_text guess_encoding const length_text wrap_text substr_text first_n_text );
+    qw( encode_text guess_encoding const length_text wrap_text substr_text first_n_text );
 
-sub id { 'tb' }
+sub id {'tb'}
 
 sub init {
     my $app = shift;
@@ -32,6 +32,25 @@ sub init {
     $app;
 }
 
+sub validate_request_params {
+    my $app = shift;
+
+    my $q = $app->param;
+
+    # attempt to determine character set encoding based on
+    # 'charset' parameter or 'charset' in content-type header:
+    my $enc = $q->param('charset');
+    unless ($enc) {
+        my $content_type = $q->content_type();
+        if ( $content_type =~ m/;[ ]+charset=(.+)/i ) {
+            $enc = lc $1;
+            $enc =~ s/^\s+|\s+$//gs;
+        }
+    }
+    local $app->{charset} = $enc if $enc;
+    return $app->SUPER::validate_request_params();
+}
+
 sub view {
     my $app = shift;
     my $q   = $app->param;
@@ -39,25 +58,25 @@ sub view {
     require MT::Template::Context;
     require MT::Entry;
     my $entry_id = $q->param('entry_id');
-    my $entry =
-      MT::Entry->load( { id => $entry_id, status => MT::Entry::RELEASE() } )
-      or return $app->error(
+    my $entry
+        = MT::Entry->load(
+        { id => $entry_id, status => MT::Entry::RELEASE() } )
+        or return $app->error(
         $app->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     my $ctx = MT::Template::Context->new;
     $ctx->stash( 'entry', $entry );
     $ctx->{current_timestamp} = $entry->authored_on;
     my $tmpl = MT::Template->load(
-        {
-            type    => 'pings',
+        {   type    => 'pings',
             blog_id => $entry->blog_id
         }
-      )
-      or return $app->error(
+        )
+        or return $app->error(
         $app->translate(
             "You must define a Ping template in order to display pings.")
-      );
+        );
     defined( my $html = $tmpl->build($ctx) )
-      or return $app->error( $tmpl->errstr );
+        or return $app->error( $tmpl->errstr );
     $html;
 }
 
@@ -139,15 +158,13 @@ sub _builtin_throttle {
         @ts[ 3, 2, 1, 0 ]
     );
     require MT::TBPing;
-    if (
-        $app->config('OneHourMaxPings') <= MT::TBPing->count(
-            {
-                blog_id    => $tb->blog_id,
+    if ($app->config('OneHourMaxPings') <= MT::TBPing->count(
+            {   blog_id    => $tb->blog_id,
                 created_on => [$from]
             },
             { range => { created_on => 1 } }
         )
-      )
+        )
     {
         return 0;
     }
@@ -177,16 +194,16 @@ sub ping {
 
     return $app->_response(
         Error => $app->translate("Trackback pings must use HTTP POST") )
-      if $app->request_method() ne 'POST';
+        if $app->request_method() ne 'POST';
 
     my ( $tb_id, $pass ) = $app->_get_params;
     return $app->_response(
         Error => $app->translate("Need a TrackBack ID (tb_id).") )
-      unless $tb_id;
+        unless $tb_id;
 
     require MT::Trackback;
     my $tb = MT::Trackback->load($tb_id)
-      or return $app->_response(
+        or return $app->_response(
         Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) );
 
     my $user_ip = $app->remote_ip;
@@ -211,7 +228,8 @@ sub ping {
             { id => $tb->entry_id, status => MT::Entry::RELEASE() } );
         if ( !$entry ) {
             return $app->_response( Error =>
-                  $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) );
+                    $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id )
+            );
         }
     }
     elsif ( $tb->category_id ) {
@@ -223,18 +241,20 @@ sub ping {
     MT->add_callback( 'TBPingThrottleFilter', 1, undef,
         \&MT::App::Trackback::_builtin_throttle );
 
-    my $passed_filter = MT->run_callbacks( 'TBPingThrottleFilter', $app, $tb );
+    my $passed_filter
+        = MT->run_callbacks( 'TBPingThrottleFilter', $app, $tb );
     if ( !$passed_filter ) {
         return $app->_response(
             Error => $app->translate(
-"You are pinging trackbacks too quickly. Please try again later."
+                "You are pinging trackbacks too quickly. Please try again later."
             ),
             Code => "403 Throttled"
         );
     }
 
-    my ( $title, $excerpt, $url, $blog_name, $enc ) = map scalar $q->param($_),
-      qw( title excerpt url blog_name charset);
+    my ( $title, $excerpt, $url, $blog_name, $enc )
+        = map scalar $q->param($_),
+        qw( title excerpt url blog_name charset);
 
     unless ($enc) {
         my $content_type = $q->content_type();
@@ -248,13 +268,13 @@ sub ping {
 
     # guess encoding as possible
     $enc = MT::I18N::guess_encoding( $excerpt . $title . $blog_name )
-      unless $enc;
-    ( $title, $excerpt, $blog_name ) =
-      map { encode_text( $_, $enc ) } ( $title, $excerpt, $blog_name );
+        unless $enc;
+    ( $title, $excerpt, $blog_name )
+        = map { encode_text( $_, $enc ) } ( $title, $excerpt, $blog_name );
 
     return $app->_response(
         Error => $app->translate("Need a Source URL (url).") )
-      unless $url;
+        unless $url;
 
     if ( my $fixed = MT::Util::is_valid_url( $url || "" ) ) {
         $url = $fixed;
@@ -271,7 +291,10 @@ sub ping {
 
     return $app->_response(
         Error => $app->translate("This TrackBack item is disabled.") )
-      if $tb->is_disabled || !$cfg->AllowPings || !$blog || !$blog->allow_pings;
+        if $tb->is_disabled
+            || !$cfg->AllowPings
+            || !$blog
+            || !$blog->allow_pings;
 
     if ( $tb->passphrase && ( !$pass || $pass ne $tb->passphrase ) ) {
         return $app->_response(
@@ -301,11 +324,13 @@ sub ping {
     my $excerpt_max_len = const('LENGTH_ENTRY_PING_EXCERPT');
     if ($excerpt) {
         if ( length_text($excerpt) > $excerpt_max_len ) {
-            $excerpt = substr_text( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
+            $excerpt
+                = substr_text( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
         }
-        $title =
-          first_n_text( $excerpt, const('LENGTH_ENTRY_PING_TITLE_FROM_TEXT') )
-          unless defined $title;
+        $title
+            = first_n_text( $excerpt,
+            const('LENGTH_ENTRY_PING_TITLE_FROM_TEXT') )
+            unless defined $title;
         $ping->excerpt($excerpt);
     }
     $ping->title( defined $title && $title ne '' ? $title : $url );
@@ -334,7 +359,7 @@ sub ping {
     }
 
     $ping->save
-      or return $app->_response( Error => "An internal error occured" );
+        or return $app->_response( Error => "An internal error occured" );
     if ( $ping->id && !$ping->is_junk ) {
         my $msg = 'New TrackBack received.';
         if ($entry) {
@@ -347,8 +372,7 @@ sub ping {
         }
         require MT::Log;
         $app->log(
-            {
-                message  => $msg,
+            {   message  => $msg,
                 class    => 'ping',
                 category => 'new',
                 blog_id  => $blog_id,
@@ -369,12 +393,12 @@ sub ping {
                     ## is being used. We also want to place the RSS files inside of the
                     ## Local Site Path.
                     $app->rebuild_indexes( Blog => $blog )
-                      or return $app->_response(
+                        or return $app->_response(
                         Error => $app->translate(
                             "Publish failed: [_1]",
                             $app->errstr
                         )
-                      );
+                        );
 
                     if ( $tb->entry_id ) {
                         $app->rebuild_entry(
@@ -400,14 +424,15 @@ sub ping {
                             $tb->rss_file || $tb->id . '.xml' );
                         my $fmgr = $blog->file_mgr;
                         $fmgr->put_data( $rss, $feed )
-                          or return $app->_response(
+                            or return $app->_response(
                             Error => $app->translate(
                                 "Can't create RSS feed '[_1]': ", $feed,
                                 $fmgr->errstr
                             )
-                          );
+                            );
                     }
-                    $app->_send_ping_notification( $blog, $entry, $cat, $ping );
+                    $app->_send_ping_notification( $blog, $entry, $cat,
+                        $ping );
                 }
             );
         }
@@ -442,27 +467,29 @@ sub _send_ping_notification {
         $author = MT::Author->load( $cat->author_id ) if $cat->author_id;
     }
     $app->set_language( $author->preferred_language )
-      if $author && $author->preferred_language;
+        if $author && $author->preferred_language;
 
     if ( $author && $author->email ) {
         if ($entry) {
-            $subj = $app->translate( 'New TrackBack Ping to Entry [_1] ([_2])',
+            $subj
+                = $app->translate( 'New TrackBack Ping to Entry [_1] ([_2])',
                 $entry->id, $entry->title );
         }
         elsif ($cat) {
-            $subj =
-              $app->translate( 'New TrackBack Ping to Category [_1] ([_2])',
+            $subj
+                = $app->translate(
+                'New TrackBack Ping to Category [_1] ([_2])',
                 $cat->id, $cat->label );
         }
         my %head = (
             id   => 'new_ping',
             To   => $author->email,
             From => $app->config('EmailAddressMain')
-              || (
+                || (
                   $author->nickname
                 ? $author->nickname . ' <' . $author->email . '>'
                 : $author->email
-              ),
+                ),
             Subject => '[' . $blog->name . '] ' . $subj
         );
         my $base;
@@ -474,13 +501,13 @@ sub _send_ping_notification {
             my ($blog_domain) = $blog->site_url =~ m|(.+://[^/]+)|;
             $base = $blog_domain . $base;
         }
-        my $nonce =
-          MT::Util::perl_sha1_digest_hex( $ping->id
-              . $ping->created_on
-              . $blog->id
-              . $app->config->SecretToken );
+        my $nonce
+            = MT::Util::perl_sha1_digest_hex( $ping->id
+                . $ping->created_on
+                . $blog->id
+                . $app->config->SecretToken );
         my $approve_link = $base
-          . $app->uri_params(
+            . $app->uri_params(
             'mode' => 'approve_item',
             args   => {
                 blog_id => $blog->id,
@@ -488,9 +515,9 @@ sub _send_ping_notification {
                 id      => $ping->id,
                 nonce   => $nonce
             }
-          );
+            );
         my $spam_link = $base
-          . $app->uri_params(
+            . $app->uri_params(
             'mode' => 'handle_junk',
             args   => {
                 blog_id => $blog->id,
@@ -498,21 +525,22 @@ sub _send_ping_notification {
                 id      => $ping->id,
                 nonce   => $nonce
             }
-          );
+            );
         my $edit_link = $base
-          . $app->uri_params(
+            . $app->uri_params(
             'mode' => 'view',
-            args => { blog_id => $blog->id, '_type' => 'ping', id => $ping->id }
-          );
+            args =>
+                { blog_id => $blog->id, '_type' => 'ping', id => $ping->id }
+            );
         my $ban_link = $base
-          . $app->uri_params(
+            . $app->uri_params(
             'mode' => 'save',
             args   => {
                 '_type' => 'banlist',
                 blog_id => $blog->id,
                 ip      => $ping->ip
             }
-          );
+            );
         my %param = (
             blog           => $blog,
             approve_url    => $approve_link,
@@ -523,9 +551,10 @@ sub _send_ping_notification {
             unapproved     => !$ping->visible(),
             state_editable => (
                 $author->is_superuser()
-                  || ( $author->permissions( $blog->id )->can_manage_feedback
+                    || (
+                       $author->permissions( $blog->id )->can_manage_feedback
                     || $author->permissions( $blog->id )->can_publish_post )
-              ) ? 1 : 0,
+                ) ? 1 : 0,
         );
         $param{entry}    = $entry if $entry;
         $param{category} = $cat   if $cat;
@@ -541,25 +570,25 @@ sub rss {
     my $app = shift;
     my ( $tb_id, $pass ) = $app->_get_params;
     my $tb = MT::Trackback->load($tb_id)
-      or return $app->_response(
+        or return $app->_response(
         Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) );
     if ( my $eid = $tb->entry_id ) {
         my $entry = $app->model('entry')->load($eid);
         return $app->_response(
-            Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) )
-          unless $entry && ( MT::Entry::RELEASE() == $entry->status );
+            Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id )
+        ) unless $entry && ( MT::Entry::RELEASE() == $entry->status );
     }
     elsif ( my $cid = $tb->category_id ) {
         my $exist = $app->model('entry')->exist(
             { status => MT::Entry::RELEASE() },
-            {
-                join =>
-                  MT::Placement->join_on( 'entry_id', { category_id => $cid } )
+            {   join => MT::Placement->join_on(
+                    'entry_id', { category_id => $cid }
+                )
             }
         );
         return $app->_response(
-            Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id ) )
-          unless $exist;
+            Error => $app->translate( "Invalid TrackBack ID '[_1]'", $tb_id )
+        ) unless $exist;
     }
     my $rss = _generate_rss($tb);
     $app->_response( RSS => $rss );
@@ -584,19 +613,18 @@ RSS
         );
     }
     my $iter = MT::TBPing->load_iter(
-      {
-        tb_id       => $tb->id,
-        junk_status => MT::TBPing::NOT_JUNK(),
-        visible     => 1
-      },
-      \%arg
+        {   tb_id       => $tb->id,
+            junk_status => MT::TBPing::NOT_JUNK(),
+            visible     => 1
+        },
+        \%arg
     );
     while ( my $ping = $iter->() ) {
         $rss .= sprintf qq(<item>\n<title>%s</title>\n<link>%s</link>\n),
-          encode_xml( $ping->title ), encode_xml( $ping->source_url );
+            encode_xml( $ping->title ), encode_xml( $ping->source_url );
         if ( $ping->excerpt ) {
             $rss .= sprintf qq(<description>%s</description>\n),
-              encode_xml( $ping->excerpt );
+                encode_xml( $ping->excerpt );
         }
         $rss .= qq(</item>\n);
     }
