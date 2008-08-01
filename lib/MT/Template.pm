@@ -328,11 +328,15 @@ sub save_widgetset {
 
     my $string_tmpl = '<mt:include widget="%s">';
     my $text = q();
+    my @ids;
     foreach my $wid (@inst) {
         my ( $tmpl ) = grep { $_->id eq $wid } @widgets;
         next unless $tmpl;
         $text .= sprintf( $string_tmpl, $tmpl->name );
+        push @ids, $wid;
     }
+    $obj->modulesets( join ',', @ids )
+        if scalar @ids != scalar @inst;
     $obj->text($text) if $text;
     return $obj->SUPER::save;
 }
@@ -659,6 +663,25 @@ sub pre_remove_children {
     my $tmpl = shift;
     $tmpl->remove_children({ key => 'template_id' });
 }
+
+sub post_remove_widget {
+    my $tmpl = shift;
+    return unless $tmpl->type eq 'widget';
+
+    my $iter = MT::Template->load_iter({
+        blog_id => [ $tmpl->blog_id, 0 ],
+        type    => 'widgetset',
+    });
+    my @resave;
+    while ( my $ws = $iter->() ) {
+        my @mods = split( ',', $ws->modulesets );
+        if ( grep { $_ == $tmpl->id } @mods ) {
+            push @resave, $ws;
+        }
+    }
+    $_->save for @resave;
+}
+__PACKAGE__->add_trigger('post_remove' => \&post_remove_widget);
 
 # Some DOM-inspired methods (replicating the interface, so it's more
 # familiar to those who know DOM)
