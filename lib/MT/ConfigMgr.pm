@@ -208,6 +208,8 @@ sub is_dirty {
 sub save_config {
     my $class = shift;
     my $mgr = $class->instance;
+    # prevent saving when the db row wasn't read already
+    return 0 unless $mgr->{__read_db};
     return 0 unless $mgr->is_dirty();
     my $data = '';
     my $settings = $mgr->{__dbvar};
@@ -301,6 +303,7 @@ sub read_config_db {
             $mgr->set($var, $val, 1);
         }
     }
+    $mgr->{__read_db} = 1;
     1;
 }
 
