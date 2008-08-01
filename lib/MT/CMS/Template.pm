@@ -310,6 +310,8 @@ sub edit {
                 $param->{enabled_archive_types} = join(", ", sort keys %at);
                 $param->{static_maps} = $build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
                 $param->{build_type_0} = 1 unless $build_type_0;
+            } else {
+                $param->{can_rebuild} = 0;
             }
         }
         # publish options
@@ -558,7 +560,7 @@ sub edit {
         if $app->param('dirty');
 
     $param->{can_preview} = 1
-        if (!$param->{is_special}) && (!$obj || ($obj && ($obj->outfile || '') !~ m/\.(css|xml|rss|js)$/));
+        if (!$param->{is_special}) && (!$obj || ($obj && ($obj->outfile || '') !~ m/\.(css|xml|rss|js)$/)) && (!exists $param->{can_preview});
 
     1;
 }
@@ -2161,6 +2163,8 @@ sub publish_archive_templates {
     $return_args =~ s/^\?//;
 
     $app->return_args( $return_args );
+    return $app->call_return unless %ats;
+
     $app->param( 'template_id', $tmpl_id );
     $app->param( 'single_template', 1 ); # forces fullscreen mode
     $app->param( 'type', join(",", keys %ats) );
