@@ -834,7 +834,7 @@ sub core_upgrade_functions {
                     require MT::Template;
                     my $styles = MT::Template->load({ blog_id => $blog->id, identifier => 'styles' });
                     if ($styles) {
-                        if ($styles->text =~ m{ <mt:?setvar \s+ name="page_layout" \s+ value="([^"]+)"> }xmsi) {
+                        if ($styles->text =~ m{ <\$?mt:?setvar \s+ name="page_layout" \s+ value="([^"]+)"\$?> }xmsi) {
                             $layout = $1;
                         }
                     }
