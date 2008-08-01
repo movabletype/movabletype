@@ -27,7 +27,21 @@ sub create_table {()}
 sub index_table {()}
 sub create_sequence {}
 sub drop_sequence {}
-sub unique_constraint_sql { '' }
+
+sub unique_constraint_sql {
+    my $ddl = shift;
+    my ($class) = @_;
+
+    my $pk = $class->properties->{primary_key};
+    return q{} if !ref $pk || 'ARRAY' ne ref $pk;
+
+    my $driver = $class->driver;
+    my $dbd = $driver->dbd;
+    my $table = $class->table_name;
+
+    my @key_fields = map { $dbd->db_column_name($table, $_) } @$pk;
+    return ', PRIMARY KEY (' . join(q{, }, @key_fields) . ')';
+}
 
 sub table_exists {
     my $ddl = shift;
@@ -257,8 +271,8 @@ sub index_table_sql {
 
     my @stmts;
     if ($indexes) {
-        # FIXME: Handle possible future primary key tuple case
         my $pk = $props->{primary_key};
+        undef $pk if ref $pk;  # ignore complex key
         foreach my $name (keys %$indexes) {
             next if $pk && $name eq $pk;
             push @stmts, $ddl->index_column_sql($class, $name);
@@ -282,7 +296,7 @@ sub index_column_sql {
     my $field_prefix = $class->datasource;
     my $pk = $props->{primary_key};
     if (!ref $indexes->{$name}) {
-        if (!($pk && $name eq $pk)) {
+        if (!$pk || ref $pk || $name ne $pk) {
             push @stmts, "CREATE INDEX ${table_name}_$name ON $table_name (${field_prefix}_$name)";
         }
     }
@@ -361,8 +375,10 @@ sub column_sql {
         }
         $default = ' DEFAULT ' . $value;
     }
-    my $key = '';
-    $key = ' PRIMARY KEY' if $def->{key};
+    my $key = !$def->{key}                          ? q{}
+            : ref $class->properties->{primary_key} ? q{}
+            :                                         ' PRIMARY KEY'
+            ;
     return $field_prefix . '_' . $name . ' ' . $type . $nullable . $default . $key;
 }
 
@@ -429,9 +445,7 @@ __END__
 
 =head1 NAME
 
-MT::ObjectDriver::DDL
-
-=head1 DESCRIPTION
+MT::ObjectDriver::DDL - Data Definition Language driver
 
 =head1 SYNOPSIS
 
@@ -442,19 +456,189 @@ MT::ObjectDriver::DDL
     $ddl->add_column($class, 'foo');
     my @ddl = $ddl->as_ddl;
 
+=head1 DESCRIPTION
+
+The Data Definition Language (DDL) drivers provide compatible SQL for creating
+and changing the database tables that contain Movable Type's data. The DDL
+drivers are mainly used by MT::Upgrade, the automatic upgrader.
+
 =head1 METHODS
 
+=head2 $ddl->column_defs($class)
+
+Returns a description of the current column definitions in the table holding
+records for C<$class>, an C<MT::Object> subclass. These descriptions are
+comparable to the results of C<MT::Object::column_defs()>; that is, the
+description for a class is a hashref containing a column definition for each
+column of the class, keyed on the name of the column. Each column definition is
+itself a hashref with the possible keys:
+
+=over 4
+
+=item * C<type>
+
+The type of data contained in the column. See C<db2type()> for the possible
+values of this member.
+
+=item * C<auto>
+
+If true, indicates the column is an auto-increment column (that is, a column
+automatically filled by the database when no value is provided for new
+records).
+
+=item * C<key>
+
+If true, indicates the column is or is part of the table's primary key. The
+combined value of all key columns in a record must be unique, and should
+constitute the identity of the record.
+
+=item * C<size>
+
+For string columns, the maximum possible length of values in the column.
+
+=item * C<not_null>
+
+If true, indicates the column is not allowed to contain a C<NULL> value.
+
+=item * C<default>
+
+The default value used if a record is sent to be saved with no value for that
+column.
+
+=back
+
+If the table does not exist, no value is returned.
+
+Subclasses B<must> themselves implement C<column_defs()>. No default
+implementation is provided.
+
+=head2 $ddl->index_defs($class)
+
+Returns a description of all the index definitions for the table storing
+records for C<$class>, an C<MT::Object> subclass. These descriptions are
+hashrefs containing individual index definitions, keyed on the names of the
+indexes.
+
+Each index definition is either C<1>, meaning the index is on the single column
+named the same as the index, or a hashref with the possible keys:
+
+=over 4
+
+=item * C<columns>
+
+An arrayref listing the columns that compose the index.
+
+=item * C<unique>
+
+If true, indicates a record's values for the indexes are required to be unique
+across the table.
+
+=back
+
+If no indexes exist for the table, either no value or an empty hashref is
+returned.
+
+=head2 $ddl->table_exists($class)
+
+Returns whether the table for C<$class>, an C<MT::Object> subclass, exists in
+the database.
+
+=head2 $ddl->unique_constraint_sql($class)
+
+Returns the SQL describing the uniqueness constraints specified in the
+properties of C<$class>, an C<MT::Object> subclass, suitable for insertion at
+the end of a C<CREATE TABLE> statement.
+
+The default implementation returns a standard multi-column C<PRIMARY KEY>
+declaration if the primary key of C<$class> is multiple columns, or the empty
+string otherwise.
+
+=head2 $ddl->can_add_column()
+
+Returns whether the database can add columns to a table that already exists.
+
+The default implementation returns false. Subclasses should override this
+method to return true if they implement C<add_column_sql()>.
+
+=head2 $ddl->can_drop_column()
+
+Returns whether the database can drop (remove) columns from a table that
+already exists.
+
+The default implementation returns false. Subclasses should override this
+method to return true if they implement C<drop_column_sql()>.
+
+=head2 $ddl->can_alter_column()
+
+Returns whether the database can change the definition of a column that already
+exists.
+
+The default implementation returns false. Subclasses should override this
+method to return true if they implement C<alter_column_sql()>.
+
+=head2 $ddl->can_add_constraint()
+
+Returns whether the database can add a constraint on the table that already
+exists.
+
+The default implementation returns B<true>. Subclasses should override this
+method to return B<false> if the database does not support the C<ALTER TABLE
+... ADD CONSTRAINT> statement.
+
+=head2 $ddl->fix_class()
+
+=head2 $ddl->insert_from_sql()
+
+=head2 $ddl->drop_table_sql()
+
+=head2 $ddl->drop_index_sql()
+
+=head2 $ddl->create_table_sql()
+
+=head2 $ddl->create_table_as_sql()
+
+=head2 $ddl->index_table_sql()
+
+=head2 $ddl->index_column_sql()
+
+=head2 $ddl->add_column_sql()
+
+=head2 $ddl->alter_column_sql()
+
+=head2 $ddl->drop_column_sql()
+
+=head2 $ddl->column_sql()
+
+=head2 $ddl->cast_column_sql()
+
+=head2 $ddl->db2type()
+
+=head2 $ddl->type2db()
+
+TODO
+
 =head2 $ddl->add_column()
+
+=head2 $ddl->alter_column()
+
+=head2 $ddl->drop_column()
+
+=head2 $ddl->index_column()
+
+B<Deprecated.> These methods return the results of the corresponding C<_sql>
+methods.
 
 =head2 $ddl->create_table()
 
 =head2 $ddl->drop_table()
 
-=head2 $ddl->drop_column()
+=head2 $ddl->index_table()
 
-=head2 $ddl->create_index()
+=head2 $ddl->create_sequence()
 
-=head2 $ddl->drop_index()
+=head2 $ddl->drop_sequence()
+
+B<Deprecated.> These methods return no value.
 
 =head1 AUTHOR & COPYRIGHT
 

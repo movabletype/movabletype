@@ -96,6 +96,7 @@ sub column_defs {
         $coltype = $ddl->db2type($coltype);
         $defs->{$colname}{type} = $coltype;
         $defs->{$colname}{auto} = ($row->{Extra} =~ m/auto_increment/i) ? 1 : 0;
+        $defs->{$colname}{key}  = $row->{Key} eq 'PRI' ? 1 : 0;
         if (($coltype eq 'string') && $size) {
             $defs->{$colname}{size} = $size;
         }

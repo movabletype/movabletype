@@ -100,6 +100,7 @@ sub column_defs {
         or return undef;
     $sth->execute or return undef;
     my $defs = {};
+    my @pks;
     while (my $row = $sth->fetchrow_hashref) {
         my $colname = lc $row->{name};
         $colname =~ s/^\Q$field_prefix\E_//i;
@@ -108,13 +109,13 @@ sub column_defs {
             $defs->{$colname}{size} = $1;
         }
         $defs->{$colname}{type} = $coltype;
+        # TODO: isn't key for pks, not foreign keys?
         if ($colname =~ m/_id$/) {
             $defs->{$colname}{key} = 1;
         }
-        if ( ($coltype eq 'integer') && $row->{pk} ) {
-            # with sqlite, integer primary keys auto increment. always.
+        if ($row->{pk}) {
             $defs->{$colname}{key} = 1;
-            $defs->{$colname}{auto} = 1;
+            push @pks, $colname;
         }
         $defs->{$colname}{not_null} = 1
             if $row->{notnull};
@@ -123,6 +124,15 @@ sub column_defs {
     }
     $sth->finish;
     return undef unless %$defs;
+
+    if (@pks && 1 == scalar @pks) {
+        my ($colname) = @pks;
+        if ($defs->{$colname}{type} eq 'integer') {
+            # with sqlite, simple integer primary keys auto increment. always.
+            $defs->{$colname}{auto} = 1;
+        }
+    }
+
     return $defs;
 }
 
@@ -172,15 +182,14 @@ sub unique_constraint_sql {
     my $ddl = shift;
     my ($class) = @_;
 
-    my $table_name = $class->table_name;
-    my $props = $class->properties;
+    my $table_name   = $class->table_name;
+    my $props        = $class->properties;
     my $field_prefix = $class->datasource;
-    my $indexes = $props->{indexes};
+    my $indexes      = $props->{indexes};
+    my $pk           = $props->{primary_key};
 
     my @stmts;
     if ($indexes) {
-        # FIXME: Handle possible future primary key tuple case
-        my $pk = $props->{primary_key};
         foreach my $name (keys %$indexes) {
             next if $pk && $name eq $pk;
             if (ref $indexes->{$name} eq 'HASH') {
@@ -197,6 +206,11 @@ sub unique_constraint_sql {
                 }
             }
         }
+    }
+    if ($pk && 'ARRAY' eq ref $pk) {
+        my @columns = map { join q{_}, $field_prefix, $_ } @$pk;
+        my $columns = join q{, }, @columns;
+        push @stmts, "PRIMARY KEY ($columns)";
     }
     if (@stmts) {
         return ',' . join("\n", @stmts);
