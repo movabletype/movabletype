@@ -50,7 +50,7 @@ function smarty_function_mtsetvar($args, &$ctx) {
             $key = $args['key'];
     }
 
-    if (preg_match('/^$/', $name)) {
+    if (preg_match('/^\$/', $name)) {
         $name = $vars[$name];
         if (!isset($name))
             return $ctx->error($ctx->mt->translate(
@@ -147,4 +147,3 @@ function smarty_function_mtsetvar($args, &$ctx) {
     }
     return '';
 }
-?>

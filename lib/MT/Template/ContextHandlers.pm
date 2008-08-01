@@ -2547,11 +2547,13 @@ sub _hdlr_for {
     my ($ctx, $args, $cond) = @_;
 
     my $start = (exists $args->{from} ? $args->{from} : $args->{start}) || 0;
-    $start = 0 unless $start =~ /^\d+$/;
+    $start = 0 unless $start =~ /^-?\d+$/;
     my $end = (exists $args->{to} ? $args->{to} : $args->{end}) || 0;
-    return q() unless $end =~ /^\d+$/;
+    return q() unless $end =~ /^-?\d+$/;
     my $incr = $args->{increment} || $args->{step} || 1;
+    # FIXME: support negative "step" values
     $incr = 1 unless $incr =~ /^\d+$/;
+    $incr = 1 unless $incr;
 
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
@@ -3361,7 +3363,7 @@ sub _hdlr_get_var {
         $key = $args->{key} if exists $args->{key};
     }
 
-    if ($name =~ m/^$/) {
+    if ($name =~ m/^\$/) {
         $name = $ctx->var($name);
     }
 
@@ -3384,7 +3386,7 @@ sub _hdlr_get_var {
                 $value = _hdlr_pass_tokens(@_) or return;
             } elsif (ref($value) eq 'ARRAY') {
                 if ( defined $index ) {
-                    if ($index =~ /^\d+$/) {
+                    if ($index =~ /^-?\d+$/) {
                         $value = $value->[ $index ];
                     } else {
                         $value = undef; # fall through to any 'default'
@@ -5491,7 +5493,7 @@ sub _hdlr_set_hashvar {
     my($ctx, $args) = @_;
     my $tag = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
-    if ($name =~ m/^$/) {
+    if ($name =~ m/^\$/) {
         $name = $ctx->var($name);
     }
     return $ctx->error(MT->translate(
@@ -5659,7 +5661,7 @@ sub _hdlr_set_var {
         $key = $args->{key} if exists $args->{key};
     }
 
-    if ($name =~ m/^$/) {
+    if ($name =~ m/^\$/) {
         $name = $ctx->var($name);
         return $ctx->error(MT->translate(
             "You used a [_1] tag without a valid name attribute.", "<MT$tag>" ))
@@ -5685,7 +5687,7 @@ sub _hdlr_set_var {
         $existing = $existing->{ $key };
     }
     elsif ( 'ARRAY' eq ref($existing) ) {
-        $existing = ( defined $index && ( $index =~ /^\d+$/ ) )
+        $existing = ( defined $index && ( $index =~ /^-?\d+$/ ) )
           ? $existing->[ $index ] 
           : undef;
     }
@@ -5718,7 +5720,7 @@ sub _hdlr_set_var {
         return $ctx->error( MT->translate("'[_1]' is not an array.", $name) )
             unless 'ARRAY' eq ref($data);
         return $ctx->error( MT->translate("Invalid index.") )
-            unless $index =~ /^\d+$/;
+            unless $index =~ /^-?\d+$/;
         $data->[ $index ] = $val;
     }
     elsif ( defined $func ) {

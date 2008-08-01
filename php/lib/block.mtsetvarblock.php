@@ -40,7 +40,7 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
                 $key = $args['key'];
         }
 
-        if (preg_match('/^$/', $name)) {
+        if (preg_match('/^\$/', $name)) {
             $name = $vars[$name];
             if (!isset($name))
                 return $ctx->error($ctx->mt->translate(
@@ -139,4 +139,3 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
     }
     return '';
 }
-?>
