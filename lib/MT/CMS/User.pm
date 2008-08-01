@@ -1068,6 +1068,7 @@ sub grant_role {
     my $app = shift;
 
     my $user = $app->user;
+    return unless $app->validate_magic;
 
     my $blogs   = $app->param('blog')   || '';
     my $authors = $app->param('author') || '';

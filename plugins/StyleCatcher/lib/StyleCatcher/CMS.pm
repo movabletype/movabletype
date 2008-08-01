@@ -134,6 +134,7 @@ sub js {
     # format of 'key: value' in comment-space
     # The remixer only uses name, author, description at the moment.
     my $app = shift;
+    return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
     my $data = fetch_themes($app->param('url'))
         or return $app->json_error( $app->errstr );

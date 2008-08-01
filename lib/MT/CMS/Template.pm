@@ -774,6 +774,8 @@ sub preview {
     my $tmpl;
     my $user_id = $app->user->id;
 
+    return unless $app->validate_magic;
+
     # We can only do previews on blog templates. Have to publish
     # the preview file somewhere!
     return $app->errtrans("Invalid request.") unless $blog;
