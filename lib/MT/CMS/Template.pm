@@ -1661,8 +1661,9 @@ sub dialog_refresh_templates {
         $param->{'template_set_count'} = scalar @sets;
         $param->{'template_set_loop'} = \@sets;
 
-        $param->{screen_id} = "refresh-templates-dialog";
     }
+
+    $param->{screen_id} = "refresh-templates-dialog";
 
     # load template sets
     $app->build_page('dialog/refresh_templates.tmpl',
