@@ -226,9 +226,18 @@ sub is_def {
         }
     }
 
-    if (!defined $got->{type} || $expected->{type} ne $got->{type}) {
+    if (!defined $got->{type}) {
         fail($reason);
-        diag("Expected type ", $expected->{type}, " but got ", $got->{type});
+        diag("Expected MT data type ", $expected->{type}, " but got no type at all");
+        return;
+    }
+
+    my $ddl_class     = MT::Object->driver->dbd->ddl_class;
+    my $got_type      = $ddl_class->type2db($got);
+    my $expected_type = $ddl_class->type2db($expected);
+    if (!defined $got_type || $expected_type ne $got_type) {
+        fail($reason);
+        diag("Expected db data type ", $expected_type, " but got ", $got_type);
         return;
     }
 
