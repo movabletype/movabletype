@@ -361,9 +361,9 @@ sub class_handler {
         if (defined *{$package.'::new'}) {
             return $package;
         } else {
-            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $package;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $package;";
             return $package unless $@;
-            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $pkg; $package->new;";
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $pkg; $package->new;";
             return $package unless $@;
         }
     }
@@ -1035,7 +1035,7 @@ sub remove_children {
     my $key = $param->{key} || $obj->datasource . '_id';
     my $obj_id = $obj->id;
     for my $class (@classes) {
-        eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';use $class;";
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $class;";
         $class->remove({ $key => $obj_id });
     }
     1;
