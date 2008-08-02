@@ -153,7 +153,7 @@ sub load_registry {
     return unless -f $path;
     require YAML::Tiny;
     my $y = eval { YAML::Tiny->read($path) }
-        or die "Error reading $path: " . $YAML::Tiny::errstr;
+        or die "Error reading $path: " . (YAML::Tiny->errstr||$@||$!);
     if ( ref($y) ) {
 
         # skip over non-hash elements
@@ -520,8 +520,7 @@ sub registry {
                         if ( -f $f ) {
                             require YAML::Tiny;
                             my $y = eval { YAML::Tiny->read($f) }
-                                or die "Error reading $f: "
-                                    . $YAML::Tiny::errstr;
+                                or die "Error reading $f: " . (YAML::Tiny->errstr||$@||$!);
                             # skip over non-hash elements
                             shift @$y
                                 while @$y && ( ref( $y->[0] ) ne 'HASH' );
