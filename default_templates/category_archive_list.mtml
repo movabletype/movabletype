@@ -7,7 +7,7 @@
         <ul>
         </mt:SubCatIsFirst>
         <mt:If tag="CategoryCount">
-            <li><a href="<$mt:CategoryArchiveLink$>"<mt:If tag="CategoryDescription"> title="<$mt:CategoryDescription$>"</mt:If>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
+            <li><a href="<$mt:CategoryArchiveLink$>"<mt:If tag="CategoryDescription"> title="<$mt:CategoryDescription remove_html="1" encode_html="1"$>"</mt:If>><__trans phrase="[_1] ([_2])" params="<$mt:CategoryLabel$>%%<$mt:CategoryCount$>"></a>
         <mt:Else>
             <li><$mt:CategoryLabel$>
         </mt:If>
