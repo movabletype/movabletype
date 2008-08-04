@@ -68,7 +68,7 @@ $Lexicon_ja = array(
 ## php/lib/block.mtassets.php
 
 ## php/lib/thumbnail_lib.php
-	'GD support has not been available. Please install GD support.' => '処理にGDが必要ですが利用できないようです。',
+	'GD support has not been available. Please install GD support.' => 'GDを利用できないようです。インストールしてください。',
 
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'ウェブページ',

@@ -681,6 +681,8 @@ use vars qw( @ISA %Lexicon );
 	'Image error: [_1]' => '画像でエラーが発生しました: [_1]',
 
 ## lib/MT/App.pm
+	'Invalid request' => '不正な要求です。',
+	'Invalid request: corrupt character data for character set [_1]' => '不正な要求です。文字コード[_1]に含まれない文字データを送信しています。',
 	'First Weblog' => 'First Weblog',
 	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => '新規ユーザー用のブログ(ID:[_1])をロードできませんでした。NewUserTemplateBlogIdの設定を確認してください。',
 	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => '新規ユーザー\'[_1]\'用のブログを複製元のブログ(ID:[_2])から作成できませんでした。',
@@ -1103,7 +1105,6 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' unbanned commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'を保留にしました。',
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => '\'[_1]\'がコメント投稿者\'[_2]\'の承認を取り消しました。',
 	'Feedback Settings' => 'コミュニケーション設定',
-	'Invalid request' => '不正な要求です。',
 	'Parent comment id was not specified.' => '返信先のコメントが指定されていません。',
 	'Parent comment was not found.' => '返信先のコメントが見つかりません。',
 	'You can\'t reply to unapproved comment.' => '未公開のコメントには返信できません。',
@@ -3939,7 +3940,7 @@ use vars qw( @ISA %Lexicon );
 	'Refresh Template Set' => 'テンプレートセットの初期化',
 	'Refresh [_1] template set' => 'テンプレートセット「[_1]」の初期化',
 	'Refresh global templates' => 'グローバルテンプレートを初期化',
-	'Updates current templates while retaining any user-created or user-modified templates.' => 'テンプレートを初期化します。ユーザーが作成またはカスタマイズしたテンプレートは初期化しません。',
+	'Updates current templates while retaining any user-created templates.' => 'テンプレートを更新しますが、ユーザーが作成したテンプレートには影響しません。',
 	'Apply a new template set' => '新しいテンプレートセットを適用',
 	'Deletes all existing templates and install the selected template set.' => '既存のテンプレートをすべて削除して、選択された新しいテンプレートセットを適用します。',
 	'Reset to factory defaults' => '初期状態にリセット',
