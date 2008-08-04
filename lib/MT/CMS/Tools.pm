@@ -1435,21 +1435,8 @@ sub dialog_adjust_sitepath {
 sub convert_to_html {
     my $app    = shift;
     my $format = $app->param('format');
-    my $text   = $app->param('text');
-    # XMLHttpRequest always send text in UTF-8... right?
-    if ( defined $text ) {
-        $text = encode_text($text, 'utf-8', $app->config->PublishCharset);
-    } 
-    else {
-        $text = '' ;
-    }
-    my $text_more = $app->param('text_more');
-    if ( defined $text_more ) {
-        $text_more = encode_text($text_more, 'utf-8', $app->config->PublishCharset);
-    } 
-    else {
-        $text_more = '' ;
-    }
+    my $text   = $app->param('text') || '';
+    my $text_more = $app->param('text_more') || '';
     my $result = {
         text      => $app->apply_text_filters( $text,      [$format] ),
         text_more => $app->apply_text_filters( $text_more, [$format] ),

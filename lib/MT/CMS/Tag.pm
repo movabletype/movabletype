@@ -155,9 +155,7 @@ sub js_recent_entries_for_tag {
     my $blog_id      = $app->param('blog_id');
     my $obj_class    = $app->model($obj_ds) or return;
     my $tag_name     = $app->param('tag') or return;
-    if ( 'utf-8' ne lc( $app->config->PublishCharset) ) {
-        $tag_name = MT::I18N::encode_text( $tag_name, 'utf-8', $app->config->PublishCharset );
-    }
+
     my $tag_obj =
       $tag_class->load( { name => $tag_name }, { binary => { name => 1 } } );
 

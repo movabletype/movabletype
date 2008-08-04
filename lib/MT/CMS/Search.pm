@@ -385,10 +385,6 @@ sub do_search_replace {
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
     if ( ($search || '') ne '' ) {
-        my $enc = $app->charset;
-        $search = MT::I18N::encode_text( $search, 'utf-8', $enc )
-          if ( $enc !~ m/utf-?8/i )
-          && ( 'dialog_grant_role' eq $app->param('__mode') );
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
     }

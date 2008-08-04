@@ -88,7 +88,7 @@ TC.Client.call = function( param )
                 args.push( a + '=' + e( param['arguments'][a] ) );
             contents = args.join('&');
         }
-        c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8' );
     }
     c.send( contents );
     return c;

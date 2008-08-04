@@ -275,12 +275,6 @@ sub js_add_category {
     }
 
     my $label = $app->param('label');
-    my $enc   = $app->config->PublishCharset;
-
-    # XMLHttpRequest always send text in UTF-8... right?
-    if ( 'utf-8' ne lc($enc) ) {
-        $label = MT::I18N::encode_text( $label, 'utf-8', $enc );
-    }
     my $basename = $app->param('basename');
     if ( !defined($label) || ( $label =~ m/^\s*$/ ) ) {
         return $app->json_error( $app->translate("Invalid request.") );

@@ -449,18 +449,7 @@ sub edit {
         if ($sess_obj) {
             my $data = $sess_obj->thaw_data;
             if ($data) {
-
-                # XMLHttpRequest always send text in UTF-8... right?
-                if ( 'utf-8' eq lc($enc) ) {
-                    $q->param( $_, $data->{$_} ) for keys %$data;
-                }
-                else {
-                    foreach ( keys %$data ) {
-                        my $encoded =
-                          MT::I18N::encode_text( $data->{$_}, 'utf-8', $enc );
-                        $q->param( $_, $encoded );
-                    }
-                }
+                $q->param( $_, $data->{$_} ) for keys %$data;
                 $param{'recovered_object'} = 1;
             }
             else {

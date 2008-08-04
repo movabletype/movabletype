@@ -38,15 +38,8 @@ sub validate_request_params {
     my $q = $app->param;
 
     # attempt to determine character set encoding based on
-    # 'charset' parameter or 'charset' in content-type header:
+    # 'charset' parameter:
     my $enc = $q->param('charset');
-    unless ($enc) {
-        my $content_type = $q->content_type();
-        if ( $content_type =~ m/;[ ]+charset=(.+)/i ) {
-            $enc = lc $1;
-            $enc =~ s/^\s+|\s+$//gs;
-        }
-    }
     local $app->{charset} = $enc if $enc;
     return $app->SUPER::validate_request_params();
 }
@@ -252,25 +245,11 @@ sub ping {
         );
     }
 
-    my ( $title, $excerpt, $url, $blog_name, $enc )
+    my ( $title, $excerpt, $url, $blog_name )
         = map scalar $q->param($_),
-        qw( title excerpt url blog_name charset);
-
-    unless ($enc) {
-        my $content_type = $q->content_type();
-        if ( $content_type =~ m/;[ ]+charset=(.+)/i ) {
-            $enc = lc $1;
-            $enc =~ s/^\s+|\s+$//gs;
-        }
-    }
+        qw( title excerpt url blog_name);
 
     no_utf8( $tb_id, $title, $excerpt, $url, $blog_name );
-
-    # guess encoding as possible
-    $enc = MT::I18N::guess_encoding( $excerpt . $title . $blog_name )
-        unless $enc;
-    ( $title, $excerpt, $blog_name )
-        = map { encode_text( $_, $enc ) } ( $title, $excerpt, $blog_name );
 
     return $app->_response(
         Error => $app->translate("Need a Source URL (url).") )
