@@ -43,6 +43,7 @@ mt-static/themes/unity-tricolor
 #?package=MT ^COPYRIGHT
 #?package=MT ^mt-cp.cgi
 #?package=MT ^mt-static/themes/tristan-blue
+#?package=MT ^mt-static/themes/tristan-blue-4.2
 #?package=MT ^addons/Community.pack
 #?package=MT ^mt-static/addons/Community.pack
 #?package=MT ^addons/Enterprise.pack
@@ -54,11 +55,13 @@ mt-static/themes/unity-tricolor
 #?package=MTP ^mt-cp.cgi
 #?package=MTP ^mt-static/addons
 #?package=MTP ^mt-static/themes/tristan-blue
+#?package=MTP ^mt-static/themes/tristan-blue-4.2
 
 #?package=MTOS ^addons
 #?package=MTOS ^mt-cp.cgi
 #?package=MTOS ^mt-static/addons
 #?package=MTOS ^mt-static/themes/tristan-blue
+#?package=MTOS ^mt-static/themes/tristan-blue-4.2
 #?package=MTOS ^mt-static/plugins/feeds-app-lite
 #?package=MTOS ^plugins/feeds-app-lite
 #?package=MTOS ^plugins/CustomFields
@@ -69,6 +72,7 @@ mt-static/themes/unity-tricolor
 #?package=MTE ^mt-static/addons/Community.pack
 #?package=MTE ^mt-cp.cgi
 #?package=MTE ^mt-static/themes/tristan-blue
+#?package=MTE ^mt-static/themes/tristan-blue-4.2
 
 #?package=MTCS ^COPYING
 #?package=MTCS ^COPYRIGHT
