@@ -37,7 +37,7 @@ use vars qw( @ISA %Lexicon );
 	'Error compiling widgetset [_1]' => 'Erreur de compilation du groupe de widget [_1]',
 
 ## php/lib/thumbnail_lib.php
-	'GD support has not been available. Please install GD support.' => 'Le support GP n\'est pas disponible. Veuillez installer le support GD.', # Translate - New
+	'GD support has not been available. Please install GD support.' => 'Le support GP n\'est pas disponible. Veuillez installer le support GD.',
 
 ## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anonyme',
@@ -160,7 +160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/recent_comments.mtml
 	'Recent Comments' => 'Commentaires récents',
-	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1] :</strong> [_2] <a href="[_3]" title="commentaire complet sur : [_4]">lire la suite</a>', # Translate - New
+	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1] :</strong> [_2] <a href="[_3]" title="commentaire complet sur : [_4]">lire la suite</a>',
 
 ## default_templates/new-ping.mtml
 	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'Un Trackback non-approuvé a été déposé sur votre blog [_1], pour la note #[_2] ([_3]). Vous devez approuver ce Trackback pour qu\'il apparaisse sur votre site.',
@@ -271,14 +271,14 @@ use vars qw( @ISA %Lexicon );
 	'This page contains a single entry by [_1] published on <em>[_2]</em>.' => 'Cette page contient une unique note de [_1] publiée le <em>[_2]</em>.',
 	'<a href="[_1]">[_2]</a> was the previous entry in this blog.' => '<a href="[_1]">[_2]</a> est la note précédente de ce blog.',
 	'<a href="[_1]">[_2]</a> is the next entry in this blog.' => '<a href="[_1]">[_2]</a> est la note suivante de ce blog.',
-	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Cette page est une archive des notes dans la catégorie <strong>[_1]</strong> de <strong>[_2]</strong>.', # Translate - New
+	'This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>.' => 'Cette page est une archive des notes dans la catégorie <strong>[_1]</strong> de <strong>[_2]</strong>.',
 	'<a href="[_1]">[_2]</a> is the previous archive.' => '<a href="[_1]">[_2]</a> est l\'archive précédente.',
 	'<a href="[_1]">[_2]</a> is the next archive.' => '<a href="[_1]">[_2]</a> est l\'archive suivante.',
-	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'Cette page est une archive des notes récentes dans la catégorie <strong>[_1]</strong>.', # Translate - New
+	'This page is an archive of recent entries in the <strong>[_1]</strong> category.' => 'Cette page est une archive des notes récentes dans la catégorie <strong>[_1]</strong>.',
 	'<a href="[_1]">[_2]</a> is the previous category.' => '<a href="[_1]">[_2]</a> est la catégorie précédente.',
 	'<a href="[_1]">[_2]</a> is the next category.' => '<a href="[_1]">[_2]</a> est la catégorie suivante.',
-	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong> dans <strong>[_2]</strong>.', # Translate - New
-	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong>.', # Translate - New
+	'This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong> dans <strong>[_2]</strong>.',
+	'This page is an archive of recent entries written by <strong>[_1]</strong>.' => 'Cette page est une archive des notes récentes écrites par <strong>[_1]</strong>.',
 	'This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest.' => 'Cette page est une archive des notes de <strong>[_2]</strong> listées de la plus récente à la plus ancienne.',
 	'Find recent content on the <a href="[_1]">main index</a>.' => 'Retrouvez le contenu récent sur <a href="[_1]">l\'index principal</a>.',
 	'Find recent content on the <a href="[_1]">main index</a> or look in the <a href="[_2]">archives</a> to find all content.' => 'Retrouvez le contenu récent sur <a href="[_1]">l\'index principal</a> ou allez dans les <a href="[_2]">archives</a> pour retrouver tout le contenu.',
@@ -341,9 +341,9 @@ use vars qw( @ISA %Lexicon );
 	'3-column layout - Secondary Sidebar' => 'Mise en page à 3 colonnes - Seconde barre latérale',
 
 ## default_templates/openid.mtml
-	'[_1] accepted here' => '[_1] est accepté', # Translate - New
-	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/', # Translate - New
-	'Learn more about OpenID' => 'Apprenez-en plus à propos d\'OpenID', # Translate - New
+	'[_1] accepted here' => '[_1] est accepté',
+	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/',
+	'Learn more about OpenID' => 'Apprenez-en plus à propos d\'OpenID',
 
 ## default_templates/creative_commons.mtml
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Ce blog possède une licence <a href="[_1]">Creative Commons</a>.',
@@ -618,7 +618,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning author basename...' => 'Attribution du nom de base de l\'auteur...',
 	'Assigning entry comment and TrackBack counts...' => 'Attribution des nombres de commentaires et trackbacks...',
 	'Assigning embedded flag to asset placements...' => 'Attribution des drapeaux embarqués vers la gestion d\'éléments...',
-	'Updating template build types...' => 'Mise à jour des types de construction de gabarits...', # Translate - New
+	'Updating template build types...' => 'Mise à jour des types de construction de gabarits...',
 	'Replacing file formats to use CategoryLabel tag...' => 'Remplacement des formats de fichiers pour utiliser le tag CategoryLabel...',
 	'Assigning all permissions to blog administrator...' => 'Attribution de toutes les permissions à l\'administrateur du blog...',
 	'Recover permissions of system administrators...' => 'Récupération des permissions des administrateurs système...',
@@ -1170,9 +1170,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Dashboard.pm
 	'Better, Stronger, Faster' => 'Meilleur, Plus robuste, Plus Rapide',
-	'A concerted effort has been made to make significant improvements to Movable Type\'s performance and reliability with added features like Server Side Includes and Template Module Caching.' => 'Un effort particulier à été fait pour améliorer la performance et la stabilité de Movable Type, notamment par l\'ajout de fonctionnalités telles les Server Side Includes et le Template Module Caching.',
-	'Improved Template Management' => 'Gestion de gabarit améliorée',
-	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design.' => 'L\'interface d\'édition des gabarits a été améliorée pour permettre aux designers d\'être plus efficaces dans la mise à jour de leur site.',
+	'Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!' => 'Movable Type a subi des changements majeurs concernant ses performances. L\'utilisation de la mémoire a été réduite, les temps de publication sont significativement réduits et la recherche est désormais 100x plus rapide !', # Translate - New
+	'Module Caching' => 'Cache des modules',
+	'Template module and widget content can now be cached in the database to dramatically speed up publishing.' => 'Les gabarits de module et de widget peuvent désormais être cachés en base de données pour améliorer le temps de publication.', # Translate - New
+	'Improved Template and Design Management' => 'Gestion du design et des gabarits améliorée', # Translate - New
+	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.' => 'L\'interface d\'édition des gabarits a été améliorée pour permettre aux graphistes d\'être plus efficace dans la mise à jour du design de leur site. Les gabarits par défaut ont été grandement simplifiés pour vous rendre plus simple l\'édition et la création d\'un site sur mesure.', # Translate - New
 	'Threaded Comments' => 'Commentaires en cascade',
 	'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.' => 'Permet à vos commentateurs de se répondre entre eux pour un engagement accru et des conversations plus dynamiques.',
 
@@ -1287,6 +1289,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' unbanned commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\'  a retiré le statut Banni à l\'auteur de commentaire \'[_2]\'.',
 	'User \'[_1]\' untrusted commenter \'[_2]\'.' => 'L\'utilisateur \'[_1]\'  a retiré le statut Fiable à l\'auteur de commentaire \'[_2]\'.',
 	'Feedback Settings' => 'Paramètres des Feedbacks',
+	'Invalid request' => 'Demande incorrecte',
 	'An error occurred: [_1]' => 'Une erreur s\'est produite: [_1]',
 	'Parent comment id was not specified.' => 'id du commentaire parent non spécifié.',
 	'Parent comment was not found.' => 'Commentaire parent non trouvé.',
@@ -1359,6 +1362,7 @@ use vars qw( @ISA %Lexicon );
 	'This tag is referenced by others.' => 'Ce tag est référencé par d\'autres.',
 
 ## lib/MT/App.pm
+	'Invalid request: corrupt character data for character set [_1]' => 'Requête invalide : les données de ces caractères sont corrompues pour ce jeu de caractères [_1]', # Translate - New
 	'First Weblog' => 'Premier Blog',
 	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => 'Erreur de chargement #[_1] concernant la création Utilisateur. Veuillez vérifier vos paramètres NewUserTemplateBlogId.',
 	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => 'Erreur de création du blog pour le nouvel utilisateur  \'[_1]\' utilisant le template #[_2].',
@@ -1506,7 +1510,6 @@ use vars qw( @ISA %Lexicon );
 	'No such comment' => 'Pas de commentaire de la sorte',
 	'IP [_1] banned because comment rate exceeded 8 comments in [_2] seconds.' => 'l\'IP [_1] a été bannie car elle a envoyé plus de 8 commentaires en  [_2] seconds.',
 	'IP Banned Due to Excessive Comments' => 'IP bannie pour cause de commentaires excessifs',
-	'Invalid request' => 'Demande incorrecte',
 	'No entry_id' => 'Pas de note_id',
 	'No such entry \'[_1]\'.' => 'Aucune Note \'[_1]\'.',
 	'_THROTTLED_COMMENT' => 'Dans le but de réduire les possibilités d\'abus, Nous avons activé une fonction obligeant les auteurs de commentaires à attendre quelques instants avant de publier un autre commentaire. Veuillez attendre quelques instants avant de publier un autre commentaire. Merci.',
@@ -1600,10 +1603,10 @@ use vars qw( @ISA %Lexicon );
 	'File::Spec is required for path manipulation across operating systems.' => 'File::Spec est nécessaire pour manipuler les chemins de fichiers sur différents systèmes d\'exploitation.',
 
 ## lib/MT/App/CMS.pm
-	'This action will restore your global templates to factory settings without creating a backup. Click OK to continue or Cancel to abort.' => 'Cette action va restaurer vos gabarits globaux aux valeurs d\'origine sans créer de sauvegarde. Cliquez OK pour continuer ou Annuler pour annuler',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point de ré-initialiser le mot de passe des utilisateurs sélectionnés. Les nouveaux mots de passe sont générés automatiquement et seront envoyés directement aux utilisateurs par e-mail. Êtes-vous sûr de vouloir continuer ?',
 	'_WARNING_DELETE_USER_EUM' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous voulez retirer un utilisateur ou lui supprimer ses accès nous vous recommandons de désactiver son compte. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ? Attention, il pourra se créer un nouvel accès s\'il existe encore dans le répertoire externe',
 	'_WARNING_DELETE_USER' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous souhaitez retirer un utilisateur ou lui supprimer ses accès nous vous recommandons de désactiver son compte. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?',
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Cette action rétablira les gabarits par défaut pour le(s) blog(s) sélectionné(s). Etes-vous sûr de vouloir rafraîchir les gabarits de ce(s) blog(s) ?', # Translate - New
 	'Published [_1]' => '[_1] publiées',
 	'Unpublished [_1]' => '[_1] non-publiées',
 	'Scheduled [_1]' => '[_1] programmées',
@@ -1900,7 +1903,7 @@ use vars qw( @ISA %Lexicon );
 	'Technorati Search' => 'Recherche Technorati',
 	'Date-Based Author Archives' => 'Archives des Auteurs par Dates',
 	'Date-Based Category Archives' => 'Archives des Catégories par Dates',
-	'OpenID Accepted' => 'OpenID Accepté', # Translate - New
+	'OpenID Accepted' => 'OpenID Accepté',
 	'Comment throttle' => 'Limitation des commentaires',
 	'Commenter Confirm' => 'Confirmation du commentateur',
 	'Commenter Notify' => 'Notification du commentateur',
@@ -2061,7 +2064,7 @@ use vars qw( @ISA %Lexicon );
 	'Your configuration settings have been written to the following file:' => 'Vos paramètres de configuration ont été écrits dans le fichier suivant:',
 	'To reconfigure the settings, click the \'Back\' button below.' => 'Pour reconfigurer vos paramètres, cliquez sur le bouton \'Retour\' ci-dessous. Sinon, cliquez sur Continuer.',
 	'Show the mt-config.cgi file generated by the wizard' => 'Afficher le fichier mt-config.cgi généré par l\'assistant',
-	'The mt-config.cgi file has been created manually.' => 'Le fichier mt-config.cgi a été créé manuellement.', # Translate - New
+	'The mt-config.cgi file has been created manually.' => 'Le fichier mt-config.cgi a été créé manuellement.',
 	'Retry' => 'Recommencer',
 
 ## tmpl/wizard/cfg_dir.tmpl
@@ -2121,9 +2124,9 @@ use vars qw( @ISA %Lexicon );
 	'Show Current Settings' => 'Montrer les paramètres actuels',
 	'Database Type' => 'Type de base de données',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.org/documentation/[_1]',
-	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Votre base de données préférée n\'est pas listée ? Regardez <a href="[_1]" target="_blank">Movable Type System Check</a> pour voir s\'il y a des modules additionnels nécessaires pour permettre son utilisation.', # Translate - New
-	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Une fois installé, <a href="javascript:void(0)" onclick="[_1]">cliquez ici pour réactualiser cette page</a>.', # Translate - New
-	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Apprenez-en plus : <a href="[_1]" target="_blank">Configurez votre base de données</a>', # Translate - New
+	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => 'Votre base de données préférée n\'est pas listée ? Regardez <a href="[_1]" target="_blank">Movable Type System Check</a> pour voir s\'il y a des modules additionnels nécessaires pour permettre son utilisation.',
+	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'Une fois installé, <a href="javascript:void(0)" onclick="[_1]">cliquez ici pour réactualiser cette page</a>.',
+	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => 'Apprenez-en plus : <a href="[_1]" target="_blank">Configurez votre base de données</a>',
 	'Database Path' => 'Chemin de la Base de Données',
 	'The physical file path for your SQLite database. ' => 'Le chemin du fichier physique de votre base de données SQLite. ',
 	'A default location of \'./db/mt.db\' will store the database file underneath your Movable Type directory.' => 'Un endroit par défaut \'./db/mt.db\' stockera le fichier de base de données dans votre répertoire Movable Type.',
@@ -2208,7 +2211,6 @@ use vars qw( @ISA %Lexicon );
 	'Server Side Include' => 'Server Side Include',
 	'Process as <strong>[_1]</strong> include' => 'Traiter comme inclusion de <strong>[_1]</strong>',
 	'Include cache path' => 'Inclure le chemin du cache',
-	'Module Caching' => 'Cache des modules',
 	'Disabled (<a href="[_1]">change publishing settings</a>)' => 'Désactivé (<a href="[_1]">changer les paramètres de publication</a>)',
 	'No caching' => 'Pas de cache',
 	'Expire after' => 'Expire après',
@@ -2291,7 +2293,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_blog.tmpl
 	'You have successfully deleted the blogs from the Movable Type system.' => 'Le blog a été correctement supprimé du système Movable Type.',
 	'You have successfully refreshed your templates.' => 'Vous avez réactualisé avec succès vos gabarits.',
-	'You can not refresh templates: [_1]' => 'Vous ne pouvez pas réactualiser le(s) gabarit(s) : [_1]', # Translate - New
+	'You can not refresh templates: [_1]' => 'Vous ne pouvez pas réactualiser le(s) gabarit(s) : [_1]',
 	'Create Blog' => 'Créer un blog',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2806,19 +2808,24 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Template Set' => 'Réactualiser le Groupe de Gabarits',
 	'Refresh [_1] template set' => 'Réactualiser le groupe de gabarits [_1]',
-	'Updates current templates while retaining any user-created or user-modified templates.' => 'Met à jour les gabarits actuels en conservant les gabarits créés ou modifiés par n\'importe quel utilisateur.',
+	'Refresh global templates' => 'Mettre à jour les gabarits généraux', # Translate - Case
+	'Updates current templates while retaining any user-created templates.' => 'Met à jour les gabarits courants tout en empêchant la création de gabarits par l\'utilisateur.', # Translate - New
 	'Apply a new template set' => 'Appliquer un nouveau groupe de gabarits',
 	'Deletes all existing templates and install the selected template set.' => 'Supprime tout les gabarits existants et installe le groupe de gabarits sélectionné.',
 	'Reset to factory defaults' => 'Remettre à zéro les modifications',
 	'Deletes all existing templates and installs factory default template set.' => 'Supprime tous les gabarits existants et installe les groupes de gabarits par défaut ',
 	'Make backups of existing templates first' => 'Faire d\'abord des sauvegardes des gabarits existants',
-	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Vous avez demandé de <strong>réactualiser le groupe de gabarit actuel</strong>. Cette action va :',
+	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Vous avez demandé à <strong>réactualiser le groupe de gabarit actuel</strong>. Cette action va :',
+	'You have requested to <strong>refresh the global templates</strong>. This action will:' => 'Vous avez demandé à <strong>rafraîchir les gabarits généraux</strong>. Cette action va :', # Translate - New
+	'make backups of your templates that can be accessed through your backup filter' => 'faire des copies de sauvegarde de vos gabarits qui pourront être accessibles via votre filtre de sauvegarde', # Translate - New
 	'potentially install new templates' => 'peut-être installer de nouveaux gabarits',
 	'overwrite some existing templates with new template code' => 'remplacer le code de certains gabarits par un nouveau code',
-	'backups will be made of your templates and can be accessed through your backup filter' => 'créer des sauvegardes de vos gabarits (qui pourront être accessibles grâce au filtre "sauvegardes")',
 	'You have requested to <strong>apply a new template set</strong>. This action will:' => 'Vous avez demandé d\'<strong>appliquer un nouveau groupe de gabarit</strong>. Cette action va :',
+	'You have requested to <strong>reset to the default global templates</strong>. This action will:' => 'Vous avez demandé à <strong>rétablir les gabarits généraux par défaut</strong>. Cette action va :', # Translate - New
 	'delete all of the templates in your blog' => 'supprimer tous les gabarits de votre blog',
 	'install new templates from the selected template set' => 'installer de nouveaux gabarits depuis le groupe de gabarits sélectionné',
+	'delete all of your global templates' => 'supprimer tous vos gabarits généraux', # Translate - New
+	'install new templates from the default global templates' => 'installer de nouveaux gabarits issus des gabarits généraux par défaut', # Translate - New
 	'Are you sure you wish to continue?' => 'Êtes-vous sûr de vouloir continuer ?',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
@@ -3555,7 +3562,7 @@ use vars qw( @ISA %Lexicon );
 	'More options' => 'Plus d\'options',
 	'Import File Encoding' => 'Encodage du fichier d\'import',
 	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Par défaut, Movable Type va essayer de détecter automatiquement l\'encodage des caractères de vos fichiers importés.  Cependant, si vous rencontrez des difficultés, vous pouvez le paramétrer de manière explicite',
-	'<mt:var name="display_name">' => '<mt:var name="display_name">',
+	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">', # Translate - New
 	'Default category for entries (optional)' => 'Catégorie par défaut pour les notes (optionnel)',
 	'You can specify a default category for imported entries which have none assigned.' => 'Vous pouvez spécifier une catégorie par défaut pour les notes importées qui n\'ont pas été assignées.',
 	'Select a category' => 'Sélectionnez une catégorie',
@@ -4040,8 +4047,6 @@ use vars qw( @ISA %Lexicon );
 	'Users following [_1]' => 'Utilisateurs qui suivent [_1]',
 	'Following' => 'Suit',
 	'Followers' => 'Suiveurs',
-	'Friends' => 'Amis',
-	'Friends Of' => 'Amis de',
 	'Welcome to the Movable Type Community Solution' => 'Bienvenue dans Movable Type Community Solution',
 	'The Community Solution gives you to the tools to build a successful community with active, engaged conversations. Some key features to explore:' => 'Le Community Solution vous offre les outils pour construire avec succès une communauté active avec des conversations engagées. Certaines fonctionnalités principales à explorer:',
 	'Friends and Followers' => 'Amis et Suiveurs',
@@ -4063,7 +4068,7 @@ use vars qw( @ISA %Lexicon );
 	'Recent Submissions' => 'Soumissions récentes',
 
 ## addons/Community.pack/tmpl/widget/recently_scored.mtml
-	'Recently Scored' => 'Noté récemment', # Translate - New
+	'Recently Scored' => 'Noté récemment',
 	'There are no recently favorited entries.' => 'Il n\'y a pas de notes favorites récentes.',
 
 ## addons/Community.pack/tmpl/cfg_community_prefs.tmpl
@@ -4114,7 +4119,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry Table' => 'Tableau de note',
 	'Content Header' => 'Entête du contenu',
 	'Category Groups' => 'Groupes de catégorie',
-	'Default Widgets' => 'Widgets par défaut', # Translate - New
+	'Default Widgets' => 'Widgets par défaut',
 
 ## addons/Community.pack/templates/global/login_form.mtml
 
@@ -4150,9 +4155,9 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/profile_feed.mtml
 	'Posted [_1] to [_2]' => 'A posté [_1] sur [_2]',
-	'Commented on [_1] in [_2]' => 'A commenté sur [_1] dans [_2]', # Translate - New
-	'Voted on [_1] in [_2]' => 'A voté sur [_1] dans [_2]', # Translate - New
-	'[_1] voted on <a href="[_2]">[_3]</a> in [_4]' => '[_1] a voté sur <a href="[_2]">[_3]</a> dans [_4]', # Translate - New
+	'Commented on [_1] in [_2]' => 'A commenté sur [_1] dans [_2]',
+	'Voted on [_1] in [_2]' => 'A voté sur [_1] dans [_2]',
+	'[_1] voted on <a href="[_2]">[_3]</a> in [_4]' => '[_1] a voté sur <a href="[_2]">[_3]</a> dans [_4]',
 
 ## addons/Community.pack/templates/global/header.mtml
 	'Blog Description' => 'Description du blog',
@@ -4235,7 +4240,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/comment_detail.mtml
 
 ## addons/Community.pack/templates/blog/entry_form.mtml
-	'In order to create an entry on this blog you must first register.' => 'Avant de créer une note sur ce blog, vous devez vous enregistrer.', # Translate - New
+	'In order to create an entry on this blog you must first register.' => 'Avant de créer une note sur ce blog, vous devez vous enregistrer.',
 	'You don\'t have permission to post.' => 'Vous n\'avez pas la permission de poster.',
 	'Sign in to create an entry.' => 'Identifiez-vous pour créer une note.',
 	'Select Category...' => 'Sélectionner la catégorie...',
@@ -4243,7 +4248,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/blog/entry_create.mtml
 
 ## addons/Community.pack/templates/blog/syndication.mtml
-	'Search results matching &ldquo;<$mt:SearchString$>&rdquo;' => 'Résultats de la recherche pour la requête &ldquo;<$mt:SearchString$>&rdquo;',
 
 ## addons/Community.pack/templates/blog/recent_comments.mtml
 	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
@@ -4403,24 +4407,24 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
 	'About' => 'A propos de',
-	'_UTS_REPLACE_THIS' => '<p><strong>Remplacez ce texte d\'exemple par vos propres informations.</strong></p>',
-	'_UTS_SAMPLE_ABOUT' => '
+	'_PTS_REPLACE_THIS' => '<p><strong>Remplacez ce texte d\'exemple par vos propres informations.</strong></p>',
+	'_PTS_SAMPLE_ABOUT' => '
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies.</p>
 ',
-	'_UTS_EDIT_LINK' => '
+	'_PTS_EDIT_LINK' => '
 <!-- retirer ce lien après l\'édition -->
 <p class="admin-edit-link">
 <a href="#" onclick="location.href=adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id; return false">Éditer ce contenu</a>
 </p>
 ',
-	'_UTS_CONTACT' => 'Contacter',
-	'_UTS_SAMPLE_CONTACT' => '
+	'_PTS_CONTACT' => 'Contacter',
+	'_PTS_SAMPLE_CONTACT' => '
 <p>Nous adorerions avoir de vos nouvelles. Envoyez un email à email (at) nomdedomaine.com</p>
 ',
 	'Welcome to our new website!' => 'Bienvenue sur notre nouveau site !',
-	'_UTS_SAMPLE_WELCOME' => '
+	'_PTS_SAMPLE_WELCOME' => '
 <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Aliquam erat volutpat. Ut placerat porta nibh. Donec vitae nulla. Pellentesque nisi leo, pretium a, gravida quis, sollicitudin non, eros. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
 
 <p>Maecenas convallis mattis justo. Ut mauris sapien, consequat a, bibendum vitae, sagittis ac, nisi. Nulla et sapien. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Ut condimentum turpis ut elit. Quisque ultricies sollicitudin justo. Duis vitae magna nec risus pulvinar ultricies. Aliquam sagittis volutpat metus.</p>
@@ -4428,7 +4432,7 @@ use vars qw( @ISA %Lexicon );
 <p>Sed enim. Integer hendrerit, arcu ac pretium nonummy, velit turpis faucibus risus, pulvinar egestas enim elit sed ante. Curabitur orci diam, placerat a, faucibus id, condimentum vitae, magna. Etiam enim massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ',
 	'New design launched using Movable Type' => 'Nouveau design lancé en utilisant Movable Type',
-	'_UTS_SAMPLE_NEWDESIGN' => '
+	'_PTS_SAMPLE_NEWDESIGN' => '
 <p>Notre nouveau site internet est habillé d\'un nouvel habillage grâce à <a href="http://www.movabletype.com/">Movable Type</a> et les Groupes d\'Habillages Universels. Les Groupes d\'Habillages Universels rendent facile et accessible à n\'importe qui la mise en place et l\'animation d\'un site internet utilisant Movable Type. Et cela ne vous prendra que quelques instants#160;! Sélectionnez-en un simplement pour votre nouveau site web et publiez. Voilà#160;! Merci Movable Type#160;!</p> 
 ',
 	'John Doe' => 'John Doe',
@@ -4479,8 +4483,8 @@ use vars qw( @ISA %Lexicon );
 	'Field' => 'Champ',
 
 ## addons/Commercial.pack/config.yaml
-	'Universal Website' => 'Site Universel',
-	'Themes that are compatible with the Universal Website template set.' => 'Thèmes étant compatibles avec les groupes de gabarits de Sites Universels.',
+	'Professional Website' => 'Sites web professionnels', # Translate - New
+	'Themes that are compatible with the Professional Website template set.' => 'Thèmes compatibles avec le jeu de gabarits Sites web professionnels', # Translate - New
 	'Blog Index' => 'Index du Blog',
 	'Blog Entry Listing' => 'Liste des Notes du Blog',
 	'Header' => 'Entête',
@@ -4544,98 +4548,98 @@ use vars qw( @ISA %Lexicon );
 	'No fields could be found.' => 'Aucun champ n\'a été trouvé.',
 	'System-Wide' => 'sur tout le système',
 
-## addons/Commercial.pack/templates/universal/comment_response.mtml
+## addons/Commercial.pack/templates/professional/comment_response.mtml
 
-## addons/Commercial.pack/templates/universal/notify-entry.mtml
+## addons/Commercial.pack/templates/professional/notify-entry.mtml
 
-## addons/Commercial.pack/templates/universal/blog_index.mtml
+## addons/Commercial.pack/templates/professional/blog_index.mtml
 
-## addons/Commercial.pack/templates/universal/category_archive_list.mtml
+## addons/Commercial.pack/templates/professional/category_archive_list.mtml
 
-## addons/Commercial.pack/templates/universal/main_index.mtml
+## addons/Commercial.pack/templates/professional/main_index.mtml
 
-## addons/Commercial.pack/templates/universal/page.mtml
+## addons/Commercial.pack/templates/professional/page.mtml
 
-## addons/Commercial.pack/templates/universal/entry_summary.mtml
+## addons/Commercial.pack/templates/professional/entry_summary.mtml
 
-## addons/Commercial.pack/templates/universal/recent_entries_expanded.mtml
+## addons/Commercial.pack/templates/professional/recent_entries_expanded.mtml
 	'By [_1] | Comments ([_2])' => 'Par [_1] | Commentaires ([_1])',
 
-## addons/Commercial.pack/templates/universal/commenter_notify.mtml
+## addons/Commercial.pack/templates/professional/commenter_notify.mtml
 
-## addons/Commercial.pack/templates/universal/verify-subscribe.mtml
+## addons/Commercial.pack/templates/professional/verify-subscribe.mtml
 
-## addons/Commercial.pack/templates/universal/footer-email.mtml
+## addons/Commercial.pack/templates/professional/footer-email.mtml
 
-## addons/Commercial.pack/templates/universal/entry_detail.mtml
+## addons/Commercial.pack/templates/professional/entry_detail.mtml
 
-## addons/Commercial.pack/templates/universal/comment_detail.mtml
+## addons/Commercial.pack/templates/professional/comment_detail.mtml
 
-## addons/Commercial.pack/templates/universal/new-ping.mtml
+## addons/Commercial.pack/templates/professional/new-ping.mtml
 
-## addons/Commercial.pack/templates/universal/comment_throttle.mtml
+## addons/Commercial.pack/templates/professional/comment_throttle.mtml
 
-## addons/Commercial.pack/templates/universal/comment_form.mtml
+## addons/Commercial.pack/templates/professional/comment_form.mtml
 
-## addons/Commercial.pack/templates/universal/recent_comments.mtml
+## addons/Commercial.pack/templates/professional/recent_comments.mtml
 	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] a commenté sur [_3]</a> : [_4]',
 
-## addons/Commercial.pack/templates/universal/monthly_archive_list.mtml
+## addons/Commercial.pack/templates/professional/monthly_archive_list.mtml
 
-## addons/Commercial.pack/templates/universal/signin.mtml
+## addons/Commercial.pack/templates/professional/signin.mtml
 
-## addons/Commercial.pack/templates/universal/new-comment.mtml
+## addons/Commercial.pack/templates/professional/new-comment.mtml
 
-## addons/Commercial.pack/templates/universal/entry_listing.mtml
+## addons/Commercial.pack/templates/professional/entry_listing.mtml
 	'Recently by <em>[_1]</em>' => 'Récemment par <em>[_1]</em>',
 
-## addons/Commercial.pack/templates/universal/footer.mtml
+## addons/Commercial.pack/templates/professional/footer.mtml
 
-## addons/Commercial.pack/templates/universal/tags.mtml
+## addons/Commercial.pack/templates/professional/tags.mtml
 
-## addons/Commercial.pack/templates/universal/navigation.mtml
+## addons/Commercial.pack/templates/professional/navigation.mtml
 	'Home' => 'Accueil',
 
-## addons/Commercial.pack/templates/universal/entry_metadata.mtml
+## addons/Commercial.pack/templates/professional/entry_metadata.mtml
 
-## addons/Commercial.pack/templates/universal/entry.mtml
+## addons/Commercial.pack/templates/professional/entry.mtml
 
-## addons/Commercial.pack/templates/universal/recover-password.mtml
+## addons/Commercial.pack/templates/professional/recover-password.mtml
 
-## addons/Commercial.pack/templates/universal/javascript.mtml
+## addons/Commercial.pack/templates/professional/javascript.mtml
 
-## addons/Commercial.pack/templates/universal/archive_index.mtml
+## addons/Commercial.pack/templates/professional/archive_index.mtml
 
-## addons/Commercial.pack/templates/universal/trackbacks.mtml
+## addons/Commercial.pack/templates/professional/trackbacks.mtml
 
-## addons/Commercial.pack/templates/universal/sidebar.mtml
+## addons/Commercial.pack/templates/professional/sidebar.mtml
 
-## addons/Commercial.pack/templates/universal/powered_by_footer.mtml
+## addons/Commercial.pack/templates/professional/powered_by_footer.mtml
 
-## addons/Commercial.pack/templates/universal/openid.mtml
+## addons/Commercial.pack/templates/professional/openid.mtml
 
-## addons/Commercial.pack/templates/universal/categories.mtml
+## addons/Commercial.pack/templates/professional/categories.mtml
 
-## addons/Commercial.pack/templates/universal/comments.mtml
+## addons/Commercial.pack/templates/professional/comments.mtml
 
-## addons/Commercial.pack/templates/universal/search_results.mtml
+## addons/Commercial.pack/templates/professional/search_results.mtml
 
-## addons/Commercial.pack/templates/universal/header.mtml
+## addons/Commercial.pack/templates/professional/header.mtml
 
-## addons/Commercial.pack/templates/universal/dynamic_error.mtml
+## addons/Commercial.pack/templates/professional/dynamic_error.mtml
 
-## addons/Commercial.pack/templates/universal/footer_links.mtml
+## addons/Commercial.pack/templates/professional/footer_links.mtml
 	'Links' => 'Liens',
 
-## addons/Commercial.pack/templates/universal/tag_cloud.mtml
+## addons/Commercial.pack/templates/professional/tag_cloud.mtml
 
-## addons/Commercial.pack/templates/universal/recent_assets.mtml
+## addons/Commercial.pack/templates/professional/recent_assets.mtml
 
-## addons/Commercial.pack/templates/universal/comment_preview.mtml
+## addons/Commercial.pack/templates/professional/comment_preview.mtml
 
-## addons/Commercial.pack/templates/universal/search.mtml
+## addons/Commercial.pack/templates/professional/search.mtml
 
-## addons/Commercial.pack/templates/universal/commenter_confirm.mtml
+## addons/Commercial.pack/templates/professional/commenter_confirm.mtml
 
 ## addons/Enterprise.pack/lib/MT/Enterprise/CMS.pm
 	'Add [_1] to a blog' => 'Ajouter [_1] à un blog',
@@ -4944,18 +4948,18 @@ Base de recherche : [_2]",
 
 ## plugins/Markdown/SmartyPants.pl
 	'Easily translates plain punctuation characters into \'smart\' typographic punctuation.' => 'Permet de convertir facilement des caractères de ponctuation basiques vers une ponctuation plus complexe (comme les guillemets, tirets, etc...)',
-	'Markdown With SmartyPants' => 'Markdown avec SmartyPants',
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'Un plugin de formatage plain-text vers HTML',
 	'Markdown' => 'Markdown',
+	'Markdown With SmartyPants' => 'Markdown avec SmartyPants',
 
 ## plugins/WXRImporter/lib/WXRImporter/Import.pm
 
 ## plugins/WXRImporter/lib/WXRImporter/WXRHandler.pm
 	'File is not in WXR format.' => 'Le fichier n\'est pas dans le format WXR.',
-	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...', # Translate - New
-	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]', # Translate - New
+	'Creating new tag (\'[_1]\')...' => 'Création d\'un nouveau tag (\'[_1]\')...',
+	'Saving tag failed: [_1]' => 'L\'enregistrement du tag a échoué : [_1]',
 	'Duplicate asset (\'[_1]\') found.  Skipping.' => 'L\'élément  (\'[_1]\') a été trouvé en double. Abandon.',
 	'Saving asset (\'[_1]\')...' => 'Enregistrement de l\'élément (\'[_1]\')...',
 	' and asset will be tagged (\'[_1]\')...' => ' et l\'élément sera taggué (\'[_1]\')...',
@@ -5227,6 +5231,6 @@ Base de recherche : [_2]",
 
 );
 
-## New words: 217
+## New words: 190
 
 1;
