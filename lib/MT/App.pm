@@ -862,7 +862,14 @@ sub init_query {
                 }
             }
         }
-        $app->param( $_, $params{ $_ } ) foreach keys %params;
+        while ( my ( $key, $val ) = each %params ) {
+            if ( ref $val ) {
+                $app->param( $key, @{ $params{ $key } } ) ;
+            }
+            else {
+                $app->param( $key, $val );
+            }
+        }
 
         return 1;
     }
