@@ -855,7 +855,7 @@ sub init_config {
         $Data::Dumper::Indent   = 1;
     }
 
-    if ($cfg->ProcessMemoryCommand) {
+    if ($cfg->PerformanceLogging && $cfg->ProcessMemoryCommand) {
         $mt->log_times();
     }
 

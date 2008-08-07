@@ -291,7 +291,8 @@ sub execute {
     ## the result list. If there is no result list, just load the first
     ## blog from the database.
     my($blog);
-    my $include = $app->param('IncludeBlogs');
+    my $include = $app->param('IncludeBlogs') || '';
+    $include =~ s/[^\d,]//g;
     if ($include) {
         my @blog_ids = split ',', $include;
         $blog = MT::Blog->load($blog_ids[0]);
@@ -302,8 +303,10 @@ sub execute {
         if (!$blog) {
             $blog = MT::Blog->load($app->param('blog_id'));
         }
-        $include = $blog->id;
+        $include = $blog->id if $blog;
     }
+    return $app->error($app->translate('Invalid request.'))
+        unless $blog;
 
     ## Initialize and set up the context object.
     my $ctx = MT::App::Search::Context->new;
@@ -316,7 +319,10 @@ sub execute {
         $ctx->stash('search_string', encode_html($str));
     }
     $ctx->stash('template_id', $app->{searchparam}{Template});
-    $ctx->stash('maxresults', $app->{searchparam}{MaxResults});
+    my $maxresults = $app->{searchparam}{MaxResults} || '';
+    $maxresults =~ s/\D//g;
+    $app->{searchparam}{MaxResults} = $maxresults;
+    $ctx->stash('maxresults', $maxresults);
     $ctx->var( 'page_layout', $blog->page_layout )
         if $blog && $blog->page_layout;
     if (my $layout = $ctx->var('page_layout')) {
