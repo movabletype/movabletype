@@ -1,51 +1,191 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Object;
+
 use strict;
+use base qw( Data::ObjectDriver::BaseObject MT::ErrorHandler );
 
-use MT::ObjectDriver;
-use MT::ErrorHandler;
-@MT::Object::ISA = qw( MT::ErrorHandler );
+use MT;
+use MT::Util qw(offset_time_list);
 
-## Magic.
+my (@PRE_INIT_PROPS, @PRE_INIT_META);
+
+sub install_pre_init_properties {
+    # Just in case; to prevent any weird recursion
+    local $MT::plugins_installed = 1;
+
+    foreach my $def (@PRE_INIT_PROPS) {
+        my ($class, $props) = @$def;
+        $class->install_properties($props);
+    }
+    @PRE_INIT_PROPS = ();
+
+    foreach my $def (@PRE_INIT_META) {
+        my ($class, $meta) = @$def;
+        $class->install_meta($meta);
+    }
+    @PRE_INIT_META = ();
+}
 
 sub install_properties {
     my $class = shift;
-    no strict 'refs';
-    my $props = shift;
-    my @cols;
-    if (exists $props->{column_defs}) {
-        $props->{columns} = [ keys %{ $props->{column_defs} } ];
-        @cols = @{ $props->{columns} };
-    } else {
-        @cols = @{ $props->{columns} };
-        foreach ( @cols ) {
-            $props->{column_defs}{$_} = ();
+    my ($props) = @_;
+
+    if ( ( $class ne 'MT::Config') && ( !$MT::plugins_installed ) ) {
+        # We're too early in the phase of MT's bootstrapping to
+        # be installing properties; we can't query the registry yet
+        # since plugins are not all accounted for. So save this
+        # set of properties to install it later (odds are, the
+        # package has been loaded to afford installing callbacks
+        # or accessing constants and isn't being used to load
+        # actual data.)
+        #
+        # The only exception to this rule is MT::Config; we must
+        # have access to the MT configuration table in order to
+        # bootstrap MT.
+
+        push @PRE_INIT_PROPS, [$class, $props];
+        return;
+    }
+
+    my %meta;
+
+    my $super_props = $class->SUPER::properties();
+    $props->{meta} = 1 if $super_props && $super_props->{meta};
+
+    if ($props->{meta}) {
+        # yank out any meta columns before we start working on column_defs
+        $meta{$_} = delete $props->{column_defs}{$_}
+            for grep { $props->{column_defs}{$_} =~ m/\bmeta\b/ }
+            keys %{ $props->{column_defs} };
+    }
+
+    if ($super_props) {
+        # subclass; merge hash
+        for (qw(primary_key class_column datasource driver audit)) {
+            $props->{$_} = $super_props->{$_}
+                if exists $super_props->{$_} && !(exists $props->{$_});
+        }
+        for my $p (qw(column_defs defaults indexes)) {
+            if (exists $super_props->{$p}) {
+                foreach my $k (keys %{ $super_props->{$p} }) {
+                    if (!exists $props->{$p}{$k}) {
+                        $props->{$p}{$k} = $super_props->{$p}{$k};
+                    }
+                }
+                if ($p eq 'column_defs') {
+                    $class->__parse_defs($props->{column_defs});
+                }
+            }
+        }
+        if ($super_props->{class_type}) {
+            # copy reference of class_to_type/type_to_class hashes
+            $props->{__class_to_type} = $super_props->{__class_to_type};
+            $props->{__type_to_class} = $super_props->{__type_to_class};
         }
     }
+
+    # Legacy MT::Object types only define 'columns'; we still support that
+    # but they aren't handled properly with the upgrade system as a result.
+    if (! exists $props->{column_defs}) {
+        map { $props->{column_defs}{$_} = () } @{ $props->{columns} };
+    }
+    $props->{columns} = [ keys %{ $props->{column_defs} } ];
+
+    # Support audit flags
     if ($props->{audit}) {
-        $props->{column_defs}{created_on} = 'datetime';
-        $props->{column_defs}{created_by} = 'integer';
-        $props->{column_defs}{modified_on} = 'timestamp not null';
-        $props->{defaults}{modified_on} ||= '20000101000000';
-        $props->{column_defs}{modified_by} = 'integer';
+        unless (exists $props->{column_defs}{created_on}) {
+            $props->{column_defs}{created_on} = 'datetime';
+            $props->{column_defs}{created_by} = 'integer';
+            $props->{column_defs}{modified_on} = 'datetime';
+            $props->{column_defs}{modified_by} = 'integer';
+            push @{ $props->{columns} }, qw( created_on created_by modified_on modified_by );
+        }
+    }
+
+    # Classed object types
+    $props->{class_column} ||= 'class' if exists $props->{class_type};
+    if (my $col = $props->{class_column}) {
+        if (!$props->{column_defs}{$col}) {
+            $props->{column_defs}{$col} = 'string(255)';
+            push @{$props->{columns}}, $col;
+            $props->{indexes}{$col} = 1;
+        }
+        if (!$super_props || !$super_props->{class_column}) {
+            $class->add_trigger( pre_search => \&_pre_search_scope_terms_to_class );
+            $class->add_trigger( post_load => \&_post_load_rebless_object );
+        }
+        if (my $type = $props->{class_type}) {
+            $props->{defaults}{$col} = $type;
+            $props->{__class_to_type}{$class} = $type;
+            $props->{__type_to_class}{$type} = $class;
+        }
+    }
+
+    my $type_id;
+    if ($type_id = $props->{class_type}) {
+        if ($type_id ne $props->{datasource}) {
+            $type_id = $props->{datasource} . '.' . $type_id;
+        }
+    } else {
+        $type_id = $props->{datasource};
+    }
+
+    $class->SUPER::install_properties($props);
+
+    # check for any supplemental columns from other components
+    my $more_props = MT->registry('object_types', $type_id);
+    if ($more_props && (ref($more_props) eq 'ARRAY')) {
+        my $cols = {};
+        for my $prop (@$more_props) {
+            next if ref($prop) ne 'HASH';
+            MT::__merge_hash($cols, $prop, 1);
+        }
+        my @classes = grep { !ref($_) } @$more_props;
+        foreach my $isa_class (@classes) {
+            next if UNIVERSAL::isa($class, $isa_class);
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $isa_class;" or die;
+            no strict 'refs'; ## no critic
+            push @{$class . '::ISA'}, $isa_class;
+        }
+        if (%$cols) {
+            # special case for 'plugin' key...
+            delete $cols->{plugin} if exists $cols->{plugin};
+            for my $name (keys %$cols) {
+                next if exists $props->{column_defs}{$name};
+                if ($cols->{$name} =~ m/\bmeta\b/) {
+                    $meta{$name} = $cols->{$name};
+                    next;
+                }
+
+                $class->install_column($name, $cols->{$name});
+                $props->{indexes}{$name} = 1
+                    if $cols->{$name} =~ m/\bindexed\b/;
+                if ($cols->{$name} =~ m/\bdefault (?:'([^']+?)'|(\d+))\b/) {
+                    $props->{defaults}{$name} = defined $1 ? $1 : $2;
+                }
+            }
+        }
     }
 
     my $pk = $props->{primary_key} || '';
-    @cols = sort { $a eq $pk ? -1 : $b eq $pk ? 1 : $a cmp $b } @cols;
-    push @cols, qw( created_on created_by modified_on modified_by )
-        if $props->{audit};
-    $props->{column_names} = \@cols;
+    @{$props->{columns}} = sort { $a eq $pk ? -1 : $b eq $pk ? 1 : $a cmp $b }
+        @{$props->{columns}};
 
+    # Child classes are declared as an array;
+    # convert them to a hashref for easier lookup.
     if ((ref $props->{child_classes}) eq 'ARRAY') {
         my $classes = $props->{child_classes};
         $props->{child_classes} = {};
         @{$props->{child_classes}}{@$classes} = ();
     }
+
+    # We're declared as a child of some other class; associate ourselves
+    # with that package (the invoking class should have already use'd it.)
     if (exists $props->{child_of}) {
         my $parent_classes = $props->{child_of};
         if (!ref $parent_classes) {
@@ -58,86 +198,744 @@ sub install_properties {
         }
     }
 
-    ${"${class}::__properties"} = $props;
+    # Special handling for 'Taggable' objects; automatic saving
+    # and removal of tags.
+    my @isa;
+    {
+        no strict 'refs';
+        @isa = @{ $class . '::ISA' };
+    }
+    foreach my $isa_pkg ( @isa ) {
+        next unless $isa_pkg =~ /able$/;
+        next if $isa_pkg eq $class;
+        if ($isa_pkg->can('install_properties')) {
+            $isa_pkg->install_properties($class);
+        }
+    }
+
+    # install legacy date translation
+    if (0 < scalar @{ $class->columns_of_type('datetime', 'timestamp') }) {
+        if ($props->{audit}) {
+            $class->add_trigger( pre_save  => \&_assign_audited_fields);
+            $class->add_trigger( post_save => \&_translate_audited_fields );
+        }
+
+        $class->add_trigger( pre_save  => _get_date_translator(\&_ts2db, 1) );
+        $class->add_trigger( post_load => _get_date_translator(\&_db2ts, 0) );
+    }
+
+    if ( exists($props->{cacheable}) && !$props->{cacheable} ) {
+        no warnings 'redefine';
+        no strict 'refs'; ## no critic
+        *{$class . '::driver'} = sub { $_[0]->dbi_driver(@_) };
+    }
+
+    # inherit parent's metadata setup
+    if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta({ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) });
+        $class->add_trigger( post_remove => \&remove_meta );
+    }
+
+    return $props;
 }
 
-sub properties {
-    no strict 'refs';
-    my $p;
-    unless ($p = ref($_[0]) ? ${ref($_[0]).'::__properties'} : ${"$_[0]::__properties"}) {
-        my $pkg = ref $_[0] || $_[0];
-        my $parent = @{$pkg . '::ISA'}[0];
-        return $parent->properties if $parent;
+# A post-load trigger for classed objects
+sub _post_load_rebless_object {
+    my $obj = shift;
+    my $props = $obj->properties;
+    if (my $col = $props->{class_column}) {
+        my $type = $obj->column($col);
+        my $pkg = ref($obj);
+        if ($pkg->class_type ne $type) {
+            if (my $class = $props->{__type_to_class}{$type}) {
+                bless $obj, $class;
+            } else {
+                my %models = map { $_ => 1 } MT->models($props->{datasource});
+                if (exists $models{ $props->{datasource} . '.' . $type}) {
+                    $class = MT->model($props->{datasource} . '.' . $type);
+                } elsif (exists $models{$type}) {
+                    $class = MT->model($type);
+                }
+                bless $obj, $class if $class;
+            }
+        }
     }
-    $p;
+}
+
+# A pre-search trigger for classed objects
+sub _pre_search_scope_terms_to_class {
+    my ($class, $terms, $args) = @_;
+    # scope search terms to class
+
+    $terms ||= {};
+    return if (ref $terms eq 'HASH') && exists($terms->{id});
+
+    my $props = $class->properties;
+    my $col = $props->{class_column}
+        or return;
+    if (ref $terms eq 'HASH') {
+        my $no_class = 0;
+        if ($args->{no_class}) {
+            delete $args->{no_class};
+            $no_class = 1;
+        }
+        if (exists $terms->{$col}) {
+            if ( ( $terms->{$col} eq '*' ) || $no_class ) {
+                # class term is '*', which signifies filtering for all classes.
+                # simply delete the term in this case.
+                delete $terms->{$col} ;
+            } elsif ($terms->{$col} =~ m/^(\w+:)\*$/) {
+                # class term is in form "foo:*"; translate to a sql-compatible
+                # syntax of "like 'foo:%'"
+                $terms->{$col} = \"like '$1%'";
+            }
+            # term has been explicitly given or explictly removed. make
+            # no further changes.
+            return;
+        }
+        $terms->{$col} = $props->{class_type}
+            unless $no_class;
+    }
+    elsif (ref $terms eq 'ARRAY') {
+        if (my @class_terms = grep { ref $_ eq 'HASH' && 1 == scalar keys %$_ && $_->{$col} } @$terms) {
+            # Filter out any unlimiting class terms (class = *).
+            @$terms = grep { ref $_ ne 'HASH' || 1 != scalar keys %$_ || !$_->{$col} || $_->{$col} ne '*' } @$terms;
+
+            # The class column has been explicitly given or removed, so don't
+            # add one.
+            return;
+        }
+        @$terms = ( { $col => $props->{class_type} } => 'AND' => [ @$terms ] );
+    }
+}
+
+sub class_label {
+    my $pkg = shift;
+    return MT->translate($pkg->datasource);
+}
+
+sub class_label_plural {
+    my $pkg = shift;
+    my $label = $pkg->datasource;
+    $label =~ s/y$/ie/;
+    $label .= 's';
+    return MT->translate($label);
+}
+
+sub class_labels {
+    my $pkg = shift;
+    my @all_types = MT->models($pkg->properties->{datasource});
+    my %names;
+    foreach my $type (@all_types) {
+        my $class = $pkg->class_handler($type);
+        $names{$type} = $class->class_label;
+    }
+    return \%names;
+}
+
+# Returns a hashref of asset identifiers mapped to the localized string
+# used to name them. (Ie, image => 'Image').
+sub class_type {
+    my $pkg = shift;
+    if (ref $pkg) {
+        return $pkg->column($pkg->properties->{class_column});
+    } else {
+        return $pkg->properties->{class_type};
+    }
+}
+
+sub class_handler {
+    my $pkg = shift;
+    my $props = $pkg->properties;
+    my ($type) = @_;
+    my $package = $props->{__type_to_class}{$type};
+    unless ($package) {
+        my $ds = $props->{datasource};
+        if (($type eq $ds) || ($type =~ m/\./)) {
+            $package = MT->model($type);
+        } else {
+            $package = MT->model($ds . '.' . $type);
+        }
+    }
+    if ($package) {
+        if (defined *{$package.'::new'}) {
+            return $package;
+        } else {
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $package;";
+            return $package unless $@;
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $pkg; $package->new;";
+            return $package unless $@;
+        }
+    }
+    return $pkg;
+}
+
+sub add_class {
+    my $pkg = shift;
+    my ($type, $class) = @_;
+    my $props = $pkg->properties;
+    if ($type =~ m/::/) {
+        ($type, $class) = ($class, $type);
+    }
+
+    if (my $old_class = $props->{__type_to_class}{$type}) {
+        delete $props->{__class_to_type}{$old_class};
+    }
+    $props->{__type_to_class}{$type} = $class;
+    $props->{__class_to_type}{$class} = $type;
+}
+
+# 'meta' metadata column support
+
+sub new {
+    my $class = shift;
+    my $obj = $class->SUPER::new(@_);
+    if ($obj->properties->{meta_installed}) {
+        $obj->init_meta();
+    }
+    return $obj;
+}
+
+sub init_meta {
+    my $obj = shift;
+    require MT::Meta::Proxy;
+    $obj->{__meta} = MT::Meta::Proxy->new($obj);
+}
+
+sub install_meta {
+    my $class = shift;
+    my ($params) = @_;
+    if ( ( $class ne 'MT::Config' ) && (!$MT::plugins_installed) ) {
+        push @PRE_INIT_META, [$class, $params];
+        return;
+    }
+
+    require MT::Meta;
+    my $pkg = ref $class || $class;
+    if (!$pkg->SUPER::properties->{meta_installed}) {
+        $pkg->add_trigger( post_save => \&_post_save_save_metadata );
+        $pkg->add_trigger( post_load => \&_post_load_initialize_metadata );
+    }
+
+    my $props = $class->properties;
+
+    if (!$params->{columns} && !$params->{fields} && !$params->{column_defs}) {
+        return $class->error('No meta fields specified to install_meta');
+    }
+
+    $params->{fields} ||= [];
+    if (my $cols = delete $params->{columns}) {
+        foreach my $col (@$cols) {
+            push @{ $params->{fields} }, {
+                name => $col,
+                type => 'vblob',
+            };
+            # $props->{fields}{$col} = 'vblob';
+        }
+    }
+    if (my $cols = delete $params->{column_defs}) {
+        foreach my $col ( keys %$cols ) {
+            my $type = $cols->{$col};
+            $type =~ s/\s.*//; # take first keyword, ignoring anything after
+            $type .= '_indexed'
+                if $cols->{$col} =~ m/\bindexed\b/;
+            $type = MT::Meta->normalize_type($type);
+
+            push @{ $params->{fields} }, {
+                name => $col,
+                type => $type,
+            };
+            # $props->{fields}{$col} = $type;
+        }
+    }
+
+    $params->{datasource} ||= $class->datasource . '_meta';
+
+    if ($props->{meta_installed} && !@{ $params->{fields} }) {
+        return 1;
+    }
+
+    if (my $fields = MT::Meta->install($pkg, $params)) {
+        # we may have inherited meta fields so lets update with
+        # the fields returned by MT::Meta
+        $props->{fields}->{$_} = $fields->{$_} for keys %$fields;
+    }
+
+    return $props->{meta_installed} = 1;
+}
+
+sub meta_args {
+    my $class = shift;
+    my $id_field = $class->datasource . '_id';
+    return {
+        key         => $class->datasource,
+        column_defs => {
+            $id_field         => 'integer not null',
+            type              => 'string(75) not null',
+            vchar             => 'string(255)',
+            vchar_idx         => 'string(255)',
+            vdatetime         => 'datetime',
+            vdatetime_idx     => 'datetime',
+            vinteger          => 'integer',
+            vinteger_idx      => 'integer',
+            vfloat            => 'float',
+            vfloat_idx        => 'float',
+            vblob             => 'blob',
+            vclob             => 'text',
+        },
+        columns => [ $id_field, qw(
+            type
+            vchar
+            vchar_idx
+            vdatetime
+            vdatetime_idx
+            vinteger
+            vinteger_idx
+            vfloat
+            vfloat_idx
+            vblob
+            vclob
+        ) ],
+        indexes => {
+            id_type    => { columns => [ $id_field, 'type' ] },
+            type_vchar => { columns => [ 'type', 'vchar_idx'     ] },
+            type_vdt   => { columns => [ 'type', 'vdatetime_idx' ] },
+            type_vint  => { columns => [ 'type', 'vinteger_idx'  ] },
+            type_vflt  => { columns => [ 'type', 'vfloat_idx'    ] },
+        },
+        primary_key => [ $id_field, 'type' ],
+    };
+}
+
+sub has_meta {
+    my $obj = shift;
+    return $obj->is_meta_column(@_) if @_;
+    return $obj->properties->{meta_installed} ? 1 : 0;
+}
+
+sub _post_load_initialize_metadata {
+    my $obj = shift;
+    if (defined $obj && $obj->properties->{meta_installed}) {
+        $obj->init_meta();
+        $obj->{__meta}->set_primary_keys($obj);
+    }
+}
+
+sub is_meta_column {
+    my $obj = shift;
+    my ($field) = @_;
+
+    my $props = $obj->properties;
+    return unless $props->{meta_installed};
+
+    my $meta = $obj->meta_pkg;
+    return 1 if $props->{fields}{$field};
+
+    return;
+}
+
+sub meta_pkg {
+    my $class = shift;
+    my $props = $class->properties;
+    return unless $props->{meta}; # this only works for meta-enabled classes
+
+    return $props->{meta_pkg} if $props->{meta_pkg};
+
+    my $meta = ref $class || $class;
+    $meta .= '::Meta';
+    return $props->{meta_pkg} = $meta;
+}
+
+sub has_column {
+    my $obj = shift;
+    return 1 if $obj->SUPER::has_column(@_);
+    return 1 if $obj->is_meta_column(@_);
+    return;
+}
+
+sub _post_save_save_metadata {
+    my $obj = shift;
+    if (defined $obj && exists $obj->{__meta}) {
+        $obj->{__meta}->set_primary_keys($obj);
+        $obj->{__meta}->save;
+    }
+}
+
+sub meta {
+    my $obj = shift;
+    my ( $name, $value ) = @_;
+
+    return !$obj->{__meta} ? undef
+         : 2 == scalar @_  ? $obj->{__meta}->set( $name, $value )
+         : 1 == scalar @_  ? (
+           ref($name) eq 'HASH' ? $obj->{__meta}->set_hash(@_)
+             :                    $obj->{__meta}->get($name) )
+         :                   $obj->{__meta}->get_hash;
+}
+
+sub meta_obj {
+    my $obj = shift;
+    return $obj->{__meta};
+}
+
+sub column_func {
+    my $obj = shift;
+    my ($col) = @_;
+    return if !$col;
+
+    return $obj->SUPER::column_func(@_)
+        if !$obj->is_meta_column($col);
+
+    return sub {
+        my $obj = shift;
+        if (@_) {
+            $obj->{__meta}->set($col, @_);
+        }
+        else {
+            $obj->{__meta}->get($col);
+        }
+    };
+}
+
+sub _ts2db {  
+    return unless $_[0];  
+    if($_[0] =~ m{ \A \d{4} - }xms) {  
+        return $_[0];  
+    }  
+    my $ret = sprintf '%04d-%02d-%02d %02d:%02d:%02d', unpack 'A4A2A2A2A2A2', $_[0];  
+    return $ret;  
+}
+  
+sub _db2ts {  
+    my $ts = $_[0];
+    $ts =~ s/(?:\+|-)\d{2}$//;
+    $ts =~ tr/\- ://d;
+    return $ts;
+}
+
+sub _get_date_translator {
+    my $translator = shift;
+    my $change = shift;
+    return sub {
+        my $obj = shift;
+        my $dbd = $obj->driver->dbd;
+        FIELD: for my $field (@{$obj->columns_of_type('datetime', 'timestamp')}) {
+            my $value = $obj->column($field);
+            next FIELD if !defined $value;
+            my $new_val = $translator->($value); 
+            if((defined $new_val) && ($new_val ne $value)) {
+                $obj->column($field, $new_val, { no_changed_flag => !$change });
+            }
+        }
+        if ( $obj->has_meta ) {
+            my @meta_columns = MT::Meta->metadata_by_class( ref $obj );
+            my @date_meta = grep {
+                   $_->{type} eq 'vdatetime'
+                || $_->{type} eq 'vdatetime_idx'
+            } @meta_columns;
+            META_FIELD: for my $f (@date_meta) {
+                my $field = $f->{name};
+                my $value = $obj->$field;
+                next META_FIELD if !defined $value;
+                my $new_val = $translator->($value); 
+                if((defined $new_val) && ($new_val ne $value)) {
+                    $obj->$field( $new_val );
+                }
+            }
+        }
+    };
+}
+
+sub _translate_audited_fields {
+    my ($obj, $orig_obj) = @_;
+    my $dbd = $obj->driver->dbd;
+    FIELD: for my $field (qw( created_on modified_on )) {
+        my $value = $orig_obj->column($field);
+        next FIELD if !defined $value;
+        my $new_val = _db2ts($value); 
+        if((defined $new_val) && ($new_val ne $value)) {
+            $orig_obj->column($field, $new_val);
+        }
+    }
+    return;
+}
+
+sub nextprev {
+    my $obj = shift;
+    my $class = ref($obj);
+    my %param = @_;
+    my ($direction, $terms, $args, $by_field)
+        = @param{qw( direction terms args by )};
+    return undef unless ($direction eq 'next' || $direction eq 'previous');
+    my $next = $direction eq 'next';
+
+    if (!$by_field) {
+        return if !$class->properties->{audit};
+        $by_field = 'created_on';
+    }
+
+    # Selecting the adjacent object can be tricky since timestamps
+    # are not necessarily unique for entries. If we find that the
+    # next/previous object has a matching timestamp, keep selecting entries
+    # to select all entries with the same timestamp, then compare them using
+    # id as a secondary sort column.
+
+    my ($id, $ts) = ($obj->id, $obj->$by_field());
+    local @$args{qw( sort range_incl )}
+        = ( [ { column => $by_field, desc => $next ? 'ASC' : 'DESC' },
+            { column => 'id', desc => $next ? 'ASC' : 'DESC' } ],
+            { $by_field => 1 });
+
+    my $sibling = $class->load({
+        $by_field => ($next ? [ $ts, undef ] : [ undef, $ts ]),
+        'id' => $id,
+        %{$terms}
+    }, { not => { 'id' => 1 }, limit => 1, %$args });
+
+    return $sibling;
 }
 
 ## Drivers.
 
-use vars qw( $DRIVER );
-sub set_driver { $DRIVER = MT::ObjectDriver->new($_[1]) }
-sub driver { $DRIVER }
-sub set_callback_routine { shift; $DRIVER->set_callback_routine(@_) }
+sub count          { shift->_proxy('count',          @_) }
+sub exist          { shift->_proxy('exist',          @_) }
+sub count_group_by { shift->_proxy('count_group_by', @_) }
+sub sum_group_by   { shift->_proxy('sum_group_by',   @_) }
+sub avg_group_by   { shift->_proxy('avg_group_by',   @_) }
+sub max_group_by   { shift->_proxy('max_group_by',   @_) }
+sub remove_all     { shift->_proxy('remove_all',     @_) }
+
+sub save {
+    my $obj = shift;
+    my $res = eval {
+        my $dbh = $obj->driver->rw_handle;
+        local $dbh->{RaiseError} = 1;
+        $obj->SUPER::save(@_);
+    };
+    if (my $err = $@) {
+        return $obj->error($err);
+    }
+    return $res;
+}
+
+sub remove {
+    my $obj = shift;
+    my(@args) = @_;
+    if (!ref $obj) {
+        $obj->remove_meta( @args ) if $obj->has_meta;
+        $obj->remove_scores( @args ) if $obj->isa('MT::Scorable');
+        return $obj->driver->direct_remove($obj, @args);
+    } else {
+        return $obj->driver->remove($obj, @args);
+    }
+}
+
+sub load {
+    my $self = shift;
+    if (defined $_[0] && (!ref $_[0] || (ref $_[0] ne 'HASH' && ref $_[0] ne 'ARRAY'))) {
+        return $self->lookup($_[0]);
+    } else {
+        if (wantarray) {
+            ## MT::Object::load returns a list in list context, just like
+            ## a D::OD search.
+            return $self->search(@_);
+        } else {
+            ## MT::Object::load returns the first result in scalar context.
+            my ($terms, $args) = @_;
+            $args ||= {};
+            local $args->{limit} = 1;
+            my $iter = $self->search($terms, $args);
+            return if !defined $iter;
+            return $iter->();
+        }
+    }
+}
+
+sub load_iter {
+    my $class = shift;
+    my($terms, $args) = @_;
+    $args ||= {};
+    local $args->{window_size} = 100
+        unless defined($args->{window_size});
+    return scalar $class->search($terms, $args);
+}
 
 ## Callbacks
 
+sub _assign_audited_fields {
+    my ($obj, $orig_obj) = @_;
+    if ($obj->properties->{audit}) {
+        my $blog_id;
+        if ($obj->has_column('blog_id')) {
+            $blog_id = $obj->blog_id;
+        }
+        my @ts = offset_time_list(time, $blog_id);
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+
+        my $app = MT->instance;
+        if ($app && $app->can('user')) {
+            if (my $user = $app->user) {
+                if (!defined $obj->created_on) {
+                    $obj->created_by($user->id);
+                    $orig_obj->created_by($obj->created_by);
+                }
+            }
+        }
+        unless ($obj->created_on) {
+            $obj->created_on($ts);
+            $orig_obj->created_on($ts);
+            # intentionally not calling modified_by to distinguish
+            $obj->modified_on($ts);
+            $orig_obj->modified_on($ts);
+        }
+    }
+}
+
+sub modified_by {
+    my $obj = shift;
+    my ($user_id) = @_;
+    if ($user_id) {
+        if ($obj->properties->{audit}) {
+            my $res = $obj->SUPER::modified_by($user_id);
+
+            my $blog_id;
+            if ($obj->has_column('blog_id')) {
+                $blog_id = $obj->blog_id;
+            }
+            my @ts = offset_time_list(time, $blog_id);
+            my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+                $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+            $obj->modified_on($ts);
+            return $res;
+        }
+    }
+    return $obj->SUPER::modified_by(@_);
+}
+
+# D::OD uses Class::Trigger. Map the call_trigger calls to also invoke
+# MT's callbacks (but internal Class::Trigger routines should be invoked
+# first in the case of pre-triggers, and last in the case of post-triggers).
+
+sub call_trigger {
+    my $obj = shift;
+    my $name = shift;
+    my $class = ref $obj || $obj;
+    my $pre_trigger = $name =~ m/^pre_/;
+    $obj->SUPER::call_trigger($name, @_) if $pre_trigger;
+    MT->run_callbacks($class . '::' . $name, $obj, @_);
+    $obj->SUPER::call_trigger($name, @_) unless $pre_trigger;
+}
+
+# Support for MT-based callbacks.
+
 sub add_callback {
     my $class = shift;
-    my($meth, $priority, $plugin, $code) = @_;
-    if (ref$code ne 'CODE') {
-        return $class->error(MT->translate("4th argument to add_callback must be a perl CODE reference"));
-    }
-    MT->add_callback($class . '::' . $meth, $priority, $plugin, $code);
-    1;
+    my $meth = shift;
+    MT->add_callback($class . '::' . $meth, @_);
 }
 
 ## Construction/initialization.
 
-sub new {
-    my $class = shift;
-    my $obj = bless {}, $class;
-    $obj->init(@_);
-}
-
 sub init {
     my $obj = shift;
-    my %arg = @_;
-    my $defaults = $obj->properties->{'defaults'};
-    $obj->{'column_values'} = $defaults ? {%$defaults} : {};
-    $obj;
+    $obj->SUPER::init(@_);
+    $obj->set_defaults();
+    return $obj;
 }
 
-sub set_defaults {}
+sub set_defaults {
+    my $obj = shift;
+    my $defaults = $obj->properties->{'defaults'};
+    $obj->{'column_values'} = $defaults ? {%$defaults} : {};
+}
+
+sub __properties { }
+
+our $DRIVER;
+sub driver {
+    require MT::ObjectDriverFactory;
+    return $DRIVER ||= MT::ObjectDriverFactory->new;
+}
+
+# ref to the fallback driver for non-cacheable classes
+our $DBI_DRIVER;
+sub dbi_driver {
+    unless ($DBI_DRIVER) {
+        my $driver = driver(@_);
+        while ( $driver->can('fallback') ) {
+            if ($driver->fallback) {
+                $driver = $driver->fallback;
+            } else {
+                last;
+            }
+        }
+        $DBI_DRIVER = $driver;
+    }
+    return $DBI_DRIVER;
+}
+
+sub table_name {
+    my $obj = shift;
+    return $obj->driver->table_for($obj);
+}
+
+sub clone_all {
+    my $obj = shift;
+    my $clone = $obj->SUPER::clone_all();
+    if ($clone->properties->{meta_installed}) {
+        $clone->init_meta();
+        $clone->meta( $obj->meta );
+    }
+    return $clone;
+}
 
 sub clone {
     my $obj = shift;
-    my $clone = ref($obj)->new();
-    $clone->set_values($obj->column_values);
-    $clone;
+    my($param) = @_;
+    my $clone = $obj->clone_all();
+
+    ## If the caller has listed a set of columns not to copy to the clone,
+    ## delete them from the clone.
+    if ($param && ($param->{Except} || $param->{except})) {
+        for my $col (keys %{ $param->{Except} || $param->{except} }) {
+            $clone->$col(undef);
+        }
+    }
+    return $clone;
 }
 
-sub column_names { $_[0]->properties->{column_names} }
-
-sub datasource { $_[0]->properties->{datasource} }
-
-sub column_values { $_[0]->{'column_values'} }
-
-sub column { 
-    defined $_[2] ?
-        $_[0]->{column_values}{$_[1]} = $_[2] :
-        $_[0]->{column_values}{$_[1]};
+sub columns_of_type {
+    my $obj = shift;
+    my(@types) = @_;
+    my $props = $obj->properties;
+    my $cols = $props->{columns};
+    my $col_defs = $obj->column_defs;
+    my @cols;
+    my %types = map { $_ => 1 } @types;
+    for my $col (@$cols) {
+        push @cols, $col
+            if $col_defs->{$col} && exists $types{$col_defs->{$col}{type}};
+    }
+    \@cols;
 }
 
 sub created_on_obj {
     my $obj = shift;
-    if (my $ts = $obj->created_on) {
+    return $obj->column_as_datetime('created_on');
+}
+
+sub column_as_datetime {
+    my $obj = shift;
+    my ($col) = @_;
+    if (my $ts = $obj->column($col)) {
         my $blog;
         if ($obj->isa('MT::Blog')) {
             $blog = $obj;
         } else {
             if (my $blog_id = $obj->blog_id) {
                 require MT::Blog;
-                $blog = MT::Blog->load($blog_id);
+                $blog = MT::Blog->lookup($blog_id);
             }
         }
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
@@ -155,144 +953,165 @@ sub created_on_obj {
     undef;
 }
 
-sub set_values {
+sub join_on {
+    return [ @_ ];
+}
+
+sub remove_meta {
     my $obj = shift;
-    my($values) = @_;
-    my @cols = @{ $obj->column_names };
-    for my $col (@cols) {
-        next unless exists $values->{$col};
-        $obj->column($col, $values->{$col});
+    my $mpkg = $obj->meta_pkg or return;
+    if ( ref $obj ) {
+        my $id_field = $obj->datasource . '_id';
+        return $mpkg->remove({ $id_field => $obj->id });
+    } else {
+        # static invocation
+        my ($terms, $args) = @_;
+        $args = { %$args } if $args; # copy so we can alter
+        my $meta_id = $obj->datasource . '_id';
+        my $offset = 0;
+        $args ||= {};
+        $args->{fetchonly} = [ 'id' ];
+        $args->{join} = [ $mpkg, $meta_id ];
+        $args->{no_triggers} = 1;
+        $args->{limit} = 50;
+        while ( $offset >= 0 ) {
+            $args->{offset} = $offset;
+            if (my @list = $obj->load( $terms, $args )) {
+                my @ids = map { $_->id } @list;
+                $mpkg->driver->direct_remove( $mpkg, { $meta_id => \@ids });
+                if ( scalar @list == 50 ) {
+                    $offset += 50;
+                } else {
+                    $offset = -1; # break loop
+                }
+            } else {
+                $offset = -1;
+            }
+        }
+        return 1;
     }
 }
 
-sub _mk_passthru {
-    my($method) = @_;
-    sub {
-        my($this) = $_[0];
-        die "No ObjectDriver defined" unless defined $DRIVER;
-        my $class = ref($this) || $this;
-        if (wantarray) {
-            my @result = eval {
-                my @rc = $DRIVER->$method(@_);
-                @rc or return $this->error( $DRIVER->errstr );
-                return @rc;
-            };
-            if ($@) {
-                require Carp;
-                if ($MT::DebugMode) {
-                    Carp::confess($@);
-                } else {
-                    Carp::croak($@);
-                }
+sub remove_scores {
+    my $class = shift;
+    require MT::ObjectScore;
+    my ($terms, $args) = @_;
+    $args = { %$args } if $args; # copy so we can alter
+    my $offset = 0;
+    $args ||= {};
+    $args->{fetchonly} = [ 'id' ];
+    $args->{join} = [ 'MT::ObjectScore', 'object_id', {
+        object_ds => $class->datasource } ];
+    $args->{no_triggers} = 1;
+    $args->{limit} = 50;
+    while ( $offset >= 0 ) {
+        $args->{offset} = $offset;
+        if (my @list = $class->load( $terms, $args )) {
+            my @ids = map { $_->id } @list;
+            MT::ObjectScore->driver->direct_remove( 'MT::ObjectScore', {
+                object_ds => $class->datasource, 'object_id' => \@ids });
+            if ( scalar @list == 50 ) {
+                $offset += 50;
+            } else {
+                $offset = -1; # break loop
             }
-            return @result;
         } else {
-            my $result = eval {
-                my $rc = $DRIVER->$method(@_);
-                defined $rc or return $this->error( $DRIVER->errstr );
-                return $rc;
-            };
-            if ($@) {
-                require Carp;
-                if ($MT::DebugMode) {
-                    Carp::confess($@);
-                } else {
-                    Carp::croak($@);
-                }
-            }
-            return $result;
+            $offset = -1;
         }
     }
-}
-
-{
-    no strict 'refs';
-    *load = _mk_passthru('load');
-    *load_iter = _mk_passthru('load_iter');
-    *save = _mk_passthru('save');
-    *remove = _mk_passthru('remove');
-    *remove_all = _mk_passthru('remove_all');
-    *exists = _mk_passthru('exists');
-    *count = _mk_passthru('count');
-    *count_group_by = _mk_passthru('count_group_by');
+    return 1;
 }
 
 sub remove_children {
     my $obj = shift;
+    return 1 unless ref $obj;
+
     my ($param) = @_;
     my $child_classes = $obj->properties->{child_classes} || {};
     my @classes = keys %$child_classes;
-    return unless @classes;
+    return 1 unless @classes;
 
-    my $key = $param->{key};
-
+    $param ||= {};
+    my $key = $param->{key} || $obj->datasource . '_id';
     my $obj_id = $obj->id;
     for my $class (@classes) {
-        eval "use $class;";
-        ## We need to loop twice over the objects: first gather, then
-        ## remove, so as not to throw our gathering out of whack by removing
-        ## while we gather. :)
-        my $iter = $class->load_iter({ $key => $obj_id });
-        next unless $iter;
-        my @ids;
-        while (my $obj = $iter->()) {
-            push @ids, $obj->id;
-        }
-        ## The iterator is finished, so we can safely remove.
-        for my $id (@ids) {
-            my $obj = $class->load($id);
-            $obj->remove;
-        }
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $class;";
+        $class->remove({ $key => $obj_id });
     }
+    1;
 }
 
 sub get_by_key {
     my $class = shift;
     my ($key) = @_;
-    my $obj = $class->load($key);
+    my($obj) = $class->search($key);
     $obj ||= new $class;
-    foreach my $col (keys %$key) {
-        $obj->column($col, $key->{$col});
-    }
-    $obj;
+    $obj->set_values($key);
+    return $obj;
 }
 
 sub set_by_key {
     my $class = shift;
     my ($key, $value) = @_;
-    my $obj = $class->load($key);
-    $obj ||= new $class;
-    $obj->set_values($key);
-    foreach my $col (keys %$value) {
-        $obj->column($col, $value->{$col});
+    my ($obj) = $class->search($key);
+    unless ($obj) {
+        $obj = new $class;
+        $obj->set_values($key);
     }
-    $obj->save();
-    $obj;
+    $obj->set_values($value) if $value;
+    $obj->save or return $class->error($obj->errstr);
+    return $obj;
 }
 
-sub DESTROY { }
-
-use vars qw( $AUTOLOAD );
-sub AUTOLOAD {
-    my $obj = $_[0];
-    (my $col = $AUTOLOAD) =~ s!.+::!!;
-    my $class = ref($obj);
-    my $defs = $obj->column_defs;
-    if (!exists $defs->{$col}) {
-        require Carp;
-        Carp::confess("unknown column: $col for class $class");
+sub deflate {
+    my $obj = shift;
+    my $data = $obj->SUPER::deflate();
+    if ($obj->has_meta()) {
+        $data->{meta} = $obj->{__meta}->deflate_meta();
     }
-    no strict 'refs';
-    *$AUTOLOAD = sub {
-        shift()->column($col, @_);
-    };
-    goto &$AUTOLOAD;
+    return $data;
+}
+
+sub inflate {
+    my $class = shift;
+    my ($data) = @_;
+    my $obj = $class->SUPER::inflate(@_);
+    if ($class->has_meta()) {
+        $obj->{__meta}->inflate_meta($data->{meta});
+    }
+    return $obj;
+}
+
+# We override D::OD's set_values method here only allowing the
+# assignment of a column if the value given is defined. There are
+# some legacy reasons for doing this, mostly for backward
+# compatibility.
+sub set_values {
+    my $obj = shift;
+    my ($values) = @_;
+    for my $col (keys %$values) {
+        unless ( $obj->has_column($col) ) {
+            Carp::croak("You tried to set inexistent column $col to value $values->{$col} on " . ref($obj));
+        }
+        $obj->$col($values->{$col}) if defined $values->{$col};
+    }
 }
 
 sub column_def {
     my $obj = shift;
     my ($name) = @_;
-    $obj->column_defs->{$name};
+    my $defs = $obj->column_defs;
+    my $def = $defs->{$name};
+    if (!ref($def)) {
+        $defs->{$name} = $def = $obj->__parse_def($name, $def);
+    }
+    return $def;
+}
+
+sub index_defs {
+    my $obj = shift;
+    my $props = $obj->properties;
+    $props->{indexes};
 }
 
 sub column_defs {
@@ -302,20 +1121,21 @@ sub column_defs {
     return undef if !$defs;
     my ($key) = keys %$defs;
     if (!(ref $defs->{$key})) {
-        $obj->__mangle_defs();
+        $obj->__parse_defs($props->{column_defs});
     }
     $props->{column_defs};
 }
 
-sub __mangle_defs {
+sub __parse_defs {
     my $obj = shift;
-    my $defs = $obj->properties->{column_defs};
+    my ($defs) = @_;
     foreach my $col ( keys %$defs ) {
-        $defs->{$col} = $obj->__mangle_def($col, $defs->{$col});
+        next if ref($defs->{$col});
+        $defs->{$col} = $obj->__parse_def($col, $defs->{$col});
     }
 }
 
-sub __mangle_def {
+sub __parse_def {
     my $obj = shift;
     my ($col, $def) = @_;
     return undef if !defined $def;
@@ -331,26 +1151,143 @@ sub __mangle_def {
     $def{key} = 1 if $def =~ m/\bprimary key\b/i;
     $def{key} = 1 if ($props->{primary_key}) && ($props->{primary_key} eq $col);
     $def{auto} = 1 if $def =~ m/\bauto[_ ]increment\b/i;
-    $def{default} = $props->{defaults}{$col} if exists $props->{defaults}{$col};
+    $def{default} = $props->{defaults}{$col}
+        if exists $props->{defaults}{$col};
     \%def;
+}
+
+sub cache_property {
+    my $obj = shift;
+    my $key = shift;
+    my $code = shift;
+    if (ref $key eq 'CODE') {
+        ($key, $code) = ($code, $key);
+    }
+    $key ||= (caller(1))[3];
+
+    my $r = MT->request;
+    my $oc = $r->cache('object_cache');
+    unless ($oc) {
+        $oc = {};
+        $r->cache('object_cache', $oc);
+    }
+
+    my $pk = $obj->primary_key;
+    return $code->($obj, @_) unless defined $pk;
+    $pk = join ":", @$pk if ref $pk;
+    $oc = $oc->{ref($obj). ':' . $pk} ||= {};
+
+    if (@_) {
+        $oc->{$key} = $_[0];
+    } else {
+        if ((!exists $oc->{$key}) && $code) {
+            $oc->{$key} = $code->($obj, @_);
+        }
+    }
+    return exists $oc->{$key} ? $oc->{$key} : undef;
+}
+
+sub clear_cache {
+    my $obj = shift;
+    my $oc = MT->request('object_cache') or return;
+
+    my $pk = $obj->primary_key;
+    $pk = join ":", @$pk if ref $pk;
+    my $key = ref($obj). ':' . $pk;
+
+    if (@_) {
+        $oc = $oc->{$key};
+        delete $oc->{shift} if $oc;
+    } else {
+        delete $oc->{$key};
+    }
+    1;
 }
 
 sub to_hash {
     my $obj = shift;
     my $hash = {};
+    my $props = $obj->properties;
     my $pfx = $obj->datasource;
     my $values = $obj->column_values;
     foreach (keys %$values) {
         $hash->{"${pfx}.$_"} = $values->{$_};
     }
-    if (my $blog_id = $obj->column('blog_id')) {
+    if (my $meta = $props->{meta_columns}) {
+        foreach (keys %$meta) {
+            $hash->{"${pfx}.$_"} = $obj->meta($_);
+        }
+    }
+    if ($obj->has_column('blog_id')) {
+        my $blog_id = $obj->blog_id;
         require MT::Blog;
-        my $blog = MT::Blog->load($blog_id);
-        my $blog_hash = $blog->to_hash;
-        $hash->{"${pfx}.$_"} = $blog_hash->{$_} foreach keys %$blog_hash;
+        if (my $blog = MT::Blog->lookup($blog_id)) {
+            my $blog_hash = $blog->to_hash;
+            $hash->{"${pfx}.$_"} = $blog_hash->{$_} foreach keys %$blog_hash;
+        }
     }
     $hash;
 }
+
+sub search_by_meta {
+    my $class = shift;
+    my($key, $value, $terms, $args) = @_;
+    $terms ||= {}; $args ||= {};
+    return unless $class->properties->{meta_installed};
+    return $class->error("Unknown meta '$key' on $class")
+        unless $class->is_meta_column($key);
+
+    my $meta_rec = MT::Meta->metadata_by_name($class, $key);
+    my $type_col = $meta_rec->{type};
+    my $type_id  = $meta_rec->{name};
+    my $meta_terms = {
+        $type_col => $value,
+        type      => $type_id,
+        %$terms,
+    };
+    my $meta_class = $class->meta_pkg;
+    my $meta_pk = $meta_class->primary_key_tuple;
+    my @metaobjs = $meta_class->search(
+        $meta_terms, { %$args, fetchonly => $meta_pk }
+    );
+
+    my $pk = $class->primary_key_tuple;
+    my $get_pk = sub { 
+        my $meta = shift;
+        [ map { $meta->$_ } @$meta_pk ];
+    };
+
+    return unless @metaobjs;
+    return grep defined, @{ $class->lookup_multi([ map { $get_pk->($_) } @metaobjs ]) };
+}
+
+package MT::Object::Meta;
+
+use base qw( Data::ObjectDriver::BaseObject );
+
+sub install_properties {
+    my $class = shift;
+    my ($props) = @_;
+    $props->{column_defs}->{$_} ||= 'string'
+        for @{ $props->{columns} };
+    $class->SUPER::install_properties(@_);
+}
+
+sub meta_pkg { undef }
+
+*table_name = \&MT::Object::table_name;
+*column_defs = \&MT::Object::column_defs;
+*column_def = \&MT::Object::column_def;
+*index_defs = \&MT::Object::index_defs;
+*__parse_defs = \&MT::Object::__parse_defs;
+*__parse_def = \&MT::Object::__parse_def;
+*count = \&MT::Object::count;
+*columns_of_type = \&MT::Object::columns_of_type;
+
+*driver = \&MT::Object::dbi_driver;
+
+# TODO: copy this too
+sub blob_requires_zip {}
 
 1;
 __END__
@@ -366,15 +1303,17 @@ Creating an I<MT::Object> subclass:
     package MT::Foo;
     use strict;
 
-    use MT::Object;
-    @MT::Foo::ISA = qw( MT::Object );
+    use base 'MT::Object';
+
     __PACKAGE__->install_properties({
-        columns => [
-            'id', 'foo',
-        ],
+        columns_defs => {
+            'id'  => 'integer not null auto_increment',
+            'foo' => 'string(255)',
+        },
         indexes => {
             foo => 1,
         },
+        primary_key => 'id',
         datasource => 'foo',
     });
 
@@ -397,19 +1336,17 @@ Using an I<MT::Object> subclass:
 =head1 DESCRIPTION
 
 I<MT::Object> is the base class for all Movable Type objects that will be
-serialized/stored to some location for later retrieval; this location could
-be a DBM file, a relational database, etc.
+serialized/stored to some location for later retrieval.
 
 Movable Type objects know nothing about how they are stored--they know only
 of what types of data they consist, the names of those types of data (their
-columns), etc. The actual storage mechanism is in the I<MT::ObjectDriver>
+columns), etc. The actual storage mechanism is in the L<Data::ObjectDriver>
 class and its driver subclasses; I<MT::Object> subclasses, on the other hand,
 are essentially just standard in-memory Perl objects, but with a little extra
 self-knowledge.
 
 This distinction between storage and in-memory representation allows objects
-to be serialized to disk in many different ways--for example, an object could
-be stored in a MySQL database, in a DBM file, etc. Adding a new storage method
+to be serialized to disk in many different ways. Adding a new storage method
 is as simple as writing an object driver--a non-trivial task, to be sure, but
 one that will not require touching any other Movable Type code.
 
@@ -422,19 +1359,22 @@ by declaring your class, and inheriting from I<MT::Object>:
     package MT::Foo;
     use strict;
 
-    use MT::Object;
-    @MT::Foo::ISA = qw( MT::Object );
+    use base 'MT::Object';
+
+=item * __PACKAGE__->install_properties($args)
 
 Then call the I<install_properties> method on your class name; an easy way
 to get your class name is to use the special I<__PACKAGE__> variable:
 
     __PACKAGE__->install_properties({
-        columns => [
-            'id', 'foo',
-        ],
+        column_defs => {
+            'id' => 'integer not null auto_increment',
+            'foo' => 'string(255)',
+        },
         indexes => {
             foo => 1,
         },
+        primary_key => 'id',
         datasource => 'foo',
     });
 
@@ -445,7 +1385,7 @@ have the following keys:
 
 =over 4
 
-=item * columns
+=item * column_defs
 
 The definition of the columns (fields) in your object. Column names are also
 used for method names for your object, so your column name should not
@@ -453,37 +1393,164 @@ contain any strange characters. (It could also be used as part of the name of
 the column in a relational database table, so that is another reason to keep
 column names somewhat sane.)
 
-The value for the I<columns> key should be a reference to an array containing
-the names of your columns.
+The value for the I<columns> key should be a reference to an hashref
+containing the key/value pairs that are names of your columns matched with
+their schema definition.
+
+The type declaration of a column is pseudo-SQL. The data types loosely match
+SQL types, but are vendor-neutral, and each MT::ObjectDriver will map these
+to appropriate types for the database it services. The format of a column
+type is as follows:
+
+    'column_name' => 'type(size) options'
+
+The 'type' part of the declaration can be any one of:
+
+=over 4
+
+=item * string
+
+For storing string data, typically up to 255 characters, but assigned a length identified by '(size)'.
+
+=item * integer
+
+For storing integers, maybe limited to 32 bits.
+
+=item * boolean
+
+For storing boolean values (numeric values of 1 or 0).
+
+=item * smallint
+
+For storing small integers, typically limited to 16 bits.
+
+=item * datetime
+
+For storing a full date and time value.
+
+=item * timestamp
+
+For storing a date and time that automatically updates upon save.
+
+=item * blob
+
+For storing binary data.
+
+=item * text
+
+For storing text data.
+
+=item * float
+
+For storing floating point values.
+
+=back
+
+Note: The physical data storage capacity of these types will vary depending on
+the driver's implementation.
+
+The '(size)' element of the declaration is only valid for the 'string' type.
+
+The 'options' element of the declaration is not required, but is used to
+specify additional attributes of the column. Such as:
+
+=over 4
+
+=item * not null
+
+Specify this option when you wish to constrain the column so that it must contain a defined value. This is only enforced by the database itself, not by the MT::ObjectDriver.
+
+=item * auto_increment
+
+Specify for integer columns (typically the primary key) to automatically assign a value.
+
+=item * primary key
+
+Specify for identifying the column as the primary key (only valid for a single column).
+
+=item * indexed
+
+Identifies that this column should also be individually indexed.
+
+=item * meta
+
+Declares the column as a meta column, which means it is stored in a separate
+table that is used for storing metadata. See L<Metadata> for more information.
+
+=back
 
 =item * indexes
 
-Specifies the column indexes on your objects; this only has consequence for
-some object drivers (DBM, for example), where indexes are not automatically
-maintained by the datastore (as they are in a relational database).
+Specifies the column indexes on your objects.
 
 The value for the I<indexes> key should be a reference to a hash containing
 column names as keys, and the value C<1> for each key--each key represents
-a column that should be indexed.
+a column that should be indexed:
 
-B<NOTE:> with the DBM driver, if you do not set up an index on a column you
-will not be able to select objects with values matching that column using the
-I<load> and I<load_iter> interfaces (see below).
+    indexes => {
+        'column_1' => 1,
+        'column_2' => 1,
+    },
+
+For multi-column indexes, you must declare the individual columns as the
+value for the index key:
+
+    indexes => {
+        'column_catkey' => {
+            columns => [ 'column_1', 'column_2' ],
+        },
+    },
+
+For declaring a unique constraint, add a 'unique' element to this hash:
+
+    indexes => {
+        'column_catkey' => {
+            columns => [ 'column_1', 'column_2' ],
+            unique => 1,
+        },
+    },
 
 =item * audit
 
 Automatically adds bookkeeping capabilities to your class--each object will
 take on four new columns: I<created_on>, I<created_by>, I<modified_on>, and
-I<modified_by>. These columns will be filled automatically with the proper
-values.
-
-B<NOTE:> I<created_by> and I<modified_by> are not currently used.
+I<modified_by>. The created_on, created_by columns will be populated
+automatically (if they have not already been assigned at the time of saving
+the object). Your application is responsible for updating the modified_on,
+modified_by columns as these may require explicit application-specific
+assignments (ie, your application may only want them updated during explicit
+user interaction with the object, as opposed to cases where the object is
+being changed and saved for mechanical purposes like upgrading a table).
 
 =item * datasource
 
 The name of the datasource for your class. The datasource is a name uniquely
 identifying your class--it is used by the object drivers to construct table
 names, file names, etc. So it should not be specific to any one driver.
+
+Please note: the length of the datasource name should be conservative; some
+drivers place limits on the length of table and column names.
+
+=item * meta
+
+Specify this property if you wish to support the storage of additional
+metadata for this class. By doing so, a second table will be declared to
+MT's registry, one that is designed to hold any metadata associated
+with your class.
+
+=item * class_type
+
+If class_type is declared, an additional 'class' column is added to the
+object properties. This column is then used to differentiate between
+multiple object types that share the same physical table.
+
+Note that if this is used, all searches will be constrained to match
+the class type of the package.
+
+=item * class_column
+
+Defines the name of the class column (default is 'class') for storing
+classed objects (see 'class_type' above).
 
 =back
 
@@ -529,11 +1596,31 @@ an argument:
 
 This returns the value of the I<foo> column from the I<$foo> object.
 
+=over 4
+
+=item * $obj->init()
+
+=back
+
+This method is used to initialize the object upon construction.
+
+=over 4
+
+=item * $obj->set_defaults()
+
+=back
+
+This method is used by the I<init> method to set the object defaults.
+
 =head2 Saving an object
 
 To save an object using the object driver, call the I<save> method:
 
-    $foo->save;
+=over 4
+
+=item * $foo->save();
+
+=back
 
 On success, I<save> will return some true value; on failure, it will return
 C<undef>, and you can retrieve the error message by calling the I<errstr>
@@ -542,10 +1629,18 @@ method on the object:
     $foo->save
         or die "Saving foo failed: ", $foo->errstr;
 
-If you are saving objects in a loop, take a look at the L<Note on Object
-Locking>.
+If you are saving objects in a loop, take a look at the
+L</"Note on object locking">.
 
 =head2 Loading an existing object or objects
+
+=over 4
+
+=item * $obj->load()
+
+=item * $obj->load_iter()
+
+=back
 
 You can load an object from the datastore using the I<load> method. I<load>
 is by far the most complicated method, because there are many different ways
@@ -557,11 +1652,17 @@ an iterator to step through the objects (I<load_iter>).
 
 I<load> has the following general form:
 
-    my @objects = CLASS->load(\%terms, \%arguments);
+    my $object = MT::Foo->load( $id );
+
+    my @objects = MT::Foo->load(\%terms, \%arguments);
+
+    my @objects = MT::Foo->load(\@terms, \%arguments);
 
 I<load_iter> has the following general form:
 
-    my $iter = CLASS->load_iter(\%terms, \%arguments);
+    my $iter = MT::Foo->load_iter(\%terms, \%arguments);
+
+    my $iter = MT::Foo->load_iter(\@terms, \%arguments);
 
 Both methods share the same parameters; the only difference is the manner in
 which they return the matching objects.
@@ -575,15 +1676,15 @@ I<\%terms> should be either:
 
 =over 4
 
-=item *
+=item * The numeric ID of an object in the datastore.
 
-The numeric ID of an object in the datastore.
+=item * A reference to a hash.
 
-=item *
+The hash should have keys matching column names and the values are the
+values for that column.
 
-A reference to a hash where the keys are column names and the values are
-the values for that column. For example, to load an I<MT::Foo> object where
-the I<foo> column is equal to C<bar>, you could do this:
+For example, to load an I<MT::Foo> object where the I<foo> column is
+equal to C<bar>, you could do this:
 
     my @foo = MT::Foo->load({ foo => 'bar' });
 
@@ -593,7 +1694,36 @@ this to perform range searches. If the value is a reference, the first element
 in the array specifies the low end of the range, and the second element the
 high end.
 
+=item * A reference to an array.
+
+In this form, the arrayref contains a list of selection terms for more
+complex selections.
+
+    my @foo = MT::Foo->load( [ { foo => 'bar' }
+        => -or => { foo => 'baz' } ] );
+
+The separating operator keywords inbetween terms can be any of C<-or>,
+C<-and>, C<-or_not>, C<-and_not> (the leading '-' is not required, and the
+operator itself is case-insensitive).
+
 =back
+
+Values assigned to terms for selecting data can be either simple or complex
+in nature. Simple scalar values require an exact match. For instance:
+
+    my @foo = MT::Foo->load( { foo => 'bar' });
+
+This selects all I<MT::Foo> objects where foo == 'bar'. But you can provide
+a hashref value to provide more options:
+
+    my @foo = MT::Foo->load( { foo => { like => 'bar%' } });
+
+This selects all I<MT::Foo> objects where foo starts with 'bar'. Other
+possibilities include 'not_like', 'not_null', 'not', 'between', '>',
+'>=', '<', '<=', '!='. Note that 'not' and 'between' both accept an
+arrayref for their value; 'between' expects a two element array, and
+'not' will accept an array of 1 or more values which translates to
+a 'NOT IN (...)' SQL clause.
 
 I<\%arguments> should be a reference to a hash containing parameters for the
 search. The following parameters are allowed:
@@ -603,12 +1733,20 @@ search. The following parameters are allowed:
 =item * sort => "column"
 
 Sort the resulting objects by the column C<column>; C<column> must be an
-indexed column (see L<indexes>, above).
+indexed column (see L</"indexes">, above).
+
+Sort may also be specified as an arrayref of multiple columns to sort on.
+For example:
+
+    sort => [
+        { column => "column_1", desc => "DESC" },
+        { column => "column_2", }   # default direction is 'ascend'
+    ]
 
 =item * direction => "ascend|descend"
 
-To be used together with I<sort>; specifies the sort order (ascending or
-descending). The default is C<ascend>.
+To be used together with a scalar I<sort> value; specifies the sort
+order (ascending or descending). The default is C<ascend>.
 
 =item * limit => "N"
 
@@ -636,6 +1774,16 @@ The value of I<range> should be a hash reference, where the keys are column
 names, and the values are all C<1>; each key specifies a column that should
 be interpreted as a range.
 
+    MT::Foo->load( { created_on => [ '20011008000000', undef ] },
+        { range => { created_on => 1 } } );
+
+This selects C<MT::Foo> objects whose created_on date is greater than
+2001-10-08 00:00:00.
+
+=item * range_incl
+
+Like the 'range' attribute, but defines an inclusive range.
+
 =item * join
 
 Can be used to select a set of objects based on criteria, or sorted by
@@ -652,24 +1800,24 @@ I<MT::Entry> objects, and cannot include columns from I<MT::Comment> objects.
 
 I<join> has the following general syntax:
 
-    join => [ CLASS, JOIN_COLUMN, I<\%terms>, I<\%arguments> ]
+    join => MT::Foo->join_on( JOIN_COLUMN, I<\%terms>, I<\%arguments> )
 
-I<CLASS> is the class with which you are performing the join; I<JOIN_COLUMN>
-is the column joining the two object tables. I<\%terms> and I<\%arguments>
-have the same meaning as they do in the outer I<load> or I<load_iter>
-argument lists: they are used to select the objects with which the join is
-performed.
+Use the actual MT::Object-descended package name and the join_on static method
+providing these parameters: I<JOIN_COLUMN> is the column joining the two
+object tables, I<\%terms> and I<\%arguments> have the same meaning as they do
+in the outer I<load> or I<load_iter> argument lists: they are used to select
+the objects with which the join is performed.
 
 For example, to select the last 10 most recently commmented-upon entries, you
 could use the following statement:
 
     my @entries = MT::Entry->load(undef, {
-        'join' => [ 'MT::Comment', 'entry_id',
+        'join' => MT::Comment->join_on( 'entry_id',
                     { blog_id => $blog_id },
                     { 'sort' => 'created_on',
                       direction => 'descend',
                       unique => 1,
-                      limit => 10 } ]
+                      limit => 10 } )
     });
 
 In this statement, the I<unique> setting ensures that the I<MT::Entry>
@@ -679,20 +1827,36 @@ entry.
 
 =item * unique
 
-Ensures that the objects being returned are unique.
+Boolean flag that ensures that the objects being returned are unique.
 
 This is really only useful when used within a I<join>, because when loading
 data out of a single object datastore, the objects are always going to be
 unique.
 
+=item * window_size => "N"
+
+An optional attribute used only with the load_iter method. This attribute
+is used when requesting a result set of large or unknown size. If the
+load_iter method is called without any I<limit> attribute, this is set to
+a default value of 100 (meaning, load 100 objects per SELECT). The iterator
+will yield the specified number of objects and then issue an additional
+select operation, using the same terms and attributes, adjusting for
+a new offset for the next set of objects.
+
 =back
 
 =head2 Removing an object
 
+=over 4
+
+=item * $foo->remove()
+
+=back
+
 To remove an object from the datastore, call the I<remove> method on an
 object that you have already loaded using I<load>:
 
-    $foo->remove;
+    $foo->remove();
 
 On success, I<remove> will return some true value; on failure, it will return
 C<undef>, and you can retrieve the error message by calling the I<errstr>
@@ -701,15 +1865,30 @@ method on the object:
     $foo->remove
         or die "Removing foo failed: ", $foo->errstr;
 
-If you are removing objects in a loop, take a look at the L<Note on Object
-Locking>.
+If you are removing objects in a loop, take a look at the
+L</"Note on object locking">.
+
+=head2 Removing select objects of a particular class
+
+Combining the syntax of the load and remove methods, you can use the
+static version of the remove method to remove particular objects:
+
+    MT::Foo->remove({ bar => 'baz' });
+
+The terms you specify to remove by should be indexed columns. This
+method will load the object and remove it, firing the callback operations
+associated with those operations.
 
 =head2 Removing all of the objects of a particular class
 
 To quickly remove all of the objects of a particular class, call the
 I<remove_all> method on the class name in question:
 
-    MT::Foo->remove_all;
+=over 4
+
+=item * MT::Foo->remove_all();
+
+=back
 
 On success, I<remove_all> will return some true value; on failure, it will
 return C<undef>, and you can retrieve the error message by calling the
@@ -718,6 +1897,42 @@ I<errstr> method on the class name:
     MT::Foo->remove_all
         or die "Removing all foo objects failed: ", MT::Foo->errstr;
 
+=head2 Removing all the children of an object
+
+=over 4
+
+=item * $obj->remove_children([ \%param ])
+
+=back
+
+If your class has registered 'child_classes' as part of it's properties,
+then this method may be used to remove objects that are associated with
+the active object.
+
+This method is typically used in an overridden 'remove' method.
+
+    sub remove {
+        my $obj = shift;
+        $obj->remove_children({ key => 'object_id' });
+        $obj->SUPER::remove(@_);
+    }
+
+The 'key' parameter specified here lets you identify the field name used by
+the children classes to relate back to the parent class. If unspecified,
+C<remove_children> will assume the key to be the datasource name of the
+current class with an '_id' suffix.
+
+=over 4
+
+=item * $obj->remove_scores( \%terms, \%args );
+
+=back
+
+For object classes that also have the L<MT::Scorable> class in their
+C<@ISA> list, this method will remove any related score objects they
+are associated with. This method is invoked automatically when
+C<Class-E<gt>remove> or C<$obj-E<gt>remove> is invoked.
+
 =head2 Getting the count of a number of objects
 
 To determine how many objects meeting a particular set of conditions exist,
@@ -725,27 +1940,52 @@ use the I<count> method:
 
     my $count = MT::Foo->count({ foo => 'bar' });
 
-I<count> takes the same arguments (I<\%terms> and I<\%arguments>) as I<load>
-and I<load_iter>, above.
+I<count> takes the same arguments as I<load> and I<load_iter>.
 
 =head2 Determining if an object exists in the datastore
 
 To check an object for existence in the datastore, use the I<exists> method:
 
+=over 4
+
+=item * $obj->exists()
+
+=back
+
     if ($foo->exists) {
         print "Foo $foo already exists!";
     }
 
+To test for the existence of an unloaded object, use the 'exist' method:
+
+=over 4
+
+=item * Class->exist( \%terms )
+
+=back
+
+    if (MT::Foo->exist( { foo => 'bar' })) {
+        print "Already exists!";
+    }
+
+This is typically faster than issuing a L<count> call.
+
 =head2 Counting groups of objects
 
-The count_group_by method can be used (with SQL-based ObjectDrivers)
-to retrieve a list of all the distinct values that appear in a given
-column along with a count of how many objects carry that value. The
-routine can also be used with more than one column, in which case it
-retrieves the distinct pairs (or n-tuples) of values in those columns,
-along with the counts. Yet more powerful, any SQL expression can be
-used in place of the column names to count how many object produce any
-given result values when run through those expressions.
+=over 4
+
+=item * Class->count_group_by()
+
+=back
+
+The count_group_by method can be used to retrieve a list of all the 
+distinct values that appear in a given column along with a count of 
+how many objects carry that value. The routine can also be used with 
+more than one column, in which case it retrieves the distinct pairs 
+(or n-tuples) of values in those columns, along with the counts. 
+Yet more powerful, any SQL expression can be used in place of 
+the column names to count how many object produce any given result 
+values when run through those expressions.
 
   $iter = MT::Foo->count_group_by($terms, {%args, group => $group_exprs});
 
@@ -780,13 +2020,67 @@ values.
             "category $cat and invoice $inv\n";
     }
 
+=head2 Averaging by Group
+
+=over 4
+
+=item * Class->avg_group_by()
+
+=back
+
+Like the count_group_by method, you can select groups of averages from
+a MT::Object store.
+
+    my $iter = MT::Foo->avg_group_by($terms, {%args, group => $group_exprs,
+        avg => 'property_to_average' })
+
+=head2 Max by Group
+
+=over 4
+
+=item * Class->max_group_by()
+
+=back
+
+Like the count_group_by method, you can select objects from a MT::Object
+store using a SQL 'MAX' operator.
+
+    my $iter = MT::Foo->max_group_by($terms, {%args, group => $group_exprs,
+        max => 'column_name' })
+
+=head2 Sum by Group
+
+=over 4
+
+=item * Class->sum_group_by()
+
+=back
+
+Like the count_group_by method, you can select groups of sums from
+a MT::Object store.
+
+    my $iter = MT::Foo->sum_group_by($terms, {%args, group => $group_exprs,
+        avg => 'property_to_sum' })
+
 =head2 Inspecting and Manipulating Object State
+
+=over 4
+
+=item * $obj->column_values()
+
+=back
 
 Use C<column_values> and C<set_values> to get and set the fields of an
 object I<en masse>. The former returns a hash reference mapping column
 names to their values in this object. For example:
 
     $values = $obj->column_values()
+
+=over 4
+
+=item * $obj->set_values()
+
+=back
 
 C<set_values> accepts a similar hash ref, which need not give a value
 for every field. For example:
@@ -795,18 +2089,29 @@ for every field. For example:
 
 is equivalent to
 
-  $obj->col1($val1);
-  $obj->col2($val2);
+    $obj->col1($val1);
+    $obj->col2($val2);
 
 =head2 Other Methods
 
 =over 4
 
-=item * $obj->clone()
+=item * $obj->clone([\%param])
 
-Returns a clone of C$<obj>--that is, a distinct object which has all
+Returns a clone of C<$obj>. That is, a distinct object which has all
 the same data stored within it. Changing values within one object does
 not modify the other.
+
+An optional C<except> parameter may be provided to exclude particular
+columns from the cloning operation. For example, the following would
+clone the elements of the blog except the name attribute.
+
+   $blog->clone({ except => { name => 1 } });
+
+=item * $obj->clone_all()
+
+Similar to the C<clone> method, but also makes a clones the metadata
+information.
 
 =item * $obj->column_names()
 
@@ -820,11 +2125,23 @@ C<modified_by>), if those were enabled in install_properties.
 =item * $obj->driver()
 
 Returns the ObjectDriver object that links this object with a database.
+This is a subclass of L<Data::ObjectDriver>.
+
+=item * $obj->dbi_driver()
+
+This method is similar to the 'driver' method, but will always return
+a DBI driver (a subclass of the L<Data::ObjectDriver::Driver::DBI>
+class) and not a caching driver.
 
 =item * $obj->created_on_obj()
 
-Returns an MT::DateTime object representing the moment when the
+Returns a MT::DateTime object representing the moment when the
 object was first saved to the database.
+
+=item * $obj->column_as_datetime( $column )
+
+Returns a MT::DateTime object for the specified datetime/timestamp
+column specified.
 
 =item * MT::Foo->set_by_key($key_terms, $value_terms)
 
@@ -884,6 +2201,177 @@ matching the given key. There need not be a unique constraint on the
 columns named in the C<$key_hash>; but if not, you should be confident
 that only one object will match the key.
 
+=item * $obj->cache_property($key, $code)
+
+Caches the provided key (e.g. entry, trackback) with the return value
+of the given code reference (which is often an object load call) so
+that the value does not have to be recomputed each time.
+
+=item * $obj->clear_cache()
+
+Clears any object-level cache data (from the C<cache_property> method)
+that may existing.
+
+=item * $obj->column_def($name)
+
+This method returns the value of the given I<$name> C<column_defs>
+propery.
+
+=item * $obj->column_defs()
+
+This method returns all the C<column_defs> of the property of the
+object.
+
+=item Class->index_defs()
+
+This method returns all the index definitions assigned to this class.
+This is the 'indexes' member of the properties installed for the class.
+
+=item * $obj->to_hash()
+
+Returns a hashref containing column and metadata key/value pairs for
+the object. If the object has a blog relationship, it also populates
+data from that blog. For example:
+
+    my $entry_hash = $entry->to_hash();
+    # returns: { entry.title => "Title", entry.blog.name => "Foo", ... }
+
+=item * Class->join_on( $join_column, \%join_terms, \%join_args )
+
+A simple helper method that returns an arrayref of join terms suitable
+for the C<load> and C<load_iter> methods.
+
+=item * $obj->properties()
+
+Returns a hashref of the object properties that were declared with the
+I<install_properties> method.
+
+=item * $obj->to_xml()
+
+Returns an XML representation of the object.
+This method is defined in MT/BackupRestore.pm - you must first 
+use MT::BackupRestore to use this method.
+
+=item * $obj->restore_parent_ids()
+
+TODO - Backup file contains parent objects' ids (foreign keys).  However,
+when parent objcects are restored, their ids will be changed.  This method
+is to match the old and new ids of parent objects for children objects to be
+correctly associated.
+This method is defined in MT/BackupRestore.pm - you must first 
+use MT::BackupRestore to use this method.
+
+=item * $obj->parent_names()
+
+TODO - Should be overridden by subclasses to return correct hash
+whose keys are xml element names of the object's parent objects
+and values are class names of them.
+This method is defined in MT/BackupRestore.pm - you must first 
+use MT::BackupRestore to use this method.
+
+=item * Class->class_handler($type)
+
+Returns the appropriate Perl package name for the given type identifier.
+For example,
+
+    # Yields MT::Asset::Image
+    MT::Asset->class_handler('asset.image');
+
+=item * Class->class_label
+
+Provides a descriptive name for the requested class package.
+This is a localized name, using the currently assigned language.
+
+=item * Class->class_label_plural
+
+Returns a descriptive pluralized name for the requested class package.
+This is a localized name, using the currently assigned language.
+
+=item * Class->class_labels
+
+Returns a hashref of type identifiers to class labels for all subclasses
+associated with a multiclassed object type. For instance:
+
+    # returns { 'asset' => 'Asset', 'asset.video' => 'Video', ... }
+    my $labels = MT::Asset->class_labels;
+
+=item * Class->columns_of_type(@types)
+
+Returns an arrayref of column names that are of the requested type.
+
+    my @dates = MT::Foo->columns_of_type('datetime', 'timestamp')
+
+=item * Class->has_column( $name )
+
+Returns a boolean as to whether the column C<$name> is defined for
+this class.
+
+=item * Class->table_name()
+
+Returns the database table name (including any prefix) for the class.
+
+=item * $obj->column_func( $column )
+
+Creates an accessor/mutator method for column C<$column>, returning it as a
+coderef. This method overrides the one in L<Data::ObjectDriver::BaseObject>,
+by supporting metadata column as well.
+
+=item * $obj->call_trigger( 'trigger_name', @params )
+
+Issues a call to any Class::Trigger triggers installed for the given object.
+Also invokes any MT callbacks that are registered using MT's callback
+system. "pre" callbacks are invoked prior to triggers; "post" callbacks
+are invoked after triggers are called.
+
+=item * $obj->deflate
+
+Returns a minimal representation of the object, including any metadata.
+See also L<Data::ObjectDriver::BaseObject>.
+
+=item * Class->inflate( $deflated )
+
+Inflates the deflated representation of the object I<$deflated> into a proper
+object in the class I<Class>. That is, undoes the operation C<$deflated =
+$obj-E<gt>deflate()> by returning a new object equivalent to C<$obj>.
+
+=item * Class->install_pre_init_properties
+
+This static method is used to install any class properties that were
+registered prior to the bootstrapping of MT plugins.
+
+=item * $obj->modified_by
+
+A modified getter/setter accessor method for audited classes with a
+'modified_by', 'modified_on' columns. In the event this method is called
+to assign a 'modified_by' value, it automatically updates the 'modified_on'
+column as well.
+
+=item * $obj->nextprev( %params )
+
+Method to determine adjancent objects, based on a date column and/or id.
+The C<%params> hash provides the following elements:
+
+=over 4
+
+=item * direction
+
+Either "next" or "previous".
+
+=item * terms
+
+Any additional terms to supply to the C<load> method.
+
+=item * args
+
+Any additional arguments to supply to the C<load> method (such as a join).
+
+=item * by
+
+The column to use to determine the next/previous object. By default for
+audited classes, this is 'created_on'.
+
+=back
+
 =back
 
 =head1 NOTES
@@ -931,7 +2419,104 @@ object where I<foo> equals C<bar>, because it saves memory--only the
 I<MT::Foo> objects that you will be deleting are kept in memory at the same
 time.
 
+=head1 SUBCLASSING
+
+It is possible to declare a subclass of an existing MT::Object class,
+one that shares the same table storage as the parent class. Examples of
+this include L<MT::Log>, L<MT::Entry>, L<MT::Category>. In these cases,
+the subclass identifies a 'class_type' property. The parent class must also
+have a column where this identifier is stored. Upon loading records from the
+table, the object is reblessed into the appropriate package.
+
+=over 4
+
+=item Class->add_class( $type_id, $class )
+
+This method can be called directly to register a new subclass type
+and package for the base class.
+
+    MT::Foo->add_class( 'foochild' => 'MT::Foo::Subclass' );
+
+=back
+
+=head1 METADATA
+
+The following methods facilitate the storage and management of metadata;
+available when the 'meta' key is included in the installed properties for
+the class.
+
+=over 4
+
+=item * $obj->init_meta()
+
+For object classes that have metadata storage, this method will initialize
+the metadata member.
+
+=item * Class->install_meta( \%meta_properties )
+
+Called to register metadata properties on a particular class. The
+C<%meta_properties> may contain an arrayref of 'columns', or a hashref
+of 'column_defs' (similar to the C<install_properties> method):
+
+    MT::Foo->install_meta( { column_defs => {
+        'metadata1' => 'integer indexed',
+        'metadata2' => 'string indexed',
+    } });
+
+In this form, the storage type is explicitly declared, so the metadata
+is stored into the appropriate column (vinteger_idx and vchar_idx
+respectively).
+
+    MT::Foo->install_meta( { columns => [ 'metadata1', 'metadata2' ] } )
+
+In this form, the metadata properties store their data into a 'blob'
+column in the meta table. This type of metadata cannot be used to sort
+or filter on. This form is supported for backward compatibility and is
+considered deprecated.
+
+=item * $obj->remove_meta()
+
+Deletes all related metadata for the given object.
+
+=item * Class->search_by_meta( $key, $value, [ \%terms [, \%args ] ] )
+
+Returns objects that have a C<$key> metadata value of C<$value>. Further
+restrictions on the class may be applied through the optional C<%terms>
+and C<%args> parameters.
+
+=item * $obj->meta_obj()
+
+Returns the L<MT::Object> class
+
+=item * Class->meta_pkg()
+
+Returns the Perl package name for storing it's metadata objects.
+
+=item * Class->meta_args
+
+Returns the source of a Perl package declaration that is loaded to
+declare and process metadata objects for the C<Class>.
+
+=item * Class->has_meta( [ $name ] )
+
+Returns a boolean as to whether the class has metadata when called
+without a parameter, or whether there exists a metadata column
+of the given C<$name>.
+
+=item * Class->is_meta_column( $name )
+
+Returns a boolean as to whether the class has a meta column named
+C<$name>.
+
+=back
+
 =head1 CALLBACKS
+
+=over 4
+
+=item * $obj->add_callback()
+
+=back
 
 Most MT::Object operations can trigger callbacks to plugin code. Some
 notable uses of this feature are: to be notified when a database record is
@@ -941,7 +2526,7 @@ database.
 To add a callback, invoke the C<add_callback> method of the I<MT::Object>
 subclass, as follows:
 
-    MT::Foo->add_callback("pre_save", <priority>, 
+   MT::Foo->add_callback( "pre_save", <priority>, 
                           <plugin object>, \&callback_function);
 
 The first argument is the name of the hook point. Any I<MT::Object>
@@ -950,6 +2535,8 @@ operations:
 
     load
     save
+    update (issued for save on existing objects)
+    insert (issued for save on new objects)
     remove
     remove_all
     (load_iter operations will call the load callbacks)
@@ -990,7 +2577,7 @@ itself:
 
   sub my_callback {
       my ($cb, ...) = @_;
-      
+
       if ( <error condition> ) {
           return $cb->error("Error message");
       }

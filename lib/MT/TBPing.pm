@@ -1,18 +1,17 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::TBPing;
+
 use strict;
+use base qw( MT::Object MT::Scorable );
 
-use constant JUNK => -1;
-use constant NOT_JUNK => 1;
-use MT::Trackback;
+sub JUNK()      { -1 }
+sub NOT_JUNK () {  1 }
 
-use MT::Object;
-@MT::TBPing::ISA = qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -31,22 +30,45 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         created_on => 1,
-        blog_id => 1,
-        tb_id => 1,
+        tb_visible => {
+            columns => [ 'tb_id', 'visible', 'created_on' ],
+        },
         ip => 1,
-        visible => 1,
-        junk_status => 1,
-        last_moved_on => 1,
-        junk_score => 1,
+        last_moved_on => 1, # used for junk expiration
+        # For URL lookups to aid spam filtering
+        blog_url => {
+            columns => [ 'blog_id', 'visible', 'source_url' ],
+        },
+        blog_stat => {
+            columns => ['blog_id', 'junk_status', 'created_on'],
+        },
+        blog_visible => {
+            columns => ['blog_id', 'visible', 'created_on', 'id'],
+        },
+        visible_date => {
+            columns => [ 'visible', 'created_on' ],
+        },
+        junk_date => {
+            columns => [ 'junk_status', 'created_on' ],
+        },
     },
     defaults => {
-        junk_status => 0,
+        junk_status => NOT_JUNK,
         last_moved_on => '20000101000000',
     },
     audit => 1,
+    meta => 1,
     datasource => 'tbping',
     primary_key => 'id',
 });
+
+sub class_label {
+    return MT->translate('TrackBack');
+}
+
+sub class_label_plural {
+    return MT->translate('TrackBacks');
+}
 
 sub is_junk {
     $_[0]->junk_status == JUNK;
@@ -68,10 +90,10 @@ sub blog {
     my $blog = $ping->{__blog};
     unless ($blog) {
         my $blog_id = $ping->blog_id;
-        require MT::Blog;
-        $blog = MT::Blog->load($blog_id) or
+        my $blog_class = MT->model('blog');
+        $blog = $blog_class->load($blog_id) or
             return $ping->error(MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));   
+                "Load of blog '[_1]' failed: [_2]", $blog_id, $blog_class->errstr));   
         $ping->{__blog} = $blog;
     }
     return $blog;
@@ -79,23 +101,23 @@ sub blog {
 
 sub parent {
     my ($ping) = @_;
-    require MT::Trackback;
-    my $tb = MT::Trackback->load($ping->tb_id);
-    if ($tb->entry_id) {
-        return MT::Entry->load($tb->entry_id);
-    } else {
-        return MT::Category->load($tb->category_id);
+    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
+        if ($tb->entry_id) {
+            return MT->model('entry')->load($tb->entry_id);
+        } else {
+            return MT->model('category')->load($tb->category_id);
+        }
     }
 }
 
 sub parent_id {
     my ($ping) = @_;
-    require MT::Trackback;
-    my $tb = MT::Trackback->load($ping->tb_id);
-    if ($tb->entry_id) {
-        return ('MT::Entry', $tb->entry_id);
-    } else {
-        return ('MT::Category', $tb->category_id);
+    if (my $tb = MT->model('trackback')->load($ping->tb_id)) {
+        if ($tb->entry_id) {
+            return ('MT::Entry', $tb->entry_id);
+        } else {
+            return ('MT::Category', $tb->category_id);
+        }
     }
 }
 
@@ -138,6 +160,7 @@ sub _nextprev {
         'sort' => 'created_on',
         'direction' => $next ? 'ascend' : 'descend',
         'range_incl' => { 'created_on' => 1 },
+        'limit' => 10,
     });
 
     # This selection should always succeed, but handle situation if
@@ -168,10 +191,10 @@ sub _nextprev {
                 # has entries adjacent to _it_ that have the same timestamp.
                 while (my $e = $iter->()) {
                     push(@same, $e), next if $e->created_on eq $e_ts;
-                    $iter->('finish'), last;
+                    $iter->end, last;
                 }
             } else {
-                $iter->('finish');
+                $iter->end;
             }
             return $obj->{$label} = $e unless @same;
             last;
@@ -216,7 +239,7 @@ sub approve {
 sub all_text {
     my $this = shift;
     my $text = $this->column('blog_name') || '';
-    $text .= "\n" . ($this->column('email') || '');
+    $text .= "\n" . ($this->column('title') || '');
     $text .= "\n" . ($this->column('source_url') || '');
     $text .= "\n" . ($this->column('excerpt') || '');
     $text;
@@ -236,6 +259,26 @@ sub to_hash {
     }
 
     $hash;
+}
+
+sub visible {
+    my $ping = shift;
+    return $ping->SUPER::visible unless @_;
+        
+    ## Note transitions in visibility in the object, so that
+    ## other methods can act appropriately.
+    my $was_visible = $ping->SUPER::visible || 0;
+    my $is_visible = shift || 0;
+        
+    my $vis_delta = 0;
+    if (!$was_visible && $is_visible) {
+        $vis_delta = 1;
+    } elsif ($was_visible && !$is_visible) {
+        $vis_delta = -1;
+    }
+    $ping->{__changed}{visibility} = $vis_delta;
+
+    return $ping->SUPER::visible($is_visible);
 }
 
 1;

@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -72,8 +72,12 @@ class MTSerialize {
                     $key_name_len = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                     $key_name = substr($s["frozen"], $s["pos"] + 4, $key_name_len["len"]);
                     $s["pos"] += 4 + $key_name_len["len"];
-                    $h = $s["heater"];
-                    $values[$key_name] = $h($s);
+                    if ( strlen($s["frozen"]) >= $s["pos"] + 4 ) {
+                        $h = $s["heater"];
+                        $values[$key_name] = $h($s);
+                    } else {
+                        $values[$key_name] = "";
+                    }
                 }
                 return $values;
             '),

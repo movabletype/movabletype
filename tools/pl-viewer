@@ -1,0 +1,37 @@
+#!/usr/bin/perl -w
+
+use strict;
+use Getopt::Long;
+use lib qw( lib extlib );
+use MT::Util::PerformanceData;
+
+GetOptions(
+    'path=s' => \my ($logs_path),
+    'file=s' => \my ($log_file),
+    'sort=s' => \my ($sort_key),
+);
+
+if ( !$logs_path ) {
+    usage();
+    exit;
+}
+
+opendir DIRH, $logs_path or die "couldn't open $logs_path: $!";
+my @dir = readdir DIRH;
+closedir DIRH;
+
+foreach my $file (@dir) {
+    next if $file eq '.' or $file eq '..';
+    next if $log_file && $file ne $log_file;
+    my $data = MT::Util::PerformanceData->new(
+        path => $logs_path,
+        file => $file,
+    );
+    $data->report( sort => $sort_key, );
+}
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0 -path='log_files_path' [-file='log_file'] [-sort='sort_key']
+EOT
+}

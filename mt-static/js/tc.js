@@ -1,8 +1,9 @@
 /*
-Copyright 2003 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2003-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 
@@ -390,7 +391,7 @@ TC.getOwnerDocument = function( element )
 		return element.ownerDocument;
 	if( element.getElementById )
 		return element
-	return window;
+	return document;
 }
 
 
@@ -565,7 +566,7 @@ TC.hasClassName = function( element, className )
 	if( !element || !element.className || !className )
 		return false;
 	var classNames = element.className.split( TC.matchSpace );
-	for( var i in classNames )
+	for( var i = 0; i < classNames.length; i++ )
 	{
 		if( classNames[ i ] == className )
 			return true;
@@ -573,41 +574,69 @@ TC.hasClassName = function( element, className )
 	return false;
 }
 
-
-TC.addClassName = function( element, className )
-{
-	if( !element || !className )
-		return;
-	var classNames = (element.className && element.className.length)
-		? element.className.split( TC.matchSpace )
-		: [];
-	for( var i in classNames )
-	{
-		if( classNames[ i ] == className )
-			return;
-	}
-	classNames[ classNames.length ] = className;
-	element.className = classNames.join( " " );
+TC.getClassNames = function( e ) {
+    if( !e || !e.className )
+        return [];
+    return e.className.split( /\s+/g );
 }
 
-
-TC.removeClassName = function( element, className )
-{
-	if( !element || !element.className || !className )
-		return;
-	var classNames = (element.className && element.className.length)
-		? element.className.split( TC.matchSpace )
-		: [];
-	var newClassNames = [];
-	for( var i in classNames )
-	{
-		if( classNames[ i ] == className )
-			continue;
-		newClassNames[ newClassNames.length ] = classNames[ i ];
-	}
-	element.className = newClassNames.join( " " );
+TC.addClassName = function( e, cn ) {
+    if( !e || !cn )
+        return false;
+    var cs = TC.getClassNames( e );
+    for( var i = 0; i < cs.length; i++ ) {
+        if( cs[ i ] == cn )
+            return true;
+    }
+    cs.push( cn );
+    e.className = cs.join( " " );
+    return false;
 }
 
+TC.removeClassName = function( e, cn ) {
+    var r = false;
+    if( !e || !e.className || !cn )
+        return r;
+    var cs = (e.className && e.className.length)
+        ? e.className.split( /\s+/g )
+        : [];
+    var ncs = [];
+    /* support regex */
+    if( cn instanceof RegExp ) {
+        for( var i = 0; i < cs.length; i++ ) {
+            if ( cn.test( cs[ i ] ) ) {
+                r = true;
+                continue;
+            }
+            ncs.push( cs[ i ] );
+        }
+    } else {
+        for( var i = 0; i < cs.length; i++ ) {
+            if( cs[ i ] == cn ) {
+                r = true;
+                continue;
+            }
+            ncs.push( cs[ i ] );
+        }
+    }
+    if( r )
+        e.className = ncs.join( " " );
+    return r;
+}
+        
+TC.getComputedStyle = function( e )
+{
+        if( e.currentStyle )
+            return e.currentStyle;
+        var style = {};
+        var owner = TC.getOwnerDocument( e );
+        if( owner && owner.defaultView && owner.defaultView.getComputedStyle ) {            
+            try {
+                style = owner.defaultView.getComputedStyle( e, null );
+            } catch( e ) {}
+        }
+        return style;
+}
 
 TC.getStyle = function( element, property )
 {

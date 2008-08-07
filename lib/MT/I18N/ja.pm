@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -12,30 +12,34 @@ use vars qw( @ISA $PKG );
 @ISA = qw( MT::I18N::default );
 *PKG = *MT::I18N::default::PKG;
 
-use constant DEFAULT_LENGTH_ENTRY_EXCERPT => 40;
-use constant LENGTH_ENTRY_TITLE_FROM_TEXT => 10;
-use constant LENGTH_ENTRY_PING_EXCERPT => 80;
-use constant LENGTH_ENTRY_PING_TITLE_FROM_TEXT => 10;
-use constant DISPLAY_LENGTH_MENU_TITLE => 11;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TITLE => 12;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR => 12;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT => 23;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG => 45;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT => 30;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG => 80;
-use constant DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT => 25;
-use constant DISPLAY_LENGTH_EDIT_PING_BREAK_UP => 30;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TITLE => 11;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT => 25;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP => 30;
+sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    { 40 }
+sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    { 10 }
+sub LENGTH_ENTRY_PING_EXCERPT ()                       { 80 }
+sub LENGTH_ENTRY_PING_TITLE_FROM_TEXT ()               { 10 }
+sub DISPLAY_LENGTH_MENU_TITLE ()                       { 11 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TITLE ()               { 12 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR ()              { 12 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT ()          { 23 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG ()           { 45 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT () { 30 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG ()  { 80 }
+sub DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT ()     { 25 }
+sub DISPLAY_LENGTH_EDIT_PING_BREAK_UP ()               { 30 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 { 11 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     { 25 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         { 30 }
 
-use constant ENCODING_NAMES => [
+my $ENCODING_NAMES = [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'sjis', 'display_name' => 'SHIFT_JIS' },
     { 'name' => 'euc', 'display_name' => 'EUC-JP' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },
     { 'name' => 'ascii', 'display_name' => 'ISO-8859-1' },
+    { 'name' => 'WinLatin1', 'display_name' => 'Windows Latin1' },
 ];
+sub ENCODING_NAMES () {
+    return $ENCODING_NAMES;
+}
 
 my $ENCODINGS_LABEL = {
     'shift_jis' => 'sjis',
@@ -67,6 +71,14 @@ sub guess_encoding_jcode {
     }
     $enc = $class->_conv_enc_label($enc);
     return $enc;
+}
+
+sub decode_jcode {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    my $u8 = $class->encode_text_jcode($text, $enc, 'utf-8');
+    my $u8d = $class->decode_utf8_jcode($u8);
+    $u8d;
 }
 
 sub encode_text_jcode {
@@ -121,6 +133,31 @@ sub substr_text_jcode {
     }
     return $class->encode_text($out, 'euc-jp', $enc);
 }
+
+sub lowercase_jcode {
+    my $class = shift;
+    my ($str, $enc) = @_;
+    $enc = $class->_set_encode($str, $enc);
+    $str = $class->encode_text_jcode($str, $enc, 'utf-8') if lc $enc ne 'utf-8';
+    $class->utf8_on_jcode($str);
+    $str = lc $str;
+    $class->utf8_off_jcode($str);
+    $str = $class->encode_text_jcode($str, 'utf-8', $enc) if lc $enc ne 'utf-8';
+    return $str;
+}
+
+sub uppercase_jcode {
+    my $class = shift;
+    my ($str, $enc) = @_;
+    $enc = $class->_set_encode($str, $enc);
+    $str = $class->encode_text_jcode($str, $enc, 'utf-8') if lc $enc ne 'utf-8';
+    $class->utf8_on_jcode($str);
+    $str = uc $str;
+    $class->utf8_off_jcode($str);
+    $str = $class->encode_text_jcode($str, 'utf-8', $enc) if lc $enc ne 'utf-8';
+    return $str;
+}
+
 
 sub wrap_text_jcode {
     my $class = shift;
@@ -194,6 +231,25 @@ sub break_up_text_jcode {
 sub wrap_text_encode {
     my $class = shift;
     my ($text, $cols, $tab_init, $tab_sub, $enc) = @_;
+    if (($enc && ('utf-8' eq lc $enc)) ||
+        (MT->config->PublishCharset =~ /utf-?8/i)) {
+        eval {
+            $text = Encode::decode_utf8($text);
+            #FULLWIDTH TILDE to WAVE DASH 
+            $text =~ s/\x{ff5e}/\x{301c}/g;  
+            #PARALLEL TO to DOUBLE VERTICAL LINE 
+            $text =~ s/\x{2225}/\x{2016}/g; 
+            #FULLWIDTH HYPHEN-MINUS to MINUS SIGN 
+            $text =~ s/\x{ff0d}/\x{2212}/g;  
+            #FULLWIDTH CENT SIGN to CENT SIGN 
+            $text =~ s/\x{ffe0}/\x{00a2}/g; 
+            #FULLWIDTH POUND SIGN to POUND SIGN 
+            $text =~ s/\x{ffe1}/\x{00a3}/g; 
+            #FULLWIDTH NOT SIGN to NOT SIGN 
+            $text =~ s/\x{ffe2}/\x{00ac}/g; 
+            $text = Encode::encode_utf8($text);
+        };
+    }
     $text = $class->wrap_text_jcode($text, $cols, $tab_init, $tab_sub, $enc);
     $text;
 }
@@ -257,6 +313,13 @@ sub utf8_off_encode {
     my ($text) = @_;
     Encode::_utf8_off($text);
     $text;
+}
+
+## These are from Encode::Compat
+sub utf8_on_jcode {
+    my $class = shift;
+    my ($text) = @_;
+    return pack('U*', unpack('U0U*', $text));
 }
 
 sub utf8_off_jcode {

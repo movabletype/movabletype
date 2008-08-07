@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -10,15 +10,16 @@ use strict;
 use base 'MT::L10N';
 use vars qw( %Lexicon );
 
-sub maketext {
+sub init {
     my $lh = shift;
-    my $str;
-    eval { $str = $lh->SUPER::maketext(@_); };
-    if ($@) {
-        my $mt_lh = MT->language_handle;
-        $str = $mt_lh->maketext(@_);
-    }
-    $str;
+    $lh->SUPER::init(@_);
+    $lh->fail_with('mt_fallback');
+    return;
+}
+
+sub mt_fallback {
+    my $lh = shift;
+    MT->language_handle->maketext(@_);
 }
 
 sub get_handle {
@@ -39,3 +40,29 @@ sub get_handle {
 %Lexicon = ();
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Plugin::L10N
+
+=head1 METHODS
+
+=head2 init
+
+Initialize with L<MT::L10N/init>.
+
+=head2 mt_fallback(@args)
+
+Call the C<MT-E<gt>language_handle> I<maketext> method.
+
+=head2 get_handle([$lang])
+
+Fetch and return the plugin's I<language_handle> and default to the
+C<MT-E<gt>language_handle> if unknown.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

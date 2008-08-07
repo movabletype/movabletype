@@ -1,15 +1,17 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Category;
+
 use strict;
+use base qw( MT::Object );
+use MT::Util qw( weaken );
 
 use MT::Blog;
-use MT::Object;
-@MT::Category::ISA = qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -20,23 +22,49 @@ __PACKAGE__->install_properties({
         'description' => 'text',
         'parent' => 'integer',
         'allow_pings' => 'boolean',
-        'basename' => 'string(255)'
+        'basename' => 'string(255)',
     },
     indexes => {
         blog_id => 1,
         label => 1,
         parent => 1,
-        basename => 1,
+        blog_basename => {
+            columns => [ 'blog_id', 'basename' ],
+        },
+        blog_class => {
+            columns => [ 'blog_id', 'class' ],
+        },
     },
     defaults => {
         parent => 0,
         allow_pings => 0,
     },
+    class_type => 'category',
     child_of => 'MT::Blog',
+    audit => 1,
+    meta => 1,
     child_classes => ['MT::Placement', 'MT::Trackback', 'MT::FileInfo'],
     datasource => 'category',
     primary_key => 'id',
 });
+
+sub class_label {
+    MT->translate("Category");
+}
+
+sub class_label_plural {
+    MT->translate("Categories");
+}
+
+sub basename_prefix {
+    my $this = shift;
+    my ($dash) = @_;
+    my $prefix = 'cat';
+    if ($dash) {
+        $prefix .= MT->instance->config('CategoryNameNodash') ? '' : '-';
+    }
+    $prefix;
+}
 
 sub ping_url_list {
     my $cat = shift;
@@ -44,23 +72,26 @@ sub ping_url_list {
     [ split /\r?\n/, $cat->ping_urls ];
 }
 
-sub category_path {
+sub publish_path {
     my $cat = shift;
     return $cat->{__path} if exists $cat->{__path};
     my $result = $cat->basename;
+    my $orig = $cat;
     do {
         $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
         $result = join "/", $cat->basename, $result if $cat;
     } while ($cat);
     # caching this information may be problematic IF
     # parent category basenames are changed.
-    $cat->{__path} = $result;
+    $orig->{__path} = $result;
 }
+*category_path = \&publish_path;
 
 sub category_label_path {
     my $cat = shift;
     return $cat->{__label_path} if exists $cat->{__label_path};
     my $result = $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label;
+    my $orig = $cat;
     do {
         $cat = $cat->parent ? __PACKAGE__->load($cat->parent) : undef;
         $result = join "/", ($cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label),
@@ -68,7 +99,7 @@ sub category_label_path {
     } while ($cat);
     # caching this information may be problematic IF
     # parent category labels are changed.
-    $cat->{__label_path} = $result;
+    $orig->{__label_path} = $result;
 }
 
 sub cache_obj {
@@ -105,7 +136,7 @@ sub cache {
     my $cat_cache = $pkg->cache_obj(@_);
     my $data = $cat_cache->get('category_cache');
     if (!$data) {
-        my $cat_iter = MT::Category->load_iter({blog_id => $blog_id});
+        my $cat_iter = $pkg->load_iter({blog_id => $blog_id});
         $data = [];
         while (my $cat = $cat_iter->()) {
             push @$data, [ $cat->id, $cat->label, $cat->parent ];
@@ -118,10 +149,11 @@ sub cache {
 
 sub save {
     my $cat = shift;
+    my $pkg = ref($cat);
 
     my $clear_cache;
     if ($cat->id) {
-        my $orig_cat = MT::Category->load($cat->id);
+        my $orig_cat = $pkg->load($cat->id);
         if (!$orig_cat || ($orig_cat->label ne $cat->label) || ($orig_cat->parent != $cat->parent)) {
             $clear_cache = 1;
         }
@@ -132,13 +164,18 @@ sub save {
 
     # check that the parent is legit.
     if ($cat->parent && $cat->parent ne '0') {
-        my $parent = MT::Category->load($cat->parent)
-            or return $cat->error(MT::Category->errstr);
+        my $parent = $pkg->load($cat->parent);
+        $cat->parent(0) unless $parent;
+    }
 
-        return $cat->error(MT->translate("Categories must exist within the same blog"))
-            if ($cat->blog_id != $parent->blog_id);
-        return $cat->error(MT->translate("Category loop detected"))
-            if ($cat->id && $cat->is_ancestor($parent));
+    if ($cat->parent && $cat->parent ne '0') {
+        my $parent = $pkg->load($cat->parent);
+        if (!$parent) {
+            return $cat->error(MT->translate("Categories must exist within the same blog"))
+                if ($cat->blog_id != $parent->blog_id);
+            return $cat->error(MT->translate("Category loop detected"))
+                if ($cat->id && $cat->is_ancestor($parent));
+        }
     }
 
     $cat->SUPER::save(@_) or return;
@@ -168,8 +205,8 @@ sub save {
         }
         $tb->title($cat->label);
         $tb->description($cat->description);
-        require MT::Blog;
-        my $blog = MT::Blog->load($cat->blog_id);
+        my $blog = MT::Blog->load($cat->blog_id)
+            or return;
         my $url = $blog->archive_url;
         $url .= '/' unless $url =~ m!/$!;
         $url .= MT::Util::archive_file_for(undef, $blog,
@@ -190,7 +227,7 @@ sub save {
         }
     }
     if ($clear_cache) {
-        MT::Category->clear_cache('blog_id' => $cat->blog_id);
+        $pkg->clear_cache('blog_id' => $cat->blog_id);
     }
     1;
 }
@@ -198,24 +235,27 @@ sub save {
 sub remove {
     my $cat = shift;
     $cat->remove_children({ key => 'category_id' });
-
-    # orphan my children up to the root level
-    my @children = $cat->children_categories;
-    if (scalar @children) {
-        foreach my $child (@children) {
-            $child->parent(($cat->parent) ? $cat->parent : '0');
-            $child->save or return $cat->error($child->save);
+    if (ref $cat) {
+        my $pkg = ref($cat);
+        # orphan my children up to the root level
+        my @children = $cat->children_categories;
+        if (scalar @children) {
+            foreach my $child (@children) {
+                $child->parent(($cat->parent) ? $cat->parent : '0');
+                $child->save or return $cat->error($child->save);
+            }
+        } else {
+            $pkg->clear_cache('blog_id' => $cat->blog_id);
         }
-    } else {
-        MT::Category->clear_cache('blog_id' => $cat->blog_id);
     }
-    $cat->SUPER::remove;
+    $cat->SUPER::remove(@_);
 }
 
 
 sub _flattened_category_hierarchy {
     # Either the class name or a MT::Category object
     my $cat = shift;
+    my $class = ref($cat) || $cat;
     my @cats = ();
     my @flattened_cats = ();
 
@@ -224,7 +264,7 @@ sub _flattened_category_hierarchy {
         # Grab the blog_id from the parameters list and get the top level categories
         my $blog_id = shift or return ();
 
-        my @cats = MT::Category->load({ blog_id => $blog_id }, { 'sort' => 'label' });
+        my @cats = $class->load({ blog_id => $blog_id }, { 'sort' => 'label' });
         my $children = {};
         foreach my $cat (@cats) {
             if ($cat->parent) {
@@ -286,6 +326,8 @@ sub _flattened_category_hierarchy {
     @flattened_cats;
 }
 
+# Deprecated routine -- also assumes MT::Category class, so it won't
+# work with folders for instance.
 sub _buildCatHier {
     my ($blog_id) = @_;
   
@@ -324,7 +366,7 @@ sub _buildCatHier {
 
 sub top_level_categories {
     my ($class, $blog_id) = @_;
-    my @cats = MT::Category->load({ blog_id => $blog_id, parent => '0' }, { 'sort' => 'label' });
+    my @cats = $class->load({ blog_id => $blog_id, parent => '0' }, { 'sort' => 'label' });
 }
 
 sub copy_cat {
@@ -344,18 +386,20 @@ sub parent_categories {
 
 sub parent_category {
     my $cat = shift;
+    my $class = ref($cat);
     unless ($cat->{__parent_category}) {
-        $cat->{__parent_category} = ($cat->parent) ? MT::Category->load($cat->parent) : undef;
+        $cat->{__parent_category} = ($cat->parent) ? $class->load($cat->parent) : undef;
+        weaken( $cat->{__parent_category} );
     }
     $cat->{__parent_category};
 }
 
 sub children_categories {
     my $cat = shift;
-
+    my $class = ref($cat);
     unless ($cat->{__children}) {
         @{$cat->{__children}} = sort { $a->label cmp $b->label }
-        MT::Category->load({ blog_id => $cat->blog_id,
+        $class->load({ blog_id => $cat->blog_id,
             parent => $cat->id });
     }
     @{$cat->{__children}};
@@ -375,8 +419,9 @@ sub is_ancestor {
     # (more efficient then descending from the current category
     # as the children lists do not need to be calculated
 
+    my $class = ref($cat);
     while (my $id = $possible_child->parent) {
-        $possible_child = MT::Category->load($id);
+        $possible_child = $class->load($id);
         return 1 if $cat->id == $possible_child->id;
     }
   

@@ -1,5 +1,11 @@
 #!/usr/bin/perl
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 # $Id$
+
 use strict;
 use warnings;
 use lib 'build';
@@ -17,8 +23,10 @@ $build->get_options();
 # Show the usage if requested.
 $build->usage() if $build->help();
 
-for( $build->languages() ) {
-    $build->setup( language => $_ );
+foreach my $lang ( $build->languages() ) {
+    local $build->{'stamp=s'};
+    local $ENV{BUILD_VERSION_ID};
+    $build->setup( language => $lang );
 
     # Summarize what we are about to do.
     $build->verbose( sprintf '* Debug mode is %s and system calls %s be made.',
@@ -33,6 +41,9 @@ for( $build->languages() ) {
 
     # Export any plugins that are requested.
     $build->plugin_export();
+
+    # Export any addons that are requested.
+    ## $build->addons_export();
 
     # Add a non-production footer.
     $build->inject_footer();

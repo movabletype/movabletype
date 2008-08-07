@@ -1,7 +1,9 @@
-# $Id: Atom.pm 21854 2006-01-20 23:07:31Z bchoate $
+# $Id$
 
 package XML::Atom;
 use strict;
+
+our $VERSION = '0.25';
 
 BEGIN {
     @XML::Atom::EXPORT = qw( LIBXML );
@@ -21,11 +23,12 @@ BEGIN {
         }
         XML::XPath::Literal->new($ns ? $ns->getExpanded : '');
     };
+
+    $XML::Atom::ForceUnicode = 0;
+    $XML::Atom::DefaultVersion = 0.3;
 }
 
 use base qw( XML::Atom::ErrorHandler Exporter );
-
-our $VERSION = '0.16';
 
 package XML::Atom::Namespace;
 use strict;

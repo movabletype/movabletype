@@ -1,0 +1,102 @@
+<mt:setvar name="page_title" value="<__trans phrase="Backup">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="backup" value="1">
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+    <a href="javascript:void(0)" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a>
+
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+<div id="backup-panel">
+    <form method="post" action="<mt:var name="script_url">">
+        <input type="hidden" name="__mode" value="backup" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="blog_id">
+            <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
+            <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="blog_id">" />
+<mt:else>
+    <mtapp:setting
+        id="backup_what"
+        label="<__trans phrase="What to backup">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.">"
+        help_page="backup_restore"
+        help_section="backup_what">
+<input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
+<div><strong id="selected_blogs"><__trans phrase="Everything"></strong></div>
+<span id="selected_blogs_link" class="hidden"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').className='hidden';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a>&nbsp;|&nbsp;</span>
+<a href="javascript:void(0)" onclick="openDialog(false,'dialog_select_weblog','multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs'); return false;">
+<__trans phrase="Choose blogs..."></a>
+    </mtapp:setting>
+</mt:if>
+    <mtapp:setting
+        id="backup_archive_format"
+        label="<__trans phrase="Archive Format">"
+        hint="<__trans phrase="The type of archive format to use.">"
+        help_page="backup_restore"
+        help_section="backup_format">
+    <mt:loop name="archive_formats">
+        <input type="radio" id="<mt:var name="key">" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
+        <label for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+        <mt:if name="__last__"><mt:setvar name="format_available"></mt:if>
+    </mt:loop>
+        <input type="radio" id="no_archive" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
+        <label for="no_archive"><__trans phrase="Don't compress"></label>
+    </mtapp:setting>
+    <mtapp:setting
+        id="size_limit"
+        label="<__trans phrase="Target File Size">"
+        hint="<__trans phrase="Approximate file size per backup file.">"
+        help_page="backup_restore"
+        help_section="backup_num_size">
+                    <select name="size_limit" id="size_limit">
+                        <option value="0" selected="selected"><__trans phrase="Don't Divide"></option>
+<mt:if name="OVER_300">
+                        <option value="300">300KB</option>
+    <mt:if name="OVER_500">
+                        <option value="500">500KB</option>
+        <mt:if name="OVER_1024">
+                        <option value="1024">1MB</option>
+            <mt:if name="OVER_2048">
+                        <option value="2048">2MB</option>
+            </mt:if>
+        </mt:if>
+    </mt:if>
+</mt:if>
+                    </select>
+    </mtapp:setting>
+        <mt:setvarblock name="action_buttons">
+            <button
+                type="submit"
+                accesskey="b"
+                title="<__trans phrase="Make Backup (b)">"
+                class="primary-button"
+                ><__trans phrase="Make Backup"></button>
+        </mt:setvarblock>
+        <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </form>
+</div>
+
+<MTIgnore>
+    
+    <!-- THE FOLLOWING CODE NEEDS TO BE ADDED TO THE onload EVENT FOR THIS PAGE. -->
+    <!-- This edit was made to allow use of the common footer. -->
+    
+    <mt:if name="open_dialog">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    openDialog(false, 'dialog_restore_upload', 'magic_token=<mt:var name="magic_token" escape="url">&amp;files=<mt:var name="files" escape="url">&amp;assets=<mt:var name="assets" escape="url">&amp;current_file=<mt:var name="filename" escape="url">&amp;last=<mt:var name="last" escape="url">&amp;schema_version=<mt:var name="schema_version" escape="url">&amp;redirect=1;');
+    /* ]]> */
+    </script>
+    </mt:if>
+</MTIgnore>
+
+<mt:include name="include/footer.tmpl">

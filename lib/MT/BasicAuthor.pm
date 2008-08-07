@@ -1,10 +1,16 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::BasicAuthor;
 
 # fake out the require for this package since we're
 # declaring it inline...
 
-use MT::Object;
-@MT::BasicAuthor::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -21,13 +27,18 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub nickname {
+    my $author = shift;
+    $author->name;
+}
+
 sub is_valid_password {
-    my $auth = shift;
-    my($pass, $crypted) = @_;
+    my $author = shift;
+    my($pass, $crypted, $error_ref) = @_;
     $pass ||= '';
-    my $real_pass = $auth->column('password');
-    return $crypted ? $real_pass eq $pass :
-                      crypt($pass, $real_pass) eq $real_pass;
+
+    require MT::Auth;
+    return MT::Auth->is_valid_password($author, $pass, $crypted, $error_ref);
 }
 
 sub set_password {
@@ -41,7 +52,39 @@ sub set_password {
 sub magic_token {
     my $auth = shift;
     require MT::Util;
-    MT::Util::perl_sha1_digest_hex($auth->column('password'));
+    my $pw = $auth->column('password');
+    if ($pw eq '(none)') {
+        $pw = $auth->id . ';' . $auth->name . ';' . ($auth->email || '') . ';' . ($auth->hint || '');
+    }
+    require MT::Util;
+    MT::Util::perl_sha1_digest_hex($pw);
 }
 
+# trans('authors');
+
 1;
+__END__
+
+=head1 NAME
+
+MT::BasicAuthor
+
+=head1 METHODS
+
+=head2 $author->is_valid_password($pass, $crypted, $error_ref)
+
+Return the value of L<MT::Auth/is_valid_password>
+
+=head2 $author->set_password
+
+Set the I<$author> password with the perl C<crypt> function.
+
+=head2 $author->magic_token()
+
+Return the value of L<MT::Util/perl_sha1_digest_hex> for the I<password> column.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

@@ -1,0 +1,89 @@
+/* Status Messages -------------------------------------------------------------------------------- */
+.msg {
+    margin: 0 0 10px 0;
+    padding: 16px 10px 16px 46px;
+    background-repeat: no-repeat;
+    background-position: 12px center;
+}
+.msg-success {
+    background-color: #CFC;
+    background-image: url('../images/icon_success.png');
+}
+.msg-error {
+    background-color: #FF9;
+    background-image: url('../images/icon_error.png');
+}
+.msg-info {
+    background-color: #fff;
+    background-image: url('../images/icon_info.gif');
+}
+.msg-alert {
+    background-color: #FF9;
+    background-image: url('../images/icon_alert.png');
+}
+.msg-publishing {
+    background-color: #fff;
+    background-image: url('../images/ani-rebuild.gif');
+}
+
+.msg a.close-me {
+    background: transparent url('../images/icon_close.png') no-repeat scroll 3px 4px;
+    display: block;
+    float: right;
+    height: 18px;
+    min-width: 0;
+    padding: 2px;
+    width: 22px;
+    margin: 0;
+}
+.msg a.close-me span {
+    display: none;
+}
+
+#system-allow-pings a.close-me,
+#system-allow-comments a.close-me,
+.msg-error a.close-me,
+.rebuilding-screen .msg a.close-me,
+.restore-publishing-config .msg a.close-me,
+.insert-asset-dialog .msg a.close-me,
+.edit-template .msg-info a.close-me,
+.rebuilding-screen .msg-info a.close-me,
+.pinging-screen .msg-info a.close-me,
+.list-notification .msg-info a.close-me,
+.zero-state a.close-me {
+    display: none;
+}
+
+
+/* Debug Panel Messages ---------------------------------------------------------------------------------- */
+
+.debug-panel {
+    width: 100%;
+    border-top: 1px dotted #f55;
+    margin-top: 5px;
+    background-color: #daa;
+    text-align: left;
+}
+.debug-panel h3 {
+    padding: 5px;
+    font-size: 12px;
+    margin: 0;
+    background-color: #f55;
+    color: #fff;
+}
+
+.debug-panel-inner li {
+    white-space: pre;
+}
+
+.debug-panel-inner li:hover {
+    background-color: #eaa;
+}
+
+.debug-panel-inner {
+    padding: 5px;
+    font-family: 'Andale Mono', monospace;
+    font-size: 10px;
+    max-height: 200px;
+    overflow: auto;
+}

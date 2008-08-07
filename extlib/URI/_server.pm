@@ -13,7 +13,7 @@ sub userinfo
     if (@_) {
 	my $new = $old;
 	$new = "" unless defined $new;
-	$new =~ s/^[^@]*@//;  # remove old stuff
+	$new =~ s/.*@//;  # remove old stuff
 	my $ui = shift;
 	if (defined $ui) {
 	    $ui =~ s/@/%40/g;   # protect @
@@ -21,7 +21,7 @@ sub userinfo
 	}
 	$self->authority($new);
     }
-    return undef if !defined($old) || $old !~ /^([^@]*)@/;
+    return undef if !defined($old) || $old !~ /(.*)@/;
     return $1;
 }
 
@@ -32,7 +32,7 @@ sub host
     if (@_) {
 	my $tmp = $old;
 	$tmp = "" unless defined $tmp;
-	my $ui = ($tmp =~ /^([^@]*@)/) ? $1 : "";
+	my $ui = ($tmp =~ /(.*@)/) ? $1 : "";
 	my $port = ($tmp =~ /(:\d+)$/) ? $1 : "";
 	my $new = shift;
 	$new = "" unless defined $new;
@@ -43,7 +43,7 @@ sub host
 	$self->authority("$ui$new$port");
     }
     return undef unless defined $old;
-    $old =~ s/^[^@]*@//;
+    $old =~ s/.*@//;
     $old =~ s/:\d+$//;
     return uri_unescape($old);
 }
@@ -77,7 +77,7 @@ sub host_port
     my $old = $self->authority;
     $self->host(shift) if @_;
     return undef unless defined $old;
-    $old =~ s/^[^@]*@//;    # zap userinfo
+    $old =~ s/.*@//;        # zap userinfo
     $old =~ s/:$//;         # empty port does not could
     $old .= ":" . $self->port unless $old =~ /:/;
     $old;

@@ -67,7 +67,7 @@ sub _publish {
     my $blog = MT::Blog->load($entry->blog_id);
     $mt->rebuild_entry( Entry => $entry, Blog => $blog,
                         BuildDependencies => 1 )
-        or return $class->error("Rebuild error: " . $mt->errstr);
+        or return $class->error("Publish error: " . $mt->errstr);
     $mt->ping(Blog => $blog)
         or return $class->error("Ping error: " . $mt->errstr);
     1;

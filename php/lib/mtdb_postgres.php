@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -12,7 +12,7 @@ class MTDatabase_postgres extends MTDatabaseBase {
     var $vendor = 'postgres';
 
     function unserialize($data) {
-        $data = preg_replace('/\\\\([0-9]{3})/e', 'chr(\1)', $data);
+        $data = pg_unescape_bytea($data);
         return parent::unserialize($data);
     }
 
@@ -22,7 +22,7 @@ class MTDatabase_postgres extends MTDatabaseBase {
         $limitStr = '';
         if ($limit == -1) $limit = 0;
         if ($limit || $offset) {
-            if (!$limit) $limit = 2147483647;
+            if (!$limit) $limit = 'all';
             $limitStr = ($offset ? 'offset ' . $offset : '') . ' limit '
              . $limit;
         }
@@ -30,16 +30,18 @@ class MTDatabase_postgres extends MTDatabaseBase {
         return $sql;
     }
     function limit_by_day_sql($column, $days) {
-        return '(' . $column . '+\'' . $days . ' days\' >= current_timestamp)';
+        return '(' . $column . '+\'' . $days . ' days\' >= current_date)';
     }
 
     function entries_recently_commented_on_sql($subsql) {
         $sql = "
-            select distinct on (entry_id)
-                subs.*, comment_created_on
-            from ($subsql) as subs
-                inner join mt_comment on comment_entry_id = entry_id and comment_visible = 1
-            order by entry_id desc";
+            select main.* from (
+                select distinct on (entry_id)
+                    subs.*, comment_created_on
+                from ($subsql) as subs
+                    inner join mt_comment on comment_entry_id = entry_id and comment_visible = 1
+                order by entry_id desc
+            ) as main order by comment_created_on desc";
 
         return $sql;
     }
@@ -121,6 +123,18 @@ class MTDatabase_postgres extends MTDatabaseBase {
             @pg_free_result($this->result);
             unset($this->result);
         }
+    }
+    
+    function apply_extract_date($part, $column) {
+        return "extract('" .strtolower($part) . "' from $column)";
+    }
+
+    function &fetch_unexpired_session($ids, $ttl = 0) {
+        $result = parent::fetch_unexpired_session($ids, $ttl);
+        for ($i = 0; $i < count($result); $i++) {
+            $result[$i]['session_data'] = pg_unescape_bytea($result[$i]['session_data']);
+        }
+        return $result;
     }
 }
 ?>

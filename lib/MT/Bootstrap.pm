@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -47,16 +47,21 @@ sub import {
         my $not_fast_cgi = 0;
         $not_fast_cgi ||= exists $ENV{$_}
             for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-        my $fast_cgi = (!$not_fast_cgi) || $param{FastCGI};
-        require CGI::Fast if $fast_cgi;
+         my $fast_cgi = defined $param{FastCGI} ? $param{FastCGI} : (!$not_fast_cgi);
+         if ($fast_cgi) {
+             eval 'require CGI::Fast;';
+             $fast_cgi = 0 if $@;
+         }
 
         # ready to run now... run inside an eval block so we can gracefully
         # die if something bad happens
         my $app;
         eval {
+            # line __LINE__ __FILE__
             require MT;
-            eval "require $class; 1;" or die $@;
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $class; 1;" or die $@;
             if ($fast_cgi) {
+                $ENV{FAST_CGI} = 1;
                 while (my $cgi = new CGI::Fast) {
                     $app = $class->new( %param, CGIObject => $cgi )
                         or die $class->errstr;
@@ -74,14 +79,16 @@ sub import {
         if (my $err = $@) {
             my $charset = 'utf-8';
             eval {
+                # line __LINE__ __FILE__
                 my $cfg = MT::ConfigMgr->instance;  #this is needed
                 $app ||= MT->instance;
                 my $c = $app->find_config;
                 $app->{cfg}->read_config($c);
                 $charset = $app->{cfg}->PublishCharset;
             };
-            if ($app && UNIVERSAL::isa($app, 'MT::App')) {
+            if ($app && UNIVERSAL::isa($app, 'MT::App') && !UNIVERSAL::isa($app, 'MT::App::Wizard')) {
                 eval {
+                    # line __LINE__ __FILE__
                     my %param = ( error => $err );
                     if ($err =~ m/Bad ObjectDriver/) {
                         $param{error_database_connection} = 1;
@@ -123,7 +130,7 @@ sub import {
                     }
                 }
                 print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $err) : "Got an error: $err\n";
+                print $app ? $app->translate("Got an error: [_1]", $app->translate($err)) : "Got an error: $err\n";
             }
         }
     }

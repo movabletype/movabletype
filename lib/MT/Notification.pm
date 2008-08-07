@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -20,12 +20,22 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         blog_id => 1,
+        email => 1,
     },
     child_of => 'MT::Blog',
     datasource => 'notification',
     audit => 1,
     primary_key => 'id',
+    listing_screen => 1,
 });
+
+sub class_label {
+    MT->translate('Contact');
+}
+
+sub class_label_plural {
+    MT->translate('Contacts');
+}
 
 1;
 __END__

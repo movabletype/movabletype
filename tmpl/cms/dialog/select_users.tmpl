@@ -1,0 +1,75 @@
+<mt:unless name="json">
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></span></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+var win = window.parent;
+function returnMemberSelection(ok) {
+    if (ok) {
+<mt:unless name="idfield">
+        var frm = document.forms['members'];
+        var added = dialog.panels[0].selectionList.items();
+        for (var i = 0; i < added.length; i++)
+            added[i] = added[i].replace(/\D/g, '');
+        frm.elements['ids'].value = added.join(",");
+        frm.submit();
+<mt:else>
+        var el_id = getByID("<mt:var name="idfield" escape="js">", win.document);
+        var el_name = getByID("<mt:var name="namefield" escape="js">", win.document);
+        if (el_id && el_name) {
+            var ids = new Array();
+            var names = new Array();
+            var inputs = dialog.panels[0].tableSelect.selected();
+            for (var i = 0; i < inputs.length; ++i) {
+                var inp = inputs[i];
+                var row = TC.getParentByTagName( inp, "tr" );
+                if (!row) continue;
+                var labels = row.getElementsByTagName('label');
+                if (labels.length == 0) continue;
+                names.push(labels[0].innerHTML + ' (' + inp.value + ')');
+                ids.push(inp.value);
+            }
+            el_id.value = ids.join(',');
+            el_name.innerHTML = names.join(',');
+        }
+        closeDialog();
+</mt:unless>
+    } else {
+        closeDialog();
+    }
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-member");
+    var userPanel = new ListingPanel("author");
+    userPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([userPanel]);
+    dialog.open({}, returnMemberSelection);
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+
+<form name="members" id="members" action="<mt:var name="script_url">" method="post" target="_top">
+<input type="hidden" name="__mode" value="add_member" />
+<input type="hidden" name="ids" value="" />
+<input type="hidden" name="group_id" value="<mt:var name="group_id" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+</form>
+
+<div class="modal_width" id="select-member-dialog">
+</mt:unless>
+<mt:include name="include/listing_panel.tmpl">
+<mt:unless name="json">
+</div><!-- /modal_width#dialog-select-member -->
+<mt:include name="dialog/footer.tmpl">
+</mt:unless>

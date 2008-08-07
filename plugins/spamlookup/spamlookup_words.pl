@@ -1,10 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Copyright (c) 2004-2007, Six Apart, Ltd.
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2004-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package MT::Plugin::SpamLookup::KeywordFilter;
 
@@ -41,14 +41,17 @@ cialis
 # You can optionally place a score at the end of the line to adjust
 # the penalty applied for matching that item.
 phentermine 4}} ],
-        ])
+        ]),
+        registry => {
+            junk_filters => {
+                spamlookup_wordfilter => {
+                    label => "SpamLookup Keyword Filter",
+                    code => sub { $plugin->runner('wordfilter', @_) },
+                },
+            },
+        },
     });
     MT->add_plugin($plugin);
-    MT->register_junk_filter({
-        code => sub { $plugin->runner('wordfilter', @_) },
-        plugin => $plugin,
-        name => 'SpamLookup Keyword Filter'
-    });
 }
 
 sub runner {

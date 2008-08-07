@@ -1,0 +1,233 @@
+<mt:unless name="json">
+<$mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog"$>
+<mt:setvarblock name="page_title"><mt:if name="is_image"><__trans phrase="Insert Image"><mt:else><__trans phrase="Insert Asset"></mt:if></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function dialogClose(data) {
+        if (!data) {
+            closeDialog();
+            return;
+        }
+        // user made a selection and clicked insert...
+        var f = document.forms['select_asset'];
+        var sel = dlg.panel.tableSelect.selected();
+        f['id'].value = sel[0].value;
+        f.submit();
+    }
+
+    function viewChange(ds, fn) {
+        checkOpened();
+        if (fn) fn(ds);
+    }
+
+    var tableSelect;
+    var dlg;
+    function init() {
+        // setup
+        // assign isModal variable which is declared in assetdetail.js:
+        isModal = getByID("list-assets-dialog");
+
+        dlg = new Dialog.Simple("list-assets");
+        var panel = new ListingPanel("asset");
+        dlg.panel = panel;
+
+        // hook into view updates so we can close any opened detail panel
+        var old_update = panel.datasource.onUpdate;
+        panel.datasource.onUpdate = function(ds) { viewChange(ds, old_update) };
+
+        panel.pager.setState(<mt:var name="pager_json">);
+        panel.parent = dlg;
+        dlg.open({}, dialogClose);
+    }
+    TC.attachLoadEvent( init );
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<div id="list-assets-dialog">
+
+
+    <div class="panel-header">
+<mt:setvarblock name="upload_new_file_link">
+    <img src="<mt:var name="static_uri">images/status_icons/create.gif" alt="<__trans phrase="Upload New File">" width="9" height="9" />
+    <mt:unless name="asset_select"><mt:setvar name="entry_insert" value="1"></mt:unless>
+    <a href="<mt:var name="script_url">?__mode=start_upload&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;<mt:if name="asset_select">asset_select=1&amp;<mt:else>entry_insert=1&amp;</mt:if>edit_field=<mt:var name="edit_field" escape="url">&amp;upload_mode=<mt:var name="upload_mode" escape="url">&amp;<mt:if name="require_type">require_type=<mt:var name="require_type">&amp;</mt:if>return_args=<mt:var name="return_args" escape="url"><mt:if name="user_id">&amp;user_id=<mt:var name="user_id" escape="url"></mt:if>" onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"><mt:if name="is_image"><__trans phrase="Upload New Image"><mt:else><__trans phrase="Upload New File"></mt:if></a>
+</mt:setvarblock>
+<mt:if name="edit_blog_id">
+    <mt:if name="can_upload">
+        <mt:var name="upload_new_file_link">
+    </mt:if>
+<mt:else>
+    <mt:var name="upload_new_file_link">
+</mt:if>
+    </div>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+    <mt:if name="panel_searchable">
+            <form action="" method="get" id="modal-search">
+                <input type="text" value="<__trans phrase="Search">" class="search-input search-query" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">" />
+                <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
+            </form>
+    </mt:if>
+        </div>
+    </div>
+
+</mt:unless>
+<mt:if name="object_loop">
+    <mt:unless name="json">
+    <form method="post" action="<mt:var name="script_url">" name="select_asset">
+        <input type="hidden" name="__mode" value="<mt:if name="next_mode"><mt:var name="next_mode" escape="html"><mt:else>complete_insert</mt:if>" />
+        <input type="hidden" name="_type" value="asset" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="dialog_view" value="1" />
+        <input type="hidden" name="id" value="" />
+        <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+        <mt:if name="edit_blog_id">
+        <input type="hidden" name="blog_id" value="<mt:var name="edit_blog_id">" />
+        <input type="hidden" name="direct_asset_insert" value="1" />
+        <mt:unless name="asset_select">
+        <input type="hidden" name="entry_insert" value="1" />
+        </mt:unless>
+        </mt:if>
+        <mt:if name="asset_select">
+        <input type="hidden" name="asset_select" value="1" />
+        </mt:if><mt:if name="user_id">
+        <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+        </mt:if>        
+    </form>
+
+    <div class="list-wrapper" style="position: relative;">
+    <div class="selector listing" id="selector">
+        <form action="" method="get" onsubmit="return false">
+            <table cellspacing="0" class="list-heading <mt:unless name="edit_blog_id">show-weblog </mt:unless><mt:if name="view_expanded">expanded<mt:else>compact</mt:if>">
+                <thead>
+                    <tr>
+                        <th class="cb"><img src="<mt:var name="static_uri">images/spacer.gif" width="15" height="1"></th>
+                        <th id="as-file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                        <th class="panel-label"><__trans phrase="Asset Name"></th>
+        <mt:unless name="edit_blog_id">
+                        <th id="as-weblog"><__trans phrase="Blog"></th>
+        </mt:unless>
+                        <th class="panel-description"><span class="detail"><__trans phrase="Size"></span></th>
+                    </tr>
+                </thead>
+            </table>
+
+            <div class="list-data-wrapper-modal list-data">
+    </mt:unless>
+                <div class="list-data-layout-modal">
+                    <table cellspacing="0" class="list-data scrollable" id="assetDisplay">
+                        <tbody>
+    <mt:loop name="object_loop">
+                            <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                                <td class="cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
+                                <td class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" /></td>
+                                <td class="panel-label">
+
+        <mt:if name="has_thumbnail">
+                                    <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
+        <mt:else>
+                                    <$mt:var name="label" escape="html"$>
+        </mt:if>
+                                    <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview">
+                                        <div id="asset-<mt:var name="id" escape="html">-preview-inner" class="asset-preview-inner"></div>
+                                    </div>
+                                </td>
+        <mt:unless name="edit_blog_id">
+                                <td class="detail"><a href="<mt:var name="script_url">?__mode=list_assets&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+        </mt:unless>
+                                <td class="panel-description">
+                                    <span class="detail">
+        <mt:if name="file_size_formatted">
+                                        <span class="float_desc" title="<mt:var name="file_size">"><mt:var name="file_size_formatted"></span>
+        <mt:else>
+                                        <span class="float_desc"><mt:var name="file_size"></span>
+        </mt:if>
+                                        <span class="link">
+                                            <mt:if name="url"><a href="<mt:var name="url" escape="html">" target="view_uploaded" title="<__trans phrase="View Asset">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View Asset">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if>
+                                        </span>
+                                    </span>
+                                </td>
+                            </tr>
+    </mt:loop>
+                        <tbody>
+                    </table>
+                </div>
+    <mt:unless name="json">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="pagination"></div>
+
+<div class="insert_button_spacing">&nbsp;</div>
+
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form action="" method="get" onsubmit="return false">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
+                class="primary-button close disabled-button"
+                disabled="true"
+                ><mt:if name="is_image"><__trans phrase="Continue"><mt:else><__trans phrase="Insert"></mt:if></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                class="cancel"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </form>
+    </div>
+</div>
+
+    </mt:unless>
+<mt:else>
+    <mtapp:statusmsg
+        id="no-assets"
+        class="info">
+        <__trans phrase="No assets could be found.">
+    </mtapp:statusmsg>
+    <mt:unless name="json">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <form action="" method="get" onsubmit="return false">
+                <button
+                    onclick="closeDialog(); return false"
+                    type="submit"
+                    accesskey="x"
+                    class="cancel"
+                    title="<__trans phrase="Cancel (x)">"
+                    ><__trans phrase="Cancel"></button>
+            </form>
+        </div>
+    </div>
+    </mt:unless>
+</mt:if>
+
+<mt:unless name="json">
+
+
+    </div>
+
+<div id="upload-asset-dialog" class="hidden">
+<mt:setvar name="included_upload_asset" value="1">
+
+<mt:include name="include/asset_upload.tmpl">
+
+</div>
+
+<mt:include name="dialog/footer.tmpl">
+</mt:unless>

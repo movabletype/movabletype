@@ -1,16 +1,13 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::FileMgr;
+
 use strict;
-
-use MT::ConfigMgr;
-
-use MT::ErrorHandler;
-@MT::FileMgr::ISA = qw( MT::ErrorHandler );
+use base qw( MT::ErrorHandler );
 
 sub new {
     my $class = shift;
@@ -21,12 +18,11 @@ sub new {
     my $fmgr = bless {}, $class;
     $fmgr->init(@_)
         or return $class->error( $fmgr->errstr );
-    $fmgr;
+    return $fmgr;
 }
 
 sub init {
     my $fmgr = shift;
-    $fmgr->{cfg} = MT::ConfigMgr->instance;
     $fmgr;
 }
 
@@ -39,11 +35,12 @@ sub mkpath;
 sub rename;
 sub delete;
 sub content_is_updated { 1 }
+sub file_mod_time { undef }
 
 sub is_handle {
     my($fmgr, $f) = @_;
     my $fd = ref($f) || ref(\$f) eq 'GLOB' ? fileno($f) : undef;
-    defined $fd;
+    return defined $fd;
 }
 
 1;
@@ -87,6 +84,11 @@ host does not require anything.
 
 If an initialization error occurs, returns C<undef>; see L<ERROR HANDLING>,
 below.
+
+=head2 $fmgr->init()
+
+This is an internal method called by C<MT::FileMgr-E<gt>new> that
+initializes an L<MT::ConfigMgr/instance> as the I<cfg> attribute.
 
 =head2 $fmgr->put($src, $dest [, $type ])
 
@@ -149,6 +151,19 @@ Renames the file or directory I<$src> to I<$dest>. Returns true on success.
 
 On error, returns C<undef>; see L<ERROR HANDLING>, below.
 
+=head2 content_is_updated($file, $content)
+
+Returns true if the contents of I<$file> differs from the value in
+I<$content>.
+
+=head2 $fmgr->file_mod_time($file)
+
+Returns the modification timestamp for I<$file>.
+
+=head2 $fmgr->is_handle($file)
+
+Return the file descriptor of I<file> or C<undef> if not found.
+
 =head1 ERROR HANDLING
 
 On an error, all of the above methods (except I<exists>) return C<undef>,
@@ -166,8 +181,8 @@ Or, called on an object:
     defined(my $bytes = $fmgr->put($src, $dest))
         or die $fmgr->errstr;
 
-=head1 AUTHOR & COPYRIGHTS
+=head1 AUTHOR & COPYRIGHT
 
-Please see the I<MT> manpage for author, copyright, and license information.
+Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut

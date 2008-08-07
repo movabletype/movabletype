@@ -1,7 +1,0 @@
-<?php
-function smarty_function_MTEntryLink($args, &$ctx) {
-    // todo: needs work
-    require_once("function.MTEntryPermalink.php");
-    return smarty_function_MTEntryPermalink($args, $ctx);
-}
-?>

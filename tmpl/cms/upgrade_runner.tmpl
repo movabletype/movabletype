@@ -1,26 +1,36 @@
-<TMPL_INCLUDE NAME=header.tmpl>
+<mt:if name="installing">
+<mt:setvarblock name="page_title"><__trans phrase="Initializing database..."></mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Upgrading database..."></mt:setvarblock>
+</mt:if>
 
-<TMPL_UNLESS NAME=UP_TO_DATE>
-    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/client.js"></script>
-    <script type="text/javascript" src="<TMPL_VAR NAME=STATIC_URI>js/tc/json.js"></script>
+<mt:setvar name="complete" value="1">
+
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:unless name="up_to_date">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 
 	<script type="text/javascript">
-	<!--
+	/* <![CDATA[ */
     function upgradeDone(success) {
         var progress = getByID("progress-bar");
         if (progress) {
             progress.style.display = "none";
         }
         if (success) {
-            var complete = getByID("complete-message-div");
+            var complete = getByID("completed-action");
             if (complete) {
                 complete.style.display = "block";
             }
-<TMPL_IF NAME=INSTALLING>
-            current_task.innerHTML = "<MT_TRANS phrase="Installation complete.">";
-<TMPL_ELSE>
-            current_task.innerHTML = "<MT_TRANS phrase="Upgrade complete.">";
-</TMPL_IF>
+            current_task.style.display = "none";
+<mt:if name="installing">
+            page_title.innerHTML = "<__trans phrase="Installation complete!">";
+<mt:else>
+            page_title.innerHTML = "<__trans phrase="Upgrade complete!">";
+</mt:if>
         } else {
             var error = getByID("error-message-div");
             if (error) {
@@ -30,9 +40,9 @@
     }
 
     var actionList = [];
-<TMPL_IF NAME=INITIAL_STEPS>
-    actionList = <TMPL_VAR NAME=INITIAL_STEPS>;
-</TMPL_IF>
+<mt:if name="initial_steps">
+    actionList = <mt:var name="initial_steps">;
+</mt:if>
 
     function actionError(c, message) {
         alert( 'Error: ' + message );
@@ -53,7 +63,8 @@
         var text = responseText.substr(response_pos);
         text = text.replace(/\s*JSON:(.|\n)*/, '');
         // strip any partial lines. we'll grab 'em next time
-        text = text.replace(/(\r?\n)[^\r\n]*$/, '$1');
+        if (!text.match(/\n$/))
+            text = text.replace(/(\r?\n)[^\r\n]*$/, '$1');
         response_pos += text.length;
         if (!text.length) return;
 
@@ -143,13 +154,13 @@
             'interactive': actionInteractive,
             'error': actionError,
 	        'method': 'POST',
-            'uri': '<TMPL_VAR NAME=SCRIPT_URL>',
+            'uri': '<mt:var name="script_url">',
             'arguments': { '__mode' : 'run_actions',
-<TMPL_UNLESS NAME=INSTALLING>
-                           'magic_token' : '<TMPL_VAR NAME=MAGIC_TOKEN>',
-<TMPL_ELSE>
+<mt:unless name="installing">
+                           'magic_token' : '<mt:var name="magic_token">',
+<mt:else>
                            'installing' : '1',
-</TMPL_UNLESS>
+</mt:unless>
                            'steps' : actions }
         });
     }
@@ -157,58 +168,70 @@
         upgrade_progress = getByID('upgrade-progress');
         upgrade_container = getByID('upgrade-container');
         current_task = getByID('current-task');
+        page_title = getByID('page-title');
         runActions();
     }
     TC.attachLoadEvent( init );
-	//-->
+	/* ]]> */
 	</script>
-</TMPL_UNLESS>
+</mt:unless>
 
 <div class="upgrade">
 
-<h2><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Initializing database..."><TMPL_ELSE><MT_TRANS phrase="Upgrading database..."></TMPL_IF></h2>
 
-<TMPL_UNLESS NAME=UP_TO_DATE>
+<mt:unless name="up_to_date">
 
-<h4 id="current-task"><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Starting installation..."><TMPL_ELSE><MT_TRANS phrase="Starting upgrade..."></TMPL_IF></h4>
+<h4 id="current-task"><mt:if name="installing"><__trans phrase="Starting installation..."><mt:else><__trans phrase="Starting upgrade..."></mt:if></h4>
 
 <div id="upgrade-container" class="upgrade-process">
 <ul id="upgrade-progress">
 </ul>
 </div>
 
-<div id="progress-bar"><img src="<TMPL_VAR NAME=STATIC_URI>images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+<div class="right">
+<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+</div>
 
 <div id="error-message-div" style="display: none">
-  <p id="error-message" class="error-message"><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Error during installation:"><TMPL_ELSE><MT_TRANS phrase="Error during upgrade:"></TMPL_IF> <span id="error-message-text"></span></p>
+  <p id="error-message" class="error-message"><mt:if name="installing"><__trans phrase="Error during installation:"><mt:else><__trans phrase="Error during upgrade:"></mt:if> <span id="error-message-text"></span></p>
 </div>
 
-<div id="complete-message-div" style="display: none">
-  <h3><TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Installation complete!"><TMPL_ELSE><MT_TRANS phrase="Upgrade complete!"></TMPL_IF></h3>
+<form method="post" action="<mt:var name="mt_url">" id="completed-action" style="display: none">
+<mt:if name="installing">
+<input type="hidden" name="installed" value="1">
+</mtif>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<mt:if name="installing"><__trans phrase="Sign in to Movable Type (s)"><mt:else><__trans phrase="Return to Movable Type (s)"></mt:if>"
+                class="primary-button"
+                ><mt:if name="installing"><__trans phrase="Sign in to Movable Type"><mt:else><__trans phrase="Return to Movable Type"></mt:if></button>
+        </div>
+    </div>
+</form>
 
-  <div class="button-bar">
-    <form method="post" action="<TMPL_VAR NAME=MT_URL>">
-      <input type="submit" value="<TMPL_IF NAME=INSTALLING><MT_TRANS phrase="Login to Movable Type"><TMPL_ELSE><MT_TRANS phrase="Return to Movable Type"></TMPL_IF>" />
-    </form>
-  </div>
+<mt:else>
+
+<p><__trans phrase="Your database is already current."></p>
+
+<form method="post" action="<mt:var name="mt_url">">
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions right">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Return to Movable Type (s)">"
+                class="primary-button"
+                ><__trans phrase="Return to Movable Type"></button>
+        </div>
+    </div>
+</form>
+
+
+</mt:unless>
+
 </div>
 
-
-
-<TMPL_ELSE>
-
-
-  <h3><MT_TRANS phrase="Your database is already current."></h3>
-
-  <div class="button-bar">
-    <form method="post" action="<TMPL_VAR NAME=MT_URL>">
-      <input type="submit" value="<MT_TRANS phrase="Return to Movable Type">" />
-    </form>
-  </div>
-
-
-</TMPL_UNLESS>
-
-</div>
-
-<TMPL_INCLUDE NAME=footer.tmpl>
+<mt:include name="include/chromeless_footer.tmpl">

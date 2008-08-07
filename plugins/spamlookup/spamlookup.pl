@@ -1,10 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Copyright (c) 2004-2007, Six Apart, Ltd.
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2006-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package MT::Plugin::SpamLookup;
 
@@ -15,7 +15,7 @@ use MT::Plugin;
 use vars qw($VERSION);
 sub BEGIN {
     @MT::Plugin::SpamLookup::ISA = ('MT::Plugin');
-    $VERSION = '2.1';
+    $VERSION = '2.11';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup({
         name => 'SpamLookup - Lookups',
@@ -30,7 +30,7 @@ sub BEGIN {
             ['ipbl_mode', { Default => 1 }],
             ['ipbl_weight', { Default => 1 }],
             ['ipbl_moderate', { Default => 0 }],
-            ['ipbl_service', { Default => 'bsb.spamlookup.net, opm.blitzed.org' }],
+            ['ipbl_service', { Default => 'bsb.spamlookup.net' }],
             ['domainbl_mode', { Default => 1 }],
             ['domainbl_weight', { Default => 1 }],
             ['domainbl_service', { Default => 'bsb.spamlookup.net, sc.surbl.org' }],
@@ -45,20 +45,25 @@ sub BEGIN {
 
 # This will match sixapart.com and any of its subdomains:
 sixapart.com}}],
-        ])
+        ]),
+        registry => {
+            junk_filters => {
+                spamlookup_ipbl => {
+                    label => "SpamLookup IP Lookup",
+                    code => sub { $plugin->runner('ipbl', @_) },
+                },
+                spamlookup_domainbl => {
+                    label => "SpamLookup Domain Lookup",
+                    code => sub { $plugin->runner('domainbl', @_) },
+                },
+                spamlookup_tborigin => {
+                    label => "SpamLookup TrackBack Origin",
+                    code => sub { $plugin->runner('tborigin', @_) },
+                },
+            },
+        },
     });
     MT->add_plugin($plugin);
-    MT->register_junk_filter([
-        { code => sub { $plugin->runner('ipbl', @_) },
-          plugin => $plugin,
-          name => 'SpamLookup IP Lookup' },
-        { code => sub { $plugin->runner('domainbl', @_) },
-          plugin => $plugin,
-          name => 'SpamLookup Domain Lookup' },
-        { code => sub { $plugin->runner('tborigin', @_) },
-          plugin => $plugin,
-          name => 'SpamLookup TrackBack Origin' }
-    ]);
 }
 
 sub apply_default_settings {

@@ -1,0 +1,246 @@
+<mt:setvar name="page_title" value="<__trans phrase="System: User Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="system-user-settings" value="1">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error" escape="html">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your settings have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_system_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function clearWeblogCloneSource() {
+    var el_name = getByID("new_user_template_blog_name");
+    var el_id = getByID("new_user_template_blog_id");
+    if (el_name && el_id) {
+        el_id.value = "";
+        el_name.innerHTML = "<__trans phrase="(No blog selected)">";
+    }
+    var el_id_link = getByID("select-blog-link");
+    if (el_id_link) {
+        el_id_link.innerHTML = "<__trans phrase="Select blog">";
+    }
+}
+function validate (f) {
+    if (f.default_site_url.value && !is_valid_url(f.default_site_url.value)){
+        alert('<__trans phrase="You must set a valid Default Site URL." escape="singlequotes">');
+        return false;
+    } else if (f.default_site_root.value && !is_valid_path(f.default_site_root.value)) {
+        alert('<__trans phrase="You must set a valid Default Site Root." escape="singlequotes">');
+        return false;
+    }
+    return true;
+}
+function is_valid_url(url_){
+    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+function is_valid_path(path_){
+    for(i = 0; i < path_.length; i++){
+        var buf = escape(path_.substr(i, 1));
+        if (buf.match(/^%u.*/)){
+            return false;
+        }
+        if (buf.match(/(%.{2}){2}?/)){
+        	return false;
+        }
+    }
+    return true;
+}
+function clearNotifyUsers() {
+    var el_name = getByID("notify_user_name");
+    var el_id = getByID("notify_user_id");
+    if (el_name && el_id) {
+        el_id.value = "";
+        el_name.innerHTML = "<__trans phrase="(None selected)">";
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<input type="hidden" name="__mode" value="save_cfg_system_users" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:unless name="external_user_management">
+<fieldset>
+
+<h3><__trans phrase="User Registration"></h3>
+
+    <mtapp:setting
+        id="registration"
+        label="<__trans phrase="Allow Registration">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Select a system administrator you wish to notify when commenters successfully registered themselves.">">
+        <p><input type="checkbox" id="registration" name="registration"<mt:if name="registration"> checked="checked"</mt:if> class="cb" /> <label for="registration"><__trans phrase="Allow commenters to register to Movable Type"></label></p>
+        <input type="hidden" id="notify_user_id" name="notify_user_id" value="<mt:var name="notify_user_id" escape="html">" />
+        <p><__trans phrase="Notify the following administrators upon registration:"><br />
+            <strong id="notify_user_name">
+        <mt:if name="notify_user_id">
+            <mt:var name="notify_user_name" escape="html">
+        <mt:else>
+            <__trans phrase="(None selected)">
+        </mt:if>
+        </strong>
+        <br />
+        <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_select_sysadmin', 'multi=1&amp;idfield=notify_user_id&amp;namefield=notify_user_name')"><__trans phrase="Select Administrators"></a>
+        <mt:if name="notify_user_id">| <a href="javascript:void(0)" onclick="return clearNotifyUsers()"><__trans phrase="Clear"></a></mt:if>
+        </p>
+
+        <mt:if name="system_no_email">
+        <div class="alert-warning-inline icon-left icon-warning"><__trans phrase="Note: System Email Address is not set. Emails will not be sent."></div>
+        </mt:if>
+    </mtapp:setting>
+
+</fieldset>
+</mt:unless>
+<fieldset>
+
+<h3><__trans phrase="New User Defaults"></h3>
+
+    <mtapp:setting
+        id="personal_weblog"
+        label="<__trans phrase="Personal blog">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Check to have the system automatically create a new personal blog when a user is created in the system. The user will be granted a blog administrator role on the blog.">">
+        <input type="checkbox" id="personal_weblog" name="personal_weblog"<mt:if name="personal_weblog"> checked="checked"</mt:if> class="cb" <mt:if name="personal_weblog_readonly">disabled="disabled"</mt:if> /> <label for="personal_weblog"><__trans phrase="Automatically create a new blog for each new user"></label>
+    </mtapp:setting>
+    
+    <mtapp:setting
+        id="new_user_template_blog_id"
+        label="<__trans phrase="Personal blog clone source">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Select a blog you wish to use as the source for new personal blogs. The new blog will be identical to the source except for the name, publishing paths and permissions.">">
+        <input type="hidden" id="new_user_template_blog_id" name="new_user_template_blog_id" size="5" value="<mt:var name="new_user_template_blog_id" escape="html">" />
+        <div id="new_user_template_blog_name">
+        <mt:if name="new_user_template_blog_id">
+            <strong><mt:var name="new_user_template_blog_name" escape="html"> (<mt:var name="new_user_template_blog_id" escape="html">)</strong>
+            <mt:unless name="new_user_template_blog_id_readonly">
+            <a href="javascript:void(0)" onclick="return clearWeblogCloneSource()"><__trans phrase="Clear"></a>
+            </mt:unless>
+        <mt:else>
+            <__trans phrase="(No blog selected)">
+        </mt:if>
+        </div>
+        <mt:unless name="new_user_template_blog_id_readonly">
+        <a id="select-blog-link" href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;idfield=new_user_template_blog_id&amp;namefield=new_user_template_blog_name')"><mt:if name="new_user_template_blog_id"><__trans phrase="Change blog"><mt:else><__trans phrase="Select blog"></mt:if></a>
+        </mt:unless>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="default_site_url"
+        label="<__trans phrase="Default Site URL">"
+        hint="<__trans phrase="Define the default site URL for new blogs. This URL will be appended with a unique identifier for the blog.">">
+        <div class="textarea-wrapper">
+            <input type="text" id="default_site_url" class="full-width" name="default_site_url" value="<mt:var name="default_site_url" escape="html">" size="50" <mt:if name="default_site_url_readonly">disabled="disabled"</mt:if> />
+        </div>
+    </mtapp:setting>
+
+
+    <mtapp:setting
+        id="default_site_root"
+        label="<__trans phrase="Default Site Root">"
+        hint="<__trans phrase="Define the default site root for new blogs. This path will be appended with a unique identifier for the blog.">">
+        <div class="textarea-wrapper">
+            <input type="text" id="default_site_root" class="full-width" name="default_site_root" value="<mt:var name="default_site_root" escape="html">" size="50" <mt:if name="default_site_root_readonly">disabled="disabled"</mt:if> />
+        </div>
+    </mtapp:setting>
+
+
+    <mtapp:setting
+        id="default_language"
+        label="<__trans phrase="Default User Language">"
+        hint="<__trans phrase="Define the default language to apply to all new users.">">
+        <select id="default_language" name="default_language" size="1" <mt:if name="default_language_readonly">disabled="disabled"</mt:if>>
+        <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">" <mt:if name="l_selected">selected="selected"</mt:if>><mt:var name="l_name" escape="html"></option>
+        </mt:loop>
+        </select>
+    </mtapp:setting>
+
+
+    <mtapp:setting
+        id="default_time_zone"
+        label="<__trans phrase="Default Timezone">"
+        hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+        help_page="blog_settings_general"
+        help_section="blog_timezone">
+        <select name="default_time_zone" id="default_time_zone" <mt:if name="default_time_zone_readonly">disabled="disabled"</mt:if>>
+        <mt:if name="server_offset_">
+        <option value=""><__trans phrase="Time zone not selected"></option>
+        </mt:if>
+        <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+        <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+        <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+        <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+        <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+        <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+        <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+        <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+        <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+        <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+        <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+        <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+        <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+        <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+        <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+        <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+        <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+        <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+        <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+        <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+        <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+        <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+        <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+        <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+        <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+        <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+        <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+        <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+        <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+        <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+        </select>
+    </mtapp:setting>
+
+
+    <mtapp:setting
+        id="tag_delim"
+        label="<__trans phrase="Default Tag Delimiter">"
+        hint="<__trans phrase="Define the default delimiter for entering tags.">">
+        <select name="default_user_tag_delimiter" id="tag_delim" <mt:if name="default_user_tag_delimiter_readonly">disabled="disabled"</mt:if>>
+        <option value="comma"<mt:if name="tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
+        <option value="space"<mt:if name="tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
+        </select>
+    </mtapp:setting>
+
+</fieldset>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<mt:include name="include/footer.tmpl">

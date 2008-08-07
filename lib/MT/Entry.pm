@@ -1,23 +1,28 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Entry;
+
 use strict;
+
+use MT::Tag; # Holds MT::Taggable
+use base qw( MT::Object MT::Taggable MT::Scorable );
 
 use MT::Blog;
 use MT::Author;
 use MT::Category;
+use MT::Memcached;
 use MT::Placement;
 use MT::Comment;
+use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
-                 extract_domains );
-use MT::Tag;
+                 extract_domains weaken );
 
-use MT::Object;
-@MT::Entry::ISA = qw( MT::Object MT::Taggable );
+sub CATEGORY_CACHE_TIME () { 604800 } ## 7 * 24 * 60 * 60 == 1 week
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -37,35 +42,103 @@ __PACKAGE__->install_properties({
         'tangent_cache' => 'text',
         'basename' => 'string(255)',
         'atom_id' => 'string(255)',
+        'authored_on' => 'datetime',
         'week_number' => 'integer',
+        'template_id' => 'integer',
+        'comment_count' => 'integer',
+        'ping_count' => 'integer',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
     indexes => {
-        blog_id => 1,
         status => 1,
         author_id => 1,
         created_on => 1,
         modified_on => 1,
-        week_number => 1,
-        basename => 1,
+        authored_on => 1,
+        # For lookups 
+        blog_basename => {
+            columns => [ 'blog_id', 'basename' ],
+        },
+        # Page listings are published in order by title
+        title => 1,
+        blog_author => {
+            columns => [ 'blog_id', 'class', 'author_id', 'authored_on' ],
+        },
+        # For optimizing weekly archives, selected by blog, class,
+        # status.
+        blog_week => {
+            columns => [ 'blog_id', 'class', 'status', 'week_number' ],
+        },
+        # For system-overview listings where we list all entries of
+        # a particular class by authored on date
+        class_authored => {
+            columns => [ 'class', 'authored_on' ],
+        },
+        # For most blog-level listings, where we list all entries
+        # in a blog with a particular class by authored on date.
+        blog_authored => {
+            columns => ['blog_id', 'class', 'authored_on'],
+        },
+        # For most publishing listings, where we list entries in a blog
+        # with a particular class, publish status (2) and authored on date
+        blog_stat_date => {
+            columns => ['blog_id', 'class', 'status', 'authored_on', 'id'],
+        },
+        # for tag count
+        tag_count => {
+            columns => ['status', 'class', 'blog_id', 'id'],
+        },
+    },
+    defaults => {
+        comment_count => 0,
+        ping_count => 0,
     },
     child_of => 'MT::Blog',
+    child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
     audit => 1,
+    meta => 1,
     datasource => 'entry',
     primary_key => 'id',
+    class_type => 'entry',
 });
 
-use constant HOLD    => 1;
-use constant RELEASE => 2;
-use constant REVIEW  => 3;
-use constant FUTURE  => 4;
+sub HOLD ()    { 1 }
+sub RELEASE () { 2 }
+sub REVIEW ()  { 3 }
+sub FUTURE ()  { 4 }
 
 use Exporter;
 *import = \&Exporter::import;
 use vars qw( @EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw( HOLD RELEASE FUTURE );
 %EXPORT_TAGS = (constants => [ qw(HOLD RELEASE FUTURE) ]);
+
+sub class_label {
+    MT->translate("Entry");
+}
+
+sub class_label_plural {
+    MT->translate("Entries");
+}
+
+sub container_type {
+    return "category";
+}
+
+sub container_label {
+    MT->translate("Category");
+}
+
+sub cache_key {
+    my($entry_id, $key);
+    if (@_ == 3) {
+        ($entry_id, $key) = @_[1, 2];
+    } else {
+        ($entry_id, $key) = ($_[0]->id, $_[1]);
+    }
+    return sprintf "entry%s-%d", $key, $entry_id;
+}
 
 sub status_text {
     my $s = $_[0];
@@ -83,220 +156,152 @@ sub status_int {
                 $s eq 'future' ? FUTURE : undef;
 }
 
+sub authored_on_obj {
+    my $obj = shift;
+    return $obj->column_as_datetime('authored_on');
+}
+
 sub next {
     my $entry = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {status => RELEASE} : {};
-    $entry->_nextprev('next', $publish_only);
+    my($opt) = @_;
+    my $terms;
+    if (ref $opt) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => RELEASE } : {};
+    }
+    $entry->_nextprev('next', $terms);
 }
 
 sub previous {
     my $entry = shift;
-    my($publish_only) = @_;
-    $publish_only = $publish_only ? {status => RELEASE} : {};
-    $entry->_nextprev('previous', $publish_only);
+    my($opt) = @_;
+    my $terms;
+    if (ref $opt) {
+        $terms = $opt;
+    }
+    else {
+        $terms = $opt ? { status => RELEASE } : {};
+    }
+    $entry->_nextprev('previous', $terms);
 }
 
 sub _nextprev {
     my $obj = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
+    my ($direction, $terms) = @_;
     return undef unless ($direction eq 'next' || $direction eq 'previous');
     my $next = $direction eq 'next';
 
-    my $label = '__' . $direction;
-    return $obj->{$label} if $obj->{$label};
-
-    # Selecting the adjacent object can be tricky since timestamps
-    # are not necessarily unique for entries. If we find that the
-    # next/previous object has a matching timestamp, keep selecting entries
-    # to select all entries with the same timestamp, then compare them using
-    # id as a secondary sort column.
-
-    my ($id, $ts) = ($obj->id, $obj->created_on);
-    my $iter = $class->load_iter({
-        blog_id => $obj->blog_id,
-        created_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'created_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'created_on' => 1 },
-    });
-
-    # This selection should always succeed, but handle situation if
-    # it fails by returning undef.
-    return unless $iter;
-
-    # The 'same' array will hold any entries that have matching
-    # timestamps; we will then sort those by id to find the correct
-    # adjacent object.
-    my @same;
-    while (my $e = $iter->()) {
-        # Don't consider the object that is 'current'
-        next if $e->id == $id;
-        my $e_ts = $e->created_on;
-        if ($e_ts eq $ts) {
-            # An object with the same timestamp should only be
-            # considered if the id is in the scope we're looking for
-            # (greater than for the 'next' object; less than for
-            # the 'previous' object).
-            push @same, $e
-                if $next && $e->id > $id or !$next && $e->id < $id;
-        } else {
-            # We found an object with a timestamp different than
-            # the 'current' object.
-            if (!@same) {
-                push @same, $e;
-                # We should check to see if this new timestamped object also
-                # has entries adjacent to _it_ that have the same timestamp.
-                while (my $e = $iter->()) {
-                    push(@same, $e), next if $e->created_on eq $e_ts;
-                    $iter->('finish'), last;
-                }
-            } else {
-                $iter->('finish');
-            }
-            return $obj->{$label} = $e unless @same;
-            last;
+    $terms->{author_id} = $obj->author_id if delete $terms->{by_author};
+    if (delete $terms->{by_category}) {
+        if (my $c = $obj->category) {
+            $terms->{category_id} = $c->id;
+        }
+        else {
+            return undef;
         }
     }
-    if (@same) {
-        # If we only have 1 element in @same, return that.
-        return $obj->{$label} = $same[0] if @same == 1;
-        # Sort remaining elements in @same by id.
-        @same = sort { $a->id <=> $b->id } @same;
-        # Return front of list (smallest id) if selecting 'next'
-        # object. Return tail of list (largest id) if selection 'previous'.
-        return $obj->{$label} = $same[$next ? 0 : $#same];
+
+    my $label = '__' . $direction;
+    $label .= ':author='. $terms->{author_id} if exists $terms->{author_id};
+    $label .= ':category='. $terms->{category_id} if exists $terms->{category_id};
+    return $obj->{$label} if $obj->{$label};
+
+    my $args = {};
+    if (my $cat_id = delete $terms->{category_id}) {
+        my $join = MT::Placement->join_on('entry_id',
+            { category_id => $cat_id }
+        );
+        $args->{join} = $join;
     }
-    return;
+
+    my $o = $obj->nextprev(
+        direction => $direction,
+        terms     => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
+        args      => $args,
+        by        => 'authored_on',
+    );
+    weaken($obj->{$label} = $o) if $o;
+    return $o;
 }
 
 sub trackback {
     my $entry = shift;
-    if (@_) {
-        $entry->{__trackback} = shift;
-    } elsif (!$entry->{__trackback} && $entry->id) {
-        my $tb = MT::Trackback->load({ entry_id => $entry->id });
-        $entry->{__trackback} = $tb;
-    }
-    $entry->{__trackback};
+    $entry->cache_property('trackback', sub {
+        require MT::Trackback;
+        if ($entry->id) {
+            return scalar MT::Trackback->load({ entry_id => $entry->id });
+        }
+    }, @_);
 }
 
 sub author {
     my $entry = shift;
-    my $req = MT::Request->instance();
-    unless ($entry->{__author}) {
+    $entry->cache_property('author', sub {
+        return undef unless $entry->author_id;
+        my $req = MT::Request->instance();
         my $author_cache = $req->stash('author_cache');
-        $entry->{__author} = $author_cache->{$entry->author_id};
-        unless ($entry->{__author}) {
+        my $author = $author_cache->{$entry->author_id};
+        unless ($author) {
             require MT::Author;
-            $entry->{__author} = MT::Author->load($entry->author_id,
-                                                  {cached_ok=>1});
-            $author_cache->{$entry->author_id} = $entry->{__author};
+            $author = MT::Author->load($entry->author_id)
+                or return undef;
+            $author_cache->{$entry->author_id} = $author;
             $req->stash('author_cache', $author_cache);
         }
-    }
-    $entry->{__author};
+        $author;
+    });
 }
 
-## To speed up <$MTEntryCategory$> (and category-loading in general),
-## the first time either ->category or ->categories is used, we load the
-## list of placements (entry-category mappings) into memory into an
-## MT::Request object. Lookups to determine if an entry has a category are
-## thus very fast. We add a new config setting NoPlacementCache in case
-## this causes problems for anyone. :)
-
-sub _placement_cache {
-    my($blog_id) = @_;
-    my $r = MT::Request->instance;
-    my $cache = $r->cache('all_placements');
-    unless ($cache->{$blog_id}) {
-        $cache->{$blog_id} = {};
-        $r->cache('all_placements', $cache);
-        require MT::Placement;
-        my @p = MT::Placement->load({ blog_id => $blog_id });
-        for my $p (@p) {
-            push @{ $cache->{$blog_id}{all}{$p->entry_id} }, $p->category_id;
-            $cache->{$blog_id}{primary}{$p->entry_id} = $p->category_id
-                if $p->is_primary;
-        }
-    }
-    $cache->{$blog_id};
-}
-
-sub reset_placement_cache {
+sub __load_category_data {
     my $entry = shift;
-    if (ref $entry) {
-        delete $entry->{__category};
-        delete $entry->{__categories};
+    my $t = MT->get_timer;
+    $t->pause_partial if $t;
+    my $cache = MT::Memcached->instance;
+    my $memkey = $entry->cache_key('categories');
+    my $rows;
+    unless ($rows = $cache->get($memkey)) {
+        require MT::Placement;
+        my @maps = MT::Placement->search({ entry_id => $entry->id });
+        $rows = [ map { [ $_->category_id, $_->is_primary ] } @maps ];
+        $cache->set($memkey, $rows, CATEGORY_CACHE_TIME);
     }
-    require MT::Category;
-    return if MT::ConfigMgr->instance->NoPlacementCache;
-    my $r = MT::Request->instance;
-    my $cache = $r->cache('all_placements');
-    return unless $cache;
-    if (ref $entry) {
-        my $blog_id = $entry->blog_id;
-        my $entry_id = $entry->id;
-        if ($cache->{$blog_id}) {
-            delete $cache->{$blog_id}{all}{$entry_id};
-            delete $cache->{$blog_id}{primary}{$entry_id};
-        }
-    } else {
-        $r->cache('all_placements', {});
-    }
+    $t->mark('MT::Entry::__load_category_data') if $t;
+    return $rows;
 }
+
+sub flush_category_cache {
+    my($copy, $place) = @_;
+    MT::Memcached->instance->delete(
+        MT::Entry->cache_key($place->entry_id, 'categories')
+    );
+}
+
+MT::Placement->add_trigger(
+    post_save   => \&flush_category_cache,
+    post_remove => \&flush_category_cache
+);
 
 sub category {
     my $entry = shift;
-    unless ($entry->{__category}) {
+    $entry->cache_property('category', sub {
+        my $rows = $entry->__load_category_data or return;
+        my @rows = grep { $_->[1] } @$rows or return;
         require MT::Category;
-        unless (MT::ConfigMgr->instance->NoPlacementCache) {
-            my $cache = _placement_cache($entry->blog_id);
-            if (exists $cache->{primary}{$entry->id}) {
-                my $p = $cache->{primary}{$entry->id} or return;
-                return $entry->{__category} = MT::Category->load($p,
-                    {cached_ok=>1});
-            }
-        }
-        require MT::Placement;
-        $entry->{__category} = MT::Category->load(undef,
-            { 'join' => [ 'MT::Placement', 'category_id',
-                        { entry_id => $entry->id,
-                          is_primary => 1 } ] },
-        );
-    }
-    $entry->{__category};
+        return MT::Category->lookup( $rows[0] );
+    });
 }
 
 sub categories {
     my $entry = shift;
-    unless ($entry->{__categories}) {
-        require MT::Category;
-        unless (MT::ConfigMgr->instance->NoPlacementCache) {
-            my $cache = _placement_cache($entry->blog_id);
-            if (exists $cache->{all}{$entry->id}) {
-                my $p = $cache->{all}{$entry->id} or return;
-                for my $place (@$p) {
-                    push @{ $entry->{__categories} },
-                        MT::Category->load($place, {cached_ok=>1});
-                }
-                $entry->{__categories} = [ sort { $a->label cmp $b->label }
-                                           @{ $entry->{__categories} } ];
-                return $entry->{__categories};
-            }
-        }
-        require MT::Placement;
-        $entry->{__categories} = [ MT::Category->load(undef,
-            { 'join' => [ 'MT::Placement', 'category_id',
-                        { entry_id => $entry->id } ] },
-        ) ];
-        $entry->{__categories} = [ sort { $a->label cmp $b->label }
-                                   @{ $entry->{__categories} } ];
-    }
-    $entry->{__categories};
+    $entry->cache_property('categories', sub {
+        my $rows = $entry->__load_category_data or return;
+        my $cats = MT::Category->lookup_multi([ map { $_->[0] } @$rows ]);
+        my @cats = sort { $a->label cmp $b->label } @$cats;
+        return \@cats;
+    });
 }
 
 sub is_in_category {
@@ -318,20 +323,17 @@ sub comments {
         $terms->{entry_id} = $entry->id;
         return [ MT::Comment->load( $terms, $args ) ];
     } else {
-        unless ($entry->{__comments}) {
-            $entry->{__comments} = [ MT::Comment->load({
-                entry_id => $entry->id
-            }) ];
-        }
-        $entry->{__comments};
+        $entry->cache_property('comments', sub {
+            [ MT::Comment->load({ entry_id => $entry->id }) ];
+        });
     }
 }
 
 sub comment_latest {
     my $entry = shift;
-    unless ($entry->{__comment_latest}) {
+    $entry->cache_property('comment_latest', sub {
         require MT::Comment;
-        $entry->{__comment_latest} = MT::Comment->load({
+        MT::Comment->load({
             entry_id => $entry->id,
             visible => 1
         }, {
@@ -339,50 +341,90 @@ sub comment_latest {
             direction => 'descend',
             limit => 1,
         });
-    }
-    $entry->{__comment_latest};
+    });
 }
 
-sub comment_count {
-    my $entry = shift;
-    unless ($entry->{__comment_count}) {
-        require MT::Comment;
-        $entry->{__comment_count} = MT::Comment->count({
-            entry_id => $entry->id,
-            visible => 1
-        });
+MT::Comment->add_trigger(
+    post_save => sub {
+        my $comment = shift;
+        my $entry   = MT::Entry->load( $comment->entry_id )
+            or return;
+        my $count   = MT::Comment->count(
+            {
+                entry_id => $comment->entry_id,
+                visible  => 1,
+            }
+        );
+        $entry->comment_count($count);
+        $entry->save;
     }
-    $entry->{__comment_count};
-}
+);
+
+MT::Comment->add_trigger(
+    post_remove => sub {
+        my $comment = shift;
+        my $entry   = MT::Entry->load( $comment->entry_id )
+            or return;
+        if ( $comment->visible ) {
+            my $count = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
+            $entry->comment_count($count);
+            $entry->save;
+        }
+    }
+);
 
 sub pings {
     my $entry = shift;
     my ($terms, $args) = @_;
+    my $tb = $entry->trackback;
+    return undef unless $tb;
     if ($terms || $args) {
         $terms ||= {};
-        $terms->{entry_id} = $entry->id;
+        $terms->{tb_id} = $tb->id;
         return [ MT::TBPing->load( $terms, $args ) ];
     } else {
-        unless ($entry->{__pings}) {
-            $entry->{__pings} = [ MT::TBPing->load({
-                entry_id => $entry->id
-            }) ];
-        }
-        $entry->{__pings};
+        $entry->cache_property('pings', sub {
+            [ MT::TBPing->load({ tb_id => $tb->id }) ];
+        });
     }
 }
 
-sub ping_count {
-    my $entry = shift;
-    unless ($entry->{__ping_count}) {
+MT::TBPing->add_trigger(
+    post_save => sub {
+        my $ping = shift;
         require MT::Trackback;
-        require MT::TBPing;
-        my $tb = MT::Trackback->load({ entry_id => $entry->id });
-        $entry->{__ping_count} = $tb ?
-            MT::TBPing->count({ tb_id => $tb->id, visible => 1 }) : 0;
+        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
+            if ( $tb->entry_id ) {
+                my $entry = MT::Entry->load( $tb->entry_id )
+                    or return;
+                my $count = MT::TBPing->count(
+                    {
+                        tb_id   => $tb->id,
+                        visible => 1,
+                    }
+                );
+                $entry->ping_count($count);
+                $entry->save;
+            }
+        }
     }
-    $entry->{__ping_count};
-}
+);
+
+MT::TBPing->add_trigger(
+    post_remove => sub {
+        my $ping = shift;
+        require MT::Trackback;
+        if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
+            if ( $tb->entry_id && $ping->visible ) {
+                my $entry = MT::Entry->load( $tb->entry_id )
+                    or return;
+                my $count = $entry->ping_count > 0 ? $entry->ping_count - 1 : 0;
+                $entry->ping_count($count);
+                $entry->save;
+            }
+        }
+    }
+);
 
 sub archive_file {
     my $entry = shift;
@@ -393,9 +435,12 @@ sub archive_file {
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
+        return '' if $at eq 'Page';
         my %at = map { $_ => 1 } split /,/, $at;
-        for my $tat (qw( Individual Daily Weekly Monthly Category )) {
+        # FIXME: should draw from list of registered archive types
+        for my $tat (qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )) {
             $at = $tat if $at{$tat};
+            last;
         }
     }
     archive_file_for($entry, $blog, $at);
@@ -513,7 +558,7 @@ sub make_atom_id {
         $host = $1;
         $path = $2;
     }
-    if ($entry->created_on && ($entry->created_on =~ m/^(\d{4})/)) {
+    if ($entry->authored_on && ($entry->authored_on =~ m/^(\d{4})/)) {
         $year = $1;
     }
     return unless $host && $year && $path && $blog_id && $entry_id;
@@ -523,8 +568,7 @@ sub make_atom_id {
 sub discover_tb_from_entry {
     my $entry = shift;
     ## If we need to auto-discover TrackBack ping URLs, do that here.
-    require MT::ConfigMgr;
-    my $cfg = MT::ConfigMgr->instance;
+    my $cfg = MT->config;
     my $blog = $entry->blog();
     my $send_tb = $cfg->OutboundTrackbackLimit;
     if ($send_tb ne 'off' && 
@@ -534,7 +578,7 @@ sub discover_tb_from_entry {
         if ($send_tb eq 'selected') {
             @tb_domains = $cfg->OutboundTrackbackDomains;
         } elsif ($send_tb eq 'local') {
-            my $iter = MT::Blog->load_iter();
+            my $iter = MT::Blog->load_iter(undef, { fetchonly => ['site_url'], no_triggers => 1 });
             while (my $b = $iter->()) {
                 next if $b->id == $blog->id;
                 push @tb_domains, extract_domain($b->site_url);
@@ -579,31 +623,81 @@ sub discover_tb_from_entry {
     }
 }
 
+sub sync_assets {
+    my $entry = shift;
+    my $text = ($entry->text || '') . "\n" . ($entry->text_more || '');
+
+    require MT::ObjectAsset;
+    my @assets = MT::ObjectAsset->load({
+        object_id => $entry->id,
+        blog_id => $entry->blog_id,
+        object_ds => $entry->datasource,
+        embedded => 1,
+    });
+    my %assets = map { $_->asset_id => $_->id } @assets;
+    while ($text =~ m!<form[^>]*?\smt:asset-id=["'](\d+)["'][^>]*?>(.+?)</form>!gis) {
+        my $id = $1;
+        my $innards = $2;
+
+        # reference to an existing asset...
+        if (exists $assets{$id}) {
+            $assets{$id} = 0;
+        } else {
+            # is asset exists?
+            my $asset = MT->model('asset')->load({ id => $id }) or next;
+
+            my $map = new MT::ObjectAsset;
+            $map->blog_id($entry->blog_id);
+            $map->asset_id($id);
+            $map->object_ds($entry->datasource);
+            $map->object_id($entry->id);
+            $map->embedded(1);
+            $map->save;
+            $assets{$id} = 0;
+        }
+    }
+    if (my @old_maps = grep { $assets{$_->asset_id} } @assets) {
+        my @old_ids = map { $_->id } grep { $_->embedded } @old_maps;
+        MT::ObjectAsset->remove( { id => \@old_ids })
+            if @old_ids;
+    }
+    return 1;
+}
+
 sub save {
     my $entry = shift;
+    my $is_new = $entry->id ? 0 : 1;
 
     ## If there's no basename specified, create a unique basename.
     if (!defined($entry->basename) || ($entry->basename eq '')) {
         my $name = MT::Util::make_unique_basename($entry);
         $entry->basename($name);
     }
-    if (my $dt = $entry->created_on_obj) {
+    if (!$entry->id && !$entry->authored_on) {
+        my @ts = MT::Util::offset_time_list(time, $entry->blog_id);
+        my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
+            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+        $entry->authored_on($ts);
+    }
+    if (my $dt = $entry->authored_on_obj) {
         my ($yr, $w) = $dt->week;
         $entry->week_number($yr * 100 + $w);
     }
+
+    my $sync_assets = $entry->is_changed('text')
+        || $entry->is_changed('text_more');
 
     unless ($entry->SUPER::save(@_)) {
         print STDERR "error during save: " . $entry->errstr . "\n";
         die $entry->errstr;
     }
 
+    $entry->sync_assets() if $sync_assets;
+
     if (!$entry->atom_id && (($entry->status || 0) != HOLD)) {
         $entry->atom_id($entry->make_atom_id());
         $entry->SUPER::save(@_) if $entry->atom_id;
     }
-
-    # synchronize tags if necessary
-    $entry->save_tags;
 
     ## If pings are allowed on this entry, create or update
     ## the corresponding TrackBack object for this entry.
@@ -627,59 +721,40 @@ sub save {
         ## If there is a TrackBack item for this entry, but
         ## pings are now disabled, make sure that we mark the
         ## object as disabled.
-        if (my $tb = MT::Trackback->load({ entry_id => $entry->id })) {
+        if (my $tb = $entry->trackback) {
             $tb->is_disabled(1);
             $tb->save
                 or return $entry->error($tb->errstr);
         }
     }
 
-    delete $entry->{__next} if exists $entry->{__next};
-    delete $entry->{__previous} if exists $entry->{__previous};
+    $entry->clear_cache() if $is_new;
 
     1;
 }
 
 sub remove {
     my $entry = shift;
+    if (ref $entry) {
+        $entry->remove_children({ key => 'entry_id' }) or return;
 
-    my $comments = $entry->comments;
-    $_->remove for @$comments;
+        # Remove MT::ObjectAsset records
+        my $class = MT->model('objectasset');
+        $class->remove({ object_id => $entry->id, object_ds => $entry->class_type });
+    }
 
-    require MT::Placement;
-    my @place = MT::Placement->load({ entry_id => $entry->id });
-    $_->remove for @place;
-
-    require MT::Trackback;
-    my @tb = MT::Trackback->load({ entry_id => $entry->id });
-    $_->remove for @tb;
-
-    $entry->remove_tags;
-
-    # Archive types other than Individual may refer to this entry, but
-    # not essentially.  only the individual A.T. needs to be blottoed.
-    require MT::FileInfo;
-    my @finfos = MT::FileInfo->load({
-        entry_id => $entry->id,
-        archive_type => 'Individual',
-    });
-    $_->remove for @finfos;
-
-    $entry->SUPER::remove;
+    $entry->SUPER::remove(@_);
 }
 
 sub blog {
     my ($entry) = @_;
-    my $blog = $entry->{__blog};
-    unless ($blog) {
+    $entry->cache_property('blog', sub {
         my $blog_id = $entry->blog_id;
         require MT::Blog;
-        $blog = MT::Blog->load($blog_id, {cached_ok=>1}) or
-            return $entry->error(MT->translate(
-                                 "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
-        $entry->{__blog} = $blog;
-    }
-    return $blog;
+        MT::Blog->load($blog_id) or
+            $entry->error(MT->translate(
+            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
+    });
 }
 
 sub to_hash {
@@ -693,6 +768,7 @@ sub to_hash {
     $hash->{'entry.status_is_' . $entry->status} = 1;
     $hash->{'entry.created_on_iso'} = sub { MT::Util::ts2iso($entry->blog_id, $entry->created_on) };
     $hash->{'entry.modified_on_iso'} = sub { MT::Util::ts2iso($entry->blog_id, $entry->modified_on) };
+    $hash->{'entry.authored_on_iso'} = sub { MT::Util::ts2iso($entry->blog_id, $entry->authored_on) };
 
     # Populate author info
     my $auth = $entry->author or return $hash;
@@ -701,6 +777,10 @@ sub to_hash {
 
     $hash;
 }
+
+#trans('Draft')
+#trans('Review')
+#trans('Future')
 
 1;
 __END__
@@ -801,20 +881,6 @@ entry, returns a reference to an empty array.
 Caches the return value internally so that subsequent calls will not have to
 re-query the database.
 
-=head2 $entry->comment_count
-
-Returns the number of comments made on this entry.
-
-Caches the return value internally so that subsequent calls will not have to
-re-query the database.
-
-=head2 $entry->ping_count
-
-Returns the number of TrackBack pings made on this entry.
-
-Caches the return value internally so that subsequent calls will not have to
-re-query the database.
-
 =head2 $entry->archive_file([ $archive_type ])
 
 Returns the name of/path to the archive file for the entry I<$entry>. If
@@ -874,9 +940,8 @@ The status of the entry, either Publish (C<2>) or Draft (C<1>).
 
 An integer flag specifying whether comments are allowed on this entry. This
 setting determines whether C<E<lt>MTEntryIfAllowCommentsE<gt>> containers are
-displayed for this entry. Possible values are 0 for no comments, 1 for open
-comments and 2 for closed comments (that is, display the comments on this
-entry but do not allow new comments to be added).
+displayed for this entry. Possible values are 0 for not allowing any additional 
+comments and 1 for allowing new comments to be made on the entry.
 
 =item * convert_breaks
 

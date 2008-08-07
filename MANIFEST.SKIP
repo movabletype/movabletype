@@ -1,6 +1,92 @@
+# Themes that aren't to be in the general release
+mt-static/themes/cityscape-austin
+mt-static/themes/cityscape-boston
+mt-static/themes/cityscape-chicago
+mt-static/themes/cityscape-dc
+mt-static/themes/cityscape-houston
+mt-static/themes/cityscape-kiev
+mt-static/themes/cityscape-la
+mt-static/themes/cityscape-london
+mt-static/themes/cityscape-miami
+mt-static/themes/cityscape-nashville
+mt-static/themes/cityscape-nyc
+mt-static/themes/cityscape-paris
+mt-static/themes/cityscape-philadelphia
+mt-static/themes/cityscape-seattle
+#mt-static/themes/cityscape-sf
+mt-static/themes/cityscape-sydney
+mt-static/themes/cityscape-tokyo
+mt-static/themes/cityscape-toronto
+mt-static/themes/cityscape-vegas
+mt-static/themes/hills-dusk
+mt-static/themes/hills-green
+mt-static/themes/hills-midnight
+mt-static/themes/hills-pink
+mt-static/themes/minimalist-blue
+mt-static/themes/minimalist-brown
+mt-static/themes/minimalist-green
+mt-static/themes/minimalist-grey
+mt-static/themes/minimalist-light-blue
+mt-static/themes/minimalist-light-green
+mt-static/themes/minimalist-pink
+mt-static/themes/minimalist-purple
+#mt-static/themes/minimalist-red
+mt-static/themes/minimalist-white
+mt-static/themes/mt-static/themes/cityscape-portland
+#mt-static/themes/unity-blue
+mt-static/themes/unity-green
+mt-static/themes/unity-purple
+mt-static/themes/unity-tricolor
+
+# Conditional SKIP rule; format: #?(var=value) RULE
+#?package=MT ^COPYING
+#?package=MT ^COPYRIGHT
+#?package=MT ^mt-cp.cgi
+#?package=MT ^mt-static/themes/tristan-blue
+#?package=MT ^mt-static/themes/tristan-blue-4.2
+#?package=MT ^addons/Community.pack
+#?package=MT ^mt-static/addons/Community.pack
+#?package=MT ^addons/Enterprise.pack
+#?package=MT ^mt-static/addons/Enterprise.pack
+
+#?package=MTP ^addons
+#?package=MTP ^COPYING
+#?package=MTP ^COPYRIGHT
+#?package=MTP ^mt-cp.cgi
+#?package=MTP ^mt-static/addons
+#?package=MTP ^mt-static/themes/tristan-blue
+#?package=MTP ^mt-static/themes/tristan-blue-4.2
+
+#?package=MTOS ^addons
+#?package=MTOS ^mt-cp.cgi
+#?package=MTOS ^mt-static/addons
+#?package=MTOS ^mt-static/themes/tristan-blue
+#?package=MTOS ^mt-static/themes/tristan-blue-4.2
+#?package=MTOS ^mt-static/plugins/feeds-app-lite
+#?package=MTOS ^plugins/feeds-app-lite
+#?package=MTOS ^plugins/CustomFields
+
+#?package=MTE ^COPYING
+#?package=MTE ^COPYRIGHT
+#?package=MTE ^addons/Community.pack
+#?package=MTE ^mt-static/addons/Community.pack
+#?package=MTE ^mt-cp.cgi
+#?package=MTE ^mt-static/themes/tristan-blue
+#?package=MTE ^mt-static/themes/tristan-blue-4.2
+
+#?package=MTCS ^COPYING
+#?package=MTCS ^COPYRIGHT
+#?package=MTCS ^addons/Enterprise.pack
+#?package=MTCS ^mt-static/addons/Enterprise.pack
+
+# MT::App::Viewer
+lib/MT/App/Viewer.pm
+mt-view.cgi
+
 ^schemas
 \bknown-issues
 ^t/
+.*/t/
 ^db
 ^ToDo$
 ^README
@@ -15,6 +101,7 @@
 \bCVS\b
 \bRCS\b
 \.svn\b
+\.gitignore
 ,v$
 
 # Hidden, temp and backup files.
@@ -26,16 +113,6 @@
 \.tmp$
 ^\.DS_Store$
 
-# Doc files.
-^mt-static/docs
-^mt-static/docs/.*\.txt
-^mt-static/docs/.*\.pod
-^mt-static/docs/mtweblogs.*
-^mt-static/docs/mtapi
-^mt-static/docs/mttrackback
-^mt-static/docs/mtmanual-full.html$
-^docs-.*/
-
 # Packages
 ^lib/MT/FileMgr/SFTP.pm$
 ^lib/MT/FileMgr/FTP.pm$
@@ -45,7 +122,6 @@
 ^extlib/perllocal.po
 Tangent\.pm$
 /no\.pm$
-#/ja\.pm$
 /it\.pm$
 
 # Language
@@ -63,6 +139,7 @@ lang-it
 #^tools/find-junk
 #^tools/list-index
 #^tools/list-objects
+^tools/populate
 ^tools/mt-tools
 ^tools/mt-tools.tar.gz
 ^tools/mt-tools.zip
@@ -81,6 +158,9 @@ lang-it
 plugins/feeds-app-lite/tools/
 plugins/feeds-app-lite/t/
 
+# 'Extras'
+^extras/
+
 # Build process and distribution files
 \.pre$
 ^MANIFEST
@@ -94,4 +174,5 @@ Makefile
 ^MT.*\.zip
 ^MT.*\.gz
 index\.html\..*
+readme\.html\..*
 build-language-stamp

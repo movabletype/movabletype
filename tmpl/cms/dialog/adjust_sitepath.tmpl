@@ -1,0 +1,136 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Confirm Publishing Configuration">"$>
+<$mt:setvar name="screen_type" value="restore-confirm-publishing-config"$>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function validate (f) {
+    var items = TC.getElementsByClassName('path_field');
+    for (var i = 0; i < items.length; ++i) {
+        if ((items[i].name.match(/_url/)) && ('' != items[i].value)) {
+            if (!is_valid_url(items[i].value)) {
+                alert('<__trans phrase="URL is not valid." escape="singlequotes">');
+                return false;
+            } else if (checkUrlSpaces(items[i].value)){
+                alert('<__trans phrase="You can not have spaces in the URL." escape="singlequotes">');
+                return false;
+            }
+        } else if ((items[i].name.match(/_path/)) && ('' != items[i].value)) {
+            if (checkPathSpaces(items[i].value)){
+                alert('<__trans phrase="You can not have spaces in the path." escape="singlequotes">');
+                return false;
+            } else if (!is_valid_path(items[i].value)){
+                alert('<__trans phrase="Path is not valid." escape="singlequotes">');
+                return false;
+            }
+        }
+    }
+    return true;
+}
+function checkUrlSpaces(url_){
+    if (url_.match(/\s+/)){
+        return true;
+    }
+}
+function is_valid_url(url_){
+    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+}
+function checkPathSpaces(path_){
+    if (path_.match(/\s+/)){
+        return true;
+    }
+}
+function is_valid_path(path_){
+    for(i = 0; i < path_.length; i++){
+        var buf = escape(path_.substr(i, 1));
+        if (buf.match(/^%u.*/)){
+            return false;
+        }
+        if (buf.match(/(%.{2}){2}?/)){
+            return false;
+        }
+    }
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+<form name="adjust_sitepath" id="adjust_sitepath" method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+    <input type="hidden" name="__mode" value="adjust_sitepath" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="tmp_dir" value="<mt:var name="tmp_dir" escape="html">" />
+    <input type="hidden" name="restore_upload" value="<mt:var name="restore_upload" escape="html">" />
+    <input type="hidden" name="error" value="<mt:var name="error" escape="html">" />
+    <input type="hidden" name="asset_ids" value="<mt:var name="asset_ids" escape="html">" />
+    <input type="hidden" name="files" value="<mt:var name="files" escape="html">" />
+    <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
+    <input type="hidden" name="current_file" value="<mt:var name="name" escape="html">" />
+    <input type="hidden" name="last" value="<mt:var name="last" escape="html">" />
+    <input type="hidden" name="redirect" value="<mt:var name="redirect" escape="html">" />
+    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty" escape="html">" />
+    <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
+    <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
+    <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+    <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
+
+    <div class="restore-publishing-paths">
+<mt:loop name="blogs_loop">
+        <fieldset>
+            <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
+            <mtapp:setting
+                id="site_path"
+                label="Site Path">
+                <mt:if name="old_site_path">
+                <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
+                </mt:if>
+                <div class="textarea-wrapper">
+                    <input name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="path_field full-width" value="<$mt:var name="old_site_path" escape="html"$>" />
+                </div>
+            </mtapp:setting>
+            <mtapp:setting
+                id="site_url"
+                label="Site URL">
+                <mt:if name="old_site_url">
+                <input type="hidden" name="old_site_url_<mt:var name="id" escape="html">" id="old_site_url_<mt:var name="id" escape="html">" value="<mt:var name="old_site_url" escape="html">" />
+                </mt:if>
+                <div class="textarea-wrapper">
+                    <input name="site_url_<mt:var name="id" escape="html">" id="site_url_<mt:var name="id" escape="html">" class="site_url full-width" value="<mt:var name="old_site_url" escape="html">" />
+                </div>
+            </mtapp:setting>
+            <mt:if name="old_archive_path">
+                <mtapp:setting
+                    id="archive_path"
+                    label="Archive Path">
+                    <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
+                    <div class="textarea-wrapper">
+                        <input name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="path_field full-width" value="<mt:var name="old_archive_path" escape="html">" />
+                    </div>
+                </mtapp:setting>
+            </mt:if>
+            <mt:if name="old_archive_url">
+                <mtapp:setting
+                    id="archive_url"
+                    label="<__trans phrase="Archive URL">">
+                    <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
+                    <div class="textarea-wrapper">
+                        <input name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="archive_url full-width" value="<mt:var name="old_archive_url" escape="html">" />
+                    </div>
+                </mtapp:setting>
+            </mt:if>
+        </fieldset>
+</mt:loop>
+    </div>
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                value="<__trans phrase="Continue">"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Continue (s)">"
+                class="primary-button"
+                ><__trans phrase="Continue"></button>
+        </div>
+    </div>
+</form>
+
+<mt:include name="dialog/footer.tmpl">

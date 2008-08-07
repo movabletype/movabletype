@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -11,7 +11,7 @@ use MT::Object;
 @MT::Session::ISA = qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
-        'id' => 'string(80) not null primary key',
+        'id' => 'string(80) not null',
         'data' => 'blob',
         'email' => 'string(255)',
         'name' => 'string(255)',
@@ -20,10 +20,16 @@ __PACKAGE__->install_properties({
     },
     indexes => {
         'start' => 1,
-        'kind' => 1
+        'name' => 1,
+        'kind' => 1,
     },
     datasource => 'session',
+    primary_key => 'id',
 });
+
+sub class_label {
+    MT->translate("Session");
+}
 
 sub get_unexpired_value {
     my $timeout = shift;
@@ -132,13 +138,38 @@ Active user sessions are held in 'US' records.
 The cached contents of the newsbox (top right of MT's welcome screen)
 is held in the I<single> record of kind 'NW'.
 
+=back
+
 =head1 METHODS
 
-=head2 $sess = MT::Session->get_unexpired_value($timeout,
-                                        [ $terms, [ $args, ... ] ]);
+=head2 $sess = MT::Session::get_unexpired_value($timeout[, $terms[, $args, ...]]);
 
 Fetches the specified session record, if it is current (its C<start>
 field falls within last $timeout seconds). Arguments following the
 $timeout argument are passed directly to C<MT::Object::load>.
+
+=head2 $sess->get($var)
+
+Return the value of I<var>.
+
+=head2 is_dirty
+
+Return the value of the session I<__dirty> flag.
+
+=head2 $sess->save()
+
+Save the session data and unset the I<__dirty> flag.
+
+=head2 $sess->set($var, $val)
+
+Set the I<var> to I<val> and set the session I<__dirty> flag.
+
+=head2 $sess->thaw_data()
+
+Return the session data and unset the I<__dirty> flag.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut

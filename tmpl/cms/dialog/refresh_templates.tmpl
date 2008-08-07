@@ -1,0 +1,204 @@
+<mt:if name="blog_id">
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Template Set">">
+<mt:else>
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Global Templates">">
+</mt:if>
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+function enable(id) {
+    var el = getByID(id);
+    if (el)
+        el.disabled = false;
+}
+function disable(id) {
+    var el = getByID(id);
+    if (el)
+        el.disabled = true;
+}
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = getByID("refresh_form");
+        frm.submit();
+    } else {
+        closeDialog();
+    }
+}
+function init() {
+    dialog = new Dialog.MultiPanel("refresh");
+    panels = [];
+    var panel;
+    panel = new ListingPanel("refresh");
+    panels[panels.length] = panel;
+    panel = new ListingPanel("confirm");
+    panels[panels.length] = panel;
+    dialog.setPanels(panels);
+    dialog.open({}, dialog_closed);
+}
+TC.attachLoadEvent(init);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
+    <input type="hidden" name="__mode" value="refresh_all_templates" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+
+    <div id="refresh-panel" class="hidden panel">
+
+    <mt:setvarblock name="refresh_label">
+        <mt:if name="blog_id">
+            <mt:loop name="template_set_loop"><mt:if name="selected"><__trans phrase="Refresh [_1] template set" params="<mt:var name="label" escape="html">"></mt:if></mt:loop>
+        <mt:else>
+            <__trans phrase="Refresh global templates">
+        </mt:if>
+    </mt:setvarblock>
+
+    <mtapp:setting
+        id="refresh_templates"
+        label="$refresh_label"
+        label_class="top-label"
+        show_label="0"
+        show_hint="1"
+        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
+        <div class="field-header">
+            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" /> <$mt:var name="refresh_label"$></label>
+        </div>
+    </mtapp:setting>
+
+    <mt:if name="template_set_count" gt="1">
+    <mt:setvarblock name="new_label"><__trans phrase="Apply a new template set"></mt:setvarblock>
+    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and install the selected template set."></mt:setvarblock>
+    <mt:else>
+    <mt:setvarblock name="new_label"><__trans phrase="Reset to factory defaults"></mt:setvarblock>
+    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and installs factory default template set."></mt:setvarblock>
+    </mt:if>
+
+    <mtapp:setting
+        id="clean_start"
+        label="$new_label"
+        show_label="0"
+        show_hint="1"
+        hint="$new_hint"
+        label_class="top-label">
+
+        <div class="field-header">
+            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" /> <$mt:var name="new_label"$></label>
+        </div>
+
+        <mt:if name="template_set_count" gt="1">
+        <select id="template_set" name="template_set" size="1" disabled="disabled">
+            <mt:loop name="template_set_loop">
+            <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+            </mt:loop>
+        <mt:else>
+            <mt:loop name="template_set_loop">
+            <input type="hidden" name="template_set" value="<mt:var name="key" escape="html">" />
+            </mt:loop>
+        </mt:if>
+        </select>
+
+    </mtapp:setting>
+
+
+        <div>
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
+        <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
+        </div>
+
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    class="primary-button next"
+                    ><__trans phrase="Continue"></button>
+                <button
+                    onclick="closeDialog(); return false"
+                    type="submit"
+                    class="cancel"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    ><__trans phrase="Cancel"></button>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="confirm-panel" class="hidden panel">
+        <div id="confirm-refresh">
+            <mt:if name="blog_id">
+                <p><__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:"></p>
+            <mt:else>
+                <p><__trans phrase="You have requested to <strong>refresh the global templates</strong>. This action will:"></p>
+            </mt:if>
+
+            <ul>
+                <li id="backups-message-refresh"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
+                <li><__trans phrase="potentially install new templates"></li>
+                <li><__trans phrase="overwrite some existing templates with new template code"></li>
+            </ul>
+        </div>
+
+        <div id="confirm-clean" class="hidden">
+            <mt:if name="blog_id">
+                <p><__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:"></p>
+            <mt:else>
+                <p><__trans phrase="You have requested to <strong>reset to the default global templates</strong>. This action will:"></p>
+            </mt:if>
+
+            <ul>
+                <li id="backups-message-clean"><__trans phrase="make backups of your templates that can be accessed through your backup filter"></li>
+                <mt:if name="blog_id">
+                    <li><__trans phrase="delete all of the templates in your blog"></li>
+                    <li><__trans phrase="install new templates from the selected template set"></li>
+                <mt:else>
+                    <li><__trans phrase="delete all of your global templates"></li>
+                    <li><__trans phrase="install new templates from the default global templates"></li>
+                </mt:if>
+            </ul>
+        </div>
+
+        <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
+
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="button"
+                    accesskey="s"
+                    class="primary-button close"
+                    ><__trans phrase="Confirm"></button>
+                <button
+                    onclick="closeDialog(); return false"
+                    type="submit"
+                    class="cancel"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    ><__trans phrase="Cancel"></button>
+                <!-- <button
+                    onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
+                    type="submit"
+                    accesskey="b"
+                    title="<__trans phrase="Back (b)">"
+                    ><__trans phrase="Back"></button> -->
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+<mt:include name="dialog/footer.tmpl">

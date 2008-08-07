@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -8,7 +8,6 @@ package MT::XMLRPC;
 use strict;
 
 use MT;
-use MT::ConfigMgr;
 use MT::Util qw( encode_xml );
 use MT::ErrorHandler;
 @MT::XMLRPC::ISA = qw( MT::ErrorHandler );
@@ -17,21 +16,22 @@ use MT::I18N qw( encode_text );
 sub weblogs_ping {
     my $class = shift;
     my($blog) = @_;
-    my $url = MT::ConfigMgr->instance->WeblogsPingURL
+    my $url = MT->config->WeblogsPingURL
         or return $class->error(MT->translate(
-            "No WeblogsPingURL defined in mt.cfg" ));
+            "No WeblogsPingURL defined in the configuration file" ));
     $class->ping_update('weblogUpdates.ping', $blog, $url);
 }
 
 sub mt_ping {
     my $class = shift;
     my($blog) = @_;
-    my $url = MT::ConfigMgr->instance->MTPingURL
+    my $url = MT->config->MTPingURL
         or return $class->error(MT->translate(
-            "No MTPingURL defined in mt.cfg" ));
+            "No MTPingURL defined in the configuration file" ));
     if (!ref($blog)) {
         require MT::Blog;
-        $blog = MT::Blog->load($blog);
+        $blog = MT::Blog->load($blog)
+            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
     }
     $class->ping_update('mtUpdates.ping', $blog, $url, $blog->mt_update_key);
 }
@@ -41,9 +41,10 @@ sub ping_update {
     my($method, $blog, $url, $mt_key) = @_;
     if (!ref($blog)) {
         require MT::Blog;
-        $blog = MT::Blog->load($blog);
+        $blog = MT::Blog->load($blog)
+            or return $class->error(MT->translate('Can\'t load blog #[_1].', $blog));
     }
-    my $ua = MT->new_ua;
+    my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
     my $req = HTTP::Request->new('POST', $url);
     $req->header('Content-Type' => 'text/xml');
     my $blog_name = encode_xml(encode_text($blog->name, undef, 'utf-8'));

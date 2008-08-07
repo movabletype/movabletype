@@ -1,0 +1,35 @@
+<div id="pagination-<$mt:var name="bar_position" default="top"$>" class="pagination">
+<mt:unless name="limit_none">
+    <mt:unless name="pager_json">
+        <mt:if name="offset">
+    <a href="<$mt:var name="script_url"$>?offset=0&amp;<$mt:var name="return_args" escape="html"$>" class="start"><em>&lt;&lt;</em>&nbsp;</a>
+        <mt:else>
+    <span class="start-disabled"><em>&lt;&lt;</em>&nbsp;</span>
+        </mt:if>
+        <mt:if name="prev_offset">
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="prev_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="to-start"><em>&lt;</em>&nbsp;</a>
+        <mt:else>
+    <span class="to-start-disabled"><em>&lt;</em>&nbsp;</span>
+        </mt:if>
+    <span class="current-rows"><__trans phrase="[_1] &ndash; [_2] of [_3]" params="<$mt:var name="list_start"$>%%<$mt:var name="list_end"$>%%<$mt:var name="list_total"$>"></span>
+        <mt:if name="next_offset">
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_offset_val"$>&amp;<$mt:var name="return_args" escape="html"$>" class="to-end">&nbsp;<em>&gt;</em></a>
+        <mt:else>
+    <span class="to-end-disabled">&nbsp;<em>&gt;</em></span>
+        </mt:if>
+        <mt:if name="next_max">
+    <a href="<$mt:var name="script_url"$>?offset=<$mt:var name="next_max"$>&amp;<$mt:var name="return_args" escape="html"$>" class="end">&nbsp;<em>&gt;&gt;</em></a>
+        <mt:else>
+    <span class="end-disabled">&nbsp;<em>&gt;&gt;</em></span>
+        </mt:if>
+    </mt:unless>
+</mt:unless>
+</div>
+<mt:if name="pager_json">
+<script type="text/javascript" charset="utf-8">
+/* <![CDATA[ */
+    pager_<$mt:var name="bar_position" default="top"$> = new Pager(TC.elementOrId('pagination-<$mt:var name="bar_position" default="top"$>'));
+    pager_<$mt:var name="bar_position" default="top"$>.setState(<$mt:var name="pager_json"$>);
+/* ]]> */
+</script>
+</mt:if>

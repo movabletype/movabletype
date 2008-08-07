@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::BasicSession;
 
 # fake out the require for this package since we're
@@ -26,3 +32,14 @@ __PACKAGE__->install_properties({
 # }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::BasicSession
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

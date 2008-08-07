@@ -1,0 +1,51 @@
+<mt:setvarblock name="action_buttons">
+<mt:if name="can_administer_blog">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 'id', {}, { 'mode': 'remove_user_assoc', 'singular_prompt': '<__trans phrase="Are you sure you want to remove the selected user from this blog?" escape="js">', 'plural_prompt': '<__trans phrase="Are you sure you want to remove the [_1] selected users from this blog?" params="[_1]" escape="js">' }); return false;"
+        accesskey="r"
+        title="<__trans phrase="Remove selected user(s) (r)">"
+        ><__trans phrase="Remove"></a>
+</mt:if>
+</mt:setvarblock>
+
+<mtapp:listing>
+    <mt:if name="__first__">
+        <thead>
+            <!-- for role_revoke mode -->
+            <input type="hidden" name="role_id" value="" />
+            <input type="hidden" name="author_id" value="" />
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                <th id="at-username"><__trans phrase="Username"></th>
+                <th id="at-name"><__trans phrase="Name"></th>
+                <mt:if name="filter_key" ne="commenter">
+                <th id="at-roles"><__trans phrase="Roles"></th>
+                </mt:if><mt:loop name="more_column_headers"><mt:var name="__value__"></mt:loop>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td class="cb"><input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<$mt:var name="id"$>" class="select" /></td>
+    <mt:if name="usertype_author">
+                <td class="<mt:if name="status_enabled">user-status-enabled<mt:else><mt:if name="status_pending">user-status-pending<mt:else>user-status-disabled</mt:if></mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="_USER_ENABLED">" width="13" height="9" /></td>
+                <td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+    <mt:else>
+                <td class="<mt:if name="status_trusted">status-trusted<mt:else>user-status-enabled</mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_trusted"><__trans phrase="Trusted commenter"><mt:else><__trans phrase="Commenter"></mt:if>" width="13" height="9" /></td>
+                <td><mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" /> </mt:if><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
+    </mt:if>
+                <td>
+                    <mt:if name="nickname"><span class="status-name"><mt:var name="nickname" escape="html"></span></mt:if>
+                    <mt:if name="email"><span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a></span></mt:if>
+                    <mt:if name="url"><span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a></mt:if></span>
+                </td>
+                <mt:if name="filter_key" ne="commenter">
+                <td>
+                <mt:loop name="role_loop" glue=", "><span title="<mt:var name="role_perms" escape="html">" onmouseover="DOM.addClassName(this, 'focus')" onmouseout="DOM.removeClassName(this, 'focus')"><mt:var name="role_name"><mt:if name="can_administer_blog"> <a href="javascript:void(0)" onclick="return removeMemberRole(<mt:var name="id">,<mt:var name="role_id">)" class="delete" title="<__trans phrase="Remove this role">">&nbsp;</a></mt:if></span></mt:loop></td>
+                </mt:if><mt:loop name="more_columns"><mt:var name="__value__"></mt:loop>
+            </tr>
+    <mt:if name="__last__">
+        </tbody>
+    </mt:if>
+</mtapp:listing>

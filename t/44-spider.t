@@ -2,48 +2,33 @@
 
 use strict;
 
-use Test;
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use Test::More;
 
-BEGIN { plan tests => 4 };
+BEGIN {
+    plan $ENV{MT_TEST_SPIDER}
+        ? (tests => 4)
+        : (skip_all => 'Enable spider test with MT_TEST_SPIDER environment variable')
+        ;
+}
 
 use LWP::UserAgent::Local;
 use URI;
-
-mkdir "t/sandbox";
-system('for i in `ls`; do ln -sf `pwd`/$i t/sandbox; done');
-chdir "t/sandbox";
-my $pwd = `pwd`;
-chomp $pwd;
-$ENV{MT_CONFIG} = $pwd . '/mt-config.cgi';
-
-unlink "mt-config.cgi";
-unlink "mt.cfg";
-my $db_dir = "/tmp/test-db-$ENV{USER}";
-system "rm -rf $db_dir 2>/dev/null";
-mkdir $db_dir;
-open MTCFG, ">mt-config.cgi";
-print MTCFG <<THIS;
-ObjectDriver DBM
-DataSource $db_dir
-CGIPath http://localhost/cgi-bin/sandbox/
-# To watch for warnings...
-DebugMode 1
-THIS
-close MTCFG;
-
-system("perl -Ilib ../blog-common.pl ./mt.cfg");
+use MT::Test qw(:db :data);
 
 my $username = "Chuck D"; # Melody
 my $password = "bass"; # Nelson
 
 unlink "t/cookie.jar";
 use HTTP::Cookies;
+my $cgipath = MT->config->CGIPath;
+$cgipath =~ s/\/*$//;
 my $cookie_jar = HTTP::Cookies->new(file => "t/cookie.jar");
-my $ua = new LWP::UserAgent::Local({ ScriptAlias => '/cgi-bin/sandbox/',
+my $ua = new LWP::UserAgent::Local({ ScriptAlias => "$cgipath/",
                                      AddHandler => 'cgi-script .cgi',
                                      cookie_jar => $cookie_jar,
                                  });
-my $start_link = "http://local.local/cgi-bin/sandbox/mt.cgi?username=$username&password=$password";
+my $start_link = "http://localhost" . $cgipath . "/mt.cgi?username=$username&password=$password";
 my $start_url = new URI($start_link);
 
 my %link_queue;
@@ -61,7 +46,7 @@ my %modes_seen;
 my $skip_pattern = qr{logout|export|magic_token};
 my $must_match = qr{(/cgi-bin/|^\?).*mt\.cgi};
 my $warning_pattern = qr{Uninitialized};
-my $good_pattern = qr{Copyright .* 2001-2007 Six Apart\. All Rights Reserved\.};
+my $good_pattern = qr{Copyright .* 2001-\d+ Six Apart\. All Rights Reserved\.};
 my $bad_pattern = qr{<input\s+type="submit"\s+value="Log In" />|time\s+to\s+upgrade!}i;
 
 my $verbose = 0;
@@ -88,6 +73,7 @@ while (keys %link_queue && $count < 500) {
         my $resp = $ua->request($req) or next;
 
         #print STDERR "Response: [" . $resp->content() . "]\n" if $verbose;
+        use Data::Dumper;
         print STDERR $resp->content() unless $resp->content() =~ m/$good_pattern/;
 
         push @failures, $curr_link unless $resp->is_success;

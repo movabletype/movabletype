@@ -1,0 +1,37 @@
+<mtapp:listing empty_message="<__trans phrase="No log records could be found." escape="html">">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th id="log-message" colspan="2"><__trans phrase="Log Message"></th>
+        <mt:if name="system_overview_nav">
+            <th id="weblog"><__trans phrase="Blog"></th>
+        </mt:if>
+            <th id="action-by"><__trans phrase="_LOG_TABLE_BY"></th>
+            <th id="date"><__trans phrase="Date"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
+    <mt:if name="log_detail">
+            <td class="details-toggle si"><a href="javascript:void(0)" onclick="toggleActive('log-detail-<$mt:var name="id"$>'); toggleActive('log-detail-parent-<$mt:var name="id"$>'); return false;"><span>Toggle Details</span></a></td>
+    <mt:else>
+            <td class="details-toggle si">&nbsp;</td>
+    </mt:if>
+            <td class="log-message"><$mt:var name="log_message" escape="html"$><mt:if name="system_overview_nav"><mt:if name="log_ip"> (<__trans phrase="IP: [_1]" params="<$mt:var name="log_ip"$>">)</mt:if></mt:if></td>
+    <mt:if name="system_overview_nav">
+            <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=view_log&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+    </mt:if>
+            <td class="action-by"><mt:if name="username"><$mt:var name="username"$><mt:else><__trans phrase="[_1]" params="<$mt:var name="log_ip"$>"></mt:if></td>
+            <td class="date"><mt:if name="is_last"><a name="last"></a></mt:if><span title="<$mt:var name="created_on_formatted"$>"><mt:if name="created_on_relative"><mt:if name="dates_relative"><$mt:var name="created_on_relative"$><mt:else><$mt:var name="created_on_formatted"$></mt:if><mt:else><$mt:var name="created_on_formatted"$></mt:if></span></td>
+        </tr>
+    <mt:if name="log_detail">
+        <tr class="log-detail <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="log-detail-<$mt:var name="id"$>">
+            <td>&nbsp;</td>
+            <td colspan="4"><div class="detail-inner"><$mt:var name="log_detail" escape="html"$></div></td>
+        </tr>
+    </mt:if>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

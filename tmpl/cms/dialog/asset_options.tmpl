@@ -1,0 +1,153 @@
+<mt:unless name="direct_asset_insert"><mt:setvarblock name="screen_type">dialog-screen new-asset</mt:setvarblock></mt:unless>
+<mt:setvarblock name="page_title"><__trans phrase="File Options"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+    // array of tag names
+    var tagList;
+
+    function tagSplit(str) {
+        var delim = RegExp.escape(tag_delim);
+        var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+        str = str.replace(/(^\s+|\s+$)/g, '');
+        var tags = [];
+        while (str.length && str.match(delim_scan)) {
+            str = str.substr(RegExp.$1.length);
+            var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+            tag = tag.replace(/(^\s+|\s+$)/g, '');
+            tag = tag.replace(/\s+/g, ' ');
+            if (tag != '') tags.push(tag);
+        }
+        return tags;
+    }
+
+    var autoTag;
+    <mt:if name="tags_js">
+    tagList = <mt:var name="tags_js">;
+    </mt:if>
+
+    function init()
+    {
+        <mt:if name="tags_js">initTags();</mt:if>
+    }
+
+    var tagPos = 0;
+    function initTags() {
+        if (!tagList || tagList.length == 0) return;
+        autoTag = new TC.TagComplete("tags", tagList);
+        autoTag.delimiter = tag_delim;
+    }
+
+    TC.attachLoadEvent( init );
+
+    function presubmit(f) {
+        var mode = 'complete_upload';
+    <mt:if name="entry_insert">
+        mode = 'asset_insert';
+    <mt:else name="asset_select">
+        mode = 'asset_insert';
+    <mt:else name="can_create_post">
+        if (f.new_entry && f.new_entry.checked) mode = 'start_upload_entry';
+    </mt:if>
+        if (mode != 'asset_insert') {
+            f.target = "_top";
+        }
+        f['__mode'].value = mode;
+        return true;
+    }
+
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+<form action="<mt:var name="script_url">" method="post" onsubmit="return presubmit(this)">
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="id" value="<mt:var name="asset_id">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+    <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+    <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
+    <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mt:unless name="direct_asset_insert">
+    <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+    <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+    </mt:unless>
+    <mt:if name="entry_insert">
+    <input type="hidden" name="new_entry" value="1" />
+    </mt:if>
+<mt:unless name="is_image">
+    <input type="hidden" name="link" value="1" />
+</mt:unless>
+
+<mt:unless name="direct_asset_insert">
+    <div>
+        <div id="asset_details">
+    <mtapp:setting
+        id="file_name"
+        label_class="top-label"
+        label="<__trans phrase="Name">">
+            <div class="textarea-wrapper">
+                <input type="text" name="label" id="file_name" value="<mt:var name="fname" escape="html">" class="full-width">
+            </div>
+    </mtapp:setting>
+    <mtapp:setting
+        id="file_desc"
+        label_class="top-label"
+        label="<__trans phrase="Description">">
+            <textarea name="description" id="file_desc" cols="" rows="" class="full-width short"></textarea>
+    </mtapp:setting>
+    <mtapp:setting
+        id="file_tags"
+        label_class="top-label"
+        label="<__trans phrase="Tags">">
+            <div class="textarea-wrapper">
+                <input type="text" name="tags" id="file_tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" />
+            </div>
+    </mtapp:setting>
+        </div>
+    <mt:unless name="asset_select">
+        <mt:unless name="entry_insert">
+            <mt:if name="can_create_post">
+                <mtapp:setting
+                    id="new_entry"
+                    label="<__trans phrase="Create entry using this uploaded file">"
+                    label_class="no-header"
+                    hint=""
+                    show_hint="0"
+                    help_page="file_upload"
+                    help_section="creating_a_new_entry">
+                    <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+                    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+                </mtapp:setting>
+            </mt:if>
+        </mt:unless>
+    </mt:unless>
+</mt:unless>
+
+<mt:var name="options_snippet">
+    </div>
+    <div class="actions-bar">
+        <div class="actions-bar-inner actions">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Finish (s)">"
+                class="primary-button"
+                ><__trans phrase="Finish"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </div>
+    </div>
+</form>
+
+<mt:include name="dialog/footer.tmpl">

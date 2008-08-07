@@ -1,14 +1,13 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Serialize;
-use strict;
 
-use vars qw( $VERSION );
-$VERSION = 2;
+use strict;
+our $VERSION = 2;
 
 {
     my %Types = (
@@ -26,8 +25,7 @@ $VERSION = 2;
 my $default_serializer;
 sub _default_serializer {
     return $default_serializer if $default_serializer;
-    require MT::ConfigMgr;
-    $default_serializer = new MT::Serialize(MT::ConfigMgr->instance->Serializer);
+    $default_serializer = new MT::Serialize(MT->config->Serializer);
 }
 
 sub serialize {
@@ -256,7 +254,7 @@ MT::Serialize - Data serialization library
 
 =head1 SYNOPSIS
 
-    my $serializer = MT::Serialize->new(MT::ConfigMgr->instance->Serializer);
+    my $serializer = MT::Serialize->new(MT->config->Serializer);
 
     my $data = { 'this' => 'is', 'my' => 'data' };
     my $frozen = $serializer->serialize( \$data );
@@ -292,6 +290,10 @@ should pass through a reference to the hashref.
 Converts a serialized bytestream given back into the original Perl data
 structure.  It returns a reference to whatever data structure was
 reconstructed.
+
+=head2 no_utf8
+
+This function removes UTF-8 from scalars.
 
 =head1 COMPATIBILITY NOTES
 

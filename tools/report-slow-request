@@ -1,0 +1,134 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+package MT::Tool::ReportSlowRequest;
+use strict;
+
+use lib "./lib";
+use base qw( MT::Tool );
+
+use List::Util qw( min );
+use Time::HiRes qw( time );
+use MT;
+use MT::Util::LogProcessor;
+use Data::Dumper;
+
+my ($arg_day, $arg_logdir, $arg_sample, $arg_slow, $arg_debug, $arg_dump);
+
+sub help {
+    return q{
+        --logdir <dir>    Look for logs in directory <dir>. By default, logs
+                          in the current directory are analyzed.
+        --sample <num>    ?
+        --slow <secs>     Number of seconds after which a request is listed
+                          as one of the slowest. By default, requests over 2
+                          seconds are considered the slowest.
+        --day <name>      The name of the day to examine; either 'today',
+                         'yesterday', or a date in the format YYYY-MM-DD.
+        --debug           Enable debugging output.
+        --dump            ?
+    };
+}
+
+sub usage {
+}
+
+sub options {
+    return (
+        'logdir=s' => \$arg_logdir,
+        'sample=i' => \$arg_sample,
+        'slow=i'   => \$arg_slow,
+        'day=s'    => \$arg_day,
+        'debug'    => \$arg_debug,
+        'dump'     => \$arg_dump,
+    );
+}
+
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
+
+    $arg_slow ||= 2;
+
+    my $proc = MT::Util::LogProcessor->new(
+        {
+            debug        => $arg_debug,
+            logdir       => $arg_logdir || '.',
+            sample       => $arg_sample,
+            day          => $arg_day || 'yesterday',
+            file_pattern => 'pl-\d{8}.log',
+        }
+    );
+
+    my %stash = ( today => $proc->day );
+    my ( $total_records, $elapsed ) = $proc->process_log_files(
+        sub {
+            my ($rec) = @_;
+
+            my $secs = int $rec->{time_total};
+
+            my $bucket = $secs > 10 ? 10 : $secs;
+            $stash{by_seconds}[$bucket]++;
+
+            $stash{total_requests}++;
+
+            if ( $secs > $arg_slow - 1 ) {
+                push @{ $stash{slow} }, $rec;
+            }
+        }
+    );
+
+    printf "Processed %d records in %.02f seconds; speed: %.02f recs/sec\n",
+      $total_records, $elapsed, $total_records / ( $elapsed || 1 )
+      if $arg_debug;
+
+    for my $bucket ( 0 .. $#{ $stash{by_seconds} } ) {
+        my $count = $stash{by_seconds}[$bucket] || 0;
+        $stash{restime_histogram}[$bucket] = {
+            count => $count,
+            range => $bucket == 10
+            ? '10+ sec'
+            : $bucket . '-' . ( $bucket + 1 ) . 's',
+            percent => int( $count / $stash{total_requests} * 100 ) || 1,
+        };
+    }
+
+    $stash{slow} =
+      [ sort { $b->{time_total} <=> $a->{time_total} } @{ $stash{slow} || [] } ];
+
+    report( \%stash );
+}
+
+sub report {
+    my ($stash) = @_;
+
+    print "Response time histogram:\n";
+    for my $row ( @{ $stash->{restime_histogram} } ) {
+        printf "%s: %s (%s%%)\n", $row->{range}, $row->{count}, $row->{percent};
+    }
+
+    print "Slowest requests:\n";
+    for my $row ( @{ $stash->{slow} } ) {
+        printf "%s\n", $row->{url};
+        for my $key ( keys %$row ) {
+            next if $key !~ /^time_/;
+            my $secs = $row->{$key};
+            next
+              if $key eq 'time_mem_start'
+              || $key eq 'time_mem_end'
+              || $key eq 'time_total'
+              || $secs < 0.01;
+            printf "%s: %s\n", $key, $secs;
+        }
+    }
+}
+
+__PACKAGE__->main() unless caller;
+
+1;
+

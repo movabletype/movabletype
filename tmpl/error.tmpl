@@ -1,130 +1,33 @@
+<mt:var name="error_page" value="1">
+<mt:setvarblock name="page_title"><__trans phrase="Movable Type"></mt:setvarblock>
+<mt:include name="cms/include/chromeless_header.tmpl">
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+        <mt:if name="error_config_file">
+        <h2><__trans phrase="Missing Configuration File"></h2>
 
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=<TMPL_VAR NAME=LANGUAGE_ENCODING>" />
-	<meta http-equiv="content-language" content="en" />
-	
-	<title>Movable Type Publishing Platform</title>
-	
-	<style type="text/css">
-		<!--
-		
-			body {
-				font-family : Trebuchet MS, Tahoma, Verdana, Arial, Helvetica, Sans Serif;
-				font-size : smaller;
-				padding-top : 0px;
-				padding-left : 0px;
-				margin : 0px;
-				padding-bottom : 40px;
-				width : 80%;
-				border-right : 1px dotted #8faebe;
-			}
-			
-			h1 {
-				background : #8faebe;
-				font-size: large;
-				color : white;
-				padding : 10px;
-				margin-top : 0px;
-				margin-bottom : 20px;
-				text-align : center;
-			}
-			
-			h2 {
-				color: #fff;
-				font-size: small;
-				background : #8faebe;
-				padding : 5px 10px 5px 10px;
-				margin-top : 30px;
-				margin-left : 40px;
-				margin-right : 40px;
-			}
-			
-			h3 {
-				color: #333;
-				font-size: small;
-				margin-left : 40px;
-				margin-bottom : 0px;
-				padding-left : 20px;
-			}
-	
-			p {
-				padding-left : 20px;
-				margin-left : 40px;
-				margin-right : 60px;
-				color : #666;
-			}
-			
-			ul {
-				padding-left : 40px;
-				margin-left : 40px;
-			}
-			
-			.error-message {
-				margin-left : 60px;
-				margin-right : 60px;
-				padding : 20px;
-				border : 1px solid #d44;
-				background : #fee;
-				color : #666;
-			}
+        <p><__trans phrase="_ERROR_CONFIG_FILE"></p>
+        <mt:else>
+        <mt:if name="error_database_connection">
+        <h2><__trans phrase="Database Connection Error"></h2>
 
-			.info {
-				margin-left : 60px;
-				margin-right : 60px;
-				padding : 20px;
-				border : 1px solid #666;
-				background : #eaf2ff;
-				color : black;
-			}
-		
-			.login {
-				width: 250px;
-				margin: 30px auto 10px auto;
-				border-width: 2px;
-				border-style: solid;
-				border-color: #EEE #D5D5D5 #D5D5D5 #EEE;
-				padding: 10px 0;
-				color: #000;
-				font-size: large;
-				text-align: center;
-				background-color: #E5E5E5;
-			}
-		
-		//-->
-	</style>
-</head>
+        <p><__trans phrase="_ERROR_DATABASE_CONNECTION"></p>
+        <mt:else>
+        <mt:if name="error_cgi_path">
+        <h2><__trans phrase="CGI Path Configuration Required"></h2>
 
-<body>
+        <p><__trans phrase="_ERROR_CGI_PATH"></p>
+        <mt:else>
 
-<h1>Movable Type</h1>
+        <h2><__trans phrase="An error occurred"></h2>
 
-<TMPL_IF NAME=ERROR_CONFIG_FILE>
-<h2><MT_TRANS phrase="Missing Configuration File"></h2>
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
 
-<p><MT_TRANS phrase="_ERROR_CONFIG_FILE"></p>
-<TMPL_ELSE>
-<TMPL_IF NAME=ERROR_DATABASE_CONNECTION>
-<h2><MT_TRANS phrase="Database Connection Error"></h2>
+        </mt:if>
+        </mt:if>
+        </mt:if>
 
-<p><MT_TRANS phrase="_ERROR_DATABASE_CONNECTION"></p>
-<TMPL_ELSE>
-<TMPL_IF NAME=ERROR_CGI_PATH>
-<h2><MT_TRANS phrase="CGI Path Configuration Required"></h2>
-
-<p><MT_TRANS phrase="_ERROR_CGI_PATH"></p>
-<TMPL_ELSE>
-
-<h2><MT_TRANS phrase="An error occurred"></h2>
-
-<div class="error-message"><TMPL_VAR NAME=ERROR></div>
-
-</TMPL_IF>
-</TMPL_IF>
-</TMPL_IF>
-
-</body>
-
-</html>
+<mt:include name="../cms/include/chromeless_footer.tmpl">

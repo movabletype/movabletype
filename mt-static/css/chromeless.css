@@ -1,0 +1,585 @@
+/* Chromeless ------------------------------------------------------------ */
+
+body{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    background-color: #fff;
+}
+
+h1, h2, p, ul {
+    margin-bottom: 12px;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+strong {
+    font-weight: bold;
+}
+
+em {
+    font-style: italic;
+}
+
+a:link,
+a:visited {
+    color: #33789c;
+}
+
+a:hover,
+a:active {
+    color: #a2ad00;
+}
+
+#container {
+    margin: 50px auto 0;
+    text-align: left;
+    width: 360px;
+}
+
+.ready {
+    font-weight: bold;
+    color: #93b06b;
+}
+.note {
+    clear: both;
+    padding: 10px 0 10px 0;
+}
+#page-title {
+    font-size: 24px;
+    font-weight: normal;
+    margin-top: 10px;
+}
+p.intro {
+    font-size: 14px;
+    font-weight: normal;
+}
+.hint {
+    line-height: 1.1;
+    font-size: 11px;
+    padding-top: 2px;
+}
+#db_hint {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+#db_hint p {
+    margin-bottom: 3px;
+}
+#error_more {
+    margin: 10px 0 15px;
+    font-weight: normal;
+    overflow: auto;
+    padding: 5px 0 10px 0;
+}
+#continue {
+    margin-bottom: 20px;
+}
+.module-name {
+    font-weight: bold;
+}
+.module-name a {
+    color: black;
+    text-decoration: none;
+}
+.module-name a:hover {
+    text-decoration: underline;
+}
+
+#brand {
+    position: relative;
+    margin: 30px 0 0 20px;
+    background: url('../images/chromeless/mt_logo.gif') no-repeat;
+    height: 34px;
+    width: 192px;
+}
+
+#container-inner {
+    border: 1px solid #cfdde5;
+    background: url('../images/chromeless/chromeless_bg_b.png') repeat-x bottom center;
+}
+
+#content #content-inner {
+    margin: 0 18px;
+}
+
+#nav {
+    float: right;
+    margin-right: 20px;
+}
+
+#nav .step {
+    float: left;
+    background: url('../images/chromeless/nav_off.png');
+    height: 15px;
+    width: 14px;
+}
+
+#nav .step_active {
+    float: left;
+    background: url('../images/chromeless/nav_on.png');
+    height: 15px;
+    width: 14px;
+}
+
+.edit-entry .actions-bar-top,
+.edit-entry .actions-bar-bottom {
+    display: none;
+}
+#container.show-actions-bar-top .actions-bar-top {
+    display: block;
+}
+#container.show-actions-bar-bottom .actions-bar-bottom {
+    display: block;
+}
+
+ul li {
+    list-style-type: disc;
+    margin-left: 15px;
+}
+
+fieldset {
+    margin: 0;
+}
+
+.field {
+    border: 0;
+    margin-bottom: .75em;
+}
+
+.field-header label {
+    font-weight: bold;
+}
+
+.field-content select,
+.field-content input.ti,
+.field-content textarea.ta,
+.field-content input.pw {
+    margin: 0;
+    width: 318px;
+}
+
+#header {
+    background: transparent #fff;
+}
+#header .comment_signin_title {
+    margin-left: 20px;
+}
+
+#main-content {
+    position: relative;
+}
+
+#main-content-inner {
+    margin-bottom: 10px;
+}
+
+.comment_signin_options {
+    position: absolute;
+    left: 341px;
+    width: 200px;
+    margin-top: -60px;
+}
+
+.comment_signin_options p {
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.comment_signin_options li {
+    margin-left: 0;
+    list-style: none;
+    height: 26px;
+}
+
+.choice_on,
+.choice_on a {
+    color: #fff;
+}
+
+.choice_on {
+    background: #a3becc url('../images/comment/signin_on.png') no-repeat right center;
+}
+
+.choice_off,
+.choice_off a {
+    color: #000;
+    background-color: #fff;
+}
+
+.signin_logo {
+    float: left;
+    width: 36px;
+    height: 26px;
+}
+
+.choice_on .signin_logo {
+    background: url('../images/comment/signin_logo_on.png') no-repeat center;
+}
+
+.auth_name {
+    padding-top: .45em;
+}
+
+#packages-list li {
+    margin-bottom: .5em;
+}
+
+.input-hint {
+    color:#999;
+}
+
+.msg a.close-me {
+    display: none;
+}
+
+h3 {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+table.show-admin {
+    margin-bottom: 10px;
+    width: 99%;
+    border: 1px solid #cfdde5;
+    background-color: #fff;
+}
+table.show-admin th {
+    color: #666;
+    padding: 1%;
+    overflow: hidden;
+}
+table.show-admin td {
+    width: 32%;
+    padding: 1px 1% 0 1%;
+    overflow: hidden;
+}
+
+/* Corners -------------------------------------------------------------------------------- */
+
+#ctl, #ctr,
+#cbl, #cbr {
+    background: url('../images/chromeless/chromeless_corners.gif') no-repeat;
+}
+#ctl, #ctr {
+    width: 10px;
+    height: 20px;
+    position: relative;
+    top: -1px;
+    z-index:5;
+}
+#ctl {
+    background-position: top left;
+    left: -1px;
+    float: left;
+}
+#ctr {
+    background-position: top right;
+    left: 1px;
+    float: right;
+}
+#cbl, #cbr {
+    width: 14px;
+    height: 115px;
+    position: relative;
+    top: -114px;
+    z-index:4;
+}
+#cbl {
+    background-position: bottom left;
+    left: -1px;
+    float: left;
+}
+#cbr {
+    background-position: bottom right;
+    left: 1px;
+    float: right;
+}
+
+/* Wide Styles -------------------------------------------------------------------------------- */
+
+.error-screen #container {
+    width: 760px;
+}
+
+.chromeless-wide #ctl, .chromeless-wide #ctr,
+.chromeless-wide #cbl, .chromeless-wide #cbr {
+    display: none;
+}
+.chromeless-wide #container-inner {
+    background: none;
+}
+.chromeless-wide #brand {
+    position: absolute;
+    top: 0;
+    margin: 15px 0 0 20px;
+    background: url('../images/chromeless/movable-type-logo.gif') no-repeat 0 7px;
+    height: 34px;
+    width: 192px;
+}
+.chromeless-wide {
+    background: url('../images/chromeless/chromeless_top_bg.gif') repeat-x;
+    padding-top: 59px;
+}
+.chromeless-wide #container {
+    margin-top: 10px;
+}
+.chromeless-wide #container-inner {
+    border:0;
+}
+.chromeless-wide #content {
+    margin: 0;
+}
+.chromeless-wide #footer .inner {
+    border-top: 1px solid #ccc;
+    padding-top: 10px;
+    margin: 0 18px;
+}
+
+
+/* Progress Bar ---------------------------------------------------------------------------------- */
+
+.progress-bar {
+    height: 20px;
+    width: 322px;
+    background: url('../images/progress-bar.gif') repeat-x 100% 0;
+    border: 1px solid #9CBCCB;
+}
+.progress-bar span {
+    display: none;
+}
+
+.progress-bar-indeterminate {
+    background: url('../images/progress-bar-indeterminate.gif') repeat-x 0 0;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.action-buttons {
+    height: 1%;  /*IE6 Hack*/
+}
+
+/* Buttons ---------------------------------------------------------------------------------- */
+
+/* Buttons */
+.actions-bar .actions a,
+.actions-bar .actions button,
+.actions-bar .actions select {
+    float: left;
+    margin: 0 5px 0 0;
+}
+.dialog .actions-bar .actions a,
+.dialog .actions-bar .actions button,
+.dialog .actions-bar .actions select {
+    float: right;
+    margin: 0 0 0 5px;
+}
+.actions-bar .actions .plugin-actions a,
+.actions-bar .actions .plugin-actions button,
+.actions-bar .actions .plugin-actions select {
+    margin: 0 0 0 5px;
+}
+.actions-bar .actions a:link,
+.actions-bar .actions a:visited,
+.actions-bar .actions button {
+    display: block;
+    background: #333 url('../images/buttons/button.gif') no-repeat 0 center;
+    border: none;
+    border-top: 1px solid #d4d4d4;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 1.3;
+    text-decoration: none;
+    color: #eee;
+    cursor: pointer;
+    padding: 2px 10px 4px;
+}
+.actions-bar .actions button {
+    width: auto;
+    overflow: visible;
+    padding: 2px 10px 1px; /* IE6 */
+}
+.actions-bar .actions button[type] {
+    padding: 3px 10px 3px; /* Firefox */
+}
+.actions-bar .actions a {
+    padding: 3px 10px 4px !important; /* Firefox */
+}
+*:first-child+html button[type]{
+    padding: 4px 10px 3px; /* IE7 */
+}
+.actions-bar .actions button.primary-button,
+.actions-bar .actions a.primary-button {
+    background-image: url('../images/buttons/button-primary.gif');
+}
+.system .actions-bar .actions button.primary-button,
+.system .actions-bar .actions a.primary-button {
+    background-image: url('../images/buttons/button-primary-system.gif');
+}
+.actions-bar .actions button.disabled-button,
+.actions-bar .actions a.disabled-button {
+    background-image: url('../images/buttons/button-primary-disabled.gif');
+    background-image: url('../images/buttons/button.gif');
+}
+.system .actions-bar .actions button.disabled-button,
+.system .actions-bar .actions a.disabled-button {
+    background-image: url('../images/buttons/button-primary-disabled-system.gif');
+    background-image: url('../images/buttons/button.gif');
+}
+
+.actions-bar .actions a:hover,
+.actions-bar .actions a:active,
+.actions-bar .actions button:hover {
+    color: #fff;
+    background-color: #666;
+    background-position: -500px center;
+}
+
+.buttons a,
+.buttons button,
+.buttons select, 
+.listing .actions-bar .actions a,
+.listing .actions-bar .actions button,
+.listing .actions-bar .actions select, 
+.actions-bar .plugin-actions a,
+.actions-bar .plugin-actions button,
+.actions-bar .plugin-actions select {
+    margin: 0 5px 0 0;
+    font-size: 12px;
+}
+.listing .actions-bar .actions select {
+    margin-left: 5px;
+}
+
+.buttons a:link,
+.buttons a:visited,
+.buttons button,
+.listing .actions-bar .actions a:link,
+.listing .actions-bar .actions a:visited,
+.listing .actions-bar .actions button,
+.actions-bar .plugin-actions a:link,
+.actions-bar .plugin-actions a:visited,
+.actions-bar .plugin-actions button {
+    color: #33789c !important;
+    border: 1px solid #85afc4;
+    border-top-color: #cddee7;
+    border-left-color: #cddee7;
+    padding: 1px 2px;
+    background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
+    margin: 0 5px 0 0;
+}
+.system .buttons a,
+.system .buttons button,
+.system .listing .actions-bar .actions a,
+.system .listing .actions-bar .actions button,
+.system .actions-bar .plugin-actions a,
+.system .actions-bar .plugin-actions button {
+    color: #7f8833 !important;
+    border-color: #a2a48d;
+    border-top-color: #c9ccb0;
+    border-left-color: #c9ccb0;
+    background-image: url('../images/buttons/button-list-system.gif');
+}
+.buttons a:link,
+.buttons a:visited,
+.buttons button {
+    margin: 0 2px 0 0;
+}
+.actions-bar .plugin-actions a:link,
+.actions-bar .plugin-actions a:visited,
+.actions-bar .plugin-actions button {
+    margin: 0;
+}
+.buttons button,
+.listing .actions-bar .actions button,
+.actions-bar .plugin-actions button {
+    width: auto;
+    overflow: visible;
+}
+
+.buttons a:hover,
+.buttons a:active,
+.buttons button:hover,
+.listing .actions-bar .actions a:hover,
+.listing .actions-bar .actions a:active,
+.listing .actions-bar .actions button:hover,
+.actions-bar .plugin-actions a:hover,
+.actions-bar .plugin-actions a:active,
+.actions-bar .plugin-actions button:hover {
+    color: #33789c !important;
+    background-position: 50% 30%;
+}
+.system .buttons a:hover,
+.system .buttons a:active,
+.system .buttons button:hover,
+.system .listing .actions-bar .actions a:hover,
+.system .listing .actions-bar .actions a:active,
+.system .listing .actions-bar .actions button:hover,
+.system .actions-bar .plugin-actions a:hover,
+.system .actions-bar .plugin-actions a:active,
+.system .actions-bar .plugin-actions button:hover {
+    color: #7f8833 !important;
+}
+
+/* Actions Bar Chromeless ---------------------------------------------------------------------------------- */
+
+.dialog .actions-bar {
+    margin-bottom: 10px;
+}
+
+.dialog .actions-bar-login .actions a,
+.dialog .actions-bar-login .actions button,
+.dialog .actions-bar-login .actions select {
+    float: left;
+    margin: 0 5px 0 0;
+}
+
+
+/* Upgrade ---------------------------------------------------------------------------------- */
+
+.upgrade .upgrade-process {
+    overflow: auto;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fafafa;
+    height: 200px;
+}
+
+/* Wizard ---------------------------------------------------------------------------------- */
+
+.mt-config-file-path {
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 2.75em;
+    font-weight:bold;
+}
+
+/* Profile ---------------------------------------------------------------------------------- */
+
+ul#profile-data li {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+#profile_userpic-field .field-content label {
+    display: block;
+    margin-top: 5px;
+}
+
+.mt-profile-edit form {
+    margin-bottom: .75em;
+}
+
+.custom-field-radio-list {
+    margin-bottom: .25em;
+}
+.custom-field-radio-list li {
+    list-style: none;
+    margin-left: 0;
+}

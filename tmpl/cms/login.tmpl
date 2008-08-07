@@ -1,11 +1,20 @@
-<TMPL_IF NAME=IS_BOOKMARKLET>
-<TMPL_INCLUDE NAME="header-popup.tmpl">
-<TMPL_ELSE>
-<TMPL_INCLUDE NAME="header.tmpl">
-</TMPL_IF>
+<mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
 
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
+// if this loads within our modal dialog iframe, force the user to
+// login from the 'top' of the browser.
+if (window.top && (window.top.location != window.location)) {
+    // strip any parameters to return them to the main menu,
+    // since leaving them will display the modal dialog in the
+    // full window.
+    var loc = window.location.href;
+    loc = loc.replace(/\?.+/, '');
+    window.top.location.href = loc;
+}
+
 function init() {
     var u = getByID("username");
     if (u.value != '') {
@@ -16,45 +25,61 @@ function init() {
     }
 }
 TC.attachLoadEvent(init);
-//-->
+/* ]]> */
 </script>
 
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<TMPL_LOOP NAME=QUERY_PARAMS>
-<input type="hidden" name="<TMPL_VAR NAME=NAME ESCAPE=HTML>" value="<TMPL_VAR NAME=VALUE ESCAPE=HTML>" />
-</TMPL_LOOP>
-<TMPL_IF NAME=IS_BOOKMARKLET>
-<input type="hidden" name="is_bm" value="1" />
-</TMPL_IF>
+<form method="post" action="<mt:var name="script_url">">
+<mt:loop name="query_params">
+<input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
+</mt:loop>
 
-<TMPL_IF NAME=LOGGED_OUT>
-<h4 class="message"><MT_TRANS phrase="Your Movable Type session has ended. If you wish to log in again, you can do so below."></h4>
-<TMPL_ELSE>
-<TMPL_IF NAME=LOGIN_AGAIN>
-<h4 class="message"><MT_TRANS phrase="Your Movable Type session has ended. Please login again to continue this action."></h4>
-<TMPL_ELSE>
-<TMPL_IF NAME=ERROR>
-<div class="error-message"><TMPL_VAR NAME=ERROR></div>
-</TMPL_IF>
-</TMPL_IF>
-</TMPL_IF>
-
-<p><label for="username"><MT_TRANS phrase="Username"></label><br />
-<input name="username" id="username" size="20" /></p>
-
-<p><label for="password"><MT_TRANS phrase="Password"></label><br />
-<input type="password" name="password" id="password" size="20" /></p>
-
-<p><label><MT_TRANS phrase="Remember me?"> <input type="checkbox" name="remember" value="1" /></label></p>
-
-<p><input type="submit" name="submit" value="<MT_TRANS phrase="Log In">" /></p>
-
-<p><a href="#" onclick="window.open('<TMPL_VAR NAME=MT_URL>?__mode=start_recover', 'recover', 'width=370,height=250'); return false"><MT_TRANS phrase="Forgot your password?"></a></p>
-
+<mt:if name="logged_out">
+    <mt:if name="delegate_auth">
+        <mtapp:statusmsg
+            id="delegate_auth_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended.">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mtapp:statusmsg
+            id="session_end_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended. If you wish to sign in again, you can do so below.">
+        </mtapp:statusmsg>
+    </mt:if>
+<mt:else>
+    <mt:if name="login_again">
+        <mtapp:statusmsg
+            id="action_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended. Please sign in again to continue this action.">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mt:if name="error">
+            <mtapp:statusmsg
+                id="generic-error"
+                class="error" can_close="0">
+                <mt:var name="error">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+</mt:if>
+<mt:unless name="delegate_auth">
+    <mt:var name="login_fields">
+    <mt:if name="can_recover_password">
+        <div class="left"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
+    </mt:if>
+        <div class="actions-bar">
+            <div class="actions-bar-inner pkg actions">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Sign In (s)">"
+                    class="primary-button"
+                    ><__trans phrase="Sign In"></button>
+            </div>
+        </div>
+</mt:unless>
 </form>
 
-<TMPL_IF NAME=IS_BOOKMARKLET>
-<TMPL_INCLUDE NAME="footer-popup.tmpl">
-<TMPL_ELSE>
-<TMPL_INCLUDE NAME="footer.tmpl">
-</TMPL_IF>
+<mt:include name="include/chromeless_footer.tmpl">

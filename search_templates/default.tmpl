@@ -1,18 +1,26 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
 <head>
-   <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
-   <meta name="generator" content="<$MTProductName version="1"$>" />
-   
-   <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="<$MTProductName version="1"$>" />
+<mt:IfBlog>
+    <mt:IfNonEmpty tag="Link" template="styles">
+    <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+    <mt:else>
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    </mt:IfNonEmpty>
+<mt:else>
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+</mt:IfBlog>
 <MTIgnore>
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
 </MTIgnore>
 <MTNoSearch><MTElse>
-   <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
 </MTElse></MTNoSearch>      
-   <title><MT_TRANS phrase="Search Results"></title>
+    <title><MT_TRANS phrase="Search Results"></title>
 </head>
 <body class="<MTNoSearch>layout-one-column<MTElse>layout-two-column-right</MTElse></MTNoSearch> mt-search-results">
    <div id="container">
@@ -36,7 +44,7 @@
                       <h2 class="search-results-header"><MT_TRANS phrase="Search this site"></h2>
                       <form method="post" action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
                          <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
-                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString encode_html="1"$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
+                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
                          <p id="search-options"><input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase="Match case"> <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase="Regex search"></p>
                       </form>
                       </MTIfStraightSearch>
@@ -77,6 +85,9 @@
                           <MTBlogResultFooter>
                               </div>
                           </MTBlogResultFooter>
+                          <MTIfMaxResultsCutoff>
+                          <MT_TRANS phrase="Showing the first [_1] results." params="<$MTMaxResults$>">
+                          </MTIfMaxResultsCutoff>
                       </MTSearchResults>
 
 <MTIgnore>
@@ -150,11 +161,11 @@
                           <MTIfTagSearch>
                           <div class="module-tags module">
                              <h2 class="module-header"><MT_TRANS phrase="Other Tags"></h2>
-                             <div class="module-content">
-                                 <p><MT_TRANS phrase="Other tags used on this blog">:</p>
-                                 <ul>
+                             <div class="module-content module-tagcloud">
+                                 <p></p>
+                                 <ul class="module-list">
                                  <MTTags>
-                                     <li><a href="<$MTTagSearchLink$>"><$MTTagName$> (<$MTTagCount$>)</a></li>
+                                     <li class="module-list-item taglevel<$MTTagRank$>"><a href="<$MTTagSearchLink$>" title="<$MTTagCount$>"><$MTTagName$></a></li>
                                  </MTTags>
                                  </ul>
                              </div>

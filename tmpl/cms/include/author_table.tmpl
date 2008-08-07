@@ -1,0 +1,38 @@
+<mt:if name="entry_type" eq="page">
+    <$mt:setvar name="type_label" value="<__trans phrase="Pages">"$>
+    <$mt:setvar name="mode" value="list_pages"$>
+<mt:else>
+    <$mt:setvar name="type_label" value="<__trans phrase="Entries">"$>
+    <$mt:setvar name="mode" value="list_entries"$>
+</mt:if>
+<mtapp:listing>
+    <mt:if name="__first__">
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                <th id="at-username"><__trans phrase="Username"></th>
+                <th id="at-name"><__trans phrase="Name"></th>
+                <th id="at-created"><__trans phrase="Created By"></th>
+                <th id="at-entries"><mt:var name="type_label"></th><mt:loop name="more_column_headers"><mt:var name="__value__"></mt:loop>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input<mt:if name="is_administrator"><mt:if name="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td class="<mt:if name="status_enabled">user-status-enabled<mt:else><mt:if name="status_pending">user-status-pending<mt:else>user-status-disabled</mt:if></mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_enabled"><__trans phrase="_USER_ENABLED"><mt:else><mt:if name="status_pending"><__trans phrase="Pending"><mt:else><__trans phrase="_USER_DISABLED"></mt:if></mt:if>" width="13" height="9" /></td>
+            <td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+            <td>
+                <mt:if name="nickname"><span class="status-name"><mt:var name="nickname" escape="html"></span></mt:if>
+                <mt:if name="email"><span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a></span></mt:if>
+                <mt:if name="url"><span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a></span></mt:if>
+            </td>
+            <td><mt:if name="created_by_name"><mt:var name="created_by_name" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+            <td align="right"><mt:if name="entry_count"><a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a><mt:else>&nbsp;</mt:if></td><mt:loop name="more_columns"><mt:var name="__value__"></mt:loop>
+            </tr>
+    <mt:if name="__last__">
+        </tbody>
+    </mt:if>
+</mtapp:listing>
+

@@ -1,0 +1,113 @@
+<mt:Ignore>
+<!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->
+</mt:Ignore>
+<mt:IfCommentsActive>
+<div id="comments" class="comments">
+
+
+    <mt:Ignore>
+    <!-- Display comments -->
+    </mt:Ignore>
+    <mt:Comments>
+        <mt:CommentsHeader>
+    <h2 class="comments-header"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
+    <div class="comments-content">
+        </mt:CommentsHeader>
+        <div id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>">
+            <div class="inner">
+                <div class="comment-header">
+                    <div class="asset-meta">
+                        <span class="byline">
+                            <$mt:CommentAuthorIdentity$>
+        <mt:IfCommentParent>
+                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>">
+        <mt:Else>
+                            <span class="vcard author"><$mt:CommentAuthorLink$></span>
+        </mt:IfCommentParent>
+                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
+        <mt:IfCommentsAccepted>
+                            | <$mt:CommentReplyToLink$>
+        </mt:IfCommentsAccepted>
+                        </span>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <$mt:CommentBody$>
+                </div>
+            </div>
+        </div>
+        <mt:CommentsFooter>
+    </div>
+        </mt:CommentsFooter>
+    </mt:Comments>
+
+
+    <mt:Ignore>
+    <!-- Display commenting form if entry/page is accepting comments -->
+    </mt:Ignore>
+    <mt:IfCommentsAccepted>
+    <div class="comments-open" id="comments-open">
+        <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
+        <div class="comments-open-content">
+
+        <mt:Ignore>
+        <!-- Display greeting for users if blog allows users to register locally -->
+        </mt:Ignore>
+            <div id="comment-greeting"></div>
+
+            <form method="post" action="<$mt:CGIPath$><$mt:CommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                <input type="hidden" name="static" value="1" />
+                <input type="hidden" name="entry_id" value="<$mt:EntryID$>" />
+                <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>" />
+                <input type="hidden" name="parent_id" value="<$mt:CommentParentID$>" id="comment-parent-id" />
+                <input type="hidden" name="armor" value="1" />
+                <input type="hidden" name="preview" value="" />
+                <input type="hidden" name="sid" value="" />
+                <div id="comments-open-data">
+                    <div id="comment-form-name">
+                        <label for="comment-author"><__trans phrase="Name"></label>
+                        <input id="comment-author" name="author" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-email">
+                        <label for="comment-email"><__trans phrase="Email Address"></label>
+                        <input id="comment-email" name="email" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-url">
+                        <label for="comment-url"><__trans phrase="URL"></label>
+                        <input id="comment-url" name="url" size="30" value="" onfocus="mtCommentFormOnFocus()" />
+                    </div>
+                    <div id="comment-form-remember-me">
+                        <input type="checkbox" id="comment-bake-cookie" name="bakecookie" onclick="mtRememberMeOnClick(this)" value="1" accesskey="r" />
+                        <label for="comment-bake-cookie"><__trans phrase="Remember personal info?"></label>
+                    </div>
+                </div>
+                <div id="comment-form-reply" style="display:none">
+                    <input type="checkbox" id="comment-reply" name="comment_reply" value="" onclick="mtSetCommentParentID()" />
+                    <label for="comment-reply" id="comment-reply-label"></label>
+                </div>
+                <div id="comments-open-text">
+                    <label for="comment-text"><__trans phrase="Comments">
+                    <mt:IfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></mt:IfAllowCommentHTML></label>
+                    <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtCommentFormOnFocus()"></textarea>
+                </div>
+                <div id="comments-open-captcha"></div>
+                <div id="comments-open-footer">
+                    <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';" />
+                    <input type="submit" accesskey="s" name="post" id="comment-submit" value="<__trans phrase="Submit">" />
+                </div>
+            </form>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+    <!--
+    mtAttachEvent("load", mtEntryOnLoad);
+    mtAttachEvent("unload", mtEntryOnUnload);
+    //-->
+    </script>
+    </mt:IfCommentsAccepted>
+
+
+</div>
+</mt:IfCommentsActive>

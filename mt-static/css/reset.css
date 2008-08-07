@@ -1,0 +1,60 @@
+
+/*
+    reset.css - resets default browser styling
+    http://tantek.com/log/2004/09.html#d06t2354
+    http://www.vox.com/.shared/css/base.css
+    http://developer.yahoo.com/yui/reset/
+*/
+
+:link,:visited {
+    text-decoration:none;
+}
+html,body,div,
+ul,ol,li,dl,dt,dd,
+form,fieldset,input,textarea,
+h1,h2,h3,h4,h5,h6,pre,code,p,blockquote,hr,
+th,td {
+    margin:0;
+    padding:0;
+}
+h1,h2,h3,h4,h5,h6 {
+    font-size:100%;
+    font-weight:normal;
+}
+table {
+    border-spacing:0;
+}
+fieldset,img,abbr,acronym {
+    border:0;
+} 
+address,caption,cite,code,dfn,em,strong,b,u,s,i,th,var {
+    font-style:normal;
+    font-weight:normal;
+}
+ol,ul {
+    list-style:none;
+}
+caption,th {
+    text-align:left;
+}
+q:before,q:after {
+    content:'';
+}
+a {
+    text-decoration:underline;
+    outline:none;
+}
+hr {
+    border:0;
+    height:1px;
+    background-color:#000;
+    color:#000;
+}
+a img,:link img,:visited img {
+    border:none;
+}
+address {
+    font-style:normal;
+}
+
+/* FIXME - add other formatted tags: legend? abbr? */

@@ -1,0 +1,64 @@
+        </div></div><!-- /main-content -->
+<mt:if name="related_content">
+        <div id="related-content"><div id="related-content-inner">
+            <$mt:var name="related_content"$>
+            <mt:if name="agent_ie"><div>&nbsp;<!-- IE Duplicate Characters Bug -->&nbsp;</div></mt:if>
+        </div></div> <!-- /related-content -->
+</mt:if>
+    </div></div><!-- /content -->
+
+    <mt:if name="mt_beta">
+    <div id="msg-beta">
+        <p id="msg-beta-inner" class="inner"><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
+    </div>
+    </mt:if>
+
+    <div id="footer"><div id="footer-inner" class="inner">
+<mt:if name="author_name">
+        <ul id="footer-nav" class="inline-nav">
+            <li class="first"><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
+            <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
+            <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
+            <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
+            <li><a href="<__trans phrase="http://www.movabletype.com/support/">"><__trans phrase="Support"></a></li>
+            <li><a href="<__trans phrase="http://www.movabletype.org/feedback.html">"><__trans phrase="Send us Feedback"></a></li>
+        </ul>
+</mt:if>
+        <mt:include name="include/copyright.tmpl">
+        <div id="version">
+            <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
+            <mt:if name="packs_installed">
+            <__trans phrase="with">:
+            <mt:loop name="packs_installed" glue=", "><a href="<mt:var name="portal_url">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+            </mt:if>
+        </div>
+    </div></div> 
+</div>
+</div><!-- /container -->
+<$mt:var name="form_footer"$>
+<div id="resize-mask" class="hidden modal-mask resize-mask autolayout-height-parent" mt:delegate="resizer">
+    <div class="modal-mask"></div>
+</div>
+<mt:if name="agent_ie"><$mt:var name="header_block"$></mt:if>
+<$mt:var name="html_body_footer"$>
+<div id="dialog-container" class="autolayout-height-parent">
+    <div class="modal-mask opaque-mask"></div>
+    <div id="dialog"><iframe frameborder="0" scrolling="auto" src="<$mt:var name="static_uri">html/blank.html" id="dialog-iframe" name="dialog_iframe"></iframe></div>
+</div>
+<mt:if name=open_dialog> 
+<script type="text/javascript"> 
+/* <![CDATA[ */
+openDialog(false, '<mt:var name="dialog_mode">', '<mt:var name="dialog_params">'); 
+/* ]]> */
+</script> 
+</mt:if> 
+<div id="bootstrapper" class="hidden"></div>
+<mt:unless name="delayed_bootstrap">
+<script type="text/javascript">
+    /* <![CDATA[ */
+        App.bootstrapInline( false );
+    /* ]]> */
+</script>
+</mt:unless>
+</body>
+</html>

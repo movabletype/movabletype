@@ -1,14 +1,13 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Request;
 use strict;
 
-use MT::ErrorHandler;
-@MT::Request::ISA = qw( MT::ErrorHandler );
+use base qw( MT::ErrorHandler );
 
 use vars qw( $r );
 sub instance {
@@ -62,6 +61,10 @@ for the lifetime of the application).
 
 Returns the I<MT::Request> singleton.
 
+=head2 new
+
+This is an internal method used by C<MT::Request-E<gt>instance>.
+
 =head2 $r->cache($key [, $value ])
 
 Given a key I<$key>, returns the cached value of the key in the cache held by
@@ -73,8 +76,17 @@ an object, etc.
 
 C<stash> is an alias to C<cache>.
 
+=head2 $r->finish()
+
+This method sets the given request (I<$r>) to C<undef>.
+
+=head2 $r->reset()
+
+This method sets the request object's I<__stash> attribute to C<{}>
+(nothing).
+
 =head1 AUTHOR & COPYRIGHT
 
-Please see the I<MT> manpage for author, copyright, and license information.
+Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut

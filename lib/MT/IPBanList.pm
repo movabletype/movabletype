@@ -1,14 +1,14 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::IPBanList;
-use strict;
 
-use MT::Object;
-@MT::IPBanList::ISA = qw( MT::Object );
+use strict;
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -24,12 +24,19 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("IP Ban");
+}
+
+sub class_label_plural {
+    MT->translate("IP Bans");
+}
+
 sub ban_ip {
     my $class = shift;
     my ($ip, $blog_id) = @_;
     $class->set_by_key({ip => $ip, blog_id => $blog_id});
 }
-
 
 1;
 __END__
@@ -83,6 +90,11 @@ C<10.100.100.3>, etc.
 
 =back
 
+=head2 ban_ip($ip, $blog_id)
+
+This convenience method can be used in place of setting the I<ip> and
+I<blog_id> individually.
+
 =head1 DATA LOOKUP
 
 In addition to numeric ID lookup, you can look up or sort records by any
@@ -97,8 +109,8 @@ I<MT::Object> for more information.
 
 =back
 
-=head1 AUTHOR & COPYRIGHTS
+=head1 AUTHOR & COPYRIGHT
 
-Please see the I<MT> manpage for author, copyright, and license information.
+Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut

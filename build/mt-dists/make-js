@@ -3,30 +3,96 @@
 use strict;
 
 use lib 'lib';
+use lib 'extlib';
+use File::Spec;
 use MT;
 use MT::Util qw(encode_js);
 
 my $js = `cat mt-static/mt.js`;
+$js .= `cat mt-static/js/edit.js`;
+$js .= `cat mt-static/js/archetype_editor.js`;
+$js .= `cat mt-static/js/dialog.js`;
+$js .= `cat mt-static/js/assetdetail.js`;
+$js .= `cat tmpl/cms/edit_template.tmpl`;
+$js .= `cat tmpl/cms/edit_entry.tmpl`;
+$js .= `cat tmpl/cms/widget/blog_stats.tmpl`;
+$js .= `cat tmpl/cms/list_tag.tmpl`;
+$js .= `cat tmpl/cms/include/calendar.tmpl`;
+$js .= `cat tmpl/cms/include/category_selector.tmpl`;
+
+my $addon_path = File::Spec->catdir( 'addons' );
+local *DH;
+my @files;
+my @addons;
+if ( opendir DH, $addon_path ) {
+    my @p = readdir DH;
+    foreach my $p (@p) {
+        next if $p eq '.' || $p eq '..';
+        my $full_path = File::Spec->catdir( $addon_path, $p );
+        if ( -d $full_path ) {
+            if ( $p =~ m/^(.+)\.(\w+)$/ ) {
+                my $label = $1;
+                my $id    = lc $1;
+                my $type  = $2;
+                next if $type ne 'pack';
+                if ( open my $fh, '<', File::Spec->catfile($full_path, 'make_js_templates') ) {
+                    while (<$fh>) {
+                        chomp $_;
+                        push @files, $_;
+                    }
+                    close $fh;
+                    push @addons, $label;
+                }
+            }
+        }
+    }
+    closedir DH;
+}
+
+$js .= `cat $_` foreach @files;
 
 foreach my $lang (qw(ja de nl fr es)) {
-    open(FOUT, ">./mt-static/mt_$lang.js")
-        or die "failed to open mt-static/mt_$lang.js for writing";
-
-    print FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
-
     eval 'require MT::L10N::' . $lang
         or die "failed to find package MT::L10N::$lang";
 
-    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }';
+    my $lex = eval '\%{ %MT::L10N::' . $lang . '::Lexicon }' || {};
+
+    foreach my $addon (@addons) {
+        eval {
+            unshift @INC, "addons/$addon.pack/lib";
+            require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm";
+        };
+        my $conv;
+        unless ($@) {
+            $conv = eval '\%{MT::' . $addon . '::L10N::' . $lang . '::Lexicon}';
+        }
+        if ( %$conv ) {
+            $lex = {
+                %$lex,
+                %$conv,
+            };
+        }
+    }
+
     $js =~ s/\\'/\t\t/g;
-    while ($js =~ m/trans\('([^'|\\\']+?)'/g) {
-	my $str = $1;
+    my %lexicon;
+    while ($js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
+        my $str = $2;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} || $str;
         $str = encode_js($str);
         $local = encode_js($local);
         next if $str eq $local;
-        print FOUT "Lexicon['$str'] = '$local';\n";
+        $lexicon{$str} = $local;
+    }
+
+    open(FOUT, ">./mt-static/mt_$lang.js")
+        or die "failed to open mt-static/mt_$lang.js for writing";
+
+    print FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
+
+    for my $text ( keys %lexicon ) {
+        print FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
     }
     close(FOUT);
 }

@@ -1,43 +1,47 @@
-<TMPL_INCLUDE NAME="header.tmpl">
+<mt:setvar name="page_title" value="<__trans phrase="System: Feedback Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="system-feedback-settings" value="1">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your feedback preferences have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_system_content_nav.tmpl">
+</MTSetVarBlock>
 
-<h2><span class="weblog-title-highlight"><MT_TRANS phrase="System-wide">:</span> <MT_TRANS phrase="Settings"></h2>
+<mt:include name="include/header.tmpl">
 
-<p class="page-desc"><MT_TRANS phrase="This screen allows you to configure feedback and outbound TrackBack settings for the entire installation.  These settings override any similar settings for individual weblogs."></p>
-
-<TMPL_IF NAME=SAVED>
-<div class="message"><MT_TRANS phrase="Your feedback preferences have been saved."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
-</TMPL_IF>
-
-<form action="<TMPL_VAR NAME=SCRIPT_URL>" method="post">
+<form action="<mt:var name="script_url">" method="post">
 <input type="hidden" name="__mode" value="save_cfg_system_feedback" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
 
-<h3><MT_TRANS phrase="Feedback Master Switch"></h3>
+<h3><__trans phrase="Feedback: Master Switch"></h3>
 
 <div class="inner">
 
-<div class="setting">
-<div class="label"><label for="comment_disable"><MT_TRANS phrase="Disable Comments">:</label></div>
-<div class="field">
-<ul>
-<li><input type="checkbox" id="comment_disable" name="comment_disable"<TMPL_IF NAME=COMMENT_DISABLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Stop accepting comments on all weblogs"></li>
-</ul>
-<p><MT_TRANS phrase="This will override all individual weblog comment settings."></p>
-</div>
-</div>
+    <mtapp:setting
+        id="comment_disable"
+        label="<__trans phrase="Comments">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual blog settings.">">
+            <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <label for="comment_disable"><__trans phrase="Disable comments for all blogs"></label>
+    </mtapp:setting>
 
-<div class="setting">
-<div class="label"><label for="ping_disable"><MT_TRANS phrase="Disable TrackBacks">:</label></div>
-<div class="field">
-<ul>
-<li><input type="checkbox" id="ping_disable" name="ping_disable"<TMPL_IF NAME=PING_DISABLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Stop accepting TrackBacks on all weblogs"></li>
-</ul>
-<p><MT_TRANS phrase="This will override all individual weblog TrackBack settings."></p>
-</div>
-</div>
+    <mtapp:setting
+        id="ping_disable"
+        label="<__trans phrase="TrackBacks">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual blog settings.">">
+            <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable TrackBacks for all blogs"></label>
+    </mtapp:setting>
 
 </div>
 
@@ -45,32 +49,50 @@
 
 <fieldset>
 
-<h3><MT_TRANS phrase="Outbound TrackBack Control"></h3>
+<h3><__trans phrase="Outbound Notifications"></h3>
 
 <div class="inner">
 
-<div class="setting">
-<div class="label"><label for="trackback_send"><MT_TRANS phrase="Allow outbound TrackBacks to:"></label></div>
-<div class="field">
-<ul>
-<li><input type="radio" name="trackback_send" value="any"<TMPL_IF NAME=TRACKBACK_SEND_ANY> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Any site"></li>
-<li><input type="radio" name="trackback_send" value="off"<TMPL_IF NAME=TRACKBACK_SEND_OFF> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="No site"> <span class="hint"><MT_TRANS phrase="(Disable all outbound TrackBacks.)"></span></li>
-<li><input type="radio" name="trackback_send" value="local"<TMPL_IF NAME=TRACKBACK_SEND_LOCAL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Only the weblogs on this installation"></li>
-<li><input type="radio" name="trackback_send" value="selected"<TMPL_IF NAME=TRACKBACK_SEND_SELECTED> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Only the sites on the following domains:"><br />
-<textarea rows="5" cols="60" name="trackback_send_domains"><TMPL_VAR NAME=TRACKBACK_SEND_DOMAINS ESCAPE=HTML></textarea></li>
-</ul>
-<p><MT_TRANS phrase="This feature allows you to limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private."> </p>
-</div>
-</div>
+    <mtapp:setting
+        id="disable_notify_ping"
+        label="<__trans phrase="Notification pings">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This feature allows you to disable sending notification pings when a new entry is created.">">
+            <input type="checkbox" id="disable_notify_ping" name="disable_notify_ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all blogs"></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="trackback_send"
+        label="<__trans phrase="Outbound TrackBacks">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Limit outbound TrackBacks and TrackBack auto-discovery for the purposes of keeping your installation private.">"
+        show_hint="1">
+        <ul>
+            <li><input type="radio" name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_any"><__trans phrase="Allow to any site"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No outbound TrackBacks)"></span></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_local"><__trans phrase="Only allow to blogs on this installation"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_selected"><__trans phrase="Only allow the sites on the following domains:"></label><br />
+                <div class="textarea-wrapper">
+                    <textarea rows="" cols="" name="trackback_send_domains" class="full-width short"><mt:var name="trackback_send_domains" escape="html"></textarea>
+                </div>
+            </li>
+        </ul>
+    </mtapp:setting>
 
 </div>
 
 </fieldset>
 
-<div style="text-align: center;">
-<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
-</div>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 </form>
 
-<TMPL_INCLUDE NAME="footer.tmpl">
+<mt:include name="include/footer.tmpl">

@@ -1,80 +1,112 @@
 <?php
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+global $Lexicon_ja;
 $Lexicon_ja = array(
-    ## default_templates.pl
-    'Continue reading' => '続きを読む',
-    'Posted by' => '投稿者',
-    'at' => ':',
-    'Comments' => 'コメント',
-    'TrackBack' => 'トラックバック',
-    'Monthly calendar with links to each day\'s posts' => '投稿されたエントリーへのリンク付き月間カレンダー',
-    'Sunday' => '日曜日',
-    'Sun' => '日',
-    'Monday' => '月曜日',
-    'Mon' => '月',
-    'Tuesday' => '火曜日',
-    'Tue' => '火',
-    'Wednesday' => '水曜日',
-    'Wed' => '水',
-    'Thursday' => '木曜日',
-    'Thu' => '木',
-    'Friday' => '金曜日',
-    'Fri' => '金',
-    'Saturday' => '土曜日',
-    'Sat' => '土',
-    'Search' => '検索',
-    'Search this site:' => 'サイト内の検索',
-    'Archives' => 'アーカイブ',
-    'Recent Entries' => '最近のエントリー',
-    'Syndicate this site' => 'Syndicate this site',
-    'This weblog is licensed under a' => 'このウェブログのライセンス:',
-    'Powered by' => 'Powered by',
-    'Comment Preview' => 'コメントの確認',
-    'Previewing your Comment' => 'コメントの確認',
-    'Previous Comments' => '以前のコメント',
-    'Thank You for Commenting' => 'コメントしてくれてありがとう! ',
-    'Your comment has been received. To protect against malicious comments, I have enabled a feature that allows your comments to be held for approval the first time you post a comment. I\'ll approve your comment when convenient; there is no need to re-post your comment.' => 'コメントを受けつけました。不適切なコメントを防止するために、初回のコメントが掲載される前に確認しています。適切なコメントであれば掲載されるでしょう。もう一度投稿する必要はありません。',
-    'Return to the comment page' => 'コメントのページに戻る',
-    'Comment Submission Error' => 'コメントの登録エラー',
-    'Your comment submission failed for the following reasons:' => 'コメントの登録が失敗しました:',
-    'Comment on' => 'コメント:',
-    'Comments:' => 'コメント:',
-    'Post a comment' => 'コメントしてください',
-    'Main' => 'メイン',
-    'Trackback Pings' => 'トラックバック',
-    'TrackBack URL for this entry:' => 'このエントリーのトラックバックURL:',
-    'Listed below are links to weblogs that reference' => 'このリストは、次のエントリーを参照しています: ',
-    'Read More' => '続きを読む',
-    'Tracked on' => 'トラックバック時刻: ',
-    'Posted by:' => '投稿者',
-    'Thanks for signing in, ' => 'サイン・インを確認しました、',
-    'Now you can comment.' => 'さん。コメントしてください。',
-    'sign out' => 'サイン・アウト',
-    '(If you haven\'t left a comment here before, you may need to be approved by the site owner before your comment will appear. Until then, it won\'t appear on the entry. Thanks for waiting.)' => '(いままで、ここでコメントしたとがないときは、コメントを表示する前にこのウェブログのオーナーの承認が必要になることがあります。承認されるまではコメントは表示されません。そのときはしばらく待ってください。)',
-    'URL' => 'URL',
-    'Remember me?' => '情報を登録する?',
-    'Yes' => 'はい',
-    'No' => 'いいえ',
-    'Preview' => '確認',
-    'Post' => '投稿',
-    'You are not signed in. You need to be registered to comment on this site.' => 'サイン・インしていません。このサイトにコメントをする前に登録してください。',
-    'Sign in' => 'サイン・イン',
-    '&#xA1;Comment registration is required but no TypeKey token has been given in weblog configuration!' => 'コメント登録機能を利用するには、TypeKey トークンを設定してください。',
-    '. Now you can comment.' => 'さん。コメントしてください。',
-    'If you have a TypeKey identity, you can' => 'TypeKey ID を使って',
-    'sign in' => 'サイン・イン',
-    'to use it here.' => 'してください。',
-    'Name' => '名前',
-    'Email Address' => 'メールアドレス',
-    'Remember Me?' => '保存しますか?',
-    '(you may use HTML tags for style)' => '(書式を変更するような一部のHTMLタグを使うことができます)',
-    '(You may use HTML tags for style)' => '(書式を変更するような一部のHTMLタグを使うことができます)',
-    'Discussion on' => 'トラックバック: ',
-    'Continuing the discussion...' => 'トラックバック',
-    'from' => ',',
+
+## php/mt.php
+	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+
+## php/lib/archive_lib.php
+	'Page' => 'ウェブページ',
+	'Individual' => 'ブログ記事',
+	'Yearly' => '年別',
+	'Monthly' => '月別',
+	'Daily' => '日別',
+	'Weekly' => '週別',
+	'Author' => 'ユーザー',
+	'(Display Name not set)' => '(表示名なし)',
+	'Author Yearly' => 'ユーザー 年別',
+	'Author Monthly' => 'ユーザー 月別',
+	'Author Daily' => 'ユーザー 日別',
+	'Author Weekly' => 'ユーザー 週別',
+	'Category Yearly' => 'カテゴリ 年別',
+	'Category Monthly' => 'カテゴリ 月別',
+	'Category Daily' => 'カテゴリ 日別',
+	'Category Weekly' => 'カテゴリ 週別',
+
+## php/lib/function.mtsetvar.php
+	'You used a [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
+	'\'[_1]\' is not a hash.' => '[_1]はハッシュではありません。',
+	'Invalid index.' => '不正なインデックスです。',
+	'\'[_1]\' is not an array.' => '[_1]は配列ではありません。',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
+	'\'[_1]\' is not a valid function.' => '[_1]という関数はサポートされていません。',
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
+
+## php/lib/function.mtcommentauthor.php
+	'Anonymous' => '匿名',
+
+## php/lib/block.mtsetvarblock.php
+
+## php/lib/block.mtsethashvar.php
+
+## php/lib/function.mtcommentauthorlink.php
+
+## php/lib/function.mtvar.php
+	'\'[_1]\' is not a valid function for a hash.' => '[_1]はハッシュで利用できる関数ではありません。',
+	'\'[_1]\' is not a valid function for an array.' => '[_1]は配列で利用できる関数ではありません。',
+
+## php/lib/function.mtwidgetmanager.php
+	'Error: widgetset [_1] is empty.' => 'ウィジェットセット[_1]に中身がありません。',
+	'Error compiling widgetset [_1]' => 'ウィジェットセット[_1]をコンパイルできませんでした。',
+
+## php/lib/block.mtauthorhaspage.php
+	'No author available' => 'ユーザーが見つかりません。',
+
+## php/lib/block.mtentries.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
+
+## php/lib/block.mtif.php
+
+## php/lib/block.mtassets.php
+
+## php/lib/thumbnail_lib.php
+	'GD support has not been available. Please install GD support.' => 'GDを利用できないようです。インストールしてください。',
+
+## php/lib/function.mtentryclasslabel.php
+	'page' => 'ウェブページ',
+	'entry' => 'ブログ記事',
+	'Entry' => 'ブログ記事',
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
+
+## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtremotesigninlink.php
+	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
+
+## php/lib/captcha_lib.php
+	'Captcha' => 'Captcha',
+	'Type the characters you see in the picture above.' => '画像の中に見える文字を入力してください。',
+
+## php/lib/function.mtassettype.php
+	'image' => '画像',
+	'Image' => '画像',
+	'file' => 'ファイル',
+	'File' => 'ファイル',
+	'audio' => 'オーディオ',
+	'Audio' => 'オーディオ',
+	'video' => 'ビデオ',
+	'Video' => 'ビデオ',
+
+## php/lib/block.mtauthorhasentry.php
+
+## php/lib/function.mtcommentreplytolink.php
+	'Reply' => '返信',
+
+## php/mt.php.pre
 );
 function translate_phrase($str, $params = null) {
     global $Lexicon, $Lexicon_ja;
-    $l10n_str = isset($Lexicon_ja[$str]) ? $Lexicon_ja[$str] : isset($Lexicon[$str]) ? $Lexicon[$str] : $str;
+    $l10n_str = isset($Lexicon_ja[$str]) ? $Lexicon_ja[$str] : (isset($Lexicon[$str]) ? $Lexicon[$str] : $str);
     if (extension_loaded('mbstring')) {
         $str = mb_convert_encoding($l10n_str,mb_internal_encoding(),"UTF-8");
     } else {

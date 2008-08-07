@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -20,6 +20,7 @@ __PACKAGE__->install_properties({
         'template_id' => 'integer',
         'archive_type' => 'string(255)',
         'category_id' => 'integer',
+        'author_id' => 'integer',
         'startdate' => 'string(80)',
         'virtual' => 'boolean',
     },
@@ -28,10 +29,15 @@ __PACKAGE__->install_properties({
         entry_id => 1,
         template_id => 1,
         templatemap_id => 1,
+        archive_type => 1,
         url => 1,
+        startdate => 1,
+        category_id => 1,
+        author_id => 1,
     },
     datasource => 'fileinfo',
     primary_key => 'id',
+    cacheable => 0,
 });
 
 =pod
@@ -101,12 +107,27 @@ sub set_info_for_url {
         $url_map->startdate($args->{StartDate}) if $args->{StartDate};
         $args->{Category} = $args->{Category}->id if ref $args->{Category};
         $url_map->category_id($args->{Category}) if $args->{Category};
+        $args->{Author} = $args->{Author}->id if ref $args->{Author};
+        $url_map->author_id($args->{Author}) if $args->{Author};
     }
     $url_map->archive_type($archive_type);
     $url_map->url($url);
     $url_map->file_path($file_path);
     $url_map->save() || return $class->error($url_map->errstr());
     return $url_map;
+}
+
+sub parent_names {
+    my $obj = shift;
+    my $parents = {
+        blog => 'MT::Blog',
+        template => 'MT::Template',
+        templatemap => 'MT::TemplateMap',
+        category => 'MT::Category',
+        entry => 'MT::Entry',
+        author => 'MT::Author',
+    };
+    $parents;
 }
 
 1;

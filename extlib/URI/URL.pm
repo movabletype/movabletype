@@ -202,7 +202,7 @@ This module is provided for backwards compatibility with modules that
 depend on the interface provided by the C<URI::URL> class that used to
 be distributed with the libwww-perl library.
 
-The following differences compared to the C<URI> class interface exist:
+The following differences exist compared to the C<URI> class interface:
 
 =over 3
 
@@ -214,11 +214,11 @@ constructor interface.
 =item *
 
 The constructor takes an optional $base argument.  The C<URI::URL>
-class is a subclasses of C<URI::WithBase>.
+class is a subclass of C<URI::WithBase>.
 
 =item *
 
-The URI::URL->newlocal class method is the same as URI::file->new_abs
+The URI::URL->newlocal class method is the same as URI::file->new_abs.
 
 =item *
 
@@ -234,15 +234,15 @@ $url->crack method
 
 =item *
 
-$url->full_path; same as ($uri->abs_path || "/")
+$url->full_path: same as ($uri->abs_path || "/")
 
 =item *
 
-$url->netloc; same as $uri->authority
+$url->netloc: same as $uri->authority
 
 =item *
 
-$url->epath, $url->equery; same as $uri->path, $uri->query
+$url->epath, $url->equery: same as $uri->path, $uri->query
 
 =item *
 
@@ -250,12 +250,12 @@ $url->path and $url->query pass unescaped strings.
 
 =item *
 
-$url->path_components; same as $uri->path_segments (if you don't
-consider path segment parameters).
+$url->path_components: same as $uri->path_segments (if you don't
+consider path segment parameters)
 
 =item *
 
-$url->params and $url->eparams methods.
+$url->params and $url->eparams methods
 
 =item *
 
@@ -268,27 +268,27 @@ L<URI::WithBase>.
 
 =item *
 
-$url->frag; same as $uri->fragment
+$url->frag: same as $uri->fragment
 
 =item *
 
-$url->keywords; same as $uri->query_keywords;
+$url->keywords: same as $uri->query_keywords
 
 =item *
 
-$url->localpath with friends map to $uri->file
+$url->localpath and friends map to $uri->file.
 
 =item *
 
-$url->address and $url->encoded822addr; same as $uri->to for mailto URI.
+$url->address and $url->encoded822addr: same as $uri->to for mailto URI
 
 =item *
 
-$url->groupart method for news URI.
+$url->groupart method for news URI
 
 =item *
 
-$url->article; same as $uri->message
+$url->article: same as $uri->message
 
 =back
 

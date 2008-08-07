@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -27,10 +27,10 @@ sub lazy (&) {
 }
 
 sub force {
-    my ($this) = @_;
+    my $this = shift;
     return $this if (ref $this ne 'MT::Promise');
     if (ref $$this eq 'CODE') {
-        $$this = $$this->();
+        $$this = $$this->(@_);
     } else {
         return $$this;
     } 
@@ -62,7 +62,7 @@ MT::Promise - Faux-lazy evaluation for Perl
     print force($meaning_of_life);
     # prints:
     # 42
-    
+
 =head1 DESCRIPTION
 
 A promise is like a value, but the value itself hasn't been computed
@@ -81,6 +81,8 @@ runtime.
 
 =head1 USAGE
 
+=head2 lazy
+
 There are three forms for creating promises. The C<lazy> form is the slickest:
 
     my $red = foo($arg);
@@ -88,6 +90,8 @@ There are three forms for creating promises. The C<lazy> form is the slickest:
         $green = green($red);
         $blue = blue($red, $green);
     }
+
+=head2 delay
 
 The C<delay> form can be useful if you want to delay the evaluation of
 a routine that already has a name:
@@ -104,12 +108,19 @@ This is almost precisely like $value2 = fibonacci(865309) except that
 (a) you have to force $value1, and (b) the 8675309th fibonacci won't
 be calculated if it's never C<force>d.
 
+=head2 new
+
 Last and least, you can use C<new> to create a promise, though it's
 clunkier than the other methods:
 
    my $value = new MT::Promise(sub { fibonacci(8675309) });
 
 This would be useful if you were sub-classing promise for some reason.
+
+=head2 force
+
+Force the promise to get its value. The first time, the computation of
+the value happens and the value is stored for subsequent access.
 
 =head1 NOTES
 
@@ -124,5 +135,8 @@ $value lives. This is important to keep in mind as it's possible to
 create a circular reference without realizing it. You've got to try
 pretty hard, though.
 
-=cut
+=head1 AUTHOR & COPYRIGHT
 
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

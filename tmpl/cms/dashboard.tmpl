@@ -1,0 +1,89 @@
+<mt:if name="blog_id">
+    <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+    <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
+<mt:else>
+    <mt:setvarblock name="page_title"><__trans phrase="Dashboard"></mt:setvarblock>
+</mt:if>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+</mt:setvarblock>
+
+<mt:setvartemplate name="select_widget_form">
+<mt:var name="widget_options" value="0">
+<mt:setvarblock name="add_widget_form">
+<form method="POST" action="<mt:var name="script_url">" class="listing">
+    <input type="hidden" name="__mode" value="update_widget_prefs" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="widget_action" value="add" />
+    <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
+    <input type="hidden" name="widget_set" value="<mt:var name="set">" />
+    <div class="actions-bar buttons">
+        <div class="actions-bar-inner pkg actions">
+            <select name="widget_id">
+                <option value=""><__trans phrase="Select a Widget..."></option>
+<mt:loop name="all_widget_loop"><mt:if name="widget_set"><mt:if name="widget_set" eq="$set"><mt:var name="widget_options" value="1">
+                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+</mt:if><mt:else><mt:var name="widget_options" value="1">
+                <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+</mt:if></mt:loop>
+            </select>
+            <button
+                type="submit"
+                ><__trans phrase="Add"></button>
+        </div>
+    </div>
+</form>
+</mt:setvarblock>
+<mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>
+</mt:setvartemplate>
+
+<mt:setvarblock name="related_content">
+<div id="widget-container-sidebar">
+<mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
+</div>
+<$mt:var name="select_widget_form" set="sidebar"$>
+</mt:setvarblock>
+<mt:setvarblock name="system_msg">
+    <div id="msg-block">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="info"
+            can_close="1">
+            <__trans phrase="Your Dashboard has been updated.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="permission">
+        <mtapp:statusmsg
+            id="permissions"
+            class="error">
+            <__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:unless name="has_uploads_path">
+        <mt:if name="is_administrator">
+            <mtapp:statusmsg
+                id="permissions"
+                class="error">
+                <__trans phrase="The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]" params="<mt:var name="support_path">">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:unless>
+    <mt:unless name="main">
+    <mtapp:statusmsg
+        id="empty_dashboard"
+        class="info">
+        <__trans phrase="Your dashboard is empty!">
+    </mtapp:statusmsg>
+    </mt:unless>
+    </div>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<div id="widget-container-main">
+<mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
+</div>
+<$mt:var name="select_widget_form" set="main"$>
+
+<mt:include name="include/footer.tmpl">

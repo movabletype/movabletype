@@ -1,4 +1,4 @@
-# $Id: Entry.pm 21854 2006-01-20 23:07:31Z bchoate $
+# $Id$
 
 package XML::Atom::Entry;
 use strict;
@@ -14,12 +14,23 @@ sub element_name { 'entry' }
 
 sub content {
     my $entry = shift;
-    my @arg = @_;
-    if (@arg && ref($arg[0]) ne 'XML::Atom::Content') {
-        $arg[0] = XML::Atom::Content->new($arg[0]);
+    if (my @arg = @_) {
+        if (ref($arg[0]) ne 'XML::Atom::Content') {
+            $arg[0] = XML::Atom::Content->new(Body => $arg[0], Version => $entry->version);
+        }
+        $entry->set($entry->ns, 'content', @arg);
+    } else {
+        return $entry->get_object($entry->ns, 'content', 'XML::Atom::Content');
     }
-    $entry->_element('XML::Atom::Content', 'content', @arg);
 }
+
+__PACKAGE__->mk_elem_accessors(qw( summary source ));
+
+__PACKAGE__->_rename_elements('issued' => 'published');
+__PACKAGE__->_rename_elements('modified' => 'updated');
+
+# OMG 0.3 elements ... to be backward compatible
+__PACKAGE__->mk_elem_accessors(qw( created ));
 
 1;
 __END__

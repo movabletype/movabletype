@@ -1,30 +1,23 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Template;
-use strict;
 
-use vars qw( %TYPES );
-%TYPES = (
-    'index' => 'Index',
-    archive => 'Archive',
-    category => 'Category Archive',
-    individual => 'Individual',
-    comments => 'Comment Listing',
-    pings => 'Ping Listing',
-    comment_preview => 'Comment Preview',
-    comment_error => 'Comment Error',
-    comment_pending => 'Comment Pending',
-    custom => 'Custom',
-);
+use strict;
+use base qw( MT::Object );
+use MT::Util qw( weaken );
+
+sub NODE () { 'MT::Template::Node' }
+
+sub NODE_TEXT ()     { 1 }
+sub NODE_BLOCK ()    { 2 }
+sub NODE_FUNCTION () { 3 }
 
 my $resync_to_db;
 
-use MT::Object;
-@MT::Template::ISA = qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -38,74 +31,365 @@ __PACKAGE__->install_properties({
         'linked_file_size' => 'integer',
         'rebuild_me' => 'boolean',
         'build_dynamic' => 'boolean',
+        'identifier' => 'string(50)',
+        'build_type' => 'smallint',
+        'build_interval' => 'integer',
+
+        # meta properties
+        'last_rebuild_time' => 'integer meta',
+        'page_layout' => 'string meta',
+        'include_with_ssi' => 'integer meta',
+        'cache_expire_type' => 'integer meta',
+        'cache_expire_interval' => 'integer meta',
+        'cache_expire_event' => 'string meta',
+        'cache_path' => 'string meta',
+        'modulesets' => 'string meta',
     },
     indexes => {
         blog_id => 1,
         name => 1,
         type => 1,
-        build_dynamic => 1,
+        outfile => 1,
+        identifier => 1,
     },
     defaults => {
         'rebuild_me' => 1,
         'build_dynamic' => 0,
+        'build_type' => 1,
+        'build_interval' => 0,
     },
+    meta => 1,
     child_of => 'MT::Blog',
     child_classes => [ 'MT::TemplateMap', 'MT::FileInfo' ],
     audit => 1,
     datasource => 'template',
     primary_key => 'id',
 });
+__PACKAGE__->add_trigger('pre_remove' => \&pre_remove_children);
 
 use MT::Builder;
 use MT::Blog;
-use MT::ConfigMgr;
 use File::Spec;
+
+sub class_label {
+    MT->translate("Template");
+}
+
+sub class_label_plural {
+    MT->translate("Templates");
+}
+
+sub new {
+    my $pkg = shift;
+    my (%param) = @_;
+    if (my $type = delete $param{type}) {
+        if ($type eq 'filename') {
+            return $pkg->new_file($param{source}, %param);
+        } elsif ($type eq 'scalarref') {
+            return $pkg->new_string($param{source}, %param);
+        }
+    }
+    my $tmpl = $pkg->SUPER::new(@_);
+    $tmpl->{include_path} = $param{path};
+    $tmpl->{include_filter} = $param{filter};
+    return $tmpl;
+}
+
+sub new_file {
+    my $pkg = shift;
+    my ($file, %param) = @_;
+    my $tmpl = $pkg->new;
+    $tmpl->{include_path} = $param{path};
+    $tmpl->{include_filter} = $param{filter};
+    $tmpl->{__file} = $file;
+    my $contents = $tmpl->load_file($file);
+    if (defined $contents) {
+        if ($tmpl->{include_filter}) {
+            $tmpl->{include_filter}->(\$contents, $file);
+        }
+        $tmpl->text($contents);
+        return $tmpl;
+    }
+    return;                     # load_file errror;
+}
+
+sub new_string {
+    my $pkg = shift;
+    my ($str, %param) = @_;
+    my $tmpl = $pkg->new;
+    $tmpl->{include_path} = $param{path};
+    $tmpl->{include_filter} = $param{filter};
+    if (ref($str) && defined($$str)) {
+        if ($tmpl->{include_filter}) {
+            $tmpl->{include_filter}->($str);
+        }
+        $tmpl->text($$str);
+    }
+    return $tmpl;
+}
+
+sub load_file {
+    my $tmpl = shift;
+    my ($file) = @_;
+    unless (File::Spec->file_name_is_absolute($file)) {
+        my @paths = @{ $tmpl->{include_path} || [] };
+        foreach my $path (@paths) {
+            my $test_file = File::Spec->catfile($path, $file);
+            $file = $test_file, last if -f $test_file;
+        }
+    }
+    return $tmpl->trans_error("File not found: [_1]", $file) unless -e $file;
+    local *FH;
+    open FH, $file
+        or return $tmpl->trans_error("Error reading file '[_1]': [_2]", $file, $!);
+    my $c;
+    do { local $/; $c = <FH> };
+    close FH;
+    return $c;
+}
+
+sub context {
+    my $tmpl = shift;
+    return $tmpl->{context} = shift if @_;
+    require MT::Template::Context;
+    my $ctx = $tmpl->{context} ||= MT::Template::Context->new;
+    weaken($ctx->{__stash}{'template'} = $tmpl);
+    return $ctx;
+}
+
+sub param {
+    my $tmpl = shift;
+    my $ctx = $tmpl->context;
+    if (@_ == 1) {
+        if (ref($_[0]) eq 'HASH') {
+            $ctx->var($_, $_[0]->{$_}) for keys %{ $_[0] };
+        } else {
+            return $ctx->var($_[0]);
+        }
+    } elsif (@_ == 2) {
+        $ctx->var($_[0], $_[1]);
+    } else {
+        return $ctx->{__stash}{vars};
+    }
+}
+
+sub clear_params {
+    my $tmpl = shift;
+    my $ctx = $tmpl->context;
+    %{$ctx->{__stash}{vars}} = ();
+}
+
+sub reflow {
+    my $tmpl = shift;
+    my ($tokens) = @_;
+    $tokens ||= $tmpl->tokens;
+
+    # reconstitute text of template based on tokens
+    my $str = '';
+    foreach my $token (@$tokens) {
+        if ($token->[0] eq 'TEXT') {
+            $str .= $token->[1];
+        } else {
+            my $tag = $token->[0];
+            $str .= '<mt' . $tag;
+            if (my $attrs = $token->[4]) {
+                my $attrh = $token->[1];
+                foreach my $a (@$attrs) {
+                    delete $attrh->{$a->[0]};
+                    my $v = $a->[1];
+                    $v = $v =~ m/"/ ? qq{'$v'} : qq{"$v"};
+                    $str .= ' ' . $a->[0] . '=' . $v;
+                }
+                foreach my $a (keys %$attrh) {
+                    my $v = $attrh->{$a};
+                    $v = $v =~ m/"/ ? qq{'$v'} : qq{"$v"};
+                    $str .= ' ' . $a . '=' . $v;
+                }
+            }
+            $str .= '>';
+            if ($token->[2]) {
+                # container tag
+                $str .= $tmpl->reflow( $token->[2] );
+                $str .= '</mt' . $tag . '>';
+            }
+        }
+    }
+    return $str;
+}
 
 sub build {
     my $tmpl = shift;
     my($ctx, $cond) = @_;
-    my $tokens;
-    my $build = MT::Builder->new;
-    unless ($tokens = $tmpl->{__tokens}) {
-        my $text = $tmpl->text;
-        $tokens = $tmpl->{__tokens} = $build->compile($ctx, $text) or
-            return $tmpl->error(MT->translate(
-                "Parse error in template '[_1]': [_2]",
-                $tmpl->name, $build->errstr));
+    $ctx ||= $tmpl->context;
+
+    my $timer = MT->get_timer();
+    local $timer->{elapsed} = 0 if $timer;
+
+    local $ctx->{__stash}{template} = $tmpl;
+    my $tokens = $tmpl->tokens
+        or return;
+    my $build = $ctx->{__stash}{builder} || MT::Builder->new;
+    my $page_layout;
+    if (my $blog_id = $tmpl->blog_id) {
+        $ctx->stash('blog_id', $blog_id);
+        my $blog = $ctx->stash('blog');
+        unless ($blog) {
+            $blog = MT::Blog->load($blog_id) or
+                return $tmpl->error(MT->translate(
+                    "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr ));
+            $ctx->stash('blog', $blog);
+        } else {
+            $ctx->stash('blog_id', $blog->id);
+        }
+        MT->config->TimeOffset($blog->server_offset);
+        $page_layout = $blog->page_layout;
     }
-    my $blog_id = $tmpl->blog_id;   ## ??
-    $ctx->stash('blog_id', $blog_id);
-    my $blog = $ctx->stash('blog');
-    unless ($blog) {
-        $blog = MT::Blog->load($blog_id) or
-            return $tmpl->error(MT->translate(
-                "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr ));
-        $ctx->stash('blog', $blog);
+    $page_layout = $tmpl->page_layout if $tmpl->page_layout;
+    $ctx->var( 'page_layout', $page_layout )
+        unless $ctx->var('page_layout');
+    if (my $layout = $ctx->var('page_layout')) {
+        my $columns = {
+            'layout-wt'  => 2,
+            'layout-tw'  => 2,
+            'layout-wm'  => 2,
+            'layout-mw'  => 2,
+            'layout-wtt' => 3,
+            'layout-twt' => 3,
+        }->{$layout};
+        $ctx->var( 'page_columns', $columns ) if $columns;
     }
-    MT::ConfigMgr->instance->TimeOffset($blog->server_offset);
-    defined(my $res = $build->build($ctx, $tokens, $cond)) or
+    $ctx->var( $tmpl->identifier, 1 ) if defined $tmpl->identifier;
+
+    $timer->pause_partial if $timer;
+
+    my $res = $build->build($ctx, $tokens, $cond);
+
+    if ($timer) {
+        $timer->mark("MT::Template::build[" . ($tmpl->name || $tmpl->{__file} || "?").']');
+    }
+
+    unless (defined($res)) {
         return $tmpl->error(MT->translate(
-            "Build error in template '[_1]': [_2]",
-            $tmpl->name, $build->errstr));
-    $res;
+            "Publish error in template '[_1]': [_2]",
+            $tmpl->name || $tmpl->{__file}, $build->errstr));
+    }
+    $res =~ s/^\s*//;
+    return $res;
+}
+
+sub output {
+    my $tmpl = shift;
+    my ($param) = @_;
+    $tmpl->param($param) if $param;
+    return $tmpl->build();
+}
+
+sub widgets_to_modulesets {
+    my $pkg = shift;
+    my ( $widgets, $blog_id ) = @_;
+    return unless $widgets && @$widgets;
+
+    my @wtmpls = $pkg->load(
+        { name => $widgets, blog_id => $blog_id ? [ $blog_id, 0 ] : 0, type => 'widget' }
+    ) if $widgets && @$widgets;
+    my @wids;
+    foreach my $name ( @$widgets ) {
+        my ( $widget ) = grep { $_->name eq $name } @wtmpls;
+        next unless $widget;
+        push @wids, $widget->id;
+    }
+    return join ',', @wids;
+}
+
+sub save_widgetset {
+    my $obj = shift;
+
+    my $ms = $obj->modulesets;
+    # build module list
+    my @inst;
+    if ( $ms && $ms =~ /;/ ) {
+        my @mods = split /;/, $ms;
+        for (@mods) {
+            # tmpl_id = column index . order in column ;
+            my ($id, $col) = /(\d+)=(\d+)\.(\d+)/;
+            push @inst, $id if $col && ( $col == 1 );
+        }
+        $obj->modulesets( join ',', @inst );
+    }
+    else {
+        @inst = split /,/, $obj->modulesets;
+    }
+
+    my @widgets = MT::Template->load(
+        { id => \@inst, type => 'widget',
+          blog_id => $obj->blog_id ? [ 0, $obj->blog_id ] : '0' },
+        { fetchonly => [ 'id', 'name' ] }
+    ) if @inst;
+
+    my $string_tmpl = '<mt:include widget="%s">';
+    my $text = q();
+    my @ids;
+    foreach my $wid (@inst) {
+        my ( $tmpl ) = grep { $_->id eq $wid } @widgets;
+        next unless $tmpl;
+        $text .= sprintf( $string_tmpl, $tmpl->name );
+        push @ids, $wid;
+    }
+    $obj->modulesets( join ',', @ids )
+        if scalar @ids != scalar @inst;
+    $obj->text($text) if $text;
+    return $obj->SUPER::save;
 }
 
 sub save {
     my $tmpl = shift;
+    my $existing = MT::Template->load({ name => $tmpl->name, blog_id => $tmpl->blog_id });
+    if ($existing && (!$tmpl->id || ($tmpl->id && ($existing->id ne $tmpl->id)))
+        && ($existing->type eq $tmpl->type)) {
+        return $tmpl->error(MT->translate('Template with the same name already exists in this blog.'));
+    }
+
+    if ( 'widgetset' eq $tmpl->type ) {
+        return $tmpl->save_widgetset();
+    }
+
+    if ($tmpl->id && ($tmpl->is_changed('build_type'))) {
+        # check for templatemaps, and update them appropriately
+        require MT::TemplateMap;
+        require MT::PublishOption;
+        my @maps = MT::TemplateMap->load({ template_id => $tmpl->id });
+        foreach my $map (@maps) {
+            if ( ($map->build_type || 0) != ($tmpl->build_type || 0) ) {
+                $map->build_type($tmpl->build_type);
+                $map->save or die $map->errstr;
+            }
+        }
+    }
+
     if ($tmpl->linked_file) {
         $tmpl->_sync_to_disk($tmpl->SUPER::text) or return;
     }
     $tmpl->{needs_db_sync} = 0;
+
     $tmpl->SUPER::save;
+}
+
+sub build_dynamic {
+    my $tmpl = shift;
+    return $tmpl->SUPER::build_dynamic($_[0]) if @_;
+    require MT::PublishOption;
+    return 1 if $tmpl->build_type == MT::PublishOption::DYNAMIC();
+    return $tmpl->SUPER::build_dynamic;
 }
 
 sub blog {
     my $this = shift;
+    return undef unless $this->blog_id;
     return $this->{__blog} if $this->{__blog};
-    return $this->{__blog} = MT::Blog->load($this->blog_id, {cached_ok=>1});
+    return $this->{__blog} = MT::Blog->load($this->blog_id);
 }
 
-sub set_values {
+sub set_values_internal {
     my $tmpl = shift;
     my ($cols) = @_;
     if (exists $cols->{text}) {
@@ -121,7 +405,7 @@ sub set_values {
             if ($cols->{linked_file}) {
                 my %local_cols = %$cols;
                 delete $local_cols{text};
-                $tmpl->SUPER::set_values(\%local_cols);
+                $tmpl->SUPER::set_values_internal(\%local_cols);
                 my $sync_text = $tmpl->text();
                 if (!defined $sync_text) {
                     $tmpl->text($cols->{text});
@@ -130,12 +414,18 @@ sub set_values {
             }
         }
     }
-    $tmpl->SUPER::set_values(@_);
+    $tmpl->SUPER::set_values_internal(@_);
 }
 
 sub text {
     my $tmpl = shift;
-    my $text = $tmpl->SUPER::text(@_);
+    my $text;
+    if ($tmpl->{reflow_flag}) {
+        $tmpl->{reflow_flag} = 0;
+        $text = $tmpl->reflow();
+    }
+    $text = $tmpl->SUPER::text(@_);
+
     $tmpl->{needs_db_sync} = 0;
     unless (@_) {
         if ($tmpl->linked_file) {
@@ -147,13 +437,13 @@ sub text {
                 ## template, so saving would try to write-lock it).
                 if (!defined $resync_to_db) {
                     $resync_to_db = {};
-                    MT->add_callback('TakeDown', 9, undef, \&_resync_to_db);
+                    MT->add_callback('takedown', 9, undef, \&_resync_to_db);
                 }
                 $resync_to_db->{$tmpl->id} = $tmpl;
                 $tmpl->{needs_db_sync} = 1;
             }
         }
-        undef $tmpl->{__tokens}; # reset any cached tokens
+        $tmpl->reset_tokens;
     }
     $text;
 }
@@ -173,8 +463,15 @@ sub _sync_from_disk {
     my $tmpl = shift;
     my $lfile = $tmpl->linked_file;
     unless (File::Spec->file_name_is_absolute($lfile)) {
-        my $blog = MT::Blog->load($tmpl->blog_id);
-        $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        if ($tmpl->blog_id) {
+            my $blog = MT::Blog->load($tmpl->blog_id)
+                or return;
+            $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        }
+        else {
+            # use MT path to base relative paths
+            $lfile = File::Spec->catfile(MT->instance->server_path, $lfile);
+        }
     }
     return unless -e $lfile;
     my($size, $mtime) = (stat _)[7,9];
@@ -193,10 +490,11 @@ sub _sync_to_disk {
     my $tmpl = shift;
     my($text) = @_;
     my $lfile = $tmpl->linked_file;
-    if (MT::ConfigMgr->instance->SafeMode) {
+    my $cfg = MT->config;
+    if ($cfg->SafeMode) {
         ## Check for a set of extensions that aren't allowed.
         for my $ext (qw( pl pm cgi cfg )) {
-            if ($lfile =~ /\.$ext$/) {
+            if ($lfile =~ /\.$ext$/i) {
                 return $tmpl->error(MT->translate(
                     "You cannot use a [_1] extension for a linked file.",
                     ".$ext"));
@@ -204,8 +502,13 @@ sub _sync_to_disk {
         }
     }
     unless (File::Spec->file_name_is_absolute($lfile)) {
-        my $blog = MT::Blog->load($tmpl->blog_id);
-        $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        if ($tmpl->blog_id) {
+            my $blog = MT::Blog->load($tmpl->blog_id)
+                or return;
+            $lfile = File::Spec->catfile($blog->site_path, $lfile);
+        } else {
+            $lfile = File::Spec->catfile(MT->instance->server_path, $lfile);
+        }
     }
     local *FH;
     ## If the linked file already exists, and there is no template text
@@ -218,7 +521,6 @@ sub _sync_to_disk {
         do { local $/; $tmpl->SUPER::text(<FH>) };
         close FH;
     } else {
-        my $cfg = MT::ConfigMgr->instance;
         my $umask = oct $cfg->HTMLUmask;
         my $old = umask($umask);
         ## Untaint. We assume that the user knows what he/she is doing,
@@ -237,10 +539,95 @@ sub _sync_to_disk {
     1;
 }
 
-sub remove {
+sub rescan {
     my $tmpl = shift;
-    $tmpl->remove_children({ key => 'template_id' });
-    $tmpl->SUPER::remove;
+    my ($tokens) = @_;
+    unless ($tokens) {
+        # top of tree; reset
+        $tmpl->{__ids} = {};
+        $tmpl->{__classes} = {};
+        # Use tokens if we already have them, otherwise compile
+        $tokens = $tmpl->{__tokens} || $tmpl->compile;
+    }
+    return unless $tokens;
+    foreach my $t (@$tokens) {
+        if ($t->[0] ne 'TEXT') {
+            if ($t->[1]->{id}) {
+                my $ids = $tmpl->{__ids} ||= {};
+                $ids->{lc $t->[1]->{id}} = $t;
+            }
+            elsif ($t->[1]->{class}) {
+                my $classes = $tmpl->{__classes} ||= {};
+                push @{ $classes->{lc $t->[1]->{class}} ||= [] }, $t;
+            }
+            $tmpl->rescan($t->[2]) if $t->[2];
+        }
+    }
+}
+
+sub compile {
+    my $tmpl = shift;
+    require MT::Builder;
+    my $b = new MT::Builder;
+    $b->compile($tmpl) or return $tmpl->error($b->errstr);
+    return $tmpl->{__tokens};
+}
+
+sub errors {
+    my $tmpl = shift;
+    $tmpl->{errors} = shift if @_;
+    $tmpl->{errors};
+}
+
+sub reset_tokens {
+    my $tmpl = shift;
+    $tmpl->{__tokens} = undef;
+    $tmpl->{__classes} = undef;
+    $tmpl->{__ids} = undef;
+}
+
+sub reset_ids {
+    my $tmpl = shift;
+    $tmpl->{__ids} = undef;
+}
+
+sub reset_classes {
+    my $tmpl = shift;
+    $tmpl->{__classes} = undef;
+}
+
+sub reset_markers {
+    my $tmpl = shift;
+    $tmpl->{__classes} = undef;
+    $tmpl->{__ids} = undef;
+}
+
+sub token_ids {
+    my $tmpl = shift;
+    if (@_) {
+        return $tmpl->{__ids} = shift;
+    }
+    $tmpl->rescan unless $tmpl->{__ids};
+    return $tmpl->{__ids};
+}
+
+sub token_classes {
+    my $tmpl = shift;
+    if (@_) {
+        return $tmpl->{__classes} = shift;
+    }
+    $tmpl->rescan unless $tmpl->{__classes};
+    return $tmpl->{__classes};
+}
+
+sub tokens {
+    my $tmpl = shift;
+    if (@_) {
+        return bless $tmpl->{__tokens} = shift, 'MT::Template::Tokens';
+    }
+    my $t = $tmpl->{__tokens} || $tmpl->compile;
+    return bless $t, 'MT::Template::Tokens' if $t;
+    return undef;
 }
 
 sub published_url {
@@ -248,9 +635,10 @@ sub published_url {
 
     return undef unless $tmpl->outfile;
     return undef unless ($tmpl->type eq 'index');
-    
+
     my $blog = $tmpl->blog;
-    my $site_url = $blog->site_url;
+    return undef unless $blog;
+    my $site_url = $blog->site_url || '';
     $site_url .= '/' if $site_url !~ m!/$!;
     my $url = $site_url . $tmpl->outfile;
 
@@ -262,13 +650,399 @@ sub published_url {
             return $url;
         }
     } else {
-        my $tmpl_path = File::Spec->catfile($blog->site_path, $tmpl->outfile);
+        my $site_path = $blog->site_path || '';
+        my $tmpl_path = File::Spec->catfile($site_path, $tmpl->outfile);
         if (-f $tmpl_path) {
             return $url;
         }
     }
     undef;
 }
+
+sub pre_remove_children {
+    my $tmpl = shift;
+    $tmpl->remove_children({ key => 'template_id' });
+}
+
+sub post_remove_widget {
+    my $tmpl = shift;
+    return unless $tmpl->type eq 'widget';
+
+    my $iter = MT::Template->load_iter({
+        blog_id => [ $tmpl->blog_id, 0 ],
+        type    => 'widgetset',
+    });
+    my @resave;
+    while ( my $ws = $iter->() ) {
+        my @mods = split( ',', $ws->modulesets );
+        if ( grep { $_ == $tmpl->id } @mods ) {
+            push @resave, $ws;
+        }
+    }
+    $_->save for @resave;
+}
+__PACKAGE__->add_trigger('post_remove' => \&post_remove_widget);
+
+# Some DOM-inspired methods (replicating the interface, so it's more
+# familiar to those who know DOM)
+sub getElementsByTagName {
+    my $tmpl = shift;
+    return MT::Template::Tokens::getElementsByTagName($tmpl->tokens, @_);
+}
+
+sub getElementsByClassName {
+    my $tmpl = shift;
+    my ($name) = @_;
+    my $classes = $tmpl->token_classes;
+    my $tokens = $classes->{lc $name};
+    if ($tokens && @$tokens) {
+        #@$tokens = map { bless $_, NODE } @$tokens;
+        return @$tokens;
+    }
+    return ();
+}
+
+sub getElementsByName {
+    my $tmpl = shift;
+    return MT::Template::Tokens::getElementsByName($tmpl->tokens, @_);
+}
+
+sub getElementById {
+    my $tmpl = shift;
+    my ($id) = @_;
+    if (my $node = $tmpl->token_ids->{$id}) {
+        return bless $node, NODE;
+    }
+    undef;
+}
+
+sub createElement {
+    my $tmpl = shift;
+    my ($tag, $attr) = @_;
+    my $node = bless [ $tag, $attr, undef, undef, undef, undef, $tmpl ], NODE;
+    weaken($node->[6]);
+    return $node;
+}
+
+sub createTextNode {
+    my $tmpl = shift;
+    my ($text) = @_;
+    my $node = bless [ 'TEXT', $text, undef, undef, undef, undef, $tmpl ], NODE;
+    weaken($node->[6]);
+    return $node;
+}
+
+sub insertAfter {
+    my $tmpl = shift;
+    my ($node1, $node2) = @_;
+    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_array = $parent_node->childNodes;
+    if ( $node2 ) {
+        for (my $i = 0; $i < scalar @$parent_array; $i++) {
+            if ($parent_array->[$i] == $node2) {
+                $node1->parentNode($parent_node);
+                splice(@$parent_array, $i + 1, 0, $node1);
+                return 1;
+            }
+        }
+        return 0;
+    }
+    else {
+        $node1->parentNode($parent_node);
+        push @$parent_array, $node1;
+        return 1;
+    }
+    return 0;
+}
+
+sub insertBefore {
+    my $tmpl = shift;
+    my ($node1, $node2) = @_;
+    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_array = $parent_node->childNodes;
+    if ( $node2 ) {
+        for (my $i = 0; $i < scalar @$parent_array; $i++) {
+            if ($parent_array->[$i] == $node2) {
+                $node1->parentNode($parent_node);
+                splice(@$parent_array, $i, 0, $node1);
+                return 1;
+            }
+        }
+        return 0;
+    }
+    else {
+        $node1->parentNode($parent_node);
+        unshift @$parent_array, $node1;
+        return 1;
+    }
+    return 0;
+}
+
+sub childNodes {
+    my $tmpl = shift;
+    return $tmpl->tokens;
+}
+
+sub hasChildNodes {
+    my $tmpl = shift;
+    my $nodes = $tmpl->childNodes;
+    return $nodes && (@$nodes) ? 1 : 0;
+}
+
+sub appendChild {
+    my $tmpl = shift;
+    my ($new_node) = @_;
+    my $nodes = $tmpl->childNodes;
+    push @$nodes, $new_node;
+    $tmpl->{reflow_flag} = 1;
+}
+
+# Alias to perl_function_names for those that may prefer that.
+# *get_elements_by_tag_name = \&getElementsByTagName;
+# *get_elements_by_name = \&getElementsByName;
+# *get_element_by_id = \&getElementById;
+# *create_element = \&createElement;
+
+# functionality for individual nodes gathered by DOM-like query operations.
+
+package MT::Template::Tokens;
+
+use strict;
+sub NODE_TEXT ()     { 1 }
+sub NODE_BLOCK ()    { 2 }
+sub NODE_FUNCTION () { 3 }
+
+sub getElementsByTagName {
+    my ($tokens, $name) = @_;
+    my @list;
+    $name = lc $name;
+    foreach my $t (@$tokens) {
+        if (lc $t->[0] eq $name) {
+            push @list, $t;
+        }
+        if ($t->[2]) {
+            my $subt = getElementsByTagName($t->[2], $name);
+            push @list, @$subt if $subt;
+        }
+    }
+    scalar @list ? \@list : undef;
+}
+
+sub getElementsByName {
+    my ($tokens, $name) = @_;
+    my @list;
+    $name = lc $name;
+    foreach my $t (@$tokens) {
+        if ((ref($t->[1]) eq 'HASH') && (lc ($t->[1]{'name'} || '') eq $name)) {
+            push @list, $t;
+        }
+        if ($t->[2]) {
+            my $subt = getElementsByName($t->[2], $name);
+            push @list, @$subt if $subt;
+        }
+    }
+    scalar @list ? \@list : undef;
+}
+
+package MT::Template::Node;
+
+use strict;
+use MT::Util qw( weaken );
+
+sub setAttribute {
+    my $node = shift;
+    my ($attr, $val) = @_;
+    if ($attr eq 'id') {
+        # assign into ids
+        my $tmpl = $node->template;
+        my $ids = $tmpl->token_ids;
+        my $old_id = $node->getAttribute("id");
+        if ($old_id && $ids) {
+            delete $ids->{$old_id};
+        }
+    }
+    elsif ($attr eq 'class') {
+        # assign into classes
+        my $tmpl = $node->template;
+        my $classes = $tmpl->token_classes;
+        my $old_class = $node->getAttribute("class");
+        if ($old_class && $classes->{$old_class}) {
+            @{$classes->{$old_class}} = grep { $_ != $node }
+                @{$classes->{$old_class}};
+        }
+        push @{$classes->{$val} ||= []}, $node;
+    }
+    ($node->[1] ||= {})->{$attr} = $val;
+}
+
+sub template {
+    my $node = shift;
+    return $node->[6];
+}
+
+sub getAttribute {
+    my $node = shift;
+    my ($attr) = @_;
+    ($node->[1] || {})->{$attr};
+}
+
+# sub attributes {
+#     my $node = shift;
+#     return $node->[1] ||= {};
+# }
+
+sub nextSibling {
+    my $node = shift;
+    my $parent = $node->parentNode->childNodes;
+    my $max = (scalar @$parent) - 1;
+    return undef unless $max;
+    my $last = $parent->[0];
+    foreach my $n ($parent->[1..$max]) {
+        return $n if $node == $last;
+        $last = $n;
+    }
+    return $parent->[$max] if $node == $last;
+    return undef;
+}
+
+sub lastChild {
+    my $node = shift;
+    my $children = $node->childNodes or return undef;
+    @$children ? $children->[scalar @$children - 1] : undef;
+}
+
+sub firstChild {
+    my $node = shift;
+    my $children = $node->[2] or return undef;
+    @$children ? $children->[0] : undef;
+}
+
+sub previousSibling {
+    my $node = shift;
+    my $parent = $node->parentNode->childNodes;
+    my $last;
+    foreach my $n (@$parent) {
+        return $last if $node == $n;
+        $last = $n;
+    }
+    return undef;
+}
+
+sub parentNode {
+    my $node = shift;
+    weaken($node->[5] = shift) if @_;
+    $node->[5];
+}
+
+sub childNodes {
+    my $node = shift;
+    $node->[2] = shift if @_;
+    $node->[2];
+}
+
+sub ownerDocument { #template
+    my $node = shift;
+    return $node->template;
+}
+
+sub hasChildNodes {
+    my $node = shift;
+    $node->[2] && (@{$node->[2]}) ? 1 : 0;
+}
+
+sub nodeType {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return NODE_TEXT();
+    } elsif (defined $node->[2]) {
+        return NODE_BLOCK();
+    } else {
+        return NODE_FUNCTION();
+    }
+}
+
+sub nodeName {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return undef;
+    }
+    # normalize:
+    #    MTEntry => mt:entry
+    #    MTAPP:WIDGET => mtapp:widget
+    my $tag = lc $node->[0];
+    if (($tag !~ m/:/) && ($tag =~ m/^mt/)) {
+        $tag =~ s/^mt/mt:/;
+    }
+    return $tag;
+}
+
+# Returns text of a text node; inner text for a block tag, or undef
+# for a function tag.
+sub nodeValue {
+    my $node = shift;
+    if ($node->[0] eq 'TEXT') {
+        return $node->[1];
+    } else {
+        if (defined $node->[3]) {
+            return $node->[3];
+        }
+    }
+    return undef;
+}
+
+sub innerHTML {
+    my $node = shift;
+    if (@_) {
+        my ($text) = @_;
+        $node->[3] = $text;
+        my $builder = new MT::Builder;
+        my $ctx = MT::Template::Context->new;
+        $node->[2] = $builder->compile($ctx, $text);
+        my $tmpl = $node->ownerDocument;
+        if ($tmpl) {
+            $tmpl->reset_markers;
+            $tmpl->{reflow_flag} = 1;
+        }
+    }
+    return $node->[3];
+}
+
+# TBD: what about new nodes that are added with id elements?
+sub appendChild {
+    my $node = shift;
+    my ($new_node) = @_;
+    my $nodes = $node->childNodes;
+    push @$nodes, $new_node;
+    my $tmpl = $node->ownerDocument;
+    if ($tmpl) {
+        $tmpl->{reflow_flag} = 1;
+    }
+}
+
+sub removeChild {
+    my $node = shift;
+}
+
+*inner_html = \&innerHTML;
+*append_child = \&appendChild;
+*insert_before = \&insertBefore;
+*remove_child = \&removeChild;
+
+# trans('Index')
+# trans('Archive')
+# trans('Category Archive')
+# trans('Individual')
+# trans('Page')
+# trans('Comment Listing')
+# trans('Ping Listing')
+# trans('Comment Preview')
+# trans('Comment Error')
+# trans('Comment Pending')
+# trans('Dynamic Error')
+# trans('Uploaded Image')
+# trans('Search Results')
+# trans('Module')
+# trans('Widget')
 
 1;
 __END__
@@ -337,6 +1111,26 @@ If the template is not of type index, or if the index template has not built
 yet (if the template is static), or if the index template does not have
 corresponding FileInfo record (if the template is dynamic), this method
 returns undef.
+
+=head2 $tmpl->blog
+
+Returns the I<MT::Blog> object associated with the template.
+
+=head2 $tmpl->save
+
+Saves the template and if linked to a physical file, updates the file.
+
+=head2 $tmpl->remove
+
+Removes the template object and any related objects in I<MT::TemplateMap>
+and I<MT::FileInfo>.
+
+=head2 $tmpl->set_values
+
+Updates the values of the C<$tmpl> object. When this is called through
+the I<MT::ObjectDriver> classes (upon loading a template object), and if
+the template is linked to a file, it will also load the contents of that
+file, setting the 'text' property.
 
 =head1 DATA ACCESS METHODS
 

@@ -1,8 +1,9 @@
 /*
-Copyright 2003 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2003-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 
@@ -28,6 +29,7 @@ TC.Mixer = function( name )
 	this.tagMatches = [];
 	this.displays = [];
 	this.entryEvents = [];
+	this.onselect = null;
 	
 	var self = this;
 	this.sortEntryClosure = function( a, b ) { return self.sortEntry( a, b ); };
@@ -80,6 +82,8 @@ TC.Mixer.prototype.remix = function()
 	for( var i in this.tagMatches )
 	{
 		var tagMatch = this.tagMatches[ i ];
+        if (typeof(tagMatch) != 'object')
+            continue;
 		if( tagMatch.match( this.entry ) )
 			this.dirtyDisplays( tagMatch.matches );
 		
@@ -103,7 +107,9 @@ TC.Mixer.prototype.display = function()
 	for( var i in this.displays )
 	{
 		var display = this.displays[ i ];
-		display.display();
+        if (typeof(display) != 'object')
+            continue;
+		if (display) display.display();
 	}
 }
 
@@ -114,6 +120,9 @@ TC.Mixer.prototype.selectEntry = function( name )
 {
 	this.name = name;
 	this.remix();
+	if (this.onselect) {
+	    this.onselect(this, name);
+	}
 }
 
 TC.Mixer.prototype.addEntry = 
@@ -238,6 +247,8 @@ TC.Mixer.prototype.dirtyDisplays = function( source )
 	for( var i in this.displays )
 	{
 		var display = this.displays[ i ];
+        if (typeof(display) != 'object')
+            continue;
 		if( !source || display.source == source )
 			display.dirty = true;
 	}

@@ -4,9 +4,17 @@ require URI::urn;
 @ISA=qw(URI::urn);
 
 use strict;
-use Business::ISBN ();
+use Carp qw(carp);
 
-
+BEGIN {
+    require Business::ISBN;
+    
+    local $^W = 0; # don't warn about dev versions, perl5.004 style
+    warn "Using Business::ISBN version " . Business::ISBN->VERSION . 
+        " which is deprecated.\nUpgrade to Business::ISBN version 2\n"
+        if Business::ISBN->VERSION < 2;
+    }
+    
 sub _isbn {
     my $nss = shift;
     $nss = $nss->nss if ref($nss);
@@ -35,14 +43,50 @@ sub isbn_publisher_code {
     return $isbn->publisher_code;
 }
 
-sub isbn_country_code {
+BEGIN {
+my $group_method = do {
+    local $^W = 0; # don't warn about dev versions, perl5.004 style
+    Business::ISBN->VERSION >= 2 ? 'group_code' : 'country_code';
+    };
+
+sub isbn_group_code {
     my $isbn = shift->_isbn || return undef;
-    return $isbn->country_code;
+    return $isbn->$group_method;
+}
+}
+
+sub isbn_country_code {
+    my $name = (caller(0))[3]; $name =~ s/.*:://;
+    carp "$name is DEPRECATED. Use isbn_group_code instead";
+    
+    no strict 'refs';
+    &isbn_group_code;
+}
+
+BEGIN {
+my $isbn13_method = do {
+    local $^W = 0; # don't warn about dev versions, perl5.004 style
+    Business::ISBN->VERSION >= 2 ? 'as_isbn13' : 'as_ean';
+    };
+
+sub isbn13 {
+    my $isbn = shift->_isbn || return undef;
+    
+    # Business::ISBN 1.x didn't put hyphens in the EAN, and it was just a string
+    # Business::ISBN 2.0 doesn't do EAN, but it does ISBN-13 objects
+    #   and it uses the hyphens, so call as_string with an empty anon array
+    # or, adjust the test and features to say that it comes out with hyphens.
+    my $thingy = $isbn->$isbn13_method;
+    return eval { $thingy->can( 'as_string' ) } ? $thingy->as_string([]) : $thingy;
+}
 }
 
 sub isbn_as_ean {
-    my $isbn = shift->_isbn || return undef;
-    return $isbn->as_ean;
+    my $name = (caller(0))[3]; $name =~ s/.*:://;
+    carp "$name is DEPRECATED. Use isbn13 instead";
+
+    no strict 'refs';
+    &isbn13;
 }
 
 sub canonical {

@@ -1,16 +1,19 @@
 # $Id$
 
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test;
 use MT;
+use MT::Test;
 use MT::Util qw( encode_html decode_html wday_from_ts format_ts dirify
-                 convert_high_ascii encode_xml decode_xml substr_wref );
+                 convert_high_ascii encode_xml decode_xml substr_wref
+                 trim ltrim rtrim );
 use MT::I18N qw( encode_text );
 use strict;
 
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
-BEGIN { plan tests => 80 };
+BEGIN { plan tests => 92 };
 
 ok(substr_wref("Sabado", 0, 3), "Sab"); #1
 ok(substr_wref("S&agrave;bado", 0, 3), "S&agrave;b"); #2
@@ -112,6 +115,21 @@ for my $test (keys %xml_tests) {
         ok(decode_xml(encode_xml($test)), $test); #55 #58 #61 #64
     }
 }
+
+### tests for trim
+ok(ltrim(' sunday'), 'sunday'); #81
+ok(ltrim('  sunday monday'), 'sunday monday'); #82
+ok(ltrim(' sunday monday tuesday '), 'sunday monday tuesday '); #83
+ok(ltrim('sunday'), 'sunday'); #84
+ok(rtrim('sunday'), 'sunday'); #85
+ok(rtrim('sunday '), 'sunday'); #86
+ok(rtrim(' sunday monday '), ' sunday monday'); #87
+ok(rtrim('sunday monday tuesday  '), 'sunday monday tuesday'); #88
+ok(trim('sunday'), 'sunday'); #89
+ok(trim(' sunday'), 'sunday'); #90
+ok(trim(' sunday '), 'sunday'); #91
+ok(trim(' sunday monday '), 'sunday monday'); #92
+
 
 =pod
 

@@ -125,7 +125,7 @@ URI::WithBase - URIs which remember their base
 
 =head1 DESCRIPTION
 
-This module provide the C<URI::WithBase> class.  Objects of this class
+This module provides the C<URI::WithBase> class.  Objects of this class
 are like C<URI> objects, but can keep their base too.  The base
 represents the context where this URI was found and can be used to
 absolutize or relativize the URI.  All the methods described in L<URI>
@@ -137,19 +137,19 @@ The methods provided in addition to or modified from those of C<URI> are:
 
 =item $uri = URI::WithBase->new($str, [$base])
 
-The constructor takes a an optional base URI as the second argument.
-If provided this argument initialize the base attribute.
+The constructor takes an optional base URI as the second argument.
+If provided, this argument initializes the base attribute.
 
 =item $uri->base( [$new_base] )
 
-This method can be used to get or set the value of the base attribute.
-The return value is the old value and will be an URI object or C<undef>.
+Can be used to get or set the value of the base attribute.
+The return value, which is the old value, is a URI object or C<undef>.
 
 =item $uri->abs( [$base_uri] )
 
 The $base_uri argument is now made optional as the object carries its
 base with it.  A new object is returned even if $uri is already
-absolute (while plain URI objects will simply return themselves in
+absolute (while plain URI objects simply return themselves in
 that case).
 
 =item $uri->rel( [$base_uri] )

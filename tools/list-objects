@@ -1,25 +1,23 @@
 #!/usr/bin/perl -w
 use strict;
 
-use lib 'lib', '../lib';
+use lib 'extlib', 'lib', '../lib';
 
 my %opts;
 use Getopt::Long;
-GetOptions("class=s", \my($class),
+GetOptions("type=s", \my($type),
 	   "id=i", \my($id),
            "cols=s",  \my($cols),
 	   "config=s", \my($cfg));
-$class or die "usage: $0 --class=<class> [--id=<id>] [--cols=<columns>] [--config=<cfg>]";
+$type or die "usage: $0 --type=<type> [--id=<id>] [--cols=<columns>] [--config=<cfg>]";
 
 use MT;
 my $mt = MT->new(defined $cfg ? (Config => $cfg) : ()) or die MT->errstr;
+my $class = MT->model($type);
 
-eval "use $class;";
-die "Error loading '$class': $@" if $@;
+die "Error loading '$type': $@" if $@;
 
-my @args;
-@args = ($id) if $id;
-my $iter = $class->load_iter(@args) or
+my $iter = $class->load_iter($id ? { id => $id } : ()) or
     die "Load failed: " . $class->errstr;
 $cols = $cols ? [ split /\s*,\s*/, $cols ] : $class->column_names;
 print join(':', @$cols), "\n";

@@ -1,240 +1,63 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Plugin;
 
 use strict;
-
-use MT::ErrorHandler;
-@MT::Plugin::ISA = qw( MT::ErrorHandler );
-
-# static method
-sub select {
-    my ($pkg, $class)  = @_;
-    if ($class && $class !~ m/::/) {
-        $class = $pkg . '::' . $class;
-    } elsif (!$class) {
-        $class = $pkg;
-    }
-    my @plugins;
-    foreach (@MT::Plugins) {
-        push @plugins, $_ if UNIVERSAL::isa($_, $class);
-    }
-    @plugins;
-}
-
-sub new {
-    my $class = shift;
-    my ($self) = ref$_[0] ? @_ : {@_};
-    $self->{__settings} = {};
-    bless $self, $class;
-    $self->init();
-    $self;
-}
+use base qw( MT::Component );
 
 sub init {
     my $plugin = shift;
-    if (my $cb = $plugin->callbacks) {
-        if (ref $cb eq 'ARRAY') {
-            foreach (@$cb) {
-                MT->add_callback($_->{name}, $_->{priority} || 5, $plugin, $_->{code});
-            }
-        } elsif (ref $cb eq 'HASH') {
-            foreach (keys %$cb) {
-                if (ref $cb->{$_} eq 'CODE') {
-                    MT->add_callback($_, 5, $plugin, $cb->{$_});
-                } elsif (ref $cb->{$_} eq 'HASH') {
-                    MT->add_callback($_, $cb->{$_}{priority} || 5, $plugin, $cb->{$_}{code});
-                }
-            }
-        }
+    $plugin->{__settings} = {};
+    if (exists $plugin->{app_action_links}
+        || exists $plugin->{app_itemset_actions}
+        || exists $plugin->{upgrade_functions}
+        || exists $plugin->{app_methods}
+        || exists $plugin->{junk_filters}
+        || exists $plugin->{object_classes}) {
+        # Found in MT::Compat::v3
+        $plugin->legacy_init();
     }
-    if (my $jf = $plugin->junk_filters) {
-        if (ref $jf eq 'ARRAY') {
-            $_->{plugin} = $plugin for @$jf;
-            MT->register_junk_filter($jf);
-        } elsif (ref $jf eq 'HASH') {
-            foreach (keys %$jf) {
-                MT->register_junk_filter({
-                    name => $_,
-                    code => $jf->{$_},
-                    plugin => $plugin
-                });
-            }
-        }
-    }
-    if (my $filters = $plugin->text_filters) {
-        MT->add_text_filter($_, $filters->{$_}) for keys %$filters;
-    }
-    if (my $classes = $plugin->log_classes) {
-        MT->add_log_class($_, $classes->{$_}) for keys %$classes;
-    }
-    if (my $tags = $plugin->template_tags) {
-        require MT::Template::Context;
-        MT::Template::Context->add_tag($_, $tags->{$_}) for keys %$tags;
-    }
-    if (my $tags = $plugin->conditional_tags) {
-        require MT::Template::Context;
-        MT::Template::Context->add_conditional_tag($_, $tags->{$_}) for keys %$tags;
-    }
-    if (my $tags = $plugin->container_tags) {
-        require MT::Template::Context;
-        MT::Template::Context->add_container_tag($_, $tags->{$_}) for keys %$tags;
-    }
-    if (my $f = $plugin->global_filters) {
-        require MT::Template::Context;
-        MT::Template::Context->add_global_filter($_, $f->{$_}) for keys %$f;
-    }
+    $plugin->SUPER::init(@_) or return;
+    return $plugin;
 }
 
-sub init_app {
+sub id {
     my $plugin = shift;
-    my ($app) = @_;
-    my $app_pkg = ref $app;
-    if (my $init = $plugin->{init_app}) {
-        if (ref $init eq 'HASH') {
-            if ($init->{$app_pkg}) {
-                $init->{$app_pkg}->($plugin, @_);
-            }
-        } elsif (ref $init eq 'CODE') {
-            $init->($plugin, @_);
-        }
-    }
-    if (my $methods = $plugin->app_methods) {
-        if (my $app_methods = $methods->{$app_pkg}) {
-            foreach my $meth (keys %$app_methods) {
-                $MT::App::Global_actions{$app_pkg}{$meth} = $app_methods->{$meth};
-            }
-        }
-    }
-    # Localize these settings which are used by add_plugin_action to
-    # construct the hyperlinks to the plugin CGI.
-    local $MT::plugin_sig = $plugin->{plugin_sig};
-    local $MT::plugin_envelope = $plugin->envelope;
-    if (my $actions = $plugin->app_action_links) {
-        if (my $app_actions = $actions->{$app_pkg}) {
-            if (ref $app_actions eq 'ARRAY') {
-                foreach (@$app_actions) {
-                    $app->add_plugin_action($_->{type}, $_->{link}, $_->{link_text});
-                }
-            } elsif (ref $app_actions eq 'HASH') {
-                $app->add_plugin_action($_, $app_actions->{$_}{link}, $app_actions->{$_}{link_text})
-                    for keys %$app_actions;
-            }
-        }
-    }
-    if (my $actions = $plugin->app_itemset_actions) {
-        if (my $app_actions = $actions->{$app_pkg}) {
-            if (ref $app_actions eq 'ARRAY') {
-                $app->add_itemset_action($_) for @$app_actions;
-            } elsif (ref $app_actions eq 'HASH') {
-                $app->add_itemset_action({ type => $_, %{ $app_actions->{$_} }})
-                    for keys %$app_actions;
-            }
-        }
-    }
+    my $id = $plugin->SUPER::id(@_);
+    return $id || $plugin->{plugin_sig};
 }
 
-sub init_request {
+sub key { &MT::Component::_getset(shift, 'key', @_) }
+sub author_name { &MT::Component::_getset_translate(shift, 'author_name', @_) }
+sub author_link { &MT::Component::_getset(shift, 'author_link', @_) }
+sub plugin_link { &MT::Component::_getset(shift, 'plugin_link', @_) }
+sub config_link { &MT::Component::_getset(shift, 'config_link', @_) }
+sub doc_link { &MT::Component::_getset(shift, 'doc_link', @_) }
+sub description { &MT::Component::_getset_translate(shift, 'description', @_) }
+sub settings {
     my $plugin = shift;
-    my ($app) = @_;
-    delete $plugin->{__config_obj} if exists $plugin->{__config_obj};
-    my $app_pkg = ref $app;
-    if (my $init = $plugin->{init_request}) {
-        if (ref $init eq 'HASH') {
-            if ($init->{$app_pkg}) {
-                $init->{$app_pkg}->($plugin, @_);
-            }
-        } elsif (ref $init eq 'CODE') {
-            $init->($plugin, @_);
-        }
+    my $s = &MT::Component::_getset($plugin, 'settings', @_);
+    unless (ref($s) eq 'MT::PluginSettings') {
+        $s = MT::PluginSettings->new($s);
+        &MT::Component::_getset($plugin, 'settings', $s);
     }
+    return $s;
 }
+sub icon { &MT::Component::_getset(shift, 'icon', @_) }
 
-sub init_tasks {
-    my $plugin = shift;
-    if (my $tasks = $plugin->tasks) {
-        if (ref $tasks eq 'ARRAY') {  # an array of MT::Task objects
-            MT->add_task($_) for @$tasks;
-        } elsif (ref $tasks eq 'HASH') {  # an array of task metadata
-            foreach (keys %$tasks) {
-                my $task;
-                if (ref $tasks->{$_} eq 'CODE') {
-                    $task = { key => $_, code => $tasks->{$_} };
-                } elsif (ref $tasks->{$_} eq 'HASH') {
-                    $task = { %{ $tasks->{$_} }, key => $_ };
-                }
-                MT->add_task(MT::Task->new($task));
-            }
-        } elsif (UNIVERSAL::isa($tasks, 'MT::Task')) {
-            MT->add_task($tasks);       # a single MT::Task object
-        }
-    }
-}
-
-sub _getset {
-    my $p = (caller(1))[3]; $p =~ s/.*:://;
-    @_ > 1 ? $_[0]->{$p} = $_[1] : $_[0]->{$p};
-}
-
-sub _getset_translate {
-    my $p = (caller(1))[3]; $p =~ s/.*:://;
-    $_[0]->{$p} = $_[1] if @_ > 1;
-    $_[0]->l10n_filter($_[0]->{$p} || '');
-}
-
-sub key { &_getset }
-sub name { &_getset_translate }
-sub author_name { &_getset_translate }
-sub author_link { &_getset }
-sub plugin_link { &_getset }
-sub version { &_getset }
-sub schema_version { &_getset }
-sub config_link { &_getset }
-sub doc_link { &_getset }
-sub description { &_getset_translate }
-sub envelope { &_getset }
-sub settings { &_getset }
-sub icon { &_getset }
-sub callbacks { &_getset }
-sub upgrade_functions { &_getset }
-sub object_classes { &_getset }
-sub junk_filters { &_getset }
-sub text_filters { &_getset }
-sub template_tags { &_getset }
-sub conditional_tags { &_getset }
-sub log_classes { &_getset }
-sub container_tags { &_getset }
-sub global_filters { &_getset }
-sub app_methods { &_getset }
-sub app_action_links { &_getset }
-sub app_itemset_actions { &_getset }
-sub tasks { &_getset }
-
-sub needs_upgrade {
-    my $plugin = shift;
-    my $sv = $plugin->schema_version;
-    return 0 unless defined $sv;
-    my $ver = MT->config('PluginSchemaVersion');
-    my $cfg_ver = $ver->{$plugin->{plugin_sig}} if $ver;
-    if ((!defined $cfg_ver) || ($cfg_ver < $sv)) {
-        return 1;
-    }
-    0;
-}
-
+# Plugin-specific: configuration settings and data
 sub load_config {
     my $plugin = shift;
     my ($param, $scope) = @_;
     my $setting_obj = $plugin->get_config_obj($scope);
     my $settings = $setting_obj->data;
     %$param = %$settings;
-    foreach my $key (%$settings) {
+    foreach my $key (keys %$settings) {
         next unless defined $key;
-        next unless exists $settings->{$key};
         my $value = $settings->{$key};
         next if !defined $value or $value =~ m/\s/ or length($value) > 100;
         $param->{$key.'_'.$value} = 1;
@@ -252,6 +75,7 @@ sub save_config {
         $data->{$_} = exists $param->{$_} ? $param->{$_} : undef;
     }
     $pdata->data($data);
+    MT->request('plugin_config.'.$plugin->id, undef);
     $pdata->save() or die $pdata->errstr;
 }
 
@@ -259,6 +83,7 @@ sub reset_config {
     my $plugin = shift;
     my ($scope) = @_;
     my $obj = $plugin->get_config_obj($scope);
+    MT->request('plugin_config.'.$plugin->id, undef);
     $obj->remove if $obj->id;
 }
 
@@ -270,7 +95,14 @@ sub config_template {
     } else {
         $scope = 'system';
     }
-    if (my $tmpl = $plugin->{"${scope}_config_template"} || $plugin->{'config_template'}) {
+    my $r = $plugin->registry;
+    if (my $tmpl = $r->{"${scope}_config_template"} ||
+        $r->{"config_template"} ||
+        $plugin->{"${scope}_config_template"} ||
+        $plugin->{'config_template'}) {
+        if (ref $tmpl eq 'HASH') {
+            $tmpl = MT->handler_to_coderef($tmpl->{code});
+        }
         return $tmpl->($plugin, @_) if ref $tmpl eq 'CODE';
         if ($tmpl =~ /\s/) {
             return $tmpl;
@@ -289,7 +121,7 @@ sub config_vars {
     if (my $s = $plugin->settings) {
         foreach my $setting (@$s) {
             my ($name, $param) = @$setting;
-            next if $scope && $param->{Scope} && $param->{Scope} ne $scope;
+            next if $scope && $param->{scope} && $param->{scope} ne $scope;
             push @settings, $name;
         }
     }
@@ -326,7 +158,12 @@ sub get_config_obj {
         $scope = 'system';
         $key = 'configuration';
     }
-    return $plugin->{__config_obj}{$scope_id} if $plugin->{__config_obj}{$scope_id};
+    my $cfg = MT->request('plugin_config.'.$plugin->id);
+    unless ($cfg) {
+        $cfg = {};
+        MT->request('plugin_config.'.$plugin->id, $cfg);
+    }
+    return $cfg->{$scope_id} if $cfg->{$scope_id};
     require MT::PluginData;
     # calling "name" directly here to avoid localization
     my $pdata_obj = MT::PluginData->load({plugin => $plugin->key || $plugin->{name},
@@ -336,7 +173,7 @@ sub get_config_obj {
         $pdata_obj->plugin($plugin->key || $plugin->{name});
         $pdata_obj->key($key);
     }
-    $plugin->{__config_obj}{$scope_id} = $pdata_obj;
+    $cfg->{$scope_id} = $pdata_obj;
     my $data = $pdata_obj->data() || {};
     $plugin->apply_default_settings($data, $scope_id);
     $pdata_obj->data($data);
@@ -373,133 +210,34 @@ sub get_config_value {
     return exists $config->{$_[0]} ? $config->{$_[0]} : undef;
 }
 
-sub load_tmpl {
-    my $plugin = shift;
-    my($file, @p) = @_;
-
-    my $mt = MT->instance;
-    my $path = $mt->config('TemplatePath');
-    require HTML::Template;
-    my $tmpl;
-    my $err; 
-
-    my @paths;
-    my $dir = File::Spec->catdir($mt->mt_dir, $plugin->envelope, 'tmpl');
-    push @paths, $dir if -d $dir;
-    $dir = File::Spec->catdir($mt->mt_dir, $plugin->envelope);
-    push @paths, $dir if -d $dir;
-    if (my $alt_path = $mt->config('AltTemplatePath')) {
-        my $dir = File::Spec->catdir($path, $alt_path);
-        if (-d $dir) {              # AltTemplatePath is relative
-            push @paths, File::Spec->catdir($dir, $mt->{template_dir})
-                if $mt->{template_dir};
-            push @paths, $dir;
-        } elsif (-d $alt_path) {    # AltTemplatePath is absolute
-            push @paths, File::Spec->catdir($alt_path,
-                                            $mt->{template_dir})
-                if $mt->{template_dir};
-            push @paths, $alt_path;
-        }
-    }
-    push @paths, File::Spec->catdir($path, $mt->{template_dir})
-        if $mt->{template_dir};
-    push @paths, $path;
-    my $cache_dir = File::Spec->catdir($path, 'cache');
-    undef $cache_dir if (!-d $cache_dir) || (!-w $cache_dir);
-    my $type = {'SCALAR' => 'scalarref', 'ARRAY' => 'arrayref'}->{ref $file}
-        || 'filename';
-    eval {
-        $tmpl = HTML::Template->new(
-            type => $type, source => $file,
-            path => \@paths,
-            search_path_on_include => 1,
-            die_on_bad_params => 0, global_vars => 1,
-            loop_context_vars => 1,
-            $cache_dir ? (file_cache_dir => $cache_dir, file_cache => 1, file_cache_dir_mode => 0777) : (),
-            @p);
-    };
-    $err = $@;
-    return $plugin->error(
-        $mt->translate("Loading template '[_1]' failed: [_2]", $file, $err))
-        if $@;
-
-    $tmpl->param(static_uri => $mt->static_path);
-    $tmpl->param(script_path => $mt->path);
-    $tmpl->param(mt_version => MT->version_id);
-
-    $tmpl->param(language_tag => $mt->current_language);
-    my $enc = $mt->config('PublishCharset') ||
-              $mt->language_handle->encoding;
-    $tmpl->param(language_encoding => $enc);
-    $mt->{charset} = $enc;
-
-    if (my $author = $mt->user) {
-        $tmpl->param(author_id => $author->id);
-        $tmpl->param(author_name => $author->name);
-    }
-
-    ## We do this in load_tmpl because show_error and login don't call
-    ## build_page; so we need to set these variables here.
-    if (UNIVERSAL::isa($mt, 'MT::App')) {
-        $tmpl->param(script_url => $mt->uri);
-        $tmpl->param(mt_url => $mt->mt_uri);
-        $tmpl->param(script_full_url => $mt->base . $mt->uri);
-    }
-
-    $tmpl;
-}
-
-sub l10n_class { $_[0]->{'l10n_class'} || 'MT::L10N' }
-
-sub translate {
-    my $plugin = shift;
-    unless ($plugin->{__l10n_handle}) {
-        my $lang = MT->current_language || 'en_us';
-        eval "require " . $plugin->l10n_class . ";";
-        $plugin->{__l10n_handle} = $plugin->l10n_class->get_handle($lang);
-    }
-    my ($format, @args) = @_;
-    my $enc = MT->instance->config('PublishCharset');
-    my $str;
-    if ($plugin->{__l10n_handle}) {
-        if ($enc =~ m/utf-?8/i) {
-            $str = $plugin->{__l10n_handle}->maketext($format, @args);
-        } else {
-            $str = MT::I18N::encode_text($plugin->{__l10n_handle}->maketext($format, map {MT::I18N::encode_text($_, $enc, 'utf-8')} @args),'utf-8', $enc);
-        }
-    }
-    if (!defined $str) {
-        $str = MT->translate(@_);
-    }
-    $str;
-}
-
-sub translate_templatized {
-    my $plugin = shift;
-    my($text) = @_;
-    $text =~ s!(<MT_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)+?\3))+?\s*/?>)!
-        my($msg, %args) = ($1);
-        while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)\2/g) {  #"
-            $args{$1} = $3;
-        }
-        $args{params} = '' unless defined $args{params};
-        my @p = map MT::Util::decode_html($_),
-            split /\s*%%\s*/, $args{params};
-        @p = ('') unless @p;
-        my $translation = $plugin->translate($args{phrase}, @p);
-        $translation =~ s/([\\'])/\\$1/sg if $args{escape};
-        $translation;
-    !ge;
-    $text;
-}
-
-sub l10n_filter { $_[0]->translate_templatized($_[1]) }
 
 package MT::PluginSettings;
 
 sub new {
     my $pkg = shift;
     my ($self) = @_;
+    $self ||= [];
+    if (ref $self eq 'HASH') {
+        # convert a hash-style setting structure into what PluginSettings
+        # expects
+        my $settings = [];
+        foreach my $key (keys %$self) {
+            if (defined $self->{$key}) {
+                push @$settings, [ $key, $self->{$key} ];
+            }
+            else {
+                push @$settings, [ $key ];
+            }
+        }
+        @$settings = sort { ( $a->[1] ? $a->[1]->{order} || 0 : 0 )
+            <=> ( $b->[1] ? $b->[1]->{order} || 0 : 0 ) } @$settings;
+        $self = $settings;
+    }
+    # Lowercase all settings keys
+    foreach my $setting (@$self) {
+        my ($name, $param) = @$setting;
+        $param->{lc $_} = $param->{$_} for keys %$param;
+    }
     bless $self, $pkg;
 }
 
@@ -509,9 +247,9 @@ sub defaults {
     my $defaults = {};
     foreach my $setting (@$settings) {
         my ($name, $param) = @$setting;
-        next unless exists $param->{Default};
-        next if $scope && $param->{Scope} && $param->{Scope} ne $scope;
-        $defaults->{$name} = $param->{Default};
+        next unless exists $param->{default};
+        next if $scope && $param->{scope} && $param->{scope} ne $scope;
+        $defaults->{$name} = $param->{default};
     }
     $defaults;
 }
@@ -521,8 +259,7 @@ __END__
 
 =head1 NAME
 
-MT::Plugin - Movable Type class holding information that describes a
-plugin
+MT::Plugin - Movable Type class that describes a plugin
 
 =head1 SYNOPSIS
 
@@ -659,28 +396,28 @@ A URL pointing to the home page for the plugin itself.
 
 =item * config_template
 
-Defines a C<HTML::Template> file by name to use for plugin configuration.
+Defines a C<MT::Template> file by name to use for plugin configuration.
 This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (either "system"
+C<MT::Template> parameter data and the scope value (either "system"
 for system-wide configuration or "blog:N" where N is the active blog id).
 
 =item * system_config_template
 
-Defines a C<HTML::Template> file by name to use for system-wide
+Defines a C<MT::Template> file by name to use for system-wide
 plugin configuration. If not defined, MT will fall back to the config_template
 setting. This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (always "system" in
+C<MT::Template> parameter data and the scope value (always "system" in
 this case).
 
 =item * blog_config_template
 
-Defines a C<HTML::Template> file by name to use for weblog-specific
+Defines a C<MT::Template> file by name to use for weblog-specific
 plugin configuration. If not defined, MT will fall back to the config_template
 setting. This value may also be a code reference, which MT would call
 passing three arguments: the plugin object instance, a hashref of
-C<HTML::Template> parameter data and the scope value (for weblogs, this
+C<MT::Template> parameter data and the scope value (for weblogs, this
 would be "blog:N", where N is the active blog id).
 
 =item * settings
@@ -699,57 +436,6 @@ modes and their handlers. For example:
             'mode2' => \&handler2
         }
     }
-
-=item * app_action_links
-
-Used to register plugin action links that are displayed on various pages
-within the MT::App::CMS application. The format for this key is:
-
-    app_action_links => {
-        'MT::App::CMS' => {   # application the action applies to
-            'type' => {
-                link => 'myplugin.cgi',
-                link_text => 'Configure MyPlugin'
-            }
-        }
-    }
-
-This is an alternative to using C<MT-E<gt>add_plugin_action>.
-
-=item * app_itemset_actions
-
-Used to register plugin itemset action links that are displayed on various
-listings within the MT::App::CMS application. The format for this key is:
-
-    app_itemset_actions => {
-        'MT::App::CMS' => {   # application the action applies to
-            'type' => {
-                key => 'unique_action_name',
-                label => 'Uppercase text',
-                code => \&itemset_handler
-            }
-        }
-    }
-
-In the event that you need to register multiple actions for a single type,
-you can use the alternate format:
-
-    app_itemset_actions => {
-        'MT::App::CMS' => [   # application the action applies to
-            {   type => 'type',
-                key => 'unique_action_name',
-                label => 'Uppercase text',
-                code => \&itemset_handler_upper
-            },
-            {   type => 'type',
-                key => 'unique_action_name2',
-                label => 'Lowercase text',
-                code => \&itemset_handler_lower
-            }
-        ]
-    }
-
-This is an alternative to using C<MT::App::CMS-E<gt>add_itemset_action>.
 
 =item * callbacks
 
@@ -894,11 +580,36 @@ package for how to declare an upgrade function.  Here is an example:
         }
     }
 
+=item * icon
+
+Set the icon filename (not including the plugin's static web path).
+
+=item * log_classes
+
+Set the name of the plugin's log classes to use.  For example:
+
+  MT->add_plugin({
+    name => "My custom plugin",
+    log_classes => { customlog => "MyCustomLog" }
+  });
+
+=back
+
 =head1 METHODS
 
 Each of the above arguments to the constructor is also a 'getter'
 method that returns the corresponding value. C<MT::Plugin> also offers
 the following methods:
+
+=head2 MT::Plugin->new
+
+Return a new I<MT::Plugin> instance.  This method calls the I<init> method.
+
+=head2 $plugin->init
+
+This construction helper method registers plugin I<callbacks>,
+I<junk_filters>, I<text_filters>, I<log_classes>, I<template_tags>,
+I<conditional_tags>, I<global_filters>.
 
 =head2 $plugin->init_app
 
@@ -910,12 +621,19 @@ the application starts up.
 For subclassed MT::Plugins that declare this method, it is invoked when
 the application begins handling a new request.
 
+=head2 $plugin->init_tasks
+
+For subclassed MT::Plugins that declare this method, it is invoked when
+the application begins handling a new task.
+
 =head2 $plugin->envelope
 
 Returns the path to the plugin, relative to the MT directory. This is
 determined automatically when the plugin is loaded.
 
 =head2 $plugin->set_config_value($key, $value[, $scope])
+
+See the I<get_config_value> description below.
 
 =head2 $plugin->get_config_value($key[, $scope])
 
@@ -935,6 +653,10 @@ same C<name> as a different plugin.
 Retrieves the MT::PluginData object associated with this plugin
 and the scope identified (which defaults to 'system' if unspecified).
 
+=head2 $plugin->apply_default_settings($data[, $scope])
+
+Applies the default plugin settings to the given data.
+
 =head2 $plugin->get_config_hash([$scope])
 
 Retrieves the configuration data associated with this plugin
@@ -943,7 +665,7 @@ the 'system' scope is assumed.
 
 =head2 $plugin->config_template($params[, $scope])
 
-Called to retrieve a HTML::Template object which will be output as the
+Called to retrieve a MT::Template object which will be output as the
 configuration form for this plugin. Optionally a scope may be specified
 (defaults to 'system').
 
@@ -966,14 +688,198 @@ Handles saving configuration data from the plugin configuration form.
 
 =head2 $plugin->load_config($param[, $scope])
 
+This method returns the configuration data associated with a plugin (and
+an optional scope) in the given I<param> hash reference.
+
+=head2 $plugin->reset_config($scope)
+
+This method drops the configuration data associated with this plugin
+given the scope identified and reverts to th MT defaults.
+
 Handles loading configuration data from the plugindata table.
 
 =head2 $plugin->load_tmpl($file[, ...])
 
-Used to load a HTML::Template object relative to the plugin's directory.
+Used to load a MT::Template object relative to the plugin's directory.
 It will scan both the plugin's directory and a directory named 'tmpl'
 underneath it. It will passthrough parameters that follow the $file
-parameter into the HTML::Template constructor.
+parameter into the MT::Template constructor.
+
+=head2 MT::Plugin->select([$class])
+
+Return the list of plugins available for the calling class or of the given
+class name argument.
+
+=head2 $plugin->needs_upgrade()
+
+This method compares any previously stored schema version for the
+plugin to the current plugin schema version number to determine if an
+upgrade is in order.
+
+=head2 $plugin->translate($phrase [, @args])
+
+This method translate the C<$phrase> to the currently selected language
+using the localization module for the plugin. The C<@args> parameters
+are passed through if given.
+
+=head2 $plugin->translate_templatized($text)
+
+This method calls the plugin's I<translate> method on any E<lt>MT_TRANSE<gt>
+tags inside C<$text>.
+
+=head2 $plugin->l10n_filter($text)
+
+This method is an alias for the I<translate_templatized> method.
+
+=head2 $plugin->l10n_class()
+
+This method returns the I<l10n_class> attribute of the plugin or
+I<MT::L10N> if not defined.
+
+=head2 $plugin->register_importer()
+
+This method gives plugins access to registry of importers.
+Detailed information can be found in I<MT::Import> document.
+
+=head2 Additional Accessor Methods
+
+The following are plugin attributes with accompanying get/set methods.
+
+=over 4
+
+=item * key
+
+=item * name
+
+=item * author_name
+
+=item * author_link
+
+=item * plugin_link
+
+=item * version
+
+=item * schema_version
+
+=item * config_link
+
+=item * doc_link
+
+=item * description
+
+=item * envelope
+
+=item * settings
+
+=item * icon
+
+=item * callbacks
+
+=item * upgrade_functions
+
+=item * object_classes
+
+=item * junk_filters
+
+=item * text_filters
+
+=item * template_tags
+
+=item * conditional_tags
+
+=item * log_classes
+
+=item * container_tags
+
+=item * global_filters
+
+=item * app_methods
+
+=item * app_action_links
+
+=item * app_itemset_actions
+
+=item * tasks
+
+=back
+
+=head1 LOCALIZATION
+
+Proper localization of a plugin requires a bit of structure and discipline.
+First of all, your plugin should declare a 'l10n_class' element upon
+registration. This defines the base L10N package to use for any translation
+done by the plugin:
+
+    # file l10nplugin.pl, in MT_DIR/plugins/l10nplugin
+
+    my $plugin = new MT::Plugin({
+        name => "My Localized Plugin",
+        l10n_class => "l10nplugin::L10N",
+    });
+
+Then, you should have a file like this in C<MT_DIR/plugins/l10nplugin/lib/l10nplugin>:
+
+    # file L10N.pm, in MT_DIR/plugins/l10nplugin/lib/l10nplugin
+
+    package l10nplugin::L10N;
+    use base 'MT::Plugin::L10N';
+    1;
+
+And then your actual localization modules in C<MT_DIR/plugins/l10nplugin/lib/l10nplugin/L10N>:
+
+    # file en_us.pm, in MT_DIR/plugins/l10nplugin/lib/l10nplugin/L10N
+
+    package l10n::L10N::en_us;
+
+    use base 'l10nplugin::L10N';
+
+    1;
+
+Here's a French module, to localize the plugin name:
+
+    # file fr.pm, in MT_DIR/plugins/l10nplugin/lib/l10nplugin/L10N
+
+    package l10nplugin::L10N::fr;
+
+    use base 'l10nplugin::L10N::en_us';
+
+    our %Lexicon = (
+        "My Localized Plugin" => "Mon Plugin Localise",
+    );
+
+    1;
+
+And, the following methods of the plugin object are I<automatically>
+translated for you, so you don't need to invoke translate on them
+yourself:
+
+=over 4
+
+=item * name
+
+=item * author_name
+
+=item * description
+
+=back
+
+To translate individual strings of text from within your plugin code
+is done like this:
+
+    my $rebuild_str = $plugin->translate("Publish");
+
+Note that if your plugin does not translate a phrase, it may be translated
+by the MT translation matrix if the phrase is found there. So common
+MT phrases like "Weblog", "User", etc., are already handled and you should
+not have to duplicate the translation of such terms in your plugin's
+localization modules.
+
+To translate a template that has embedded E<lt>MT_TRANSE<gt> tags in
+them, use the C<translate_templatized> method of the plugin object.
+
+    $tmpl = $plugin->load_tmpl("my_template.tmpl");
+    $tmpl->param(\%param);
+    my $html = $plugin->translate_templatized($tmpl->output());
 
 =head1 MT::PluginSettings
 
@@ -993,8 +899,8 @@ Example:
 Settings can be assigned a default value and an applicable 'scope'.
 Currently, recognized scopes are "system" and "blog".
 
-=head1 AUTHOR & COPYRIGHTS
+=head1 AUTHOR & COPYRIGHT
 
-Please see the I<MT> manpage for author, copyright, and license information.
+Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut

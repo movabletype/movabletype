@@ -1,0 +1,20 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Restoring...">"$>
+<$mt:setvar name="screen_type" value="restore-publishing-config"$>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function progress(str, id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = str;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<div class="modal_width dialog import-process">
+
+<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+
+<pre><mt:var name="name" escape="html">

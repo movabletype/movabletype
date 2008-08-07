@@ -1,0 +1,35 @@
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="blog" escape="js">', '<__trans phrase="blogs" escape="js">'); return false;"
+        accesskey="x"
+        title="<__trans phrase="Delete selected blogs (x)">"
+        ><__trans phrase="Delete"></a>
+    </mt:if>
+</mt:setvarblock>
+<mtapp:listing>
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th id="bt-name"><__trans phrase="Blog Name"></th>
+            <th id="bt-entries"><__trans phrase="Entries"></th>
+            <th id="bt-comments"><__trans phrase="Comments"></th>
+            <th id="bt-trackbacks"><__trans phrase="TrackBacks"></th>
+            <th id="bt-settings"><__trans phrase="Settings"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
+            <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entries&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
+            <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+            <td align="right"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
+            <td><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

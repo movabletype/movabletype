@@ -1,14 +1,18 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Comment;
-use strict;
 
-use MT::Object;
-@MT::Comment::ISA = qw( MT::Object );
+use strict;
+use base qw( MT::Object MT::Scorable );
+use MT::Util qw( weaken );
+
+sub JUNK ()     { -1 }
+sub NOT_JUNK () { 1 }
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -25,21 +29,41 @@ __PACKAGE__->install_properties({
         'last_moved_on' => 'datetime not null',
         'junk_score' => 'float',
         'junk_log' => 'text',
+        'parent_id' => 'integer',
     },
     indexes => {
-        ip => 1,
         created_on => 1,
-        entry_id => 1,
-        blog_id => 1,
+        entry_visible => {
+            columns => [ 'entry_id', 'visible', 'created_on' ],
+        },
         email => 1,
         commenter_id => 1,
-        visible => 1,
-        junk_status => 1,
-        last_moved_on => 1,
-        junk_score => 1,
+        parent_id => 1,
+        last_moved_on => 1, # used for junk expiration
+        # For comment throttle check
+        blog_ip_date => {
+            columns => [ 'blog_id', 'ip', 'created_on' ],
+        },
+        # For URL lookups to aid spam filtering
+        blog_url => {
+            columns => [ 'blog_id', 'visible', 'url' ],
+        },
+        blog_stat => {
+            columns => [ 'blog_id', 'junk_status', 'created_on' ],
+        },
+        blog_visible => {
+            columns => [ 'blog_id', 'visible', 'created_on', 'id' ],
+        },
+        visible_date => {
+            columns => [ 'visible', 'created_on' ],
+        },
+        junk_date => {
+            columns => [ 'junk_status', 'created_on' ],
+        },
     },
+    meta => 1,
     defaults => {
-        junk_status => 0,
+        junk_status => NOT_JUNK,
         last_moved_on => '20000101000000',
     },
     audit => 1,
@@ -47,10 +71,15 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
-use constant JUNK => -1;
-use constant NOT_JUNK => 1;
-
 my %blocklists = ();
+
+sub class_label {
+    return MT->translate("Comment");
+}
+
+sub class_label_plural {
+    return MT->translate("Comments");
+}
 
 sub is_junk {
     $_[0]->junk_status == JUNK;
@@ -102,77 +131,20 @@ sub previous {
 sub _nextprev {
     my $obj = shift;
     my $class = ref($obj);
-    my ($direction, $publish_only) = @_;
+    my ($direction, $terms) = @_;
     return undef unless ($direction eq 'next' || $direction eq 'previous');
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
     return $obj->{$label} if $obj->{$label};
 
-    # Selecting the adjacent object can be tricky since timestamps
-    # are not necessarily unique for entries. If we find that the
-    # next/previous object has a matching timestamp, keep selecting entries
-    # to select all entries with the same timestamp, then compare them using
-    # id as a secondary sort column.
-
-    my ($id, $ts) = ($obj->id, $obj->created_on);
-    my $iter = $class->load_iter({
-        blog_id => $obj->blog_id,
-        created_on => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        %{$publish_only}
-    }, {
-        'sort' => 'created_on',
-        'direction' => $next ? 'ascend' : 'descend',
-        'range_incl' => { 'created_on' => 1 },
-    });
-
-    # This selection should always succeed, but handle situation if
-    # it fails by returning undef.
-    return unless $iter;
-
-    # The 'same' array will hold any entries that have matching
-    # timestamps; we will then sort those by id to find the correct
-    # adjacent object.
-    my @same;
-    while (my $e = $iter->()) {
-        # Don't consider the object that is 'current'
-        next if $e->id == $id;
-        my $e_ts = $e->created_on;
-        if ($e_ts eq $ts) {
-            # An object with the same timestamp should only be
-            # considered if the id is in the scope we're looking for
-            # (greater than for the 'next' object; less than for
-            # the 'previous' object).
-            push @same, $e
-                if $next && $e->id > $id or !$next && $e->id < $id;
-        } else {
-            # We found an object with a timestamp different than
-            # the 'current' object.
-            if (!@same) {
-                push @same, $e;
-                # We should check to see if this new timestamped object also
-                # has entries adjacent to _it_ that have the same timestamp.
-                while (my $e = $iter->()) {
-                    push(@same, $e), next if $e->created_on eq $e_ts;
-                    $iter->('finish'), last;
-                }
-            } else {
-                $iter->('finish');
-            }
-            return $obj->{$label} = $e unless @same;
-            last;
-        }
-    }
-    if (@same) {
-        # If we only have 1 element in @same, return that.
-        return $obj->{$label} = $same[0] if @same == 1;
-        # Sort remaining elements in @same by id.
-        @same = sort { $a->id <=> $b->id } @same;
-        # Return front of list (smallest id) if selecting 'next'
-        # object. Return tail of list (largest id) if selection 'previous'.
-        return $obj->{$label} = $same[$next ? 0 : $#same];
-    }
-    return;
+    my $o = $obj->nextprev(
+        direction => $direction,
+        terms     => { blog_id => $obj->blog_id, %$terms },
+        by        => 'created_on',
+    );
+    weaken($o->{$label} = $o) if $o;
+    return $o;
 }
 
 sub entry {
@@ -220,6 +192,7 @@ sub junk {
 sub moderate {
     my ($comment) = @_;
     $comment->visible(0);
+    $comment->junk_status(NOT_JUNK);
 }
 
 sub approve {
@@ -229,6 +202,17 @@ sub approve {
 }
 
 *publish = \&approve;
+
+sub author {
+    my $comment = shift;
+    if (!@_ && $comment->commenter_id) {
+        require MT::Author;
+        if (my $auth = MT::Author->load($comment->commenter_id)) {
+            return $auth->nickname;
+        }
+    }
+    return $comment->column('author', @_);
+}
 
 sub all_text {
     my $this = shift;
@@ -257,7 +241,9 @@ sub save {
     my $comment = shift;
     $comment->junk_log(join "\n", @{$comment->{__junk_log}})
         if ref $comment->{__junk_log} eq 'ARRAY';
-    $comment->SUPER::save();
+    my $ret = $comment->SUPER::save();
+    delete $comment->{__changed}{visibility} if $ret;
+    return $ret;
 }
 
 sub to_hash {
@@ -276,7 +262,7 @@ sub to_hash {
                 MT->apply_text_filters($txt, $blog->comment_text_filters) :
                 $txt;
             my $sanitize_spec = $blog->sanitize_spec ||
-                MT::ConfigMgr->instance->GlobalSanitizeSpec;
+                MT->config->GlobalSanitizeSpec;
             require MT::Sanitize;
             MT::Sanitize->sanitize($txt, $sanitize_spec);
         }
@@ -295,6 +281,36 @@ sub to_hash {
     }
 
     $hash;
+}
+
+sub visible {
+    my $comment = shift;
+    return $comment->SUPER::visible unless @_;
+
+    ## Note transitions in visibility in the object, so that
+    ## other methods can act appropriately.
+    my $was_visible = $comment->SUPER::visible || 0;
+    my $is_visible = shift || 0;
+
+    my $vis_delta = 0;
+    if (!$was_visible && $is_visible) {
+        $vis_delta = 1;
+    } elsif ($was_visible && !$is_visible) {
+        $vis_delta = -1;
+    }
+    $comment->{__changed}{visibility} ||= 0;
+    $comment->{__changed}{visibility} += $vis_delta;
+
+    return $comment->SUPER::visible($is_visible);
+}
+
+sub parent {
+    my $comment = shift;
+    $comment->cache_property('parent', sub {
+        if ($comment->parent_id) {
+            return MT::Comment->load($comment->parent_id);
+        }
+    });
 }
 
 1;

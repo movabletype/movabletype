@@ -1,8 +1,9 @@
 /*
-Copyright 2004 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2004-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 /*
@@ -88,6 +89,9 @@ TC.TagComplete.prototype.keyDown = function( evt )
 {
     evt = evt || event;
     var element = evt.target || evt.srcElement;
+    if (evt.ctrlKey) {
+        return true;
+    }
     if ( evt.keyCode == 8 ) {   // backspace
         this.truncateWord();
     }
@@ -343,8 +347,11 @@ TC.TagCompleteNode.prototype.getStrings = function(str1, str2, outStr)
         if ( this.isLeaf ) 
             outStr.push( str2 );
 
-        for ( var i in this.nodeValue )
+        for ( var i in this.nodeValue ) {
+            if (typeof(this.nodeValue[ i ]) != 'object')
+                continue;
             this.nodeValue[ i ].getStrings( str1, str2 + i, outStr );
+        }
     }
     else
     {

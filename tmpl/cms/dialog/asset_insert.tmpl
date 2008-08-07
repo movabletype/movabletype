@@ -1,0 +1,11 @@
+<mt:include name="dialog/header.tmpl">
+<mt:setvarblock name="insert_script" id="insert_script">
+window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:var name="edit_field" escape="js">' );
+</mt:setvarblock>
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:var name="insert_script">
+closeDialog();
+/* ]]> */
+</script>
+<mt:include name="dialog/footer.tmpl">

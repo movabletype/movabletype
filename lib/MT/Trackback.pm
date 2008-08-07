@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -33,19 +33,63 @@ __PACKAGE__->install_properties({
         'category_id' => 0,
         'is_disabled' => 0,
     },
+    child_classes => ['MT::TBPing'],
     audit => 1,
     datasource => 'trackback',
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("TrackBack");
+}
+
+sub class_label_plural {
+    MT->translate("TrackBacks");
+}
+
 sub remove {
     my $tb = shift;
-    require MT::TBPing;
-    my @pings = MT::TBPing->load({ tb_id => $tb->id });
-    for my $ping (@pings) {
-        $ping->remove;
-    }
-    $tb->SUPER::remove;
+    $tb->remove_children({ key => 'tb_id' }) or return;
+    $tb->SUPER::remove(@_);
+}
+
+sub entry {
+    my $tb = shift;
+    return undef unless $tb->entry_id;
+    require MT::Entry;
+    MT::Entry->load($tb->entry_id);
+}
+
+sub category {
+    my $tb = shift;
+    return undef unless $tb->category_id;
+    require MT::Category;
+    MT::Category->load($tb->category_id);
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Trackback
+
+=head1 METHODS
+
+=head2 $tb->remove()
+
+Call L<MT::Object/remove> for the trackback.
+
+=head2 $tb->entry()
+
+Call L<MT::Entry/load> for the trackback I<entry_id>.
+
+=head2 $tb->category()
+
+Call L<MT::Category/load> for the trackback I<category_id>.
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

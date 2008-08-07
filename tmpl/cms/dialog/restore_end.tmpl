@@ -1,0 +1,108 @@
+</pre>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var progress = getByID("progress-bar");
+if (progress) {
+    progress.style.display = "none";
+}
+/* ]]> */
+</script>
+
+<mt:if name="restore_end">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="restore-error"
+            class="error">
+            <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
+        </mtapp:statusmsg>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+            <button
+                onclick="return closeDialog('<mt:var name="error_url">'); return false"
+                type="submit"
+                accesskey="v"
+                title="<__trans phrase="View Activity Log (v)">"
+                class="primary-button"
+                ><__trans phrase="View Activity Log"></button>
+        </form>
+    </div>
+</div>
+    <mt:else>
+        <mtapp:statusmsg
+            id="restore-success"
+            class="success">
+            <__trans phrase="All data restored successfully!">
+        </mtapp:statusmsg>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+            <button
+                onclick="return closeDialog('<mt:var name="ok_url">'); return false"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Close (s)">"
+                class="primary-button"
+                ><__trans phrase="Close"></button>
+        </form>
+    </div>
+</div>
+    </mt:if>
+
+<mt:else>
+<form name="next_page" id="next_page" method="POST" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="<mt:var name="next_mode" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="files" value="<mt:var name="files" escape="html">" />
+    <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
+    <input type="hidden" name="current_file" value="<mt:var name="name" escape="html">" />
+    <input type="hidden" name="last" value="<mt:var name="last" escape="html">" />
+    <input type="hidden" name="redirect" value="1" />
+    <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty" escape="html">" />
+    <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
+    <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
+    <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+    <input type="hidden" name="blog_ids" value="<mt:var name="blog_ids" escape="html">" />
+    <input type="hidden" name="asset_ids" value="<mt:var name="asset_ids" escape="html">" />
+    <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
+
+</form>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
+            <button
+                onclick="submit_form();"
+                type="submit"
+                id="next-page-button"
+                class="hidden"
+                accesskey="s"
+                title="<__trans phrase="Next Page"> (s)"
+                ><__trans phrase="Next Page"></button>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+function submit_form() {
+    var f = document['next_page'];
+    if (f) {
+        f.submit();
+    }
+}
+
+var timer;
+timer = window.setTimeout("submit_form()", 3000);
+
+function stopTimer() {
+    window.clearTimeout(timer);
+    var p = getByID("message");
+    p.innerHTML = '';
+    DOM.removeClassName(getByID('next-page-button'), 'hidden');
+}
+/* ]]> */
+</script>
+<p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
+</mt:if>
+<mt:include name="dialog/footer.tmpl">

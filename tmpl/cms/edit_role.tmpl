@@ -1,0 +1,371 @@
+<mt:setvar name="edit_role" value="1">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:if name="id">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit Role">">
+    <MTSetVarBlock name="content_nav">
+        <mt:include name="include/users_content_nav.tmpl">
+    </MTSetVarBlock>
+    <mt:else>
+        <mt:setvar name="page_title" value="<__trans phrase="Create Role">">
+    </mt:if>
+<mt:setvarblock name="system_msg">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved-added"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <ul class="action-link-list">
+        <li>
+            <a href="<mt:var name="script_url">?__mode=list_roles" class="icon-left icon-related"><__trans phrase="List Roles"></a>
+    <mt:if name="id">
+            - <a href="<mt:var name="script_url">?__mode=list_associations&amp;role_id=<mt:var name="id" escape="url">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a>
+    </mt:if>
+        </li>
+    </ul>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function toggleAndUncheck(obj, target) {
+    if (!obj || !target) {
+        return;
+    }
+
+    var targetObj = getByID(target);
+    if (!targetObj) {
+        return;
+    }
+
+    if (obj.disabled) {
+        targetObj.disabled = true;
+    } else {
+        targetObj.disabled = !obj.checked;
+    }
+    if (!obj.checked) {
+        targetObj.checked = false;
+    }
+}
+
+function toggleAndDisable(obj, target) {
+    if (!obj || !target) {
+        return;
+    }
+
+    var targetObj = getByID(target);
+    if (!targetObj) {
+        return;
+    }
+
+    if (obj.checked) {
+        targetObj.checked = true;
+        targetObj.disabled = true;
+    } else {
+        targetObj.disabled = false;
+        // targetObj.checked = true;
+    }
+}
+
+function on_edit_config_changed(obj) {
+    toggleAndUncheck(obj, 'permission-set_publish_paths');
+}
+
+function on_create_post_changed(obj) {
+    toggleAndUncheck(obj, 'permission-publish_post');
+    var eap = getByID('permission-edit_all_posts');
+    if (eap && eap.checked) {
+        return;
+    }
+    toggleAndUncheck(obj, 'permission-send_notifications');
+}
+
+function on_edit_all_posts_changed(obj) {
+    var cp = getByID('permission-create_post');
+    if (cp && cp.checked) {
+        return;
+    }
+    toggleAndUncheck(obj, 'permission-send_notifications');
+}
+
+function on_edit_assets_changed(obj) {
+    toggleAndDisable(obj, 'permission-upload');
+    getByID("permission-save_image_defaults").disabled = false;
+}
+
+function on_upload_changed(obj) {
+    if (getByID("permission-edit_assets").checked)
+        return;
+    toggleAndUncheck(obj, 'permission-save_image_defaults');
+}
+
+var permsChanged = "no";
+function checkPerms(obj) { 
+    permsChanged = "yes";
+    var name = 'on_' + obj.value + '_changed';
+    if ('function' == typeof(window[name])) {
+        window[name](obj);
+    }
+}
+function permsUnChanged() { permsChanged = "no"; } 
+
+function doSubmitFormConfirm( f, mode, message ) {
+    if (confirm(message)) {
+        if (f.elements["__mode"] && mode)
+            f.elements["__mode"].value = mode;
+        f.submit();
+    }
+    return false;
+}
+
+function checkChanged() {
+    var orig_roleName = "<mt:var name="name" escape="html">";
+    var roleName = getByID('name').value;
+    if(permsChanged == "yes") {
+        if(roleName == orig_roleName) {
+            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+        } else {
+            doSubmitForm(document.role, 'save_role');
+        }
+    } else {
+        doSubmitForm(document.role, 'save_role');
+    }
+    return false;
+}
+
+function allPerms(name, check) {
+    var f = document.forms['role'];
+    var flds = f[name];
+    for (var i = 0; i < flds.length; i++) {
+        flds[i].checked = check;
+        if (!flds[i].className.match(/administer_blog/))
+            flds[i].disabled = check;
+    }
+    return false;
+}
+
+function getParentByClass(n, c) {
+    var result = n;
+    while (!result.className.match(c)
+           && result.nodeName && (result.nodeName != 'body')) {
+       result = result.parentNode;
+    }
+    return result;
+}
+
+function rectify(permContainer, forcibly) {
+    var permCheckboxes = permContainer.getElementsByTagName('input');
+    for (var i=0; i < permCheckboxes.length; i++) {
+        if (permCheckboxes[i].className.match(/administer_blog/)) {
+            isAdmin = permCheckboxes[i].checked;
+        }
+    }
+    for (var i=0; i < permCheckboxes.length; i++) {
+        if (!permCheckboxes[i].className.match(/administer_blog/)) {
+            if (isAdmin) {
+                permCheckboxes[i].disabled = true;
+                permCheckboxes[i].checked = true;
+            } else {
+                if (forcibly) {
+                    permCheckboxes[i].disabled = false;
+                    permCheckboxes[i].checked = false;
+                } else {
+                    checkPerms(permCheckboxes[i]);
+                }
+            }
+        }
+    }
+    if (forcibly) {
+        for (var i=0; i < permCheckboxes.length; i++) {
+            checkPerms(permCheckboxes[i]);
+        }
+    }
+}
+
+function handleClick(e) {
+    e = e || event;
+    var targ = e.target || e.srcElement;
+    if (!targ || !targ.nodeName) {
+        return;
+    }
+    if (targ.nodeName.toLowerCase() == 'label') {
+        if (targ.getAttribute('for'))
+            targ = getByID(targ.getAttribute('for'));
+        else {
+           var inputs = targ.getElementsByTagName('input');
+           targ = inputs[0];
+           checkPerms(targ);
+        }
+    }
+    if (targ.className.match(/administer_blog/)) {
+        permContainer = getParentByClass(targ, 'permission-list');
+        rectify(permContainer, 1);
+    }
+}
+
+function rectifyAll() {
+    var containers = TC.getElementsByClassName('permission-list');
+    for (var i=0; i < containers.length; i++) {
+        rectify(containers[i]);
+    }
+    permsUnChanged();
+}
+
+TC.attachLoadEvent( rectifyAll );
+
+/* ]]> */
+</script>
+
+<div id="edit-role" onclick="handleClick(event)">
+
+<mt:if name="id">
+<form name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+<mt:else>
+<form id="role" name="role" method="post" action="<mt:var name="script_url">">
+</mt:if>
+
+<mt:if name="id">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+</mt:if>
+    <input type="hidden" name="__mode" value="save_role" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <fieldset>
+        <h3><__trans phrase="Role Details"></h3>
+        <mtapp:setting
+            id="name"
+            label="<__trans phrase="Role Name">"
+            required="1"
+            hint="">
+            <div class="textarea-wrapper">
+                <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" />
+            </div>
+        </mtapp:setting>
+        <mtapp:setting
+            id="description"
+            label="<__trans phrase="Description">"
+            hint="">
+            <textarea name="description" id="description" class="full-width short" cols="" rows=""><mt:var name="description" escape="html"></textarea>
+        </mtapp:setting>
+        <mt:if name="id">
+            <mtapp:setting
+                id="created_by"
+                label="<__trans phrase="Created by">"
+                hint="">
+                <p><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></p>
+            </mtapp:setting>
+        </mt:if>
+    </fieldset>
+    <fieldset>
+        <h3><__trans phrase="Privileges"></h3>
+
+<div id="permission-list" class="permission-list">
+
+<mt:if name="is_enabled">
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', true)"><__trans phrase="Check All"></a> | -->
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', false)"><__trans phrase="Uncheck All"></a> -->
+</mt:if>
+
+    <mtapp:setting
+        id="administration"
+        label="<__trans phrase="Administration">"
+        hint="">
+        <ul>
+            <li><label for="permission-administer_blog"><input id="permission-administer_blog" type="checkbox" onclick="checkPerms(this);" class="administer_blog cb" name="permission" value="administer_blog"<mt:if name="have_access-administer_blog"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-administer_blog" escape="html"></label></li>
+            <li><label for="permission-edit_config"><input id="permission-edit_config" type="checkbox" onclick="checkPerms(this);" class="edit_config cb" name="permission" value="edit_config"<mt:if name="have_access-edit_config"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_config" escape="html"></label></li>
+            <li><label for="permission-set_publish_paths"><input id="permission-set_publish_paths" type="checkbox" onclick="checkPerms(this);" class="set_publish_paths cb" name="permission" value="set_publish_paths"<mt:if name="have_access-set_publish_paths"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-set_publish_paths" escape="html"></label></li>
+            <li><label for="permission-edit_categories"><input id="permission-edit_categories" type="checkbox" onclick="checkPerms(this);" class="edit_categories cb" name="permission" value="edit_categories"<mt:if name="have_access-edit_categories"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_categories" escape="html"></label></li>
+            <li><label for="permission-edit_tags"><input id="permission-edit_tags" type="checkbox" onclick="checkPerms(this);" class="edit_tags cb" name="permission" value="edit_tags"<mt:if name="have_access-edit_tags"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_tags" escape="html"></label></li>
+<mt:if name="config.enableaddressbook">
+            <li><label for="permission-edit_notifications"><input id="permission-edit_notifications" type="checkbox" onclick="checkPerms(this);" class="edit_notifications cb" name="permission" value="edit_notifications"<mt:if name="have_access-edit_notifications"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_notifications" escape="html"></label></li>
+</mt:if>
+            <li><label for="permission-view_blog_log"><input id="permission-view_blog_log" type="checkbox" onclick="checkPerms(this);" class="view_blog_log cb" name="permission" value="view_blog_log"<mt:if name="have_access-view_blog_log"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-view_blog_log" escape="html"></label></li>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="authoring_publishing"
+        label="<__trans phrase="Authoring and Publishing">"
+        hint="">
+        <ul>
+            <li><label for="permission-create_post"><input id="permission-create_post" type="checkbox" onclick="checkPerms(this);" class="create_post cb" name="permission" value="create_post"<mt:if name="have_access-create_post"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-create_post" escape="html"></label></li>
+            <li><label for="permission-publish_post"><input id="permission-publish_post" type="checkbox" onclick="checkPerms(this);" class="publish_post cb" name="permission" value="publish_post"<mt:if name="have_access-publish_post"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-publish_post" escape="html"></label></li>
+            <li><label for="permission-send_notifications"><input id="permission-send_notifications" type="checkbox" onclick="checkPerms(this);" class="send_notifications cb" name="permission" value="send_notifications"<mt:if name="have_access-send_notifications"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-send_notifications" escape="html"></label></li>
+            <li><label for="permission-edit_all_posts"><input id="permission-edit_all_posts" type="checkbox" onclick="checkPerms(this);" class="edit_all_posts cb" name="permission" value="edit_all_posts"<mt:if name="have_access-edit_all_posts"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_all_posts" escape="html"></label></li>
+            <li><label for="permission-manage_pages"><input id="permission-manage_pages" type="checkbox" onclick="checkPerms(this);" class="manage_pages cb" name="permission" value="manage_pages"<mt:if name="have_access-manage_pages"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-manage_pages" escape="html"></label></li>
+            <li><label for="permission-rebuild"><input id="permission-rebuild" type="checkbox" onclick="checkPerms(this);" class="rebuild cb" name="permission" value="rebuild"<mt:if name="have_access-rebuild"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-rebuild" escape="html"></label></li>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="designing"
+        label="<__trans phrase="Designing">"
+        hint="">
+        <ul>
+            <li><label for="permission-edit_templates"><input id="permission-edit_templates" type="checkbox" onclick="checkPerms(this);" class="edit_templates cb" name="permission" value="edit_templates"<mt:if name="have_access-edit_templates"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_templates" escape="html"></label></li>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="assets"
+        label="<__trans phrase="Assets">"
+        hint="">
+        <ul>
+            <li><label for="permission-edit_assets"><input id="permission-edit_assets" type="checkbox" onclick="checkPerms(this);" class="edit_assets cb" name="permission" value="edit_assets"<mt:if name="have_access-edit_assets"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_assets" escape="html"></label></li>
+            <li><label for="permission-upload"><input id="permission-upload" type="checkbox" onclick="checkPerms(this);" class="upload cb" name="permission" value="upload"<mt:if name="have_access-upload"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-upload" escape="html"></label></li>
+            <li><label for="permission-save_image_defaults"><input id="permission-save_image_defaults" type="checkbox" onclick="checkPerms(this);" class="save_image_defaults cb" name="permission" value="save_image_defaults"<mt:if name="have_access-save_image_defaults"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"><mt:unless name="have_access-edit_assets"> disabled="disabled"</mt:unless></mt:unless></mt:if> /> <mt:var name="prompt-save_image_defaults" escape="html"></label></li>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="commenting"
+        label="<__trans phrase="Commenting">"
+        hint="">
+        <ul>
+            <li><label for="permission-comment"><input id="permission-comment" type="checkbox" onclick="checkPerms(this);" class="comment cb" name="permission" value="comment"<mt:if name="have_access-comment"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-comment" escape="html"></label></li>
+            <li><label for="permission-manage_feedback"><input id="permission-manage_feedback" type="checkbox" onclick="checkPerms(this);" class="manage_feedback cb" name="permission" value="manage_feedback"<mt:if name="have_access-manage_feedback"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-manage_feedback" escape="html"></label></li>
+        </ul>
+    </mtapp:setting>
+
+</div>
+
+<mt:if name="id">
+<mt:if name="same_perm_loop">
+    <mtapp:setting
+        id="same_permissions"
+        label="<__trans phrase="Duplicate Roles">"
+        hint="<__trans phrase="These roles have the same privileges as this role">">
+        <div class="static">
+        <mt:loop name="same_perm_loop">
+        <a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a> 
+        </mt:loop>
+        </div>
+    </mtapp:setting>
+</mt:if>
+</mt:if>
+
+</fieldset>
+
+
+
+<mt:setvarblock name="action_buttons">
+    <button
+    <mt:if name="id">
+        onclick="return checkChanged();"
+    </mt:if>
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this role (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

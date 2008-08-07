@@ -1,0 +1,113 @@
+<mt:unless name="json">
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+    
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+var win = window.parent;
+function returnBlogSelection(ok) { 
+    if (!ok) // user cancelled 
+        return closeDialog(); 
+    var el_id = getByID("<mt:var name="idfield" escape="js">", win.document); 
+    var el_name = getByID("<mt:var name="namefield" escape="js">", win.document); 
+    var el_link = getByID("<mt:var name="namefield" escape="js">_link", win.document); 
+    var return_url = "<mt:var name="return_url" escape="js">";
+    if (el_id && el_name) { 
+<mt:if name="panel_multi"> 
+        var ids = new Array(); 
+        var names = new Array(); 
+        var inputs = dialog.panels[0].tableSelect.selected(); 
+        for (var i = 0; i < inputs.length; ++i) { 
+            var inp = inputs[i]; 
+            var row = TC.getParentByTagName( inp, "tr" ); 
+            if (!row) continue; 
+            var labels = row.getElementsByTagName('label'); 
+            if (labels.length == 0) continue; 
+            names.push(labels[0].innerHTML + ' (' + inp.value + ')'); 
+            ids.push(inp.value); 
+        } 
+        el_id.value = ids.join(','); 
+        el_name.innerHTML = names.join(','); 
+<mt:else> 
+        var inputs = dialog.panels[0].tableSelect.selected(); 
+        if (inputs.length == 0) return; 
+        var inp = inputs[0]; 
+        var row = TC.getParentByTagName( inp, "tr" ); 
+        if (!row) return; 
+        var labels = row.getElementsByTagName('label'); 
+        if (labels.length == 0) return; 
+        var blog_name = labels[0].innerHTML; 
+        el_id.value = inp.value; 
+        if (blog_name) 
+            el_name.innerHTML = blog_name + ' (' + inp.value + ')'; 
+</mt:if> 
+        if ( el_link )
+            DOM.removeClassName( el_link, "hidden" );
+        closeDialog();
+    } else if (return_url) {
+        var inputs = dialog.panels[0].tableSelect.selected(); 
+        if (inputs.length == 0) return; 
+        var inp = inputs[0]; 
+        var id = inp.value;
+        if (return_url.match(/\bblog_id=(\d+)/)) {
+            return_url = return_url.replace(/\bblog_id=(\d+)/, "blog_id=" + id);
+        } else {
+            return_url = return_url.replace(/\b__mode=([:\w-]+)/, '__mode=$1&blog_id=' + id);
+        }
+        closeDialog(return_url);
+    } else { 
+        alert("couldn't find required form elements"); 
+    } 
+} 
+
+function savedFavorite(id) {
+    var return_url = "<mt:var name="return_url" escape="js">";
+    if (return_url.match(/\bblog_id=(\d+)/)) {
+        return_url = return_url.replace(/\bblog_id=(\d+)/, "blog_id=" + id);
+    } else {
+        return_url = return_url.replace(/\b__mode=([:\w-]+)/, '__mode=$1&blog_id=' + id);
+    }
+    closeDialog(return_url);
+}
+
+function saveFavorite(ok) {
+    if (!ok) return closeDialog();
+    var inputs = dialog.panels[0].tableSelect.selected();
+    if (inputs.length == 0) return;
+    var id = inputs[0].value;
+    var param = '__mode=save_favorite_blogs'
+        + '&id=' + id
+        + '&magic_token=<mt:var name="magic_token">';
+    var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: function() { savedFavorite(id) } };
+    TC.Client.call(params);
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, <mt:var name="confirm_js" default="returnBlogSelection">);
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+
+<div class="modal_width" id="select-weblog-dialog">
+
+</mt:unless>
+<mt:include name="include/listing_panel.tmpl">
+<mt:unless name="json">
+
+</div>
+
+<mt:include name="dialog/footer.tmpl">
+</mt:unless>

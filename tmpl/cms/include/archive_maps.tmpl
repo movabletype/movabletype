@@ -1,0 +1,56 @@
+<mtapp:listing
+    show_actions="0"
+    type="templatemap">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="archive-type"><__trans phrase="Type"></th>
+            <th class="archive-path"><__trans phrase="Path"></th>
+            <th class="publish-options"><__trans phrase="Publishing"></th>
+            <th class="archive-delete si"><div><span><__trans phrase="Delete"></span></div></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr id="<mt:var name="map_id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="archive-type"><mt:var name="archive_label">
+    <mt:if name="has_multiple_archives">
+                <input type="checkbox" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" id="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">"<mt:if name="map_is_preferred"> checked="checked"</mt:if> value="1" onchange="togglePreferred(this, '<mt:var name="map_id">')" /><input type="hidden" name="archive_tmpl_preferred_<mt:var name="archive_type" escape="html">_<mt:var name="map_id">" value="<mt:if name="map_is_preferred">1<mt:else>0</mt:if>" />
+    </mt:if>
+            </td> 
+            <td class="archive-path">
+                <select id="archive_file_sel_<mt:var name="map_id">" class="tmpl-path" name="archive_file_sel_<mt:var name="map_id">" onchange="archiveFileSelect(this)">
+    <mt:loop name="archive_tmpl_loop">
+                    <option value="<mt:var name="value" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="name" escape="html"></option>
+    </mt:loop>
+                    <option value=""><__trans phrase="Custom..."></option>
+                </select><input type="text" id="archive_file_tmpl_<mt:var name="map_id">" class="tmpl-path tmpl-path-custom hidden" name="archive_file_tmpl_<mt:var name="map_id">" value="<mt:var name="file_template" escape="html">" />
+            </td>
+            <td class="publish-options">
+                <select name="map_build_type_<mt:var name="map_id">" id="build-type" class="half-width">
+                    <option value="1"<mt:if name="map_build_type_1"> selected="selected"</mt:if>><__trans phrase="Statically (default)"></option>
+    <mt:if name="publish_queue_available">
+                    <option value="4"<mt:if name="map_build_type_4"> selected="selected"</mt:if>><__trans phrase="Via Publish Queue"></option>
+        <mt:ignore>
+            <!-- untested features -->
+                    <option value="5"<mt:if name="map_build_type_5"> selected="selected"</mt:if>><__trans phrase="On a schedule"></option>
+                        <!-- This code needs to be shown if the "On a schedule" has been selected -->
+                    <__trans phrase=": every "><input name="schedule_interval" id="schedule_interval" value="<mt:var name="schedule_interval" escape="html">" maxlength="10" class="quarter-width" mt:watch-change="1" />
+                    <select name="schedule_period" id="schedule_period">
+                        <option value="minutes"<mt:if name="schedule_period_minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
+                        <option value="hours"<mt:if name="schedule_period_hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
+                        <option value="days"<mt:if name="schedule_period_days"> selected="selected"</mt:if>><__trans phrase="days"></option>
+                    </select>
+        </mt:ignore>
+    </mt:if>
+                    <option value="3"<mt:if name="map_build_type_3"> selected="selected"</mt:if>><__trans phrase="Dynamically"></option>
+                    <option value="2"<mt:if name="map_build_type_2"> selected="selected"</mt:if>><__trans phrase="Manually"></option>
+                    <option value="0"<mt:if name="map_build_type_0"> selected="selected"</mt:if>><__trans phrase="Do Not Publish"></option>
+                </select>
+            </td>
+            <td class="archive-delete si"><a href="javascript:void(0)" onclick="return deleteMap('<mt:var name="map_id">')" class="delete-archive-link"><span><__trans phrase="Delete"></span></a></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

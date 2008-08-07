@@ -308,26 +308,49 @@ sub CDSect {
     
     $self->start_cdata({});
     
+    my $split_end = "";
     $data = $reader->data;
     while (1) {
         $self->parser_error("EOF looking for CDATA section end", $reader)
-            unless length($data);
-        
+            unless length($data);    
+
+        # watch out for ]]> split between data segments
+        if ($split_end ne "")
+        {
+            if ($split_end eq "]" and $data =~ /^\]>/) {
+                $reader->move_along(2);
+                last;
+            }
+
+            if ($split_end eq "]]" and $data =~ /^>/) {
+                $reader->move_along(1);
+                last;
+            }
+
+            # rescue false positives on real ] and ]]
+            $self->characters({ Data => $split_end });
+            $split_end = "";
+        }
+
         if ($data =~ /^(.*?)\]\]>/s) {
             my $chars = $1;
-            $reader->move_along(length($chars) + 2);
+            $reader->move_along(length($chars) + 3);
             $self->characters({Data => $chars});
             last;
         }
-        else {
-            $self->characters({Data => $data});
-            $reader->move_along(length($data));
-            $data = $reader->data;
+
+        $reader->move_along(length($data)); # do move past ] or ]] in the reader
+
+        if ($data =~ s/(\]\]?)\z//s) {
+            $split_end = $1;
         }
+
+        $self->characters({Data => $data}); # don't write ] or ]] (yet) to the writer
+        $data = $reader->data;
     }
     $self->end_cdata({});
     return 1;
-}
+} 
 
 sub CharData {
     my ($self, $reader) = @_;

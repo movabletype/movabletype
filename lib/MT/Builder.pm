@@ -1,78 +1,242 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Builder;
-use strict;
 
-use MT::ErrorHandler;
-@MT::Builder::ISA = qw( MT::ErrorHandler );
+use strict;
+use base qw( MT::ErrorHandler );
+use MT::Util qw( weaken );
+
+sub NODE () { 'MT::Template::Node' }
 
 sub new { bless { }, $_[0] }
 
 sub compile {
     my $build = shift;
-    my($ctx, $text) = @_;
-    return [ ] unless $text;
-    my $state = local $build->{__state} = { tokens => [ ] };
-    $state->{text} = \$text;
+    my($ctx, $text, $opt) = @_;
+    my $tmpl;
+
+    $opt ||= { uncompiled => 1 };
+    my $depth = $opt->{depth} ||= 0;
+
+    my $ids;
+    my $classes;
+    my $errors;
+
+    # handle $builder->compile($template) signature
+    if (UNIVERSAL::isa($ctx, 'MT::Template')) {
+        $tmpl = $ctx;
+        $ctx = $tmpl->context;
+        $text = $tmpl->text;
+        $tmpl->reset_tokens();
+        $ids = $build->{__state}{ids} = {};
+        $classes = $build->{__state}{classes} = {};
+        $errors = $build->{__state}{errors} = [];
+        $build->{__state}{tmpl} = $tmpl;
+    } else {
+        $ids = $build->{__state}{ids} || {};
+        $classes = $build->{__state}{classes} || {};
+        $tmpl = $build->{__state}{tmpl};
+        $errors = $build->{__state}{errors} ||= [];
+    }
+
+    return [ ] unless defined $text;
+
+    my $mods;
+
+    # Translate any HTML::Template markup into native MT syntax.
+    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
+        translate_html_tmpl($text);
+    }
+
+    my $state = $build->{__state};
+    local $state->{tokens} = [];
+    local $state->{classes} = $classes;
+    local $state->{tmpl} = $tmpl;
+    local $state->{ids} = $ids;
+    local $state->{text} = \$text;
+
     my $pos = 0;
     my $len = length $text;
-    while ($text =~ m!(<\$?MT(.+?)[\$/]?>)!gs) {
-        my($whole_tag, $tag) = ($1, $2);
+    # MT tag syntax: <MTFoo>, <$MTFoo$>, <$MTFoo>
+    #                <MT:Foo>, <$MT:Foo>, <$MT:Foo$>
+    #                <MTFoo:Bar>, <$MTFoo:Bar>, <$MTFoo:Bar$>
+    # For 'function' tags, the '$' characters are optional
+    # For namespace, the ':' is optional for the default 'MT' namespace.
+    # Other namespaces (like 'Foo') would require the colon.
+    # Tag and attributes are case-insensitive. So you can write:
+    #   <mtfoo>...</MTFOO>
+    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)[\$/]?>)!gis) {
+        my($whole_tag, $prefix, $tag) = ($1, $2, $3);
         ($tag, my($args)) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         _text_block($state, $pos, $tag_start) if $pos < $tag_start;
         $args ||= '';
-        my %args; my @args;
-        while ($args =~ /(\w+)\s*=\s*(["'])(.*?)\2/gs) { #"
-            push @args, [$1, $3];
-            $args{$1} = $3;
+        # Structure of a node:
+        #   tag name, attribute hashref, contained tokens, template text,
+        #       attributes arrayref, parent array reference
+        my $rec = bless [ $tag, \my %args, undef, undef, \my @args ], NODE;
+        while ($args =~ /
+            (?:
+                (?:
+                    ((?:\w|:)+)                     #1
+                    \s*=\s*
+                    (?:(?:
+                        (["'])                      #2
+                        ((?:<[^>]+?>|.)*?)          #3
+                        \2
+                        (                           #4
+                            (?:
+                                [,:]
+                                (["'])              #5
+                                (?:(?:<[^>]+?>|.)*?)
+                                \5
+                            )+
+                        )?
+                    ) |
+                    (\S+))                          #6
+                )
+            ) |
+            (\w+)                                   #7
+            /gsx) {
+            if (defined $7) {
+                # An unnamed attribute gets stored in the 'name' argument.
+                $args{'name'} = $7;
+            } else {
+                my $attr = lc $1;
+                my $value = defined $6 ? $6 : $3;
+                my $extra = $4;
+                if (defined $extra) {
+                    my @extra;
+                    push @extra, $2 while $extra =~ m/[,:](["'])((?:<[^>]+?>|.)*?)\1/gs;
+                    $value = [ $value, @extra ];
+                }
+                # We need a reference to the filters to check
+                # attributes and whether they need to be in the array of
+                # attributes for post-processing.
+                $mods ||= $ctx->{__filters};
+                push @args, [$attr, $value] if exists $mods->{$attr};
+                $args{$attr} = $value;
+                if ($attr eq 'id') {
+                    # store a reference to this token based on the 'id' for it
+                    $ids->{$3} = $rec;
+                } 
+                elsif ($attr eq 'class') {
+                    # store a reference to this token based on the 'id' for it
+                    $classes->{lc $3} ||= [];
+                    push @{ $classes->{lc $3} }, $rec;
+                }
+            }
         }
         my($h, $is_container) = $ctx->handler_for($tag);
-        my $rec = [ $tag, \%args, undef, undef, \@args ];
+        if (!$h) {
+            # determine line #
+            my $pre_error = substr($text, 0, $tag_start);
+            my @m = $pre_error =~ m/\r?\n/g;
+            my $line = scalar @m;
+            if ($depth) {
+                $opt->{error_line} = $line;
+                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, "#"), line => $line };
+            } else {
+                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, $line + 1), line => $line };
+            }
+        }
         if ($is_container) {
-            if ($whole_tag !~ m|/>|) {
+            if ($whole_tag !~ m|/>$|) {
                 my ($sec_end, $tag_end) = _consume_up_to(\$text,$sec_start,$tag);
                 if ($sec_end) {
-                    my $sec = substr $text, $sec_start, $sec_end - $sec_start;
-                    $sec =~ s!^\n!!;
-                    if ($sec !~ m/<\$?MT/) {
+                    my $sec = $tag =~ m/ignore/i ? '' # ignore MTIgnore blocks
+                            : substr $text, $sec_start, $sec_end - $sec_start;
+                    if ($sec !~ m/<\$?MT/i) {
                         $rec->[2] = [ ($sec ne '' ? ['TEXT', $sec ] : ()) ];
-                    } else {
-                        $rec->[2] = $build->compile($ctx, $sec) or return;
                     }
-                    $rec->[3] = $sec;
-                } else {
-                    return $build->error(MT->translate("&lt;MT[_1]> with no &lt;/MT[_1]>", $tag));
+                    else {
+                        local $opt->{depth} = $opt->{depth} + 1;
+                        local $opt->{parent} = $rec;
+                        $rec->[2] = $build->compile($ctx, $sec, $opt);
+                        if ( @$errors ) {
+                            my $pre_error = substr($text, 0, $sec_start);
+                            my @m = $pre_error =~ m/\r?\n/g;
+                            my $line = scalar @m;
+                            foreach (@$errors) {
+                                $line += $_->{line};
+                                $_->{line} = $line;
+                                $_->{message} =~ s/#/$line/;
+                            }
+                        }
+                        # unless (defined $rec->[2]) {
+                        #     my $pre_error = substr($text, 0, $sec_start);
+                        #     my @m = $pre_error =~ m/\r?\n/g;
+                        #     my $line = scalar @m;
+                        #     if ($depth) {
+                        #         $opt->{error_line} = $line + ($opt->{error_line} || 0);
+                        #         return;
+                        #     }
+                        #     else {
+                        #         $line += ($opt->{error_line} || 0) + 1;
+                        #         my $err = $build->errstr;
+                        #         $err =~ s/#/$line/;
+                        #         return $build->error($err);
+                        #     }
+                        # }
+                    }
+                    $rec->[3] = $sec if $opt->{uncompiled};
+                }
+                else {
+                    my $pre_error = substr($text, 0, $tag_start);
+                    my @m = $pre_error =~ m/\r?\n/g;
+                    my $line = scalar @m;
+                    if ($depth) {
+                        # $opt->{error_line} = $line;
+                        # return $build->error(MT->translate("<[_1]> with no </[_1]> on line #", $prefix . $tag));
+                        push @$errors, { message => MT->translate("<[_1]> with no </[_1]> on line [_2].", $prefix . $tag, "#" ), line => $line };
+                    }
+                    else {
+                        push @$errors, { message => MT->translate("<[_1]> with no </[_1]> on line [_2].", $prefix . $tag, $line +1 ), line => $line + 1 };
+                        # return $build->error(MT->translate("<[_1]> with no </[_1]> on line [_2]", $prefix . $tag, $line + 1));
+                    }
+                    last; # return undef;
                 }
                 $pos = $tag_end + 1;
                 (pos $text) = $tag_end;
-            } else {
-                $rec->[3] = '';
-                $pos = pos $text;
             }
-        } else {
-            $pos = pos $text;
+            else {
+                $rec->[3] = '';
+            }
         }
+        weaken($rec->[5] = $opt->{parent} || $tmpl);
+        weaken($rec->[6] = $tmpl);
         push @{ $state->{tokens} }, $rec;
         $pos = pos $text;
     }
     _text_block($state, $pos, $len) if $pos < $len;
-    $state->{tokens};
+    if (defined $tmpl) {
+        # assign token and id references to template
+        $tmpl->tokens($state->{tokens});
+        $tmpl->token_ids($state->{ids});
+        $tmpl->token_classes($state->{classes});
+        $tmpl->errors($state->{errors})
+            if $state->{errors} && (@{$state->{errors}});
+    }
+    return $state->{tokens};
+}
+
+sub translate_html_tmpl {
+    $_[0] =~ s!<(/?)tmpl_(if|loop|unless|else|var|include)\b!<$1mt:$2!ig;
+    $_[0] =~ s!<MT_TRANS\b!<__trans!ig;
+    $_[0] =~ s!<MT_ACTION\b!<__action!ig;
 }
 
 sub _consume_up_to {
     my($text, $start, $stoptag) = @_;
     my $pos;
     (pos $$text) = $start;
-    while ($$text =~ m!(<([\$/]?)MT($stoptag[^>]*?)[\$/]?>)!g) {
+    while ($$text =~ m!(<([\$/]?)MT:?($stoptag)\b(?:[^>]*?)[\$/]?>)!gi) {
         my($whole_tag, $prefix, $tag) = ($1, $2, $3);
-        ($tag, my($args)) = split /\s+/, $tag, 2;
-        next if $tag ne $stoptag;
         my $end = pos $$text;
         if ($prefix && ($prefix eq '/')) {
             return ($end - length($whole_tag), $end);
@@ -82,12 +246,22 @@ sub _consume_up_to {
             (pos $$text) = $end_tag;
         }
     }
+    # special case for unclosed 'else' tag:
+    if (lc($stoptag) eq 'else' || lc($stoptag) eq 'elseif') {
+        return ($start + length($$text), $start + length($$text));
+    }
     return (0, 0);
 }
 
 sub _text_block {
     my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
-    push @{ $_[0]->{tokens} }, [ 'TEXT', $text ] if (defined $text) && ($text ne '');
+    if ((defined $text) && ($text ne '')) {
+        my $rec = bless [ 'TEXT', $text, undef, undef, undef, $_[0]->{tokens}, $_[0]->{tmpl} ], NODE;
+        # Avoids circular reference between NODE and TOKENS, MT::Template.
+        weaken($rec->[5]);
+        weaken($rec->[6]);
+        push @{ $_[0]->{tokens} }, $rec;
+    }
 }
 
 sub syntree2str {
@@ -99,8 +273,6 @@ sub syntree2str {
         if (ref $args eq 'HASH') {
             $string .= join(", ", (map { " $_ => " . $args->{$_} }
                                    (keys %$args)));
-        } else {
-            # $string .= "\"" . $args . "\"";
         }
 
         $string.= "\n";
@@ -113,10 +285,21 @@ sub build {
     my $build = shift;
     my($ctx, $tokens, $cond) = @_;
 
-    #print STDERR syntree2str($tokens) unless $count++ == 1;
+    my $timer;
+    if ($MT::DebugMode & 8) {
+        $timer = MT->get_timer();
+    }
 
-    $cond ||= { };
-    $ctx->stash('builder', $build);
+    if ($cond) {
+        my %lcond;
+        # lowercase condtional keys since we're storing tags in lowercase now
+        %lcond = map { lc $_ => $cond->{$_} } keys %$cond;
+        $cond = \%lcond;
+    } else {
+        $cond = {};
+    }
+    # Avoids circular reference between MT::Template::Context and MT::Builder.
+    local $ctx->{__stash}{builder} = $build;
     my $res = '';
     my $ph = $ctx->post_process_handler;
 
@@ -125,12 +308,13 @@ sub build {
             $res .= $t->[1];
         } else {
             my($tokens, $tokens_else, $uncompiled);
-            if (exists $cond->{ $t->[0] } && !$cond->{ $t->[0] }) {
+            my $tag = lc $t->[0];
+            if ($cond && (exists $cond->{ $tag } && !$cond->{ $tag })) {
                 # if there's a cond for this tag and it's false,
                 # walk the children and look for an MTElse.
                 # the children of the MTElse will become $tokens
                 for my $tok (@{ $t->[2] }) {
-                    if ($tok->[0] eq 'Else') {
+                    if (lc $tok->[0] eq 'else' || lc $tok->[0] eq 'elseif') {
                         $tokens = $tok->[2];
                         $uncompiled = $tok->[3];
                         last;
@@ -138,13 +322,13 @@ sub build {
                 }
                 next unless $tokens;
             } else {
-                if ($t->[2] && ref($t->[2]) eq 'ARRAY') {
+                if ($t->[2] && ref($t->[2])) {
                     # either there is no cond for this tag, or it's true,
                     # so we want to partition the children into
                     # those which are inside an else and those which are not.
                     ($tokens, $tokens_else) = ([], []);
                     for my $sub (@{ $t->[2] }) {
-                        if ($sub->[0] eq 'Else') {
+                        if (lc $sub->[0] eq 'else' || lc $sub->[0] eq 'elseif') {
                             push @$tokens_else, $sub;
                         } else {
                             push @$tokens, $sub;
@@ -153,41 +337,135 @@ sub build {
                 }
                 $uncompiled = $t->[3];
             }
-            my($h) = $ctx->handler_for($t->[0]);
+            my($h, $type) = $ctx->handler_for($t->[0]);
             if ($h) {
-                my $start;
-                if ($MT::DebugMode & 8) {
-                    require Time::HiRes;
-                    $start = [ Time::HiRes::gettimeofday() ];
-                }
-                local($ctx->{__stash}->{tag}) = $t->[0];
-                local($ctx->{__stash}->{tokens}) = $tokens;
-                local($ctx->{__stash}->{tokens_else}) = $tokens_else;
-                local($ctx->{__stash}->{uncompiled}) = $uncompiled;
+                $timer->pause_partial if $timer;
+                local($ctx->{__stash}{tag}) = $t->[0];
+                local($ctx->{__stash}{tokens}) = ref($tokens) ? bless $tokens, 'MT::Template::Tokens' : undef;
+                local($ctx->{__stash}{tokens_else}) = ref($tokens_else) ? bless $tokens_else, 'MT::Template::Tokens' : undef;
+                local($ctx->{__stash}{uncompiled}) = $uncompiled;
                 my %args = %{$t->[1]} if defined $t->[1];
                 my @args = @{$t->[4]} if defined $t->[4];
 
+                # process variables
+                foreach my $v (keys %args) {
+                    if (ref $args{$v} eq 'ARRAY') {
+                        foreach (@{$args{$v}}) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
+                                $_ = $ctx->var($1);
+                            }
+                        }
+                    } else {
+                        if ($args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
+                            $args{$v} = $ctx->var($1);
+                        }
+                    }
+                }
+                foreach (@args) {
+                    $_ = [ $_->[0], $_->[1] ];
+                    my $arg = $_;
+                    if (ref $arg->[1] eq 'ARRAY') {
+                        $arg->[1] = [ @{$arg->[1]} ];
+                        foreach (@{$arg->[1]}) {
+                            if (m/^\$([A-Za-z_](\w|\.)*)$/) {
+                                $_ = $ctx->var($1);
+                            }
+                        }
+                    } else {
+                        if ($arg->[1] =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
+                            $arg->[1] = $ctx->var($1);
+                        }
+                    }
+                }
+
+                # Stores a reference to the ordered list of arguments,
+                # just in case the handler wants them
+                local $args{'@'} = \@args;
                 my $out = $h->($ctx, \%args, $cond);
 
-                return $build->error(MT->translate("Error in &lt;MT[_1]> tag: [_2]", $t->[0], $ctx->errstr)) unless defined $out;
-                
-                if ($ph) {
-                    $out = $ph->($ctx, \%args, $out, \@args);
+                unless (defined $out) {
+                    my $err = $ctx->errstr;
+                    if (defined $err) {
+                        return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr));
+                    }
+                    else {
+                        # no error was given, so undef will mean '' in
+                        # such a scenario
+                        $out = '';
+                    }
                 }
-                $res .= $out;
-                if ($MT::DebugMode & 8) {
-                    my $elapsed = Time::HiRes::tv_interval($start);
-                    print STDERR "Builder: Tag [" . $t->[0] . "] - $elapsed seconds\n" if $elapsed > 0.25;
+
+                if ((defined $type) && ($type == 2)) {
+                    # conditional; process result
+                    my $vars = $ctx->{__stash}{vars};
+                    local $vars->{__value__} = delete $vars->{__cond_value__};
+                    local $vars->{__name__}  = delete $vars->{__cond_name__};
+                    $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
+                    delete $vars->{__cond_tag__};
+                    return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr))
+                        unless defined $out;
+                }
+
+                $out = $ph->($ctx, \%args, $out, \@args)
+                    if %args && $ph;
+                $res .= $out
+                    if defined $out;
+
+                if ($timer) {
+                    $timer->mark("tag_"
+                        . lc($t->[0]) . args_to_string(\%args));
                 }
             } else {
-                # FIXME: should we make this louder?
-                warn "No handler exists for tag $t->[0]";
+                if ($t->[0] !~ m/^_/) { # placeholder tag. just ignore
+                    return $build->error(MT->translate("Unknown tag found: [_1]", $t->[0]));
+                }
             }
         }
     }
-    $res;
+
+    return $res;
 }
 
+sub args_to_string {
+    my ($args) = @_;
+    my $str = '';
+    foreach my $a (keys %$args) {
+        next if $a eq '@';
+        next unless defined $args->{$a};
+        next if $args->{$a} eq '';
+        $str .= ';' . $a . ':';
+        if (ref $args->{$a} eq 'ARRAY') {
+            foreach my $aa (@{ $args->{$a} }) {
+                $aa = '...' if $aa =~ m/ /;
+                $str .= $aa . ';';
+            }
+            chop($str);
+        } else {
+            $str .= $args->{$a} =~ m/ / ? '...' : $args->{$a};
+        }
+    }
+    my $more_args = $args->{'@'};
+    if ($more_args && @$more_args) {
+        foreach my $a (@$more_args) {
+            if (ref $a->[1] eq 'ARRAY') {
+                $str .= ' ' . $a->[0] . '=';
+                foreach my $aa (@{ $a->[1] }) {
+                    $aa = '...' if $aa =~ m/ /;
+                    $str .= $aa . ';';
+                }
+                chop($str);
+            } else {
+                next if exists $args->{$a->[0]}
+                    && ($args->{$a->[0]} eq $a->[1]);
+                next unless defined $args->[1];
+                next if $args->[1] eq '';
+                $str .= ';' . $a->[0] . ':';
+                $str .= $a->[1];
+            }
+        }
+    }
+    return $str ne '' ? '[' . substr($str,1) . ']' : '';
+}
 1;
 __END__
 
@@ -262,6 +540,11 @@ the container
 and you wish to exclude this conditional, you could call I<build> like this:
 
     my $out = $build->build($ctx, $tokens, { EntryIfExtended => 0 });
+
+=head2 $build->syntree2str(\@tokens)
+
+Internal debugging routine to dump a set of template tokens. Returns a
+readable string of contents of the C<$tokens> parameter.
 
 =head1 ERROR HANDLING
 

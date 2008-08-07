@@ -1,0 +1,68 @@
+<mt:setvarblock name="html_head" append="1">
+<__trans_section component="typepadantispam">
+<style type="text/css" media="screen">
+    .typepadantispam-stats {
+        width: 300px;
+        background: #e7eff3;
+    }
+    .typepadantispam-stats .widget-content {
+        padding-top: 3px;
+    }
+    .tpas-label {
+        float: left;
+        width: <__trans phrase="widget_label_width">px;
+        text-align: right;
+        padding-top: 3px;
+    }
+    .tpas-totals {
+        float: right;
+        width: <__trans phrase="widget_totals_width">px;
+        padding: 2px 6px;
+        background: #fff;
+        border: 1px solid #d5e3ea;
+        border-width: 0 1px 1px 0;
+        overflow: auto;
+    }
+    .tpas-totals strong {
+        font-size: 24px;
+        font-weight: normal;
+        white-space: nowrap;
+    }
+    .tpas-totals em {
+        color: #999;
+        padding-left: 5px;
+        white-space: nowrap;
+    }
+    .tpas-ad {
+        clear: both;
+        width: 280px;
+        height: 30px;
+        margin-top: 10px;
+    }
+    .tpas-ad iframe {
+        border: none;
+    }
+</style>
+</__trans_section>
+</mt:setvarblock>
+<mtapp:widget class="widget typepadantispam-stats"
+    label="<__trans phrase="TypePad AntiSpam">"
+    label_link="http://antispam.typepad.com/"
+    can_close="1"
+    corners="1">
+    <div class="tpas-data pkg">
+        <div class="tpas-label"><__trans phrase="Spam Blocked"></div>
+        <div class="tpas-totals">
+<mt:if name="blog_id">
+            <strong><mt:var name="blog_blocked"></strong>
+            <em><__trans phrase="on this blog"></em>
+<mt:else>
+            <strong><mt:var name="system_blocked"></strong>
+            <em><__trans phrase="on this system"></em>
+</mt:if>
+        </div>
+    </div>
+    <mt:unless name="is_ssl">
+    <div class="tpas-ad"><iframe src="http://ads.sixapart.com/show?p=mt&amp;channel=app&amp;width=280&amp;height=30&amp;language=<mt:var name="language">" width="280" height="30" frameborder="0" marginwidth="0" marginheight="0" scrolling="0"></iframe></div>
+    </mt:unless>
+</mtapp:widget>

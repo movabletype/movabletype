@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
+    <title><mt:if name="html_title"><mt:var name="html_title"><mt:else><mt:var name="page_title"></mt:if> | <$mt:var name="mt_product_name"$></title>
+<mt:setvarblock name="html_head" prepend="1">
+    <mt:unless name="cfg_exists">
+    <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+        <mt:if name="mt_debug">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/reset.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/utilities.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/messaging.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+        <mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/simple.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+        </mt:if>
+    <!--[if IE]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <![endif]-->
+        <mt:if name="local_lang_id" ne="en-us">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+        </mt:if>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    </mt:unless>
+</mt:setvarblock>
+<$mt:var name="html_head"$>
+<mt:unless name="cfg_exists">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+    </mt:if>
+<script language="javascript" type="text/javascript">
+/* <![CDATA[ */
+function showByID(id) {
+    var el = getByID(id);
+    if (el) el.style.display = "block";
+}
+function hideByID(id) {
+    var el = getByID(id);
+    if (el) el.style.display = "none";
+}
+/* ]]> */
+</script>
+</mt:unless>
+<$mt:var name="js_include"$>
+</head>
+
+<body id="<$mt:var name="screen_id"$>" class="chromeless<mt:if name="mt_debug"> debug</mt:if><mt:if name="error_page"><mt:if name="is_full_screen"> error-screen</mt:if> chromeless-wide</mt:if><mt:if name="screen_type" eq="popup-screen"> chromeless-wide</mt:if> <$mt:var name="body_class" default="dialog"$>">
+
+<div id="container">
+<div id="container-inner">
+    <div id="ctl"></div>
+    <div id="ctr"></div>
+    <div id="header" class="pkg">
+        <div id="brand"></div>
+        <div id="nav">
+            <mt:if name="wizard_steps">
+            <mt:unless name="complete">
+            <mt:if name="step" ne="pre_start">
+            <mt:loop name="wizard_steps">
+            <mt:unless name="__last__">
+            <div class="step<mt:if name="active">_active</mt:if>"></div>
+            </mt:unless>
+            </mt:loop>
+            </mt:if>
+            </mt:unless>
+            </mt:if>
+        </div>
+    </div>
+    <div id="content">
+        <div id="content-inner" class="inner pkg">
+            <div id="main-content"><div id="main-content-inner" class="inner pkg">
+                <h1 id="page-title"><$mt:var name="page_title"$></h1>

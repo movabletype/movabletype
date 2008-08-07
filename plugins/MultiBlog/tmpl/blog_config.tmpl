@@ -1,0 +1,107 @@
+<script type="text/javascript">
+/* <![CDATA[ */
+var multiBlogRebuilds = new Array();
+<TMPL_LOOP NAME=REBUILDS_LOOP>
+multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<TMPL_VAR NAME=ACTION_NAME ESCAPE=HTML>", "<TMPL_VAR NAME=ACTION_VALUE>", "<TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>", "<TMPL_VAR NAME=BLOG_ID>", "<TMPL_VAR NAME=TRIGGER_NAME>", "<TMPL_VAR NAME=TRIGGER_VALUE>");
+</TMPL_LOOP>
+
+function rebuildMultiBlogTriggerTable() {
+    DOM.addClassName(getByID('multiblog_blog_list_zero_state'), 'hidden');
+    DOM.removeClassName(getByID('multiblog_blog_list'), 'hidden');
+    getByID('multiblog_blog_list').innerHTML = "";
+    getByID('rebuild_triggers').value = "";
+    if (multiBlogRebuilds.length > 0) {
+        var values = new Array();
+        var str = "";
+        for (var i = 0; i < multiBlogRebuilds.length; i++) {
+            str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
+            str += "<td> <MT_TRANS phrase="When"> <strong>"
+                + (multiBlogRebuilds[i][3] == "_all"
+                    ? "<em><MT_TRANS phrase="Any Weblog"></em>"
+                    : multiBlogRebuilds[i][2])
+                + "</strong></td><td>"
+                + multiBlogRebuilds[i][4]
+                + "</td>";
+            str += "<td>" + multiBlogRebuilds[i][0] + "</td>";
+            str += "<td><a href='javascript:void(0)' onclick='removeMultiBlogTrigger(" + i + ")'><img src='<TMPL_VAR NAME=STATIC_URI>images/nav_icons/mini/delete.gif' width='9' height='11' alt='<MT_TRANS phrase="Remove">' /></a></td>";
+            str += "</tr>\n";
+            values[i] = multiBlogRebuilds[i][1];
+            values[i] += ":";
+            values[i] += multiBlogRebuilds[i][3];
+            values[i] += ":";
+            values[i] += multiBlogRebuilds[i][5];
+        }
+        str = "<table cellspacing='0'><tr><thead><th><MT_TRANS phrase="Weblog" escape="js"></th><th><MT_TRANS phrase="Trigger" escape="js"></th><th><MT_TRANS phrase="Action" escape="js"></th><th></th></thead></tr>\n" + str + "</table>";
+        getByID('multiblog_blog_list').innerHTML = str;
+        getByID('rebuild_triggers').value = values.join('|');
+    }
+}
+
+function removeMultiBlogTrigger(index) {
+    multiBlogRebuilds.splice(index, 1);
+    rebuildMultiBlogTriggerTable();
+}
+
+function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerName, triggerValue) {
+    multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue];
+    rebuildMultiBlogTriggerTable();
+}
+/* ]]> */
+</script>
+
+<fieldset>
+
+    <mtapp:setting
+        id="blog_content_accessible"
+        label="<__trans phrase="Content Privacy">"
+        hint="<__trans phrase="Specify whether other blogs in the installation may publish content from this blog. This setting takes precedence over the default system aggregation policy found in the system-level MultiBlog configuration.">">
+        <select name="blog_content_accessible" id="blog_content_accessible">
+            <option value="0"><MT_TRANS phrase="Use system default"></option>
+            <option value="2" <TMPL_IF NAME=BLOG_CONTENT_ACCESSIBLE_2>selected="selected"</TMPL_IF>><MT_TRANS phrase="Allow"></option>
+            <option value="1"  <TMPL_IF NAME=BLOG_CONTENT_ACCESSIBLE_1>selected="selected"</TMPL_IF>><MT_TRANS phrase="Disallow"></option>
+        </select>
+    </mtapp:setting>
+</fieldset>
+
+<fieldset>
+    <mtapp:setting
+        id="default_mtmultiblog_action"
+        label="<__trans phrase="MTMultiBlog tag default arguments">"
+        hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">">
+    <select name="default_mtmultiblog_action" id="default_mtmultiblog_action">
+        <option value="1" <TMPL_IF NAME=DEFAULT_MTMULTIBLOG_ACTION_1>selected="selected"</TMPL_IF>><MT_TRANS phrase="Include blogs"></option>
+        <option value="0"  <TMPL_IF NAME=DEFAULT_MTMULTIBLOG_ACTION_0>selected="selected"</TMPL_IF>><MT_TRANS phrase="Exclude blogs"></option>
+    </select>
+    <input name="default_mtmulitblog_blogs" type="text" value="<TMPL_VAR NAME=DEFAULT_MTMULITBLOG_BLOGS>" />
+    </mtapp:setting>
+</fieldset>
+
+<fieldset>
+
+<mtapp:setting
+    id="rebuild_triggers"
+    label="<__trans phrase="Rebuild Triggers">"
+    label_class="top-label"
+    hint=""
+    show_hint="0">
+    <p><a href="javascript:void(0)" onclick="return openDialog(this.form, 'multiblog_add_trigger', 'blog_id=<mt:var name="blog_id">')" class="icon-left icon-create"><__trans phrase="Create Rebuild Trigger"></a></p>
+
+    <TMPL_UNLESS NAME=REBUILDS_LOOP>
+    <em id="multiblog_blog_list_zero_state"><MT_TRANS phrase="You have not defined any rebuild triggers."></em>
+    </TMPL_UNLESS>
+    <div id="multiblog_blog_list" class="listing hide_actions<mt:unless name="rebuilds_loop"> hidden</mt:unless>">
+    </div>
+
+    <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
+    <input type="hidden" name="old_rebuild_triggers" id="old_rebuild_triggers" value="<TMPL_VAR NAME=REBUILD_TRIGGERS>" />
+</mtapp:setting>
+
+</fieldset>
+
+<TMPL_IF NAME=REBUILDS_LOOP>
+<script type="text/javascript">
+<!--
+rebuildMultiBlogTriggerTable();
+// -->
+</script>
+</TMPL_IF>

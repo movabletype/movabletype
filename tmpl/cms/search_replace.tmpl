@@ -1,453 +1,296 @@
-<TMPL_INCLUDE NAME="header.tmpl">
-
-<script type="text/javascript">
-<!--
-var tableSelect;
-function init()
-{
-	// setup
-	tableSelect = new TC.TableSelect( "selector" );
-	tableSelect.rowSelect = true;
-<TMPL_UNLESS NAME=HAVE_RESULTS>
-	getByID('search').focus();
-</TMPL_UNLESS>
-}
-        
-TC.attachLoadEvent( init );
-
-function toggleVisibility(c, s) {
-    var e = getByID(s);
-    if (e) {
-        if (c.checked) e.style.display = 'block';
-        if (!c.checked) e.style.display = 'none';
+<mt:setvarblock name="page_title"><__trans phrase="Search &amp; Replace"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var tableSelect;
+    function init()
+    {
+    	// setup
+        tableSelect = new TC.TableSelect( "<$mt:var name="object_type"$>-listing-table" );
+        tableSelect.rowSelect = true;
+    <mt:unless name="have_results">
+    	getByID('search').focus();
+    </mt:unless>
     }
-}
 
-function toggleSearchAndReplace(selection) {
-	var s = getByID('search-bar-search-field');
-	var r = getByID('search-bar-replace-fields');
-	var sa = getByID('search-bar-advanced-search');
-	var ra = getByID('search-bar-advanced-replace');
-	if (s && r) {
-		if (selection.value == 'search') {
-			s.style.display = 'block';
-			sa.style.display = 'block';
-			r.style.display = 'none';
-			ra.style.display = 'none';
-		} else if (selection.value == 'replace') {
-			r.style.display = 'block';
-			ra.style.display = 'block';
-			s.style.display = 'none';
-			sa.style.display = 'none';
-		}
-	}
-}
+    TC.attachLoadEvent( init );
 
-function reSearch(type) {
-    if (type && (document.search_form['_type'].value != type)) {
-        if (document.search_form['orig_search'] && 
-            document.search_form['orig_search'].value != '') {
-            document.search_form['do_search'].value = '1';
-        }
-        document.search_form['_type'].value = type;
-        document.search_form.submit();
-    }
-    return false;
-}
-
-function unLimit(newLimit) {
-    document.search_form['limit'].value = newLimit;
-    document.search_form['do_search'].value = '1';
-    document.search_form.submit();
-    return false;
-}
-
-function doSearch() {
-    document.search_form['limit'].value = '';
-    document.search_form['do_search'].value = '1';
-    document.search_form.submit();
-}
-
-function doReplace() {
-    // gather ids from checked items listed and put them in the
-    // hidden 'id' field in the search form
-    var ids = new Array();
-    var div = TC.elementOrId('selector');
-    var inputs = TC.getElementsByTagAndClassName('input', 'select', div);
-    for (var i = 0; i < inputs.length; i++) {
-        if (inputs[i].checked) {
-            if (inputs[i].value != 'all')
-                ids[ids.length] = inputs[i].value;
+    function toggleVisibility(c, s) {
+        var e = getByID(s);
+        if (e) {
+            if (c.checked) e.style.display = 'block';
+            if (!c.checked) e.style.display = 'none';
         }
     }
-    if (ids.length) {
-        document.search_form['replace_ids'].value = ids.join(',');
-        document.search_form['do_replace'].value = '1';
-        document.search_form.submit();
-    } else {
-        alert("<MT_TRANS phrase="You must select one or more item to replace.">");
+
+    function toggleSearchAndReplace(selection) {
+    	var s = getByID('search-bar-search-field');
+    	var r = getByID('search-bar-replace-fields');
+    	var sa = getByID('search-bar-advanced-search');
+    	var ra = getByID('search-bar-advanced-replace');
+    	if (s && r) {
+    		if (selection.value == 'search') {
+    			s.style.display = 'block';
+    			sa.style.display = 'block';
+    			r.style.display = 'none';
+    			ra.style.display = 'none';
+    		} else if (selection.value == 'replace') {
+    			r.style.display = 'block';
+    			ra.style.display = 'block';
+    			s.style.display = 'none';
+    			sa.style.display = 'none';
+    		}
+    	}
     }
-    return false;
-}
 
-function focusDateFields(s) {
-	var dateFields = new Array(getByID('datefrom_year'),getByID('datefrom_month'),getByID('datefrom_day'),getByID('dateto_year'),getByID('dateto_month'),getByID('dateto_day'));
-	var datesDisbaled = getByID('dates-disabled');
-	
-	if (datesDisbaled && (datesDisbaled.value == 1)) {
-		for (var i = 0; i < dateFields.length; i++) {
-			dateFields[i].value = '';
-			dateFields[i].style.color = '#000';
-		}
-		datesDisbaled.value = 0;
-	}
-}
+    function reSearch(type) {
+        if (type && (document.search_form['_type'].value != type)) {
+            if (document.search_form['orig_search'] && 
+                document.search_form['orig_search'].value != '') {
+                document.search_form['do_search'].value = '1';
+            }
+            document.search_form['_type'].value = type;
+            document.search_form.submit();
+        }
+        return false;
+    }
 
-function blurDateFields(s) {
-	var dateFields = new Array(getByID('datefrom_year'),getByID('datefrom_month'),getByID('datefrom_day'),getByID('dateto_year'),getByID('dateto_month'),getByID('dateto_day'));
-	var datesDisbaled = getByID('dates-disabled');
-	var allEmpty = 1;
-	
-	if (datesDisbaled && (datesDisbaled.value == 0)) {
-		for (var i = 0; i < dateFields.length; i++) {
-			if (dateFields[i].value != "") {
-				allEmpty = 0;
-			}
-		}
-		
-		if (allEmpty) {
-			for (var i = 0; i < dateFields.length; i++) {
-				if ((i == 0) || (i == 3)) dateFields[i].value = 'YYYY';
-				if ((i == 1) || (i == 4)) dateFields[i].value = 'MM';
-				if ((i == 2) || (i == 5)) dateFields[i].value = 'DD';
-				dateFields[i].style.color = '#999';
-			}
-			datesDisbaled.value = 1;
-		}
-	}
-}
-//-->
-</script>
+    function unLimit(newLimit) {
+        document.search_form['limit'].value = newLimit;
+        document.search_form['do_search'].value = '1';
+        document.search_form.submit();
+        return false;
+    }
 
-<div id="search-replace">
+    function doSearch() {
+        document.search_form['limit'].value = '';
+        document.search_form['do_search'].value = '1';
+        document.search_form.submit();
+    }
 
-<h2><span class="weblog-title-highlight"><TMPL_IF NAME=BLOG_ID><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML><TMPL_ELSE><MT_TRANS phrase="System-wide"></TMPL_IF>:</span> <MT_TRANS phrase="Search &amp; Replace"></h2>
+    function doReplace() {
+        // gather ids from checked items listed and put them in the
+        // hidden 'id' field in the search form
+        var ids = new Array();
+        var div = TC.elementOrId("<$mt:var name="object_type"$>-listing");
+        var inputs = TC.getElementsByTagAndClassName('input', 'select', div);
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].checked) {
+                if (inputs[i].value != 'all')
+                    ids[ids.length] = inputs[i].value;
+            }
+        }
+        if (ids.length) {
+            document.search_form['replace_ids'].value = ids.join(',');
+            document.search_form['do_replace'].value = '1';
+            document.search_form.submit();
+        } else {
+            alert("<__trans phrase="You must select one or more item to replace.">");
+        }
+        return false;
+    }
 
-<p class="page-desc"><MT_TRANS phrase="_USAGE_SEARCH"></p>
+    function focusDateFields(s) {
+    	var dateFields = new Array(getByID('datefrom_year'),getByID('datefrom_month'),getByID('datefrom_day'),getByID('dateto_year'),getByID('dateto_month'),getByID('dateto_day'));
+    	var datesDisbaled = getByID('dates-disabled');
+
+    	if (datesDisbaled && (datesDisbaled.value == 1)) {
+    		for (var i = 0; i < dateFields.length; i++) {
+    			dateFields[i].value = '';
+    			dateFields[i].style.color = '#000';
+    		}
+    		datesDisbaled.value = 0;
+    	}
+    }
+
+    function blurDateFields(s) {
+    	var dateFields = new Array(getByID('datefrom_year'),getByID('datefrom_month'),getByID('datefrom_day'),getByID('dateto_year'),getByID('dateto_month'),getByID('dateto_day'));
+    	var datesDisbaled = getByID('dates-disabled');
+    	var allEmpty = 1;
+
+    	if (datesDisbaled && (datesDisbaled.value == 0)) {
+    		for (var i = 0; i < dateFields.length; i++) {
+    			if (dateFields[i].value != "") {
+    				allEmpty = 0;
+    			}
+    		}
+
+    		if (allEmpty) {
+    			for (var i = 0; i < dateFields.length; i++) {
+    				if ((i == 0) || (i == 3)) dateFields[i].value = 'YYYY';
+    				if ((i == 1) || (i == 4)) dateFields[i].value = 'MM';
+    				if ((i == 2) || (i == 5)) dateFields[i].value = 'DD';
+    				dateFields[i].style.color = '#999';
+    			}
+    			datesDisbaled.value = 1;
+    		}
+    	}
+    }
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
 
 <div id="search-form">
-<form name="search_form" method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="doSearch()">
-<input type="hidden" name="__mode" value="search_replace" />
-<input type="hidden" name="_type" value="<TMPL_VAR NAME=SEARCH_TYPE>" />
-<input type="hidden" name="limit" value="<TMPL_UNLESS NAME=LIMIT_ALL><TMPL_VAR NAME=LIMIT></TMPL_UNLESS>" />
-<TMPL_IF NAME=BLOG_ID>
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-</TMPL_IF>
-<TMPL_IF NAME=SEARCHED><TMPL_IF NAME=SEARCH>
-<input type="hidden" name="orig_search" value="<TMPL_VAR NAME=SEARCH ESCAPE=HTML>" /></TMPL_IF>
-</TMPL_IF>
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<input type="hidden" name="return_args" value="<TMPL_IF NAME=SEARCH>search=<TMPL_VAR NAME=SEARCH ESCAPE=HTML>&amp;</TMPL_IF><TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="replace_ids" value="" />
-<input type="hidden" name="do_search" value="" />
-<input type="hidden" name="do_replace" value="" />
+    <form name="search_form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="search_replace" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="limit" value="<mt:unless name="limit_all"><mt:var name="limit" escape="html"></mt:unless>" />
+<mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+</mt:if>
+<mt:if name="entry_type">
+    <input type="hidden" name="entry_type" value="<mt:var name="entry_type" escape="html">" />
+</mt:if>
+<mt:if name="searched"><mt:if name="search">
+    <input type="hidden" name="orig_search" value="<mt:var name="search" escape="html">" /></mt:if>
+</mt:if>
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:if name="search">search=<mt:var name="search" escape="html">&amp;</mt:if><mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="replace_ids" value="" />
+    <input type="hidden" name="do_search" value="" />
+    <input type="hidden" name="do_replace" value="" />
 
 <div class="tabs">
-<ul>
-<TMPL_IF NAME=BLOG_ID><TMPL_IF NAME=CAN_EDIT_ENTRIES>
-<li<TMPL_IF NAME=SEARCH_ENTRY> class="yah"</TMPL_IF> id="results-entry-tab"><a href="#" onclick="reSearch('entry')"><MT_TRANS phrase="Entries"></a></li>
-<li<TMPL_IF NAME=SEARCH_COMMENT> class="yah"</TMPL_IF> id="results-comment-tab"><a href="#" onclick="reSearch('comment')"><MT_TRANS phrase="Comments"></a></li>
-<li<TMPL_IF NAME=SEARCH_PING> class="yah"</TMPL_IF> id="results-ping-tab"><a href="#" onclick="reSearch('ping')"><MT_TRANS phrase="TrackBacks"></a></li>
-</TMPL_IF>
-<TMPL_IF NAME=CAN_EDIT_TEMPLATES>
-<li<TMPL_IF NAME=SEARCH_TEMPLATE> class="yah"</TMPL_IF> id="results-template-tab"><a href="#" onclick="reSearch('template')"><MT_TRANS phrase="Templates"></a></li>
-</TMPL_IF>
-<TMPL_IF NAME=CAN_EDIT_CONFIG>
-<li<TMPL_IF NAME=SEARCH_COMMENTER> class="yah"</TMPL_IF> id="results-commenter-tab"><a href="#" onclick="reSearch('commenter')"><MT_TRANS phrase="Commenters"></a></li>
-</TMPL_IF>
-<TMPL_ELSE>
-<li<TMPL_IF NAME=SEARCH_ENTRY> class="yah"</TMPL_IF> id="results-entry-tab"><a href="#" onclick="reSearch('entry')"><MT_TRANS phrase="Entries"></a></li>
-<li<TMPL_IF NAME=SEARCH_COMMENT> class="yah"</TMPL_IF> id="results-comment-tab"><a href="#" onclick="reSearch('comment')"><MT_TRANS phrase="Comments"></a></li>
-<li<TMPL_IF NAME=SEARCH_PING> class="yah"</TMPL_IF> id="results-ping-tab"><a href="#" onclick="reSearch('ping')"><MT_TRANS phrase="TrackBacks"></a></li>
-<li<TMPL_IF NAME=SEARCH_TEMPLATE> class="yah"</TMPL_IF> id="results-template-tab"><a href="#" onclick="reSearch('template')"><MT_TRANS phrase="Templates"></a></li>
-</TMPL_IF>
-<TMPL_IF NAME=CAN_VIEW_LOG>
-<li<TMPL_IF NAME=SEARCH_LOG> class="yah"</TMPL_IF> id="results-log-tab"><a href="#" onclick="reSearch('log')"><MT_TRANS phrase="Activity Log"></a></li>
-</TMPL_IF>
-<TMPL_IF NAME=SYSTEM_OVERVIEW_NAV><TMPL_IF NAME=IS_ADMINISTRATOR>
-<li<TMPL_IF NAME=SEARCH_AUTHOR> class="yah"</TMPL_IF> id="results-author-tab"><a href="#" onclick="reSearch('author')"><MT_TRANS phrase="Authors"></a></li>
-</TMPL_IF></TMPL_IF>
-
-<li class="special"><a href="#" onclick="return openManual('search_and_replace', 'index')" class="help">?</a></li>
-</ul>
+    <ul><mt:loop name="search_tabs">
+        <li<mt:if name="object_type" eq="$key"> class="yah"</mt:if> id="results-<mt:var name="key" escape="html">-tab"><a href="javascript:void(0)" onclick="reSearch('<mt:var name="key" escape="js">'); return false"><span><mt:var name="label" escape="html"></span></a></li>
+    </mt:loop></ul>
 </div>
 
 <div class="search-bar">
-<div class="search-bar-inner">
+    <div class="search-bar-inner">
 
-<TMPL_IF NAME=HAVE_RESULTS>
-<TMPL_IF NAME=CAN_REPLACE>
-<div class="search-bar-toggle">
-<label for="search-replace-toggle-search"><input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" /> <MT_TRANS phrase="Search Again"></label>
-&nbsp;
-<label for="search-replace-toggle-replace"><input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" /> <MT_TRANS phrase="Search &amp; Replace"></label>
-</div>
-</TMPL_IF>
-</TMPL_IF>
+<mt:if name="have_results">
+    <mt:if name="can_replace">
+        <div class="search-bar-toggle">
+            <label for="search-replace-toggle-search"><input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search Again"></label>
+            &nbsp;
+            <label for="search-replace-toggle-replace"><input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="rb" onclick="toggleSearchAndReplace(this)" /> <__trans phrase="Search &amp; Replace"></label>
+        </div>
+    </mt:if>
+</mt:if>
 
-<div id="search-bar-search-field">
-<input name="search" id="search" value="<TMPL_VAR NAME=SEARCH ESCAPE=HTML>" />
-<input type="button" value="<MT_TRANS phrase="Search">" onclick="doSearch()" />
-</div>
+        <div id="search-bar-search-field" class="pkg">
+            <input name="search" id="search" value="<mt:var name="search" escape="html">" />
+            <div class="search-button-wrapper">
+                <button
+                    onclick="doSearch()"
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Submit search (s)">"
+                    id="search-button"
+                    class="big-button primary-button"
+                    ><__trans phrase="Search"></button>
+            </div>
+        </div>
 
-<TMPL_IF NAME=HAVE_RESULTS>
-<div id="search-bar-replace-fields" style="display: none;">
-<div class="search-bar-replace-wrapper">
-<div class="search-bar-replace-label"><label for="search-alt"><MT_TRANS phrase="Search:"></label></div>
-<div class="search-bar-replace-field"><input name="search-alt" id="search-alt" value="<TMPL_VAR NAME=SEARCH ESCAPE=HTML>" disabled="disabled" /></div>
-</div>
-<div class="search-bar-replace-wrapper">
-<div class="search-bar-replace-label"><label for="replace"><MT_TRANS phrase="Replace:"></label></div>
-<div class="search-bar-replace-field">
-<input name="replace" id="replace" value="<TMPL_VAR NAME=REPLACE ESCAPE=HTML>" />
-<input type="button" value="<MT_TRANS phrase="Replace Checked">" onclick="doReplace()" />
-</div>
-</div>
-</div>
-</TMPL_IF>
+<mt:if name="have_results">
+        <div id="search-bar-replace-fields" style="display: none;">
+            <div class="search-bar-replace-wrapper pkg">
+                <div class="search-bar-replace-label"><label for="search-alt"><__trans phrase="Search"></label></div>
+                <div class="search-bar-replace-field"><input name="search-alt" id="search-alt" value="<mt:var name="search" escape="html">" disabled="disabled" /></div>
+            </div>
+            <div class="search-bar-replace-wrapper pkg">
+                <div class="search-bar-replace-label"><label for="replace"><__trans phrase="Replace"></label></div>
+                <div class="search-bar-replace-field">
+                    <input name="replace" id="replace" value="<mt:var name="replace" escape="html">" />
+                    <button
+                        onclick="doReplace(); return false"
+                        type="submit"
+                        id="replace-button"
+                        class="big-button primary-button"
+                        ><__trans phrase="Replace Checked"></button>
+                </div>
+            </div>
+        </div>
+</mt:if>
 
-<div id="search-bar-advanced-search">
-<label for="case"><input type="checkbox" id="case" name="case" value="1"<TMPL_IF NAME=CASE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Case Sensitive"></label>
-&nbsp;
-<label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<TMPL_IF NAME=IS_REGEX> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Regex Match"></label>
-&nbsp;
-<label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<TMPL_IF NAME=IS_LIMITED> checked="checked"</TMPL_IF> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <MT_TRANS phrase="Limited Fields"></label>
-<TMPL_IF NAME=CAN_SEARCH_BY_DATE>
-&nbsp;
-<label for="is_dateranged"><input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<TMPL_IF NAME=IS_DATERANGED> checked="checked"</TMPL_IF> class="cb" onclick="toggleVisibility(this, 'date-range')" /> <MT_TRANS phrase="Date Range"></label>
-</TMPL_IF>
-<TMPL_IF NAME=CAN_SEARCH_JUNK>
-&nbsp;
-<label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<TMPL_IF NAME=IS_JUNK> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Is Junk?"></label>
-</TMPL_IF>
-</div>
+        <div id="search-bar-advanced-search">
+            <label for="case"><input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Case Sensitive"></label>
+            &nbsp;
+            <label for="is_regex"><input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Regex Match"></label>
+            &nbsp;
+            <label for="is_limited"><input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'limited-fields')" /> <__trans phrase="Limited Fields"></label>
+<mt:if name="can_search_by_date">
+            &nbsp;
+            <label for="is_dateranged"><input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="cb" onclick="toggleVisibility(this, 'date-range')" /> <__trans phrase="Date Range"></label>
+</mt:if>
+<mt:if name="can_search_junk">
+            &nbsp;
+            <label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label>
+</mt:if>
+        </div>
 
-<TMPL_IF NAME=HAVE_RESULTS>
-<div id="search-bar-advanced-replace">
-<label><input type="checkbox" name="replace-case" value="1"<TMPL_IF NAME=CASE> checked="checked"</TMPL_IF> disabled="disabled" class="cb" /> <MT_TRANS phrase="Case Sensitive"></label>
-&nbsp;
-<label><input type="checkbox" name="replace-is_regex" value="1"<TMPL_IF NAME=IS_REGEX> checked="checked"</TMPL_IF> disabled="disabled" class="cb" /> <MT_TRANS phrase="Regex Match"></label>
-&nbsp;
-<label><input type="checkbox" name="replace-is_limited" value="1"<TMPL_IF NAME=IS_LIMITED> checked="checked"</TMPL_IF> disabled="disabled" class="cb" /> <MT_TRANS phrase="Limited Fields"></label>
-<TMPL_IF NAME=CAN_SEARCH_BY_DATE>
-&nbsp;
-<label><input type="checkbox" name="replace-is_dateranged" value="1"<TMPL_IF NAME=IS_DATERANGED> checked="checked"</TMPL_IF> disabled="disabled" class="cb" /> <MT_TRANS phrase="Date Range"></label>
-</TMPL_IF>
-<TMPL_IF NAME=CAN_SEARCH_JUNK>
-&nbsp;
-<label><input type="checkbox" name="replace-is_junk" value="1"<TMPL_IF NAME=IS_JUNK> checked="checked"</TMPL_IF> disabled="disabled" class="cb" /> <MT_TRANS phrase="Is Junk?"></label>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-</div>
-</div>
-
-<div class="advanced-options" id="limited-fields"<TMPL_UNLESS NAME=IS_LIMITED> style="display: none;"</TMPL_UNLESS>>
-<TMPL_IF NAME=SEARCH_ENTRY>
-<div id="weblog-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<TMPL_IF NAME=SEARCH_COLS_TITLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Title"></label></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<TMPL_IF NAME=SEARCH_COLS_TEXT> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Entry Body"></label></li>
-<li><label for="search_cols-text_more"><input type="checkbox" id="search_cols-text_more" name="search_cols" value="text_more"<TMPL_IF NAME=SEARCH_COLS_TEXT_MORE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Extended Entry"></label></li>
-<li><label for="search_cols-keywords"><input type="checkbox" id="search_cols-keywords" name="search_cols" value="keywords"<TMPL_IF NAME=SEARCH_COLS_KEYWORDS> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Keywords"></label></li>
-<li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<TMPL_IF NAME=SEARCH_COLS_EXCERPT> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Excerpt"></label></li>
-<li><label for="search_cols-basename"><input type="checkbox" id="search_cols-basename" name="search_cols" value="basename"<TMPL_IF NAME=SEARCH_COLS_BASENAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Basename"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_COMMENT>
-<div id="comment-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<TMPL_IF NAME=SEARCH_COLS_TEXT> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Comment Text"></label></li>
-<li><label for="search_cols-author"><input type="checkbox" id="search_cols-author" name="search_cols" value="author"<TMPL_IF NAME=SEARCH_COLS_AUTHOR> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<TMPL_IF NAME=SEARCH_COLS_EMAIL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="E-mail Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<TMPL_IF NAME=SEARCH_COLS_URL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="URL"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<TMPL_IF NAME=SEARCH_COLS_IP> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="IP Address"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_COMMENTER>
-<div id="comment-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-nickname"><input type="checkbox" id="search_cols-nickname" name="search_cols" value="nickname"<TMPL_IF NAME=SEARCH_COLS_NICKNAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<TMPL_IF NAME=SEARCH_COLS_EMAIL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Email Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<TMPL_IF NAME=SEARCH_COLS_URL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="URL"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_PING>
-<div id="ping-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-title"><input type="checkbox" id="search_cols-title" name="search_cols" value="title"<TMPL_IF NAME=SEARCH_COLS_TITLE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Title"></label></li>
-<li><label for="search_cols-excerpt"><input type="checkbox" id="search_cols-excerpt" name="search_cols" value="excerpt"<TMPL_IF NAME=SEARCH_COLS_EXCERPT> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Excerpt"></label></li>
-<li><label for="search_cols-source_url"><input type="checkbox" id="search_cols-source_url" name="search_cols" value="source_url"<TMPL_IF NAME=SEARCH_COLS_SOURCE_URL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Source URL"></label></li>
-<li><label for="search_cols-blog_name"><input type="checkbox" id="search_cols-blog_name" name="search_cols" value="blog_name"<TMPL_IF NAME=SEARCH_COLS_BLOG_NAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Blog Name"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<TMPL_IF NAME=SEARCH_COLS_IP> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="IP Address"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_TEMPLATE>
-<div id="template-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<TMPL_IF NAME=SEARCH_COLS_NAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Template Name"></label></li>
-<li><label for="search_cols-text"><input type="checkbox" id="search_cols-text" name="search_cols" value="text"<TMPL_IF NAME=SEARCH_COLS_TEXT> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Text"></label></li>
-<li><label for="search_cols-outfile"><input type="checkbox" id="search_cols-outfile" name="search_cols" value="outfile"<TMPL_IF NAME=SEARCH_COLS_OUTFILE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Output Filename"></label></li>
-<li><label for="search_cols-linked_file"><input type="checkbox" id="search_cols-linked_file" name="search_cols" value="linked_file"<TMPL_IF NAME=SEARCH_COLS_LINKED_FILE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Linked Filename"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_LOG>
-<div id="log-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-message"><input type="checkbox" id="search_cols-message" name="search_cols" value="message"<TMPL_IF NAME=SEARCH_COLS_MESSAGE> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Log Message"></label></li>
-<li><label for="search_cols-ip"><input type="checkbox" id="search_cols-ip" name="search_cols" value="ip"<TMPL_IF NAME=SEARCH_COLS_IP> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="IP Address"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_AUTHOR>
-<div id="author-fields">
-<ul>
-<li class="first"><MT_TRANS phrase="Search Fields:"></li>
-<li><label for="search_cols-name"><input type="checkbox" id="search_cols-name" name="search_cols" value="name"<TMPL_IF NAME=SEARCH_COLS_NAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Username"></label></li>
-<li><label for="search_cols-nickname"><input type="checkbox" id="search_cols-nickname" name="search_cols" value="nickname"<TMPL_IF NAME=SEARCH_COLS_NICKNAME> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Display Name"></label></li>
-<li><label for="search_cols-email"><input type="checkbox" id="search_cols-email" name="search_cols" value="email"<TMPL_IF NAME=SEARCH_COLS_EMAIL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="Email Address"></label></li>
-<li><label for="search_cols-url"><input type="checkbox" id="search_cols-url" name="search_cols" value="url"<TMPL_IF NAME=SEARCH_COLS_URL> checked="checked"</TMPL_IF> class="cb" /> <MT_TRANS phrase="URL"></label></li>
-</ul>
-</div>
-</TMPL_IF>
-
+<mt:if name="have_results">
+        <div id="search-bar-advanced-replace">
+            <label><input type="checkbox" name="replace-case" value="1"<mt:if name="case"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Case Sensitive"></label>
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Regex Match"></label>
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Limited Fields"></label>
+    <mt:if name="can_search_by_date">
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Date Range"></label>
+    </mt:if>
+    <mt:if name="can_search_junk">
+            &nbsp;
+            <label><input type="checkbox" name="replace-is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Reported as Spam?"></label>
+    </mt:if>
+        </div>
+</mt:if>
+    </div>
 </div>
 
-<div class="advanced-options" id="date-range"<TMPL_UNLESS NAME=IS_DATERANGED> style="display: none;"</TMPL_UNLESS>>
-<input type="hidden" name="dates-disabled" id="dates-disabled" value="<TMPL_IF NAME=DATEFROM_YEAR>0<TMPL_ELSE>1</TMPL_IF>" />
-<ul>
-<li class="first"><MT_TRANS phrase="Date Range">:</li>
-<li><label for="datefrom_year"><MT_TRANS phrase="From:"></label> <input type="text" size="4" maxlength="4" value="<TMPL_IF NAME=DATEFROM_YEAR><TMPL_VAR NAME=DATEFROM_YEAR><TMPL_ELSE>YYYY</TMPL_IF>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATEFROM_YEAR> class="prefilled"</TMPL_IF> /> - <input type="text" size="2" maxlength="2" value="<TMPL_IF NAME=DATEFROM_MONTH><TMPL_VAR NAME=DATEFROM_MONTH><TMPL_ELSE>MM</TMPL_IF>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATEFROM_MONTH> class="prefilled"</TMPL_IF> /> - <input type="text" size="2" maxlength="2" value="<TMPL_IF NAME=DATEFROM_DAY><TMPL_VAR NAME=DATEFROM_DAY><TMPL_ELSE>DD</TMPL_IF>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATEFROM_DAY> class="prefilled"</TMPL_IF> /></li>
-<li><label for="dateto_year"><MT_TRANS phrase="To:"></label> <input type="text" size="4" maxlength="4" value="<TMPL_IF NAME=DATETO_YEAR><TMPL_VAR NAME=DATETO_YEAR><TMPL_ELSE>YYYY</TMPL_IF>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATETO_YEAR> class="prefilled"</TMPL_IF> /> - <input type="text" size="2" maxlength="2" value="<TMPL_IF NAME=DATETO_MONTH><TMPL_VAR NAME=DATETO_MONTH><TMPL_ELSE>MM</TMPL_IF>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATETO_MONTH> class="prefilled"</TMPL_IF> /> - <input type="text" size="2" maxlength="2" value="<TMPL_IF NAME=DATETO_DAY><TMPL_VAR NAME=DATETO_DAY><TMPL_ELSE>DD</TMPL_IF>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<TMPL_IF NAME=DATETO_DAY> class="prefilled"</TMPL_IF> /></li>
-</ul>
+<div class="advanced-options" id="limited-fields"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
+<mt:if name="search_cols">
+    <div id="<mt:var name="object_type">-fields">
+        <ul>
+        <mt:loop name="search_cols">
+            <mt:if name="__first__"><li class="first"><__trans phrase="Search Fields:"></li></mt:if>
+            <li><label for="search_cols-<mt:var name="field" escape="html">"><input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label" escape="html"></label></li>
+        </mt:loop>
+        </ul>
+    </div>
+</mt:if>
 </div>
 
-</form>
+<div class="advanced-options" id="date-range"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+    <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="datefrom_year">0<mt:else>1</mt:if>" />
+    <ul>
+        <li class="first"><__trans phrase="Date Range">:</li>
+        <li><label for="datefrom_year"><__trans phrase="_DATE_FROM">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="datefrom_year"><mt:var name="datefrom_year" escape="html"><mt:else>YYYY</mt:if>" name="datefrom_year" id="datefrom_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_month"><mt:var name="datefrom_month" escape="html"><mt:else>MM</mt:if>" name="datefrom_month" id="datefrom_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="datefrom_day"><mt:var name="datefrom_day" escape="html"><mt:else>DD</mt:if>" name="datefrom_day" id="datefrom_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="datefrom_day"> class="prefilled"</mt:if> /></li>
+        <li><label for="dateto_year"><__trans phrase="_DATE_TO">:</label> <input type="text" size="4" maxlength="4" value="<mt:if name="dateto_year"><mt:var name="dateto_year" escape="html"><mt:else>YYYY</mt:if>" name="dateto_year" id="dateto_year" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_year"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_month"><mt:var name="dateto_month" escape="html"><mt:else>MM</mt:if>" name="dateto_month" id="dateto_month" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_month"> class="prefilled"</mt:if> /> - <input type="text" size="2" maxlength="2" value="<mt:if name="dateto_day"><mt:var name="dateto_day" escape="html"><mt:else>DD</mt:if>" name="dateto_day" id="dateto_day" onfocus="focusDateFields(this)" onblur="blurDateFields(this)"<mt:if name="dateto_day"> class="prefilled"</mt:if> /></li>
+    </ul>
 </div>
 
-<TMPL_IF NAME=REPLACE_COUNT>
-<p class="message"><MT_TRANS phrase="Replaced [_1] records successfully." params="<TMPL_VAR NAME=REPLACE_COUNT>"></p>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCHED>
-
-<div id="selector">
-
-<TMPL_IF NAME=SEARCH_ENTRY>
-<div class="list" id="list-entry">
-<TMPL_IF NAME=ENTRY_TABLE>
-<TMPL_INCLUDE NAME=entry_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No entries were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_COMMENT>
-<div class="list" id="list-comment">
-<TMPL_IF NAME=COMMENT_TABLE>
-<TMPL_INCLUDE NAME=comment_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No comments were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_PING>
-<div class="list" id="list-ping">
-<TMPL_IF NAME=PING_TABLE>
-<TMPL_INCLUDE NAME=ping_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No TrackBacks were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_COMMENTER>
-<div class="list" id="results-commenter-content">
-<TMPL_IF NAME=COMMENTER_TABLE>
-<TMPL_INCLUDE NAME=commenter_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No commenters were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_TEMPLATE>
-<div class="list" id="results-template-content">
-<TMPL_IF NAME=TEMPLATE_TABLE>
-<TMPL_INCLUDE NAME=template_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No templates were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_LOG>
-<div class="list" id="results-log-content">
-<TMPL_IF NAME=LOG_TABLE>
-<TMPL_INCLUDE NAME=log_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No log messages were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
-<TMPL_IF NAME=SEARCH_AUTHOR>
-<div class="list" id="results-author-content">
-<TMPL_IF NAME=AUTHOR_TABLE>
-<TMPL_INCLUDE NAME=author_table.tmpl>
-<TMPL_ELSE>
-<div class="error-message"><MT_TRANS phrase="No authors were found that match the given criteria."></div>
-</TMPL_IF>
-</div>
-</TMPL_IF>
-
+    </form>
 </div>
 
-<TMPL_IF NAME=HAVE_MORE>
-<MT_TRANS phrase="Showing first [_1] results." params="<TMPL_VAR NAME=LIMIT>">
-<a href="#" onclick="return unLimit('all'); return false"><MT_TRANS phrase="Show all matches"></a>
-<TMPL_ELSE>
-<TMPL_IF NAME=HAVE_RESULTS>
-<MT_TRANS phrase="[_1] result(s) found." params="<TMPL_VAR NAME=COUNT_MATCHES>">
-</TMPL_IF>
-</TMPL_IF>
+<mt:if name="replace_count">
+    <mtapp:statusmsg
+        id="replace-count"
+        class="success">
+        <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
+    </mtapp:statusmsg>
+</mt:if>
 
-</TMPL_IF>
+<mt:if name="have_more">
+<p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+<mt:else>
+    <mt:if name="have_results">
+<p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>
+    </mt:if>
+</mt:if>
 
-<TMPL_IF NAME=ERROR>
-<div class="error-message"><MT_TRANS phrase="<TMPL_VAR NAME=ERROR>"></div>
-</TMPL_IF>
+<mt:if name="searched" id="search_results">
+<mt:ignore>Search results will be placed here from app code.</mt:ignore>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+</mt:if>
 
-</div>
-
-<TMPL_INCLUDE NAME="footer.tmpl">
+<mt:include name="include/footer.tmpl">

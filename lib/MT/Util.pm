@@ -1,33 +1,41 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Util;
-use strict;
 
-use MT::ConfigMgr;
-use MT::Request;
+use strict;
+use base 'Exporter';
+
 use Time::Local qw( timegm );
-use Exporter;
-@MT::Util::ISA = qw( Exporter );
-use vars qw( @EXPORT_OK );
-@EXPORT_OK = qw( start_end_day start_end_week start_end_month
+
+our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  start_end_period week2ymd munge_comment
-                 html_text_transform encode_html decode_html
+                 rich_text_transform html_text_transform encode_html decode_html
                  iso2ts ts2iso offset_time offset_time_list first_n_words
                  archive_file_for format_ts dirify remove_html
                  days_in wday_from_ts encode_js get_entry spam_protect
                  is_valid_email encode_php encode_url decode_url encode_xml
-                 decode_xml is_valid_url discover_tb convert_high_ascii 
+                 decode_xml is_valid_url is_url discover_tb convert_high_ascii 
                  mark_odd_rows dsa_verify perl_sha1_digest relative_date
                  perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8 
                  start_background_task launch_background_tasks substr_wref
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
-                 sax_parser);
+                 sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+                 weaken log_time make_string_csv );
 
+{
+my $Has_Weaken;
+sub weaken {
+    no warnings;
+    return Scalar::Util::weaken($_[0]) if $Has_Weaken;
+    $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0;
+    Scalar::Util::weaken($_[0]) if $Has_Weaken;
+}
+}
 
 sub leap_day {
     my ($y, $m, $d) = @_;
@@ -73,14 +81,9 @@ sub iso2ts {
         unless $iso =~ /^(\d{4})(?:-?(\d{2})(?:-?(\d\d?)(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(Z|[+-]\d{2}:\d{2})?)?)?)?/;
     my($y, $mo, $d, $h, $m, $s, $offset) =
         ($1, $2 || 1, $3 || 1, $4 || 0, $5 || 0, $6 || 0, $7);
-    if ($offset && !MT::ConfigMgr->instance->IgnoreISOTimezones) {
+    if ($offset && !MT->config->IgnoreISOTimezones) {
         $mo--;
-        my $time;
-        if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-            $time = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
-        } else {
-            $time = timegm($s, $m, $h, $d, $mo, $y - 1900);
-        }
+        my $time = Time::Local::timegm_nocheck($s, $m, $h, $d, $mo, $y);
         ## If it's not already in UTC, first convert to UTC.
         if ($offset ne 'Z') {
             my($sign, $h, $m) = $offset =~ /([+-])(\d{2}):(\d{2})/;
@@ -99,11 +102,7 @@ sub iso2ts {
 sub ts2iso {
     my ($blog, $ts) = @_;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
-    if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-        $ts = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
-    } else {
-        $ts = timegm($sc, $mn, $hr, $dy, $mo-1, $yr - 1900);
-    }
+    $ts = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     ($sc, $mn, $hr, $dy, $mo, $yr) = offset_time_list($ts, $blog, '-');
     $yr += 1900;
     $mo += 1;
@@ -112,20 +111,16 @@ sub ts2iso {
 
 sub ts2epoch {
     my ($blog, $ts) = @_;
+    return unless $ts;
     my ($yr, $mo, $dy, $hr, $mn, $sc) = unpack('A4A2A2A2A2A2', $ts);
-    my $epoch;
-    if ($] >= 5.006) { # _nocheck is only available with 5.6 and up
-        $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
-    } else {
-        $epoch = timegm($sc, $mn, $hr, $dy, $mo-1, $yr - 1900);
-    }
+    my $epoch = Time::Local::timegm_nocheck($sc, $mn, $hr, $dy, $mo-1, $yr);
     return unless $epoch;
     $epoch = offset_time($epoch, $blog, '-') if ref $blog;
     $epoch;
 }
 sub epoch2ts {
     my ($blog, $epoch) = @_;
-    $epoch = offset_time($epoch, $blog) if ref $blog;
+    $epoch = offset_time($epoch, $blog) if defined $blog;
     my ($s, $m, $h, $d, $mo, $y) = gmtime($epoch);
     sprintf("%04d%02d%02d%02d%02d%02d",
                      $y+1900, $mo+1, $d, $h, $m, $s);
@@ -142,7 +137,9 @@ sub substr_wref {
 }
 
 sub relative_date {
-    my ($ts1, $ts2, $blog, $fmt) = @_;
+    my ($ts1, $ts2, $blog, $fmt, $style) = @_;
+
+    $style ||= 1;
 
     # TBD: Fix this
     my $ts = $ts1;
@@ -155,46 +152,123 @@ sub relative_date {
         $future = 1;
         $delta = $ts1 - $ts2;
     }
-    if ($delta <= 60) {
-        $future ? MT->translate("Less than 1 minute from now") : MT->translate("Less than 1 minute ago");
-    } elsif ($delta <= 86400) {
-        # less than 1 day
-        my $hours = int($delta / 3600);
-        my $min = int(($delta % 3600) / 60);
-        my $result;
-        if ($hours && $min) {
-            $result = $future ? MT->translate("[quant,_1,hour], [quant,_2,minute] from now", $hours, $min) : MT->translate("[quant,_1,hour], [quant,_2,minute] ago", $hours, $min);
-        } elsif ($hours) {
-            $result = $future ? MT->translate("[quant,_1,hour] from now", $hours) : MT->translate("[quant,_1,hour] ago", $hours);
-        } elsif ($min) {
-            $result = $future ? MT->translate("[quant,_1,minute] from now", $min) : MT->translate("[quant,_1,minute] ago", $min);
+    if ($style == 1) {
+        if ($delta <= 60) {
+            return $future ? MT->translate("moments from now") : MT->translate("moments ago");
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            if ($hours) {
+                return $future ? MT->translate("[quant,_1,hour,hours] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours] ago", $hours, $min);
+            } else {
+                return $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes] ago", $min);
+            }
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days) {
+                return $future ? MT->translate("[quant,_1,day,days] from now", $days, $hours) : MT->translate("[quant,_1,day,days] ago", $days, $hours);
+            } else {
+                return $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            }
+        } else {
+            # more than a week, same year
+            if ((localtime($ts1))[5] == (localtime($ts2))[5]) {
+                $fmt ||= "%b %e";
+            } else {
+                $fmt ||= "%b %e %Y";
+            }
         }
-        $result;
-    } elsif ($delta <= 604800) {
-        # less than 1 week
-        my $days = int($delta / 86400);
-        my $hours = int(($delta % 86400) / 3600);
-        my $result;
-        if ($days && $hours) {
-            $result = $future ? MT->translate("[quant,_1,day], [quant,_2,hour] from now", $days, $hours) : MT->translate("[quant,_1,day], [quant,_2,hour] ago", $days, $hours);
-        } elsif ($days) {
-            $result = $future ? MT->translate("[quant,_1,day] from now", $days) : MT->translate("[quant,_1,day] ago", $days);
-        } elsif ($hours) {
-            $result = $future ? MT->translate("[quant,_1,hour] from now", $hours) : MT->translate("[quant,_1,hour] ago", $hours);
+    } elsif ($style == 2) {
+        if ($delta <= 60) {
+            return $future ? MT->translate("less than 1 minute from now") : MT->translate("less than 1 minute ago");
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            my $result;
+            if ($hours && $min) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", $hours, $min);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes] ago", $min);
+            }
+            return $result;
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days && $hours) {
+                $result = $future ? MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", $days, $hours) : MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] ago", $days, $hours);
+            } elsif ($days) {
+                $result = $future ? MT->translate("[quant,_1,day,days] from now", $days) : MT->translate("[quant,_1,day,days] ago", $days);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours] ago", $hours);
+            }
+            return $result;
         }
-        $result;
-    } else {
-        $fmt ? format_ts($fmt, $ts) : "";
+    } elsif ($style == 3) {
+        if ($delta < 60) {
+            return $future ? MT->translate("[quant,_1,second,seconds] from now", $delta) : MT->translate("[quant,_1,second,seconds]", $delta);
+        } elsif ($delta <= 3600) {
+            # less than 1 hour
+            my $min = int(($delta % 3600) / 60);
+            my $sec = $delta % 60;
+            my $result;
+            if ($sec && $min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", $min, $sec) : MT->translate("[quant,_1,minute,minutes], [quant,_2,second,seconds]", $min, $sec);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes]", $min);
+            } elsif ($sec) {
+                $result = $future ? MT->translate("[quant,_1,second,seconds] from now", $sec) : MT->translate("[quant,_1,second,seconds]", $sec);
+            }
+            return $result;
+        } elsif ($delta <= 86400) {
+            # less than 1 day
+            my $hours = int($delta / 3600);
+            my $min = int(($delta % 3600) / 60);
+            my $result;
+            if ($hours && $min) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", $hours, $min) : MT->translate("[quant,_1,hour,hours], [quant,_2,minute,minutes]", $hours, $min);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours]", $hours);
+            } elsif ($min) {
+                $result = $future ? MT->translate("[quant,_1,minute,minutes] from now", $min) : MT->translate("[quant,_1,minute,minutes]", $min);
+            }
+            return $result;
+        } elsif ($delta <= 604800) {
+            # less than 1 week
+            my $days = int($delta / 86400);
+            my $hours = int(($delta % 86400) / 3600);
+            my $result;
+            if ($days && $hours) {
+                $result = $future ? MT->translate("[quant,_1,day,days], [quant,_2,hour,hours] from now", $days, $hours) : MT->translate("[quant,_1,day,days], [quant,_2,hour,hours]", $days, $hours);
+            } elsif ($days) {
+                $result = $future ? MT->translate("[quant,_1,day,days] from now", $days) : MT->translate("[quant,_1,day,days]", $days);
+            } elsif ($hours) {
+                $result = $future ? MT->translate("[quant,_1,hour,hours] from now", $hours) : MT->translate("[quant,_1,hour,hours]", $hours);
+            }
+            return $result;
+        }
     }
+    my $mt = MT->instance;
+    my $user = $mt->user if $mt;
+    return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
-use vars qw( %Languages );
+our %Languages;
 sub format_ts {
-    my($format, $ts, $blog, $lang) = @_;
+    my($format, $ts, $blog, $lang, $is_mail) = @_;
+    return '' unless defined $ts;
     my %f;
     unless ($lang) {
         $lang = $blog && $blog->language ? $blog->language : 
-            MT::ConfigMgr->instance->DefaultLanguage;
+            MT->config->DefaultLanguage;
     }
     if ($lang eq 'jp') {
         $lang = 'ja';
@@ -202,7 +276,7 @@ sub format_ts {
     unless (defined $format) {
         $format = $Languages{$lang}[3] || "%B %e, %Y %l:%M %p";
     }
-    my $cache = MT::Request->instance->cache('formats');
+    my $cache = MT->request->cache('formats');
     unless ($cache) {
         MT::Request->instance->cache('formats', $cache = {});
     }
@@ -223,7 +297,6 @@ sub format_ts {
         }
         $f{A} = $L->[0][$f{w}];
         ($f{e} = $f{d}) =~ s!^0! !;
-        $f{I} = $f{H};
         $f{I} = $f{H};
         if ($f{I} > 12) {
             $f{I} -= 12;
@@ -252,8 +325,26 @@ sub format_ts {
     ## I'll just hardcode this, for Japanese dates.
     if ($lang eq 'ja') {
         $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
+        $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+        $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
+    }
+    elsif ($lang eq 'it') {
+        ## Hack for the Italian dates
+        ## In Italian, the date always come before the month.
+        $format =~ s!%b %e!%e %b!g;
     }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
+
+    if ($is_mail) {
+        $format =~ s!&#([0-9]+);!chr($1)!ge;
+        $format =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
+
+        require MT::I18N;
+        my $enc   = MT->config->PublishCharset;
+        $format = MT::I18N::encode_text( $format, undef, 'utf-8' );
+        $format = MT::I18N::encode_text( $format, 'utf-8', $enc )
+            unless 'utf-8' eq lc $enc;
+    }
     $format;
 }
 
@@ -318,6 +409,7 @@ sub week2ymd {
     my($y, $week) = @_;
     require MT::DateTime;
     my $jan_one_dow_m1 = (MT::DateTime->ymd2rd($y, 1, 1) + 6) % 7;
+    ($y, $week) = unpack 'A4A2', $week if $week > $y;
     $week-- if $jan_one_dow_m1 < 4;
     my $day_of_year = $week * 7 - $jan_one_dow_m1;
     my $leap_year = is_leap_year($y);
@@ -347,6 +439,15 @@ sub start_end_month {
     ($start, $end);
 }
 
+sub start_end_year {
+    my($ts) = @_;
+    my($y) = unpack 'A4', $ts;
+    my $start = sprintf "%04d0101000000", $y;
+    return $start unless wantarray;
+    my $end = sprintf "%04d1231235959", $y;
+    ($start, $end);
+}
+
 sub offset_time_list { gmtime offset_time(@_) }
 
 sub offset_time {
@@ -359,12 +460,17 @@ sub offset_time {
         }
         $offset = $blog && $blog->server_offset ? $blog->server_offset : 0;
     } else {
-        $offset = MT::ConfigMgr->instance->TimeOffset;
+        $offset = MT->config->TimeOffset;
     }
     $offset += 1 if (localtime $ts)[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
     $ts;
+}
+
+sub rich_text_transform {
+    my $str = shift;
+    return $str;
 }
 
 sub html_text_transform {
@@ -393,8 +499,14 @@ sub html_text_transform {
 sub encode_js {
     my($str) = @_;
     return '' unless defined $str;
-    $str =~ s!(['"\\])!\\$1!g;
+    $str =~ s!\\!\\\\!g;
+    $str =~ s!>!\\>!g;
+    $str =~ s!<!\\<!g;
+    $str =~ s!(s)(cript)!$1\\$2!gi;
+    $str =~ s!</!<\\/!g; # </ is supposed to be the end of Javascript (</script in most UA)
+    $str =~ s!(['"])!\\$1!g;
     $str =~ s!\n!\\n!g;
+    $str =~ s!\0!\\0!g;
     $str =~ s!\f!\\f!g;
     $str =~ s!\r!\\r!g;
     $str =~ s!\t!\\t!g;
@@ -439,14 +551,17 @@ sub decode_url {
 }
 
 {
-    my $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
+    my $Have_Entities;
 
     sub encode_html {
         my($html, $can_double_encode) = @_;
         return '' unless defined $html;
         $html =~ tr!\cM!!d;
-        #Encode::_utf8_on($html) if MT->instance->charset eq 'utf-8';
-        if ($Have_Entities && !MT::ConfigMgr->instance->NoHTMLEntities) {
+        unless (defined($Have_Entities)) {
+            $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
+            $Have_Entities = 0 if $Have_Entities && MT->config->NoHTMLEntities;
+        }
+        if ($Have_Entities) {
             $html = HTML::Entities::encode_entities($html);
         } else {
             if ($can_double_encode) {
@@ -460,15 +575,18 @@ sub decode_url {
             $html =~ s!<!&lt;!g;
             $html =~ s!>!&gt;!g;
         }
-        #Encode::_utf8_off($html) if MT->instance->charset eq 'utf-8';
-        $html;
+        return $html;
     }
 
     sub decode_html {
         my($html) = @_;
         return '' unless defined $html;
         $html =~ tr!\cM!!d;
-        if ($Have_Entities && !MT::ConfigMgr->instance->NoHTMLEntities) {
+        unless (defined($Have_Entities)) {
+            $Have_Entities = eval 'use HTML::Entities; 1' ? 1 : 0;
+            $Have_Entities = 0 if $Have_Entities && MT->config->NoHTMLEntities;
+        }
+        if ($Have_Entities) {
             $html = HTML::Entities::decode_entities($html);
         } else {
             $html =~ s!&quot;!"!g;  #"
@@ -476,7 +594,7 @@ sub decode_url {
             $html =~ s!&gt;!>!g;
             $html =~ s!&amp;!&!g;
         }
-        $html;
+        return $html;
     }
 }
 
@@ -490,7 +608,7 @@ sub decode_url {
     sub encode_xml {
         my($str, $nocdata) = @_;
         return '' unless defined $str;
-        $nocdata ||= MT::ConfigMgr->instance->NoCDATA;
+        $nocdata ||= MT->config->NoCDATA;
         if (!$nocdata && $str =~ m/
             <[^>]+>  ## HTML markup
             |        ## or
@@ -502,6 +620,8 @@ sub decode_url {
             $str = '<![CDATA[' . $str . ']]>';
         } else {
             $str =~ s!($RE)!$Map{$1}!g;
+            # re-replace &amp;#nnnn => &#nnnn
+            $str =~ s/&amp;((\#([0-9]+)|\#x([0-9a-fA-F]+)).*?);/&$1;/g;
         }
         $str;
     }
@@ -521,6 +641,7 @@ sub decode_url {
 sub remove_html {
     my($text) = @_;
     return $text if !defined $text;  # suppress warnings
+    return $text if $text =~ m/^<\!\[CDATA\[/i; 
     $text =~ s!<[^>]+>!!gs;
     $text =~ s!<!&lt;!gs;
     $text;
@@ -528,6 +649,7 @@ sub remove_html {
 
 sub iso_dirify {
     my $s = $_[0];
+    return '' unless defined $s;
     my $sep;
     if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
@@ -538,13 +660,14 @@ sub iso_dirify {
     $s = lc $s;                   ## lower-case.
     $s = remove_html($s);         ## remove HTML tags.
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
-    $s =~ s![^\w\s]!!gs;          ## remove non-word/space chars.
+    $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
     $s;    
 }
 
 sub utf8_dirify {
     my $s = $_[0];
+    return '' unless defined $s;
     my $sep;
     if ((defined $_[1]) && ($_[1] ne '1')) {
         $sep = $_[1];
@@ -555,7 +678,7 @@ sub utf8_dirify {
     $s = lc $s;                   ## lower-case.
     $s = remove_html($s);         ## remove HTML tags.
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
-    $s =~ s![^\w\s]!!gs;          ## remove non-word/space chars.
+    $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
     $s;    
 }
@@ -764,7 +887,7 @@ sub xliterate_utf8 {
           "\xc5\xb9" => 'Z',    # latin capital letter z with acute
           "\xc5\xba" => 'z',    # latin small letter z with acute
     );
-    
+
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
     $str;
 }
@@ -802,7 +925,7 @@ my %DynamicURIs = (
 # until we get a non-existent basename
 sub make_unique_basename {
     my ($entry) = @_;
-    my $blog = $entry->blog;
+    my $blog = MT::Blog->load($entry->blog_id);
     my $title = $entry->title;
     $title = '' if !defined $title;
     $title =~ s/^\s+|\s+$//gs;
@@ -820,8 +943,9 @@ sub make_unique_basename {
     my $i = 1;
     my $base_copy = $base;
 
-    while (MT::Entry->count({ blog_id => $blog->id,
-                              basename => $base })) {
+    my $class = ref $entry; 
+    while ($class->exist({ blog_id => $blog->id,
+                           basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
     $base;
@@ -835,164 +959,45 @@ sub make_unique_category_basename {
     $label = '' if !defined $label;
     $label =~ s/^\s+|\s+$//gs;
 
-    my $dash = MT->instance->config('CategoryNameNodash') ? '' : '-';
-    my $name = MT::Util::dirify($label) || ("cat" . $dash . $cat->id);
+    my $name = MT::Util::dirify($label) || ($cat->basename_prefix(1) . $cat->id);
 
-    my $limit = $blog->basename_limit || 30;
+    my $limit = ($blog && $blog->basename_limit) ? $blog->basename_limit : 30;
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
     my $base = substr($name, 0, $limit);
     $base =~ s/_+$//;
-    $base = 'cat' if $base eq '';
+    $base = $cat->basename_prefix(0) if $base eq ''; #FIXME when does this happen?
     my $i = 1;
     my $base_copy = $base;
 
-    while (MT::Category->count({ blog_id => $cat->blog_id,
-                                 basename => $base })) {
+    my $cat_class = ref $cat;
+    while ($cat_class->exist({ blog_id => $cat->blog_id,
+                               basename => $base })) {
         $base = $base_copy . '_' . $i++;
     }
     $base;
 }
 
-##
-## archive_file_for takes an entry to determine the timestamps,
-## but if the entry is not available it uses the time_start
-## and time_end values
-##
-sub archive_file_for {
-    my($entry, $blog, $at, $cat, $map, $timestamp) = @_;
-    return if $at eq 'None';
-    my $file;
-    if ($blog->is_dynamic) {
-        require MT::TemplateMap;
-        $map = MT::TemplateMap->new;
-        $map->file_template($DynamicURIs{$at});
-    }
-    unless ($map) {
-        my $cache = MT::Request->instance->cache('maps');
-        unless ($cache) {
-            MT::Request->instance->cache('maps', $cache = {});
-        }
-        unless ($map = $cache->{$blog->id . $at}) {
-            require MT::TemplateMap;
-            $map = MT::TemplateMap->load({ blog_id => $blog->id,
-                                           archive_type => $at,
-                                           is_preferred => 1 });
-            $cache->{$blog->id . $at} = $map if $map;
-        }
-    }
-    my $file_tmpl = $map ? $map->file_template : '';
-    $file_tmpl ||= '';
-    my($ctx);
-    if ($file_tmpl =~ m/\%[_-]?[A-Za-z]/) {
-        if ($file_tmpl =~ m/<\$?MT/) {
-            $file_tmpl =~ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '">'!ge;
-        } else {
-            $file_tmpl = qq{<MTFileTemplate format="$file_tmpl">};
-        }
-    }
-    if ($file_tmpl) {
-        require MT::Template::Context;
-        $ctx = MT::Template::Context->new;
-        $ctx->stash('blog', $blog);
-    }
-    local $ctx->{__stash}{category};
-    $timestamp = $entry->created_on() if $entry;
+sub make_unique_author_basename {
+    my ($author) = @_;
+    my $name = MT::Util::dirify($author->nickname || '');
+    return "author" . $author->id if $name !~ /\w/;
 
-    my $index = MT::ConfigMgr->instance->IndexBasename;
-    if ($at eq 'Individual') {
-        Carp::croak "archive_file_for Individual archive needs an entry" 
-            unless $entry;
-        if ($file_tmpl) {
-            $ctx->stash('entry', $entry);
-            $ctx->{current_timestamp} = $entry->created_on;
-        } else {
-            if ($blog->old_style_archive_links) {
-                $file = sprintf("%06d", $entry->id);
-            } else {
-                my $basename = $entry->basename();
-                $basename = dirify($entry->title()) unless defined($basename);
-                $file = sprintf("%04d/%02d/%s", 
-                    unpack('A4A2', $entry->created_on),
-                    $basename);
-            }
-        }
-    } elsif ($at eq 'Daily') {
-        if ($file_tmpl) {
-            ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-            start_end_day($timestamp);
-        } else {
-            my $start = start_end_day($timestamp);
-            my($year, $mon, $mday) = unpack 'A4A2A2', $start;
-            if ($blog->old_style_archive_links) {
-                $file = sprintf("%04d_%02d_%02d", $year, $mon, $mday);
-            } else {
-                $file = sprintf("%04d/%02d/%02d/%s", $year, $mon, $mday, $index);
-            }
-        }
-    } elsif ($at eq 'Weekly') {
-        if ($file_tmpl) {
-            ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-                start_end_week($timestamp);
-        } else {
-            my $start = start_end_week($timestamp);
-            my($year, $mon, $mday) = unpack 'A4A2A2', $start;
-            if ($blog->old_style_archive_links) {
-                $file = sprintf("week_%04d_%02d_%02d", $year, $mon, $mday);
-            } else {
-                $file = sprintf("%04d/%02d/%02d-week/%s", $year, $mon, $mday, $index);
-            }
-        }
-    } elsif ($at eq 'Monthly') {
-        if ($file_tmpl) {
-            ($ctx->{current_timestamp}, $ctx->{current_timestamp_end}) =
-                start_end_month($timestamp);
-        } else {
-            my $start = start_end_month($timestamp);
-            my($year, $mon) = unpack 'A4A2', $start;
-            if ($blog->old_style_archive_links) {
-                $file = sprintf("%04d_%02d", $year, $mon);
-            } else {
-                $file = sprintf("%04d/%02d/%s", $year, $mon, $index);
-            }
-        }
-    } elsif ($at eq 'Category') {
-        my $this_cat = $cat ? $cat : $entry->category;
-        if ($file_tmpl) {
-            $ctx->stash('archive_category', $this_cat);
-            $ctx->{inside_mt_categories} = 1;
-            $ctx->{__stash}{category} = $this_cat;
-        } else {
-            if (!$this_cat) {
-                return "";
-            }
-            my $label = '';
-            $label = dirify($this_cat->label);
-            if ($label !~ /\w/) {
-                $label = $this_cat ? "cat" .  $this_cat->id : "";
-            }
-            if ($blog->old_style_archive_links) {
-                $file = sprintf("cat_%s", $label);
-            } else {
-                $file = sprintf("%s/%s", $this_cat->category_path, $index);
-            }
-        }
-    } else {
-        return $entry->error(MT->translate(
-            "Invalid Archive Type setting '[_1]'", $at ));
+    my $limit = MT->instance->config('AuthorBasenameLimit');
+    $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
+    my $base = substr($name, 0, $limit);
+    $base =~ s/_+$//;
+    my $i = 1;
+    my $base_copy = $base;
+
+    my $author_class = ref $author;
+    while ($author_class->exist({ basename => $base })) {
+        $base = $base_copy . '_' . $i++;
     }
-    if ($file_tmpl) {
-        local $ctx->{archive_type} = $at;
-        require MT::Builder;
-        my $build = MT::Builder->new;
-        my $tokens = $build->compile($ctx, $file_tmpl) 
-            or return $blog->error($build->errstr());
-        defined($file = $build->build($ctx, $tokens)) 
-            or return $blog->error($build->errstr());
-    } else {
-        my $ext = $blog->file_extension;
-        $file .= '.' . $ext if $ext;
-    }
-    $file;
+    $base;
+}
+
+sub archive_file_for {
+    MT->instance->publisher->archive_file_for(@_);
 }
 
 sub strip_index {
@@ -1007,30 +1012,16 @@ sub strip_index {
     $link;
 }
 
-{
-    my %Helpers = ( Monthly => \&start_end_month,
-                    Weekly => \&start_end_week,
-                    Daily => \&start_end_day,
-                  );
-    sub get_entry {
-        my($ts, $blog_id, $at, $order) = @_;
-        my($start, $end) = $Helpers{$at}->($ts);
-        if ($order eq 'previous') {
-            $order = 'descend';
-            $ts = $start;
-        } else {
-            $order = 'ascend';
-            $ts = $end;
-        }
-        my $entry = MT::Entry->load(
-            { blog_id => $blog_id,
-              status => MT::Entry::RELEASE() },
-            { limit => 1,
-              'sort' => 'created_on',
-              direction => $order,
-              start_val => $ts });
-        $entry;
+sub get_entry {
+    my ( $ts, $blog_id, $at, $order ) = @_;
+    my $archiver = MT->instance->publisher->archiver($at)
+        or return;
+
+    if ($archiver->can('get_entry')) {
+        return $archiver->get_entry($ts, $blog_id, $order);
     }
+
+    return;
 }
 
 sub is_valid_date {
@@ -1084,6 +1075,12 @@ sub is_valid_url {
     } else {
         return '';
     }
+}
+
+sub is_url {
+    my($url) = @_;
+
+    return $url =~ /s?https?:\/\/[-_.!~*'()a-zA-Z0-9;\/?:\@&=+\$,%#]+/;
 }
 
 sub discover_tb {
@@ -1273,6 +1270,9 @@ sub mark_odd_rows {
                'juillet', "ao&#xfb;t", 'septembre', 'octobre', 'novembre',
                "d&#xe9;cembre") ],
             [ qw( AM PM ) ],
+              "%e %B %Y %kh%M",
+              "%e %B %Y",
+	      "%kh%M",
           ],
 
     'es' => [
@@ -1281,6 +1281,8 @@ sub mark_odd_rows {
             [ qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
                   Septiembre Octubre Noviembre Diciembre ) ],
             [ qw( AM PM ) ],
+              "%e de %B %Y a las %I:%M %p",
+              "%e de %B %Y",
           ],
 
     'pt' => [
@@ -1298,8 +1300,9 @@ sub mark_odd_rows {
             [ qw( januari februari maart april mei juni juli augustus
                   september oktober november december ) ],
             [ qw( am pm ) ],
-              "%d %B %Y %H:%M",
-              "%d %B %Y"
+              "%e %B %Y %k:%M",
+              "%e %B %Y",
+	      "%k:%M",
           ],
 
     'dk' => [
@@ -1336,9 +1339,9 @@ sub mark_odd_rows {
                'Juli', 'August', 'September', 'Oktober', 'November',
                'Dezember') ],
             [ qw( FM EM ) ],
-            "%d.%m.%y %H:%M",
-            "%d.%m.%y",
-            "%H:%M",
+            "%e.%m.%y %k:%M",
+            "%e.%m.%y",
+            "%k:%M",
           ],
 
     'it' => [
@@ -1425,10 +1428,11 @@ sub mark_odd_rows {
               '&#22303;&#26332;&#26085;'],
             [ qw( 1 2 3 4 5 6 7 8 9 10 11 12 ) ],
             [ qw( AM PM ) ],
-            "%Y&#24180;%m&#26376;%d&#26085; %H:%M",
-            "%Y&#24180;%m&#26376;%d&#26085;",
+            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
+            "%Y&#24180;%b&#26376;%e&#26085;",
             "%H:%M",
-            "%Y&#24180;%m&#26376;",
+            "%Y&#24180;%b&#26376;",
+            "%b&#26376;%e&#26085;",
           ],
 
     'et' => [
@@ -1448,15 +1452,15 @@ $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
 
 sub launch_background_tasks {
-    require MT::ConfigMgr;
-    my $cfg = MT::ConfigMgr->instance();
-    return !($ENV{MOD_PERL} || !$cfg->LaunchBackgroundTasks);
+    return !($ENV{MOD_PERL} || $ENV{FAST_CGI}
+        || !MT->config->LaunchBackgroundTasks);
 }
 
 sub start_background_task {
     my ($func) = @_;
     if (!launch_background_tasks()) { $func->(); }
     else {
+        MT::ObjectDriverFactory->cleanup();
         $| = 1;            # Flush open filehandles
         my $pid = fork();
         if (!$pid) {
@@ -1465,13 +1469,13 @@ sub start_background_task {
             close STDOUT; open STDOUT, ">/dev/null"; 
             close STDERR; open STDERR, ">/dev/null"; 
 
-            MT::Object->driver->init();
-            MT::Object->driver->configure();
+            MT::Object->driver; # This inititalizes driver
+            MT::ObjectDriverFactory->configure();
             $func->();
             CORE::exit(0) if defined($pid) && !$pid;
         } else {
-            MT::Object->driver->init();
-            MT::Object->driver->configure();
+            MT::Object->driver; # This inititalizes driver
+            MT::ObjectDriverFactory->configure();
             return 1;
         }
     }
@@ -1481,7 +1485,6 @@ sub start_background_task {
     eval { require bytes; 1; };
 
     sub addbin {
-        #local $ENV{LANG} = undef;
         my ($a, $b) = @_;
         my $length = (length $a > length $b ? length $a : length $b);
 
@@ -1524,7 +1527,6 @@ sub start_background_task {
     }
 
     sub divbindec {
-        # local $ENV{LANG} = undef;
         my ($a, $b) = @_;
         # $b is decimal-ascii, $b < 256
 
@@ -1634,15 +1636,18 @@ sub perl_sha1_digest_base64 {
     MIME::Base64::encode_base64(perl_sha1_digest(@_), '');
 }
 
+{
+my $has_crypt_dsa;
 sub dsa_verify {
     my %param = @_;
 
-    eval {
-        require Crypt::DSA;
-    };
-    my $has_crypt_dsa = $@ ? 0 : 1;
-    $has_crypt_dsa = 0 if $param{ForcePerl};
-    if ($has_crypt_dsa) {
+    unless (defined $has_crypt_dsa) {
+        eval {
+            require Crypt::DSA;
+        };
+        $has_crypt_dsa = $@ ? 0 : 1;
+    }
+    if ($has_crypt_dsa && !$param{ForcePerl}) {
         $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
         $param{Signature} = bless $param{Signature}, 'Crypt::DSA::Signature';
         Crypt::DSA->new->verify(%param);
@@ -1680,6 +1685,7 @@ sub dsa_verify {
     my $result = $u1->bcmp($sig->{r});
     return defined($result) ? $result == 0 : 0;
     }
+}
 }
 
 # TBD: fill in the contracts of these.
@@ -1773,6 +1779,200 @@ sub unescape_unicode {
         my $f = XML::SAX::ParserFactory->new;
         $f->parser();
     }
+}
+
+sub multi_iter {
+    my ($iters, $picker) = @_;
+    my @streams;
+    foreach my $iter (@$iters) {
+        my $head = $iter->();
+        push @streams, { iter => $iter, head => $head };
+    }
+    my $finish = sub {
+        foreach my $iter (@streams) {
+            $iter->{iter}->end;
+        }
+    };
+    my $iter = sub {
+        my ($f) = @_;
+        # find the head with greatest created_on
+        my $which;
+        foreach my $iter (@streams) {
+            next unless defined($iter->{head});
+            if (!$which) {
+                $which = $iter;
+                last unless $picker;
+            } else {
+                if (!$picker || ($picker && $picker->($iter->{head}, $which->{head}))) {
+                    $which = $iter;
+                }
+            }
+        }
+        return unless $which;
+
+        # Advance the chosen one
+        my $result = $which->{head};
+        if (defined $result) {
+            $which->{head} = $which->{iter}->();
+        }
+        $result;
+    };
+    return Data::ObjectDriver::Iterator->new($iter, $finish);
+}
+
+sub trim {
+    my $string = shift;
+    $string = ltrim($string);
+    $string = rtrim($string);
+    $string;
+}
+
+sub ltrim {
+    my $string = shift;
+    $string =~ s/^\s+//;
+    $string;
+}
+
+sub rtrim {
+    my $string = shift;
+    $string =~ s/\s+$//;
+    $string;
+}
+
+sub asset_cleanup {
+    my ($str) = @_;
+    $str =~ s/
+        <(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])
+        ([^>]*?)
+        \s
+        mt:asset-id="\d+"
+        ([^>]*?>)(.*?)
+        <\/(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])>
+    /
+    my $attr = $1 . $2;
+    my $inner = $3;
+    $attr =~ s!\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=(['"][^'"]*?['"]|[Ff][Aa][Ll][Ss][Ee])!!;
+    '<span' . $attr . $inner . '<\/span>'
+    /gsex;
+    return $str;
+}
+
+sub caturl {
+    return '' unless @_;
+ 
+    my $url = shift;
+    foreach (@_) {
+        my $u = $_;
+        next unless $u;
+        $u =~ s!^/!!;
+        $url .= '/' unless $url =~ m!/$!;
+        $url .= $u;
+    }
+    return $url;
+}
+
+sub get_newsbox_html {
+    my ($newsbox_url, $kind, $cached_only) = @_;
+
+    return unless $newsbox_url;
+    return unless is_url($newsbox_url);
+    return unless $kind && (length($kind) == 2);
+    $cached_only ||= 0;
+
+    my $NEWSCACHE_TIMEOUT = 60 * 60 * 24;
+    my $sess_class        = MT->model('session');
+    my ($news_object)     = ("");
+    my $retries           = 0;
+    $news_object = $sess_class->load( { id => $kind } );
+    my $refresh_news;
+    if ( $news_object
+        && ( $news_object->start() < ( time - $NEWSCACHE_TIMEOUT ) ) )
+    {
+        $refresh_news = 1;
+    }
+    my $last_available_news = MT::I18N::encode_text( $news_object->data(), 'utf-8', undef )
+      if $news_object;
+    return $last_available_news unless $refresh_news || !$news_object;
+    return q() if $cached_only;
+
+    # don't block the dashboard for more than 10 seconds to fetch
+    # the news feed...
+    my $ua = MT->new_ua( { timeout => 10 } );
+    return $last_available_news unless $ua;
+
+    my $req = new HTTP::Request( GET => $newsbox_url );
+    my $resp = $ua->request($req);
+    my $result = $resp->content();
+    if ( !$resp->is_success() || !$result ) {
+        # failure; either timeout or worse
+        # if news_object is available, bump up it's expiration
+        # so we don't attempt to hit the server again
+        # for an hour
+        if (! $news_object ) {
+            $news_object = MT::Session->new;
+            $news_object->set_values(
+                {
+                    id    => $kind,
+                    kind  => $kind,
+                    data  => ''
+                }
+            );
+            $last_available_news = '';
+            $refresh_news = 1;
+        }
+        if (defined($last_available_news) && $refresh_news) {
+            $news_object->start( ( time - $NEWSCACHE_TIMEOUT ) + 60 * 60 );
+            $news_object->save;
+        }
+        return $last_available_news;
+    }
+    require MT::Sanitize;
+
+    # allowed html
+    my $spec = 'a href,* style class id,ul,li,div,span,br';
+    $result = MT::Sanitize->sanitize( $result, $spec );
+    $news_object = MT::Session->new();
+    $news_object->set_values(
+        {
+            id    => $kind,
+            kind  => $kind,
+            start => time(),
+            data  => $result
+        }
+    );
+    $news_object->save();
+    $result = MT::I18N::encode_text( $result, 'utf-8', undef );
+    return $result;
+}
+
+sub log_time {
+    return format_ts(
+        '[%Y-%m-%d %H:%M:%S]',
+        epoch2ts(undef, time),
+        undef,
+        MT->config->DefaultLanguage,
+        0
+    );
+}
+
+## FIXME
+# This method is to supplement CGI.pm's lack of read method.
+# Some XML parsers (XML::SAX::ExpatXS and XML::LibXML to name a few) 
+# requires OO access to filehandles.
+# Once CGI solved this issue, this method will be removed.
+*Fh::read = sub {
+    read($_[0], $_[1], $_[2], $_[3] || 0);
+};
+
+sub make_string_csv {
+    my ( $value, $enc ) = @_;
+    $value =~ s/\r|\r\n/\n/gs;
+    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) )
+        && !( $value =~ m/^".*"$/gs ) )
+    {
+        $value = "\"$value\"";
+    }
+    return MT::I18N::encode_text( $value, undef, $enc );
 }
 
 1;
@@ -1947,6 +2147,16 @@ digits. Use perl_sha1_digest to get a binary representation.
 Verifies that sig is a DSA signature of $msg (or $dgst) produced using
 the private half of the public key given in $key. Requires
 Math::BigInt but doesn't call for any non-perl libraries.
+
+=head2 get_newsbox_html($newsbox_url, $kind)
+
+Retrieves newsbox content from the specified URL.  Content retrieved is
+cached in MT::Session for 24 hours under the key specified in I<$kind>.
+Content will be sanitized based on pre-defined rules.
+
+=head2 log_time
+
+Returns the current server time in log specific format.
 
 =head1 AUTHOR & COPYRIGHTS
 

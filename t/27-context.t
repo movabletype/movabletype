@@ -1,40 +1,46 @@
+#!/usr/bin/perl
 # $Id$
+use strict;
+use warnings;
 
-BEGIN { unshift @INC, 't/' }
+use lib 't/lib';
+use lib 'lib';
+use lib 'extlib';
 
-use Test;
-use MT::Blog;
+use Test::More tests => 55;
+use File::Temp qw( tempfile );
+
+use MT;
 use MT::Author;
-use MT::Template;
-use MT::Entry;
+use MT::Blog;
 use MT::Comment;
+use MT::Entry;
+use MT::Template;
 use MT::Template::Context;
 use MT::Util qw( first_n_words html_text_transform );
-use MT;
-use File::Temp qw( tempfile );
-use strict;
-
-BEGIN { plan tests => 52 };
 
 use vars qw( $DB_DIR $T_CFG $BASE );
-require 'test-common.pl';
-system("rm -r t/db/*"); # needed because some earlier test craps up the db
-require 'blog-common.pl';
+
+use MT::Test qw(:db :data);
 
 my $mt = MT->new( Config => $T_CFG ) or die MT->errstr;
-MT->add_text_filter(wiki => {
-    label => 'Wiki',
-    on_format => sub {
-        require Text::WikiFormat;
-        Text::WikiFormat::format($_[0]);
-    },
-});
+isa_ok($mt, 'MT');
 
 sub build {
+#    my($ctx, $markup) = @_;
+#    my $b = MT::Builder->new;
+#    my $tokens = $b->compile($ctx, $markup) or die $b->errstr;
+#    $b->build($ctx, $tokens);
+
     my($ctx, $markup) = @_;
-    my $b = MT::Builder->new;
-    my $tokens = $b->compile($ctx, $markup) or die $b->errstr;
-    $b->build($ctx, $tokens);
+    my $b = $ctx->stash('builder');
+    my $tokens = $b->compile($ctx, $markup);
+    print('# -- error compiling: ' . $b->errstr), return undef
+        unless defined $tokens;
+    my $res = $b->build($ctx, $tokens);
+    print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
+        unless defined $res;
+    return $res;
 }
 
 ## Need to test:
@@ -59,25 +65,28 @@ sub build {
 ##     test each of the tags, both for failure (out of context) and success
 
 my $blog = MT::Blog->load(1);
-ok($blog);
+isa_ok($blog, 'MT::Blog');
 
 my $author = MT::Author->load({ name => 'Chuck D' });
-ok($author);
+isa_ok($author, 'MT::Author');
 
-ok($author && $author->is_valid_password('bass'));
-ok($author && !$author->is_valid_password('wrong'));
+ok($author && $author->is_valid_password('bass'), 'valid');
+ok($author && !$author->is_valid_password('wrong'), 'invalid');
 
 my $ctx = MT::Template::Context->new;
+isa_ok($ctx, 'MT::Template::Context');
 $ctx->stash('blog', $blog);
 $ctx->stash('blog_id', $blog->id);
-ok($ctx);
+$ctx->stash('builder', MT::Builder->new);
+isa_ok($ctx, 'MT::Template::Context');
+
 
 ## Test MTBlog* tags
-ok(build($ctx, '<$MTBlogName$>'), $blog->name);
-ok(build($ctx, '<$MTBlogURL$>'), $blog->site_url);
-ok(build($ctx, '<$MTBlogDescription$>'), $blog->description);
-ok(build($ctx, '<a href="<$MTBlogURL$>"><$MTBlogName$></a>'),
-   qq(<a href="@{[ $blog->site_url ]}">@{[ $blog->name ]}</a>));
+is(build($ctx, '<$MTBlogName$>'), $blog->name, 'MTBlogName');
+is(build($ctx, '<$MTBlogURL$>'), $blog->site_url, 'MTBlogURL');
+is(build($ctx, '<$MTBlogDescription$>'), $blog->description, 'MTBlogDescription');
+is(build($ctx, '<a href="<$MTBlogURL$>"><$MTBlogName$></a>'),
+   qq(<a href="@{[ $blog->site_url ]}">@{[ $blog->name ]}</a>), 'href');
 
 my $entry = MT::Entry->load(1);
 $entry->text_more("Something\nelse");
@@ -88,49 +97,49 @@ my $ts = local $ctx->{current_timestamp} = $entry->created_on;
 my @ts = unpack 'A4A2A2A2A2A2', $ts;
 $ts = sprintf "%04d.%02d.%02d %02d:%02d:%02d", @ts;
 
-ok(build($ctx, '<$MTEntryTitle$>'), $entry->title);
-ok(build($ctx, '<$MTEntryAuthor$>'), $entry->author->name);
-ok(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more));
-ok(build($ctx, '<$MTEntryCommentCount$>'), 0);
-ok(build($ctx, '<$MTEntryDate format="%Y.%m.%d %H:%M:%S"$>'), $ts);
+is(build($ctx, '<$MTEntryTitle$>'), $entry->title, 'MTEntryTitle');
+is(build($ctx, '<$MTEntryAuthor$>'), $entry->author->name, 'MTEntryAuthor');
+is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
+is(build($ctx, '<$MTEntryCommentCount$>'), 0, 'MTEntryCommentCount');
+is(build($ctx, '<$MTEntryDate format="%Y.%m.%d %H:%M:%S"$>'), $ts, 'MTEntryDate format');
 
-ok(build($ctx, '<$MTEntryBody words="2"$>'), first_n_words($entry->text, 2));
+is(build($ctx, '<$MTEntryBody words="2"$>'), first_n_words($entry->text, 2), 'MTEntryBody words 2');
 
 ## Test convert_breaks variations with <$MTEntryBody$>.
-ok(build($ctx, '<$MTEntryBody$>'), html_text_transform($entry->text));
-ok(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text));
+is(build($ctx, '<$MTEntryBody$>'), html_text_transform($entry->text), 'MTEntryBody');
+is(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text), 'convert_breaks 1');
 $entry->convert_breaks(0);
-ok(build($ctx, '<$MTEntryBody$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text));
+is(build($ctx, '<$MTEntryBody$>'), $entry->text, 'MTEntryBody');
+is(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text), 'convert_breaks 1');
 $entry->column_values->{convert_breaks} = undef;
-ok(build($ctx, '<$MTEntryBody$>'), html_text_transform($entry->text));
-ok(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text));
+is(build($ctx, '<$MTEntryBody$>'), html_text_transform($entry->text), 'MTEntryBody');
+is(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text), 'convert_breaks 1');
 $blog->convert_paras(0);
-ok(build($ctx, '<$MTEntryBody$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text);
-ok(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text));
+is(build($ctx, '<$MTEntryBody$>'), $entry->text, 'MTEntryBody');
+is(build($ctx, '<$MTEntryBody convert_breaks="0"$>'), $entry->text, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryBody convert_breaks="1"$>'), html_text_transform($entry->text), 'convert_breaks 1');
 $entry->convert_breaks(1);
 $blog->convert_paras(1);
 
 ## Test convert_breaks variations with <$MTEntryMore$>.
-ok(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more));
-ok(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more));
+is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
+is(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more), 'convert_breaks 1');
 $entry->convert_breaks(0);
-ok(build($ctx, '<$MTEntryMore$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more));
+is(build($ctx, '<$MTEntryMore$>'), $entry->text_more, 'MTEntryMore');
+is(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more), 'convert_breaks 1');
 $entry->column_values->{convert_breaks} = undef;
-ok(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more));
-ok(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more));
+is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
+is(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more), 'convert_breaks 1');
 $blog->convert_paras(0);
-ok(build($ctx, '<$MTEntryMore$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more);
-ok(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more));
+is(build($ctx, '<$MTEntryMore$>'), $entry->text_more, 'MTEntryMore');
+is(build($ctx, '<$MTEntryMore convert_breaks="0"$>'), $entry->text_more, 'convert_breaks 0');
+is(build($ctx, '<$MTEntryMore convert_breaks="1"$>'), html_text_transform($entry->text_more), 'convert_breaks 1');
 $entry->convert_breaks(1);
 $blog->convert_paras(1);
 
@@ -138,34 +147,36 @@ $blog->convert_paras(1);
 ## run encode_xml. Previous to 2.61 encode_xml was run first, wrapping
 ## the excerpt in CDATA, which was then screwed up by remove_html.
 $entry->excerpt('Contains <html>');
-ok(build($ctx, '<$MTEntryExcerpt remove_html="1" encode_xml="1"$>'), 'Contains ');
+is(build($ctx, '<$MTEntryExcerpt remove_html="1" encode_xml="1"$>'), 'Contains ', 'remove_html 1 encode_xml 1');
 $entry->excerpt('Fight the powers that be');
 
 ## Test with set excerpt.
-ok(build($ctx, '<$MTEntryExcerpt$>'), $entry->excerpt);
-ok(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), html_text_transform($entry->excerpt));
-ok(build($ctx, '<$MTEntryExcerpt no_generate="1"$>'), $entry->excerpt);
+is(build($ctx, '<$MTEntryExcerpt$>'), $entry->excerpt, 'MTEntryExcerpt');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), html_text_transform($entry->excerpt), 'convert_breaks 1');
+is(build($ctx, '<$MTEntryExcerpt no_generate="1"$>'), $entry->excerpt, 'no_generate 1');
 
 ## Test with auto-generating excerpt.
 $entry->excerpt('');
-ok(build($ctx, '<$MTEntryExcerpt$>'), first_n_words($entry->text, 40) . '...');
-ok(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), first_n_words($entry->text, 40) . '...');
-ok(build($ctx, '<$MTEntryExcerpt no_generate="1"$>'), '');
+is(build($ctx, '<$MTEntryExcerpt$>'), first_n_words($entry->text, 40) . '...', 'MTEntryExcerpt');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), first_n_words($entry->text, 40) . '...', 'convert_breaks 1');
+is(build($ctx, '<$MTEntryExcerpt no_generate="1"$>'), '', 'no_generate 1');
 
 ## Make sure text formatting is applied before excerpt is generated,
 ## unless convert_breaks="0" is explicitly set.
-$entry->convert_breaks('wiki');
-$entry->text(q(This text is ''strong''));
-ok(build($ctx, '<$MTEntryExcerpt$>'), 'This text is strong...');
-ok(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), 'This text is strong...');
-ok(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), q(This text is ''strong''...));
+## Change to use Markdown
+$entry->convert_breaks('markdown');
+$entry->text(q(This text is **strong**));
+is(build($ctx, '<$MTEntryExcerpt$>'), q(This text is strong...), 'MTEntryExcerpt');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="1"$>'), q(This text is strong...), 'convert_breaks 1');
+is(build($ctx, '<$MTEntryExcerpt convert_breaks="0"$>'), q(This text is **strong**...), 'convert_breaks 0');
 
 $entry->convert_breaks('__default__');
 $entry->text('Elvis was a hero to most but he never meant shit to me');
 
-ok(build($ctx, '<$MTEntryBody encode_xml="1"$>'), "<![CDATA[<p>Elvis was a hero to most but he never meant shit to me</p>]]>");
+is(build($ctx, '<$MTEntryBody encode_xml="1"$>'), "<![CDATA[<p>Elvis was a hero to most but he never meant shit to me</p>]]>", 'MTEntryBody');
 
 my $comment = MT::Comment->new;
+isa_ok($comment, 'MT::Comment');
 $comment->entry_id($entry->id);
 $comment->blog_id($entry->blog_id);
 $comment->author('JL');
@@ -173,6 +184,10 @@ $comment->text('This is not a comment');
 $comment->visible(1);
 $comment->save or die $comment->errstr;
 
-ok(build($ctx, '<MTComments><$MTCommentBody encode_xml="1"$></MTComments>'),
-   "<![CDATA[<p>This is not a comment</p>]]>");
-ok(build($ctx, '<$MTEntryCommentCount$>'), 1);
+# Clear caching of things like the comment count of an entry
+$entry = MT::Entry->load($entry->id);
+$ctx->stash('entry', $entry);
+
+is(build($ctx, '<MTComments><$MTCommentBody encode_xml="1"$></MTComments>'),
+   "<![CDATA[<p>This is not a comment</p>]]>", 'This is not a comment');
+is(build($ctx, '<$MTEntryCommentCount$>'), 1, 'MTEntryCommentCount');

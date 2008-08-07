@@ -1,33 +1,43 @@
-<TMPL_INCLUDE NAME="header.tmpl">
-
-<div id="edit-category">
+<mt:setvar name="page_title" value="<__trans phrase="Edit Category">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your category changes have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list_cat&amp;_type=category&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Categories"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage entries in this category"></a></li>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
+/* <![CDATA[ */
 function validate(form) {    
     if (form.label.value.match(/\S/,''))
         return true;
-    alert('<MT_TRANS phrase="You must specify a label for the category." escape="singlequotes">');
+    alert('<__trans phrase="You must specify a label for the category." escape="singlequotes">');
     form.label.focus();
     return false;
-}
- 
-function tabToggle(selectedTab) {
-	var tabs = new Array('details','pings','settings');
-	
-	for (var i = 0; i < tabs.length; i++) {
-		var tabObject = getByID('category-' + tabs[i] + '-tab');
-		var contentObject = getByID('category-' + tabs[i] + '-content');
-		
-		if (tabObject && contentObject) {
-			if (tabs[i] == selectedTab) {
-				tabObject.className = 'yah';
-				contentObject.style.display = 'block';
-			} else {
-				tabObject.className = 'default';
-				contentObject.style.display = 'none';
-			}
-		}
-	}
 }
 
 function toggleFile() {
@@ -50,175 +60,122 @@ var tableSelect;
 function init()
 {
     // setup
-    tableSelect = new TC.TableSelect( "selector" );
+    tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
     tableSelect.rowSelect = true;
 }
 TC.attachLoadEvent( init );
-//-->
+/* ]]> */
 </script>
 
-<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Edit Category">: <span class="title-highlight"><TMPL_VAR NAME=LABEL ESCAPE=HTML></span></h2>
 
-<p class="page-desc"><MT_TRANS phrase="Use this page to edit the attributes of the category [_1]. You can set a description for your category to be used in your public pages, as well as configuring the TrackBack options for this category." params="<TMPL_VAR NAME=LABEL ESCAPE=HTML>"></p>
+<div id="category-details-content">
+<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="category_parent" value="<mt:var name="parent">" />
 
-<TMPL_IF NAME=ERROR>
-<p class="error-message"><TMPL_VAR NAME=ERROR></p>
-</TMPL_IF>
+    <fieldset>
+<mtapp:setting
+    id="label"
+    label="<__trans phrase="Label">">
+    <div class="textarea-wrapper">
+        <input name="label" id="label" class="full-width" maxlength="100" value="<mt:var name="label" escape="html">" class="wide" />
+    </div>
+</mtapp:setting>
 
-<TMPL_IF NAME=SAVED>
-<div class="message"><MT_TRANS phrase="Your category changes have been made."> <TMPL_INCLUDE NAME="rebuild-stub.tmpl"></div>
-</TMPL_IF>
+    <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
+    <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
 
-<div class="tabs">
-<ul>
-<li<TMPL_IF NAME=TAB_DETAILS> class="yah"</TMPL_IF> id="category-details-tab"><a href="#" onclick="tabToggle('details')"><MT_TRANS phrase="Details"></a></li>
-<TMPL_IF NAME=TB_URL>
-<li<TMPL_IF NAME=TAB_PINGS> class="yah"</TMPL_IF> id="category-pings-tab"><a href="#" onclick="tabToggle('pings')"><MT_TRANS phrase="TrackBacks"></a></li>
-</TMPL_IF>
-<li<TMPL_IF NAME=TAB_SETTINGS> class="yah"</TMPL_IF> id="category-settings-tab"><a href="#" onclick="tabToggle('settings')"><MT_TRANS phrase="Settings"></a></li>
-</ul>
-</div>
+<mtapp:setting
+    id="basename"
+    label="<__trans phrase="_CATEGORY_BASENAME">"
+    hint="<__trans phrase="This is the basename assigned to your category.">"
+    help_page="categories"
+    help_section="category_basename">
+        <input name="basename" id="basename" class="width90" maxlength="250" value="<mt:var name="basename" escape="html">" disabled="disabled" onchange="setElementValue('basename', dirify(this.value))" />
+        <a href="javascript:void(0);"id="basename-lock" title="<__trans phrase="Unlock this category&rsquo;s output filename for editing">" onclick="return toggleFile()"><span>Unlock</span></a>
+    
+    <p class="alert-warning-inline" id="basename-warning" style="display: none;">
+    <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+    <__trans phrase="Warning: Changing this category's basename may break inbound links.">
+    </p>
+</mtapp:setting>
 
-<div id="category-details-content" <TMPL_UNLESS NAME=TAB_DETAILS> style="display: none;"</TMPL_UNLESS>>
+<mtapp:setting
+    id="description"
+    label="<__trans phrase="Description">">
+    <textarea name="description" id="description" rows="" cols="" class="full-width short"><mt:var name="description" escape="html"></textarea>
+</mtapp:setting>
+    </fieldset>
 
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return validate(this)">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="category" />
-<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<input type="hidden" name="category_parent" value="<TMPL_VAR NAME=PARENT>" />
+    <fieldset>
+        <h3><__trans phrase="Inbound TrackBacks"></h3>
+<mtapp:setting
+    id="allow_pings"
+    label="<__trans phrase="Accept Trackbacks">"
+    hint="<__trans phrase="If enabled, TrackBacks will be accepted for this category from any source.">"
+    help_page="categories"
+    help_section="accept_category_pings">
+    <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> 
+</mtapp:setting>
 
-<p><label for="label"><MT_TRANS phrase="Label"></label> <a href="#" onclick="return openManual('categories', 'category_label')" class="help">?</a><br />
-<input name="label" id="label" maxlength="100" value="<TMPL_VAR NAME=LABEL ESCAPE=HTML>" class="wide" /></p>
+<mt:if name="tb">
+    <mtapp:setting
+        id="view_trackbacks"
+        label="<__trans phrase="TrackBacks">">
+        <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list_pings&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="View TrackBacks"></a></strong></div>
+    </mtapp:setting>
+</mt:if>
+        <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">
+<mt:if name="tb_url">
+    <mtapp:setting
+        id="trackback_url"
+        label="<__trans phrase="TrackBack URL for this category">"
+        hint="<__trans phrase="_USAGE_CATEGORY_PING_URL">">
+        <div class="textarea-wrapper">
+            <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="full-width" />
+        </div>
+    </mtapp:setting>
+    <mtapp:setting
+        id="tb_passphrase"
+        label="<__trans phrase="Passphrase Protection">"
+        hint="<__trans phrase="Optional">"
+        help_page="categories"
+        help_section="trackback_passphrase_protection">
+        <div class="textarea-wrapper">
+            <input name="tb_passphrase" id="tb_passphrase" class="full-width" value="<mt:var name="tb_passphrase" escape="html">" size="30" />
+        </div>
+    </mtapp:setting>
+</mt:if>
+        </div>
+    </fieldset>
 
-<input type="hidden" name="basename_manual" id="basename_manual" value="0" />
-<input type="hidden" name="basename_old" id="basename_old" value="<TMPL_VAR NAME=BASENAME_OLD ESCAPE=HTML>" />
+    <fieldset>
+        <h3><__trans phrase="Outbound TrackBacks"></h3>
+<mtapp:setting
+    id="ping_urls"
+    label="<__trans phrase="Trackback URLs">"
+    hint="<__trans phrase="Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)">"
+    help_page="categories"
+    help_section="categories_urls_to_ping">
+    <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="full-width short"><mt:var name="ping_urls" escape="html"></textarea>
+</mtapp:setting>
+    </fieldset>
 
-<p><label for="basename"><MT_TRANS phrase="Basename"></label> <a href="#" onclick="return openManual('categories', 'category_basename')" class="help">?</a><br />
-<input name="basename" id="basename" maxlength="250" value="<TMPL_VAR NAME=BASENAME ESCAPE=HTML>" disabled="disabled" class="wide" onchange="setElementValue('basename', dirify(this.value))" />&nbsp;<a href="#" title="<MT_TRANS phrase="Unlock this category's output filename for editing">" onclick="return toggleFile()"><img src="<TMPL_VAR NAME=STATIC_URI>images/locked.gif" alt="Filename Lock" id="basename-lock" height="14" width="14" /></a></p>
-
-<p class="alert-warning-inline" id="basename-warning" style="display: none;">
-<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/warning.gif" alt="<MT_TRANS phrase="Warning">" width="9" height="9" />
-<MT_TRANS phrase="Warning: Changing this category's basename may break inbound links.">
-</p>
-
-<p><label for="description"><MT_TRANS phrase="Description"></label> <a href="#" onclick="return openManual('categories', 'category_description')" class="help">?</a><br />
-<textarea name="description" id="description" rows="5" cols="72" class="wide"><TMPL_VAR NAME=DESCRIPTION ESCAPE=HTML></textarea></p>
-
-<div>
-<input accesskey="s" type="submit" value="<MT_TRANS phrase="Save">" title="<MT_TRANS phrase="Save this category (s)">" />
-</div>
-
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this category (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 </div>
-<div id="category-pings-content"<TMPL_UNLESS NAME=TAB_PINGS> style="display: none;"</TMPL_UNLESS>>
-
-<div id="selector">
-
-<TMPL_IF NAME=PING_TABLE>
-<TMPL_LOOP NAME=PING_TABLE>
-<TMPL_INCLUDE NAME=ping_table.tmpl>
-</TMPL_LOOP>
-
-<TMPL_INCLUDE NAME=pager.tmpl>
-</TMPL_IF>
-
-</div>
-
-</div>
-<div id="category-settings-content"<TMPL_UNLESS NAME=TAB_SETTINGS> style="display: none;"</TMPL_UNLESS>>
-
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="category" />
-<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-
-<fieldset>
-
-<h3><MT_TRANS phrase="Inbound TrackBacks"></h3>
-
-<div class="inner">
-
-<div class="setting">
-<div class="label"><label for="allow_pings"><MT_TRANS phrase="Accept TrackBacks">:</label></div>
-<div class="field">
-<ul>
-<li><input type="checkbox" name="allow_pings" id="allow_pings" value="1"<TMPL_IF NAME=ALLOW_PINGS> checked="checked"</TMPL_IF> class="cb" /> <span class="hint"><MT_TRANS phrase="If enabled, TrackBacks will be accepted for this category from any source."></span> <a href="#" onclick="return openManual('categories', 'accept_category_pings')" class="help">?</a></li>
-</ul>
-</div>
-</div>
-
-<TMPL_IF NAME=TB_URL>
-
-<div class="setting">
-<div class="label"><MT_TRANS phrase="TrackBack URL for this category">:</div>
-<div class="field">
-<h4><input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<TMPL_VAR NAME=TB_URL ESCAPE=HTML>" /></h4>
-<p><MT_TRANS phrase="This is the URL that others will use to send TrackBacks to your weblog. If you wish for anyone to send TrackBacks to your weblog when they have a post specific to this category, post this URL publicly. If you choose to only allow a select group of individuals to TrackBack, send this URL to them privately. To include a list of incoming TrackBacks in your Main Index Template, check the documentation for template tags related to TrackBacks."></p>
-</div>
-</div>
-
-<div class="setting">
-<div class="label"><label for="tb_passphrase"><MT_TRANS phrase="Passphrase Protection">:</label></div>
-<div class="field">
-<input name="tb_passphrase" id="tb_passphrase" value="<TMPL_VAR NAME=TB_PASSPHRASE ESCAPE=HTML>" size="30" />
-<p><MT_TRANS phrase="Optional.">
-<a href="#" onclick="return openManual('categories', 'trackback_passphrase_protection')" class="help">?</a></p>
-</div>
-</div>
-
-</TMPL_IF>
-
-</div>
-
-</fieldset>
-
-<fieldset>
-
-<h3><MT_TRANS phrase="Outbound TrackBacks"></h3>
-
-<div class="inner">
-
-<div class="setting">
-<div class="label"><label for="ping_urls"><MT_TRANS phrase="Outbound TrackBack URLs">:</label></div>
-<div class="field">
-<textarea name="ping_urls" id="ping_urls" cols="50" rows="5"><TMPL_VAR NAME=PING_URLS ESCAPE=HTML></textarea>
-<p><MT_TRANS phrase="Enter the URL(s) of the websites that you would like to send a TrackBack to each time you post an entry in this category. (Separate URLs with a carriage return.)">
-<a href="#" onclick="return openManual('categories', 'categories_urls_to_ping')" class="help">?</a></p>
-</div>
-</div>
-
-</div>
-
-</fieldset>
-
-<div style="text-align: center;">
-<input type="submit" value="<MT_TRANS phrase="Save Changes">" title="<MT_TRANS phrase="Save changes (s)">" accesskey="s" />
-</div>
-
-</form>
-
-</div>
-
-<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
-<div class="box" id="plugin-actions-box">
-<h4><MT_TRANS phrase="Plugin Actions"></h4>
-<div class="inner">
-<ul>
-<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
-<li><a href="<TMPL_VAR NAME=PAGE>;from=edit_category;id=<TMPL_VAR NAME=ID>;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=LINK_TEXT></a></li>
-</TMPL_LOOP>
-</ul>
-</div>
-</div>
-</TMPL_IF>
-
-</div>
-
-<TMPL_INCLUDE NAME="footer.tmpl">
+<mt:include name="include/footer.tmpl">

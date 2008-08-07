@@ -1,0 +1,180 @@
+<mt:setvar name="page_title" value="<__trans phrase="TrackBack Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="trackbacks" value="1">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mt:if name="can_rebuild">
+            <mt:if name="need_full_rebuild">
+                <mtapp:statusmsg
+                    id="saved-full-rebuild"
+                    class="success"
+                    rebuild="all">
+                    <__trans phrase="Your TrackBack preferences have been saved.">
+                </mtapp:statusmsg>
+            <mt:else>
+                <mt:if name="need_index_rebuild">
+                    <mtapp:statusmsg
+                        id="saved-index-rebuild"
+                        class="success"
+                        rebuild="index">
+                        <__trans phrase="Your TrackBack preferences have been saved.">
+                    </mtapp:statusmsg>
+                <mtelse>
+                    <mtapp:statusmsg
+                        id="saved"
+                        class="success">
+                        <__trans phrase="Your TrackBack preferences have been saved.">
+                    </mtapp:statusmsg>
+                </mt:if>
+            <mtelse>
+                <mtapp:statusmsg
+                    id="saved"
+                    class="success">
+                    <__trans phrase="Your TrackBack preferences have been saved.">
+                </mtapp:statusmsg>
+            </mt:if>
+        <mtelse>
+            <mtapp:statusmsg
+                id="saved"
+                class="success">
+                <__trans phrase="Your TrackBack preferences have been saved.">
+            </mtapp:statusmsg> 
+        </mtif> 
+    </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<div id="cfg-trackbacks">
+
+<form name="cfg_form" method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="cfg_screen" value="cfg_trackbacks" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mt:unless name="system_allow_pings">
+    <mtapp:statusmsg
+        id="system-allow-pings"
+        class="alert">
+        <__trans phrase="Note: TrackBacks are currently disabled at the system level.">
+    </mtapp:statusmsg>
+</mt:unless>
+
+<fieldset>
+    <mtapp:setting
+        id="allow_pings"
+        label="<__trans phrase="Accept TrackBacks">"
+        content_class="field-content-text"
+        help_page="blog_settings_feedback"
+        help_section="accept_trackbacks">
+<input type="checkbox" name="allow_pings" value="1" id="allow_pings" onclick="toggleHidden('trackback-policy'); toggleHidden('trackback-display-options'); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="If enabled, TrackBacks will be accepted from any source."></label>
+    </mtapp:setting>
+
+</fieldset>
+<fieldset id="trackback-policy"<mt:unless name="allow_pings"> class="hidden"</mt:unless>>
+
+<h3><__trans phrase="TrackBack Policy"></h3>
+
+    <mtapp:setting
+        id="moderate_pings"
+        label="<__trans phrase="Moderation">"
+        content_class="field-content-text"
+        help_page="blog_settings_feedback"
+        help_section="trackback_moderation">
+<input type="checkbox" name="moderate_pings" value="1" id="moderate_pings"<mt:if name="MODERATE_PINGS_1"> checked="checked"</mt:if> class="cb" /> <label for="moderate_pings"><__trans phrase="Hold all TrackBacks for approval before they're published."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="nofollow_urls"
+        label="<__trans phrase="Apply 'nofollow' to URLs">"
+        content_class="field-content-text"
+        help_page="blog_settings_feedback"
+        help_section="nofollow_urls"
+        show_warning="1"
+        warning="<__trans phrase="This preference affects both comments and TrackBacks.">">
+        <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" onclick="toggleSubPrefs(this)" /> <label for="nofollow_urls"><__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="email-new_pings"
+        label="<__trans phrase="E-mail Notification">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Specify when Movable Type should notify you of new TrackBacks if at all.">"
+        help_page="blog_settings_feedback"
+        help_section="email_notification">
+<ul>
+<li><label><input type="radio" name="email_new_pings" value="1"<mt:if name="EMAIL_NEW_PINGS_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="On"></label></li>
+<li><label><input type="radio" name="email_new_pings" value="2"<mt:if name="EMAIL_NEW_PINGS_2"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Only when attention is required"></label></li>
+<li><label><input type="radio" name="email_new_pings" value="0"<mt:unless name="email_new_pings"> checked="checked"</mt:unless> class="rb" /> <__trans phrase="Off"></label></li>
+</ul>
+    </mtapp:setting>
+
+</fieldset>
+<fieldset id="trackback-display-options"<mt:unless name="allow_pings"> class="hidden"</mt:unless>>
+
+<h3><__trans phrase="TrackBack Options"></h3>
+
+    <mtapp:setting
+        id="autodiscover_links"
+        label="<__trans phrase="TrackBack Auto-Discovery">"
+        content_class="field-content-text"
+        hint="<__trans phrase="If you turn on auto-discovery, when you write a new entry, any external links will be extracted and the appropriate sites automatically sent TrackBacks.">"
+        help_page="blog_settings_entry_defaults"
+        help_section="trackback_autodiscovery">
+<ul>
+<li><input type="checkbox" value="1" name="autodiscover_links" id="autodiscover_links"<mt:if name="autodiscover_links"> checked="checked"</mt:if> class="cb" />
+<label for="autodiscover_links"><__trans phrase="Enable External TrackBack Auto-Discovery"></label>
+<mt:if name="system_allow_selected_pings">
+<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Note: The above option may be affected since outbound pings are constrained system-wide."></span></p>
+<mt:else>
+<mt:unless name="system_allow_outbound_pings">
+<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Note: The above option is currently ignored since outbound pings are disabled system-wide."></span></p>
+</mt:unless>
+</mt:if>
+</li>
+<li><input type="checkbox" value="1" name="internal_autodiscovery" id="internal_autodiscovery"<mt:if name="internal_autodiscovery"> checked="checked"</mt:if> class="cb" /> <label for="internal_autodiscovery"><__trans phrase="Enable Internal TrackBack Auto-Discovery"></label>
+<mt:if name="system_allow_selected_pings">
+<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Notice">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Note: The above option may be affected since outbound pings are constrained system-wide."></span></p>
+<mt:else>
+<mt:unless name="system_allow_local_pings">
+<p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
+<span class="alert-warning-inline"><__trans phrase="Note: The above option is currently ignored since outbound pings are disabled system-wide."></span></p>
+</mt:unless>
+</mt:if>
+</li>
+</ul>
+    </mtapp:setting>
+
+</fieldset>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

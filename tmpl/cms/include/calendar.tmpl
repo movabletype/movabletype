@@ -1,0 +1,101 @@
+<mt:setvarblock name="html_head" prepend="1">
+<script type="text/javascript">
+    /* <![CDATA[ */
+
+    Template.templates.calendar = '<mt:section encode_js="1">
+    <div class="calendar-month">
+        <a href="javascript: void 0;" class="left command-prev-month">&laquo;</a>
+        [# if ( cal.nextMonthAllowed() ) { #]
+        <a href="javascript: void 0;" class="right command-next-month">&raquo;</a>
+        [# } #]
+        <h1>[#|h trans("[_1:calMonth] [_2:calYear]", cal.getLocaleMonthShortString(), cal.year() ) #]</h1>
+    </div>
+    <ul class="calendar-week">
+        [# for ( var i = cal.weekStart(); i <= ( 6 + cal.weekStart() ); i++ ) { #]
+            <li>[#|h cal.getLocaleDayShortString( ( cal.weekStart() && i == ( 6 + cal.weekStart() ) ? 0 : i ) ) #]</li>
+        [# } #]
+    </ul>
+    <ul class="calendar-days">
+        [#
+            var daysInMonth = cal.getDaysInMonth();
+            var monthStart = ( cal.getDOWFromDay( 1 ) - cal.weekStart() );
+            if ( monthStart == -1 )
+                monthStart = 6;
+        #]
+        [# for ( var i = 0; i < monthStart; i++ ) { #]
+            <li>&nbsp;</li>
+        [# } #]
+        [# for ( var day = 1; day <= daysInMonth; day++ ) { #]
+            [# var isFuture = cal.isFuture( day ) ? true : false; #]
+            <li class="day-[#= day #][# if ( cal.date() == day ) { #] selected[# } #][# if ( cal.isToday( day ) ) { #] today[# } #][# 
+                if ( isFuture ) { #] future[# } #]"
+             >[# if ( !( isFuture && cal.disallowFuture ) ) { #]<a href="javascript: void 0;" class="command-set-day-[#= day #]">[#= day #]</a>[# } else { #][#= day #][# } #]</li>
+        [# } #]
+        [# for ( var i = ( cal.getDOWFromDay( daysInMonth ) - cal.weekStart() ); i < 6; i++ ) {
+            if ( i == -i ) 
+                break; #]
+            <li>&nbsp;</li>
+        [# } #]
+    </ul>
+    </mt:section>';
+
+    Date.strings = {
+        
+        localeWeekStart: <__trans phrase="_LOCALE_WEEK_START">,
+        
+        localeWeekdays: [
+            "<__trans phrase="Sunday">",
+            "<__trans phrase="Monday">",
+            "<__trans phrase="Tuesday">",
+            "<__trans phrase="Wednesday">",
+            "<__trans phrase="Thursday">",
+            "<__trans phrase="Friday">",
+            "<__trans phrase="Saturday">"
+        ],
+    
+        localeShortWeekdays: "<__trans phrase="S|M|T|W|T|F|S">".split( "|" ),
+    
+        localeMonths: [
+            "<__trans phrase="January">",
+            "<__trans phrase="Febuary">",
+            "<__trans phrase="March">",
+            "<__trans phrase="April">",
+            "<__trans phrase="May">",
+            "<__trans phrase="June">",
+            "<__trans phrase="July">",
+            "<__trans phrase="August">",
+            "<__trans phrase="September">",
+            "<__trans phrase="October">",
+            "<__trans phrase="November">",
+            "<__trans phrase="December">"
+        ],
+    
+        localeShortMonths: [
+            "<__trans phrase="Jan">",
+            "<__trans phrase="Feb">",
+            "<__trans phrase="Mar">",
+            "<__trans phrase="Apr">",
+            "<__trans phrase="_SHORT_MAY">",
+            "<__trans phrase="Jun">",
+            "<__trans phrase="Jul">",
+            "<__trans phrase="Aug">",
+            "<__trans phrase="Sep">",
+            "<__trans phrase="Oct">",
+            "<__trans phrase="Nov">",
+            "<__trans phrase="Dec">"
+        ]
+    };
+
+/* ]]> */
+</script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Calendar.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+<mt:setvarblock name="html_body">
+<div id="calendar" class="calendar autolayout-flyout-smart hidden">
+    <div id="calendar-content" class="calendar-content pkg"></div>
+    <div class="calendar-footer">
+        <input type="hidden" id="calendar-time-input" name="ignore-me-time-input" value="00:00:00" />
+        <a class="calendar-ok-link" href="javascript:void(0);" mt:command="save"><__trans phrase="OK"></a>
+    </div>
+</div>
+</mt:setvarblock>

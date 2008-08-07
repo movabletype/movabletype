@@ -1,8 +1,9 @@
 /*
-Copyright 2003-2007 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2003-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 
@@ -64,22 +65,32 @@ TC.Client.call = function( param )
         } else if( c.readyState == 4 ) {
             if( c.status && ( c.status != 200 ) ) {
                 if ( param['error'] )
-                    param['error']( c, c.responseText );
+                    param['error']( c, c.responseText, param );
                 else
                     alert( 'Error: [' + c.status + '] ' + c.responseText );
-            } else if( param['load'] )
-                param['load']( c, c.responseText );
+            } else if( param['load'] ) {
+                if ( c.responseText.charAt(0) == '/' )
+                    param['load']( c, c.responseText.substr( 2, ( c.responseText.length - 4 ) ), param );
+                else 
+                    param['load']( c, c.responseText, param );
+            }
         }
     };
     var contents = null;
     if( param['arguments'] )
     {
-        var args = new Array();
-        for( var a in param['arguments'] )
-            args[ args.length ] = a + '=' + escape( param['arguments'][a] );
-        contents = args.join('&');
-        c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        if (typeof param['arguments'] == 'string') {
+            contents = param['arguments'];
+        } else {
+            var args = new Array();
+            var e = encodeURIComponent || escapeURI || escape;
+            for( var a in param['arguments'] )
+                args.push( a + '=' + e( param['arguments'][a] ) );
+            contents = args.join('&');
+        }
+        c.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8' );
     }
     c.send( contents );
+    return c;
 }
 

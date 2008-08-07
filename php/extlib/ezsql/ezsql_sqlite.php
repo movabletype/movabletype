@@ -1,5 +1,4 @@
 <?php
-
 	// ==================================================================
 	//  Author: Justin Vincent (justin@visunet.ie)
 	//	Web: 	http://php.justinvincent.com

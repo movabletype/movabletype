@@ -1,59 +1,97 @@
 #!/usr/bin/perl -w
 
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+package MT::Tool::Upgrade;
 use strict;
 
-use Getopt::Long;
+use lib  qw( extlib lib );
+use base qw( MT::Tool );
+
 use Carp qw(confess);
-GetOptions("dryrun", \my($dryrun), "name:s", \my($name), "sql", \my($sqlonly));
-
-use lib 'extlib';
-use lib 'lib';
-
-use MT;
 use MT::Upgrade;
 
-my $mt = new MT(Config => 'mt.cfg') or die MT->errstr;
+sub usage { '[--dryrun] [--sql] [--name <name>]' }
 
-MT->add_callback('MT::Upgrade::SQL', 1, undef, \&sql_cb) if $sqlonly;
+sub help {
+    return q{
+        Installs or upgrades a database to the current MT schema.
 
-$dryrun = 1 if $sqlonly;
-
-if (!$sqlonly) {
-    print "upgrade -- A command line tool for upgrading the schema for Movable Type.\n";
-    print "(Non-destructive mode)\n" if $dryrun;
+        --dryrun         Determine the upgrade steps required without
+                         executing any changes.
+        --sql            Report the SQL that would be performed instead
+                         of executing it.
+        --name <name>    The author as whom to perform the upgrade steps.
+                         Required when performing an upgrade (not at
+                         initial install).
+    };
 }
 
-my $install;
-my $driver = MT::Object->driver;
-if (!$driver || !$driver->table_exists('MT::Author')) {
-    $install = 1;
+my ($dryrun, $name, $sqlonly);
+
+sub options {
+    return (
+        'dryrun!' => \$dryrun,
+        'sql!'    => \$sqlonly,
+        'name=s'  => \$name,
+    );
 }
 
-unless ($install || $name) {
-    print "Please set username to set superuser at upgrading.  cf: upgrade --name Melody\n";
-    exit;
-}
 
-my $author_id;
-if (!$install && $name) {
-   require MT::BasicAuthor;
-   my $a = MT::BasicAuthor->load({name => $name});
-   die "Not found user $name:" . MT::BasicAuthor->errstr if !$a;
-   $author_id = $a->id || 0;
-}
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
 
-my $updated = MT::Upgrade->do_upgrade(App => 'main', 
-                                      DryRun => $dryrun,
-                                      Install => $install,
-                                      SuperUser => $author_id,
-                                      CLI => 1,
-                                      );
+    if ($sqlonly) {
+        $dryrun = 1;
+        MT->add_callback('MT::Upgrade::SQL', 1, undef, \&sql_cb);
+    }
+    else {
+        print "upgrade -- A command line tool for upgrading the schema for Movable Type.\n";
+        print "(Non-destructive mode)\n" if $dryrun;
+    }
 
-if ($install) {
-    print "Installation complete.\n";
-} else {
-    print "Upgrade complete!\n" if !$dryrun && $updated;
-    print "Your schema is up to date already.\n" if defined $updated && !$updated;
+    my $install;
+    my $driver = MT::Object->driver;
+    if (!$driver || !$driver->table_exists('MT::Author')) {
+        $install = 1;
+    }
+
+    unless ($install || $name) {
+        print "Please set username to set superuser at upgrading.  cf: upgrade --name Melody\n";
+        exit;
+    }
+
+    my $author_id;
+    if (!$install && $name) {
+        require MT::BasicAuthor;
+        my $a = MT::BasicAuthor->load({name => $name})
+            or die "Not found user $name:" . MT::BasicAuthor->errstr;
+        $author_id = $a->id;
+    }
+
+    if ( $install ) {
+        $MT::Upgrade::Installing = 1;
+    }
+    my $updated = MT::Upgrade->do_upgrade(
+        App       => __PACKAGE__, 
+        DryRun    => $dryrun,
+        Install   => $install,
+        SuperUser => $author_id,
+        CLI       => 1,
+        User      => { user_nickname => 'Melody Nelson' },
+    );
+
+    if ($install) {
+        print "Installation complete.\n";
+    } else {
+        print "Upgrade complete!\n" if !$dryrun && $updated;
+        print "Your schema is up to date already.\n" if defined $updated && !$updated;
+    }
 }
 
 sub progress {
@@ -61,13 +99,21 @@ sub progress {
     my $msg = shift;
     print "\t* " . $msg . "\n" unless $sqlonly;
 }
+
 sub error {
     my $pkg = shift;
     my $err = shift;
     confess $err;
 }
+
 sub sql_cb {
     my $cb = shift;
     my ($upgrade, $stmt) = @_;
     print "$stmt\n";
 }
+
+
+__PACKAGE__->main() unless caller;
+
+1;
+

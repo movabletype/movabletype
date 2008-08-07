@@ -1,0 +1,306 @@
+<mt:setvarblock name="page_title"><__trans phrase="Manage Folders"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+// build array of each folder's id and the header id
+var categoryRows = new Array('0'<mt:loop name="category_loop">,'<mt:var name="category_id">'</mt:loop>);
+
+function submitMoveMode() {
+    var f = getByID('folder-listing-form');
+    f['__mode'].value = 'save_cat';
+    f.submit();
+}
+function setCreateMode (id) {
+    DOM.addClassName(getByID('create-new-link'), 'hidden');
+    var f = getByID('folder-listing-form');
+    f['__mode'].value = 'save_cat';
+    if (getByID('msg-block')) {
+        getByID('msg-block').style.display = 'none'; // hide any messaging 
+    }
+    if (document.all) {
+        if (getByID('create-' + id))
+            getByID('create-' + id).style.display = 'block'; // show subcategory creation row
+    } else {
+        if (getByID('create-' + id))
+            getByID('create-' + id).style.display = 'table-row';
+    }
+    // reset any fields that might be set from a previous failed attempt.
+    for (var i = 0; i < categoryRows.length; i++) {
+        getByID('category-new-parent-' + categoryRows[i]).value = '';
+        if (categoryRows[i] != id) {
+            el = getByID('create-' + categoryRows[i]);
+            if (el.style.display != 'none') el.style.display = 'none';
+        }
+    }
+    if (document.forms['folder-listing-form'].move_cat_id)
+    document.forms['folder-listing-form'].move_cat_id.value = '0';
+
+    getByID('category-new-parent-' + id).focus();
+
+    if (getByID('action-col-head'))
+        getByID('action-col-head').style.display = 'none'; // hide header of actions column
+    if (getByID('delete-col-head'))
+        getByID('delete-col-head').style.display = 'none'; // hide header of delete column
+    for (var i = 0; i < categoryRows.length; i++) {
+        if (getByID('action-' + categoryRows[i]))
+            getByID('action-' + categoryRows[i]).style.display = 'none'; // hide actions column for category rows
+        if (getByID('delete-' + categoryRows[i]))
+            getByID('delete-' + categoryRows[i]).style.display = 'none'; // hide delete column for category rows
+    }
+    if (getByID('footer-list-actions')) {
+        getByID('footer-list-actions').style.display = 'none';
+    }
+    return false;
+}
+
+function cancelCreateMode (id) {
+    DOM.removeClassName(getByID('create-new-link'), 'hidden');
+    getByID('create-' + id).style.display = 'none'; // hide subcategory creation row
+    if (document.all) {
+        if (getByID('action-col-head'))
+            getByID('action-col-head').style.display = 'block'; // show header of actions column
+        if (getByID('delete-col-head'))
+            getByID('delete-col-head').style.display = 'block'; // show header of delete column
+    } else {
+        if (getByID('action-col-head'))
+            getByID('action-col-head').style.display = 'table-cell';
+        if (getByID('delete-col-head'))
+            getByID('delete-col-head').style.display = 'table-cell';
+    }
+    for (var i = 0; i < categoryRows.length; i++) {
+        if (document.all) {
+            if (getByID('action-' + categoryRows[i]))
+                getByID('action-' + categoryRows[i]).style.display = 'block'; // show actions column for category rows
+            if (getByID('delete-' + categoryRows[i]))
+                getByID('delete-' + categoryRows[i]).style.display = 'block'; // show delete column for category rows
+        } else {
+            if (getByID('action-' + categoryRows[i]))
+                getByID('action-' + categoryRows[i]).style.display = 'table-cell';
+            if (getByID('delete-' + categoryRows[i]))
+                getByID('delete-' + categoryRows[i]).style.display = 'table-cell';
+        }
+    }
+    if (getByID('footer-list-actions')) {
+        getByID('footer-list-actions').style.display = 'block';
+    }
+}
+
+function setMoveMode (id) {
+    var f = getByID('folder-listing-form');
+    f['__mode'].value = 'save_cat';
+    if (getByID('msg-block')) {
+        getByID('msg-block').style.display = 'none'; // hide any messaging 
+    }
+    DOM.addClassName( getByID('category-' + id), "selected" );
+    getByID('move-radio-' + id).style.display = 'none'; // hide radio button of selected row
+    if (document.all) {
+        getByID('move-col-head').style.display = 'block'; // show header of radio button column
+        getByID('move-0').style.display = 'block'; // show top level row
+    } else {
+        getByID('move-col-head').style.display = 'table-cell';
+        getByID('move-0').style.display = 'table-row';
+    }
+    getByID('action-col-head').style.display = 'none'; // hide header of actions column
+    getByID('delete-col-head').style.display = 'none'; // hide header of delete column
+    if (getByID('footer-list-actions')) {
+        getByID('footer-list-actions').style.display = 'none';
+    }
+    document.forms['folder-listing-form'].move_cat_id.value = id;
+    for (var i = 0; i < categoryRows.length; i++) {
+        if (document.all) {
+            getByID('move-col-' + categoryRows[i]).style.display = 'block'; // show radio buttons for category rows
+        } else {
+            getByID('move-col-' + categoryRows[i]).style.display = 'table-cell';
+        }
+        getByID('action-' + categoryRows[i]).style.display = 'none'; // hide actions column for category rows
+        getByID('delete-' + categoryRows[i]).style.display = 'none'; // hide delete column for category rows
+    }
+    return false;
+}
+
+var tableSelect;
+function init()
+{
+    // setup
+    tableSelect = new TC.TableSelect( "folder-listing-table" );
+    tableSelect.rowSelect = true;
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:setvarblock name="system_msg">
+    <div id="msg-block">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your folder changes and additions have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success"
+            rebuild="all">
+            <__trans phrase="You have successfully deleted the selected folder.">
+        </mtapp:statusmsg>
+    </mt:if>
+    </div>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('folder-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
+        accesskey="x"
+        title="<__trans phrase="Delete selected folders (x)">"
+        ><__trans phrase="Delete"></a>
+</mt:setvarblock>
+<mt:var name="position_actions_top" value="1">
+<mt:setvarblock name="content_header">
+    <p id="create-new-link"><a href="javascript:void(0)" onclick="return setCreateMode(0)" class="icon-left icon-create"><__trans phrase="Create top level folder"></a></p>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+<mtapp:listing
+    hide_pager="1">
+    <mt:if __first__>
+        <input type="hidden" name="move_cat_id" value="" />
+        <thead>
+            <tr>
+                <th class="cb" id="delete-col-head"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th class="move-col" id="move-col-head">&nbsp;</th>
+                <th id="cat-display-name"><__trans phrase="Display Name"></th>
+                <th id="cat-categories"><__trans phrase="Path"></th>
+                <th id="action-col-head"><__trans phrase="Actions"></th>
+                <th id="cat-entries"><mt:var name="entry_label_plural"></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr id="create-0" class="create-row create-inline">
+                <td class="move-col" colspan="2">&nbsp;</td>
+                <td colspan="4">
+                    <mt:setvarblock name="new_label"><__trans phrase="New Parent [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+                    <mtapp:setting
+                        id="new-parent-category"
+                        label="$new_label"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" />
+                    </mtapp:setting>
+                    <mtapp:setting
+                        id="actions"
+                        label="<__trans phrase="Actions">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <span class="buttons"> 
+                            <a href="javascript:void(0)" mt:command="submit"
+                                title="<__trans phrase="Create Folder">" 
+                                ><__trans phrase="Create"></a> 
+                            <a href="javascript:void(0)" 
+                                onclick="cancelCreateMode(0); return false"
+                                ><__trans phrase="Cancel"></a> 
+                        </span> 
+                    </mtapp:setting>
+                </td>
+            </tr>
+            <tr class="move-row" id="move-0">
+                <td id="delete-0">&nbsp;</td>
+                <td class="move-col" id="move-col-0"><input type="radio" name="move-radio" id="move-radio-0" value="0" onclick="submitMoveMode()" /></td>
+                <td><__trans phrase="Top Level"></td>
+                <td id="action-0">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>" id="category-<mt:var name="category_id">">
+                <td class="cb" id="delete-<mt:var name="category_id">"><input type="checkbox" name="id" value="<mt:var name="category_id">" class="select" /></td>
+                <td class="move-col" id="move-col-<mt:var name="category_id">"><input type="radio" name="move-radio" id="move-radio-<mt:var name="category_id">" value="<mt:var name="category_id">" onclick="submitMoveMode()" /></td>
+                <td><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="category_id">"><$mt:var name="category_label" escape="html"$></a></td>
+                <td><mt:var name="blog_site_url"><mt:var name="category_selector_label"></td>
+                <td id="action-<mt:var name="category_id">">
+                    <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create Subfolder">"><__trans phrase="Create"></a>
+                    &nbsp;
+                    <a href="javascript:void(0)" onclick="return setMoveMode(<mt:var name="category_id">)" class="icon-left icon-move" title="<__trans phrase="Move Folder">"><__trans phrase="Move"></a>
+                </td>
+                <td><mt:if name="category_entrycount"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_<mt:var name="search_type" lower_case="1">&amp;_type=<mt:var name="search_type">&amp;blog_id=<mt:var name="blog_id">&amp;filter=category_id&amp;filter_val=<mt:var name="category_id">"></mt:if></mt:if><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="category_entrycount">%%<mt:var name="entry_label" lower_case="1">%%<mt:var name="entry_label_plural" lower_case="1">"><mt:if name="category_entrycount"><mt:if name="can_edit_entries"></a></mt:if></mt:if></td>
+            </tr>
+            <tr class="create-row create-inline" id="create-<mt:var name="category_id">">
+                <td class="move-col" colspan="2">&nbsp;</td>
+                <td colspan="4" style="padding-left: 15px;">
+                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                        <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+                        <mtapp:setting
+                            id="new-category"
+                            label="$new_label"
+                            label_class="inline field-no-header"
+                            hint=""
+                            show_hint="0">
+                            <input type="text" name="category-new-parent-<mt:var name="category_id">" id="category-new-parent-<mt:var name="category_id">" value="" maxlength="100"/>
+                        </mtapp:setting>
+                        <mtapp:setting
+                            id="actions"
+                            label="<__trans phrase="Actions">"
+                            label_class="inline field-no-header"
+                            hint=""
+                            show_hint="0">
+                            <span class="buttons"> 
+                                <a href="javascript:void(0)" mt:command="submit"
+                                    title="<__trans phrase="Create Subfolder">" 
+                                    ><__trans phrase="Create"></a> 
+                                <a href="javascript:void(0)" 
+                                    onclick="cancelCreateMode(<mt:var name="category_id">); return false"
+                                    ><__trans phrase="Cancel"></a> 
+                            </span> 
+                        </mtapp:setting>
+                    </span>
+                </td>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+<mt:else>
+    <mtapp:statusmsg id="zero-state" class="info zero-state">
+        <__trans phrase="No folders could be found.">
+    </mtapp:statusmsg>
+    <form id="folder-listing-form" method="post" action="<$mt:var name="script_url"$>">
+        <input type="hidden" name="__mode" value="save_cat" />
+        <input type="hidden" name="_type" value="folder" />
+        <input type="hidden" name="return_args" value="<$mt:var name="return_args" escape="html"$>" />
+        <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+        <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+        <table width="100%">
+            <tr id="create-0" class="create-row create-inline">
+                <td style="padding: 5px">
+                    <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+                    <mtapp:setting
+                        id="new_category"
+                        label="$new_label"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <input type="text" name="category-new-parent-0" id="category-new-parent-0" value="" maxlength="100" />
+                    </mtapp:setting>
+                    <mtapp:setting
+                        id="actions"
+                        label="<__trans phrase="Actions">"
+                        label_class="inline field-no-header"
+                        hint=""
+                        show_hint="0">
+                        <span class="buttons"> 
+                            <a href="javascript:void(0)" mt:command="submit"
+                                title="<__trans phrase="Create Subfolder">" 
+                                ><__trans phrase="Create"></a> 
+                            <a href="javascript:void(0)" 
+                                onclick="cancelCreateMode(0); return false"
+                                ><__trans phrase="Cancel"></a> 
+                        </span> 
+                    </mtapp:setting>
+                </td>
+            </tr>
+        </table>
+    </form>
+</mtapp:listing>
+<mt:include name="include/footer.tmpl">

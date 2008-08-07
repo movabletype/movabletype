@@ -1,0 +1,28 @@
+<mt:if name="has_list_actions">
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:loop name="list_actions">itemset_options['<mt:var name="key">'] = {type:'core'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
+</mt:loop>
+<mt:loop name="more_list_actions">itemset_options['<mt:var name="key">'] = {type:'plugin'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
+</mt:loop>
+/* ]]> */
+</script>
+<div style="position:relative; display:inline;">
+<select name="plugin_action_selector" onchange="updatePluginAction(this)">
+    <option value="0"><__trans phrase="More actions..."></option>
+    <mt:loop name="list_actions">
+    <option value="<mt:var name="key">"><mt:var name="label"></option>
+    </mt:loop>
+    <mt:loop name="more_list_actions">
+        <mt:if name="__first__">
+    <optgroup label="<__trans phrase='Plugin Actions'>">
+        </mt:if>
+        <option value="<mt:var name="key">"><mt:var name="label"></option>
+        <mt:if name="__last__">
+    </optgroup>
+        </mt:if>
+    </mt:loop>
+</select>
+</div>
+<a href="javascript:void(0)" class="small-button" onclick="doPluginAction(getByID('<mt:if name="form_id"><mt:var name="form_id"><mt:else><$mt:var name="object_type"$>-listing-form</mt:if>'), '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>', '<__trans phrase="to act upon" escape="js">'); return false;"><__trans phrase="Go"></a>
+</mt:if>

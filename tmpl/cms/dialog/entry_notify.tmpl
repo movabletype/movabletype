@@ -1,0 +1,77 @@
+<mt:setvar name="page_title" value="<__trans phrase="Send a Notification">">
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function doValidateNotifyRecips(f) {
+    if (f.send_notify_list && f.send_notify_list.checked)
+        return true
+
+    if (f.send_notify_emails && !f.send_notify_emails.value) {
+        alert('<__trans phrase="You must specify at least one recipient." escape="singlequotes">');
+        return false;
+    }
+
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<p><__trans phrase="Your blog's name, this entry's title and a link to view it will be sent in the notification.  Additionally, you can add a  message, include an excerpt of the entry and/or send the entire entry."></p>
+
+<form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
+    <input type="hidden" name="__mode" value="send_notify" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <mtapp:setting
+        id="send_notify_list"
+        label="<__trans phrase="Recipients">"
+        label_class="top-label"
+        show_hint="1"
+        hint="<__trans phrase="Enter email addresses on separate lines, or comma separated.">">
+        <ul>
+<mt:if name="config.enableaddressbook">
+            <li><input type="checkbox" name="send_notify_list" id="send_notify_list" value="1" class="cb" checked="checked" /> <label for="send_notify_list"><__trans phrase="All addresses from Address Book"></label></li>
+</mt:if>
+            <li><textarea name="send_notify_emails" class="full-width lines-4" id="send_notify_emails" cols="" rows="3"></textarea></li>
+        </ul>
+    </mtapp:setting>
+    <mtapp:setting
+        id="message"
+        label="<__trans phrase="Optional Message">"
+        label_class="top-label">
+        <textarea name="message" id="message" class="full-width lines-5" cols="" rows="4"><mt:var name="notification" escape="html"></textarea>
+    </mtapp:setting>
+    <mtapp:setting
+        id="send_content"
+        label="<__trans phrase="Optional Content">"
+        label_class="top-label"
+        hint=""
+        show_hint="0">
+        <ul>
+            <li><input type="checkbox" name="send_excerpt" id="send_excerpt" value="1" /> <label for="send_excerpt"><__trans phrase="Entry Excerpt"></label></li>
+            <li><input type="checkbox" name="send_body" id="send_body" value="1" /> <label for="send_body"><__trans phrase="Entry Body"> <span class="disabled"><__trans phrase="(Entry Body will be sent without any text formatting applied)"></span></label></li>
+        </ul>
+    </mtapp:setting>
+
+    <div class="actions-bar">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                onclick="return doValidateNotifyRecips(this.form);"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Send notification (s)">"
+                class="primary-button"
+                ><__trans phrase="Send"></button>
+            <button
+                onclick="closeDialog(); return false"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </div>
+    </div>
+</form>
+<mt:include name="dialog/footer.tmpl">

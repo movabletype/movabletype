@@ -1,76 +1,117 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Author;
-use strict;
 
-use MT::Object;
-@MT::Author::ISA = qw( MT::Object );
+use strict;
+use base qw( MT::Object MT::Scorable );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
-        'name' => 'string(50) not null',
-        'nickname' => 'string(50)',
+        'name' => 'string(255) not null',
+        'nickname' => 'string(255)',
         'password' => 'string(60) not null',
         'type' => 'smallint not null',
         'email' => 'string(75)',
         'url' => 'string(255)',
-        'can_create_blog' => 'boolean',
-        'is_superuser' => 'boolean',
         'hint' => 'string(75)',
-        'can_view_log' => 'boolean',
         'public_key' => 'text',
         'preferred_language' => 'string(50)',
         'api_password' => 'string(60)',
         'remote_auth_username' => 'string(50)',
         'remote_auth_token' => 'string(50)',
         'entry_prefs' => 'string(255)',
+        'text_format' => 'string(30)',
+        'status' => 'integer',
+        'external_id' => 'string(255)',
+        #'last_login' => 'datetime',
+
+        # deprecated; permissions are in MT::Permission only now
+        'can_create_blog' => 'boolean',
+        'is_superuser' => 'boolean',
+        'can_view_log' => 'boolean',
+        'auth_type' => 'string(50)',
+        'userpic_asset_id' => 'integer',
+        'basename' => 'string(255)',
+
+        # meta properties
+        'widgets' => 'hash meta',
+        'favorite_blogs' => 'array meta',
     },
     defaults => {
-        type => 1
+        type => 1,
+        status => 1,
     },
     indexes => {
         created_on => 1,
         name => 1,
         email => 1,
         type => 1,
+        status => 1,
+        external_id => 1,
+        auth_type_name => {
+            columns => ['auth_type', 'name', 'type'],
+        },
+        basename => 1,
     },
+    meta => 1,
+    child_classes => ['MT::Permission', 'MT::Association'],
     datasource => 'author',
     primary_key => 'id',
     audit => 1,
 });
 
-# Valid "type" codes:
-use constant AUTHOR => 1;
-use constant COMMENTER => 2;
+sub class_label {
+    MT->translate("User");
+}
 
-use constant APPROVED => 1;
-use constant BANNED => 2;
-use constant BLOCKED => 2; # alias for BANNED for backward compatibility
-use constant PENDING => 3;
+sub class_label_plural {
+    MT->translate("Users");
+}
+
+# Valid "type" codes:
+sub AUTHOR ()    { 1 }
+sub COMMENTER () { 2 }
+
+# Commenter statuses
+sub APPROVED () { 1 }
+sub BANNED ()   { 2 }
+sub BLOCKED ()  { 2 }  # alias for BANNED for backward compatibility
+sub PENDING ()  { 3 }
+
+# Author statuses
+sub ACTIVE ()   { 1 }
+sub INACTIVE () { 2 }
+#use constant PENDING => 3; # there *is* PENDING status for authors but it's the same name and value.
 
 use Exporter;
 *import = \&Exporter::import;
 use vars qw(@EXPORT_OK %EXPORT_TAGS);
-@EXPORT_OK = qw(AUTHOR COMMENTER APPROVED BANNED PENDING);
-%EXPORT_TAGS = (constants => [qw(AUTHOR COMMENTER APPROVED BANNED PENDING)]);
+@EXPORT_OK = qw(AUTHOR COMMENTER ACTIVE INACTIVE APPROVED BANNED PENDING);
+%EXPORT_TAGS = (constants => [qw(AUTHOR COMMENTER ACTIVE INACTIVE APPROVED BANNED PENDING)]);
+
+sub set_defaults {
+    my $auth = shift;
+    my $cfg = MT->config;
+    $auth->SUPER::set_defaults(@_);
+    $auth->preferred_language($cfg->DefaultUserLanguage || $cfg->DefaultLanguage);
+}
 
 sub remove_sessions {
     my $auth = shift;
     require MT::Session;
-    my @sess = MT::Session->load({ id => $auth->id, kind => 'US' });
+    my $sess_iter = MT::Session->load_iter({ kind => 'US' });
+    my @sess;
+    while (my $sess = $sess_iter->()) {
+        my $id = $sess->get('author_id');
+        next unless $id == $auth->id;
+        push @sess, $sess;
+    }
     $_->remove foreach @sess;
-}
-
-sub session {
-    die "This was removed";        # FIXME: this is to catch mistakes
-}
-
-sub magic_token {
-    die "there is no magic_token"; # FIXME: this is to catch mistakes
 }
 
 sub set_password {
@@ -78,29 +119,23 @@ sub set_password {
     my($pass) = @_;
     my @alpha = ('a'..'z', 'A'..'Z', 0..9);
     my $salt = join '', map $alpha[rand @alpha], 1..2;
+    # FIXME: use something besides 'crypt'
     $auth->column('password', crypt $pass, $salt);
 }
 
 sub is_valid_password {
-    my $auth = shift;
-    my($pass, $crypted) = @_;
+    my $author = shift;
+    my($pass, $crypted, $error_ref) = @_;
     $pass ||= '';
-    my $real_pass = $auth->column('password');
-    return $crypted ? $real_pass eq $pass :
-                      crypt($pass, $real_pass) eq $real_pass;
+    require MT::Auth;
+    return MT::Auth->is_valid_password($author, $pass, $crypted, $error_ref);
 }
 
 sub is_email_hidden {
     my $auth = shift;
+    return 1 unless $auth->email =~ m/@/;
     return ($auth->email =~ /^[0-9a-f]{40}$/i) ? 1 : 0;
 }
-
-# The two permissions can_comment and can_not_comment form the
-# three-state "status" variable:
-# can_comment   can_not_comment | status
-#    0             0            | pending
-#    1             0            | approved
-#    0             1            | banned
 
 # Existing comments of a user are made visible only if the 
 # user is coming from "pending" status.
@@ -108,8 +143,10 @@ sub is_email_hidden {
 sub set_commenter_perm {
     my $this = shift;
     my ($blog_id, $action) = @_;
-    return $this->error(MT->translate("Can't approve/ban non-COMMENTER author"))
-        if ($this->type ne COMMENTER);
+
+    if ( MT->config->SingleCommunity ) {
+        $blog_id = 0;
+    }
 
     require MT::Permission;
     my %perm_spec = (
@@ -121,17 +158,15 @@ sub set_commenter_perm {
         $perm = MT::Permission->new();
         $perm->set_values(\%perm_spec);
     }
-    my $was_pending = !$perm->can_comment() && !$perm->can_not_comment();
     if ($action eq 'approve') {
-        $perm->can_comment(1);
-        $perm->can_not_comment(0);
+        $perm->remove_restrictions('comment');
+        $perm->can_comment(1) if COMMENTER eq $this->type;
     } elsif (($action eq 'ban') || ($action eq 'block')) {
-        $perm->can_not_comment(1);
-        $perm->can_comment(0);
+        $perm->set_these_restrictions('comment');
+        $perm->can_comment(0) if COMMENTER eq $this->type;
     } elsif ($action eq 'pending') {
-        return if $was_pending && $perm->id; # no need to resave here
-        $perm->can_not_comment(0);
-        $perm->can_comment(0);
+        $perm->remove_restrictions('comment');
+        $perm->can_comment(0) if COMMENTER eq $this->type;
     }
     $perm->save()
         or return $this->error(MT->translate("The approval could not be committed: [_1]", $perm->errstr));
@@ -139,22 +174,29 @@ sub set_commenter_perm {
     return 1;
 }
 
-sub status {
+sub commenter_status {
     my $this = shift;
+    return APPROVED if $this->is_superuser;
     my ($blog_id) = @_;
-    # TBD: cache the permission record FIXME
+
+    if ( MT->config->SingleCommunity ) {
+        $blog_id = 0;
+    }
+
     require MT::Permission;
-    my $perm = MT::Permission->load({author_id=>$this->id, blog_id=>$blog_id});
+    my $perm = MT::Permission->load(
+        { author_id => $this->id, blog_id => $blog_id } );
     return PENDING if !$perm;
-    return BANNED if $perm->can_not_comment();
-    return APPROVED if $perm->can_comment();
+    return BANNED if $perm->is_restricted('comment');
+    return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
     return PENDING;
 }
 
-sub is_trusted { shift->status(@_) == APPROVED; }
-sub is_banned { shift->status(@_) == BANNED; }
+sub is_active { shift->status() == ACTIVE; }
+sub is_trusted { shift->commenter_status(@_) == APPROVED; }
+sub is_banned { shift->commenter_status(@_) == BANNED; }
 *is_blocked = \&is_banned;
-sub is_not_trusted { shift->status(@_) == PENDING; }
+sub is_not_trusted { shift->commenter_status(@_) == PENDING; }
 *is_untrusted = \&is_not_trusted;
 
 sub approve {
@@ -179,107 +221,212 @@ sub ban {
 sub save {
     my $auth = shift;
 
-    if ((!$auth->id) && ($auth->type == AUTHOR)) {
-        # New author, undefined API password. Generate one.
-        if (!defined $auth->api_password) {
-            my @pool = ('a'..'z', 0..9);
-            my $pass = '';
-            for (1..8) { $pass .= $pool[ rand @pool ] }
-            $auth->api_password($pass);
+    if ($auth->type == AUTHOR) {
+        if (!$auth->id) {
+            # New author, undefined API password. Generate one.
+            if (!defined $auth->api_password) {
+                my @pool = ('a'..'z', 0..9);
+                my $pass = '';
+                for (1..8) { $pass .= $pool[ rand @pool ] }
+                $auth->api_password($pass);
+            }
         }
+        # Generate basename
+        my $basename = MT::Util::make_unique_author_basename($auth);
+        $auth->basename($basename);
     }
 
-    $auth->SUPER::save(@_);
+    my $privs;
+    if (exists $auth->permissions(0)->{changed_cols}->{permissions}) {
+         $privs = $auth->permissions(0)->permissions;
+    }
+    # delete new user's privilege from cache
+    delete MT::Request->instance->{__stash}->{'__perm_author_'} unless $auth->id;
+    $auth->SUPER::save(@_) or return $auth->error($auth->errstr);
+    if (defined $privs) {
+        my $perm = $auth->permissions(0);
+        $perm->permissions($privs);
+        $perm->save or return $auth->error("Error saving permission: " . $perm->errstr);
+    }
+    1;
 }
 
 sub remove {
     my $auth = shift;
-    require MT::Permission;
-    ## We need to loop twice over the permissions: first gather, then
-    ## remove, so as not to throw our gathering out of whack by removing
-    ## while we gather. :)
-    my $iter = MT::Permission->load_iter({ author_id => $auth->id });
-    my @perms;
-    while (my $perms = $iter->()) {
-        push @perms, $perms;
-    }
-    ## The iterator is finished, so we can safely remove.
-    for my $perms (@perms) {
-        $perms->remove;
-    }
-    $auth->SUPER::remove;
-}
-
-sub blog_perm {
-    my $author = shift;
-    my $blog_id = shift;
-    my $cache = "__perm-" . $blog_id;
-    return $author->{$cache} if $author->{$cache};
-    my $perm = MT::Permission->load({author_id => $author->id,
-                                     blog_id => $blog_id});
-    if (!$perm) {
-        # Return a fictional permission object; can be queried using
-        # same interface
-        $perm = MT::Permission->new();
-        $perm->author_id($author->id);
-        $perm->blog_id($blog_id);
-        if ($author->is_superuser) {
-            $perm->set_full_permissions();
-        } else {
-            $perm->role_mask(0);
-        }
-    }
-    return $author->{$cache} = $perm;
+    $auth->remove_sessions if ref $auth;
+    $auth->remove_children({ key => 'author_id' }) or return;
+    $auth->SUPER::remove(@_);
 }
 
 sub can_edit_entry {
     my $author = shift;
     die unless $author->isa('MT::Author');
+    return 1 if $author->is_superuser();
     my($entry) = @_;
     unless (ref $entry) {
         require MT::Entry;
-        $entry = MT::Entry->load($entry, {cached_ok=>1});
+        $entry = MT::Entry->load($entry);
     }
-    die unless $entry->isa('MT::Entry');
-    my $perms = $author->blog_perm($entry->blog_id);
+    die if !$entry || !$entry->isa('MT::Entry');
+    my $perms = $author->permissions($entry->blog_id);
     die unless $perms->isa('MT::Permission');
     $perms->can_edit_all_posts ||
-    ($perms->can_post && $entry->author_id == $author->id);
+        ($perms->can_create_post && $entry->author_id == $author->id);
+}
+
+sub is_superuser {
+    my $author = shift;
+    if (@_) {
+        $author->permissions(0)->can_administer(@_);
+        if ($_[0]) {
+            $author->permissions(0)->can_create_blog(@_);
+            $author->permissions(0)->can_view_log(@_);
+            $author->permissions(0)->can_manage_plugins(@_);
+            $author->permissions(0)->can_edit_templates(@_);
+        }
+    } else {
+        $author->permissions(0)->can_administer() ||
+            $author->SUPER::is_superuser();
+    }
 }
 
 sub can_create_blog {
     my $author = shift;
-    $author->is_superuser() || $author->SUPER::can_create_blog(@_);
+    if (@_) {
+        $author->permissions(0)->can_create_blog(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_create_blog(@_);
+    }
 }
 
 sub can_view_log {
     my $author = shift;
-    $author->is_superuser() || $author->SUPER::can_view_log(@_);
+    if (@_) {
+        $author->permissions(0)->can_view_log(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_view_log(@_);
+    }
 }
 
-    # Get the permission records for these two authors that share a blog_id
-    # and for which "this" has the can_administer_blog flag.
-    # A mythical SQL query for this:
-#       select this.blog_id from mt_permission this, mt_permission other
-#        where this.author_id = ? and other.author_id = ?
-#          and this.blog_id = other.blog_id
-#          and this.role_mask & 4096;
+sub can_manage_plugins {
+    my $author = shift;
+    if (@_) {
+        $author->permissions(0)->can_manage_plugins(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_manage_plugins(@_);
+    }
+}
+
+sub can_edit_templates {
+    my $author = shift;
+    if (@_) {
+        $author->permissions(0)->can_edit_templates(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_edit_templates(@_);
+    }
+}
+
+sub blog_perm {
+    my $author = shift;
+    my ($blog_id) = @_;
+    $author->permissions($blog_id);
+}
+
+sub permissions {
+    my $author = shift;
+    my ($obj) = @_;
+    my $blog_id = $obj;
+
+    my $terms = { author_id => $author->id };
+    my $cache_key = "__perm_author_" . (defined($author->id) ? $author->id : q());
+    if ($obj) {
+        if ((ref $obj) && $obj->isa('MT::Blog')) {
+            $blog_id = $obj->id;
+        } elsif ($obj) {
+            $blog_id = $obj;
+            require MT::Blog;
+            $obj = MT::Blog->load($blog_id);
+        }
+        $cache_key .= "_blog_$blog_id";
+        $terms->{blog_id} = [ 0, $blog_id ];
+    } else {
+        $terms->{blog_id} = 0;
+    }
+
+    require MT::Request;
+    my $r = MT::Request->instance;
+    my $p = $r->stash($cache_key);
+    return $p if $p;
+
+    require MT::Permission;
+    my @perm = MT::Permission->load($terms);
+    my $perm;
+    if ($obj) {
+        if (@perm == 2) {
+            if (!$perm[0]->blog_id) {
+                @perm = reverse @perm;
+            }
+            ($perm, my $sys_perm) = @perm;
+            $perm->add_permissions($sys_perm);
+        } elsif (@perm == 1) {
+            $perm = $perm[0];
+            if (!$perm->blog_id) {
+                $perm->blog_id($obj->id);
+                delete $perm->{column_values}{blog_id};
+                delete $perm->{changed_cols}{blog_id};
+            }
+        } elsif (@perm > 2) {
+            # Condition sometimes caused by saving preferences. BugId:79501
+            # Handle by merging permissions and removing all but one
+            # Not ideal, but better than dying...
+            my ($sys_perm) = grep { ! $_->blog_id } @perm;
+            my @blog_perms = grep { $_->blog_id } sort { $b->modified_on cmp $a->modified_on } @perm;
+
+            my $new_perm = shift @blog_perms; # take last one saved
+            if (@blog_perms) {
+                foreach my $more_perms (@blog_perms) {
+                    $new_perm->add_permissions($more_perms);
+                    $new_perm->add_restrictions($more_perms);
+                    $more_perms->remove;
+                }
+                # save merged permission record
+                $new_perm->save;
+            }
+            $new_perm->add_permissions($sys_perm);
+            $new_perm->add_restrictions($sys_perm);
+            $perm = $new_perm;
+            @perm = ($perm);
+        }
+    } else {
+        $perm = $perm[0] if @perm;
+    }
+    unless (@perm) {
+        if ($blog_id || !@_) {
+            if ($author->is_superuser()) {
+                $perm = new MT::Permission;
+                $perm->author_id($author->id);
+                $perm->set_full_permissions;
+            }
+        }
+    }
+    unless ($perm) {
+        $perm = new MT::Permission;
+        $perm->author_id($author->id);
+        $perm->clear_full_permissions;
+    }
+    $r->stash($cache_key, $perm);
+    $perm;
+}
 
 sub common_blogs { # returns the blogs in the form of permission records of $this
-    my ($this, $other) = @_;
-    require MT::Permission;
-    my @this_perms = MT::Permission->load({author_id => $this->id});
-    my @other_perms = MT::Permission->load({author_id => $other->id});
-    my @shared_perms; # will accumulate perms of "this" that pertain to a blog of "other"
-    for my $p (@other_perms) {
-        push @shared_perms, grep { $_->blog_id == $p->blog_id } @this_perms;
-    }
-    @shared_perms;
+    die "This was removed";        # FIXME: this is to catch mistakes
 }
-
 sub can_administer {
-    my ($this, $other) = @_;
-    return grep {$_->can_administer_blog} $this->common_blogs($other);
+    die "This was removed";        # FIXME: this is to catch mistakes
 }
 
 sub entry_prefs {
@@ -301,9 +448,142 @@ sub entry_prefs {
     }
 
     # default assignments for author entry preferences
-    $prefs{tag_delim} ||= ord(',');
+    $prefs{tag_delim} ||= MT->config->DefaultUserTagDelimiter;
 
     \%prefs;
+}
+
+sub role_iter {
+    my $author = shift;
+    my ($terms, $args) = @_;
+    require MT::Association;
+    require MT::Role;
+    my $blog_id = delete $terms->{blog_id};
+    my $type;
+    if ($blog_id) {
+        $type = MT::Association::USER_BLOG_ROLE();
+    } else {
+        $type = MT::Association::USER_ROLE();
+    }
+    $args->{join} = MT::Association->join_on('role_id', {
+        type => $type,
+        author_id => $author->id,
+        $blog_id ? (blog_id => $blog_id) : (blog_id => 0),
+    });
+    MT::Role->load_iter($terms, $args);
+}
+
+sub blog_iter {
+    my $author = shift;
+    my ($terms, $args) = @_;
+    my $perm = $author->permissions;
+    if (!$author->is_superuser) {
+        require MT::Permission;
+        $args->{join} = MT::Permission->join_on('blog_id', {
+            author_id => $author->id,
+        });
+    }
+    require MT::Blog;
+    my $i = MT::Blog->load_iter($terms, $args);
+}
+
+sub group_iter {
+    my $author = shift;
+    my ($terms, $args) = @_;
+    my $grp_class = MT->model('group') or return undef;
+    require MT::Association;
+    $args->{join} = MT::Association->join_on('group_id', {
+        type => MT::Association::USER_GROUP(),
+        author_id => $author->id,
+    });
+    return $grp_class->load_iter($terms, $args);
+}
+
+sub group_role_iter {
+    my $author = shift;
+    my ($terms, $args) = @_;
+
+    my $grp_class = MT->model('group')
+        or return undef;
+    my @iters;
+    require MT::Association;
+    require MT::Role;
+    my $blog_id = delete $terms->{blog_id};
+    $args->{join} = MT::Association->join_on('role_id', {
+        type => $blog_id ? MT::Association::USER_BLOG_ROLE() : MT::Association::USER_ROLE(),
+        author_id => $author->id,
+        $blog_id ? (blog_id => $blog_id) : (),
+    });
+    my $user_iter = MT::Role->load_iter($terms, $args);
+    push @iters, $user_iter if $user_iter;
+
+    my @groups;
+    if (my $group_iter = $author->group_iter({ status => MT::Group::ACTIVE() })) {
+        while (my $g = $group_iter->()) {
+            push @groups, $g->id;
+        }
+    }
+    if (@groups) {
+        $args->{join} = MT::Association->join_on('role_id', {
+            type => $blog_id ? MT::Association::GROUP_BLOG_ROLE() : MT::Association::GROUP_ROLE(),
+            group_id => \@groups,
+            $blog_id ? (blog_id => $blog_id) : (),
+        });
+        my $group_iter = MT::Role->load_iter($terms, $args);
+        push @iters, $group_iter if $group_iter;
+    }
+    MT::Util::multi_iter(\@iters);
+}
+
+sub add_role {
+    my $author = shift;
+    my ($role, $blog) = @_;
+    $author->save unless $author->id;
+    $role->save unless $role->id;
+    $blog->save if $blog && !$blog->id;
+    require MT::Association;
+    MT::Association->link($author, @_);
+}
+
+sub add_group {
+    my $author = shift;
+    my ($group) = @_;
+    $author->save unless $author->id;
+    $group->save unless $group->id;
+    require MT::Association;
+    MT::Association->link($author, @_);
+}
+
+sub remove_role {
+    my $author = shift;
+    require MT::Association;
+    MT::Association->unlink($author, @_);
+}
+
+sub remove_group {
+    my $author = shift;
+    require MT::Association;
+    MT::Association->unlink($author, @_);
+}
+
+sub add_default_roles {
+    my $author = shift;
+    my $def = MT->config->DefaultAssignments;
+    return unless $def;
+
+    my $blog_class = MT->model('blog');
+    my $role_class = MT->model('role');
+
+    require MT::Association;
+    my @def = split ',', $def;
+    while (my $role_id = shift @def) {
+        my $blog_id = shift @def;
+        next unless $role_id && $blog_id;
+        my $blog = $blog_class->load($blog_id);
+        my $role = $role_class->load($role_id);
+        next unless ref $blog && ref $role;
+        MT::Association->link($author => $role => $blog);
+    }
 }
 
 sub to_hash {
@@ -320,7 +600,161 @@ sub to_hash {
     }
     $hash;
 }
+
+sub group_count {
+    my $author = shift;
+    require MT::Association;
+    MT::Association->count({
+        type => MT::Association::USER_GROUP(),
+        author_id => $author->id,
+    });
+}
+
+sub external_id {
+    my $author = shift;
+    if (@_) {
+        return $author->SUPER::external_id($author->unpack_external_id(@_));
+    }
+    my $value = $author->SUPER::external_id;
+    $value = $author->pack_external_id($value) if $value;
+}
+
+sub load {
+    my $author = shift;
+    my ($terms, $args) = @_;
+    if ((ref($terms) eq 'HASH') && exists($terms->{external_id})) {
+        $terms->{external_id} = $author->unpack_external_id($terms->{external_id});
+    }
+    $author->SUPER::load($terms, $args);
+}
+
+sub load_iter {
+    my $author = shift;
+    my ($terms, $args) = @_;
+    if ((ref($terms) eq 'HASH') && exists($terms->{external_id})) {
+        $terms->{external_id} = $author->unpack_external_id($terms->{external_id});
+    }
+    $author->SUPER::load_iter($terms, $args);
+}
+
+sub pack_external_id { return pack('H*', $_[1]); }
+sub unpack_external_id { return unpack('H*', $_[1]); }
+
+sub auth_icon_url {
+    my $author = shift;
+    my ($size) = @_;
+    $size ||= 'logo_small';
+
+    my $app = MT->instance;
+    my $static_path = $app->static_path;
+
+    my $auth_type = $author->auth_type;
+    return q() unless $auth_type;
+
+    if ( $author->type == MT::Author::AUTHOR() ) {
+        return $static_path . 'images/comment/mt_logo.png' ;
+    }
+    
+    my $authenticator = MT->commenter_authenticator( $auth_type );
+    return q() unless $authenticator;
+    return q() unless exists $authenticator->{$size};
+
+    my $logo = $authenticator->{$size};
+    if ( ( $logo !~ m!^https?://! ) || ( $logo !~ m!^/! ) ) {
+        $logo = $static_path . $logo;
+    }
+    return $logo;
+}
+
+sub userpic {
+    my $author = shift;
+    my (%param) = @_;
+
+    my $asset = $param{Asset};
+    return $asset if $asset;
+
+    my $asset_id = $author->userpic_asset_id or return;
+    require MT::Asset;
+    $asset = MT->model('asset.image')->load($asset_id) or return;
+
+    $asset;
+}
+
+sub userpic_thumbnail_options {
+    my $author = shift;
+
+    # Specify these to put an author's userpic thumbnail in a consistent
+    # place whenever userpic_url is called as an instance method on a
+    # particular author.
+    my %real_userpic_options = (
+        Path   => File::Spec->catdir( MT->config->AssetCacheDir, 'userpics' ),
+        Format => MT->translate('userpic-[_1]-%wx%h%x', $author->id),
+    ) if ref $author;
+
+    my $cfg = MT->config;
+    my $max_dim = $cfg->UserpicThumbnailSize;
+    my $square  = $cfg->UserpicAllowRect ? 0 : 1;
+    return (
+        Width  => $max_dim,
+        Height => $max_dim,
+        Square => $square,
+        Type   => 'png',
+        %real_userpic_options,
+    );
+}
+
+sub userpic_file {
+    my $author = shift;
+
+    my $asset = $author->userpic;
+    if (!$asset) {
+        $asset = MT->model('asset.image')->new;
+        $asset->file_name('userpic');
+    }
+
+    my %thumb_param = $author->userpic_thumbnail_options();
+    my $thumb_file = File::Spec->catfile(
+        $asset->thumbnail_path(%thumb_param),
+        $asset->thumbnail_filename(%thumb_param),
+    );
+
+    return $thumb_file;
+}
+
+sub userpic_url {
+    my $author = shift;
+    my (%param) = @_;
+
+    my $asset = delete $param{Asset};
+    if (!$asset && ref $author) {
+        $asset = $author->userpic;
+    }
+    return if !$asset;
+
+    my @info = $asset->thumbnail_url(
+        $author->userpic_thumbnail_options(),
+        %param,
+    );
+    if ($info[0] !~ m!^https?://!) {
+        my $static_host = MT->instance->static_path;
+        if ($static_host =~ m!^https?://!) {
+            $static_host =~ s!^(https?://[^/]+?)!$1!;
+            $info[0] = $static_host . $info[0];
+        }
+    }
+    return wantarray ? @info : $info[0];
+}
+
+sub userpic_html {
+    my $author = shift;
+    my ($thumb_url, $w, $h) = $author->userpic_url(@_) or return;
+    return unless $thumb_url;
+    sprintf q{<img src="%s?%d" width="%d" height="%d" alt="" />},
+      MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
+}
+
 1;
+
 __END__
 
 =head1 NAME
@@ -390,13 +824,24 @@ The username of the author. This is the username used to log in to the system.
 
 =item * nickname
 
-The author nickname. This is not displayed anywhere in the system unless you
-use a C<E<lt>$MTEntryAuthorNickname$E<gt>> tag.
+The author nickname (or "display" name). This is the preferred name used for publishing the author's name.
 
 =item * password
 
 The author's password, one-way encrypted. If you wish to check the validity of
 a password, you should use the I<is_valid_password> method, above.
+
+=item * type
+
+The type of author record. Currently, MT stores authenticated commenters in the author table. The type column can be one of AUTHOR or COMMENTER (constants defined in this package).
+
+=item * status
+
+A column that defines whether the records of an AUTHOR type are ACTIVE, INACTIVE or PENDING (constants declared in this package). 
+
+=item * commenter_status
+
+This method requires a blog id to be passed as the argument and a value of APPROVED, BANNED or PENDING (constants declared in this package) is returned.
 
 =item * email
 
@@ -408,8 +853,11 @@ The author's homepage URL.
 
 =item * hint
 
-The answer to the question used when recovering the user's password. Currently
-this is the birthplace of the author, though this may change in the future.
+The answer to the question used when recovering the user's password.
+
+=item * external_id
+
+A column for holding a value used to synchronize the MT author record with an external record.
 
 =item * can_create_blog
 
@@ -423,8 +871,7 @@ system activity log.
 
 =item * created_by
 
-The author ID of the author who created this author. For the initial author
-created by the F<mt-load.cgi> program, this author ID is undefined.
+The author ID of the author who created this author. If the author was created by a process where no user was logged in to Movable Type, the created_by column will be empty.
 
 =item * public_key
 

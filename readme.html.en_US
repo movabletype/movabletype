@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="content-language" content="en" />
+	<title>Movable Type Read Me</title>
+	<style type="text/css">
+        body { font-family: Arial, Helvetica, sans-serif; }
+        #container { margin: 0 auto 0 auto; width: 750px; }
+	</style>
+</head>
+<body>
+  <div id="container">
+    <img src="mt-static/readme/mt4-logo.png" width="750" height="250" />
+
+    <h1>Welcome to Movable Type</h1>
+    <p>Thank you for choosing Movable Type, the premiere solution for all your blogging needs. This file will show you how to get up and running; click on the highlighted sections for more information on that subject.</p>
+
+    <h2>Before You Begin</h2>
+    <p>Movable Type requires the following applications:</p>
+    <ul>
+      <li><p>Perl 5.6.1 or greater;</p></li>
+      <li><p>A web server like Apache, or Windows IIS;</p></li>
+      <li><p>Access to a database like MySQL, SQLite or Postgres;</p></li>
+      <li><p>The following Perl modules:</p>
+        <ul>
+          <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+          <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+          <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+        </ul>
+        <p><em>Consult the following documentation to learn how to <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">determine if a perl module is already installed</a> and, if they are not, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">how to install them</a>.</em></p>
+    </ul>
+
+    <h2>Upgrading Movable Type</h2>
+    <p>If you are upgrading to Movable Type 4 from a previous version, we recommend that you first back up your old installation. Then upload Movable Type 4's files over your old ones. Access Movable Type as you normally do, and you will be taken through the upgrade process.</p>
+
+    <h2>Installing Movable Type</h2>
+    <p>Before you install Movable Type:</p>
+    <ol>
+      <li>Upload all of Movable Type's files into a folder accessible via your web browser. (Typically, this folder is called 'mt' in the root folder of your website.</li>
+      <li>Ensure that each .cgi file (e.g. mt.cgi, mt-search.cgi, etc) found in the Movable Type directory has the <a href="http://www.elated.com/articles/understanding-permissions/">execute permission</a> enabled.</li>
+      <li>Make sure that the 'mt' folder containing the uploaded Movable Type files has been <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">enabled to execute CGI scripts</a>.</li>
+      <li>Open that folder in your web browser (i.e. <tt>http://www.mywebsite.com/mt/</tt>).
+      <li>You should see a Movable Type welcome screen that will take you through the installation process. If the welcome screen does not appear, please consult our Troubleshooting Guide below.</li>
+    </ol>
+
+    <h2>Troubleshooting Movable Type</h2>
+    <h3>Setting up your static web path</h3>
+    <p>In some web servers (and in some configurations), static files such as javascript, css and image files are not permitted inside of a cgi-bin folder. If you have installed Movable Type into a cgi-bin folder you will need to place your static files in another web accessible location. Read our documentation on setting up your <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static folder</a>.</p>
+
+    <h3>Internal Server Errors</h3>
+    <p>If you receive an "Internal Server Error" message, a configuration change may be required on your web server. Please consult our <a href="http://www.movabletype.org/documentation/install/">installation guide</a> to help resolve this issue, or search our <a href="http://www.sixapart.com/movabletype/kb/">knowledge base</a>.</p>
+
+    <h3>Finding more help</h3>
+    <p>Need additional information or support? Check out the <a href="http://www.movabletype.org/documentation/installation/">Detailed Installation Guide</a>.</p>
+  </div>
+</body>
+</html>

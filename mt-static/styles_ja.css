@@ -1,51 +1,81 @@
-* {
-  _font-family: "MS PGothic", "Trebuchet MS", Trebuchet, Verdana, Arial, sans-serif ! important;
-  font-weight: normal ! important;
+.welcome-widget .widget-label {
+  margin-bottom: 0.5em;
+  font-size: 19px;
+  font-weight: bold;
 }
 
-p {    font-size: 12px;    line-height: 1.3;}
-
-#list-blog .blog-info {
-  width: 225px;
+.welcome-widget .widget-content li a {
+  font-size: 16px;
 }
 
-#list-blog .shortcuts {
-  width: 210px;
+.dialog #page-title {
+  font-size: 20px;
 }
 
-#list-blog .shortcuts ul {
-  width: 100px;
+#selector-nav #create-entry a {
+  line-height: 26px;
 }
 
-#list-blog .shortcuts ul.shortcut-col2 {
-   width: 90px;
+#content-header #content-header-inner #page-title {
+  line-height: 1.2;
 }
 
-.box li {
-  font-size: 11px;
+.tabs span {
+  padding: 7px 10px 3px; 
 }
 
-.box#news-box li {    display: list-item;}
+.dashboard .you-widget li {
+  line-height: 1.5;
+}
 
-.box ul.nav li a {
+.shortcuts-widget ul li {
+  margin-bottom: 0;
+}
+
+.edit-entry .field-left-label .field-header {
+  width: 85px;
+}
+
+.edit-entry .field-left-label .field-content {
+  margin-left: 95px;
+}
+
+#category-field .field-content {
+    width: 185px;
+}
+
+#calendar #calendar-content {
+  overflow: auto;
+}
+
+.calendar-footer {
+  clear: both;
+}
+
+.actions-bar .actions a:link,
+.actions-bar .actions a:visited,
+.listing .actions-bar .actions a { 
   font-size: 12px;
-}
-
-#nav .top li {
-  line-height: 1.6;
-  padding-top: 0;
-  font-size: 11px;
   font-weight: normal;
 }
 
-.sub li a {
-  font-size: 10px;
+div#filter-select select,
+div#filter-select input, 
+div#filter-select textarea {
+  font-size: 12px;
+  padding: 0;
 }
 
-input, select, option, textarea {
-  font-family: sans-selif;
+.category-listing-table .actions  {
+  width: 155px;
 }
 
-b {
-  font-weight: bold ! important;
+div.module {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+#create-inline-notification-form #email-field input, 
+#create-inline-notification-form #website-field input {
+  width: 160px;
 }

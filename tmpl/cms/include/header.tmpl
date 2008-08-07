@@ -1,0 +1,227 @@
+<mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="<$mt:var name="language_tag"$>" xmlns="http://www.w3.org/1999/xhtml" xmlns:mt="http://www.sixapart.com/ns/mt">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
+    <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+<mt:setvarblock name="html_head" prepend="1">
+    <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+<mt:if name="feed_url">
+    <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
+</mt:if>
+<mt:if name="mt_debug">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+</mt:if>
+    <!--[if IE]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <![endif]-->
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <![endif]-->
+<mt:if name="local_lang_id" ne="en-us">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+</mt:if>
+<mt:if name="mt_debug">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/List.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:else>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+        CMSScriptURI = '<$mt:var name="mt_url"$>';
+        ScriptURI = '<$mt:var name="script_url"$>';
+        ScriptBaseURI = '<$mt:var name="script_base_url"$>';
+        StaticURI = '<$mt:var name="static_uri"$>';
+        HelpBaseURI = '<$mt:var name="help_url"$>';
+        /* ]]> */
+    </script>
+</mt:setvarblock>
+<$mt:var name="html_head"$>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+</mt:if>
+<$mt:var name="js_include"$>
+</head>
+
+<body id="<$mt:var name="screen_id"$>" class="<mt:if name="system_overview_nav">system<mt:else>blog blog-<$mt:var name="blog_id"$></mt:if> <$mt:var name="screen_type" default="main-screen"$> <mt:if name="screen_class"> <$mt:var name="screen_class"$></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if>">
+<div id="modal-mask" class="autolayout-height-parent modal-mask hidden">
+    <div></div>
+</div>
+<$mt:var name="html_body"$>
+<div id="container" class="<$mt:var name="screen_type" default="main-screen"$><mt:if name="listing_screen"> listing-screen</mt:if>">
+<div id="container-inner" class="<mt:if name="content_nav"> content-nav</mt:if><mt:if name="related_content"> related-content<mt:unless name="content_nav"> related-content-without-content-nav</mt:unless></mt:if><mt:if name="position_actions_bottom"> show-actions-bar-bottom</mt:if><mt:if name="position_actions_top"> show-actions-bar-top</mt:if>">
+
+<mt:setvarblock name="header_block">
+<div id="header"><div id="header-inner" class="pkg">
+    <div id="brand"><h1><a href="<$mt:var name="mt_url"$>"><span><$mt:var name="mt_product_name"$></span></a></h1></div>
+<mt:if name="author_name">
+    <div id="utility-nav" mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0">
+        <ul id="utility-nav-list">
+    <mt:unless name="system_overview_nav">
+    <mt:loop name="sys_nav_loop">
+            <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
+        <mt:if name="allowed"><a href="<$mt:var name="link" escape="html"$>" class="nav-menu-link"><span><$mt:var name="label"$></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
+        <mt:if name="sub_nav_loop">
+                <ul>
+        <mt:loop name="sub_nav_loop">
+                    <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link" escape="html"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
+        </mt:loop>
+                </ul>
+        </mt:if>
+            </li>
+    </mt:loop>
+    </mt:unless>
+            <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
+            <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name"$>"></a></li>
+        <mt:if name="can_logout">
+            <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Logout"></a></li>
+        </mt:if>
+        </ul>
+    </div>
+    <div id="main-nav">
+        <div id="main-nav-inner">
+            <div id="selector-nav" mt:delegate="nav-menu" mt:nav-delayed-open="-1" mt:nav-delayed-close="300">
+                <ul id="selector-nav-list">
+            <mt:if name="top_blog_loop">
+                <mt:setvarblock name="blog_selector_dropdown">
+                <mt:loop name="top_blog_loop">
+                    <mt:unless name="top_blog_selected">
+                            <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="top_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><$mt:var name="top_blog_name" escape="html"$></a></li>
+                    </mt:unless>
+                    <mt:if name="__last__">
+                        <mt:unless name="single_blog_mode">
+                            <mt:if name="blog_id">
+                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
+                            </mt:if>
+                            <mt:unless name="selector_hide_chooser">
+                            <li id="select-blog"><a mt:command="open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
+                            </mt:unless>
+                        </mt:unless>
+                        <mt:if name="can_create_blog">
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
+                        </mt:if>
+                    </mt:if>
+                </mt:loop>
+                </mt:setvarblock>
+                <mt:if name="blog_selector_dropdown" like="\S">
+                    <li id="blog-selector-control" class="nav-menu has-sub-nav">
+                        <a href="javascript:void(0);" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if><span>&nbsp;</span></a>
+                        <ul><mt:var name="blog_selector_dropdown"></ul>
+                    </li>
+                <mt:else>
+                    <li id="blog-selector-control" class="nav-menu">
+                        <a href="javascript:void(0);" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a></li>
+                </mt:if>
+            <mt:else>
+                    <li id="blog-selector-control" class="nav-menu<mt:unless name="no_submenu"> has-sub-nav</mt:unless>">
+                        <a href="javascript:void(0);" class="blog-name" id="current-blog-title" mt:command="open-menu"><mt:if name="blog_id"><$mt:var name="blog_name" escape="html"$><mt:else><em><__trans phrase="System Overview"></em></mt:if></a>
+                <mt:unless name="no_submenu">
+                        <ul>
+                <mt:unless name="single_blog_mode">
+                        <mt:if name="blog_id">
+                            <li id="all-blogs"><a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><em><__trans phrase="System Overview"></em></a></li>
+                        </mt:if>
+                            <li id="select-blog"><a class="command-open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
+                </mt:unless>
+                        <mt:if name="can_create_blog">
+                            <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
+                        </mt:if>
+                        </ul>
+                </mt:unless>
+                    </li>
+            </mt:if>
+            <mt:if name="blog_id">
+                <mt:if name="can_create_post">
+                    <li id="create-entry" class="nav-link"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"><span><__trans phrase="Write Entry"></span></a></li>
+                </mt:if>
+            </mt:if>
+                </ul>
+            </div>
+            <mt:if name="top_nav_loop">
+            <div id="blog-nav"<mt:if name="agent_ie"> mt:delegate="nav-menu" mt:nav-delayed-open="0" mt:nav-delayed-close="0"</mt:if>>
+                <div id="blog-nav-inner">
+                    <ul id="blog-nav-list" class="blog-nav-list pkg">
+                        <li id="blog-dashboard"><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="blog_id" _default="0"$>" title="<__trans phrase="Blog Dashboard">"><span><__trans phrase="Blog Dashboard"></span></a></li>
+                <mt:loop name="top_nav_loop">
+                        <li id="<$mt:var name="id" lower_case="1"$>-menu" class="nav-menu">
+                    <mt:if name="allowed"><a href="<$mt:var name="link" escape="html"$>"><span><$mt:var name="label"$><span mt:command="open-menu">&nbsp;</span></span></a><mt:else><a href="javascript:void(0)"><span><$mt:var name="label"$></span></a></mt:if>
+                    <mt:if name="sub_nav_loop">
+                            <ul>
+                    <mt:loop name="sub_nav_loop">
+                                <li<mt:if name="divider"> class="section"</mt:if>><mt:if name="allowed"><a<mt:if name="dialog"> href="javascript:void(0)" onclick="return openDialog(false, '<mt:var name="dialog">', 'blog_id=<$mt:var name="blog_id"$>&amp;return_args=<mt:var name="return_args" escape="url">')"<mt:else> href="<$mt:var name="link" escape="html"$>"</mt:if>><$mt:var name="label"$></a><mt:else><span><$mt:var name="label"$></span></mt:if></li>
+                    </mt:loop>
+                            </ul>
+                    </mt:if>
+                        </li>
+                </mt:loop>
+                <mt:if name="blog_id">
+                    <mt:if name="can_rebuild">
+                    <mt:unless name="dynamic_all">
+                        <li id="rebuild-site" class="nav-link"><a href="javascript:void(0)" title="<__trans phrase="Publish Site">" onclick="window.open('<$mt:var name="mt_url"$>?__mode=rebuild_confirm&amp;blog_id=<$mt:var name="blog_id"$>', 'rebuild_blog_<$mt:BlogID$>', 'width=400,height=400,resizable=yes'); return false"><span><__trans phrase="Publish"></span></a></li>
+                    </mt:unless>
+                    </mt:if>
+                        <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View"></span></a></li>
+                </mt:if>
+                    </ul>
+                </div>
+            </div>
+            </mt:if>
+            <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
+                <input type="hidden" name="__mode" value="search_replace" />
+                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+            <mt:if name="blog_id">
+                <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+            </mt:if>
+                <input type="hidden" name="do_search" value="1" />
+                <input type="hidden" name="quicksearch" value="1" />
+                <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+                <span class="search-cap-left">&nbsp;</span>
+                <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <a href="javascript:void(0)" onclick="document.quicksearch.submit(); return false;" class="search-submit"><img src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" alt="Search" width="24" height="19" /></a>
+            </form>
+        </mt:if>
+        </div>
+    </div>
+</div></div><!-- /header -->
+</mt:setvarblock><mt:unless name="agent_ie"><$mt:var name="header_block"$><mt:else><mt:if name="force_header"><$mt:var name="header_block"$></mt:if></mt:unless>
+
+<div id="content-header"><div id="content-header-inner" class="inner pkg">
+<mt:if name="system_msg">
+    <$mt:var name="system_msg"$>
+</mt:if>
+<mt:if name="show_display_options_link">
+    <a href="javascript:void(0)" class="display-options-link" mt:command="open-flyout" mt:flyout="display-options-widget"><__trans phrase="Display Options"></a>
+</mt:if>
+<mt:if name="object_nav"><$mt:var name="object_nav"$></mt:if>
+    <h2 id="page-title"><$mt:var name="page_title"$></h2>
+    <mt:if name="content_header">
+        <$mt:var name="content_header"$>
+    </mt:if>
+</div></div><!-- /content-header -->
+<div id="content"><div id="content-inner" class="inner pkg">
+<mt:if name="content_nav">
+    <div id="content-nav">
+        <$mt:var name="content_nav"$>
+    </div>
+</mt:if>
+    <$mt:var name="form_header"$>
+    <div id="main-content"><div id="main-content-inner" class="inner pkg">

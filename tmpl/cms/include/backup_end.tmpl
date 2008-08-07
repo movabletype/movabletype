@@ -1,0 +1,72 @@
+</pre> 
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var progress = getByID("progress-bar");
+if (progress) {
+    progress.style.display = "none";
+}
+/* ]]> */
+</script>
+
+<mt:if name="backup_success">
+<p><strong><__trans phrase="All of the data has been backed up successfully!"></strong></p>
+    <mt:if name="files_loop">
+<div id="files-listing" class="listing">
+    <table cellspacing="0" class="files-listing-table">
+        <thead>
+            <tr>
+                <th id="ft-filename"><__trans phrase="Filename"></th>
+            </tr>
+        </thead>
+        <tbody>
+        <mt:loop name="files_loop">
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td>
+            <mt:if name="url">
+                    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">"><$mt:var name="filename"$></a>
+            <mt:else>
+                    <$mt:var name="filename"$>
+            </mt:if>
+                </td>
+            </tr>
+        </mt:loop>
+        </tbody>
+    </table>
+</div>
+<p><strong><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></strong></p>
+    <mt:else>
+<form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="backup_download" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="filename" value="<mt:var name="filename" escape="html">" />
+        <mt:if name="blog_id">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        </mt:if>
+</form>
+<script type="text/javascript">
+/* <![CDATA[ */
+var timer;
+
+function submit_form() {
+    window.clearTimeout(timer);
+    var p = getByID('download_message');
+    if (p)
+        p.style.display = 'none';
+    var f = document['file_download'];
+    if (f) {
+        f.submit();
+    }
+}
+
+timer = window.setTimeout("submit_form()", 3000);
+/* ]]> */
+</script>
+<p id="download_message"><strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
+    </mt:if>
+<mt:else>
+<p><strong><__trans phrase="An error occurred during the backup process: [_1]" params="<mt:var name="error">"></strong></p>
+</mt:if>
+
+<mt:include name="include/footer.tmpl">

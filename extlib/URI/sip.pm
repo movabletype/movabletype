@@ -22,19 +22,20 @@ sub default_port { 5060 }
 sub authority
 {
     my $self = shift;
-    $$self =~ m,^((?:$URI::scheme_re:)?)(?:([^;?]*))?(;[^?]*)?(.*)$,os or die;
+    $$self =~ m,^($URI::scheme_re:)?([^;?]*)(.*)$,os or die;
+    my $old = $2;
 
     if (@_) {
         my $auth = shift;
-        $$self = $1;
-        my $rest = $3 . $4;
+        $$self = defined($1) ? $1 : "";
+        my $rest = $3;
         if (defined $auth) {
-            $auth =~ s/([^$URI::uric])/$URI::Escape::escapes{$1}/go;
+            $auth =~ s/([^$URI::uric])/ URI::Escape::escape_char($1)/ego;
             $$self .= "$auth";
         }
         $$self .= $rest;
     }
-    $2;
+    $old;
 }
 
 sub params_form
@@ -75,11 +76,11 @@ sub params
 }
 
 # Inherited methods that make no sense for a SIP URI.
-sub path {};
-sub path_query {};
-sub path_segments {};
-sub abs {};
-sub rel {};
-sub query_keywords {};
+sub path {}
+sub path_query {}
+sub path_segments {}
+sub abs { shift }
+sub rel { shift }
+sub query_keywords {}
 
 1;

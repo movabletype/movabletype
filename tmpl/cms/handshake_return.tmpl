@@ -1,4 +1,5 @@
 <script type="text/javascript">
+/* <![CDATA[ */
 function getByID (d, n) {
     if (d.getElementById)
         return d.getElementById(n);
@@ -6,7 +7,8 @@ function getByID (d, n) {
         return d.all[n];
 }
 var d = window.opener.document;
-d.cfg_form.remote_auth_token.value = '<TMPL_VAR NAME=REMOTE_AUTH_TOKEN ESCAPE=HTML>';
+d.cfg_form.remote_auth_token.value = '<mt:var name="remote_auth_token" escape="html">';
 getByID(d, 'save_token_msg').style.display='block';
 window.close();
+/* ]]> */
 </script>

@@ -1,8 +1,9 @@
 /*
-Copyright 2003 Six Apart. This code cannot be redistributed without
-permission from www.sixapart.com.
-
-$Id$
+# Movable Type (r) Open Source (C) 2003-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 */
 
 
@@ -147,6 +148,8 @@ TC.Mixer.Display.prototype.display = function()
 	for( var i in entryElements )
 	{
 		var element = entryElements[ i ];
+        if (typeof(element) != 'object')
+            continue;
 		this.displayElement.appendChild( element );
 		if( this.events )
 		{

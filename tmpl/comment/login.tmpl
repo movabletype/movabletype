@@ -1,0 +1,120 @@
+<mt:setvarblock name="page_title"><__trans phrase="Sign in to comment"></mt:setvarblock>
+<mt:setvarblock name="html_head">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function signinToggle(choice) {
+        var auths = new Array(<mt:if name="enabled_MovableType">'mt',</mt:if><mt:loop name="auth_loop">'<mt:var name="name" escape="js">',</mt:loop>'');
+
+        for (var i = 0; i < auths.length - 1; i++) {
+            var signinObject = getByID('signin_with_' + auths[i]);
+            var optionsObject = getByID('signin_option_' + auths[i]);
+
+            if (signinObject && optionsObject) {
+                if (auths[i] == choice) {
+                    signinObject.style.display = 'block';
+                    optionsObject.className = 'choice_on';
+                } else {
+                    signinObject.style.display = 'none';
+                    optionsObject.className = 'choice_off';
+                }
+            }
+        }
+    }
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+
+<mt:include name="../cms/include/chromeless_header.tmpl">
+
+<mt:if name="auth_loop">
+    <div class="comment_signin_options">
+        <p><__trans phrase="Sign in using">...</p>
+
+        <ul>
+        <mt:if name="enabled_MovableType">
+        <li id="signin_option_mt"<mt:if name="enabled_MovableType"> class="choice_on"</mt:if>><div class="signin_logo"><a href="javascript:void(0)" onclick="signinToggle('mt');"><img src="<$mt:var name="static_uri"$>images/comment/signin_mt.png" width="36" height="26" border="0" alt="" /></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('mt');">Movable Type</a></div></li>
+        </mt:if>
+
+        <mt:loop name="auth_loop">
+        <li id="signin_option_<mt:var name="name" escape="html">"<mt:if name="name" eq="$default_signin"> class="choice_on"<mt:else> class="choice_off"</mt:if>><div class="signin_logo"><mt:if name="logo"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name" escape="js">');"><img src="<$mt:var name="static_uri"$><$mt:var name="logo"$>" width="36" height="26" border="0" alt="" /></a></mt:if></div><div class="auth_name"><a href="javascript:void(0)" onclick="signinToggle('<mt:var name="name" escape="js">');"><mt:var name="name" escape="html"></a></div></li>
+        </mt:loop>
+
+        </ul>
+    </div>
+</mt:if>
+
+<mt:if name="message">
+    <mtapp:statusmsg
+        id="message"
+        class="alert">
+        <mt:var name="message">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<div class="signin">
+
+<mt:if name="enabled_MovableType">
+<div id="signin_with_mt"<mt:unless name="enabled_MovableType"> style="display: none"</mt:unless>>
+<form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="do_login" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+    <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
+    <mt:unless name="auth_mode_mt"><input type="hidden" name="external_auth" value="1" /></mt:unless>
+    <mtapp:setting
+        id="username"
+        label="<__trans phrase="Username">"
+        label_class="top-label">
+        <input type="text" name="username" id="username" class="ti" />
+    </mtapp:setting>
+    <mtapp:setting
+        id="password"
+        label="<__trans phrase="Password">"
+        label_class="top-label">
+        <input type="password" name="password" id="password" class="pw" />
+    </mtapp:setting>
+    <mt:if name="can_recover_password">
+    <div class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
+    </mt:if>
+    <p><label><__trans phrase="Remember me?"></label> <input type="checkbox" name="remember" value="1" accesskey="r" class="cb" /></p>
+    <div class="actions-bar actions-bar-login">
+        <div class="actions-bar-inner pkg actions">
+            <button
+                type="submit"
+                class="primary-button"
+                accesskey="s"
+                ><__trans phrase="Sign in"></button>
+        </div>
+    </div>
+    <mt:if name="registration_allowed">
+    <div class="right"><__trans phrase="Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id" escape="js"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>"></div>
+    </mt:if>
+</form>
+
+</div>
+</mt:if>
+<mt:if name="auth_loop">
+
+<dl>
+<mt:loop name="auth_loop">
+<dd>
+<div id="signin_with_<mt:var name="name" escape="html">"<mt:if name="name" ne="$default_signin"> style="display: none"</mt:if>>
+<mt:var name="login_form">
+</div>
+</dd>
+</mt:loop>
+</dl>
+
+</mt:if>
+
+</div>
+
+<mt:include name="../cms/include/chromeless_footer.tmpl">

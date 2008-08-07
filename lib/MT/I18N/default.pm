@@ -1,43 +1,52 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.movabletype.org
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::I18N::default;
 
 use strict;
-use MT::ConfigMgr;
-use vars qw( @ISA $PKG );
-@ISA = qw( MT::ErrorHandler );
+use base qw( MT::ErrorHandler );
+our $PKG;
 
-use constant DEFAULT_LENGTH_ENTRY_EXCERPT => 40;
-use constant LENGTH_ENTRY_TITLE_FROM_TEXT => 5;
-use constant LENGTH_ENTRY_PING_EXCERPT => 255;
-use constant LENGTH_ENTRY_PING_TITLE_FROM_TEXT => 5;
-use constant DISPLAY_LENGTH_MENU_TITLE => 22;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TITLE => 25;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR => 25;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT => 45;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG => 90;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT => 30;
-use constant DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG => 80;
-use constant DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT => 12;
-use constant DISPLAY_LENGTH_EDIT_PING_BREAK_UP => 30;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TITLE => 25;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT => 50;
-use constant DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP => 30;
+sub DEFAULT_LENGTH_ENTRY_EXCERPT ()                    { 40 }
+sub LENGTH_ENTRY_TITLE_FROM_TEXT ()                    { 5 }
+sub LENGTH_ENTRY_PING_EXCERPT ()                       { 255 }
+sub LENGTH_ENTRY_PING_TITLE_FROM_TEXT ()               { 5 }
+sub DISPLAY_LENGTH_MENU_TITLE ()                       { 22 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TITLE ()               { 25 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_AUTHOR ()              { 25 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT ()          { 45 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_LONG ()           { 90 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_SHORT () { 30 }
+sub DISPLAY_LENGTH_EDIT_COMMENT_TEXT_BREAK_UP_LONG ()  { 80 }
+sub DISPLAY_LENGTH_EDIT_PING_TITLE_FROM_EXCERPT ()     { 12 }
+sub DISPLAY_LENGTH_EDIT_PING_BREAK_UP ()               { 30 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 { 25 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     { 50 }
+sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         { 30 }
 
-use constant ENCODING_NAMES => [
+my $ENCODING_NAMES = [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },
     { 'name' => 'ascii', 'display_name' => 'ISO-8859-1' },
+    { 'name' => 'WinLatin1', 'display_name' => 'Windows Latin1' },
 ];
+sub ENCODING_NAMES () {
+    return $ENCODING_NAMES;
+}
 
 my @ENCODINGS_ENCODE =
-    qw( utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp
+    qw( cp1252 utf-8 euc-jp shiftjis 7bit-jis iso-2022-jp
         iso-2022-jp-1 jis0201-raw jis0208-raw
         jis0212-raw cp932 Macjapanese iso-8859-1 );
 
+sub decode {
+    my $class = shift;
+    my $meth = 'decode_' . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
 sub guess_encoding {
     my $class = shift;
     my $meth = 'guess_encoding_' . ($PKG || $class->_load_module);
@@ -95,7 +104,25 @@ sub utf8_off {
     $class->$meth(@_);
 }
 
+sub lowercase {
+    my $class = shift;
+    my $meth = 'lowercase_' . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
+
+sub uppercase {
+    my $class = shift;
+    my $meth = 'uppercase_' . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
+
 # Dumb default methods (charset ignorant)
+
+sub decode_perl {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    $text;
+}
 
 sub encode_text_perl {
     my $class = shift;
@@ -107,6 +134,18 @@ sub substr_text_perl {
     my $class = shift;
     my ($str, $start, $end) = @_;
     substr($str, $start, $end);
+}
+
+sub lowercase_perl {
+    my $class = shift;
+    my ($str) = @_;
+    return lc $str;
+}
+
+sub uppercase_perl {
+    my $class = shift;
+    my ($str) = @_;
+    return uc $str;
 }
 
 sub length_text_perl {
@@ -158,7 +197,7 @@ sub wrap_text_encode {
     $tab_init = '' unless defined $tab_init;
     $tab_sub = '' unless defined $tab_sub;
     require Text::Wrap;
-    $Text::Wrap::column = $col;
+    $Text::Wrap::columns = $col;
     $text = Text::Wrap::wrap($tab_init, $tab_sub, $text);
     return $text;
 }
@@ -306,6 +345,30 @@ sub length_text_encode {
     return length($enc_text);
 }
 
+sub lowercase_encode {
+    my $class = shift;
+    my ($str, $enc) = @_;
+    $enc = $class->_set_encode($str, $enc);
+    $str = $class->_conv_to_utf8($str, $enc) if $enc ne 'utf-8';
+    Encode::_utf8_on($str);
+    $str = lc $str;
+    Encode::_utf8_off($str);
+    $str = $class->_conv_from_utf8($str, $enc) if $enc ne 'utf-8';
+    return $str;
+}
+
+sub uppercase_encode {
+    my $class = shift;
+    my ($str, $enc) = @_;
+    $enc = $class->_set_encode($str, $enc);
+    $str = $class->_conv_to_utf8($str, $enc) if $enc ne 'utf-8';
+    Encode::_utf8_on($str);
+    $str = uc $str;
+    Encode::_utf8_off($str);
+    $str = $class->_conv_from_utf8($str, $enc) if $enc ne 'utf-8';
+    return $str;
+}
+
 sub encode_text_encode {
     my $class = shift;
     my($text, $from, $to) = @_;
@@ -316,7 +379,28 @@ sub encode_text_encode {
 
     if ($from ne $to) {
         #Encode::_utf8_off($text);
-        eval { Encode::from_to($text, $from, $to) };
+        eval {
+            if ( ( ( 'iso-2022-jp' eq lc($to) ) || ( 'shift_jis' eq lc($to) ) )
+                && ( 'utf-8' eq lc($from)) )
+            {
+                $text = Encode::decode($from, $text);
+                #FULLWIDTH TILDE to WAVE DASH 
+                $text =~ s/\x{ff5e}/\x{301c}/g;  
+                #PARALLEL TO to DOUBLE VERTICAL LINE 
+                $text =~ s/\x{2225}/\x{2016}/g; 
+                #FULLWIDTH HYPHEN-MINUS to MINUS SIGN 
+                $text =~ s/\x{ff0d}/\x{2212}/g;  
+                #FULLWIDTH CENT SIGN to CENT SIGN 
+                $text =~ s/\x{ffe0}/\x{00a2}/g; 
+                #FULLWIDTH POUND SIGN to POUND SIGN 
+                $text =~ s/\x{ffe1}/\x{00a3}/g; 
+                #FULLWIDTH NOT SIGN to NOT SIGN 
+                $text =~ s/\x{ffe2}/\x{00ac}/g; 
+                $text = Encode::encode($to, $text);
+            } else {
+                Encode::from_to($text, $from, $to);
+            }
+        };
         if (my $err = $@) {
             warn $err;
         }

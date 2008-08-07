@@ -1,0 +1,6 @@
+[%# content with beta and gamma columns using images %]
+
+.layout-wtt #content-inner { background: transparent [% PROCESS bg_image file='content-wtt' %] repeat-y scroll right top; }
+.layout-twt #content-inner { background: transparent [% PROCESS bg_image file='content-twt' %] repeat-y scroll left top; }
+.layout-wt #content-inner { background: transparent [% PROCESS bg_image file='content-wt' %] repeat-y scroll right top; }
+.layout-tw #content-inner { background: transparent [% PROCESS bg_image file='content-tw' %] repeat-y scroll left top; }

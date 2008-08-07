@@ -1,23 +1,28 @@
+#!/usr/bin/perl
 # $Id$
-
 use strict;
-use MT::ErrorHandler;
-use Test;
+use warnings;
 
-BEGIN { plan tests => 9 };
+use lib 'lib';
+use lib 'extlib';
+use lib 't/lib';
+
+use Test::More tests => 9;
+
+use MT::ErrorHandler;
 
 my $eh = MT::ErrorHandler->new;
-ok($eh);
+isa_ok($eh, 'MT::ErrorHandler');
 my $val = $eh->error('foo bar');
-ok(!defined $val);
-ok($eh->errstr eq "foo bar\n");
+ok(!defined $val, 'val undef');
+is($eh->errstr, "foo bar\n", 'foo bar');
 my @val = $eh->error('foo');
-ok(@val == 0);
-ok($eh->errstr eq "foo\n");
+is(@val, 0, 'val size=0');
+is($eh->errstr, "foo\n", 'foo');
 
 $val = MT::ErrorHandler->error('foo bar');
-ok(!defined $val);
-ok(MT::ErrorHandler->errstr eq "foo bar\n");
+ok(!defined $val, 'val undef');
+is(MT::ErrorHandler->errstr, "foo bar\n", 'foo bar');
 @val = MT::ErrorHandler->error('foo');
-ok(@val == 0);
-ok(MT::ErrorHandler->errstr eq "foo\n");
+is(@val, 0, 'val size=0');
+is(MT::ErrorHandler->errstr, "foo\n", 'foo');

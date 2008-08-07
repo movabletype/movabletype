@@ -1,41 +1,46 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::TaskMgr;
 
-use MT::ErrorHandler;
-
 use strict;
+use base qw( MT::ErrorHandler );
+
+use MT::Task;
 use Fcntl qw( :DEFAULT :flock );
 use Symbol;
-use vars qw(@ISA %Tasks $inst);
-@ISA = qw(MT::ErrorHandler);
+our (%Tasks, $inst);
 
 sub instance {
     $inst ||= new MT::TaskMgr;
 }
 
-sub add_task {
+sub new {
+    my $mgr = bless {}, shift;
+    $mgr->init();
+    return $mgr;
+}
+
+sub init {
     my $mgr = shift;
-    my ($task) = @_;
-    if (ref $task eq 'HASH') {
-        require MT::Task;
-        $task = new MT::Task($task);
-    }
-    if (!$task->key) {
-        die "Tasks cannot be registered without a key.";
-    }
-    $Tasks{$task->key} = $task;
+    return if $mgr->{initialized};
+    %Tasks = %{ MT->registry("tasks") || {} };
+    MT->run_callbacks('tasks', \%Tasks);
+    $mgr->{initialized} = 1;
 }
 
 sub run_tasks {
     my $mgr = shift;
+    my (@tasks_to_run) = @_;
+
     if (!ref($mgr)) {
         $mgr = $mgr->instance;
     }
+
+    @tasks_to_run = keys %Tasks unless @tasks_to_run;
 
     if ($mgr->{running}) {
         warn "Attempt to recursively invoke TaskMgr.";
@@ -47,12 +52,11 @@ sub run_tasks {
     # Secure lock before running tasks
     my $unlock;
     unless ($unlock = $mgr->_lock()) {
-        require MT::ConfigMgr;
         MT->log({
             class => 'system',
             category => 'tasks',
             level => MT::Log::ERROR(),
-            message => MT->translate("Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.", MT::ConfigMgr->instance->TempDir)
+            message => MT->translate("Unable to secure lock for executing system tasks. Make sure your TempDir location ([_1]) is writable.", MT->config->TempDir)
         });
         return;
     }
@@ -65,14 +69,21 @@ sub run_tasks {
         require MT::Log;
         require MT::Session;
         my @completed;
-        foreach my $task (values %Tasks) {
-            my $name = $app->translate($task->name || $task->key);
+
+        foreach my $task_name (@tasks_to_run) {
+            my $task = $Tasks{$task_name} or next;
+
+            if (ref $task eq 'HASH') {
+                $task->{key} ||= $task_name;
+                $task = $Tasks{$task_name} = MT::Task->new($task);
+            }
+
+            my $name = $task->label();
             my $sess = MT::Session->load({
-                id => 'Task:' . $task->key ,
+                id => 'Task:' . $task->key,
                 kind => 'PT'
             });
             next if $sess && ($sess->start + $task->frequency > time);
-
             if (!$sess) {
                 $sess = MT::Session->new;
                 $sess->id('Task:' . $task->key);
@@ -91,10 +102,13 @@ sub run_tasks {
                     class => 'system',
                     category => 'tasks',
                     level => MT::Log::ERROR(),
-                    message => $app->translate("Error during task '[_1]': [_2]", $name, $err)
+                    message => $app->translate("Error during task '[_1]': [_2]", $name, $err),
+                    metadata => MT::Util::log_time() . ' '
+                        . $app->translate("Error during task '[_1]': [_2]", $name, $err)
                 });
             } else {
-                push @completed, $name if defined $status && ($status > 0);
+                push @completed, $name if (defined $status) && ($status ne '') && ($status > 0);
+ 
             }
 
             $sess->start(time);
@@ -106,7 +120,7 @@ sub run_tasks {
                 category => 'tasks',
                 level => MT::Log::INFO(),
                 message => $app->translate("Scheduled Tasks Update"),
-                metadata => $app->translate("The following tasks were run:") . ' ' .
+                metadata => MT::Util::log_time() . ' ' . $app->translate("The following tasks were run:") . ' ' .
                     join ", ", @completed
             });
         }
@@ -118,8 +132,7 @@ sub run_tasks {
 sub _lock {
     my $mgr = shift;
 
-    require MT::ConfigMgr;
-    my $cfg = MT::ConfigMgr->instance;
+    my $cfg = MT->config;
 
     # It's unwise to ignore locking for task manager; NoLocking should be
     # limited to the DBM driver.
@@ -171,7 +184,6 @@ sub _lock {
         my $lock_flags = LOCK_EX;
         unless (flock $lock_fh, $lock_flags) {
             close $lock_fh;
-            unlink $lock_name;
             return;
         }
         return sub { close $lock_fh; unlink $lock_name };
@@ -186,8 +198,6 @@ __END__
 MT::TaskMgr - MT class for controlling the execution of system tasks.
 
 =head1 SYNOPSIS
-
-    MT::TaskMgr->add_task($task);
 
     MT::TaskMgr->run_tasks;
 
@@ -238,6 +248,45 @@ Tasks are an excellent way to maximize MT performance and user experience.
 For example, a plugin that may need to retrieve or synchronize data with a
 remote server may choose to operate from a cache that is periodically kept
 up to date using a registered task.
+
+=head1 METHODS
+
+=head2 MT::TaskMgr->new
+
+Constructs the MT::TaskMgr singleton instance.
+
+=head2 MT::TaskMgr->init
+
+Initializes the MT::TaskMgr instance, pulling tasks are defined in
+the MT registry. It also runs a callback 'tasks' after gathering
+this list.
+
+=head2 MT::TaskMgr->run_tasks
+
+Runs all available pending tasks. If an instance of the TaskMgr is already
+found to be running (through use of a physical file lock mechanism), the
+process will abort.
+
+=head2 MT::TaskMgr->instance
+
+Returns the TaskMgr singleton.
+
+=head1 CALLBACKS
+
+=head2 PeriodicTask
+
+Prior to running any registered tasks, this callback is issued to allow
+any registered MT plugins to add additional tasks to the list or simply
+as a way to signal tasks are about to start. This callback sends no
+parameters, but it is possible to retrieve the active I<MT::TaskMgr>
+instance using the I<instance> method.
+
+=head2 tasks(\%tasks)
+
+Upon initialization of the TaskMgr instance, the list of MT tasks are
+gathered from the MT registry. This hashref of tasks is then passed to
+the 'tasks' callback, giving plugins a chance to manipulate the task
+metadata before being used.
 
 =head1 AUTHOR & COPYRIGHTS
 

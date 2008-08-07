@@ -1,0 +1,121 @@
+<mt:if name="object_type" eq="entry">
+    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this entry">"$>
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this entry (s)">"$>
+    <$mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this entry">"$>
+    <$mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this entry (e)">"$>
+<mt:else>
+    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this page">"$>
+    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this page (s)">"$>
+    <$mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this page">"$>
+    <$mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this page (e)">"$>
+</mt:if>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
+    <title><__trans phrase="Preview"> | <$mt:var name="mt_product_name"$></title>
+<mt:if name="mt_debug">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+<mt:else>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+</mt:if>
+    <!--[if IE]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <![endif]-->
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+    <![endif]-->
+<mt:if name="local_lang_id" ne="en-us">
+    <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+</mt:if>
+<mt:if name="mt_debug">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/List.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url_id">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<mt:else>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:if>
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        CMSScriptURI = '<$mt:var name="mt_url"$>';
+        ScriptURI = '<$mt:var name="script_url"$>';
+        ScriptBaseURI = '<$mt:var name="script_base_url"$>';
+        StaticURI = '<$mt:var name="static_uri"$>';
+        HelpBaseURI = '<$mt:var name="help_url"$>';
+        /* ]]> */
+    </script>
+<$mt:var name="html_head"$>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:if name="local_lang_id" ne="en-us">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+</mt:if>
+<$mt:var name="js_include"$>
+</head>
+<body class="main-screen preview-screen">
+<div id="brand"><h1><a href="<$mt:var name="mt_url"$>"><span><$mt:var name="mt_product_name"$></span></a></h1></div>
+<table id="preview-layout">
+    <tr>
+        <td id="entry-preview-control-strip">
+            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></div>
+            <form method="post" action="<$mt:var name="script_url"$>">
+                <div class="actions-bar">
+                    <div class="actions-bar-inner pkg actions">
+                        <button
+                            mt:mode="save_entry"
+                            type="submit"
+                            name="save"
+                            value="save"
+                            accesskey="s"
+                            title="<$mt:var name="save_button_title"$>"
+                            class="primary-button"
+                            ><$mt:var name="save_button_value"$></button>
+                        <button
+                            mt:mode="view"
+                            type="submit"
+                            name="reedit"
+                            value="reedit"
+                            accesskey="e"
+                            title="<$mt:var name="edit_button_title"$>"
+                            class="primary-button"
+                            ><$mt:var name="edit_button_value"$></button>
+                    </div>
+                </div>
+                <input type="hidden" name="__mode" value="save_entry" />
+                <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
+                <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+                <input type="hidden" name="_preview_file" value="<$mt:var name="preview_file" escape="html"$>" />
+                <input type="hidden" name="dirty" value="1" />
+    <mt:loop name="entry_loop">
+                <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
+    </mt:loop>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td id="entry-preview-content">
+            <iframe id="frame" frameborder="0" scrolling="auto" src="<$mt:var name="preview_url"$>?<mt:date format="%H%M%S">" onclick="return TC.stopEvent(event);"></iframe>
+        </td>
+    </tr>
+</table>
+<div id="bootstrapper" class="hidden"></div>
+<mt:unless name="delayed_bootstrap">
+<script type="text/javascript">
+    /* <![CDATA[ */
+        App.bootstrapInline( false );
+    /* ]]> */
+</script>
+</mt:unless>
+</body>
+</html>

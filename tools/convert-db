@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 
-# Copyright 2001-2005 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -26,7 +26,8 @@ my @CLASSES = qw( MT::Author MT::Blog MT::Category MT::Comment MT::Entry
                   MT::IPBanList MT::Log MT::Notification MT::Permission
                   MT::Placement MT::Template MT::TemplateMap MT::Trackback
                   MT::TBPing MT::Session MT::PluginData MT::Config MT::FileInfo
-                  MT::Tag MT::ObjectTag
+                  MT::Tag MT::ObjectTag MT::Group MT::Role MT::Association
+                  MT::Asset
                   );
 
 use File::Spec;
@@ -49,7 +50,6 @@ eval {
     require MT::Object;
     MT::Object->set_driver($cfg->ObjectDriver)
         or die MT::ObjectDriver->errstr;
-    MT::Object->driver->configure;
 
     use MT::Upgrade;
     my @stmts;
@@ -68,7 +68,6 @@ eval {
         print $class, "\n";
         $cfg->read_config($cfg_file_orig);
         MT::Object->set_driver($cfg->ObjectDriver);
-        MT::Object->driver->configure;
         eval "use $class";
         my $iter = $class->load_iter;
 
@@ -77,7 +76,6 @@ eval {
 
         $cfg->read_config($cfg_file_new);
         MT::Object->set_driver($cfg->ObjectDriver);
-        MT::Object->driver->configure;
         while (my $obj = $iter->()) {
             print "    ", $obj->id, "\n";
             $obj = clean_object($obj);
@@ -157,6 +155,13 @@ eval {
                       $class->properties->{primary_key};
             $dbh->do("select setval('$seq', $ids{$class})")
                 or die $dbh->errstr;
+        }
+    } elsif ($cfg->ObjectDriver =~ /oracle/) {
+        print "Updating sequences\n";
+        for my $class (keys %ids) {
+            print "    $class => $ids{$class}\n";
+            MT::Object->driver->drop_sequence($class);
+            MT::Object->driver->create_sequence($class);
         }
     }
 

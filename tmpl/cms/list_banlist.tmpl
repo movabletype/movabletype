@@ -1,124 +1,131 @@
-<TMPL_INCLUDE NAME="header.tmpl">
-
-<div id="list-banlist">
-
+<Mt:setvar name="page_title" value="<__trans phrase="IP Banning Settings">">
+<mt:setvar name="ip_info" value="1">
+<MTSetVarBlock name="html_head" append="1">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 function setCreateMode () {
-	getByID('ip').value = '';
-	getByID('create-inline-ipban').style.display = 'block';
-	getByID('ip').focus();
+    getByID('create-ip').style.display = 'none';
+    getByID('create-inline-ipban').style.display = 'block';
+    getByID('actions-bar-top').style.display = 'none';
+    getByID('ip-address').value = '';
+    getByID('ip-address').focus();
 }
 
 function cancelCreateMode () {
-	getByID('create-inline-ipban').style.display = 'none';
+    getByID('create-ip').style.display = 'block';
+    getByID('create-inline-ipban').style.display = 'none';
+    getByID('actions-bar-top').style.display = 'block';
 }
 
 var tableSelect;
 function init()
 {
-	// setup
-	tableSelect = new TC.TableSelect( "selector" );
-	tableSelect.rowSelect = true;
+    // setup
+    tableSelect = new TC.TableSelect( "banlist-listing-table" );
+    tableSelect.rowSelect = true;
 }
 
 TC.attachLoadEvent( init );
-// -->
+/* ]]> */
 </script>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:setvarblock name="action_buttons">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="IP address" escape="js">', '<__trans phrase="IP addresses" escape="js">')" type="button" value="<__trans phrase="Delete">"
+        accesskey="x"
+        title="<__trans phrase="Delete selected IP Address (x)">"
+        ><__trans phrase="Delete"></a>
+</mt:setvarblock>
+<mt:setvarblock name="system_msg">
+    <mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+    </mt:if>
 
-<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="IP Banning Settings"></h2>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html">">
+        </mtapp:statusmsg>
+    </mt:if>
 
-<p class="page-desc"><MT_TRANS phrase="This screen allows you to ban comments and TrackBacks from specific IP addresses."> <MT_TRANS phrase="You have banned [quant,_1,address,addresses]." params="<TMPL_VAR NAME=OBJECT_COUNT>"></p>
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the selected IP addresses from the list.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <mt:if name="show_ip_info">
+    <ul id="create-ip" class="action-link-list">
+        <li><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban IP Address"></a></li>
+    </ul>
+    </mt:if>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
 
-<TMPL_IF NAME=ERROR>
-<p class="error-message"><TMPL_VAR NAME=ERROR></p>
-</TMPL_IF>
+<mtapp:listing
+    id="banlist-listing"
+    hide_pager="1">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" value="all" class="select" /></th>
+            <th id="bt-ip"><__trans phrase="IP Address"></th>
+            <th id="bt-date"><__trans phrase="Date Banned"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id" escape="html">" /></td>
+            <td><mt:var name="ip" escape="html"></td>
+            <td><mt:var name="created_on_formatted" escape="html"></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>
 
-<TMPL_IF NAME=SAVED>
-<h4 class="message"><MT_TRANS phrase="You have added [_1] to your list of banned IP addresses." params="<TMPL_VAR NAME=SAVED ESCAPE=HTML>"></h4>
-</TMPL_IF>
-
-<TMPL_IF NAME=SAVED_DELETED>
-<h4 class="message"><MT_TRANS phrase="You have successfully deleted the selected IP addresses from the list."></h4>
-</TMPL_IF>
-
-<div class="tabs">
-<ul>
-<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_prefs&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="General"></a></li>
-<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_entries&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="New Entry Defaults"></a></li>
-<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_feedback&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Feedback"></a></li>
-<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_archives&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Publishing"></a></li>
-<TMPL_IF NAME=SHOW_IP_INFO>
-<li class="yah"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list&amp;_type=banlist&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="IP Banning"></a></li>
-</TMPL_IF>
-<li><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=cfg_plugins&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>"><MT_TRANS phrase="Plugins"></a></li>
-<TMPL_IF NAME=SHOW_IP_INFO>
-<li class="special">
-<img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/create.gif" alt="<MT_TRANS phrase="Ban New IP Address">" width="9" height="9" />
-<a href="#" onclick="setCreateMode()"><MT_TRANS phrase="Ban New IP Address"></a>
-</li>
-</TMPL_IF>
-</ul>
+<div id="create-inline-ipban" class="create-inline">
+    <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="__mode" value="save" />
+        <input type="hidden" name="_type" value="banlist" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <mtapp:setting
+            id="ip-address"
+            label="<__trans phrase="IP Address">"
+            label_class="inline"
+            hint=""
+            show_hint="0">
+            <input name="ip" id="ip-address" value="<mt:var name="ip" escape="html">" maxlength="15" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="actions"
+            label="<__trans phrase="Actions">"
+            label_class="inline field-no-header"
+            hint=""
+            show_hint="0">
+            <span class="buttons">
+                <a href="javascript:void(0)" mt:command="submit"
+                    ><__trans phrase="Save"></a>
+                <a href="javascript:void(0)"
+                    onclick="cancelCreateMode(); return false"
+                    ><__trans phrase="Cancel"></a>
+            </span>
+        </mtapp:setting>
+    </form>
 </div>
 
-<div class="create-inline" id="create-inline-ipban">
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="banlist" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<p>
-<label for="ip"><MT_TRANS phrase="IP Address">:</label> <input name="ip" id="ip" value="<TMPL_VAR NAME=IP>" maxlength="15" />
-&nbsp;
-<input type="submit" name="save" value="<MT_TRANS phrase="Ban IP Address">" />
-<input type="button" name="cancel" value="<MT_TRANS phrase="Cancel">" onclick="cancelCreateMode(); return false" />
-</p>
-</form>
-</div>
-
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>" onsubmit="return this['__mode'] ? true : false;" id="myform">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="_type" value="banlist" />
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-
-<div class="list" id="selector">
-<table cellspacing="0">
-
-<thead>
-<tr>
-<th class="cb"><input type="checkbox" value="all" class="select" /></th>
-<th id="bt-ip"><MT_TRANS phrase="IP Address"></th>
-<th id="bt-date"><MT_TRANS phrase="Date Banned"></th>
-</tr>
-</thead>
-
-<tbody>
-<TMPL_LOOP NAME=OBJECT_LOOP>
-<tr class="<TMPL_IF __ODD__>odd<TMPL_ELSE>even</TMPL_IF>">
-<td class="cb"><input type="checkbox" name="id" class="select" value="<TMPL_VAR NAME=ID>" /></td>
-<td><TMPL_VAR NAME=IP></td>
-<td><TMPL_VAR NAME=CREATED_ON_FORMATTED></td>
-</tr>
-
-</TMPL_LOOP>
-</tbody>
-
-</table>
-</div>
-
-<div class="list-actions">
-<div class="button-bar">
-<input onclick="doRemoveItems(this.form, '<MT_TRANS phrase="IP address">', '<MT_TRANS phrase="IP addresses">')" type="button" value="<MT_TRANS phrase="Delete">" />
-</div>
-</div>
-
-</form>
-
-</div>
-
-<TMPL_INCLUDE NAME="footer.tmpl">
+<mt:include name="include/footer.tmpl">

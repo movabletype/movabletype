@@ -1,42 +1,77 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::JunkFilter;
 
 use strict;
 use MT;
 
 # constants that force an action or determination. these are all non-numeric
-use constant ABSTAIN  => 'ABSTAIN';
+sub ABSTAIN () { 'ABSTAIN' }
+sub HAM ()     { 'HAM' }
+sub SPAM ()    { 'SPAM' }
+sub APPROVE () { 'APPROVE' }
+sub JUNK ()    { 'JUNK' }
 
 use Exporter;
 *import = \&Exporter::import;
-use vars qw(@EXPORT_OK %EXPORT_TAGS);
-@EXPORT_OK = qw(ABSTAIN);
-%EXPORT_TAGS = (constants => [qw(ABSTAIN)]);
+our (@EXPORT_OK, %EXPORT_TAGS);
+@EXPORT_OK = qw(ABSTAIN HAM SPAM APPROVE JUNK);
+%EXPORT_TAGS = ( constants => [qw(ABSTAIN HAM SPAM APPROVE JUNK)] );
+
+sub core_filters {
+    # MT Registry style list of core filters
+    return {};
+}
 
 sub filter {
-    my $pkg = shift;
-    my ($obj) = @_;
-    my $blog = MT::Blog->load($obj->blog_id);
-    my $threshold = $blog->junk_score_threshold;
+    my $pkg       = shift;
+    my ($obj)     = @_;
+    my $blog      = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
+    my $threshold = $blog ? $blog->junk_score_threshold : 0;
 
     # Have the item scored by plugin tests, save any log messages:
-    my ($score, $log_msgs) = $pkg->score($obj);
-    if (defined $score) {
-        $obj->junk_log(join("\n", @$log_msgs));
+    my ( $score, $log_msgs ) = $pkg->score($obj);
+    if ( defined $score ) {
+        $obj->junk_log( join( "\n", @$log_msgs ) );
         $obj->junk_score($score);
     }
 
     # Take action as determined by the score:
-    if (defined $score) {
-        if ($score < $threshold) {
-            $obj->junk_log($obj->junk_log . "\n---> " . MT->translate("Action: Junked (score below threshold)"));
+    if ( defined $score ) {
+        if ( $score < $threshold ) {
+            $obj->junk_log( $obj->junk_log
+                  . "\n---> "
+                  . MT->translate("Action: Junked (score below threshold)") );
             $obj->junk;
-        } else {
+        }
+        else {
+
             # If the item has been moderated, we're done.
             # (Plugin has the responsibility of logging its moderate action.)
-            return if ($obj->is_moderated);
-            
-            $obj->junk_log($obj->junk_log . "\n---> " . MT->translate("Action: Published (default action)"));
+            return if ( $obj->is_moderated );
+
+            $obj->junk_log( $obj->junk_log
+                  . "\n---> "
+                  . MT->translate("Action: Published (default action)") );
         }
+    }
+}
+
+{
+    my @junk_filters;
+
+    sub all_filters {
+        return @junk_filters if @junk_filters;
+        if ( my $filters = MT->registry("junk_filters") ) {
+            for my $f ( values %$filters ) {
+                push @junk_filters, $f;
+            }
+        }
+        return @junk_filters;
     }
 }
 
@@ -44,75 +79,121 @@ sub score {
     my $pkg = shift;
     my ($obj) = @_;
 
-    my $total = 0;     # the composite score for non-ABSTAIN'd tests
-    my $count = 0;     # the ones that don't abstain
+    my $total = 0;    # the composite score for non-ABSTAIN'd tests
+    my $count = 0;    # the ones that don't abstain
     my @log;
 
     # Run all the registered filters & average their results.
-    foreach my $filter (@MT::JunkFilters) {
-        my ($score, $log) = eval { $filter->{code}->($obj) };
+    foreach my $filter ( $pkg->all_filters ) {
+        my $hdlr = $filter->{code} || $filter->{handler};
+        next unless defined $hdlr;
+        unless (ref $hdlr eq 'CODE') {
+            $hdlr = $filter->{code} = MT->handler_to_coderef($hdlr);
+            next unless $hdlr;
+        }
+        my ( $score, $log ) = eval { $hdlr->($obj) };
         if ($@) {
             my $err = $@;
-            MT->instance->log(MT->translate("Junk Filter [_1] died with: [_2]", ($filter->{name} || (MT->translate("Unnamed Junk Filter"))), $err));
+            my $name  = $filter->{name};
+            if ( my $plugin = $filter->{plugin} ) {
+                $name ||= $plugin->name;
+            }
+            MT->instance->log(
+                MT->translate(
+                    "Junk Filter [_1] died with: [_2]",
+                    (
+                        $name
+                          || ( MT->translate("Unnamed Junk Filter") )
+                    ),
+                    $err
+                )
+            );
             next;
         }
-        if ($score ne ABSTAIN) {
-            $score = 10 if $score > 10;
+        if ( $score ne ABSTAIN ) {
+            $score = 10  if $score > 10;
             $score = -10 if $score < -10;
             $total += $score;
             $count++;
         }
         if ($log) {
-            if (!(ref $log eq 'ARRAY' && @$log)) {
-                $log = [ $log ];
+            if ( !( ref $log eq 'ARRAY' && @$log ) ) {
+                $log = [$log];
             }
             my $line1 = shift @$log;
-            my $name = $filter->{name};
-            if (my $plugin = $filter->{plugin}) {
-                $name ||= $plugin->{name};
+            my $name  = $filter->{name};
+            if ( my $plugin = $filter->{plugin} ) {
+                $name ||= $plugin->name;
             }
-            push @log, (($name || MT->translate('Unnamed Junk Filter')) . " (" . $score . "): " . $line1);
+            push @log,
+              (     ( $name || MT->translate('Unnamed Junk Filter') ) . " ("
+                  . $score . "): "
+                  . $line1 );
             push @log, "\t" . $_ foreach @$log;
         }
     }
 
     if ($total) {
         $total = $total / $count if $count > 0;
-        $total = sprintf("%.2f", $total);
-        push @log, "\n---> " . MT->translate('Composite score: [_1]', $total);
+        $total = sprintf( "%.2f", $total );
+        push @log, "\n---> " . MT->translate( 'Composite score: [_1]', $total );
     }
     return undef if !$count;
-    ($total, \@log);
+    ( $total, \@log );
 }
 
 sub task_expire_junk {
     my $pkg = shift;
     require MT::Blog;
-    my $iter = MT::Blog->load_iter;
+    my $iter    = MT::Blog->load_iter;
     my $removed = 0;
     my @blogs;
     my $blog;
-    while ($blog = $iter->()) {
+    while ( $blog = $iter->() ) {
         push @blogs, $blog if $blog->junk_folder_expiry;
     }
     require MT::Util;
     require MT::Comment;
     require MT::TBPing;
     foreach $blog (@blogs) {
-        my ($blog_id, $expiry_age) = ($blog->id, 86400 * $blog->junk_folder_expiry);
-        my @ts = MT::Util::offset_time_list(time() - $expiry_age, $blog_id);
-        my $ts = sprintf("%04d%02d%02d%02d%02d%02d",
-            $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0]);
+        my ( $blog_id, $expiry_age ) =
+          ( $blog->id, 86400 * $blog->junk_folder_expiry );
+        my @ts = MT::Util::offset_time_list( time() - $expiry_age, $blog_id );
+        my $ts = sprintf(
+            "%04d%02d%02d%02d%02d%02d",
+            $ts[5] + 1900,
+            $ts[4] + 1,
+            @ts[ 3, 2, 1, 0 ]
+        );
         for my $class (qw(MT::Comment MT::TBPing)) {
-            while (my @junk = $class->load({
-                last_moved_on => ['19700101000000', $ts],
-                junk_status => -1, blog_id => $blog_id},
-                {range => {last_moved_on => 1}, limit => 1000})) {
+            while (
+                my @junk = $class->load(
+                    {
+                        last_moved_on => [ '19700101000000', $ts ],
+                        junk_status   => -1,
+                        blog_id       => $blog_id
+                    },
+                    { range => { last_moved_on => 1 }, limit => 1000 }
+                )
+              )
+            {
                 $removed++, $_->remove for @junk;
             }
         }
     }
+    $pkg->_expire_commenter_registration;
     $removed ? 1 : 0;
+}
+
+sub _expire_commenter_registration {
+    my $pkg = shift;
+    require MT::Session;
+
+    # remove commenter registration which has already expired (24 hrs)
+    MT::Session->remove(
+        { kind => 'CR', start => [ undef, time - 60 * 60 * 24 ] },
+        { range => { start => 1 } } );
+    1;
 }
 
 1;
@@ -179,6 +260,20 @@ Think of the balance beam as a perfectly smooth continuum from -10 to +10 --
 don't count on any particular value being the cutoff between junk and
 not-junk. If your plugin's sensors don't know what to make of a comment, it
 should abstain and let other plugins take care of it.
+
+=head1 METHODS
+
+=head2 filter($obj)
+
+Score the object, mark as junk or not-junk and log the action.
+
+=head2 score($obj)
+
+Apply the defined filters and return the junk score.
+
+=head2 task_expire_junk()
+
+Perform junk expiration for each blog.
 
 =head1 The API: Sample Code
 
@@ -297,7 +392,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2007 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
 All rights reserved.
 
 =cut

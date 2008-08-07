@@ -1,59 +1,65 @@
+#!/usr/bin/perl
 # $Id$
+use strict;
+use warnings;
 
-use Test;
+use lib 'lib';
+use lib 'extlib';
+use lib 't/lib';
+
+use MT::Test;
+
+use Cwd;
+use File::Spec;
+use File::Temp qw( tempfile );
+use Test::More tests => 16;
+
 use MT;
 use MT::ConfigMgr;
-use File::Temp qw( tempfile );
-use strict;
-use Cwd;
-
-BEGIN { plan tests => 16 };
 
 use vars qw( $BASE );
-unshift @INC, 't/';
-require 'test-common.pl';
-use File::Spec;
+require 't/test-common.pl';
 
 my($cfg_file, $cfg, $mt);
 
 my $db_dir = cwd() . '/t/db/';
 (my($fh), $cfg_file) = tempfile();
 print $fh <<CFG;
-DataSource $db_dir
-ObjectDriver DBM 
+Database $db_dir/mt.db
+ObjectDriver DBI::SQLite 
 AltTemplate foo bar
 AltTemplate baz quux
 CFG
 close $fh;
 
-$cfg = MT::ConfigMgr->instance;
-ok($cfg);
-ok( $cfg->read_config($cfg_file) );
+$cfg = MT->config;
+isa_ok($cfg, 'MT::ConfigMgr');
+ok( $cfg->read_config($cfg_file), "read '$cfg_file'" );
 
 ## Test standard get/set
-ok($cfg->get('DataSource'), $db_dir);
+is($cfg->get('Database'), $db_dir . '/mt.db', "get(DataSource)=$db_dir");
 $cfg->set('DataSource', './db2');
-ok($cfg->get('DataSource'), './db2');
+is($cfg->get('DataSource'), './db2', 'get(DataSource)=./db2');
 
 ## Test autoloaded methods
-ok($cfg->DataSource, './db2');
+is($cfg->DataSource, './db2', 'autoloaded DataSource=./db2');
 $cfg->DataSource('./db');
-ok($cfg->DataSource, './db');
+is($cfg->DataSource, './db', 'autoloaded DataSource=./db2');
 
 ## Test defaults
-ok($cfg->Serializer, 'MT');
-ok($cfg->TimeOffset, 0);
+is($cfg->Serializer, 'MT', 'Serializer=MT');
+is($cfg->TimeOffset, 0, 'TimeOffset=0');
 
 ## Test that multiple settings (AltTemplate) work.
 my @paths = $cfg->AltTemplate;
-ok($cfg->type('AltTemplate'), 'ARRAY');
-ok(@paths, 2);
-ok(($cfg->AltTemplate)[0], 'foo bar');
-ok(($cfg->AltTemplate)[1], 'baz quux');
+is($cfg->type('AltTemplate'), 'ARRAY', 'AltTemplate=ARRAY');
+is(@paths, 2, 'paths=2');
+is(($cfg->AltTemplate)[0], 'foo bar', 'foo bar');
+is(($cfg->AltTemplate)[1], 'baz quux', 'baz quux');
 
 ## Test bug in early version of ConfigMgr where space was not
 ## stripped from the ends of values
-ok($cfg->ObjectDriver, 'DBM');
+is($cfg->ObjectDriver, 'DBI::SQLite', 'ObjectDriver=SQLite');
 
 mkdir $db_dir;
 
@@ -62,8 +68,8 @@ undef $MT::ConfigMgr::cfg;
 ## constructor.
 $mt = MT->new( Config => $cfg_file, Directory => "." ) or die MT->errstr;
 if (!$mt) { print "# MT constructor returned error: ", MT->errstr(); }
-ok($mt);
-ok($mt->{cfg});
-ok($mt->{cfg}->DataSource, $db_dir);
+isa_ok($mt, 'MT');
+isa_ok($mt->{cfg}, 'MT::ConfigMgr');
+is($mt->{cfg}->Database, $db_dir . '/mt.db', "DataSource=$db_dir");
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";

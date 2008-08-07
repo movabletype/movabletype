@@ -1,0 +1,45 @@
+#container-inner,
+#content {
+    background-color: [% theme.layout.page.background.color || '#fff' %];
+}
+
+#header-inner, #content-inner, #footer-inner {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#header-inner, #beta-inner, #gamma-inner {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+[%+ IF theme.layout.content.margin_bottom || theme.layout.content.margin_top || theme.layout.content.margin -%]
+#content {
+[% IF theme.layout.content.margin_top %]
+    margin-top: [% theme.layout.content.margin_top %];
+[% END %]
+[% IF theme.layout.content.margin_bottom %]
+    margin-bottom: [% theme.layout.content.margin_bottom %];
+[% END %]
+[% IF theme.layout.content.margin %]
+    margin: [% theme.layout.content.margin %];
+[% END %]
+}
+
+[%+ END -%]
+[%+ IF theme.layout.content_inner -%]
+#content-inner {
+[% IF theme.layout.content_inner.padding %]
+    padding: [% theme.layout.content_inner.padding %];
+[% END %]
+[% IF theme.layout.content_inner.background.repeat %]
+    background-repeat: [% theme.layout.content_inner.background.repeat %];
+[% END %]
+}
+
+[%+ END -%]
+[%+ IF theme.default.template == 'fullwidth' -%]
+[%+ INCLUDE layout/fullwidth.css.tt %]
+
+
+[%+ END -%]

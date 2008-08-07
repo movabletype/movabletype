@@ -1,7 +1,7 @@
 <?php
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -13,33 +13,37 @@ class MTViewer extends Smarty {
     var $last_ts = 0;
     var $id;
 
+    var $path_sep;
+
     var $conditionals = array(
-        'MTEntryPrevious' => 1,
-        'MTEntryNext' => 1,
-        'MTDateHeader' => 1,
-        'MTDateFooter' => 1,
-        'MTEntriesHeader' => 1,
-        'MTEntriesFooter' => 1,
-        'MTCalendarWeekHeader' => 1,
-        'MTCalendarWeekFooter' => 1,
-        'MTParentCategory' => 1,
-        'MTSubCatIsFirst' => 1,
-        'MTSubCatIsLast' => 1,
-        'MTHasSubCategories' => 1,
-        'MTHasNoSubCategories' => 1,
-        'MTHasParentCategory' => 1,
-        'MTHasNoParentCategory' => 1,
-        'MTTopLevelParent' => 1,
+        'mtparentcategory' => 1,
+        'mttoplevelparent' => 1,
+        'mtunless' => 1,
+        'mtfolderheader' => 1,
+        'mtfolderfooter' => 1,
+        'mtpagesheader' => 1,
+        'mtpagesfooter' => 1,
+        'mthassubfolders' => 1,
+        'mthasparentfolders' => 1,
+        'mthasparentfolder' => 1,
+        'mtauthorhasentry' => 1,
+        'mtauthorhaspage' => 1,
     );
     var $sanitized = array(
-        'MTCommentAuthor' => 1,
-        'MTCommentEmail' => 1,
-        'MTCommentURL' => 1,
-        'MTCommentBody' => 1,
-        'MTPingTitle' => 1,
-        'MTPingURL' => 1,
-        'MTPingExcerpt' => 1,
-        'MTPingBlogName' => 1,
+        'mtcommentauthor' => 1,
+        'mtcommentemail' => 1,
+        'mtcommenturl' => 1,
+        'mtcommentbody' => 1,
+        'mtpingtitle' => 1,
+        'mtpingurl' => 1,
+        'mtpingexcerpt' => 1,
+        'mtpingblogname' => 1,
+    );
+    var $nofollowed = array(
+        'mtcommentauthorlink' => 1,
+        'mtcommenturl' => 1,
+        'mtcommentbody' => 1,
+        'mtpings' => 1,
     );
     var $global_attr = array(
         'filters' => 1,
@@ -63,6 +67,9 @@ class MTViewer extends Smarty {
         'space_pad' => 1,
         'zero_pad' => 1,
         'sprintf' => 1,
+        'wrap_text' => 1,
+        'setvar' => 1,
+        'numify' => 1,
          # native smarty modifiers
         'regex_replace' => 1,
         'capitalize' => 1,
@@ -85,8 +92,12 @@ class MTViewer extends Smarty {
         'wordwrap' => 1,
     );
     var $needs_tokens = array(
-        'MTSubCategories' => 1,
-        'MTTopLevelCategories' => 1,
+        'mtsubcategories' => 1,
+        'mttoplevelcategories' => 1,
+        'mtsubfolers' => 1,
+        'mttoplevelfolders' => 1,
+        'mtcommentreplies' => 1,
+        'mtsetvartemplate' => 1,
     );
 
     function MTViewer(&$mt) {
@@ -94,15 +105,35 @@ class MTViewer extends Smarty {
         $this->id = md5(uniqid('MTViewer',true));
         $_COOKIE['SMARTY_DEBUG'] = 0;
         $GLOBALS['HTTP_COOKIE_VARS']['SMARTY_DEBUG'] = 0;
+        $this->path_sep = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? ';' : ':';
         $this->Smarty();
         $this->mt =& $mt;
         $this->__stash =& $this->_tpl_vars;
         $this->left_delimiter = "{{";
         $this->right_delimiter = "}}";
         $this->load_filter('pre', 'mt_to_smarty');
-        $this->register_block('MTDynamic', array(&$this, 'smarty_block_dynamic'),
+        $this->register_block('mtdynamic', array(&$this, 'smarty_block_dynamic'),
                               false);
-        $this->register_block('MTElse', array(&$this, 'smarty_block_else'));
+        $this->register_block('mtelse', array(&$this, 'smarty_block_else'));
+        $this->register_block('mtelseif', array(&$this, 'smarty_block_elseif'));
+
+        # Unregister the 'core' regex_replace so we can replace it
+        $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
+    }
+
+    function add_plugin_dir($plugin_dir) {
+        ini_set('include_path', $plugin_dir . $this->path_sep . ini_get('include_path'));
+        $this->plugins_dir[] = $plugin_dir;
+    }
+
+    function regex_replace($string, $search, $replace) {
+        if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (preg_match('/[eg]/', $match[1]))) {
+            if (strpos($match[1], "g") !== false)
+                $global = 1;
+            /* remove eval-modifier from $search */
+            $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
+        }
+        return preg_replace($search, $replace, $string, $global ? -1 : 1);
     }
 
     function add_token_tag($name) {
@@ -142,7 +173,7 @@ class MTViewer extends Smarty {
             $old_val = $this->__stash[$name];
         else
             $old_val = null;
-        if(isset($value))
+        if(func_num_args() > 1)
             $this->__stash[$name] = $value;
         return $old_val;
     }
@@ -176,32 +207,94 @@ class MTViewer extends Smarty {
 
     function _hdlr_if($args, $content, &$ctx, &$repeat, $cond_tag = 1) {
         if (!isset($content)) {
-            $ctx->localize(array('conditional','else_content'));
-            if ($cond_tag == '1' or $cond_tag == '0') {
-                $ctx->stash('conditional', $cond_tag);
-            } else {
-                $ctx->stash('conditional', $ctx->stash($cond_tag));
+            if (!isset($args['elseif'])) {
+                $ctx->localize(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional'));
+                unset($ctx->_tpl_vars['conditional']);
+                unset($ctx->_tpl_vars['else_content']);
+                unset($ctx->_tpl_vars['elseif_content']);
+                unset($ctx->_tpl_vars['elseif_conditional']);
             }
-            $ctx->stash('else_content', null);
+            if ($cond_tag == '1' or $cond_tag == '0')
+                $ctx->_tpl_vars['conditional'] = $cond_tag;
+            else
+                $ctx->_tpl_vars['conditional'] = $ctx->_tpl_vars[$cond_tag];
         } else {
-            if (!$ctx->stash('conditional')) {
-                $content = $ctx->stash('else_content');
+            if (!$ctx->_tpl_vars['conditional']) {
+                if (isset($ctx->_tpl_vars['else_content'])) {
+                    $content = $ctx->_tpl_vars['else_content'];
+                } else {
+                    $content = '';
+                }
             }
-            $ctx->restore(array('conditional','else_content'));
+            else {
+                if (isset($ctx->_tpl_vars['elseif_content'])) {
+                    $content = $ctx->_tpl_vars['elseif_content'];
+                }
+            }
+            if (!isset($args['elseif'])) {
+                $ctx->restore(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional'));
+            }
         }
         return $content;
     }
 
+    function smarty_block_elseif($args, $content, &$ctx, &$repeat) {
+        return $this->smarty_block_else($args, $content, $ctx, $repeat);
+    }
+
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
-        if (!isset($content)) {
-            $ctx->stash('else_content', '');
-            if ($ctx->stash('conditional')) {
-                $repeat = false;
+        if (isset($ctx->_tpl_vars['elseif_content'])
+            or ($ctx->_tpl_vars['conditional'])) {
+            $repeat = false;
+            return '';
+        }
+        if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
+            $vars =& $ctx->__stash['vars'];
+            if ( array_key_exists('__cond_tag__', $vars) ) {
+                $tag = $vars['__cond_tag__'];
+                unset($vars['__cond_tag__']);
+                if ( isset($tag) && $tag )
+                    $args['tag'] = $tag;
             }
+            else if ( array_key_exists('__cond_name__', $vars) ) {
+                $name = $vars['__cond_name__'];
+                unset($vars['__cond_name__']);
+                if ( isset($name) && $name )
+                    $args['name'] = $name;
+            }
+            if ( array_key_exists('__cond_value__', $vars) ) {
+                $value = $vars['__cond_value__'];
+                unset($vars['__cond_value__']);
+                if ( isset($value) && $value )
+                    $args['value'] = $value;
+            }
+            $ctx->__stash['vars'] =& $vars;
+        }
+        if (count($args) >= 1) { # else-if case
+            require_once("block.mtif.php");
+            $args['elseif'] = 1;
+            if (!isset($content)) {
+                $out = smarty_block_mtif($args, $content, $ctx, $repeat);
+                if ($ctx->_tpl_vars['conditional']) {
+                    $ctx->_tpl_vars['elseif_conditional'] = 1;
+                    unset($ctx->_tpl_vars['conditional']);
+                }
+            } else {
+                // $out = smarty_block_mtif($args, $content, $ctx, $repeat);
+                if ($ctx->_tpl_vars['elseif_conditional']) {
+                    $ctx->_tpl_vars['elseif_content'] = $content;
+                    $ctx->_tpl_vars['conditional'] = 1;
+                }
+            }
+            return '';
+        }
+        if (!isset($content)) {
+            if ($ctx->_tpl_vars['conditional'])
+                $repeat = false;
         } else {
-            $else_content = $ctx->stash('else_content');
+            $else_content = $ctx->_tpl_vars['else_content'];
             $else_content .= $content;
-            $ctx->stash('else_content', $else_content);
+            $ctx->_tpl_vars['else_content'] = $else_content;
         }
         return '';
     }
@@ -241,8 +334,7 @@ class MTViewer extends Smarty {
             $ts = gmdate('YmdHis', strtotime("$y-$mo-$d $h:$m:$s $four_digit_offset"));
         }
         if (isset($args['format_name'])) {
-            $format = $args['format_name'];
-            if ($format == 'rfc822') {
+            if ($format = $args['format_name']) {
                 $tz = 'Z';
                 if (!$args['utc']) {
                     $blog = $ctx->stash('blog');
@@ -251,41 +343,108 @@ class MTViewer extends Smarty {
                     }
                     $so = $blog['blog_server_offset'];
                     $partial_hour_offset = 60 * abs($so - intval($so));
-                    $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
+                    if ($format == 'rfc822') {
+                        $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
                                   abs($so), $partial_hour_offset);
+                    }
+                    elseif ($format == 'iso8601') {
+                        $tz = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+',
+                                  abs($so), $partial_hour_offset);
+                    }
                 }
-                $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
-                $args['language'] = 'en';
+                if ($format == 'rfc822') {
+                    $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
+                    $args['language'] = 'en';
+                }
+                elseif ($format == 'iso8601') {
+                    $args['format'] = '%Y-%m-%dT%H:%M:%S'. $tz;
+                }
             }
         }
         if (!isset($args['format'])) $args['format'] = null;
         require_once("MTUtil.php");
-        return format_ts($args['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+        $fds = format_ts($args['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
+        if (isset($args['relative'])) {
+            if ($args['relative'] == 'js') {
+                preg_match('/(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/', $ts, $match);
+                list($xx, $y, $mo, $d, $h, $m, $s) = $match;
+                $mo--;
+                $js = <<<EOT
+<script type="text/javascript">
+/* <![CDATA[ */
+document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
+/* ]]> */
+</script><noscript>$fds</noscript>
+EOT;
+                return $js;
+            }
+        }
+        return $fds;
     }
 
     function tag($tag, $args = array()) {
-        $tag = preg_replace('/^MT/', '', $tag);
-        if ((array_key_exists('MT' . $tag, $this->conditionals)) || (preg_match('/^If/', $tag) || preg_match('/[a-z]If[A-Z]/', $tag))) {
-            @require_once("block.MT$tag.php");
-            $fntag = 'smarty_block_MT' . $tag;
-            if (function_exists($fntag)) {
-                $fntag($args, NULL, $this, $repeat = true);
+        $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
+        if ((array_key_exists('mt' . $tag, $this->conditionals)) || (preg_match('/^if/i', $tag) || preg_match('/^has/', $tag) || preg_match('/[a-z](header|footer|previous|next)$/i', $tag))) {
+            list($hdlr) = $this->handler_for($tag);
+            if (!$hdlr) {
+                $fntag = 'smarty_block_mt' . $tag;
+                if (!function_exists($fntag))
+                    @include_once("block.mt$tag.php");
+                if (function_exists($fntag))
+                    $hdlr = $fntag;
+            }
+            if ($hdlr) {
+                $this->_tag_stack[] = array("mt$tag", $args);
+                $repeat = true;
+                $hdlr($args, NULL, $this, $repeat);
                 if ($repeat) {
                     $content = 'true';
-                    $this->_tag_stack[] = array("MT$tag", $args);
-                    $content = $fntag($args, $content, $this, $repeat = false);
-                    array_pop($this->_tag_stack);
-                    return isset($content) && ($content === 'true');
+                    $content = $hdlr($args, $content, $this, $repeat = false);
+                    $result = isset($content) && ($content === 'true');
                 } else {
-                    return false;
+                    $result = false;
                 }
+                array_pop($this->_tag_stack);
+                return $result;
             }
         } else {
-            @require_once("function.MT$tag.php");
-            $fntag = 'smarty_function_MT'.$tag;
-            if (function_exists($fntag)) {
-                $this->_tag_stack[] = array("MT$tag", $args);
-                $content = $fntag($args, $this);
+            list($hdlr, $type) = $this->handler_for("mt" . $tag);
+            if ($hdlr) $block_tag = $type == 'block';
+            if (!$hdlr) {
+                $fntag = 'smarty_function_mt'.$tag;
+                if (!function_exists($fntag))
+                  if (file_exists($this->mt->config['phplibdir']."/function.mt$tag.php"))
+                        @include_once("function.mt$tag.php");
+                if (function_exists($fntag))
+                    $hdlr = $fntag;
+            }
+            if (!$hdlr) { // try block tags
+                $fntag = 'smarty_block_mt'.$tag;
+                if (!function_exists($fntag))
+                    if (file_exists($this->mt->config['phplibdir']."/block.mt$tag.php"))
+                        @include_once("block.mt$tag.php");
+                if (function_exists($fntag)) {
+                    $hdlr = $fntag;
+                    $block_tag = true;
+                }
+            }
+            if ($hdlr) {
+                if ($block_tag) {
+                    $this->_tag_stack[] = array("mt$tag", $args);
+                    $repeat = true;
+                    $hdlr($args, NULL, $this, $repeat);
+                    if ($repeat) {
+                        $content = 'true';
+                        $content = $hdlr($args, $content, $this, $repeat = false);
+                        $result = isset($content) && ($content === 'true');
+                    } else {
+                        $result = false;
+                    }
+                    array_pop($this->_tag_stack);
+                    return $result;
+                }
+                $this->_tag_stack[] = array("mt$tag", $args);
+                $content = $hdlr($args, $this);
                 foreach ($args as $k => $v) {
                     if (array_key_exists($k, $this->global_attr)) {
                         $fnmod = 'smarty_modifier_' . $k;
@@ -299,7 +458,7 @@ class MTViewer extends Smarty {
                 return $content;
             }
         }
-        return $this->error("Tag &lt;MT$tag&gt; does not exist.");
+        return $this->error("Tag &lt;mt$tag&gt; does not exist.");
     }
 
     function load_modifier($name) {
@@ -307,5 +466,58 @@ class MTViewer extends Smarty {
         smarty_core_load_plugins($params, $this);
         return true;
     }
+
+    function register_tag_handler($tag, $fn, $type) {
+        if (substr($tag, 0, 2) != 'mt') {
+            $tag = 'mt' . $tag;
+        }
+        if ($type == 'block')
+            $this->register_block($tag, $fn);
+        elseif ($type == 'function')
+            $this->register_function($tag, $fn);
+        $old_handler = $this->_handlers[$tag];
+        $this->_handlers[$tag] = array( $fn, $type );
+        if ($old_handler) {
+            $fn = $old_handler[0];
+        } else {
+            if ($type == 'block')
+                $fn = create_function('$args, $content, &$ctx, &$repeat', 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";');
+            elseif ($type == 'function') {
+                $fn = create_function('$args, &$ctx', '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";');
+            }
+        }
+        return $fn;
+    }
+    function add_container_tag($tag, $fn = null) {
+        return $this->register_tag_handler($tag, $fn, 'block');
+    }
+    function add_tag($tag, $fn) {
+        return $this->register_tag_handler($tag, $fn, 'function');
+    }
+    function handler_for($tag) {
+        if (isset($this->_handlers[$tag]))
+            return $this->_handlers[$tag];
+        else
+            return null;
+    }
+
+    function count_format($count, $args) {
+        $phrase = '';
+        if ($count == 0) {
+            $phrase = array_key_exists('none', $args) ? $args['none'] :
+                (array_key_exists('plural', $args) ? $args['plural'] : '');
+        } elseif ($count == 1) {
+            $phrase = array_key_exists('singular', $args) ? $args['singular'] : '';
+        } elseif ($count > 1) {
+            $phrase = array_key_exists('plural', $args) ? $args['plural'] : '';
+        }
+        if ($phrase == '')
+            return $count;
+
+        // \# of entries: #  --> # of entries: 10
+        $phrase = preg_replace('/(?<!\\\\)#/', $count, $phrase);
+        $phrase = preg_replace('/\\\\#/', '#', $phrase);
+
+        return $phrase;
+    }
 }
-?>

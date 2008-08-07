@@ -17,12 +17,12 @@
 #     convert_high_ascii
 #     const
 
-use Test;
-BEGIN { plan tests => 35 }
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use Test::More tests => 35;
 
 use Encode;
-use MT::Bootstrap;
 use MT;
+use MT::Test;
 my $mt = new MT;
 
 my ($utf8_str, $sjis_str, $euc_str, $utf8_substr, $euc_substr, $sjis_substr, $iso2022_str, $iso2022_substr);
@@ -40,32 +40,32 @@ MT->config('UseJcodeModule', 0);
 
 require MT::I18N;
 
-ok(MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT'), 10);
+is(MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT'), 10);
 
 MT->config('PublishCharset', 'utf-8');
-ok(length($utf8_str), 66);
-ok(MT::I18N::substr_text($utf8_str, 0, 4), $utf8_substr);
-ok(MT::I18N::length_text($utf8_str), 22);
-ok(lc $MT::I18N::ja::PKG, 'encode');
-ok(MT::I18N::encode_text($utf8_str, undef, 'utf-8'), $utf8_str);
+is(length($utf8_str), 66);
+is(MT::I18N::substr_text($utf8_str, 0, 4), $utf8_substr);
+is(MT::I18N::length_text($utf8_str), 22);
+is(lc $MT::I18N::ja::PKG, 'encode');
+is(MT::I18N::encode_text($utf8_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'Shift_JIS');
-ok(length($sjis_str), 44);
-ok(MT::I18N::substr_text($sjis_str, 0, 4), $sjis_substr);
-ok(MT::I18N::length_text($sjis_str), 22);
-ok(MT::I18N::encode_text($sjis_str, undef, 'utf-8'), $utf8_str);
+is(length($sjis_str), 44);
+is(MT::I18N::substr_text($sjis_str, 0, 4), $sjis_substr);
+is(MT::I18N::length_text($sjis_str), 22);
+is(MT::I18N::encode_text($sjis_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'euc-jp');
-ok(length($euc_str), 44);
-ok(MT::I18N::substr_text($euc_str, 0, 4), $euc_substr);
-ok(MT::I18N::length_text($euc_str), 22);
-ok(MT::I18N::encode_text($euc_str, undef, 'utf-8'), $utf8_str);
+is(length($euc_str), 44);
+is(MT::I18N::substr_text($euc_str, 0, 4), $euc_substr);
+is(MT::I18N::length_text($euc_str), 22);
+is(MT::I18N::encode_text($euc_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'iso-2022-jp');
-ok(length($iso2022_str), 50);
-ok(MT::I18N::substr_text($iso2022_str, 0, 4), $iso2022_substr);
-ok(MT::I18N::length_text($iso2022_str), 22);
-ok(MT::I18N::encode_text($iso2022_str, undef, 'utf-8'), $utf8_str);
+is(length($iso2022_str), 50);
+is(MT::I18N::substr_text($iso2022_str, 0, 4), $iso2022_substr);
+is(MT::I18N::length_text($iso2022_str), 22);
+is(MT::I18N::encode_text($iso2022_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('UseJcodeModule', 1);
 undef $MT::I18N::ja::PKG;
@@ -73,32 +73,32 @@ undef $MT::I18N::ja::PKG;
 MT->config('PublishCharset', 'utf-8');
 #binmode(STDOUT, 'utf-8');
 #print "UTF-8: [$utf8_str]\n";
-ok(length($utf8_str), 66);
-ok(MT::I18N::substr_text($utf8_str, 0, 4), $utf8_substr);
-ok(MT::I18N::length_text($utf8_str), 22);
-ok(lc $MT::I18N::ja::PKG, 'jcode');
-ok(MT::I18N::encode_text($utf8_str, undef, 'utf-8'), $utf8_str);
+is(length($utf8_str), 66);
+is(MT::I18N::substr_text($utf8_str, 0, 4), $utf8_substr);
+is(MT::I18N::length_text($utf8_str), 22);
+is(lc $MT::I18N::ja::PKG, 'jcode');
+is(MT::I18N::encode_text($utf8_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'Shift_JIS');
 #binmode(STDOUT, 'Shift_JIS');
 #print "Shift_JIS: [$sjis_str]\n";
-ok(length($sjis_str), 44);
-ok(MT::I18N::substr_text($sjis_str, 0, 4), $sjis_substr);
-ok(MT::I18N::length_text($sjis_str), 22);
-ok(MT::I18N::encode_text($sjis_str, undef, 'utf-8'), $utf8_str);
+is(length($sjis_str), 44);
+is(MT::I18N::substr_text($sjis_str, 0, 4), $sjis_substr);
+is(MT::I18N::length_text($sjis_str), 22);
+is(MT::I18N::encode_text($sjis_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'euc-jp');
 #binmode(STDOUT, 'euc-jp');
 #print "EUC-JP: [$euc_str]\n";
-ok(length($euc_str), 44);
-ok(MT::I18N::substr_text($euc_str, 0, 4), $euc_substr);
-ok(MT::I18N::length_text($euc_str), 22);
-ok(MT::I18N::encode_text($euc_str, undef, 'utf-8'), $utf8_str);
+is(length($euc_str), 44);
+is(MT::I18N::substr_text($euc_str, 0, 4), $euc_substr);
+is(MT::I18N::length_text($euc_str), 22);
+is(MT::I18N::encode_text($euc_str, undef, 'utf-8'), $utf8_str);
 
 MT->config('PublishCharset', 'iso-2022-jp');
 #binmode(STDOUT, 'iso-2022-jp');
 #print "ISO-2022-JP: [  $iso2022_str  ]\n";
-ok(length($iso2022_str), 50);
-ok(MT::I18N::substr_text($iso2022_str, 0, 4), $iso2022_substr);
-ok(MT::I18N::length_text($iso2022_str), 22);
-ok(MT::I18N::encode_text($iso2022_str, undef, 'utf-8'), $utf8_str);
+is(length($iso2022_str), 50);
+is(MT::I18N::substr_text($iso2022_str, 0, 4), $iso2022_substr);
+is(MT::I18N::length_text($iso2022_str), 22);
+is(MT::I18N::encode_text($iso2022_str, undef, 'utf-8'), $utf8_str);

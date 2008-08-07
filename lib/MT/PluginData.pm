@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -10,8 +10,8 @@ use strict;
 use MT::Serialize;
 
 use MT::Blog;
-use MT::Object;
-@MT::PluginData::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties ({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -28,6 +28,28 @@ __PACKAGE__->install_properties ({
     primary_key => 'id',
 });
 
+sub class_label {
+    MT->translate("Plugin Data");
+}
+
+sub remove {
+    my $pd = shift;
+    return $pd->SUPER::remove(@_) if ref($pd);
+
+    # class method call - might have blog_id parameter
+    my ($terms, $args) = @_;
+    $pd->SUPER::remove(@_) unless $terms && exists($terms->{blog_id});
+
+    my $blog_ids = delete $terms->{blog_id};
+    if ( 'ARRAY' ne ref($blog_ids) ) {
+        $blog_ids = [ $blog_ids ];
+    }
+
+    my @keys = map { "configuration:blog:$_" } @$blog_ids;
+    $terms->{key} = \@keys;
+    $pd->SUPER::remove($terms, $args);
+}
+
 {
     my $ser;
     sub data {
@@ -35,7 +57,11 @@ __PACKAGE__->install_properties ({
         $ser ||= MT::Serialize->new('MT');  # force MT serialization for plugins
         if (@_) {
             my $data = shift;
-            $self->column('data', $ser->serialize( \$data ));
+            if (ref($data)) {
+                $self->column('data', $ser->serialize( \$data ));
+            } else {
+                $self->column('data', $data);
+            }
             $data;
         } else {
             my $data = $self->column('data');

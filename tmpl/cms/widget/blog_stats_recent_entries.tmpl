@@ -1,0 +1,37 @@
+<MTEntries>
+    <mt:if name="__first__">
+    <h4 class="tab-panel-header"><__trans phrase="[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;" params="<mt:var name="entry_count">%%<mt:var name="tag" escape="html">"></h4>
+    </mt:if>
+    <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+        <div class="entry-title"><MTEntryAuthorID setvar="entry_author_id"><MTSetVarBlock name="entry_title"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></MTSetVarBlock>
+            <h4><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;blog_id=<MTEntryBlogID>&amp;id=<MTEntryID>"><$MTEntryTitle$></a><MTElse name="author_id" eq="$entry_author_id"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;blog_id=<MTEntryBlogID>&amp;id=<MTEntryID>"><$MTEntryTitle$></a><MTElse><$MTEntryTitle$></MTIf></h4>
+        </div>
+        <div class="entry-content">
+            <p><$MTEntryExcerpt$></p>
+        </div>
+        <div class="entry-meta">
+        <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
+            <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
+        <MTElse>
+            <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
+        </MTIfNonEmpty>
+        <MTIfNonEmpty tag="EntryCategory">
+            <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1" format="%x %X"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries&amp;_type=&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a><MTElse><$MTCategoryLabel$></MTIf></MTEntryCategories>">
+        <MTElse>
+            <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1" format="%x %X"$>">
+        </MTIfNonEmpty>
+        <MTEntryIfTagged>
+            <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a><MTElse><$MTTagName$></MTIf></MTEntryTags>">
+        </MTEntryIfTagged>
+        </div>
+    </div>
+    <mt:if name="__last__"><mt:if name="editable">
+    <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_entry&amp;filter=exacttag&amp;filter_val=<mt:var name="tag" escape="url"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="View all entries tagged &ldquo;[_1]&rdquo;" params="<mt:var name="tag" escape="html">"></a></div>
+    </mt:if></mt:if>
+<MTElse>
+    <mtapp:statusmsg    
+        id="warning"
+        class="info">
+        <__trans phrase="No entries available.">
+    </mtapp:statusmsg>
+</MTEntries>

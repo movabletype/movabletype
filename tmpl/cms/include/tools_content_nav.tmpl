@@ -1,0 +1,20 @@
+<ul>
+    <mt:if name="is_administrator">
+    <mt:unless name="blog_id">
+    <li<mt:if name="system-information"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=system_check&amp;blog_id=<$mt:var name="blog_id"$>"><b><__trans phrase="System Information"></b></a></li>
+    </mt:unless>
+    </mt:if>
+    <mt:if name="can_view_log">
+    <li<mt:if name="activity-log"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=view_log&amp;blog_id=<$mt:var name="blog_id"$>"><b><__trans phrase="Activity Log"></b></a></li>
+    </mt:if>
+    <mt:if name="blog_id">
+    <li<mt:if name="import"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=start_import<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><b><__trans phrase="Import"></b></a></li>
+    <li<mt:if name="export"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=start_export<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><b><__trans phrase="Export"></b></a></li>
+    </mt:if>
+    <mt:if name="is_administrator">
+    <li<mt:if name="backup"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=start_backup<mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><b><__trans phrase="Backup"></b></a></li>
+    <mt:unless name="BLOG_ID">
+    <li<mt:if name="restore"> class="active"</mt:if>><a href="<$mt:var name="mt_url"$>?__mode=start_restore&amp;blog_id=<$mt:var name="blog_id"$>"><b><__trans phrase="Restore"></b></a></li>
+    </mt:unless>
+    </mt:if>
+</ul>

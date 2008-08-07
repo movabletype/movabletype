@@ -1,0 +1,371 @@
+<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Widget Set"><mt:else><__trans phrase="Create Widget Set"></mt:if>
+</mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvarblock name="html_head" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" type="text/css" />
+<script type="text/javascript" src="<mt:var name="static_uri">/js/widget.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var colWidth = 350;
+var modWidth = 275;
+var modHeight = 30;
+var gCols;
+
+var isIE = navigator.userAgent.indexOf('MSIE') >= 0;
+var isOpera = navigator.userAgent.indexOf('Opera') >= 0;
+var isSafari = navigator.userAgent.indexOf('Safari') >= 0;
+var curMod, curCol;
+var dragStartX, dragStartY;
+var topZIndex = 10;
+
+function checkName() {
+    widgetname = getByID('name').value;
+    if (!widgetname) {
+        alert('<__trans phrase="Please use a unique name for this widget set." escape="js">');
+        return false;
+    }
+}
+
+
+var gDropIndex, gDrop;
+var gCanDrop = 0;
+
+function init () {
+    gDrop = new Object();
+    gDrop.node = getByID('stage-drop');
+
+    gCols = new Array();
+
+    gCols[0] = new Column('installed-column', 0, 0);
+
+<mt:loop name="installed">
+    gCols[0].addModule('<mt:var name="id" escape="js">');
+</mt:loop>
+
+    gCols[1] = new Column('available-column', 1, 322);
+
+<mt:loop name="available">
+    gCols[1].addModule('<mt:var name="id" escape="js">');
+</mt:loop>
+
+    calculateHeight();
+}
+
+function Column (label, index, left) {
+    this.label = label;
+    this.node = getByID(label);
+    this.node.style.height = '110px';
+    this.x = left;
+    this.y = 0;
+    this.offsetX = offsetX(this.node) - this.x;
+    this.offsetY = offsetY(this.node) - this.y;
+    this.startX = this.x + 5;
+    this.startY = this.y + 35;
+    this.index = index;
+    this.width = colWidth;
+    this.height = 100;
+    this.modules = new Array();
+    return this;
+}
+
+Column.prototype.addModule = function (key, label) {
+    var row = this.modules.length;
+    this.modules[row] = new Module(key, label, row, this.index, this);
+}
+
+Column.prototype.moveModule = function (module, index) {
+    var inCol = (curCol.index == module.col);
+    if (inCol && (module.row == index)) {
+        module.move(module.x, module.y);
+        return;
+    }
+    if (inCol && module.row < index) index--;
+    
+    // Remove the module from the old column...
+    var i;
+    var oldMods = gCols[module.col].modules;
+    for (i = module.row + 1; i < oldMods.length; i++) {
+        oldMods[i].y -= modHeight;
+        oldMods[i].row--;
+        oldMods[i].move(oldMods[i].x, oldMods[i].y);
+        oldMods[i-1] = oldMods[i];
+    }
+    oldMods.length--;
+    if (inCol && index > oldMods.length) index--;
+    
+    // ... and insert it into the new column.
+    var newMods = curCol.modules;
+    for (i = newMods.length-1; i >= index; i--) {
+        newMods[i].y += modHeight;
+        newMods[i].row++;
+        newMods[i].move(newMods[i].x, newMods[i].y);
+        newMods[i+1] = newMods[i];
+    }
+    module.colObj = curCol;
+    module.row = index;
+    module.col = curCol.index;
+    module.x = curCol.startX;
+    module.y = curCol.startY + index * modHeight;
+    module.move(module.x, module.y);
+    newMods[index] = module;
+    
+    calculateHeight();
+}
+
+function Module (key, label, row, col, colObj) {
+        this.key = key;
+        this.label = label;
+        this.row = row;
+        this.col = col;
+        this.colObj = colObj;
+        this.node = getByID('module-' + key);
+        this.node.onmousedown = this.dragStart;
+        this.node.module = this;
+        this.x = colObj.startX;
+        this.y = colObj.startY + modHeight * row;
+        this.move(this.x, this.y);
+        this.node.style.width = modWidth + 'px';
+        this.node.style.display = 'block';
+        return this;
+}
+
+Module.prototype.move = function (x, y) {
+    move(this.node, x, y);
+}
+
+Module.prototype.dragStart = function (event) {
+    document.onmousemove = dragMove;
+    document.onmouseup = dragStop;
+    gCanDrop = 0;
+    var module = this.module;
+    dragStartX = cursorX(event);
+    dragStartY = cursorY(event);
+    module.node.style.zIndex = topZIndex;
+    curMod = module;
+    return false;
+}
+
+function dragMove (event) {
+    if (!curMod) return true;
+    var x = cursorX(event);
+    var y = cursorY(event);
+    curMod.move(curMod.x + x - dragStartX, curMod.y + y - dragStartY);
+    var i;
+    curCol = null;
+    for (i = 0; i< gCols.length; i++) {
+        var adjX = gCols[i].x + gCols[i].offsetX;
+        var adjY = gCols[i].y + gCols[i].offsetY;
+        if ((x > adjX) &&
+            (x < adjX + gCols[i].width) &&
+            (y > adjY) &&
+            (y < adjY + gCols[i].height)) {
+            curCol = gCols[i];
+            break;
+        }
+    }
+    if (curCol == null) {
+        gDrop.node.style.display = 'none';
+        gCanDrop = 0;
+        return false;
+    }
+    gDropIndex = Math.floor((y - curCol.y - curCol.offsetY) / modHeight + 0.0);
+    if (gDropIndex < 0)
+        gDropIndex = 0;
+    if (gDropIndex > curCol.modules.length)
+        gDropIndex = curCol.modules.length;
+    if (!gCanDrop) {
+        gCanDrop = 1;
+        gDrop.node.style.display = 'block';
+    }
+    move(gDrop.node, curCol.startX, curCol.startY + gDropIndex * modHeight - 8);
+    return false;
+}
+
+function dragStop (event) {
+    if (!curMod) return true;
+    gDrop.node.style.display = 'none';
+    if (!curCol || !gCanDrop)
+        curMod.move(curMod.x, curMod.y);
+    else
+        curCol.moveModule(curMod, gDropIndex);
+    curMod = null;
+    return false;
+}
+
+function moduleListStr () {
+    var s = '';
+    var i, j;
+    for (i = 0; i < gCols.length; i++)
+        for (j = 0; j < gCols[i].modules.length; j++)
+            s += gCols[i].modules[j].key + '=' + (i+1) + '.' + (j+1) + ';';
+    return s;
+}
+
+function move (node, x, y) {
+    node.style.left = x + 'px';
+    node.style.top = y + 'px';
+}
+
+function offsetX (node) {
+    var o = node.offsetLeft;
+    while((node = node.offsetParent) != null)
+        o += node.offsetLeft;
+    return o;
+}
+
+function offsetY (node) {
+    var o = node.offsetTop;
+    while((node = node.offsetParent) != null)
+        o += node.offsetTop;
+    return o;
+}
+
+function cursorX (event) {
+    var x;
+    if (isIE || isOpera) {
+        x = window.event.clientX;
+        if (document.documentElement.scrollLeft)
+            x += document.documentElement.scrollLeft;
+        if(!isOpera) x += document.body.scrollLeft;
+    } else {
+        x = event.clientX;
+        if (!isSafari)
+            x += window.scrollX;
+    }
+    return x;
+}
+
+function cursorY (event) {
+    var y;
+    if (isIE || isOpera) {
+        y = window.event.clientY;
+        if (document.documentElement.scrollTop)
+            y += document.documentElement.scrollTop;
+        if(!isOpera) y += document.body.scrollTop;
+    } else {
+        y = event.clientY;
+        if (!isSafari)
+            y += window.scrollY;
+    }
+    return y;
+}
+
+function calculateHeight () {
+    var i, newHeight;
+    var maxMods = 0;
+    for (i = 0; i < gCols.length; i++) {
+        if (gCols[i].modules.length > maxMods) {
+            maxMods = gCols[i].modules.length;
+        }
+    }
+    if ((maxMods * modHeight) < 100) {
+        newHeight = 100;
+    } else {
+        newHeight = (maxMods + 1) * modHeight;
+    }
+    for (i = 0; i < gCols.length; i++) {
+        gCols[i].height = newHeight;
+        gCols[i].node.style.height = (newHeight + 10) + 'px';
+    }
+    getByID('center-column').style.height = (newHeight + 10) + 'px';
+    getByID('stage').style.height = (newHeight + 10) + 'px';
+    return true;
+}
+
+function toggleCache(id) {
+    if ("expire-time" == id) {
+        toggleDisable('cache-time-value', 0);
+        toggleDisable('cache-time-unit', 0);
+    } else {
+        toggleDisable('cache-time-value', 1);
+        toggleDisable('cache-time-unit', 1);
+    }
+    var es = DOM.getElement('cache-events').getElementsByTagName('input');
+    for (var i=0, len=es.length; i<len; i++)
+        toggleDisable( es[i].id, "expire-event" != id )
+    return false;
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<div id="msg-block">
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success">
+        <__trans phrase="Your template changes have been saved.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+</div>
+
+<div id="edit-form">
+
+    <form onsubmit="this.modules.value = moduleListStr(); return checkName();" id="manager" name="manager" method="post" action="<mt:var name="script_url">">
+      <input type="hidden" name="__mode" value="save_widget" />
+      <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id" escape="html">" /></mt:if>
+      <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+      <input type="hidden" name="modules" value="" />
+
+      <fieldset>
+      <mtapp:setting
+          id="name"
+          label="<__trans phrase="Set Name">">
+          <div class="textarea-wrapper">
+              <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" />
+          </div>
+      </mtapp:setting>
+
+      <mtapp:setting
+          id="widgets"
+          label="<__trans phrase="Drag and drop the widgets you want into the Installed column.">">
+          <div id="stage" class="pkg">
+              <div id="installed-column" class="pkg">
+                  <p><__trans phrase="Installed Widgets"></p>
+              <mt:loop name="installed">
+                  <div id="module-<mt:var name="id" escape="html">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
+                  </div>
+              </mt:loop>
+              </div>
+              <div id="center-column" class="pkg">&nbsp;</div>
+              <div id="available-column" class="pkg">
+                  <p><__trans phrase="Available Widgets"></p>
+              <mt:loop name="available">
+                  <div id="module-<mt:var name="id" escape="html">" class="module pkg">
+                    <div class="module-name"><a href="javascript:void(0)"><mt:var name="name" escape="html"></a></div>
+                    <div class="module-edit"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_new"><__trans phrase="edit"></a></div>
+                  </div>
+              </mt:loop>
+              </div>
+              <div id="stage-drop">&nbsp;</div>
+          </div>
+      </mtapp:setting>
+      </fieldset>
+
+    <mt:setvarblock name="action_buttons">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Save changes to this widget set (s)">"
+            class="primary-button"
+            ><__trans phrase="Save Changes"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </form>
+</div>
+
+<mt:include name="include/footer.tmpl">

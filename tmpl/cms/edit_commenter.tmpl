@@ -1,8 +1,95 @@
-<TMPL_INCLUDE NAME="header.tmpl">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="page_title" value="<__trans phrase="Commenter Details">">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="saved_commenter">
+        <mtapp:statusmsg
+            id="saved-commenter"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="trusted">
+        <mtapp:statusmsg
+            id="trusted"
+            class="success">
+            <__trans phrase="The commenter has been trusted.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="banned">
+        <mtapp:statusmsg
+            id="banned"
+            class="success">
+            <__trans phrase="The commenter has been banned.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html">"></a></li>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <mt:if name="can_edit_commenters"><mt:unless name="is_me">
+        <mt:if name="id">
+            <mt:unless name="type_author">
+            <mt:unless name="commenter_approved">
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Trust user (t)">"
+            ><__trans phrase="Trust"></button>
+            <mt:else>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Untrust user (t)">"
+            ><__trans phrase="Untrust"></button>
+            </mt:unless>
+            </mt:unless>
+            <mt:unless name="commenter_banned">
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Ban user (b)">"
+            ><__trans phrase="Ban"></button>
+            <mt:else>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Unban user (b)">"
+            ><__trans phrase="Unban"></button>
+            </mt:unless>
+        <mt:else>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="t"
+            title="<__trans phrase="Trust user (t)">"
+            ><__trans phrase="Trust"></button>
+        <button
+            onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+            type="submit"
+            accesskey="b"
+            title="<__trans phrase="Ban user (b)">"
+            ><__trans phrase="Ban"></button>
+            />
+        </mt:if>
+    </mt:unless></mt:if>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
 
-<TMPL_UNLESS NAME=TAB_COMMENTER>
+<mt:unless name="tab_commenter">
 <script type="text/javascript">
-<!--
+/* <![CDATA[ */
 var tableSelect;
 function init()
 {
@@ -11,125 +98,78 @@ function init()
         tableSelect.rowSelect = true;
 }
 TC.attachLoadEvent(init);
-// -->
+/* ]]> */
 </script>
-</TMPL_UNLESS>
+</mt:unless>
 
-<div id="<TMPL_IF NAME=TAB_COMMENTER>edit-commenter<TMPL_ELSE>list-comment</TMPL_IF>">
+<form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="commenter" />
+    <input type="hidden" name="action_name" value="" />
+    <input type="hidden" name="itemset_action_input" value="" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
-<h2><span class="weblog-title-highlight"><TMPL_VAR NAME=BLOG_NAME ESCAPE=HTML>:</span> <MT_TRANS phrase="Commenter Details"></h2>
+        <mt:if name="position_actions_top">
+            <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+        </mt:if>
 
-<TMPL_IF NAME=SAVED_COMMENTER>
-<h4 class="message"><MT_TRANS phrase="Your changes have been saved."></h4>
-</TMPL_IF>
-
-<TMPL_IF NAME=TRUSTED>
-<h4 class="message"><MT_TRANS phrase="The commenter has been trusted."></h4>
-</TMPL_IF>
-
-<TMPL_IF NAME=BANNED>
-<h4 class="message"><MT_TRANS phrase="The commenter has been banned."></h4>
-</TMPL_IF>
-
-<div class="tabs">
-<ul>
-<li<TMPL_IF NAME=TAB_COMMENTER> class="yah"</TMPL_IF> id="commenter-tab"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;tab=commenter"><MT_TRANS phrase="Commenter"></a></li>
-<li<TMPL_IF NAME=TAB_COMMENTS> class="yah"</TMPL_IF> id="comments-tab"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;tab=comments"><MT_TRANS phrase="Comments"></a></li>
-<li<TMPL_IF NAME=TAB_JUNK> class="yah"</TMPL_IF> id="junk-tab"><a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=ID>&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;tab=junk"><MT_TRANS phrase="Junk Comments"></a></li>
-</ul>
-</div>
-
-<TMPL_IF NAME=TAB_COMMENTER>
-
-<form method="post" action="<TMPL_VAR NAME=SCRIPT_URL>">
-<input type="hidden" name="blog_id" value="<TMPL_VAR NAME=BLOG_ID>" />
-<input type="hidden" name="id" value="<TMPL_VAR NAME=ID>" />
-<input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="commenter" />
-<input type="hidden" name="action_name" value="" />
-<input type="hidden" name="itemset_action_input" value="" />
-<input type="hidden" name="return_args" value="<TMPL_VAR NAME=RETURN_ARGS ESCAPE=HTML>" />
-<input type="hidden" name="magic_token" value="<TMPL_VAR NAME=MAGIC_TOKEN>" />
-
-<div class="list">
-<table cellspacing="0">
-
-<tr class="even">
-<td class="label" id="edit-commenter-label"><MT_TRANS phrase="Name">:</td>
-<td id="edit-commenter-field"><TMPL_VAR NAME=NICKNAME ESCAPE=HTML></td>
-<td class="filter">
-<a title="<MT_TRANS phrase="View all comments with this name">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=name&amp;search=<TMPL_VAR NAME=NICKNAME ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
-</td>
-</tr>
-
-<tr class="odd">
-<td class="label"><MT_TRANS phrase="Identity">:</td>
-<td><a href="<TMPL_VAR NAME=PROFILE_PAGE>"><TMPL_VAR NAME=NAME ESCAPE=HTML> &raquo;</a></td>
-<td class="filter">&nbsp;</td>
-</tr>
-
-<tr class="even">
-<td class="label"><TMPL_UNLESS IS_EMAIL_HIDDEN><a href="mailto:<TMPL_VAR NAME=EMAIL ESCAPE=HTML>"><img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/email.gif" height="9" width="16" alt="Email" /></a> </TMPL_UNLESS><MT_TRANS phrase="Email">:</td>
-<td><TMPL_IF NAME=IS_EMAIL_HIDDEN><MT_TRANS phrase="Withheld"><TMPL_ELSE><TMPL_VAR NAME=EMAIL ESCAPE=HTML></TMPL_IF></td>
-<td class="filter"><TMPL_IF NAME=IS_EMAIL_HIDDEN>&nbsp;<TMPL_ELSE>
-<a title="<MT_TRANS phrase="View all comments with this email address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=email&amp;search=<TMPL_VAR NAME=EMAIL ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a></TMPL_IF>
-</td>
-</tr>
-
-<tr class="odd">
-<td class="label"><MT_TRANS phrase="URL">:</td>
-<td><TMPL_IF NAME=URL><a href="<TMPL_VAR NAME=URL ESCAPE=HTML>"><TMPL_VAR NAME=URL ESCAPE=HTML> &raquo;</a><TMPL_ELSE>&nbsp;</TMPL_IF></td>
-<td class="filter"><TMPL_IF NAME=URL>
-<a title="<MT_TRANS phrase="View all comments with this URL address">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;search_cols=url&amp;search=<TMPL_VAR NAME=URL ESCAPE=URL>&amp;do_search=1"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
-<TMPL_ELSE>&nbsp;</TMPL_IF></td>
-</tr>
-
-<tr class="even">
-<td class="label"><MT_TRANS phrase="Status">:</td>
-<td class="<TMPL_IF NAME=COMMENTER_APPROVED>status-trusted<TMPL_ELSE><TMPL_IF NAME=COMMENTER_BANNED>status-banned<TMPL_ELSE>status-authenticated</TMPL_IF></TMPL_IF>">
-<TMPL_IF NAME=COMMENTER_APPROVED>
-<img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Trusted">" width="13" height="9" /> <MT_TRANS phrase="Trusted">
-<TMPL_ELSE>
-<TMPL_IF NAME=COMMENTER_BANNED>
-<img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Blocked">" width="13" height="9" /> <MT_TRANS phrase="Banned">
-<TMPL_ELSE>
-<img src="<TMPL_VAR NAME=STATIC_URI>images/spacer.gif" alt="<MT_TRANS phrase="Authenticated">" width="7" height="9" /> <MT_TRANS phrase="Authenticated">
-</TMPL_IF>
-</TMPL_IF>
-</td>
-<td class="filter">
-<a title="<MT_TRANS phrase="View all commenters with this status">" href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=list_commenters&amp;blog_id=<TMPL_VAR NAME=BLOG_ID>&amp;filter=status&amp;filter_val=<TMPL_IF NAME=COMMENTER_APPROVED>approved<TMPL_ELSE><TMPL_IF NAME=COMMENTER_BANNED>banned<TMPL_ELSE>authenticated</TMPL_IF></TMPL_IF>"><img src="<TMPL_VAR NAME=STATIC_URI>images/filter.gif" alt="" width="8" height="8" /></a>
-</td>
-</tr>
-
-</table>
-</div>
-
-<TMPL_INCLUDE NAME=commenter_actions.tmpl>
-
+        <mtapp:setting
+            id="name"
+            label="<__trans phrase="Name">"
+            hint="<__trans phrase="The Name of the commenter">"
+            show_hint="0">
+            <mt:var name="nickname" escape="html">
+            <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=name&amp;search=<mt:var name="nickname" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="identity"
+            label="<__trans phrase="Identity">"
+            hint="<__trans phrase="The Identity of the commenter">"
+            show_hint="0">
+            <mt:if name="url"><a href="<mt:var name="url" escape="html">"><mt:var name="name" escape="html"> &raquo;</a><mt:else><mt:var name="name" escape="html"></mt:if>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="email"
+            label="<__trans phrase="Email">"
+            hint="<__trans phrase="The Email of the commenter">"
+            show_hint="0">
+            <mt:if name="is_email_hidden"><__trans phrase="Withheld"><mt:else><mt:var name="email" escape="html"></mt:if>
+            <mt:if name="is_email_hidden">&nbsp;<mt:else><a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=email&amp;search=<mt:var name="email" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a></mt:if>        </mtapp:setting>
+    
+        <mtapp:setting
+            id="url"
+            label="<__trans phrase="URL">"
+            hint="<__trans phrase="The URL of the commenter">"
+            show_hint="0">
+            <mt:if name="url"><a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html"> &raquo;</a><mt:else>&nbsp;</mt:if>
+            <mt:if name="url"><a title="<__trans phrase="View all comments with this URL address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=url&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a><mt:else>&nbsp;</mt:if>
+        </mtapp:setting>
+    
+        <mtapp:setting
+            id="status"
+            label="<__trans phrase="Status">"
+            hint="<__trans phrase="The trusted status of the commenter">"
+            show_hint="0">
+            <mt:if name="commenter_approved">
+            <span class="icon-left-wide icon-trusted"><__trans phrase="Trusted"></span>
+            <mt:else>
+                <mt:if name="commenter_banned">
+              <span class="icon-left-wide icon-banned"><__trans phrase="Banned"></span>
+                <mt:else>
+            <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
+                </mt:if>
+            </mt:if>
+            <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list_member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+        </mtapp:setting>
+    
+        <mt:if name="position_actions_bottom">
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+        </mt:if>
 </form>
-<TMPL_ELSE>
-<TMPL_IF NAME=COMMENT_TABLE>
-<div class="list-wrapper" id="selector">
-<TMPL_INCLUDE NAME=comment_table.tmpl>
-<TMPL_INCLUDE NAME=pager.tmpl>
-</div>
-</TMPL_IF>
-</TMPL_IF>
 
-<TMPL_IF NAME=PLUGIN_ACTION_LOOP>
-<div class="box" id="plugin-actions-box">
-<h4><MT_TRANS phrase="Plugin Actions"></h4>
-<div class="inner">
-<ul>
-<TMPL_LOOP NAME=PLUGIN_ACTION_LOOP>
-<li><a href="<TMPL_VAR NAME=PAGE>;from=edit_commenter;id=<TMPL_VAR NAME=ID>;blog_id=<TMPL_VAR NAME=BLOG_ID>"><TMPL_VAR NAME=LINK_TEXT></a></li>
-</TMPL_LOOP>
-</ul>
-</div>
-</div>
-</TMPL_IF>
-
-</div>
-
-<TMPL_INCLUDE NAME="footer.tmpl">
+<mt:include name="include/footer.tmpl">

@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -14,7 +14,6 @@ __PACKAGE__->install_properties({
        'id', 'blog_id', 'text', 'action'
     ],
     indexes => {
-        name => 1,
         blog_id => 1,
         text => 1,
     },
@@ -32,7 +31,7 @@ sub block_these {
     my $class = shift;
     my ($blog_id, $action, @urls) = @_;
     foreach my $url (@urls) {
-        next if $class->count({blog_id => $blog_id, text => $url});
+        next if $class->exist({blog_id => $blog_id, text => $url});
         my $this = $class->new();
         $this->set_values({blog_id => $blog_id, text => $url,
                            action => $action});
@@ -40,3 +39,30 @@ sub block_these {
     }
     1;
 }
+
+1;
+
+__END__
+
+=head1 NAME
+
+MT::Blocklist - MT object class for storing rules for filtering content.
+
+=head1 METHODS
+
+=head2 MT::Blocklist->block_these($blog_id, $action, @urls)
+
+Adds the specified URLs to the blocklist table with the specified I<$action>
+and for the specified I<$blog_id>.
+
+=head1 LICENSE
+
+The license that applies is the one you agreed to when downloading
+Movable Type.
+
+=head1 AUTHOR & COPYRIGHT
+
+Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
+All rights reserved.
+
+=cut

@@ -1,31 +1,34 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Mail;
+
 use strict;
 
 use MT;
-use MT::ConfigMgr;
-use MT::ErrorHandler;
+use base qw( MT::ErrorHandler );
 use MT::I18N qw(encode_text);
-
-@MT::Mail::ISA = qw( MT::ErrorHandler );
 
 sub send {
     my $class = shift;
-    my($hdrs, $body) = @_;
-    foreach my $h (keys %$hdrs) {
-        if (ref($hdrs->{$h}) eq 'ARRAY') {
-            map { y/\n\r/  / } @{$hdrs->{$h}};
+    my($hdrs_arg, $body) = @_;
+
+    local $hdrs_arg->{id} = $hdrs_arg->{id};
+    my $id = delete $hdrs_arg->{id};
+
+    my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
+    foreach my $h (keys %hdrs) {
+        if (ref($hdrs{$h}) eq 'ARRAY') {
+            map { y/\n\r/  / } @{$hdrs{$h}};
         } else {
-            $hdrs->{$h} =~ y/\n\r/  / unless (ref($hdrs->{$h}));
+            $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
         }
     }
     
-    my $mgr = MT::ConfigMgr->instance;
+    my $mgr = MT->config;
     my $xfer = $mgr->MailTransfer;
 
     my $enc = $mgr->PublishCharset;
@@ -34,21 +37,22 @@ sub send {
 
     $body = encode_text($body, $enc, lc $mail_enc);
 
-    eval "require MIME::Words;";
-    my $subj = MIME::Words::decode_mimewords($hdrs->{Subject});
-    $hdrs->{Subject} = encode_text($subj, $enc, lc $mail_enc);
+    eval "require MIME::EncWords;";
     unless ($@) {
-        foreach my $header (keys %$hdrs) {
-            my $val = $hdrs->{$header};
+        foreach my $header (keys %hdrs) {
+            my $val = $hdrs{$header};
+
             if (ref $val eq 'ARRAY') {
                 foreach (@$val) {
                     if ((lc($mail_enc) ne 'iso-8859-1') || (m/[^[:print:]]/)) {
                         if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                                $_ = MIME::Words::encode_mimeword($1, 'b', $mail_enc) . ' ' . $2;
+                                $_ = MIME::EncWords::encode_mimeword(
+                                    encode_text($1, $enc, lc $mail_enc), 'b', lc $mail_enc) . ' ' . $2;
                             }
                         } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
-                            $_ = MIME::Words::encode_mimeword($_, 'b', $mail_enc);
+                            $_ = MIME::EncWords::encode_mimeword(
+                                    encode_text($_, $enc, lc $mail_enc), 'b', lc $mail_enc);
                         }
                     }
                 }
@@ -56,26 +60,36 @@ sub send {
                 if ((lc($mail_enc) ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
                     if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                         if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                            $hdrs->{$header} = MIME::Words::encode_mimeword($1, 'b', $mail_enc) . ' ' . $2;
+                            $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                                    encode_text($1, $enc, lc $mail_enc), 'b', lc $mail_enc) . ' ' . $2;
                         }
                     } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
-                       $hdrs->{$header} = MIME::Words::encode_mimeword($val, 'b', $mail_enc);
+                        $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                            encode_text($val, $enc, lc $mail_enc), 'b', lc $mail_enc);
                     }
                 }
             }
         }
+    } else {
+        $hdrs{Subject} = encode_text($hdrs{Subject}, $enc, lc $mail_enc);
+        $hdrs{From} = encode_text($hdrs{From}, $enc, lc $mail_enc);
     }
+    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . lc $mail_enc . q(");
+    $hdrs{'Content-Transfer-Encoding'} = ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs{'MIME-Version'} ||= "1.0";
 
-    $hdrs->{'Content-Type'} ||= qq(text/plain; charset=") . lc $mail_enc . q(");
-    $hdrs->{'Content-Transfer-Encoding'} ||= ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
-    $hdrs->{'MIME-Version'} ||= "1.0";
+    $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+
+    return 1 unless
+        MT->run_callbacks('mail_filter', args => $hdrs_arg, headers => \%hdrs,
+            body => \$body, transfer => \$xfer, ( $id ? ( id => $id ) : () ) );
 
     if ($xfer eq 'sendmail') {
-        return $class->_send_mt_sendmail($hdrs, $body, $mgr);
+        return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'smtp') {
-        return $class->_send_mt_smtp($hdrs, $body, $mgr);
+        return $class->_send_mt_smtp(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'debug') {
-        return $class->_send_mt_debug($hdrs, $body, $mgr);
+        return $class->_send_mt_debug(\%hdrs, $body, $mgr);
     } else {
         return $class->error(MT->translate(
             "Unknown MailTransfer method '[_1]'", $xfer ));

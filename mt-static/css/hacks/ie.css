@@ -1,0 +1,105 @@
+ul.main-nav-list ul a {
+    display: inline-block; /* removes vertical space in menus */
+}
+
+.field-left-label .field-content {
+    margin-left: 0 !important;
+    float: left !important;
+}
+
+.system_check {
+    width: 736px; /* scrollbars are wider in IE */
+}
+
+/* checkboxes are bigger in IE, so remove padding */
+.listing .cb {
+    padding: 0 2px;
+}
+
+.add-category-new-parent-link {
+    right: 4px;
+}
+
+.add-category-ok-link {
+    margin-bottom: 3px;
+}
+
+.add-category-new-link {
+    background: url('../../images/spacer.gif') no-repeat left center;
+}
+
+#category-field .field-content {
+    width: 190px;
+}
+
+
+#entryfield-options li input.cb,
+#entryfield-options li input.rb { margin: -2px -4px; }
+
+#basic-search .search-query {
+    margin-top: 0;
+}
+
+.dashboard .shortcuts-widget li {
+    width: 49%;
+}
+
+.dashboard .you-widget .widget-header {
+    height: 1%;
+}
+
+.actions-bar button,
+button.big-button {
+    border: none !important;
+}
+
+.search-replace .search-bar-replace-wrapper {
+    margin-left: -46px;
+}
+
+.search-replace #search-bar-search-field {
+    margin-left: 2px;
+}
+
+#system-check iframe {
+    width: 756px; /* 2px less to account for border width */
+}
+
+.log-listing-table tr.active { display: inline; }
+.list-tag .create-inline { display: inline; }
+
+/* 3.3x hacks that may still be needed */
+/*    body.edit-entry #entry-container select { margin: 0; }*/
+/*    * html body.edit-entry #entry-container select { margin-top: 1px; }*/
+
+/** html body.edit-entry input.cb { margin: -2px -4px; }*/
+
+
+
+/* PNG transprancy fix */
+/** html img {*/
+/*   behavior: url("pngbehavior.htc");*/
+/*}*/
+/* to be sure IE displays pointer */
+/*a:link, a:visited { cursor: pointer; }*/
+
+/* In IE, the header block is actually placed at the bottom of the document
+   but above the modal dialog iframe; this allows the pulldown menus to
+   display above all other elements on the screen */
+
+.main-screen #content-header {
+    margin-top: 120px;
+}
+.main-screen #header {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+#editor .editor-header .tab {
+    position: relative;
+    top: 1px;
+    margin-bottom: 0;
+}
+

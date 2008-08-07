@@ -1,10 +1,10 @@
-# $Id: Feed.pm 21854 2006-01-20 23:07:31Z bchoate $
+# $Id$
 
 package XML::Atom::Feed;
 use strict;
+use base qw( XML::Atom::Thing );
 
 use XML::Atom;
-use base qw( XML::Atom::Thing );
 use XML::Atom::Entry;
 BEGIN {
     if (LIBXML) {
@@ -71,23 +71,23 @@ sub element_name { 'feed' }
 sub language {
     my $feed = shift;
     if (LIBXML) {
-        my $elem = $feed->{doc}->getDocumentElement;
+        my $elem = $feed->elem;
         if (@_) {
             $elem->setAttributeNS('http://www.w3.org/XML/1998/namespace',
                 'lang', $_[0]);
         }
-        return $elem->getAttribute('lang');
+        return $elem->getAttributeNS('http://www.w3.org/XML/1998/namespace', 'lang');
     } else {
         if (@_) {
-            $feed->{doc}->setAttribute('xml:lang', $_[0]);
+            $feed->elem->setAttribute('xml:lang', $_[0]);
         }
-        return $feed->{doc}->getAttribute('xml:lang');
+        return $feed->elem->getAttribute('xml:lang');
     }
 }
 
 sub version {
     my $feed = shift;
-    my $elem = LIBXML ? $feed->{doc}->getDocumentElement : $feed->{doc};
+    my $elem = $feed->elem;
     if (@_) {
         $elem->setAttribute('version', $_[0]);
     }
@@ -96,7 +96,7 @@ sub version {
 
 sub entries_libxml {
     my $feed = shift;
-    my @res = $feed->{doc}->getElementsByTagNameNS($feed->ns, 'entry') or return;
+    my @res = $feed->elem->getElementsByTagNameNS($feed->ns, 'entry') or return;
     my @entries;
     for my $res (@res) {
         my $entry = XML::Atom::Entry->new(Elem => $res->cloneNode(1));
@@ -107,7 +107,7 @@ sub entries_libxml {
 
 sub entries_xpath {
     my $feed = shift;
-    my $set = $feed->{doc}->find("descendant-or-self::*[local-name()='entry' and namespace-uri()='" . $feed->ns . "']");
+    my $set = $feed->elem->find("descendant-or-self::*[local-name()='entry' and namespace-uri()='" . $feed->ns . "']");
     my @entries;
     for my $elem ($set->get_nodelist) {
         ## Delete the link to the parent (feed) element, and append
@@ -130,16 +130,11 @@ sub add_entry_libxml {
     # <entry>'s, then fall back to appending, which should be
     # semantically identical.
     my ($first_entry) =
-        $feed->{doc}->getDocumentElement->getChildrenByTagNameNS($entry->ns, 'entry');
+        $feed->elem->getChildrenByTagNameNS($entry->ns, 'entry');
     if ($opt->{mode} && $opt->{mode} eq 'insert' && $first_entry) {
-        $feed->{doc}->getDocumentElement->insertBefore(
-            $entry->{doc}->getDocumentElement,
-            $first_entry,
-        );
+        $feed->elem->insertBefore($entry->elem, $first_entry);
     } else {
-        $feed->{doc}->getDocumentElement->appendChild(
-            $entry->{doc}->getDocumentElement,
-        );
+        $feed->elem->appendChild($entry->elem);
     }
 }
 
@@ -147,14 +142,19 @@ sub add_entry_xpath {
     my $feed = shift;
     my($entry, $opt) = @_;
     $opt ||= {};
-    my $set = $feed->{doc}->find("*[local-name()='entry' and namespace-uri()='" . $entry->ns . "']");
+    my $set = $feed->elem->find("*[local-name()='entry' and namespace-uri()='" . $entry->ns . "']");
     my $first_entry = $set ? ($set->get_nodelist)[0] : undef;
     if ($opt->{mode} && $opt->{mode} eq 'insert' && $first_entry) {
-        $feed->{doc}->insertBefore($entry->{doc}, $first_entry);
+        $feed->elem->insertBefore($entry->elem, $first_entry);
     } else {
-        $feed->{doc}->appendChild($entry->{doc});
+        $feed->elem->appendChild($entry->elem);
     }
 }
+
+__PACKAGE__->mk_elem_accessors(qw( generator ));
+
+__PACKAGE__->_rename_elements('modified' => 'updated');
+__PACKAGE__->_rename_elements('tagline' => 'subtitle');
 
 1;
 __END__
@@ -169,8 +169,10 @@ XML::Atom::Feed - Atom feed
     use XML::Atom::Entry;
     my $feed = XML::Atom::Feed->new;
     $feed->title('My Weblog');
+    $feed->id('tag:example.com,2006:feed-id');
     my $entry = XML::Atom::Entry->new;
     $entry->title('First Post');
+    $entry->id('tag:example.com,2006:entry-id');
     $entry->content('Post Body');
     $feed->add_entry($entry);
     $feed->add_entry($entry, { mode => 'insert' });
@@ -281,6 +283,61 @@ representing the author. For example:
     $author->name('Foo Bar');
     $author->email('foo@bar.com');
     $feed->author($author);
+
+=head2 $feed->id([ $id ])
+
+Returns an id for the feed. If I<$id> is supplied, set the id. When
+generating the new feed, it is your responsibility to generate unique
+ID for the feed and set to XML::Atom::Feed object. You can use I<http>
+permalink, I<tag> URI scheme or I<urn:uuid> for handy.
+
+=head1 UNICODE FLAGS
+
+By default, XML::Atom takes off all the Unicode flag fro mthe feed content. For example,
+
+  my $title = $feed->title;
+
+the variable C<$title> contains UTF-8 bytes without Unicode flag set,
+even if the feed title contains some multibyte chracters.
+
+If you don't like this behaviour and wants to andle everything as
+Unicode characters (rather than UTF-8 bytes), set
+C<$XML::Atom::ForceUnicode> flag to 1.
+
+  $XML::Atom::ForceUnicode = 1;
+
+then all the data returned from XML::Atom::Feed object and
+XML::Atom::Entry object etc., will have Unicode flag set.
+
+The only exception will be C<< $entry->content->body >>, if content
+type is not text/* (e.g. image/gif). In that case, the content body is
+still binary data, without Unicode flag set.
+
+=head1 CREATING ATOM 1.0 FEEDS
+
+By default, XML::Atom::Feed and other classes (Entry, Link and
+Content) will create entities using Atom 0.3 namespaces. In order to
+create 1.0 feed and entry elements, you can set I<Version> as a
+parameter, like:
+
+  $feed = XML::Atom::Feed->new(Version => 1.0);
+  $entry = XML::Atom::Entry->new(Version => 1.0);
+
+Setting those Version to every element would be sometimes painful. In
+that case, you can override the default version number by setting
+C<$XML::Atom::DefaultVersion> global variable to "1.0".
+
+  use XML::Atom;
+
+  $XML::Atom::DefaultVersion = "1.0";
+
+  my $feed = XML::Atom::Feed->new;
+  $feed->title("blah");
+
+  my $entry = XML::Atom::Entry->new;
+  $feed->add_entry($entry);
+
+  $feed->version; # 1.0
 
 =head1 AUTHOR & COPYRIGHT
 

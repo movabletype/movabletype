@@ -1,0 +1,34 @@
+name: StyleCatcher
+id: StyleCatcher
+key: StyleCatcher
+author_link: http://www.sixapart.com/
+author_name: Six Apart, Ltd.
+description: <MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a> page.">
+version: 2.1
+doc_link: http://www.sixapart.com/movabletype/styles/
+l10n_class: StyleCatcher::L10N
+
+stylecatcher_libraries:
+    sixapart_mt4:
+        url: http://www.sixapart.com/movabletype/styles/mt4/library
+        label: MT 4 Style Library
+        description_label: A collection of styles compatible with Movable Type 4 default templates.
+        order: 1
+
+template_sets:
+    mt_blog:
+        base_css: themes-base/blog.css 
+
+applications:
+    cms:
+        methods:
+            stylecatcher_theme: $StyleCatcher::StyleCatcher::CMS::view
+            stylecatcher_js: $StyleCatcher::StyleCatcher::CMS::js
+            stylecatcher_apply: $StyleCatcher::StyleCatcher::CMS::apply
+        menus:
+            design:theme:
+                label: Styles
+                order: 300
+                mode: stylecatcher_theme
+                view: blog
+                permission: edit_templates

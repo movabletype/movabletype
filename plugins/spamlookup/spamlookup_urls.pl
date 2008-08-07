@@ -1,10 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Copyright (c) 2004-2007, Six Apart, Ltd.
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2004-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package MT::Plugin::SpamLookup::Link;
 
@@ -15,7 +15,7 @@ use MT::Plugin;
 use vars qw($VERSION);
 sub BEGIN {
     @MT::Plugin::SpamLookup::Link::ISA = ('MT::Plugin');
-    $VERSION = '2.1';
+    $VERSION = '2.11';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::Link({
         name => '<MT_TRANS phrase="SpamLookup - Link">',
@@ -42,24 +42,25 @@ sub BEGIN {
             ['prioremail_weight', { Default => 1 }],
             ['prioremail_greyperiod_mode', { Default => 1 }],
             ['prioremail_greyperiod', { Default => 7 }],
-        ])
+        ]),
+        registry => {
+            junk_filters => {
+                spamlookup_urls => {
+                    label => "SpamLookup Link Filter",
+                    code => sub { $plugin->runner('urls', @_) },
+                },
+                spamlookup_link_memory => {
+                    label => "SpamLookup Link Memory",
+                    code => sub { $plugin->runner('link_memory', @_) },
+                },
+                spamlookup_email_memory => {
+                    label => "SpamLookup Email Memory",
+                    code => sub { $plugin->runner('email_memory', @_) },
+                },
+            },
+        },
     });
     MT->add_plugin($plugin);
-    MT->register_junk_filter({
-        code => sub { $plugin->runner('urls', @_) },
-        plugin => $plugin,
-        name => 'SpamLookup Link Filter'
-    });
-    MT->register_junk_filter({
-        code => sub { $plugin->runner('link_memory', @_) },
-        plugin => $plugin,
-        name => 'SpamLookup Link Memory'
-    });
-    MT->register_junk_filter({
-        code => sub { $plugin->runner('email_memory', @_) },
-        plugin => $plugin,
-        name => 'SpamLookup Email Memory'
-    });
 }
 
 sub config_tmpl {

@@ -5,7 +5,7 @@
 ## critical for everyone are listed below.                    ##
 ##                                                            ##
 ## Information on all others can be found at:                 ##
-## __HELP_URL__config
+## http://www.movabletype.org/documentation/appendices/config-directives/ ##
 
 ################################################################
 ##################### REQUIRED SETTINGS ########################
@@ -42,5 +42,3 @@ DBHost localhost
 ObjectDriver DBI::sqlite
 Database /path/to/sqlite/database/file
 
-##### BERKELEYDB #####
-DataSource  /path/to/database/directory

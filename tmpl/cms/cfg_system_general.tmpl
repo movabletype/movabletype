@@ -1,0 +1,64 @@
+<mt:setvar name="page_title" value="<__trans phrase="System: General Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="system-general-settings" value="1">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your settings have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/cfg_system_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function validate (f) {
+    return true;
+}
+/* ]]> */
+</script>
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<input type="hidden" name="__mode" value="save_cfg_system_general" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<fieldset>
+
+    <mtapp:setting
+        id="system_email_address"
+        label="<__trans phrase="System Email">"
+        hint="<__trans phrase="The email address used in the From: header of each email sent from the system.  The address is used in password recovery, commenter registration, comment, trackback notification and a few other minor events.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> class="full-width" />
+        </div>
+    </mt:app:setting>
+
+</fieldset>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<mt:include name="include/footer.tmpl">

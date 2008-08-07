@@ -1,0 +1,56 @@
+<mt:setvarblock name="page_title"><__trans phrase="Export"></mt:setvarblock>
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="export" value="1">
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function validate(f) {
+    if (!f['blog_id'].value) {
+        alert("<__trans phrase="You must select a blog to export." escape="js">");
+        return false;
+    }
+    return true;
+}
+function selectBlog() {
+    return openDialog(this.form, 'dialog_select_weblog', 'multi=0&amp;return_args=__mode%3Dstart_export');
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+<MTSetVarBlock name="content_nav">
+    <mt:include name="include/tools_content_nav.tmpl">
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+<p><__trans phrase="_USAGE_EXPORT_1"></p> 
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<input type="hidden" name="__mode" value="export" />
+<mt:if name="blog_id">
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<mt:else>
+<input type="hidden" id="export_blog_id" name="blog_id" value="" />
+</mt:if>
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<mtapp:setting
+    id="export_blog_id_field"
+    label="<__trans phrase="Blog to Export">"
+    hint="<__trans phrase="Select a blog for exporting.">"
+    content_class="field-content-text">
+    <mt:if name="blog_id">
+        <div><mt:var name="blog_name" escape="html"> (<mt:var name="blog_id">)</div>
+    </mt:if>
+    <a href="javascript:void(0)" onclick="return selectBlog()"><mt:if name="blog_id"><__trans phrase="Change blog"><mt:else><__trans phrase="Select blog"></mt:if></a>
+</mtapp:setting>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Export Blog (s)">"
+        class="primary-button"
+        ><__trans phrase="Export Blog"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+<mt:include name="include/footer.tmpl">

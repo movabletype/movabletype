@@ -1,3 +1,9 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::L10N::lang_tag;  ## <--- Replace "lang_tag" with proper tag.
 use strict;
 use MT::L10N;
@@ -74,7 +80,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'Main Menu' => '',
     '[_1] Editing Menu' => '',
     'Entries' => '',
-    'Create New Entry' => '',
+    'Create Entry' => '',
     'List &amp; Edit Entries' => '',
     'Upload File' => '',
     'Manage' => '',
@@ -177,17 +183,6 @@ sub encoding { "iso-8859-1" }   # Latin-1
     ', and it has been posted to your site' => '',
     'View your site' => '',
     'Edit this entry' => '',
-
-    ## Bookmarklet setup screen (bookmarklets.tmpl)
-    'Bookmarklets' => '',
-    'Post to MT Weblog' => '',
-    'Add MT It! to Windows right-click menu' => '',
-    '_USAGE_BOOKMARKLET_1' => '',
-    '_USAGE_BOOKMARKLET_2' => '',
-    '_USAGE_BOOKMARKLET_3' => '',
-    '_USAGE_BOOKMARKLET_4' => '',
-    '_USAGE_BOOKMARKLET_5' => '',
-    'Include:' => '',
 
     ## Blog Config: Navigation
     'Configuration' => '',
@@ -323,7 +318,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'You must set your Local Site Path.' => '',
     'You must set your Site URL.' => '',
     'You did not select a timezone.' => '',
-    'Create new weblog' => '',
+    'Create weblog' => '',
     'Your weblog configuration has been saved.' => '',
     'Name your weblog. The weblog name can be changed at any time.' => '',
     'Weblog name:' => '',
@@ -441,7 +436,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'View complete list of authors' => '',
     'Delete, view, and edit authors via a complete list of authors in the system.' => '',
     'General Permissions' => '',
-    'User can create new weblogs' => '',
+    'User can create weblogs' => '',
     'User can view activity log' => '',
     'Weblog:' => '',
     'Post' => '',
@@ -467,7 +462,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
 
     ## Template-editing screen (edit_template.tmpl)
     'List Templates' => '',
-    'Create New Template' => '',
+    'Create Template' => '',
     'Edit Template' => '',
     'Template Name' => '',
     'Comment Listing Template' => '',
@@ -522,7 +517,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
 
     ## Main Menu screen (list_blog.tmpl)
     '[_1]: Welcome to the Main Menu' => '',
-    'Select an existing weblog to edit, create new weblogs, add/edit authors, and edit your personal information.' => '',
+    'Select an existing weblog to edit, create weblogs, add/edit authors, and edit your personal information.' => '',
     'Your selected weblog has been deleted.' => '',
     'Your existing weblogs:' => '',
     'Add entries, manage templates, set configurations, etc.' => '',
@@ -532,14 +527,13 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'New Entry' => '',
     'Manage Weblog' => '',
     'Delete Weblog' => '',
-    'Create new Weblog' => '',
+    'Create Weblog' => '',
     'Add/Edit Weblog authors' => '',
     'Add authors, set permissions' => '',
     'Edit your profile' => '',
     'Change password, contact info, select language' => '',
     'View Activity Log' => '',
     'System activity, logins' => '',
-    'Set up bookmarklets' => '',
     'Bookmarklets enable one-click publishing' => '',
 
     ## List & Edit Entries screen (list_entry.tmpl)
@@ -581,13 +575,13 @@ sub encoding { "iso-8859-1" }   # Latin-1
     '_USAGE_TEMPLATES' => '',
     'You have successfully deleted the checked template(s).' => '',
     'Index templates' => '',
-    'Create new index template' => '',
+    'Create index template' => '',
     'Rebuild?' => '',
     'Archive-Related Templates' => '',
-    'Create new archive template' => '',
+    'Create archive template' => '',
     'Miscellaneous Templates' => '',
     'Template Modules' => '',
-    'Create new template module' => '',
+    'Create template module' => '',
 
     ## Login screen (login.tmpl)
     'Your Movable Type session has ended. If you wish to log in again, you can do so below.' => '',
@@ -630,17 +624,6 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'Rebuild Indexes Only' => '',
     'Rebuild [_1] Archives Only' => '',
 
-    ## Delete confirmation screen (delete_confirm.tmpl)
-    'Are you sure you want to permanently delete the [quant,_1,author] from the system?' => '',
-    'Are you sure you want to delete the [quant,_1,comment]?' => '',
-    'Are you sure you want to delete the [quant,_1,entry,entries]?' => '',
-    'Are you sure you want to delete the [quant,_1,template]?' => '',
-    'Are you sure you want to delete the [quant,_1,category,categories]? When you delete a category, all entries assigned to that category will be unassigned from that category.' => '',
-    'Are you sure you want to delete the [quant,_1,template] from the particular archive type(s)?' => '',
-    'Are you sure you want to delete the [quant,_1,IP address,IP addresses] from your Banned IP List?' => '',
-    'Are you sure you want to delete the [quant,_1,notification address,notification addresses]?' => '',
-    'Are you sure you want to delete the [quant,_1,weblog]? When you delete a weblog, all of the entries, comments, templates, notifications, and author permissions are deleted along with the weblog itself. Make sure that this is what you want, because this action is permanent.' => '',
-
     ## Rebuilding screen (rebuilding.tmpl)
     'Rebuilding [_1]' => '',
     'Rebuilding [_1] pages [_2]' => '',
@@ -673,7 +656,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     'The following entries match the search string [_1]' => '',
     '; that search string has been replaced by [_1]' => '',
 
-    ## Show upload HTML screen (show_upload_html.tmpl)
+    ## Show upload HTML screen (popup/show_upload_html.tmpl)
     'Copy and paste this HTML into your entry.' => '',
     'Upload Another' => '',
 
@@ -847,7 +830,7 @@ sub encoding { "iso-8859-1" }   # Latin-1
     "No blog ID" => "",
     "You do not have export permissions" => "",
     "Export failed on entry '[_1]': [_2]" => "",
-    "You need to provide a password if you are going to\ncreate new authors for each author listed in your blog.\n" => "",
+    "You need to provide a password if you are going to\ncreate authors for each author listed in your blog.\n" => "",
     "Can't open directory '[_1]': [_2]" => "",
     "Can't open file '[_1]': [_2]" => "",
     "Saving author failed: [_1]" => "",

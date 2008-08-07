@@ -1,0 +1,189 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Asset">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your asset changes have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="asset-stats-widget"
+        class="stats-widget"
+        label="<__trans phrase="Stats">">
+        <ul class="object-stats">
+            <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></li>
+        <mt:if name="modified_by">
+            <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></li>
+        </mt:if>
+        </ul>
+    </mtapp:widget>
+    
+    <mtapp:widget
+        id="appears-in"
+        label="<__trans phrase="Appears in...">">
+        <mt:if name="appears_in">
+            <mt:loop name="appears_in">
+                <mt:if name="__first__">
+        <ul>
+                </mt:if>
+            <li><a href="<mt:var name="script_url">?__mode=edit&amp;_type=<mt:var name="class">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="id" escape="url">" title="<__trans phrase="Published on [_1]" params="<mt:var name="created_on_formatted">">" class="icon-left icon-<mt:var name="class" lower_case="1">"><mt:var name="title" escape="html" default="<__trans phrase="...">"></a></li>
+                <mt:if name="__last__">
+        </ul>
+                </mt:if>
+            </mt:loop>
+            <mt:if name="appears_in_more">
+                <p><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all entries"></a></p>
+                <p><a href="<mt:var name="script_url">?__mode=list_pages&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=asset_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Show all pages"></a></p>
+            </mt:if>
+        <mt:else>
+            <span class="hint"><__trans phrase="This asset has not been used."></span>
+        </mt:if>
+    </mtapp:widget>
+    <mt:if name="related">
+        <mtapp:widget
+            id="related-assets"
+            label="<__trans phrase="Related Assets">">
+            <ul>
+            <mt:loop name="related">
+                <li class="asset asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if> pkg">
+                    <div class="asset-thumb">
+                        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<$mt:var name="file_name" escape="html"$>">
+                <mt:if name="has_thumbnail">
+                            <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+                <mt:else>
+                            <span><__trans phrase="No thumbnail image"></span>
+                </mt:if>
+                        </a>
+                    </div>
+                    <div class="asset-metadata">
+                        <h3 class="asset-label"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name" escape="html"$>"><mt:var name="label" escape="html"></a></h3>
+                        <div class="asset-size">
+                            <mt:var name="created_on_formatted"><br />
+                            <mt:if name="class" eq="image"><mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">px</mt:if><br />
+                            <mt:var name="file_size_formatted" escape="html">
+                            <!-- <mt:if var="is_parent">(parent)</mt:if><mt:if var="is_child">(child)</mt:if><mt:if var="is_sibling">(sibling)</mt:if> -->
+                        </div>
+                    </div>
+                </li>
+            </mt:loop>
+            </ul>
+        </mtapp:widget>
+    </mt:if>
+    <$MTApp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function validate(form) {    
+        if (form.label.value.match(/\S/,''))
+            return true;
+        alert('<__trans phrase="You must specify a label for the asset." escape="singlequotes">');
+        form.label.focus();
+        return false;
+    }
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+<div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
+    <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="__mode" value="save" />
+        <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+        <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+        <div class="asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+            <div class="asset-thumb">
+                <div class="asset-thumb-inner">
+<mt:if name="has_thumbnail">
+                <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+<mt:else>
+                <span><__trans phrase="No thumbnail image"></span>
+</mt:if>
+<mt:if name="file_is_missing">
+                <span class="asset-missing-msg"><mt:if name="file_is_missing"><__trans phrase="[_1] is missing" params="<mt:var name="asset_class_label" escape="html">"><mt:else><mt:var name="asset_class_label" escape="html"></mt:if></span>
+</mt:if>
+                </div>
+            </div>
+            <div class="asset-thumb-metadata">
+                <div class="asset-size">
+                    <mt:if name="class" eq="image"><mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">px<mt:if name="file_size_formatted"> - </mt:if></mt:if><mt:var name="file_size_formatted" escape="html">
+                </div>
+                <div class="asset-actions">
+                    <a href="<mt:var name="url" escape="html">"><__trans phrase="View Asset"></a>
+<mt:unless name="file_is_missing">
+                    <div class="asset-embed">
+                        <a href="javascript:void(0)" onclick="toggleHidden('asset-embed-input');toggleHidden('asset-embed-link');selectAll('asset-embed-input')" id="asset-embed-link"><__trans phrase="Embed Asset"></a>
+                        <input value="<mt:var name="url" escape="html">" id="asset-embed-input" class="hidden" />
+                    </div>
+</mt:unless>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="asset-metadata">
+            <mtapp:setting
+                id="type"
+                label="<__trans phrase="Type">"
+                label_class="text-top"
+                content_class="field-content-text">
+                <mt:var name="asset_class_label" escape="html">
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="label"
+                label="<__trans phrase="Label">"
+                label_class="text-top"
+                help_page="assets"
+                help_section="asset_label">
+                <div class="textarea-wrapper">
+                    <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
+                </div>
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="description"
+                label="<__trans phrase="Description">"
+                label_class="text-top">
+                <textarea name="description" id="description" rows="" cols="" class="full-width short"><mt:var name="description" escape="html"></textarea>
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="tags"
+                label="<__trans phrase="Tags">"
+                label_class="text-top">
+                <div class="textarea-wrapper">
+                    <input name="tags" id="tags" class="full-width" value="<$mt:var name="tags" escape="html"$>" autocomplete="off" />
+                </div>
+            </mtapp:setting>
+        </div>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this asset (s)">"
+        class="primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+</form>
+
+</div>
+
+<mt:include name="include/footer.tmpl">

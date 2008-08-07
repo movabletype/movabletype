@@ -1,4 +1,11 @@
 #!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 use strict;
 
 if (grep { /--help/ } @ARGV) {
@@ -82,7 +89,9 @@ sub wanted {
     close $fh;
     while (/<MT_TRANS ([^>]+)>/g) {
         my($msg, %args) = ($1);
-        while ($msg =~ /(\w+)\s*=\s*(\\?["'])(.*?)\2/g) {   #"
+        while ($msg =~ /(\w+)\s*=\s*(\\?["'])(.*?[^\\])\2/gs) {   #"
+# try avoiding strings ending in escape chars					 
+#        while ($msg =~ /(\w+)\s*=\s*(\\?["'])(.*?)\2/g) {   #"
             $args{$1} = $3;
         }
         next unless $args{phrase};
@@ -95,7 +104,7 @@ sub wanted {
 
 sub wanted_app {
     my $file = $File::Find::name;
-    return unless $file =~ m!/mt\.js$! || $file =~ /\.(pm|cgi\.pre)$/;
+    return unless $file =~ m!/mt\.js$! || $file =~ /\.(pm|pl|cgi\.pre)$/;
     print "\n    ## $file\n";
     open my $fh, $_ or die "Can't open $_: $!";
     local $_ = do { local $/; <$fh> };
@@ -109,7 +118,13 @@ sub wanted_app {
             print encode_phrase($phrase,eval('$MT::L10N::'.$languagename.'::Lexicon{$phrase}'));
         }
     } else {
-        while (/(?:translate|errtrans|maketext)\s*\(\s*("([^"]*)"|'([^']*)')/gs) { #"
+        while (/(?:translate|errtrans|maketext|trans_error)\s*\(\s*("([^"]*?[^\\])"|'([^']*?[^\\])')/gs) { #"
+	# Try avoiding escape symbols at end of string
+#        while (/(?:translate|errtrans|maketext|trans_error)\s*\(\s*("([^"]*)"|'([^']*)')/gs) { #"
+	# Translate, errtrans... followed by open and closed brackets with either 
+	# a double quote followed by non double quotes followed by a double quote
+	# or 
+	# a single quote followed by non single quotes followed by a single quote
             my($phrase) = ($2 || $3);
             next if $SeenPhrase{$phrase}++;
             next if $phrase =~ /^_[A-Z]/;

@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -87,9 +87,14 @@ sub score_rules {
         if ($self->can($meth)) {
             if (my $result = $self->$meth($obj, $test)) {
                 $total += $score;
-                push @log, $self->{name} . ": "
-                    . ($score < 0?'':'+') . $score
-                    . ' ' . MT->translate("from rule") . " $type $test";
+                push @log, MT->translate
+                  ( '[_1]: [_2][_3] from rule [_4][_5]',
+                    $self->{name},
+                    ($score < 0 ? '' : '+'),
+                    $score,
+                    $type,
+                    $test
+                  );
             }
         }
     }
@@ -127,10 +132,13 @@ sub score {
             push @log, @$log;
         } else {
             if ($score ne ABSTAIN) {
-                push @log, $self->{name} . ": "
-                    . ($score < 0?'':'+') . $score
-                    . ' ' . MT->translate("from test")
-                    . ' ' . $_->{name};
+                push @log, MT->translate
+                  ( '[_1]: [_2][_3] from test [_4]',
+                    $self->{name},
+                    ($score < 0?'':'+'),
+                    $score,
+                    $_->{name}
+                  );
             }
         }
     }
@@ -180,3 +188,18 @@ sub decode_entities {
 }
 
 1;
+__END__
+
+=head1 NAME
+
+MT::Plugin::JunkFilter
+
+=head1 METHODS
+
+TODO
+
+=head1 AUTHOR & COPYRIGHT
+
+Please see L<MT/AUTHOR & COPYRIGHT>.
+
+=cut

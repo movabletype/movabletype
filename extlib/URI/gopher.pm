@@ -38,7 +38,7 @@ sub _gopher_type
 	my $new_type = shift;
 	if (defined($new_type)) {
 	    Carp::croak("Bad gopher type '$new_type'")
-               unless $new_type =~ /^[0-9+IgT]$/;
+               unless length($new_type) == 1;
 	    substr($path, 0, 0) = $new_type;
 	    $self->path_query($path);
 	} else {

@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 use strict;
 use vars qw( $T_CFG );
 
@@ -28,17 +34,12 @@ $T_CFG = $ARGV[0] || $T_CFG;
 my $mt = MT->instance(Config => $T_CFG) or die "No MT object " . MT->errstr();
 
 my $driver = MT::Object->driver();
-my @tables = qw(author blog category comment entry fileinfo ipbanlist log notification permission placement plugindata session tbping template templatemap trackback objecttag);
-if ($driver->{dbh}) {
-    $driver->{dbh}->do("drop table mt_$_") foreach @tables;
-    if ($driver->{dbh}->isa('MT::ObjectDriver::DBI::postgres')) {
-        $driver->{dbh}->do("drop sequence mt_$_\_id") foreach @tables;
-    }
-} else {
-    my $path = $mt->config('DataSource');
-    if (-d $path && glob("$path/*")) {
-        system("rm $path/* 2>/dev/null");
-    }
+my @tables = keys %{ $mt->registry("object_types") };
+@tables = grep { ! m/^plugin$/ } @tables;
+my $dbh = $driver->rw_handle;
+$dbh->do("drop table mt_$_") foreach @tables;
+if (MT->config('ObjectDriver') =~ m/(postgres|pg)/i) {
+    $dbh->do("drop sequence mt_$_\_id") foreach @tables;
 }
 require MT::Upgrade;
 MT::Upgrade->do_upgrade(Install => 1, App => __PACKAGE__);
@@ -214,29 +215,22 @@ And it\'s a hard, it\'s a hard, it\'s a hard, it\'s a hard,
 It\'s a hard rain\'s a-gonna fall');
 
 require MT::Category;
-my $cat = MT::Category->load({ name => 'foo', blog_id => 1});
-if (!$cat) {
-    $cat = new MT::Category;
-    $cat->blog_id(1);
-    $cat->label('foo');
-    $cat->description('bar');
-    $cat->author_id($chuckd->id);
-    $cat->parent(0);
-    $cat->id(1);
-    $cat->save or die "Couldn't save category record 1: ". $cat->errstr;
-}
+my $cat = new MT::Category;
+$cat->blog_id(1);
+$cat->label('foo');
+$cat->description('bar');
+$cat->author_id($chuckd->id);
+$cat->parent(0);
+$cat->save or die "Couldn't save category record 1: ". $cat->errstr;
+my $parent_cat = $cat->id;
 
-$cat = MT::Category->load({ name => 'bar', blog_id => 1});
-if (!$cat) {
-    $cat = new MT::Category;
-    $cat->blog_id(1);
-    $cat->label('bar');
-    $cat->description('foo');
-    $cat->author_id($chuckd->id);
-    $cat->parent(0);
-    $cat->id(2);
-    $cat->save or die "Couldn't save category record 2: ". $cat->errstr;
-}
+$cat = new MT::Category;
+$cat->blog_id(1);
+$cat->label('bar');
+$cat->description('foo');
+$cat->author_id($chuckd->id);
+$cat->parent(0);
+$cat->save or die "Couldn't save category record 2: ". $cat->errstr;
 
 $tb = MT::Trackback->load(2);
 if (!$tb) {
@@ -250,17 +244,13 @@ if (!$tb) {
     $tb->save or die "Couldn't save Trackback record 2: " . $tb->errstr;;
 }
 
-$cat = MT::Category->load({ name => 'subfoo', blog_id => 1});
-if (!$cat) {
-    $cat = new MT::Category;
-    $cat->blog_id(1);
-    $cat->label('subfoo');
-    $cat->description('subcat');
-    $cat->author_id($bobd->id);
-    $cat->parent(1);
-    $cat->id(3);
-    $cat->save or die "Couldn't save category record 3: ". $cat->errstr;
-}
+$cat = new MT::Category;
+$cat->blog_id(1);
+$cat->label('subfoo');
+$cat->description('subcat');
+$cat->author_id($bobd->id);
+$cat->parent($parent_cat);
+$cat->save or die "Couldn't save category record 3: ". $cat->errstr;
 
 require MT::Placement;
 foreach my $i (1..@verses) {
@@ -271,6 +261,7 @@ foreach my $i (1..@verses) {
                              title => "Verse $i",
                              text => $verses[$i],
                              author_id => ($i == 3 ? $bobd->id : $chuckd->id),
+                             authored_on => sprintf("%04d0131074501", $i + 1960),
                              created_on => sprintf("%04d0131074501", $i + 1960),
                              modified_on => sprintf("%04d0131074601", $i + 1960),
                              allow_comments => ($i <= 2 ? 0 : 1),
@@ -306,7 +297,7 @@ unless (MT::Comment->count({entry_id => 1})) {
                       entry_id => 1,
                       author => 'v14GrUH 4 cheep',
                       visible => 1,
-                      name => 'Jake',
+                      author => 'Jake',
                       email => 'jake@fatman.com',
                       url => 'http://fatman.com/',
                       blog_id => 1,
@@ -322,7 +313,6 @@ unless (MT::Comment->count({entry_id => 5})) {
                       entry_id => 5,
                       author => 'Comment 2',
                       visible => 1,
-                      name => 'John D',
                       email => 'johnd@doe.com',
                       url => 'http://john.doe.com/',
                       commenter_id => $johnd->id,
@@ -340,7 +330,6 @@ unless (MT::Comment->count({entry_id => 6})) {
                       entry_id => 6,
                       author => 'Comment 3',
                       visible => 1,
-                      name => 'JD3',
                       email => '',
                       url => '',
                       blog_id => 1,
@@ -363,7 +352,6 @@ unless (MT::Comment->count({entry_id => 7})) {
                       entry_id => 7,
                       author => 'Comment 7',
                       visible => 0,
-                      name => 'JD5',
                       email => '',
                       url => '',
                       blog_id => 1,
@@ -379,7 +367,6 @@ unless (MT::Comment->count({entry_id => 8})) {
                       entry_id => 8,
                       author => 'Comment 8',
                       visible => 1,
-                      name => 'JD6',
                       email => '',
                       url => '',
                       blog_id => 1,

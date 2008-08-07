@@ -1,10 +1,10 @@
-# SpamLookup plugin for Movable Type
-# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
-# Copyright (c) 2004-2007, Six Apart, Ltd.
-# Author: Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
+# Movable Type (r) Open Source (C) 2006-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
+
+# Original copyright (c) 2004-2006, Brad Choate and Tobias Hoellrich
 
 package spamlookup;
 
@@ -138,7 +138,7 @@ sub link_memory {
             if (UNIVERSAL::isa($obj, 'MT::Comment')) {
                 my @textdomains = extract_domains($obj->text);
                 if (!@textdomains) {
-                    my $url = $obj->url;
+                    my $url = $obj->url || '';
                     $url =~ s/^\s+|\s+$//gs;
                     if ($url =~ m!https?://\w+!) { # valid url requirement...
                         require MT::Comment;
@@ -162,7 +162,7 @@ sub link_memory {
                     }
                 }
             } elsif (UNIVERSAL::isa($obj, 'MT::TBPing')) {
-                my $url = $obj->source_url;
+                my $url = $obj->source_url || '';
                 $url =~ s/^\s+|\s+$//gs;
                 my $terms = { source_url => $url,
                     blog_id => $obj->blog_id,
@@ -345,6 +345,8 @@ sub ipbl {
     }
 
     my ($a, $b, $c, $d) = split /\./, $remote_ip;
+    return (ABSTAIN) unless $a && $b && $c &&$d;
+
     my @ipbl_service = split /\s*,?\s+/, $config->{ipbl_service};
     return (ABSTAIN) unless @ipbl_service;
 
@@ -491,8 +493,15 @@ sub wordlist_match {
             my ($opt) = $re =~ m!/([^/]*)$!;
             $re =~ s!^/!!;
             $re =~ s!/[^/]*$!!;
-            $re = '(?'.$opt.':'.$re.')' if $opt;
-            $re = eval { qr/$re/ };
+            if ($opt) {
+                # increment any internal backreferences (\1),
+                # since we're wrapping the whole expression in
+                # a capturing group
+                $re =~ s/ \\(\d+) / '\\' . ($1 + 1) /gex;
+
+                $re = '(?' . $opt . ':' . $re . ')';
+            }
+            $re = eval { qr/($re)/ };
             $re = $re_opt . quotemeta($patt) . $re_opt if $@;
             if ($has_encode) {
                 push @matches, [ Encode::encode($enc, $patt),
@@ -523,8 +532,8 @@ sub domain_or_ip_in_whitelist {
             my @whitelist = split /\r?\n/, $whitelist;
             foreach my $whiteitem (@whitelist) {
                 next if $whiteitem =~ m/^#/;
-                if ($whiteitem =~ m/^\d{1,3}(?:\.\d{1,3}){0,3}$/) {
-                    return 1 if defined $ip && ($whiteitem =~ m/^\Q$ip\E/);
+                if ($whiteitem =~ m/^\d{1,3}\.(?:\d{1,3}\.(?:\d{1,3}\.(?:\d{1,3})?)?)?$/) {
+                    return 1 if defined $ip && ($ip =~ m/^\Q$whiteitem\E/);
                 } elsif ($whiteitem =~ m/\w/) {
                     next if defined $domain && ($domain =~ m/\Q$whiteitem\E$/i);
                     $domains{$domain} = 1;
@@ -539,8 +548,8 @@ sub domain_or_ip_in_whitelist {
     my @whitelist = split /\r?\n/, $whitelist;
     foreach my $whiteitem (@whitelist) {
         next if $whiteitem =~ m/^#/;
-        if ($whiteitem =~ m/^\d{1,3}(?:\.\d{1,3}){0,3}$/) {
-            return 1 if defined $ip && ($whiteitem =~ m/^\Q$ip\E/);
+        if ($whiteitem =~ m/^\d{1,3}\.(?:\d{1,3}\.(?:\d{1,3}\.(?:\d{1,3})?)?)?$/) {
+            return 1 if defined $ip && ($ip =~ m/^\Q$whiteitem\E/);
         } elsif ($whiteitem =~ m/\w/) {
             return 1 if defined $domain && ($domain =~ m/\Q$whiteitem\E$/i);
         }

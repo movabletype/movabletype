@@ -1,0 +1,60 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Success"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<mtapp:statusmsg
+    id="message"
+    class="success">
+    <p>
+    <mt:if name="all">
+    <__trans phrase="The files for [_1] have been published." params="<strong><mt:var name="blog_name" escape="html"></strong>">
+    <mt:else>
+    <mt:if name="is_one_index">
+    <__trans phrase="Your [_1] has been published." params="<mt:var name="type" escape="html">">
+    <mt:else>
+    <mt:if name="is_entry">
+    <__trans phrase="Your [_1] has been published." params="<mt:var name="type" escape="html">">
+    <mt:else>
+    <mt:if name="archives">
+    <__trans phrase="Your [_1] archives have been published." params="<mt:var name="type" escape="html">">
+    <mt:else>
+    <__trans phrase="Your [_1] templates have been published." params="<mt:var name="type" escape="html">">
+    </mt:if>
+    </mt:if>
+    </mt:if>
+    </mt:if>
+    <br />
+    <mt:if name="start_timestamp">
+    <__trans phrase="Publish time: [_1]." params="<mt:date ts="$start_timestamp" relative="3">">
+    </mt:if>
+    </p>
+    <p>
+    <a target="_blank" href="<mt:var name="blog_url" escape="html">"><__trans phrase="View your site."></a>
+    <mt:if name="is_one_index">
+        <a target="_blank" href="<mt:var name="tmpl_url">"><__trans phrase="View this page."></a>
+    </mt:if>
+    </p>
+</mtapp:statusmsg>
+
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions right">
+        <button
+            onclick="window.close()"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Close (x)">"
+            class="primary-button"
+            ><__trans phrase="Close"></button>
+        <button
+            onclick="window.location='<mt:var name="script_url">?__mode=rebuild_confirm&amp;blog_id=<mt:var name="blog_id">'"
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Publish Again (s)">"
+            ><__trans phrase="Publish Again"></button>
+            
+    </div>
+</div>
+
+
+<mt:include name="include/chromeless_footer.tmpl">

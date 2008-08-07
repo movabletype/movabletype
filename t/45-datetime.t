@@ -1,7 +1,8 @@
 # $Id$
 
 use strict;
-use Test;
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use Test::More;
 use MT::DateTime;
 use DateTime;
 use DateTime::TimeZone;
@@ -22,7 +23,7 @@ foreach my $year ( 2000..2001 ) {
 }
 
 my $num_tests = 3;
-plan tests => (scalar @dates) * $num_tests;
+plan tests => 9 + (scalar @dates) * $num_tests;
 
 foreach my $dh (@dates) {
     my $mt_dt = MT::DateTime->new( %$dh );
@@ -65,3 +66,24 @@ foreach my $dh (@dates) {
         or print "$wk_ymd :: $the_date -> $mt_yr/$mt_wk -> $wk_ymd -> $wk_yr/$wk_wk does not equate\n";
 }
 
+# compare tests
+my $t = time();
+ok( (MT::DateTime->compare( a => '20080401123456', b => '20080401123456' ) == 0), 'the same time is equal to each other');
+ok( (MT::DateTime->compare( a => '20080401123457', b => '20080401123456' ) > 0), 'a > b returns positive');
+ok( (MT::DateTime->compare( a => '20080401123456', b => '20080501123456' ) < 0), 'a < b returns negative');
+ok( (MT::DateTime->compare( a => { value => $t, type => 'epoch' }, b => { value => $t, type => 'epoch' } ) == 0), 'the same time is equal to each other');
+ok( (MT::DateTime->compare( b => { value => $t, type => 'epoch' }, a => { value => $t, type => 'epoch' } ) == 0), 'the same time is equal to each other');
+ok( (MT::DateTime->compare( b => { value => time(), type => 'epoch' }, a => '20080101235959' ) < 0), 'today is larger than Jan 1st 23:59:59, 2008');
+ok( (MT::DateTime->compare( a => { value => time(), type => 'epoch' }, b => '20080101235959' ) > 0), 'today is larger than Jan 1st 23:59:59, 2008');
+my $dt1 = MT::DateTime->new( %{$dates[0]} );
+my $dt2 = MT::DateTime->new( %{$dates[$#dates]} );
+ok( ($dt1->compare(a => { value => $dt2, type => 'datetime' }) > 0),
+    sprintf("%04d-%02d-%02d %02d:%02d:%02d %s", $dates[$#dates]{year}, $dates[$#dates]{month}, $dates[$#dates]{day}, $dates[$#dates]{hour}, $dates[$#dates]{minute}, $dates[$#dates]{second}, $dates[$#dates]{time_zone}) .
+    ' is the future from ' .
+    sprintf("%04d-%02d-%02d %02d:%02d:%02d %s", $dates[0]{year}, $dates[0]{month}, $dates[0]{day}, $dates[0]{hour}, $dates[0]{minute}, $dates[0]{second}, $dates[0]{time_zone})
+);
+ok( ($dt1->compare(b => { value => $dt2, type => 'datetime' }) < 0),
+    sprintf("%04d-%02d-%02d %02d:%02d:%02d %s", $dates[0]{year}, $dates[0]{month}, $dates[0]{day}, $dates[0]{hour}, $dates[0]{minute}, $dates[0]{second}, $dates[0]{time_zone}) .
+    ' is the past from ' .
+    sprintf("%04d-%02d-%02d %02d:%02d:%02d %s", $dates[$#dates]{year}, $dates[$#dates]{month}, $dates[$#dates]{day}, $dates[$#dates]{hour}, $dates[$#dates]{minute}, $dates[$#dates]{second}, $dates[$#dates]{time_zone})
+);

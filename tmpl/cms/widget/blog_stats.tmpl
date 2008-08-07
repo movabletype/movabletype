@@ -1,0 +1,137 @@
+<mt:unless name="tab"><mt:setvar name="tab" value="entry"></mt:unless>
+<mt:if name="tab" eq="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
+<mt:setvarblock name="html_head" append="1">
+    <mt:if name="has_stat_urls">
+    <script type="text/javascript" src="<mt:var name="static_uri">js/flash/JavaScriptFlashGateway.js"></script>
+    </mt:if>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function showRecentEntriesByTag(el_div, res) {
+        var result = eval('(' + res.responseText + ')');
+        if (result && result.result.html) {
+            getByID(el_div).innerHTML = result.result.html;
+        }
+    }
+    function clearRecentEntriesByTag(el_div, res) {
+        getByID(el_div).innerHTML = "<div class='error-message'><__trans phrase="Error retrieving recent entries."></div>";
+    }
+    function recentEntriesForTag(tag, el_div) {
+        var el = getByID(el_div);
+        getByID(el_div).innerHTML = "<div style='text-align:center'><__trans phrase="Loading recent entries..." escape="html"> <img src='<mt:var name="static_uri">images/indicator.white.gif' height='16' width='16' alt='' /></div>";
+        TC.Client.call({
+            'load': function(r) { showRecentEntriesByTag(el_div, r) },
+            'error': function(r) { clearRecentEntriesByTag(el_div, r) },
+	        'method': 'POST',
+            'uri': '<mt:var name="script_url">',
+            'arguments': {
+                '__mode' : 'js_recent_entries_for_tag',<mt:if name="blog_id">
+                'blog_id' : <mt:var name="blog_id">,</mt:if>
+                'tag' : tag
+            }
+        });
+    }
+    var updateTabPrefTimeout;
+    function blogStatsTabSelect(newTab) {
+        if (activeStatsPanel != newTab) {
+            activeStatsPanel = newTab;
+            if (updateTabPrefTimeout) {
+                window.clearTimeout(updateTabPrefTimeout);
+            }
+            // update after 5 seconds, but will restart timer if
+            // user selects again
+            updateTabPrefTimeout = window.setTimeout('blogStatsUpdateTabPref()', 5000);
+        }
+    }
+    function blogStatsUpdateTabPref() {
+        updateTabPrefTimeout = null;
+        var f = getByID("<mt:var name="widget_id">-form");
+        f['tab'].value = activeStatsPanel;
+        updateWidget('blog_stats');
+    }
+    <mt:if name="has_stat_urls">
+        var lcId = new Date().getTime();
+        var flashProxy = new FlashProxy(lcId, "<mt:var name="static_uri">flash/JavaScriptFlashGateway.swf");
+        /*
+        SET THESE VARIABLES TO CUSTOMIZE THE DATE SLIDER
+        */
+        var date_range = 'today';
+        var line_color = '999999';
+        var box_color = '006699';
+        var bar_color = '0066CC';
+        var activeStatsPanel = '<mt:var name="tab" escape="js" default="comment">';
+
+        var months = {
+            '01': '<__trans phrase="Jan." escape="js">',
+            '02': '<__trans phrase="Feb." escape="js">',
+            '03': '<__trans phrase="March" escape="js">',
+            '04': '<__trans phrase="April" escape="js">',
+            '05': '<__trans phrase="May" escape="js">',
+            '06': '<__trans phrase="June" escape="js">',
+            '07': '<__trans phrase="July." escape="js">',
+            '08': '<__trans phrase="Aug." escape="js">',
+            '09': '<__trans phrase="Sept." escape="js">',
+            '10': '<__trans phrase="Oct." escape="js">',
+            '11': '<__trans phrase="Nov." escape="js">',
+            '12': '<__trans phrase="Dec." escape="js">'
+        };
+
+        function updatePage(raw_range, clean_range, total_count) {
+            var str;
+            var from = raw_range.match(/^(\d\d\d\d\d\d\d\d)/)[1];
+            var to;
+            if (raw_range.match(/-(\d\d\d\d\d\d\d\d)/)) {
+                to = raw_range.match(/-(\d\d\d\d\d\d\d\d)/)[1];
+            } else {
+                to = from;
+            }
+            if ('<mt:var name="language_tag">' != 'en') {
+                var from_month = months[from.substr(4,2)];
+                var to_month = months[to.substr(4,2)];
+                if (from != to) {
+                    clean_range = trans("[_1] [_2] - [_3] [_4]", from_month, from.substr(6, 2), to_month, to.substr(6,2));
+                } else {
+                    clean_range = trans("[_1] [_2]", from_month, from.substr(6, 2));
+                }
+            }
+            var search_url = '<mt:var name="script_url">?__mode=list_' + activeStatsPanel + '&filter_key=_by_date<mt:if name="blog_id">&blog_id=<mt:var name="blog_id"></mt:if>&filter_val=' + from + '-' + to;
+            if (activeStatsPanel == 'comment') {
+                str = trans("You have <a href='[_3]'>[quant,_1,comment,comments] from [_2]</a>", total_count, clean_range, search_url);
+            } else if (activeStatsPanel == 'entry') {
+                str = trans("You have <a href='[_3]'>[quant,_1,entry,entries] from [_2]</a>", total_count, clean_range, search_url);
+            }
+            <mt:var name="active_stats_panel_updates">
+            getByID("stats-summary-"+activeStatsPanel).innerHTML = str;
+        }
+        </mt:if>
+        blogStatsTabs = new Array('comment','entry'<mt:if name="tag_cloud">,'tag'</mt:if>);
+        /* ]]> */
+    </script>
+    <mt:var name="tab_html_head">
+</mt:setvarblock>
+
+<mt:unless name="has_stat_urls">
+    <mt:if name="is_administrator">
+        <mt:unless name="static_file_path">
+            <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to locate your 'mt-static' directory. Please configure the 'StaticFilePath' configuration setting in your mt-config.cgi file, and create a writable 'support' directory underneath your 'mt-static' directory."></mt:setvarblock>
+        <mt:else>
+            <mt:setvarblock name="error"><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></mt:setvarblock>
+        </mt:unless>
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:unless>
+
+<mtapp:widget tabbed="1" label="Blog Stats" can_close="1" class="blog_stats-widget">
+    <mt:setvarblock name="widget_header">
+    <ul class="tabs">
+        <mt:var name="tabs">
+    </ul>
+    </mt:setvarblock>
+    <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
+
+    <mt:var name="blog_stats">
+
+</mtapp:widget>

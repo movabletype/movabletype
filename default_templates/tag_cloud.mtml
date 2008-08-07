@@ -1,0 +1,12 @@
+<mt:If tag="Tags">
+<div class="widget-tag-cloud widget">
+    <h3 class="widget-header"><__trans phrase="Tag Cloud"></h3>
+    <div class="widget-content">
+        <ul>
+    <mt:Tags top="20">
+            <li class="rank-<$mt:TagRank max="10"$>"><a href="javascript:void(0)" onclick="location.href='<$mt:TagSearchLink encode_js="1"$>';return false;" rel="tag"><$mt:TagName$></a></li>
+    </mt:Tags>
+        </ul>
+    </div>
+</div>
+</mt:If>

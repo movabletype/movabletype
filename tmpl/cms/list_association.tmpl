@@ -1,0 +1,146 @@
+<mt:setvar name="list_associations" value="1">
+<mt:if name="blog_id">
+    <mt:setvarblock name="page_title"><__trans phrase="Members"></mt:setvarblock>
+<mt:else>
+    <mt:setvarblock name="content_nav">
+        <mt:include name="include/users_content_nav.tmpl">
+    </mt:setvarblock>
+    <mt:include name="include/list_associations/page_title.tmpl" id="page_title">
+</mt:if>
+<mt:setvarblock name="action_buttons">
+    <mt:if name="can_create_association">
+    <a href="javascript:void(0)"
+        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="permission">', '<__trans phrase="permissions">'); return false;"
+        accesskey="x"
+        title="<__trans phrase="Remove selected permissions (x)">"
+        ><__trans phrase="Revoke Permission"></a>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+<mt:setvarblock name="actions_link" id="actions_link">
+    <mt:unless name="blog_id">
+        <mt:if name="edit_name">
+            <mt:unless name="status_enabled"><mt:if name="edit_author_id" ne="PSEUDO">
+    <li class="icon-left icon-warning"><__trans phrase="[_1] <em>[_2]</em> is currently disabled." params="<mt:var name="edit_object" escape="html">%%<mt:var name="edit_name" escape="html">"></li>
+            </mt:if></mt:unless>
+        </mt:if>
+    </mt:unless>
+    <mt:if name="user_view">
+        <mt:if name="can_create_association">
+        <li>
+            <mt:if name="status_enabled">
+            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
+            <mt:else name="edit_author_id" eq="PSEUDO">
+            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
+            <mt:else>
+            <span class="disabled icon-left icon-create-disabled" title="<__trans phrase="You can not create permissions for disabled users.">"><__trans phrase="Grant Permission"></span>
+            </mt:if>
+        </li>
+        </mt:if>
+    </mt:if>
+    <mt:if name="role_view">
+        <mt:if name="can_create_association">
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user&amp;role_id=<mt:var name="role_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id" escape="url">')" class="icon-left icon-create"><__trans phrase="Assign Role to User"></a></li>
+        </mt:if>
+    </mt:if>
+    <mt:if name="usergroup_view">
+        <mt:if name="can_create_association">
+            <mt:if name="blog_view">
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Add a user to this blog"></a></li>
+            <mt:else>
+        <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Grant permission to a user"></a></li>
+            </mt:if>
+        </mt:if>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="system_msg">
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully revoked the given permission(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="You have successfully granted the given permission(s).">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <ul class="action-link-list">
+        <$mt:var name="actions_link"$>
+    </ul>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var tableSelect;
+    function init() {
+    	// setup
+    	tableSelect = new TC.TableSelect( "<$mt:var name="object_type"$>-listing-table" );
+    	tableSelect.rowSelect = true;
+    }
+    TC.attachLoadEvent( init );
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<div id="list-association">
+
+<mtapp:listing empty_message="<__trans phrase="No permissions could be found.">">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+        <mt:if name="usergroup_view">
+            <th id="pt-name"><mt:var name="pt_name"></th>
+        </mt:if>
+        <mt:unless name="role_view">
+            <th id="pt-role"><__trans phrase="Role"></th>
+        <mt:else>
+            <th id="pt-name"><mt:var name="pt_name"></th>
+        </mt:unless>
+        <mt:unless name="blog_view">
+            <th id="pt-weblog"><__trans phrase="Blog"></th>
+        <mt:else>
+            <th id="pt-created-by"><__trans phrase="Created By"></th>
+        </mt:unless>
+            <th id="pt-created"><__trans phrase="Created On"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+        <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
+    <mt:if name="usergroup_view">
+        <td>
+        <mt:include name="include/list_associations/table_user_view.tmpl" id="table_usergroup_view">
+        </td>
+    </mt:if>
+    <mt:include name="include/list_associations/table_role_view.tmpl" id="table_role_view">
+    <mt:unless name="blog_view">
+        <td><a href="<mt:var name="script_url">?__mode=list_associations&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+    <mt:else>
+        <td><mt:var name="created_by" escape="html"></td>
+    </mt:unless>
+        <td><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if></td>
+    </tr>
+    <mt:if name="view_expanded">
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
+        <td class="cb"<mt:if name="usergroup_view"> colspan="2"</mt:if>>&nbsp;</td><td colspan="3"><div class="detail-inner"><__trans phrase="Permissions">: <mt:loop name="perm_loop"><mt:var name="name" escape="html"><mt:unless name="__last__">, </mt:unless></mt:loop></div></td>
+    </tr>
+    </mt:if>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>
+
+</div>
+<mt:include name="include/footer.tmpl">

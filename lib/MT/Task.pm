@@ -1,10 +1,13 @@
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
 package MT::Task;
 
-use MT::ErrorHandler;
-
 use strict;
-use vars qw(@ISA);
-@ISA = qw(MT::ErrorHandler);
+use base qw(MT::ErrorHandler);
 
 sub new {
     my $class = shift;
@@ -29,17 +32,33 @@ sub name {
     $task->{name} || $task->{key};
 }
 
+sub label {
+    my $task = shift;
+    my $label = $task->{label};
+    $label = $label->() if ref($label) eq 'CODE';
+    return $label || $task->name();
+}
+
 sub frequency {
     my $task = shift;
     $task->{frequency} = shift if @_;
     # default to daily run
-    $task->{frequency} || 60 * 60 * 24;
+    my $freq = $task->{frequency} || 60 * 60 * 24;
+    if ( $freq =~ m/^\s*sub\s*\{/s ) {
+        $freq = MT->handler_to_coderef($freq);
+        $freq = $freq->();
+    }
+    $freq;
 }
 
 sub run {
     my $task = shift;
-    if (ref $task->{code} eq 'CODE') {
-        return $task->{code}->($task);
+    my $code = $task->{code} || $task->{handler};
+    if (ref $code ne 'CODE') {
+        $code = $task->{code} = MT->handler_to_coderef($code);
+    }
+    if (ref $code eq 'CODE') {
+        return $code->($task);
     }
     0;
 }
@@ -57,7 +76,7 @@ MT::Task - Movable Type class for registering runnable tasks.
     MT->add_task(new MT::Task({
         name => "My Task",
         key => "Task001",
-        frequency => 360, # at most, once per hour
+        frequency => 3600, # at most, once per hour
         code => \&runner
     }));
 
@@ -74,7 +93,9 @@ to the C<add_task> method of the I<MT> class:
         # arguments; see listing of arguments below
     }));
 
-=head1 ARGUMENTS
+=head1 METHODS
+
+=head2 MT::Task->new(\%params)
 
 The following are a list of parameters that can be specified when constructing
 an I<MT::Task> object.
@@ -107,6 +128,26 @@ is a code reference and the routine is given the I<MT::Task> instance
 as a parameter.
 
 =back
+
+=head2 $task->init
+
+Initializes a I<MT::Task> instance.
+
+=head2 $task->run
+
+Called when running the task.
+
+=head2 $task->key([$key])
+
+Gets or sets the unique key registered for the task.
+
+=head2 $task->name([$name])
+
+Gets or sets the name registered for the task.
+
+=head2 $task->frequency([$frequency])
+
+Gets or sets the execution frequency for the task (in seconds). The default frequency is 86400 which is daily.
 
 =head1 AUTHOR & COPYRIGHTS
 

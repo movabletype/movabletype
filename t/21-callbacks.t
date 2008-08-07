@@ -1,57 +1,57 @@
+#!/usr/bin/perl
 # $Id$
-
 use strict;
+use warnings;
 
-BEGIN { unshift @INC, 't/' }
+use Test::More tests => 5;
+use CGI;
 
-use Test;
-
-BEGIN { plan tests => 6 };
+use lib 'extlib';
+use lib 't/lib';
+use lib 'lib';
 
 use MT;
-
-BEGIN { unshift @INC, 't/' }
-
-require 'test-common.pl';
-require 'blog-common.pl';
+use MT::Test;
+use MT::Plugin;
+use MT::Entry;
+use MT::App::CMS;
+use MT::Permission;
 
 use vars qw($T_CFG);
 
+use lib 't';
+require 'test-common.pl';
+require 'blog-common.pl';
+
 my $mt = MT->new(Config => $T_CFG);
-
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;
-
-print "# " . MT->errstr() if !$mt;
 
 sub rot13 {
     $_[0] =~ tr/A-Za-z/N-ZA-Mn-za-m/;
     return $_[0];
 }
 
-use MT::Plugin;
-
-my $plug = new MT::Plugin();
-
-use MT::Entry;
+my $plug = MT::Plugin->new();
 
 # my $blog = MT::Blog->new();
 # $blog->set_values({ name => 'none'});
 # $blog->save();
 
-use MT::Plugin;
-my $plugin = new MT::Plugin({name => "21-callbacks.t"});
-
+my $plugin = MT::Plugin->new({name => "21-callbacks.t"});
 
 ### Test object callbacks
 
+my ($pre_save_called, $post_load_called);
 MT->add_callback('MT::Entry::pre_save', 1, $plugin, 
-		 sub { my ($eh, $obj, $app_obj) = @_; 
-		       $obj->text(rot13($obj->text));
-		       $app_obj->text($app_obj->text . '(rot13d)')} )
+                 sub { my ($eh, $obj, $app_obj) = @_;
+                       $pre_save_called = 1;
+                       $obj->text(rot13($obj->text));
+                       $app_obj->text($app_obj->text . '(rot13d)')} )
     || die "Couldn't add pre_save cb: " . MT->errstr;
 MT->add_callback('MT::Entry::post_load', 1, $plugin,
-		 sub { my ($eh, $args, $obj) = @_;
-		       $obj->text(rot13($obj->text)) } )
+                 sub { my ($eh, $obj) = @_;
+                       $post_load_called = 1;
+                       $obj->text(rot13($obj->text)) } )
     || die "Couldn't add post_load cb: " . MT->errstr;
 
 my $entry = MT::Entry->new();
@@ -64,67 +64,15 @@ $entry->text_more($TEST_TEXT_MORE);
 $entry->title("Cantaloop");
 $entry->blog_id(1);
 $entry->save() or die $entry->errstr();
+
+ok($pre_save_called, 'pre-save callback was called');
+
+is($entry->text, $TEST_TEXT . '(rot13d)', 'in-mem object altered');
+
 my $id = $entry->id();
-ok($entry->text, $TEST_TEXT . '(rot13d)');   # test that the in-mem object got altered
+ok($id, 'new entry has an id');
 
 my $entry2 = MT::Entry->load($id);
-ok($entry2->text, $TEST_TEXT);     # test that the on-disk obj got altered
+ok($post_load_called, 'post-load callback was called');
+is($entry2->text, $TEST_TEXT, 'on-disk obj altered');
 
-use MT::ObjectDriver::DBM;
-
-# TBD: generalize this
-my $driver = MT::ObjectDriver->new('DBM');
-
-use DB_File;
-use strict;
-
-my %entries;
-tie %entries, "DB_File", $mt->{cfg}->DataSource . "/entry.db",
-                         O_RDWR, 0400, $DB_BTREE
-    || die $!;
-my $rec = $entries{$id};
-$rec = $driver->{serializer}->unserialize($rec);
-use Data::Dumper;
-ok($$rec->{text}, rot13($TEST_TEXT));
-
-ok($entry2->text_more, $TEST_TEXT_MORE);
-ok($$rec->{text_more}, $TEST_TEXT_MORE);
-
-### Test app callbacks
-
-my @result_cats = ();
-
-require MT::App::CMS;
-my $cms = MT::App::CMS->new(Config => $T_CFG);
-
-MT->add_callback('AppPostEntrySave', 1, $plugin, 
-                 sub { 
-                       my @plcmts = MT::Placement->load({entry_id => $_[2]->id});
-		       for my $plcmt (@plcmts) {
-			   push @result_cats, $plcmt->category_id;
-		       }
-		   } );
-
-MT::unplug();
-require CGI;
-my $q = new CGI;
-#$q->param(id => $entry2->id);
-$q->param(blog_id => 1);
-$q->param(category_id => 17);
-# $q->param(username => 'Chuck D');
-# $q->param(password => 'bass');
-$q->param(text => "Buddha blessed and boo-ya blasted; 
-these are the words that she manifested.");
-$cms->{query} = $q;
-require MT::Permission;
-$cms->{perms} = new MT::Permission();
-$cms->{perms}->can_post(1);
-$cms->{author} = new MT::Author();
-$cms->{author}->name("Mel E. Mel");
-$cms->{author}->id(1);
-# fake out the magic; we're not testing that right now
-no warnings 'once';
-*MT::App::CMS::validate_magic = sub { 1; };
-use warnings 'once';
-print STDERR $cms->save_entry();
-ok($result_cats[0], 17);

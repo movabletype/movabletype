@@ -1,38 +1,36 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Log;
+
 use strict;
+use base qw( MT::Object );
 
-use constant INFO     => 1;
-use constant WARNING  => 2;
-use constant ERROR    => 4;
-use constant SECURITY => 8;
-use constant DEBUG    => 16;
+# use constant is slow
+sub INFO ()     { 1 }
+sub WARNING ()  { 2 }
+sub ERROR ()    { 4 }
+sub SECURITY () { 8 }
+sub DEBUG ()    { 16 }
 
-use vars qw(@ISA %Classes);
-%Classes = (
-    'system' => 'MT::Log',
-    'entry' => 'MT::Log::Entry',
-    'ping' => 'MT::Log::TBPing',
-    'comment' => 'MT::Log::Comment',
-);
+use Exporter;
+*import = \&Exporter::import;
+our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
+our %EXPORT_TAGS = (constants => [ @EXPORT_OK ]);
 
-use MT::Object;
-@ISA = qw( MT::Object );
+use MT::Blog;
 
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
-        'message' => 'string(255)',
+        'message' => 'text',
         'ip' => 'string(16)',
         'blog_id' => 'integer',
         'author_id' => 'integer',
         'level' => 'integer',
-        'class' => 'string(255)',
         'category' => 'string(255)',
         'metadata' => 'string(255)',
     },
@@ -40,29 +38,26 @@ __PACKAGE__->install_properties({
         created_on => 1,
         blog_id => 1,
         level => 1,
-        class => 1,
     },
     defaults => {
         blog_id => 0,
         author_id => 0,
         level => 1,
-        class => 'system',
     },
     child_of => 'MT::Blog',
     datasource => 'log',
     audit => 1,
     primary_key => 'id',
+    class_column => 'class',
+    class_type => 'system',
 });
 
-sub new {
-    my $pkg = shift;
-    my $log = $pkg->SUPER::new(@_);
-    if ($pkg eq __PACKAGE__) {
-        $log->class('system');
-    } else {
-        $log->class($pkg);
-    }
-    $log;
+sub class_label {
+    return MT->translate('Log message');
+}
+
+sub class_label_plural {
+    return MT->translate('Log messages');
 }
 
 sub init {
@@ -76,36 +71,6 @@ sub init {
     $log;
 }
 
-sub add_class {
-    my $class = shift;
-    my ($ident, $package) = @_;
-    $Classes{$ident} = $package;
-}
-
-{
-    my %bad_classes;
-
-    sub set_values {
-        my $obj = shift;
-        $obj->SUPER::set_values(@_);
-        my $pkg = $obj->class;
-        $pkg = $Classes{$pkg} or return $obj;
-        if ($pkg ne ref($obj)) {
-            return $obj if exists $bad_classes{$pkg};
-            unless (defined *{$pkg.'::'}) {
-                eval "use $pkg;";
-                if ($@) {
-                    $bad_classes{$pkg} = 1;
-                    return $obj if $@;
-                }
-            }
-            $obj = bless $obj, $pkg if $pkg;
-        }
-        $obj;
-    }
-}
-
-sub class_label { "System" }
 sub description {
     my $log = shift;
     my $msg = '';
@@ -118,9 +83,9 @@ sub description {
     }
     if ($msg ne '') {
         require MT::Util;
-        $msg = '<pre>' . MT::Util::encode_html($msg) . '</pre>';
+        $msg = MT::Util::encode_html($msg);
     }
-
+                            
     $msg;
 }
 
@@ -172,11 +137,38 @@ sub to_hash {
     return $hash;
 }
 
+package MT::Log::Page;
+
+our @ISA = qw( MT::Log );
+
+__PACKAGE__->install_properties({
+    class_type => 'page',
+});
+
+sub class_label { MT->translate("Pages") }
+
+sub description {
+    my $log = shift;
+    my $msg;
+    if (my $entry = $log->metadata_object) {
+        $msg = $entry->to_hash->{'entry.text_html'};
+    } else {
+        $msg = MT->translate('Page # [_1] not found.', $log->metadata);
+    }
+
+    $msg;
+}
+
 package MT::Log::Entry;
 
-@MT::Log::Entry::ISA = qw(MT::Log);
+our @ISA = qw( MT::Log );
 
-sub class_label { "Entries" }
+__PACKAGE__->install_properties({
+    class_type => 'entry',
+});
+
+sub class_label { MT->translate("Entries") }
+
 sub description {
     my $log = shift;
     my $msg;
@@ -191,9 +183,14 @@ sub description {
 
 package MT::Log::Comment;
 
-@MT::Log::Comment::ISA = qw(MT::Log);
+our @ISA = qw( MT::Log );
 
-sub class_label { "Comments" }
+__PACKAGE__->install_properties({
+    class_type => 'comment',
+});
+
+sub class_label { MT->translate("Comments") }
+
 sub description {
     my $log = shift;
     my $cmt = $log->metadata_object;
@@ -208,9 +205,14 @@ sub description {
 
 package MT::Log::TBPing;
 
-@MT::Log::TBPing::ISA = qw(MT::Log);
+our @ISA = qw( MT::Log );
 
-sub class_label { "TrackBacks" }
+__PACKAGE__->install_properties({
+    class_type => 'ping',
+});
+
+sub class_label { MT->translate("TrackBacks") }
+
 sub description {
     my $log = shift;
     my $id = int($log->metadata);
@@ -244,7 +246,7 @@ Extended log example:
     use MT::Log;
     my $log = MT::Log->new;
     $log->message("This is a debug message");
-    $log->level(MT::Log::DEBUG);
+    $log->level(MT::Log::DEBUG());
     $log->save or die $log->errstr;
 
 You can also log directly with the MT package:
@@ -252,7 +254,7 @@ You can also log directly with the MT package:
     MT->log({
         message => "A new entry has been posted.",
         metadata => $entry->id,
-        class => 'MT::Log::Entry'
+        class => 'entry'
     });
 
 =head1 DESCRIPTION
@@ -299,19 +301,33 @@ element should be unique enough to not conflict with other plugins.
 
 =head1 METHODS
 
-=over 4
+=head2 CLASS->new()
 
-=item * class_label
+Creates a new log object.
 
-Returns a string identifying the kind of log record the class is for.
+=head2 $log->init()
 
-=item * description
+Initializes the created_on and modified_on properties of the object
+to the current time (these are overwritten if an object is being loaded
+from the database).
+
+=head2 CLASS->class_label
+
+Returns a localized string identifying the kind of log record the class is
+for.
+
+=head2 $log->description
 
 Provides an extended view of the log data; this may contain HTML.
 
-=item * metadata_object
+=head2 $log->metadata_class()
 
-The base C<MT::Log> metadata_object method will return a MT data object that
+Returns a Perl package name for the metadata object related to the
+log record.
+
+=head2 $log->metadata_object
+
+The base I<MT::Log> metadata_object method will return a MT data object that
 is related to this log object in the event that:
 
 =over 4
@@ -319,18 +335,31 @@ is related to this log object in the event that:
 =item 1. The metadata column is populated with a number.
 
 =item 2. The class column has an identifier that maps to a registered
-C<MT::Log> subclass.
+I<MT::Log> subclass.
 
-=item 3. The class identified for the log record has a name that follows this
-pattern: C<BASE::Log::OBJECTCLASS>.
+=item 3. The class identified for the log record is provided by the C<metadata_class> method.
 
 =back
 
 If these conditions are met, this method will attempt to load a record using
-the package name C<BASE::OBJECTCLASS> with the id given in the metadata
-column.
+the package name provided by the C<metadata_class> method with the id given in
+the metadata column.
 
-=back
+=head2 MT::Log->add_class($identifier => $package_name)
+
+Registers a I<MT::Log> subclass with an identifier that is stored in the
+'class' column of log records.
+
+=head2 $log->set_values(\%values)
+
+Overrides the I<MT::Object> set_values method and reblesses the object
+with the appropriate I<MT::Log> subclass based on the identifier in
+the 'class' column.
+
+=head2 $log->to_hash()
+
+Returns a hashref of data that represents the data held by the log
+object and any associated metadata_object that it points to.
 
 =head1 DATA ACCESS METHODS
 

@@ -1,12 +1,13 @@
-# $Id: Util.pm 29346 2006-05-19 23:59:07Z bchoate $
+# $Id$
 
 package XML::Atom::Util;
 use strict;
 
 use XML::Atom;
 use vars qw( @EXPORT_OK @ISA );
+use Encode;
 use Exporter;
-@EXPORT_OK = qw( set_ns hack_unicode_entity first nodelist textValue iso2dt encode_xml remove_default_ns );
+@EXPORT_OK = qw( set_ns hack_unicode_entity first nodelist childlist textValue iso2dt encode_xml remove_default_ns create_element );
 @ISA = qw( Exporter );
 
 our %NS_MAP = (
@@ -23,7 +24,7 @@ sub set_ns {
         $thing->{ns}      = $ns;
         $thing->{version} = $NS_VERSION{$ns};
     } else  {
-        my $version = delete $param->{Version} || '0.3';
+        my $version = delete $param->{Version} || $XML::Atom::DefaultVersion;
         $version    = '1.0' if $version == 1;
         my $ns = $NS_MAP{$version} or $thing->error("Unknown version: $version");
         $thing->{ns} = $ns;
@@ -38,15 +39,9 @@ sub ns_to_version {
 
 sub hack_unicode_entity {
     my $data = shift;
-    if ($] >= 5.008) {
-        require Encode;
-        Encode::_utf8_on($data);
-    }
+    Encode::_utf8_on($data);
     $data =~ s/&#x(\w{4});/chr(hex($1))/eg;
-    if ($] >= 5.008) {
-        require Encode;
-        Encode::_utf8_off($data);
-    }
+    Encode::_utf8_off($data) unless $XML::Atom::ForceUnicode;
     $data;
 }
 
@@ -64,6 +59,19 @@ sub nodelist {
         my $set = $_[1] ?
             $_[0]->find("descendant::*[local-name()='$_[2]' and namespace-uri()='$_[1]']") :
             $_[0]->find("descendant::$_[2]");
+        return unless $set && $set->isa('XML::XPath::NodeSet');
+        return $set->get_nodelist;
+    }
+}
+
+sub childlist {
+    if (LIBXML) {
+        return  $_[1] ? $_[0]->getChildrenByTagNameNS($_[1], $_[2]) :
+                $_[0]->getChildrenByTagName($_[2]);
+    } else {
+        my $set = $_[1] ?
+            $_[0]->find("*[local-name()='$_[2]' and namespace-uri()='$_[1]']") :
+            $_[0]->find($_[2]);
         return unless $set && $set->isa('XML::XPath::NodeSet');
         return $set->get_nodelist;
     }
@@ -108,11 +116,37 @@ sub encode_xml {
 
 sub remove_default_ns {
     my($node) = @_;
-    $node->setNamespace('http://www.w3.org/1999/xhtml', '')
-        if ($node->nodeName) =~ /^default:/ && ref($node) =~ /Element$/;
+    if (ref($node) =~ /Element$/ && $node->nodeName =~ /^default\d*:/) {
+       my $ns = $node->getNamespace;
+        if ($ns and my $uri = $ns->getData) {
+            $node->setNamespace($uri, '');
+        }
+    }
     for my $n ($node->childNodes) {
         remove_default_ns($n);
     }
+}
+
+sub create_element {
+    my($ns, $name) = @_;
+    my($ns_uri, $ns_prefix);
+    if (ref $ns eq 'XML::Atom::Namespace') {
+        $ns_uri = $ns->{uri};
+        $ns_prefix = $ns->{prefix};
+    } else {
+        $ns_uri = $ns;
+    }
+    my $elem;
+    if (LIBXML) {
+        $elem = XML::LibXML::Element->new($name);
+        $elem->setNamespace($ns_uri, $ns_prefix ? $ns_prefix : ());
+    } else {
+        $ns_prefix ||= '#default';
+        $elem = XML::XPath::Node::Element->new($name);
+        my $ns = XML::XPath::Node::Namespace->new($ns_prefix => $ns_uri);
+        $elem->appendNamespace($ns);
+    }
+    return $elem;
 }
 
 1;

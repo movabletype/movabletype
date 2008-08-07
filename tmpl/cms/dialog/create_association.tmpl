@@ -1,0 +1,136 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-grant-role"$>
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<!--
+This dialog presents a list of roles for selection. The user may
+select one and only one role.
+
+If the role selected was a system role, then there is nothing further
+to do.
+
+Upon selecting a non-system role, the user clicks the "Next" button to
+then select one or more weblogs.
+
+possible paths:
+
+creating a new user association
+    list of users -> list of roles -> list of weblogs
+
+creating a new group association
+    list of groups -> list of roles -> list of weblogs
+
+creating a new association for a particular user
+    list of roles -> list of weblogs
+
+creating a new association for a particular group
+    list of roles -> list of weblogs
+
+To facilitate this, I need to create divs for each "page" of the dialog
+all but the first will be hidden. The "continue" button will toggle from
+one page to the following page.
+-->
+
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = document['grant'];
+        for (var i = 0; i < dialog.panels.length; i++) {
+            var panel = dialog.panels[i];
+            var fld = frm.elements[panel.name];
+            if (!fld) {
+                alert("can't find field for " + panel.name);
+                continue;
+            }
+            fld.value = panel.selectionList.items().join(",");
+        }
+        // commit!
+        frm.submit();
+    } else {
+        closeDialog();
+    }
+}
+
+function init() {
+    dialog = new Dialog.MultiPanel("assoc");
+    panels = [];
+    var panel;<mt:loop name="panel_loop">
+    panel = new ListingPanel("<mt:var name="panel_type">");
+    panel.pager.setState(<mt:var name="pager_json">);
+    panels[panels.length] = panel;</mt:loop>
+    dialog.setPanels(panels);
+    dialog.open({}, dialog_closed);
+}
+
+TC.attachLoadEvent(init);
+/* ]]> */
+</script>
+
+<form name="grant" id="grant" method="post" target="_top" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="grant_role" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    </mt:if><mt:if name="edit_author_id"><input type="hidden" name="author_id" value="<mt:var name="edit_author_id">" />
+    </mt:if><mt:if name="group_id"><input type="hidden" name="group_id" value="<mt:var name="group_id" escape="html">" />
+    </mt:if><mt:if name="role_id"><input type="hidden" name="role_id" value="<mt:var name="role_id" escape="html">" />
+    </mt:if><mt:loop name="panel_loop">
+    <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
+</form>
+
+<mt:if name="missing_data">
+    <mt:if name="missing_role">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=edit_role");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_group">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=group");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_author">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=author");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_blog">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=blog");'>">
+        </mtapp:statusmsg>
+    </mt:if>
+<div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+        <form onsubmit="return false" onclick="window.focus();">
+            <button
+                type="submit"
+                accesskey="x"
+                class="cancel primary-button"
+                title="<__trans phrase="Close (x)">"
+                ><__trans phrase="Close"></button>
+        </form>
+    </div>
+</div>
+<mt:else>
+    <mt:loop name="panel_loop">
+        <mt:include name="include/listing_panel.tmpl">
+    </mt:loop>
+</mt:if>
+
+<mt:include name="dialog/footer.tmpl">

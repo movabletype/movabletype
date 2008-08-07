@@ -1,6 +1,6 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
@@ -21,6 +21,12 @@ sub error  {
     }
     return;
 }
+
+sub trans_error {
+    my $obj = shift;
+    return $obj->error($obj->can('translate') ? $obj->translate(@_) : MT->translate(@_));
+}
+
 sub errstr { ref($_[0]) ? $_[0]->{_errstr} : $ERROR }
 
 1;
@@ -80,6 +86,10 @@ As demonstrated in the I<SYNOPSIS> (above), I<error> and I<errstr> work both
 as class methods and as object methods.
 
 =head1 USAGE
+
+=head2 Class->new
+
+Constructs a new I<MT::ErrorHandler> instance.
 
 =head2 Class->error($message)
 

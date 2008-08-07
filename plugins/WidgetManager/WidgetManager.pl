@@ -1,69 +1,103 @@
-#!/usr/bin/perl -w
+# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 
 # WidgetManager plugin for Movable Type
 # Author: Byrne Reese, Six Apart (http://www.sixapart.com)
-# Released under the Artistic License
-#
-# $Id$
+# Released under the Artistic and GPLv2 License
 
 package MT::Plugin::WidgetManager;
 
 use strict;
-use MT;
+
+use base qw( MT::Plugin );
 use constant DEBUG => 0;
+use MT::Template;
+use MT::Util qw( escape_unicode );
+use MT::I18N qw( encode_text );
 
-use vars qw( $VERSION $plugin );
-$VERSION = '1.0';
+our $VERSION = '1.1';
 
-unless ($plugin) {
-    eval {
-        require MT::Plugin;
-        @MT::Plugin::WidgetManager::ISA = ('MT::Plugin');
-        $plugin = MT::Plugin::WidgetManager->new({
-              name        => 'Widget Manager',
-              description => "<MT_TRANS phrase=\"Maintain your weblog's widget content using a handy drag and drop interface.\">",
-              version     => $VERSION,
-              author_name => 'Six Apart',
-              key => 'widget-manager',
-              l10n_class => 'WidgetManager::L10N',
-        });
-        MT->add_plugin($plugin);
-    };
-    MT->add_plugin_action('blog','widget-manager.cgi?', "Manage my Widgets");
-    MT->add_plugin_action('list_template','widget-manager.cgi?', "Manage my Widgets");
-    MT->add_callback('MT::App::CMS::AppTemplateParam.menu', 9, $plugin,
-        \&verify_permission);
-    MT->add_callback('MT::App::CMS::AppTemplateParam.list_template', 9, $plugin,
-        \&verify_permission);
-
-    require MT::Template::Context;
-    MT::Template::Context->add_tag(WidgetManager => sub { $plugin->runner('_hdlr_widget_manager', @_) });
-}                                                                                                        
+my $plugin = MT::Plugin::WidgetManager->new({
+    id             => 'WidgetManager',
+    name           => 'Widget Manager Upgrade Assistant',
+    description    => q(<MT_TRANS phrase="Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.">),
+    version        => $VERSION,
+    schema_version => $VERSION,
+    author_name    => 'Six Apart, Ltd.',
+    key            => 'widget-manager',
+    l10n_class     => 'WidgetManager::L10N',
+});
+MT->add_plugin($plugin);
 
 sub instance { $plugin; }
 
-sub runner {
+sub init_registry { 
     my $plugin = shift;
-    my $method = shift;
-    require WidgetManager::Plugin;
-    return $_->($plugin, @_) if $_ = \&{"WidgetManager::Plugin::$method"};
-    die $plugin->translate("Failed to find WidgetManager::Plugin::[_1]", $method);
+    $plugin->registry({
+        upgrade_functions => {
+            'upgrade_widgetmanagers_nv' => {
+                # this is to workaround absence of PluginSchemaVersion
+                code => \&upgrade_widgetmanagers,
+            },
+            'upgrade_widgetmanagers' => {
+                version_limit => 1.1,
+                code => \&upgrade_widgetmanagers,
+            }
+        },
+    });
+    return 1;
 }
 
-sub load_selected_modules { 
-    require WidgetManager::Plugin; 
-    WidgetManager::Plugin::load_selected_modules(@_); 
-}
+sub _disable_widgetmanager { 
+    my $switch = MT->config('PluginSwitch') || {}; 
+    $switch->{$plugin->{plugin_sig}} = 0; 
+    MT->config('PluginSwitch', $switch, 1); 
+    MT->config->save_config(); 
+} 
 
-sub verify_permission {
-    my ($eh, $app, $param, $tmpl) = @_;
-    unless ($app->user->is_superuser || $param->{'can_edit_templates'}) {
-        @{$param->{plugin_action_loop}} = grep { $_->{'orig_link_text'} ne 'Manage my Widgets' }
-            @{$param->{plugin_action_loop}};
+sub _translate_escape { 
+    my $trans = $plugin->translate(@_); 
+    return $trans if $MT::Upgrade::CLI; 
+    $trans = MT::I18N::encode_text($trans, undef, 'utf-8'); 
+    return MT::Util::escape_unicode($trans); 
+} 
+
+sub upgrade_widgetmanagers { 
+    my $upg = shift; 
+
+    require MT::PluginData;
+    my $iter = MT::PluginData->load_iter(
+        { plugin => $plugin->key }
+    );
+    while ( my $pd = $iter->() ) {
+        next unless $plugin->key eq $pd->plugin;
+        my ( $blog_id ) = $pd->key =~ /configuration:blog:(\d+)/;
+        next unless $blog_id;
+        my $config = $pd->data;
+        next unless $config;
+        my $modulesets = $config->{modulesets};
+        next unless $modulesets;
+        foreach my $mod_key ( keys %$modulesets ) {
+            $upg->progress(_translate_escape('Moving storage of Widget Manager [_1]...', $mod_key));
+            my $tmpl_ids = $modulesets->{$mod_key};
+            my $tmpl = MT::Template->new;
+            $tmpl->blog_id($blog_id);
+            $tmpl->name($mod_key);
+            $tmpl->type('widgetset');
+            $tmpl->build_dynamic(0);
+            $tmpl->rebuild_me(0);
+            $tmpl->modulesets($tmpl_ids);
+            $tmpl->save_widgetset
+                or $upg->progress(_translate_escape('Failed.')), next;
+            $upg->progress(_translate_escape('Done.'));
+        }
+        $pd->remove;
     }
-    1;
+    _disable_widgetmanager;
 }
-
 
 1;
 __END__

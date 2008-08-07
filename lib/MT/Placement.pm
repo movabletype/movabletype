@@ -1,14 +1,15 @@
-# Copyright 2001-2007 Six Apart. This code cannot be redistributed without
-# permission from www.sixapart.com.  For more information, consult your
-# Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
 # $Id$
 
 package MT::Placement;
+
 use strict;
 
-use MT::Object;
-@MT::Placement::ISA = qw( MT::Object );
+use base qw( MT::Object );
+
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -22,10 +23,18 @@ __PACKAGE__->install_properties({
         entry_id => 1,
         category_id => 1,
         is_primary => 1,
+        blog_cat => {
+            columns => [ 'blog_id', 'category_id' ],
+        },
     },
     datasource => 'placement',
     primary_key => 'id',
+    cacheable => 0,
 });
+
+sub class_label {
+    MT->translate("Category Placement");
+}
 
 1;
 __END__

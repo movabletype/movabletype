@@ -1,0 +1,145 @@
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function calcDim (val, type, full) {
+        return val.value;
+    }
+
+    function adjustPixelsPct (f, width) {
+    //    if (!f.constrain.checked) return;
+        var e, s, full;
+        if (width) {
+            e = f.thumb_width;
+            s = f.thumb_width_type;
+            full = f.full_width.value;
+        } else {
+            e = f.thumb_height;
+            s = f.thumb_height_type;
+            full = f.full_height.value;
+        }
+        e.value = Math.floor(full * e.value / 100);
+        return true;
+    }
+
+    function checkThumbs(f) {
+        f = document.forms[0];
+        adjustWidthHeight(f,1);
+    }
+
+    function adjustWidthHeight (f, width) {
+    //    if (!f.constrain.checked) return;
+        var w = f.thumb_width;
+        var wt = f.thumb_width_type;
+        var wf = f.full_width.value;
+        var h = f.thumb_height;
+        var ht = f.thumb_height_type;
+        var hf = f.full_height.value;
+        var pct;
+        var s = width ? wt : ht;
+        pct = width ? (w.value / wf) : (h.value / hf);
+        var e = width ? h : w;
+        var s = width ? ht : wt;
+        var full = width ? hf : wf;
+        e.value = Math.floor(pct * full);
+        return true;
+    }
+
+    function widthKeyPress(e) {
+        var key;
+        if (window.event) {
+            key = window.event.keyCode;
+            e = window.event;
+        } else if (e)
+            key = e.which;
+        else
+            return true;
+        if (( key == null) || ( key == 0 ) || ( key == 8 ) || 
+            ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+            return true;
+        if (key > 60000) // handles range of special keys such as arrow keys
+            return true;
+        if (e.ctrlKey || e.altKey)
+            return true;
+        if ((e.charCode < 48) || (e.charCode > 57))
+            return TC.stopEvent(e);
+        return true;
+    }
+
+    /* ]]> */
+    </script>
+
+<mt:if name="do_thumb">
+<input type="hidden" name="full_width" value="<mt:var name="width">" />
+<input type="hidden" name="full_height" value="<mt:var name="height">" />
+</mt:if>
+<input type="hidden" name="wrap_text" value="1" />
+
+<div id="new_entry_prefs">
+<mtapp:setting
+    id="display_image"
+    label="<__trans phrase="Display image in entry">"
+    label_class="no-header"
+    hint=""
+    show_hint="0"
+    help_page=""
+    help_section="">
+    <input type="checkbox" name="include" id="display_image" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+    <label for="display_image"><__trans phrase="Display image in entry"></label>
+</mtapp:setting>
+    <div id="include_prefs">
+<mtapp:setting
+    id="image_alignment"
+    label="<__trans phrase="Alignment">"
+    label_class="top-header"
+    hint=""
+    show_hint="0">
+    <input type="radio" name="align" id="align-none" class="rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>
+    <label for="align-none" class="icon-left icon-left-xwide icon-align icon-align-none"><__trans phrase="None"></label>
+
+    <input type="radio" name="align" id="align-left" class="rb" value="left" <mt:if name="align_left">checked="checked" </mt:if>/>
+    <label for="align-left" class="icon-left-xwide icon-align icon-align-left"><__trans phrase="Left"></label>
+
+    <input type="radio" name="align" id="align-center" class="rb" value="center" <mt:if name="align_center">checked="checked" </mt:if>/>
+    <label for="align-center" class="icon-left-xwide icon-align icon-align-center"><__trans phrase="Center"></label>
+
+    <input type="radio" name="align" id="align-right" class="rb" value="right" <mt:if name="align_right">checked="checked" </mt:if>/>
+    <label for="align-right" class="icon-left-xwide icon-align icon-align-right"><__trans phrase="Right"></label>
+</mtapp:setting>
+<mt:if name="do_thumb">
+    <mtapp:setting
+        id="create_thumbnail"
+        label="<__trans phrase="Use thumbnail">"
+        label_class="no-header"
+        hint=""
+        show_hint="0"
+        help_page="file_upload"
+        help_section="creating_thumbnails">
+        <input type="checkbox" name="thumb" id="create_thumbnail" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
+        <label for="create_thumbnail"><__trans phrase="Use thumbnail"></label>
+        (<label for="thumb_width"><__trans phrase="width:"></label>
+        <input name="thumb_width" id="thumb_width" value="<mt:var name="thumb_width" escape="html">" onkeypress="widthKeyPress(event)" onchange="adjustWidthHeight(this.form, 1)" size="4" /> <__trans phrase="pixels">)
+        <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
+        <img onload="checkThumbs('now');" src="<mt:var name="static_uri">images/spacer.gif" alt="" width="1" height="1" />
+    </mtapp:setting>
+</mt:if>
+<mtapp:setting
+    id="link_to_popup"
+    label="<__trans phrase="Link image to full-size version in a popup window.">"
+    label_class="no-header"
+    hint=""
+    show_hint="0">
+    <input type="checkbox" name="popup" id="link_to_popup" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
+    <label for="link_to_popup"><__trans phrase="Link image to full-size version in a popup window."></label>
+</mtapp:setting>
+<mt:if name="can_save_image_defaults">
+    <mtapp:setting
+        id="save_settings"
+        label="<__trans phrase="Remember these settings">"
+        label_class="no-header"
+        hint=""
+        show_hint="0">
+        <input type="checkbox" name="image_defaults" id="image_defaults" value="1" />
+        <label for="image_defaults"><__trans phrase="Remember these settings"></label>
+    </mtapp:setting>
+</mt:if>
+    </div>
+</div>
