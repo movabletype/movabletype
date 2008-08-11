@@ -3232,7 +3232,7 @@ B<Attributes:>
 Identifies the template variable. The 'name' attribute supports a variety
 of expressions. The typical case is a simple variable name:
 
-    <mt:Var name="foo">
+    <$mt:Var name="foo"$>
 
 Template variables may be arrays, or hash variables, in which case you
 may want to reference a specific element instead of the array or hash
@@ -3240,32 +3240,70 @@ itself.
 
 This selects the second element from the 'foo' array template variable:
 
-    <mt:Var name="foo[1]">
+    <$mt:Var name="foo[1]"$>
 
 This selects the 'bar' element from the 'foo' hash template variable:
 
-    <mt:Var name="foo{bar}">
+    <$mt:Var name="foo{bar}"$>
 
 Sometimes you want to obtain the value of a function that is applied
 to a variable (see the 'function' attribute). This will obtain the
 number of elements in the 'foo' array:
 
-    <mt:Var name="count(foo)">
+    <$mt:Var name="count(foo)"$>
 
-=item * op
-
-Along with the 'value' attribute, this allows the application of
-a number of mathematical operators (see the L<If> tag for which
-are supported).
+Excluding the punctuation required in the examples above, the 'name'
+attribute value should contain only alphanumeric characters and,
+optionally, underscores.
 
 =item * value
 
-If provided with the 'op' attribute, provides the operand for the
-specified mathematical operation.
+In the simplest case, this attribute triggers I<assignment> of the
+specified value to the variable.
 
-If provided without the 'op' attribute, this causes the variable
-to be I<assigned> the value specified. In this way, this tag
-is useful for setting variables as well.
+    <$mt:Var name="little_pig_count" value="3"$>          # Stores 3
+
+However, if provided with the 'op' attribute (see below), the value becomes
+the operand for the specified mathematical operation and no assignment takes
+place.
+
+The 'value' attribute can contain anything other than a double quote. If you
+need to use a double quote or the value is very long, you may want to use
+the L<SetVarBlock> tag or the L<setvar> global modifier instead.
+
+=item * op
+
+Used along with the 'value' attribute to perform a number of mathematical
+operations on the value of the variable.  When used in this way, the stored
+value of the variable doesn't change but instead gets transformed in the
+process of being output.
+
+    <$mt:Var name="little_pig_count">                     # Displays 3
+    <$mt:Var name="little_pig_count" value="1" op="sub"$> # Displays 2
+    <$mt:Var name="little_pig_count" value="2" op="sub"$> # Displays 1
+    <$mt:Var name="little_pig_count" value="3" op="sub"$> # Displays 0
+
+See the L<If> tag for the list of supported operators.
+
+=item * prepend
+
+When used in conjuction with the 'value' attribute to store a value, this
+attribute acts as a flag (i.e. 'prepend="1"') to indicate that the new value
+should be added to the front of any existing value instead of replacing it.
+
+    <$mt:Var name="greeting" value="World"$>
+    <$mt:Var name="greeting" value="Hello " prepend="1"$>
+    <$mt:Var name="greeting"$>  # Displays: Hello World
+
+=item * append
+
+When used in conjuction with the 'value' attribute to store a value, this
+attribute acts as a flag (i.e. 'append="1"') to indicate that the new value
+should be added to the back of any existing value instead of replacing it.
+
+    <$mt:Var name="greeting" value="Hello"$>
+    <$mt:Var name="greeting" value=" World" append="1"$>
+    <$mt:Var name="greeting"$>  # Displays: Hello World
 
 =item * function
 
@@ -3273,9 +3311,18 @@ For array template variables, this attribute supports:
 
 =over 4
 
+=item * push
+
+Adds the element to the end of the array (becomes the last element).
+
 =item * pop
 
-Takes an element from the end of the array (last element).
+Removes an element from the end of the array (last element) and
+outputs it.
+
+=item * unshift
+
+Adds the element to the front of the array (index 0).
 
 =item * shift
 
@@ -3308,11 +3355,17 @@ Identifies an element of an array template variable.
 
 =item * key
 
-Identifies a key of a hash template variable.
+Identifies a value stored for the key of a hash template variable.
 
 =item * default
 
-If the variable is undefined or empty, this value will be output instead.
+If the variable is undefined or empty, this value will be output
+instead. Use of the 'default' and 'setvar' attributes together make
+for an excellent way to conditionally initialize variables. The
+following sets the "max_pages" variable to 10 if and only if it does
+not yet have a value.
+
+    <mt:var name="max_pages" default="10" setvar="max_pages"> 
 
 =item * to_json
 
