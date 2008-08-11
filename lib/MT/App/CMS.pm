@@ -595,7 +595,7 @@ sub core_list_actions {
             'untrust' => {
                 label      => "Untrust Commenter(s)",
                 order      => 100,
-                code       => "{$pkg}Comment::untrust_commenter",
+                code       => "${pkg}Comment::untrust_commenter",
                 permission => 'manage_feedback',
             },
             'unban' => {
