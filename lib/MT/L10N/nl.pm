@@ -342,7 +342,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => '[_1] hier geaccepteerd',
-	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/',
+	'http://www.sixapart.com/labs/openid/' => 'http://www.sixapart.com/labs/openid/',
 	'Learn more about OpenID' => 'Meer weten over OpenID',
 
 ## default_templates/creative_commons.mtml
