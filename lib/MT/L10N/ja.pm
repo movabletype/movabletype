@@ -191,7 +191,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => '[_1]対応しています',
-	'http://www.movabletype.com/openid/' => 'http://www.movabletype.jp/openid/',
+	'http://www.sixapart.com/labs/openid/' => 'http://www.movabletype.jp/openid/',
 	'Learn more about OpenID' => 'OpenIDについて',
 
 ## default_templates/date_based_author_archives.mtml

@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -342,7 +342,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => 'Hier wird [_1] akzeptiert', # Translate - New # OK
-	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/', # Translate - New # OK
+	'http://www.sixapart.com/labs/openid/' => 'http://www.sixapart.com/labs/openid/', # Translate - New # OK
 	'Learn more about OpenID' => 'Mehr über OpenID erfahren', # Translate - New # OK
 
 

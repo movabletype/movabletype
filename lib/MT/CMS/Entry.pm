@@ -2042,7 +2042,6 @@ sub update_entry_status {
         my $entry = MT::Entry->load($id)
           or return $app->errtrans(
             "One of the entries ([_1]) did not actually exist", $id );
-        next if $entry->status == $new_status;
         if ( $app->config('DeleteFilesAtRebuild')
             && ( MT::Entry::RELEASE() eq $entry->status ) )
         {

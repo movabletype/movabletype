@@ -71,7 +71,7 @@
 
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=entry&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ENTRY.ID>&amp;tab=comments"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;filter_key=_comments_by_entry&amp;filter_val=<TMPL_VAR NAME=LOG.COMMENT.ENTRY_ID>"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
         <TMPL_IF NAME=LOG.COMMENT.AUTHOR.AUTHENTICATED>
         &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;tab=comments"&gt;<MT_TRANS phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;

@@ -421,16 +421,6 @@ sub core_list_actions {
     my $pkg = '$Core::MT::CMS::';
     return {
         'entry' => {
-            'set_published' => {
-                label      => "Publish Entries",
-                order      => 100,
-                code       => "${pkg}Entry::publish_entries",
-                permission => 'edit_all_posts,publish_post',
-                condition  => sub {
-                    return 0 if $app->mode eq 'view';
-                    return $app->blog && $app->blog->site_path ? 1 : 0;
-                },
-            },
             'set_draft' => {
                 label      => "Unpublish Entries",
                 order      => 200,
@@ -476,16 +466,6 @@ sub core_list_actions {
             },
         },
         'page' => {
-            'set_published' => {
-                label      => "Publish Pages",
-                order      => 100,
-                code       => "${pkg}Entry::publish_entries",
-                permission => 'manage_pages',
-                condition  => sub {
-                    return 0 if $app->mode eq 'view';
-                    return $app->blog && $app->blog->site_path ? 1 : 0;
-                },
-            },
             'set_draft' => {
                 label      => "Unpublish Pages",
                 order      => 200,
@@ -595,7 +575,7 @@ sub core_list_actions {
             'untrust' => {
                 label      => "Untrust Commenter(s)",
                 order      => 100,
-                code       => "{$pkg}Comment::untrust_commenter",
+                code       => "${pkg}Comment::untrust_commenter",
                 permission => 'manage_feedback',
             },
             'unban' => {

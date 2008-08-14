@@ -267,7 +267,7 @@ sub apply {
 '/* This is the StyleCatcher theme addition. Do not remove this block. */';
     my $footer = '/* end StyleCatcher imports */';
     my $styles = $header . "\n";
-    $styles .= "\@import url(".File::Spec->catfile($app->static_path, $base_css).");\n" if $base_css;
+    $styles .= "\@import url(".MT::Util::caturl($app->static_path, $base_css).");\n" if $base_css;
     $styles .= "\@import url($url);\n";
     $styles .= $footer;
     print STDERR "styles=$styles\n";

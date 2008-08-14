@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::es;
 use strict;
@@ -342,7 +342,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/openid.mtml
 	'[_1] accepted here' => '[_1] aceptado aquí',
-	'http://www.movabletype.com/openid/' => 'http://www.movabletype.com/openid/',
+	'http://www.sixapart.com/labs/openid/' => 'http://www.sixapart.com/labs/openid/',
 	'Learn more about OpenID' => 'Más información sobre OpenID',
 
 ## default_templates/creative_commons.mtml
@@ -1170,11 +1170,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Dashboard.pm
 	'Better, Stronger, Faster' => 'Mejor, más potente, más rápido',
-	'Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!' => 'Movable Type ha realizado una importante revisión en todos los aspectos de rendimiento. ¡La memoria de utilización ha sido reducida, el tiempo de publicación se ha incrementado considerablemente y desde ahora la búsqueda es 100x más rápida!', # Translate - New
+	'Movable Type has undergone a significant overhaul in all aspects of performance. Memory utilization has been reduced, publishing times have been increased significantly and search is now 100x faster!' => 'Se ha realizado una importante revisión en todos los aspectos relacionados con el rendimiento de Movable Type. ¡Se ha reducido la utilización de memoria, el tiempo de publicación y ahora la búsqueda es 100 veces más rápida!', # Translate - New
 	'Module Caching' => 'Caché de módulos',
-	'Template module and widget content can now be cached in the database to dramatically speed up publishing.' => 'Los módulos de las plantillas y el contenido widget puede ser ahora cached en la base de datos para acelerar dramáticamente la publicación.', # Translate - New
-	'Improved Template and Design Management' => 'Mejora de la plantilla y la gestión del diseño', # Translate - New
-	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.' => 'La plantilla de interfaz de edición ha sido mejorada para hacer que los diseñadores sean más eficientes en la actualización del diseño de sus sitios. Las platillas predeterminadas también han sido drásticamente simplificadas para que sea más fácil para ud. la edición y la creación del sito que desea.', # Translate - New
+	'Template module and widget content can now be cached in the database to dramatically speed up publishing.' => 'Para acelerar la publicación, hora se cachean en la base de datos los módulos de las plantillas y los contenidos de los widgets.', # Translate - New
+	'Improved Template and Design Management' => 'Mejora dela gestión de las plantillas y los diseños', # Translate - New
+	'The template editing interface has been enhanced to make designers more efficient at updating their site\'s design. The default templates have also been dramatically simplified to make it easier for you to edit and create the site you want.' => 'Se ha mejorado el interfaz de la edición de plantillas para aumentar la productividad de los diseñadores a la hora de actualizar el diseño del sitio. También se han simplificado las plantillas predefinidas para facilitar la edición y creación del sitio.', # Translate - New
 	'Threaded Comments' => 'Hilos de comentarios',
 	'Allow commenters on your blog to reply to each other increasing user engagement and creating more dynamic conversations.' => 'Permita que los comentaristas de su blog se respondan mutuamente y hagan más dinámicas las conversaciones.',
 
@@ -1362,7 +1362,7 @@ use vars qw( @ISA %Lexicon );
 	'This tag is referenced by others.' => 'Esta etiqueta está referenciada por otros.',
 
 ## lib/MT/App.pm
-	'Invalid request: corrupt character data for character set [_1]' => 'Solicitud inválida: datos corruptos para el conjunto de caracteres', # Translate - New
+	'Invalid request: corrupt character data for character set [_1]' => 'Petición inválida: caracteres corruptos para el conjunto de caracteres [_1]', # Translate - New
 	'First Weblog' => 'Primer weblog',
 	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => 'Error de telécargamiento #[_1] que comprende la creación de Usuarios. Por favor, verifique sus parámetros NewUserTemplateBlogId.',
 	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => 'Se ha producido un error durante la creación del blog del nuevo usuario \'[_1]\' utilizando la plantilla #[_2].',
@@ -1608,7 +1608,7 @@ que la dirección provista es correcta y le pertenece.',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Va a reiniciar la contraseña de los usuarios seleccionados. Se generarán nuevas contraseñas aleatorias y se enviarán directamente a sus respectivas direcciones de correo electrónico.\n\n¿Desea continuar?',
 	'_WARNING_DELETE_USER_EUM' => 'Borrar un usuario es una acción irreversible que crea huérfanos en las entradas del usuario. Si desea retirar un usuario o bloquear su acceso al sistema, se recomienda deshabilitar su cuenta. ¿Está seguro de que desea borrar a los usuarios seleccionados\nPodrán re-crearse a sí mismos si el usuario seleccionado existe en el directorio externo.',
 	'_WARNING_DELETE_USER' => 'El borrado de un usuario es una acción irreversible que crea huérfanos de las entradas del usuario. Si desea retirar a un usuario o bloquear su acceso al sistema, la forma recomendada es deshabilitar su cuenta. ¿Está seguro de que desea borrar el/los usuario/s seleccionado/s?',
-	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Esta acción restablecerá las plantillas en el(los) blog(s) seleccionado(s) para reinicializar la configuración de fabricación. ¿Está seguro de querer refrescar las plantillas en el(los) blog(s) seleccionado(s)? ', # Translate - New
+	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Esta acción restablecerá las plantillas en los blogs seleccionados con la configuración de fábrica. ¿Está seguro de que desea reiniciar las plantillas de los blogs seleccionados?', # Translate - New
 	'Published [_1]' => '[_1] publicadas',
 	'Unpublished [_1]' => '[_1] no publicadas',
 	'Scheduled [_1]' => '[_1] programadas',
@@ -2811,23 +2811,23 @@ que la dirección provista es correcta y le pertenece.',
 	'Refresh Template Set' => 'Refrescar el conjunto de plantillas',
 	'Refresh [_1] template set' => 'Refrescar el conjunto de plantillas [_1]',
 	'Refresh global templates' => 'Recargar plantillas globales', # Translate - Case
-	'Updates current templates while retaining any user-created templates.' => 'Actualizaciones de las plantillas actuales, manteniendo al mismo tiempo cualquier usuario-creador de plantillas.', # Translate - New
+	'Updates current templates while retaining any user-created templates.' => 'Actualiza las plantillas actuales pero mantiene las plantillas creadas por el usuario.', # Translate - New
 	'Apply a new template set' => 'Aplicar un nuevo conjunto',
 	'Deletes all existing templates and install the selected template set.' => 'Borra todas las plantillas existentes e instala el conjunto seleccionado.',
 	'Reset to factory defaults' => 'Valores de fábrica',
 	'Deletes all existing templates and installs factory default template set.' => 'Borra todas las plantillas existentes e instala el conjunto de plantillas predefinido.',
 	'Make backups of existing templates first' => 'Primero, haga copias de seguridad de las plantillas',
 	'You have requested to <strong>refresh the current template set</strong>. This action will:' => 'Ha solicitado <strong>refrescar el actual conjunto de plantillas</strong>. Esta acción:',
-	'You have requested to <strong>refresh the global templates</strong>. This action will:' => 'Ha solicitado <strong>recargar plantillas globales</strong>. Esta acción:', # Translate - New
-	'make backups of your templates that can be accessed through your backup filter' => 'realice copias de seguridad de sus plantillas que puedan ser accesibles a través de su filtro de copias de seguridad', # Translate - New
+	'You have requested to <strong>refresh the global templates</strong>. This action will:' => 'Ha solicitado <strong>recargar ñas plantillas globales</strong>. Esta acción:', # Translate - New
+	'make backups of your templates that can be accessed through your backup filter' => 'realizará copia de seguridad de las plantillas accesibles a través del filtro de copias de seguridad', # Translate - New
 	'potentially install new templates' => 'instalará potencialmente nuevas plantillas',
 	'overwrite some existing templates with new template code' => 'reescribirá algunas plantillas existentes con el código de las nuevas plantillas',
 	'You have requested to <strong>apply a new template set</strong>. This action will:' => 'Ha solicitado <strong>aplicar un nuevo conjunto de plantillas</strong>. Esta acción:',
-	'You have requested to <strong>reset to the default global templates</strong>. This action will:' => 'Ha solicitado <strong>reinicializar por defecto las plantillas globales </strong>. Esta acción:', # Translate - New
+	'You have requested to <strong>reset to the default global templates</strong>. This action will:' => 'Ha solicitado <strong>reinicializar a las plantillas globales predefinidas</strong>. Esta acción:', # Translate - New
 	'delete all of the templates in your blog' => 'borrará todas las plantillas del blog',
 	'install new templates from the selected template set' => 'instalará nuevas plantillas del conjunto seleccionado',
 	'delete all of your global templates' => 'borrará todas las plantillas globales', # Translate - New
-	'install new templates from the default global templates' => 'instalará nuevas plantillas globales por defecto', # Translate - New
+	'install new templates from the default global templates' => 'instalará nuevas plantillas con las plantillas globales predefinidas', # Translate - New
 	'Are you sure you wish to continue?' => '¿Está seguro de que desea continuar?',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
@@ -3499,7 +3499,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The files for [_1] have been published.' => 'Los ficheros de [_1] han sido publicados.',
 	'Your [_1] archives have been published.' => 'Se han publicado los archivos [_1].',
 	'Your [_1] templates have been published.' => 'Se han publicado las plantillas [_1].',
-	'Publish time: [_1].' => 'Hora de publicación: [_1].',
+	'Publish time: [_1].' => 'Tiempo de publicación: [_1].',
 	'View your site.' => 'Ver sitio.',
 	'View this page.' => 'Ver página.',
 	'Publish Again (s)' => 'Publicar otra vez (s)',
@@ -3564,7 +3564,7 @@ que la dirección provista es correcta y le pertenece.',
 	'More options' => 'Más opciones',
 	'Import File Encoding' => 'Codificación del fichero de importación',
 	'By default, Movable Type will attempt to automatically detect the character encoding of your import file.  However, if you experience difficulties, you can set it explicitly.' => 'Por defecto, Movable Type intentará detectar automáticamente la codificación del fichero a importar. Sin embargo, si experimenta dificultados, puede especificarlo explícitamente.',
-	'<mt:var name="display_name" escape="html">' => 'mt:var name="display_name" escape="html">', # Translate - New
+	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">', # Translate - New
 	'Default category for entries (optional)' => 'Categoría predefinida de las entradas (opcional)',
 	'You can specify a default category for imported entries which have none assigned.' => 'Puede especificar una categoría predefinida para las entradas importadas que no tengan ninguna asignada.',
 	'Select a category' => 'Seleccione una categoría',
@@ -4482,8 +4482,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Field' => 'Campo',
 
 ## addons/Commercial.pack/config.yaml
-	'Professional Website' => 'Sitio Web Profesional', # Translate - New
-	'Themes that are compatible with the Professional Website template set.' => 'Temas que son compatibles con el Sitio Web Profesional en el conjunto de plantillas.', # Translate - New
+	'Professional Website' => 'Web Profesional', # Translate - New
+	'Themes that are compatible with the Professional Website template set.' => 'Temas compatibles con el conjunto de plantillas Web Profesional.', # Translate - New
 	'Blog Index' => 'Índice del blog',
 	'Blog Entry Listing' => 'Lista de entradas',
 	'Header' => 'Cabecera',
