@@ -57,7 +57,7 @@ my $version = $cgi->param("version");
 # $version ||= '__PRODUCT_VERSION_ID__';
 
 my ($mt, $LH);
-my $lang = $cgi->param("language");
+my $lang = $cgi->param("language") || $cgi->param("__lang");
 eval {
     require MT::App::Wizard;
     $mt = MT::App::Wizard->new();
