@@ -3,12 +3,17 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id$
+# $Id: mt.php 2703 2008-07-03 22:19:49Z bchoate $
 
-define('VERSION', '__API_VERSION__');
-define('VERSION_ID', '__PRODUCT_VERSION_ID__');
-define('PRODUCT_VERSION', '__PRODUCT_VERSION__');
-define('PRODUCT_NAME', '__PRODUCT_NAME__');
+define('VERSION', '4.2');
+define('VERSION_ID', '4.2');
+define('PRODUCT_VERSION', '4.2');
+
+$PRODUCT_NAME = '__PRODUCT_NAME__';
+if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
+    $PRODUCT_NAME = 'Movable Type';
+
+define('PRODUCT_NAME', $PRODUCT_NAME);
 
 global $Lexicon;
 $Lexicon = array();
@@ -101,7 +106,7 @@ class MT {
         $ctx =& $this->context();
 
         foreach ($plugin_paths as $path) {
-            if ($dh = @opendir($path)) {
+            if ($dh = opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;
@@ -317,14 +322,12 @@ class MT {
     function config_defaults() {
         $cfg =& $this->config;
         // assign defaults:
-        isset($cfg['cgipath']) or
-            $cfg['cgipath'] = '/cgi-bin/';
         if (substr($cfg['cgipath'], strlen($cfg['cgipath']) - 1, 1) != '/')
             $cfg['cgipath'] .= '/'; 
         isset($cfg['staticwebpath']) or
             $cfg['staticwebpath'] = $cfg['cgipath'] . 'mt-static/';
         isset($cfg['publishcharset']) or
-            $cfg['publishcharset'] = '__PUBLISH_CHARSET__';
+            $cfg['publishcharset'] = 'utf-8';
         isset($cfg['trackbackscript']) or
             $cfg['trackbackscript'] = 'mt-tb.cgi';
         isset($cfg['adminscript']) or
@@ -338,7 +341,7 @@ class MT {
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
         isset($cfg['defaultlanguage']) or
-            $cfg['defaultlanguage'] = '__BUILD_LANGUAGE__';
+            $cfg['defaultlanguage'] = 'en_US';
         isset($cfg['globalsanitizespec']) or
             $cfg['globalsanitizespec'] = 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre';
         isset($cfg['signonurl']) or
@@ -364,7 +367,7 @@ class MT {
         isset($cfg['pluginpath']) or
             $cfg['pluginpath'] = array($this->config('MTDir') . DIRECTORY_SEPARATOR . 'plugins');
         isset($cfg['timeoffset']) or
-            $cfg['timeoffset'] = '__DEFAULT_TIMEZONE__';
+            $cfg['timeoffset'] = '0';
         isset($cfg['includesdir']) or
             $cfg['includesdir'] = 'includes_c';
         isset($cfg['searchmaxresults']) or

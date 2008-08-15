@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time make_string_csv );
+                 weaken log_time make_string_csv browser_language );
 
 {
 my $Has_Weaken;
@@ -1450,6 +1450,33 @@ sub mark_odd_rows {
 
 $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
 $Languages{ja} = $Languages{jp};
+
+sub browser_language {
+    my @browser_langs = $ENV{HTTP_ACCEPT_LANGUAGE} =~ m{
+    	(
+    		[a-z]{2}      # en
+    		(?:-[a-z]{2})?  # -us
+    	)
+    	\s*
+    	(?:
+    		; \s* q\s*=\s*  # ; q=
+    		(?:1|0\.[0-9]+)   # 0.xx or 1
+    	)?
+    }xmsg;
+    my $mt_langs = MT->supported_languages;
+    foreach my $lang (@browser_langs) {
+        if($mt_langs->{$lang}) {
+            return $lang;
+        }
+        
+        $lang =~ m/(.*)-.*/s;
+        if($mt_langs->{$1}) {
+            return $1;
+        }
+    }
+    
+    return 'en-us';
+}
 
 sub launch_background_tasks {
     return !($ENV{MOD_PERL} || $ENV{FAST_CGI}

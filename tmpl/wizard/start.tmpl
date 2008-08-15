@@ -175,6 +175,15 @@
     </noscript>
 
     <p class="intro"><__trans phrase="This wizard will help you configure the basic settings needed to run Movable Type."></p>
+    
+    <mtapp:setting
+                id="default_language"
+                label="<__trans phrase="Language">"
+                hint="<__trans phrase="Default language.">">
+                <select name="default_language" id="default_language" class="se" onchange="changeLanguage(this.form);"><mt:loop name="languages">
+                    <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+                </select>
+            </mtapp:setting>
 
     <mt:if name="uri_invalid">
         <mtapp:statusmsg

@@ -9,7 +9,7 @@ package MT::App::Wizard;
 use strict;
 use base qw( MT::App );
 
-use MT::Util qw( trim );
+use MT::Util qw( trim browser_language );
 
 sub id {'wizard'}
 
@@ -42,6 +42,9 @@ sub init_request {
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
     $app->{requires_login} = 0;
+    
+    my $default_lang = $app->param('default_language') || browser_language();
+    $app->set_language($default_lang);
 
     my $mode = $app->mode;
     return
@@ -331,6 +334,19 @@ sub pre_start {
         if $app->is_valid_static_path( $app->static_path );
     $param{mt_static_exists} = $app->mt_static_exists;
     $param{static_file_path} = $static_file_path;
+      
+    my $langs = $app->supported_languages;
+    my @languages;
+    my $curr_lang ||= $app->current_language || $app->config('DefaultLanguage');
+    $curr_lang = 'en-us' if ( lc($curr_lang) eq 'en_us' );
+    for my $tag ( keys %$langs ) {
+        ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
+        my $row = { l_tag => $tag, l_name => $app->translate($name) };
+        $row->{l_selected} = 1 if $curr_lang eq $tag;
+        push @languages, $row;
+    }
+    @languages = sort { $a->{l_name} cmp $b->{l_name} } @languages;
+    $param{languages} = \@languages;
 
     return $app->build_page( "start.tmpl", \%param );
 }
@@ -368,6 +384,8 @@ sub build_page {
     my $steps = $app->wizard_steps;
     $param->{'wizard_steps'} = $steps;
     $param->{'step'}         = $app->param('step');
+    $param->{'default_language'} = $app->param('default_language');
+    $param->{'default_language'} = $app->param('default_language');
 
     return $app->SUPER::build_page( $tmpl, $param );
 }

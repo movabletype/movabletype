@@ -29,6 +29,18 @@ sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 { 11 }
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     { 25 }
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         { 30 }
 
+sub PORTAL_URL()            { 'http://www.sixapart.jp/movabletype/' }
+sub SUPPORT_URL()           { 'http://www.sixapart.jp/movabletype/support/' }
+sub NEWS_URL()              { 'http://www.sixapart.jp/movabletype/' }
+sub NEWSBOX_URL()           { 'http://www.sixapart.jp/movabletype/news/newsbox.html' }
+sub LEARNINGNEWS_URL()      { 'http://www.movabletype.jp/newsbox.html' }
+sub CATEGORY_NAME_NODASH()  { 1 }
+sub DEFAULT_TIMEZONE()      { 9 }
+sub MAIL_ENCODING()         { 'ISO-2022-JP' }
+sub LOG_EXPORT_ENCODING()   { 'Shift_JIS' }
+sub EXPORT_ENCODING()       { 'Shift_JIS' }
+sub PUBLISH_CHARSET()       { 'UTF-8' }
+
 my $ENCODING_NAMES = [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'sjis', 'display_name' => 'SHIFT_JIS' },

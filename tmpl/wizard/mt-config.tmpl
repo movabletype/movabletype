@@ -42,6 +42,8 @@ MailTransfer <mt:var name="mail_transfer"><mt:if name="smtp_server">
 SMTPServer <mt:var name="smtp_server"><mt:else><mt:if name="sendmail_path">
 SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="temp_dir">
 
-TempDir <mt:var name="temp_dir"></mt:if><mt:loop name="tmpl_loop">
+TempDir <mt:var name="temp_dir"></mt:if><mt:if name="default_language">
+    
+DefaultLanguage <mt:var name="default_language"></mt:if><mt:loop name="tmpl_loop">
 
 <mt:var name="tmpl_code"></mt:loop>

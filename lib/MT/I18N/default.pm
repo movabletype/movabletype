@@ -27,6 +27,18 @@ sub DISPLAY_LENGTH_EDIT_ENTRY_TITLE ()                 { 25 }
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_FROM_EXCERPT ()     { 50 }
 sub DISPLAY_LENGTH_EDIT_ENTRY_TEXT_BREAK_UP ()         { 30 }
 
+sub PORTAL_URL()            { 'http://www.sixapart.com/movabletype/' }
+sub SUPPORT_URL()           { 'http://www.sixapart.com/movabletype/support/' }
+sub NEWS_URL()              { 'http://www.sixapart.com/movabletype/news/' }
+sub NEWSBOX_URL()           { 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html' }
+sub LEARNINGNEWS_URL()      { 'http://learning.movabletype.org/newsbox.html' }
+sub CATEGORY_NAME_NODASH()  { 0 }
+sub DEFAULT_TIMEZONE()      { 0 }
+sub MAIL_ENCODING()         { 'ISO-8859-1' }
+sub LOG_EXPORT_ENCODING()   { '' }
+sub EXPORT_ENCODING()       { '' }
+sub PUBLISH_CHARSET()       { 'UTF-8' }
+
 my $ENCODING_NAMES = [
     { 'name' => 'guess', 'display_name' => 'AUTO DETECT' },
     { 'name' => 'utf8', 'display_name' => 'UTF-8' },

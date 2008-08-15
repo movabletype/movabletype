@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id$
+# $Id: MT.pm.pre 2276 2008-05-08 16:52:18Z fumiakiy $
 
 package MT;
 
@@ -29,11 +29,17 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '__API_VERSION__', '__SCHEMA_VERSION__' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '4.2', '4.0067' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID ) = (
-        '__PRODUCT_NAME__',    '__PRODUCT_CODE__',
-        '__PRODUCT_VERSION__', '__PRODUCT_VERSION_ID__'
+        '__PRODUCT_NAME__', 'MT',
+        '4.2', '4.2'
     );
+
+    # To allow MT to run straight from svn, if no build process (pre-processing)
+    # is run, then default to MTOS
+    if ($PRODUCT_NAME eq '__PRODUCT' . '_NAME__') {
+        $PRODUCT_NAME = 'Movable Type';
+    }
 
     $DebugMode = 0;
 
@@ -87,6 +93,12 @@ sub version_slug {
 <MT_TRANS phrase="Version [_1]" params="$VERSION_ID">
 <MT_TRANS phrase="http://www.sixapart.com/movabletype/">
 SLUG
+}
+
+sub build_id {
+    my $build_id = '__BUILD_ID__';
+    $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
+    return $build_id;
 }
 
 sub import {
@@ -329,6 +341,9 @@ sub construct {
 sub registry {
     my $pkg = shift;
 
+    # if (!ref $pkg) {
+    #     return $pkg->instance->registry(@_);
+    # }
     require MT::Component;
     my $regs = MT::Component->registry(@_);
     my $r;
@@ -1050,7 +1065,7 @@ sub init_paths {
     unshift @INC, File::Spec->catdir( $orig_dir, 'lib' )
       if $orig_dir && ( $orig_dir ne $MT_DIR );
 
-    $mt->set_language('__BUILD_LANGUAGE__');
+    $mt->set_language('en_US');
 
     if ( my $cfg_file = $mt->find_config($param) ) {
         $cfg_file = File::Spec->rel2abs($cfg_file);
@@ -1093,23 +1108,36 @@ sub init_core {
       or die MT::Core->errstr;
     $Components{'core'} = $c;
 
-    # Additional locale-specific defaults
-    my $defaults = $c->{registry}{config_settings};
-    $defaults->{DefaultLanguage}{default} = '__BUILD_LANGUAGE__';
-    $defaults->{NewsboxURL}{default} = '__NEWSBOX_URL__';
-    $defaults->{LearningNewsURL}{default} = '__LEARNINGNEWS_URL__';
-    $defaults->{SupportURL}{default} = '__SUPPORT_URL__';
-    $defaults->{NewsURL}{default} = '__NEWS_URL__';
-    #$defaults->{HelpURL}{default} = '__HELP_URL__';
-    $defaults->{DefaultTimezone}{default} = '__DEFAULT_TIMEZONE__';
-    $defaults->{TimeOffset}{default} = '__DEFAULT_TIMEZONE__';
-    $defaults->{MailEncoding}{default} = '__MAIL_ENCODING__';
-    $defaults->{ExportEncoding}{default} = '__EXPORT_ENCODING__';
-    $defaults->{LogExportEncoding}{default} = '__LOG_EXPORT_ENCODING__';
-    $defaults->{CategoryNameNodash}{default} = '__CATEGORY_NAME_NODASH__';
-    $defaults->{PublishCharset}{default} = '__PUBLISH_CHARSET__';
-
     push @Components, $c;
+    return 1;
+}
+
+sub init_lang_defaults {
+    my $mt = shift;
+    my $cfg = $mt->config;
+    
+    $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
+    
+    my %lang_settings = (
+        'NewsboxURL'         => 'NEWSBOX_URL',
+        'LearningNewsURL'    => 'LEARNINGNEWS_URL',
+        'SupportURL'         => 'SUPPORT_URL',
+        'NewsURL'            => 'NEWS_URL',
+        'DefaultTimezone'    => 'DEFAULT_TIMEZONE',
+        'TimeOffset'         => 'DEFAULT_TIMEZONE',
+        'MailEncoding'       => 'MAIL_ENCODING',
+        'ExportEncoding'     => 'EXPORT_ENCODING',
+        'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
+        'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
+        'PublishCharset'     => 'PUBLISH_CHARSET'
+    );
+
+    require MT::I18N;
+    foreach my $setting (keys %lang_settings) {
+        my $const = $lang_settings{$setting};
+        $cfg->$setting(MT::I18N::const($const));
+    }
+    
     return 1;
 }
 
@@ -1127,6 +1155,7 @@ sub init {
     ## Initialize the language to the default in case any errors occur in
     ## the rest of the initialization process.
     $mt->init_config( \%param ) or return;
+    $mt->init_lang_defaults(@_) or return;
     $mt->init_addons(@_)       or return;
     $mt->init_config_from_db( \%param ) or return;
     $mt->init_plugins(@_)       or return;
@@ -2044,6 +2073,7 @@ sub set_default_tmpl_params {
     $param->{mt_product_name} = $mt->translate(MT->product_name);
     $param->{language_tag} = substr($mt->current_language, 0, 2);
     $param->{language_encoding} = $mt->charset;
+    $param->{optimize_ui} = $mt->build_id && !$MT::DebugMode;
     if ($mt->isa('MT::App')) {
         if (my $author = $mt->user) {
             $param->{author_id} = $author->id;
@@ -2109,9 +2139,6 @@ sub build_page {
             if ($c) {
                 my $label = $c->label || $pack->{label};
                 $label = $label->() if ref($label) eq 'CODE';
-                # if the component did not declare a label,
-                # it isn't wanting to be visible on the app footer.
-                next if $label eq $c->{plugin_sig};
                 push @packs_installed, {
                     label => $label,
                     version => $c->version,
@@ -2122,7 +2149,9 @@ sub build_page {
     }
     @packs_installed = sort { $a->{label} cmp $b->{label} } @packs_installed;
     $param->{packs_installed} = \@packs_installed;
-    $param->{portal_url} = $mt->translate("__PORTAL_URL__");
+    
+    require MT::I18N;
+    $param->{portal_url} = MT::I18N::const('PORTAL_URL');
 
     for my $config_field (keys %{ MT::ConfigMgr->instance->{__var} || {} }) {
         $param->{ $config_field . '_readonly' } = 1;
@@ -2825,46 +2854,17 @@ the discovered path of the MT configuration file.
 
 =back
 
-=head2 $mt->init(%params)
+=head2 $mt->init
 
 Initializes the Movable Type instance, including registration of basic
 resources and callbacks. This method also invokes the C<init_config>
 and C<init_plugins> methods.
-
-=head2 $mt->init_core()
-
-A method that the base MT class uses to initialize all the 'core'
-functionality of Movable Type. If you want to subclass MT and extensively
-modify it's core behavior, this method can be overridden to do that.
-The L<MT::Core> module is a L<MT::Component> that defines the core
-features of MT, and this method loads that component. Non-core components
-are loaded by the L<init_addons> method.
-
-=head2 $mt->init_paths()
-
-Establishes some key file paths for the MT environment. Assigns
-C<$MT_DIR>, C<$APP_DIR> and C<$CFG_FILE> package variables.
-
-=head2 $mt->init_permissions()
-
-Loads the L<MT::Permission> class and runs the
-MT::Permission->init_permissions method to establish system permissions.
-
-=head2 $mt->init_schema()
-
-Completes the initialization of the Movable Type schema following the
-loading of plugins. After this method runs, any MT object class may
-safely be used.
 
 =head2 MT->instance
 
 MT and all it's subclasses are now singleton classes, meaning you can only
 have one instance per package. MT->instance() returns the active instance.
 MT->new() is now an alias to instance_of.
-
-=head2 MT->app
-
-An alias for the 'instance' method.
 
 =head2 $class->instance_of
 
@@ -2879,21 +2879,6 @@ Constructs a new instance of the MT subclass identified by C<$class>.
 Assigns the active MT instance object. This value is returned when
 C<MT-E<gt>instance> is invoked.
 
-=head2 MT->run_app( $pkg, $params )
-
-Instantiates and runs a MT application (identified by C<$pkg>), passing
-the C<$params> hashref as the parameters to the constructor method. This
-method is a self-contained version found in L<MT::Bootstrap> and will
-eventually be the manner in which MT applications are run (eliminating
-the need for the bootstrap module). The MT::import module calls this
-method when the MT module is used with an 'App' parameter. So, you can
-write a mt.cgi script that looks like this:
-
-    #!/usr/bin/perl
-    use strict;
-    use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';
-    use MT App => 'MT::App::CMS';
-
 =head2 $mt->find_config($params)
 
 Handles the discovery of the MT configuration file. The path and filename
@@ -2903,36 +2888,19 @@ constructor.
 
 =head2 $mt->init_config($params)
 
-Reads the MT configuration settingss from the MT configuration file.
+Reads the MT configuration settingss from the MT configuration file
+and settings from database (L<MT::Config>).
 
 The C<$params> parameter is a reference to the hash of settings passed to
 the MT constructor.
 
-=head2 $mt->init_config_from_db($param)
-
-Reads any MT configuration settings from the MT database (L<MT::Config>).
-
-The C<$params> parameter is a reference to the hash of settings passed to
-the MT constructor.
-
-=head2 $mt->init_addons(%param)
-
-Loads any discoverable addons that are available. This is called from
-the C<init> method, after C<init_config> method has loaded the
-configuration settings, but prior to making a database connection.
-
-=head2 $mt->init_plugins(%param)
+=head2 $mt->init_plugins
 
 Loads any discoverable plugins that are available. This is called from
 the C<init> method, after the C<init_config> method has loaded the
 configuration settings.
 
-=head2 $mt->init_callbacks()
-
-Installs any MT callbacks. This is called from the C<init> method very,
-early; prior to loading any addons or plugins.
-
-=head2 $mt->init_tasks()
+=head2 $mt->init_tasks
 
 Registers the standard set of periodic tasks that Movable Type provides
 and then invokes the C<init_tasks> method for each available plugin.
@@ -2942,15 +2910,6 @@ and then invokes the C<init_tasks> method for each available plugin.
 Initializes the tasks, running C<init_tasks> and invokes the task system
 through L<MT::TaskMgr> to run any registered tasks that are pending
 execution. See L<MT::TaskMgr> for further documentation.
-
-=head2 MT->find_addons( $type )
-
-Returns an array of all 'addons' that are found within the MT 'addons'
-directory of the given C<$type>. What is returned is an array reference
-of hash data. Each hash will contain these elements: 'label' (the name
-of the addon), 'id' (the unique identifier of the addon), 'envelope'
-(the subpath of the addon, relative to the MT home directory), and 'path'
-(the full path to the addon subdirectory).
 
 =head2 MT->unplug
 
@@ -3264,74 +3223,6 @@ that comes from invoking a callback.
 This internal routine returns the error response stored using the
 C<callback_error> routine.
 
-=head2 MT->handler_to_coderef($handler[, $delayed])
-
-Translates a registry handler signature into a Perl coderef. Handlers
-are in one of the following forms:
-
-    $<COMPONENTID>::<PERL_PACKAGE>::<SUBROUTINE>
-
-    <PERL_PACKAGE>::<SUBROUTINE>
-
-    <PERL_PACKAGE>-><SUBROUTINE>
-
-    sub { ... }
-
-When invoked with a '-E<gt>' operator, the subroutine is invoked as
-a package method.
-
-When the handler is a string that starts with 'sub {', it is eval'd
-to compile it, and the resulting coderef is returned.
-
-The coderef that is returned can be passed any parameters you wish.
-
-When the coderef is invoked, any component that was identified in
-the handler signature becomes the active component when running the
-code (this affects how strings are translated, and the search paths
-for templates that are loaded).
-
-If the C<$delayed> parameter is given, a special coderef is constructed
-that will delay the 'require' of the identified Perl package until
-the coderef is actually invoked.
-
-=head2 MT->registry( @path )
-
-Queries the Movable Type registry data structure for a given resource
-path. The MT registry is a collection of hash structures that contain
-resources MT and/or plugins can utilize.
-
-When this method is invoked, it actually issues a registry request
-against each component registered with MT, then merges the resulting
-hashes and returns them. See L<MT::Component> for further details.
-
-=head2 MT->component( $id )
-
-Returns a loaded L<MT::Component> based on the requested C<$id> parameter.
-For example:
-
-    # Returns the MT 'core' component
-    MT->component('core');
-
-=head2 MT->model( $id )
-
-Returns a Perl package name for the MT object type identified by C<$id>.
-For example:
-
-    # Assigns (by default) 'MT::Blog' to $blog_class
-    my $blog_class = MT->model('blog');
-
-It is a recommended practice to utilize the model method to derive the
-implementation package name, instead of hardcoding Perl package names.
-
-=head2 MT->models( $id )
-
-Returns a list of object types that are registered as sub-types. For
-instance, the MT 'asset' object type has several sub-types associated
-with it:
-
-    my @types = MT->models('asset');
-    # @types now contains ('asset', 'asset.image', 'asset.video', etc.)
-
 =head2 MT->product_code
 
 The product code identifying the Movable Type product that is installed.
@@ -3348,18 +3239,6 @@ The name of the Movable Type product that is installed. This is either
 The version number of the product. This is different from the C<version_id>
 and C<version_number> methods as they report the API version information.
 
-=head2 MT->VERSION
-
-Returns the API version of MT. When using the MT module with the version
-requirement, this method will also load the suitable API 'compatibility'
-module, if available. For instance, if your plugin declares:
-
-    use MT 4;
-
-Then, once MT 5 is available, that statement will cause the C<VERSION> method
-to attempt to load a module named "MT::Compat::v4". This module would contain
-compatibility support for MT 4-based plugins.
-
 =head2 MT->version_id
 
 Returns the API version of MT (including any beta/alpha designations).
@@ -3373,15 +3252,6 @@ return C<2.5>.
 =head2 MT->schema_version
 
 Returns the version of the MT database schema.
-
-=head2 $mt->id
-
-Provides an identifier for the application, one that relates to the
-'application' paths of the MT registry. This method may be overridden
-for any subclass of MT to provide the appropriate identifier. By
-default, the base 'id' method will return an id taken from the
-Perl package name, by stripping off any 'MT::App::' prefix, and lowercasing
-the remaining string.
 
 =head2 MT->version_slug
 
@@ -3408,132 +3278,6 @@ for documentation of this method.
 An alias to L<MT::WeblogPublisher::rebuild_indexes>. See
 L<MT::WeblogPublisher> for documentation of this method.
 
-=head2 $mt->rebuild_archives
-
-An alias to L<MT::WeblogPublisher::rebuild_archives>. See
-L<MT::WeblogPublisher> for documentation of this method.
-
-=head2 $app->template_paths
-
-Returns an array of directory paths where application templates exist.
-
-=head2 $app->find_file(\@paths, $filename)
-
-Returns the path and filename for a file found in any of the given paths.
-If the file cannot be found, it returns undef.
-
-=head2 $app->load_tmpl($file[, @params])
-
-Loads a L<MT::Template> template using the filename specified. See the
-documentation for the C<build_page> method to learn about how templates
-are located. The optional C<@params> are passed to the L<MT::Template>
-constructor.
-
-=head2 $app->set_default_tmpl_params($tmpl)
-
-Assigns standard parameters to the given L<MT::Template> C<$tmpl> object.
-Refer to the L<STANDARD APPLICATION TEMPLATE PARAMETERS> section for a
-complete list of these parameters.
-
-=head2 $app->charset( [$charset] )
-
-Gets or sets the application's character set based on the "PublishCharset"
-configuration setting or the encoding of the active language
-(C<$app-E<gt>current_language>).
-
-=head2 $app->build_page($tmpl_name, \%param)
-
-Builds an application page to be sent to the client; the page name is specified
-in C<$tmpl_name>, which should be the name of a template containing valid
-L<MT::Template> markup. C<\%param> is a hash ref whose keys and values will
-be passed to L<MT::Template::param> for use in the template.
-
-On success, returns a scalar containing the page to be sent to the client. On
-failure, returns C<undef>, and the error message can be obtained from
-C<$app-E<gt>errstr>.
-
-=head3 How does build_page find a template?
-
-The C<build_page> function looks in several places for an app
-template. Two configuration directives can modify these search paths,
-and application and plugin code can also affect them.
-
-The I<TemplatePath> config directive is an absolute path to the directory
-where MT's core application templates live. It defaults to the I<mt_dir>
-plus an additional path segment of 'tmpl'.
-
-The optional I<AltTemplatePath> config directive is a path (absolute
-or relative) to a directory where some 'override templates' may
-live. An override template takes the place of one of MT's core
-application templates, and is used interchangeably with the core
-template. This allows power users to customize the look and feel of
-the MT application. If I<AltTemplatePath> is relative, its base path
-is the value of the Movable Type configuration file.
-
-Next, any application built on the C<MT::App> foundation can define
-its own I<template_dir> parameter, which identifies a subdirectory of
-TemplatePath (or AltTemplatePath) where that application's templates
-can be found. I<template_dir> defaults to C<cms>. Most templates will
-be found in this directory, but sometimes the template search will
-fall through to the parent directory, where a default error template
-is found, for example. I<template_dir> should rightly have been named
-I<application_template_dir>, since it is application-specific.
-
-Finally, a plugin can specify its I<plugin_template_path>, which
-locates a directory where the templates for that plugin's own
-interface are found. If the I<plugin_template_path> is relative, it
-may be relative to either the I<app_dir>, or the I<mt_dir>; the former
-takes precedence if it exists. (for a definition of I<app_dir> and
-I<mt_dir>, see L<MT>)
-
-Given these values, the order of search is as follows:
-
-=over 4
-
-=item * I<plugin_template_path>
-
-=item * I<AltTemplatePath>
-
-=item * I<AltTemplatePath>F</>I<template_dir>
-
-=item * I<TemplatePath>/I<template_dir>
-
-=item * I<TemplatePath>
-
-=back
-
-If a template with the given name is not found in any of these
-locations, an ugly error is thrown to the user.
-
-=head2 $app->build_page_in_mem($tmpl, \%param)
-
-Used internally by the L<build_page> method to render the output
-of a L<MT::Template> object (the first parameter) using the parameter
-data (the second parameter). It additionally calls the L<process_mt_template>
-method (to process any E<lt>MT_ACTIONE<gt> and E<lt>MT_X:YE<gt> marker tags)
-and then L<translate_templatized> (to process any E<lt>MT_TRANSE<gt> tags).
-
-=head2 $app->process_mt_template($str)
-
-Processes the E<lt>__action<gt> tags that are present in C<$str>. These tags
-are in the following format:
-
-    <__action mode="mode_name" parameter="value">
-
-The mode parameter is required (and must be the first attribute). The
-following attributes are appended as regular query parameters.
-
-The MT_ACTION tag is a preferred way to specify application links rather
-than using this syntax:
-
-    <mt:var name="script_url">?__mode=mode_name&parameter=value
-
-C<process_mt_templates> also strips the C<$str> variable of any tags in
-the format of C<E<lt>MT_\w+:\w+E<gt>>. These are 'marker' tags that are
-used to identify specific portions of the template page and used in
-conjunction with the transformer callback helper methods C<tmpl_prepend>,
-C<tmpl_append>, C<tmpl_replace>, C<tmpl_select>.
-
 =head2 $mt->build_email($file, $param)
 
 Loads a template from the application's 'email' template directory and
@@ -3547,110 +3291,6 @@ This is an internal routine used by L<MT::XMLRPCServer> and the
 getNextScheduled XMLRPC method to determine the timestamp for the next
 entry that is scheduled for publishing. The return value is the timestamp
 in UTC time in the format "YYYY-MM-DDTHH:MM:SSZ".
-
-=head2 $mt->commenter_authenticator($id)
-
-Returns a specific comment authenication option using the identifier
-C<$id> parameter.
-
-=head2 $mt->commenter_authenticators()
-
-Returns the available comment authentication identifiers that are
-installed in the MT registry.
-
-=head2 $mt->core_commenter_authenticators()
-
-A method that returns the MT-supplied comment authentication registry
-data.
-
-=head2 $mt->init_commenter_authenticators()
-
-Initializes the list of installed MT comment authentication options,
-drawing from the MT registry.
-
-=head2 $mt->captcha_provider($id)
-
-Returns a specific CAPTCHA provider configuration using the identifier
-C<$id> parameter. This is a convenience method that accesses the CAPTCHA
-providers installed into the MT registry.
-
-=head2 $mt->captcha_providers()
-
-Returns the available CAPTCHA providers. This is a convenience method
-that accesses the MT registry for available CAPTCHA providers (it also
-invokes the 'condition' key for each provider to filter the list).
-
-=head2 $mt->core_captcha_providers()
-
-A method that returns the MT-supplied CAPTCHA provider registry data.
-
-=head2 $mt->init_captcha_providers()
-
-Initializes the list of installed CAPTCHA providers, drawing from
-the MT registry.
-
-=head2 $mt->effective_captcha_provider()
-
-Returns the Perl package name for the configured CAPTCHA provider.
-
-=head2 $app->static_path()
-
-Returns the application's static web path.
-
-=head2 $app->static_file_path()
-
-Returns the application's static file path.
-
-=head2 MT::core_upload_file_to_sync
-
-A MT callback handler routine that forwards to the L<upload_file_to_sync>
-method.
-
-=head2 MT->upload_file_to_sync(%param)
-
-A routine that will make record of a file that is to be transmitted
-to one or more servers (typically via rsync). This method runs when
-the C<SyncTarget> MT configuration setting is configured. Normally
-published files are automatically processed for syncing operations,
-but this routine is used for files that are created through other
-means, such as uploading an asset.
-
-=head2 MT->help_url( [ $suffix ] )
-
-Returns a help URL for the application. This method is used to construct
-the URL directing users to online documentation. If called without any
-parameters, it returns the base URL for providing help. If a parameter is
-given, the URL is appended with the given subpath. The base URL by default
-is 'http://www.movabletype.org/documentation/'. This string is passed
-through MT's localization modules, so it can be changed on a per-language
-basis. The C<$suffix> parameter, however, is always appended to this base URL.
-
-=head2 MT->get_timer
-
-Returns an instance of L<MT::Util::ReqTimer> for use in timing MT's
-operations.
-
-=head2 MT->log_times
-
-Used as part of Movable Type's performance logging framework. This method
-is called internally, once at the startup of Movable Type, and once as it
-is shutting down.
-
-=head2 MT->time_this($string, $code)
-
-Utility method to time a particular routine. This will log the execution
-time of the C<$code> coderef with the identifying phrase C<$string> using
-MT's performance logging framework.
-
-=head2 MT::refresh_cache($cb)
-
-A callback handler that invalidates the cache of MT's caching driver.
-See L<MT::Cache::Negotiate>.
-
-=head2 MT->register_refresh_cache_event($callback)
-
-Registers a callback that will cause the MT cache to invalidate itself.
-See L<MT::Cache::Negotiate>.
 
 =head1 ERROR HANDLING
 
