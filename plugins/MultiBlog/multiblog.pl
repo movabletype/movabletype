@@ -84,6 +84,10 @@ MT->add_callback( 'MT::Comment::post_save', 10, $plugin,
 MT->add_callback( 'MT::TBPing::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_feedback_save', 'tb_pub', @_ ) } );
 
+# Register restore callback to restore blog assciation of triggers
+MT->add_callback( 'restore', 10, $plugin,
+    sub { $plugin->runner( 'post_restore', @_ ) } );
+
 sub instance { $plugin }
 
 sub add_trigger {

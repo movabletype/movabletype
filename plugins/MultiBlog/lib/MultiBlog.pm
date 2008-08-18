@@ -319,5 +319,34 @@ sub filter_blogs {
     }
 }
 
+sub post_restore {
+    my ( $plugin, $cb, $objects, $deferred, $errors, $callback ) = @_;
+
+    foreach my $key ( keys %$objects ) {
+        next unless $key =~ /^MT::PluginData#\d+$/;
+        my $pd = $objects->{$key};
+        my $data = $pd->data;
+        my $rebuild_triggers = $data->{rebuild_triggers}
+            or next;
+        my @restored;
+        foreach my $trg_str ( split ( '\|', $rebuild_triggers ) ) {
+            my ( $action, $id, $trigger ) = split ( ':', $trg_str );
+            if ( $id eq '_all' ) {
+                push @restored, "$action:$id:$trigger";
+            }
+            elsif ( my $new_obj = $objects->{'MT::Blog#' . $id} ) {
+                push @restored, "$action:" . $new_obj->id . ":$trigger";
+                $callback->(
+                    $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $id)
+                );
+            }
+        }
+        if ( @restored ) {
+            $data->{rebuild_triggers} = join ( '|', @restored );
+            $pd->data($data);
+            $pd->save;
+        }
+    }
+}
 
 1;
