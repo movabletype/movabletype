@@ -297,6 +297,7 @@ sub core_tags {
             AuthorUserpic => \&_hdlr_author_userpic,
             AuthorUserpicURL => \&_hdlr_author_userpic_url,
             AuthorBasename => \&_hdlr_author_basename,
+            AuthorEntryCount => \&_hdlr_author_entry_count,
 
             BlogID => \&_hdlr_blog_id,
             BlogName => \&_hdlr_blog_name,
@@ -6817,6 +6818,36 @@ sub _hdlr_author_basename {
     my $name = $author->basename;
     $name = MT::Util::make_unique_author_basename($author) if !$name;
     return $name;
+}
+
+###########################################################################
+
+=head2 AuthorEntryCount
+
+Returns the number of published entries associated with the author
+currently in context.
+
+=for tags authors
+
+=cut
+
+sub _hdlr_author_entry_count {
+    my ($ctx, $args, $cond) = @_;
+    my $author = $ctx->stash('author');
+    unless ($author) {
+        my $e = $ctx->stash('entry');
+        $author = $e->author if $e;
+    }
+    return $ctx->_no_author_error() unless $author;
+
+    my (%terms, %args);
+    my $class = MT->model('entry');
+    $ctx->set_blog_load_context($args, \%terms, \%args)
+        or return $ctx->error($ctx->errstr);
+    $terms{author_id} = $author->id;
+    $terms{status}    = MT::Entry::RELEASE();
+    my $count = $class->count(\%terms, \%args);
+    return $ctx->count_format($count, $args);
 }
 
 ###########################################################################
