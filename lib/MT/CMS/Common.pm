@@ -73,7 +73,7 @@ sub save {
             return list( $app, \%param );
         }
         elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_archives' ) {
-            return edit( $app, \%param );
+            return MT::CMS::Blog::cfg_archives( $app, \%param );
         }
         else {
             if ($type) {
