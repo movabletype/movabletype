@@ -574,6 +574,7 @@ sub cb_restore_objects {
             }
             # also restore ids of favorite blogs
             if ( my $favorites = $new_author->favorite_blogs ) {
+                next unless 'ARRAY' eq ref($favorites);
                 my @new_favs;
                 if ( @$favorites ) {
                     foreach my $old_id ( @$favorites ) {

@@ -443,7 +443,7 @@ sub backup {
     require MT::BackupRestore;
     my $count_term =
       $blog_id
-      ? { class => '*', blog_id => $blog_id }
+      ? { class => '*', blog_id => [ 0, $blog_id ] }
       : { class => '*' };
     my $num_assets = $app->model('asset')->count($count_term);
     my $printer;
