@@ -357,11 +357,6 @@ sub upgrade_functions {
                         where author_type = 1 and author_status is null',
             }
         },
-        'core_install_default_roles' => {
-            code => \&create_default_roles,
-            on_class => 'MT::Role',
-            priority => 3.1,
-        },
         'core_migrate_permissions_to_roles' => {
             version_limit => 3.3101,
             priority => 3.2,
