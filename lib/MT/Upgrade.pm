@@ -82,16 +82,6 @@ sub init {
     }
 
     my $fns = MT::Component->registry('upgrade_functions') || [];
-
-    # now, the core upgrade function set
-    # my $vpkg = "$pkg::Core";
-    # eval "require $vpkg;";
-    # unless ($@) {
-    #     my $fn_set = $vpkg->upgrade_functions();
-    #     %functions = ( %functions, %$fn_set )
-    #         if $fn_set && (ref($fn_set) eq 'HASH');
-    # }
-
     foreach my $fn_set (@$fns) {
         %functions = ( %functions, %{ $fn_set } );
     }
@@ -104,7 +94,7 @@ sub init {
     my $to = int( MT->version_number );
     for (my $i = $from; $i <= $to; $i++) {
         my $vpkg = "${pkg}::v$i";
-        eval "require $vpkg; 1;" or die;
+        eval "# line " . __LINE__ . " " . __FILE__ . "require $vpkg; 1;" or die;
         next if $@;
         my $fn_set = $vpkg->upgrade_functions();
         %functions = ( %functions, %$fn_set )
