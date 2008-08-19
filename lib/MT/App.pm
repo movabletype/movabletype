@@ -2631,10 +2631,6 @@ sub run {
                 $body = $out;
             }
 
-            # Some browsers throw you to quirks mode if the doctype isn't
-            # up front.
-            $body =~ s/^\s+(<!DOCTYPE)/$1/s if defined $body;
-
             unless ( defined $body
                 || $app->{redirect}
                 || $app->{login_again}
@@ -2726,6 +2722,11 @@ sub run {
                     }
                 }
             }
+
+            # Some browsers throw you to quirks mode if the doctype isn't
+            # up front and leading whitespace makes a feed invalid.
+            $body =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
+
             $app->print($body);
         }
     }
