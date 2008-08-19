@@ -1,0 +1,50 @@
+#!/usr/bin/perl -d
+
+# This needs to load first on Centos for some reason
+use Term::ReadLine;
+
+use FindBin qw( $Bin );
+use Cwd;
+use lib map { Cwd::realpath("$Bin/../$_") } qw( extlib lib ../lib );
+
+use constant HISTORY_FILE => $ENV{HOME} . '/.mt-phistory';
+
+use vars qw( $mt $HAS_HISTORY );
+
+use MT;
+use MT::App::CMS;
+
+BEGIN {
+    $DB::term || DB::setterm();
+    $HAS_HISTORY = $DB::term->can('GetHistory');
+
+    my @h;
+    if ($HAS_HISTORY) {
+        @h = $DB::term->GetHistory;
+    } else {
+        print STDERR "== Command history unavailable ==\n\n";
+    }
+
+    # Don't load history if we already have something (probably a db restart)
+    if ((scalar @h == 0) and $HAS_HISTORY) {
+        if (open H, '<', HISTORY_FILE()) {
+            chomp(my @h = <H>);
+            close H;
+            my %seen;
+            $DB::term->SetHistory(grep { /\S/ && !$seen{$_}++ } @h);
+        }
+    }
+
+    $mt = MT::App::CMS->new() or die MT->errstr;
+}
+
+END {
+    if ($HAS_HISTORY and open(H, '>', HISTORY_FILE())) {
+        my %seen;
+        print H join("\n", grep { /\S/ && !$seen{$_}++ } $DB::term->GetHistory);
+        close H;
+    }
+}
+
+1;
+
