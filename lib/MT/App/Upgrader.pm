@@ -717,12 +717,16 @@ sub build_page {
     my @data;
     my $preferred = $app->config('DefaultLanguage');
     $preferred = 'en-us' if ( lc($preferred) eq 'en_us' );
+
+    my $curr_lang = $app->current_language;
     for my $tag ( keys %$langs ) {
         ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
+        $app->set_language($tag);
         my $row = { l_tag => $tag, l_name => $app->translate($name) };
         $row->{l_selected} = 1 if $preferred eq $tag;
         push @data, $row;
     }
+    $app->set_language($curr_lang);
     $param->{languages} = [ sort { $a->{l_name} cmp $b->{l_name} } @data ];
 
     $app->SUPER::build_page( $tmpl, $param );

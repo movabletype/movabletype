@@ -841,7 +841,8 @@ sub load_core_tags {
 
 sub load_upgrade_fns {
     require MT::Upgrade;
-    return MT::Upgrade->core_upgrade_functions;
+    require MT::Upgrade::Core;
+    return MT::Upgrade::Core->upgrade_functions;
 }
 
 sub load_backup_instructions {
