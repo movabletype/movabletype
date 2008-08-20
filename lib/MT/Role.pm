@@ -121,6 +121,61 @@ sub has {
     MT::Permission::has(@_);
 }
 
+sub create_default_roles {
+    my $class = shift;
+    my (%param) = @_;
+
+    my @default_roles = (
+        { name => 'Blog Administrator',
+          description => 'Can administer the blog.',
+          role_mask => 2**12,
+          perms => ['administer_blog'] },
+        { name => 'Editor',
+          description => 'Can upload files, edit all entries/categories/tags on a blog and publish the blog.',
+          perms => ['comment', 'create_post', 'publish_post', 'edit_all_posts', 'edit_categories', 'edit_tags', 'manage_pages',
+                    'rebuild', 'upload', 'send_notifications', 'manage_feedback', 'edit_assets'], },
+        { name => 'Author',
+          description => 'Can create entries, edit their own, upload files and publish.',
+          perms => ['comment', 'create_post', 'publish_post', 'upload', 'send_notifications'], },
+        { name => 'Designer',
+          description => 'Can edit, manage and publish blog templates.',
+          role_mask => (2**4 + 2**7),
+          perms => ['edit_templates', 'rebuild'] },
+        { name => 'Webmaster',
+          description => 'Can manage pages and publish blog templates.',
+          perms => ['manage_pages', 'rebuild'] },
+        { name => 'Contributor',
+          description => 'Can create entries, edit their own and comment.',
+          perms => ['comment', 'create_post'], },
+        { name => 'Moderator',
+          description => 'Can comment and manage feedback.',
+          perms => ['comment', 'manage_feedback'], },
+        { name => 'Commenter',
+          description => 'Can comment.',
+          role_mask => 2**0,
+          perms => ['comment'], },
+    );
+
+    require MT::Role;
+    return if MT::Role->exist();
+
+    foreach my $r (@default_roles) {
+        my $role = MT::Role->new();
+        $role->name(MT->translate($r->{name}));
+        $role->description(MT->translate($r->{description}));
+        $role->clear_full_permissions;
+        $role->set_these_permissions($r->{perms});
+        if ($r->{name} =~ m/^System/) {
+            $role->is_system(1);
+        }
+        $role->role_mask($r->{role_mask}) if exists $r->{role_mask};
+        $role->save
+            or return $class->error($role->errstr);
+    }
+
+    1;
+}
+
 1;
 __END__
 
