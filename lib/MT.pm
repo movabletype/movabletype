@@ -1135,8 +1135,15 @@ sub init_lang_defaults {
     require MT::I18N;
     foreach my $setting (keys %lang_settings) {
         my $const = $lang_settings{$setting};
-        $cfg->$setting(MT::I18N::const($const))
-            unless $cfg->$setting;
+        my $value = $cfg->$setting;
+        my $i18n_val = MT::I18N::const($const);
+        if ( !$value ) {
+            $cfg->$setting($i18n_val);
+        }
+        elsif ( ( $value eq $cfg->default($setting) )
+             && ( $value ne $i18n_val ) ) {
+            $cfg->$setting($i18n_val);
+        }
     }
     
     return 1;
