@@ -1135,7 +1135,8 @@ sub init_lang_defaults {
     require MT::I18N;
     foreach my $setting (keys %lang_settings) {
         my $const = $lang_settings{$setting};
-        $cfg->$setting(MT::I18N::const($const));
+        $cfg->$setting(MT::I18N::const($const))
+            unless $cfg->$setting;
     }
     
     return 1;
