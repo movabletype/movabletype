@@ -94,7 +94,7 @@ sub init {
     my $to = int( MT->version_number );
     for (my $i = $from; $i <= $to; $i++) {
         my $vpkg = "${pkg}::v$i";
-        eval "# line " . __LINE__ . " " . __FILE__ . "require $vpkg; 1;" or die;
+        eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $vpkg; 1;" or die;
         next if $@;
         my $fn_set = $vpkg->upgrade_functions();
         %functions = ( %functions, %$fn_set )
