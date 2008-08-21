@@ -661,7 +661,10 @@ sub published_url {
 
 sub pre_remove_children {
     my $tmpl = shift;
-    $tmpl->remove_children({ key => 'template_id' });
+    # global templates doesn't have child records
+    if ( $tmpl->blog_id ) {
+        $tmpl->remove_children({ key => 'template_id' });
+    }
 }
 
 sub post_remove_widget {
