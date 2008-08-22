@@ -101,7 +101,10 @@ sub remove {
         my $blog_id;
         if ( $_[0] && $_[0]->{template_id} ) {
             my $tmpl = MT::Template->load( $_[0]->{template_id} );
-            $blog_id = $tmpl->blog_id if $tmpl;
+            if ( $tmpl ) {
+                return $result unless $tmpl->blog_id; # global template does not have maps
+                $blog_id = $tmpl->blog_id;
+            }
         }
 
         my $maps_iter = MT::TemplateMap->count_group_by(

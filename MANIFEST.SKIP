@@ -53,6 +53,16 @@ mt-static/themes/unity-tricolor
 #?package=MTOS ^plugins/feeds-app-lite
 #?package=MTOS ^plugins/CustomFields
 
+#?package=MTCOM ^COPYING
+#?package=MTCOM ^COPYRIGHT
+#?package=MTCOM ^addons/Enterprise.pack
+#?package=MTCOM ^mt-static/addons/Enterprise.pack
+#?package=MTCOM ^addons/Community.pack
+#?package=MTCOM ^mt-static/addons/Community.pack
+#?package=MTCOM ^mt-cp.cgi
+#?package=MTCOM ^mt-static/themes/tristan-blue
+#?package=MTCOM ^mt-static/themes/tristan-blue-4.2
+
 #?package=MTE ^COPYING
 #?package=MTE ^COPYRIGHT
 

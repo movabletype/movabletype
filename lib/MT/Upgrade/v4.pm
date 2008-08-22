@@ -1246,15 +1246,6 @@ sub core_upgrade_meta_for_table {
     }
     $sth->finish;
 
-    # now, clear the meta column for each of the objects touched
-    if (@ids) {
-        my $id_col = $dbd->db_column_name($class->datasource, 'id');
-        my $list = join ",", @ids;
-        my $sql = join " ", "UPDATE", $driver->table_for($class),
-            "SET", $db_meta_col, "=NULL WHERE", $id_col, " IN ($list)";
-        $dbh->do($sql);
-    }
-
     if ($rows == 101) {
         $offset += 100;
     } else {
