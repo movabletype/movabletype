@@ -162,8 +162,65 @@ Active user sessions are held in 'US' records.
 
 =item NW
 
-The cached contents of the newsbox (top right of MT's welcome screen)
+The cached contents of the newsbox in the dashboard widget
 is held in the I<single> record of kind 'NW'.
+
+=item AF
+
+Session data for Activity Feeds.
+
+=item AS
+
+AutoSave data for entry and template.
+
+=item TF
+
+Data for temporary file created during entry and template preview.
+
+=item CR
+
+Token stored for commenter registration.
+
+=item CS
+
+Cache of the result of blog search via mt-search.cgi
+
+=item UA
+
+Active user records indicate when the particular user logged in the last time.
+
+=item CO
+
+Cached Object records store cache data of objects via MT::Cache::Session class.
+Cache of the template module is the default use of the kind.
+
+=item BU
+
+BU indicates the backup session whose files should be downloaded 
+only within the particular period of time.  Backup data can't be
+downloaded using the link provided by MT after the period is expired.
+
+=item CC
+
+Category Cache is the cache of a particular category data.
+
+=item SC
+
+System Check is the result of the mt-check.cgi executed within the application
+(from Tools menu item).
+
+=item PT
+
+Periodic Task indicates when a certain scheduled task is run the last time.
+
+=item CA
+
+CaptchA session stores the captcha token that is asked for a particular challenge.
+It expires after 10 minutes.
+
+=item TC
+
+Tag Cache is the cache of a particular tag data.
 
 =back
 
@@ -200,7 +257,7 @@ Return the session data and unset the I<__dirty> flag.
 Purges stale session records.  I<$kind> and I<$ttl> are both optional.
 Pass I<$kind> and the method purges only the records that are of the kind.
 Pass I<$ttl> and the method purges records that have lived more than the time-to-live.
-If $ttl is not specified, the method purges records that has specified duration
+If I<$ttl> is not specified, the method purges records that has specified duration
 and the duration has been ended.
 
 =head1 AUTHOR & COPYRIGHT
