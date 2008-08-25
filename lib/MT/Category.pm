@@ -117,6 +117,7 @@ sub cache_obj {
         $cat_cache->kind('CC');
         $cat_cache->id($sess_id);
         $cat_cache->start(time);
+        $cat_cache->duration(time + 60 * 60);
     }
     $cat_cache;
 }

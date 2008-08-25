@@ -10,11 +10,11 @@ use strict;
 use warnings;
 use base qw( MT::ErrorHandler );
 
-use constant READABLECHARS => '23456789abcdefghjkmnzpqrstuvwxyz';
-use constant WIDTH  => 25;
-use constant HEIGHT => 35;
-use constant LENGTH => 6;
-use constant EXPIRE => 60 * 10;
+sub READABLECHARS { '23456789abcdefghjkmnzpqrstuvwxyz' };
+sub WIDTH  { 25 };
+sub HEIGHT { 35 };
+sub LENGTH { 6 };
+sub EXPIRE { 60 * 10 };
 
 use MT::Session;
 
@@ -75,6 +75,7 @@ sub generate_captcha {
     $sess->id($code);
     $sess->kind('CA'); #CA == CaptchA
     $sess->start(time);
+    $sess->duration( time + EXPIRE() );
     $sess->name($token);
     $sess->save or
         $app->error($sess->errstr), return undef;

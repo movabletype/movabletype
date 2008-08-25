@@ -17,11 +17,13 @@ __PACKAGE__->install_properties({
         'name' => 'string(255)',
         'kind' => 'string(2)',
         'start' => 'integer not null',
+        'duration' => 'integer',
     },
     indexes => {
         'start' => 1,
         'name' => 1,
         'kind' => 1,
+        'duration' => 1,
     },
     datasource => 'session',
     primary_key => 'id',
@@ -86,6 +88,31 @@ sub set {
     my $data = $sess->thaw_data;
     $sess->{__dirty} = 1;
     $data->{$var} = $val;
+}
+
+sub purge {
+    my $class = shift;
+    my ( $kind, $ttl ) = @_;
+
+    $class = ref($class) if ref($class);
+
+    my $terms = {
+        $kind ? ( kind => $kind ) : ()
+    };
+    my $args = {};
+    if ( $ttl ) {
+        $terms->{start} = [ undef, time - $ttl ];
+        $args->{range}  = { start => 1 };
+    }
+    else {
+        # use stored expiration period
+        $terms->{duration} = [ undef, time ];
+        $args->{range}     = { duration => 1 };
+    }
+
+    $class->remove( $terms, $args )
+        or return $class->error($class->errstr);
+    1;
 }
 
 1;
@@ -167,6 +194,14 @@ Set the I<var> to I<val> and set the session I<__dirty> flag.
 =head2 $sess->thaw_data()
 
 Return the session data and unset the I<__dirty> flag.
+
+=head2 MT::Session->purge($kind, $ttl)
+
+Purges stale session records.  I<$kind> and I<$ttl> are both optional.
+Pass I<$kind> and the method purges only the records that are of the kind.
+Pass I<$ttl> and the method purges records that have lived more than the time-to-live.
+If $ttl is not specified, the method purges records that has specified duration
+and the duration has been ended.
 
 =head1 AUTHOR & COPYRIGHT
 

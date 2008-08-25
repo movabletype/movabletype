@@ -475,6 +475,7 @@ sub _send_signup_confirmation {
     $sess->email($email);
     $sess->name($id);
     $sess->start(time);
+    $sess->duration( time + 60 * 60 * 24 );
     $sess->save;
 
     MT::Mail->send( \%head, $body )

@@ -766,19 +766,12 @@ sub load_core_tasks {
                 MT::Core->remove_temporary_files;
             },
         },
-        'RemoveExpiredUserSessions' => {
-            label => 'Remove Expired User Sessions',
-            frequency => 60 * 60 * 24,   # once a day
+        'PurgeExpiredSessionRecords' => {
+            label => 'Purge Stale Session Records',
+            frequency => 60,# * 60 * 24,   # once a day
             code => sub {
-                MT::Core->remove_expired_sessions;
-            },
-        },
-        'RemoveExpiredSearchCaches' => {
-            label => 'Remove Expired Search Caches',
-            frequency => 60 * 60 * 24,   # once a day
-            code => sub {
-                MT::Core->remove_expired_search_caches;
-            },
+                MT::Core->purge_session_records;
+            }
         },
     };
 }
@@ -799,9 +792,10 @@ sub remove_temporary_files {
     return '';
 }
 
-sub remove_expired_sessions {
+sub purge_session_records {
     require MT::Session;
 
+    # remove expired user sessions
     my $expired = MT->config->UserSessionTimeout;
     my @sesss = MT::Session->load(
         { kind => 'US', start => [ undef, time - $expired ] },
@@ -809,15 +803,16 @@ sub remove_expired_sessions {
     foreach my $s (@sesss) {
         $s->remove if !$s->get('remember');
     }
-    return '';
-}
 
-sub remove_expired_search_caches {
-    require MT::Session;
-
+    # remove stale search cache
     MT::Session->remove(
         { kind => 'CS', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
+
+    # remove all the other session records
+    # that have their duration expired
+    MT::Session->purge();
+
     return '';
 }
 
