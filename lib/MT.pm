@@ -14,7 +14,7 @@ use MT::Util qw( weaken );
 use MT::I18N qw( encode_text );
 
 our ( $VERSION,      $SCHEMA_VERSION );
-our ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID );
+our ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL );
 our ( $MT_DIR,       $APP_DIR, $CFG_DIR, $CFG_FILE, $SCRIPT_SUFFIX );
 our (
     $plugin_sig, $plugin_envelope, $plugin_registry,
@@ -30,15 +30,19 @@ BEGIN {
     $plugins_installed = 0;
 
     ( $VERSION, $SCHEMA_VERSION ) = ( '4.2', '4.0067' );
-    ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID ) = (
+    ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
         '__PRODUCT_NAME__', 'MT',
-        '4.2', '4.2'
+        '4.2', '4.2',
+        '__PORTAL_URL__'
     );
 
     # To allow MT to run straight from svn, if no build process (pre-processing)
     # is run, then default to MTOS
     if ($PRODUCT_NAME eq '__PRODUCT' . '_NAME__') {
         $PRODUCT_NAME = 'Movable Type';
+    }
+    if ($PORTAL_URL eq '__PORTAL' . '_URL__') {
+        $PORTAL_URL = 'http://www.movabletype.org/';
     }
 
     $DebugMode = 0;
@@ -76,6 +80,13 @@ sub product_code    { $PRODUCT_CODE }
 sub product_name    { $PRODUCT_NAME }
 sub product_version { $PRODUCT_VERSION }
 sub schema_version  { $SCHEMA_VERSION }
+sub portal_url      {
+    require MT::I18N;
+    if ( my $url = MT::I18N::const('PORTAL_URL') ) {
+        return $url;
+    }
+    return $PORTAL_URL;
+}
 
 # Default id method turns MT::App::CMS => cms; Foo::Bar => foo/bar
 sub id {
@@ -2158,8 +2169,7 @@ sub build_page {
     @packs_installed = sort { $a->{label} cmp $b->{label} } @packs_installed;
     $param->{packs_installed} = \@packs_installed;
     
-    require MT::I18N;
-    $param->{portal_url} = MT::I18N::const('PORTAL_URL');
+    $param->{portal_url} = &portal_url;
 
     for my $config_field (keys %{ MT::ConfigMgr->instance->{__var} || {} }) {
         $param->{ $config_field . '_readonly' } = 1;
