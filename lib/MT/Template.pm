@@ -10,11 +10,8 @@ use strict;
 use base qw( MT::Object );
 use MT::Util qw( weaken );
 
+use MT::Template::Node;
 sub NODE () { 'MT::Template::Node' }
-
-sub NODE_TEXT ()     { 1 }
-sub NODE_BLOCK ()    { 2 }
-sub NODE_FUNCTION () { 3 }
 
 my $resync_to_db;
 
@@ -187,13 +184,13 @@ sub reflow {
     # reconstitute text of template based on tokens
     my $str = '';
     foreach my $token (@$tokens) {
-        if ($token->[0] eq 'TEXT') {
-            $str .= $token->[1];
+        my $tag = $token->tag;
+        if ($tag eq 'TEXT') {
+            $str .= $token->nodeValue;
         } else {
-            my $tag = $token->[0];
             $str .= '<mt' . $tag;
-            if (my $attrs = $token->[4]) {
-                my $attrh = $token->[1];
+            if (my $attrs = $token->attribute_list) {
+                my $attrh = $token->attributes;
                 foreach my $a (@$attrs) {
                     delete $attrh->{$a->[0]};
                     my $v = $a->[1];
@@ -207,9 +204,9 @@ sub reflow {
                 }
             }
             $str .= '>';
-            if ($token->[2]) {
+            if (my $childNodes = $token->childNodes) {
                 # container tag
-                $str .= $tmpl->reflow( $token->[2] );
+                $str .= $tmpl->reflow($childNodes);
                 $str .= '</mt' . $tag . '>';
             }
         }
@@ -551,16 +548,18 @@ sub rescan {
     }
     return unless $tokens;
     foreach my $t (@$tokens) {
-        if ($t->[0] ne 'TEXT') {
-            if ($t->[1]->{id}) {
+        if ($t->tag ne 'TEXT') {
+            if (my $id = $t->getAttribute('id')) {
                 my $ids = $tmpl->{__ids} ||= {};
-                $ids->{lc $t->[1]->{id}} = $t;
+                $ids->{lc $id} = $t;
             }
-            elsif ($t->[1]->{class}) {
+            elsif (my $class = $t->getAttribute('class')) {
                 my $classes = $tmpl->{__classes} ||= {};
-                push @{ $classes->{lc $t->[1]->{class}} ||= [] }, $t;
+                push @{ $classes->{lc $class} ||= [] }, $t;
             }
-            $tmpl->rescan($t->[2]) if $t->[2];
+            if (my $childNodes = $t->childNodes) {
+                $tmpl->rescan($childNodes);
+            }
         }
     }
 }
@@ -711,7 +710,7 @@ sub getElementById {
     my $tmpl = shift;
     my ($id) = @_;
     if (my $node = $tmpl->token_ids->{$id}) {
-        return bless $node, NODE;
+        return $node;
     }
     undef;
 }
@@ -719,17 +718,13 @@ sub getElementById {
 sub createElement {
     my $tmpl = shift;
     my ($tag, $attr) = @_;
-    my $node = bless [ $tag, $attr, undef, undef, undef, undef, $tmpl ], NODE;
-    weaken($node->[6]);
-    return $node;
+    return NODE->new(tag => $tag, attributes => $attr, template => $tmpl);
 }
 
 sub createTextNode {
     my $tmpl = shift;
     my ($text) = @_;
-    my $node = bless [ 'TEXT', $text, undef, undef, undef, undef, $tmpl ], NODE;
-    weaken($node->[6]);
-    return $node;
+    return NODE->new(tag => 'TEXT', nodeValue => $text, template => $tmpl);
 }
 
 sub insertAfter {
@@ -808,20 +803,17 @@ sub appendChild {
 package MT::Template::Tokens;
 
 use strict;
-sub NODE_TEXT ()     { 1 }
-sub NODE_BLOCK ()    { 2 }
-sub NODE_FUNCTION () { 3 }
 
 sub getElementsByTagName {
     my ($tokens, $name) = @_;
     my @list;
     $name = lc $name;
     foreach my $t (@$tokens) {
-        if (lc $t->[0] eq $name) {
+        if (lc $t->tag eq $name) {
             push @list, $t;
         }
-        if ($t->[2]) {
-            my $subt = getElementsByTagName($t->[2], $name);
+        if (my $childNodes = $t->childNodes) {
+            my $subt = getElementsByTagName($childNodes, $name);
             push @list, @$subt if $subt;
         }
     }
@@ -833,200 +825,16 @@ sub getElementsByName {
     my @list;
     $name = lc $name;
     foreach my $t (@$tokens) {
-        if ((ref($t->[1]) eq 'HASH') && (lc ($t->[1]{'name'} || '') eq $name)) {
+        if (lc ($t->getAttribute('name') || '') eq $name) {
             push @list, $t;
         }
-        if ($t->[2]) {
-            my $subt = getElementsByName($t->[2], $name);
+        if (my $childNodes = $t->childNodes) {
+            my $subt = getElementsByName($childNodes, $name);
             push @list, @$subt if $subt;
         }
     }
     scalar @list ? \@list : undef;
 }
-
-package MT::Template::Node;
-
-use strict;
-use MT::Util qw( weaken );
-
-sub setAttribute {
-    my $node = shift;
-    my ($attr, $val) = @_;
-    if ($attr eq 'id') {
-        # assign into ids
-        my $tmpl = $node->template;
-        my $ids = $tmpl->token_ids;
-        my $old_id = $node->getAttribute("id");
-        if ($old_id && $ids) {
-            delete $ids->{$old_id};
-        }
-    }
-    elsif ($attr eq 'class') {
-        # assign into classes
-        my $tmpl = $node->template;
-        my $classes = $tmpl->token_classes;
-        my $old_class = $node->getAttribute("class");
-        if ($old_class && $classes->{$old_class}) {
-            @{$classes->{$old_class}} = grep { $_ != $node }
-                @{$classes->{$old_class}};
-        }
-        push @{$classes->{$val} ||= []}, $node;
-    }
-    ($node->[1] ||= {})->{$attr} = $val;
-}
-
-sub template {
-    my $node = shift;
-    return $node->[6];
-}
-
-sub getAttribute {
-    my $node = shift;
-    my ($attr) = @_;
-    ($node->[1] || {})->{$attr};
-}
-
-# sub attributes {
-#     my $node = shift;
-#     return $node->[1] ||= {};
-# }
-
-sub nextSibling {
-    my $node = shift;
-    my $parent = $node->parentNode->childNodes;
-    my $max = (scalar @$parent) - 1;
-    return undef unless $max;
-    my $last = $parent->[0];
-    foreach my $n ($parent->[1..$max]) {
-        return $n if $node == $last;
-        $last = $n;
-    }
-    return $parent->[$max] if $node == $last;
-    return undef;
-}
-
-sub lastChild {
-    my $node = shift;
-    my $children = $node->childNodes or return undef;
-    @$children ? $children->[scalar @$children - 1] : undef;
-}
-
-sub firstChild {
-    my $node = shift;
-    my $children = $node->[2] or return undef;
-    @$children ? $children->[0] : undef;
-}
-
-sub previousSibling {
-    my $node = shift;
-    my $parent = $node->parentNode->childNodes;
-    my $last;
-    foreach my $n (@$parent) {
-        return $last if $node == $n;
-        $last = $n;
-    }
-    return undef;
-}
-
-sub parentNode {
-    my $node = shift;
-    weaken($node->[5] = shift) if @_;
-    $node->[5];
-}
-
-sub childNodes {
-    my $node = shift;
-    $node->[2] = shift if @_;
-    $node->[2];
-}
-
-sub ownerDocument { #template
-    my $node = shift;
-    return $node->template;
-}
-
-sub hasChildNodes {
-    my $node = shift;
-    $node->[2] && (@{$node->[2]}) ? 1 : 0;
-}
-
-sub nodeType {
-    my $node = shift;
-    if ($node->[0] eq 'TEXT') {
-        return NODE_TEXT();
-    } elsif (defined $node->[2]) {
-        return NODE_BLOCK();
-    } else {
-        return NODE_FUNCTION();
-    }
-}
-
-sub nodeName {
-    my $node = shift;
-    if ($node->[0] eq 'TEXT') {
-        return undef;
-    }
-    # normalize:
-    #    MTEntry => mt:entry
-    #    MTAPP:WIDGET => mtapp:widget
-    my $tag = lc $node->[0];
-    if (($tag !~ m/:/) && ($tag =~ m/^mt/)) {
-        $tag =~ s/^mt/mt:/;
-    }
-    return $tag;
-}
-
-# Returns text of a text node; inner text for a block tag, or undef
-# for a function tag.
-sub nodeValue {
-    my $node = shift;
-    if ($node->[0] eq 'TEXT') {
-        return $node->[1];
-    } else {
-        if (defined $node->[3]) {
-            return $node->[3];
-        }
-    }
-    return undef;
-}
-
-sub innerHTML {
-    my $node = shift;
-    if (@_) {
-        my ($text) = @_;
-        $node->[3] = $text;
-        my $builder = new MT::Builder;
-        my $ctx = MT::Template::Context->new;
-        $node->[2] = $builder->compile($ctx, $text);
-        my $tmpl = $node->ownerDocument;
-        if ($tmpl) {
-            $tmpl->reset_markers;
-            $tmpl->{reflow_flag} = 1;
-        }
-    }
-    return $node->[3];
-}
-
-# TBD: what about new nodes that are added with id elements?
-sub appendChild {
-    my $node = shift;
-    my ($new_node) = @_;
-    my $nodes = $node->childNodes;
-    push @$nodes, $new_node;
-    my $tmpl = $node->ownerDocument;
-    if ($tmpl) {
-        $tmpl->{reflow_flag} = 1;
-    }
-}
-
-sub removeChild {
-    my $node = shift;
-}
-
-*inner_html = \&innerHTML;
-*append_child = \&appendChild;
-*insert_before = \&insertBefore;
-*remove_child = \&removeChild;
 
 # trans('Index')
 # trans('Archive')

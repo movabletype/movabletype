@@ -8,7 +8,7 @@ package MT::Builder;
 
 use strict;
 use base qw( MT::ErrorHandler );
-use MT::Util qw( weaken );
+use MT::Template::Node;
 
 sub NODE () { 'MT::Template::Node' }
 
@@ -79,7 +79,7 @@ sub compile {
         # Structure of a node:
         #   tag name, attribute hashref, contained tokens, template text,
         #       attributes arrayref, parent array reference
-        my $rec = bless [ $tag, \my %args, undef, undef, \my @args ], NODE;
+        my $rec = NODE->new(tag => $tag, attributes => \my %args, attribute_list => \my @args);
         while ($args =~ /
             (?:
                 (?:
@@ -152,12 +152,12 @@ sub compile {
                     my $sec = $tag =~ m/ignore/i ? '' # ignore MTIgnore blocks
                             : substr $text, $sec_start, $sec_end - $sec_start;
                     if ($sec !~ m/<\$?MT/i) {
-                        $rec->[2] = [ ($sec ne '' ? ['TEXT', $sec ] : ()) ];
+                        $rec->childNodes([ ($sec ne '' ? NODE->new(tag => 'TEXT', nodeValue => $sec) : ()) ]);
                     }
                     else {
                         local $opt->{depth} = $opt->{depth} + 1;
                         local $opt->{parent} = $rec;
-                        $rec->[2] = $build->compile($ctx, $sec, $opt);
+                        $rec->childNodes($build->compile($ctx, $sec, $opt));
                         if ( @$errors ) {
                             my $pre_error = substr($text, 0, $sec_start);
                             my @m = $pre_error =~ m/\r?\n/g;
@@ -184,7 +184,7 @@ sub compile {
                         #     }
                         # }
                     }
-                    $rec->[3] = $sec if $opt->{uncompiled};
+                    $rec->nodeValue($sec) if $opt->{uncompiled};
                 }
                 else {
                     my $pre_error = substr($text, 0, $tag_start);
@@ -205,11 +205,11 @@ sub compile {
                 (pos $text) = $tag_end;
             }
             else {
-                $rec->[3] = '';
+                $rec->nodeValue('');
             }
         }
-        weaken($rec->[5] = $opt->{parent} || $tmpl);
-        weaken($rec->[6] = $tmpl);
+        $rec->parentNode($opt->{parent} || $tmpl);
+        $rec->template($tmpl);
         push @{ $state->{tokens} }, $rec;
         $pos = pos $text;
     }
@@ -256,10 +256,7 @@ sub _consume_up_to {
 sub _text_block {
     my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
     if ((defined $text) && ($text ne '')) {
-        my $rec = bless [ 'TEXT', $text, undef, undef, undef, $_[0]->{tokens}, $_[0]->{tmpl} ], NODE;
-        # Avoids circular reference between NODE and TOKENS, MT::Template.
-        weaken($rec->[5]);
-        weaken($rec->[6]);
+        my $rec = NODE->new(tag => 'TEXT', nodeValue => $text, parentNode => $_[0]->{tokens}, template => $_[0]->{tmpl});
         push @{ $_[0]->{tokens} }, $rec;
     }
 }
@@ -268,7 +265,7 @@ sub syntree2str {
     my ($tokens, $depth) = @_;
     my $string = '';
     foreach my $t (@$tokens) {
-        my ($name, $args, $tokens, $uncompiled) = @$t;
+        my ($name, $args, $tokens, $uncompiled) = ($t->tag, $t->attributes, $t->childNodes, $t->nodeValue);
         $string .= (" " x $depth) .  $name;
         if (ref $args eq 'HASH') {
             $string .= join(", ", (map { " $_ => " . $args->{$_} }
@@ -304,48 +301,51 @@ sub build {
     my $ph = $ctx->post_process_handler;
 
     for my $t (@$tokens) {
-        if ($t->[0] eq 'TEXT') {
-            $res .= $t->[1];
+        if ($t->tag eq 'TEXT') {
+            $res .= $t->nodeValue;
         } else {
             my($tokens, $tokens_else, $uncompiled);
-            my $tag = lc $t->[0];
+            my $tag = lc $t->tag;
             if ($cond && (exists $cond->{ $tag } && !$cond->{ $tag })) {
                 # if there's a cond for this tag and it's false,
                 # walk the children and look for an MTElse.
                 # the children of the MTElse will become $tokens
-                for my $tok (@{ $t->[2] }) {
-                    if (lc $tok->[0] eq 'else' || lc $tok->[0] eq 'elseif') {
-                        $tokens = $tok->[2];
-                        $uncompiled = $tok->[3];
+                for my $tok (@{ $t->childNodes }) {
+                    my $tag = lc $tok->tag;
+                    if ($tag eq 'else' || $tag eq 'elseif') {
+                        $tokens = $tok->childNodes;
+                        $uncompiled = $tok->nodeValue;
                         last;
                     }
                 }
                 next unless $tokens;
             } else {
-                if ($t->[2] && ref($t->[2])) {
+                my $childNodes = $t->childNodes;
+                if ($childNodes && ref($childNodes)) {
                     # either there is no cond for this tag, or it's true,
                     # so we want to partition the children into
                     # those which are inside an else and those which are not.
                     ($tokens, $tokens_else) = ([], []);
-                    for my $sub (@{ $t->[2] }) {
-                        if (lc $sub->[0] eq 'else' || lc $sub->[0] eq 'elseif') {
+                    for my $sub (@$childNodes) {
+                        my $tag = lc $sub->tag;
+                        if ($tag eq 'else' || $tag eq 'elseif') {
                             push @$tokens_else, $sub;
                         } else {
                             push @$tokens, $sub;
                         }
                     }
                 }
-                $uncompiled = $t->[3];
+                $uncompiled = $t->nodeValue;
             }
-            my($h, $type) = $ctx->handler_for($t->[0]);
+            my($h, $type) = $ctx->handler_for($t->tag);
             if ($h) {
                 $timer->pause_partial if $timer;
-                local($ctx->{__stash}{tag}) = $t->[0];
+                local($ctx->{__stash}{tag}) = $t->tag;
                 local($ctx->{__stash}{tokens}) = ref($tokens) ? bless $tokens, 'MT::Template::Tokens' : undef;
                 local($ctx->{__stash}{tokens_else}) = ref($tokens_else) ? bless $tokens_else, 'MT::Template::Tokens' : undef;
                 local($ctx->{__stash}{uncompiled}) = $uncompiled;
-                my %args = %{$t->[1]} if defined $t->[1];
-                my @args = @{$t->[4]} if defined $t->[4];
+                my %args = %{$t->attributes} if defined $t->attributes;
+                my @args = @{$t->attribute_list} if defined $t->attribute_list;
 
                 # process variables
                 foreach my $v (keys %args) {
@@ -386,7 +386,7 @@ sub build {
                 unless (defined $out) {
                     my $err = $ctx->errstr;
                     if (defined $err) {
-                        return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr));
+                        return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->tag, $ctx->errstr));
                     }
                     else {
                         # no error was given, so undef will mean '' in
@@ -413,11 +413,11 @@ sub build {
 
                 if ($timer) {
                     $timer->mark("tag_"
-                        . lc($t->[0]) . args_to_string(\%args));
+                        . lc($t->tag) . args_to_string(\%args));
                 }
             } else {
-                if ($t->[0] !~ m/^_/) { # placeholder tag. just ignore
-                    return $build->error(MT->translate("Unknown tag found: [_1]", $t->[0]));
+                if ($t->tag !~ m/^_/) { # placeholder tag. just ignore
+                    return $build->error(MT->translate("Unknown tag found: [_1]", $t->tag));
                 }
             }
         }

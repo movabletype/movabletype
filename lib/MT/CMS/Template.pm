@@ -144,9 +144,10 @@ sub edit {
             my %seen;
             foreach my $tag (@$includes) {
                 my $include = {};
-                my $mod = $include->{include_module} = $tag->[1]->{module} || $tag->[1]->{widget};
+                my $attr = $tag->attributes;
+                my $mod = $include->{include_module} = $attr->{module} || $attr->{widget};
                 next unless $mod;
-                my $type = $tag->[1]->{widget} ? 'widget' : 'custom';
+                my $type = $attr->{widget} ? 'widget' : 'custom';
                 next if exists $seen{$type}{$mod};
                 $seen{$type}{$mod} = 1;
                 my $other = MT::Template->load(
@@ -207,7 +208,7 @@ sub edit {
             my @widget_sets;
             my %seen;
             foreach my $set (@sets) {
-                my $name = $set->[1]->{name};
+                my $name = $set->attributes->{name};
                 next unless $name;
                 next if $seen{$name};
                 $seen{$name} = 1;
