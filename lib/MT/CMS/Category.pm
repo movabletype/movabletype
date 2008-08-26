@@ -163,7 +163,7 @@ sub save {
 
             $app->run_callbacks( 'cms_pre_save.' . $type,
                 $app, $cat, $original )
-              || return $app->errtrans( "Saving [_1] failed: [_2]", $type,
+              || return $app->errtrans( "Saving [_1] failed: [_2]", $class->class_label,
                 $app->errstr );
 
             $cat->save
