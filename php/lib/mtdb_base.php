@@ -714,6 +714,14 @@ class MTDatabaseBase extends ezsql {
             }
         }
 
+        # Adds an count of comment filter
+        if (isset($args['max_comment']) && is_numeric($args['max_comment'])) {
+            $max_comment_filter = 'and entry_comment_count <= ' . intval($args['max_comment']);
+        }
+        if (isset($args['min_comment']) && is_numeric($args['min_comment'])) {
+            $min_comment_filter = 'and entry_comment_count >= ' . intval($args['min_comment']);
+        }
+
         if (count($entry_list) && ($entry_filter == '')) {
             $entry_list = implode(",", array_keys($entry_list));
             # set a reasonable cap on the entry list cache. if
@@ -758,7 +766,8 @@ class MTDatabaseBase extends ezsql {
                 'author',
                 'min_score',  'max_score',
                 'min_rate',    'max_rate',
-                'min_count',  'max_count'
+                'min_count',  'max_count',
+                'min_comment', 'max_comment'
               ) as $valid_key )
             {
                 if (array_key_exists($valid_key, $args)) {
@@ -907,6 +916,8 @@ class MTDatabaseBase extends ezsql {
                    $date_filter
                    $day_filter
                    $class_filter
+                   $max_comment_filter
+                   $min_comment_filter
         ";
 
         if ($sort_field) {

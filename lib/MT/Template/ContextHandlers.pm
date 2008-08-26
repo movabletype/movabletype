@@ -8054,6 +8054,14 @@ sub _hdlr_entries {
         }
     }
 
+    # Adds an count of comments filter to the filter list.
+    if ($args->{max_comment}) {
+        push @filters, sub { $_[0]->comment_count <= $args->{max_comment}; };
+    }
+    if ($args->{min_comment}) {
+        push @filters, sub { $_[0]->comment_count >= $args->{min_comment}; };
+    }
+
     my $published = $ctx->{__stash}{entry_ids_published} ||= {};
     if ($args->{unique}) {
         push @filters, sub { !exists $published->{$_[0]->id} }
