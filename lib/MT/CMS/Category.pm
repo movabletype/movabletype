@@ -170,7 +170,7 @@ sub save {
               or return $app->error(
                 $app->translate(
                     "Saving [_1] failed: [_2]",
-                    $type, $cat->errstr
+                    $class->class_label, $cat->errstr
                 )
               );
 
