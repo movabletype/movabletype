@@ -5106,8 +5106,8 @@ sub _hdlr_file_template {
     }
     my %f = (
         'a' => "<MTAuthorBasename $dir>",
-        '-a' => "<MTAuthorBasename dirify='-'>",
-        '_a' => "<MTAuthorBasename dirify='_'>",
+        '-a' => "<MTAuthorBasename separator='-'>",
+        '_a' => "<MTAuthorBasename separator='_'>",
         'b' => "<MTEntryBasename $sep>",
         '-b' => "<MTEntryBasename separator='-'>",
         '_b' => "<MTEntryBasename separator='_'>",
@@ -6806,16 +6806,34 @@ sub _hdlr_author_userpic_asset {
 
 Outputs the 'Basename' field of the author currently in context.
 
+B<Attributes:>
+
+=over 4
+
+=item * separator (optional)
+
+Accepts either "-" or "_". If unspecified, the raw basename value is
+returned.
+
+=back
+
 =for tags authors
 
 =cut
 
 sub _hdlr_author_basename {
-    my ($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $author = $ctx->stash('author')
         or return $ctx->_no_author_error();
     my $name = $author->basename;
     $name = MT::Util::make_unique_author_basename($author) if !$name;
+    if (my $sep = $args->{separator}) {
+        if ($sep eq '-') {
+            $name =~ s/_/-/g;
+        } elsif ($sep eq '_') {
+            $name =~ s/-/_/g;
+        }
+    }
     return $name;
 }
 
