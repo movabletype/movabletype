@@ -4564,7 +4564,7 @@ includes like that found in PHP.
 
 For selecting Index templates by their unique identifier.
 
-=name
+=item * name
 
 For application template use: identifies an application template by
 filename to load.
