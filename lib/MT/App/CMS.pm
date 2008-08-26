@@ -2625,7 +2625,7 @@ sub load_entry_prefs {
 
 sub _convert_word_chars {
     my ( $app, $s ) = @_;
-    return '' unless $s;
+    return '' if !defined($s) || ( $s eq '' );
     return $s if 'utf-8' ne lc( $app->charset );
 
     my $blog = $app->blog;
