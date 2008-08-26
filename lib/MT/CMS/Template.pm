@@ -42,6 +42,15 @@ sub edit {
         $param->{include_cache} = $blog->include_cache;
     }
 
+    if ( $obj && ( $obj->type eq 'widgetset' ) ) {
+        return $app->redirect(
+            $app->uri(
+                'mode' => 'edit_widget',
+                args   => { blog_id => $obj->blog_id, id => $obj->id }
+            )
+        );
+    }
+
     if ($id) {
         # FIXME: Template types should not be enumerated here
         $param->{nav_templates} = 1;
