@@ -90,15 +90,15 @@ sub edit {
                   MT::Author::BANNED();
                 $param->{type_author} = 1
                   if MT::Author::AUTHOR() == $cmtr->type;
+                $param->{auth_icon_url} = $cmtr->auth_icon_url;
+                $param->{email} = $cmtr->email;
+                $param->{url} = $cmtr->url;
                 $param->{commenter_url} = $app->uri(
                     mode => 'view',
                     args => { '_type' => 'author', 'id' => $cmtr->id, }
                   )
                   if ( MT::Author::AUTHOR() == $cmtr->type )
                   && $app->user->is_superuser;
-            }
-            if ( $obj->email !~ m/@/ ) {    # no email for this commenter
-                $param->{email_withheld} = 1;
             }
         }
         $param->{invisible_unregistered} = !$obj->visible
