@@ -116,7 +116,7 @@
                             <li id="select-blog"><a mt:command="open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                             </mt:unless>
                         </mt:unless>
-                        <mt:if name="can_create_blog">
+                        <mt:if name="can_create_newblog">
                             <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                     </mt:if>
@@ -142,7 +142,7 @@
                         </mt:if>
                             <li id="select-blog"><a class="command-open-select-blog" href="javascript:void(0)" mt:href="<mt:var name="return_args" escape="js">"><__trans phrase="Select another blog..."></a></li>
                 </mt:unless>
-                        <mt:if name="can_create_blog">
+                        <mt:if name="can_create_newblog">
                             <li id="create-blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog<mt:if name="single_blog_mode">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>"><__trans phrase="Create a new blog"></a></li>
                         </mt:if>
                         </ul>

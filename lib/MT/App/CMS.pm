@@ -1851,7 +1851,7 @@ sub set_default_tmpl_params {
     $blog ||= $blog_class->load($blog_id) if $blog_id;
     if ( my $auth = $app->user ) {
         $param->{is_administrator} = $auth->is_superuser;
-        $param->{can_create_blog}  = $auth->can_create_blog;
+        $param->{can_create_newblog}  = $auth->can_create_blog;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
         $param->{can_edit_templates}    = $auth->can_edit_templates;
