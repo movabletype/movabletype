@@ -180,7 +180,7 @@ sub save {
         }
     }
 
-    return $app->errtrans( "The [_1] must be given a name!", $type )
+    return $app->errtrans( "The [_1] must be given a name!", $class->class_label )
       if !$cat;
 
     $app->redirect(
