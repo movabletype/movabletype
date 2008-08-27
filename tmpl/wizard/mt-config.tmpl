@@ -38,7 +38,8 @@ UseSQLite2 1</mt:if><mt:if name="mail_transfer">
 
 #======== MAIL =======================
 
-MailTransfer <mt:var name="mail_transfer"><mt:if name="smtp_server">
+MailTransfer <mt:var name="mail_transfer"><mt:if name="email_address_main">
+EmailAddressMain <mt:var name="email_address_main"></mt:if><mt:if name="smtp_server">
 SMTPServer <mt:var name="smtp_server"><mt:else><mt:if name="sendmail_path">
 SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="temp_dir">
 

@@ -112,7 +112,7 @@ sub init_core_registry {
                 handler => \&optional,
                 params  => [
                     qw(mail_transfer sendmail_path smtp_server
-                        test_mail_address)
+                       test_mail_address email_address_main)
                 ]
             },
             cfg_dir => {
@@ -786,6 +786,8 @@ sub optional {
                 if $param{mail_transfer}
                     && ( $param{mail_transfer} eq 'sendmail' )
                     && $param{sendmail_path};
+            $cfg->EmailAddressMain( $param{email_address_main} )
+                if $param{email_address_main};
             my %head = (
                 id => 'wizard_test',
                 To => $param{test_mail_address},
