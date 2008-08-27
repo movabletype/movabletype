@@ -121,15 +121,6 @@ function mail_select(sel) {
 
 </div>
 
-<!-- Email Address Main -->
-
-    <mtapp:setting
-        id="email_address_main"
-        label="<__trans phrase="From mail address">"
-        label_class="top-label">
-<input type="text" id="email_address_main" class="ti" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" /><br />
-    </mtapp:setting>
-
 <!-- Test Address -->
 
     <mtapp:setting
@@ -140,6 +131,16 @@ function mail_select(sel) {
     </mtapp:setting>
 
 </div>
+
+<!-- Email Address Main -->
+
+    <mtapp:setting
+        id="email_address_main"
+        label="<__trans phrase="From mail address">"
+        label_class="top-label">
+<input type="text" id="email_address_main" class="ti" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" /><br />
+    </mtapp:setting>
+
 
 <div id="goback" <mt:if name=mail_transfer>style="display: none"</mt:if>>
 <div class="left">
