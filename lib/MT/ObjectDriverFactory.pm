@@ -42,7 +42,7 @@ sub new {
         my $all_drivers = MT->registry("object_drivers");
         foreach my $driver ( %$all_drivers ) {
             if ( my $re = $all_drivers->{$driver}{match} ) {
-                if ( (lc $type) =~ m/^re$/ ) {
+                if ( (lc $type) =~ m/^$re$/ ) {
                     $class = $all_drivers->{$driver}{config_package};
                     last;
                 }
@@ -50,7 +50,7 @@ sub new {
         }
     }
     $class ||= $type;
-    die "Unsupported driver :" unless $class;
+    die "Unsupported driver $type" unless $class;
     $class = 'MT::ObjectDriver::Driver::DBD::' . $class
         unless $class =~ m/::/;
     eval "use $class;";
