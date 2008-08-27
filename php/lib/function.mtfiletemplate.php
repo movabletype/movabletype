@@ -7,9 +7,9 @@
 
 function _file_template_format($m) {
     static $f = array(
-        'a' => "<MTEntryAuthorNickname DIR>",
-        '-a' => "<MTEntryAuthorNickname dirify='-'>",
-        '_a' => "<MTEntryAuthorNickname dirify='_'>",
+        'a' => "<MTAuthorBasename DIR>",
+        '-a' => "<MTAuthorBasename separator='-'>",
+        '_a' => "<MTAuthorBasename separator='_'>",
         'b' => "<MTEntryBasename SEP>",
         '-b' => "<MTEntryBasename separator='-'>",
         '_b' => "<MTEntryBasename separator='_'>",

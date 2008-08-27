@@ -5,10 +5,10 @@
 #
 # $Id$
 
-function smarty_function_mtentrybasename($args, &$ctx) {
-    $entry = $ctx->stash('entry');
-    if (!$entry) return '';
-    $basename = $entry['entry_basename'];
+function smarty_function_mtauthorbasename($args, &$ctx) {
+    $author = $ctx->stash('author');
+    if (!$author) return '';
+    $basename = $author['author_basename'];
     if ($sep = $args['separator']) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);
