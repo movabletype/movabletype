@@ -810,6 +810,15 @@ sub delete_post {
             or die _fault($app->errstr);
     }
 
+    require MT::Log;
+    my $user = $app->{user};
+    $app->log({
+        message => $app->translate("Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from atom api", $entry->title, $entry->id, $user->name, $user->id, $entry->class_label),
+        level => MT::Log::INFO(),
+        class => 'system',
+        category => 'delete',
+    });
+
     '';
 }
 
