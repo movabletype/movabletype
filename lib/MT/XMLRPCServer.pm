@@ -696,14 +696,22 @@ sub _delete_entry {
         Entry => $entry,
         Blog  => $blog);
 
-    # Rebuild archives
-    $mt->rebuild_archives(
-        Blog             => $blog,
-        Recip            => \%recip,
-    ) or die _fault($class->errstr);
-
     # Remove object
     $entry->remove;
+
+    # Rebuild archives
+    if ( %recip ) {
+        $mt->rebuild_archives(
+            Blog             => $blog,
+            Recip            => \%recip,
+        ) or die _fault($class->errstr);
+    }
+
+    # Rebuild index files
+    if ( $mt->config('RebuildAtDelete') ) {
+        $mt->rebuild_indexes( Blog => $blog )
+            or die _fault($class->errstr);
+    }
 
     $mt->log({
         message => $mt->translate("Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from xml-rpc", $entry->title, $entry->id, $author->name, $author->id, $entry->class_label),

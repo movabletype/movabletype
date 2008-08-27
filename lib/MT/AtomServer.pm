@@ -792,15 +792,24 @@ sub delete_post {
         Entry => $entry,
         Blog  => $blog);
 
-    # Rebuild archives
-    $app->rebuild_archives(
-        Blog             => $blog,
-        Recip            => \%recip,
-    ) or die _fault($app->errstr);
-
     # Remove object
     $entry->remove
         or return $app->error(500, $entry->errstr);
+
+    # Rebuild archives
+    if (%recip) {
+        $app->rebuild_archives(
+            Blog             => $blog,
+            Recip            => \%recip,
+        ) or die _fault($app->errstr);
+    }
+
+    # Rebuild index files
+    if ( $app->config('RebuildAtDelete') ) {
+        $app->rebuild_indexes( Blog => $blog )
+            or die _fault($app->errstr);
+    }
+
     '';
 }
 
