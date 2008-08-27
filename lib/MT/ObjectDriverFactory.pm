@@ -16,10 +16,7 @@ use MT::ObjectDriver::SQL;
 our $drivers = [
     [ qr/(db[id]::)?(postgres|pg(sql)?)/ => 'Pg' ],
     [ qr/(db[id]::)?mysql/               => 'mysql' ],
-    [ qr/(db[id]::)?u(ms)?sqlserver/     => 'UMSSQLServer' ],
-    [ qr/(db[id]::)?(ms)?sqlserver/      => 'MSSQLServer' ],
     [ qr/(db[id]::)?sqlite/              => 'SQLite' ],
-    [ qr/(db[id]::)?oracle/              => 'Oracle' ],
 ];
 
 our @drivers;
@@ -39,6 +36,17 @@ sub new {
         if ((lc $type) =~ m/^$driver->[0]$/) {
             $class = $driver->[1];
             last;
+        }
+    }
+    unless ( $class ) {
+        my $all_drivers = MT->registry("object_drivers");
+        foreach my $driver ( %$all_drivers ) {
+            if ( my $re = $all_drivers->{$driver}{match} ) {
+                if ( (lc $type) =~ m/^re$/ ) {
+                    $class = $all_drivers->{$driver}{config_package};
+                    last;
+                }
+            }
         }
     }
     $class ||= $type;
