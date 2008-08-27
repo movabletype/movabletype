@@ -692,7 +692,7 @@ sub _delete_entry {
 
     # Delete archive file
     my $blog = MT::Blog->load($entry->blog_id);
-    my %recip = $mt->publisher->rebuild_deleted_entry(
+    my %recipe = $mt->publisher->rebuild_deleted_entry(
         Entry => $entry,
         Blog  => $blog);
 
@@ -700,10 +700,10 @@ sub _delete_entry {
     $entry->remove;
 
     # Rebuild archives
-    if ( %recip ) {
+    if ( %recipe ) {
         $mt->rebuild_archives(
             Blog             => $blog,
-            Recip            => \%recip,
+            Recipe           => \%recipe,
         ) or die _fault($class->errstr);
     }
 

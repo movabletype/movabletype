@@ -410,7 +410,7 @@ sub rebuild_deleted_entry {
           );
     }
 
-    my %rebuild_recip;
+    my %rebuild_recipe;
     my $at = $blog->archive_type;
     my @at;
     if ( $at && $at ne 'None' ) {
@@ -471,19 +471,19 @@ sub rebuild_deleted_entry {
                 else {
                     if ( $app->config('RebuildAtDelete') ) {
                         if ( $archiver->date_based() ) {
-                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
                               {'Start'} = $start;
-                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
                               {'End'} = $end;
-                            $rebuild_recip{$at}{ $cat->id }{ $start . $end }
+                            $rebuild_recipe{$at}{ $cat->id }{ $start . $end }
                               {'File'} = MT::Util::archive_file_for(
                                 $entry, $blog, $at, $cat,
                                 undef,  undef, undef
                               );
                         }
                         else {
-                            $rebuild_recip{$at}{ $cat->id }{id} = $cat->id;
-                            $rebuild_recip{$at}{ $cat->id }{'File'} =
+                            $rebuild_recipe{$at}{ $cat->id }{id} = $cat->id;
+                            $rebuild_recipe{$at}{ $cat->id }{'File'} =
                               MT::Util::archive_file_for(
                                 $entry, $blog, $at, $cat,
                                 undef,  undef, undef
@@ -521,39 +521,39 @@ sub rebuild_deleted_entry {
                 if ( $app->config('RebuildAtDelete') ) {
                     if ( $archiver->author_based() ) {
                         if ( $archiver->date_based() ) {
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recipe{$at}{ $entry->author->id }
                               { $start . $end }{'Start'} = $start;
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recipe{$at}{ $entry->author->id }
                               { $start . $end }{'End'} = $end;
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recipe{$at}{ $entry->author->id }
                               { $start . $end }{'File'} =
                               MT::Util::archive_file_for( $entry, $blog, $at,
                                 undef, undef, undef, $entry->author );
                         }
                         else {
-                            $rebuild_recip{$at}{ $entry->author->id }{id} =
+                            $rebuild_recipe{$at}{ $entry->author->id }{id} =
                               $entry->author->id;
-                            $rebuild_recip{$at}{ $entry->author->id }{'File'} =
+                            $rebuild_recipe{$at}{ $entry->author->id }{'File'} =
                               MT::Util::archive_file_for( $entry, $blog, $at,
                                 undef, undef, undef, $entry->author );
                         }
                     }
                     elsif ( $archiver->date_based() ) {
-                        $rebuild_recip{$at}{ $start . $end }{'Start'} = $start;
-                        $rebuild_recip{$at}{ $start . $end }{'End'}   = $end;
-                        $rebuild_recip{$at}{ $start . $end }{'File'} =
+                        $rebuild_recipe{$at}{ $start . $end }{'Start'} = $start;
+                        $rebuild_recipe{$at}{ $start . $end }{'End'}   = $end;
+                        $rebuild_recipe{$at}{ $start . $end }{'File'} =
                           MT::Util::archive_file_for( $entry, $blog, $at, undef,
                             undef, undef, undef );
                     }
                     if ( my $prev = $entry->previous(1) ) {
-                        $rebuild_recip{Individual}{ $prev->id }{id} = $prev->id;
-                        $rebuild_recip{Individual}{ $prev->id }{'File'} =
+                        $rebuild_recipe{Individual}{ $prev->id }{id} = $prev->id;
+                        $rebuild_recipe{Individual}{ $prev->id }{'File'} =
                           MT::Util::archive_file_for( $prev, $blog,
                             'Individual', undef, undef, undef, undef );
                     }
                     if ( my $next = $entry->next(1) ) {
-                        $rebuild_recip{Individual}{ $next->id }{id} = $next->id;
-                        $rebuild_recip{Individual}{ $next->id }{'File'} =
+                        $rebuild_recipe{Individual}{ $next->id }{id} = $next->id;
+                        $rebuild_recipe{Individual}{ $next->id }{'File'} =
                           MT::Util::archive_file_for( $next, $blog,
                             'Individual', undef, undef, undef, undef );
                     }
@@ -562,7 +562,7 @@ sub rebuild_deleted_entry {
         }
     }
 
-    return %rebuild_recip;
+    return %rebuild_recipe;
 }
 
 #   rebuild_entry
@@ -765,7 +765,7 @@ sub rebuild_entry {
     1;
 }
 
-### Recip hash
+### Recipe hash
 ### {ArchiveType} - {Category-id} - {Date key} - {Start}
 ###                                            - {End}
 ###                                            - {File}
@@ -788,30 +788,30 @@ sub rebuild_archives {
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
     return 1 if $blog->is_dynamic;
 
-    my $recip = $param{Recip}
+    my $recipe = $param{Recipe}
         or return $mt->error(
-            MT->translate( "Parameter '[_1]' is required", 'Recip' ) );
+            MT->translate( "Parameter '[_1]' is required", 'Recipe' ) );
 
-    for my $at (keys %$recip){
+    for my $at (keys %$recipe){
         my $archiver = $mt->archiver($at);
         next unless $archiver;
 
         if ($archiver->category_based()) {
             require MT::Category;
-            for my $cat_id (keys %{$recip->{$at}}) {
+            for my $cat_id (keys %{$recipe->{$at}}) {
                 my $cat = MT::Category->load($cat_id)
                     or next;
                 if ($archiver->date_based()) {
-                    for my $key (keys %{$recip->{$at}->{$cat_id}}) {
+                    for my $key (keys %{$recipe->{$at}->{$cat_id}}) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ($param{Force} ? 1 : 0),
                             Blog        => $blog,
                             Category    => $cat,
                             ArchiveType => $at,
-                            Start       => $recip->{$at}->{$cat_id}->{$key}->{Start},
-                            End         => $recip->{$at}->{$cat_id}->{$key}->{End},
-                            File        => $recip->{$at}->{$cat_id}->{$key}->{File}
+                            Start       => $recipe->{$at}->{$cat_id}->{$key}->{Start},
+                            End         => $recipe->{$at}->{$cat_id}->{$key}->{End},
+                            File        => $recipe->{$at}->{$cat_id}->{$key}->{File}
                         ) or return;
                     }
                 } else {
@@ -821,26 +821,26 @@ sub rebuild_archives {
                         Blog        => $blog,
                         Category    => $cat,
                         ArchiveType => $at,
-                        File        => $recip->{$at}->{$cat_id}->{File}
+                        File        => $recipe->{$at}->{$cat_id}->{File}
                     ) or return;
                 }
             }
         } elsif ($archiver->author_based()) {
             require MT::Author;
-            for my $auth_id (keys %{$recip->{$at}}) {
+            for my $auth_id (keys %{$recipe->{$at}}) {
                 my $author = MT::Author->load($auth_id)
                     or next;
                 if ($archiver->date_based()) {
-                    for my $key (keys %{$recip->{$at}->{$auth_id}}) {
+                    for my $key (keys %{$recipe->{$at}->{$auth_id}}) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ($param{Force} ? 1 : 0),
                             Blog        => $blog,
                             Author      => $author,
                             ArchiveType => $at,
-                            Start       => $recip->{$at}->{$auth_id}->{$key}->{Start},
-                            End         => $recip->{$at}->{$auth_id}->{$key}->{End},
-                            File        => $recip->{$at}->{$auth_id}->{$key}->{File}
+                            Start       => $recipe->{$at}->{$auth_id}->{$key}->{Start},
+                            End         => $recipe->{$at}->{$auth_id}->{$key}->{End},
+                            File        => $recipe->{$at}->{$auth_id}->{$key}->{File}
                         ) or return;
                     }
                 } else {
@@ -850,25 +850,25 @@ sub rebuild_archives {
                         Blog        => $blog,
                         Author      => $author,
                         ArchiveType => $at,
-                        File        => $recip->{$at}->{$auth_id}->{File}
+                        File        => $recipe->{$at}->{$auth_id}->{File}
                     ) or return;
                 }
             }
         } elsif ($archiver->date_based()) {
-            for my $key (keys %{$recip->{$at}}) {
+            for my $key (keys %{$recipe->{$at}}) {
                 $mt->_rebuild_entry_archive_type(
                     NoStatic    => 0,
                     Force       => ($param{Force} ? 1 : 0),
                     Blog        => $blog,
                     ArchiveType => $at,
-                    Start       => $recip->{$at}->{$key}->{Start},
-                    End         => $recip->{$at}->{$key}->{End},
-                    File        => $recip->{$at}->{$key}->{File}
+                    Start       => $recipe->{$at}->{$key}->{Start},
+                    End         => $recipe->{$at}->{$key}->{End},
+                    File        => $recipe->{$at}->{$key}->{File}
                 ) or return;
             }
         } else {
             require MT::Entry;
-            for my $entry_id (keys %{$recip->{$at}}) {
+            for my $entry_id (keys %{$recipe->{$at}}) {
                 my $entry = MT::Entry->load($entry_id)
                     or next;
                 $mt->_rebuild_entry_archive_type(
@@ -877,7 +877,7 @@ sub rebuild_archives {
                     Entry       => $entry,
                     Blog        => $blog,
                     ArchiveType => $at,
-                    File        => $recip->{$at}->{$entry_id}->{File}
+                    File        => $recipe->{$at}->{$entry_id}->{File}
                 ) or return;
             }
         }

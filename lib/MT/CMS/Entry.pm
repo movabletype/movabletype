@@ -2135,7 +2135,7 @@ sub delete {
         ( $blog->count_static_templates('Individual') == 0
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
-    my %rebuild_recip;
+    my %rebuild_recipe;
     for my $id ( $q->param('id') ) {
         my $class = $app->model("entry");
         my $obj   = $class->load($id);
@@ -2145,7 +2145,7 @@ sub delete {
           || return $app->error(
             $app->translate( "Permission denied: [_1]", $app->errstr() ) );
 
-        my %recip = $app->publisher->rebuild_deleted_entry(
+        my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
             Blog  => $blog);
 
@@ -2170,7 +2170,7 @@ sub delete {
                 sub {
                     my $res = $app->rebuild_archives(
                         Blog             => $blog,
-                        Recip            => \%rebuild_recip,
+                        Recipe           => \%rebuild_recipe,
                     ) or return $app->publish_error();
                     $app->rebuild_indexes( Blog => $blog )
                         or return $app->publish_error();
@@ -2182,7 +2182,7 @@ sub delete {
         else {
             $app->rebuild_archives(
                 Blog             => $blog,
-                Recip            => \%rebuild_recip,
+                Recipe           => \%rebuild_recipe,
             ) or return $app->publish_error();
             $app->rebuild_indexes( Blog => $blog )
                 or return $app->publish_error();
