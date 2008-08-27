@@ -8073,11 +8073,12 @@ sub _hdlr_entries {
     }
 
     # Adds an count of comments filter to the filter list.
-    if ($args->{max_comment}) {
-        push @filters, sub { $_[0]->comment_count <= $args->{max_comment}; };
-    }
-    if ($args->{min_comment}) {
-        push @filters, sub { $_[0]->comment_count >= $args->{min_comment}; };
+    if (exists $args->{min_comment} && exists $args->{max_comment}) {
+        $terms{comment_count} = { 'between' => [ int($args->{min_comment}), int($args->{max_comment}) ] };
+    } elsif (exists $args->{min_comment}) {
+        $terms{comment_count} = { '>=' => int($args->{min_comment}) };
+    } elsif (exists $args->{max_comment}) {
+        $terms{comment_count} = { '<=' => int($args->{max_comment}) };
     }
 
     my $published = $ctx->{__stash}{entry_ids_published} ||= {};
