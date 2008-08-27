@@ -341,10 +341,12 @@ sub pre_start {
     $curr_lang = 'en-us' if ( lc($curr_lang) eq 'en_us' );
     for my $tag ( keys %$langs ) {
         ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
+        $app->set_language($tag);
         my $row = { l_tag => $tag, l_name => $app->translate($name) };
         $row->{l_selected} = 1 if $curr_lang eq $tag;
         push @languages, $row;
     }
+    $app->set_language($curr_lang);
     @languages = sort { $a->{l_name} cmp $b->{l_name} } @languages;
     $param{languages} = \@languages;
 
