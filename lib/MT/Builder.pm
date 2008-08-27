@@ -402,7 +402,7 @@ sub build {
                     local $vars->{__name__}  = delete $vars->{__cond_name__};
                     $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
                     delete $vars->{__cond_tag__};
-                    return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr))
+                    return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->tag, $ctx->errstr))
                         unless defined $out;
                 }
 
