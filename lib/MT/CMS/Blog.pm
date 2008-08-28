@@ -781,7 +781,7 @@ sub rebuild_pages {
                         class   => 'entry',
                     };
                     $total = MT::Author->count(
-                        undef,
+                        { status => MT::Author::ACTIVE() },
                         {
                             join   => MT::Entry->join_on( 'author_id', $terms, { unique => 1 } ),
                             unique => 1,
@@ -959,7 +959,7 @@ sub start_rebuild_pages {
                 class => 'entry',
             };
             $total = MT::Author->count(
-                undef,
+                { status => MT::Author::ACTIVE() },
                 {
                     join   => MT::Entry->join_on( 'author_id', $terms, { unique => 1 } ),
                     unique => 1,
