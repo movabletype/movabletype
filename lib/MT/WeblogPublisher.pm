@@ -326,7 +326,7 @@ sub rebuild_authors {
     require MT::Entry;
     $arg{join} = MT::Entry->join_on(
         'author_id',
-        { blog_id => $blog->id, class => 'entry' },
+        { blog_id => $blog->id, class => 'entry', status => MT::Entry::RELEASE() },
         { unique  => 1 }
     );
     my $auth_iter = MT::Author->load_iter( \%terms, \%arg );
