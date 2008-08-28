@@ -7,6 +7,25 @@ function setExtraPath(sel) {
    var middle = sel.form['middle_path'];
    if (middle) middle.value = path;
 }
+
+function validate(f) {
+    if (!is_valid_path(f.extra_path.value)){
+        alert('You must set a valid destination.');
+        return false;
+    }
+}
+
+function is_valid_path(path_){
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+    str = encodeURI(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
+    }
+    return true;
+}
 /* ]]> */
 </script>
 
@@ -36,7 +55,7 @@ function setExtraPath(sel) {
         </mtapp:statusmsg>
     </mt:if>
 
-<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form">
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form" onsubmit="return validate(this)">
     <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
