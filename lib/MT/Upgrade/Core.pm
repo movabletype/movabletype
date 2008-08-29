@@ -94,7 +94,7 @@ sub upgrade_functions {
             }
         },
         'core_install_default_roles' => {
-            code => \&create_default_roles,
+            code => sub { require MT::Role; return MT::Role->create_default_roles },
             on_class => 'MT::Role',
             priority => 3.1,
         },
@@ -102,24 +102,6 @@ sub upgrade_functions {
 }
 
 ### Subroutines
-
-## Translation
-# translate('Blog Administrator')
-# translate('Can administer the blog.')
-# translate('Editor')
-# translate('Can upload files, edit all entries/categories/tags on a blog and publish the blog.')
-# translate('Author')
-# translate('Can create entries, edit their own, upload files and publish.')
-# translate('Designer')
-# translate('Can edit, manage and publish blog templates.')
-# translate('Webmaster')
-# translate('Can manage pages and publish blog templates.')
-# translate('Contributor')
-# translate('Can create entries, edit their own and comment.')
-# translate('Moderator')
-# translate('Can comment and manage feedback.')
-# translate('Commenter')
-# translate('Can comment.')
 
 sub seed_database {
     my $cb = shift;
