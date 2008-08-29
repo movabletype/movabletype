@@ -3231,7 +3231,10 @@ B<Attributes:>
 =item * name (or var)
 
 Identifies the template variable. The 'name' attribute supports a variety
-of expressions. The typical case is a simple variable name:
+of expressions. In order to not conflict with variable interpolation, 
+the value of the name attribute should only contain uppercase letters,
+lowercase letters, numbers and underscores. The typical case is a simple
+variable name:
 
     <$mt:Var name="foo"$>
 
