@@ -95,6 +95,7 @@ sub _set {
         kind  => $self->{kind},
         start => time,
         data  => $val,
+        $self->{ttl} ? ( duration => time + $self->{ttl} ) : (),
     });
     $cache->save();
 }
