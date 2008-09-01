@@ -1188,6 +1188,8 @@ sub core_upgrade_meta_for_table {
     my $args = {
         'limit'      => 101,
         'fetchonly' => [ 'id' ],  # meta is added to the select list separately
+        'sort'      => 'id',
+        'direction' => 'ascend',
         $offset ? ( 'offset' => $offset ) : ()
     };
     my $stmt = $driver->prepare_statement( $class, $terms, $args );
