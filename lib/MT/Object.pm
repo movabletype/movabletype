@@ -2261,6 +2261,41 @@ correctly associated.
 This method is defined in MT/BackupRestore.pm - you must first 
 use MT::BackupRestore to use this method.
 
+=item * $obj->parents()
+
+If the relationship of the class and its parent is as simple as the class
+has 'parent_id' column, the class does not have to implment its own
+restore_parent_ids, but instead implement I<parents> method to indicate
+what column refers to which parent class.
+
+    { name_of_the_column => class reference }
+
+For example, if a class is a child of MT::Blog and the class has blog_id 
+column as the foreign key, the I<parents> method should return the following
+hashref:
+
+    { blog_id => MT->model('blog') }
+
+If the class's foreign key is used for more than a parent class (e.g.
+MT::Category::parent), I<parents> method can return the following hashref:
+
+    { parent => [ MT->model('category'), MT->model('folder') ] }
+
+If the class's parent (foreign key) is optional (e.g. MT::Comment::commenter_id),
+the class's I<parents> method can return the following hashref:
+
+    { commenter_id => { class => MT->model('author'), optional => 1 } }
+
+If the class uses multiple columns to identify the parent object (e.g. ObjectTag)
+the class's I<parents> method can return the following hashref:
+
+    { object_id => { relations => {
+            key => 'object_datasource',
+            entry_id => [ MT->model('entry'), MT->model('page') ],
+    }}
+
+=cut
+
 =item * $obj->parent_names()
 
 TODO - Should be overridden by subclasses to return correct hash
