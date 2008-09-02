@@ -921,12 +921,12 @@ sub core_upgrade_functions {
                     require MT::CMS::Blog;
                     MT::CMS::Blog::update_publishing_profile( $App, $blog );
                     require MT::Template;
+                    require MT::PublishOption;
                     my @tmpls = MT::Template->load( { blog_id => $blog->id } );
                     foreach my $tmpl (@tmpls) {
 
                         if ( $tmpl->build_dynamic ) {
                             require MT::TemplateMap;
-                            require MT::PublishOption;
                             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
                             $tmpl->save;
                             my @maps = MT::TemplateMap->load(
@@ -936,6 +936,11 @@ sub core_upgrade_functions {
                                     MT::PublishOption::DYNAMIC() );
                                 $map->save;
                             }
+                        }
+                        if ( !$tmpl->rebuild_me && $tmpl->type eq 'index' ) {
+                            $tmpl->build_type(
+                                MT::PublishOption::MANUALLY() );
+                            $tmpl->save;
                         }
                     }
                     return 0;
