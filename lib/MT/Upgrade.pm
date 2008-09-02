@@ -16,7 +16,7 @@ use File::Spec;
 #      - assign default values for 'null' columns
 #    * Template check for all blogs
 
-use vars qw(%classes %functions $App $DryRun $Installing $SuperUser 
+use vars qw(%classes %functions %LegacyPerms $App $DryRun $Installing $SuperUser
             $CLI $MAX_TIME $MAX_ROWS @steps);
 
 sub max_rows {
@@ -69,6 +69,41 @@ sub BEGIN {
             code => \&core_finish,
             priority => 10,
         },
+    );
+
+    %LegacyPerms = (
+        # System-wide permissions
+        #[ 2**0, 'administer', 'System Administrator', 2, 'system' ],
+        #[ 2**1, 'create_blog', 'Create Blogs', 2, 'system' ],
+        #[ 2**2, 'view_log', 'View System Activity Log', 2, 'system' ],
+        #[ 2**3, 'manage_plugins', 'Manage Plugins', 'system' ],
+
+        # Blog-specific permissions:
+        # The order here is the same order they are presented on the
+        # role definition screen.
+        2**0 => 'comment',# 'Add Comments', 1, 'blog'], 
+        2**12 => 'administer_blog',# 'Blog Administrator', 1, 'blog'], 
+        2**6 => 'edit_config',# 'Configure Blog', 1, 'blog'], 
+        2**3 => 'edit_all_posts',# 'Edit All Entries', 1, 'blog'], 
+        2**4 => 'edit_templates',# 'Manage Templates', 1, 'blog'], 
+        2**2 => 'upload',# 'Upload File', 1, 'blog'], 
+        2**1 => 'post',# 'Create Entry', 1, 'blog'], 
+        2**16 => 'edit_assets',# 'Manage Assets', 1, 'blog'],
+        2**15 => 'save_image_defaults',# 'Save Image Defaults', 1, 'blog'], 
+        2**9 => 'edit_categories',# 'Add/Manage Categories', 1, 'blog'], 
+        2**14 => 'edit_tags',# 'Manage Tags', 1, 'blog'], 
+        2**10 => 'edit_notifications',# 'Manage Notification List', 1, 'blog'], 
+        2**8 => 'send_notifications',# 'Send Notifications', 1, 'blog'], 
+        2**13 => 'view_blog_log',# 'View Activity Log', 1, 'blog'], 
+        #[ 2**17, 'publish_post', 'Publish Post', 1, 'blog'],
+        #[ 2**18, 'manage_feedback', 'Manage Feedback', 1, 'blog'],
+        #[ 2**19, 'set_publish_paths', 'Set Publishing Paths', 1, 'blog'],
+        #[ 2**20, 'manage_pages', 'Manage Pages', 1, 'blog'],
+        # 2**5 == 32 is deprecated; reserved for future use 
+        2**7 => 'rebuild',# 'Rebuild Files', 1, 'blog'], 
+        # Not a real permission but a denial thereeof; unlisted because it 
+        # has no label. 
+        2**11 => 'not_comment',# '', 1, 'blog'],
     );
 }
 
