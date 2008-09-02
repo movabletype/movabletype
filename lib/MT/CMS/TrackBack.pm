@@ -2,7 +2,7 @@ package MT::CMS::TrackBack;
 
 use strict;
 use MT::Util qw( format_ts relative_date encode_url encode_html );
-use MT::I18N qw( const break_up_text );
+use MT::I18N qw( const break_up_text substr_text );
 
 sub edit {
     my $cb = shift;
