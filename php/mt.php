@@ -5,9 +5,9 @@
 #
 # $Id: mt.php 2703 2008-07-03 22:19:49Z bchoate $
 
-define('VERSION', '4.2');
-define('VERSION_ID', '4.2');
-define('PRODUCT_VERSION', '4.2');
+define('VERSION', '4.21');
+define('VERSION_ID', '4.21');
+define('PRODUCT_VERSION', '4.21');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
