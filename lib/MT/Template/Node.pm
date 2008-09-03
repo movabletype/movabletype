@@ -7,7 +7,15 @@
 package MT::Template::Node;
 
 use strict;
-use base qw( Class::Accessor::Fast );
+
+sub EL_NODE_NAME ()     { 0 }
+sub EL_NODE_TEXT ()     { 1 }
+sub EL_NODE_ATTR ()     { 1 }
+sub EL_NODE_CHILDREN () { 2 }
+sub EL_NODE_VALUE ()    { 3 }
+sub EL_NODE_ATTRLIST () { 4 }
+sub EL_NODE_PARENT ()   { 5 }
+sub EL_NODE_TEMPLATE () { 6 }
 
 sub NODE_TEXT ()     { 1 }
 sub NODE_BLOCK ()    { 2 }
@@ -15,25 +23,75 @@ sub NODE_FUNCTION () { 3 }
 
 use MT::Util qw( weaken );
 
-__PACKAGE__->mk_accessors(qw( tag attributes childNodes nodeValue attribute_list ));
-
 sub mk_wref_accessor {
-    my ($class, $field) = @_;
+    my ($class, $field, $index) = @_;
     return sub {
-        return $_[0]->{$field} unless @_ > 1;
+        return $_[0]->[$index] unless @_ > 1;
         my $self = shift;
-        weaken($self->{$field} = (@_ == 1 ? $_[0] : [@_]));
+        weaken($self->[$index] = (@_ == 1 ? $_[0] : [@_]));
     };
 }
-__PACKAGE__->_mk_accessors('mk_wref_accessor', qw( parentNode template ));
+*parentNode = __PACKAGE__->mk_wref_accessor('parentNode', EL_NODE_PARENT);
+*template = __PACKAGE__->mk_wref_accessor('template', EL_NODE_TEMPLATE);
 
 sub new {
-    my $pkg = shift;
-    my ($self) = ref $_[0] ? @_ : {@_};
-    bless $self, $pkg;
-    weaken($self->{parentNode})if defined $self->{parentNode};
-    weaken($self->{template}) if defined $self->{template};
-    $self;
+   my $pkg = shift;
+   my ($param) = ref $_[0] ? $_[0] : { @_ };
+   my $self =
+     $param->{tag} eq 'TEXT'
+     ? [
+       'TEXT',
+       delete $param->{nodeValue},
+       undef,  # unused for TEXT nodes
+       undef,
+       undef,
+       delete $param->{parentNode},
+       delete $param->{template},
+     ]
+     : [
+       delete $param->{tag},
+       delete $param->{attributes},
+       delete $param->{childNodes},
+       delete $param->{nodeValue},
+       delete $param->{attribute_list},
+       delete $param->{parentNode},
+       delete $param->{template},
+     ];
+   bless $self, $pkg;
+   weaken($self->[EL_NODE_PARENT]) if defined $self->[EL_NODE_PARENT];
+   weaken($self->[EL_NODE_TEMPLATE]) if defined $self->[EL_NODE_TEMPLATE];
+   $self;
+}
+
+sub nodeValue {
+   my $node = shift;
+   my $index = $node->[0] eq 'TEXT' ? EL_NODE_TEXT : EL_NODE_VALUE;
+   $node->[$index] = shift if @_;
+   $node->[$index];
+}
+
+sub childNodes {
+    my $node = shift;
+    return $node->[EL_NODE_CHILDREN] = shift if @_;
+    return $node->[EL_NODE_CHILDREN] ||= [];
+}
+
+sub attributes {
+    my $node = shift;
+    return $node->[EL_NODE_ATTR] = shift if @_;
+    return $node->[EL_NODE_ATTR] ||= {};
+}
+
+sub attribute_list {
+    my $node = shift;
+    return $node->[EL_NODE_ATTRLIST] = shift if @_;
+    return $node->[EL_NODE_ATTRLIST] ||= [];
+}
+
+sub tag {
+    my $node = shift;
+    return $node->[EL_NODE_NAME] = shift if @_;
+    return $node->[EL_NODE_NAME];
 }
 
 sub setAttribute {
@@ -59,24 +117,24 @@ sub setAttribute {
         }
         push @{$classes->{$val} ||= []}, $node;
     }
-    ($node->{attributes} ||= {})->{$attr} = $val;
+    ($node->[EL_NODE_ATTR] ||= {})->{$attr} = $val;
 }
 
 sub getAttribute {
     my $node = shift;
     my ($attr) = @_;
-    ($node->attributes || {})->{$attr};
+    ($node->attributes)->{$attr};
 }
 
 sub firstChild {
     my $node = shift;
-    my $children = $node->childNodes or return undef;
+    my $children = $node->childNodes;
     @$children ? $children->[0] : undef;
 }
 
 sub lastChild {
     my $node = shift;
-    my $children = $node->childNodes or return undef;
+    my $children = $node->childNodes;
     @$children ? $children->[scalar @$children - 1] : undef;
 }
 
