@@ -127,6 +127,9 @@ tags:
 test: code
 	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
 
+testall: code
+	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t addons/*/t/*.t plugins/*/t/*.t
+
 quick-test: code
 	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV'  \
 		t/00-compile.t t/01-serialize.t t/04-config.t \
