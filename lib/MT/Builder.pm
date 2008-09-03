@@ -40,7 +40,7 @@ sub compile {
         $ids = $build->{__state}{ids} || {};
         $classes = $build->{__state}{classes} || {};
         $tmpl = $build->{__state}{tmpl};
-        $errors = $build->{__state}{errors} ||= [];
+        $errors = $build->{__state}{errors} = [];
     }
 
     return [ ] unless defined $text;
@@ -221,6 +221,10 @@ sub compile {
         $tmpl->token_classes($state->{classes});
         $tmpl->errors($state->{errors})
             if $state->{errors} && (@{$state->{errors}});
+    } else {
+        if ($errors && @$errors) {
+            return $build->error( $errors->[0]->{message} );
+        }
     }
     return $state->{tokens};
 }
