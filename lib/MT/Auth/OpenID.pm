@@ -225,7 +225,13 @@ sub _get_nickname {
         }
         $xml->cleanup;
 
-        return MT::I18N::utf8_off($name) if $name;
+        if ( $name ) {
+            $name = MT::I18N::utf8_off($name);
+            if ( MT->config->PublishCharset !~ /utf-?8/i ) {
+                $name = encode_text( $name, 'UTF-8', MT->config->PublishCharset );
+            }
+            return $name;
+        }
     }
 
     ## Atom
@@ -242,7 +248,13 @@ sub _get_nickname {
                 }
                 $xml->cleanup;
             
-                return MT::I18N::utf8_off($name) if $name;
+                if ( $name ) {
+                    $name = MT::I18N::utf8_off($name);
+                    if ( MT->config->PublishCharset !~ /utf-?8/i ) {
+                        $name = encode_text( $name, 'UTF-8', MT->config->PublishCharset );
+                    }
+                    return $name;
+                }
             }
         }
     }
