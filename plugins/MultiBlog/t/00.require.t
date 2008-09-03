@@ -2,11 +2,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 3;
 
-use lib qw( lib plugins/MultiBlog plugins/MultiBlog/lib );
+use lib qw( extlib lib plugins/MultiBlog plugins/MultiBlog/lib );
+use MT;
 
 require_ok ( 'multiblog.pl' );
-require_ok ( 'MultiBlog::Tags::Include' );
-require_ok ( 'MultiBlog::Tags::LocalBlog' );
-require_ok ( 'MultiBlog::Tags::MultiBlog' );
+require_ok ( 'MultiBlog' );
+require_ok ( 'MultiBlog::Tags' );

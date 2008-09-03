@@ -2,29 +2,23 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13;
+use Test::More tests => 4;
 
-use lib qw( lib plugins/MultiBlog plugins/MultiBlog/lib );
+use lib qw( lib plugins/MultiBlog plugins/MultiBlog/lib t/lib );
 
+use MT::Test;
 use MT::Template::Context;
 
-require_ok ('multiblog.pl');
+my $mt = MT->new;
+my $ctx = MT::Template::Context->new;
 
 sub tag_ok {
     my ($tag) = @_;
     $tag =~ s/^MT//;
-    ok (exists $MT::Template::Context::Global_handlers{ $tag }, $tag);
+    ok($ctx->handler_for($tag), "tag handler for $tag exists");
 }
 
 tag_ok ('MTMultiBlog');
 tag_ok ('MTOtherBlog');
-tag_ok ('MTMultiBlogEntries');
-tag_ok ('MTMultiBlogComments');
-tag_ok ('MTMultiBlogCategories');
-tag_ok ('MTMultiBlogPings');
-tag_ok ('MTMultiBlogEntry');
-tag_ok ('MTMultiBlogComment');
-tag_ok ('MTMultiBlogCategory');
-tag_ok ('MTMultiBlogPing');
+tag_ok ('MTMultiBlogLocalBlog');
 tag_ok ('MTMultiBlogIfLocalBlog');
-tag_ok ('MTMultiBlogIfNotLocalBlog');
