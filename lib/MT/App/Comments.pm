@@ -33,7 +33,7 @@ sub init {
         do_register      => \&do_register,
         preview          => \&preview,
         post             => \&post,
-        handle_sign_in   => \&handle_sign_in,
+        handle_sign_in   => { handler => \&handle_sign_in, charset => 'utf-8' },
         session_js       => \&session_js,
         edit_profile     => \&edit_commenter_profile,
         save_profile     => \&save_commenter_profile,

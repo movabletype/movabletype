@@ -41,7 +41,7 @@ sub validate_request_params {
     # 'charset' parameter:
     my $enc = $q->param('charset');
     local $app->{charset} = $enc if $enc;
-    return $app->SUPER::validate_request_params();
+    return $app->SUPER::validate_request_params(@_);
 }
 
 sub view {

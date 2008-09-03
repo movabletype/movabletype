@@ -804,6 +804,7 @@ sub init_query {
 
     sub validate_request_params {
         my $app = shift;
+        my ( $options ) = @_;
 
         $has_encode = eval { require Encode; 1 } ? 1 : 0
             unless defined $has_encode;
@@ -813,7 +814,8 @@ sub init_query {
 
         # validate all parameter data matches the expected character set.
         my @p       = $q->param();
-        my $charset = $app->charset;
+        # use specific charset if the application method forces it
+        my $charset = $options->{charset} || $app->charset;
         require Encode;
         require MT::I18N::default;
         $charset = 'UTF-8' if $charset =~ m/utf-?8/i;
@@ -2477,11 +2479,37 @@ sub run {
     }
 
     my ($body);
+    # Declare these variables here for Perl 5.6.x
+    # BugId:79755
+    my ( $mode, $code, $requires_login,
+         $get_method_info, $meth_info, @handlers );
     eval {
 
         # line __LINE__ __FILE__
 
-        $app->validate_request_params() or die;
+        $mode = $app->mode || 'default';
+
+        $requires_login = $app->{requires_login};
+
+        $get_method_info = sub {
+            $code = $app->handlers_for_mode($mode);
+
+            @handlers = ref($code) eq 'ARRAY' ? @$code : ($code)
+                if defined $code;
+
+            $meth_info = {};
+            foreach my $code (@handlers) {
+                if ( ref $code eq 'HASH' ) {
+                    $meth_info = $code;
+                    $requires_login
+                        = $requires_login & $meth_info->{requires_login}
+                        if exists $meth_info->{requires_login};
+                }
+            }
+        };
+        $get_method_info->();
+
+        $app->validate_request_params($meth_info) or die;
 
         require MT::Auth;
         if ( $ENV{MOD_PERL} ) {
@@ -2504,29 +2532,8 @@ sub run {
             }
         }
 
-        my $mode = $app->mode || 'default';
-
     REQUEST:
         {
-
-            # for Perl 5.6.x BugId:79755
-            $mode = $app->{forward} unless $mode;
-
-            my $requires_login = $app->{requires_login};
-
-            my $code = $app->handlers_for_mode($mode);
-
-            my @handlers = ref($code) eq 'ARRAY' ? @$code : ($code)
-                if defined $code;
-
-            foreach my $code (@handlers) {
-                if ( ref $code eq 'HASH' ) {
-                    my $meth_info = $code;
-                    $requires_login
-                        = $requires_login & $meth_info->{requires_login}
-                        if exists $meth_info->{requires_login};
-                }
-            }
 
             if ($requires_login) {
                 my ($author) = $app->login;
@@ -2620,6 +2627,7 @@ sub run {
 
             if ( my $new_mode = $app->{forward} ) {
                 $mode = $new_mode;
+                $get_method_info->();
                 goto REQUEST;
             }
 
