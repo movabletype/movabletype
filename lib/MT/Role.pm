@@ -157,7 +157,7 @@ sub create_default_roles {
     );
 
     require MT::Role;
-    return if MT::Role->exist();
+    return 1 if MT::Role->exist();
 
     foreach my $r (@default_roles) {
         my $role = MT::Role->new();
