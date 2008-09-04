@@ -99,7 +99,7 @@ my @apis = (
             $author = MT::Author->load({ name => 'Bob D' });
             is($result->[1]->{userid}, $author->id);
             is($result->[1]->{postid}, $entry->id);
-            my $ao = sprintf "%04d%02d%02dT%02d:%02d:%02d",
+            $ao = sprintf "%04d%02d%02dT%02d:%02d:%02d",
                 unpack 'A4A2A2A2A2A2', $entry->authored_on;
             is($result->[1]->{dateCreated}, $ao);
             is($result->[1]->{content}, $entry->text);
