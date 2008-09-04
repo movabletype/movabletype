@@ -10,7 +10,7 @@ use lib 'extlib';
 use lib 't/lib';
 use lib 'lib';
 
-use MT::Test;
+use MT::Test ();
 use MT;
 use MT::Plugin;
 use MT::Entry;
