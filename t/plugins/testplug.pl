@@ -50,12 +50,10 @@ sub unxfrm_entry {
 }
 
 require MT::Callback;
-MT->add_callback("MT::Entry::pre_save" => 
-		 new MT::Callback("ezplug", \&xfrm_entry));
+MT->add_callback("MT::Entry::pre_save", undef, 5, \&xfrm_entry);
 
 # MT->add_callback('MT::Entry::post_save' => 
 # 		 new MT::Callback(\&transform_entry));
 
-MT->add_callback("MT::Entry::post_load" => 
-		 new MT::Callback("ezplug", \&unxfrm_entry));
+MT->add_callback("MT::Entry::post_load", undef, 5, \&unxfrm_entry);
 1;
