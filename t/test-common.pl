@@ -38,5 +38,6 @@ $T_SCHEMA_ORACLE = File::Spec->catfile($BASE, 't', 't-schema-oracle.dump');
 $T_SCHEMA_SQLITE = File::Spec->catfile($BASE, 't', 't-schema-sqlite.dump');
 $T_SCHEMA_MSSQLSERVER = File::Spec->catfile($BASE, 't', 't-schema-mssqlserver.dump');
 $SQLITE_DB = File::Spec->catfile($BASE, 't', 'mtdb');
+$ENV{MT_CONFIG} = $T_CFG;
 
 1;

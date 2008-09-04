@@ -6,19 +6,14 @@ use warnings;
 use Test::More tests => 3;
 use CGI;
 
-use lib 'extlib';
-use lib 't/lib';
-use lib 'lib';
+use lib qw( t/lib t );
+BEGIN { require 'test-common.pl'; print "after test-config\n"; }
 
-use MT::Test ();
-use MT;
+use MT::Test qw( :cms :db :data );
+
 use MT::Plugin;
 use MT::Entry;
-use MT::App::CMS;
 use MT::Permission;
-
-use lib 't';
-require 'test-common.pl';
 
 ### Test app callbacks
 
@@ -26,7 +21,7 @@ my @result_cats = ();
 
 my $cms = MT::App::CMS->new();
 
-my $plugin = MT::Plugin->new({name => "21-callbacks.t"});
+my $plugin = MT::Plugin->new({name => "21-app-callbacks.t"});
 
 my $entry2 = MT::Entry->load({}, { limit => 1 });
 
