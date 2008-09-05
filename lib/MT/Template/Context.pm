@@ -464,7 +464,7 @@ sub compile_tag_filter {
     $tag_expr =~ s/
         (
             [ ]  | # space
-            #\d+ | # #123
+            \#\d+ | # #123
             &&   | # literal &&
             \|\| | # literal ||
             !    | # literal !
@@ -472,7 +472,7 @@ sub compile_tag_filter {
             \)     # literal )
         )  |
         (
-            [^#0-9&|!()]+  # some unknown set of characters
+            [^#&|!()]+  # some unknown set of characters
         )
     / $2 ? '(0)' : $1 /gex;
 
