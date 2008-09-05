@@ -1182,7 +1182,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
 
     # The following is no more readable in PHP than it is in Perl
-    $expr = preg_replace_callback('/( |#\d+|&&|\|\||!|\(|\))|([^#0-9&|!()]+)/', 'create_expr_exception', $expr);
+    $expr = preg_replace_callback('/( |\#\d+|&&|\|\||!|\(|\))|([^#&|!()]+)/', 'create_expr_exception', $expr);
 
     # Syntax check on 'tag' argument
     # Strip out all the valid stuff. if anything is left, we have
