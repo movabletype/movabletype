@@ -126,8 +126,8 @@ ok(!dsa_verify(
 
 SKIP: {
     my $package = 'Math::Pari';
-    eval { require $package };
-    skip("$package not installed", 1);
+    eval "use $package qw( PARI )";
+    skip("$package not installed: $@", 1) if $@;
 
     sub mp2bin {
         my($p) = @_;
