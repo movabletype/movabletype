@@ -15865,7 +15865,7 @@ sub _hdlr_assets {
     # Added a file_ext filter to the filters list.
     if (my $ext = $args->{file_ext}) {
         my @exts = split(',', $args->{file_ext});
-        if (!$assets) {
+        if ($assets) {
             push @filters, sub { my $a = $_[0]->file_ext; grep(m/$a/, @exts) };
         } else {
             $terms{file_ext} = \@exts;
