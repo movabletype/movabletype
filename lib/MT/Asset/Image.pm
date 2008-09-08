@@ -599,7 +599,9 @@ sub on_upload {
                 $asset_html = new $html_pkg;
                 $original   = $asset_html->clone;
                 $asset_html->blog_id($blog_id);
-                $asset_html->url($pseudo_path);
+                my $pseudo_url = $pseudo_path;
+                $pseudo_url  =~ s!\\!/!g;
+                $asset_html->url($pseudo_url);
                 $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
                 $asset_html->file_path($pseudo_path);
                 $asset_html->file_name($basename);
