@@ -150,7 +150,7 @@ sub list {
             my @blog_ids;
             push @blog_ids, $_->blog_id
               foreach grep { $_->can_edit_assets } @perms;
-            $terms{blog_id} = \@blog_ids;
+            $terms{blog_id} = @blog_ids ? \@blog_ids : 0;
         }
     }
 
