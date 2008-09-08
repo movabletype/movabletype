@@ -230,7 +230,7 @@ sub thumbnail_filename {
     my $file    = $asset->file_name or return;
 
     require MT::Util;
-    my $format = $param{Format} || MT->translate('%f-thumb-%wx%h%x');
+    my $format = $param{Format} || MT->translate('%f-thumb-%wx%h-%i%x');
     my $width  = $param{Width}  || 'auto';
     my $height = $param{Height} || 'auto';
     $file =~ s/\.\w+$//;
@@ -549,6 +549,7 @@ sub on_upload {
                 return $app->error(
                     $app->translate( "Invalid basename '[_1]'", $rel_path ) );
             }
+            $rel_path .= '-' . $asset->id;
             my $ext = $blog->file_extension || '';
             $ext = '.' . $ext if $ext ne '';
             require MT::Template::Context;
@@ -566,15 +567,7 @@ sub on_upload {
             my $abs_file_path =
               File::Spec->catfile( $root_path, $rel_path . $ext );
 
-            ## If the popup filename already exists, we don't want to overwrite
-            ## it, because it could contain valuable data; so we'll just make
-            ## sure to generate the name uniquely.
             my ( $i, $rel_path_ext ) = ( 0, $rel_path . $ext );
-            while ( $fmgr->exists($abs_file_path) ) {
-                $rel_path_ext = $rel_path . ++$i . $ext;
-                $abs_file_path =
-                  File::Spec->catfile( $root_path, $rel_path_ext );
-            }
             $pseudo_path = File::Spec->catfile( $pseudo_path, $rel_path_ext );
             my ( $vol, $dirs, $basename ) =
               File::Spec->splitpath($rel_path_ext);
@@ -611,7 +604,7 @@ sub on_upload {
                 $asset_html->save;
             } else {
                 $original   = $asset_html->clone;
-            }                
+            }
 
             # Select back the real URL for callbacks
             $url = $asset_html->url;
