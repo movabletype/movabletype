@@ -335,20 +335,7 @@ sub pre_start {
     $param{mt_static_exists} = $app->mt_static_exists;
     $param{static_file_path} = $static_file_path;
       
-    my $langs = $app->supported_languages;
-    my @languages;
-    my $curr_lang ||= $app->current_language || $app->config('DefaultLanguage');
-    $curr_lang = 'en-us' if ( lc($curr_lang) eq 'en_us' );
-    for my $tag ( keys %$langs ) {
-        ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
-        $app->set_language($tag);
-        my $row = { l_tag => $tag, l_name => $app->translate($name) };
-        $row->{l_selected} = 1 if $curr_lang eq $tag;
-        push @languages, $row;
-    }
-    $app->set_language($curr_lang);
-    @languages = sort { $a->{l_name} cmp $b->{l_name} } @languages;
-    $param{languages} = \@languages;
+    $param{languages} = MT::I18N::languages_list( $app, $app->current_language );
 
     return $app->build_page( "start.tmpl", \%param );
 }

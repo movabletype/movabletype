@@ -50,7 +50,7 @@ sub save {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
         $param->{languages} =
-          $app->languages_list( $q->param('preferred_language') )
+          MT::I18N::languages_list( $app, $q->param('preferred_language') )
           if $q->param('preferred_language');
         $param->{create_personal_weblog} =
           $q->param('create_personal_weblog') ? 1 : 0;

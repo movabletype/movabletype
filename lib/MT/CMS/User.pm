@@ -43,7 +43,7 @@ sub edit {
           ( $param->{editing_other_profile} || $param->{is_me} )
           && MT::Auth->password_exists;
         $param->{can_recover_password} = MT::Auth->can_recover_password;
-        $param->{languages} = $app->languages_list( $obj->preferred_language )
+        $param->{languages} = MT::I18N::languages_list( $app, $obj->preferred_language )
           unless exists $param->{langauges};
     } else {
         $param->{create_personal_weblog} =
@@ -61,13 +61,13 @@ sub edit {
     if ($obj) {
         $app->add_breadcrumb( $obj->name );
         $param->{languages} =
-          $app->languages_list( $obj->preferred_language );
+          MT::I18N::languages_list( $app, $obj->preferred_language );
         $auth_prefs = $obj->entry_prefs;
     }
     else {
         $app->add_breadcrumb( $app->translate("Create User") );
         $param->{languages} =
-          $app->languages_list( $app->config('DefaultUserLanguage') )
+          MT::I18N::languages_list( $app, $app->config('DefaultUserLanguage') )
           unless ( exists $param->{languages} );
         $auth_prefs = { tag_delim => $app->config->DefaultUserTagDelimiter }
           unless ( exists $param->{'auth_pref_tag_delim'} );
@@ -864,7 +864,7 @@ sub cfg_system_users {
 
     $param{nav_settings} = 1;
     $param{languages} =
-      $app->languages_list( $app->config('DefaultUserLanguage') );
+      MT::I18N::languages_list( $app, $app->config('DefaultUserLanguage') );
     my $tag_delim = $app->config('DefaultUserTagDelimiter') || ord(',');
     if ( $tag_delim eq ord(',') ) {
         $tag_delim = 'comma';

@@ -200,7 +200,7 @@ sub cfg_system_general {
     $param{nav_config}   = 1;
     $param{nav_settings} = 1;
     $param{languages} =
-      $app->languages_list( $app->config('DefaultUserLanguage') );
+      MT::I18N::languages_list( $app, $app->config('DefaultUserLanguage') );
     my $tag_delim = $app->config('DefaultUserTagDelimiter') || 'comma';
     $param{"tag_delim_$tag_delim"} = 1;
 

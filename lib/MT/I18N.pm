@@ -71,6 +71,26 @@ sub _language {
     $Supported_Languages{$lang} ? $lang : 'default';
 }
 
+sub languages_list {
+    my ( $app, $curr ) = @_;
+
+    $app ||= MT->instance;
+    my $langs = $app->supported_languages;
+    my @data;
+    $curr ||= $app->config('DefaultLanguage');
+    $curr = 'en-us' if ( lc($curr) eq 'en_us' );
+    my $curr_lang = $app->current_language;
+    for my $tag ( keys %$langs ) {
+        ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
+        $app->set_language($tag);
+        my $row = { l_tag => $tag, l_name => $app->translate($name) };
+        $row->{l_selected} = 1 if $curr eq $tag;
+        push @data, $row;
+    }
+    $app->set_language($curr_lang);
+    [ sort { $a->{l_name} cmp $b->{l_name} } @data ];
+}
+
 1;
 __END__
 
@@ -128,6 +148,13 @@ Turn off UTF-8 encoding in the given I<text>
 
 Return the value of the given I<id> method from the C<MT::I18N>
 package for the current language.
+
+=head2 languages_list($app, $current)
+
+Returns a reference to an array of hashes which contains necessary
+data to render a dropdown list of languages that MT supports.
+Dropdown lists appear on User Profile, System Settings, and the
+start page of the wizard, among others.
 
 =head1 LICENSE
 
