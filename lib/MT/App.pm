@@ -2417,12 +2417,12 @@ sub show_error {
     my $type = $app->param('__type') || '';
     if ( $type eq 'dialog' ) {
         $param->{name}   ||= $app->{name}   || 'dialog';
-        $param->{goback} ||= $app->{goback} || 'closeDialog()';
+        $param->{goback} ||= "window.location='" . $app->{goback} . "'" || 'closeDialog()';
         $param->{value}  ||= $app->{value}  || $app->translate("Close");
         $param->{dialog} = 1;
     }
     else {
-        $param->{goback} ||= $app->{goback} || 'history.back()';
+        $param->{goback} ||= "window.location='" . $app->{goback} . "'" || 'history.back()';
         $param->{value}  ||= $app->{value}  || $app->translate("Go Back");
     }
     $tmpl->param($param);
