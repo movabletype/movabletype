@@ -431,6 +431,9 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
         path = path.replace(/(.*)editor-content.html.*/, "$1");
         var regex = new RegExp(path, "g");
         html = html.replace(regex, "");
+        /* XXX for save on ff */
+        regex = new RegExp(path.replace(/~/, "%7E"), "g");
+        html = html.replace(regex, "");
 
         return html;
     }
