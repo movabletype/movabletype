@@ -31,10 +31,6 @@ sub handle_sign_in {
     my $email = $q->param('email') || "";
     my $name = $q->param('name') || "";
     my $nick = $q->param('nick') || "";
-    # handle_sign_in is forced to believe input is in utf-8
-    if ( $nick && ( MT->config->PublishCharset !~ /utf-?8/i ) ) {
-        $nick = encode_text( decode_url($nick), 'UTF-8', MT->config->PublishCharset );
-    }
     my $cmntr;
     my $session;
 
@@ -49,6 +45,11 @@ sub handle_sign_in {
         # This implies tampering, not a user mistake.
         $app->error($app->translate("The sign-in validation failed."));
         return 0;
+    }
+
+    # handle_sign_in is forced to believe input is in utf-8
+    if ( $nick && ( MT->config->PublishCharset !~ /utf-?8/i ) ) {
+        $nick = encode_text( decode_url($nick), 'UTF-8', MT->config->PublishCharset );
     }
 
     if ($blog->require_typekey_emails && !is_valid_email($email)) {
