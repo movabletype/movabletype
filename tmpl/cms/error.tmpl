@@ -23,6 +23,8 @@
                 type="submit"
                 <mt:if name="dialog">
                 onclick="if ( window.opener ) { window.close(); } else { window.parent.closeDialog('<mt:var name="link" escape="js">'); }; return false;"
+                <mt:elseif name="fs">
+                onclick="window.location='<mt:var name="link" escape="js">'; return false;"
                 <mt:else>
                 onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
                 </mt:if>

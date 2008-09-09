@@ -2437,27 +2437,52 @@ sub show_error {
         if ( my $tmpl = $r->cache('build_template') ) {
 
             # this is the template that likely caused the rebuild error
-            push @{ $param->{button_loop} ||= [] },
-                {
-                link => $app->uri(
-                    mode => 'view',
-                    args => {
-                        blog_id => $tmpl->blog_id,
-                        '_type' => 'template',
-                        id      => $tmpl->id
+            my $tmpl_edit_link = $app->uri(
+                        mode => 'view',
+                        args => {
+                            blog_id => $tmpl->blog_id,
+                            '_type' => 'template',
+                            id      => $tmpl->id
+                        }
+                    );
+
+            if ( $app->param('fs') ) {
+                $param->{fs} = 1;
+                if ( exists $app->{goback} ) {
+                    $param->{goback} = "window.location='" . $app->{goback} . "'";
+                    if ( $tmpl_edit_link ne $app->{goback} ) {
+                        push @{ $param->{button_loop} ||= [] },
+                          {
+                            link => $tmpl_edit_link,
+                            label => $app->translate("Edit Template"),
+                          };
                     }
-                ),
-                label => $app->translate("Edit Template"),
-                };
+                }
+                else {
+                    $param->{goback} = "window.location='$tmpl_edit_link'";
+                }
+            }
+            else {
+                push @{ $param->{button_loop} ||= [] },
+                  {
+                    link => $tmpl_edit_link,
+                    label => $app->translate("Edit Template"),
+                  };
+            }
         }
 
-        my $blog_id = $app->param('blog_id');
-        my $url     = $app->uri(
-            mode => 'rebuild_confirm',
-            args => { blog_id => $blog_id }
-        );
-        $param->{goback} ||= qq{window.location='$url'};
-        $param->{value}  ||= $app->translate('Go Back');
+        if ( !exists( $param->{goback} ) && exists( $app->{goback} ) ) {
+            $param->{goback} = $app->{goback};
+        }
+        else {
+            my $blog_id = $app->param('blog_id');
+            my $url     = $app->uri(
+                mode => 'rebuild_confirm',
+                args => { blog_id => $blog_id }
+            );
+            $param->{goback} ||= qq{window.location='$url'};
+        }
+        $param->{value} ||= $app->{value} || $app->translate('Go Back');
     }
 
     return $app->SUPER::show_error($param);

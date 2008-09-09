@@ -531,7 +531,7 @@ sub rebuild_phase {
     my $app  = shift;
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->param('id');
-    $app->{goback} = "window.location='" . $app->return_uri . "'";
+    $app->{goback} = $app->return_uri;
     $app->{value} ||= $app->translate('Go Back');
     if ( $type eq 'entry' ) {
         my %ids = map { $_ => 1 } @ids;
@@ -610,9 +610,7 @@ sub rebuild_pages {
                 my $entry = MT::Entry->load($obj_id);
                 $edit_type = $entry ? $entry->class : 'entry';
             }
-            $app->{goback} =
-              "window.location='"
-              . $app->object_edit_uri( $edit_type, $obj_id ) . "'";
+            $app->{goback} = $app->object_edit_uri( $edit_type, $obj_id );
             $app->{value} ||= $app->translate('Go Back');
         }
     }
