@@ -9248,6 +9248,16 @@ sub _hdlr_entry_author_userpic_asset {
 
 Ouptuts the numeric ID for the current entry in context.
 
+B<Attributes:>
+
+=over 4
+
+=item * pad (optional; default "0")
+
+Adds leading zeros to create a 6 character string. The default is 0 (false). This is equivalent to using the C<zero_pad> global filter with a value of 6.
+
+=back
+
 =cut
 
 sub _hdlr_entry_id {
