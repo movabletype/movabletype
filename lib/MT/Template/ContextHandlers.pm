@@ -5184,18 +5184,15 @@ sub _hdlr_template_created_on {
 
 Generates the absolute URL to an index template or specific entry in the system.
 
-B<NOTE:> Only one of the 'template', 'identifier' and 'entry_id'
-attributes can be specified at a time.
+B<NOTE:> Only one of the 'template' or 'entry_id' attributes can be specified
+at a time.
 
 B<Attributes:>
 
 =item * template
 
-The name of the index template.
-
-=item * identifier
-
-A template identifier.
+The index template to which to link. This attribute should be the template's
+name, identifier, or outfile.
 
 =item * entry_id
 
@@ -5212,9 +5209,9 @@ B<Examples:>
 
     <a href="<mt:Link template="About Page">">My About Page</a>
 
+    <a href="<mt:Link template="main_index">">Blog Home</a>
+    
     <a href="<mt:Link entry_id="221">">the entry about my vacation</a>
-
-    <a href="<mt:Link identifier="main_index">">Home</a>
 
 =for tags archives
 =cut
