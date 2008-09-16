@@ -2399,7 +2399,7 @@ sub show_error {
         }
 
         if ( !exists( $param->{goback} ) && exists( $app->{goback} ) ) {
-            $param->{goback} = $app->{goback};
+            $param->{goback} = "window.location='" . $app->{goback} . "'";
         }
         else {
             my $blog_id = $app->param('blog_id');
