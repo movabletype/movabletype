@@ -7972,7 +7972,7 @@ sub _hdlr_entries {
                     fetchonly => ['tag_id'],
                     no_triggers => 1
                 };
-                my @ot_ids = MT::ObjectTag->load($terms, $args);
+                my @ot_ids = MT::ObjectTag->load($terms, $args) if @tag_ids;
                 $map{$_->tag_id} = 1 for @ot_ids;
                 \%map;
             };
@@ -15953,7 +15953,7 @@ sub _hdlr_assets {
                     fetchonly => ['tag_id'],
                     no_triggers => 1,
                 };
-                my @ot_ids = MT::ObjectTag->load( $terms, $args );
+                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
                 my %map;
                 $map{ $_->tag_id } = 1 for @ot_ids;
                 \%map;
