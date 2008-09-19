@@ -10061,7 +10061,7 @@ sub _hdlr_date {
     my $blog = $ctx->stash('blog');
     unless (ref $blog) {
         my $blog_id = $blog || $args->{offset_blog_id};
-        if ($blog) {
+        if ($blog_id) {
             $blog = MT->model('blog')->load($blog_id);
             return $ctx->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
               unless $blog;
@@ -10072,7 +10072,7 @@ sub _hdlr_date {
     if ($args->{utc}) {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
-        my $server_offset = $blog->server_offset;
+        my $server_offset = ($blog && $blog->server_offset) || MT->config->TimeOffset;
         if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y )))[8]) {
             $server_offset += 1;
         }
@@ -10090,7 +10090,7 @@ sub _hdlr_date {
     if (my $format = lc ($args->{format_name} || '')) {
         my $tz = 'Z';
         unless ($args->{utc}) {
-            my $so = $blog->server_offset;
+            my $so = ($blog && $blog->server_offset) || MT->config->TimeOffset;
             my $partial_hour_offset = 60 * abs($so - int($so));
             if ($format eq 'rfc822') {
                 $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
