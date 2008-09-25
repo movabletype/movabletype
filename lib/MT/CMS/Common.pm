@@ -960,10 +960,6 @@ sub delete {
             }
         }
         elsif ( $type eq 'category' ) {
-            my @kids = MT::Category->load( { parent => $id } );
-            return $app->errtrans(
-"You can't delete that category because it has sub-categories. Move or delete the sub-categories first if you want to delete this one."
-            ) if @kids;
             if ( $app->config('DeleteFilesAtRebuild') ) {
                 require MT::Blog;
                 require MT::Entry;
