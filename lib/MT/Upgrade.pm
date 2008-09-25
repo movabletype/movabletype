@@ -1705,6 +1705,7 @@ sub do_upgrade {
         $MAX_ROWS = 300;
         my $fn = \%MT::Upgrade::functions;
         my @these_steps = @steps;
+
         while (@these_steps) {
             my $step = shift @these_steps;
             @steps = ();
@@ -1714,6 +1715,11 @@ sub do_upgrade {
                 @these_steps = sort { $fn->{$a->[0]}->{priority} <=>
                                       $fn->{$b->[0]}->{priority} } @these_steps;
             }
+
+            # Reset the request to eliminate any caching that may be
+            # happening there (objects tend to cache into the request
+            # with the 'cache_property' method)
+            MT->request->reset;
         }
         return 1;
     } else {
