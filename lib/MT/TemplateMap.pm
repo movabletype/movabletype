@@ -106,6 +106,10 @@ sub remove {
                 $blog_id = $tmpl->blog_id;
             }
         }
+        elsif ( $_[0] && $_[0]->{blog_id} ) {
+            # for cases where we remove with a blog_id parameter
+            $blog_id = $_[0]->{blog_id};
+        }
 
         my $maps_iter = MT::TemplateMap->count_group_by(
             { ( defined $blog_id ? ( blog_id => $blog_id ) : () ) },
