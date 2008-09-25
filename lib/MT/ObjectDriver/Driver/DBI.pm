@@ -579,7 +579,7 @@ as the result of select_one method.
 
 =item * post_group_by
 
-    callback($class, \$value, \@retrunvals)
+    callback($class, \$value, \@returnvals)
 
 Callback issued prior to returning the number and additional return
 values that are retrieved as the result of grouping query.  The value

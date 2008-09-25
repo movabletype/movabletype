@@ -1061,7 +1061,7 @@ sub save {
     my $type = $app->param('_type') || 'entry';
 
     my $class = $app->model($type)
-      or retrun $app->errtrans("Invalid parameter");
+      or return $app->errtrans("Invalid parameter");
 
     my $cat_class = $app->model( $class->container_type );
 
