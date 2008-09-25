@@ -320,7 +320,7 @@ sub set_blog_load_context {
 
     # If no blog IDs specified, use the current blog
     if ( ! $blog_ids ) {
-        $terms->{$col} = $blog_id if $col eq 'blog_id';
+        $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
     } 
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
