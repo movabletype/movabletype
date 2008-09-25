@@ -747,7 +747,7 @@ sub core_list_filters {
                 order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
-                    my $ts = time - 10 * 24 * 60 * 60;
+                    my $ts = time - 7 * 24 * 60 * 60;
                     $ts = epoch2ts( MT->app->blog, $ts );
                     $args->{join} = MT::Comment->join_on(
                         'entry_id',
