@@ -1657,7 +1657,12 @@ sub run_step {
         my $code = $fn->{code} || $fn->{handler};
         $code = MT->handler_to_coderef($code);
         my $result = $code->($self, %param, %update_params, step => $name);
-        if ((defined $result) && ($result > 1)) {
+        if (ref $result eq 'HASH') {
+            $param{$_} = $result->{$_} for keys %$result;
+            $result = 1;
+            $self->add_step($name, %param);
+        }
+        elsif ((defined $result) && ($result > 1)) {
             $param{offset} = $result; $result = 1;
             $self->add_step($name, %param);
         }
@@ -2983,9 +2988,12 @@ sub core_update_records {
         $msg = $self->translate_escape($param{message} || "Updating [_1] records...", $class_label);
     }
     my $offset = $param{offset};
+    my $count = $param{count};
+    if (!$count) {
+        $count = $class->count;
+    }
+    return unless $count;
     if ($offset) {
-        my $count = $class->count;
-        return unless $count;
         $self->progress(sprintf("$msg (%d%%)", ($offset/$count*100)), $param{step});
     } else {
         $self->progress($msg, $param{step});
@@ -3025,7 +3033,7 @@ sub core_update_records {
         }
     }
     if ($continue) {
-        return $offset;
+        return { offset => $offset, count => $count };
     } else {
         $self->progress("$msg (100%)", $param{step});
     }
