@@ -632,6 +632,38 @@ sub _fltr_numify {
 
 Processes the input string for any MT template tags and returns the output.
 
+B<Example:>
+
+1. Add the `mteval` attribute to the <mt:PageBody> and <mt:PageMore> tags 
+in your Page archive template so these tags...
+
+    <$mt:PageBody$>
+    <$mt:PageMore$>
+
+...become:
+
+    <$mt:PageBody mteval="1"$>
+    <$mt:PageMore mteval="1"$>
+
+2. Create a page and place the following code within the body of the page. 
+Yes, you read that correctly, put MT tags into the body of a new page.
+
+    <p>Latest 3 entries are...</p>
+    <ul>
+        <mt:Entries lastn="3">
+            <li><$mt:EntryTitle$></li>
+        </mt:Entries>
+    </ul>
+
+3. Publish the page and view the result!
+
+B<Note:> When a new entry is created MT will not know to republish this page, 
+so this is kind of a bad example... but it shows how the feature works. It's 
+also bad practice because you should separate the code and the content of the 
+site otherwise some user will eventually tinker with it and break it... but 
+then they'll call you and PayPal you butloads of cash to fix it... so I guess 
+it's not that bad.
+
 =cut
 
 sub _fltr_mteval {
