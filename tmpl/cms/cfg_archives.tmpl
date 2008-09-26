@@ -115,7 +115,7 @@ function validate (f) {
         alert('<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">');
         return false;
     }
-    if (f.enable_archive_paths.value) {
+    if (f.enable_archive_paths.checked) {
         if (!f.archive_path.value) {
             alert('<__trans phrase="You must set Local Archive Path." escape="singlequotes">');
             return false;
