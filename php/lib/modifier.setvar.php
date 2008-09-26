@@ -8,8 +8,11 @@
 function smarty_modifier_setvar($text, $name) {
     global $mt;
     $ctx =& $mt->context();
-    $vars =& $ctx->__stash['vars'];
+    if (array_key_exists('__inside_set_hashvar', $ctx->__stash)) {
+        $vars =& $ctx->__stash['__inside_set_hashvar'];
+    } else {
+        $vars =& $ctx->__stash['vars'];
+    }
     $vars[$name] = $text;
     return '';
 }
-?>

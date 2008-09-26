@@ -687,7 +687,12 @@ just use the L<Var> tag.
 
 sub _fltr_setvar {
     my ($str, $arg, $ctx) = @_;
-    $ctx->var($arg, $str);
+    if ( my $hash = $ctx->{__inside_set_hashvar} ) {
+        $hash->{$arg} = $str;
+    }
+    else {
+        $ctx->var($arg, $str);
+    }
     return '';
 }
 

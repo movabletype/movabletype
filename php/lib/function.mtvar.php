@@ -110,6 +110,15 @@ function smarty_function_mtvar($args, &$ctx) {
                     );
                 }
             }
+            else {
+                if (array_key_exists('to_json', $args) && $args['to_json']) {
+                    if (function_exists('json_encode')) {
+                        $return_val = json_encode($value);
+                    } else {
+                        $return_val = '';
+                    }
+                }
+            }
         }
         elseif (is_array($value)) {
             if ( isset($index) ) {
@@ -139,11 +148,12 @@ function smarty_function_mtvar($args, &$ctx) {
                 }
             }
             else {
-                if (!array_key_exists('to_json', $args) && $args['to_json']) {
-                    $glue = $args['glue'];
-                    if (!isset($glue))
-                        $glue = '';
-                    $return_val = implode($glue, $value);
+                if (array_key_exists('to_json', $args) && $args['to_json']) {
+                    if (function_exists('json_encode')) {
+                        $return_val = json_encode($value);
+                    } else {
+                        $return_val = '';
+                    }
                 }
             }
         }
