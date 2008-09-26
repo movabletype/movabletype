@@ -2985,8 +2985,10 @@ sub core_update_entry_counts {
     })) {
         while (my ($count, $id) = $grp_iter->()) {
             my $e = $c{$id} or next;
-            $e->comment_count($count);
-            $touched{$e->id} = $e;
+            if ((!defined $e->comment_count) || (($e->comment_count || 0) != $count)) {
+                $e->comment_count($count);
+                $touched{$e->id} = $e;
+            }
         }
     }
 
@@ -3000,8 +3002,10 @@ sub core_update_entry_counts {
         })) {
             while (my ($count, $id) = $grp_iter->()) {
                 my $e = $tb{$id} or next;
-                $e->ping_count($count);
-                $touched{$e->id} = $e;
+                if ((!defined $e->ping_count) || (($e->ping_count || 0) != $count)) {
+                    $e->ping_count($count);
+                    $touched{$e->id} = $e;
+                }
             }
         }
     }
