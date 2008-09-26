@@ -3077,7 +3077,7 @@ sub core_update_records {
             }
             $code->($obj);
             $obj->save()
-                or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]... [_4].", $class_label, $obj->errstr, $obj->id, Dumper($obj)));
+                or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]...", $class_label, $obj->errstr, $obj->id));
             $continue = 1, last if time > $start + $MAX_TIME;
         }
     }
