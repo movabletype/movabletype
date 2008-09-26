@@ -866,37 +866,7 @@ sub core_upgrade_functions {
         'core_set_count_columns' => {
             version_limit => 4.0047,
             priority      => 3.2,
-            updater       => {
-                type      => 'entry',
-                label     => 'Assigning entry comment and TrackBack counts...',
-                condition => sub {
-                    require MT::Comment;
-                    my $comment_count = MT::Comment->count(
-                        {
-                            entry_id => $_[0]->id,
-                            visible  => 1,
-                        }
-                    );
-                    $_[0]->comment_count($comment_count);
-                    require MT::Trackback;
-                    require MT::TBPing;
-                    my $tb = MT::Trackback->load( { entry_id => $_[0]->id } );
-                    my $ping_count;
-                    if ($tb) {
-                        my $ping_count = MT::TBPing->count(
-                            {
-                                tb_id   => $tb->id,
-                                visible => 1,
-                            }
-                        );
-                        $_[0]->ping_count($ping_count);
-                    }
-                    ( $comment_count || $ping_count );
-                },
-                # only count once and set it, so code do nothing.
-                # it doesn't have the unnecessary save.
-                code => sub { 1; },
-            },
+            code          => \&core_update_entry_counts,
         },
         'core_assign_object_embedded' => {
             version_limit => 4.0052,
@@ -2968,6 +2938,86 @@ sub core_create_template_maps {
     1;
 }
 
+sub core_update_entry_counts {
+    my $self = shift;
+    my (%param) = @_;
+
+    my $class = MT->model('entry');
+    return $self->error($self->translate_escape("Error loading class: [_1].", $param{type}))
+        unless $class;
+
+    my $msg = $self->translate("Assigning entry comment and TrackBack counts...");
+    my $offset = $param{offset};
+    my $count = $param{count};
+    if (!$count) {
+        $count = $class->count({ class => '*' });
+    }
+    return unless $count;
+    if ($offset) {
+        $self->progress(sprintf("$msg (%d%%)", ($offset/$count*100)), $param{step});
+    } else {
+        $self->progress($msg, $param{step});
+    }
+
+    my $continue = 0;
+    my $driver = $class->driver;
+
+    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $MAX_ROWS+1 });
+    my $start = time;
+    my ( %touched, %c, %tb );
+    my $rows = 0;
+    while (my $e = $iter->()) {
+        $rows++;
+        $c{$e->id} = $e;
+        if (my $tb = $e->trackback) {
+            $tb{$tb->id} = $e;
+        }
+        $continue = 1, last if scalar $rows == $MAX_ROWS;
+    }
+    $iter->end if $continue;
+
+    # now gather counts -- comments
+    if (my $grp_iter = MT::Comment->count_group_by({
+        visible => 1,
+        entry_id => [ keys %c ],
+    }, {
+        group => ['entry_id'],
+    })) {
+        while (my ($count, $id) = $grp_iter->()) {
+            my $e = $c{$id} or next;
+            $e->comment_count($count);
+            $touched{$e->id} = $e;
+        }
+    }
+
+    # pings
+    if ( %tb ) {
+        if (my $grp_iter = MT::TBPing->count_group_by({
+            visible => 1,
+            tb_id => [ keys %tb ],
+        }, {
+            group => ['tb_id'],
+        })) {
+            while (my ($count, $id) = $grp_iter->()) {
+                my $e = $tb{$id} or next;
+                $e->ping_count($count);
+                $touched{$e->id} = $e;
+            }
+        }
+    }
+
+    foreach my $e (values %touched) {
+        $e->save;
+    }
+
+    if ($continue) {
+        return { offset => $offset, count => $count };
+    } else {
+        $self->progress("$msg (100%)", $param{step});
+    }
+    1;
+}
+
 sub core_update_records {
     my $self = shift;
     my (%param) = @_;
@@ -3026,7 +3076,6 @@ sub core_update_records {
                 next unless $cond->($obj, %param);
             }
             $code->($obj);
-            use Data::Dumper;
             $obj->save()
                 or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]... [_4].", $class_label, $obj->errstr, $obj->id, Dumper($obj)));
             $continue = 1, last if time > $start + $MAX_TIME;
