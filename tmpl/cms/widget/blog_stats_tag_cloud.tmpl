@@ -4,6 +4,7 @@
     </mt:setvarblock>
 
     <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
+<mt:Section cache_prefix="tagcloud" period="3600" by_blog="1" by_user="1">
         <div id="tag-cloud">
             <ul id="tag-cloud-list">
             <mt:loop name="tag_loop">
@@ -11,6 +12,7 @@
             </mt:loop>
             </ul>
         </div>
+</mt:Section>
         <div id="tag-cloud-recent-entries"></div>
     </div>
 </mt:if>
