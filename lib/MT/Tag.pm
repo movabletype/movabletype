@@ -175,7 +175,11 @@ sub load_by_datasource {
         $blog_id ? (blog_id => $blog_id) : (),
         object_datasource => $datasource
     }, { unique => 1, %jargs });
-    my @tags = MT::Tag->load($terms, $args);
+    my @tags;
+    my $iter = MT::Tag->load_iter($terms, $args);
+    while ( my $tag = $iter->() ) {
+        push @tags, $tag;
+    }
     @tags;
 }
 
