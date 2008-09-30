@@ -688,10 +688,22 @@ sub rebuild_pages {
     }
     elsif ($type) {
         my $special = 0;
-        my @options = $app->{rebuild_options} ||= {};
+        my @options;
+        my $opts = $app->registry("rebuild_options") || {};
+        if ($opts) {
+            foreach my $opt ( keys %$opts ) {
+                $opts->{$opt}{key} ||= $opt;
+                push @options, $opts->{$opt};
+            }
+        }
         $app->run_callbacks( 'rebuild_options', $app, \@options );
         for my $optn (@options) {
             if ( ( $optn->{key} || '' ) eq $type ) {
+                my $code = $optn->{code};
+                unless ( ref($code) eq 'CODE' ) {
+                    $code = MT->handler_to_coderef($code);
+                    $optn->{code} = $code;
+                }
                 $optn->{code}->();
                 $special = 1;
             }
