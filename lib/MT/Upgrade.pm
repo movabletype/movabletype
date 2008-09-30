@@ -2946,8 +2946,8 @@ sub core_update_entry_counts {
     return $self->error($self->translate_escape("Error loading class: [_1].", $param{type}))
         unless $class;
 
-    my $msg = $self->translate("Assigning entry comment and TrackBack counts...");
-    my $offset = $param{offset};
+    my $msg = $self->translate_escape("Assigning entry comment and TrackBack counts...");
+    my $offset = $param{offset} || 0;
     my $count = $param{count};
     if (!$count) {
         $count = $class->count({ class => '*' });
@@ -2974,7 +2974,10 @@ sub core_update_entry_counts {
         }
         $continue = 1, last if scalar $rows == $MAX_ROWS;
     }
-    $iter->end if $continue;
+    if ( $continue ) {
+        $iter->end;
+        $offset += $rows;
+    }
 
     # now gather counts -- comments
     if (my $grp_iter = MT::Comment->count_group_by({
