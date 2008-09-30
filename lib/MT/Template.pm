@@ -337,7 +337,7 @@ sub save_widgetset {
     }
     $obj->modulesets( join ',', @ids )
         if scalar @ids != scalar @inst;
-    $obj->text($text) if $text;
+    $obj->text($text);
     return $obj->SUPER::save;
 }
 
