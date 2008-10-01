@@ -84,6 +84,20 @@ sub blog {
     );
 }
 
+sub global_perms {
+    my $perm = shift;
+
+    return undef unless $perm->author_id;
+    return $perm unless $perm->blog_id;
+
+    $perm->cache_property(
+        'global_perms',
+        sub {
+            __PACKAGE__->load( { author_id => $perm->author_id, blog_id => 0 });
+        }
+    );
+}
+
 # Legend:
 # author_id || blog_id || permissions
 #    N      ||    0    || System level privilege
@@ -288,13 +302,22 @@ sub blog {
                       if ( ( $meth ne 'can_administer' )
                         && $author->is_superuser );
                     return 1
-                      if ( ( $set eq 'blog' )
+                      if ( ( $_[0]->blog_id )
                         && $_[0]->has('administer_blog') );
                 }
             }
+            # return negative if a restriction is present
             return undef
               if $_[0]->restrictions && $_[0]->restrictions =~ /'$perm'/i;
-            ( defined($cur_perm) && $cur_perm =~ /'$perm'/i ) ? 1 : undef;
+            # return positive if permission is set in this permission set
+            return 1 if defined($cur_perm) && $cur_perm =~ /'$perm'/i;
+            # test for global-level permission
+            return 1
+              if $_[0]->author_id
+              && $_[0]->blog_id
+              && $_[0]->global_perms
+              && $_[0]->global_perms->has($perm);
+            return undef;
         };
     }
 
