@@ -869,8 +869,8 @@ sub clone_with_children {
             { blog_id => $old_blog_id, type => 'widgetset' }
         );
         while (my $tmpl = $iter->()) {
-            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
             my @old_widgets = split /,/, $tmpl->modulesets;
+            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
             my @new_widgets;
             push @new_widgets, $tmpl_map{$_}
                 foreach @old_widgets;

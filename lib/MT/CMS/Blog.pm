@@ -531,7 +531,7 @@ sub rebuild_phase {
     my $app  = shift;
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->param('id');
-    $app->{goback} = "window.location='" . $app->return_uri . "'";
+    $app->{goback} = $app->return_uri;
     $app->{value} ||= $app->translate('Go Back');
     if ( $type eq 'entry' ) {
         my %ids = map { $_ => 1 } @ids;
@@ -610,9 +610,7 @@ sub rebuild_pages {
                 my $entry = MT::Entry->load($obj_id);
                 $edit_type = $entry ? $entry->class : 'entry';
             }
-            $app->{goback} =
-              "window.location='"
-              . $app->object_edit_uri( $edit_type, $obj_id ) . "'";
+            $app->{goback} = $app->object_edit_uri( $edit_type, $obj_id );
             $app->{value} ||= $app->translate('Go Back');
         }
     }
@@ -690,10 +688,22 @@ sub rebuild_pages {
     }
     elsif ($type) {
         my $special = 0;
-        my @options = $app->{rebuild_options} ||= {};
+        my @options;
+        my $opts = $app->registry("rebuild_options") || {};
+        if ($opts) {
+            foreach my $opt ( keys %$opts ) {
+                $opts->{$opt}{key} ||= $opt;
+                push @options, $opts->{$opt};
+            }
+        }
         $app->run_callbacks( 'rebuild_options', $app, \@options );
         for my $optn (@options) {
             if ( ( $optn->{key} || '' ) eq $type ) {
+                my $code = $optn->{code};
+                unless ( ref($code) eq 'CODE' ) {
+                    $code = MT->handler_to_coderef($code);
+                    $optn->{code} = $code;
+                }
                 $optn->{code}->();
                 $special = 1;
             }

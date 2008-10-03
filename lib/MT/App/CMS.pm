@@ -747,7 +747,7 @@ sub core_list_filters {
                 order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
-                    my $ts = time - 10 * 24 * 60 * 60;
+                    my $ts = time - 7 * 24 * 60 * 60;
                     $ts = epoch2ts( MT->app->blog, $ts );
                     $args->{join} = MT::Comment->join_on(
                         'entry_id',
@@ -1049,79 +1049,6 @@ sub core_list_filters {
                     $terms->{junk_status}           = MT::Comment::NOT_JUNK();
                     $terms->{created_on}            = [ $from, $to ];
                     $args->{range_incl}{created_on} = 1;
-                },
-            },
-        },
-        template => {
-            index_templates => {
-                label   => "Index Templates",
-                order   => 100,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-
-                    # FIXME: enumeration of types
-                    $terms->{type} = 'index';
-                },
-                condition => sub {
-                    $app->param('blog_id');
-                },
-            },
-            archive_templates => {
-                label   => "Archive Templates",
-                order   => 200,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    $terms->{type}
-                        = [ 'individual', 'page', 'archive', 'category' ];
-                },
-                condition => sub {
-                    $app->param('blog_id');
-                },
-            },
-            module_templates => {
-                label   => "Template Modules",
-                order   => 400,
-                handler => sub {
-                    my ($terms) = @_;
-                    $terms->{type} = 'custom';
-                },
-            },
-            email_templates => {
-                label   => "E-mail Templates",
-                order   => 300,
-                handler => sub {
-                    my ($terms) = @_;
-                    $terms->{type} = 'email';
-                },
-                condition => sub {
-                    !$app->param('blog_id');
-                },
-            },
-            system_templates => {
-                label   => "System Templates",
-                order   => 200,
-                handler => sub {
-                    my ($terms) = @_;
-                    my $scope;
-                    my $set;
-                    if ( my $blog_id = $app->param('blog_id') ) {
-                        my $blog = $app->model('blog')->load($blog_id);
-                        $set = $blog->template_set;
-                        $scope .= 'system';
-                    }
-                    else {
-                        $terms->{blog_id} = 0;
-                        $scope = 'global:system';
-                    }
-                    my @tmpl_path
-                        = ( $set && ( $set ne 'mt_blog' ) )
-                        ? ( "template_sets", $set, 'templates', $scope )
-                        : ( "default_templates", $scope );
-                    my $sys_tmpl = MT->registry(@tmpl_path) || {};
-                    $terms->{type} = [ keys %$sys_tmpl ];
-                },
-                condition => sub {
-                    $app->param('blog_id');
                 },
             },
         },
@@ -2437,27 +2364,52 @@ sub show_error {
         if ( my $tmpl = $r->cache('build_template') ) {
 
             # this is the template that likely caused the rebuild error
-            push @{ $param->{button_loop} ||= [] },
-                {
-                link => $app->uri(
-                    mode => 'view',
-                    args => {
-                        blog_id => $tmpl->blog_id,
-                        '_type' => 'template',
-                        id      => $tmpl->id
+            my $tmpl_edit_link = $app->uri(
+                        mode => 'view',
+                        args => {
+                            blog_id => $tmpl->blog_id,
+                            '_type' => 'template',
+                            id      => $tmpl->id
+                        }
+                    );
+
+            if ( $app->param('fs') ) {
+                $param->{fs} = 1;
+                if ( exists $app->{goback} ) {
+                    $param->{goback} = "window.location='" . $app->{goback} . "'";
+                    if ( $tmpl_edit_link ne $app->{goback} ) {
+                        push @{ $param->{button_loop} ||= [] },
+                          {
+                            link => $tmpl_edit_link,
+                            label => $app->translate("Edit Template"),
+                          };
                     }
-                ),
-                label => $app->translate("Edit Template"),
-                };
+                }
+                else {
+                    $param->{goback} = "window.location='$tmpl_edit_link'";
+                }
+            }
+            else {
+                push @{ $param->{button_loop} ||= [] },
+                  {
+                    link => $tmpl_edit_link,
+                    label => $app->translate("Edit Template"),
+                  };
+            }
         }
 
-        my $blog_id = $app->param('blog_id');
-        my $url     = $app->uri(
-            mode => 'rebuild_confirm',
-            args => { blog_id => $blog_id }
-        );
-        $param->{goback} ||= qq{window.location='$url'};
-        $param->{value}  ||= $app->translate('Go Back');
+        if ( !exists( $param->{goback} ) && exists( $app->{goback} ) ) {
+            $param->{goback} = "window.location='" . $app->{goback} . "'";
+        }
+        else {
+            my $blog_id = $app->param('blog_id');
+            my $url     = $app->uri(
+                mode => 'rebuild_confirm',
+                args => { blog_id => $blog_id }
+            );
+            $param->{goback} ||= qq{window.location='$url'};
+        }
+        $param->{value} ||= $app->{value} || $app->translate('Go Back');
     }
 
     return $app->SUPER::show_error($param);

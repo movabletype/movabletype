@@ -115,6 +115,18 @@ function validate (f) {
         alert('<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">');
         return false;
     }
+    if (f.enable_archive_paths.checked) {
+        if (!f.archive_path.value) {
+            alert('<__trans phrase="You must set Local Archive Path." escape="singlequotes">');
+            return false;
+        } else if (!is_valid_url(f.archive_url.value)){
+            alert('<__trans phrase="You must set a valid Archive URL." escape="singlequotes">');
+            return false;
+        } else if (!is_valid_path(f.archive_path.value)){
+            alert('<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">');
+            return false;
+        }
+    }
     f.site_url.disabled = false;
     f.site_path.disabled = false;
     f.archive_path.disabled = false;
@@ -125,14 +137,13 @@ function is_valid_url(url_){
     return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
 }
 function is_valid_path(path_){
-    for(i = 0; i < path_.length; i++){
-        var buf = escape(path_.substr(i, 1));
-        if (buf.match(/^%u.*/)){
-            return false;
-        }
-        if (buf.match(/(%.{2}){2}?/)){
-        	return false;
-        }
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+    str = encodeURI(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
     }
     return true;
 }

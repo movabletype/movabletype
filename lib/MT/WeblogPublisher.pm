@@ -1415,8 +1415,11 @@ sub rebuild_indexes {
     require MT::Template;
     require MT::Template::Context;
     require MT::Entry;
+
     my $blog;
-    unless ( $blog = $param{Blog} ) {
+    $blog = $param{Blog}
+        if defined $param{Blog};
+    if (!$blog && defined $param{BlogID}) {
         my $blog_id = $param{BlogID};
         $blog = MT::Blog->load($blog_id)
           or return $mt->error(
@@ -1427,9 +1430,15 @@ sub rebuild_indexes {
           );
     }
     my $tmpl = $param{Template};
-    unless ($blog) {
+    if ($tmpl && (!$blog || $blog->id != $tmpl->blog_id)) {
         $blog = MT::Blog->load( $tmpl->blog_id );
     }
+
+    return $mt->error(
+        MT->translate(
+            "Blog, BlogID or Template param must be specified.")
+    ) unless $blog;
+
     return 1 if $blog->is_dynamic;
     my $iter;
     if ($tmpl) {

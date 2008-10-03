@@ -226,7 +226,7 @@ sub create_blog_list {
             }
             else {
                 $blog_id =~ s/\D+//g;    # only numeric values.
-                $blog_list{$type}{$blog_id} = 1;
+                $blog_list{$type}{$blog_id} = 1 if $blog_id;
             }
         }
     }

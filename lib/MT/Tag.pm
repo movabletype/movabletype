@@ -175,7 +175,11 @@ sub load_by_datasource {
         $blog_id ? (blog_id => $blog_id) : (),
         object_datasource => $datasource
     }, { unique => 1, %jargs });
-    my @tags = MT::Tag->load($terms, $args);
+    my @tags;
+    my $iter = MT::Tag->load_iter($terms, $args);
+    while ( my $tag = $iter->() ) {
+        push @tags, $tag;
+    }
     @tags;
 }
 
@@ -334,11 +338,14 @@ sub __load_tags {
         @tags = grep { defined } @{ MT::Tag->lookup_multi($tag_ids) };
     } else {
         require MT::ObjectTag;
-        @tags = MT::Tag->search(undef, {  
+        my $iter = MT::Tag->load_iter(undef, {
             sort => 'name',  
             join => [ 'MT::ObjectTag', 'tag_id', { object_id => $obj->id,
                 object_datasource => $obj->datasource }, { unique => 1 } ],       
         });
+        while ( my $tag = $iter->() ) {
+            push @tags, $tag;
+        }
         $cache->set($memkey, [ map { $_->id } @tags ], TAG_CACHE_TIME);
     }
     $obj->{__tags} = [ map { $_->name } @tags ];

@@ -37,7 +37,7 @@ function sanitize($s, $arg) {
                     $closure = 2;
                 $inside = preg_replace('!/?>$!', '', $inside);
                 $attrs = '';
-                if (preg_match_all('/\s*(\w+)\s*=(?:([\'"])(.*?)\2|([^\s]+))\s*/', $inside, $matches, PREG_SET_ORDER)) {
+                if (preg_match_all('/\s*(\w+)\s*=(?:([\'"])(.*?)\2|([^\s]+))\s*/s', $inside, $matches, PREG_SET_ORDER)) {
                     foreach ($matches as $match) {
                         $attr = strtolower($match[1]);
                         if (isset($match[4])) {
@@ -54,7 +54,7 @@ function sanitize($s, $arg) {
                             if (preg_match('/^(src|href|dynsrc)$/', $attr)) {
                                 $dec_val = preg_replace('/&#0*58(?:=;|[^0-9])/', ':', $dec_val);
                                 $dec_val = preg_replace('/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/', ':', $dec_val);
-                                if (preg_match('/^(.+?):/', $dec_val, $proto_match)) {
+                                if (preg_match('/^([\s\S]+?):/', $dec_val, $proto_match)) {
                                     $proto = $proto_match[1];
                                     if (preg_match('/[\r\n\t]/', $proto)) {
                                         $safe = 0;

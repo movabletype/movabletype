@@ -1300,7 +1300,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb_h = $max_dim;
     $dest;
     $thumb_name = $static_file_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$format;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name, 'png')) {
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'png')) {
         return '';
     }
     $basename = basename($dest);
@@ -1313,18 +1313,18 @@ function userpic_url($asset, $blog, $author) {
 }
 
 # for compatibility...
-function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto') {
+function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto', $id = 0) {
     require_once('thumbnail_lib.php');
     $thumb = new Thumbnail($src);
 
     $thumb_w = $width;
     $thumb_h = $height;
-    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, null, $dest_type);
+    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $id, $scale, null, $dest_type);
 
     return array($thumb_w, $thumb_h);
 }
 
-function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h%x') {
+function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h-%i%x') {
     # Get parameter
     $site_path = $blog['blog_site_path'];
     $site_path = preg_replace('/\/$/', '', $site_path);
@@ -1337,26 +1337,34 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
 
     $ts = preg_replace('![^0-9]!', '', $asset['asset_created_on']);
     $date_stamp = format_ts('%Y/%m', $ts, $blog);
-    $cache_dir = $site_path . DIRECTORY_SEPARATOR . $cache_path . DIRECTORY_SEPARATOR . $date_stamp . DIRECTORY_SEPARATOR;
+    $base_path = $site_path;
+    if (preg_match('/^%a/', $asset['asset_file_path']) && !empty($blog['blog_archive_path'])) {
+        $base_path = $blog['blog_archive_path'];
+        $base_path = preg_replace('/\/$/', '', $base_path);
+    }
+
+    $cache_dir = $base_path . DIRECTORY_SEPARATOR . $cache_path . DIRECTORY_SEPARATOR . $date_stamp . DIRECTORY_SEPARATOR;
     $thumb_name = $cache_dir . $format;
- 
+
     # generate thumbnail
     require_once('thumbnail_lib.php');
     $thumb = new Thumbnail($filename);
     $thumb_w = $width;
     $thumb_h = $height;
     $dest;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $scale, $thumb_name)) {
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name)) {
         return '';
     }
 
     # make url
     $basename = basename($dest);
-    $site_url = $blog['blog_site_url'];
-    if (!preg_match('!/$!', $site_url))
-        $site_url .= '/';
+    $base_url = $blog['blog_site_url'];
+    if (preg_match('/^%a/', $asset['asset_file_path']) && !empty($blog['blog_archive_url']))
+        $base_url = $blog['blog_archive_url'];
+    if (!preg_match('!/$!', $base_url))
+        $base_url .= '/';
 
-    $thumb_url = $site_url . $cache_path . '/' . $date_stamp . '/' . $basename;
+    $thumb_url = $base_url . $cache_path . '/' . $date_stamp . '/' . $basename;
 
     return array($thumb_url, $thumb_w, $thumb_h, $thumb_name);
 }

@@ -165,7 +165,12 @@ sub run_step {
         my $code = $fn->{code} || $fn->{handler};
         $code = MT->handler_to_coderef($code);
         my $result = $code->($self, %param, %update_params, step => $name);
-        if ((defined $result) && ($result > 1)) {
+        if (ref $result eq 'HASH') {
+            $param{$_} = $result->{$_} for keys %$result;
+            $result = 1;
+            $self->add_step($name, %param);
+        }
+        elsif ((defined $result) && ($result > 1)) {
             $param{offset} = $result; $result = 1;
             $self->add_step($name, %param);
         }
@@ -215,6 +220,7 @@ sub do_upgrade {
         $MAX_ROWS = 300;
         my $fn = \%MT::Upgrade::functions;
         my @these_steps = @steps;
+
         while (@these_steps) {
             my $step = shift @these_steps;
             @steps = ();
@@ -224,6 +230,11 @@ sub do_upgrade {
                 @these_steps = sort { $fn->{$a->[0]}->{priority} <=>
                                       $fn->{$b->[0]}->{priority} } @these_steps;
             }
+
+            # Reset the request to eliminate any caching that may be
+            # happening there (objects tend to cache into the request
+            # with the 'cache_property' method)
+            MT->request->reset;
         }
         return 1;
     } else {
@@ -837,6 +848,93 @@ sub core_finish {
     1;
 }
 
+sub core_update_entry_counts {
+    my $self = shift;
+    my (%param) = @_;
+
+    my $class = MT->model('entry');
+    return $self->error($self->translate_escape("Error loading class: [_1].", $param{type}))
+        unless $class;
+
+    my $msg = $self->translate_escape("Assigning entry comment and TrackBack counts...");
+    my $offset = $param{offset} || 0;
+    my $count = $param{count};
+    if (!$count) {
+        $count = $class->count({ class => '*' });
+    }
+    return unless $count;
+    if ($offset) {
+        $self->progress(sprintf("$msg (%d%%)", ($offset/$count*100)), $param{step});
+    } else {
+        $self->progress($msg, $param{step});
+    }
+
+    my $continue = 0;
+    my $driver = $class->driver;
+
+    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $MAX_ROWS+1 });
+    my $start = time;
+    my ( %touched, %c, %tb );
+    my $rows = 0;
+    while (my $e = $iter->()) {
+        $rows++;
+        $c{$e->id} = $e;
+        if (my $tb = $e->trackback) {
+            $tb{$tb->id} = $e;
+        }
+        $continue = 1, last if scalar $rows == $MAX_ROWS;
+    }
+    if ( $continue ) {
+        $iter->end;
+        $offset += $rows;
+    }
+
+    # now gather counts -- comments
+    if (my $grp_iter = MT::Comment->count_group_by({
+        visible => 1,
+        entry_id => [ keys %c ],
+    }, {
+        group => ['entry_id'],
+    })) {
+        while (my ($count, $id) = $grp_iter->()) {
+            my $e = $c{$id} or next;
+            if ((!defined $e->comment_count) || (($e->comment_count || 0) != $count)) {
+                $e->comment_count($count);
+                $touched{$e->id} = $e;
+            }
+        }
+    }
+
+    # pings
+    if ( %tb ) {
+        if (my $grp_iter = MT::TBPing->count_group_by({
+            visible => 1,
+            tb_id => [ keys %tb ],
+        }, {
+            group => ['tb_id'],
+        })) {
+            while (my ($count, $id) = $grp_iter->()) {
+                my $e = $tb{$id} or next;
+                if ((!defined $e->ping_count) || (($e->ping_count || 0) != $count)) {
+                    $e->ping_count($count);
+                    $touched{$e->id} = $e;
+                }
+            }
+        }
+    }
+
+    foreach my $e (values %touched) {
+        $e->save;
+    }
+
+    if ($continue) {
+        return { offset => $offset, count => $count };
+    } else {
+        $self->progress("$msg (100%)", $param{step});
+    }
+    1;
+}
+
 sub core_update_records {
     my $self = shift;
     my (%param) = @_;
@@ -857,9 +955,12 @@ sub core_update_records {
         $msg = $self->translate_escape($param{message} || "Updating [_1] records...", $class_label);
     }
     my $offset = $param{offset};
+    my $count = $param{count};
+    if (!$count) {
+        $count = $class->count;
+    }
+    return unless $count;
     if ($offset) {
-        my $count = $class->count;
-        return unless $count;
         $self->progress(sprintf("$msg (%d%%)", ($offset/$count*100)), $param{step});
     } else {
         $self->progress($msg, $param{step});
@@ -892,14 +993,13 @@ sub core_update_records {
                 next unless $cond->($obj, %param);
             }
             $code->($obj);
-            use Data::Dumper;
             $obj->save()
-                or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]... [_4].", $class_label, $obj->errstr, $obj->id, Dumper($obj)));
+                or return $self->error($self->translate_escape("Error saving [_1] record # [_3]: [_2]...", $class_label, $obj->errstr, $obj->id));
             $continue = 1, last if time > $start + $MAX_TIME;
         }
     }
     if ($continue) {
-        return $offset;
+        return { offset => $offset, count => $count };
     } else {
         $self->progress("$msg (100%)", $param{step});
     }

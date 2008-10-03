@@ -349,37 +349,7 @@ sub upgrade_functions {
         'core_set_count_columns' => {
             version_limit => 4.0047,
             priority      => 3.2,
-            updater       => {
-                type      => 'entry',
-                label     => 'Assigning entry comment and TrackBack counts...',
-                condition => sub {
-                    require MT::Comment;
-                    my $comment_count = MT::Comment->count(
-                        {
-                            entry_id => $_[0]->id,
-                            visible  => 1,
-                        }
-                    );
-                    $_[0]->comment_count($comment_count);
-                    require MT::Trackback;
-                    require MT::TBPing;
-                    my $tb = MT::Trackback->load( { entry_id => $_[0]->id } );
-                    my $ping_count;
-                    if ($tb) {
-                        my $ping_count = MT::TBPing->count(
-                            {
-                                tb_id   => $tb->id,
-                                visible => 1,
-                            }
-                        );
-                        $_[0]->ping_count($ping_count);
-                    }
-                    ( $comment_count || $ping_count );
-                },
-                # only count once and set it, so code do nothing.
-                # it doesn't have the unnecessary save.
-                code => sub { 1; },
-            },
+            code          => \&core_update_entry_counts,
         },
         'core_assign_object_embedded' => {
             version_limit => 4.0052,
@@ -489,36 +459,6 @@ sub upgrade_functions {
                     $file_template =~ s/%C/<MTCategoryLabel dirify="1">/g;
                     $file_template =~ s/%-C/<MTCategoryLabel dirify="-">/g;
                     $map->file_template($file_template);
-                },
-            },
-        },
-        'core_assign_all_permisssions_blog_admin' => {
-            version_limit => 4.0063,
-            priority => 3.4,
-            updater => {
-                type => 'permission',
-                label => 'Assigning all permissions to blog administrator...',
-                condition => sub {
-                    $_[0]->can_administer_blog && $_[0]->blog_id;
-                },
-                code => sub {
-                    my ($perm) = shift;
-                    $perm->set_full_permissions;
-                },
-            },
-        },
-        'core_recover_sysadmin_permissions' => {
-            version_limit => 4.0066,
-            priority => 3.5,
-            updater => {
-                type => 'permission',
-                label => 'Recover permissions of system administrators...',
-                condition => sub {
-                    !$_[0]->blog_id && !$_[0]->has('administer') && $_[0]->can_administer_blog;
-                },
-                code => sub {
-                    my ($perm) = shift;
-                    $perm->set_permissions('system');
                 },
             },
         },
@@ -1061,6 +1001,8 @@ sub core_upgrade_meta_for_table {
     my $args = {
         'limit'      => 101,
         'fetchonly' => [ 'id' ],  # meta is added to the select list separately
+        'sort'      => 'id',
+        'direction' => 'ascend',
         $offset ? ( 'offset' => $offset ) : ()
     };
     my $stmt = $driver->prepare_statement( $class, $terms, $args );
@@ -1185,6 +1127,93 @@ sub core_drop_meta_for_table {
     #}
 
     return 0;
+}
+
+sub core_update_entry_counts {
+    my $self = shift;
+    my (%param) = @_;
+
+    my $class = MT->model('entry');
+    return $self->error($self->translate_escape("Error loading class: [_1].", $param{type}))
+        unless $class;
+
+    my $msg = $self->translate_escape("Assigning entry comment and TrackBack counts...");
+    my $offset = $param{offset} || 0;
+    my $count = $param{count};
+    if (!$count) {
+        $count = $class->count({ class => '*' });
+    }
+    return unless $count;
+    if ($offset) {
+        $self->progress(sprintf("$msg (%d%%)", ($offset/$count*100)), $param{step});
+    } else {
+        $self->progress($msg, $param{step});
+    }
+
+    my $continue = 0;
+    my $driver = $class->driver;
+
+    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $MAX_ROWS+1 });
+    my $start = time;
+    my ( %touched, %c, %tb );
+    my $rows = 0;
+    while (my $e = $iter->()) {
+        $rows++;
+        $c{$e->id} = $e;
+        if (my $tb = $e->trackback) {
+            $tb{$tb->id} = $e;
+        }
+        $continue = 1, last if scalar $rows == $MAX_ROWS;
+    }
+    if ( $continue ) {
+        $iter->end;
+        $offset += $rows;
+    }
+
+    # now gather counts -- comments
+    if (my $grp_iter = MT::Comment->count_group_by({
+        visible => 1,
+        entry_id => [ keys %c ],
+    }, {
+        group => ['entry_id'],
+    })) {
+        while (my ($count, $id) = $grp_iter->()) {
+            my $e = $c{$id} or next;
+            if ((!defined $e->comment_count) || (($e->comment_count || 0) != $count)) {
+                $e->comment_count($count);
+                $touched{$e->id} = $e;
+            }
+        }
+    }
+
+    # pings
+    if ( %tb ) {
+        if (my $grp_iter = MT::TBPing->count_group_by({
+            visible => 1,
+            tb_id => [ keys %tb ],
+        }, {
+            group => ['tb_id'],
+        })) {
+            while (my ($count, $id) = $grp_iter->()) {
+                my $e = $tb{$id} or next;
+                if ((!defined $e->ping_count) || (($e->ping_count || 0) != $count)) {
+                    $e->ping_count($count);
+                    $touched{$e->id} = $e;
+                }
+            }
+        }
+    }
+
+    foreach my $e (values %touched) {
+        $e->save;
+    }
+
+    if ($continue) {
+        return { offset => $offset, count => $count };
+    } else {
+        $self->progress("$msg (100%)", $param{step});
+    }
+    1;
 }
 
 1;

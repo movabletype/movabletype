@@ -403,26 +403,37 @@ sub mt_blog_stats_tag_cloud_tab {
     my $blog_id = $blog->id if $blog;
 
     my $terms = {};
+    my $args = {};
     $terms->{blog_id} = $blog_id if $blog_id;
     $terms->{object_datasource} = 'entry';
-    my $args = {};
     $args->{group} = [ 'tag_id' ];
     $args->{sort} = '1'; # sort by count(*)
     $args->{direction} = 'descend';
     $args->{limit} = 100;
+    $args->{join} = MT::Tag->join_on(undef, { id => \'= objecttag_tag_id', is_private => 1 },
+        { not => { is_private => 1 } } );
 
     my $iter = $app->model('objecttag')->count_group_by($terms, $args);
     my @tag_loop;
+    my @tag_ids;
     my $ntags = 0;
     my $min = undef;
     my $max = undef;
     while (my ($count, $tag_id) = $iter->()) {
-        my $tag = MT::Tag->load($tag_id) or next;
-        next if $tag->is_private; # weed these from the dashboard
         $ntags += $count;
         $min = defined $min ? ($count < $min ? $count : $min) : $count;
         $max = defined $max ? ($count > $max ? $count : $max) : $count;
-        push @tag_loop, { name => $tag->name, count => $count };
+        push @tag_loop, { id => $tag_id, count => $count };
+        push @tag_ids, $tag_id;
+    }
+
+    if ( @tag_ids ) {
+        my $iter = MT::Tag->load_iter( { id => \@tag_ids } );
+        my %tags;
+        while ( my $t = $iter->() ) {
+            $tags{ $t->id } = $t->name;
+        }
+        $_->{name} = $tags{$_->{id}} for @tag_loop;
     }
 
     $min ||= 0;

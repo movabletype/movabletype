@@ -675,7 +675,11 @@ sub list {
     $param{page_actions}        = $app->page_actions( $app->mode );
     $param{list_filters}        = $app->list_filters('entry');
     $param{can_power_edit}      = $blog_id && !$is_power_edit;
-    $param{can_republish}       = $blog_id ? $perms->can_rebuild : 1;
+    $param{can_republish}       = $blog_id
+                                    ? $perms->can_rebuild
+                                    : $app->user->is_superuser
+                                        ? 1
+                                        : 0;
     $param{is_power_edit}       = $is_power_edit;
     $param{saved_deleted}       = $q->param('saved_deleted');
     $param{no_rebuild}          = $q->param('no_rebuild');
@@ -1057,7 +1061,7 @@ sub save {
     my $type = $app->param('_type') || 'entry';
 
     my $class = $app->model($type)
-      or retrun $app->errtrans("Invalid parameter");
+      or return $app->errtrans("Invalid parameter");
 
     my $cat_class = $app->model( $class->container_type );
 

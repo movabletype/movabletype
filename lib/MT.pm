@@ -31,9 +31,9 @@ BEGIN {
 
     ( $VERSION, $SCHEMA_VERSION ) = ( '4.21', '4.0068' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
-        '__PRODUCT_NAME__', 'MT',
+        'Movable Type Pro', 'MT',
         '4.21', '4.21',
-        '__PORTAL_URL__'
+        'http://www.sixapart.com/movabletype/'
     );
 
     # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -107,7 +107,7 @@ SLUG
 }
 
 sub build_id {
-    my $build_id = '__BUILD_ID__';
+    my $build_id = '-en-trunk-r3063-20081002';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
 }

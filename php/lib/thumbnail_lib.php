@@ -55,7 +55,7 @@ class Thumbnail {
         return array($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name);
     }
 
-    function _make_dest_name ($w, $h, $format, $dest_type) {
+    function _make_dest_name ($w, $h, $format, $dest_type, $id) {
         $output = $this->src_type;
         if ($dest_type != 'auto') {
             $output = strtolower($dest_type) == 'gif' ? 1
@@ -81,17 +81,19 @@ class Thumbnail {
         $patterns[0] = '/%w/';
         $patterns[1] = '/%h/';
         $patterns[2] = '/%f/';
-        $patterns[3] = '/%x/';
+        $patterns[3] = '/%i/';
+        $patterns[4] = '/%x/';
         $replacement[0] = $w;
         $replacement[1] = $h;
         $replacement[2] = $basename;
-        $replacement[3] = $ext;
+        $replacement[3] = $id;
+        $replacement[4] = $ext;
 
         return preg_replace($patterns, $replacement, $format);
     }
 
     # Load or generate a thumbnail.
-    function get_thumbnail (&$dest, &$width, &$height, $scale = 0, $format = '%f-thumb-%wx%h%x', $dest_type = 'auto') {
+    function get_thumbnail (&$dest, &$width, &$height, $id, $scale = 0, $format = '%f-thumb-%wx%h-%i%x', $dest_type = 'auto') {
         if (empty($this->src_file)) return false;
         if (!file_exists($this->src_file)) return false;
         if (!$this->is_available()) {
@@ -129,7 +131,7 @@ class Thumbnail {
 
         # Decide a destination file name
         if (empty($dest)) {
-            $dest = $this->_make_dest_name($thumb_w_name, $thumb_h_name, $format, $dest_type);
+            $dest = $this->_make_dest_name($thumb_w_name, $thumb_h_name, $format, $dest_type, $id);
         }
 
         # Generate

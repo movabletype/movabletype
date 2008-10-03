@@ -720,7 +720,12 @@ just use the L<Var> tag.
 
 sub _fltr_setvar {
     my ($str, $arg, $ctx) = @_;
-    $ctx->var($arg, $str);
+    if ( my $hash = $ctx->{__inside_set_hashvar} ) {
+        $hash->{$arg} = $str;
+    }
+    else {
+        $ctx->var($arg, $str);
+    }
     return '';
 }
 
@@ -10143,7 +10148,7 @@ sub _hdlr_date {
     my $blog = $ctx->stash('blog');
     unless (ref $blog) {
         my $blog_id = $blog || $args->{offset_blog_id};
-        if ($blog) {
+        if ($blog_id) {
             $blog = MT->model('blog')->load($blog_id);
             return $ctx->error( MT->translate( 'Can\'t load blog #[_1].', $blog_id ) )
               unless $blog;
@@ -10154,7 +10159,7 @@ sub _hdlr_date {
     if ($args->{utc}) {
         my($y, $mo, $d, $h, $m, $s) = $ts =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
         $mo--;
-        my $server_offset = $blog->server_offset;
+        my $server_offset = ($blog && $blog->server_offset) || MT->config->TimeOffset;
         if ((localtime (timelocal ($s, $m, $h, $d, $mo, $y )))[8]) {
             $server_offset += 1;
         }
@@ -10172,7 +10177,7 @@ sub _hdlr_date {
     if (my $format = lc ($args->{format_name} || '')) {
         my $tz = 'Z';
         unless ($args->{utc}) {
-            my $so = $blog->server_offset;
+            my $so = ($blog && $blog->server_offset) || MT->config->TimeOffset;
             my $partial_hour_offset = 60 * abs($so - int($so));
             if ($format eq 'rfc822') {
                 $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
@@ -15947,7 +15952,7 @@ sub _hdlr_assets {
     # Added a file_ext filter to the filters list.
     if (my $ext = $args->{file_ext}) {
         my @exts = split(',', $args->{file_ext});
-        if (!$assets) {
+        if ($assets) {
             push @filters, sub { my $a = $_[0]->file_ext; grep(m/$a/, @exts) };
         } else {
             $terms{file_ext} = \@exts;
