@@ -9,7 +9,7 @@ define('VERSION', '4.21');
 define('VERSION_ID', '4.21');
 define('PRODUCT_VERSION', '4.21');
 
-$PRODUCT_NAME = 'Movable Type Pro';
+$PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
     $PRODUCT_NAME = 'Movable Type';
 
