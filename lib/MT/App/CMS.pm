@@ -2627,7 +2627,14 @@ sub _translate_naughty_words {
     my @fields = split( /\s*,\s*/, $fields || '' );
     foreach my $field (@fields) {
         if ( $entry->can($field) ) {
-            $entry->$field( _convert_word_chars( $app, $entry->$field ) );
+            if ( $field eq 'tags' ) {
+                my @tags
+                    = map { _convert_word_chars( $app, $_ ) } $entry->tags;
+                $entry->set_tags(@tags);
+            }
+            else {
+                $entry->$field( _convert_word_chars( $app, $entry->$field ) );
+            }
         }
     }
 }

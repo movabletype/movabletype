@@ -791,6 +791,7 @@ sub preview {
     if (@tag_names) {
         my @tags;
         foreach my $tag_name (@tag_names) {
+            next if $tag_name =~ m/^@/;
             my $tag = MT::Tag->new;
             $tag->name($tag_name);
             push @tags, $tag;
