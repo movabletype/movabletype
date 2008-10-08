@@ -2,7 +2,7 @@
 
 use strict;
 use lib 't/lib', 'extlib', 'lib';
-use Test::More tests => 11;
+use Test::More tests => 14;
 
 use MT::Test;
 my $mt = new MT;
@@ -56,3 +56,11 @@ ok($image->class_type eq 'image', 'image class_type is image');
 ok($audio->class_type eq 'audio', 'audio class_type is audio');
 ok(MT::TestAsset->class_type eq 'file', 'generic asset class_type is file');
 ok(MT::TestAsset::Image->class_type eq 'image', 'generic image asset class type is image');
+
+# deflate/inflate tests; object should be re-blessed with proper package name
+# upon inflation with base class
+my $defl = $audio->deflate;
+my $audio2 = MT::TestAsset->inflate( $defl );
+ok($audio2, "Object re-inflated okay");
+ok( ref($audio2) eq ref($audio), "Package name matches");
+ok( $audio->title eq $audio2->title, "Title restored okay");

@@ -19,7 +19,7 @@ sub new {
             memcached => $driver_class->new({
                 servers => \@servers,
                 ( $ns ? ( namespace => $ns ) : () ),
-                debug   => 0,
+                ( $driver_class eq 'Cache::Memcached' ? ( debug => 0 ) : () ),
             })
         }, $class;
     } else {
