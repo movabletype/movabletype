@@ -1969,6 +1969,7 @@ sub update_publishing_profile {
 
     require MT::PublishOption;
     require MT::Template;
+    require MT::TemplateMap;
 
     if ( ($dcty eq 'none') || ($dcty =~ m/^async/) ) {
         my @templates = MT::Template->load( {
