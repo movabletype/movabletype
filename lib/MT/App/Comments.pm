@@ -1151,7 +1151,7 @@ sub _extend_commenter_session {
     my %param       = @_;
     my %cookies     = $app->cookies();
     my $cookie_name = $app->commenter_cookie;
-    my $session_key = $cookies{$cookie_name}->value() || "";
+    my $session_key = $app->cookie_val($cookie_name) || "";
     $session_key =~ y/+/ /;
     my $sessobj = MT::Session->load( { id => $session_key, kind => 'SI' } );
     return
