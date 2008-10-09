@@ -6257,10 +6257,10 @@ Supported values: display_name, name, created_on.
 
 Supported values: ascend, descend.
 
-=item * roles
+=item * role
 
-A comma separated list of roles used to select users by.
-eg: "Author, Commenter".
+A the role used to select users by.
+eg: "Editor" or multiple roles "Author, Contributor" or exclude roles "!(Editor)".
 
 =item * need_entry (optional; default "1")
 
