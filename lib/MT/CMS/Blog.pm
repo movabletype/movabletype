@@ -1556,7 +1556,7 @@ sub post_save {
         if ($path_changed) {
             update_dynamicity( $app, $obj );
             $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
-                or return $app->publish_error();
+                or $app->publish_error();
         }
 
         cfg_archives_save($app, $obj) or return;
