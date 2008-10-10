@@ -1434,13 +1434,14 @@ sub dialog_adjust_sitepath {
 
 sub convert_to_html {
     my $app    = shift;
-    my $format = $app->param('format');
+    my $format = $app->param('format') || '';
+    my @formats = split /\s*,\s*/, $format;
     my $text   = $app->param('text') || '';
     my $text_more = $app->param('text_more') || '';
     my $result = {
-        text      => $app->apply_text_filters( $text,      [$format] ),
-        text_more => $app->apply_text_filters( $text_more, [$format] ),
-        format    => $format,
+        text      => $app->apply_text_filters( $text,      \@formats ),
+        text_more => $app->apply_text_filters( $text_more, \@formats ),
+        format    => $formats[0],
     };
     return $app->json_result($result);
 }
