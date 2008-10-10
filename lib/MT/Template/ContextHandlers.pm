@@ -7726,14 +7726,6 @@ sub _hdlr_entries {
 
     my $cfg = $ctx->{config};
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $entries = $ctx->stash('entries');
-    if ($at && !$entries) {
-        my $archiver = MT->publisher->archiver($at);
-        if ( $archiver && $archiver->group_based ) {
-            $entries = $archiver->archive_group_entries( $ctx, %$args );
-            # $ctx->stash( 'entries', $entries );
-        }
-    }
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
@@ -7755,38 +7747,52 @@ sub _hdlr_entries {
         }
     }
 
-    if ($entries && @$entries) {
-        my $entry = @$entries[0];
-        $entries = undef if $entry->class ne $class_type;
+    my $use_stash = 1;
 
-        # For the stock Entries/Pages tags, clear any prepopulated
-        # entries list (placed by archive publishing) if we're invoked
-        # with any of the following attributes. A plugin tag may
-        # prepopulate the entries stash and then invoke this handler
-        # to permit further filtering of the entries.
-        my $tag = lc $ctx->stash('tag');
-        if ($entries && (($tag eq 'entries') || ($tag eq 'pages'))) {
-            foreach my $args_key ('category', 'categories', 'tag', 'tags',
-                'author') {
-                if (exists($args->{$args_key})) {
-                    $entries = undef;
-                    last;
-                }
+    # For the stock Entries/Pages tags, clear any prepopulated
+    # entries list (placed by archive publishing) if we're invoked
+    # with any of the following attributes. A plugin tag may
+    # prepopulate the entries stash and then invoke this handler
+    # to permit further filtering of the entries.
+    my $tag = lc $ctx->stash('tag');
+    if (($tag eq 'entries') || ($tag eq 'pages')) {
+        foreach my $args_key ('category', 'categories', 'tag', 'tags',
+            'author') {
+            if (exists($args->{$args_key})) {
+                $use_stash = 0;
+                last;
             }
         }
-        if ( $entries ) {
-            foreach my $args_key ('id', 'days', 'recently_commented_on',
-                'include_subcategories', 'include_blogs', 'exclude_blogs',
-                'blog_ids') {
-                if (exists($args->{$args_key})) {
-                    $entries = undef;
-                    last;
-                }
+    }
+    if ( $use_stash ) {
+        foreach my $args_key ('id', 'days', 'recently_commented_on',
+            'include_subcategories', 'include_blogs', 'exclude_blogs',
+            'blog_ids') {
+            if (exists($args->{$args_key})) {
+                $use_stash = 0;
+                last;
             }
         }
-        if ( $entries && %fields ) {
-            $entries = undef;
+    }
+    if ( $use_stash && %fields ) {
+        $use_stash = 0;
+    }
+
+    my $entries;
+    if ( $use_stash ) {
+        $entries = $ctx->stash('entries');
+        if ( !$entries && $at ) {
+            my $archiver = MT->publisher->archiver($at);
+            if ( $archiver && $archiver->group_based ) {
+                $entries = $archiver->archive_group_entries( $ctx, %$args );
+                # $ctx->stash( 'entries', $entries );
+            }
         }
+    }
+    if ( $entries && scalar @$entries ) {
+        my $entry = @$entries[0];
+        $entries = undef
+            if $entry->class ne $class_type;
     }
     local $ctx->{__stash}{entries};
 
