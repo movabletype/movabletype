@@ -118,6 +118,7 @@ sub install_properties {
         if (!$super_props || !$super_props->{class_column}) {
             $class->add_trigger( pre_search => \&_pre_search_scope_terms_to_class );
             $class->add_trigger( post_load => \&_post_load_rebless_object );
+            $class->add_trigger( post_inflate => \&_post_load_rebless_object );
         }
         if (my $type = $props->{class_type}) {
             $props->{defaults}{$col} = $type;

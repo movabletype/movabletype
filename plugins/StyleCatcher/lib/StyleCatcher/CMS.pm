@@ -257,8 +257,8 @@ sub apply {
     my $blog = MT->model('blog')->load($blog_id)    
       or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
 
-    my $r = MT->registry;
-    my $base_css = $r->{"template_sets"}{$blog->template_set}{"base_css"};
+    my $r = MT->registry("template_sets");
+    my $base_css = $r->{$blog->template_set || 'mt_blog'}{"base_css"};
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text  = $tmpl->text();

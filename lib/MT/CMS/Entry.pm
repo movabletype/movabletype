@@ -297,7 +297,8 @@ sub edit {
     ## Load text filters if user displays them
     my %entry_filters;
     if ( defined( my $filter = $q->param('convert_breaks') ) ) {
-        $entry_filters{$filter} = 1;
+        my @filters = split /\s*,\s*/, $filter;
+        $entry_filters{$_} = 1 for @filters;
     }
     elsif ($obj) {
         %entry_filters = map { $_ => 1 } @{ $obj->text_filters };
@@ -311,6 +312,10 @@ sub edit {
     my $filters = MT->all_text_filters;
     $param->{text_filters} = [];
     for my $filter ( keys %$filters ) {
+        if (my $cond = $filters->{$filter}{condition}) {
+            $cond = MT->handler_to_coderef($cond) if !ref($cond);
+            next unless $cond->( $type );
+        }
         push @{ $param->{text_filters} },
           {
             filter_key      => $filter,
@@ -341,7 +346,7 @@ sub edit {
     }
 
     my $rte;
-    if ($param->{convert_breaks} eq 'richtext') {
+    if ($param->{convert_breaks} =~ m/richtext/) {
         ## Rich Text editor
         $rte = lc($app->config('RichTextEditor'));
     }

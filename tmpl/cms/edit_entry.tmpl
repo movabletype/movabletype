@@ -494,7 +494,9 @@
 
     <script type="text/javascript">
     /* <![CDATA[ */
+var orig_text_format;
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
+orig_text_format = cur_text_format;
 var customizable_fields = new Array(<mt:unless name="object_type" eq="page">'category',</mt:unless>'excerpt','keywords','tags','publishing','feedback');
 var default_fields = new Array();
 <mt:loop name="disp_prefs_default_fields">
@@ -564,7 +566,7 @@ function convertedText(c, result) {
 
     form.text.value = response.result.text;
     form.text_more.value = response.result.text_more;
-    cur_text_format = 'richtext';
+    orig_text_format = cur_text_format = 'richtext';
     TC.removeClassName(TC.elementOrId("editor-content"), "editor-plaintext");
     app.setEditorIframeHTML();
 }
@@ -597,7 +599,7 @@ function changedTextFormat(sel) {
     if (cur_text_format == 'richtext') {
         // changing to plaintext editor
         TC.addClassName(TC.elementOrId("editor-content"), "editor-plaintext");
-        cur_text_format = option;
+        orig_text_format = cur_text_format = option;
         app.editor.setMode('textarea');
         app.editor.focus();
     } else if (option == 'richtext') {
@@ -608,7 +610,7 @@ function changedTextFormat(sel) {
             '__mode': 'convert_to_html',
             'text': form.text.value,
             'text_more': form.text_more.value,
-            'format': cur_text_format
+            'format': orig_text_format
         };
         var params = {
             uri: '<mt:var name="script_url">', method: 'POST',
@@ -616,7 +618,7 @@ function changedTextFormat(sel) {
         };
         TC.Client.call(params);
     } else {
-        cur_text_format = option;
+        orig_text_format = cur_text_format = option;
         app.editor.focus();
     }
 }
