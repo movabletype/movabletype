@@ -13894,14 +13894,13 @@ sub _hdlr_if_category {
     my $entry_context = $tag =~ m/(entry|page)if(category|folder)/;
     return $ctx->_no_entry_error() if $entry_context && !$e;
     my $name = $args->{name} || $args->{label};
-    if (!defined $name) {
-        return $ctx->error(MT->translate("You failed to specify the label attribute for the [_1] tag.", $tag));
-    }
     my $primary = $args->{type} && ($args->{type} eq 'primary');
     my $secondary = $args->{type} && ($args->{type} eq 'secondary');
+    $entry_context ||= ($primary || $secondary);
     my $cat = $entry_context ? $e->category : ($ctx->stash('category') || $ctx->stash('archive_category'));
     if (!$cat && $e && !$entry_context) {
         $cat = $e->category;
+        $entry_context = 1;
     }
     my $cats;
     if ($cat && ($primary || !$entry_context)) {
@@ -13912,6 +13911,9 @@ sub _hdlr_if_category {
     if ($secondary && $cat) {
         my @cats = grep { $_->id != $cat->id } @$cats;
         $cats = \@cats;
+    }
+    if (!defined $name) {
+        return @$cats ? 1 : 0;
     }
     foreach my $cat (@$cats) {
         return 1 if $cat->label eq $name;
