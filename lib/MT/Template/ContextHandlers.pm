@@ -3681,8 +3681,7 @@ sub _tag_sort {
 
 =head2 Tags
 
-A container tags used for listing all previously assigned entry tags for
-the blog in context.
+A container tag used for listing all tags in use on the blog in context.
 
 B<Attributes:>
 
@@ -3698,7 +3697,9 @@ would print out each tag name separated by a comma and a space.
 
 =item * type
 
-The kind of object for which to show tags. By default the entry tags are shown.
+The kind of object for which to show tags. Valid values in a default
+installation are C<entry> (the default), C<page>, C<asset>, C<audio>,
+C<video> and C<image>. Plugins can extend this to other object classes.
 
 =item * sort_by
 
@@ -3864,13 +3865,14 @@ sub _hdlr_tags {
 =head2 TagSearchLink
 
 A variable tag that outputs a link to a tag search for the entry tag in
-context. The tag context is created by either an L<EntryTags> or a L<Tags>
-block.
+context. This tag can be used whenever a tag context is present (e.g.
+within an L<Tags>, L<EntryTags>, L<PageTags> or L<AssetTags> block.
 
 Like all variable tags, you can apply any of the supported global modifiers
 to L<TagSearchLink> to do further transformations.
 
-The example below shows each tag in a cloud tag linked to a search for other entries with that tag assigned. It can just as easily be used to link entry tags within an L<EntryTags> loop
+The example below shows each tag in a cloud tag linked to a search for other
+entries with that tag assigned.
 
     <h1>Tag cloud</h1>
     <div id="tagcloud">
@@ -3943,7 +3945,8 @@ sub _hdlr_tag_search_link {
 A variable tag which returns a number from 1 to 6 (by default) which
 represents the rating of the entry tag in context in terms of usage
 where '1' is used for the most often used tags, '6' for the least often.
-The tag context is created by either an L<EntryTags> or an L<Tags> block.
+This tag can be used anytime a tag context exists (e.g. within an L<Tags>,
+L<EntryTags>, L<PageTags> or L<AssetTags> block).
 
 This is suitable for creating "tag clouds" in which L<TagRank> can
 determine what level of header (h1 - h6) to apply to the tag.
@@ -4062,8 +4065,9 @@ sub _hdlr_tag_rank {
 
 =head2 EntryTags
 
-A container tag used to output infomation about the entry tags assigned
-to the entry in context.
+A container tag used to output infomation about the tags assigned
+to the entry in context. This tag's functionality is analogous
+to that of L<PageTags>.
 
 To avoid printing out the leading text when no entry tags are assigned you
 can use the L<EntryIfTagged> conditional block to first test for entry tags
@@ -4081,6 +4085,51 @@ A text string that is used to join each of the items together. For example:
     <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
 
 would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block.  The default is 0 which suppresses
+the output of private tags.  If set to 1, the tags will be displayed.  
+
+One example of its use is in publishing a list of related entries to the
+current entry.
+
+    <mt:EntryIfTagged>
+        <mt:EntryID setvar="curentry">
+
+        <mt:SetVarBlock name="relatedtags">
+            <mt:EntryTags include_private="1" glue=" OR ">
+                <mt:TagName />
+            </mt:EntryTags>
+        </mt:SetVarBlock>
+        <mt:Var name="relatedtags" strip_linefeeds="1" setvar="relatedtags">
+
+        <mt:SetVarBlock name="listitems">
+            <mt:Entries tags="$relatedtags" unique="1">
+                <mt:Unless tag="EntryID" eq="$curentry">
+                    <li>
+                        <a href="<mt:EntryPermalink />">
+                            <mt:EntryTitle />
+                        </a>
+                    </li>
+                </mt:Unless>
+            </mt:Entries>
+       </mt:SetVarBlock>
+
+       <mt:If name="listitems">
+          <h3>Related Blog Entries</h3>
+          <ul>
+             <$mt:Var name="listitems"$>
+          </ul>
+       </mt:If>
+    </mt:EntryIfTagged>
+
+In the code sample above, the related entries list is created using the
+entry tags of the entry currently in context, built as a boolean C<OR>
+statement for the L<Entries> tag and stored in the C<$relatedtags> MT
+template variable.  Without including private tags in that list, you
+would miss entries that are similarly tagged on the back end.
 
 =back
 
@@ -4512,7 +4561,7 @@ tag used to include this "Some Module" template module, like so:
 
 B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached
 
-=head4 Attributes:
++B<Attributes:>
 
 =over 4
 
@@ -16331,12 +16380,13 @@ sub _hdlr_asset {
 =head2 AssetTags
 
 A container tag used to output infomation about the asset tags assigned
-to the asset in context.
+to the asset in context. This tag's functionality is analogous
+to that of L<EntryTags> and its attributes are identical.
 
 To avoid printing out the leading text when no asset tags are assigned you
-can use the L<AssetIfTagged> conditional block to first test for asset tags
+can use the L<AssetIfTagged> conditional block to first test for tags
 on the asset. You can also use the L<AssetIfTagged> conditional block with
-the tag attribute to test for the assignment of a particular entry tag.
+the tag attribute to test for the assignment of a particular tag.
 
 B<Attributes:>
 
@@ -16349,6 +16399,13 @@ A text string that is used to join each of the items together. For example:
     <mt:AssetTags glue=", "><$mt:TagName$></mt:AssetTags>
 
 would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
 
 =back
 
@@ -17158,8 +17215,14 @@ sub _hdlr_page_next {
 
 =head2 PageTags
 
-A container tag which create a context about the assigned tags. Analogous
-to L<EntryTags>.
+A container tag used to output infomation about the tags assigned
+to the page in context. This tag's functionality is analogous
+to that of L<EntryTags> and its attributes are identical.
+
+To avoid printing out the leading text when no page tags are assigned you
+can use the L<PageIfTagged> conditional block to first test for tags
+on the page. You can also use the L<PageIfTagged> conditional block with
+the tag attribute to test for the assignment of a particular tag.
 
 B<Attributes:>
 
@@ -17167,8 +17230,18 @@ B<Attributes:>
 
 =item * glue
 
-A string used to join the output of the separate iterations of
-this tag.
+A text string that is used to join each of the items together. For example:
+
+    <mt:PageTags glue=", "><$mt:TagName$></mt:PageTags>
+
+would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
 
 =back
 
