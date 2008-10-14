@@ -235,8 +235,7 @@ sub core_search_apis {
                 return 1 if $author->is_superuser;
                 my ($obj) = @_;
                 my $perm = $author->permissions( $obj->id );
-                $perm
-                  && ( $perm->can_administer_blog || $perm->can_edit_config );
+                return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
             },
             'search_cols' => {
                 'name' => sub { $app->translate('Name') },
