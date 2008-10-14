@@ -338,6 +338,8 @@ sub build {
                 $uncompiled = $t->[3];
             }
             my($h, $type) = $ctx->handler_for($t->[0]);
+            my $conditional = defined $type && $type == 2;
+
             if ($h) {
                 $timer->pause_partial if $timer;
                 local($ctx->{__stash}{tag}) = $t->[0];
@@ -381,6 +383,13 @@ sub build {
                 # Stores a reference to the ordered list of arguments,
                 # just in case the handler wants them
                 local $args{'@'} = \@args;
+
+                my $vars = $ctx->{__stash}{vars};
+                local $vars->{__cond_value__} = $vars->{__cond_value__}
+                    if $conditional;
+                local $vars->{__cond_name__}  = $vars->{__cond_name__}
+                    if $conditional;
+
                 my $out = $h->($ctx, \%args, $cond);
 
                 unless (defined $out) {
@@ -395,11 +404,8 @@ sub build {
                     }
                 }
 
-                if ((defined $type) && ($type == 2)) {
+                if ($conditional) {
                     # conditional; process result
-                    my $vars = $ctx->{__stash}{vars};
-                    local $vars->{__value__} = delete $vars->{__cond_value__};
-                    local $vars->{__name__}  = delete $vars->{__cond_name__};
                     $out = $out ? $ctx->slurp(\%args, $cond) : $ctx->else(\%args, $cond);
                     delete $vars->{__cond_tag__};
                     return $build->error(MT->translate("Error in <mt[_1]> tag: [_2]", $t->[0], $ctx->errstr))
