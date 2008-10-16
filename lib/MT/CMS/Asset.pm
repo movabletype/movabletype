@@ -49,7 +49,8 @@ sub edit {
             }
         );
         while (my $place = $place_iter->()) {
-            my $entry_class = $app->model($place->object_ds);
+            my $entry_class = $app->model($place->object_ds) or next;
+            next unless $entry_class->isa('MT::Entry');
             my $entry = $entry_class->load($place->object_id)
                 or next;
             my %entry_data = (
