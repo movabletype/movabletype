@@ -1153,7 +1153,7 @@ sub core_update_entry_counts {
     my $continue = 0;
     my $driver = $class->driver;
 
-    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $MAX_ROWS+1 });
+    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $self->max_rows + 1 });
     my $start = time;
     my ( %touched, %c, %tb );
     my $rows = 0;
@@ -1163,7 +1163,7 @@ sub core_update_entry_counts {
         if (my $tb = $e->trackback) {
             $tb{$tb->id} = $e;
         }
-        $continue = 1, last if scalar $rows == $MAX_ROWS;
+        $continue = 1, last if scalar $rows == $self->max_rows;
     }
     if ( $continue ) {
         $iter->end;
