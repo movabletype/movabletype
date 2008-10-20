@@ -872,8 +872,18 @@ sub clone_with_children {
             my @old_widgets = split /,/, $tmpl->modulesets;
             $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
             my @new_widgets;
-            push @new_widgets, $tmpl_map{$_}
-                foreach @old_widgets;
+            foreach ( @old_widgets ) {
+                if ( exists $tmpl_map{$_} ) {
+                    push @new_widgets, $tmpl_map{$_};
+                }
+                else {
+                    my $global_widget = MT::Template->load( $_ );
+                    push @new_widgets, $_
+                      if $global_widget
+                      && $global_widget->blog_id == 0
+                      && $global_widget->type eq 'widget'
+                }
+            }
             $tmpl->modulesets( join(',', @new_widgets) );
             $tmpl->save;
         }
