@@ -19,13 +19,15 @@ $build->usage() unless @ARGV;
 
 # Get the command-line options.
 $build->get_options();
+my $orig_stamp = $build->{'stamp=s'};
+my $orig_verid = $ENV{BUILD_VERSION_ID};
 
 # Show the usage if requested.
 $build->usage() if $build->help();
 
 foreach my $lang ( $build->languages() ) {
-    local $build->{'stamp=s'};
-    local $ENV{BUILD_VERSION_ID};
+    local $build->{'stamp=s'}    = $orig_stamp;
+    local $ENV{BUILD_VERSION_ID} = $orig_verid;
     $build->setup( language => $lang );
 
     # Summarize what we are about to do.
