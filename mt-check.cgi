@@ -517,7 +517,7 @@ MSG
                 if (!$dbi_is_okay) {
                     print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>});
                 } else {
-                    $got_one_data = 1;
+                    $got_one_data = 1 if $mod ne 'DBI';
                 }
             }
             print trans_templ(qq{<p class="installed"><MT_TRANS phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n});
