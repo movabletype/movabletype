@@ -2424,6 +2424,7 @@ sub load_default_entry_prefs {
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
     my %default = %{ $app->config->DefaultEntryPrefs };
+    %default = map { lc $_ => $default{$_} } keys %default;
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
     }
@@ -2439,9 +2440,8 @@ sub load_default_entry_prefs {
             );
             my @p;
             foreach my $p ( keys %map ) {
-                push @p,
-                    $map{$p} . ':' . ( $default{$p} || $default{ lc $p } )
-                    if ( $default{$p} || $default{ lc $p } );
+                push @p, $map{$p} . ':' . $default{ lc $p }
+                    if $default{ lc $p };
             }
             $prefs = join ',', @p;
             $prefs ||= 'Custom';
