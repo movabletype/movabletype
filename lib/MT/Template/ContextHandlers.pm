@@ -8032,6 +8032,22 @@ sub _hdlr_entries {
         }
     }
 
+    if ( my $f = MT::Component->registry("tags", "filters", "Entries") ) {
+        foreach my $set ( @$f ) {
+            foreach my $fkey ( keys %$set ) {
+                if (exists $args->{$fkey}) {
+                    my $h = $set->{$fkey}{code} ||= MT->handler_to_coderef( $set->{$fkey}{handler} );
+                    next unless ref($h) eq 'CODE';
+
+                    local $ctx->{filters} = \@filters;
+                    local $ctx->{terms} = \%terms;
+                    local $ctx->{args} = \%args;
+                    $h->($ctx, $args, $cond);
+                }
+            }
+        }
+    }
+
     # Adds an ID filter to the filter list.
     if ((my $target_id = $args->{id}) && (ref($args->{id}) || ($args->{id} =~ m/^\d+$/))) {
         if ($entries) {
