@@ -984,6 +984,8 @@ function listPreviousPings () {
 
     <mt:include name="include/actions_bar.tmpl" hide_pager="1">
 
+    <mt:section id="content_fields">
+
     <mtapp:setting
         id="title"
         label="<__trans phrase="Title">"
@@ -1080,6 +1082,8 @@ function listPreviousPings () {
             <input name="keywords" id="keywords" class="full-width" tabindex="8" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
         </div>
     </mtapp:setting>
+
+    </mt:section>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 
