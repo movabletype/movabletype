@@ -1,0 +1,514 @@
+#!/usr/bin/perl
+
+# Use this line if you want to enable the NYTProf Perl profile:
+#!/usr/bin/perl -d:NYTProf
+
+package MT::CLITest;
+
+use strict;
+
+use Data::Dumper;
+$Data::Dumper::Deparse  = 1;
+$Data::Dumper::Terse    = 1;
+$Data::Dumper::Maxdepth = 4;
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Indent   = 1;
+
+use lib 'extlib', 'lib', '../extlib', '../lib';
+use base qw( MT::Tool );
+use Time::HiRes qw( tv_interval gettimeofday );
+
+my ($blog, $blog_name,
+    $template_name,
+    $template_obj,
+    $category_name,
+    $entry_title,
+    $author_name,
+    $archive_type,
+    $debug_mode, $profile_flag);
+
+sub options {
+    return (
+        'blog=s' => \$blog_name,
+        'template=s' => \$template_name,
+        'category=s' => \$category_name,
+        'entry=s' => \$entry_title,
+        'author=s' => \$author_name,
+        'archive=s' => \$archive_type,
+        'profile!' => \$profile_flag,
+        'debug=i' => \$debug_mode,
+    );
+}
+
+sub help {
+    return q{
+        --blog <name>      Specify a blog context by blog ID or name.
+        --template <name>  Specify a template to process by template ID or name.
+        --category <label> Specify a category to process by category ID or label.
+        --entry <title>    Specify an entry to process by entry ID or title.
+        --author <name>    Specify an author to process by ID or username.
+        --archive <type>   Specify a archive type.
+        --profile          Enables SQL and template tag profiling.
+        --debug <mode>     Sets MT's DebugMode.
+    };
+}
+
+sub usage {
+    return q{[template name]};
+}
+
+sub load_blog {
+    my $class = shift;
+
+    my $blog;
+    require MT::Blog;
+    if ($blog_name =~ m/^\d+$/) {
+        $blog = MT::Blog->load($blog_name)
+            or die "Could not load blog # $blog_name";
+    }
+    elsif (defined $blog_name) {
+        $blog = MT::Blog->load({ name => $blog_name })
+            or die "Could not locate blog by name '$blog_name'";
+    }
+    return $blog;
+}
+
+sub load_template {
+    my $class = shift;
+
+    require MT::Template;
+    my $template;
+
+    # Support for argument mode of template name
+    if (!defined($template_name) && @ARGV) {
+        $template_name = $ARGV[0];
+    }
+
+    if ($template_name =~ m/^\d+$/) {
+        # assume $template is an id
+        $template_obj = MT::Template->load($template_name)
+            or die "Could not load template # $template_name";
+        $blog_name = $template_obj->blog_id unless $blog;
+        $template = $template_obj->text;
+    }
+    elsif (defined $template_name) {
+        if ( -f $template_name ) {
+            local $/ = undef;
+            open FIN, "<$template_name";
+            $template = <FIN>;
+            close FIN;
+        }
+        else {
+            $template_obj = MT::Template->load({
+                identifier => $template_name,
+                ( $blog ? ( blog_id => $blog->id ) : () )
+            }) || MT::Template->load({
+                name => $template_name,
+                ( $blog ? ( blog_id => $blog->id ) : () )
+            }) or die "Could not locate template by name '$template_name'";
+            $blog_name = $template_obj->blog_id unless $blog;
+            $template = $template_obj->text;
+        }
+    }
+    return $template;
+}
+
+sub load_category {
+    my $class = shift;
+
+    my $cat;
+    require MT::Category;
+    if ($category_name =~ m/^\d+$/) {
+        $cat = MT::Category->load($category_name)
+            or die "Could not load category # $category_name";
+    }
+    elsif (defined $category_name) {
+        $cat = MT::Category->load({
+            label => $category_name,
+            ( $blog ? ( blog_id => $blog->id ) : () ),
+        }) or die "Could not locate category by name '$category_name'";
+    }
+    else {
+        # okay, select first available
+        require MT::Placement;
+        my $p = MT::Placement->load({
+            ( $blog ? ( blog_id => $blog->id ) : () ),
+            is_primary => 1,
+            },
+            { limit => 1,
+              join => MT::Entry->join_on( undef, {
+                  class => 'entry',
+                  id => \'= placement_entry_id',
+                  status => 2,
+              } ), }
+        );
+        if ( $p ) {
+            $cat = MT::Category->load( $p->category_id );
+        }
+    }
+    return $cat;
+}
+
+sub load_author {
+    my $class = shift;
+
+    require MT::Author;
+    if ($author_name =~ m/^\d+$/) {
+        $a = MT::Author->load($author_name)
+            or die "Could not load author # $author_name";
+    }
+    elsif (defined $author_name) {
+        $a = MT::Author->load({ name => $author_name })
+            or die "Could not locate author by name '$author_name'";
+    }
+    return $a;
+}
+
+sub load_entry {
+    my $class = shift;
+    my ($entry_class) = @_;
+
+    require MT::Entry;
+    my $e;
+    if ($entry_title =~ m/^\d+$/) {
+        $e = MT::Entry->load($entry_title)
+            or die "Could not load entry # $entry_title";
+    }
+    elsif (defined $entry_title) {
+        $e = MT::Entry->load({ title => $entry_title,
+            class => $entry_class,
+            ( $blog ? ( blog_id => $blog->id ) : () ),
+            status => 2 })
+            or die "Could not locate entry by title '$entry_title'";
+    }
+    else {
+        # load first available
+        $e = MT::Entry->load( {
+            class => $entry_class,
+            status => 2,
+            ( $blog ? ( blog_id => $blog->id ) : () )
+        }, { limit => 1, sort => 'authored_on', direction => 'descend' });
+    }
+    return $e;
+}
+
+sub main {
+    my $class = shift;
+
+    require MT::Template::Context;
+    require MT::Template::ContextHandlers;
+    require MT::Builder;
+    require MT::Util;
+
+    my ($verbose) = $class->SUPER::main(@_);
+
+    if ($profile_flag) {
+        $ENV{DOD_PROFILE} = 1;
+        $Data::ObjectDriver::PROFILE = 1;
+
+        BuildProfiler->install;
+    }
+
+    if (defined $debug_mode) {
+        $MT::DebugMode = $debug_mode;
+    }
+
+    my $mt = MT->app;
+
+    my $d = MT::Object->driver->r_handle;
+    $d->{RaiseError} = 1;
+
+    $blog = $class->load_blog if defined $blog_name;
+
+    my $template = $class->load_template;
+    defined($template)
+        or die "A template has not been specified";
+
+    # blog context can be set by means of the template, if it hasn't
+    # already been loaded.
+    $blog = $class->load_blog if !$blog && defined $blog_name;
+
+    my $ctx = MT::Template::Context->new;
+
+    my $builder = MT::Builder->new;
+    $template = $mt->translate_templatized($template);
+
+    my $tokens = $builder->compile($ctx, $template);
+
+    if ($blog) {
+        printf STDERR "Context blog: %s (#%d)\n", $blog->name, $blog->id
+            if $verbose;
+    }
+
+    if ($template_obj) {
+        printf STDERR "Template: %s (#%d)\n", $template_obj->name, $template_obj->id
+            if $verbose;
+
+        unless (defined $archive_type) {
+            # determine archive type for this template
+            if ( $template_obj->type eq 'category' ) {
+                $archive_type = 'Category';
+            }
+            elsif ( $template_obj->type eq 'individual' ) {
+                $archive_type = 'Individual';
+            }
+            elsif ( $template_obj->type eq 'page' ) {
+                $archive_type = 'Page';
+            }
+            elsif ( $template_obj->type eq 'archive' ) {
+                my $map = MT::TemplateMap->load( { template_id => $template_obj->id, is_preferred => 1 });
+                $archive_type = $map->archive_type if $map;
+            }
+        }
+    } else {
+        print STDERR "Template: " . $template_name . "\n"
+            if $verbose;
+    }
+
+    if ($blog) {
+        $ctx->stash('blog', $blog);
+        $ctx->stash('blog_id', $blog->id);
+
+        if (defined $archive_type) {
+            my $t = $mt->publisher->archiver($archive_type)
+                or die "Invalid archive type '$archive_type'";
+
+            print STDERR "Context archive_type: $archive_type\n"
+                if $verbose;
+
+            $ctx->{current_archive_type} = $archive_type;
+            $ctx->{archive_type} = $archive_type;
+
+            my $e = $class->load_entry( $t->entry_class );
+
+            require MT::Promise;
+            if ($t->date_based) {
+                my ($ts_start, $ts_end) = $t->date_range($e->authored_on);
+                $ctx->{current_timestamp} = $ts_start;
+                $ctx->{current_timestamp_end} = $ts_end;
+                my $entries = sub { $t->dated_group_entries($ctx, $archive_type, $ts_start) };
+                $ctx->stash('entries', MT::Promise::delay($entries));
+                printf STDERR "Context current_timestamp: %s\nContext current_timestamp_end: %s\n",
+                    $ts_start, $ts_end
+                    if $verbose;
+            }
+            if ($t->author_based) {
+                my $a = $e->author || $class->load_author;
+                $ctx->stash('author') = $a;
+                my $entries = sub { $t->archive_group_entries($ctx) };
+                $ctx->stash('entries', MT::Promise::delay($entries));
+                printf STDERR "Context author: %s (#%d)\n", $a->name, $a->id
+                    if $verbose;
+            }
+            if ($t->category_based) {
+                my $cat = $class->load_category;
+                $ctx->stash('archive_category', $cat);
+                my $entries = sub { $t->archive_group_entries($ctx) };
+                $ctx->stash('entries', MT::Promise::delay($entries));
+                printf STDERR "Context archive_category: %s (#%d)\n", $cat->label, $cat->id
+                    if $verbose;
+            }
+            if ($t->entry_based) {
+                $ctx->stash('entry', $e);
+                printf STDERR "Context entry: %s (#%d)\n", $e->title, $e->id
+                    if $verbose;
+            }
+        }
+    }
+    else {
+        if (defined $archive_type) {
+            die "Cannot specify archive type without a blog.";
+        }
+    }
+
+    if ($ENV{DOD_PROFILE}) {
+        Data::ObjectDriver->profiler->reset;
+    }
+
+    my $start = [ gettimeofday ];
+    my $out = $builder->build($ctx, $tokens, {});
+    my $end = [ gettimeofday ];
+
+    if ( defined $out ) {
+        print $out . "\n";
+    } else {
+        print STDERR "Builder error: ".$builder->errstr if $builder->errstr;
+        print STDERR "Context error: ".$ctx->errstr if $ctx->errstr;
+    }
+
+    if ($profile_flag) {
+        print STDERR BuildProfiler->report();
+        print STDERR "  Total Build Time: " . tv_interval($start, $end) . "\n";
+    }
+    if ($ENV{DOD_PROFILE}) {
+        print STDERR Data::ObjectDriver->profiler->report_query_frequency();
+    }
+}
+
+#### Tag Profiling code from BuildTracer
+
+package BuildProfiler;
+
+use strict;
+
+use MT::Util qw( epoch2ts );
+use Time::HiRes;
+use Data::Dumper;
+
+my %PROFILES;
+my $BUILD_START_AT;
+my $BUILD_ELAPSED;
+our ( %EXDATA );
+
+sub report {
+    Data::ObjectDriver->profiler->reset;
+    my $driver = MT::Object->driver;
+
+    # Report Layout
+
+=pod
+  12345678   12345678901234567890   123456   1234567   123456   123456   12345
++----------+----------------------+--------+---------+--------+--------+-------+
+| Time     | Tag                  | Calls  | Avg     | SQL    | Hits   | Miss  |
++----------+----------------------+--------+---------+--------+--------+-------+
+| 1234.123 | EntriesWithSubCatego | 123456 | 1234567 | 123456 | 123456 | 12345 |
+=cut
+
+    eval 'require Text::SimpleTable; 1' or return '';
+    my $tbl = Text::SimpleTable->new( [ 8, 'Time' ], [ 20, 'Tag' ],
+        [ 6, 'Calls' ], [ 7, 'Avg' ], [ 6, 'SQL' ], [ 6, 'Hits' ], [ 5, 'Miss' ]);
+
+    print STDERR "Template Tag Utilization:\n";
+    my $total_time = 0;
+    my $total_query = 0;
+    foreach my $tag ( sort { $PROFILES{$b}{time} <=> $PROFILES{$a}{time} } keys %PROFILES ) {
+        my $queries = $PROFILES{$tag}{queries} || [];
+        my $time_avg = sprintf("%0.3f", $PROFILES{$tag}{time} / $PROFILES{$tag}{calls});
+        my $queries = $PROFILES{$tag}->{queries};
+        my $ramhit = map { $_ =~ m/RAMCACHE_GET/ } @$queries;
+        my $ramadd = map { $_ =~ m/RAMCACHE_ADD/ } @$queries;
+        my $query_count = scalar(@$queries) - ($ramhit + $ramadd);
+        $tbl->row(sprintf("%0.3f", $PROFILES{$tag}{time}),
+            $tag, $PROFILES{$tag}{calls},
+            $time_avg,
+            $query_count,
+            $ramhit, $ramadd);
+        $total_time += $PROFILES{$tag}{time};
+        $total_query += $query_count;
+        # Restore D::OD query profile so the report we will generate
+        # from it will be right:
+        foreach my $q (@$queries) {
+            Data::ObjectDriver->profiler->record_query($driver, $q);
+        }
+    }
+    return $tbl->draw
+        . sprintf("  Total Queries: %d\n", $total_query);
+}
+
+sub install {
+    my $all_tags = MT::Component->registry("tags");
+    for my $tag_set (@$all_tags) {
+        for my $type (qw( block function )) {
+            my $tags = $tag_set->{$type} or next;
+            for my $tagname ( keys %$tags ) {
+                $tags->{$tagname} = _make_tracker($tags->{$tagname});
+            }
+        }
+    }
+}
+
+sub _make_tracker {
+    my $original_method = shift;
+    return sub {
+        my ($ctx, $args, $cond) = @_;
+        my $tagname = lc $ctx->stash('tag');
+        pre_process_tag($ctx, $args, $cond);
+        my $meth = MT->handler_to_coderef($original_method)
+            unless $original_method eq 'CODEREF';
+        my $res = $meth->($ctx, $args, $cond);
+        post_process_tag($res);
+        return $res;
+    };
+}
+
+{
+    my $CURRENT_TAG;
+    my @PROFILE_STACK;
+
+    sub pre_process_tag {
+        my ($ctx, $args, $cond) = @_;
+        $BUILD_START_AT = [ Time::HiRes::gettimeofday() ]
+            unless defined $BUILD_START_AT;
+        if ( defined $CURRENT_TAG ) {
+            $CURRENT_TAG->pause;
+            push @PROFILE_STACK, $CURRENT_TAG;
+        }
+        my $tagname = lc $ctx->stash('tag');
+        $CURRENT_TAG = TagProfiler->new($tagname);
+    }
+
+    sub post_process_tag {
+        my ($res) = @_;
+        $CURRENT_TAG->end;
+        #save results to hash
+        my $results = $PROFILES{ $CURRENT_TAG->{tagname} };
+        if ( defined $results ) {
+            $results->{calls} += 1;
+            $results->{time} += $CURRENT_TAG->{time};
+            push @{$results->{queries}}, @{$CURRENT_TAG->{queries}};
+        }
+        else {
+            $PROFILES{ $CURRENT_TAG->{tagname} } = {
+                calls => 1,
+                time  => $CURRENT_TAG->{time},
+                queries => $CURRENT_TAG->{queries},
+            };
+        }
+        $CURRENT_TAG = pop @PROFILE_STACK;
+        $CURRENT_TAG->resume if defined $CURRENT_TAG;
+        $BUILD_ELAPSED = Time::HiRes::tv_interval($BUILD_START_AT);
+    }
+}
+
+package TagProfiler;
+
+use strict;
+use Time::HiRes;
+use Data::ObjectDriver;
+
+sub new {
+    my $class = shift;
+    my ($tagname) = @_;
+    my $now = [ Time::HiRes::gettimeofday() ];
+    Data::ObjectDriver->profiler->reset;
+    return bless {
+        tagname => $tagname,
+        last    => $now,
+        time    => 0,
+        queries => [],
+     }, $class;
+}
+
+sub pause {
+    my $self = shift;
+    $self->{time} += Time::HiRes::tv_interval($self->{last});
+    my $log = Data::ObjectDriver->profiler->query_log;
+    if ( defined $log && scalar @$log ) {
+        @{$self->{queries}} = (@{$self->{queries}}, @$log );
+    }
+}
+
+sub resume {
+    my $self = shift;
+    $self->{last} = [ Time::HiRes::gettimeofday() ];
+    Data::ObjectDriver->profiler->reset;
+}
+
+sub end {
+    my $self = shift;
+    $self->pause;
+}
+
+package MT::CLITest;
+
+__PACKAGE__->main() unless caller;
