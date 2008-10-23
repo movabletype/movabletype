@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_modifier_sanitize($text, $spec) {
+function smarty_modifier_sanitize($text, $spec = '1') {
     if ($spec == '1') {
         global $mt;
         $ctx =& $mt->context();
