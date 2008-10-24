@@ -331,7 +331,6 @@ sub templates {
             next unless ref($tmpl_hash->{$tmpl_set}) eq 'HASH';
             foreach my $tmpl_id (keys %{ $tmpl_hash->{$tmpl_set} }) {
                 next if $tmpl_id eq 'plugin';
-
                 my $p = $tmpl_hash->{plugin} || $tmpl_hash->{$tmpl_set}{plugin};
                 my $base_path = $def_tmpl->{base_path} || $tmpl_hash->{$tmpl_set}{base_path};
                 if ($p && $base_path) {
@@ -359,19 +358,6 @@ sub templates {
                 $tmpl->{key} = $tmpl_id;
                 $tmpl->{identifier} = $tmpl_id;
 
-                # load template if it hasn't been loaded already
-                if (!exists $tmpl->{text}) {
-                    local (*FIN, $/);
-                    my $filename = $tmpl->{filename} || ($tmpl_id . '.mtml');
-                    my $file = File::Spec->catfile($base_path, $filename);
-                    if ((-e $file) && (-r $file)) {
-                        open FIN, "<$file"; my $data = <FIN>; close FIN;
-                        $tmpl->{text} = $data;
-                    } else {
-                        $tmpl->{text} = '';
-                    }
-                }
-
                 if ( exists $tmpl->{widgets} ) {
                     my $widgets = $tmpl->{widgets};
                     my @widgets;
@@ -384,16 +370,30 @@ sub templates {
                         }
                     }
                     $tmpl->{widgets} = \@widgets if @widgets;
+                } else {
+                    # load template if it hasn't been loaded already
+                    if (!exists $tmpl->{text}) {
+                        local (*FIN, $/);
+                        my $filename = $tmpl->{filename} || ($tmpl_id . '.mtml');
+                        my $file = File::Spec->catfile($base_path, $filename);
+                        if ((-e $file) && (-r $file)) {
+                            open FIN, "<$file"; my $data = <FIN>; close FIN;
+                            $tmpl->{text} = $data;
+                        } else {
+                            $tmpl->{text} = '';
+                        }
+                    }
                 }
 
                 my $local_global_tmpls = $tmpl->{global} ? \%global_tmpls : \%tmpls;
-                if (exists $local_global_tmpls->{$tmpl_id}) {
+                my $tmpl_key = $type . ":" . $tmpl_id;
+                if (exists $local_global_tmpls->{$tmpl_key}) {
                     # allow components/plugins to override core
                     # templates
-                    $local_global_tmpls->{$tmpl_id} = $tmpl if $p && ($p->id ne 'core');
+                    $local_global_tmpls->{$tmpl_key} = $tmpl if $p && ($p->id ne 'core');
                 }
                 else {
-                    $local_global_tmpls->{$tmpl_id} = $tmpl;
+                    $local_global_tmpls->{$tmpl_key} = $tmpl;
                 }
             }
         }
