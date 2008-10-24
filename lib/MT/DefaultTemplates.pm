@@ -328,11 +328,9 @@ sub templates {
         my $plugin = $tmpl_hash->{plugin};
 
         foreach my $tmpl_set (keys %$tmpl_hash) {
-print STDERR "processing $tmpl_set\n";
             next unless ref($tmpl_hash->{$tmpl_set}) eq 'HASH';
             foreach my $tmpl_id (keys %{ $tmpl_hash->{$tmpl_set} }) {
                 next if $tmpl_id eq 'plugin';
-print STDERR "\tprocessing $tmpl_id\n";
                 my $p = $tmpl_hash->{plugin} || $tmpl_hash->{$tmpl_set}{plugin};
                 my $base_path = $def_tmpl->{base_path} || $tmpl_hash->{$tmpl_set}{base_path};
                 if ($p && $base_path) {
