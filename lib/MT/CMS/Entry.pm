@@ -23,25 +23,32 @@ sub edit {
     $param->{autosave_support} = 1;
 
     if ($id) {
-        return $app->error( $app->translate("Invalid parameter") )
-          if $obj->class ne $type;
+        if ($obj->class ne $type) {
+            my %args = map  { $_ => scalar $q->param($_) }
+                       grep { $_ ne '_type' && $_ ne '__mode' }
+                       $q->param();
+            return $app->redirect($app->uri(
+                mode => $app->mode,
+                args => { _type => $obj->class, %args },
+            ));
+        }
 
         $param->{nav_entries} = 1;
         $param->{entry_edit}  = 1;
-        if ( $type eq 'entry' ) {
-            $app->add_breadcrumb(
-                $app->translate('Entries'),
-                $app->uri(
-                    'mode' => 'list_entries',
-                    args   => { blog_id => $blog_id }
-                )
-            );
-        }
-        elsif ( $type eq 'page' ) {
+        if ( $type eq 'page' ) {
             $app->add_breadcrumb(
                 $app->translate('Pages'),
                 $app->uri(
                     'mode' => 'list_pages',
+                    args   => { blog_id => $blog_id }
+                )
+            );
+        }
+        else {
+            $app->add_breadcrumb(
+                $app->translate('Entries'),
+                $app->uri(
+                    'mode' => 'list_entries',
                     args   => { blog_id => $blog_id }
                 )
             );
@@ -108,18 +115,7 @@ sub edit {
     } else {
         $param->{entry_edit} = 1;
         if ($blog_id) {
-            if ( $type eq 'entry' ) {
-                $app->add_breadcrumb(
-                    $app->translate('Entries'),
-                    $app->uri(
-                        'mode' => 'list_entries',
-                        args   => { blog_id => $blog_id }
-                    )
-                );
-                $app->add_breadcrumb( $app->translate('New Entry') );
-                $param->{nav_new_entry} = 1;
-            }
-            elsif ( $type eq 'page' ) {
+            if ( $type eq 'page' ) {
                 $app->add_breadcrumb(
                     $app->translate('Pages'),
                     $app->uri(
@@ -129,6 +125,17 @@ sub edit {
                 );
                 $app->add_breadcrumb( $app->translate('New Page') );
                 $param->{nav_new_page} = 1;
+            }
+            else {
+                $app->add_breadcrumb(
+                    $app->translate('Entries'),
+                    $app->uri(
+                        'mode' => 'list_entries',
+                        args   => { blog_id => $blog_id }
+                    )
+                );
+                $app->add_breadcrumb( $app->translate('New Entry') );
+                $param->{nav_new_entry} = 1;
             }
         }
 
@@ -367,6 +374,11 @@ sub edit {
         $param->{search_label} = $app->translate('pages');
         $param->{output}       = 'edit_entry.tmpl';
         $param->{screen_class} = 'edit-page edit-entry';
+    }
+    else {
+        $param->{output}       = 'edit_entry.tmpl';
+        $param->{screen_class} = 'edit-entry';
+        $param->{screen_id}    = 'edit-entry';
     }
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
     1;
