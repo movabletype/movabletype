@@ -1646,6 +1646,7 @@ sub init_core_callbacks {
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",
             $pkg . 'view_permission_filter.entry' => "${pfx}Entry::can_view",
+            $pkg . 'save_permission_filter.entry' => "${pfx}Entry::can_save",
             $pkg
                 . 'delete_permission_filter.entry' =>
                 "${pfx}Entry::can_delete",
@@ -1656,6 +1657,7 @@ sub init_core_callbacks {
             # page callbacks
             $pkg . 'edit.page'                   => "${pfx}Page::edit",
             $pkg . 'view_permission_filter.page' => "${pfx}Page::can_view",
+            $pkg . 'save_permission_filter.page' => "${pfx}Page::can_save",
             $pkg
                 . 'delete_permission_filter.page' => "${pfx}Page::can_delete",
             $pkg . 'pre_save.page'    => "${pfx}Page::pre_save",

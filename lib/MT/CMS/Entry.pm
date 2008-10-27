@@ -419,7 +419,12 @@ sub list {
     my $blog_id   = $q->param('blog_id');
     my %terms;
     $terms{blog_id} = $blog_id if $blog_id;
-    $terms{class} = $type;
+    if ($type eq MT::Entry->class_type) {
+        $terms{class} = { op => '!=', value => 'page' };
+    }
+    else {
+        $terms{class} = $type;
+    }
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
 
@@ -1066,6 +1071,18 @@ sub cfg_entry {
     );
 }
 
+sub can_save {
+    my ($eh, $app, $id) = @_;
+    my $perms = $app->permissions or return;
+
+    return $perms->can_create_post() if !$id;
+
+    my $obj = MT->model('entry')->load($id)
+        or return $eh->errtrans("No such [_1].", MT->model('entry')->class_label);
+    my $status_changed = $obj->status ne ($app->param('status') || q{});
+    return $perms->can_edit_entry($obj, $app->user, $status_changed);
+}
+
 sub save {
     my $app = shift;
     $app->validate_magic or return;
@@ -1086,19 +1103,18 @@ sub save {
     my $perms = $app->permissions
       or return $app->errtrans("Permission denied.");
 
-    if ( $type eq 'page' ) {
-        return $app->errtrans("Permission denied.")
-          unless $perms->can_manage_pages;
-    }
-
     my $id = $app->param('id');
-    if ( !$id ) {
-        return $app->errtrans("Permission denied.")
-          unless ( ( 'entry' eq $type ) && $perms->can_create_post )
-          || ( ( 'page' eq $type ) && $perms->can_manage_pages );
-    }
 
     $app->validate_magic() or return;
+
+    if ( !$author->is_superuser() ) {
+        if ( !$app->run_callbacks( 'cms_save_permission_filter.' . $type, $app, $id ) ) {
+            return $app->error(
+                $app->errstr ? $app->translate( "Permission denied: [_1]", $app->errstr() )
+                             : $app->translate( "Permission denied." )
+            );
+        }
+    }
 
     # check for autosave
     if ( $app->param('_autosave') ) {
@@ -1119,16 +1135,11 @@ sub save {
             $app->translate( "No such [_1].", $class->class_label ) );
         return $app->error( $app->translate("Invalid parameter") )
           unless $obj->blog_id == $blog_id;
-        if ( $type eq 'entry' ) {
-            return $app->error( $app->translate("Permission denied.") )
-              unless $perms->can_edit_entry( $obj, $author );
-            return $app->error( $app->translate("Permission denied.") )
-              if ( $obj->status ne $app->param('status') )
-              && !( $perms->can_edit_entry( $obj, $author, 1 ) );
-            $archive_type = 'Individual';
-        }
-        elsif ( $type eq 'page' ) {
+        if ( $type eq 'page' ) {
             $archive_type = 'Page';
+        }
+        else {
+            $archive_type = 'Individual';
         }
         $orig_obj = $obj->clone;
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
