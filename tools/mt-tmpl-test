@@ -205,7 +205,10 @@ sub main {
     if ($profile_flag) {
         $ENV{DOD_PROFILE} = 1;
         $Data::ObjectDriver::PROFILE = 1;
-
+	eval "use Text::SimpleTable";
+	if ($@) {
+	    die "You are missing the Text::SimpleTable perl module which is required when using the --profile flag.";
+	}
         BuildProfiler->install;
     }
 
