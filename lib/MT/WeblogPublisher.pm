@@ -136,7 +136,7 @@ sub rebuild {
 
         @at = ($set_at);
         my $archiver = $mt->archiver($set_at);
-        $entry_class = $archiver->entry_class || "entry";
+        $entry_class = $archiver->entry_class;
     }
     else {
         $entry_class = '*';
@@ -195,7 +195,7 @@ sub rebuild {
                 # Skip this archive type if the archive type doesn't
                 # match the kind of entry we've loaded
                 next unless $archiver;
-                next if $entry->class ne $archiver->entry_class;
+                next if !$archiver->accepts_entry_class($entry->class);
                 if ( $archiver->category_based ) {
                     my $cats = $entry->categories;
                     CATEGORY: for my $cat (@$cats) {
@@ -602,7 +602,7 @@ sub rebuild_entry {
         for my $at (@at) {
             my $archiver = $mt->archiver($at);
             next unless $archiver;    # invalid archive type
-            next if $entry->class ne $archiver->entry_class;
+            next if !$archiver->accepts_entry_class($entry->class);
             if ( $archiver->category_based ) {
                 my $cats = $entry->categories;    # (ancestors => 1)
                 for my $cat (@$cats) {
@@ -1115,7 +1115,7 @@ sub rebuild_file {
 
     my $url = $blog->archive_url;
     $url = $blog->site_url
-      if $archiver->entry_based && $archiver->entry_class eq 'page';
+      if $archiver->entry_based && $archiver->accepts_entry_class('page');
     $url .= '/' unless $url =~ m|/$|;
     $url .= $map->{__saved_output_file};
 

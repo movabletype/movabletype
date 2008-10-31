@@ -276,12 +276,12 @@ sub edit {
                 elsif ( $obj_type eq 'page' ) {
                     # only include if it is a entry-based archive type and page
                     next unless $archiver->entry_based;
-                    next if $archiver->entry_class ne 'page';
+                    next if !$archiver->accepts_entry_class('page');
                 }
                 elsif ( $obj_type eq 'individual' ) {
                     # only include if it is a entry-based archive type and entry
                     next unless $archiver->entry_based;
-                    next if $archiver->entry_class eq 'page';
+                    next if $archiver->accepts_entry_class('page');
                 }
                 push @archive_types,
                   {
@@ -859,7 +859,8 @@ sub preview {
         if ($tparams) {
             $ctx->var( $_, $tparams->{$_} ) for keys %$tparams;
         }
-        my @entries = create_preview_content($app, $blog, $archiver->entry_class, 10);
+        my $entry_class = $archiver->accepts_entry_class('page') ? 'page' : 'entry';
+        my @entries = create_preview_content($app, $blog, $entry_class, 10);
         if ($archiver->date_based) {
             $ctx->{current_timestamp} = $entries[0]->authored_on;
             $ctx->{current_timestamp_end} = $entries[$#entries]->authored_on;

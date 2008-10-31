@@ -72,9 +72,32 @@ sub default_archive_templates {
     shift->_getset( 'default_archive_templates', @_ );
 }
 sub dynamic_template { shift->_getset( 'dynamic_template', @_ ) }
-sub entry_class      { shift->_getset( 'entry_class',      @_ ) || 'entry' }
+sub entry_class      { shift->_getset( 'entry_class',      @_ ) || { op => '!=', value => 'page' } }
 sub category_class   { shift->_getset( 'category_class',   @_ ) || 'category' }
 sub template_params  { shift->_getset('template_params') }
+
+sub accepts_entry_class {
+    my $at = shift;
+    my ($entry_class) = @_;
+    my $accepted_class = $at->entry_class();
+
+    if (ref $accepted_class) {
+        return if 'HASH' ne ref $accepted_class;
+        return if !$accepted_class->{op};
+        return if  $accepted_class->{op} ne '!=';
+        return if !$accepted_class->{value};
+        return if  $accepted_class->{value} eq $entry_class;
+        return 1;
+    }
+    elsif ($accepted_class eq '*') {
+        return 1;
+    }
+    elsif ($accepted_class eq $entry_class) {
+        return 1;
+    }
+    
+    return;
+}
 
 sub dynamic_support  {
     my $obj = shift;
