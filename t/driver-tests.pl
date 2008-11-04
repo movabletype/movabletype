@@ -458,10 +458,57 @@ sub clean_db : Test(teardown) {
 }
 
 
+package Test::Classy;
+use Test::More;
+use MT::Test;
+use base qw( Test::Class MT::Test );
+
+use Sock;
+
+sub reset_db : Test(setup) {
+    MT::Test->reset_table_for(qw( Sock ));
+}
+
+sub a_plain_old_sock : Tests(3) {
+    my $s = Sock->new();
+    $s->text('asf dasf');
+    ok($s->save(), 'A regular old sock could be saved');
+    is($s->class, 'sock', q{A regular old sock's class is sock});
+
+    my $g = Classfree::Sock->load($s->id);
+    is($g->class, 'sock', q{Class-unaware object says a regular old sock's class is sock too});
+}
+
+sub sock_monkey_fish : Tests(8) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('asf dasf');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('asf dasf');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load();
+    is(scalar @socks, 0, 'Plain load looks for plain old socks and finds none');
+
+    @socks = Sock->load({ class => '*' });
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub clean_db : Test(teardown) {
+    MT::Test->reset_table_for(qw( Sock ));
+}
+
+
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', +126);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', 'Test::Classy', +126);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -927,3 +974,4 @@ SKIP: {
 }
 
 1;
+
