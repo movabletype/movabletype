@@ -735,7 +735,7 @@ sub userpic_url {
         $author->userpic_thumbnail_options(),
         %param,
     );
-    if ($info[0] !~ m!^https?://!) {
+    if (($info[0] || '') !~ m!^https?://!) {
         my $static_host = MT->instance->static_path;
         if ($static_host =~ m!^https?://!) {
             $static_host =~ s!^(https?://[^/]+?)!$1!;
