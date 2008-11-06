@@ -5798,6 +5798,7 @@ sub _hdlr_set_var {
           ? $existing->[ $index ] 
           : undef;
     }
+    $existing = '' unless defined $existing;
 
     if ($args->{prepend}) {
         $val = $val . $existing;
@@ -7834,12 +7835,15 @@ sub _hdlr_entries {
             my $archiver = MT->publisher->archiver($at);
             if ( $archiver && $archiver->group_based ) {
                 $entries = $archiver->archive_group_entries( $ctx, %$args );
-                # $ctx->stash( 'entries', $entries );
             }
         }
     }
     if ( $entries && scalar @$entries ) {
         my $entry = @$entries[0];
+        if ( ! $entry->isa( $class ) ) {
+            # class types do not match; we can't use stashed entries
+            undef $entries;
+        }
     }
     local $ctx->{__stash}{entries};
 
