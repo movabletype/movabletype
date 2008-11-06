@@ -29,6 +29,7 @@ sub new {
 sub init {
     my $ctx = shift;
     weaken($ctx->{config} = MT->config);
+    $ctx->stash('vars', {});
     $ctx->init_handlers();
     $ctx;
 }
@@ -81,7 +82,9 @@ sub init_handlers {
                         $prev_hdlr = $h->{$tag};
                     }
                     if (ref($block->{$orig_tag}) eq 'HASH') {
-                        $h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                        if ( $block->{$orig_tag}{handler} ) {
+                            $h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                        }
                     } else {
                         $h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
                     }
@@ -626,8 +629,8 @@ sub _no_page_error {
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
     return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an page; " .
-        "perhaps you mistakenly placed it outside of an 'MTPages' container?",
+        "You used an '[_1]' tag outside of the context of a page; " .
+        "perhaps you mistakenly placed it outside of a 'MTPages' container?",
         $tag_name
     ));
 }
