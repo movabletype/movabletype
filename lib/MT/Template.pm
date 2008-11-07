@@ -468,7 +468,9 @@ sub _sync_from_disk {
         my $set = MT::DefaultTemplates->templates( $blog ? $blog->template_set : () );
         my ($set_tmpl) = grep { ($_->{type} eq $tmpl->type) && ($_->{identifier} eq $tmpl->identifier) } @$set;
         if ($set_tmpl) {
-            my $c = MT->translate_templatized($set_tmpl->{text});
+            my $c = $set_tmpl->{text};
+            $c = '' unless defined $c;
+            $c = MT->translate_templatized($c) if $c =~ m/<(?:mt|_)_trans\b/i;
             return $c;
         }
         return;
