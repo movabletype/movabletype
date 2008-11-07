@@ -390,7 +390,7 @@ sub list {
     $param ||= {};
 
     require MT::Entry;
-    my $type = $param->{type} || MT::Entry->class_type;
+    my $type = $app->param('type') || MT::Entry->class_type;
     my $pkg = $app->model($type) or return "Invalid request.";
 
     my $q     = $app->param;

@@ -462,6 +462,17 @@ sub _resync_to_db {
 sub _sync_from_disk {
     my $tmpl = shift;
     my $lfile = $tmpl->linked_file;
+    if ($lfile eq '*') {
+        require MT::DefaultTemplates;
+        my $blog = $tmpl->blog;
+        my $set = MT::DefaultTemplates->templates( $blog ? $blog->template_set : () );
+        my ($set_tmpl) = grep { ($_->{type} eq $tmpl->type) && ($_->{identifier} eq $tmpl->identifier) } @$set;
+        if ($set_tmpl) {
+            my $c = MT->translate_templatized($set_tmpl->{text});
+            return $c;
+        }
+        return;
+    }
     unless (File::Spec->file_name_is_absolute($lfile)) {
         if ($tmpl->blog_id) {
             my $blog = MT::Blog->load($tmpl->blog_id)
@@ -483,13 +494,14 @@ sub _sync_from_disk {
     close FH;
     $tmpl->linked_file_size($size);
     $tmpl->linked_file_mtime($mtime);
-    $c;
+    return $c;
 }
 
 sub _sync_to_disk {
     my $tmpl = shift;
     my($text) = @_;
     my $lfile = $tmpl->linked_file;
+    return 1 if $lfile eq '*';
     my $cfg = MT->config;
     if ($cfg->SafeMode) {
         ## Check for a set of extensions that aren't allowed.

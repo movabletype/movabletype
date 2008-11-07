@@ -392,7 +392,13 @@ sub listing {
                 );
             }
             elsif ( !exists( $terms->{$filter_col} ) ) {
-                if ( $class->has_column($filter_col) ) {
+                if ( $class->is_meta_column($filter_col) ) {
+                    my @result = $class->search_by_meta( $filter_col, $val, {}, $args );
+                    $iter_method = sub {
+                        return shift @result;
+                    };
+                }
+                elsif ( $class->has_column($filter_col) ) {
                     $terms->{$filter_col} = $val;
                 }
             }

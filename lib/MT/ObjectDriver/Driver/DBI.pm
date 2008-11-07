@@ -20,6 +20,18 @@ sub init {
     $driver;
 }
 
+sub start_query {
+    my $driver = shift;
+    my ($sql, $bind) = @_;
+    if ($MT::DebugMode && $MT::DebugMode & 4) {
+        $sql =~ s/\r?\n/ /g;
+        if ( $sql =~ m/mt_template\b/) {
+            warn Carp::longmess("QUERY: $sql");
+        }
+    }
+    return $driver->SUPER::start_query(@_);
+}
+
 sub configure {
     my $driver = shift;
     $driver->dbd->configure($driver, @_);
