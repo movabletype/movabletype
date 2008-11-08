@@ -657,13 +657,6 @@ sub init {
     $app->{plugin_template_path} = 'tmpl';
     $app->run_callbacks( 'init_app', $app, @_ );
 
-    if ( $MT::DebugMode & 4 ) {
-
-        # SQL profiling
-        my $dbh = MT::Object->driver->r_handle;
-        require DBI::Profile;
-        $dbh->{Profile} = DBI::Profile->new();
-    }
     if ( $MT::DebugMode & 128 ) {
         MT->add_callback( 'pre_run',  1, $app, sub { $app->pre_run_debug } );
         MT->add_callback( 'takedown', 1, $app, sub { $app->post_run_debug } );
@@ -2705,13 +2698,6 @@ sub run {
                         foreach ( @{ $app->{trace} } ) {
                             my $msg = encode_html($_);
                             $trace .= '<li>' . $msg . '</li>' . "\n";
-                        }
-                    }
-                    if ( $MT::DebugMode & 4 ) {
-                        my $h   = MT::Object->driver->r_handle;
-                        my @msg = $h->{Profile}->as_text();
-                        foreach my $m (@msg) {
-                            $trace .= '<li>' . $m . '</li>' . "\n";
                         }
                     }
                     $trace = "<li>"

@@ -25,7 +25,7 @@ sub start_query {
     my ($sql, $bind) = @_;
     if ($MT::DebugMode && $MT::DebugMode & 4) {
         $sql =~ s/\r?\n/ /g;
-        warn Carp::longmess("QUERY: $sql");
+        warn "QUERY: $sql";
     }
     return $driver->SUPER::start_query(@_);
 }
