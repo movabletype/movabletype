@@ -27,12 +27,6 @@ sub can_view {
     1;
 }
 
-sub can_save {
-    my ($eh, $app, $id) = @_;
-    my $perms = $app->permissions;
-    return $perms && $perms->can_manage_pages();
-}
-
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     my $author = $app->user;
