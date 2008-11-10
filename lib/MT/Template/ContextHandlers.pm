@@ -8177,9 +8177,8 @@ sub _hdlr_entries {
             }
         }
 
-        # Use given class type if specified, but default to "not pages"
-        $terms{class} = $args->{class_type} ? $class_type
-                      :                       { op => '!=', value => 'page' };
+        # Adds class_type
+        $terms{class} = $class_type;
 
         $args{'sort'} = 'authored_on';
         if ($args->{sort_by}) {
