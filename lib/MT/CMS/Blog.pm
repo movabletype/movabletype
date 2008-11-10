@@ -444,7 +444,7 @@ sub cfg_archives {
     for my $at ( split /\s*,\s*/, $blog->archive_type ) {
         my $archiver = $app->publisher->archiver($at);
         next unless $archiver;
-        next if !$archiver->accepts_entry_class('entry');
+        next if 'entry' ne $archiver->entry_class;
         my $archive_label = $archiver->archive_label;
         $archive_label = $at unless $archive_label;
         $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
@@ -771,7 +771,7 @@ sub rebuild_pages {
             # determine total
             if ( my $archiver = $app->publisher->archiver($type_name) ) {
                 if ( $archiver->entry_based || $archiver->date_based ) {
-                    my $entry_class = $archiver->entry_class;
+                    my $entry_class = $archiver->entry_class || 'entry';
                     require MT::Entry;
                     my $terms = {
                         class   => $entry_class,
@@ -946,7 +946,7 @@ sub start_rebuild_pages {
 
     if ($archiver) {
         if ( $archiver->entry_based || $archiver->date_based ) {
-            my $entry_class = $archiver->entry_class;
+            my $entry_class = $archiver->entry_class || 'entry';
             require MT::Entry;
             my $terms = {
                 class   => $entry_class,
