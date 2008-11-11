@@ -556,7 +556,7 @@ sub clean_db : Test(teardown) {
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', +135);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', +137);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -740,6 +740,23 @@ $tmp = Foo->load(undef, {
     limit => 1,
     offset => 1 });
 is_object($tmp, $foo[0], 'Second oldest Foo is Foo #1');
+
+## This should load only the first Foo object (because limit is 1).
+@tmp = Foo->load(undef, {
+    direction => 'descend',
+    sort => 'created_on',
+    fetchonly => ['id'],
+    limit => 1 });
+is($tmp[0]->id, $foo[0]->id, 'The newest Foo is Foo #1 (fetchonly)');
+
+## Should load the first Foo object (ascend with offset of 1).
+@tmp = Foo->load(undef, {
+    direction => 'ascend',
+    sort => 'created_on',
+    fetchonly => ['id'],
+    limit => 1,
+    offset => 1 });
+is($tmp[0]->id, $foo[0]->id, 'Second oldest Foo is Foo #1 (fetchonly)');
 
 ## Now test join loads.
 ## First we need to create a couple of Bar objects.
