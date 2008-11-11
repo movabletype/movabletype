@@ -66,16 +66,19 @@ sub reset_db : Test(setup) {
           text => 'quux',
           status => 1, },
         { class => 'Bar',
+          __wait => 1,
           id => 1,
           foo_id => 2,
           name => 'bar0',
           status => 0, },
         { class => 'Bar',
+          __wait => 1,
           id => 2,
           foo_id => 2,
           name => 'bar1',
           status => 1, },
         { class => 'Bar',
+          __wait => 1,
           id => 3,
           foo_id => 1,
           name => 'bar2',
@@ -84,8 +87,10 @@ sub reset_db : Test(setup) {
 
     for my $data (@obj_data) {
         my $class = delete $data->{class};
+        my $wait = delete $data->{__wait};
         my $obj = $class->new;
         $obj->set_values($data);
+        sleep($wait) if $wait;
         $obj->save();
     }
 }
@@ -193,6 +198,61 @@ sub avg_group_by : Tests(7) {
     
     ($status, $id) = $agb->();
     ok(!$status, 'avg_group_by only had two results');
+}
+
+sub max_group_by : Tests(7) {
+    my $mgb = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            {
+                'id' => \'=bar_foo_id',
+            }),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    my ($created_on, $foo_id) = $mgb->();
+    my $f1 = Foo->load(1);
+    my $b3 = Bar->load(3);
+    is($foo_id, $f1->id, 'max_group_by had a second result');
+    #is($created_on, $b3->created_on, 'max_group_by had a second result');
+
+    my $f2 = Foo->load(2);
+    my $b2 = Bar->load(2);
+    ($created_on, $foo_id) = $mgb->();
+    is($foo_id, $f2->id, 'max_group_by had a first result');
+    #is($created_on, $b2->created_on, 'max_group_by had a first result');
+
+    ($created_on, $foo_id) = $mgb->();
+    ok(!$created_on, 'max_group_by only had two results');
+
+    my $mgb2 = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            { 'id' => \'=bar_foo_id' },
+            { limit => 1 },
+        ),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    ($created_on, $foo_id) = $mgb2->();
+    is($foo_id, $f1->id, 'max_group_by with limit had a first result');
+    #is($created_on, $b3->created_on, 'max_group_by with limit had a first result');
+
+    ($created_on, $foo_id) = $mgb2->();
+    ok(!$created_on, 'max_group_by with limit only had one result');
+
+    my $mgb3 = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            { 'id' => \'=bar_foo_id' },
+            { limit => 1, offset => 1 },
+        ),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    ($created_on, $foo_id) = $mgb3->();
+    is($foo_id, $f2->id, 'max_group_by with limit and offset had a first result');
+    #is($created_on, $b2->created_on, 'max_group_by with limit and offset had a first result');
+
+    ($created_on, $foo_id) = $mgb3->();
+    ok(!$created_on, 'max_group_by with limit and offset only had one result');
 }
 
 sub clean_db : Test(teardown) {
