@@ -89,6 +89,9 @@ sub import {
             if ($app && UNIVERSAL::isa($app, 'MT::App') && !UNIVERSAL::isa($app, 'MT::App::Wizard')) {
                 eval {
                     # line __LINE__ __FILE__
+                    if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
+                        $err = $1;
+                    }
                     my %param = ( error => $err );
                     if ($err =~ m/Bad ObjectDriver/) {
                         $param{error_database_connection} = 1;
@@ -129,9 +132,14 @@ sub import {
                         }
                     }
                 }
-                print "Content-Type: text/plain; charset=$charset\n\n";
-                print $app ? $app->translate("Got an error: [_1]", $app->translate($err)) : "Got an error: $err\n";
             }
+            if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
+                $err = $1;
+            }
+            print "Content-Type: text/plain; charset=$charset\n\n";
+            print $app
+              ? $app->translate( "Got an error: [_1]", $err )
+              : "Got an error: $err";
         }
     }
 }
