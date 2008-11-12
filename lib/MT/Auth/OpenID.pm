@@ -10,37 +10,27 @@ use strict;
 use MT::Util qw( decode_url is_valid_email escape_unicode ts2epoch );
 use MT::I18N qw( encode_text );
 
+sub NS_OPENID_AX   { "http://openid.net/srv/ax/1.0" }
+sub NS_OPENID_SREG { "http://openid.net/extensions/sreg/1.1" }
+
 sub login {
     my $class = shift;
     my ($app) = @_;
-    my $q = $app->{query};
+    my $q = $app->param;
     return $app->errtrans("Invalid request.")
         unless $q->param('blog_id');
-    my $blog = MT::Blog->load(scalar $q->param('blog_id'));
-    my %param = $app->param_hash;
-    my $csr = _get_csr(\%param, $blog) or return;
+    my $blog = $app->model('blog')->load(scalar $q->param('blog_id'));
     my $identity = $q->param('openid_url');
     if (!$identity &&
         (my $u = $q->param('openid_userid')) && $class->can('url_for_userid')) {
         $identity = $class->url_for_userid($u);
     }
-    my $claimed_identity = $csr->claimed_identity($identity);
-    if (!$claimed_identity) {
-        my ($err_code, $err_msg) = ($csr->errcode, $csr->errtext);
-        if ($err_code eq 'no_head_tag' || $err_code eq 'no_identity_server' || $err_code eq 'url_gone') {
-            $err_msg = $app->translate('The address entered does not appear to be an OpenID');
-        }
-        elsif ($err_code eq 'empty_url' || $err_code eq 'bogus_url') {
-            $err_msg = $app->translate('The text entered does not appear to be a web address');
-        }
-        elsif ($err_code eq 'url_fetch_error') {
-            $err_msg =~ s{ \A Error \s fetching \s URL: \s }{}xms;
-            $err_msg = $app->translate('Unable to connect to [_1]: [_2]', $identity, $err_msg);
-        }
-        return $app->error($app->translate("Could not verify the OpenID provided: [_1]", $err_msg));
-    }
+    my $claimed_identity = $class->check_openid($app, $blog, $identity)
+        or return $app->error($app->errstr);
 
     my %params = $class->check_url_params( $app, $blog );
+
+    $class->set_extension_args( $claimed_identity );
 
     my $check_url = $claimed_identity->check_url(
         %params
@@ -57,54 +47,47 @@ sub handle_sign_in {
 
     $auth_type ||= 'OpenID';
 
-    my $blog = MT::Blog->load($q->param('blog_id'));
+    my $blog = $app->model('blog')->load($q->param('blog_id'));
+    my $author_class = $app->model('author');
 
     my $cmntr;
     my $session;
 
     my %param = $app->param_hash;
-    my $csr = _get_csr(\%param, $blog) or return 0;
+    my $csr = $class->get_csr(\%param, $blog) or return 0;
 
     if(my $setup_url = $csr->user_setup_url( post_grant => 'return' )) {
         return $app->redirect($setup_url);
     } elsif(my $vident = $csr->verified_identity) {
         my $name = $vident->url;
-        $cmntr = $app->model('author')->load(
+        $cmntr = $author_class->load(
             {
                 name => $name,
-                type => MT::Author::COMMENTER(),
+                type => $author_class->COMMENTER(),
                 auth_type => $auth_type,
             }
         );
-        my $nick;
         if ( $cmntr ) {
-            if ( ( $cmntr->modified_on
+            unless ( ( $cmntr->modified_on
                 && ( ts2epoch($blog, $cmntr->modified_on) > time - $INTERVAL ) )
               || ( $cmntr->created_on
                 && ( ts2epoch($blog, $cmntr->created_on) > time - $INTERVAL ) ) )
             {
-                $nick = $cmntr->nickname;
-            }
-            else {
-                $nick = $class->get_nickname($vident);
-                $cmntr->nickname($nick);
+                $class->set_commenter_properties($cmntr, $vident);
                 $cmntr->save or return 0;
             }
         }
         else {
-            $nick = $class->get_nickname($vident);
             $cmntr = $app->_make_commenter(
-                email       => q(),
-                nickname    => $nick,
                 name        => $name,
                 url         => $vident->url,
                 auth_type   => $auth_type,
                 external_id => _url_hash($vident->url),
             );
+            $class->set_commenter_properties($cmntr, $vident);
+            $cmntr->save or return 0;
         }
         return 0 unless $cmntr;
-
-        $nick = $name unless $nick;
 
         # Signature was valid, so create a session, etc.
         $session = $app->make_commenter_session($cmntr);
@@ -148,11 +131,10 @@ sub handle_sign_in {
             && ($session = $cookies{$cookie_name}->value())) 
         {
             require MT::Session;
-            require MT::Author;
             my $sess = MT::Session->load({id => $session});
             if ($sess) {
-                $cmntr = MT::Author->load({name => $sess->name,
-                                           type => MT::Author::COMMENTER(),
+                $cmntr = $author_class->load({name => $sess->name,
+                                           type => $author_class->COMMENTER(),
                                            auth_type => $auth_type});
             }
         }
@@ -163,20 +145,67 @@ sub handle_sign_in {
     return $cmntr;
 }
 
+sub set_extension_args {
+    my $class = shift;
+    my ( $claimed_identity ) = @_;
+}
+
+sub check_openid {
+    my $class = shift;
+    my ( $app, $blog, $identity ) = @_;
+    my $q = $app->param;
+
+    my %param = $app->param_hash;
+    my $csr = $class->get_csr(\%param, $blog);
+    unless ( $csr ) {
+        $app->errtrans('Could not load Net::OpenID::Consumer.');
+        return;
+    }
+
+    my $claimed_identity = $csr->claimed_identity($identity);
+    unless ( $claimed_identity ) {
+        my ($err_code, $err_msg) = ($csr->errcode, $csr->errtext);
+        if ($err_code eq 'no_head_tag' || $err_code eq 'no_identity_server' || $err_code eq 'url_gone') {
+            $err_msg = $app->translate('The address entered does not appear to be an OpenID');
+        }
+        elsif ($err_code eq 'empty_url' || $err_code eq 'bogus_url') {
+            $err_msg = $app->translate('The text entered does not appear to be a web address');
+        }
+        elsif ($err_code eq 'url_fetch_error') {
+            $err_msg =~ s{ \A Error \s fetching \s URL: \s }{}xms;
+            $err_msg = $app->translate('Unable to connect to [_1]: [_2]', $identity, $err_msg);
+        }
+        return $app->errtrans("Could not verify the OpenID provided: [_1]", $err_msg);
+    }
+    return $claimed_identity;
+}
+
 sub _get_ua {
     return MT->new_ua( { paranoid => 1 } );
 }
 
 sub _get_csr {
-    my ($params, $blog) = @_;
+    my ($params, $blog, $ua) = @_;
     my $secret = MT->config->SecretToken;
-    my $ua = _get_ua() or return;
+    $ua ||= _get_ua();
+    return unless $ua;
     require Net::OpenID::Consumer;
     Net::OpenID::Consumer->new(
         ua => $ua,
         args => $params,
         consumer_secret => $secret,
+        debug => sub {
+            open my $fh, '>>', 'c:\\inetpub\\frampton\\openid.txt';
+            print $fh "----\n";
+            print $fh "$_\n" foreach @_;
+            close $fh;
+        }
     );
+}
+
+sub get_csr {
+    my $class = shift;
+    return _get_csr(@_);
 }
 
 sub _get_declared_foaf {
@@ -248,6 +277,12 @@ sub _get_nickname {
     }
 
     return $vident->display ? $vident->display : $vident->url;
+}
+
+sub get_email {
+    my $class = shift;
+    my ( $vident ) = @_;
+    return q();
 }
 
 sub get_userpicasset {
@@ -394,6 +429,15 @@ sub check_url_params {
     ( trust_root => $path, return_to => $return_to );
 }
 
+sub set_commenter_properties {
+    my $class = shift;
+    my ( $commenter, $vident ) = @_;
+    my $nick = $class->get_nickname($vident);
+    my $email = $class->get_email($vident);
+    $commenter->nickname($nick) if $nick;
+    $commenter->email($email) if $email;
+}
+
 1;
 
 __END__
@@ -434,20 +478,47 @@ and MT::Auth::LiveJournal for examples.
 
 =head2 get_nickname
 
-This method is called in handle_sign_in method, in which it
-tries to grab the user's nickname.  By default, a user who
-is authenticated via OpenID has his/her nickname as the OpenID
-(thus, URL).  It tends to get ugly when it is displayed.
+This method is called in set_commenter_properties method,
+in which it tries to grab the user's nickname.  By default,
+a user who is authenticated via OpenID has his/her nickname
+as the OpenID (thus, URL).  It tends to get ugly when it is
+displayed.
 
-By default, this class tries to load FOAF or Atom from the
-verified OpenID to see if it is able to get more semantic information.
-If it was able to load the semantic info from one of them,
-it uses the information as the user's nickname.
+By default, this class tries to load FOAF or Atom from
+the verified OpenID to see if it is able to get more semantic
+information.  If it was able to load the semantic info from
+one of them, it uses the information as the user's nickname.
 
 You can inherit this class, create your own authentication
 module and override this method to generate more user friendly
 nickname for a user from the OpenID that does not support
 FOAF or Atom retrieval from the URL.
+
+=head2 get_email
+
+This method is called in set_commenter_properties method.
+By default the class returns empty string, but you can inherit
+from this class to create your own authentication module,
+and overwride this method that grabs user's email address
+in a certain way such as SREG or AX.
+
+=head2 set_commenter_properties
+
+This method is called in handle_sign_in method. The method
+accepts two arguments; I<$commenter> which is an MT::Author
+object that represents the commenter who just logged in,
+and I<$vident> which is an Net::OpenID::VerifiedIdentity.
+
+By default the method calls get_username and get_email to
+grab user's nickname and email address, and stores those values
+to the equivalent property of I<$commenter>.
+ 
+You can inherit this class, create your own authentication
+module and inherit this method so your module can grab
+more information from the OpenID provider and store them to
+I<$commenter>.  Or you can inherit get_nickname and/or
+get_email if that is all that your OpenID provider
+would return.
 
 =head2 get_userpic_asset
 
@@ -470,6 +541,32 @@ By default, the class specifies trust_root and return_to parameters.
 You can inherit this class, create your own authentication
 module and override this method to specify more parameters, or
 change how to construct trust_root and return_to arguments.
+
+=head2 set_extension_args
+
+You can inherit this method in your own authentication module
+and set up any extension properties necessary to I<$claimed_identity>
+that is passed to the method, such as AX and/or SREG property
+requirements.
+
+By default this method does nothing.
+
+=head2 check_openid
+
+This method calls Net::OpenID::Consumer::claimed_identity and returns
+Net::OpenID::ClaimedIdentity object if it is a success, effectively
+meaning the URL provided is resolved to be an OpenID.
+
+In other words, you can call this method instead of login method to see
+if the given URL can be used as an OpenID.
+
+=head2 get_csr
+
+This method returns Net::OpenID::Consumer object.  By default this class
+creates the object and returns, but sometimes the default object
+is not enough for some authentication provider.  For example you
+may want to remove max_size parameter from the user agent object
+it uses, to avoid "range" request.
 
 =head1 AUTHOR & COPYRIGHT
 
