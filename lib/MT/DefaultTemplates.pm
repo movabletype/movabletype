@@ -399,9 +399,22 @@ sub templates {
         }
     }
     my @tmpls = (values(%tmpls), values(%global_tmpls));
-    @tmpls = sort { $a->{order} <=> $b->{order} } @tmpls;
+    # sort widgets to process last, since they rely on the widgets to exist first.
+    @tmpls = sort _template_sort @tmpls;
     MT->run_callbacks('DefaultTemplateFilter' . ($set ? '.' . $set : ''), \@tmpls);
     return \@tmpls;
+}
+
+sub _template_sort {
+    if ( $a->{type} eq 'widgetset' ) {
+        return 1 unless $b->{type} eq 'widgetset';
+    }
+    elsif ($b->{type} eq 'widgetset') {
+        # a is not a widgetset
+        return -1;
+    }
+    # both a, b == widgetset or both a, b != widgetset
+    return $a->{order} <=> $b->{order};
 }
 
 1;
