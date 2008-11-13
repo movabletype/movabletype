@@ -2311,12 +2311,15 @@ our %Commenter_Auth;
 sub init_commenter_authenticators {
     my $self = shift;
     my $auths = $self->registry("commenter_authenticators") || {};
-    foreach my $auth ( keys %$auths ) {
-        delete $auths->{$auth}
-          if exists( $auths->{$auth}->{condition} )
-          && !( $auths->{$auth}->{condition}->() );
-    }
     %Commenter_Auth = %$auths;
+    foreach my $auth ( keys %$auths ) {
+        if ( my $c = $auths->{$auth}->{condition} ) {
+            $c = $self->handler_to_coderef($c);
+            if ( $c ) {
+                delete $Commenter_Auth{$auth} unless $c->();
+            }
+        }
+    }
     $Commenter_Auth{$_}{key} ||= $_ for keys %Commenter_Auth;
 }
 

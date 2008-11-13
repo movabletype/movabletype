@@ -50,9 +50,12 @@ sub edit {
         foreach my $auth ( keys %$cmtauth_reg ) {
             my %auth = %{$cmtauth_reg->{$auth}};
             $cmtauth{$auth} = \%auth;
-            $cmtauth{$auth}->{disabled} = 1
-              if exists( $cmtauth_reg->{$auth}->{condition} )
-              && !( $cmtauth_reg->{$auth}->{condition}->() );
+            if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
+                $c = $app->handler_to_coderef($c);
+                if ( $c ) {
+                    $cmtauth{$auth}->{disabled} = 1 unless $c->();
+                }
+            }
         }
         if ( my $auths = $blog->commenter_authenticators ) {
             foreach ( split ',', $auths ) {
