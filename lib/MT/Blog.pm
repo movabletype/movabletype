@@ -228,6 +228,8 @@ sub create_default_templates {
 
     require MT::Template;
     my @arch_tmpl;
+    # sort widgets to process last, since they rely on the widgets to exist first.
+    @$tmpl_list = sort { $a->{type} eq 'widgetset' ? 1 : -1 } @$tmpl_list;
     for my $val (@$tmpl_list) {
         next if $val->{global};
 
