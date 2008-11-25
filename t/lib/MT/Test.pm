@@ -94,8 +94,9 @@ sub init_testdb {
     %MT::Upgrade::classes = (foo=>'Foo',bar=>'Bar');
     #MT::Upgrade->register_class(['Foo', 'Bar']);
     MT->instance;
-    MT->registry->{object_types}->{foo} = 'Foo';
-    MT->registry->{object_types}->{bar} = 'Bar';
+    my $obj = MT->registry('object_types');
+    $obj->{foo} = 'Foo';
+    $obj->{bar} = 'Bar';
 
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
