@@ -163,7 +163,7 @@ function submit_form(f, command) {
         hint="<__trans phrase="Select the templates you wish to use for this new blog.">">
         <select name="blog_template_set">
         <mt:loop name="template_set_loop">
-            <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+            <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq="$config.DefaultTemplateSet"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
     </mtapp:setting>

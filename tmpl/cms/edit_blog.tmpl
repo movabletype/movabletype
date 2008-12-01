@@ -148,7 +148,7 @@ TC.attachLoadEvent(init);
         help_section="template_set">
         <select name="template_set">
         <mt:loop name="template_set_loop">
-            <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+            <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultTemplateSet'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
     </mtapp:setting>
