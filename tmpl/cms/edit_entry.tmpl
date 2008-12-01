@@ -320,7 +320,7 @@
                             <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished"></span>&nbsp;<span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
             <mt:else>
                 <mt:if name="can_publish_post">
-                            <select name="status" id="status" class="full-width" tabindex="9" onchange="highlightSwitch(this)">
+                            <select name="status" id="status" class="full-width" onchange="highlightSwitch(this)">
                                 <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
                                 <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
                     <mt:if name="status_review">
@@ -374,9 +374,9 @@
             help_page="entries"
             help_section="date">
             <span class="date-time-fields<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>">
-                <input id="created-on" class="entry-date" name="authored_on_date" tabindex="10" value="<$mt:var name="authored_on_date" escape="html"$>" />
+                <input id="created-on" class="entry-date" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" />
                 <a href="javascript:void(0);" mt:command="open-calendar-created-on" class="date-picker" title="<__trans phrase="Select entry date">"><span>Choose Date</span></a>
-                <input class="entry-time" name="authored_on_time" tabindex="11" value="<$mt:var name="authored_on_time" escape="html"$>" />
+                <input class="entry-time" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
             </span>
         </mtapp:setting>
 
@@ -390,7 +390,7 @@
             help_page="entries"
             help_section="basename">
                 <input type="hidden" name="basename_old" id="basename_old" value="<$mt:var name="basename_old" escape="html"$>" />
-                <input type="text" <mt:if name="object_type" eq="entry">disabled="disabled"</mt:if> name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" onchange="setElementValue('basename', dirify(this.value))" tabindex="12" />
+                <input type="text" <mt:if name="object_type" eq="entry">disabled="disabled"</mt:if> name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" onchange="setElementValue('basename', dirify(this.value))" />
             <mt:if name="object_type" eq="page">
             <span class="file-extension"><$mt:var name="file_extension" escape="html"$></span>
             </mt:if>
@@ -437,8 +437,8 @@
             help_page="entries"
             help_section="accept_comments">
             <ul>
-                <li><input type="checkbox" name="allow_comments" id="allow_comments" tabindex="14" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Comments"/></label></li>
-                <li><input type="checkbox" name="allow_pings" id="allow_pings" tabindex="15" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="TrackBacks"/></label></li>
+                <li><input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Comments"/></label></li>
+                <li><input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="TrackBacks"/></label></li>
             </ul>
         </mtapp:setting>
 
@@ -457,7 +457,7 @@
             show_hint="$show_ping_urls_hint"
             help_page="entries"
             help_section="urls_to_ping">
-                <textarea name="to_ping_urls" id="to_ping_urls" class="full-width short" tabindex="16" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
+                <textarea name="to_ping_urls" id="to_ping_urls" class="full-width short" cols="" rows=""><$mt:var name="to_ping_urls" escape="html"$></textarea>
         </mtapp:setting>
 
     </mtapp:widget>
@@ -497,28 +497,14 @@
 var orig_text_format;
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
 orig_text_format = cur_text_format;
-var customizable_fields = new Array(<mt:unless name="object_type" eq="page">'category',</mt:unless>'excerpt','keywords','tags','publishing','feedback');
-var default_fields = new Array();
-<mt:loop name="disp_prefs_default_fields">
-default_fields.push('<mt:var name="name" escape="js">');
-</mt:loop>
-var custom_fields = new Array();
-<mt:unless name="object_type" eq="page">
-<mt:if name="disp_prefs_show_category">custom_fields.push('category');</mt:if>
-</mt:unless>
-<mt:if name="disp_prefs_show_excerpt">custom_fields.push('excerpt');</mt:if>
-<mt:if name="disp_prefs_show_keywords">custom_fields.push('keywords');</mt:if>
-<mt:if name="disp_prefs_show_tags">custom_fields.push('tags');</mt:if>
-<mt:if name="disp_prefs_show_publishing">custom_fields.push('publishing');</mt:if>
-<mt:if name="disp_prefs_show_feedback">custom_fields.push('feedback');</mt:if>
+var customizable_fields = [<mt:loop name="field_loop" glue=","><mt:unless name="system_field"><mt:unless name="lock_field">'<mt:var name="field_id" escape="js">'</mt:unless></mt:unless></mt:loop>];
+<mt:unless name="object_type" eq="page">customizable_fields.push('category');
+</mt:unless>customizable_fields.push('publishing');
+customizable_fields.push('feedback');
+var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
 
 function savedEntryOptions(c) {
     var message = '<__trans phrase="Your entry screen preferences have been saved." escape="js">';
-    for (var i = 0; i < custom_fields.length; i++) {
-        if (custom_fields[i].match( /^customfield_/ )) {
-            message = '<__trans phrase="Your entry screen preferences have been saved. Please refresh the page to reorder the custom fields." escape="js">'
-        }
-    }
     showMsg(message, 'saved-prefs-msg', 'success');
 }
 
@@ -537,8 +523,10 @@ function saveEntryFieldOptions() {
         } else if (fld.name == 'entry_prefs') {
             mode = fld.value;
         } else if (fld.name == 'custom_prefs') {
-            if (!fld.disabled && fld.checked)
-                custom_prefs += '&custom_prefs=' + fld.value;
+            if (!fld.disabled && fld.checked) {
+                if (custom_prefs != '') custom_prefs += ',';
+                custom_prefs += fld.value;
+            }
         }
     }
     // TBD: we need to get the blog id from the selector control
@@ -550,7 +538,7 @@ function saveEntryFieldOptions() {
         + '&magic_token=<mt:var name="magic_token">'
         + '&bar_position=' + bar_position;
     if (mode == 'Custom') {
-        param += custom_prefs;
+        param += '&custom_prefs=' + custom_prefs;
     }
     var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedEntryOptions };
     TC.Client.call(params);
@@ -623,21 +611,17 @@ function changedTextFormat(sel) {
     }
 }
 
-function setFieldGroup(selection) {
+function setDefaultFieldGroup() {
     var i, j, selected_fields, disable_fields, field_object;
     var entry_prefs = getByID('entry_prefs');
     entry_prefs.value = selection;
  
     // set checkbox data based on which group was selected
-    if (selection == 'Default') {
-        selected_fields = default_fields;
-        var bar_position = document.getElementById('bar_position_bottom');
-        if (bar_position) {
-            bar_position.checked = true;
-            setBarPosition(bar_position);
-        }
-    } else if (selection == 'Custom') {
-        selected_fields = custom_fields;
+    selected_fields = default_fields;
+    var bar_position = document.getElementById('bar_position_bottom');
+    if (bar_position) {
+        bar_position.checked = true;
+        setBarPosition(bar_position);
     }
 
     // uncheck all the checkboxes
@@ -676,11 +660,24 @@ function setFieldGroup(selection) {
     return false;
 }
 
-function setCustomFields() {
+var pre_sortable_node;
+function setCustomFields(args) {
     var i = 0;
 
-    // empty the custom fields array
-    custom_fields = new Array();
+    if (!pre_sortable_node)
+        pre_sortable_node = TC.elementOrId(customizable_fields[0] + "-field").previousSibling;
+
+    if (args && args['order']) {
+        var order = args['order'];
+        for (var i = order.length - 1; i >= 0; i--) {
+            var el = TC.elementOrId(customizable_fields[order[i]] + "-field");
+            el.parentNode.removeChild(el);
+            if (pre_sortable_node.nextSibling)
+                pre_sortable_node.parentNode.insertBefore(el, pre_sortable_node.nextSibling);
+            else
+                pre_sortable_node.parentNode.appendChild(el);
+        }
+    }
 
     // we loop over all customizable fields here (which includes
     // all the metadata fields). we want to hide the metadata (or
@@ -694,7 +691,6 @@ function setCustomFields() {
         var field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
 
         if (field_object && field_object.checked) {
-            custom_fields.push(customizable_fields[i]);
             hide = false;
         }
         var div = TC.elementOrId(customizable_fields[i] + '-field');
@@ -925,15 +921,20 @@ function listPreviousPings () {
                     id="entry_fields"
                     label="<__trans phrase="Fields">"
                     label_class="display-options">
+                    <ul id="entry-pref-field-list">
+                        <mt:loop name="field_loop">
+                        <mt:unless name="field_system"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+                        </mt:loop>
+                    </ul>
+                </mtapp:setting>
+                <mtapp:setting
+                    id="metadata_fields"
+                    label="<__trans phrase="Metadata">"
+                    label_class="display-options">
                     <ul>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Title"></label></li>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <__trans phrase="Body"></label></li>
-                        <li><label><input type="checkbox" onclick="setCustomFields(); return true;" name="custom_prefs" id="custom-prefs-tags" value="tags" <mt:if name="disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Tags"></label></li>
                         <mt:if name="object_type" ne="page">
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Category"></label></li>
                         </mt:if>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-excerpt" value="excerpt" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Excerpt"></label></li>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-keywords" value="keywords" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Keywords"></label></li>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_publishing"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Publishing"></label></li>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Feedback"></label></li>
                     </ul>
@@ -953,7 +954,7 @@ function listPreviousPings () {
                     label="<__trans phrase="Reset display options">"
                     label_class="display-options"
                     show_label="0">
-                    <a href="javascript:void(0)" onclick="return setFieldGroup('Default');" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
+                    <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
                 </mtapp:setting>
             <div class="actions-bar display-options-actions-bar buttons">
                 <div class="actions-bar-inner">
@@ -984,106 +985,132 @@ function listPreviousPings () {
 
     <mt:include name="include/actions_bar.tmpl" hide_pager="1">
 
-    <mt:section id="content_fields">
-
-    <mtapp:setting
-        id="title"
-        label="<__trans phrase="Title">"
-        label_class="top-label"
-        help_page="entries"
-        help_section="entry_title">
-        <input name="title" id="title" tabindex="1" value="<$mt:var name="title" escape="html"$>" maxlength="255" mt:watch-change="1" onkeyup="rebasename(this)" />
-    </mtapp:setting>
-
-        <div id="editor">
-            <div id="editor-inner" class="editor-header pkg" mt:delegate="tab-container">
-                <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
-                    <label><a href="javascript:void(0);"><__trans phrase="Body"></a></label>
-                </div>
-                <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
-                    <label><a href="javascript:void(0);"><__trans phrase="Extended"></a></label>
-                </div>
-
-                <!-- text filters -->
-                <div id="field-convert_breaks">
-                    <__trans phrase="Format:">
-                    <select name="convert_breaks" id="convert_breaks" tabindex="2" onchange="changedTextFormat(this)">
-    <mt:loop name="text_filters">
-                        <option value="<mt:var name="filter_key">"<mt:if name="filter_selected"> selected="selected"</mt:if>><mt:var name="filter_label" escape="html"></option>
-    </mt:loop>
-                    </select>
-                    <$mt:setvar name="show_formatting_help" value="1"$>
-                    <mt:if name="convert_breaks" eq="richtext">
-                        <$mt:setvar name="show_formatting_help" value="0"$>
-                    </mt:if>
-                    <mt:if name="convert_breaks" eq="0">
-                        <$mt:setvar name="show_formatting_help" value="0"$>
-                    </mt:if>
-                    <mt:if name="convert_breaks" eq="__default__">
-                        <$mt:setvar name="show_formatting_help" value="0"$>
-                    </mt:if>
-                    <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
-                </div>
-
-            </div>
-        </div>
-
-<mt:include name="include/editor.tmpl">
-
-<mt:setvarblock name="show_metadata"><$mt:var name="disp_prefs_show_tags"$><mt:unless name="object_type" eq="page"><$mt:var name="disp_prefs_show_category"></mt:unless><$mt:var name="disp_prefs_show_excerpt"$><$mt:var name="disp_prefs_show_keywords"$></mtsetvarblock>
-
-    <mt:if name="auth_pref_tag_delim_comma">
-        <$mt:setvar name="tags_hint" value="<__trans phrase="(comma-delimited list)">"$>
-    <mt:else>
-        <mt:if name="auth_pref_tag_delim_space">
-            <$mt:setvar name="tags_hint" value="<__trans phrase="(space-delimited list)">"$>
+    <mt:loop id="content_fields" name="field_loop">
+        <mt:if name="field_html">
+            <mtapp:setting
+                id="$field_id"
+                label="$field_label"
+                label_class="$label_class"
+                hint="$description"
+                shown="$show_field"
+                content_class="$content_class"
+                show_hint="$show_hint"
+                required="$required">
+                <$mt:var name="field_html"$>
+            </mtapp:setting>
         <mt:else>
-            <mt:setvarblock name="tags_hint">
-                <__trans phrase="(delimited by '[_1]')" params="<$mt:var name="auth_pref_tag_delim"$>">
-            </mt:setvarblock>
+        <mt:if name="field_name" eq="title">
+            <mtapp:setting
+                id="title"
+                label="<__trans phrase="Title">"
+                label_class="top-label"
+                help_page="entries"
+                help_section="entry_title">
+                <input name="title" id="title" value="<$mt:var name="title" escape="html"$>" maxlength="255" mt:watch-change="1" onkeyup="rebasename(this)" />
+            </mtapp:setting>
+
+        <mt:else eq="text">
+            <mt:section id="text">
+
+                <div id="text-field">
+                <div id="editor">
+                    <div id="editor-inner" class="editor-header pkg" mt:delegate="tab-container">
+                        <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
+                            <label><a href="javascript:void(0);"><__trans phrase="Body"></a></label>
+                        </div>
+                        <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
+                            <label><a href="javascript:void(0);"><__trans phrase="Extended"></a></label>
+                        </div>
+
+                        <!-- text filters -->
+                        <div id="field-convert_breaks">
+                            <__trans phrase="Format:">
+                            <select name="convert_breaks" id="convert_breaks" onchange="changedTextFormat(this)">
+                <mt:loop name="text_filters">
+                                <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>
+                </mt:loop>
+                            </select>
+                            <$mt:setvar name="show_formatting_help" value="1"$>
+                            <mt:if name="convert_breaks" eq="richtext">
+                                <$mt:setvar name="show_formatting_help" value="0"$>
+                            </mt:if>
+                            <mt:if name="convert_breaks" eq="0">
+                                <$mt:setvar name="show_formatting_help" value="0"$>
+                            </mt:if>
+                            <mt:if name="convert_breaks" eq="__default__">
+                                <$mt:setvar name="show_formatting_help" value="0"$>
+                            </mt:if>
+                            <a href="#" onclick="openTFDocs(); return false" id="formatting-help-link" class="help-link<mt:unless name="show_formatting_help"> disabled</mt:unless>">?</a>
+                        </div>
+
+                    </div>
+                </div>
+                <mt:include name="include/editor.tmpl">
+                </div>
+
+            </mt:section>
+
+        <mt:else eq="tags">
+            <mt:setvarblock name="show_metadata"><$mt:var name="disp_prefs_show_tags"$><mt:unless name="object_type" eq="page"><$mt:var name="disp_prefs_show_category"></mt:unless><$mt:var name="disp_prefs_show_excerpt"$><$mt:var name="disp_prefs_show_keywords"$></mtsetvarblock>
+
+                <mt:if name="auth_pref_tag_delim_comma">
+                    <$mt:setvar name="tags_hint" value="<__trans phrase="(comma-delimited list)">"$>
+                <mt:else>
+                    <mt:if name="auth_pref_tag_delim_space">
+                        <$mt:setvar name="tags_hint" value="<__trans phrase="(space-delimited list)">"$>
+                    <mt:else>
+                        <mt:setvarblock name="tags_hint">
+                            <__trans phrase="(delimited by '[_1]')" params="<$mt:var name="auth_pref_tag_delim"$>">
+                        </mt:setvarblock>
+                    </mt:if>
+                </mt:if>
+
+                <mtapp:setting
+                    id="tags"
+                    shown="$show_field"
+                    label="<__trans phrase="Tags">"
+                    label_class="top-label"
+                    hint="$tags_hint"
+                    help_page="entries"
+                    help_section="entry_tags">
+                    <div class="textarea-wrapper">
+                        <input name="tags" id="tags" class="full-width" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+                        <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+                    </div>
+                    <!-- FIXME - move this styling to the ie hacks css file -->
+                    <!--[if lte IE 6.5]><div style="position:relative;"><![endif]-->
+                    <div id="tags_completion"></div>
+                    <!--[if lte IE 6.5]></div><![endif]-->
+                </mtapp:setting>
+
+        <mt:else eq="excerpt">
+            <mtapp:setting
+                id="excerpt"
+                shown="$show_field"
+                label="$field_label"
+                label_class="top-label"
+                help_page="entries"
+                help_section="excerpt">
+                <textarea name="excerpt" id="excerpt" class="full-width short" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
+            </mtapp:setting>
+
+        <mt:else eq="keywords">
+            <mtapp:setting
+                id="keywords"
+                shown="$show_field"
+                label="$field_label"
+                label_class="top-label"
+                help_page="entries"
+                help_section="keywords">
+                <div class="textarea-wrapper">
+                    <input name="keywords" id="keywords" class="full-width" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
+                </div>
+            </mtapp:setting>
+
         </mt:if>
-    </mt:if>
-    <mtapp:setting
-        id="tags"
-        shown="$disp_prefs_show_tags"
-        label="<__trans phrase="Tags">"
-        label_class="top-label"
-        hint="$tags_hint"
-        help_page="entries"
-        help_section="entry_tags">
-        <div class="textarea-wrapper">
-            <input name="tags" id="tags" class="full-width" tabindex="5" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-        </div>
-        <!-- FIXME - move this styling to the ie hacks css file -->
-        <!--[if lte IE 6.5]><div style="position:relative;"><![endif]-->
-        <div id="tags_completion"></div>
-        <!--[if lte IE 6.5]></div><![endif]-->
-    </mtapp:setting>
+        </mt:if>
 
-    <mtapp:setting
-        id="excerpt"
-        shown="$disp_prefs_show_excerpt"
-        label="<__trans phrase="Excerpt">"
-        label_class="top-label"
-        help_page="entries"
-        help_section="excerpt">
-        <textarea name="excerpt" id="excerpt" class="full-width short" tabindex="7" cols="" rows="" mt:watch-change="1"><$mt:var name="excerpt" escape="html"$></textarea>
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="keywords"
-        shown="$disp_prefs_show_keywords"
-        label="<__trans phrase="Keywords">"
-        label_class="top-label"
-        help_page="entries"
-        help_section="keywords">
-        <div class="textarea-wrapper">
-            <input name="keywords" id="keywords" class="full-width" tabindex="8" value="<$mt:var name="keywords" escape="html"$>" mt:watch-change="1" autocomplete="off" />
-        </div>
-    </mtapp:setting>
-
-    </mt:section>
+    </mt:loop>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
 

@@ -362,6 +362,14 @@ sub edit {
     }
 
     $param->{object_type}  = $type;
+    $param->{field_loop} ||= [ map { {
+        field_name => $_,
+        field_id => $_,
+        lock_field => ($_ eq 'title' or $_ eq 'text'),
+        show_field => ($_ eq 'title' or $_ eq 'text') ? 1 : $param->{"disp_prefs_show_$_"},
+        field_label => $app->translate( ucfirst( $_ ) ),
+    } }
+        qw( title text tags excerpt keywords ) ];
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js($app, $type);
     if ( 'page' eq $type ) {
         $param->{search_label} = $app->translate('pages');
@@ -424,6 +432,8 @@ sub list {
     my $filter_key = $q->param('filter_key') || '';
     my $filter_col = $q->param('filter')     || '';
     my $filter_val = $q->param('filter_val');
+    my $iter_method;
+    my $total;
 
     # check blog_id for deciding to apply category filter or not
     my ( $filter_name, $filter_value );    # human-readable versions
@@ -514,7 +524,23 @@ sub list {
                 );
             }
             else {
-                $terms{$filter_col} = $filter_val;
+                if ( $pkg->is_meta_column($filter_col) ) {
+                    my $meta_rec = MT::Meta->metadata_by_name($pkg, $filter_col);
+                    my $type_col = $meta_rec->{type};
+                    my $type_id  = $meta_rec->{name};
+                    my $meta_terms = {
+                        $type_col => $filter_val,
+                        type      => $type_id,
+                    };
+                    $total = $pkg->meta_pkg->count( $meta_terms );
+                    my @result = $pkg->search_by_meta( $filter_col, $filter_val, {}, \%arg );
+                    $iter_method = sub {
+                        return shift @result;
+                    };
+                }
+                elsif ( $pkg->has_column($filter_col) ) {
+                    $terms{$filter_col} = $filter_val;
+                }
             }
             $param{filter_args} = "&filter=" . encode_url($filter_col) . "&filter_val=" . encode_url($filter_val);
 
@@ -559,7 +585,8 @@ sub list {
     require MT::Category;
     require MT::Placement;
 
-    my $total = $pkg->count( \%terms, \%arg ) || 0;
+    $total = $pkg->count( \%terms, \%arg ) || 0
+        unless defined $total;
     $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
     $arg{direction} = 'descend';
     $arg{limit}     = $limit + 1;
@@ -577,7 +604,7 @@ sub list {
         $arg{offset} = $offset if $offset;
     }
 
-    my $iter = $pkg->load_iter( \%terms, \%arg );
+    my $iter = $iter_method || $pkg->load_iter( \%terms, \%arg );
 
     my $is_power_edit = $q->param('is_power_edit');
     if ($is_power_edit) {

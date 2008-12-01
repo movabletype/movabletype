@@ -2476,7 +2476,7 @@ sub load_template_prefs {
 
 sub _parse_entry_prefs {
     my $app = shift;
-    my ( $prefs, $param ) = @_;
+    my ( $prefs, $param, $fields ) = @_;
 
     my @p = split /,/, $prefs;
     for my $p (@p) {
@@ -2486,6 +2486,7 @@ sub _parse_entry_prefs {
                 $param->{ 'disp_prefs_height_' . $name } = $num;
             }
             $param->{ 'disp_prefs_show_' . $name } = 1;
+            push @$fields, { name => $name };
         }
         else {
             $p = 'Default' if lc($p) eq 'basic';
@@ -2496,15 +2497,18 @@ sub _parse_entry_prefs {
                     )
                 {
                     $param->{ 'disp_prefs_show_' . $def } = 1;
+                    push @$fields, { name => $def };
                 }
                 if ( lc($p) eq 'advanced' ) {
                     foreach my $def (qw(excerpt feedback)) {
                         $param->{ 'disp_prefs_show_' . $def } = 1;
+                        push @$fields, { name => $def };
                     }
                 }
             }
             else {
                 $param->{ 'disp_prefs_show_' . $p } = 1;
+                push @$fields, { name => $p };
             }
         }
     }
@@ -2522,30 +2526,18 @@ sub load_entry_prefs {
         $prefs = $app->load_default_entry_prefs;
         ( $prefs, $pos ) = split /\|/, $prefs;
         $is_from_db = 0;
-        $app->_parse_entry_prefs( $prefs, \%param );
-        my @fields;
-        foreach ( keys %param ) {
-            if (m/^disp_prefs_show_(.+)/) {
-                push @fields, { name => $1 };
-            }
-        }
+        $app->_parse_entry_prefs( $prefs, \%param, \my @fields );
         $param{disp_prefs_default_fields} = \@fields;
     }
     else {
         ( $prefs, $pos ) = split /\|/, $prefs;
     }
-    $app->_parse_entry_prefs( $prefs, \%param );
+    $app->_parse_entry_prefs( $prefs, \%param, \my @custom_fields );
     if ($is_from_db) {
         my $default_prefs = $app->load_default_entry_prefs;
         ( $default_prefs, my ($default_pos) ) = split /\|/, $default_prefs;
         $pos ||= $default_pos;
-        $app->_parse_entry_prefs( $default_prefs, \my %def_param );
-        my @fields;
-        foreach ( keys %def_param ) {
-            if (m/^disp_prefs_show_(.+)/) {
-                push @fields, { name => $1 };
-            }
-        }
+        $app->_parse_entry_prefs( $default_prefs, \my %def_param, \my @fields );
         if ( $prefs eq 'Default' ) {
             foreach my $p ( keys %param ) {
                 delete $param{$p} if $p =~ m/^disp_prefs_show_/;
@@ -2563,6 +2555,7 @@ sub load_entry_prefs {
         && !exists $param{'disp_prefs_Advanced'} )
     {
         $param{'disp_prefs_Custom'} = 1;
+        $param{disp_prefs_custom_fields} = \@custom_fields if @custom_fields;
     }
     if ( lc $pos eq 'both' ) {
         $param{'position_actions_top'}    = 1;
@@ -2884,9 +2877,6 @@ sub _entry_prefs_from_params {
     if ( $type && lc $type ne 'custom' ) {
         $fields{$type} = 1;
     }
-    else {
-        $fields{$_} = 1 foreach $q->param('custom_prefs');
-    }
     if ( my $body_height = $q->param('text_height') ) {
         $fields{'body'} = $body_height;
     }
@@ -2895,6 +2885,13 @@ sub _entry_prefs_from_params {
         $prefs .= ',' if $prefs ne '';
         $prefs .= $_;
         $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
+    }
+    if ( $type && lc $type eq 'custom' ) {
+        my @fields = split /,/, $q->param('custom_prefs');
+        foreach (@fields) {
+            $prefs .= ',' if $prefs ne '';
+            $prefs .= $_;
+        }
     }
     $prefs .= '|' . $q->param('bar_position');
     $prefs;
