@@ -9,7 +9,7 @@ use Storable;
 package Net::OpenID::Consumer;
 
 use vars qw($VERSION);
-$VERSION = "1.02";
+$VERSION = "1.03";
 
 use fields (
     'cache',           # a Cache object to store HTTP responses and associations
@@ -229,8 +229,7 @@ sub _find_semantic_info {
         $$htmlref =~ s/<body\b.*//is;
     };
 
-    my $doc = $self->_get_url_contents($url, $final_url_ref, $trim_hook) or
-        return;
+    my $doc = $self->_get_url_contents($url, $final_url_ref, $trim_hook) || '';
 
     # find <head> content of document (notably: the first head, if an attacker
     # has added others somehow)
@@ -742,9 +741,7 @@ sub verified_identity {
 
         # if openid.delegate was used, check that it was done correctly
         if ($a_ident_nofragment ne $real_ident_nofragment) {
-            my $a_ident_nofragment = $a_ident;
-            $a_ident_nofragment =~ s/\#.*$//;
-            unless ($delegate eq $a_ident) {
+            unless ($delegate eq $a_ident_nofragment) {
                 $error->("bogus_delegation");
                 next;
             }
@@ -776,6 +773,27 @@ sub verified_identity {
     my $assoc = Net::OpenID::Association::handle_assoc($self, $server, $assoc_handle);
 
     my %signed_fields;   # key (without openid.) -> value
+
+    # Auth 2.0 requires certain keys to be signed.
+    if ($self->_message_version >= 2) {
+        my %signed_fields = map {$_ => 1} split /,/, $signed;
+        my %unsigned_fields;
+        # these fields must be signed unconditionally
+        foreach my $f (qw/op_endpoint return_to response_nonce assoc_handle/) {
+            $unsigned_fields{$f}++ if !$signed_fields{$f};
+        }
+        # these fields must be signed if present
+        foreach my $f (qw/claimed_id identity/) {
+            next unless $self->args("openid.$f");
+            $unsigned_fields{$f}++ if !$signed_fields{$f};
+        }
+        if (%unsigned_fields) {
+            return $self->_fail(
+                "unsigned_field",
+                "Field(s) must be signed: " . join(", ", keys %unsigned_fields)
+            );
+        }
+    }
 
     if ($assoc) {
         $self->_debug("verified_identity: verifying with found association");
