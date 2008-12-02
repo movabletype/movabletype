@@ -177,8 +177,8 @@ sub set_defaults {
         ping_blogs => 0,
         ping_technorati => 0,
         ping_google => 0,
-        archive_type => 'Individual,Monthly,Category,Category-Monthly,Page',
-        archive_type_preferred => 'Individual',
+        archive_type => '',
+        archive_type_preferred => '',
         status_default => 2,
         junk_score_threshold => 0,
         junk_folder_expiry => 14, # 14 days
@@ -258,6 +258,7 @@ sub create_default_templates {
         }
     }
 
+    my %archive_types;
     if (@arch_tmpl) {
         require MT::TemplateMap;
         for my $map_set (@arch_tmpl) {
@@ -266,6 +267,7 @@ sub create_default_templates {
             foreach my $map_key (keys %$mappings) {
                 my $m = $mappings->{$map_key};
                 my $at = $m->{archive_type};
+                $archive_types{$at} = 1;
                 # my $preferred = $mappings->{$map_key}{preferred};
                 my $map = MT::TemplateMap->new;
                 $map->archive_type($at);
@@ -283,6 +285,11 @@ sub create_default_templates {
         }
     }
 
+    $blog->archive_type( join ',', keys %archive_types );
+    foreach my $at ( qw( Individual Daily Weekly Monthly Category ) ) {
+        $blog->archive_type_preferred($at), last
+            if exists $archive_types{$at};
+    }
     $blog->custom_dynamic_templates('none');
     $blog->save;
 
