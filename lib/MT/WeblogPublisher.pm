@@ -1099,6 +1099,7 @@ sub rebuild_file {
     local $ctx->{current_timestamp_end} = $end   if $end;
 
     $ctx->{__stash}{blog} = $blog;
+    $ctx->{__stash}{local_blog_id} = $blog->id;
 
     require MT::FileInfo;
 

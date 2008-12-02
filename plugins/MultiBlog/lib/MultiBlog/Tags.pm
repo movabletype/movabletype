@@ -48,9 +48,6 @@ sub MultiBlog {
         return $ctx->errstr ? $ctx->error($ctx->errstr) : '';
     }
 
-    # Save current blog ID
-    local $ctx->{__stash}{local_blog_id} = $ctx->stash('blog_id');
-    
     # Run MultiBlog in specified mode
     my $res;
     if ( $args->{mode} eq 'loop') {

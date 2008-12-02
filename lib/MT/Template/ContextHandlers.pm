@@ -4627,6 +4627,11 @@ filename to load.
 Used to include a template from another blog in the system. Use in
 conjunction with the module, widget or identifier attributes.
 
+=item * local (optional)
+
+Forces an Include of a template that exists in the blog that is being
+published.
+
 =item * global (optional; default "0")
 
 Forces an Include of a globally defined template even if the
@@ -4737,6 +4742,7 @@ sub _include_module {
         $tmpl_name =~ s/^Widget: ?//;
     }
     my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
     my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
     return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
         if $include_stack{$stash_id};
