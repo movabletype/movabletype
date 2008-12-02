@@ -83,9 +83,9 @@ sub id {
 
 sub version_slug {
     return MT->translate_templatized(<<"SLUG");
-<MT_TRANS phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<MT_TRANS phrase="Version [_1]" params="$VERSION_ID">
-<MT_TRANS phrase="http://www.sixapart.com/movabletype/">
+<__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
+<__trans phrase="Version [_1]" params="$VERSION_ID">
+<__trans phrase="http://www.sixapart.com/movabletype/">
 SLUG
 }
 
@@ -2312,11 +2312,13 @@ sub init_commenter_authenticators {
     my $self = shift;
     my $auths = $self->registry("commenter_authenticators") || {};
     %Commenter_Auth = %$auths;
+    my $app = $self->app;
+    my $blog = $self->blog if $self->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
             if ( $c ) {
-                delete $Commenter_Auth{$auth} unless $c->();
+                delete $Commenter_Auth{$auth} unless $c->($blog);
             }
         }
     }
@@ -2388,6 +2390,7 @@ OpenID
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_openid.png',
             logo_small        => 'images/comment/openid_logo.png',
+            order => 10,
         },
         'LiveJournal' => {
             class      => 'MT::Auth::LiveJournal',
@@ -2402,8 +2405,7 @@ OpenID
 <fieldset>
 <mtapp:setting
     id="livejournal_display"
-    label="<__trans phrase="Your LiveJournal Username">"
-    hint="<__trans phrase="Sign in using your Vox blog URL">">
+    label="<__trans phrase="Your LiveJournal Username">">
 <input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/livejournal_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 300px; font-size: 110%;" />
 </mtapp:setting>
 <div class="actions-bar actions-bar-login">
@@ -2422,6 +2424,7 @@ LiveJournal
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_livejournal.png',
             logo_small        => 'images/comment/livejournal_logo.png',
+            order => 11,
         },
         'Vox' => {
             class      => 'MT::Auth::Vox',
@@ -2455,6 +2458,104 @@ Vox
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_vox.png',
             logo_small        => 'images/comment/vox_logo.png',
+            order => 12,
+        },
+        'Google' => {
+            label => 'Google',
+            class => 'MT::Auth::GoogleOpenId',
+            login_form => <<EOT,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="https://www.google.com/accounts/o8/id" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Google" />
+<fieldset>
+<mtapp:setting
+    id="GoogleOpenId_display"
+    hint="<__trans phrase="Sign in using your Gmail account">">
+    <input type="image" src="<mt:var name="static_uri">images/comment/google_button.gif" width="150" height="30" />
+    <p><__trans phrase="Click the button to sign in using your Gmail (Google) account."></p>
+</mtapp:setting>
+</fieldset>
+</form>
+EOT
+            condition => sub {
+                eval "require Digest::SHA1;";
+                return 0 if $@;
+                eval "require Crypt::SSLeay;";
+                return 0 if $@;
+                return 1;
+            },
+            login_form_params => \&_commenter_auth_params,
+            logo => 'images/comment/signin_google.png',
+            logo_small => 'images/comment/signin_google_small.gif',
+            order => 13,
+        },
+        'Yahoo' => {
+            class => 'MT::Auth::Yahoo',
+            label => 'Yahoo!',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/yahoo.png',
+            login_form => <<YAHOO,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0"
+    label="<__trans phrase="Your Yahoo! Username">">
+<input type="hidden" name="key" value="Yahoo" />
+<input type="hidden" name="openid_url" value="yahoo.com" />
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/yahoo-button.png" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.com/">Turn on OpenID for your Yahoo! account now</a></p>
+</fieldset>
+</form>
+YAHOO
+            order => 14,
+        },
+        'WordPress' => {
+            class => 'MT::Auth::WordPress',
+            label => 'WordPress.com',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/wordpress.png',
+            login_form => <<WORDPRESS,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="WordPress" />
+<fieldset>
+<mtapp:setting
+    id="wordpress_display"
+    label="<__trans phrase="Your Wordpress.com Username">">
+<input name="openid_userid" style="background: #fff 
+    url('<mt:var name="static_uri">images/comment/wordpress_logo.png') 
+no-repeat left; padding-left: 18px; padding-bottom: 1px; 
+border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
+<p class="hint"><__trans phrase="Sign in using your WordPress.com username."></p>
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input type="submit" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+</fieldset>
+</form>
+WORDPRESS
+            order => 15,
         },
         'TypeKey' => {
             class      => 'MT::Auth::TypeKey',
@@ -2481,7 +2582,13 @@ TypeKey
                 return $params;
             },
             logo => 'images/comment/signin_typekey.png',
-            logo_small        => 'images/comment/typekey_logo.png',
+            logo_small => 'images/comment/typekey_logo.png',
+            condition => sub {
+                my ($blog) = @_;
+                return 1 unless $blog;
+                return $blog->remote_auth_token ? 1 : 0;
+            },
+            order => 16,
         },
     };
 }
@@ -3111,16 +3218,16 @@ passed through to the C<maketext> method of the active localization module.
 
 =head2 MT->translate_templatized($str)
 
-Translates a string that has embedded E<lt>MT_TRANSE<gt> tags. These
+Translates a string that has embedded E<lt>__transE<gt> tags. These
 tags identify the portions of the string that require localization.
 Each tag is processed separately and passed through the MT->translate
 method. Examples (used in your application's HTML::Template templates):
 
-    <p><MT_TRANS phrase="Hello, world"></p>
+    <p><__trans phrase="Hello, world"></p>
 
 and
 
-    <p><MT_TRANS phrase="Hello, [_1]" params="<TMPL_VAR NAME=NAME>"></p>
+    <p><__trans phrase="Hello, [_1]" params="<TMPL_VAR NAME=NAME>"></p>
 
 =head2 $mt->trans_error( $str[, $arg1, $arg2] )
 
@@ -3513,8 +3620,8 @@ locations, an ugly error is thrown to the user.
 Used internally by the L<build_page> method to render the output
 of a L<MT::Template> object (the first parameter) using the parameter
 data (the second parameter). It additionally calls the L<process_mt_template>
-method (to process any E<lt>MT_ACTIONE<gt> and E<lt>MT_X:YE<gt> marker tags)
-and then L<translate_templatized> (to process any E<lt>MT_TRANSE<gt> tags).
+method (to process any E<lt>__actionE<gt> tags)
+and then L<translate_templatized> (to process any E<lt>__transE<gt> tags).
 
 =head2 $app->process_mt_template($str)
 

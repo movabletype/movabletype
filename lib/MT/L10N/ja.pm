@@ -522,6 +522,9 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT.pm.pre
 	'__PORTAL_URL__' => '__PORTAL_URL__',
+	'Allows commenters to sign in to Movable Type 4 using their own Gmail (Google) account via OpenID.' => 'Gmail(Google)のアカウントを使ってMovable Type 4にコメントすることができるようにします。',
+	'Click the button to sign in using your Gmail (Google) account.' => 'ボタンをクリックしてGmail(Google)にログインしてください。',
+	'Sign in using your Gmail account' => 'Gmailのアカウントでログインする',
 
 ## lib/MT/Page.pm
 	'Folder' => 'フォルダ',

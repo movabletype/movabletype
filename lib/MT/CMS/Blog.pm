@@ -53,7 +53,9 @@ sub edit {
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
                 $c = $app->handler_to_coderef($c);
                 if ( $c ) {
-                    $cmtauth{$auth}->{disabled} = 1 unless $c->();
+                    $cmtauth{$auth}->{disabled} = 1 unless $c->( $blog );
+                    delete $cmtauth{TypeKey}
+                        if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
                 }
             }
         }
@@ -76,18 +78,12 @@ sub edit {
                 )
               )
             {
-                push @cmtauth_loop, $cmtauth{$_};
+                # force plugin auth schemes to show after native auth schemes
+                $cmtauth{$_}{order} = ($cmtauth{$_}{order} || 0) + 100;
             }
+            push @cmtauth_loop, $cmtauth{$_};
         }
-        unshift @cmtauth_loop, $cmtauth{'TypeKey'}
-          if exists( $cmtauth{'TypeKey'} )
-          && $blog->remote_auth_token;
-        unshift @cmtauth_loop, $cmtauth{'Vox'}
-          if exists $cmtauth{'Vox'};
-        unshift @cmtauth_loop, $cmtauth{'LiveJournal'}
-          if exists $cmtauth{'LiveJournal'};
-        unshift @cmtauth_loop, $cmtauth{'OpenID'}
-          if exists $cmtauth{'OpenID'};
+        @cmtauth_loop = sort { $a->{order} <=> $b->{order} } @cmtauth_loop;
 
         $param->{cmtauth_loop} = \@cmtauth_loop;
 
