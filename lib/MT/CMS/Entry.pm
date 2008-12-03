@@ -1831,7 +1831,7 @@ sub build_entry_table {
               || $app_author->blog_perm( $obj->blog_id );
         }
 
-        my $row = $obj->column_values;
+        my $row = $obj->get_values;
         $row->{text} ||= '';
         if ( my $ts =
             ( $type eq 'page' ) ? $obj->modified_on : $obj->authored_on )

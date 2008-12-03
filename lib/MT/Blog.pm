@@ -221,10 +221,16 @@ sub create_default_blog {
 sub create_default_templates {
     my $blog = shift;
 
+    my $app = MT->instance;
+    my $curr_lang = $app->current_language;
+    $app->set_language($blog->language);
+
     require MT::DefaultTemplates;
     my $tmpl_list = MT::DefaultTemplates->templates( @_ );
-    return $blog->error(MT->translate("No default templates were found."))
-        if !$tmpl_list || (ref($tmpl_list) ne 'ARRAY') || (!@$tmpl_list);
+    if ( !$tmpl_list || (ref($tmpl_list) ne 'ARRAY') || (!@$tmpl_list) ) {
+        $app->set_language($curr_lang);
+        return $blog->error(MT->translate("No default templates were found."));
+    }
 
     require MT::Template;
     my @arch_tmpl;
@@ -299,6 +305,7 @@ sub create_default_templates {
         $tmpl_list
     );
 
+    $app->set_language($curr_lang);
     return $blog;
 }
 

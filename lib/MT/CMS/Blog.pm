@@ -298,6 +298,8 @@ sub edit {
         @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
         $param->{'template_set_loop'} = $sets;
         $param->{'template_set_index'} = $#$sets;
+
+        $param->{languages} = $app->languages_list( $app->current_language );
     }
 
     if (   !$param->{site_path}

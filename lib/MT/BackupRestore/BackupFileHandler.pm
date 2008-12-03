@@ -317,6 +317,32 @@ sub end_element {
                     $exists = 1 if $field;
                 }
             }
+            elsif ('role' eq $name) {
+                my $role = $class->load( { name => $obj->name } );
+                if ( $role ) {
+                    my $old_perms = join '', sort { $a <=> $b } split(',', $obj->permissions);
+                    my $cur_perms = join '', sort { $a <=> $b } split(',', $role->permissions);
+                    if ($old_perms eq $cur_perms) {
+                        $self->{objects}->{"$class#$old_id"} = $role;
+                        $exists = 1;
+                    }
+                    else {
+                        # restore in a different name
+                        my $i = 1;
+                        my $new_name = $obj->name . " ($i)";
+                        while ( $class->exist( { name => $new_name } ) ) {
+                            $new_name = $obj->name . ' (' . ++$i . ')';
+                        }
+                        $obj->name($new_name);
+                        MT->log({ 
+                            message => MT->translate("The role '[_1]' has been renamed to '[_2]' because a role with the same name already exists.", $role->name, $new_name),
+                            level => MT::Log::INFO(),
+                            class => 'system',
+                            category => 'restore',
+                        });
+                    }
+                }
+            }
             unless ($exists) {
                 my $result;
                 if ( $obj->id ) {

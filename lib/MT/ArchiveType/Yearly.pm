@@ -40,6 +40,7 @@ sub template_params {
         archive_template         => 1,
         archive_listing          => 1,
         archive_class            => "datebased-yearly-archive",
+        datebased_archive        => 1,
     };
 }
 

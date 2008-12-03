@@ -2396,24 +2396,40 @@ sub show_error {
     my $mode    = $app->mode;
     my $url     = $app->uri;
     my $blog_id = $app->param('blog_id');
-    if ( ref $param ne 'HASH' ) {
 
+    if ( ref $param ne 'HASH' ) {
         # old scalar signature
         $param = { error => $param };
     }
 
-    if ( $MT::DebugMode && $@ ) {
-        $param->{error} = '<pre>' . encode_html( $param->{error} ) . '</pre>';
+    my $error = $param->{error};
+
+    if ( $MT::DebugMode ) {
+        if ( $@ ) {
+            # Use 'pre' tag to wrap Perl error
+            $error = '<pre>' . encode_html( $error ) . '</pre>';
+        }
     }
     else {
-        $param->{error} = encode_html( $param->{error} );
-        $param->{error}
+        if ($error =~ m/^(.+?)( at .+? line \d+)(.*)$/s) {
+            # Hide any module path info from perl error message
+            # Information could be revealing info about where MT app
+            # resides on server, and what version is being used, which
+            # may be helpful forensics to an attacker.
+            $error = $1;
+        }
+        $error = encode_html( $error );
+        $error
             =~ s!(https?://\S+)!<a href="$1" target="_blank">$1</a>!g;
     }
-    $tmpl = $app->load_tmpl('error.tmpl')
-        or return "Can't load error template; got error '"
-        . encode_html( $app->errstr )
-        . "'. Giving up. Original error was <pre>$param->{error}</pre>";
+
+    $tmpl = $app->load_tmpl('error.tmpl');
+    if (!$tmpl) {
+        $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
+        return "Can't load error template; got error '"
+            . encode_html( $app->errstr )
+            . "'. Giving up. Original error was: $error";
+    }
     my $type = $app->param('__type') || '';
     if ( $type eq 'dialog' ) {
         $param->{name}   ||= $app->{name}   || 'dialog';
@@ -2425,13 +2441,15 @@ sub show_error {
         $param->{goback} ||= "window.location='" . $app->{goback} . "'" || 'history.back()';
         $param->{value}  ||= $app->{value}  || $app->translate("Go Back");
     }
+    local $param->{error} = $error;
     $tmpl->param($param);
     my $out = $tmpl->output;
     if ( !defined $out ) {
+        $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
         return
               "Can't build error template; got error '"
             . encode_html( $tmpl->errstr )
-            . "'. Giving up. Original error was <pre>$param->{error}</pre>";
+            . "'. Giving up. Original error was: $error";
     }
     return $app->l10n_filter($out);
 }

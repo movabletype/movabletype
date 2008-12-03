@@ -84,6 +84,21 @@ sub init_request {
 
     my $q = $app->param;
 
+    # These parameters are strictly numeric; invalid request if they
+    # are given and are not
+    foreach my $param ( qw( blog_id limit offset SearchMaxResults ) ) {
+        my $val = $q->param($param);
+        next unless defined $val && ($val ne '');
+        return $app->errtrans( 'Invalid [_1] parameter.', $param )
+            if $val !~ m/^\d+$/;
+    }
+    foreach my $param ( qw( IncludeBlogs ExcludeBlogs ) ) {
+        my $val = $q->param($param);
+        next unless defined $val && ($val ne '');
+        return $app->errtrans( 'Invalid [_1] parameter.', $param )
+            if $val !~ m/^(\d+,?)+$/;
+    }
+
     my $params = $app->registry( $app->mode, 'params' );
     foreach (@$params) {
         delete $app->{$_} if exists $app->{$_};

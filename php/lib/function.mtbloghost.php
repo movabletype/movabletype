@@ -13,7 +13,7 @@ function smarty_function_mtbloghost($args, &$ctx) {
     if (!preg_match('!/$!', $host))
         $host .= '/';
 
-    if (preg_match('!^https?://([^/:]+)(:\d+)?/!', $host, $matches)) {
+    if (preg_match('!^https?://([^/:]+)(:\d+)?/?!', $host, $matches)) {
         if ($args['signature']) {
             $sig = $matches[1];
             $sig = preg_replace('/\./', '_', $sig);
@@ -24,4 +24,3 @@ function smarty_function_mtbloghost($args, &$ctx) {
         return '';
     }
 }
-?>

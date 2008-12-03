@@ -1,4 +1,4 @@
-# $Id: Fetch.pm 1918 2006-02-24 21:18:37Z btrott $
+# $Id: Fetch.pm 1952 2006-07-25 05:41:24Z btrott $
 
 package URI::Fetch;
 use strict;
@@ -9,7 +9,7 @@ use Carp qw( croak );
 use URI;
 use URI::Fetch::Response;
 
-our $VERSION = '0.05';
+our $VERSION = '0.08';
 
 our $HAS_ZLIB;
 BEGIN {
@@ -61,13 +61,15 @@ sub fetch {
             $fetch->content($ref->{Content});
             $fetch->etag($ref->{ETag});
             $fetch->last_modified($ref->{LastModified});
+            $fetch->content_type($ref->{ContentType});
             return $fetch;
         }
         return undef if $p_no_net == 1;
     }
 
     $ua ||= LWP::UserAgent->new;
-    $ua->agent(join '/', $class, $class->VERSION);
+    $ua->agent(join '/', $class, $class->VERSION)
+        if $ua->agent =~ /^libwww-perl/;
 
     my $req = HTTP::Request->new(GET => $uri);
     if ($HAS_ZLIB) {
@@ -85,6 +87,7 @@ sub fetch {
     $fetch->uri($uri);
     $fetch->http_status($res->code);
     $fetch->http_response($res);
+    $fetch->content_type($res->header('Content-Type'));
     if ($res->previous && $res->previous->code == HTTP::Status::RC_MOVED_PERMANENTLY()) {
         $fetch->status(URI_MOVED_PERMANENTLY);
         $fetch->uri($res->previous->header('Location'));
@@ -97,6 +100,7 @@ sub fetch {
         $fetch->content($ref->{Content});
         $fetch->etag($ref->{ETag});
         $fetch->last_modified($ref->{LastModified});
+        $fetch->content_type($ref->{ContentType});
         return $fetch;
     } elsif (!$res->is_success) {
         return $force ? $fetch : $class->error($res->message);
@@ -127,11 +131,12 @@ sub fetch {
     if ($cache &&
         ($p_cache_grep ? $p_cache_grep->($fetch) : 1)) {
 
-        $cache->set($uri, $freeze->({
+        $cache->set($fetch->uri, $freeze->({
             ETag         => $fetch->etag,
             LastModified => $fetch->last_modified,
             Content      => $fetch->content,
             CacheTime    => time(),
+            ContentType  => $fetch->content_type,
         }));
     }
     $fetch;

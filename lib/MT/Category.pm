@@ -435,6 +435,19 @@ sub is_descendant {
     $possible_parent->is_ancestor($cat);
 }
 
+sub entry_count {
+    my $cat = shift;
+    $cat->cache_property('entry_count', sub {
+        require MT::Placement;
+        my $class = MT->model( $cat->class eq 'folder' ? 'page' : 'entry' );
+        my @args = ({ blog_id => $cat->blog_id,
+                      status  => $class->RELEASE() },
+                    { 'join'  => [ 'MT::Placement', 'entry_id',
+                                 { category_id => $cat->id } ] });
+        scalar $class->count(@args);
+    }, @_);
+}
+
 1;
 __END__
 

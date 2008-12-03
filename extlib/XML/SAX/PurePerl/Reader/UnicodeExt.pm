@@ -1,9 +1,9 @@
-# $Id: UnicodeExt.pm,v 1.4 2003/07/30 13:39:23 matt Exp $
+# $Id: UnicodeExt.pm,v 1.5 2008-08-04 10:04:54 grant Exp $
 
 package XML::SAX::PurePerl::Reader;
 use strict;
 
-use Encode;
+use Encode ();
 
 sub set_raw_stream {
     my ($fh) = @_;
@@ -16,7 +16,7 @@ sub switch_encoding_stream {
 }
 
 sub switch_encoding_string {
-    Encode::from_to($_[0], $_[1], "utf-8");
+    $_[0] = Encode::decode($_[1], $_[0]);
 }
 
 1;

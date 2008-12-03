@@ -533,7 +533,7 @@ sub core_list_actions {
                 label      => "Unpublish TrackBack(s)",
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
-                permission => 'manage_feedback,publish_post',
+                permission => 'edit_all_posts,manage_feedback,publish_post',
             },
         },
         'comment' => {
@@ -541,7 +541,7 @@ sub core_list_actions {
                 label      => "Unpublish Comment(s)",
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
-                permission => 'manage_feedback,publish_post',
+                permission => 'edit_all_posts,manage_feedback,publish_post',
                 condition  => sub {
                     return 1;
                 },
@@ -1880,7 +1880,9 @@ sub build_page {
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
-        $param->{page_actions} ||= $app->page_actions( $app->mode );
+        # Using a sub here to delay the loading of page actions, since not all
+        # templates actually utilize them.
+        $param->{page_actions} ||= sub { $app->page_actions( $app->mode ) };
     }
 
     $app->SUPER::build_page( $page, $param );
@@ -2845,12 +2847,15 @@ sub languages_list {
     my @data;
     $curr ||= $app->config('DefaultLanguage');
     $curr = 'en-us' if ( lc($curr) eq 'en_us' );
+    my $curr_lang = $app->current_language;
     for my $tag ( keys %$langs ) {
         ( my $name = $langs->{$tag} ) =~ s/\w+ English/English/;
+        $app->set_language($tag);
         my $row = { l_tag => $tag, l_name => $app->translate($name) };
         $row->{l_selected} = 1 if $curr eq $tag;
         push @data, $row;
     }
+    $app->set_language($curr_lang);
     [ sort { $a->{l_name} cmp $b->{l_name} } @data ];
 }
 

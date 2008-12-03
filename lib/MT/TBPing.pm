@@ -20,7 +20,7 @@ __PACKAGE__->install_properties({
         'title' => 'string(255)',
         'excerpt' => 'text',
         'source_url' => 'string(255)',
-        'ip' => 'string(15) not null',
+        'ip' => 'string(50) not null',
         'blog_name' => 'string(255)',
         'visible' => 'boolean',
         'junk_status' => 'smallint not null',

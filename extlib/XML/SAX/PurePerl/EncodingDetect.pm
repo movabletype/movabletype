@@ -1,4 +1,4 @@
-# $Id: EncodingDetect.pm,v 1.5 2003/09/29 20:20:41 matt Exp $
+# $Id: EncodingDetect.pm,v 1.6 2007-02-07 09:33:50 grant Exp $
 
 package XML::SAX::PurePerl; # NB, not ::EncodingDetect!
 
@@ -85,6 +85,10 @@ sub encoding_detect {
         return;
     }
     elsif ($data =~ /^\x3C/) {
+        # $reader->set_encoding('UTF-8');
+        return;
+    }
+    elsif ($data =~ /^[\x20\x09\x0A\x0D]+\x3C[^\x3F]/) {
         # $reader->set_encoding('UTF-8');
         return;
     }

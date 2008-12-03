@@ -13,7 +13,7 @@ __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
         'blog_id' => 'integer not null',
-        'ip' => 'string(15) not null',
+        'ip' => 'string(50) not null',
     },
     indexes => {
         blog_id => 1,

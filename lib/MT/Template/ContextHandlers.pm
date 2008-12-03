@@ -7243,7 +7243,7 @@ sub _hdlr_blog_host {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $host = $blog->site_url;
-    if ($host =~ m!^https?://([^/:]+)(:\d+)?/!) {
+    if ($host =~ m!^https?://([^/:]+)(:\d+)?/?!) {
         if ($args->{signature}) {
             # using '_' to replace '.' since '-' is a valid
             # letter for domains
@@ -8013,12 +8013,16 @@ sub _hdlr_entries {
                 $map{$_->tag_id} = 1 for @ot_ids;
                 \%map;
             };
-            if (!$entries && @tag_ids) {
+            if (!$entries) {
                 if ($tag_arg !~ m/\bNOT\b/i) {
+                    return '' unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on( 'object_id', {
                             tag_id => \@tag_ids, object_datasource => 'entry',
                             %blog_terms
                         }, { %blog_args, unique => 1 } );
+                    if (my $last = $args->{lastn} || $args->{limit}) {
+                        $args{limit} = $last;
+                    }
                 }
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
@@ -13349,25 +13353,55 @@ sub _hdlr_categories {
     my $class = MT->model($class_type);
     my $entry_class = MT->model(
         $class_type eq 'category' ? 'entry' : 'page');
-
-    # issue a single count_group_by for all categories
-    my $cnt_iter = MT::Placement->count_group_by(
-        {%terms},
-        {
-            group => ['category_id'],
-            join  => $entry_class->join_on(
-                undef,
-                {
-                    id     => \'=placement_entry_id',
-                    status => MT::Entry::RELEASE()
-                }
-            ),
-        }
-    ); 
     my %counts;
-    while (my ($count, $cat_id) = $cnt_iter->()) {
-        $counts{$cat_id} = $count;
+    my $count_tag = $class_type eq 'category' ? 'CategoryCount'
+                  :                             'FolderCount'
+                  ;
+    my $uncompiled = $ctx->stash('uncompiled') || '';
+    my $count_all = 0;
+    if (!$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i) {
+        $count_all = 1;
     }
+
+    ## Supplies a routine that will yield the number of entries associated
+    ## with the category in context in the most efficient manner.
+    ## If we can determine counts will be gathered for all categories,
+    ## a 'count_group_by' request is done for MT::Placement to fetch counts
+    ## with a single query (storing them in %counts). 
+    ## Otherwise, counts are collected on an as-needed basis, using the
+    ## 'entry_count' method in MT::Category.
+    my $counts_fetched = 0;
+    my $entry_count_of = sub {
+          my $cat = shift;
+          return delay(sub{$cat->entry_count})
+              unless $count_all;
+          return $cat->entry_count(defined $counts{$cat->id} ? $counts{$cat->id} : 0)
+              if $counts_fetched;
+          return $cat->cache_property(
+              'entry_count',
+              sub{
+                  # issue a single count_group_by for all categories
+                  my $cnt_iter = MT::Placement->count_group_by(
+                      {%terms},
+                      {
+                          group => ['category_id'],
+                          join  => $entry_class->join_on(
+                              undef,
+                              {
+                                  id     => \'=placement_entry_id',
+                                  status => MT::Entry::RELEASE(),
+                              }
+                          ),
+                      }
+                  ); 
+                  while (my ($count, $cat_id) = $cnt_iter->()) {
+                      $counts{$cat_id} = $count;
+                  }
+                  $counts_fetched = 1;
+                  $counts{$cat->id};
+              }
+        );
+    };
 
     my $iter = $class->load_iter(\%terms, \%args);
     my $res = '';
@@ -13380,11 +13414,21 @@ sub _hdlr_categories {
     local $ctx->{inside_mt_categories} = 1;
     my $i = 0;
     my $cat = $iter->();
+    if ( !$args->{show_empty} ) {
+        while ( defined $cat && !$entry_count_of->($cat) ) {
+            $cat = $iter->();
+        }
+    }
     my $n = $args->{lastn};
     my $vars = $ctx->{__stash}{vars} ||= {};
     while (defined($cat)) {
         $i++;
         my $next_cat = $iter->();
+        if ( !$args->{show_empty} ) {
+            while ( defined $next_cat && !$entry_count_of->($next_cat) ) {
+                $next_cat = $iter->();
+            }
+        }
         my $last;
         $last = 1 if $n && ($i >= $n);
         $last = 1 unless defined $next_cat;
@@ -13401,8 +13445,7 @@ sub _hdlr_categories {
         local $vars->{__odd__} = ($i % 2) == 1;
         local $vars->{__even__} = ($i % 2) == 0;
         local $vars->{__counter__} = $i;
-        $ctx->{__stash}{category_count} = $counts{$cat->id};
-        $cat = $next_cat,next unless $ctx->{__stash}{category_count} || $args->{show_empty};
+        $ctx->{__stash}{category_count} = $entry_count_of->($cat);
         defined(my $out = $builder->build($ctx, $tokens,
             { %$cond,
               ArchiveListHeader => $i == 1,
@@ -13410,6 +13453,7 @@ sub _hdlr_categories {
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
+        last if $last;
         $cat = $next_cat;
     }
     $res;
@@ -13568,17 +13612,8 @@ sub _hdlr_category_count {
         or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MT' . $ctx->stash('tag') . '$>'));
-    my($count);
-    unless ($count = $ctx->stash('category_count')) {
-        my $class = MT->model(
-            $ctx->stash('tag') =~ m/Category/ig ? 'entry' : 'page');
-        my @args = ({ blog_id => $ctx->stash ('blog_id'),
-                      status => MT::Entry::RELEASE() },
-                    { 'join' => [ 'MT::Placement', 'entry_id',
-                                  { category_id => $cat->id } ] });
-        require MT::Placement;
-        $count = scalar $class->count(@args);
-    }
+    my $count = $ctx->stash('category_count');
+    $count = $cat->entry_count unless defined $count;
     return $ctx->count_format($count, $args);
 }
 
@@ -19864,7 +19899,7 @@ sub _hdlr_widget_manager {
     my $tmpl = MT::Template->load({ name => $tmpl_name,
                                     blog_id => $blog_id ? [ 0, $blog_id ] : 0,
                                     type => 'widgetset' })
-        or return $ctx->error(MT->translate("Specified WidgetSet not found."));
+        or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
     my $text = $tmpl->text;
     return $ctx->build($text) if $text;
 

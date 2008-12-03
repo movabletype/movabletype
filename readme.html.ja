@@ -46,10 +46,10 @@
 
     <h2>トラブルシューティングガイド</h2>
     <h3>StaticWebPathの設定</h3>
-    <p>Webサーバー（やその設定）によっては、JavaScript、CSS、画像ファイルなどの静的ファイルはcgi-binフォルダからは取得できないようになっている場合があります。その場合は、Movable Typeが利用する静的ファイルを別の、Webブラウザから取得できる場所に移動する必要があります。<a href="http://www.sixapart.jp/support/mt4/install/post_14.html">ドキュメントを参照</a>して設定してください。</p>
+    <p>Webサーバー（やその設定）によっては、JavaScript、CSS、画像ファイルなどの静的ファイルはcgi-binフォルダからは取得できないようになっている場合があります。その場合は、Movable Typeが利用する静的ファイルを別の、Webブラウザから取得できる場所に移動する必要があります。<a href="http://www.movabletype.jp/faq/post-9.html">ドキュメントを参照</a>して設定してください。</p>
 
     <h3>Internal Server Error</h3>
-    <p>"Internal Server Error"というメッセージが出た場合は、Webサーバー上で設定を変更する必要があるかもしれません。<a href="http://www.movabletype.jp/documentation/#mtinstall">インストールガイド</a>に沿ってインストールを行ってください。また<a href="http://www.sixapart.jp/support/mt4/">FAQ</a>もご確認ください。</p>
+    <p>"Internal Server Error"というメッセージが出た場合は、Webサーバー上で設定を変更する必要があるかもしれません。<a href="http://www.movabletype.jp/documentation/#mtinstall">インストールガイド</a>に沿ってインストールを行ってください。また<a href="http://www.movabletype.jp/faq/">FAQ</a>もご確認ください。</p>
 
     <h3>その他</h3>
     <p>より詳しい情報は<a href="http://www.movabletype.jp/documentation/#mtinstall">インストールガイド</a>に掲載しています。ご確認ください。</p>

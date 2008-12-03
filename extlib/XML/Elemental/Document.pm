@@ -2,14 +2,23 @@ package XML::Elemental::Document;
 use strict;
 use base qw( XML::Elemental::Node );
 
-__PACKAGE__->mk_accessors(qw( contents attributes ));
+use Scalar::Util qw(weaken);
 
-sub new {
-    my $self = shift->SUPER::new(@_);
-    $self->{attributes} ||= {};
-    $self->{contents}   ||= [];
-    $self;
+sub root_element { $_[0]->{contents} }
+
+sub contents {
+    if (@_ > 1) {
+        $_[0]->{contents} = ref $_[1] eq 'ARRAY' ? $_[1]->[0] : $_[1];
+        weaken($_[0]->{contents}->{parent} = $_[0]);
+    }
+    return $_[0]->{contents} ? [$_[0]->{contents}] : [];
 }
+
+sub attributes { }    # deprecated. documents never have attributes.
+
+sub DESTROY {
+    $_[0]->{contents}->DESTROY if $_[0]->{contents};
+}                     # starts circular reference teardown
 
 1;
 
@@ -35,14 +44,32 @@ Parameterless constructor. Returns an instance of the object.
 
 =item $doc->contents([\@children])
 
-Returns an ordered array reference of direct sibling objects.
-Returns a reference to an empty array if the element does not have
-any siblings. If a parameter is passed all the direct siblings are
-(re)set.
+Returns an ordered array reference of direct sibling
+objects. In the case of the document object it will return 0
+to 1 elements. Returns a reference to an empty array if the
+element does not have any siblings. If a parameter is passed
+all the direct siblings are (re)set.
+
+=item $doc->root_element;
+
+Returns the root element of the document. This a connivence method that
+is the equivalent of:
+
+  $doc->contents->[0];
 
 =item $doc->root
 
-Inherited from L<XML::Elemental::Node> returns a reference to itself.
+Inherited from L<XML::Elemental::Node>, returns a reference to itself.
+
+=item $doc->ancestors
+
+Inherited from L<XML::Elemental::Node>, returns undef. The
+document object never has ancestors.
+
+=item $doc->in($element)
+
+Inherited from L<XML::Elemental::Node>, returns undef. The
+document object is always the root of the tree.
 
 =head1 AUTHOR & COPYRIGHT
 

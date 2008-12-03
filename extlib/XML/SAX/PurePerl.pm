@@ -1,13 +1,13 @@
-# $Id: PurePerl.pm,v 1.19 2005/10/24 19:22:12 matt Exp $
+# $Id: PurePerl.pm,v 1.28 2008-08-05 12:36:51 grant Exp $
 
 package XML::SAX::PurePerl;
 
 use strict;
 use vars qw/$VERSION/;
 
-$VERSION = '0.90';
+$VERSION = '0.96';
 
-use XML::SAX::PurePerl::Productions qw($Any $CharMinusDash $SingleChar);
+use XML::SAX::PurePerl::Productions qw($NameChar $SingleChar);
 use XML::SAX::PurePerl::Reader;
 use XML::SAX::PurePerl::EncodingDetect ();
 use XML::SAX::Exception;
@@ -308,49 +308,26 @@ sub CDSect {
     
     $self->start_cdata({});
     
-    my $split_end = "";
     $data = $reader->data;
     while (1) {
         $self->parser_error("EOF looking for CDATA section end", $reader)
-            unless length($data);    
-
-        # watch out for ]]> split between data segments
-        if ($split_end ne "")
-        {
-            if ($split_end eq "]" and $data =~ /^\]>/) {
-                $reader->move_along(2);
-                last;
-            }
-
-            if ($split_end eq "]]" and $data =~ /^>/) {
-                $reader->move_along(1);
-                last;
-            }
-
-            # rescue false positives on real ] and ]]
-            $self->characters({ Data => $split_end });
-            $split_end = "";
-        }
-
+            unless length($data);
+        
         if ($data =~ /^(.*?)\]\]>/s) {
             my $chars = $1;
             $reader->move_along(length($chars) + 3);
             $self->characters({Data => $chars});
             last;
         }
-
-        $reader->move_along(length($data)); # do move past ] or ]] in the reader
-
-        if ($data =~ s/(\]\]?)\z//s) {
-            $split_end = $1;
+        else {
+            $self->characters({Data => $data});
+            $reader->move_along(length($data));
+            $data = $reader->data;
         }
-
-        $self->characters({Data => $data}); # don't write ] or ]] (yet) to the writer
-        $data = $reader->data;
     }
     $self->end_cdata({});
     return 1;
-} 
+}
 
 sub CharData {
     my ($self, $reader) = @_;
@@ -397,6 +374,11 @@ sub Reference {
     return 0 unless $reader->match('&');
     
     my $data = $reader->data;
+
+    # Fetch more data if we have an incomplete numeric reference
+    if ($data =~ /^(#\d*|#x[0-9a-fA-F]*)$/) {
+        $data = $reader->data(length($data) + 6);
+    }
     
     if ($data =~ /^#x([0-9a-fA-F]+);/) {
         my $ref = $1;
@@ -589,7 +571,8 @@ sub AttValue {
             unless length($data);
         if ($data =~ /^([^$quote]*)$quote/) {
             $reader->move_along(length($1) + 1);
-            return $value . $1;
+            $value .= $1;
+            last;
         }
         else {
             $value .= $data;
@@ -602,7 +585,7 @@ sub AttValue {
     }
     
     $value =~ s/[\x09\x0A\x0D]/\x20/g;
-    $value =~ s/&(#(x[0-9a-fA-F]+)|([0-9]+)|\w+);/$self->AttReference($1, $reader)/geo;
+    $value =~ s/&(#(x[0-9a-fA-F]+)|#([0-9]+)|\w+);/$self->AttReference($1, $reader)/geo;
     
     return $value;
 }
@@ -644,22 +627,23 @@ sub PI {
     
     if ($data =~ /^<\?/) {
         $reader->move_along(2);
-        my ($target, $data);
+        my ($target);
         $target = $self->Name($reader) ||
             $self->parser_error("PI has no target", $reader);
+	    
+        my $pi_data = '';
         if ($self->skip_whitespace($reader)) {
-            $target = '';
             while (1) {
                 my $data = $reader->data;
                 $self->parser_error("End of data seen while looking for close PI marker", $reader)
                     unless length($data);
                 if ($data =~ /^(.*?)\?>/s) {
-                    $target .= $1;
+                    $pi_data .= $1;
                     $reader->move_along(length($1) + 2);
                     last;
                 }
                 else {
-                    $target .= $data;
+                    $pi_data .= $data;
                     $reader->move_along(length($data));
                 }
             }
@@ -669,7 +653,8 @@ sub PI {
             $data =~ /^\?>/ or $self->parser_error("PI closing sequence not found", $reader);
             $reader->move_along(2);
         }
-        $self->processing_instruction({ Target => $target, Data => $data });
+	
+        $self->processing_instruction({ Target => $target, Data => $pi_data });
         
         return 1;
     }
@@ -683,7 +668,7 @@ sub Name {
     while(1) {
         my $data = $reader->data;
         return unless length($data);
-        $data =~ /^([^\s>\/&\?;=<\)\(\[\],\%\#\!\*]*)/ or return;
+        $data =~ /^([^\s>\/&\?;=<\)\(\[\],\%\#\!\*\|]*)/ or return;
         $name .= $1;
         my $len = length($1);
         $reader->move_along($len);

@@ -148,6 +148,9 @@ TC.TagComplete.prototype.keyDown = function( evt )
     else if ( (evt.keyCode > 64) && (evt.keyCode < 91) ) { // uppercase A-Z
         this.updateWord( String.fromCharCode(evt.keyCode).toLowerCase() );
     }
+    else if ( (evt.keyCode > 47) && (evt.keyCode < 58) ) { // 0-9
+        this.updateWord( String.fromCharCode(evt.keyCode) );
+    }
     else {
         return true;
     }

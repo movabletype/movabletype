@@ -39,6 +39,7 @@ sub template_params {
         datebased_daily_archive => 1,
         archive_template        => 1,
         archive_listing         => 1,
+        datebased_archive       => 1,
     };
 }
 

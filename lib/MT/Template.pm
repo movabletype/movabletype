@@ -449,7 +449,8 @@ sub text {
         }
         $tmpl->reset_tokens;
     }
-    $text;
+    $text = '' unless defined $text;
+    return $text;
 }
 
 sub _resync_to_db {

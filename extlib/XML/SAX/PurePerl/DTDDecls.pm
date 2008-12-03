@@ -1,9 +1,9 @@
-# $Id: DTDDecls.pm,v 1.7 2005/10/14 20:31:20 matt Exp $
+# $Id: DTDDecls.pm,v 1.9 2008-08-05 12:37:13 grant Exp $
 
 package XML::SAX::PurePerl;
 
 use strict;
-use XML::SAX::PurePerl::Productions qw($NameChar $SingleChar);
+use XML::SAX::PurePerl::Productions qw($SingleChar);
 
 sub elementdecl {
     my ($self, $reader) = @_;
@@ -469,7 +469,7 @@ sub EntityValue {
     my $data = $reader->data;
     my $quote = '"';
     my $re = $quotre;
-    if (!$data =~ /^"/) {
+    if ($data !~ /^"/) {
         $data =~ /^'/ or $self->parser_error("Not a quote character", $reader);
         $quote = "'";
         $re = $aposre;

@@ -33,6 +33,15 @@ sub start_document {
     1;
 }
 
+sub _encoder {
+    my ( $text ) = @_;
+    $text = MT::I18N::encode_text($text, 'utf-8');
+    if ( MT->config->PublishCharset =~ /utf-?8/i ) {
+        $text = MT::I18N::utf8_off($text);
+    }
+    return $text;
+}
+
 sub start_element {
     my $self = shift;
     my $data = shift;
@@ -64,7 +73,7 @@ sub start_element {
     }
 
     my %values = map { $attrs->{$_}->{LocalName} => 
-            MT::I18N::encode_text(MT::I18N::utf8_off($attrs->{$_}->{Value}), 'utf-8')
+            _encoder($attrs->{$_}->{Value})
         } keys(%$attrs);
 
     $self->{in_wp_comment_content} = 1 if ('wp' eq $prefix) && ('comment_content' eq $name);
@@ -89,7 +98,7 @@ sub characters {
     my $element = pop @{$self->{'bucket'}};
     return unless $element;
 
-    my $chars = MT::I18N::utf8_off($data->{Data});
+    my $chars = $data->{Data};
     if ('HASH' eq ref($element)) {
         my @hash_array = grep { $_ ne '_a' } keys %$element;
         return unless $hash_array[0];
@@ -120,7 +129,7 @@ sub end_element {
     my $element = pop @{$self->{'bucket'}};
     if ('HASH' eq ref($element)) {
         $element->{$prefix . '_' . $name} = 
-            MT::I18N::encode_text($element->{$prefix . '_' . $name}, 'utf-8')
+            _encoder($element->{$prefix . '_' . $name})
                 if exists $element->{$prefix . '_' . $name};
     }
     push @{$self->{'bucket'}}, $element;

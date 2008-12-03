@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = '2.0';
+$VERSION = '2.1';
 
 use XML::SAX;
 
@@ -80,7 +80,7 @@ XML::Elemental default classes can be used.
 
 =head1 DEPENDENCIES
 
-L<XML::SAX>, L<Class::Accessor>
+L<XML::SAX>, L<Scalar::Util>
 
 =head1 SEE ALSO
 
@@ -95,7 +95,7 @@ L<http://www.perl.com/language/misc/Artistic.html>.
 =head1 AUTHOR & COPYRIGHT
 
 Except where otherwise noted, XML::Elemental is Copyright
-2004-2005, Timothy Appnel, cpan@timaoutloud.org. All rights
+2004-2008, Timothy Appnel, tima@cpan.org. All rights
 reserved.
 
 =cut

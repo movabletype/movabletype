@@ -25,7 +25,7 @@ __PACKAGE__->install_properties({
         'email' => 'string(75)',
         'url' => 'string(255)',
         'text' => 'text',
-        'ip' => 'string(16)',
+        'ip' => 'string(50)',
         'last_moved_on' => 'datetime not null',
         'junk_score' => 'float',
         'junk_log' => 'text',

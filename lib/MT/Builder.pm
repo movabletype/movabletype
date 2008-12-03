@@ -357,7 +357,7 @@ sub build {
                     if (ref $args{$v} eq 'ARRAY') {
                         foreach (@{$args{$v}}) {
                             if (m/^\$([A-Za-z_](\w|\.)*)$/) {
-                                $_ = $ctx->var($1);
+                                local $_ = $ctx->var($1);
                             }
                         }
                     } else {
