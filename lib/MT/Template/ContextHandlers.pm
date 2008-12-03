@@ -4559,7 +4559,7 @@ tag used to include this "Some Module" template module, like so:
     <$mt:Var name="contents"$>
     (footer stuff)
 
-B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached
+B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached.
 
 +B<Attributes:>
 
@@ -4577,12 +4577,19 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
 =cut
 
 sub _hdlr_include_block {
-    my($ctx, @param) = @_;
-    my $contents = $ctx->slurp(@param);
-    my $args = $param[0];
+    my($ctx, $args, $cond) = @_;
     my $name = delete $args->{var} || 'contents';
-    local $ctx->{__stash}{vars}{$name} = $contents;
-    return $ctx->tag('include', @param);
+    # defer the evaluation of the child tokens until used inside
+    # the block (so any variables/context changes made in that template
+    # affect the contained template code)
+    my $tokens = $ctx->stash('tokens');
+    local $ctx->{__stash}{vars}{$name} = sub {
+        my $builder = $ctx->stash('builder');
+        my $html = $builder->build($ctx, $tokens, $cond);
+        return $ctx->error($builder->errstr) unless defined $html;
+        return $html;
+    };
+    return $ctx->tag('include', $args, $cond);
 }
 
 ###########################################################################

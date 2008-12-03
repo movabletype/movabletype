@@ -17,10 +17,10 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
         $name = $args['var'];
         $name or $name = 'contents';
         $oldval = $vars[$name];
-        $vars[$name] = $content;
+
+        $vars[$name] = $args['token_fn'];
         $content = smarty_function_mtinclude($args, $ctx);
         $vars[$name] = $oldval;
     }
     return $content;
 }
-?>

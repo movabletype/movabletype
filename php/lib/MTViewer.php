@@ -98,6 +98,7 @@ class MTViewer extends Smarty {
         'mttoplevelfolders' => 1,
         'mtcommentreplies' => 1,
         'mtsetvartemplate' => 1,
+        'mtincludeblock' => 1,
     );
 
     function MTViewer(&$mt) {
