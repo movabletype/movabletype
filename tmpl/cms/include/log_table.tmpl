@@ -22,7 +22,7 @@
     <mt:if name="system_overview_nav">
             <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=view_log&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
     </mt:if>
-            <td class="action-by"><mt:if name="username"><$mt:var name="username"$><mt:else><__trans phrase="[_1]" params="<$mt:var name="log_ip"$>"></mt:if></td>
+            <td class="action-by"><mt:if name="username"><$mt:var name="username" escape="html"$><mt:else><__trans phrase="[_1]" params="<$mt:var name="log_ip"$>"></mt:if></td>
             <td class="date"><mt:if name="is_last"><a name="last"></a></mt:if><span title="<$mt:var name="created_on_formatted"$>"><mt:if name="created_on_relative"><mt:if name="dates_relative"><$mt:var name="created_on_relative"$><mt:else><$mt:var name="created_on_formatted"$></mt:if><mt:else><$mt:var name="created_on_formatted"$></mt:if></span></td>
         </tr>
     <mt:if name="log_detail">

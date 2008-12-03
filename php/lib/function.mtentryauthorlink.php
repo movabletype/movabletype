@@ -10,7 +10,7 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     if (!$entry) return '';
 
     $type = $args['type'];
-    $displayname = $entry['author_nickname'];
+    $displayname = encode_html( $entry['author_nickname'] );
     if (isset($args['show_email']))
         $show_email = $args['show_email'];
     else
@@ -20,6 +20,7 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     else
         $show_url = 1;
 
+    require_once("MTUtil.php");
     # Open the link in a new window if requested (with new_window="1").
     $target = $args['new_window'] ? ' target="_blank"' : '';
     if (!$type) {
@@ -31,11 +32,11 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     }
     if ($type == 'url') {
         if ($entry['author_url'] && ($displayname != '')) {
-            return sprintf('<a href="%s"%s>%s</a>', $entry['author_url'], $target, $displayname);
+            return sprintf('<a href="%s"%s>%s</a>', encode_html( $entry['author_url'] ), $target, $displayname);
         }
     } elseif ($type == 'email') {
         if ($entry['author_email'] && ($displayname != '')) {
-            $str = "mailto:" . $entry['author_email'];
+            $str = "mailto:" . encode_html( $entry['author_email'] );
             if ($args['spam_protect'])
                 $str = spam_protect($str);
             return sprintf('<a href="%s">%s</a>', $str, $displayname);
@@ -49,4 +50,3 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     }
     return $displayname;
 }
-?>

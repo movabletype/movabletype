@@ -13,6 +13,7 @@ use MT::Placement;
 use MT::Category;
 use base qw( MT::ErrorHandler );
 use MT::I18N qw( first_n_text const encode_text );
+use MT::Util qw( encode_html );
 
 use vars qw( $SEP $SUB_SEP );
 $SEP = ('-' x 8);
@@ -135,7 +136,7 @@ sub import_contents {
                                 } else {
                                     $author->password('(none)');
                                 }
-                                $cb->(MT->translate("Creating new user ('[_1]')...", $val));
+                                $cb->(MT->translate("Creating new user ('[_1]')...", encode_html($val)));
                                 if ($author->save) {
                                     $cb->(MT->translate("ok") . "\n");
                                 } else {
@@ -172,7 +173,7 @@ sub import_contents {
                                     $cat->label($val);
                                     $cat->author_id($entry->author_id);
                                     $cat->parent(0);
-                                    $cb->(MT->translate("Creating new category ('[_1]')...", $val));
+                                    $cb->(MT->translate("Creating new category ('[_1]')...", encode_html($val)));
                                     if ($cat->save) {
                                         $cb->(MT->translate("ok") . "\n");
                                     } else {
@@ -238,7 +239,7 @@ sub import_contents {
                             $cb->(MT->translate("Can't find existing entry with timestamp '[_1]'... skipping comments, and moving on to next entry.", $ts) . "\n");
                             next ENTRY_BLOCK;
                         } else {
-                            $cb->(MT->translate("Importing into existing entry [_1] ('[_2]')", $entry->id, $entry->title) . "\n");
+                            $cb->(MT->translate("Importing into existing entry [_1] ('[_2]')", $entry->id, encode_html($entry->title)) . "\n");
                         }
                     }
 
@@ -370,7 +371,7 @@ sub import_contents {
 
                     ## Save entry.
                     unless ($no_save) {
-                        $cb->(MT->translate("Saving entry ('[_1]')...", $entry->title));
+                        $cb->(MT->translate("Saving entry ('[_1]')...", encode_html($entry->title)));
                         if ($entry->save) {
                             $cb->(MT->translate("ok (ID [_1])", $entry->id) . "\n");
                         } else {
@@ -426,7 +427,7 @@ sub import_contents {
                     ## Save comments.
                     for my $comment (@comments) {
                         $comment->entry_id($entry->id);
-                        $cb->(MT->translate("Creating new comment (from '[_1]')...", $comment->author));
+                        $cb->(MT->translate("Creating new comment (from '[_1]')...", encode_html($comment->author)));
                         if ($comment->save) {
                             $cb->(MT->translate("ok (ID [_1])", $comment->id) . "\n");
                         } else {
@@ -443,7 +444,7 @@ sub import_contents {
                                 "Entry has no MT::Trackback object!"));
                         for my $ping (@pings) {
                             $ping->tb_id($tb->id);
-                            $cb->(MT->translate("Creating new ping ('[_1]')...", $ping->title));
+                            $cb->(MT->translate("Creating new ping ('[_1]')...", encode_html($ping->title)));
                             if ($ping->save) {
                                 $cb->(MT->translate("ok (ID [_1])", $ping->id) . "\n");
                             } else {

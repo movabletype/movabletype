@@ -6,14 +6,14 @@ use MT;
 use MT::Test;
 use MT::Util qw( encode_html decode_html wday_from_ts format_ts dirify
                  convert_high_ascii encode_xml decode_xml substr_wref
-                 trim ltrim rtrim );
+                 trim ltrim rtrim remove_html );
 use MT::I18N qw( encode_text );
 use strict;
 
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
-BEGIN { plan tests => 92 };
+BEGIN { plan tests => 96 };
 
 ok(substr_wref("Sabado", 0, 3), "Sab"); #1
 ok(substr_wref("S&agrave;bado", 0, 3), "S&agrave;b"); #2
@@ -130,6 +130,10 @@ ok(trim(' sunday'), 'sunday'); #90
 ok(trim(' sunday '), 'sunday'); #91
 ok(trim(' sunday monday '), 'sunday monday'); #92
 
+ok(remove_html('<![CDATA[foo]]>'), '<![CDATA[foo]]>', "remove html preserves CDATA");
+ok(remove_html('<![CDATA[]]><script>alert("foo")</script><![CDATA[]]>'), '<![CDATA[]]>alert("foo")<![CDATA[]]>', "remove html prevents abuse");
+ok(remove_html('<![CDATA[one]]><script>alert("foo")</script><![CDATA[two]]>'), '<![CDATA[one]]>alert("foo")<![CDATA[two]]>', "remove html prevents abuse, saves plain text");
+ok(remove_html('<![CDATA[<foo>]]><script>alert("foo")</script><![CDATA[two]]>'), '<![CDATA[&lt;foo>]]>alert("foo")<![CDATA[two]]>', "remove html prevents abuse, saves plain text, escapes inner < characters");
 
 =pod
 

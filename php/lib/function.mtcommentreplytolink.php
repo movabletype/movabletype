@@ -19,7 +19,7 @@ function smarty_function_mtcommentreplytolink($args, &$ctx) {
 
     $comment_author = $comment['comment_author'];
     require_once("MTUtil.php");
-    $comment_author = encode_js($comment_author);
+    $comment_author = encode_html(encode_js($comment_author));
 
     $onclick = sprintf($onclick, $comment['comment_id'], $comment_author);
     return sprintf("<a title=\"%s\" href=\"javascript:void(0);\" onclick=\"$onclick\">%s</a>",

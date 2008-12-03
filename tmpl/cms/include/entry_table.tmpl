@@ -168,9 +168,9 @@
                 <td class="author">
             <mt:if name="is_editable">
                     <input type="hidden" name="author_id_<$mt:var name="id"$>" value="<$mt:var name="row_author_id"$>" id="entry_author_id_<$mt:var name="id"$>">
-                    <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_select_author', 'blog_id=<$mt:var name="blog_id"$>&amp;multi=0&amp;idfield=entry_author_id_<$mt:var name="id"$>&amp;namefield=entry_author_name_<$mt:var name="id"$>')"><span id="entry_author_name_<$mt:var name="id"$>"><$mt:var name="row_author_name"$></span></a>
+                    <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_select_author', 'blog_id=<$mt:var name="blog_id"$>&amp;multi=0&amp;idfield=entry_author_id_<$mt:var name="id"$>&amp;namefield=entry_author_name_<$mt:var name="id"$>')"><span id="entry_author_name_<$mt:var name="id"$>"><$mt:var name="row_author_name" escape="html"$></span></a>
             <mt:else>
-                    <$mt:var name="author_name"$>
+                    <$mt:var name="author_name" escape="html"$>
             </mt:if>
                 </td>
         <mt:unless name="blog_view">

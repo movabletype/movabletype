@@ -77,7 +77,9 @@ function togglePerms(c) {
     }
 }
 function passwordResetConfirm() {
-    if (confirm('<__trans phrase="_WARNING_PASSWORD_RESET_SINGLE" params="<mt:var name="name" escape="js">%%<mt:var name="email" escape="js">">')) {
+    var username = '<mt:var name="name" escape="js">';
+    var email = '<mt:var name="email" escape="js">';
+    if (confirm('<__trans phrase="_WARNING_PASSWORD_RESET_SINGLE" params="'+username+'%%'+email+'">')) {
         document.forms['recover'].submit();
     }
 }

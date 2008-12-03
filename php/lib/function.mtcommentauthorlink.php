@@ -12,6 +12,8 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
     if (!$name && isset($args['default_name']))
         $name = $args['default_name'];
     $name or $name = $mt->translate("Anonymous");
+    require_once "MTUtil.php";
+    $name = encode_html( $name );
     $email = $comment['comment_email'];
     $url = $comment['comment_url'];
     if (isset($args['show_email']))
@@ -32,23 +34,22 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
 
     if ( $cmntr ) {
-        $name = isset($cmntr['author_nickname']) ? $cmntr['author_nickname'] : $name;
+        $name = isset($cmntr['author_nickname']) ? encode_html( $cmntr['author_nickname'] ) : $name;
         if ($cmntr['author_url'])
-            return sprintf('<a title="%s" href="%s"%s>%s</a>', $cmntr['author_url'], $cmntr['author_url'], $target, $name);
+            return sprintf('<a title="%s" href="%s"%s>%s</a>', encode_html( $cmntr['author_url'] ), encode_html( $cmntr['author_url'] ), $target, $name);
         return $name;
     } elseif ($show_url && $url) {
         require_once "function.mtcgipath.php";
         $cgi_path = smarty_function_mtcgipath($args, $ctx);
         $comment_script = $ctx->mt->config('CommentScript');
         $name = strip_tags($name);
-        $url = strip_tags($url);
-        $url = preg_replace('/>/', '&gt;', $url);
+        $url = encode_html( strip_tags($url) );
         if ($comment['comment_id'] && !isset($args['no_redirect']) && !isset($args['nofollowfy']))
             return sprintf('<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>', $url, $cgi_path, $comment_script, $comment['comment_id'], $target, $name);
         else
             return sprintf('<a title="%s" href="%s"%s>%s</a>', $url, $url, $target, $name);
     } elseif ($show_email && $email && is_valid_email($email)) {
-        $email = strip_tags($email);
+        $email = encode_html( strip_tags($email) );
         $str = 'mailto:' . $email;
         if ($args['spam_protect']) {
             $str = spam_protect($str);

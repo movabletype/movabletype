@@ -23,9 +23,9 @@
         class="stats-widget"
         label="<__trans phrase="Stats">">
         <ul class="object-stats">
-            <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></li>
+            <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
         <mt:if name="modified_by">
-            <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></li>
+            <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
         </mt:if>
         </ul>
     </mtapp:widget>

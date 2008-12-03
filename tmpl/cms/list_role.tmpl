@@ -73,7 +73,7 @@
             <td><mt:var name="description" escape="html"></td>
             <td><mt:var name="members"></td>
             <td><mt:var name="weblogs"></td>
-            <td><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+            <td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
         </tr>
     <mt:if name="view_expanded">
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave<mt:unless name="members"> inactive</mt:unless>">

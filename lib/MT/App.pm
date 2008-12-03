@@ -1971,7 +1971,7 @@ sub create_user_pending {
         }
 
         $url = $q->param('url');
-        if ( $url && !is_url($url) ) {
+        if ( $url && (!is_url($url) || ($url =~ m/[<>]/)) ) {
             return $app->error( $app->translate("URL is invalid.") );
         }
     }
@@ -1984,6 +1984,9 @@ sub create_user_pending {
     unless ( defined($name) && $name ) {
         return $app->error( $app->translate("User requires username.") );
     }
+    if ( $name =~ m/([<>])/) {
+        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Username"), encode_html( $1 ) ) );
+    }
 
     my $existing = MT::Author->exist( { name => $name } );
     return $app->error(
@@ -1994,6 +1997,9 @@ sub create_user_pending {
     unless ($nickname) {
         return $app->error( $app->translate("User requires display name.") );
     }
+    if ( $nickname =~ m/([<>])/) {
+        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
+    }
 
     my $email = $q->param('email');
     if ($email) {
@@ -2001,6 +2007,10 @@ sub create_user_pending {
             delete $param->{email};
             return $app->error(
                 $app->translate("Email Address is invalid.") );
+        }
+
+        if ( $email =~ m/([<>])/) {
+            return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) ) );
         }
     }
     else {

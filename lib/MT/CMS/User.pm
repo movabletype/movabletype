@@ -1565,6 +1565,10 @@ sub save_filter {
         }
         return $eh->error( $app->translate("User requires username") )
           if ( !$name );
+
+        if ( $name =~ m/([<>])/) {
+            return $eh->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Username"), encode_html( $1 ) ) );
+        }
     }
 
     # Display name is required for all auth types; for new users
@@ -1575,6 +1579,10 @@ sub save_filter {
         $app->param( 'nickname', $nickname );
         return $eh->error( $app->translate("User requires display name") )
           if ( !length( $nickname ) );
+
+        if ( $nickname =~ m/([<>])/) {
+            return $eh->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
+        }
     }
 
     require MT::Author;
@@ -1613,13 +1621,18 @@ sub save_filter {
             $app->translate("User requires password recovery word/phrase") )
           if ( !$app->param('hint') );
     }
+    my $email = $app->param('email');
     return $eh->error(
         MT->translate("Email Address is required for password recovery") )
-      unless $app->param('email');
+      unless $email;
+    if ( $email =~ m/([<>])/) {
+        return $eh->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) ) );
+    }
+
     if ( $app->param('url') ) {
         my $url = $app->param('url');
-        return $eh->error( MT->translate("Website URL is invalid") )
-          unless is_url($url);
+        return $eh->error( MT->translate("URL is invalid.") )
+          if !is_url($url) || ($url =~ m/[<>]/);
     }
     1;
 }
