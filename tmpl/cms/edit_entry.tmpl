@@ -352,12 +352,12 @@
             </mt:unless>
             <mt:unless name="new_object">
             <ul>
-                <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html"$>"></li>
+                <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
             <mt:if name="status_publish">
-                <li><__trans phrase="[_1] - Published by [_2]" params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>%%<$mt:var name="author_name" escape="html"$>"></li>
+                <li><__trans phrase="[_1] - Published by [_2]" params="<$MTDate ts="$authored_on_ts" relative="1" _default="$authored_on_formatted"$>%%<$mt:var name="author_name" escape="html" escape="html"$>"></li>
             </mt:if>
             <mt:if name="modified_by">
-                <li><__trans phrase="[_1] - Edited by [_2]" params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html"$>"></li>
+                <li><__trans phrase="[_1] - Edited by [_2]" params="<$MTDate ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
             </mt:if>
             </ul>
             </mt:unless>
@@ -897,7 +897,7 @@ function highlightSwitch(selection) {
     </mt:ignore>
 
 function listPreviousPings () {
-    window.open('<TMPL_VAR NAME=SCRIPT_URL>?__mode=pinged_urls&entry_id=<TMPL_VAR NAME=ID>&blog_id=<TMPL_VAR NAME=BLOG_ID>', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
+    window.open('<mt:var name="script_url">?__mode=pinged_urls&entry_id=<mt:var name="id" escape="html">&blog_id=<mt:var name="blog_id" escape="html">', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
 }
 /* ]]> */
         </script>

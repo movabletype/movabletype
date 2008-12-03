@@ -13,6 +13,7 @@ package MT::Plugin::Cloner;
 use strict;
 use MT 4;
 use base 'MT::Plugin';
+use MT::Util qw( encode_html );
 our $VERSION = '2.0';
 
 my $plugin = MT::Plugin::Cloner->new({
@@ -62,8 +63,8 @@ sub itemset_clone_blog {
     my $blog_id = shift @id;
     my $blog = MT::Blog->load($blog_id)
         or return $app->error($plugin->translate("Invalid blog_id"));
-    require MT::Util;
-    my $blog_name = MT::Util::encode_html($blog->name);
+    # double escape to survive decode_html in translate_templatized
+    my $blog_name = encode_html(encode_html($blog->name, 1), 1);
 
     # Set up and commence app output
     $app->{no_print_body} = 1;

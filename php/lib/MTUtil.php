@@ -1529,6 +1529,8 @@ function apply_text_filter ($ctx, $text, $filters) {
         foreach ($f as $filter) {
             if ($filter == '__default__') {
                 $filter = 'convert_breaks';
+            } elseif ($filter == '__sanitize__') {
+                $filter = 'sanitize';
             }
             if ($filter == 'convert_breaks') {
                 $text = html_text_transform($text);

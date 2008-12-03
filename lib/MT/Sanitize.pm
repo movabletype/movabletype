@@ -106,7 +106,7 @@ sub sanitize {
                                 $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;
                                 $dec_val =~ s/&#x0*3[Aa](?:=;|[^a-fA-F0-9])/:/;
 
-                                if ((my $prot) = $dec_val =~ m/^(.+?):/) {
+                                if ((my $prot) = $dec_val =~ m/^([\s\S]+?):/) {
                                     next if $prot =~ m/[\r\n\t]/;
                                     $prot =~ s/\s+//gs;
                                     next if $prot =~ m/[^a-zA-Z0-9\+]/;

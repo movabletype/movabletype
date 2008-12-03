@@ -708,6 +708,7 @@ use vars qw( @ISA %Lexicon );
 	'User requires password recovery word/phrase.' => 'パスワード再設定用のフレーズは必須です。',
 	'URL is invalid.' => 'URLが不正です。',
 	'User requires username.' => 'ユーザー名は必須です。',
+	'[_1] contains an invalid character: [_2]' => '[_1]に不正な文字( [_2] )が含まれています。',
 	'A user with the same name already exists.' => '同名のユーザーがすでに存在します。',
 	'User requires display name.' => '表示名は必須です。',
 	'Email Address is invalid.' => '不正なメールアドレスです。',

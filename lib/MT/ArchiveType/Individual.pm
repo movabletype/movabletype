@@ -9,6 +9,8 @@ package MT::ArchiveType::Individual;
 use strict;
 use base qw( MT::ArchiveType );
 
+use MT::Util qw( remove_html encode_html );
+
 sub name {
     return 'Individual';
 }
@@ -52,7 +54,7 @@ sub archive_file {
 
 sub archive_title {
     my $obj = shift;
-    $_[1]->title;
+    encode_html( remove_html( $_[1]->title ) );
 }
 
 sub archive_group_iter {

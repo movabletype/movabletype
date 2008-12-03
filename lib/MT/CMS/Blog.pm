@@ -1007,7 +1007,7 @@ sub start_rebuild_pages {
         my $entry = MT::Entry->load($entry_id)
             or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
         $param{build_type_name} =
-          $app->translate( "[_1] '[_2]'", $entry->class_label, $entry->title );
+          $app->translate( "[_1] '[_2]'", $entry->class_label, MT::Util::encode_html($entry->title) );
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
         for my $col (qw( is_new old_status old_next old_previous )) {

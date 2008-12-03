@@ -91,7 +91,7 @@
     </mt:loop>
     </mt:unless>
             <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
-            <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name"$>"></a></li>
+            <li id="user"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="html" escape="html"$>"><__trans phrase="Hi [_1]," params="<$mt:var name="author_name" escape="html" escape="html"$>"></a></li>
         <mt:if name="can_logout">
             <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Logout"></a></li>
         </mt:if>

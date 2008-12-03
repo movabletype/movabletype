@@ -10,7 +10,7 @@ use strict;
 use base 'MT::App';
 use MT::Author qw(AUTHOR);
 use MT::Util qw(perl_sha1_digest_hex ts2epoch epoch2ts ts2iso iso2ts
-    encode_html);
+    encode_html encode_url);
 use HTTP::Date qw(time2isoz str2time time2str);
 
 sub id {'feeds'}
@@ -259,7 +259,7 @@ sub process_log_feed {
     $param->{loop_entries} = \@entries;
     my $str = qq();
     for my $key ( $app->param ) {
-        $str .= "&amp;$key=" . $app->param($key);
+        $str .= "&amp;" . encode_url($key) . "=" . encode_url($app->param($key));
     }
     $str =~ s/^&amp;(.+)$/?$1/;
     $param->{feed_self} = $app->base . $app->app_path . $app->script . $str;

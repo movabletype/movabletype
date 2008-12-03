@@ -66,16 +66,19 @@ sub reset_db : Test(setup) {
           text => 'quux',
           status => 1, },
         { class => 'Bar',
+          __wait => 1,
           id => 1,
           foo_id => 2,
           name => 'bar0',
           status => 0, },
         { class => 'Bar',
+          __wait => 1,
           id => 2,
           foo_id => 2,
           name => 'bar1',
           status => 1, },
         { class => 'Bar',
+          __wait => 1,
           id => 3,
           foo_id => 1,
           name => 'bar2',
@@ -84,8 +87,10 @@ sub reset_db : Test(setup) {
 
     for my $data (@obj_data) {
         my $class = delete $data->{class};
+        my $wait = delete $data->{__wait};
         my $obj = $class->new;
         $obj->set_values($data);
+        sleep($wait) if $wait;
         $obj->save();
     }
 }
@@ -195,6 +200,61 @@ sub avg_group_by : Tests(7) {
     ok(!$status, 'avg_group_by only had two results');
 }
 
+sub max_group_by : Tests(7) {
+    my $mgb = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            {
+                'id' => \'=bar_foo_id',
+            }),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    my ($created_on, $foo_id) = $mgb->();
+    my $f1 = Foo->load(1);
+    my $b3 = Bar->load(3);
+    is($foo_id, $f1->id, 'max_group_by had a second result');
+    #is($created_on, $b3->created_on, 'max_group_by had a second result');
+
+    my $f2 = Foo->load(2);
+    my $b2 = Bar->load(2);
+    ($created_on, $foo_id) = $mgb->();
+    is($foo_id, $f2->id, 'max_group_by had a first result');
+    #is($created_on, $b2->created_on, 'max_group_by had a first result');
+
+    ($created_on, $foo_id) = $mgb->();
+    ok(!$created_on, 'max_group_by only had two results');
+
+    my $mgb2 = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            { 'id' => \'=bar_foo_id' },
+            { limit => 1 },
+        ),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    ($created_on, $foo_id) = $mgb2->();
+    is($foo_id, $f1->id, 'max_group_by with limit had a first result');
+    #is($created_on, $b3->created_on, 'max_group_by with limit had a first result');
+
+    ($created_on, $foo_id) = $mgb2->();
+    ok(!$created_on, 'max_group_by with limit only had one result');
+
+    my $mgb3 = Bar->max_group_by(undef, {
+        join => Foo->join_on(undef,
+            { 'id' => \'=bar_foo_id' },
+            { limit => 1, offset => 1 },
+        ),
+        group => ['foo_id'],
+        max => 'created_on',
+    });
+    ($created_on, $foo_id) = $mgb3->();
+    is($foo_id, $f2->id, 'max_group_by with limit and offset had a first result');
+    #is($created_on, $b2->created_on, 'max_group_by with limit and offset had a first result');
+
+    ($created_on, $foo_id) = $mgb3->();
+    ok(!$created_on, 'max_group_by with limit and offset only had one result');
+}
+
 sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar ));
 }
@@ -252,14 +312,17 @@ sub make_pc_data {
           status  => 10,      },
 
         { __class => 'Bar',
+          __wait   => 1,
           name    => 'Silverlight',
           status  => 2,
           foo_id  => 3,             },
         { __class => 'Bar',
+          __wait   => 1,
           name    => 'IronPython',
           status  => 3,
           foo_id  => 3,            },
         { __class => 'Bar',
+          __wait   => 1,
           name    => 'IronRuby',
           status  => 0,
           foo_id  => 1,          },
@@ -414,7 +477,7 @@ sub alias : Tests(2) {
         }
     );
     is_deeply(\@a_foos, [], 'No Foo has Bars with status=2 and status=0 (alias)');
-} 
+}
 
 sub conjunctions : Tests(4) {
     my $self = shift;
@@ -453,6 +516,38 @@ sub conjunctions : Tests(4) {
     are_objects(\@res, [ @foos[0,1,3,4] ], 'big -or results');
 }
 
+sub early_ending_iterators: Tests(4) {
+    my $self = shift;
+    $self->make_pc_data();
+    
+    my ($iter, $tmp, @tmp);
+    my @foo = map { Foo->load($_) } (1..5);
+
+    ## Load using descending sort (newest)
+    $iter = Foo->load_iter(undef,
+        { join => [ 'Bar', 'foo_id',
+                    undef,
+                    { sort => 'created_on',
+                      direction => 'descend',
+                      unique => 1 } ] });
+    $tmp = $iter->();
+    is_object($tmp, $foo[0], '(early ending iterator) Foo associated with the newest Bar is Foo #1');
+    eval { $iter->end(); };
+    is($@, q(), 'Iterator can be ended #1');
+
+    ## Load using ascending sort (oldest)
+    $iter = Foo->load_iter(undef,
+        { join => [ 'Bar', 'foo_id',
+                    undef,
+                    { sort => 'created_on',
+                      direction => 'ascend',
+                      unique => 1 } ] });
+    $tmp = $iter->();
+    is_object($tmp, $foo[2], '(early ending iterator) Foo associated with the oldest Bar is Foo #3');
+    eval { $iter->end(); };
+    is($@, q(), 'Iterator can be ended #2');
+}
+
 sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar ));
 }
@@ -461,7 +556,7 @@ sub clean_db : Test(teardown) {
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', +126);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', +137);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);
@@ -646,6 +741,23 @@ $tmp = Foo->load(undef, {
     offset => 1 });
 is_object($tmp, $foo[0], 'Second oldest Foo is Foo #1');
 
+## This should load only the first Foo object (because limit is 1).
+@tmp = Foo->load(undef, {
+    direction => 'descend',
+    sort => 'created_on',
+    fetchonly => ['id'],
+    limit => 1 });
+is($tmp[0]->id, $foo[0]->id, 'The newest Foo is Foo #1 (fetchonly)');
+
+## Should load the first Foo object (ascend with offset of 1).
+@tmp = Foo->load(undef, {
+    direction => 'ascend',
+    sort => 'created_on',
+    fetchonly => ['id'],
+    limit => 1,
+    offset => 1 });
+is($tmp[0]->id, $foo[0]->id, 'Second oldest Foo is Foo #1 (fetchonly)');
+
 ## Now test join loads.
 ## First we need to create a couple of Bar objects.
 $bar[0] = Bar->new;
@@ -690,6 +802,19 @@ is(Foo->count(undef,
                   unique => 1 } ] });
 are_objects(\@tmp, \@foo, 'unique Foos associated with Bars, oldest first');
 
+## Use load_iter and do the same thing.
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { join => [ 'Bar', 'foo_id',
+                undef,
+                { sort => 'created_on',
+                  direction => 'descend',
+                  unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, \@foo, 'unique Foos associated with Bars, oldest first, by load_iter');
+
 ## Load all Foo objects in order of most recently
 ## created Bar object. No uniqueness requirement.
 @tmp = Foo->load(undef,
@@ -698,6 +823,18 @@ are_objects(\@tmp, \@foo, 'unique Foos associated with Bars, oldest first');
                 { sort => 'created_on',
                   direction => 'descend', } ] });
 are_objects(\@tmp, [ @foo, $foo[1] ], 'Foos associated with Bars, oldest first');
+
+## Use load_iter and do the same thing.
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { join => [ 'Bar', 'foo_id',
+                undef,
+                { sort => 'created_on',
+                  direction => 'descend', } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ @foo, $foo[1] ], 'Foos associated with Bars, oldest first, by load_iter');
 
 ## Load last 1 Foo object in order of most recently
 ## created Bar object.
@@ -710,6 +847,20 @@ are_objects(\@tmp, [ @foo, $foo[1] ], 'Foos associated with Bars, oldest first')
                   limit => 1, } ] });
 are_objects(\@tmp, [ $foo[0] ], 'Foos associated with oldest Bar');
 
+## Use load_iter to do the same thing.
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { join => [ 'Bar', 'foo_id',
+                undef,
+                { sort => 'created_on',
+                  direction => 'descend',
+                  unique => 1,
+                  limit => 1, } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ $foo[0] ], 'Foos associated with oldest Bar, by load_iter');
+
 ## Load all Foo objects where Bar.name = 'bar0'
 @tmp = Foo->load(undef,
     { join => [ 'Bar', 'foo_id',
@@ -719,12 +870,35 @@ are_objects(\@tmp, [ $foo[0] ], 'Foos associated with oldest Bar');
                   unique => 1, } ] });
 are_objects(\@tmp, [ $foo[1] ], 'Foos associated with Bars named bar0');
 
+## Use load_iter and do the same thing.
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { join => [ 'Bar', 'foo_id',
+                { name => 'bar0' },
+                { sort => 'created_on',
+                  direction => 'descend',
+                  unique => 1, } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ $foo[1] ], 'Foos associated with Bars named bar0, by load_iter');
+
 ## foo[1] is older than foo[0] because we overrode the timestamp,
 ## so this should load foo[0]
 @tmp = Foo->load(undef,
     { sort => 'created_on', direction => 'descend', limit => 1,
     join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
 are_objects(\@tmp, [ $foo[0] ], 'One Foo associated with Bars of status=0');
+
+## and load_iter
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { sort => 'created_on', direction => 'descend', limit => 1,
+    join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ $foo[0] ], 'One Foo associated with Bars of status=0, by load_iter');
 
 ## This is the same join as the last one, but without the limit--so
 ## we should get both Foo objects this time, in descending order.
@@ -733,12 +907,32 @@ are_objects(\@tmp, [ $foo[0] ], 'One Foo associated with Bars of status=0');
       join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
 are_objects(\@tmp, \@foo, 'All Foos associated with Bars of status=0');
 
+## and load_iter.
+@tmp = ();
+$iter = Foo->load_iter(undef,
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, \@foo, 'All Foos associated with Bars of status=0, by load_iter');
+
 ## Filter join results by providing a value for 'status'; only Foo[0]
 ## has a 'status' == 2, so only that record should be returned.
 @tmp = Foo->load({ status => 2 },
     { sort => 'created_on', direction => 'descend',
       join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
 are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 associated with Bars of status=0');
+
+## and load_iter.
+@tmp = ();
+$iter = Foo->load_iter({ status => 2 },
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', 'foo_id', { status => 0 }, { unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 associated with Bars of status=0, by load_iter');
 
 # Join across a column.
 @tmp = Foo->load({},
@@ -750,6 +944,25 @@ are_objects(\@tmp, \@foo, 'Foos loaded by explicit join across columns');
     { sort => 'created_on', direction => 'descend',
       join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 0 }, { unique => 1 } ] });
 are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 loaded by explicit join across columns');
+
+# and load_iter.
+@tmp = ();
+$iter = Foo->load_iter({},
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 0 }, { unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, \@foo, 'Foos loaded by explicit join across columns, by load_iter');
+
+@tmp = ();
+$iter = Foo->load_iter({ status => 2 },
+    { sort => 'created_on', direction => 'descend',
+      join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 0 }, { unique => 1 } ] });
+while ( my $obj = $iter->() ) {
+    push @tmp, $obj;
+}
+are_objects(\@tmp, [ $foo[0] ], 'Foos of status=2 loaded by explicit join across columns, by load_iter');
 
 ## TEST EXISTS METHOD
 ok($foo->exists, 'First Foo long saved exists in db');

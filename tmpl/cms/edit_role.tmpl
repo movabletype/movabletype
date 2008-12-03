@@ -256,7 +256,7 @@ TC.attachLoadEvent( rectifyAll );
                 id="created_by"
                 label="<__trans phrase="Created by">"
                 hint="">
-                <p><mt:if name="created_by"><mt:var name="created_by"><mt:else><em><__trans phrase="System"></em></mt:if></p>
+                <p><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></p>
             </mtapp:setting>
         </mt:if>
     </fieldset>

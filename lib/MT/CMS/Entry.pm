@@ -188,7 +188,7 @@ sub edit {
     }
     my $cats = $q->param('category_ids');
     if ( defined $cats ) {
-        if ( my @cats = split /,/, $cats ) {
+        if ( my @cats = grep { $_ =~ /^\d+/ } split /,/, $cats ) {
             $cat_id = $cats[0];
             %places = map { $_ => 1 } @cats;
         }
@@ -1929,7 +1929,7 @@ sub quickpost_js {
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script = qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&title='+encodeURIComponent(d.title)+'&text='+encodeURIComponent(d.location.href)+encodeURIComponent('<br/><br/>')+encodeURIComponent(t),'_blank','scrollbars=yes,status=yes,resizable=yes,location=yes'))!;
     # Translate the phrase here to avoid ActivePerl DLL bug.
-    $app->translate('<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.', encode_html($script), $blog->name);
+    $app->translate('<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.', encode_html($script), encode_html($blog->name));
 }
 
 sub can_view {

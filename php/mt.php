@@ -5,9 +5,9 @@
 #
 # $Id: mt.php 2703 2008-07-03 22:19:49Z bchoate $
 
-define('VERSION', '4.21');
-define('VERSION_ID', '4.21');
-define('PRODUCT_VERSION', '4.21');
+define('VERSION', '4.23');
+define('VERSION_ID', '4.23');
+define('PRODUCT_VERSION', '4.23');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -106,7 +106,7 @@ class MT {
         $ctx =& $this->context();
 
         foreach ($plugin_paths as $path) {
-            if ($dh = opendir($path)) {
+            if ($dh = @opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")
                          continue;

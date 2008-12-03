@@ -30,7 +30,7 @@
             ><__trans phrase="Publish"></a>
     <mt:else if name="template_type" eq="archive">
         <a href="javascript:void(0)"
-            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="template_type" default="template"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">', 'id', 'publish_archive_templates', {}, '<__trans phrase="to publish" escape="js">'); return false;"
+            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="template_type" default="template" escape="html"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">', 'id', 'publish_archive_templates', {}, '<__trans phrase="to publish" escape="js">'); return false;"
             accesskey="a"
             title="<__trans phrase="Publish selected templates (a)">"
             ><__trans phrase="Publish"></a>
@@ -73,7 +73,7 @@
         </thead>
         <tbody>
     </mt:if>
-            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template"$>">
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
                 <td class="cb"><input type="checkbox" name="id" class="select" value="<mt:var name="id">" /></td>
                 <td class="template-name"><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"><mt:var name="name" escape="html"></a></td>
     <mt:if name="template_type" like="/(index|archive)/">
@@ -138,7 +138,7 @@
     </mt:if>
 <mt:else>
     <mt:if name="blog_id">
-    <div id="<$mt:var name="template_type" default="template"$>-listing" class="listing zero-state-listing zero-state">
+    <div id="<$mt:var name="template_type" default="template" escape="html"$>-listing" class="listing zero-state-listing zero-state">
         <div class="listing-header">
             <$mt:var name="listing_header"$>
         </div>

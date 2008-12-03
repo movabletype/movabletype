@@ -1749,6 +1749,7 @@ sub edit_commenter_profile {
 
     my ( $sess_obj, $commenter ) = $app->get_commenter_session();
     if ($commenter) {
+        $app->user($commenter);
         $app->{session} = $sess_obj;
 
         my $url;
@@ -1775,6 +1776,7 @@ sub edit_commenter_profile {
             email    => $commenter->email,
             hint     => $commenter->hint,
             url      => $commenter->url,
+            blog_id  => $blog_id,
             $entry_id ? ( entry_url => $url ) : ( return_url => $url ),
         };
         $param->{ 'auth_mode_' . $commenter->auth_type } = 1;
@@ -1798,21 +1800,28 @@ sub save_commenter_profile {
 
     my %param
         = map { $_ => scalar( $q->param($_) ) }
-        qw( name nickname email password pass_verify hint url entry_url return_url external_auth);
+        qw( name nickname email password pass_verify hint url entry_url return_url external_auth blog_id );
+    $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
 
     $app->user($cmntr);
     $app->{session} = $sess_obj;
+
     my $original = $cmntr->clone();
 
     $app->validate_magic
         or return $app->handle_error( $app->translate('Invalid request') );
 
     unless ( $param{external_auth} ) {
-        unless ( $param{nickname} && $param{email} && $param{hint} ) {
+        my $nickname = $param{nickname};
+        unless ( $nickname && $param{email} && $param{hint} ) {
             $param{error} = $app->translate(
                 'All required fields must have valid values.');
+            return $app->build_page( 'profile.tmpl', \%param );
+        }
+        if ( $nickname =~ m/([<>])/) {
+            $param{error} = $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) );
             return $app->build_page( 'profile.tmpl', \%param );
         }
         if ( $param{password} ne $param{pass_verify} ) {
@@ -1820,11 +1829,16 @@ sub save_commenter_profile {
             return $app->build_page( 'profile.tmpl', \%param );
         }
     }
-    if ( $param{email} && !is_valid_email( $param{email} ) ) {
+    my $email = $param{email};
+    if ( $email && !is_valid_email( $email ) ) {
         $param{error} = $app->translate('Email Address is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }
-    if ( $param{url} && !is_url( $param{url} ) ) {
+    if ( $email && $email =~ m/([<>])/) {
+        $param{error} = $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) );
+        return $app->build_page( 'profile.tmpl', \%param );
+    }
+    if ( $param{url} && (!is_url( $param{url} ) || ($param{url} =~ m/[<>]/) ) ) {
         $param{error} = $app->translate('URL is invalid.');
         return $app->build_page( 'profile.tmpl', \%param );
     }

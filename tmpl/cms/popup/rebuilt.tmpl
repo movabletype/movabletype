@@ -8,7 +8,8 @@
     class="success">
     <p>
     <mt:if name="all">
-    <__trans phrase="The files for [_1] have been published." params="<strong><mt:var name="blog_name" escape="html"></strong>">
+    <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
+    <__trans phrase="The files for [_1] have been published." params="<strong><mt:var name="blog_name" escape="html" escape="html"></strong>">
     <mt:else>
     <mt:if name="is_one_index">
     <__trans phrase="Your [_1] has been published." params="<mt:var name="type" escape="html">">

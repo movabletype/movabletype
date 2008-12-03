@@ -19,7 +19,7 @@ setTimeout('doRedirect()', 200);
     <mt:include name="include/header.tmpl">
 <mt:else>
     <$mt:setvar name="screen_type" value="popup-screen"$>
-    <mt:setvarblock name="page_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html">"></mt:setvarblock>
+    <mt:setvarblock name="page_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
     <mt:include name="include/chromeless_header.tmpl">
 </mt:if>
 
