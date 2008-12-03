@@ -2502,23 +2502,22 @@ EOT
             login_form => <<YAHOO,
 <form method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="yahoo.com" />
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
 <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Yahoo" />
 <fieldset>
 <mtapp:setting
     id="yahoo_display"
-    show_label="0"
-    label="<__trans phrase="Your Yahoo! Username">">
-<input type="hidden" name="key" value="Yahoo" />
-<input type="hidden" name="openid_url" value="yahoo.com" />
+    show_label="0">
 </mtapp:setting>
 <div class="pkg">
   <p class="left">
     <input src="<mt:var name="static_uri">images/comment/yahoo-button.png" type="image" name="submit" value="<__trans phrase="Sign In">" />
   </p>
 </div>
-<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.com/">Turn on OpenID for your Yahoo! account now</a></p>
+<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.com/"><__trans phrase="Turn on OpenID for your Yahoo! account now"></a></p>
 </fieldset>
 </form>
 YAHOO
