@@ -2055,7 +2055,7 @@ sub translate_naughty_words {
     my @fields = split( /\s*,\s*/, $fields || '' );
     foreach my $field (@fields) {
         if ( $entry->has_column($field) ) {
-            $entry->column($field, _convert_word_chars($entry->column($field), $smart_replace));
+            $entry->column($field, convert_word_chars($entry->column($field), $smart_replace));
         } elsif ( $field eq 'tags' ) {
             my @tags
                 = map { convert_word_chars( $_, $smart_replace ) }
