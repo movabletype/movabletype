@@ -2475,9 +2475,16 @@ Vox
 <mtapp:setting
     id="GoogleOpenId_display"
     hint="<__trans phrase="Sign in using your Gmail account">">
-    <input type="image" src="<mt:var name="static_uri">images/comment/google_button.gif" width="150" height="30" />
-    <p><__trans phrase="Click the button to sign in using your Gmail (Google) account."></p>
+    <p>Sign in to Movable Type with your<br /><img src="<mt:var name="static_uri">images/comment/google_transparent.gif" width="61" height="25" /> <strong>Account</strong></p>
 </mtapp:setting>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
+</div>
 </fieldset>
 </form>
 EOT
@@ -2489,8 +2496,8 @@ EOT
                 return 1;
             },
             login_form_params => \&_commenter_auth_params,
-            logo => 'images/comment/signin_google.png',
-            logo_small => 'images/comment/signin_google_small.gif',
+            logo => 'images/comment/google.png',
+            logo_small => 'images/comment/google_logo.png',
             order => 13,
         },
         'Yahoo' => {
