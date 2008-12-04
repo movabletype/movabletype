@@ -6287,6 +6287,11 @@ Supported values: display_name, name, created_on.
 
 Supported values: ascend, descend.
 
+=item * any_type (optional; default "0")
+
+Pass a value of '1' for this attribute to cause it to select users of
+any type associated with the blog, including commenters.
+
 =item * roles
 
 A comma separated list of roles used to select users by.
@@ -6426,10 +6431,12 @@ sub _hdlr_authors {
             require MT::Permission;
             $args{'join'} =
                 MT::Permission->join_on( 'author_id', undef, \%blog_args );
-            push @filters, sub {
-                $_[0]->permissions($blog_id)->can_administer_blog
-                    || $_[0]->permissions($blog_id)->can_post;
-            };
+            if ( ! $args->{any_type} ) {
+                push @filters, sub {
+                    $_[0]->permissions($blog_id)->can_administer_blog
+                        || $_[0]->permissions($blog_id)->can_post;
+                };
+            }
         }
     }
 
