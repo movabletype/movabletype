@@ -878,7 +878,7 @@ sub preview {
     return $app->error($app->translate('Can\'t load template.')) unless $tmpl;
 
     # translates naughty words when PublishCharset is NOT UTF-8
-    $app->_translate_naughty_words($entry);
+    MT::Util::translate_naughty_words($entry);
 
     $entry->convert_breaks( scalar $q->param('convert_breaks') );
         
@@ -1299,7 +1299,7 @@ $ao
     }
     my $is_new = $obj->id ? 0 : 1;
 
-    $app->_translate_naughty_words($obj);
+    MT::Util::translate_naughty_words($obj);
 
     $obj->modified_by( $author->id ) unless $is_new;
 
