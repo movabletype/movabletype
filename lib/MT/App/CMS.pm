@@ -2572,6 +2572,7 @@ sub load_entry_prefs {
 
 sub _convert_word_chars {
     my ( $app, $s ) = @_;
+
     return '' unless $s;
     return $s if 'utf-8' ne lc( $app->charset );
 
@@ -2582,56 +2583,14 @@ sub _convert_word_chars {
         : MT->config->NwcSmartReplace;
     return $s if $smart_replace == 2;
 
-    if ($smart_replace) {
-
-        # html character entity replacements
-        $s =~ s/\342\200\231/&#8217;/g;
-        $s =~ s/\342\200\230/&#8216;/g;
-        $s =~ s/\342\200\246/&#133;/g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/&#8212;/g;
-        $s =~ s/\342\200\234/&#8220;/g;
-        $s =~ s/\342\200\235/&#8221;/g;
-    }
-    else {
-
-        # ascii equivalent replacements
-        $s =~ s/\342\200[\230\231]/'/g;
-        $s =~ s/\342\200\246/.../g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/--/g;
-        $s =~ s/\342\200[\234\235]/"/g;
-    }
-
-    # While we're fixing Word, remove processing instructions with
-    # colons, as they can break PHP.
-    $s =~ s{ <\? xml:namespace [^>]*> }{}ximsg;
-
-    $s;
+    require MT::Util;
+    return MT::Util::convert_word_chars($s, $smart_replace);
 }
 
 sub _translate_naughty_words {
-    my $app     = shift;
-    my ($entry) = @_;
-    my $blog    = $app->blog;
-    return if $blog->smart_replace == 2;
-
-    my $fields = $blog->smart_replace_fields;
-    return unless $fields;
-
-    my @fields = split( /\s*,\s*/, $fields || '' );
-    foreach my $field (@fields) {
-        if ( $entry->can($field) ) {
-            if ( $field eq 'tags' ) {
-                my @tags
-                    = map { _convert_word_chars( $app, $_ ) } $entry->tags;
-                $entry->set_tags(@tags);
-            }
-            else {
-                $entry->$field( _convert_word_chars( $app, $entry->$field ) );
-            }
-        }
-    }
+    my ($app, $entry) = @_;
+    require MT::Util;
+    return MT::Util::translate_naughty_words($entry);
 }
 
 sub autosave_session_obj {

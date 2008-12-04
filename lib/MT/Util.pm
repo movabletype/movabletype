@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time make_string_csv );
+                 weaken log_time make_string_csv sanitize_embed );
 
 {
 my $Has_Weaken;
@@ -1650,7 +1650,7 @@ sub dsa_verify {
     if ($has_crypt_dsa && !$param{ForcePerl}) {
         $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
         $param{Signature} = bless $param{Signature}, 'Crypt::DSA::Signature';
-        Crypt::DSA->new->verify(%param);
+        return Crypt::DSA->new->verify(%param);
     } else {
         require Math::BigInt;
 
@@ -1664,26 +1664,26 @@ sub dsa_verify {
                 unless $param{Message};
             $dgst = perl_sha1_digest($param{Message});
         }
-    Carp::croak "dsa_verify: Need a Signature"
-        unless $sig = $param{Signature};
-    my $r = new Math::BigInt($sig->{r});
-    my $s = new Math::BigInt($sig->{'s'});
-    my $p = new Math::BigInt($key->{p});
-    my $q = new Math::BigInt($key->{'q'});
-    my $g = new Math::BigInt($key->{g});
-    my $pub_key = new Math::BigInt($key->{pub_key});
-    my $u2 = $s->bmodinv($q);
+        Carp::croak "dsa_verify: Need a Signature"
+            unless $sig = $param{Signature};
+        my $r = new Math::BigInt($sig->{r});
+        my $s = new Math::BigInt($sig->{'s'});
+        my $p = new Math::BigInt($key->{p});
+        my $q = new Math::BigInt($key->{'q'});
+        my $g = new Math::BigInt($key->{g});
+        my $pub_key = new Math::BigInt($key->{pub_key});
+        my $u2 = $s->bmodinv($q);
 
-    my $u1 = new Math::BigInt("0x" . unpack("H*", $dgst));
+        my $u1 = new Math::BigInt("0x" . unpack("H*", $dgst));
 
-    $u1 = $u1->bmul($u2)->bmod($q);
-    $u2 = $r->bmul($u2)->bmod($q);
-    my $t1 = $g->bmodpow($u1, $p);
-    my $t2 = $pub_key->bmodpow($u2, $p);
-    $u1 = $t1->bmul($t2)->bmod($key->{p});
-    $u1 = $u1->bmod($key->{'q'});
-    my $result = $u1->bcmp($sig->{r});
-    return defined($result) ? $result == 0 : 0;
+        $u1 = $u1->bmul($u2)->bmod($q);
+        $u2 = $r->bmul($u2)->bmod($q);
+        my $t1 = $g->bmodpow($u1, $p);
+        my $t2 = $pub_key->bmodpow($u2, $p);
+        $u1 = $t1->bmul($t2)->bmod($key->{p});
+        $u1 = $u1->bmod($key->{'q'});
+        my $result = $u1->bcmp($sig->{r});
+        return defined($result) ? $result == 0 : 0;
     }
 }
 }
@@ -1945,6 +1945,34 @@ sub get_newsbox_html {
     return $result;
 }
 
+sub sanitize_embed {
+    my ($str) = @_;
+
+    require MT::Sanitize;
+
+    my $spec = 'embed src width height href allowfullscreen type,object width height,param name value';
+    my $sanitized = MT::Sanitize->sanitize($str, $spec);
+    my @domains = extract_domains($sanitized);
+
+    my @whitelist = map { lc $_ } split /\s+/s, (MT->config('EmbedDomainWhitelist') || '');
+
+    my $re = '';
+    foreach my $d ( @whitelist ) {
+        $re .= '|' unless $re eq '';
+        $re .= '(?:\A|\.)' . quotemeta($d);
+    }
+    $re = qr/($re)$/;
+
+    foreach my $d ( @domains ) {
+        unless ($d =~ m/$re/) {
+            my $err = MT->translate("Invalid domain: '[_1]'", $d);
+            die $err;
+        }
+    }
+
+    return $sanitized;
+}
+
 sub log_time {
     return format_ts(
         '[%Y-%m-%d %H:%M:%S]',
@@ -1973,6 +2001,68 @@ sub make_string_csv {
         $value = "\"$value\"";
     }
     return MT::I18N::encode_text( $value, undef, $enc );
+}
+
+sub convert_word_chars {
+    my ( $s, $smart_replace ) = @_;
+
+    return '' unless $s;
+    return $s if $smart_replace == 2;
+
+    if ($smart_replace) {
+        # html character entity replacements
+        $s =~ s/\342\200\231/&#8217;/g;
+        $s =~ s/\342\200\230/&#8216;/g;
+        $s =~ s/\342\200\246/&#133;/g;
+        $s =~ s/\342\200\223/-/g;
+        $s =~ s/\342\200\224/&#8212;/g;
+        $s =~ s/\342\200\234/&#8220;/g;
+        $s =~ s/\342\200\235/&#8221;/g;
+    }
+    else {
+        # ascii equivalent replacements
+        $s =~ s/\342\200[\230\231]/'/g;
+        $s =~ s/\342\200\246/.../g;
+        $s =~ s/\342\200\223/-/g;
+        $s =~ s/\342\200\224/--/g;
+        $s =~ s/\342\200[\234\235]/"/g;
+    }
+
+    # While we're fixing Word, remove processing instructions with
+    # colons, as they can break PHP.
+    $s =~ s{ <\? xml:namespace [^>]*> }{}ximsg;
+
+    return $s;
+}
+
+sub translate_naughty_words {
+    my ($entry) = @_;
+
+    my $app = MT->instance;
+    return if 'utf-8' ne lc( $app->charset );
+
+    my $blog = $entry->blog;
+
+    my $fields = $blog->smart_replace_fields;
+    return unless $fields;
+
+    my $smart_replace
+        = $blog
+        ? $blog->smart_replace
+        : $app->config->NwcSmartReplace;
+    return if $smart_replace == 2;
+
+    my @fields = split( /\s*,\s*/, $fields || '' );
+    foreach my $field (@fields) {
+        if ( $entry->has_column($field) ) {
+            $entry->column($field, _convert_word_chars($entry->column($field), $smart_replace));
+        } elsif ( $field eq 'tags' ) {
+            my @tags
+                = map { convert_word_chars( $_, $smart_replace ) }
+                    $entry->tags;
+            $entry->set_tags(@tags);
+        }
+    }
 }
 
 1;
