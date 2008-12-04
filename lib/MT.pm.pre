@@ -2475,7 +2475,7 @@ Vox
 <mtapp:setting
     id="GoogleOpenId_display"
     hint="<__trans phrase="Sign in using your Gmail account">">
-    <p>Sign in to Movable Type with your<br /><img src="<mt:var name="static_uri">images/comment/google_transparent.gif" width="61" height="25" /> <strong>Account</strong></p>
+    <p>Sign in to Movable Type with your<br /><strong style="font-size:16px;"><img alt="Google" src="<mt:var name="static_uri">images/comment/google_transparent.gif" width="75" height="32" style="vertical-align:middle;" /> Account</strong></p>
 </mtapp:setting>
 <div class="actions-bar actions-bar-login">
     <div class="actions-bar-inner pkg actions">
