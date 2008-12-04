@@ -6501,6 +6501,9 @@ sub _hdlr_authors {
             $args{'sort'} = $args->{sort_by};
         }
     }
+    if ($args->{'limit'}) {
+        $args{limit} = $args->{limit};
+    }
 
     if ($re_sort) {
         $args{'direction'} = 'ascend';
