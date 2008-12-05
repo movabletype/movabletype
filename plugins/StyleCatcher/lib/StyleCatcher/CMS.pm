@@ -100,7 +100,7 @@ sub view {
         # blog_loop   => \@blog_loop,
         blog_id => $blog_id,
         themes_json => JSON::objToJson(
-            $theme_data, { pretty => 1, indent => 2, delimiter => 1 }
+            $theme_data, { pretty => 1, indent => 2 }
         ),
         auto_fetch => $url ? 1 : 0,
         style_library => $stylelibrary,
