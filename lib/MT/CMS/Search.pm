@@ -634,7 +634,9 @@ sub do_search_replace {
         }
         $param{object_type} = $type;
         if ( exists $api->{results_table_template} ) {
-            $param{results_template} = $api->{results_table_template};
+            my $tmpl = _load_template( $app, $api->{results_table_template},
+                exists( $api->{plugin} ) ? $api->{plugin} : undef );
+            $param{results_template} = $tmpl;
         }
         else {
             $param{results_template} = _default_results_table_template($app, $type, 1, $class->class_label_plural);
@@ -642,7 +644,9 @@ sub do_search_replace {
     }
     else {
         if ( exists $api->{no_results_template} ) {
-            $param{results_template} = $api->{no_results_template};
+            my $tmpl = _load_template( $app, $api->{no_results_template},
+                exists( $api->{plugin} ) ? $api->{plugin} : undef );
+            $param{results_template} = $tmpl;
         }
         else {
             $param{results_template} = _default_results_table_template($app, $type, 0, $class->class_label_plural);
@@ -728,6 +732,37 @@ sub _default_results_table_template {
         </mt:if>
 TMPL
     }
+}
+
+sub _load_template {
+    my $app = shift;
+    my ( $tmpl, $plugin ) = @_;
+
+    my $meth;
+    if ( ref $tmpl eq 'HASH' ) {
+        $meth = $tmpl->{handler} || $tmpl->{code};
+    }
+    elsif ( $tmpl =~ m/^\$(\w+)::/ ) {
+        $meth = $tmpl;
+    }
+    $tmpl = $app->handler_to_coderef($meth) if $meth;
+    if ( ref $tmpl eq 'CODE' ) {
+        $tmpl = $tmpl->($plugin || $app, @_);
+    }
+    if ($tmpl !~ /\s/) {
+        # no spaces in $tmpl; must be a filename...
+        my $tmpl_obj;
+        if ( $plugin ) {
+            $tmpl_obj = $plugin->load_tmpl($tmpl);
+        }
+        else {
+            $tmpl_obj = $app->load_tmpl($tmpl);
+        }
+        if ( $tmpl_obj ) {
+            $tmpl = $tmpl_obj->text;
+        }
+    }
+    return $tmpl;
 }
 
 1;
