@@ -163,3 +163,5 @@ Makefile
 index\.html\..*
 readme\.html\..*
 build-language-stamp
+^mt-config.cgi$
+
