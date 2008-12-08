@@ -3518,7 +3518,7 @@ sub _hdlr_get_var {
 
     if (ref($value) && $args->{to_json}) {
         require JSON;
-        return JSON::objToJson($value);
+        return JSON::to_json($value);
     }
     return defined $value ? $value : "";
 }
@@ -11615,7 +11615,7 @@ sub _hdlr_user_session_state {
 
     my ( $state, $commenter ) = $app->session_state();
     require JSON;
-    my $json = JSON::objToJson($state);
+    my $json = JSON::to_json($state);
     return $json;
 }
 

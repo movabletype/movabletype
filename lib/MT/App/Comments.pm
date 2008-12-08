@@ -1509,7 +1509,7 @@ sub session_js {
     require JSON;
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = JSON::objToJson($state);
+    my $json = JSON::to_json($state);
     $app->print( "$jsonp(" . $json . ");\n" );
     return undef;
 }

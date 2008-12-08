@@ -401,9 +401,8 @@ sub complete_insert {
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
         require JSON;
-        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
         $param->{tags_js} =
-          $json->objToJson(
+          JSON::to_json(
             MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
 
@@ -655,7 +654,7 @@ sub build_asset_hasher {
         }
 
         @$row{keys %$meta} = values %$meta;
-        $row->{metadata_json} = JSON::objToJson($meta);
+        $row->{metadata_json} = JSON::to_json($meta);
         $row;
     };
 }

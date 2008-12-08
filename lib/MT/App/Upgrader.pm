@@ -205,7 +205,7 @@ sub upgrade {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = objToJson($steps);
+        $json_steps = JSON::to_json($steps);
     }
 
     $param{up_to_date} = $json_steps ? 0 : 1;
@@ -441,7 +441,7 @@ sub init_blog {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = objToJson($steps);
+        $json_steps = JSON::to_json($steps);
     }
 
     $param{installing}    = $install_mode;
@@ -487,7 +487,7 @@ sub run_actions {
     }
 
     my $steps = $app->param('steps');
-    $steps = jsonToObj($steps);
+    $steps = JSON::from_json($steps);
 
     my $start = time;
     my @steps = (@$steps);
@@ -542,7 +542,7 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print( ' JSON:' . objToJson( $app->response ) );
+    $app->print( ' JSON:' . JSON::to_json( $app->response ) );
 }
 
 sub response {

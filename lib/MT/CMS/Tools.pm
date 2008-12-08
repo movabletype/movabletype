@@ -928,7 +928,7 @@ sub restore_premature_cancel {
     $app->validate_magic() or return;
 
     require JSON;
-    my $deferred = JSON::jsonToObj( $app->param('deferred_json') )
+    my $deferred = JSON::from_json( $app->param('deferred_json') )
       if $app->param('deferred_json');
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
@@ -1143,7 +1143,7 @@ sub adjust_sitepath {
     if ( scalar $q->param('redirect') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
         require JSON;
-        $param->{blogs_meta} = JSON::objToJson( \%blogs_meta );
+        $param->{blogs_meta} = JSON::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
     }
     else {
@@ -1184,7 +1184,7 @@ sub dialog_restore_upload {
     my $deferred = {};
     require JSON;
     my $objects_json = $q->param('objects_json') if $q->param('objects_json');
-    $deferred = JSON::jsonToObj( $q->param('deferred_json') )
+    $deferred = JSON::from_json( $q->param('deferred_json') )
       if $q->param('deferred_json');
 
     my ($fh) = $app->upload_info('file');
@@ -1199,7 +1199,7 @@ sub dialog_restore_upload {
     $param->{redirect}       = 1;
     $param->{is_dirty}       = $q->param('is_dirty');
     $param->{objects_json}   = $objects_json if defined($objects_json);
-    $param->{deferred_json}  = JSON::objToJson($deferred) if defined($deferred);
+    $param->{deferred_json}  = JSON::to_json($deferred) if defined($deferred);
     $param->{blogs_meta}     = $q->param('blogs_meta');
     $param->{schema_version} = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
@@ -1231,7 +1231,7 @@ sub dialog_restore_upload {
     $app->print( $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
     if ( defined $objects_json ) {
-        my $objects_tmp = JSON::jsonToObj($objects_json);
+        my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
         # { MT::CLASS#OLD_ID => NEW_ID }
@@ -1266,7 +1266,7 @@ sub dialog_restore_upload {
         }
     }
 
-    my $assets = JSON::jsonToObj( decode_html($assets_json) )
+    my $assets = JSON::from_json( decode_html($assets_json) )
       if ( defined($assets_json) && $assets_json );
     $assets = [] if !defined($assets);
     my $asset;
@@ -1279,7 +1279,7 @@ sub dialog_restore_upload {
     if ($is_asset) {
         $asset = shift @$assets;
         $asset->{fh} = $fh;
-        my $blogs_meta = JSON::jsonToObj( $q->param('blogs_meta') || '{}' );
+        my $blogs_meta = JSON::from_json( $q->param('blogs_meta') || '{}' );
         MT::BackupRestore->_restore_asset_multi( $asset, $objects,
             $error_assets, sub { $app->print(@_); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
@@ -1315,7 +1315,7 @@ sub dialog_restore_upload {
         }
     }
     $param->{files}  = join( ',', @files );
-    $param->{assets} = encode_html( JSON::objToJson($assets) );
+    $param->{assets} = encode_html( JSON::to_json($assets) );
     $param->{name}   = $file_next;
     if ( 0 < scalar(@files) ) {
         $param->{last} = 0;
@@ -1367,8 +1367,8 @@ sub dialog_restore_upload {
     else {
         my %objects_json;
         %objects_json = map { $_ => $objects->{$_}->id } keys %$objects;
-        $param->{objects_json}  = JSON::objToJson( \%objects_json );
-        $param->{deferred_json} = JSON::objToJson($deferred);
+        $param->{objects_json}  = JSON::to_json( \%objects_json );
+        $param->{deferred_json} = JSON::to_json($deferred);
 
         $param->{error} = join( '; ', @errors );
         if ( defined($blog_ids) && scalar(@$blog_ids) ) {
@@ -1745,7 +1745,7 @@ sub restore_upload_manifest {
         }
     }
     require JSON;
-    $assets_json = encode_url( JSON::objToJson($assets) )
+    $assets_json = encode_url( JSON::to_json($assets) )
       if scalar(@$assets) > 0;
     $param->{files}       = join( ',', @$files );
     $param->{assets}      = $assets_json;

@@ -456,7 +456,7 @@ sub listing {
         };
         $param->{object_type} ||= $type;
         require JSON;
-        $param->{pager_json} = $json ? $pager : JSON::objToJson($pager);
+        $param->{pager_json} = $json ? $pager : JSON::to_json($pager);
 
   # pager.rows (number of rows shown)
   # pager.listTotal (total number of rows in datasource)
@@ -487,7 +487,7 @@ sub listing {
         };
         $app->send_http_header("text/javascript+json");
         require JSON;
-        $app->print( JSON::objToJson($data) );
+        $app->print( JSON::to_json($data) );
         $app->{no_print_body} = 1;
     }
     else {
@@ -512,7 +512,7 @@ sub json_result {
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
     require JSON;
-    $app->print( JSON::objToJson( { error => undef, result => $result } ) );
+    $app->print( JSON::to_json( { error => undef, result => $result } ) );
     return undef;
 }
 
@@ -522,7 +522,7 @@ sub json_error {
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
     require JSON;
-    $app->print( JSON::objToJson( { error => $error } ) );
+    $app->print( JSON::to_json( { error => $error } ) );
     return undef;
 }
 
@@ -1124,7 +1124,7 @@ sub session_state {
         ( my $sessobj, $commenter ) = $app->get_commenter_session();
         if ( $sessobj && $commenter ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
-            my $banned = $commenter->is_banned($blog_id) ? "1" : "0";
+            my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
 
@@ -1143,7 +1143,7 @@ sub session_state {
                 unless $blog->allow_unreg_comments
                     || $blog->allow_reg_comments;
             my $can_post
-                = ( $blog_perms && $blog_perms->can_create_post ) ? "1" : "0";
+                = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
             $c = {
                 sid     => $sessobj->id,
                 name    => $commenter->nickname,
@@ -1151,12 +1151,12 @@ sub session_state {
                 email   => $commenter->email,
                 userpic => scalar $commenter->userpic_url,
                 profile => "",                              # profile link url
-                is_authenticated => "1",
+                is_authenticated => 1,
                 is_trusted =>
-                    ( $commenter->is_trusted($blog_id) ? "1" : "0" ),
+                    ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
                 is_author =>
-                    ( $commenter->type == MT::Author::AUTHOR() ? "1" : "0" ),
-                is_anonymous => "0",
+                    ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
+                is_anonymous => 0,
                 is_banned    => $banned,
                 can_comment  => $can_comment,
                 can_post     => $can_post,
@@ -1165,14 +1165,14 @@ sub session_state {
     }
 
     unless ($c) {
-        my $can_comment = $blog && $blog->allow_anon_comments ? "1" : "0";
+        my $can_comment = $blog && $blog->allow_anon_comments ? 1 : 0;
         $c = {
-            is_authenticated => "0",
-            is_trusted       => "0",
-            is_anonymous     => "1",
-            can_post         => "0",            # no anonymous posts
+            is_authenticated => 0,
+            is_trusted       => 0,
+            is_anonymous     => 1,
+            can_post         => 0,            # no anonymous posts
             can_comment      => $can_comment,
-            is_banned        => "0",
+            is_banned        => 0,
         };
     }
 
