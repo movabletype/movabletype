@@ -231,9 +231,8 @@ sub edit {
         }
 
         require JSON;
-        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
         $param->{tags_js} =
-          $json->objToJson(
+          JSON::to_json(
             MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
           );
 
