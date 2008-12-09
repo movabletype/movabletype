@@ -1295,6 +1295,63 @@ sub get_commenter_session {
     return ( $sess_obj, $user );
 }
 
+sub make_commenter {
+    my $app    = shift;
+    my %params = @_;
+
+    # Strip any angle brackets from input, just to be safe
+    foreach my $f ( qw( name email nickname url ) ) {
+        $params{$f} =~ s/[<>]//g if exists $params{$f};
+    }
+
+    require MT::Author;
+    my $cmntr = MT::Author->load(
+        {   name      => $params{name},
+            type      => MT::Author::COMMENTER(),
+            auth_type => $params{auth_type},
+        }
+    );
+    if ( !$cmntr ) {
+        $cmntr = $app->model('author')->new();
+        $cmntr->set_values(
+            {   email     => $params{email},
+                name      => $params{name},
+                nickname  => $params{nickname},
+                password  => "(none)",
+                type      => MT::Author::COMMENTER(),
+                url       => $params{url},
+                auth_type => $params{auth_type},
+                (   $params{external_id}
+                    ? ( external_id => $params{external_id} )
+                    : ()
+                ),
+                (   $params{remote_auth_username}
+                    ? ( remote_auth_username =>
+                            $params{remote_auth_username} )
+                    : ()
+                ),
+            }
+        );
+        $cmntr->save();
+    }
+    else {
+        $cmntr->set_values(
+            {   email    => $params{email},
+                nickname => $params{nickname},
+                password => "(none)",
+                type     => MT::Author::COMMENTER(),
+                url      => $params{url},
+                (   $params{external_id}
+                    ? ( external_id => $params{external_id} )
+                    : ()
+                ),
+            }
+        );
+        $cmntr->save();
+    }
+    return $cmntr;
+}
+
 sub make_commenter_session {
     my $app = shift;
     my ( $session_key, $email, $name, $nick, $id, $url ) = @_;

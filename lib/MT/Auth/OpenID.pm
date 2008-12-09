@@ -78,14 +78,16 @@ sub handle_sign_in {
             }
         }
         else {
-            $cmntr = $app->_make_commenter(
+            $cmntr = $app->make_commenter(
                 name        => $name,
                 url         => $vident->url,
                 auth_type   => $auth_type,
                 external_id => _url_hash($vident->url),
             );
-            $class->set_commenter_properties($cmntr, $vident);
-            $cmntr->save or return 0;
+            if ($cmntr) {
+                $class->set_commenter_properties($cmntr, $vident);
+                $cmntr->save or return 0;
+            }
         }
         return 0 unless $cmntr;
 
@@ -194,12 +196,8 @@ sub _get_csr {
         ua => $ua,
         args => $params,
         consumer_secret => $secret,
-        debug => sub {
-            open my $fh, '>>', 'c:\\inetpub\\frampton\\openid.txt';
-            print $fh "----\n";
-            print $fh "$_\n" foreach @_;
-            close $fh;
-        }
+        # debug => sub {
+        # }
     );
 }
 
@@ -422,10 +420,11 @@ sub check_url_params {
     $path .= MT->config->CommentScript;
 
     my $return_to = $path . '?__mode=handle_sign_in'
-        . '&blog_id=' . $q->param('blog_id')
-        . '&static=' . $q->param('static')
-        . '&key=' . $q->param('key');
-    $return_to .= '&entry_id=' . $q->param('entry_id') if $q->param('entry_id');
+        . '&blog_id=' . MT::Util::encode_url($q->param('blog_id'))
+        . '&static=' . MT::Util::encode_url($q->param('static'))
+        . '&key=' . MT::Util::encode_url($q->param('key'));
+    $return_to .= '&entry_id=' . MT::Util::encode_url($q->param('entry_id'))
+        if $q->param('entry_id');
     ( trust_root => $path, return_to => $return_to );
 }
 

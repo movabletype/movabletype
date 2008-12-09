@@ -58,13 +58,14 @@ sub handle_sign_in {
     $url .= $name;
 
     # Signature was valid, so create a session, etc.
-    $cmntr = $app->_make_commenter(
+    $cmntr = $app->make_commenter(
         email => $email,
         nickname => $nick,
         name => $name,
         url => $url,
         auth_type => $auth_type,
     );
+    return 0 unless $cmntr;
     $session = $app->make_commenter_session($cmntr);
     unless ($session) {
         $app->error($app->errstr() || $app->translate("Couldn't save the session"));

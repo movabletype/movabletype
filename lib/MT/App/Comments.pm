@@ -1345,53 +1345,7 @@ sub preview { my $app = shift; do_preview( $app, $app->{query}, @_ ) }
 
 sub _make_commenter {
     my $app    = shift;
-    my %params = @_;
-    require MT::Author;
-    my $cmntr = MT::Author->load(
-        {   name      => $params{name},
-            type      => MT::Author::COMMENTER,
-            auth_type => $params{auth_type},
-        }
-    );
-    if ( !$cmntr ) {
-        $cmntr = $app->model('author')->new();
-        $cmntr->set_values(
-            {   email     => $params{email},
-                name      => $params{name},
-                nickname  => $params{nickname},
-                password  => "(none)",
-                type      => MT::Author::COMMENTER,
-                url       => $params{url},
-                auth_type => $params{auth_type},
-                (   $params{external_id}
-                    ? ( external_id => $params{external_id} )
-                    : ()
-                ),
-                (   $params{remote_auth_username}
-                    ? ( remote_auth_username =>
-                            $params{remote_auth_username} )
-                    : ()
-                ),
-            }
-        );
-        $cmntr->save();
-    }
-    else {
-        $cmntr->set_values(
-            {   email    => $params{email},
-                nickname => $params{nickname},
-                password => "(none)",
-                type     => MT::Author::COMMENTER,
-                url      => $params{url},
-                (   $params{external_id}
-                    ? ( external_id => $params{external_id} )
-                    : ()
-                ),
-            }
-        );
-        $cmntr->save();
-    }
-    return $cmntr;
+    return $app->make_commenter(@_);
 }
 
 # TBD: Move this to MT::Session and store expiration date in
