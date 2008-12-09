@@ -419,12 +419,26 @@ sub check_url_params {
     $path .= '/' unless $path =~ m!/$!;
     $path .= MT->config->CommentScript;
 
+    my $blog_id = $q->param('blog_id') || '';
+    $blog_id =~ s/\D//g;
+
+    my $static = $q->param('static') || '';
+    $static = MT::Util::encode_url($static)
+        if $static =~ m/[^a-zA-Z0-9_.~%-]/;
+
+    my $key = $q->param('key') || '';
+    $key = MT::Util::encode_url($key)
+        if $key =~ m/[^a-zA-Z0-9_.~%-]/;
+
+    my $entry_id = $q->param('entry_id') || '';
+    $entry_id =~ s/\D//g;
+
     my $return_to = $path . '?__mode=handle_sign_in'
-        . '&blog_id=' . MT::Util::encode_url($q->param('blog_id'))
-        . '&static=' . MT::Util::encode_url($q->param('static'))
-        . '&key=' . MT::Util::encode_url($q->param('key'));
-    $return_to .= '&entry_id=' . MT::Util::encode_url($q->param('entry_id'))
-        if $q->param('entry_id');
+        . '&blog_id=' . $blog_id
+        . '&static=' . $static
+        . '&key=' . $key;
+    $return_to .= '&entry_id=' . $entry_id
+        if $entry_id;
     ( trust_root => $path, return_to => $return_to );
 }
 

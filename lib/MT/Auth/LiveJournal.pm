@@ -5,8 +5,8 @@
 # $Id$
 
 package MT::Auth::LiveJournal;
-use strict;
 
+use strict;
 use base qw( MT::Auth::OpenID );
 
 sub url_for_userid {
@@ -15,7 +15,8 @@ sub url_for_userid {
     return "http://www.livejournal.com/users/$uid";
 };
 
-sub _get_nickname {
+sub get_nickname {
+    my $class = shift;
     my ($vident, $blog_id) = @_;
     ## LJ username
     my $url = $vident->url;
@@ -25,7 +26,7 @@ sub _get_nickname {
     ) {
         return $1;
     }
-    *MT::Auth::OpenID::_get_nickname->(@_);
+    return $class->SUPER::get_nickname(@_);
 }
 
 1;
