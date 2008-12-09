@@ -35,7 +35,13 @@ sub process {
 
     my $format = $app->param('format') || q();
     my $method = "render";
-    $method .= $format if $format && $app->can($method . $format);
+    if ( $format ) {
+        $method .= $format if $app->can( $method . $format );
+    }
+    elsif ( my $tmpl_name = $app->param('Template') ) {
+        $method .= $tmpl_name if $app->can( $method . $tmpl_name );
+    }
+
     $out = $app->$method( $count, $iter );
 
     my $result;
