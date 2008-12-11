@@ -184,7 +184,15 @@ sub tag {
     my $tag = lc shift;
     my ($h) = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
     local $ctx->{__stash}{tag} = $tag;
-    return $h->($ctx, @_);
+    my ($args, $cond) = @_;
+    $args ||= {};
+    my $out = $h->($ctx, $args, $cond);
+    if (defined $out) {
+        if (my $ph = $ctx->post_process_handler) {
+            $out = $ph->( $ctx, $args, $out );
+        }
+    }
+    return $out;
 }
 
 sub handler_for {
