@@ -8475,6 +8475,7 @@ sub _hdlr_entries {
         local $ctx->{__stash}{blog_id} = $e->blog_id;
         local $ctx->{__stash}{entry} = $e;
         local $ctx->{current_timestamp} = $e->authored_on;
+        local $ctx->{current_timestamp_end} = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
         my $this_day = substr $e->authored_on, 0, 8;
         my $next_day = $this_day;
@@ -12466,9 +12467,6 @@ sub _hdlr_archives {
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
-    my $map_class = MT->model('templatemap');
-    my $map = $map_class->load({ archive_type => $at, blog_id => $blog->id });
-    return '' unless $map;
 
     my $save_stamps;
     if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
