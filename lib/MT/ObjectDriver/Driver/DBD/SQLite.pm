@@ -102,11 +102,18 @@ sub init_dbh {
     return $dbh;
 }
 
+my $orig_load_iter;
+
 sub configure {
     my $dbd = shift;
     my ($driver) = @_;
     no warnings 'redefine';
     *MT::ObjectDriver::Driver::DBI::count = \&count;
+    eval "use DBD::SQLite 1.14;";
+    if ($@) {
+        $orig_load_iter        = \&MT::Object::load_iter;
+        *MT::Object::load_iter = \&_load_iter;
+    }
     $dbd;
 }
 
@@ -141,6 +148,32 @@ sub count {
     );
     delete $args->{count_distinct};
     $result;
+}
+
+sub _load_iter {
+    my $class = shift;
+    my ( $terms, $args ) = @_;
+    my $result = $orig_load_iter->( $class, @_ );
+    return $result
+        if 'CODE' ne ref($result)
+            && 'Data::ObjectDriver::Iterator' ne ref($result);
+
+    my @ids;
+    while ( my $o = $result->() ) {
+        push @ids, $o->id;
+    }
+    if (@ids) {
+        my $iter = sub {
+            return if !@ids;
+            my $id  = shift @ids;
+            my $obj = $class->load($id);
+            $obj;
+        };
+
+        return $iter if 'CODE' eq ref($result);
+        return Data::ObjectDriver::Iterator->new($iter);
+    }
+    return $result;
 }
 
 1;
