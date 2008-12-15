@@ -424,7 +424,7 @@ sub list_association {
 
     my $blog_id   = $app->param('blog_id');
     $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
+      if $blog_id;
 
     my $author_id = $app->param('author_id');
     my $role_id   = $app->param('role_id');
