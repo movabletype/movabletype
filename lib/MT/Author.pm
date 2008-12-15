@@ -232,8 +232,10 @@ sub save {
             }
         }
         # Generate basename
-        my $basename = MT::Util::make_unique_author_basename($auth);
-        $auth->basename($basename);
+        unless ($auth->basename()) {
+            my $basename = MT::Util::make_unique_author_basename($auth);
+            $auth->basename($basename);
+        }
     }
 
     my $privs;
