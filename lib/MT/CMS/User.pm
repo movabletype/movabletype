@@ -423,9 +423,11 @@ sub list_association {
     my $app = shift;
 
     my $blog_id   = $app->param('blog_id');
+    $app->return_to_dashboard( redirect => 1 )
+      unless $blog_id;
+
     my $author_id = $app->param('author_id');
     my $role_id   = $app->param('role_id');
-
     my $this_user = $app->user;
     if ( !$this_user->is_superuser ) {
         if (
