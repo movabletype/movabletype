@@ -231,10 +231,15 @@ sub edit {
         }
 
         require JSON;
-        $param->{tags_js} =
-          JSON::to_json(
-            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
-          );
+        my $tags_js = JSON::to_json(
+            MT::Tag->cache(
+                blog_id => $blog_id,
+                class   => 'MT::Entry',
+                private => 1
+            )
+        );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
 
         $param->{can_edit_categories} = $perms->can_edit_categories;
     }
