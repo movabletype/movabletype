@@ -429,9 +429,7 @@ MT::TBPing->add_trigger(
 sub archive_file {
     my $entry = shift;
     my($at) = @_;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -448,9 +446,7 @@ sub archive_file {
 
 sub archive_url {
     my $entry = shift;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     my $url = $blog->archive_url || "";
     $url .= '/' unless $url =~ m!/$!;
     $url . $entry->archive_file(@_);
@@ -458,9 +454,7 @@ sub archive_url {
 
 sub permalink {
     my $entry = shift;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     my $url = $entry->archive_url($_[0]);
     my $effective_archive_type = ($_[0]
         || $blog->archive_type_preferred
@@ -474,9 +468,7 @@ sub permalink {
 
 sub all_permalinks {
     my $entry = shift;
-    my $blog = $entry->blog || return $entry->error(MT->translate(
-                                                    "Load of blog failed: [_1]",
-                                                    MT::Blog->errstr));
+    my $blog = $entry->blog || return;
     my @at = split /,/, $blog->archive_type;
     return unless @at;
     my @urls;
@@ -506,9 +498,7 @@ sub get_excerpt {
     my($words) = @_;
     return $entry->excerpt if $entry->excerpt;
     my $excerpt = MT->apply_text_filters($entry->text, $entry->text_filters);
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     MT::I18N::first_n_text($excerpt, $words || $blog->words_in_excerpt || MT::I18N::const('DEFAULT_LENGTH_ENTRY_EXCERPT')) . '...';
 }
 
@@ -753,7 +743,8 @@ sub blog {
         require MT::Blog;
         MT::Blog->load($blog_id) or
             $entry->error(MT->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
+            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr
+                || MT->translate("record does not exist.")));
     });
 }
 
