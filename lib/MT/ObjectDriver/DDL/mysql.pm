@@ -72,7 +72,7 @@ sub index_defs {
 }
 
 sub column_defs {
-    my $ddl = shift; 
+    my $ddl = shift;
     my ($class) = @_;
 
     my $driver = $class->driver;
@@ -156,7 +156,7 @@ sub db2type {
 
 sub type2db {
     my $ddl = shift;
-    my ($def) = @_; 
+    my ($def) = @_;
     return undef if !defined $def;
     my $type = $def->{type};
     if ($type eq 'string') {
