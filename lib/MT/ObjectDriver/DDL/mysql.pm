@@ -38,12 +38,14 @@ sub index_defs {
         # ignore fulltext or other unrecognized indexes for now
         next unless $type eq 'BTREE';
 
-        my $seq = $row->{'Seq_in_index'};
-        my $col = $row->{'Column_name'};
+        my $seq        = $row->{'Seq_in_index'};
+        my $col        = $row->{'Column_name'};
         my $non_unique = $row->{'Non_unique'};
-        my $null = $row->{'Null'};
+        my $null       = $row->{'Null'};
+
         $key =~ s/^mt_\Q$field_prefix\E_//;
         $col =~ s/^\Q$field_prefix\E_//;
+
         $unique->{$key} = 1 unless $non_unique;
         my $idx_bag = $bags->{$key} ||= [];
         $idx_bag->[$seq - 1] = $col;
