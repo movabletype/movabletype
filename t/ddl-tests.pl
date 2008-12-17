@@ -66,9 +66,6 @@ __PACKAGE__->install_properties({
         string_dt  => {
             columns => [ qw( string_25 datetime_nn ) ],
         },
-        string_str => {
-            columns => [ 'string_25', 'string_255(100)', ],
-        },
     },
     audit       => 1,
     datasource  => 'ddltest',
@@ -101,6 +98,33 @@ __PACKAGE__->install_properties({
         boo => 'asfdasf',
     },
     datasource  => 'ddltest_invalidtype',
+    primary_key => 'id',
+    cacheable   => 0,
+});
+
+
+package Ddltest::ShortIndex;
+use base qw( MT::Object );
+
+__PACKAGE__->install_properties({
+    column_defs => {
+        id => 'integer not null auto_increment',
+        foo => 'string(25)',
+        bar => 'string(25)',
+    },
+    indexes => {
+        foo => 1,
+        short => {
+            columns => [ 'foo(10)' ],
+        },
+        short_short => {
+            columns => [ qw( foo(10) bar(10) ) ],
+        },
+        short_multi => {
+            columns => [ qw( foo bar(10) ) ],
+        },
+    },
+    datasource  => 'ddltest_shortindex',
     primary_key => 'id',
     cacheable   => 0,
 });
@@ -180,7 +204,7 @@ sub _02_create_indexes : Tests(6) {
 
     my @index_sql = $ddl_class->index_table_sql('Ddltest');
     ok(@index_sql, 'Index Table SQL for Ddltest is available');
-    is(scalar @index_sql, 4, 'Index Table SQL has four statements');
+    is(scalar @index_sql, 3, 'Index Table SQL has three statements');
     for my $index_sql (@index_sql) {
         my $res = $dbh->do($index_sql);
         ok($res, 'Driver could perform Index Table SQL for Ddltest');
@@ -323,20 +347,16 @@ sub table_defs : Tests(26) {
     is_def($defs->{modified_by}, _def(0, 'integer'),  'Ddltest modified_by column def is correct');
 }
 
-sub index_defs : Tests(6) {
+sub index_defs : Tests(5) {
     my $index_defs = MT::Object->driver->dbd->ddl_class->index_defs('Ddltest');
     ok($index_defs, 'Ddltest table has index defs');
 
-    is(keys %$index_defs, 4, 'Ddltest table has four indexes');
+    is(keys %$index_defs, 3, 'Ddltest table has three indexes');
     is($index_defs->{string_25_nn}, 1, 'Ddltest table has name index');
     is($index_defs->{int_small_nn}, 1, 'Ddltest table has status index');
     is_deeply($index_defs->{string_dt}, {
         columns => [ qw( string_25 datetime_nn ) ]
     }, 'Ddltest table has multi-column string_dt index');
-    is_deeply($index_defs->{string_str}, {
-        columns => [ qw( string_25 string_255 ) ],
-        sizes   => { string_255 => 100 },
-    }, 'Ddltest table has multi-column foreshortened string_str index');
 }
 
 sub multikey_defs : Tests(8) {
@@ -401,6 +421,38 @@ sub invalid_type : Tests(3) {
     ok(!defined $ddl_class->column_defs('Ddltest::InvalidType'), 'Ddltest::InvalidType table has no column defs');
 
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
+}
+
+sub short_index : Tests(4) {
+    my $self = shift;
+
+    my $ddl_class = MT::Object->driver->dbd->ddl_class;
+    SKIP: {
+        skip('Only mysql supports shortened indexes', 4)
+            if $ddl_class !~ m{ mysql \z }xms;
+
+        $self->reset_table_for('Ddltest::ShortIndex');
+
+        my $index_defs = $ddl_class->index_defs('Ddltest::ShortIndex');
+        is($index_defs->{foo}, 1, 'Class with short indexes can have regular indexes too');
+        is_deeply($index_defs->{short}, {
+            columns => [ 'foo' ],
+            sizes   => { foo => 10 },
+        }, 'Class can have a single column with a shortened index');
+        is_deeply($index_defs->{short_short}, {
+            columns => [ qw( foo bar ) ],
+            sizes   => {
+                foo => 10,
+                bar => 10,
+            },
+        }, 'Class can have multiple shortened columns in an index');
+        is_deeply($index_defs->{short_multi}, {
+            columns => [ qw( foo bar ) ],
+            sizes   => {
+                bar => 10,
+            },
+        }, 'Class can have mixed shortened and regular columns in an index');
+    }
 }
 
 sub fixable : Tests(12) {
