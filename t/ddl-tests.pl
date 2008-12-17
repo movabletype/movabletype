@@ -66,6 +66,9 @@ __PACKAGE__->install_properties({
         string_dt  => {
             columns => [ qw( string_25 datetime_nn ) ],
         },
+        string_str => {
+            columns => [ 'string_25', 'string_255(100)', ],
+        },
     },
     audit       => 1,
     datasource  => 'ddltest',
@@ -168,7 +171,7 @@ sub _01_create_table : Tests(2) {
     diag($dbh->errstr || $DBI::errstr) if !$res;
 }
 
-sub _02_create_indexes : Tests(5) {
+sub _02_create_indexes : Tests(6) {
     my $self = shift;
 
     my $driver    = MT::Object->dbi_driver;
@@ -177,7 +180,7 @@ sub _02_create_indexes : Tests(5) {
 
     my @index_sql = $ddl_class->index_table_sql('Ddltest');
     ok(@index_sql, 'Index Table SQL for Ddltest is available');
-    is(scalar @index_sql, 3, 'Index Table SQL has 4 statements');
+    is(scalar @index_sql, 4, 'Index Table SQL has four statements');
     for my $index_sql (@index_sql) {
         my $res = $dbh->do($index_sql);
         ok($res, 'Driver could perform Index Table SQL for Ddltest');
@@ -320,16 +323,20 @@ sub table_defs : Tests(26) {
     is_def($defs->{modified_by}, _def(0, 'integer'),  'Ddltest modified_by column def is correct');
 }
 
-sub index_defs : Tests(5) {
+sub index_defs : Tests(6) {
     my $index_defs = MT::Object->driver->dbd->ddl_class->index_defs('Ddltest');
     ok($index_defs, 'Ddltest table has index defs');
 
-    is(keys %$index_defs, 3, 'Ddltest table has three indexes');
+    is(keys %$index_defs, 4, 'Ddltest table has four indexes');
     is($index_defs->{string_25_nn}, 1, 'Ddltest table has name index');
     is($index_defs->{int_small_nn}, 1, 'Ddltest table has status index');
     is_deeply($index_defs->{string_dt}, {
         columns => [ qw( string_25 datetime_nn ) ]
     }, 'Ddltest table has multi-column string_dt index');
+    is_deeply($index_defs->{string_str}, {
+        columns => [ qw( string_25 string_255 ) ],
+        sizes   => { string_255 => 100 },
+    }, 'Ddltest table has multi-column foreshortened string_str index');
 }
 
 sub multikey_defs : Tests(8) {
