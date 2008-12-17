@@ -12,7 +12,7 @@ use base qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
         'id'           => 'integer not null auto_increment',
-        'namespace'    => 'string(255) not null',
+        'namespace'    => 'string(100) not null',
         'object_id'    => 'integer',
         'author_id'    => 'integer',
         'score'        => 'float',
