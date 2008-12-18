@@ -183,14 +183,14 @@ sub _validate_signature {
     $timer = time - $timer;
 
     $app->log({
-        message => $app->translate("TypeKey signature verif'n returned [_1] in [_2] seconds verifying [_3] with [_4]",
+        message => $app->translate("TypePad signature verif'n returned [_1] in [_2] seconds verifying [_3] with [_4]",
             ($valid ? "VALID" : "INVALID"), $timer, $msg, $sig_str),
         class => 'system',
         level => MT::Log::WARNING(),
     }) unless $valid;
 
     $app->log({
-        message => $app->translate("The TypeKey signature is out of date ([_1] seconds old). Ensure that your server's clock is correct", ($params{ts} - time)),
+        message => $app->translate("The TypePad signature is out of date ([_1] seconds old). Ensure that your server's clock is correct", ($params{ts} - time)),
         class => 'system',
         level => MT::Log::WARNING(),
     }) unless ($params{ts} + $SIG_WINDOW >= time);

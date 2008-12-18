@@ -4282,9 +4282,9 @@ sub _hdlr_tag_count {
 =head2 IfTypeKeyToken
 
 A conditional tag that is true when the current blog in context has been
-configured with a TypeKey token.
+configured with a TypePad token.
 
-=for tags comments, typekey
+=for tags comments, typepad
 
 =cut
 
@@ -9707,8 +9707,8 @@ sub _hdlr_entry_categories {
 
 =head2 TypeKeyToken
 
-Outputs the configured TypeKey token for the current blog in context.
-If the blog has not been configured to use TypeKey, this will output
+Outputs the configured TypePad token for the current blog in context.
+If the blog has not been configured to use TypePad, this will output
 an empty string.
 
 =cut
@@ -9783,7 +9783,7 @@ sub _hdlr_sign_out_link {
 
 =head2 RemoteSignInLink
 
-Outputs a link to the MT Comment script to allow signing in to a TypeKey
+Outputs a link to the MT Comment script to allow signing in to a TypePad
 configured blog. B<NOTE: This is deprecated in favor of L<SignInLink>.>
 
 =for tags deprecated
@@ -9798,11 +9798,11 @@ sub _hdlr_remote_sign_in_link {
         if defined $blog && !(ref $blog);
     return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
     my $auths = $blog->commenter_authenticators;
-    return $ctx->error(MT->translate("TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
+    return $ctx->error(MT->translate("TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
         if $auths !~ /TypeKey/;
     
     my $rem_auth_token = $blog->effective_remote_auth_token();
-    return $ctx->error(MT->translate("To enable comment registration, you need to add a TypeKey token in your weblog config or user profile."))
+    return $ctx->error(MT->translate("To enable comment registration, you need to add a TypePad token in your weblog config or user profile."))
         unless $rem_auth_token;
     my $needs_email = $blog->require_typekey_emails ? "&amp;need_email=1" : "";
     my $signon_url = $cfg->SignOnURL;

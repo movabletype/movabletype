@@ -99,10 +99,10 @@ class TypeKeyCommenterAuth extends BaseCommenterAuthProvider {
         return 'TypeKey Commenter Authenticator';
     }
     function get_logo() {
-        return 'images/comment/signin_typekey.png';
+        return 'images/comment/signin_typepad.png';
     }
     function get_logo_small() {
-        return 'images/comment/typekey_logo.png';
+        return 'images/comment/typepad_logo.png';
     }
 }
 

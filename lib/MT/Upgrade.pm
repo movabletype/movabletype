@@ -1292,7 +1292,7 @@ sub core_populate_author_auth_type {
             }
         }
         else {
-            # Default to TypeKey for remaining plain name fields
+            # Default to TypePad for remaining plain name fields
             $u->auth_type('TypeKey');
         }
     }

@@ -12,7 +12,7 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     $blog = $ctx->stash('blog');
     $auths = $blog['blog_commenter_authenticators'];
     if (!preg_match('/TypeKey/', $auths)) {
-        return $ctx->error($ctx->mt->translate("TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."));
+        return $ctx->error($ctx->mt->translate("TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."));
     }
     $blog_id = $blog['blog_id'];
     $token = 0;
