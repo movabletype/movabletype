@@ -504,8 +504,8 @@ sub rebuild_deleted_entry {
                     ArchiveType => $at,
                     Blog        => $blog->id,
                     (
-                        $archiver->author_based()
-                        ? ( author_id => $entry->author->id )
+                        $archiver->author_based() && $entry->author_id
+                        ? ( author_id => $entry->author_id )
                         : ()
                     ),
                     ( $archiver->date_based() ? ( startdate => $start ) : () ),
@@ -519,21 +519,21 @@ sub rebuild_deleted_entry {
             }
             else {
                 if ( $app->config('RebuildAtDelete') ) {
-                    if ( $archiver->author_based() ) {
+                    if ( $archiver->author_based() && $entry->author_id ) {
                         if ( $archiver->date_based() ) {
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recip{$at}{ $entry->author_id }
                               { $start . $end }{'Start'} = $start;
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recip{$at}{ $entry->author_id }
                               { $start . $end }{'End'} = $end;
-                            $rebuild_recip{$at}{ $entry->author->id }
+                            $rebuild_recip{$at}{ $entry->author_id }
                               { $start . $end }{'File'} =
                               MT::Util::archive_file_for( $entry, $blog, $at,
                                 undef, undef, undef, $entry->author );
                         }
                         else {
-                            $rebuild_recip{$at}{ $entry->author->id }{id} =
-                              $entry->author->id;
-                            $rebuild_recip{$at}{ $entry->author->id }{'File'} =
+                            $rebuild_recip{$at}{ $entry->author_id }{id} =
+                              $entry->author_id;
+                            $rebuild_recip{$at}{ $entry->author_id }{'File'} =
                               MT::Util::archive_file_for( $entry, $blog, $at,
                                 undef, undef, undef, $entry->author );
                         }
