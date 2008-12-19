@@ -1957,6 +1957,12 @@ sub seed_database {
     my ($blog_admin_role) = MT::Role->load_by_permission("administer_blog");
     MT::Association->link( $blog => $blog_admin_role => $author );
 
+    if ($param{use_system_email}) {
+        my $cfg = MT->config;
+        $cfg->EmailAddressMain(uri_unescape($param{user_email}), 1);
+        $cfg->save;
+    }
+
     1;
 }
 

@@ -215,7 +215,7 @@ sub upgrade {
 }
 
 my @keys
-    = qw( admin_email hint preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id );
+    = qw( admin_email hint preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id use_system_email );
 
 sub init_user {
     my $app = shift;
@@ -244,6 +244,7 @@ sub init_user {
     my $initial_hint        = $app->param('hint') || '';
     my $initial_lang        = $app->param('preferred_language');
     my $initial_external_id = '';
+    my $initial_use_system  = 0;
 
     require MT::Auth;
     my $mode = $app->config("AuthenticationModule");
@@ -314,6 +315,9 @@ sub init_user {
         $initial_hint =~ s!^\s+|\s+$!!gs;
     }
 
+    $initial_use_system = 1
+        if $param{use_system_email};
+
     $param{initial_user}        = $initial_user;
     $param{initial_password}    = $initial_password;
     $param{initial_nickname}    = $initial_nickname;
@@ -321,6 +325,7 @@ sub init_user {
     $param{initial_hint}        = $initial_hint;
     $param{initial_lang}        = $initial_lang;
     $param{initial_external_id} = $initial_external_id;
+    $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
     $app->init_blog( \%param );
 }
@@ -409,6 +414,7 @@ sub init_blog {
         user_lang        => $param{initial_lang},
         user_hint        => uri_escape( $param{initial_hint} ),
         user_external_id => $param{initial_external_id},
+        use_system_email => $param{initial_use_system} || $param{use_system_email} || undef,
     };
     $new_blog = {
         blog_name         => uri_escape( $param{blog_name} ),

@@ -169,6 +169,15 @@ function validate(f) {
     </mtapp:setting>
 
     <mtapp:setting
+        id="use_system_email"
+        hint="<__trans phrase="The email address used in the From: header of each email sent from the system.">"
+        show_hint="1"
+        >
+        <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email"  class="cb" />
+        <__trans phrase="Use this as system email address">
+    </mtapp:setting>
+
+    <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
         label_class="top-label"
