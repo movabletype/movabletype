@@ -32,7 +32,10 @@
         <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
 
         <MTEntries>
-            <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1">">
+        <mt:if name="packs_installed">
+          <mt:setvarblock name="entry_type"><$MTEntryPostType$></mt:setvarblock>
+        </mt:if>
+            <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1"><mt:if name="entry_type"> entry-<$mt:Var name="entry_type"$></mt:if>">
                 <div class="entry-inner">
                     <div class="entry-title"><MTEntryAuthorID setvar="entry_author_id"><MTSetVarBlock name="entry_title"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></MTSetVarBlock>
                         <h4><MTIf name="editable"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTGetVar name="entry_title"></a><MTElse name="author_id" eq="$entry_author_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTGetVar name="entry_title"></a><MTElse><MTGetVar name="entry_title"></MTIf></h4>

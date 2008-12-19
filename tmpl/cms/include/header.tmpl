@@ -23,6 +23,9 @@
 <mt:if name="local_lang_id" ne="en-us">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
 </mt:if>
+<mt:if name="packs_installed">
+   <link rel="stylesheet" type="text/css" href="<$mt:var name="static_uri"$>addons/Commercial.pack/css/post_types.css?v=<mt:var name="mt_version_id" escape="url">" />
+</mt:if>
 <mt:if name="mt_debug">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
