@@ -3040,7 +3040,6 @@ sub build_widgets {
             $h = $app->handler_to_coderef($h);
             $h->( $app, $tmpl, $widget_param );
         }
-        $tmpl->param($widget_param);
         my $ctx = $tmpl->context;
         if ($blog) {
             $ctx->stash( 'blog_id', $blog_id );
@@ -3050,7 +3049,8 @@ sub build_widgets {
         $app->run_callbacks( 'template_param' . $tmpl_name,
             $app, $tmpl->param, $tmpl );
 
-        my $content = $tmpl->output();
+        my $content = $app->build_page($tmpl, $widget_param);
+
         if ( !defined $content ) {
             return $app->error(
                 "Error processing template for widget $widget_id: "
