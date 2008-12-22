@@ -1,4 +1,4 @@
-<mt:setvarblock name="html_head" append="1">
+<mt:setvarblock name="html_head" append="1" id="html_head">
     <mt:if name="stat_url">
 <script type="text/javascript">
     /* <![CDATA[ */
@@ -32,9 +32,7 @@
         <h4 class="tab-panel-header"><__trans phrase="Most Recent Entries"></h4>
 
         <MTEntries>
-        <mt:if name="packs_installed">
-          <mt:setvarblock name="entry_type"><$MTEntryPostType$></mt:setvarblock>
-        </mt:if>
+            <mt:setvarblock name="entry_type" id="entry_type"></mt:setvarblock>
             <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1"><mt:if name="entry_type"> entry-<$mt:Var name="entry_type"$></mt:if>">
                 <div class="entry-inner">
                     <div class="entry-title"><MTEntryAuthorID setvar="entry_author_id"><MTSetVarBlock name="entry_title"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></MTSetVarBlock>
