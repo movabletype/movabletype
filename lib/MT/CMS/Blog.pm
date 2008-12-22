@@ -1341,11 +1341,6 @@ sub pre_save {
               keys %$ping_servers;
             $obj->update_pings( join( ',', @pings_list ) );
         }
-        if ( $screen eq 'cfg_entry' ) {
-            my %param = $_[0] ? %{ $_[0] } : ();
-            my $pref_param = $app->load_entry_prefs;
-            %param = ( %param, %$pref_param );
-        }
         if ( $screen eq 'cfg_trackbacks' ) {
             if ( my $pings = $app->param('allow_pings') ) {
                 if ($pings) {

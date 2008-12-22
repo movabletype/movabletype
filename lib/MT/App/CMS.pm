@@ -2841,6 +2841,9 @@ sub _entry_prefs_from_params {
     if ( $type && lc $type ne 'custom' ) {
         $fields{$type} = 1;
     }
+    else {
+        $fields{$_} = 1 foreach $q->param('custom_prefs');
+    }
     if ( my $body_height = $q->param('text_height') ) {
         $fields{'body'} = $body_height;
     }
