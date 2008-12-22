@@ -48,7 +48,7 @@ sub edit {
     } else {
         $param->{create_personal_weblog} =
           $app->config->NewUserAutoProvisioning ? 1 : 0
-          unless exists $param->{create_personal_weblog};
+          unless exists $param->{create_personal_weblog};_
         $param->{can_modify_password}  = MT::Auth->password_exists;
         $param->{can_recover_password} = MT::Auth->can_recover_password;
     }
@@ -796,6 +796,11 @@ sub set_object_status {
             next;
         }
         next if $new_status == $obj->status;
+        my $create_blog
+            = (    $new_status == MT::Author::ACTIVE()
+                && $type eq 'author'
+                && $app->config->NewUserAutoProvisioning
+                && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
         $obj->save;
         $saved++;
@@ -803,6 +808,10 @@ sub set_object_status {
             if ( $new_status == MT::Author::ACTIVE() ) {
                 push @sync, $obj;
             }
+        }
+        if ($create_blog) {
+            # provision new user with a personal blog
+            $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
     my $unchanged = 0;
@@ -1699,6 +1708,13 @@ sub post_save {
             {
                 $app->start_session();
             }
+        }
+        if (   $original->status == MT::Author::PENDING()
+            && $obj->status == MT::Author::ACTIVE()
+            && $app->config->NewUserAutoProvisioning )
+        {
+            # provision new user with a personal blog
+            $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
     1;
