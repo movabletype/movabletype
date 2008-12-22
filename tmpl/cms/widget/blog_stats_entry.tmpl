@@ -55,7 +55,7 @@
                         <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
                     </MTIfNonEmpty>
                     <MTEntryIfTagged>
-                        <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName$></a><MTElse><$MTTagName$></MTIf></MTEntryTags>">
+                        <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName escape="html"$></a><MTElse><$MTTagName escape="html"$></MTIf></MTEntryTags>">
                     </MTEntryIfTagged>
                     </div>
                 </div>

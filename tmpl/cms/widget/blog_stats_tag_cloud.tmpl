@@ -8,7 +8,7 @@
         <div id="tag-cloud">
             <ul id="tag-cloud-list">
             <mt:loop name="tag_loop">
-                <li class="tag-<$mt:var name="rank"$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<mt:var name="name" escape="js">', 'tag-cloud-recent-entries'); return false"><$mt:var name="name"$></a></li>
+                <li class="tag-<$mt:var name="rank"$>"><a href="javascript:void(0)" onclick="recentEntriesForTag('<mt:var name="name" escape="js">', 'tag-cloud-recent-entries'); return false"><$mt:var name="name" escape="html"$></a></li>
             </mt:loop>
             </ul>
         </div>

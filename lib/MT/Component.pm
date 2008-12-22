@@ -460,8 +460,7 @@ sub translate_templatized {
             '';
         } else {
             $args{params} = '' unless defined $args{params};
-            my @p = map MT::Util::decode_html($_),
-                    split /\s*%%\s*/, $args{params}, -1;
+            my @p = split /\s*%%\s*/, $args{params}, -1;
             @p = ('') unless @p;
             my $translation = $c->translate($args{phrase}, @p);
             if (exists $args{escape}) {
