@@ -18249,6 +18249,9 @@ B<Example:>
 =cut
 
 sub _hdlr_if_folder {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry');
+    return undef if ($e && !defined $e->category);
     return undef unless &_check_folder(@_);
     return _hdlr_if_category(@_);
 }
