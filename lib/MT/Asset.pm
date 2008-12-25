@@ -45,7 +45,19 @@ require MT::Asset::Audio;
 require MT::Asset::Video;
 
 sub extensions {
-    undef;
+    my $pkg = shift;
+    return undef unless @_;
+
+    my ($this_pkg) = caller;
+    my ($ext)      = @_;
+    return \@$ext unless MT->config('AssetFileTypes');
+
+    my @custom_ext = map {qr/$_/i}
+        split( /\s*,\s*/, MT->config('AssetFileTypes')->{$this_pkg} );
+    my %seen;
+    my ($new_ext) = grep { ++$seen{$_} < 2 }[ @$ext, @custom_ext ];
+
+    return \@$new_ext;
 }
 
 # This property is a meta-property.

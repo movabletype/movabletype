@@ -524,6 +524,8 @@ BEGIN {
             'EnableAddressBook' => { default => 0 },
             'SingleCommunity' => { default => 0 },
             'DefaultTemplateSet' => { default => 'mt_blog' },
+
+            'AssetFileTypes' => { type    => 'HASH' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
