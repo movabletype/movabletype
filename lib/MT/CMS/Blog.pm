@@ -53,7 +53,9 @@ sub edit {
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
                 $c = $app->handler_to_coderef($c);
                 if ( $c ) {
-                    $cmtauth{$auth}->{disabled} = 1 unless $c->( $blog );
+                    my $reason;
+                    $cmtauth{$auth}->{disabled} = 1 unless $c->( $blog, \$reason );
+                    $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
                     delete $cmtauth{TypeKey}
                         if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
                 }
