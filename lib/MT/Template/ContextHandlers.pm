@@ -4749,6 +4749,13 @@ sub _include_module {
         $tmpl_name =~ s/^Widget: ?//;
     }
     my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    my $blog_id = defined($arg->{blog_id})
+      ? $arg->{blog_id}
+      : ( $arg->{global} )
+        ? 0 
+        : defined($ctx->{__stash}{blog_id})
+          ? $ctx->{__stash}{blog_id}
+          : 0;
     $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
     my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
     return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))

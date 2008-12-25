@@ -151,7 +151,10 @@ sub edit {
                 $seen{$type}{$mod} = 1;
                 my $other = MT::Template->load(
                     {
-                        blog_id => [ $obj->blog_id, 0 ],
+                        blog_id => ( $tag->[1]->{global}
+                          ? 0
+                          : [ $obj->blog_id, 0 ]
+                        ),
                         name    => $mod,
                         type    => $type,
                     }, {
