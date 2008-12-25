@@ -29,7 +29,6 @@ sub entry_class {
 sub template_params {
     return {
         archive_class     => "page-archive",
-        entry_archive     => 0,
         page_archive      => 1,
         archive_template  => 1,
         page_template     => 1,
