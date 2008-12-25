@@ -46,7 +46,7 @@ sub process {
 
     my $result;
     if (ref($out) && ($out->isa('MT::Template'))) {
-        defined( $result = $app->build_page($out) )
+        defined( $result = $out->build() )
             or return $app->error($out->errstr);
     }
     else {
