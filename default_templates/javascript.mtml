@@ -451,6 +451,8 @@ function mtUserOnLoad() {
 </mt:Ignore>
 <mt:IfBlog>
 function mtEntryOnLoad() {
+    var cf = document['comments_form'];
+    if (cf && cf.preview) cf.preview.value = '';
     <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
     <mt:Unless tag="IfCommentsAccepted">mtHide('comments-open');</mt:Unless>
     mtFireEvent('usersignin');
