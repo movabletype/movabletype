@@ -48,7 +48,7 @@ sub edit {
     } else {
         $param->{create_personal_weblog} =
           $app->config->NewUserAutoProvisioning ? 1 : 0
-          unless exists $param->{create_personal_weblog};_
+          unless exists $param->{create_personal_weblog};
         $param->{can_modify_password}  = MT::Auth->password_exists;
         $param->{can_recover_password} = MT::Auth->can_recover_password;
     }
