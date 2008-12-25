@@ -110,7 +110,20 @@ sub remove {
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
         my $file = $asset->file_path;
-        $fmgr->delete($file);
+        unless ($fmgr->delete($file)) {
+            my $app = MT->instance;
+            $app->log(
+                {
+                    message => $app->translate(
+                        "Could not remove asset file [_1] from filesystem: [_2]",
+                        $file, $fmgr->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'asset',
+                    category => 'delete',
+                }
+            );
+        }
         $asset->remove_cached_files;
 
         # remove children.
@@ -161,7 +174,20 @@ sub remove_cached_files {
                     $basename . '-thumb-*' . $ext);
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
-                    $fmgr->delete($file);
+                    unless ($fmgr->delete($file)) {
+                        my $app = MT->instance;
+                        $app->log(
+                            {
+                                message => $app->translate(
+                                    "Could not remove asset file [_1] from filesystem: [_2]",
+                                    $file, $fmgr->errstr
+                                ),
+                                level    => MT::Log::ERROR(),
+                                class    => 'asset',
+                                category => 'delete',
+                            }
+                        );
+                    }
                 }
             }
         }
