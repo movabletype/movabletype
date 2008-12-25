@@ -432,9 +432,9 @@ function mtUserOnLoad() {
                 if (u && u.sid && cf.sid)
                     cf.sid.value = u.sid;
             }
-            if (cf.post.disabled)
+            if (cf.post && cf.post.disabled)
                 cf.post.disabled = false;
-            if (cf.preview_button.disabled)
+            if (cf.preview_button && cf.preview_button.disabled)
                 cf.preview_button.disabled = false;
             mtRequestSubmitted = false;
         }
