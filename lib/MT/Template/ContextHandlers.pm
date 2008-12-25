@@ -17071,6 +17071,7 @@ sub _hdlr_asset_thumbnail_link {
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
     $arg{Scale} = $args->{scale} if $args->{scale};
+    $arg{Square} = $args->{square} if $args->{square}; 
     my ($url, $w, $h) = $a->thumbnail_url(%arg);
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ($args->{new_window}) {
