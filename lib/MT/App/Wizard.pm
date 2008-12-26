@@ -610,6 +610,7 @@ sub configure {
             $cfg->DBSocket( $param{dbsocket} ) if $param{dbsocket};
             $cfg->DBHost( $param{dbserver} )
                 if $param{dbserver} && ( $param{dbtype} ne 'oracle' );
+            my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
 
@@ -641,6 +642,8 @@ sub configure {
             else {
                 $ok = 1;
             }
+
+            $cfg->PublishCharset( $current_charset );
         }
         if ($ok) {
             $param{success} = 1;
