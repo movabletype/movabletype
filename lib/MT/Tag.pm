@@ -273,7 +273,7 @@ sub cache {
                     })
                 }),
                 limit => $limit,
-                fetchonly => [ 'name' ]
+                fetchonly => [ 'id', 'name' ]
             }
         );
         if (@tags) {
