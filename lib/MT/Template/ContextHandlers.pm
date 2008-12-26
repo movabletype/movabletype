@@ -4748,7 +4748,6 @@ sub _include_module {
         $type = 'widget';
         $tmpl_name =~ s/^Widget: ?//;
     }
-    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
     my $blog_id = defined($arg->{blog_id})
       ? $arg->{blog_id}
       : ( $arg->{global} )
