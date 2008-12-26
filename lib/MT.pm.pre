@@ -1127,6 +1127,7 @@ sub init {
     ## Initialize the language to the default in case any errors occur in
     ## the rest of the initialization process.
     $mt->init_config( \%param ) or return;
+    require MT::Plugin;
     $mt->init_addons(@_)       or return;
     $mt->init_config_from_db( \%param ) or return;
     $mt->init_plugins(@_)       or return;
@@ -1209,7 +1210,6 @@ sub init_plugins {
     # This should always be MT::Compat::v(MAJOR_RELEASE_VERSION - 1).
     require MT::Compat::v3;
 
-    require MT::Plugin;
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
     my @PluginPaths  = $cfg->PluginPath;
