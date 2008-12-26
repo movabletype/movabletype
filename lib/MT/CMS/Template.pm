@@ -1760,9 +1760,11 @@ sub refresh_all_templates {
                     MT::TemplateMap->remove({
                         template_id => $tmpl->id,
                     });
+                    $tmpl->name( $tmpl->name
+                            . ' (Backup from '
+                            . $ts . ') '
+                            . $tmpl->type );
                     $tmpl->type('backup');
-                    $tmpl->name(
-                        $tmpl->name . ' (Backup from ' . $ts . ')' );
                     $tmpl->identifier(undef);
                     $tmpl->rebuild_me(0);
                     $tmpl->linked_file(undef);
