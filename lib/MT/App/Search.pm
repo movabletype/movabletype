@@ -607,6 +607,7 @@ sub load_search_tmpl {
             or
             return $app->errtrans( "Opening local file '[_1]' failed: [_2]",
             $filename, "$!" );
+        $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
 
@@ -624,6 +625,7 @@ sub load_search_tmpl {
             # load template from search_template path
             # template_paths method does the magic
             $tmpl = $app->load_tmpl( $app->config->SearchDefaultTemplate );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
     }
     return $app->error( $app->errstr )
