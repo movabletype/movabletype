@@ -43,7 +43,9 @@ in memcached or in MT::Session table.
 
 =head1 SYNOPSIS
 
-    my $cache = MT::Cache::Negotiate->new({ttl => 10});
+    # MT::Cache::Session uses the 'kind' parameter
+    # which accepts namespace of the cache
+    my $cache = MT::Cache::Negotiate->new( ttl => 10, kind => 'XX' );
     my $data = $cache->get($key);
     $cache->set($key => $value);
     my $hash = $cache->get_multi($key1, $key2);
