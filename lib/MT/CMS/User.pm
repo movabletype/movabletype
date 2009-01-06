@@ -45,6 +45,8 @@ sub edit {
         $param->{can_recover_password} = MT::Auth->can_recover_password;
         $param->{languages} = $app->languages_list( $obj->preferred_language )
           unless exists $param->{langauges};
+        eval { require MT::Image; MT::Image->new; };
+        $param->{can_use_userpic} = $@ ? 0 : 1;
     } else {
         $param->{create_personal_weblog} =
           $app->config->NewUserAutoProvisioning ? 1 : 0

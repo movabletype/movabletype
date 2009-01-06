@@ -230,6 +230,7 @@ TC.attachLoadEvent(init);
     </mtapp:setting>
 
 <mt:if name="id">
+    <mt:if name="can_use_userpic">
     <mtapp:setting
         id="userpic_asset_id"
         label="<__trans phrase="Userpic">"
@@ -247,6 +248,7 @@ TC.attachLoadEvent(init);
             <span id="ajax-message"></span>
         </span>
     </mtapp:setting>
+    </mt:if>
 </mt:if>
 
     <mt:if name="can_modify_password">
