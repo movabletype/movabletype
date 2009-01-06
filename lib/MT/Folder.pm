@@ -29,9 +29,10 @@ sub basename_prefix {
 
 sub remove {
     my $folder = shift;
-    my $delete_page_files = MT->config('DeleteFilesAtRebuild');
+    my $delete_files_at_rebuild = MT->config('DeleteFilesAtRebuild');
+    my $rebuild_at_delete = MT->config('RebuildAtDelete');
     my @moving_pages;
-    if ( ref $folder && $delete_page_files ) {
+    if ( ref $folder && $rebuild_at_delete && delete_files_at_rebuild ) {
         my $search_pages;
         $search_pages = sub {
             my $folder = shift;
@@ -59,7 +60,7 @@ sub remove {
     $folder->SUPER::remove(@_)
         or return $folder->errstr;
   
-    if ( ref $folder && $delete_page_files ) {
+    if ( ref $folder && $rebuild_at_delete ) {
         for my $page ( @moving_pages ) {
             $page->clear_cache();
             MT->rebuild_entry( Entry => $page );
