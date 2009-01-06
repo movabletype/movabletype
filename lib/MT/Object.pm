@@ -1369,6 +1369,8 @@ by declaring your class, and inheriting from I<MT::Object>:
 
     use base 'MT::Object';
 
+=over 4
+
 =item * __PACKAGE__->install_properties($args)
 
 Then call the I<install_properties> method on your class name; an easy way
@@ -1559,6 +1561,8 @@ the class type of the package.
 
 Defines the name of the class column (default is 'class') for storing
 classed objects (see 'class_type' above).
+
+=back
 
 =back
 
@@ -2245,7 +2249,7 @@ propery.
 This method returns all the C<column_defs> of the property of the
 object.
 
-=item Class->index_defs()
+=item * Class->index_defs()
 
 This method returns all the index definitions assigned to this class.
 This is the 'indexes' member of the properties installed for the class.

@@ -598,6 +598,8 @@ For example, in count_group_by method, $value holds the count for each
 group, while in sum_group_by method, $value holds the sum for each group.
 @returnvals parameter holds the additional data that wiil be retured.
 
+=back
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.

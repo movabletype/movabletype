@@ -1939,6 +1939,8 @@ be saved. The callback has the following signature:
         ...
     }
 
+=back
+
 =head1 SPAM PROTECTION
 
 Spam filtering (or "Junk" filtering in MT terminology) is handled using
@@ -1949,4 +1951,4 @@ refer to that module for further documentation.
 
 Please see the I<MT> manpage for author, copyright, and license information.
 
-=back
+=cut

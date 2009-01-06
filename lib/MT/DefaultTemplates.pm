@@ -8,7 +8,7 @@ package MT::DefaultTemplates;
 
 use strict;
 
-=start
+=pod
 Registry storage format for default templates:
 
 default_templates:

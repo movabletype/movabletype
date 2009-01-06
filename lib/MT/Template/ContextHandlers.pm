@@ -4201,6 +4201,8 @@ If specified, outputs the "normalized" form of the tag. A normalized
 tag has been stripped of any spaces and punctuation and is only
 lowercase.
 
+=back
+
 =over 4
 
 =item * quote (optional; default "0")
@@ -4624,7 +4626,7 @@ includes like that found in PHP.
 
 For selecting Index templates by their unique identifier.
 
-=name
+=item * name
 
 For application template use: identifies an application template by
 filename to load.
@@ -5257,6 +5259,8 @@ B<NOTE:> Only one of the 'template', 'identifier' and 'entry_id'
 attributes can be specified at a time.
 
 B<Attributes:>
+
+=over 4
 
 =item * template
 
@@ -7472,6 +7476,8 @@ B<Attributes:>
 
 If specified, forces the trailing "index" filename to be left on any
 entry permalink published in the RDF block.
+
+=back
 
 =for tags blogs, creativecommons
 
@@ -19680,10 +19686,6 @@ The page number is set to __value__ standard variable in each iteration.
 The tag also sets __odd__, __even__, __first__, __last__ and __counter__
 standard variables. 
 
-=for tags pagination
-
-=back
-
 B<Example:>
 
     M
@@ -19695,6 +19697,8 @@ B<Example:>
 produces:
 
     "Mooooooooovable Type" where each "o" is a link to the page.
+
+=for tags pagination
 
 =cut
 

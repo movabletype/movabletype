@@ -208,5 +208,3 @@ C<parse_spec> method if rules are not provided).
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-
-=cut

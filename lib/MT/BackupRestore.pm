@@ -1450,6 +1450,8 @@ $asset has new url and path.
 $callback is a code reference which will print out the passed paramter.
 Callback method can use this to communicate with users.
 
+=back
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.

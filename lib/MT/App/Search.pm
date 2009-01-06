@@ -1060,6 +1060,8 @@ whose priority is higher than itself.
 
     return $$result if defined $$result;
 
+=back
+
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.
