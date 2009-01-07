@@ -62,7 +62,7 @@ sub dashboard {
                 File::Spec->catdir( $app->static_file_path, 'support' );
         }
     }
-    eval { require MT::Image; MT::Image->new; };
+    eval { require MT::Image; MT::Image->new or die; };
     $param->{can_use_userpic} = $@ ? 0 : 1;
 
     # We require that the determination of the 'single blog mode'
