@@ -32,7 +32,7 @@ sub remove {
     my $delete_files_at_rebuild = MT->config('DeleteFilesAtRebuild');
     my $rebuild_at_delete = MT->config('RebuildAtDelete');
     my @moving_pages;
-    if ( ref $folder && $rebuild_at_delete && delete_files_at_rebuild ) {
+    if ( ref $folder && $rebuild_at_delete && $delete_files_at_rebuild ) {
         my $search_pages;
         $search_pages = sub {
             my $folder = shift;
