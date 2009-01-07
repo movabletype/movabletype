@@ -2075,7 +2075,6 @@ sub create_user_pending {
         );
     }
 
-    my $url = $q->param('url');
     if ( $url && (!is_url($url) || ($url =~ m/[<>]/)) ) {
         return $app->error( $app->translate("URL is invalid.") );
     }
