@@ -15389,6 +15389,18 @@ and is the equivalent of the following template tags:
 
     <mt:ParentCategories glue="/"><mt:CategoryBasename /></mt:ParentCategories>
 
+B<Attributes:>
+
+=over 4
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying an
+underscore will convert any dashes to underscores. Specifying a dash will
+convert any underscores to dashes.
+
+=back
+
 B<Example:>
 
 The category "Bar" in a category "Foo" C<E<lt>$mt:SubCategoryPath$E<gt>> becomes C<foo/bar>.
@@ -15870,8 +15882,8 @@ B<Attributes:>
 =item * type
 
 Specifies a particular type(s) of asset to select. This may be
-one of image, audio, video (if unspecified, will select all asset
-types). Supports a comma-delimited list.
+one of image, audio, video, or file(a generic for unrecognized file types). 
+If unspecified, will select all asset types. Supports a comma-delimited list.
 
 =item * file_ext
 
@@ -17209,11 +17221,18 @@ B<Attributes unique to the Pages tag:>
 
 =over 4
 
-=item * folder
+=item * folder or folders (optional)
 
-Use folder label, not basename.
+This attribute allows you to filter the pages based on their folder label.
+Please see the mt:Entries analogous category/categories attributes of
+for details.
 
-=item * include_subfolders
+=item * no_folder (optional)
+
+This attribute filters the pages to return only those not contained in
+a folder.
+
+=item * include_subfolders (optional)
 
 Specify '1' to cause all pages that may exist within subfolders to the
 folder in context to be included.
@@ -18217,6 +18236,17 @@ sub _hdlr_folder_count {
 =head2 FolderPath
 
 The path to the folder, relative to the L<BlogURL>.
+
+B<Attributes:>
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying an
+underscore will convert any dashes to underscores. Specifying a dash will
+convert any underscores to dashes.
+
+=back
+
 
 B<Example:>
 
