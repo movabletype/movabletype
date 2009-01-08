@@ -894,7 +894,9 @@ sub preview {
 
     # Default case; works for index templates (other template types should
     # have defined $archive_file by now).
-    $archive_file = File::Spec->catfile( $blog_path, $preview_tmpl->outfile )
+    my $outfile = $preview_tmpl->outfile;
+    my ($path_in_outfile) = $outfile =~ m/^(.*\/)/;
+    $archive_file = File::Spec->catfile( $blog_path, $outfile )
         unless defined $archive_file;
 
     ( $orig_file, $path ) = File::Basename::fileparse( $archive_file );
@@ -958,7 +960,7 @@ sub preview {
     if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
         $param{preview_file} = $preview_basename;
         my $preview_url = $archive_url;
-        $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+        $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$path_in_outfile$preview_basename$file_ext$1!x;
 
         # We also have to translate the URL used for the
         # published file to be on the MT app domain.
