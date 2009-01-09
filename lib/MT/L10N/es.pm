@@ -67,7 +67,7 @@ use vars qw( @ISA %Lexicon );
 	'No author available' => 'Ningún autor disponible',
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.', # Translate - New
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
 
 ## php/lib/block.mtsethashvar.php
 
@@ -841,7 +841,7 @@ use vars qw( @ISA %Lexicon );
 	'Error scaling image: [_1]' => 'Error redimensionando la imagen: [_1]',
 	'Error converting image: [_1]' => 'Error convirtiendo la imagen: [_1]',
 	'Error creating thumbnail file: [_1]' => 'Error creando el fichero de la miniatura: [_1]',
-	'%f-thumb-%wx%h-%i%x' => '%f-miniatura-%wx%h-%i%x', # Translate - New
+	'%f-thumb-%wx%h-%i%x' => '%f-miniatura-%wx%h-%i%x',
 	'Can\'t load image #[_1]' => 'No se pudo cargar la imagen nº[_1]',
 	'View image' => 'Ver imagen',
 	'Permission denied setting image defaults for blog #[_1]' => 'Se denegó el permiso para cambiar las opciones predefinidos de imágenes del blog nº[_1]',
@@ -874,7 +874,7 @@ use vars qw( @ISA %Lexicon );
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => 'Se encontró un usuario con el mismo nombre \'[_1]\' (ID:[_2]). La restauración reemplazó este usuario con los datos de la copia de seguridad.',
 	'Tag \'[_1]\' exists in the system.' => 'La etiqueta \'[_1]\' existe en el sistema.',
 	'[_1] records restored...' => '[_1] registros restaurados...',
-	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'El rol \'[_1]\' se ha renombrado como \'[_2]\' porque ya existía un rol con el mismo nombre.', # Translate - New
+	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'El rol \'[_1]\' se ha renombrado como \'[_2]\' porque ya existía un rol con el mismo nombre.',
 
 ## lib/MT/Component.pm
 	'Loading template \'[_1]\' failed: [_2]' => 'Fallo cargando plantilla \'[_1]\': [_2]',
@@ -901,7 +901,7 @@ use vars qw( @ISA %Lexicon );
 	'Category loop detected' => 'Bucle de categorías detectado',
 
 ## lib/MT/Asset.pm
-	'Could not remove asset file [_1] from filesystem: [_2]' => 'No se pudo eliminar el fichero de medios [_1] del sistema de ficheros: [_2]', # Translate - New
+	'Could not remove asset file [_1] from filesystem: [_2]' => 'No se pudo eliminar el fichero de medios [_1] del sistema de ficheros: [_2]',
 	'Location' => 'Lugar',
 
 ## lib/MT/Permission.pm
@@ -930,7 +930,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un comentario; ¿quizás la puso por error fuera de un contenedor \'MTComments\'?',
 	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un ping; ¿quizás la situó por error fuera de un contenedor \'MTPings\'?',
 	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un medio, ¿quizás la situó fuera de un contenedor \'MTAssets\'?',
-	'You used an \'[_1]\' tag outside of the context of a page; perhaps you mistakenly placed it outside of a \'MTPages\' container?' => 'Ha usado una etiqueta \'[_1]\' fuera del contexto de una página; ¿quizás la situó fuera de un contenedor \'MTPages\'?', # Translate - New
+	'You used an \'[_1]\' tag outside of the context of a page; perhaps you mistakenly placed it outside of a \'MTPages\' container?' => 'Ha usado una etiqueta \'[_1]\' fuera del contexto de una página; ¿quizás la situó fuera de un contenedor \'MTPages\'?',
 
 ## lib/MT/Template/ContextHandlers.pm
 	'All About Me' => 'Todo sobre mi',
@@ -963,7 +963,7 @@ use vars qw( @ISA %Lexicon );
 	'You used <$MTEntryFlag$> without a flag.' => 'Usó <$MTEntryFlag$> sin \'flag\'.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Usó una etiqueta [_1] enlazando los archivos \'[_2]\', pero el tipo de archivo no está publicado.',
 	'Could not create atom id for entry [_1]' => 'No se pudo crear un identificador atom en la entrada [_1]',
-	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Para activar el registro de comentarios, debe añadir un token de TypePad a la configuración del weblog o al perfil de usuario.', # Translate - New
+	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'Para activar el registro de comentarios, debe añadir un token de TypePad a la configuración del weblog o al perfil de usuario.',
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'La etiqueta MTCommentFields no está más disponible; por favor incluya el módulo de platilla [_1] que lo remplaza',
 	'Comment Form' => 'Formulario de comentarios',
 	'You used an [_1] tag without a date context set up.' => 'Usó una etiqueta [_1] sin un contexto de fecha configurado.',
@@ -983,7 +983,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load user.' => 'No se pudo cargar el usuario.',
 	'Division by zero.' => 'División por cero.',
 	'name is required.' => 'el nombre es obligatorio.',
-	'Specified WidgetSet \'[_1]\' not found.' => 'No se encontró el conjunto de widgets \'[_1]\' que se especificó.', # Translate - New
+	'Specified WidgetSet \'[_1]\' not found.' => 'No se encontró el conjunto de widgets \'[_1]\' que se especificó.',
 	'Can\'t find included template widget \'[_1]\'' => 'No se encontró la plantilla de widget \'[_1]\' incluída',
 
 ## lib/MT/Session.pm
@@ -1043,7 +1043,7 @@ use vars qw( @ISA %Lexicon );
 	'Contacts' => 'Contactos',
 
 ## lib/MT/Entry.pm
-	'record does not exist.' => 'registro no existe.', # Translate - New
+	'record does not exist.' => 'registro no existe.',
 	'Draft' => 'Borrador',
 	'Review' => 'Revisar',
 	'Future' => 'Futuro',
@@ -1108,7 +1108,7 @@ use vars qw( @ISA %Lexicon );
 	'Mapping template ID [_1] to [_2].' => 'Mapeando ID plantilla [_1] a [_2].',
 	'Error loading class: [_1].' => 'Error cargando la clase: [_1].',
 	'Assigning entry comment and TrackBack counts...' => 'Asignando totales de comentarios y trackbacks de las entradas...',
-	'Error saving [_1] record # [_3]: [_2]...' => 'Error guardando [_1] registro # [_3]: [_2]...', # Translate - New
+	'Error saving [_1] record # [_3]: [_2]...' => 'Error guardando [_1] registro # [_3]: [_2]...',
 	'Creating entry category placements...' => 'Creando situaciones de categorías de entradas...',
 	'Updating category placements...' => 'Actualizando situación de categorías...',
 	'Assigning comment/moderation settings...' => 'Asignando opciones de comentarios/moderación...',
@@ -1272,7 +1272,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
 
 ## lib/MT/App/Search.pm
-	'Invalid [_1] parameter.' => 'Parámetro [_1] no válido.', # Translate - New
+	'Invalid [_1] parameter.' => 'Parámetro [_1] no válido.',
 	'Invalid type: [_1]' => 'Tipo no válido: [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Búsqueda: Fallo al guardar los resultados en la cache. [_1] no está disponible: [_2]',
 	'Invalid format: [_1]' => 'Formato no válido: [_1]',
@@ -1333,7 +1333,7 @@ que la dirección provista es correcta y le pertenece.',
 	'This is the test email sent by your new installation of Movable Type.' => 'Este es el mensaje de comprobación enviado por su nueva instalación de Movable Type.',
 	'This module is needed to encode special characters, but this feature can be turned off using the NoHTMLEntities option in mt-config.cgi.' => 'Este módulo es necesario para codificar caracteres especiales, pero se puede desactivar esta característica utilizando la opción NoHTMLEntities en mt-config.cgi.',
 	'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'Este módulo es necesario si desea usar el sistema de TrackBack, el ping a weblogs.com, o el ping a Actualizaciones Recientes de MT.',
-	'HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parser es opcional; Es necesario si desea usar el sistema de TrackBacks, el ping a weblogs.com o el ping a las actualizaciones recientes de MT.', # Translate - New
+	'HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'HTML::Parser es opcional; Es necesario si desea usar el sistema de TrackBacks, el ping a weblogs.com o el ping a las actualizaciones recientes de MT.',
 	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'Este módulo es necesario si desea usar la implementación del servidor XML-RPC de MT.',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'Este módulo es necesario si desea poder sobreescribir los ficheros al subirlos.',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Lista: Útiles opcionales; esto es necesario si usted desea utilizar la función cola de publicación',
@@ -1632,6 +1632,7 @@ que la dirección provista es correcta y le pertenece.',
 	'User requires password.' => 'El usuario necesita una contraseña.',
 	'User requires password recovery word/phrase.' => 'El usuario necesita una palabra/frase para la recuperación de contraseña.',
 	'User requires username.' => 'El usuario necesita un nombre.',
+	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter inválido: [_2]',
 	'User requires display name.' => 'El usuario necesita un pseudónimo.',
 	'Email Address is required for password recovery.' => 'La dirección de correo es necesaria para la recuperación de contraseña.',
 	'Something wrong happened when trying to process signup: [_1]' => 'Algo mal ocurrió durante el proceso de alta: [_1]',
@@ -1747,11 +1748,11 @@ que la dirección provista es correcta y le pertenece.',
 	'Couldn\'t save the session' => 'No se pudo guardar la sesión',
 	'Couldn\'t get public key from url provided' => 'No se pudo obtener la clave pública desde la URL indicada',
 	'No public key could be found to validate registration.' => 'No se encontró la clave pública para validar el registro.',
-	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'Verificación de firma de TypePad devolvió [_1] en [_2] segundos verificando [_3] con [_4]', # Translate - New
-	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'La firma de TypePad está caduca (de hace [_1] segundos). Asegúrese que el reloj del servidor está en hora', # Translate - New
+	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'Verificación de firma de TypePad devolvió [_1] en [_2] segundos verificando [_3] con [_4]',
+	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'La firma de TypePad está caduca (de hace [_1] segundos). Asegúrese que el reloj del servidor está en hora',
 
 ## lib/MT/Auth/OpenID.pm
-	'Could not load Net::OpenID::Consumer.' => 'No se pudo cargar Net::OpenID::Consumer.', # Translate - New
+	'Could not load Net::OpenID::Consumer.' => 'No se pudo cargar Net::OpenID::Consumer.',
 	'The address entered does not appear to be an OpenID' => 'La dirección introducida no parecer ser un OpenID',
 	'The text entered does not appear to be a web address' => 'El texto introducido no parece ser una dirección web',
 	'Unable to connect to [_1]: [_2]' => 'Imposible conectarse a [_1]: [_2]',
@@ -1820,7 +1821,7 @@ que la dirección provista es correcta y le pertenece.',
 	'[quant,_1,hour,hours]' => '[quant,_1,hora,horas]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,día,días], [quant,_2,hora,horas]',
 	'[quant,_1,day,days]' => '[quant,_1,día,días]',
-	'Invalid domain: \'[_1]\'' => 'Dominio no válido: \'[_1]\'', # Translate - New
+	'Invalid domain: \'[_1]\'' => 'Dominio no válido: \'[_1]\'',
 
 ## lib/MT/TheSchwartz/Error.pm
 	'Job Error' => 'Error en la Tarea',
@@ -1853,7 +1854,7 @@ que la dirección provista es correcta y le pertenece.',
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => 'Un error se ha producido durante la publicación',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Ocurrió un error publicando el archivo de fechas \'[_1]\': [_2]',
 	'Renaming tempfile \'[_1]\' failed: [_2]' => 'Fallo renombrando el fichero temporal \'[_1]\': [_2]',
-	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.', # Translate - New
+	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.',
 	'Template \'[_1]\' does not have an Output File.' => 'La plantilla \'[_1]\' no tiene un fichero de salida.',
 	'An error occurred while publishing scheduled entries: [_1]' => 'Ocurrió un error durante la publicación de las entradas programadas: [_1]',
 
@@ -1929,14 +1930,14 @@ que la dirección provista es correcta y le pertenece.',
 	'Learn more about LiveJournal.' => 'Más información sobre LiveJournal.',
 	'Your Vox Blog URL' => 'La URL de su blog de Vox',
 	'Learn more about Vox.' => 'Más información sobre Vox.',
-	'Sign in using your Gmail account' => 'Identifíquese usando su cuenta de Gmail', # Translate - New
-	'Turn on OpenID for your Yahoo! account now' => 'Active ahora OpenID para su cuenta de Yahoo', # Translate - New
-	'Your AIM or AOL Screen Name' => 'Su usuario de AIM o AOL', # Translate - New
-	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Identifíquese usando su usuario de AIM o AOL. El nombre del usuario se mostrará públicamente.', # Translate - New
-	'Your Wordpress.com Username' => 'Su usuario de Wordpress.com', # Translate - New
-	'Sign in using your WordPress.com username.' => 'Identifíquese usando su usuario de WordPress.com.', # Translate - New
-	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePad es un sistema gratuito y abierto que le provee una identidad centralizada para la publicación de comentarios en weblogs e identificarse en otros sitios web. Puede registrarse gratuitamente.', # Translate - New
-	'Sign in or register with TypePad.' => 'Identifíquese o regístrese en TypePad.', # Translate - New
+	'Sign in using your Gmail account' => 'Identifíquese usando su cuenta de Gmail',
+	'Turn on OpenID for your Yahoo! account now' => 'Active ahora OpenID para su cuenta de Yahoo',
+	'Your AIM or AOL Screen Name' => 'Su usuario de AIM o AOL',
+	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Identifíquese usando su usuario de AIM o AOL. El nombre del usuario se mostrará públicamente.',
+	'Your Wordpress.com Username' => 'Su usuario de Wordpress.com',
+	'Sign in using your WordPress.com username.' => 'Identifíquese usando su usuario de WordPress.com.',
+	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePad es un sistema gratuito y abierto que le provee una identidad centralizada para la publicación de comentarios en weblogs e identificarse en otros sitios web. Puede registrarse gratuitamente.',
+	'Sign in or register with TypePad.' => 'Identifíquese o regístrese en TypePad.',
 	'Hello, world' => 'Hola, mundo',
 	'Hello, [_1]' => 'Hola, [_1]',
 	'Message: [_1]' => 'Mensaje: [_1]',
@@ -1956,11 +1957,11 @@ que la dirección provista es correcta y le pertenece.',
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
 	'Vox' => 'Vox',
-	'Google' => 'Google', # Translate - New
-	'Yahoo!' => 'Yahoo!', # Translate - New
-	'AIM' => 'AIM', # Translate - New
-	'WordPress.com' => 'WordPress.com', # Translate - New
-	'TypePad' => 'TypePad', # Translate - New
+	'Google' => 'Google',
+	'Yahoo!' => 'Yahoo!',
+	'AIM' => 'AIM',
+	'WordPress.com' => 'WordPress.com',
+	'TypePad' => 'TypePad',
 	'Movable Type default' => 'Predefinido de Movable Type',
 
 ## mt-static/mt.js
@@ -2409,6 +2410,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Your Dashboard has been updated.' => 'Se ha actualizado el Panel de Control.',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Ha intentado usar una característica para la que no tiene permisos. Si cree que está viendo este mensaje por error, contacte con sus administrador del sistema.',
 	'The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'No se puede escribir en el directorio configurado para la transferencia de avatares. Para permitir que los usuarios suban sus avatares, por favor, modifique los permisos de este directorio para que el servidor web pueda escribir en él: [_1]',
+	'Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type\'s userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver.' => 'Image::Magick no está presente en el servidor o no está instalado correctamente. Por esa razón, no podrá usar los avatares de usuarios en Movable Type. Si desea utilizar esta característica, por favor, instale Image::Magick o algún controlador alternativo de imágenes.', # Translate - New
 	'Your dashboard is empty!' => '¡Su panel de control está vacío!',
 
 ## tmpl/cms/cfg_trackbacks.tmpl
@@ -2575,7 +2577,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Comment authentication is not available because one of the needed modules, MIME::Base64 or LWP::UserAgent is not installed. Talk to your host about getting this module installed.' => 'La autentificación de comentarios no está disponible porque uno de los módulos necesarios, MIME::Base64 o LWP::UserAgent no está instalado. Consulte con su alojamiento.',
 	'Accept Comments' => 'Aceptar comentarios',
 	'If enabled, comments will be accepted.' => 'Si está activado, se aceptarán los comentarios.',
-	'Setup Registration' => 'Configuración del registro', # Translate - New
+	'Setup Registration' => 'Configuración del registro',
 	'Commenting Policy' => 'Política de comentarios',
 	'Immediately approve comments from' => 'Aceptar inmediatamente los comentarios de',
 	'Specify what should happen to comments after submission. Unapproved comments are held for moderation.' => 'Especifique qué ocurrirá con los comentarios después de su envío. Los comentarios no aprobados se retienen a la espera de su moderación.',
@@ -2632,10 +2634,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Authentication Methods' => 'Métodos de autentificación',
 	'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => 'Nota: Seleccionó aceptar comentarios solo de comentaristas autentificados, pero la autentificación no está activada. Para recibir comentarios autentificados, debe activar la autentificación.',
 	'Native' => 'Nativo',
-	'Require E-mail Address for Comments via TypePad' => 'Requerir la dirección de correo de los comentarios a través de TypePad', # Translate - New
-	'If enabled, visitors must allow their TypePad account to share e-mail address when commenting.' => 'Si se activa, los visitantes deberán permitir que TypePad comparta la dirección de correo electrónico al comentar.', # Translate - New
-	'One or more Perl module may be missing to use this authentication method.' => 'Podría necesitar la instalación de uno o más módulos de Perl para usar este método de autentificación.', # Translate - New
-	'Setup TypePad' => 'Configurar TypePad', # Translate - New
+	'Require E-mail Address for Comments via TypePad' => 'Requerir la dirección de correo de los comentarios a través de TypePad',
+	'If enabled, visitors must allow their TypePad account to share e-mail address when commenting.' => 'Si se activa, los visitantes deberán permitir que TypePad comparta la dirección de correo electrónico al comentar.',
+	'One or more Perl module may be missing to use this authentication method.' => 'Podría necesitar la instalación de uno o más módulos de Perl para usar este método de autentificación.',
+	'Setup TypePad' => 'Configurar TypePad',
 	'OpenID providers disabled' => 'Proveedores OpenID desactivados',
 	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => 'No se encuentra el módulo necesario (Digest::SHA1) para la autentificación de comentaristas con OpenID.',
 
@@ -2709,7 +2711,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Make primary' => 'Hacer primario',
 	'Display Options' => 'Opciones de visualización',
 	'Fields' => 'Campos',
-	'Metadata' => 'Metadatos', # Translate - New
+	'Metadata' => 'Metadatos',
 	'Top' => 'Arriba',
 	'Both' => 'Ambos',
 	'Bottom' => 'Abajo',
@@ -3593,15 +3595,15 @@ que la dirección provista es correcta y le pertenece.',
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Configuración de los servicios web',
 	'Six Apart Services' => 'Servicios de Six Apart',
-	'Your TypePad token is used to access Six Apart services like its free Authentication service.' => 'El token de TypePad se utiliza para acceder a los servicios de Six Apart, como el servicio gratuito de autentificación.', # Translate - New
-	'TypePad is enabled.' => 'TypePad está activado.', # Translate - New
-	'TypePad token:' => 'Token de TypePad:', # Translate - New
-	'Clear TypePad Token' => 'Borrar token de TypePad', # Translate - New
+	'Your TypePad token is used to access Six Apart services like its free Authentication service.' => 'El token de TypePad se utiliza para acceder a los servicios de Six Apart, como el servicio gratuito de autentificación.',
+	'TypePad is enabled.' => 'TypePad está activado.',
+	'TypePad token:' => 'Token de TypePad:',
+	'Clear TypePad Token' => 'Borrar token de TypePad',
 	'Please click the Save Changes button below to disable authentication.' => 'Por favor, haga clic en el botón Guardar cambios para desactivar la autentificación.',
-	'TypePad is not enabled.' => 'TypePad no está activado.', # Translate - New
+	'TypePad is not enabled.' => 'TypePad no está activado.',
 	'or' => 'o',
-	'Obtain TypePad token' => 'Obtener token de TypePad', # Translate - New
-	'Please click the Save Changes button below to enable TypePad.' => 'Por favor, haga clic en Guardar cambios para activar TypePad.', # Translate - New
+	'Obtain TypePad token' => 'Obtener token de TypePad',
+	'Please click the Save Changes button below to enable TypePad.' => 'Por favor, haga clic en Guardar cambios para activar TypePad.',
 	'External Notifications' => 'Notificaciones externas',
 	'Notify of blog updates' => 'Notificación de actualizaciones',
 	'When this blog is updated, Movable Type will automatically notify the selected sites.' => 'Cuando se actualice el blog, Movable Type notificará automáticamente a los sitios seleccionados.',
@@ -3623,7 +3625,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/' => 'Introduzca la URL de su web público. No incluya ningún nombre de fichero (p.e. index.html). Ejemplo: http://www.ejemplo.com/weblog/',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'Introduzca la ruta donde se situará el fichero índice principal. Se aconseja una ruta absoluta (que comienzan con \'/\'), pero también puede especificar una ruta relativa al directorio de Movable Type. Ejemplo: /home/melody/public_html/weblog',
 	'Language' => 'Idioma',
-	'Blog language.' => 'Idioma del Blog.', # Translate - New
+	'Blog language.' => 'Idioma del Blog.',
 	'Create Blog (s)' => 'Crear blog (s)',
 
 ## tmpl/cms/list_template.tmpl
@@ -3660,8 +3662,8 @@ que la dirección provista es correcta y le pertenece.',
 	'The name used by this user to login.' => 'El nombre utilizado por este usario para iniciar su sesión.',
 	'The name used when published.' => 'El nombre utilizado al publicar.',
 	'The user&rsquo;s email address.' => 'La dirección de correo electrónico del usuario',
-	'The email address used in the From: header of each email sent from the system.' => 'La dirección de correousada en la cabecera De: de los correos enviados por el sistema.', # Translate - New
-	'Use this as system email address' => 'Usar esta dirección de correo para el sistema', # Translate - New
+	'The email address used in the From: header of each email sent from the system.' => 'La dirección de correousada en la cabecera De: de los correos enviados por el sistema.',
+	'Use this as system email address' => 'Usar esta dirección de correo para el sistema',
 	'The user&rsquo;s preferred language.' => 'El idioma preferido del usuario.',
 	'Select a password for your account.' => 'Seleccione una contraseña para su cuenta.',
 	'Password Confirm' => 'Confirmar contraseña',
@@ -3905,9 +3907,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => 'Atención: una o más de las plantillas están configuradas para publicarse usando PHP, sin embargo, el método de inclusión podría no ser compatible con la publicación dinámica.',
 	'You must set a valid Site URL.' => 'Debe establecer una URL de sitio válida.',
 	'You must set a valid Local Site Path.' => 'Debe establecer una ruta local de sitio válida.',
-	'You must set Local Archive Path.' => 'Debe esteblecer la ruta local de archivos.', # Translate - New
-	'You must set a valid Archive URL.' => 'Debe esteblecer una URL de archivos válida.', # Translate - New
-	'You must set a valid Local Archive Path.' => 'Debe establecer una ruta local de archivos válida.', # Translate - New
+	'You must set Local Archive Path.' => 'Debe esteblecer la ruta local de archivos.',
+	'You must set a valid Archive URL.' => 'Debe esteblecer una URL de archivos válida.',
+	'You must set a valid Local Archive Path.' => 'Debe establecer una ruta local de archivos válida.',
 	'Publishing Paths' => 'Rutas de publicación',
 	'The URL of your website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/blog/' => 'La URL de su web. No incluya ningún nombre de fichero (p.e. index.html). Ejemplo: http://www.ejemplo.com/blog/',
 	'Unlock this blog&rsquo;s site URL for editing' => 'Desbloquear la URL del sitio del blog para su edición',
@@ -4044,7 +4046,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Community Settings' => 'Configuración de la comunidad',
 	'Following Users' => 'Usuarios que sigue',
 	'Being Followed' => 'Seguidores',
-	'Sanitize' => 'Esterilizar', # Translate - New
+	'Sanitize' => 'Esterilizar',
 	'Recently Scored' => 'Puntuaciones recientes',
 	'Recent Submissions' => 'Envíos recientes',
 	'Most Popular Entries' => 'Entradas más populares',
@@ -4102,7 +4104,6 @@ que la dirección provista es correcta y le pertenece.',
 	'Id or Username is required' => 'Se necesita el Id o el nombre del usuario',
 	'Unknown user' => 'Usuario desconocido',
 	'Cannot edit profile.' => 'No se pudo editar el perfil.',
-	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter inválido: [_2]', # Translate - New
 	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
 	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
 	'Actions from [_1]' => 'Acciones de [_1]',
@@ -4429,10 +4430,10 @@ que la dirección provista es correcta y le pertenece.',
 	'Previewing your Reply' => 'Vista previa de la respuesta',
 
 ## addons/Commercial.pack/config.yaml
-	'Photo' => 'Foto', # Translate - New
-	'Embed' => 'Embeber', # Translate - New
+	'Photo' => 'Foto',
+	'Embed' => 'Embeber',
 	'Custom Fields' => 'Campos personalizados',
-	'Updating Universal Template Set to Professional Website set...' => 'Actualizar el conjuntto de plantillas Universal al conjunto Sitio Web Profesional...', # Translate - New
+	'Updating Universal Template Set to Professional Website set...' => 'Actualizar el conjuntto de plantillas Universal al conjunto Sitio Web Profesional...',
 	'Professional Website' => 'Web Profesional',
 	'Themes that are compatible with the Professional Website template set.' => 'Temas compatibles con el conjunto de plantillas Web Profesional.',
 	'Blog Index' => 'Índice del blog',
@@ -4452,9 +4453,9 @@ que la dirección provista es correcta y le pertenece.',
 	'Main Sidebar' => 'Barra lateral principal',
 
 ## addons/Commercial.pack/lib/MT/Commercial/Util.pm
-	'Could not install custom field [_1]: field attribute [_2] is required' => 'No se pudo instalar el campo personalizado [_1]: se necesita el atributo [_2]', # Translate - New
-	'Could not install custom field [_1] on blog [_2]: the blog already has a field [_1] with a conflicting type' => 'No se pudo instalar el campo personalizado [_1] en el blog [_2]: el blog ya tiene un campo [_1] con un tipo distinto', # Translate - New
-	'Blog [_1] using template set [_2]' => 'El blog [_1] está usando el conjunto de plantillas [_2]', # Translate - New
+	'Could not install custom field [_1]: field attribute [_2] is required' => 'No se pudo instalar el campo personalizado [_1]: se necesita el atributo [_2]',
+	'Could not install custom field [_1] on blog [_2]: the blog already has a field [_1] with a conflicting type' => 'No se pudo instalar el campo personalizado [_1] en el blog [_2]: el blog ya tiene un campo [_1] con un tipo distinto',
+	'Blog [_1] using template set [_2]' => 'El blog [_1] está usando el conjunto de plantillas [_2]',
 	'About' => 'Sobre mi',
 	'_PTS_REPLACE_THIS' => '<p><strong>Reemplace el texto de ejemplo con sus propios datos.</strong></p>',
 	'_PTS_SAMPLE_ABOUT' => '<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. In nec tellus sed turpis varius sagittis. Nullam pulvinar. Fusce dapibus neque pellentesque nulla. Maecenas condimentum quam. Vestibulum pretium fringilla quam. Nam elementum. Suspendisse odio magna, aliquam vitae, vulputate et, dignissim at, pede. Integer pellentesque orci at nibh. Morbi ante.</p>
@@ -4467,8 +4468,8 @@ que la dirección provista es correcta y le pertenece.',
 <a href="#" onclick="location.href=adminurl + \'?__mode=view&_type=page&id=\' + page_id + \'&blog_id=\' + blog_id; return false">Editar este contenido</a>
 </p>
 ',
-	'Could not create page: [_1]' => 'No se pudo crear la página: [_1]', # Translate - New
-	'Created page \'[_1]\'' => 'Se creó la página \'[_1]\'', # Translate - New
+	'Could not create page: [_1]' => 'No se pudo crear la página: [_1]',
+	'Created page \'[_1]\'' => 'Se creó la página \'[_1]\'',
 	'_PTS_CONTACT' => 'Contacto',
 	'_PTS_SAMPLE_CONTACT' => '<p>Nos encantará tener noticias suyas. Envíenos un mensaje a correo (arroba) dominio.com</p>',
 	'Welcome to our new website!' => '¡Bienvenido a nuestro nuevo sitio!',
@@ -4483,10 +4484,10 @@ que la dirección provista es correcta y le pertenece.',
 	'_PTS_SAMPLE_NEWDESIGN' => '
 <p>Nuestro sitio tiene un nuevo diseño gracias a <a href="http://www.movabletype.com/">Movable Type</a> y el Conjunto de Plantillas Universal. Este conjunto le permite a cualquier persona poner en marcha un nuevo web con Movable Type. Es realmente fácil, y solo con un par de clics. Seleccione un nombre para su nuevo sitio, seleccione el Conjunto de Plantillas Universal y publique. ¡Voilà! El nuevo sitio. ¡Gracias Movable Type!</p>
 ',
-	'Could not create entry: [_1]' => 'No se pudo crear la entrada: [_1]', # Translate - New
+	'Could not create entry: [_1]' => 'No se pudo crear la entrada: [_1]',
 	'John Doe' => 'Pobrecito Hablador',
 	'Great new site. I can\'t wait to try Movable Type. Congrats!' => 'Gran sitio. ¡Estoy impaciente por probar Movable Type, felicidades!',
-	'Created entry and comment \'[_1]\'' => 'Se creó la entrada y el comentario \'[_1]\'', # Translate - New
+	'Created entry and comment \'[_1]\'' => 'Se creó la entrada y el comentario \'[_1]\'',
 
 ## addons/Commercial.pack/lib/CustomFields/App/CMS.pm
 	'Show' => 'Mostrar',
@@ -4512,8 +4513,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Date and Time' => 'Fecha y Hora',
 	'Drop Down Menu' => 'Menú desplegable',
 	'Radio Buttons' => 'Botones radiales',
-	'Embed Object' => 'Embeber objeto', # Translate - New
-	'Post Type' => 'Tipo de entrada', # Translate - New
+	'Embed Object' => 'Embeber objeto',
+	'Post Type' => 'Tipo de entrada',
 
 ## addons/Commercial.pack/lib/CustomFields/Upgrade.pm
 	'Moving metadata storage for pages...' => 'Trasladando los metadatos de las páginas...',
@@ -5213,63 +5214,65 @@ Búsqueda base: [_2]",
 	'Moving storage of Widget Manager [_1]...' => 'Migrando Administrador de Widgets [_1]...',
 
 ## plugins/Motion/config.yaml
-	'Reinstall Motion Templates' => 'Reinstalar plantillas de Motion', # Translate - New
-	'Motion Themes' => 'Temas de Motion', # Translate - New
-	'Themes for Motion template set' => 'Temas para el conjunto de plantillas Motion', # Translate - New
-	'\'Motion\'' => '\'Motion\'', # Translate - New
-	'Post Type' => 'Tipo de entrada', # Translate - New
-	'Photo' => 'Foto', # Translate - New
-	'Embed Object' => 'Embeber objeto', # Translate - New
-	'MT JavaScript' => 'MT JavaScript', # Translate - New
-	'Entry Listing: Monthly' => 'Lista de entradas: Mensual', # Translate - New
-	'Entry Listing: Category' => 'Lista de entradas: Categorías', # Translate - New
-	'Entry Listing: Author' => 'Lista de entradas: Autor', # Translate - New
+	'Reinstall Motion Templates' => 'Reinstalar plantillas de Motion',
+	'Motion Themes' => 'Temas de Motion',
+	'Themes for Motion template set' => 'Temas para el conjunto de plantillas Motion',
+	'\'Motion\'' => '\'Motion\'',
+	'Post Type' => 'Tipo de entrada',
+	'Photo' => 'Foto',
+	'Embed Object' => 'Embeber objeto',
+	'MT JavaScript' => 'MT JavaScript',
+	'Motion MT JavaScript' => 'Motion MT JavaScript', # Translate - New
+	'Motion JavaScript' => 'Motion JavaScript', # Translate - New
+	'Entry Listing: Monthly' => 'Lista de entradas: Mensual',
+	'Entry Listing: Category' => 'Lista de entradas: Categorías',
+	'Entry Listing: Author' => 'Lista de entradas: Autor',
 	'Entry Response' => 'Respuesta a la entrada',
 	'Profile View' => 'Ver perfil',
 	'Profile Edit Form' => 'Formulario de edición del perfil',
 	'Profile Error' => 'Error del perfil',
 	'Profile Feed' => 'Sindicación del perfil',
 	'Login Form' => 'Formulario de inicio de sesión',
-	'Register Confirmation' => 'Confirmación de registro', # Translate - New
-	'Password Reset' => 'Reiniciar contraseña', # Translate - New
-	'Personal Action Dashboard' => 'Tablón de acciones personales', # Translate - New
+	'Register Confirmation' => 'Confirmación de registro',
+	'Password Reset' => 'Reiniciar contraseña',
+	'Personal Action Dashboard' => 'Tablón de acciones personales',
 	'User Profile' => 'Perfil del usuario',
-	'Actions (Local)' => 'Acciones (local)', # Translate - New
+	'Actions (Local)' => 'Acciones (local)',
 	'Comment Detail' => 'Detalle del comentario',
-	'Single Entry' => 'Entrada sencilla', # Translate - New
-	'Messaging' => 'Mensajería', # Translate - New
+	'Single Entry' => 'Entrada sencilla',
+	'Messaging' => 'Mensajería',
 	'Form Field' => 'Campo del formulario',
-	'About Pages' => 'Páginas Acerca de', # Translate - New
-	'About Site' => 'Sobre el sitio', # Translate - New
-	'Gallery' => 'Galería', # Translate - New
-	'Main Column Actions' => 'Acciones de la columna principal', # Translate - New
-	'Main Column Posting Form (All Media)' => 'Formulario de publicación de la columna principal (Todos los medios)', # Translate - New
-	'Main Column Posting Form (Text Only, Like Twitter)' => 'Formulario de publicación de la columna principal (Solo texto, como Twitter)', # Translate - New
-	'Main Column Registration' => 'Registro de la columna principal', # Translate - New
-	'Popular Entries' => 'Entradas populares', # Translate - New
-	'Elsewhere' => 'En otros sitios', # Translate - New
+	'About Pages' => 'Páginas Acerca de',
+	'About Site' => 'Sobre el sitio',
+	'Gallery' => 'Galería',
+	'Main Column Actions' => 'Acciones de la columna principal',
+	'Main Column Posting Form (All Media)' => 'Formulario de publicación de la columna principal (Todos los medios)',
+	'Main Column Posting Form (Text Only, Like Twitter)' => 'Formulario de publicación de la columna principal (Solo texto, como Twitter)',
+	'Main Column Registration' => 'Registro de la columna principal',
+	'Popular Entries' => 'Entradas populares',
+	'Elsewhere' => 'En otros sitios',
 	'Following' => 'Siguiendo',
 	'Followers' => 'Seguidores',
-	'User Archives' => 'Archivos de usuario', # Translate - New
-	'Blogroll' => 'Enlaces', # Translate - New
-	'Feeds' => 'Sindicación', # Translate - New
-	'Main Column Content' => 'Contenido de la columna principal', # Translate - New
-	'Main Index Widgets' => 'Widgets del índice principal', # Translate - New
+	'User Archives' => 'Archivos de usuario',
+	'Blogroll' => 'Enlaces',
+	'Feeds' => 'Sindicación',
+	'Main Column Content' => 'Contenido de la columna principal',
+	'Main Index Widgets' => 'Widgets del índice principal',
 	'Archive Widgets' => 'Widgets de los archivos',
-	'Entry Widgets' => 'Widgets de la entrada', # Translate - New
-	'Footer Widgets' => 'Widgets del pie', # Translate - New
+	'Entry Widgets' => 'Widgets de la entrada',
+	'Footer Widgets' => 'Widgets del pie',
 	'Default Widgets' => 'Widgets predefinidos',
-	'Profile Widgets' => 'Widgets del perfil', # Translate - New
+	'Profile Widgets' => 'Widgets del perfil',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 
 ## plugins/Motion/tmpl/edit_videopost.tmpl
-	'Embed code' => 'Embeber código', # Translate - New
+	'Embed code' => 'Embeber código',
 
 ## plugins/Motion/templates/Motion/widget_search.mtml
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
-	'[_1] commented on [_2]' => '[_1] comentó en [_2]', # Translate - New
+	'[_1] commented on [_2]' => '[_1] comentó en [_2]',
 	'Favorited [_1] on [_2]' => 'Marcó como favorito [_1] en [_2]',
 	'No recent actions.' => 'Ninguna acción reciente',
 
@@ -5281,15 +5284,19 @@ Búsqueda base: [_2]",
 	'Home' => 'Inicio',
 
 ## plugins/Motion/templates/Motion/entry_summary.mtml
-	' TrackBack' => ' TrackBack', # Translate - New
-	' TrackBacks' => ' TrackBacks', # Translate - New
-	' Comment' => ' Comentario', # Translate - New
-	' Comments' => ' Comentarios', # Translate - New
+	'By [_1] <span class="date">on [_2]</span>' => 'Por [_1] <span class="date">el [_2]</span>',
+	'1 <span>Comment</span>' => '1 <span>Comentario</span>',
+	'# <span>Comments</span>' => '# <span>Comentarios</span>',
+	'0 <span>Comments</span>' => '0 <span>Comentarios</span>',
+	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
+	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
+	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
+	'Posted to [_1]' => 'Publicado en [_1]',
 
-## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
+## plugins/Motion/templates/Motion/widget_members.mtml
 
 ## plugins/Motion/templates/Motion/widget_popular_entries.mtml
-	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'publicado por <a href="[_1]">[_2]</a> en [_3]', # Translate - New
+	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'publicado por <a href="[_1]">[_2]</a> en [_3]',
 
 ## plugins/Motion/templates/Motion/entry_response.mtml
 
@@ -5297,10 +5304,22 @@ Búsqueda base: [_2]",
 	'Not being followed' => 'Sin seguidores',
 
 ## plugins/Motion/templates/Motion/comment_response.mtml
-	'<strong>Bummer....</strong> [_1]' => '<strong>Qué mala suerte....</strong> [_1]', # Translate - New
+	'<strong>Bummer....</strong> [_1]' => '<strong>Qué mala suerte....</strong> [_1]',
 
-## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Entradas recientes de [_1]', # Translate - New
+## plugins/Motion/templates/Motion/user_profile.mtml
+	'Recent Actions from [_1]' => 'Acciones recientes de [_1]',
+	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
+	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
+	'You are following [_1].' => 'Estás siguiendo a [_1]',
+	'Unfollow' => 'Dejar de seguir',
+	'Follow' => 'Seguir',
+	'Profile Data' => 'Datos del perfil',
+	'More Entries by [_1]' => 'Más entradas de [_1]',
+	'Recent Actions' => 'Acciones recientes',
+	'followed [_1]' => 'sigue a [_1]',
+	'Comment Threads' => 'Hilos de comentarios',
+	'[_1] commented on ' => '[_1] comentó en',
+	'No responses to comments.' => 'Sin respuestas a comentarios.',
 
 ## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
 
@@ -5311,10 +5330,13 @@ Búsqueda base: [_2]",
 
 ## plugins/Motion/templates/Motion/register.mtml
 	'Sign up' => 'Registrarse',
-	'Enter a password for yourself.' => 'Introduzca su contraseña.', # Translate - New
-	'The URL of your website.' => 'La URL de su sitio web.', # Translate - New
+	'Enter a password for yourself.' => 'Introduzca su contraseña.',
+	'The URL of your website.' => 'La URL de su sitio web.',
 
 ## plugins/Motion/templates/Motion/comment_detail.mtml
+
+## plugins/Motion/templates/Motion/widget_following.mtml
+	'Not following anyone' => 'No sigue a nadie',
 
 ## plugins/Motion/templates/Motion/entry_listing_category.mtml
 
@@ -5324,6 +5346,8 @@ Búsqueda base: [_2]",
 	'Edit profile' => 'Editar Perfil',
 	'Sign out' => 'Salir',
 	'Not a member? <a href="[_1]">Register</a>' => '¿No es miembro? <a href="[_1]">Registrarse</a>',
+
+## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
 
 ## plugins/Motion/templates/Motion/register_confirmation.mtml
 	'Authentication Email Sent' => 'Correo de autentificación enviado.',
@@ -5335,18 +5359,10 @@ Búsqueda base: [_2]",
 ## plugins/Motion/templates/Motion/entry.mtml
 
 ## plugins/Motion/templates/Motion/single_entry.mtml
-	'By [_1] <span class="date">on [_2]</span>' => 'Por [_1] <span class="date">el [_2]</span>', # Translate - New
-	'1 <span>Comment</span>' => '1 <span>Comentario</span>', # Translate - New
-	'# <span>Comments</span>' => '# <span>Comentarios</span>', # Translate - New
-	'0 <span>Comments</span>' => '0 <span>Comentarios</span>', # Translate - New
-	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>', # Translate - New
-	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>', # Translate - New
-	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>', # Translate - New
-	'Most recent comment by ' => 'Comentario más reciente de ', # Translate - New
-	'Posted to [_1]' => 'Publicado en [_1]', # Translate - New
+	'Most recent comment by ' => 'Comentario más reciente de ',
 
 ## plugins/Motion/templates/Motion/widget_gallery.mtml
-	'Recent Photos' => 'Fotos recientes', # Translate - New
+	'Recent Photos' => 'Fotos recientes',
 
 ## plugins/Motion/templates/Motion/password_reset.mtml
 	'Reset Password' => 'Reiniciar la contraseña',
@@ -5357,7 +5373,7 @@ Búsqueda base: [_2]",
 ## plugins/Motion/templates/Motion/javascript.mtml
 
 ## plugins/Motion/templates/Motion/form_field.mtml
-	'(Optional)' => '(Opcional)', # Translate - New
+	'(Optional)' => '(Opcional)',
 
 ## plugins/Motion/templates/Motion/archive_index.mtml
 
@@ -5366,8 +5382,10 @@ Búsqueda base: [_2]",
 ## plugins/Motion/templates/Motion/sidebar.mtml
 
 ## plugins/Motion/templates/Motion/entry_listing_author.mtml
-	'Archived Entries from [_1]' => 'Entradas archivadas de [_1]', # Translate - New
-	'Recent Entries from [_1]' => 'Entradas recientes de [_1]',
+	'Archived Entries from [_1]' => 'Entradas archivadas de [_1]',
+
+## plugins/Motion/templates/Motion/widget_user_archives.mtml
+	'Recenty entries from [_1]' => 'Entradas recientes de [_1]',
 
 ## plugins/Motion/templates/Motion/widget_recent_entries.mtml
 
@@ -5376,67 +5394,52 @@ Búsqueda base: [_2]",
 ## plugins/Motion/templates/Motion/widget_main_column_actions.mtml
 
 ## plugins/Motion/templates/Motion/comments.mtml
-	'what will you say?' => '¿Qué va a decir?', # Translate - New
-	'Write a comment...' => 'Escriba un comentario...', # Translate - New
+	'what will you say?' => '¿Qué va a decir?',
+	'Write a comment...' => 'Escriba un comentario...',
 
 ## plugins/Motion/templates/Motion/search_results.mtml
 
 ## plugins/Motion/templates/Motion/widget_elsewhere.mtml
-	'Are you sure you want to remove the [_1] from your profile?' => '¿Está seguro de que desea eliminar el [_1] del perfil?', # Translate - New
-	'Your user name or ID is required.' => 'El ID o nombre de usuario es obligatorio.', # Translate - New
-	'Add a Service' => 'Añadir un servicio', # Translate - New
-	'Service' => 'Servicio', # Translate - New
-	'Select a service...' => 'Seleccionar un servicio...', # Translate - New
-	'Your Other Profiles' => 'Sus otros perfiles', # Translate - New
-	'Find [_1] Elsewhere' => 'Buscar [_1] en otro sitio', # Translate - New
-	'Remove service' => 'Eliminar servicio', # Translate - New
+	'Are you sure you want to remove the [_1] from your profile?' => '¿Está seguro de que desea eliminar el [_1] del perfil?',
+	'Your user name or ID is required.' => 'El usuario o el ID es obligatorio.',
+	'Add a Service' => 'Añadir un servicio',
+	'Service' => 'Servicio',
+	'Select a service...' => 'Seleccionar un servicio...',
+	'Your Other Profiles' => 'Sus otros perfiles',
+	'Find [_1] Elsewhere' => 'Buscar [_1] en otro sitio',
+	'Remove service' => 'Eliminar servicio',
 
 ## plugins/Motion/templates/Motion/widget_categories.mtml
 
 ## plugins/Motion/templates/Motion/widget_recent_comments.mtml
-	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>', # Translate - New
-
-## plugins/Motion/templates/Motion/user_profile.mtml
-	'Recent Actions from [_1]' => 'Acciones recientes de [_1]',
-	'Responses to Comments from [_1]' => 'Respuestas a los comentarios de [_1]',
-	'You are following [_1].' => 'Estás siguiendo a [_1]',
-	'Unfollow' => 'Dejar de seguir',
-	'Follow' => 'Seguir',
-	'Profile Data' => 'Datos del perfil', # Translate - New
-	'More Entries by [_1]' => 'Más entradas de [_1]', # Translate - New
-	'Recent Actions' => 'Acciones recientes',
-	'followed [_1]' => 'sigue a [_1]', # Translate - New
-	'Comment Threads' => 'Hilos de comentarios',
-	'[_1] commented on ' => '[_1] comentó en',
-	'No responses to comments.' => 'Sin respuestas a comentarios.',
-
-## plugins/Motion/templates/Motion/login_form.mtml
-	'Forgot?' => '¿Recordar?', # Translate - New
-
-## plugins/Motion/templates/Motion/my_dashboard.mtml
+	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>',
 
 ## plugins/Motion/templates/Motion/dynamic_error.mtml
 
-## plugins/Motion/templates/Motion/widget_members.mtml
+## plugins/Motion/templates/Motion/login_form.mtml
+	'Forgot?' => '¿Recordar?',
+
+## plugins/Motion/templates/Motion/my_dashboard.mtml
 
 ## plugins/Motion/templates/Motion/user_profile_edit.mtml
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => '<a href="[_1]">Regresar a la página anterior</a> o <a href="[_2]">vea su perfil</a>.',
-	'Change' => 'cambiar', # Translate - Case
-
-## plugins/Motion/templates/Motion/widget_following.mtml
-	'Not following anyone' => 'No sigue a nadie',
+	'Change' => 'cambiar',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(o <a href="javascript:void(0)" onclick="[_1]">identifíquese</a>)', # Translate - New
-	'No posting privileges.' => 'Sin privilegios de publicación.', # Translate - New
+	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(o <a href="javascript:void(0)" onclick="[_1]">identifíquese</a>)',
+	'No posting privileges.' => 'Sin privilegios de publicación.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
-	'[_1] is now following [_2]' => '[_1] ahora sigue a [_2]', # Translate - New
-	'[_1] favorited [_2]' => '[_1] marcó como favorito [_2]', # Translate - New
+	'[_1] is now following [_2]' => '[_1] ahora sigue a [_2]',
+	'[_1] favorited [_2]' => '[_1] marcó como favorito [_2]',
 
 ## plugins/Motion/templates/Motion/widget_powered_by.mtml
 
 ## plugins/Motion/templates/Motion/comment_preview.mtml
+
+## plugins/Score/lib/Score/App.pm
+	'Entry ID is missing.' => 'Falta el ID de la entrada.',
+	'Entry is missing.' => 'Falta la entrada.',
 
 ## plugins/ActionStreams/blog_tmpl/sidebar.mtml
 
@@ -5446,109 +5449,105 @@ Búsqueda base: [_2]",
 ## plugins/ActionStreams/blog_tmpl/footer.mtml
 
 ## plugins/ActionStreams/services.yaml
-	'Screen name' => 'Usuario', # Translate - New
-	'User ID' => 'ID de usuario', # Translate - New
-	'Search term' => 'Buscar palabra', # Translate - New
-	'Search for' => 'Buscar', # Translate - New
-	'Sharing ID' => 'Sharing ID', # Translate - New
-	'UIN' => 'UIN', # Translate - New
-	'Jabber ID' => 'ID de Jabber', # Translate - New
-	'Netflix RSS ID' => 'Netflix RSS ID', # Translate - New
-	'Profile URL' => 'URL del perfil', # Translate - New
-	'Vox name' => 'Usuario de Vox', # Translate - New
-	'Gamertag' => 'Gamertag', # Translate - New
+	'Screen name' => 'Usuario',
+	'User ID' => 'ID de usuario',
+	'Search term' => 'Buscar palabra',
+	'Search for' => 'Buscar',
+	'Sharing ID' => 'Sharing ID',
+	'UIN' => 'UIN',
+	'Jabber ID' => 'ID de Jabber',
+	'Netflix RSS ID' => 'Netflix RSS ID',
+	'Profile URL' => 'URL del perfil',
+	'Vox name' => 'Usuario de Vox',
+	'Gamertag' => 'Gamertag',
 
 ## plugins/ActionStreams/config.yaml
-	'Hide All' => 'Ocultar todo', # Translate - New
-	'Poll for new events' => 'Buscar nuevos eventos', # Translate - New
-	'Update Events' => 'Actualizar eventos', # Translate - New
+	'Hide All' => 'Ocultar todo',
+	'Poll for new events' => 'Buscar nuevos eventos',
+	'Update Events' => 'Actualizar eventos',
 	'Recent Actions' => 'Acciones recientes',
-	'\'Action Stream\'' => '\'Torrente de acciones', # Translate - New
-	'Main Index (Recent Actions)' => 'Índice principal (acciones recientes)', # Translate - New
-	'Action Archive' => 'Archivo de acciones', # Translate - New
-	'Atom' => 'Atom', # Translate - New
+	'\'Action Stream\'' => '\'Torrente de acciones',
+	'Main Index (Recent Actions)' => 'Índice principal (acciones recientes)',
+	'Action Archive' => 'Archivo de acciones',
+	'Atom' => 'Atom',
 	'Footer' => 'Pie',
-	'Find Authors Elsewhere' => 'Buscar autores en otros sitios', # Translate - New
-	'Authors Action Stream' => 'Torrente de acciones de los autores', # Translate - New
-	'\'Enabling default action streams for selected profiles...\'' => '\'Activando los torrentes de acciones para los perfiles seleccionados...\'', # Translate - New
+	'Find Authors Elsewhere' => 'Buscar autores en otros sitios',
+	'Authors Action Stream' => 'Torrente de acciones de los autores',
+	'\'Enabling default action streams for selected profiles...\'' => '\'Activando los torrentes de acciones para los perfiles seleccionados...\'',
 
 ## plugins/ActionStreams/lib/ActionStreams/Upgrade.pm
-	'Updating classification of [_1] [_2] actions...' => 'Actualizando la clasificación de [_1] [_2] acciones...', # Translate - New
-	'Renaming "[_1]" data of [_2] [_3] actions...' => 'Renombrando los datos de "[_1]" de [_2] [_3] acciones...', # Translate - New
+	'Updating classification of [_1] [_2] actions...' => 'Actualizando la clasificación de [_1] [_2] acciones...',
+	'Renaming "[_1]" data of [_2] [_3] actions...' => 'Renombrando los datos de "[_1]" de [_2] [_3] acciones...',
 
 ## plugins/ActionStreams/lib/ActionStreams/Worker.pm
-	'No such author with ID [_1]' => 'No existe un autor con el ID [_1]', # Translate - New
+	'No such author with ID [_1]' => 'No existe un autor con el ID [_1]',
 
 ## plugins/ActionStreams/lib/ActionStreams/Plugin.pm
-	'Other Profiles' => 'Otros perfiles', # Translate - New
-	'Action Stream' => 'Torrente de acciones', # Translate - New
-	'Actions from the service [_1]' => 'Acciones del servicio [_1]', # Translate - New
-	'No such event [_1]' => 'No existe el evento [_1]', # Translate - New
+	'Other Profiles' => 'Otros perfiles',
+	'Action Stream' => 'Torrente de acciones',
+	'Actions from the service [_1]' => 'Acciones del servicio [_1]',
+	'No such event [_1]' => 'No existe el evento [_1]',
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
-	'No user [_1]' => 'No existe el usuario [_1]', # Translate - New
+	'No user [_1]' => 'No existe el usuario [_1]',
 
 ## plugins/ActionStreams/lib/ActionStreams/Event.pm
-	'[_1] updating [_2] events for [_3]' => '[_1] actualizando [_2] eventos para [_3]', # Translate - New
-	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Error actualizando eventos para el torrente [_2] de [_1] (tipo [_3] ident [_4]): [_5]', # Translate - New
-	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'No se pudo cargar la clase [_1] del torrente [_2] [_3]: [_4]', # Translate - New
+	'[_1] updating [_2] events for [_3]' => '[_1] actualizando [_2] eventos para [_3]',
+	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Error actualizando eventos para el torrente [_2] de [_1] (tipo [_3] ident [_4]): [_5]',
+	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'No se pudo cargar la clase [_1] del torrente [_2] [_3]: [_4]',
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
-	'Your user name or ID is required.' => 'El usuario o el ID es obligatorio.', # Translate - New
-	'Service' => 'Servicio', # Translate - New
-	'Enter your account on the selected service.' => 'Introduzca su cuenta en el servicio seleccionado.', # Translate - New
-	'For example:' => 'Por ejemplo:', # Translate - New
+	'Your user name or ID is required.' => 'El usuario o el ID es obligatorio.',
+	'Service' => 'Servicio',
+	'Enter your account on the selected service.' => 'Introduzca su cuenta en el servicio seleccionado.',
+	'For example:' => 'Por ejemplo:',
 
 ## plugins/ActionStreams/tmpl/other_profiles.tmpl
-	'The selected profile was added.' => 'Se añadió el perfil seleccionado.', # Translate - New
-	'The selected profiles were removed.' => 'Se borraron los perfiles seleccionados.', # Translate - New
-	'The selected profiles were scanned for updates.' => 'Se escanearon las actualizaciones de los perfiles seleccionados.', # Translate - New
-	'The changes to the profile have been saved.' => 'Se han guardado los cambios al perfil.', # Translate - New
-	'Add Profile' => 'Añadir perfil', # Translate - New
-	'profile' => 'Perfil', # Translate - Case
-	'profiles' => 'perfiles', # Translate - New
-	'Delete selected profiles (x)' => 'Borrar los perfiles seleccionados (x)', # Translate - New
-	'Scan now for new actions' => 'Buscar nuevas acciones', # Translate - New
-	'Update Now' => 'Actualizar ahora', # Translate - New
-	'external_link_target' => 'external_link_target', # Translate - New
-	'View Profile' => 'Ver perfil', # Translate - New
+	'The selected profile was added.' => 'Se añadió el perfil seleccionado.',
+	'The selected profiles were removed.' => 'Se borraron los perfiles seleccionados.',
+	'The selected profiles were scanned for updates.' => 'Se escanearon las actualizaciones de los perfiles seleccionados.',
+	'The changes to the profile have been saved.' => 'Se han guardado los cambios al perfil.',
+	'Add Profile' => 'Añadir perfil',
+	'profile' => 'Perfil',
+	'profiles' => 'perfiles',
+	'Delete selected profiles (x)' => 'Borrar los perfiles seleccionados (x)',
+	'Scan now for new actions' => 'Buscar nuevas acciones',
+	'Update Now' => 'Actualizar ahora',
+	'external_link_target' => 'external_link_target',
+	'View Profile' => 'Ver perfil',
 
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
-	'Select a service where you already have an account.' => 'Seleccione un servicio donde ya tenga una cuenta.', # Translate - New
-	'Add Service (s)' => 'Añadir servicio (s)', # Translate - New
-	'Add Service' => 'Añadir servicio', # Translate - New
+	'Select a service where you already have an account.' => 'Seleccione un servicio donde ya tenga una cuenta.',
+	'Add Service (s)' => 'Añadir servicio (s)',
+	'Add Service' => 'Añadir servicio',
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
-	'The selected events were deleted.' => 'Se borraron los eventos seleccionados.', # Translate - New
-	'The selected events were hidden.' => 'Se ocultaron los eventos seleccionados.', # Translate - New
-	'The selected events were shown.' => 'Se mostraron los eventos seleccionados.', # Translate - New
-	'All action stream events were hidden.' => 'Se ocultaron todos los torrentes de acciones.', # Translate - New
-	'All action stream events were shown.' => 'Se mostraron todos los torrentes de acciones.', # Translate - New
-	'event' => 'evento', # Translate - New
-	'events' => 'eventos', # Translate - New
-	'Hide selected events (h)' => 'Ocultar eventos seleccionados (h)', # Translate - New
-	'Hide' => 'Ocultar', # Translate - New
-	'Show selected events (h)' => 'Mostrar eventos seleccionados (h)', # Translate - New
+	'The selected events were deleted.' => 'Se borraron los eventos seleccionados.',
+	'The selected events were hidden.' => 'Se ocultaron los eventos seleccionados.',
+	'The selected events were shown.' => 'Se mostraron los eventos seleccionados.',
+	'All action stream events were hidden.' => 'Se ocultaron todos los torrentes de acciones.',
+	'All action stream events were shown.' => 'Se mostraron todos los torrentes de acciones.',
+	'event' => 'evento',
+	'events' => 'eventos',
+	'Hide selected events (h)' => 'Ocultar eventos seleccionados (h)',
+	'Hide' => 'Ocultar',
+	'Show selected events (h)' => 'Mostrar eventos seleccionados (h)',
 	'Show' => 'Mostrar',
-	'No events could be found.' => 'No se encontró ningún evento.', # Translate - New
-	'Event' => 'Evento', # Translate - New
-	'Shown' => 'Mostrado', # Translate - New
-	'Hidden' => 'Oculto', # Translate - New
-	'View action link' => 'Ver enlace de la acción', # Translate - New
+	'No events could be found.' => 'No se encontró ningún evento.',
+	'Event' => 'Evento',
+	'Shown' => 'Mostrado',
+	'Hidden' => 'Oculto',
+	'View action link' => 'Ver enlace de la acción',
 
 ## plugins/ActionStreams/tmpl/widget_recent.mtml
-	'Your Recent Actions' => 'Sus acciones recientes', # Translate - New
+	'Your Recent Actions' => 'Sus acciones recientes',
 
 ## plugins/ActionStreams/tmpl/blog_config_template.tmpl
-	'Rebuild Indexes' => 'Reconstruir índices', # Translate - New
-	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si se selecciona, los índices de este blog se reconstruirán al descubrir nuevos eventos de los torrentes de acciones.', # Translate - New
-
-## plugins/Score/lib/Score/App.pm
-	'Entry ID is missing.' => 'Falta el ID de la entrada.', # Translate - New
-	'Entry is missing.' => 'Falta la entrada.', # Translate - New
+	'Rebuild Indexes' => 'Reconstruir índices',
+	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si se selecciona, los índices de este blog se reconstruirán al descubrir nuevos eventos de los torrentes de acciones.',
 
 );
 
-## New words: 989
+## New words: 49
 
 1;
