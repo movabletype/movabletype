@@ -6312,6 +6312,14 @@ eg: "Author, Commenter".
 Identifies whether the author(s) must have published an entry
 to be included or not.
 
+=item * need_association (optional; default "0")
+
+Identifies whether the author(s) must have explicit association
+to the blog(s) in context.  This attribute can be used to
+exclude system administrators who do not have explicit association
+to the blog(s).  This attribute requires blog context which
+can be created by include_blogs, exclude_blogs, and blog_ids.
+
 =item * status (optional; default "enabled")
 
 Supported values: enabled, disabled.
@@ -6440,7 +6448,13 @@ sub _hdlr_authors {
         if (!$args->{role}) {
             require MT::Permission;
             $args{'join'} =
-                MT::Permission->join_on( 'author_id', undef, \%blog_args );
+                MT::Permission->join_on(
+                  'author_id',
+                  exists($args->{need_association}) && $args->{need_association}
+                    ? \%blog_terms
+                    : undef,
+                  \%blog_args
+                );
             if ( ! $args->{any_type} ) {
                 push @filters, sub {
                     $_[0]->permissions($blog_id)->can_administer_blog
