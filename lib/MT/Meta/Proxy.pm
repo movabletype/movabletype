@@ -305,6 +305,8 @@ sub do_unserialization {
             return \$val;
         }
     } elsif ($prefix eq 'ASC') {
+        my $enc = MT->config('PublishCharset');
+        $$dataref = MT::I18N::encode_text( $$dataref, undef, $enc );
         return $dataref;
     } else {
         warn "Something's wrong with the data: prefix is $prefix";
