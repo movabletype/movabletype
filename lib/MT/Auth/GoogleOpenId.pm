@@ -39,6 +39,10 @@ sub set_commenter_properties {
     if ( $email =~ /^(.+)\@gmail\.com$/ ) {
         $nick = $1;
     }
+    if ( $commenter->url eq $vident->url ) {
+        # Google OpenID URL does not represent a web-browseable resource
+        $commenter->url(q());
+    }
     $commenter->nickname($nick || $vident->url);
     $commenter->email($email || '');
 }
