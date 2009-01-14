@@ -2084,6 +2084,16 @@ sub translate_naughty_words {
     }
 }
 
+sub to_json {
+    require JSON;
+    my $json = JSON::to_json( @_ );
+    if ( $json ) {
+        require MT::I18N;
+        return MT::I18N::utf8_off( $json );
+    }
+    return '';
+}
+
 1;
 
 __END__
