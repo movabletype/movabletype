@@ -1946,15 +1946,18 @@ sub get_newsbox_html {
 }
 
 sub sanitize_embed {
-    my ($str) = @_;
+    my ($str, $opt) = @_;
 
-    require MT::Sanitize;
+    $opt ||= {};
+    my $eh = $opt->{error_handler};
+    my $blog = $opt->{blog};
 
-    my $spec = 'embed src width height href allowfullscreen type,object width height,param name value';
-    my $sanitized = MT::Sanitize->sanitize($str, $spec);
-    my @domains = extract_domains($sanitized);
+    # Check for valid domains...
 
-    my @whitelist = map { lc $_ } split /\s+/s, (MT->config('EmbedDomainWhitelist') || '');
+    my @domains = extract_domains($str);
+
+    my @whitelist = map { lc $_ } split /\s+/s,
+        (MT->config('EmbedDomainWhitelist') || '');
 
     my $re = '';
     foreach my $d ( @whitelist ) {
@@ -1966,9 +1969,25 @@ sub sanitize_embed {
     foreach my $d ( @domains ) {
         unless ($d =~ m/$re/) {
             my $err = MT->translate("Invalid domain: '[_1]'", $d);
+            return $eh->error($err) if $err;
             die $err;
         }
     }
+
+
+    # Sanitize embed content
+
+    require MT::Sanitize;
+
+    my $gspec = ($blog ? $blog->sanitize_spec : undef) || MT->config('GlobalSanitizeSpec');
+
+    my $spec = $gspec . ',embed * !style,object id classid width height,param/ name value,script src type,div';
+    my $sanitized = MT::Sanitize->sanitize($str, $spec);
+
+    # Don't permit any actual script inside a script tag (external
+    # script loads are okay for the sake of an embed, as long as the
+    # domain is permitted), but arbitrary script code is not okay.
+    $sanitized =~ s!(<script[^>]*>)(?:.+?)(</script>)!$1$2!igs;
 
     return $sanitized;
 }
