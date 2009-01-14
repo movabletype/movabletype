@@ -455,7 +455,8 @@ sub listing {
             method        => $app->request_method,
         };
         $param->{object_type} ||= $type;
-        $param->{pager_json} = $json ? $pager : MT::Util::to_json($pager);
+        require JSON;
+        $param->{pager_json} = $json ? $pager : JSON::to_json($pager);
 
   # pager.rows (number of rows shown)
   # pager.listTotal (total number of rows in datasource)
@@ -485,7 +486,8 @@ sub listing {
             pager => $param->{pager_json},
         };
         $app->send_http_header("text/javascript+json");
-        $app->print( MT::Util::to_json($data) );
+        require JSON;
+        $app->print( JSON::to_json($data) );
         $app->{no_print_body} = 1;
     }
     else {
@@ -509,7 +511,8 @@ sub json_result {
     my ($result) = @_;
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
-    $app->print( MT::Util::to_json( { error => undef, result => $result } ) );
+    require JSON;
+    $app->print( JSON::to_json( { error => undef, result => $result } ) );
     return undef;
 }
 
@@ -518,7 +521,8 @@ sub json_error {
     my ($error) = @_;
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
-    $app->print( MT::Util::to_json( { error => $error } ) );
+    require JSON;
+    $app->print( JSON::to_json( { error => $error } ) );
     return undef;
 }
 

@@ -400,8 +400,9 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
+        require JSON;
         $param->{tags_js} =
-          MT::Util::to_json(
+          JSON::to_json(
             MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
 
@@ -653,7 +654,7 @@ sub build_asset_hasher {
         }
 
         @$row{keys %$meta} = values %$meta;
-        $row->{metadata_json} = MT::Util::to_json($meta);
+        $row->{metadata_json} = JSON::to_json($meta);
         $row;
     };
 }

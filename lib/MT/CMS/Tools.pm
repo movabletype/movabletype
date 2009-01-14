@@ -1142,7 +1142,8 @@ sub adjust_sitepath {
     my $param = {};
     if ( scalar $q->param('redirect') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
-        $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
+        require JSON;
+        $param->{blogs_meta} = JSON::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
     }
     else {
@@ -1198,7 +1199,7 @@ sub dialog_restore_upload {
     $param->{redirect}       = 1;
     $param->{is_dirty}       = $q->param('is_dirty');
     $param->{objects_json}   = $objects_json if defined($objects_json);
-    $param->{deferred_json}  = MT::Util::to_json($deferred) if defined($deferred);
+    $param->{deferred_json}  = JSON::to_json($deferred) if defined($deferred);
     $param->{blogs_meta}     = $q->param('blogs_meta');
     $param->{schema_version} = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
@@ -1314,7 +1315,7 @@ sub dialog_restore_upload {
         }
     }
     $param->{files}  = join( ',', @files );
-    $param->{assets} = encode_html( MT::Util::to_json($assets) );
+    $param->{assets} = encode_html( JSON::to_json($assets) );
     $param->{name}   = $file_next;
     if ( 0 < scalar(@files) ) {
         $param->{last} = 0;
@@ -1366,8 +1367,8 @@ sub dialog_restore_upload {
     else {
         my %objects_json;
         %objects_json = map { $_ => $objects->{$_}->id } keys %$objects;
-        $param->{objects_json}  = MT::Util::to_json( \%objects_json );
-        $param->{deferred_json} = MT::Util::to_json($deferred);
+        $param->{objects_json}  = JSON::to_json( \%objects_json );
+        $param->{deferred_json} = JSON::to_json($deferred);
 
         $param->{error} = join( '; ', @errors );
         if ( defined($blog_ids) && scalar(@$blog_ids) ) {
@@ -1743,7 +1744,8 @@ sub restore_upload_manifest {
             $param->{is_asset} = 1;
         }
     }
-    $assets_json = encode_url( MT::Util::to_json($assets) )
+    require JSON;
+    $assets_json = encode_url( JSON::to_json($assets) )
       if scalar(@$assets) > 0;
     $param->{files}       = join( ',', @$files );
     $param->{assets}      = $assets_json;

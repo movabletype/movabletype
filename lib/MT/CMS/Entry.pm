@@ -230,7 +230,8 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        my $tags_js = MT::Util::to_json(
+        require JSON;
+        my $tags_js = JSON::to_json(
             MT::Tag->cache(
                 blog_id => $blog_id,
                 class   => 'MT::Entry',
