@@ -684,7 +684,7 @@ sub build_asset_table {
     my @data;
     my $hasher = build_asset_hasher($app);
     while ( my $obj = $iter->() ) {
-        my $row = $obj->column_values;
+        my $row = $obj->get_values;
         $hasher->($obj, $row);
         $row->{object} = $obj;
         push @data, $row;

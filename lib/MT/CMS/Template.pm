@@ -1577,7 +1577,7 @@ sub build_template_table {
         my $blog = $blogs{ $tmpl->blog_id } ||=
           MT::Blog->load( $tmpl->blog_id ) if $tmpl->blog_id;
 
-        my $row = $tmpl->column_values;
+        my $row = $tmpl->get_values;
         $row->{name} = '' if !defined $row->{name};
         $row->{name} =~ s/^\s+|\s+$//g;
         $row->{name} = "(" . $app->translate("No Name") . ")"

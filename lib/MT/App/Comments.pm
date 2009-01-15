@@ -1621,7 +1621,7 @@ sub do_preview {
         ## Serialize comment state, then hex-encode it.
         require MT::Serialize;
         my $ser   = MT::Serialize->new( $cfg->Serializer );
-        my $state = $comment->column_values;
+        my $state = $comment->get_values;
         $state->{static} = $q->param('static');
         $ctx->stash( 'comment_state', unpack 'H*',
             $ser->serialize( \$state ) );

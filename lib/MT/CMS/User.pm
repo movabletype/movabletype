@@ -226,7 +226,7 @@ sub list {
     my ( @data, %authors, %entry_count_refs );
     my $entry_class = $app->model('entry');
     while ( my $au = $author_iter->() ) {
-        my $row = $au->column_values;
+        my $row = $au->get_values;
         $row->{name} = '(unnamed)' if !$row->{name};
         $authors{ $au->id } ||= $au;
         $row->{id}    = $au->id;
@@ -1753,7 +1753,7 @@ sub _merge_default_assignments {
             $obj->role_id($role_id);
             $obj->blog_id($blog_id);
             $obj->id( 'PSEUDO-' . $role_id . '-' . $blog_id );
-            my $row = $obj->column_values();
+            my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
             $row->{user_id}   = 'PSEUDO';
             $row->{user_name} = MT->translate('(newly created user)');

@@ -315,7 +315,7 @@ sub listing {
                 if ( $data && @$data ) {
                     foreach my $row (@$data) {
                         my $obj = $row->{object};
-                        $row = $obj->column_values();
+                        $row = $obj->get_values();
                         $hasher->( $obj, $row );
                     }
                 }
@@ -433,7 +433,7 @@ sub listing {
                 or return $app->error( $class->errstr ) );
         my @data;
         while ( my $obj = $iter->() ) {
-            my $row = $obj->column_values();
+            my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
             #$app->run_callbacks( 'app_listing_'.$app->mode,
