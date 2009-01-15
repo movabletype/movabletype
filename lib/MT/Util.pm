@@ -2087,44 +2087,62 @@ sub translate_naughty_words {
 sub _pre_to_json {
     my ( $ref ) = @_;
     if ( 'ARRAY' eq ref($ref) ) {
+        my @tmp;
         foreach ( @$ref ) {
             if ( ref($_) ) {
-                _pre_to_json($_);
+                push @tmp, _pre_to_json($_);
             }
             else {
                 # Do not decode numeric values because 
                 # they may be used as a boolean value in JavaScript.
-                $_ = MT::I18N::decode( MT->config->PublishCharset, $_ )
-                    if ( $_ !~ /\d+/ );
+                if ( $_ !~ /\d+/ ) {
+                    push @tmp, MT::I18N::decode( MT->config->PublishCharset, $_ );
+                }
+                else {
+                    push @tmp, $_;
+                }
             }
         }
+        return \@tmp;
     }
     elsif ( 'HASH' eq ref($ref) ) {
+        my %tmp;
         while ( my ( $k, $v ) = each %$ref ) {
             if ( ref($v) ) {
-                _pre_to_json($v);
+                $tmp{$k} = _pre_to_json($v);
             }
             else {
                 # Do not decode numeric values because 
                 # they may be used as a boolean value in JavaScript.
-                $ref->{$k} = MT::I18N::decode( MT->config->PublishCharset, $v )
-                    if ( $v !~ /\d+/ );
+                if ( $v !~ /\d+/ ) {
+                    $tmp{$k} = MT::I18N::decode( MT->config->PublishCharset, $v );
+                }
+                else {
+                    $tmp{$k} = $v;
+                }
             }
         }
+        return \%tmp;
     }
     elsif ( 'SCALAR' eq ref($ref) ) {
         # Do not decode numeric values because 
         # they may be used as a boolean value in JavaScript.
-        $$ref = MT::I18N::decode( MT->config->PublishCharset, $$ref )
-            if ( $$ref !~ /\d+/ );
+        my $tmp;
+        if ( $$ref !~ /\d+/ ) {
+            $tmp = MT::I18N::decode( MT->config->PublishCharset, $$ref );
+        }
+        else {
+            $tmp = $$ref;
+        }
+        return \$tmp;
     }
-    1;
+    return $ref;
 }
 
 sub to_json {
-    my ( $value, $args ) = @_;
+    my ( $orig_val, $args ) = @_;
     require MT::I18N;
-    _pre_to_json( $value );
+    my $value = _pre_to_json( $orig_val );
     require JSON;
     my $js = JSON::to_json($value, $args);
     return MT::I18N::encode( MT->config->PublishCharset, $js );
