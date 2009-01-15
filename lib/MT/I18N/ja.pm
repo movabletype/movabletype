@@ -73,6 +73,12 @@ sub guess_encoding_jcode {
     return $enc;
 }
 
+sub encode_jcode {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    return $class->encode_text_jcode($text, 'utf-8', $enc);
+}
+
 sub decode_jcode {
     my $class = shift;
     my ($enc, $text) = @_;

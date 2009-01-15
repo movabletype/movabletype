@@ -3517,8 +3517,7 @@ sub _hdlr_get_var {
     }
 
     if (ref($value) && $args->{to_json}) {
-        require JSON;
-        return JSON::to_json($value);
+        return MT::Util::to_json($value);
     }
     return defined $value ? $value : "";
 }
@@ -11641,8 +11640,7 @@ sub _hdlr_user_session_state {
     return 'null' unless $app->can('session_state');
 
     my ( $state, $commenter ) = $app->session_state();
-    require JSON;
-    my $json = JSON::to_json($state);
+    my $json = MT::Util::to_json($state);
     return $json;
 }
 

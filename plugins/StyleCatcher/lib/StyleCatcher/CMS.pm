@@ -93,13 +93,13 @@ sub view {
     push @{ $theme_data->{categories} }, 'current'
       if %current_themes;
 
-    require JSON;
+    require MT::Util;
     my $url   = $app->param('url');
     my %param = (
         version     => plugin()->version,
         # blog_loop   => \@blog_loop,
         blog_id => $blog_id,
-        themes_json => JSON::to_json(
+        themes_json => MT::Util::to_json(
             $theme_data, { pretty => 1, indent => 2 }
         ),
         auto_fetch => $url ? 1 : 0,

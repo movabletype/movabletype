@@ -2084,6 +2084,52 @@ sub translate_naughty_words {
     }
 }
 
+sub _pre_to_json {
+    my ( $ref ) = @_;
+    if ( 'ARRAY' eq ref($ref) ) {
+        foreach ( @$ref ) {
+            if ( ref($_) ) {
+                _pre_to_json($_);
+            }
+            else {
+                # Do not decode numeric values because 
+                # they may be used as a boolean value in JavaScript.
+                $_ = MT::I18N::decode( MT->config->PublishCharset, $_ )
+                    if ( $_ !~ /\d+/ );
+            }
+        }
+    }
+    elsif ( 'HASH' eq ref($ref) ) {
+        while ( my ( $k, $v ) = each %$ref ) {
+            if ( ref($v) ) {
+                _pre_to_json($v);
+            }
+            else {
+                # Do not decode numeric values because 
+                # they may be used as a boolean value in JavaScript.
+                $ref->{$k} = MT::I18N::decode( MT->config->PublishCharset, $v )
+                    if ( $v !~ /\d+/ );
+            }
+        }
+    }
+    elsif ( 'SCALAR' eq ref($ref) ) {
+        # Do not decode numeric values because 
+        # they may be used as a boolean value in JavaScript.
+        $$ref = MT::I18N::decode( MT->config->PublishCharset, $$ref )
+            if ( $$ref !~ /\d+/ );
+    }
+    1;
+}
+
+sub to_json {
+    my ( $value, $args ) = @_;
+    require MT::I18N;
+    _pre_to_json( $value );
+    require JSON;
+    my $js = JSON::to_json($value, $args);
+    return MT::I18N::encode( MT->config->PublishCharset, $js );
+}
+
 1;
 
 __END__
@@ -2266,6 +2312,13 @@ Content will be sanitized based on pre-defined rules.
 =head2 log_time
 
 Returns the current server time in log specific format.
+
+=head2 to_json($reference)
+
+Wrapper method to JSON::to_json which decodes any string value
+in I<reference> to UTF-8 strings as JSON::to_json requires.
+It then encodes back to the charset specified in PublishCharset
+for MT to render json strings properly.
 
 =head1 AUTHOR & COPYRIGHTS
 

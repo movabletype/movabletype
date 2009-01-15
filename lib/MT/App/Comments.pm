@@ -1460,10 +1460,9 @@ sub session_js {
 
     my ( $state, $commenter ) = $app->session_state;
 
-    require JSON;
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = JSON::to_json($state);
+    my $json = MT::Util::to_json($state);
     $app->print( "$jsonp(" . $json . ");\n" );
     return undef;
 }

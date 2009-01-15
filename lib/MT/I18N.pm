@@ -22,8 +22,12 @@ BEGIN {
         *decode = sub {
             _handle(decode => @_);
         };
+        *encode = sub {
+            _handle(encode => @_);
+        };
     } else {
         *decode = \&Encode::decode;
+        *encode = \&Encode::encode;
     }
 };
 
@@ -128,6 +132,16 @@ Turn off UTF-8 encoding in the given I<text>
 
 Return the value of the given I<id> method from the C<MT::I18N>
 package for the current language.
+
+=head2 decode($enc, $text)
+
+Decode the given I<text> from the charset specified in I<enc>
+to UTF-8 string.
+
+=head2 encode($enc, $text)
+
+Encode the given I<text> that is a UTF-8 string to the charset
+specified in I<enc>.
 
 =head1 LICENSE
 

@@ -205,7 +205,7 @@ sub upgrade {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = JSON::to_json($steps);
+        $json_steps = MT::Util::to_json($steps);
     }
 
     $param{up_to_date} = $json_steps ? 0 : 1;
@@ -447,7 +447,7 @@ sub init_blog {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = JSON::to_json($steps);
+        $json_steps = MT::Util::to_json($steps);
     }
 
     $param{installing}    = $install_mode;
@@ -548,7 +548,7 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print( ' JSON:' . JSON::to_json( $app->response ) );
+    $app->print( ' JSON:' . MT::Util::to_json( $app->response ) );
 }
 
 sub response {
