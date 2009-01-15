@@ -4948,13 +4948,15 @@ sub _include_file {
         $tokens = $cref;
     } else {
         my $blog = $ctx->stash('blog');
-        if ($blog->id != $blog_id) {
+        if ($blog && $blog->id != $blog_id) {
             $blog = MT::Blog->load($blog_id)
                 or return $ctx->error(MT->translate(
                     "Can't find blog for id '[_1]", $blog_id));
         }
-        my @paths = ($file, map File::Spec->catfile($_, $file),
-                            $blog->site_path, $blog->archive_path);
+        my @paths = ($file);
+        push @paths, map { File::Spec->catfile($_, $file) }
+            ($blog->site_path, $blog->archive_path)
+            if $blog;
         my $path;
         for my $p (@paths) {
             $path = $p, last if -e $p && -r _;
