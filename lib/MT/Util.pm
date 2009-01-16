@@ -2095,11 +2095,11 @@ sub _pre_to_json {
             else {
                 # Do not decode numeric values because 
                 # they may be used as a boolean value in JavaScript.
-                if ( $_ !~ /\d+/ ) {
+                if ( $_ !~ /^\d+$/ ) {
                     push @tmp, MT::I18N::decode( MT->config->PublishCharset, $_ );
                 }
                 else {
-                    push @tmp, $_;
+                    push @tmp, 0 + $_;
                 }
             }
         }
@@ -2114,11 +2114,11 @@ sub _pre_to_json {
             else {
                 # Do not decode numeric values because 
                 # they may be used as a boolean value in JavaScript.
-                if ( $v !~ /\d+/ ) {
+                if ( $v !~ /^\d+$/ ) {
                     $tmp{$k} = MT::I18N::decode( MT->config->PublishCharset, $v );
                 }
                 else {
-                    $tmp{$k} = $v;
+                    $tmp{$k} = 0 + $v;
                 }
             }
         }
@@ -2128,11 +2128,11 @@ sub _pre_to_json {
         # Do not decode numeric values because 
         # they may be used as a boolean value in JavaScript.
         my $tmp;
-        if ( $$ref !~ /\d+/ ) {
+        if ( $$ref !~ /^\d+$/ ) {
             $tmp = MT::I18N::decode( MT->config->PublishCharset, $$ref );
         }
         else {
-            $tmp = $$ref;
+            $tmp = 0 + $$ref;
         }
         return \$tmp;
     }
