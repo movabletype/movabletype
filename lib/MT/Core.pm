@@ -526,6 +526,9 @@ BEGIN {
             'DefaultTemplateSet' => { default => 'mt_blog' },
 
             'AssetFileTypes' => { type    => 'HASH' },
+
+            'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
+            'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

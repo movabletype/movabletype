@@ -62,13 +62,33 @@ sub import {
             eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $class; 1;" or die $@;
             if ($fast_cgi) {
                 $ENV{FAST_CGI} = 1;
+                my ($max_requests, $max_time, $cfg);
                 while (my $cgi = new CGI::Fast) {
                     $app = $class->new( %param, CGIObject => $cgi )
                         or die $class->errstr;
+
+                    $app->{fcgi_startup_time} ||= time;
+                    $app->{fcgi_request_count} = ( $app->{fcgi_request_count} || 0 ) + 1;
+
+                    unless ( $cfg ) {
+                        $cfg = $app->config;
+                        $max_requests = $cfg->FastCGIMaxRequests;
+                        $max_time = $cfg->FastCGIMaxTime;
+                    }
+
                     local $SIG{__WARN__} = sub { $app->trace($_[0]) };
                     MT->set_instance($app);
                     $app->init_request(CGIObject => $cgi);
                     $app->run;
+
+                    # Check for timeout for this process
+                    if ( $max_time && ( time - $app->{fcgi_startup_time} >= $max_time ) ) {
+                        last;
+                    }
+                    # Check for max executions for this process
+                    if ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
+                        last;
+                    }
                 }
             } else {
                 $app = $class->new( %param ) or die $class->errstr;
