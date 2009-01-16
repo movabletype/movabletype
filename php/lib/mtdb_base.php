@@ -589,10 +589,13 @@ class MTDatabaseBase extends ezsql {
                 }
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
+                $labels = array();
+                if (!$not_clause)
+                    $labels = preg_split('/\s*\b(?:AND|OR)\b\s|[\s*(?:|&)\s*]/i',$category_arg);
                 if ($blog_ctx_arg)
-                    $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class)));
+                    $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class, 'label' => $labels)));
                 else
-                    $cats =& $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class));
+                    $cats =& $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => $cat_class, 'label' => $labels));
             }
             if (!is_array($cats)) $cats = array();
             $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
@@ -1316,7 +1319,17 @@ class MTDatabaseBase extends ezsql {
                 $limit = 1;
             }
         } elseif (isset($args['label'])) {
-            $cat_filter = 'and category_label = \''.$this->escape($args['label']).'\'';
+            if (is_array($args['label'])) {
+                $labels = '';
+                foreach ($args['label'] as $c) {
+                    if ($labels != '')
+                        $labels .= ',';
+                    $labels .= "'".$this->escape($c)."'";
+                }
+                $cat_filter = 'and category_label in ('.$labels.')';
+            } else {
+                $cat_filter = 'and category_label = \''.$this->escape($args['label']).'\'';
+            }
         } else {
             $limit = $args['lastn'];
             if (isset($args['sort_order'])) {

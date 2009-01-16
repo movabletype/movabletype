@@ -7966,7 +7966,9 @@ sub _hdlr_entries {
                  ($cat_class_type ne 'category' && !$args->{include_subfolders})))
             {
                 if ($blog_terms{blog_id}) {
-                    $cats = [ $cat_class->load(\%blog_terms, \%blog_args) ];
+                    my %cat_blog_terms = %blog_terms;
+                    $cat_blog_terms{label} = $category_arg;
+                    $cats = [ $cat_class->load(\%cat_blog_terms, \%blog_args) ];
                 } else {
                     my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $cat_class_type);
                     if (@cats) {
@@ -7975,7 +7977,13 @@ sub _hdlr_entries {
                     }
                 }
             } else {
-                my @cats = $cat_class->load(\%blog_terms, \%blog_args);
+                my %cat_blog_terms = %blog_terms;
+                if ( $category_arg !~ m/\bNOT\b/i) {
+                    my @args_cat = split /\s*\b(?:AND|OR)\b\s|[\s*(?:|&)\s*]/i, $category_arg;
+                    @args_cat = grep { $_ } @args_cat;
+                    $cat_blog_terms{label} = \@args_cat;
+                }
+                my @cats = $cat_class->load(\%cat_blog_terms, \%blog_args);
                 if (@cats) {
                     $cats = \@cats;
                     $cexpr = $ctx->compile_category_filter($category_arg, $cats,
