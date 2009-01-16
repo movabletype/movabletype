@@ -2648,6 +2648,100 @@ TypeKey
             },
             order => 17,
         },
+        'YahooJP' => {
+            class => 'MT::Auth::Yahoo',
+            label => 'Yahoo! Japan',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            login_form => <<YAHOO,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="yahoo.jp" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="YahooJP" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0">
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/yahoojp-button.png" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.co.jp/"><__trans phrase="Turn on OpenID for your Yahoo! Japan account now"></a></p>
+</fieldset>
+</form>
+YAHOO
+            order => 18,
+        },
+        'livedoor' => {
+            class => 'MT::Auth::OpenID',
+            label => 'livedoor',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/signin_livedoor.png',
+            logo_small => 'images/comment/livedoor_logo.png',
+            login_form => <<LIVEDOOR,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="livedoor.com" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="livedoor" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0">
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/livedoor-button.gif" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+</fieldset>
+</form>
+LIVEDOOR
+            order => 20,
+        },
+        'Hatena' => {
+            class      => 'MT::Auth::Hatena',
+            label      => 'Hatena',
+            login_form => <<HATENA,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Hatena" />
+<fieldset>
+<mtapp:setting
+    id="vox_display"
+    label="<__trans phrase="Your Hatena ID">">
+<input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/hatena_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 200px; font-size: 110%; vertical-align: middle" />
+</mtapp:setting>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
+</div>
+</fieldset>
+</form>
+HATENA
+            login_form_params => \&_commenter_auth_params,
+            condition         => \&_openid_commenter_condition,
+            logo              => 'images/comment/signin_hatena.png',
+            logo_small        => 'images/comment/hatena_logo.png',
+            order => 21,
+        },
     };
 }
 
