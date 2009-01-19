@@ -213,6 +213,10 @@ through the C<$obj> parameter.
 
     callback($cb, $class)
 
+=item * <package>::pre_direct_remove
+
+    callback($cb, $class, $terms, $args)
+
 =item * <package>::post_clone
 
     callback($cb, %param)

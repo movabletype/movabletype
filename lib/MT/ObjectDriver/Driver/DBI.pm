@@ -96,6 +96,13 @@ sub remove_all {
     return $driver->direct_remove($class);
 }
 
+sub direct_remove {
+    my $driver = shift;
+    my ($class, $orig_terms, $orig_args) = @_;
+    $class->call_trigger('pre_direct_remove', $orig_terms, $orig_args);
+    $driver->SUPER::direct_remove(@_);
+}
+
 sub count_group_by {
     my $driver = shift;
     my ($class, $terms, $args) = @_;
