@@ -3,11 +3,11 @@
     <mt:unless name="EDIT_AUTHOR_ID" eq="PSEUDO">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID">"><b><__trans phrase="Profile"></b></a></li>
     </mt:unless>
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><b><__trans phrase="Permissions"></b></a></li>
+    <li<mt:unless name="profile_inactive"> class="active"</mt:unless>><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="EDIT_AUTHOR_ID">"><b><__trans phrase="Permissions"></b></a></li>
 </mt:if>
 
 <mt:if name="edit_author">
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id"></mt:if>"><b><__trans phrase="Profile"></b></a></li>
+    <li<mt:unless name="profile_inactive"> class="active"</mt:unless>><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id"></mt:if>"><b><__trans phrase="Profile"></b></a></li>
     <mt:unless name="new_object">
         <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="id">"><b><__trans phrase="Permissions"></b></a></li>
     </mt:unless>
