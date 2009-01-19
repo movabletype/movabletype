@@ -1214,7 +1214,8 @@ sub _upload_file {
     if (
         !(
             $asset = $asset_pkg->load(
-                { file_path => $asset_file, blog_id => $blog_id }
+                { file_path => $asset_file, blog_id => $blog_id },
+                { binary => { file_path => 1 } }
             )
         )
       )
