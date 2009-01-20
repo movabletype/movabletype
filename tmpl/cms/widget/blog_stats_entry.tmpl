@@ -54,7 +54,7 @@
                     </MTIfNonEmpty>
                     <MTEntryIfTagged>
                         <mt:SetVarBlock name="tags"><MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName escape="html"$></a><MTElse><$MTTagName escape="html"$></MTIf></MTEntryTags></mt:SetVarBlock>
-                        <__trans phrase="Tagged: [_1]" params="<mt:var name="tags" escape="html">">
+                        <__trans phrase="Tagged: [_1]" params="<mt:var name="tags">">
                     </MTEntryIfTagged>
                     </div>
                 </div>
