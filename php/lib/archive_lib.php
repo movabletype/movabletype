@@ -96,7 +96,7 @@ class IndividualArchiver extends BaseArchiver {
     }
 
     function get_title($args, $ctx) {
-        return $ctx->tag('EntryTitle', $args);
+        return encode_html( strip_tags( $ctx->tag('EntryTitle', $args) ) );
     }
 
     function get_range(&$ctx, &$row) {
@@ -112,7 +112,7 @@ class IndividualArchiver extends BaseArchiver {
     function get_archive_name() {
         return 'Individual';
     }
-    
+
     function &get_archive_list($ctx, $args) {
         return $ctx->mt->db->get_archive_list($args);
     }
@@ -291,7 +291,7 @@ class YearlyArchiver extends DateBasedArchiver {
         } else {
             $format or $format = "%Y";
         }
-        
+
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
@@ -486,9 +486,9 @@ class AuthorBasedArchiver extends BaseArchiver {
                     $ctx->mt->translate('(Display Name not set)');
             }
         }
-        return $author_name;
+        return encode_html( strip_tags( $author_name ) );
     }
-    
+
     function get_archive_name() {
         return 'Author';
     }
@@ -793,9 +793,10 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             $format or $format = "%Y";
         }
 
-        return $author_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $author_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
-    
+
     function get_archive_name() {
         return 'Author-Yearly';
     }
@@ -877,9 +878,10 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return $author_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $author_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
-    
+
     function get_archive_name() {
         return 'Author-Monthly';
     }
@@ -902,7 +904,7 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             : '';
         $year_ext = $mt->db->apply_extract_date('year', 'entry_authored_on');
         $month_ext = $mt->db->apply_extract_date('month', 'entry_authored_on');
-        $ctx = $mt->context(); 
+        $ctx = $mt->context();
         $index = $ctx->stash('index_archive');
 
         #if (!$index) {
@@ -981,9 +983,10 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return $author_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $author_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
-    
+
     function get_archive_name() {
         return 'Author-Daily';
     }
@@ -1088,11 +1091,11 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return $author_name
-            .$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
-            .' - '.$ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $author_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
+            . ' - ' . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
-    
+
     function get_archive_name() {
         return 'Author-Weekly';
     }
@@ -1191,7 +1194,7 @@ class DateBasedCategoryArchiver extends DateBasedArchiver {
     // Override method
     function &get_archive_list($ctx, $args) {
         global $mt;
-        list($results, $hi, $low) = 
+        list($results, $hi, $low) =
             $this->get_archive_list_data($args);
         if(is_array($results)) {
             $blog_id = $args['blog_id'];
@@ -1355,7 +1358,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
     }
     function get_title($args, $ctx) {
         $cat_name = parent::get_category_name($ctx);
-        $stamp = $ctx->stash('current_timestamp'); 
+        $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $blog = $ctx->stash('blog');
@@ -1367,7 +1370,8 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         } else {
             $format or $format = "%Y";
         }
-        return $cat_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $cat_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
     function get_range(&$ctx, &$row) {
@@ -1410,7 +1414,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
             $cat or $cat = $ctx->stash('category');
             if (isset($cat)){
                 $cat_filter = " and placement_category_id=".$cat['category_id'];
-        
+
             }
         #}
         $sql = "
@@ -1464,7 +1468,8 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return $cat_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $cat_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
     function get_range(&$ctx, &$row) {
@@ -1508,7 +1513,7 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
                 $cat_filter = " and placement_category_id=".$cat['category_id'];
-        
+
             }
         #}
         $sql = "
@@ -1566,7 +1571,8 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return $cat_name.$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $cat_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
     function get_range(&$ctx, &$row) {
@@ -1611,7 +1617,7 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
                 $cat_filter = " and placement_category_id=".$cat['category_id'];
-        
+
             }
         #}
         $sql = "
@@ -1671,9 +1677,9 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return $cat_name
-            .$ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
-            ." - ".$ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
+        return encode_html( strip_tags( $cat_name ) )
+            . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
+            . " - " . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
     function get_range(&$ctx, &$row) {
@@ -1719,7 +1725,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             $cat or $cat = $ctx->stash('category');
             if(isset($cat)) {
                 $cat_filter = " and placement_category_id=".$cat['category_id'];
-        
+
             }
         #}
         $sql = "

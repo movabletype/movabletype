@@ -1,7 +1,7 @@
 package MT::CMS::Dashboard;
 
 use strict;
-use MT::Util qw( epoch2ts );
+use MT::Util qw( epoch2ts encode_html );
 
 sub dashboard {
     my $app = shift;
@@ -138,7 +138,7 @@ sub this_is_you_widget {
     if ($last_post) {
         $param->{last_post_id}      = $last_post->id;
         $param->{last_post_blog_id} = $last_post->blog_id;
-        $param->{last_post_blog_name} = $last_post->blog->name;
+        $param->{last_post_blog_name} = encode_html($last_post->blog->name);
         $param->{last_post_ts}      = $last_post->authored_on;
     }
 

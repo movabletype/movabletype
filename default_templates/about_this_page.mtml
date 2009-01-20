@@ -45,7 +45,7 @@
 </mt:If>
 <mt:If name="author_archive">
     <mt:If name="datebased_archive">
-        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>." params="<$mt:AuthorDisplayName$>%%<$mt:ArchiveDate format="%B %Y"$>"></p>
+        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>." params="<$mt:AuthorDisplayName encode_html="1"$>%%<$mt:ArchiveDate format="%B %Y"$>"></p>
         <mt:ArchivePrevious>
         <p><__trans phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
         </mt:ArchivePrevious>
@@ -53,7 +53,7 @@
         <p><__trans phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
         </mt:ArchiveNext>
     <mt:Else>
-        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong>." params="<$mt:AuthorDisplayName$>"></p>
+        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong>." params="<$mt:AuthorDisplayName encode_html="1"$>"></p>
     </mt:If>
 </mt:If>
 <mt:If name="datebased_only_archive">

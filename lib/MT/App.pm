@@ -2024,7 +2024,7 @@ sub create_user_pending {
         }
 
         $url = $q->param('url');
-        if ( $url && !is_url($url) ) {
+        if ( $url && (!is_url($url) || ($url =~ m/[<>]/)) ) {
             return $app->error( $app->translate("URL is invalid.") );
         }
     }
@@ -2039,6 +2039,9 @@ sub create_user_pending {
     } elsif ( $name =~ m/([<>])/) {
         return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Username"), encode_html( $1 ) ) );
     }
+    if ( $name =~ m/([<>])/) {
+        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Username"), encode_html( $1 ) ) );
+    }
 
     my $existing = MT::Author->exist( { name => $name } );
     return $app->error(
@@ -2049,6 +2052,9 @@ sub create_user_pending {
     unless ($nickname) {
         return $app->error( $app->translate("User requires display name.") );
     } elsif ( $nickname =~ m/([<>])/) {
+        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
+    }
+    if ( $nickname =~ m/([<>])/) {
         return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
     }
 

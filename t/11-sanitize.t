@@ -6,7 +6,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-use Test::More tests => 53;
+use Test::More tests => 54;
 
 use MT;
 use MT::Test;
@@ -105,3 +105,6 @@ is(MT::Sanitize->sanitize('<p><i style="x:expression:alert(\'xss\')"', 'p,i'), '
 
 ### this one breaks...
 is(MT::Sanitize->sanitize('<? /* ?> */ readfile("/etc/passwd") ?>'), ' */ readfile("/etc/passwd") ?>', 'php cloaking attempt');
+
+is(MT::Sanitize->sanitize("<a href='
+javascript:alert(123)'>boo</a>", 'a href'), '<a>boo</a>', '<a>boo</a>'); 

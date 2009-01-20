@@ -9,6 +9,8 @@ package MT::ArchiveType::Author;
 use strict;
 use base qw( MT::ArchiveType );
 
+use MT::Util qw( remove_html encode_html );
+
 sub name {
     return 'Author';
 }
@@ -49,7 +51,7 @@ sub archive_title {
     my $obj = shift;
     my ($ctx) = @_;
     my $a = $ctx->stash('author');
-    $a ? $a->nickname || MT->translate( '(Display Name not set)' ) : '';
+    encode_html( remove_html( $a ? $a->nickname || MT->translate( '(Display Name not set)' ) : '' ) );
 }
 
 sub archive_file {

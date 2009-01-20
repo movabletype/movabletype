@@ -1669,6 +1669,7 @@ sub _hdlr_app_listing {
     $hide_pager = 1 if ($ctx->var('screen_class') || '') eq 'search-replace';
     my $show_actions = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
+    $return_args = encode_html( $return_args );
     $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
     my $blog_id = $ctx->var('blog_id') || '';
     $blog_id = qq{\n        <input type="hidden" name="blog_id" value="$blog_id" />} if $blog_id;
@@ -1953,6 +1954,7 @@ sub _hdlr_app_widget {
     my $tabbed = $args->{tabbed} ? ' mt:delegate="tab-container"' : "";
     my $header_class = $tabbed ? 'widget-header-tabs' : '';
     my $return_args = $app->make_return_args;
+    $return_args = encode_html( $return_args );
     my $cgi = $app->uri;
     if ($hosted_widget && (!$insides !~ m/<form\s/i)) {
         $insides = <<"EOT";
@@ -9222,7 +9224,7 @@ sub _hdlr_entry_author_link {
 
     my $type = $args->{type} || '';
 
-    my $displayname = $a->nickname || '';
+    my $displayname = encode_html( remove_html( $a->nickname || '' ) );
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
     # Open the link in a new window if requested (with new_window="1").
@@ -9238,13 +9240,13 @@ sub _hdlr_entry_author_link {
         if ($a->url && ($displayname ne '')) {
             # Add vcard properties to link if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
-            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard, $a->url, $target, $displayname;
+            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard, encode_html( $a->url ), $target, $displayname;
         }
     } elsif ($type eq 'email') {
         if ($a->email && ($displayname ne '')) {
             # Add vcard properties to email if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
-            my $str = "mailto:" . $a->email;
+            my $str = "mailto:" . encode_html( $a->email );
             $str = spam_protect($str) if $args->{'spam_protect'};
             return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str, $displayname;
         }
@@ -10857,6 +10859,7 @@ sub _hdlr_comment_author_link {
     $name = '' unless defined $name;
     $name ||= $args->{default_name};
     $name ||= MT->translate("Anonymous");
+    $name = encode_html( remove_html( $name ) );
     my $show_email = $args->{show_email} ? 1 : 0;
     my $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
     # Open the link in a new window if requested (with new_window="1").
@@ -10867,9 +10870,10 @@ sub _hdlr_comment_author_link {
     }
 
     if ( $cmntr ) {
+        $name = encode_html( remove_html( $cmntr->nickname ) ) if $cmntr->nickname;
         if ($cmntr->url) {
             return sprintf(qq(<a title="%s" href="%s"%s>%s</a>),
-                           $cmntr->url, $cmntr->url, $target, $name); 
+                           encode_html( $cmntr->url ), encode_html( $cmntr->url ), $target, $name); 
         }
         return $name;
     } elsif ($show_url && $c->url) {
@@ -10878,10 +10882,9 @@ sub _hdlr_comment_author_link {
         my $comment_script = $cfg->CommentScript;
         $name = remove_html($name);
         my $url = remove_html($c->url);
-        $url =~ s/>/&gt;/g;
         if ($c->id && !$args->{no_redirect} && !$args->{nofollowfy}) {
             return sprintf(qq(<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>),
-                           $url, $cgi_path, $comment_script, $c->id, $target, $name);
+                           encode_html( $url ), $cgi_path, $comment_script, $c->id, $target, $name);
         } else {
             # In the case of preview, show URL directly without a redirect
             return sprintf(qq(<a title="%s" href="%s"%s>%s</a>),
@@ -10889,7 +10892,7 @@ sub _hdlr_comment_author_link {
         }
     } elsif ($show_email && $c->email && MT::Util::is_valid_email($c->email)) {
         my $email = remove_html($c->email);
-        my $str = "mailto:" . $email;
+        my $str = "mailto:" . encode_html( $email );
         $str = spam_protect($str) if $args->{'spam_protect'};
         return sprintf qq(<a href="%s">%s</a>), $str, $name;
     }
@@ -11288,7 +11291,7 @@ sub _hdlr_comment_reply_link {
         return  $ctx->_no_comment_error();
 
     my $label = $args->{label} || $args->{text} || MT->translate('Reply');
-    my $comment_author = MT::Util::encode_js($comment->author);
+    my $comment_author = MT::Util::encode_html( MT::Util::encode_js($comment->author) );
     my $onclick = sprintf( $args->{onclick} || "mtReplyCommentOnClick(%d, '%s')", $comment->id, $comment_author);
 
     return sprintf(qq(<a title="%s" href="javascript:void(0);" onclick="$onclick">%s</a>),
@@ -12625,7 +12628,8 @@ tag will vary based on the archive type:
 
 =item * Category
 
-The label of the category.
+The label of the category. Note that any HTML tags present in the label
+will be removed.
 
 =item * Daily
 
@@ -12641,7 +12645,13 @@ The range of dates in the week in "Month YYYY" form.
 
 =item * Individual
 
-The title of the entry.
+The title of the entry. Note that any HTML tags present in the label will
+be removed.
+
+= item * Author
+
+The display name of the author. Note that any HTML tags present in the
+display name will be removed.
 
 =back
 

@@ -621,7 +621,7 @@ sub backup {
 
     my @tsnow    = gmtime(time);
     my $metadata = {
-        backup_by => $app->user->name . '(ID: ' . $app->user->id . ')',
+        backup_by => MT::Util::encode_xml($app->user->name, 1) . '(ID: ' . $app->user->id . ')',
         backup_on => sprintf(
             "%04d-%02d-%02dT%02d:%02d:%02d",
             $tsnow[5] + 1900,

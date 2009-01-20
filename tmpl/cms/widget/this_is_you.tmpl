@@ -6,7 +6,7 @@
         <h4><mt:var name="author_display_name" escape="html"></h4>
         <ul class="user-stats-list">
         <mt:if name="last_post_id">
-            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name"$>"></li>
+            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name" escape="html"$>"></li>
         </mt:if>
         <mt:if name="draft_count">
             <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter=status&amp;filter_val=1%%<mt:var name="draft_count">"></li>

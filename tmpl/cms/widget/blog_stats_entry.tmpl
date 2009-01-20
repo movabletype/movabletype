@@ -35,25 +35,26 @@
             <mt:setvarblock name="entry_type" id="entry_type"></mt:setvarblock>
             <div id="entry-<$MTEntryID$>" class="entry entry-<mt:if name="__odd__">odd<mt:else>even</mt:if> entry-status-<MTEntryStatus lower_case="1"><mt:if name="entry_type"> entry-<$mt:Var name="entry_type"$></mt:if>">
                 <div class="entry-inner">
-                    <div class="entry-title"><MTEntryAuthorID setvar="entry_author_id"><MTSetVarBlock name="entry_title"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle$><MTElse><__trans phrase="..."></MTIfNonEmpty></MTSetVarBlock>
+                    <div class="entry-title"><MTEntryAuthorID setvar="entry_author_id"><MTSetVarBlock name="entry_title"><MTIfNonEmpty tag="MTEntryTitle"><$MTEntryTitle escape="html"$><MTElse><__trans phrase="..."></MTIfNonEmpty></MTSetVarBlock>
                         <h4><MTIf name="editable"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTGetVar name="entry_title"></a><MTElse name="author_id" eq="$entry_author_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTGetVar name="entry_title"></a><MTElse><MTGetVar name="entry_title"></MTIf></h4>
                     </div>
                     <div class="entry-content">
-                        <p><$MTEntryExcerpt$></p>
+                        <p><$MTEntryExcerpt escape="html"$></p>
                     </div>
                     <div class="entry-meta">
                     <MTIfNonEmpty tag="MTEntryAuthorDisplayName">
                         <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
                     <MTElse>
-                        <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername$></mt:setvarblock>
+                        <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername escape="html"$></mt:setvarblock>
                     </MTIfNonEmpty>
                     <MTIfNonEmpty tag="EntryCategory">
-                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel$></a><MTElse><$MTCategoryLabel$></MTIf></MTEntryCategories>">
+                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author" escape="html"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html" escape="html"$></a><MTElse><$MTCategoryLabel escape="html" escape="html"$></MTIf></MTEntryCategories>">
                     <MTElse>
-                        <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
+                        <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author" escape="html"$>%%<$MTEntryDate relative="1"$>">
                     </MTIfNonEmpty>
                     <MTEntryIfTagged>
-                        <__trans phrase="Tagged: [_1]" params="<MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName escape="html"$></a><MTElse><$MTTagName escape="html"$></MTIf></MTEntryTags>">
+                        <mt:SetVarBlock name="tags"><MTEntryTags glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entries<MTIfNonEmpty tag="MTBlogID">&amp;blog_id=<$MTBlogID$></MTIfNonEmpty>&amp;filter=exacttag&amp;filter_val=<$MTTagName escape="url"$>" rel="tag"><$MTTagName escape="html"$></a><MTElse><$MTTagName escape="html"$></MTIf></MTEntryTags></mt:SetVarBlock>
+                        <__trans phrase="Tagged: [_1]" params="<mt:var name="tags" escape="html">">
                     </MTEntryIfTagged>
                     </div>
                 </div>

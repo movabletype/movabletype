@@ -21,7 +21,7 @@ closeDialog('<mt:var name="return_url" escape="js">');
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
     <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url" escape="html"><mt:else><mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>" />
     <div id="comment">
-        <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html"$></span>"></p>
+        <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html" escape="html"$></span>"></p>
         <div class="comment-body">
             <$mt:var name="comment_text"$>
         </div>

@@ -56,30 +56,30 @@
                           <MTBlogResultHeader>
                               <h3 class="search-results-header">
                               <MTIfStraightSearch>
-                                  <MT_TRANS phrase="Matching entries from [_1]" params="<$MTBlogName$>">
+                                  <MT_TRANS phrase="Matching entries from [_1]" params="<$MTBlogName encode_html="1" encode_html="1"$>">
                               </MTIfStraightSearch>
                               <MTIfTagSearch>
-                                  <MT_TRANS phrase="Entries from [_1] tagged with '[_2]'" params="<$MTBlogName$>%%<$MTSearchString$>">
+                                  <MT_TRANS phrase="Entries from [_1] tagged with '[_2]'" params="<$MTBlogName encode_html="1" encode_html="1"$>%%<$MTSearchString encode_html="1"$>">
                                   </MTIfTagSearch>
                               </h3>
                               <div class="search-results-container">
                           </MTBlogResultHeader>
                       
-                              <h3><a href="<$MTEntryPermalink$>"><$MTEntryTitle$></a></h3>
-                              <p><$MTEntryExcerpt$> <$MTEntryEditLink$></p>
+                              <h3><a href="<$MTEntryPermalink$>"><$MTEntryTitle encode_html="1"$></a></h3>
+                              <p><$MTEntryExcerpt encode_html="1"$> <$MTEntryEditLink$></p>
                               <MTIfTagSearch>
                                   <div class="entry-tags">
                                       <h4 class="entry-tags-header"><MT_TRANS phrase="Tags">:</h4> 
                                       <ul class="entry-tags-list">
                                           <MTEntryTags>
-                                              <li class="entry-tag"><a href="<$MTTagSearchLink$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" rel="tag"><$MTTagName$></a></li>
+                                              <li class="entry-tag"><a href="<$MTTagSearchLink$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" rel="tag"><$MTTagName encode_html="1"$></a></li>
                                           </MTEntryTags>
                                       </ul>
                                   </div>
                               </MTIfTagSearch>
                       
                               <p class="entry-footer">
-                                  <span class="post-footers"><MT_TRANS phrase="Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]" params="<$MTEntryAuthorDisplayName$>%%<$MTEntryDate$>"></span>
+                                  <span class="post-footers"><MT_TRANS phrase="Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]" params="<$MTEntryAuthorDisplayName encode_html="1"$>%%<$MTEntryDate$>"></span>
                               </p>
                       
                           <MTBlogResultFooter>
@@ -96,13 +96,13 @@
                       <MTNoSearchResults>
                           <h3 class="search-results-header">
                               <MTIfStraightSearch>
-                                  <MT_TRANS phrase="Entries matching '[_1]'" params="<$MTSearchString$>">
+                                  <MT_TRANS phrase="Entries matching '[_1]'" params="<$MTSearchString encode_html="1"$>">
                               </MTIfStraightSearch>
                               <MTIfTagSearch>
-                                  <MT_TRANS phrase="Entries tagged with '[_1]'" params="<$MTSearchString$>">
+                                  <MT_TRANS phrase="Entries tagged with '[_1]'" params="<$MTSearchString encode_html="1"$>">
                               </MTIfTagSearch>
                           </h3>
-                          <p><MT_TRANS phrase="No pages were found containing '[_1]'." params="<$MTSearchString$>"></p>
+                          <p><MT_TRANS phrase="No pages were found containing '[_1]'." params="<$MTSearchString encode_html="1"$>"></p>
                       </MTNoSearchResults>
                       
                       <MTNoSearch>
@@ -132,10 +132,10 @@
                    <MTSetVar name="search_feed_text" value="<MT_TRANS phrase="Subscribe to feed">">
                    <MTIfTagSearch>
                        <MTSetVar name="search_feed_param" value="tag">
-                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'." params="<$MTSearchString$>"></MTSetVarBlock>
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
                     <MTElse>    
                        <MTSetVar name="search_feed_param" value="search">
-                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'." params="<$MTSearchString$>"></MTSetVarBlock>
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
                    </MTElse>    
                    </MTIfTagSearch>
 
@@ -165,7 +165,7 @@
                                  <p></p>
                                  <ul class="module-list">
                                  <MTTags>
-                                     <li class="module-list-item taglevel<$MTTagRank$>"><a href="<$MTTagSearchLink$>" title="<$MTTagCount$>"><$MTTagName$></a></li>
+                                     <li class="module-list-item taglevel<$MTTagRank$>"><a href="<$MTTagSearchLink$>" title="<$MTTagCount$>"><$MTTagName encode_html="1"$></a></li>
                                  </MTTags>
                                  </ul>
                              </div>

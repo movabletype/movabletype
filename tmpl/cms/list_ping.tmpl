@@ -153,10 +153,10 @@ TC.attachLoadEvent( init );
                 <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
             <mt:else>
                 <mt:if name="filter_special">  
-                <strong><__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_phrase"$>"></strong>  
+                <strong><__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_phrase" escape="html"$>"></strong>  
 
                 <mt:else><mt:if name="filter_key">
-                <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+                <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">" escape="html"></strong>
                 <mt:else>
                 <strong><a href="javascript:void(0)" onclick="toggleFilter()">
                     <__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'>

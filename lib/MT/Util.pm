@@ -640,11 +640,12 @@ sub decode_url {
 
 sub remove_html {
     my($text) = @_;
-    return $text if !defined $text;  # suppress warnings
-    return $text if $text =~ m/^<\!\[CDATA\[/i; 
-    $text =~ s!<[^>]+>!!gs;
-    $text =~ s!<!&lt;!gs;
-    $text;
+    return '' if !defined $text;  # suppress warnings
+    $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
+        defined $1 ? $1 : ''
+        /geisx;
+    $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
+    return $text;
 }
 
 sub iso_dirify {
