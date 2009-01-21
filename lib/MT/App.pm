@@ -300,7 +300,9 @@ sub listing {
     my $list_pref = $app->list_pref($type) if $app->can('list_pref');
     $param->{$_} = $list_pref->{$_} for keys %$list_pref;
     my $limit = $list_pref->{rows};
+    $limit =~ s/\D//g;
     my $offset = $app->param('offset') || 0;
+    $offset =~ s/\D//g;
     $args->{offset} = $offset if $offset && !$no_limit;
     $args->{limit} = $limit + 1 unless $no_limit;
     $param->{limit_none} = 1 if $no_limit;
@@ -451,7 +453,7 @@ sub listing {
             rows          => scalar @data,
             listTotal     => $class->count( $terms, $args ) || 0,
             chronological => $param->{list_noncron} ? 0 : 1,
-            return_args   => $app->make_return_args,
+            return_args   => encode_html( $app->make_return_args ),
             method        => $app->request_method,
         };
         $param->{object_type} ||= $type;
