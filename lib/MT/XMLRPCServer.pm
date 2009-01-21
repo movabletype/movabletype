@@ -1144,9 +1144,15 @@ sub newMediaObject {
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
-    my $is_image  = defined($w)
-      && defined($h)
-      && $asset_pkg->isa('MT::Asset::Image');
+    my $is_image = 0;
+    if ( defined($w) && defined($h) ) {
+        $is_image = 1
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    else {
+        # rebless to file type
+        $asset_pkg = 'MT::Asset';
+    }
     my $asset;
     if (!($asset = $asset_pkg->load(
                 { file_path => $local_file, blog_id => $blog_id })))
