@@ -787,8 +787,12 @@ sub to_xml {
     unless ( UNIVERSAL::isa( $obj, 'MT::Log' ) ) {
         if ( $obj->properties
           && ( my $ccol = $obj->properties->{class_column} ) ) {
-            my $class = $obj->$ccol;
-            $elem = $class if $class;
+            if ( my $class = $obj->$ccol ) {
+                # use class_type value instead if
+                # the value resolves to a Perl package
+                $elem = $class
+                    if defined( MT->model($class) );
+            }
         }
     }
 
