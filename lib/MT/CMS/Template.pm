@@ -1953,7 +1953,8 @@ sub refresh_individual_templates {
     my $tmpl_ids   = {};
     my $tmpls      = {};
     foreach my $tmpl (@$tmpl_list) {
-        $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
+        $tmpl->{text} = $app->translate_templatized( $tmpl->{text} )
+            if ( $tmpl->{type} !~ m/^widgetset$/ );
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
         if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
