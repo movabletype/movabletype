@@ -249,7 +249,7 @@ sub create_blog_list {
     ## If IncludeBlogs has not been set, we need to build a list of
     ## the blogs to search. If ExcludeBlogs was set, exclude any blogs
     ## set in that list from our final list.
-    unless ( exists $blog_list{IncludeBlogs} ) {
+    unless (%{ $blog_list{IncludeBlogs} }) {
         my $exclude = $blog_list{ExcludeBlogs};
         my $iter    = $app->model('blog')->load_iter;
         while ( my $blog = $iter->() ) {
