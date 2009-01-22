@@ -2090,6 +2090,7 @@ sub _pre_to_json {
     if ( 'ARRAY' eq ref($ref) ) {
         my @tmp;
         foreach ( @$ref ) {
+            next unless defined $_;
             if ( ref($_) ) {
                 push @tmp, _pre_to_json($_);
             }
@@ -2109,6 +2110,7 @@ sub _pre_to_json {
     elsif ( 'HASH' eq ref($ref) ) {
         my %tmp;
         while ( my ( $k, $v ) = each %$ref ) {
+            next unless defined $v;
             if ( ref($v) ) {
                 $tmp{$k} = _pre_to_json($v);
             }
