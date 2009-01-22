@@ -2652,7 +2652,7 @@ TypeKey
         },
         'YahooJP' => {
             class => 'MT::Auth::Yahoo',
-            label => 'Yahoo! Japan',
+            label => 'Yahoo! JAPAN',
             login_form_params => \&_commenter_auth_params,
             condition => \&_openid_commenter_condition,
             logo => 'images/comment/yahoo.png',

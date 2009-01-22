@@ -500,6 +500,8 @@ use vars qw( @ISA %Lexicon );
 	'Sign in using your WordPress.com username.' => 'Wordpress.comのユーザー名でサインインします。',
 	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のWebサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
 	'Sign in or register with TypePad.' => 'TypePadでサインイン(登録)',
+	'Turn on OpenID for your Yahoo! Japan account now' => 'Yahoo! JAPANのOpenIDを取得してください。',
+	'Your Hatena ID' => 'はてなID',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => '[_1]',
 	'Got an error: [_1]' => 'エラーが発生しました: [_1]',
@@ -527,6 +529,9 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'WordPress.com',
 	'TypePad' => 'TypePad',
+	'Yahoo! Japan' => 'Yahoo! JAPAN',
+	'livedoor' => 'ライブドア',
+	'Hatena' => 'はてな',
 	'Movable Type default' => 'Movable Type 既定',
 
 ## lib/MT.pm.pre
