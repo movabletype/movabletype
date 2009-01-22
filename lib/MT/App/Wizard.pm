@@ -171,6 +171,11 @@ sub init_core_registry {
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
+            'IPC::Run' => {
+                link => 'http://search.cpan.org/dist/IPC-Run',
+                label =>
+                    'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
+            },
             'Storable' => {
                 link => 'http://search.cpan.org/dist/Storable',
                 label =>
@@ -180,6 +185,11 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Crypt-DSA',
                 label =>
                     'This module accelerates comment registration sign-ins.',
+            },
+            'Crypt::SSLeay' => {
+                link => 'http://search.cpan.org/dist/Crypt-SSLeay',
+                label =>
+                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.',
             },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
