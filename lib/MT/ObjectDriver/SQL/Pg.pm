@@ -26,4 +26,22 @@ sub as_limit {
            ($o ? " OFFSET " . int($o) : "");
 }
 
+sub _mk_term {
+    my $stmt = shift;
+    my ($col, $val) = @_;
+
+    if (ref $val eq 'HASH') {
+        if (!exists $val->{op}) {
+            if (exists $val->{like}) {
+                my $cols = $stmt->binary;
+                if (!$cols || !exists $cols->{$col}) {
+                    $val = { op => 'ILIKE', value => $val->{like} };
+                }
+            }
+        }
+    }
+
+    $stmt->SUPER::_mk_term($col, $val);
+}
+
 1;
