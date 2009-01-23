@@ -9845,12 +9845,12 @@ sub _hdlr_remote_sign_in_link {
     my $signon_url = $cfg->SignOnURL;
     my $path = _hdlr_cgi_path($ctx);
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "static=" . $args->{static} : "static=0";
+    my $static_arg = $args->{static} ? "static=" . encode_url( encode_url( $args->{static} ) ) : "static=0";
     my $e = $ctx->stash('entry');
     my $tk_version = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
     my $language = "&amp;lang=" . ($args->{lang} || $cfg->DefaultLanguage || $blog->language);
     return "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg" .
-        ($e ? "%26entry_id=" . $e->id : '');
+        ($e ? "%26entry_id=" . $e->id : '%26blog_id=' . $blog->id);
 }
 
 ###########################################################################
