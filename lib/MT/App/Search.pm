@@ -154,6 +154,8 @@ sub init_request {
                 $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
                     if $blog_id;
             }
+            return $app->error( $app->translate('Invalid request.') )
+                if !exists $app->{searchparam}{IncludeBlogs} || !%{$app->{searchparam}{IncludeBlogs}};
         }
     }
     else {
@@ -249,7 +251,7 @@ sub create_blog_list {
     ## If IncludeBlogs has not been set, we need to build a list of
     ## the blogs to search. If ExcludeBlogs was set, exclude any blogs
     ## set in that list from our final list.
-    unless (%{ $blog_list{IncludeBlogs} }) {
+    if ( %{$blog_list{ExcludeBlogs}} && !%{$blog_list{IncludeBlogs}} ) {
         my $exclude = $blog_list{ExcludeBlogs};
         my $iter    = $app->model('blog')->load_iter;
         while ( my $blog = $iter->() ) {
