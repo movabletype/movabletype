@@ -1101,6 +1101,7 @@ use vars qw( @ISA %Lexicon );
 	'Could not create upload path \'[_1]\': [_2]' => '[_1]を作成できませんでした: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'アップロードされたファイルを[_1]に書き込めませんでした: [_2]',
 	'<' => '<',
+	'Uploaded file is not an image.' => 'アップロードしたファイルは画像ではありません。',
 
 ## lib/MT/CMS/Import.pm
 	'Import/Export' => 'インポート/エクスポート',
@@ -1930,6 +1931,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'XML-RPC による作業を行う場合に必要となります。',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'This module is required by certain MT plugins available from third parties.' => '外部プラグインの利用の際に必要となる場合があります。',
 	'This module accelerates comment registration sign-ins.' => 'コメント投稿時のサインインが高速になります。',
 	'This module is needed to enable comment registration.' => 'コメントの認証機能を利用する場合に必要となります。',
