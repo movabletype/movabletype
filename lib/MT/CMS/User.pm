@@ -1337,6 +1337,7 @@ sub dialog_grant_role {
         $app->listing(
             {
                 terms    => $terms,
+                args     => { sort => 'name' },
                 type     => $type,
                 code     => $hasher,
                 params   => $params,
