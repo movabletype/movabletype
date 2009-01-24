@@ -735,9 +735,21 @@ sub _fltr_nofollowfy {
 
 Applies one or more text format filters.
 
-B<Example:>
+=head4 Values
 
-    <$mt:EntryBody convert_breaks="0" filters="filter1, filter2, filter3"$>
+See the list of acceptable values in the L<AllowedTextFilters|/documentation/appendices/config-directives/allowedtextfilters.html> config directive docs
+
+=head4 Examples
+
+Remove the default text filter specified in the Edit Entry screen (Rich Text, Markdown, etc) by setting convert_breaks="0" and then use the filter attribute to specify the desired filter.
+
+    <$mt:EntryBody convert_breaks="0" filters="__default__"$>
+
+If you want to use Markdown for the body, but Markdown with SmartyPants for the extended entry, do this:
+
+    <$mt:EntryMore convert_breaks="0" filters="markdown_with_smartypants"$>
+
+If you want no formatting on L<EntryBody> or L<EntryMore> (extended) text, just use convert_breaks="0".
 
 =cut
 
