@@ -5666,9 +5666,9 @@ sub _hdlr_set_hashvar {
 
 =head2 SetVar
 
-A function tag used to set the value of a template variable. This tag
-is considered deprecated in favor of L<Var>, which can be used to both
-retrieve and assign template variables.
+A function tag used to set the value of a template variable.
+
+For simply setting variables you can use the L<Var> tag with a value attribute to assign template variables.
 
 B<Attributes:>
 
@@ -5699,7 +5699,7 @@ for the template variable.
 
 =back
 
-=for tags deprecated
+=for tags
 
 =cut
 

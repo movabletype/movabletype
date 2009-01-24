@@ -77,12 +77,13 @@ button.big-button {
 
 
 /* PNG transprancy fix */
-/** html img {*/
-/*   behavior: url("pngbehavior.htc");*/
-/*}*/
-/* to be sure IE displays pointer */
-/*a:link, a:visited { cursor: pointer; }*/
+img {
+   behavior: url("iepngfix.htc");
+}
 
+/*to be sure IE displays pointer 
+a:link, a:visited { cursor: pointer; }
+*/
 /* In IE, the header block is actually placed at the bottom of the document
    but above the modal dialog iframe; this allows the pulldown menus to
    display above all other elements on the screen */

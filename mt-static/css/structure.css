@@ -2755,6 +2755,47 @@ td.output-file ul li {
 
 /* Edit Entry ---------------------------------------------------------------------------------- */
 
+#main-content {
+    position: relative;
+}
+
+#entry-types {
+    position: absolute;
+    top: 4px;
+    right: 20px;
+    float: right;
+}
+#entry-types li {
+    float: left;
+    width: 29px;
+    height: 29px;
+}
+#entry-types li.active {
+    background: url(../images/compose-on.gif) no-repeat 50% bottom;
+}
+#entry-types li a {
+    display: block;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: 16px;
+    height: 16px;
+    background: url(../images/icons/page_white_text.png) no-repeat 0 0;
+    margin: 6px auto 0;
+}
+#entry-types li#entry-photo a {
+    background-image: url(../images/icons/picture.png);
+}
+#entry-types li#entry-link a {
+    background-image: url(../images/icons/link.png);
+}
+#entry-types li#entry-video a {
+    background-image: url(../images/icons/film.png);
+}
+#entry-types li#entry-audio a {
+    background-image: url(../images/icons/sound.png);
+}
+
+
 .edit-entry #title {
     font-size: 18px;
     font-weight:bold;
