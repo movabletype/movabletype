@@ -2849,8 +2849,12 @@ sub handler_to_coderef {
 
     my $hdlr_pkg = $name;
     my $method;
-    if ( $hdlr_pkg =~ s/(->|::)([^:]+)$// ) {    # strip routine name
-        $method = $2 if $1 eq '->';
+    # strip routine name
+    if ( $hdlr_pkg =~ s/->(\w+)$// ) {
+        $method = $1;
+    }
+    else {
+        $hdlr_pkg =~ s/::[^:]+$//
     }
     if ( !defined(&$name) && !$pkg->can( 'AUTOLOAD' ) ) {
 
