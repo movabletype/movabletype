@@ -75,7 +75,7 @@ TC.attachLoadEvent(init);
         show_hint="1"
         hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
         <div class="field-header">
-            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" /> <$mt:var name="refresh_label"$></label>
+            <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" /> <$mt:var name="refresh_label"$></label>
         </div>
     </mtapp:setting>
 
@@ -96,7 +96,7 @@ TC.attachLoadEvent(init);
         label_class="top-label">
 
         <div class="field-header">
-            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" checked="checked" /> <$mt:var name="new_label"$></label>
+            <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" /> <$mt:var name="new_label"$></label>
         </div>
 
         <mt:if name="template_set_count" gt="1">
@@ -115,17 +115,17 @@ TC.attachLoadEvent(init);
 
 
         <div>
-        <input type="checkbox" id="backup" name="backup" value="1" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
+        <input type="checkbox" id="backup" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" />
         <label for="backup"><__trans phrase="Make backups of existing templates first"></label>
         </div>
 
         <div class="actions-bar">
             <div class="actions-bar-inner pkg actions">
                 <button
-                    type="button"
+                    type="submit"
                     accesskey="s"
-                    class="primary-button close"
-                    ><__trans phrase="Confirm"></button>
+                    class="primary-button next"
+                    ><__trans phrase="Continue"></button>
                 <button
                     onclick="closeDialog(); return false"
                     type="submit"
