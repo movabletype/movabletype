@@ -3236,7 +3236,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '最後にブログ記事を書いたのは[_2]です(ブログ: <a href="[_3]">[_4]</a> - <a href="[_1]">編集</a>)。',
-	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが[quant,_2,件,件]あります。',
+	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが<a href="[_1]">[quant,_2,件,件]</a>あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a><br />コメント<a href="[_3]">[quant,_4,件,件]</a>',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a>',
 	'Edit your profile' => 'ユーザー情報の編集',
