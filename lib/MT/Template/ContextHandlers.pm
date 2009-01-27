@@ -19782,9 +19782,9 @@ to show than currently appearing in the page.
 
 sub _hdlr_if_more_results {
     my ($ctx) = @_;
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
+    my $limit = $ctx->stash('limit') || 0;
+    my $offset = $ctx->stash('offset') || 0;
+    my $count = $ctx->stash('count') || 0;
     return $limit + $offset >= $count ? 0 : 1;
 }
 
