@@ -48,7 +48,7 @@
                         <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername escape="html"$></mt:setvarblock>
                     </MTIfNonEmpty>
                     <MTIfNonEmpty tag="EntryCategory">
-                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html" escape="html"$></a><MTElse><$MTCategoryLabel escape="html" escape="html"$></MTIf></MTEntryCategories>">
+                        <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html"$></a><MTElse><$MTCategoryLabel escape="html"$></MTIf></MTEntryCategories>">
                     <MTElse>
                         <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
                     </MTIfNonEmpty>
