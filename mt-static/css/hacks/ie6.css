@@ -1,5 +1,6 @@
 .dashboard #main-content {
     margin-left: 5px;
+    overflow: hidden;
 }
 
 #dialog-container {
