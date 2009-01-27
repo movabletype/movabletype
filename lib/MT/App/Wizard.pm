@@ -9,6 +9,7 @@ package MT::App::Wizard;
 use strict;
 use base qw( MT::App );
 
+use MT::I18N qw( encode_text );
 use MT::Util qw( trim );
 
 sub id {'wizard'}
@@ -641,19 +642,25 @@ sub configure {
             # test loading of object driver with these parameters...
             require MT::ObjectDriverFactory;
             my $od = MT::ObjectDriverFactory->new($driver);
+
+            $cfg->PublishCharset( $current_charset );
+
             eval { $od->rw_handle; };    ## to test connection
             if ( my $err = $@ ) {
                 $err_msg
                     = $app->translate(
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
+                if ( $param{publish_charset} ne $current_charset ) {
+                    # $param{publish_charset} is sometimes undef which forces encode_text
+                    # to guess_encode which should handle all of the cases.
+                    $err = encode_text( $err, $param{publish_charset}, $current_charset );
+                }
                 $err_more = $err;
             }
             else {
                 $ok = 1;
             }
-
-            $cfg->PublishCharset( $current_charset );
         }
         if ($ok) {
             $param{success} = 1;
