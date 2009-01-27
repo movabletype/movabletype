@@ -152,6 +152,8 @@ sub list {
     ## page of next entries to link to. Obviously we only display $limit
     ## entries.
     my %arg;
+    $arg{'sort'}    = 'created_on';
+    $arg{direction} = $sort_direction;
     require MT::TBPing;
     if ( ( $app->param('tab') || '' ) eq 'junk' ) {
         $app->param( 'filter',     'junk_status' );
@@ -241,8 +243,6 @@ sub list {
 
     my $ping_class = $app->model('ping');
     my $total      = $ping_class->count( \%terms, \%arg ) || 0;
-    $arg{'sort'}    = 'created_on';
-    $arg{direction} = $sort_direction;
     $arg{limit}     = $limit + 1;
     if ( $total <= $limit ) {
         delete $arg{limit};

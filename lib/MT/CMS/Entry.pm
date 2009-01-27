@@ -432,6 +432,8 @@ sub list {
     }
 
     my %arg;
+    $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
+    $arg{direction} = 'descend';
     my $filter_key = $q->param('filter_key') || '';
     my $filter_col = $q->param('filter')     || '';
     my $filter_val = $q->param('filter_val');
@@ -590,8 +592,6 @@ sub list {
 
     $total = $pkg->count( \%terms, \%arg ) || 0
         unless defined $total;
-    $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
-    $arg{direction} = 'descend';
     $arg{limit}     = $limit + 1;
     if ( $total <= $limit ) {
         delete $arg{limit};
