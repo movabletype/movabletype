@@ -414,8 +414,10 @@ sub init_blog {
         user_lang        => $param{initial_lang},
         user_hint        => uri_escape( $param{initial_hint} ),
         user_external_id => $param{initial_external_id},
-        use_system_email => $param{initial_use_system} || $param{use_system_email} || undef,
     };
+    if ( my $email_system = $param{initial_use_system} || $param{use_system_email} ) {
+        $new_user->{'use_system_email'} = $email_system;
+    }
     $new_blog = {
         blog_name         => uri_escape( $param{blog_name} ),
         blog_url          => uri_escape( $param{blog_url} ),
