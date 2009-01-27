@@ -3604,17 +3604,44 @@ sub trace {
 
 sub remote_ip {
     my $app = shift;
-    my $ip
-        = $app->config->TransparentProxyIPs
+
+    my $trusted = $app->config->TransparentProxyIPs || 0;
+    my $remote_ip = ($ENV{MOD_PERL}
+      ? $app->{apache}->connection->remote_ip
+      : $ENV{REMOTE_ADDR});
+    $remote_ip ||= '127.0.0.1';
+    my $ip = $trusted
         ? $app->get_header('X-Forwarded-For')
-        : (
-          $ENV{MOD_PERL} ? $app->{apache}->connection->remote_ip
-        : $ENV{REMOTE_ADDR}
-        );
-    $ip ||= '127.0.0.1';
-    if ( $ip =~ m/,/ ) {
-        $ip =~ s/.+,\s*//;
+        : $remote_ip;
+    if ( $trusted ) {
+        if ( $trusted =~ m/^\d+$/ ) {
+            # TransparentProxyIPs of 1, means to use the
+            # right-most IP from X-Forwarded-For (remote_ip is the proxy)
+            # TransparentProxyIPs of 2, means to use the
+            # next-to-last IP from X-Forwarded-For.
+            $trusted--;  # assumes numeric value
+            my @iplist = reverse split /\s*,\s*/, $ip;
+            if ( @iplist ) {
+                do {
+                    $ip = $iplist[$trusted--];
+                } while ( $trusted >= 0 && !$ip );
+                $ip ||= $remote_ip;
+            } else {
+                $ip = $remote_ip;
+            }
+        } elsif ($trusted =~ m/^\d+\./) { # looks IP-ish
+            # In this form, TransparentProxyIPs can be a list of
+            # IP or subnet addresses to exclude as trusted IPs
+            # TransparentProxyIPs 10.1.1., 12.34.56.78
+            my @trusted = split /\s*,\s*/, $trusted;
+            my @iplist = reverse split /\s*,\s*/, $ip;
+            while ( @iplist && grep( { $iplist[0] =~ m/^\Q$_\E/ } @trusted) ) {
+                shift @iplist;
+            }
+            $ip = @iplist ? $iplist[0] : $remote_ip;
+        }
     }
+
     return $ip;
 }
 
