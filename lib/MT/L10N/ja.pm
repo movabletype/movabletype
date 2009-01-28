@@ -738,7 +738,7 @@ use vars qw( @ISA %Lexicon );
 	'Close' => '閉じる',
 	'Go Back' => '戻る',
 	'The file you uploaded is too large.' => 'アップロードしたファイルは大きすぎます。',
-	'Unknown action [_1]' => '[_1]はできません。',
+	'Unknown action [_1]' => '不明なアクション: [_1]',
 	'Permission denied.' => '権限がありません。',
 	'Warnings and Log Messages' => '警告とメッセージ',
 	'Removed [_1].' => '[_1]を削除しました。',
@@ -4030,6 +4030,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You can not have spaces in the URL.' => 'URLには空白を含めないでください。',
 	'You can not have spaces in the path.' => 'パスには空白を含めないでください。',
 	'Path is not valid.' => 'パスが不正です。',
+	'Site Path' => 'サイトパス',
 
 ## tmpl/cms/dialog/restore_start.tmpl
 	'Restoring...' => '復元...',
