@@ -169,7 +169,7 @@ sub download_theme {
 
     my $static_path = $app->static_file_path;
     my $themeroot   = File::Spec->catdir($static_path, 'support', 'themes');
-    my $ua          = $app->new_ua();
+    my $ua          = $app->new_ua( {max_size => 500_000 } );
     my $filemgr     = file_mgr()
         or return;
 
