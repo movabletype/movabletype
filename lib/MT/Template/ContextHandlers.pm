@@ -6344,6 +6344,12 @@ Supported values: enabled, disabled.
 Used in conjunction with the "min*", "max*" attributes to
 select authors based on a particular scoring mechanism.
 
+=item * scoring_to
+
+If 'namespace' is also specified, filters the authors based on
+the score within that namespace. This attribute specifies which 
+type of object to look up. the object has to be specified in context.
+
 =item * min_score
 
 If 'namespace' is also specified, filters the authors based on
