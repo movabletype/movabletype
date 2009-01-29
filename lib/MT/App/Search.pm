@@ -293,17 +293,18 @@ sub process {
         $app->run_callbacks( 'search_cache_hit', $count, $out );
         return $out;
     }
-
-    my @arguments = $app->search_terms();
-    return $app->error( $app->errstr ) if $app->errstr;
-
-    $count = 0;
     my $iter;
-    if (@arguments) {
-        ( $count, $iter ) = $app->execute(@arguments);
-        return $app->error( $app->errstr ) unless $iter;
+    if ( $app->param('searchTerms') || $app->param('search') ) {
+        my @arguments = $app->search_terms();
+        return $app->error( $app->errstr ) if $app->errstr;
 
-        $app->run_callbacks( 'search_post_execute', $app, \$count, \$iter );
+        $count = 0;
+        if (@arguments) {
+            ( $count, $iter ) = $app->execute(@arguments);
+            return $app->error( $app->errstr ) unless $iter;
+
+            $app->run_callbacks( 'search_post_execute', $app, \$count, \$iter );
+        }
     }
 
     my $format = q();
@@ -372,8 +373,7 @@ sub search_terms {
     my $app = shift;
     my $q   = $app->param;
 
-    my $search_string = $q->param('searchTerms') || $q->param('search')
-        or return $app->errtrans('No search term was specified.');
+    my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
     return $app->errtrans( 'Invalid value: [_1]', encode_html($offset) )

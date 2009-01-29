@@ -24,7 +24,9 @@ sub load_core_tags {
             SearchResults => \&_hdlr_results,
             'IfTagSearch?' => sub { MT->instance->mode eq 'tag' },
             'IfStraightSearch?' => sub { MT->instance->mode eq 'default' },
-            'NoSearchResults?' => sub { $_[0]->stash('count') ? 0 : 1; },
+            'NoSearchResults?' => sub { ( $_[0]->stash('search_string') &&
+                                   $_[0]->stash('search_string') =~ /\S/ &&
+                                   !$_[0]->stash('count') ) ? 1 : 0; },
             'NoSearch?' => sub { ( $_[0]->stash('search_string') &&
                                    $_[0]->stash('search_string') =~ /\S/ ) ? 0 : 1 },
             SearchResultsHeader => \&MT::Template::Context::_hdlr_pass_tokens,
