@@ -6478,14 +6478,17 @@ sub _hdlr_authors {
             }
         }
     }
-
     if ($args->{namespace}) {
         my $namespace = $args->{namespace};
-
         my $need_join = 0;
-        if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+        my ( $scoring_to, $scored_object );
+        if ( $scoring_to = $args->{scoring_to} ) {
             $need_join = 1;
-        } else {
+        }
+        elsif ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+            $need_join = 1;
+        }
+        else {
             for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
                 if ($args->{$f}) {
                     $need_join = 1;
@@ -6494,34 +6497,60 @@ sub _hdlr_authors {
             }
         }
         if ($need_join) {
-            $args{join} = MT->model('objectscore')->join_on(undef,
-                {
-                    object_id => \'=author_id',
-                    object_ds => 'author',
-                    namespace => $namespace,
-                }, {
-                    unique => 1,
-            });
+            if ($scoring_to) {
+                return $ctx->error(MT->translate("You have an error in your 'scoring_to' attribute: [_1]", $scoring_to))
+                    unless exists $ctx->{__stash}{$scoring_to};
+                $scored_object = $ctx->{__stash}{$scoring_to};
+                $args{join} = MT->model('objectscore')->join_on(undef,
+                    {
+                        author_id => \'=author_id',
+                        object_id => $scored_object->id,
+                        object_ds => $scoring_to,
+                        namespace => $namespace,
+                    }, {
+                        unique => 1,
+                });
+            }
+            else {
+                $args{join} = MT->model('objectscore')->join_on(undef,
+                    {
+                        object_id => \'=author_id',
+                        object_ds => 'author',
+                        namespace => $namespace,
+                    }, {
+                        unique => 1,
+                });
+            }
         }
 
         # Adds a rate or score filter to the filter list.
-        if ($args->{min_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+        if ($scored_object) {
+            if ($args->{min_score}) {
+                push @filters, sub { $scored_object->get_score($namespace, $_[0]) >= $args->{min_score}; };
+            }
+            if ($args->{max_score}) {
+                push @filters, sub { $scored_object->get_score($namespace, $_[0]) <= $args->{max_score}; };
+            }
         }
-        if ($args->{max_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
-        }
-        if ($args->{min_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
-        }
-        if ($args->{max_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
-        }
-        if ($args->{min_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
-        }
-        if ($args->{max_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+        else {
+            if ($args->{min_score}) {
+                push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+            }
+            if ($args->{max_score}) {
+                push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+            }
+            if ($args->{min_rate}) {
+                push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+            }
+            if ($args->{max_rate}) {
+                push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+            }
+            if ($args->{min_count}) {
+                push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+            }
+            if ($args->{max_count}) {
+                push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+            }
         }
     }
 
