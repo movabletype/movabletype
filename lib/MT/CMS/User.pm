@@ -2,7 +2,7 @@ package MT::CMS::User;
 
 use strict;
 
-use MT::Util qw( format_ts relative_date is_url encode_url encode_html );
+use MT::Util qw( format_ts relative_date is_valid_email is_url encode_url encode_html );
 use MT::Author;
 
 sub edit {
@@ -1639,7 +1639,11 @@ sub save_filter {
     return $eh->error(
         MT->translate("Email Address is required for password recovery") )
       unless $email;
-    if ( $email =~ m/([<>])/) {
+    if ( !is_valid_email($email) ) {
+        return $eh->error( $app->translate("Email Address is invalid.") );
+    }
+
+    if ( $email =~ m/([<>])/ ) {
         return $eh->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) ) );
     }
 
