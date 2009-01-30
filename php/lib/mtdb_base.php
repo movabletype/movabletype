@@ -1571,17 +1571,48 @@ class MTDatabaseBase extends ezsql {
         # Adds a score or rate filter to the filters list.
         $re_sort = false;
         if (isset($args['namespace'])) {
-            require_once("MTUtil.php");
-            $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
-            foreach ($arg_names as $n) {
-                if (isset($args[$n])) {
-                    $rating_args = $args[$n];
-                    $cexpr = create_rating_expr_function($rating_args, $n, $args['namespace'], 'author');
-                    if ($cexpr) {
-                        $filters[] = $cexpr;
-                        $re_sort = true;
-                    } else {
-                        return null;
+            if (isset($args['scoring_to'])) {
+                require_once("MTUtil.php");
+                require_once("rating_lib.php");
+                $type = $args['scoring_to'];
+                $obj = $args['_scoring_to_obj'];
+                $obj_id = $obj[$type.'_id'];
+                if (isset($args['min_score'])) {
+                    $expr = '$ctx = $c;if ($ctx == null) { global $mt; $ctx = $mt->context(); } $old = $ctx->mt->db->result; ';
+                    $expr .= '$sc = get_score($ctx, '.$obj_id.', "'.$type.'", "'.$args['namespace'].'", $e["author_id"]);';
+                    $expr .= '$ret = $sc >= '.$args['min_score'].';';
+                    $expr .= ' $ctx->mt->db->result = $old; return $ret;';
+                    $fn = create_function('&$e,&$c', $expr);
+                    $filters[] = $fn;
+                } elseif (isset($args['max_score'])) {
+                    $expr = '$ctx = $c;if ($ctx == null) { global $mt; $ctx = $mt->context(); } $old = $ctx->mt->db->result; ';
+                    $expr .= '$sc = get_score($ctx, '.$obj_id.', "'.$type.'", "'.$args['namespace'].'", $e["author_id"]);';
+                    $expr .= '$ret = $sc <= '.$args['max_score'].';';
+                    $expr .= ' $ctx->mt->db->result = $old; return $ret;';
+                    $fn = create_function('&$e,&$c', $expr);
+                    $filters[] = $fn;
+                }
+                else {
+                    $expr = '$ctx = $c;if ($ctx == null) { global $mt; $ctx = $mt->context(); } $old = $ctx->mt->db->result; ';
+                    $expr .= '$ret = !is_null($ctx->mt->db->fetch_score('.$args['namespace'].','.$obj_id.', $e["author_id"],'.$type.'));';
+                    $expr .= ' $ctx->mt->db->result = $old; return $ret;';
+                    $fn = create_function('&$e,&$c', $expr);
+                    $filters[] = $fn;
+                }
+            }
+            else {
+                require_once("MTUtil.php");
+                $arg_names = array('min_score', 'max_score', 'min_rate', 'max_rate', 'min_count', 'max_count' );
+                foreach ($arg_names as $n) {
+                    if (isset($args[$n])) {
+                        $rating_args = $args[$n];
+                        $cexpr = create_rating_expr_function($rating_args, $n, $args['namespace'], 'author');
+                        if ($cexpr) {
+                            $filters[] = $cexpr;
+                            $re_sort = true;
+                        } else {
+                            return null;
+                        }
                     }
                 }
             }
