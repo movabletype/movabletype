@@ -202,6 +202,7 @@ sub download_theme {
     my @files = ('thumbnail.gif', 'thumbnail-large.gif', @images);
     FILE: while (my $rel_url = shift @files) {
         # Is this safe to get?
+        require URI;
         my $full_url = URI->new_abs($rel_url, $theme_url);
         next FILE if !$full_url;
         my $url = $full_url->as_string();
@@ -279,6 +280,7 @@ sub apply {
 
     my $base_css = q{};
     if ($base_css_url) {
+        require URI;
         my $uri = URI->new_abs($base_css_url, $app->static_path);
         $base_css = '@import url(' . $uri->as_string() . ');'
             if $uri;
