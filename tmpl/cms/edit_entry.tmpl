@@ -288,6 +288,8 @@
                             <span class="icon-left-wide icon-future"><__trans phrase="Scheduled"></span>
                         <mt:else name="status_publish">
                             <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
+                        <mt:else name="status_spam">
+                            <span class="icon-left-wide icon-junk"><__trans phrase="Unpublished (Spam)"></span>
                         </mt:if>
                     </li>
                     <mt:if name="status_publish">
@@ -325,6 +327,8 @@
                                 <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
                     <mt:if name="status_review">
                                 <option value="3" selected="selected"><__trans phrase="Unpublished (Review)"></option>
+                    <mt:else name="status_spam">
+                                <option value="5" selected="selected"><__trans phrase="Unpublished (Spam)"></option>
                     </mt:if>
                     <mt:if name="new_object">
                                     <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
@@ -346,6 +350,8 @@
                             <input type="hidden" name="status" id="status" value="4" /><span><__trans phrase="Scheduled"></span>
                         <mt:else name="status_review">
                             <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
+                        <mt:else name="status_spam">
+                            <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
                         </mt:if>
                     </mt:if>
                 </mt:if>
@@ -983,6 +989,44 @@ function listPreviousPings () {
     </mt:setvarblock>
 </mt:unless>
 <mt:include name="include/header.tmpl" id="header_include">
+
+    <mt:if name="status_spam">
+        <mtapp:statusmsg
+            id="junk-message"
+            can_close="0"
+            class="alert">
+            <__trans phrase="This post was classified as spam.">
+
+        <mt:if name="junk_log_loop">
+        <div class="width90 entry-spam-info">
+            <a href="javascript:void(0)" onclick="toggleHidden('entry-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
+        </div>
+        <div id="entry-feedback-rating" class="hidden">
+            <div id="spam-log-listing" class="listing width90">
+                <table class="spam-log-listing-table" cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th id="jl-test"><__trans phrase="Test"></th>
+                        <th id="jl-score"><__trans phrase="Score"></th>
+                        <th id="jl-results"><__trans phrase="Results"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+            <mt:loop name="junk_log_loop">
+                    <tr valign="top" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                        <td><mt:var name="test" escape="html"></td>
+                        <td><mt:var name="score"></td>
+                        <td><mt:var name="log"></td>
+                    </tr>
+            </mt:loop>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        </mt:if name="junk_log_loop">
+
+        </mtapp:statusmsg>
+    </mt:if>
 
     <mt:include name="include/actions_bar.tmpl" hide_pager="1">
 

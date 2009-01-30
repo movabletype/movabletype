@@ -1421,6 +1421,10 @@ li#config-menu {
     background-image: url('../images/status_icons/warning.gif');
 }
 
+.dashboard .entry-status-spam .entry-inner {
+    background-image: url('../images/status_icons/warning.gif');
+}
+
 .dashboard .entry-status-draft .entry-inner {
     background-image: url('../images/status_icons/draft.gif');
 }
@@ -2254,6 +2258,7 @@ optgroup option {
 .listing .status-draft img { background-image: url(../images/status_icons/draft.gif); }
 .listing .status-future img { background-image: url(../images/status_icons/future.gif); }
 .listing .status-pending img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-spam img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-review img { background-image: url(../images/status_icons/warning.gif); }
 .listing .status-trusted img { background-image: url(../images/status_icons/trusted.gif); }
 .listing .status-banned img { background-image: url(../images/status_icons/banned.gif); }
@@ -2283,6 +2288,7 @@ optgroup option {
 .listing .selected .status-draft img { background-image: url(../images/status_icons/invert-draft.gif); }
 .listing .selected .status-future img { background-image: url(../images/status_icons/invert-future.gif); }
 .listing .selected .status-pending img { background-image: url(../images/status_icons/invert-warning.gif); }
+.listing .selected .status-spam img { background-image: url(../images/status_icons/invert-warning.gif); }
 .listing .selected .status-review img { background-image: url(../images/status_icons/invert-warning.gif); }
 .listing .selected .status-trusted img { background-image: url(../images/status_icons/invert-trusted.gif); }
 .listing .selected .status-banned img { background-image: url(../images/status_icons/invert-banned.gif); }
@@ -3712,12 +3718,14 @@ body.preview-screen {
 .icon-future { background-image: url('../images/status_icons/future.gif'); }
 .icon-pending { background-image: url('../images/status_icons/warning.gif'); }
 .icon-share { background-image: url('../images/status_icons/share.gif');}
+.icon-spam { background-image: url('../images/status_icons/warning.gif'); }
 
 .edit-entry .stats-widget .icon-success { background-image: url('../images/status_icons/success-k.gif'); }
 .edit-entry .stats-widget .icon-view { background-image: url('../images/status_icons/view-k.gif'); }
 .edit-entry .stats-widget .icon-draft { background-image: url('../images/status_icons/draft-k.gif'); }
 .edit-entry .stats-widget .icon-future { background-image: url('../images/status_icons/future-k.gif'); }
 .edit-entry .stats-widget .icon-pending { background-image: url('../images/status_icons/warning-k.gif'); }
+.edit-entry .stats-widget .icon-spam { background-image: url('../images/status_icons/warning-k.gif'); }
 
 .icon-plugins { background-image: url('../images/nav_icons/color/plugins.gif'); }
 .icon-search { background-image: url('../images/nav_icons/color/search.gif'); }
@@ -4279,7 +4287,8 @@ body.dialog {
 }
 
 .edit-comment .comment-spam-info,
-.edit-ping .ping-spam-info {
+.edit-ping .ping-spam-info,
+.edit-entry .entry-spam-info {
     text-align: right;
 }
 

@@ -47,6 +47,7 @@ __PACKAGE__->install_properties({
         'template_id' => 'integer',
         'comment_count' => 'integer',
         'ping_count' => 'integer',
+        'junk_log' => 'string meta',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
@@ -107,6 +108,7 @@ sub HOLD ()    { 1 }
 sub RELEASE () { 2 }
 sub REVIEW ()  { 3 }
 sub FUTURE ()  { 4 }
+sub JUNK ()    { 5 }
 
 use Exporter;
 *import = \&Exporter::import;
@@ -145,7 +147,8 @@ sub status_text {
     $s == HOLD ? "Draft" :
         $s == RELEASE ? "Publish" :
             $s == REVIEW ? "Review" : 
-            $s == FUTURE ? "Future" : '';
+                $s == FUTURE ? "Future" :
+                    $s == JUNK ? "Spam" : '';
 }
 
 sub status_int {
@@ -153,7 +156,8 @@ sub status_int {
     $s eq 'draft' ? HOLD :
         $s eq 'publish' ? RELEASE :
             $s eq 'review' ? REVIEW :
-                $s eq 'future' ? FUTURE : undef;
+                $s eq 'future' ? FUTURE :
+                    $s eq 'junk' ? JUNK : undef;
 }
 
 sub authored_on_obj {
@@ -772,6 +776,7 @@ sub to_hash {
 #trans('Draft')
 #trans('Review')
 #trans('Future')
+#trans('Spam')
 
 1;
 __END__

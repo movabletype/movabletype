@@ -61,6 +61,9 @@ sub edit {
         my $blog = $app->model('blog')->load($blog_id);
         my $status = $q->param('status') || $obj->status;
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
+        if ( ($obj->status == MT::Entry::JUNK()) && $obj->junk_log ) {
+            build_junk_table( $app, param => $param, object => $obj );
+        }
         $param->{ "allow_comments_"
               . ( $q->param('allow_comments') || $obj->allow_comments || 0 )
           } = 1;
@@ -381,6 +384,55 @@ sub edit {
     }
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
     1;
+}
+
+sub build_junk_table {
+    my $app = shift;
+    my (%args) = @_;
+
+    my $param = $args{param};
+    my $obj   = $args{object};
+
+    # if ( defined $obj->junk_score ) {
+    #     $param->{junk_score} =
+    #       ( $obj->junk_score > 0 ? '+' : '' ) . $obj->junk_score;
+    # }
+    my $log = $obj->junk_log || '';
+    my @log = split /\r?\n/, $log;
+    my @junk;
+    for ( my $i = 0 ; $i < scalar(@log) ; $i++ ) {
+        my $line = $log[$i];
+        $line =~ s/(^\s+|\s+$)//g;
+        next unless $line;
+        last if $line =~ m/^--->/;
+        my ( $test, $score, $log );
+        ($test) = $line =~ m/^([^:]+?):/;
+        if ( defined $test ) {
+            ($score) = $test =~ m/\(([+-]?\d+?(?:\.\d*?)?)\)/;
+            $test =~ s/\(.+\)//;
+        }
+        if ( defined $score ) {
+            $score =~ s/\+//;
+            $score .= '.0' unless $score =~ m/\./;
+            $score = ( $score > 0 ? '+' : '' ) . $score;
+        }
+        $log = $line;
+        $log =~ s/^[^:]+:\s*//;
+        $log = encode_html($log);
+        for ( my $j = $i + 1 ; $j < scalar(@log) ; $j++ ) {
+            my $line = encode_html( $log[$j] );
+            if ( $line =~ m/^\t+(.*)$/s ) {
+                $i = $j;
+                $log .= "<br />" . $1;
+            }
+            else {
+                last;
+            }
+        }
+        push @junk, { test => $test, score => $score, log => $log };
+    }
+    $param->{junk_log_loop} = \@junk;
+    \@junk;
 }
 
 sub list {
