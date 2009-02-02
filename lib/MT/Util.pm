@@ -326,6 +326,7 @@ sub format_ts {
     if ($lang eq 'ja') {
         $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
         $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+        $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
         $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
     }
     elsif ($lang eq 'it') {
