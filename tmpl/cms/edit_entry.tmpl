@@ -504,7 +504,7 @@
 var orig_text_format;
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
 orig_text_format = cur_text_format;
-var customizable_fields = [<mt:loop name="field_loop" glue=","><mt:unless name="system_field"><mt:unless name="lock_field">'<mt:var name="field_id" escape="js">'</mt:unless></mt:unless></mt:loop>];
+var customizable_fields = [<mt:loop name="field_loop" glue=","><mt:unless name="system_field"><mt:unless name="lock_field">'<mt:var name="field_id" escape="js">'<mt:else><mt:if name="use_field">'<mt:var name="field_id" escape="js">'</mt:if></mt:unless></mt:unless></mt:loop>];
 <mt:unless name="object_type" eq="page">customizable_fields.push('category');
 </mt:unless>customizable_fields.push('publishing');
 customizable_fields.push('feedback');
@@ -530,7 +530,7 @@ function saveEntryFieldOptions() {
         } else if (fld.name == 'entry_prefs') {
             mode = fld.value;
         } else if (fld.name == 'custom_prefs') {
-            if (!fld.disabled && fld.checked) {
+            if (fld.checked) {
                 if (custom_prefs != '') custom_prefs += ',';
                 custom_prefs += fld.value;
             }
@@ -930,7 +930,7 @@ function listPreviousPings () {
                     label_class="display-options">
                     <ul id="entry-pref-field-list">
                         <mt:loop name="field_loop">
-                        <mt:unless name="field_system"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+                        <mt:unless name="field_system"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li<mt:if name="use_field"> class="dbx-box"</mt:if>><label<mt:if name="use_field"> class="dbx-handle"</mt:if>><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
                         </mt:loop>
                     </ul>
                 </mtapp:setting>
