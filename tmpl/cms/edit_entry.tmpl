@@ -289,7 +289,7 @@
                         <mt:else name="status_publish">
                             <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
                         <mt:else name="status_spam">
-                            <span class="icon-left-wide icon-junk"><__trans phrase="Unpublished (Spam)"></span>
+                            <span class="icon-left-wide icon-spam"><__trans phrase="Unpublished (Spam)"></span>
                         </mt:if>
                     </li>
                     <mt:if name="status_publish">
@@ -998,11 +998,11 @@ function listPreviousPings () {
             <__trans phrase="This post was classified as spam.">
 
         <mt:if name="junk_log_loop">
-        <div class="width90 entry-spam-info">
+        <div class="entry-spam-info">
             <a href="javascript:void(0)" onclick="toggleHidden('entry-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
         </div>
         <div id="entry-feedback-rating" class="hidden">
-            <div id="spam-log-listing" class="listing width90">
+            <div id="spam-log-listing" class="listing">
                 <table class="spam-log-listing-table" cellspacing="0">
                     <thead>
                     <tr>

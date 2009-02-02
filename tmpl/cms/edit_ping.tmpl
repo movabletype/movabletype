@@ -108,12 +108,12 @@
         <a title="<__trans phrase="View all TrackBacks with this status">" href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id"><mt:if name="is_junk">&amp;tab=junk<mt:else>&amp;filter=status&amp;filter_val=<mt:if name="ping_approved">approved</mt:if><mt:if name="ping_pending">pending</mt:if></mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 
         <mt:if name="junk_log_loop">
-        <div class="width90 ping-spam-info">
+        <div class="ping-spam-info">
                 <a href="javascript:void(0)" onclick="toggleHidden('ping-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
         </div>
         <div id="ping-feedback-rating" class="hidden">
             <strong><__trans phrase="Total Feedback Rating: [_1]" params="<$mt:var name="junk_score"$>"></strong>
-            <div id="spam-log-listing" class="listing width90">
+            <div id="spam-log-listing" class="listing">
                 <table class="spam-log-listing-table" cellspacing="0">
                     <thead>
                     <tr>

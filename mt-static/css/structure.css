@@ -4253,7 +4253,7 @@ body.dialog {
     font-weight: normal;
 }
 
-/* Edit Comment & Trackback ---------------------------------------------------------------------------------- */
+/* Edit Comment & Trackback & Entry ---------------------------------------------------------------------------------- */
 
 .edit-comment .button-actions,
 .edit-ping .button-actions { float: left; }
@@ -4286,6 +4286,11 @@ body.dialog {
     background-color: #e7cdcd;
 }
 
+#junk-message { 
+    padding-top: 26px;
+    padding-bottom: 10px;
+}
+
 .edit-comment .comment-spam-info,
 .edit-ping .ping-spam-info,
 .edit-entry .entry-spam-info {
@@ -4293,17 +4298,21 @@ body.dialog {
 }
 
 .edit-comment #spam-details-toggle,
-.edit-ping #spam-details-toggle {
+.edit-ping #spam-details-toggle,
+.edit-entry #spam-details-toggle {
     background: url('../images/spinner-right.gif') no-repeat left center;
     padding-left: 11px;
 }
 .edit-comment #spam-details-toggle.active,
-.edit-ping #spam-details-toggle.active {
+.edit-ping #spam-details-toggle.active,
+.edit-entry #spam-details-toggle.active {
     background-image: url('../images/spinner-bottom.gif');
 }
 
 .edit-comment #spam-log-listing table,
-.edit-ping #spam-log-listing table {
+.edit-ping #spam-log-listing table,
+.edit-entry #spam-log-listing table {
+    margin-top: 10px;
     border: 0;
 }
 
