@@ -6504,7 +6504,7 @@ sub _hdlr_authors {
         }
         if ($need_join) {
             if ($scoring_to) {
-                return $ctx->error(MT->translate("You have an error in your 'scoring_to' attribute: [_1]", $scoring_to))
+                return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", 'scoring_to', $scoring_to))
                     unless exists $ctx->{__stash}{$scoring_to};
                 $scored_object = $ctx->{__stash}{$scoring_to};
                 $args{join} = MT->model('objectscore')->join_on(undef,

@@ -155,9 +155,11 @@ use vars qw( @ISA %Lexicon );
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Utilのインストールは必須ではありません。再構築キューを利用する場合に必要となります。',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Utilのインストールは必須ではありません。再構築キューを利用する場合に必要となります。',
 	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Image::Magickのインストールは必須ではありません。アップロードした画像のサムネイルを作成する場合に必要となります。',
+	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Storable is optional; it is required by certain MT plugins available from third parties.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
-        'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
 	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcachedのインストールは必須ではありません。Movable Type のキャッシング機能として memcached サーバーを利用する場合に必要となります。',
@@ -494,6 +496,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'Vox',
 	'Learn more about Vox.' => 'Voxについて詳しくはこちら',
 	'Sign in using your Gmail account' => 'Gmailのアカウントでログインする',
+	'Sign in to Movable Type with your[_1] Account[_2]' => '[_1] アカウント[_2]',
 	'Turn on OpenID for your Yahoo! account now' => 'Yahoo!のアカウントをOpenIDにする',
 	'Your AIM or AOL Screen Name' => 'AIMまたはAOLのスクリーンネーム',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'AIMまたはAOLのスクリーンネームでサインインします。スクリーンネームは公開されます。',
@@ -530,7 +533,7 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'WordPress.com',
 	'TypePad' => 'TypePad',
-	'Yahoo! Japan' => 'Yahoo! JAPAN',
+	'Yahoo! JAPAN' => 'Yahoo! JAPAN', # Translate - Case
 	'livedoor' => 'ライブドア',
 	'Hatena' => 'はてな',
 	'Movable Type default' => 'Movable Type 既定',
@@ -621,6 +624,7 @@ use vars qw( @ISA %Lexicon );
 	'Draft' => '下書き',
 	'Review' => 'レビュー',
 	'Future' => '日時指定',
+	'Spam' => 'スパム',
 
 ## lib/MT/Plugin/JunkFilter.pm
 	'[_1]: [_2][_3] from rule [_4][_5]' => '[_1]: ルール[_4][_5]による判定スコア - [_2][_3]',
@@ -966,6 +970,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '更新通知: [_1] - [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'The value you entered was not a valid email address' => 'メールアドレスが不正です。',
+	'The value you entered was not a valid URL' => 'URLが不正です。',
 	'The e-mail address you entered is already on the Notification List for this blog.' => '入力されたメールアドレスはすでに通知リストに含まれています。',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => '\'[_3]\'がアドレス帳から\'[_1]\'(ID:[_2])を削除しました。',
 
@@ -1065,7 +1070,6 @@ use vars qw( @ISA %Lexicon );
 	'User requires password' => 'パスワードは必須です。',
 	'User requires password recovery word/phrase' => 'パスワード再設定用のフレーズは必須です。',
 	'Email Address is required for password recovery' => 'メールアドレスはパスワードを再設定できるようにするために必要です。',
-	'Website URL is invalid' => 'URLが不完全です。',
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を作成しました。',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を削除しました。',
 
@@ -1101,8 +1105,8 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => '\'[_1]\'という名前のファイルが既に存在します。テンポラリファイルに書き込むこともできませんでした: [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => '[_1]を作成できませんでした: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'アップロードされたファイルを[_1]に書き込めませんでした: [_2]',
-	'<' => '<',
 	'Uploaded file is not an image.' => 'アップロードしたファイルは画像ではありません。',
+	'<' => '<',
 
 ## lib/MT/CMS/Import.pm
 	'Import/Export' => 'インポート/エクスポート',
@@ -1393,6 +1397,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => '\'[_1]\'というテンプレートが見つかりませんでした。',
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
+	'You have an error in your \'scoring_to\' attribute: [_1]' => 'scoring_to', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => '[_2]属性でエラーがありました: [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'tag属性でエラーがありました: [_1]',
 	'No such user \'[_1]\'' => 'ユーザー([_1])が見つかりません。',
@@ -1901,7 +1906,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'General' => '全般',
 	'Feedback' => 'コミュニケーション',
 	'Registration' => '登録 / 認証',
-	'Spam' => 'スパム',
 	'Web Services' => 'ウェブサービス',
 	'Plugins' => 'プラグイン',
 	'Import' => 'インポート',
@@ -1931,8 +1935,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'トラックバック機能や更新通知機能を利用する場合に必要となります。',
 	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'XML-RPC による作業を行う場合に必要となります。',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
-	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'This module is required by certain MT plugins available from third parties.' => '外部プラグインの利用の際に必要となる場合があります。',
 	'This module accelerates comment registration sign-ins.' => 'コメント投稿時のサインインが高速になります。',
 	'This module is needed to enable comment registration.' => 'コメントの認証機能を利用する場合に必要となります。',
@@ -1953,7 +1955,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Invalid format: [_1]' => '不正なformatです: [_1]',
 	'Unsupported type: [_1]' => '[_1]はサポートされていません。',
 	'Invalid query: [_1]' => '不正なクエリーです: [_1]',
-	'No search term was specified.' => '検索ワードを指定してください。',
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
@@ -2469,6 +2470,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Unpublished (Draft)' => '未公開(原稿)',
 	'Unpublished (Review)' => '未公開(承認待ち)',
 	'Scheduled' => '日時指定',
+	'Unpublished (Spam)' => '未公開(スパム)',
 	'View' => '表示',
 	'Share' => '共有',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => 'コメント<a href="[_2]">[quant,_1,件,件]</a>',
@@ -2510,6 +2512,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Save display options' => '表示オプションを保存',
 	'OK' => 'OK',
 	'Close display options' => '表示オプションを閉じる',
+	'This post was classified as spam.' => 'この投稿はスパムと判定されました。',
+	'Spam Details' => 'スパムの詳細',
+	'Score' => 'スコア',
+	'Results' => '結果',
 	'Body' => '本文',
 	'Extended' => '続き',
 	'Format:' => 'フォーマット:',
@@ -2974,6 +2980,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Only show pages for review' => 'レビュー中のウェブページを表示',
 	'Only show scheduled entries' => '指定日投稿されるブログ記事を表示',
 	'Only show scheduled pages' => '指定日投稿されるウェブページを表示',
+	'Only show spam entries' => 'スパム指定されているブログ記事のみを表示',
+	'Only show spam pages' => 'スパム指定されているウェブページのみを表示',
 	'View entry' => 'ブログ記事を見る',
 	'View page' => 'ウェブページを表示',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>',
@@ -3542,10 +3550,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Unapproved' => '未公開',
 	'Reported as Spam' => 'スパムとして報告',
 	'View all comments with this status' => 'このステータスのすべてのコメントを見る',
-	'Spam Details' => 'スパムの詳細',
 	'Total Feedback Rating: [_1]' => '最終レーティング: [_1]',
-	'Score' => 'スコア',
-	'Results' => '結果',
 	'The name of the person who posted the comment' => 'このコメント投稿者の名前',
 	'(Trusted)' => '（承認済み）',
 	'Ban Commenter' => 'コメント投稿者を禁止',
@@ -3867,6 +3872,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Show only pages where' => 'ウェブページを表示: ',
 	'published' => '公開',
 	'unpublished' => '未公開',
+	'review' => 'レビュー',
 	'scheduled' => '指定日公開',
 	'Select A User:' => 'ユーザーを選択:',
 	'User Search...' => 'ユーザーを検索',
@@ -4112,11 +4118,11 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## plugins/Markdown/SmartyPants.pl
 	'Easily translates plain punctuation characters into \'smart\' typographic punctuation.' => '記号を「スマート」に置き換えます。',
-	'Markdown With SmartyPants' => 'Markdown + SmartyPants',
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
 	'Markdown' => 'Markdown',
+	'Markdown With SmartyPants' => 'Markdown + SmartyPants',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'テキストをHTMLに整形します。',
@@ -4206,6 +4212,12 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'This action can only be run for a single blog at a time.' => '一度にひとつのブログしか選択できません。',
 	'Invalid blog_id' => '不正なブログID',
 	'Clone Blog' => 'ブログの複製',
+
+## plugins/GoogleBlogSearch/config.yaml
+	'Search term' => '検索ワード',
+
+## plugins/GoogleNews/config.yaml
+	'Search for' => '検索ワード',
 
 );
 
