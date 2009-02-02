@@ -1,7 +1,7 @@
 package MT::CMS::AddressBook;
 
 use strict;
-use MT::Util qw( is_valid_email is_valid_url dirify );
+use MT::Util qw( is_valid_email is_url dirify );
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
@@ -237,7 +237,7 @@ sub save_filter {
         );
     }
     my $url = $app->param('url');
-    if ( !is_valid_url($url) ) {
+    if ( !is_url($url) ) {
         return $eh->error(
             $app->translate(
                 "The value you entered was not a valid URL")
