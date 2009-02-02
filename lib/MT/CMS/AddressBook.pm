@@ -237,7 +237,7 @@ sub save_filter {
         );
     }
     my $url = $app->param('url');
-    if ( !is_url($url) ) {
+    if ( $url && ( !is_url($url) ) ) {
         return $eh->error(
             $app->translate(
                 "The value you entered was not a valid URL")
