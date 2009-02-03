@@ -587,6 +587,7 @@ use vars qw( @ISA %Lexicon );
 	'User requires password' => 'Gebruiker vereist wachtwoord',
 	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
 	'Email Address is required for password recovery' => 'E-mail adres is vereist voor het terugvinden van een wachtwoord',
+	'Email Address is invalid.' => 'E-mail adres is ongeldig.',
 	'URL is invalid.' => 'URL is ongeldig.',
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) aangemaakt door \'[_3]\'',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Gebruiker \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
@@ -618,7 +619,7 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Bestand met de naam \'[_1]\' bestaat al; Poging tot schrijven naar tijdelijk bestand ondernomen, openen mislukt: [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => 'Kon geen upload pad \'[_1]\' aanmaken: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Fout bij schrijven van upload naar \'[_1]\': [_2]',
-	'Uploaded file is not an image.' => 'Geupload bestand is geen afbeelding.', # Translate - New
+	'Uploaded file is not an image.' => 'Geupload bestand is geen afbeelding.',
 	'<' => '<',
 	'/' => '/',
 
@@ -713,6 +714,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '[_1] update: [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); een andere MailTransfer instelling proberen?',
 	'The value you entered was not a valid email address' => 'Wat u invulde was geen geldig e-mail adres',
+	'The value you entered was not a valid URL' => 'Wat u invulde was geen geldige URL', # Translate - New
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'Het e-mail adres dat u opgaf staat al op de notificatielijst van deze weblog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnee \'[_1]\' (ID:[_2]) verwijderd uit adresboek door \'[_3]\'',
 
@@ -959,6 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => 'Kan sjabloon \'[_1]\' niet vinden',
 	'Can\'t find entry \'[_1]\'' => 'Kan bericht \'[_1]\' niet vinden',
 	'[_1] is not a hash.' => '[_1] is geen hash.',
+	'You have an error in your \'[_1]\' attribute: [_2]' => 'Er staat een fout in uw \'[_1]\' attribuut: [_2]', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Er staat een fout in uw \'[_2]\' attribuut: [_1]',
 	'You have an error in your \'tag\' attribute: [_1]' => 'Er zit een fout in uw \'tag\' attribuut: [_1]',
 	'No such user \'[_1]\'' => 'Geen gebruiker \'[_1]\'',
@@ -1049,6 +1052,7 @@ use vars qw( @ISA %Lexicon );
 	'Draft' => 'Klad',
 	'Review' => 'Na te kijken',
 	'Future' => 'Toekomstig',
+	'Spam' => 'Spam',
 
 ## lib/MT/Upgrade.pm
 	'Comment Posted' => 'Reactie geplaatst',
@@ -1266,7 +1270,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid entry ID provided' => 'Ongeldig berichtID opgegeven',
 	'All required fields must have valid values.' => 'Alle vereiste velden moeten geldige waarden bevatten.',
 	'Passwords do not match.' => 'Wachtwoorden komen niet overeen.',
-	'Email Address is invalid.' => 'E-mail adres is ongeldig.',
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
@@ -1277,7 +1280,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid format: [_1]' => 'Ongeldig formaat: [_1]',
 	'Unsupported type: [_1]' => 'Niet ondersteund type: [_1]',
 	'Invalid query: [_1]' => 'Ongeldige zoekopdracht: [_1]',
-	'No search term was specified.' => 'Er werd geen zoekterm opgegeven',
 	'Invalid value: [_1]' => 'Ongeldige waarde: [_1]',
 	'No column was specified to search for [_1].' => 'Geen kolom opgegeven om op te zoeken [_1].',
 	'Search: query for \'[_1]\'' => 'Zoeken: zoekopdracht voor \'[_1]\'',
@@ -1338,10 +1340,10 @@ use vars qw( @ISA %Lexicon );
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util is optioneel; Het is vereist als u de publicatiewachtrij-functie wenst te gebruiken.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Deze module is vereist als u graag thumbnailveries van opgeladen bestanden wenst te kunnen aanmaken.',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Deze module is vereist als u NetPBM wenst te gebruiken als driver voor afbeeldingen met MT.', # Translate - New
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Deze module is vereist als u NetPBM wenst te gebruiken als driver voor afbeeldingen met MT.',
 	'This module is required by certain MT plugins available from third parties.' => 'Deze module is vereist door bepaalde MT plugins beschikbaar bij derden.',
 	'This module accelerates comment registration sign-ins.' => 'Deze module versnelt aanmeldingen om te kunnen reageren.',
-	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Deze module en de modules waarvan ze afhangt zijn nodig om reageerders te kunnen authenticeren via OpenID providers zoals AOL en Yahoo! die SSL ondersteuning vereisen.', # Translate - New
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Deze module en de modules waarvan ze afhangt zijn nodig om reageerders te kunnen authenticeren via OpenID providers zoals AOL en Yahoo! die SSL ondersteuning vereisen.',
 	'This module is needed to enable comment registration.' => 'Deze module is vereist om registraties bij reacties mogelijk te maken.',
 	'This module enables the use of the Atom API.' => 'Deze module maakt het mogelijk de Atom API te gebruiken.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Deze module is vereist om bestanden te archiveren bij backup/restore operaties.',
@@ -1452,7 +1454,6 @@ use vars qw( @ISA %Lexicon );
 	'General' => 'Algemeen',
 	'Feedback' => 'Feedback',
 	'Registration' => 'Registratie',
-	'Spam' => 'Spam',
 	'Web Services' => 'Webservices',
 	'Plugins' => 'Plugins',
 	'Import' => 'Import',
@@ -1931,6 +1932,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'URL van uw Vox blog',
 	'Learn more about Vox.' => 'Meer weten over Vox.',
 	'Sign in using your Gmail account' => 'Aanmelden met uw Gmail account',
+	'Sign in to Movable Type with your[_1] Account[_2]' => 'Aanmelden bij Movable Type met uw[_1] Account[_2]', # Translate - New
 	'Turn on OpenID for your Yahoo! account now' => 'Nu OpenID inschakelen voor uw Yahoo! account',
 	'Your AIM or AOL Screen Name' => 'Uw AIM of AOL gebruikersnaam',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Meld u aan met uw AIM of AOL gebruikernaam.  Deze zal publiek te zien zijn.',
@@ -1938,8 +1940,8 @@ use vars qw( @ISA %Lexicon );
 	'Sign in using your WordPress.com username.' => 'Meld u aan met uw Wordpress.com gebruikersnaam',
 	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePad is een gratis, open systeem dat u een centrale identiteit geeft om reacties mee achter te laten op weblogs en om u mee aan te melden op andere websites.  U kunt zich er gratis registreren.',
 	'Sign in or register with TypePad.' => 'Meld u aan of registreer bij TypePad',
-	'Turn on OpenID for your Yahoo! Japan account now' => 'OpenID nu inschakelen voor uw Yahoo! Japan account', # Translate - New
-	'Your Hatena ID' => 'Uw Hatena ID', # Translate - New
+	'Turn on OpenID for your Yahoo! Japan account now' => 'OpenID nu inschakelen voor uw Yahoo! Japan account',
+	'Your Hatena ID' => 'Uw Hatena ID',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => 'Hallo, [_1]',
 	'Message: [_1]' => 'Bericht: [_1]',
@@ -1964,9 +1966,9 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'Wordpress.com',
 	'TypePad' => 'TypePad',
-	'Yahoo! JAPAN' => 'Yahoo! JAPAN', # Translate - New
-	'livedoor' => 'livedoor', # Translate - New
-	'Hatena' => 'Hatena', # Translate - New
+	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
+	'livedoor' => 'livedoor',
+	'Hatena' => 'Hatena',
 	'Movable Type default' => 'Movable Type standaard',
 
 ## mt-static/mt.js
@@ -2480,7 +2482,9 @@ use vars qw( @ISA %Lexicon );
 	'asset' => 'mediabestand',
 	'published' => 'gepubliceerd',
 	'unpublished' => 'ongepubliceerd',
+	'review' => 'na te kijken', # Translate - Case
 	'scheduled' => 'gepland',
+	'spam' => 'spam',
 	'Select A User:' => 'Selecteer een gebruiker:',
 	'User Search...' => 'Zoeken naar gebruiker...',
 	'Recent Users...' => 'Recente gebruikers...',
@@ -2686,6 +2690,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Review)' => 'Niet gepubliceerd (na te kijken)',
 	'Scheduled' => 'Gepland',
 	'Published' => 'Gepubliceerd',
+	'Unpublished (Spam)' => 'Niet gepubliceerd (spam)', # Translate - New
 	'View' => 'Bekijken',
 	'Share' => 'Delen',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,reactie,reacties]</a>',
@@ -2726,6 +2731,10 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Opties schermindeling opslaan',
 	'OK' => 'OK',
 	'Close display options' => 'Opties schermindeling sluiten',
+	'This post was classified as spam.' => 'Dit bericht werd geclassificeerd als spam.', # Translate - New
+	'Spam Details' => 'Spamdetails',
+	'Score' => 'Score',
+	'Results' => 'Resultaten',
 	'Body' => 'Romp',
 	'Extended' => 'Uitgebreid',
 	'Format:' => 'Formaat:',
@@ -2905,6 +2914,8 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Enkel na te kijken pagina\'s tonen',
 	'Only show scheduled entries' => 'Enkel geplande berichten tonen',
 	'Only show scheduled pages' => 'Enkel geplande pagina\'s tonen',
+	'Only show spam entries' => 'Enkel spamberichten tonen', # Translate - New
+	'Only show spam pages' => 'Enkel spampagina\'s tonen', # Translate - New
 	'View entry' => 'Bericht bekijken',
 	'View page' => 'Pagina bekijken',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Er werden geen berichten gevonden. Nu <a href="[_1]">een bericht aanmaken</a>.',
@@ -3388,6 +3399,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'Er mogen geen spaties in de URL staan.',
 	'You can not have spaces in the path.' => 'Er mogen geen spaties in het pad staan.',
 	'Path is not valid.' => 'Pad is ongeldig',
+	'Site Path' => 'Sitepad', # Translate - New
 	'Archive URL' => 'Archief-URL',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -3534,10 +3546,7 @@ use vars qw( @ISA %Lexicon );
 	'Reported as Spam' => 'Gerapporteerd als spam',
 	'Junk' => 'Spam',
 	'View all TrackBacks with this status' => 'Alle TrackBacks met deze status bekijken',
-	'Spam Details' => 'Spamdetails',
 	'Total Feedback Rating: [_1]' => 'Totale feedbackscore: [_1]',
-	'Score' => 'Score',
-	'Results' => 'Resultaten',
 	'Source Site' => 'Bronsite',
 	'Search for other TrackBacks from this site' => 'Andere TrackBacks van deze site zoeken',
 	'Source Title' => 'Brontitel',
@@ -3595,7 +3604,6 @@ use vars qw( @ISA %Lexicon );
 	'No comments appeared to be spam.' => 'Er lijken geen berichten als spam gemarkeerd te zijn',
 	'[_1] on entries created within the last [_2] days' => '[_1] op berichten aangemaakt in de laatste [_2] dagen',
 	'[_1] on entries created more than [_2] days ago' => '[_1] op berichten aangemaakt langer dan [_2] dagen geleden',
-	'spam' => 'spam',
 
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'Instellingen webservices',
@@ -4103,8 +4111,8 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Gebruiker \'[_1]\' (ID:[_2]) werd met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden.',
 	'Login required' => 'Aanmelden vereist',
+	'Title or Content is required.' => 'Titel of inhoud is vereist.', # Translate - New
 	'System template entry_response not found in blog: [_1]' => 'Systeemsjabloon entry_response niet gevonden voor blog: [_1]',
-	'Posting a new entry failed.' => 'Publiceren van nieuw bericht mislukt',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nieuw bericht \'[_1]\' toegevoegd aan de blog \'[_2]\'',
 	'Id or Username is required' => 'ID of gebruikersnaam is verplicht',
 	'Unknown user' => 'Onbekende gebruiker',
@@ -5052,7 +5060,6 @@ Zoekbasis: [_2]",
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'Uw mt-static map kon niet worden gevonden.  Gelieve \'StaticFilePath\' te configureren om verder te gaan.',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'Kon map [_1] niet aanmaken - Controleer of uw \'themes\' map beschrijfbaar is voor de webserver.',
-	'Error downloading image: [_1]' => 'Fout bij downloaden afbeelding: [_1]',
 	'Successfully applied new theme selection.' => 'Nieuwe thema-selectie met succes toegepast.',
 	'Invalid URL: [_1]' => 'Ongeldige URL: [_1]',
 
@@ -5060,10 +5067,12 @@ Zoekbasis: [_2]",
 	'Select a Style' => 'Selecteer een stijl',
 	'3-Columns, Wide, Thin, Thin' => '3-kolommen, breed, smal, smal',
 	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
+	'3-Columns, Thin, Thin, Wide' => '3-kolommen, smal, smal, breed', # Translate - New
 	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
 	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
 	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium',
 	'2-Columns, Medium, Wide' => '2-kolommen, medium, breed',
+	'1-Column, Wide, Bottom' => '1 kolom, breed, onderschrift', # Translate - New
 	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Wordt toegepast...',
 	'Apply Design' => 'Design toepassen',
@@ -5260,20 +5269,20 @@ Zoekbasis: [_2]",
 	'URI' => 'URI',
 
 ## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite maakt het mogelijk feeds te herpubliceren op uw blog.  Meer doen met feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgraden naar Feeds.App</a>.', # Translate - New
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite maakt het mogelijk feeds te herpubliceren op uw blog.  Meer doen met feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgraden naar Feeds.App</a>.',
 	'Create a Feed Widget' => 'Feedwidget aanmaken',
 
 ## plugins/CommunityActionStreams/config.yaml
-	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Action streams voor community events: bericht toevoegen, reactie toevoegen, favoriet toevoegen, gebruiker volgen.', # Translate - New
+	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Action streams voor community events: bericht toevoegen, reactie toevoegen, favoriet toevoegen, gebruiker volgen.',
 
 ## plugins/Motion/config.yaml
-	'A Movable Type theme with structured entries and action streams.' => 'Een Movable Type thema met gestructureerde berichten en action streams.', # Translate - New
-	'Adjusting field types for embed custom fields...' => 'Veldtypes aan het aanpassen voor gepersonaliseerde velden van type embed...', # Translate - New
-	'Updating favoriting namespace for Motion...' => 'Favoriting namespace aan het bijwerken voor Motion...', # Translate - New
+	'A Movable Type theme with structured entries and action streams.' => 'Een Movable Type thema met gestructureerde berichten en action streams.',
+	'Adjusting field types for embed custom fields...' => 'Veldtypes aan het aanpassen voor gepersonaliseerde velden van type embed...',
+	'Updating favoriting namespace for Motion...' => 'Favoriting namespace aan het bijwerken voor Motion...',
 	'Reinstall Motion Templates' => 'Motion sjablonen opnieuw installeren',
 	'Motion Themes' => 'Motion sjablonen',
 	'Themes for Motion template set' => 'Thema\'s voor de Motion sjabloonset',
-	'Motion' => 'Motion', # Translate - New
+	'Motion' => 'Motion',
 	'Post Type' => 'Type bericht',
 	'Photo' => 'Foto',
 	'Embed Object' => 'Embedded object',
@@ -5304,6 +5313,7 @@ Zoekbasis: [_2]",
 	'Main Column Posting Form (All Media)' => 'Hoofdkolom publicatieformulier (alle media)',
 	'Main Column Posting Form (Text Only, Like Twitter)' => 'Hoofdkolom publicatieformulier (enkel tekst, zoals Twitter)',
 	'Main Column Registration' => 'Hoofdkolom registratie',
+	'Fans' => 'Fans', # Translate - New
 	'Popular Entries' => 'Populaire berichten',
 	'Elsewhere' => 'Elders',
 	'Following' => 'Volgt',
@@ -5320,9 +5330,9 @@ Zoekbasis: [_2]",
 	'Profile Widgets' => 'Profielwidgets',
 
 ## plugins/Motion/lib/Motion/Search.pm
-	'This module works with MT::App::Search.' => 'Deze module werkt met MT::App::Search.', # Translate - New
-	'Specify the blog_id of a blog that has Motion template set.' => 'Geef het blog_id op van een blog die de Motion sjabloonset gebruikt.', # Translate - New
-	'Error loading template: [_1]' => 'Fout bij laden sjabloon: [_1]', # Translate - New
+	'This module works with MT::App::Search.' => 'Deze module werkt met MT::App::Search.',
+	'Specify the blog_id of a blog that has Motion template set.' => 'Geef het blog_id op van een blog die de Motion sjabloonset gebruikt.',
+	'Error loading template: [_1]' => 'Fout bij laden sjabloon: [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 
@@ -5331,142 +5341,75 @@ Zoekbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/widget_search.mtml
 
-## plugins/Motion/templates/Motion/actions_local.mtml
-	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'Favorited [_1] on [_2]' => 'Maakte [_1] favoriet op [_2]',
-	'No recent actions.' => 'Geen recente acties.',
-
-## plugins/Motion/templates/Motion/main_index.mtml
-
-## plugins/Motion/templates/Motion/page.mtml
-
 ## plugins/Motion/templates/Motion/banner_header.mtml
 	'Home' => 'Hoofdpagina',
 
-## plugins/Motion/templates/Motion/entry_summary.mtml
+## plugins/Motion/templates/Motion/widget_recent_comments.mtml
+	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>',
+
+## plugins/Motion/templates/Motion/widget_popular_entries.mtml
+	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'gepubliceerd door <a href="[_1]">[_2]</a> op [_3]',
+
+## plugins/Motion/templates/Motion/widget_followers.mtml
+	'Not being followed' => 'Wordt niet gevolgd',
+
+## plugins/Motion/templates/Motion/entry_response.mtml
+
+## plugins/Motion/templates/Motion/comment_response.mtml
+	'<strong>Bummer....</strong> [_1]' => '<strong>Jammer...</strong> [_1]',
+
+## plugins/Motion/templates/Motion/widget_about_ssite.mtml
+	'About' => 'Over',
+	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'De Motion sjabloonset is een goed voorbeeld van het soort site dat met Movable Type gebouwd kan worden.',
+
+## plugins/Motion/templates/Motion/entry_create.mtml
+
+## plugins/Motion/templates/Motion/comment_detail.mtml
+
+## plugins/Motion/templates/Motion/register.mtml
+	'Enter a password for yourself.' => 'Kies een wachtwoord voor uzelf.',
+	'The URL of your website.' => 'De URL van uw website.',
+
+## plugins/Motion/templates/Motion/member_index.mtml
+
+## plugins/Motion/templates/Motion/single_entry.mtml
 	'By [_1] <span class="date">on [_2]</span>' => 'Door [_1] <span class="date">op [_2]</span>',
-	'Unpublish this post' => 'Publicatie van dit bericht ongedaan maken', # Translate - New
+	'Unpublish this post' => 'Publicatie van dit bericht ongedaan maken',
 	'1 <span>Comment</span>' => '1 <span>reactie</span>',
 	'# <span>Comments</span>' => '# <span>reacties</span>',
 	'0 <span>Comments</span>' => '0 <span>reacties</span>',
 	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
 	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
 	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
+	'Note: This post is being held for approval by the site owner.' => 'Opmerking: dit bericht wordt tegengehouden tot de eigenaar van de site het goedkeurt.', # Translate - New
+	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Recentste reactie van <strong>[_2]</strong> op [_3]</a>',
 	'Posted to [_1]' => 'Gepubliceerd op [_1]',
+	'[_1] posted [_2] on [_3]' => '[_1] publiceerde [_2] op [_3]',
 
-## plugins/Motion/templates/Motion/widget_members.mtml
-
-## plugins/Motion/templates/Motion/widget_popular_entries.mtml
-	'posted by <a href="[_1]">[_2]</a> on [_3]' => 'gepubliceerd door <a href="[_1]">[_2]</a> op [_3]',
-
-## plugins/Motion/templates/Motion/entry_response.mtml
-
-## plugins/Motion/templates/Motion/widget_followers.mtml
-	'Not being followed' => 'Wordt niet gevolgd',
-
-## plugins/Motion/templates/Motion/comment_response.mtml
-	'<strong>Bummer....</strong> [_1]' => '<strong>Jammer...</strong> [_1]',
-
-## plugins/Motion/templates/Motion/user_profile.mtml
-	'Recent Actions from [_1]' => 'Recente acties van [_1]',
-	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
-	'Responses to Comments from [_1]' => 'Antwoorden op reacties van [_1]',
-	'You are following [_1].' => 'U volgt [_1].',
-	'Unfollow' => 'Niet langer volgen',
-	'Follow' => 'Volgen',
-	'Profile Data' => 'Profielgegevens',
-	'More Entries by [_1]' => 'Meer berichten van [_1]',
-	'Recent Actions' => 'Recente acties',
-	'followed [_1]' => 'volgde [_1]',
-	'Comment Threads' => 'Reactie threads',
-	'[_1] commented on ' => '[_1] reageerde op ',
-	'No responses to comments.' => 'Geen antwoorden op reacties.',
-
-## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
-
-## plugins/Motion/templates/Motion/profile_feed.mtml
-	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
-	'Commented on [_1] in [_2]' => 'Reageerde op [_1] op [_2]',
-
-## plugins/Motion/templates/Motion/comment_detail.mtml
-
-## plugins/Motion/templates/Motion/register.mtml
-	'Sign up' => 'Registreer',
-	'Enter a password for yourself.' => 'Kies een wachtwoord voor uzelf.',
-	'The URL of your website.' => 'De URL van uw website.',
-
-## plugins/Motion/templates/Motion/widget_about_ssite.mtml
-	'About' => 'Over',
-	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'De Motion sjabloonset is een goed voorbeeld van het soort site dat met Movable Type gebouwd kan worden.', # Translate - New
-
-## plugins/Motion/templates/Motion/entry_create.mtml
-
-## plugins/Motion/templates/Motion/widget_following.mtml
-	'Not following anyone' => 'Volgt niemand',
-
-## plugins/Motion/templates/Motion/entry_listing_category.mtml
-
-## plugins/Motion/templates/Motion/widget_signin.mtml
-	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>',
-	'You are signed in as [_1]' => 'U bent aangemeld als [_1]',
-	'Edit profile' => 'Profiel bewerken',
-	'Sign out' => 'Afmelden',
-	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
-
-## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
-
-## plugins/Motion/templates/Motion/register_confirmation.mtml
-	'Authentication Email Sent' => 'Authenticatiemail verzonden',
-	'Profile Created' => 'Profiel aangemaakt',
-	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
-
-## plugins/Motion/templates/Motion/member_index.mtml
-
-## plugins/Motion/templates/Motion/entry.mtml
-
-## plugins/Motion/templates/Motion/single_entry.mtml
-	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Recentste reactie van <strong>[_2]</strong> op [_3]</a>', # Translate - New
-	'[_1] posted [_2] on [_3]' => '[_1] publiceerde [_2] op [_3]', # Translate - New
-
-## plugins/Motion/templates/Motion/widget_gallery.mtml
-	'Recent Photos' => 'Recente afbeeldingen',
+## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
 
 ## plugins/Motion/templates/Motion/password_reset.mtml
 	'Reset Password' => 'Wachtwoord opnieuw instellen',
 	'Back to the original page' => 'Terug naar de oorspronkelijke pagina',
 
-## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
-
-## plugins/Motion/templates/Motion/javascript.mtml
-	'Please select a file to post.' => 'Gelieve een bestand te kiezen om te publiceren.', # Translate - New
-	'You selected an unsupported file type.' => 'U selecteerde een type bestand dat niet wordt ondersteund.', # Translate - New
-
 ## plugins/Motion/templates/Motion/form_field.mtml
 	'(Optional)' => '(optioneel)',
 
-## plugins/Motion/templates/Motion/archive_index.mtml
+## plugins/Motion/templates/Motion/javascript.mtml
+	'Please select a file to post.' => 'Gelieve een bestand te kiezen om te publiceren.',
+	'You selected an unsupported file type.' => 'U selecteerde een type bestand dat niet wordt ondersteund.',
 
 ## plugins/Motion/templates/Motion/trackbacks.mtml
 
-## plugins/Motion/templates/Motion/sidebar.mtml
+## plugins/Motion/templates/Motion/archive_index.mtml
 
 ## plugins/Motion/templates/Motion/entry_listing_author.mtml
 	'Archived Entries from [_1]' => 'Gearchiveerde berichten van [_1]',
+	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
 
-## plugins/Motion/templates/Motion/widget_user_archives.mtml
-	'Recenty entries from [_1]' => 'Recente berichten van [_]',
+## plugins/Motion/templates/Motion/widget_categories.mtml
 
-## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-
-## plugins/Motion/templates/Motion/banner_footer.mtml
-
-## plugins/Motion/templates/Motion/widget_main_column_actions.mtml
-
-## plugins/Motion/templates/Motion/comments.mtml
-	'what will you say?' => 'wat zegt u?',
-	'Write a comment...' => 'Laat een reactie achter...',
-
-## plugins/Motion/templates/Motion/search_results.mtml
+## plugins/Motion/templates/Motion/dynamic_error.mtml
 
 ## plugins/Motion/templates/Motion/widget_elsewhere.mtml
 	'Are you sure you want to remove the [_1] from your profile?' => 'Zeker om [_1] van uw profiel verwijderen?',
@@ -5478,81 +5421,155 @@ Zoekbasis: [_2]",
 	'Find [_1] Elsewhere' => 'Elders [_1] vinden',
 	'Remove service' => 'Service verwijderen',
 
-## plugins/Motion/templates/Motion/widget_categories.mtml
+## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
+	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
+	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(of <a href="javascript:void(0)" onclick="[_1]">meld u aan</a>)',
+	'No posting privileges.' => 'Geen rechten om berichten te publiceren',
 
-## plugins/Motion/templates/Motion/widget_recent_comments.mtml
-	'<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>' => '<p>[_3]...</p><div class="comment-attribution">[_4]<br /><a href="[_1]">[_2]</a></div>',
+## plugins/Motion/templates/Motion/widget_following.mtml
+	'Not following anyone' => 'Volgt niemand',
 
-## plugins/Motion/templates/Motion/dynamic_error.mtml
+## plugins/Motion/templates/Motion/widget_main_column_posting_form_text.mtml
+	'QuickPost' => 'SnelBericht',
+	'Content' => 'Inhoud',
+	'more options' => 'meer opties',
+	'Post' => 'Publiceren',
+
+## plugins/Motion/templates/Motion/comment_preview.mtml
+
+## plugins/Motion/templates/Motion/actions_local.mtml
+	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
+	'Favorited [_1] on [_2]' => 'Maakte [_1] favoriet op [_2]',
+	'No recent actions.' => 'Geen recente acties.',
+
+## plugins/Motion/templates/Motion/main_index.mtml
+
+## plugins/Motion/templates/Motion/page.mtml
+
+## plugins/Motion/templates/Motion/entry_summary.mtml
 
 ## plugins/Motion/templates/Motion/widget_main_column_posting_form.mtml
-	'QuickPost' => 'SnelBericht', # Translate - New
-	'Text post' => 'TekstBericht', # Translate - New
-	'Photo post' => 'FotoBericht', # Translate - New
-	'Link post' => 'LinkBericht', # Translate - New
-	'Embed post' => 'EmbedBericht', # Translate - New
-	'Audio post' => 'AudioBericht', # Translate - New
-	'URL of web page' => 'URL van webpagina', # Translate - New
-	'Select photo file' => 'Selecteer fotobestand', # Translate - New
-	'Only GIF, JPEG and PNG image files are supported.' => 'Enkel GIF, JPEG en PNG afbeeldingsbestanden worden ondersteund.', # Translate - New
-	'Select audio file' => 'Selecteer audiobestand', # Translate - New
-	'Only MP3 audio files are supported.' => 'Alleen MP3 audiobestanden worden ondersteund.', # Translate - New
-	'Paste embed code' => 'Plak embed code hier', # Translate - New
-	'Content' => 'Inhoud', # Translate - New
-	'more options' => 'meer opties', # Translate - Case
-	'Post' => 'Publiceren', # Translate - New
+	'Text post' => 'TekstBericht',
+	'Photo post' => 'FotoBericht',
+	'Link post' => 'LinkBericht',
+	'Embed post' => 'EmbedBericht',
+	'Audio post' => 'AudioBericht',
+	'URL of web page' => 'URL van webpagina',
+	'Select photo file' => 'Selecteer fotobestand',
+	'Only GIF, JPEG and PNG image files are supported.' => 'Enkel GIF, JPEG en PNG afbeeldingsbestanden worden ondersteund.',
+	'Select audio file' => 'Selecteer audiobestand',
+	'Only MP3 audio files are supported.' => 'Alleen MP3 audiobestanden worden ondersteund.',
+	'Paste embed code' => 'Plak embed code hier',
+
+## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
+
+## plugins/Motion/templates/Motion/profile_feed.mtml
+	'Posted [_1] to [_2]' => 'Publiceerde [_1] op [_2]',
+	'Commented on [_1] in [_2]' => 'Reageerde op [_1] op [_2]',
+	'followed [_1]' => 'volgde [_1]',
+
+## plugins/Motion/templates/Motion/widget_user_archives.mtml
+	'Recenty entries from [_1]' => 'Recente berichten van [_]',
+
+## plugins/Motion/templates/Motion/entry_listing_category.mtml
+
+## plugins/Motion/templates/Motion/widget_signin.mtml
+	'You are signed in as <a href="[_1]">[_2]</a>' => 'U bent aangemeld als <a href="[_1]">[_2]</a>',
+	'You are signed in as [_1]' => 'U bent aangemeld als [_1]',
+	'Edit profile' => 'Profiel bewerken',
+	'Sign out' => 'Afmelden',
+
+## plugins/Motion/templates/Motion/widget_fans.mtml
+
+## plugins/Motion/templates/Motion/entry_listing_monthly.mtml
+
+## plugins/Motion/templates/Motion/register_confirmation.mtml
+	'Authentication Email Sent' => 'Authenticatiemail verzonden',
+	'Profile Created' => 'Profiel aangemaakt',
+	'<a href="[_1]">Return to the original page.</a>' => '<a href="[_1]">Terugkeren naar de oorspronkelijke pagina.</a>',
+
+## plugins/Motion/templates/Motion/entry.mtml
+
+## plugins/Motion/templates/Motion/widget_gallery.mtml
+	'Recent Photos' => 'Recente afbeeldingen',
+
+## plugins/Motion/templates/Motion/sidebar.mtml
+
+## plugins/Motion/templates/Motion/widget_recent_entries.mtml
+	'posted by [_1] on [_2]' => 'gepubliceerd door [_1] op [_2]', # Translate - New
+
+## plugins/Motion/templates/Motion/banner_footer.mtml
+
+## plugins/Motion/templates/Motion/widget_main_column_actions.mtml
+
+## plugins/Motion/templates/Motion/comments.mtml
+	'what will you say?' => 'wat zegt u?',
+	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2]als antwoord op reactie van [_3][_4]', # Translate - New
+	'Write a comment...' => 'Laat een reactie achter...',
+
+## plugins/Motion/templates/Motion/search_results.mtml
 
 ## plugins/Motion/templates/Motion/login_form.mtml
 	'Forgot?' => 'Vergeten?',
+
+## plugins/Motion/templates/Motion/widget_members.mtml
+
+## plugins/Motion/templates/Motion/user_profile.mtml
+	'Recent Actions from [_1]' => 'Recente acties van [_1]',
+	'Responses to Comments from [_1]' => 'Antwoorden op reacties van [_1]',
+	'You are following [_1].' => 'U volgt [_1].',
+	'Unfollow' => 'Niet langer volgen',
+	'Follow' => 'Volgen',
+	'Profile Data' => 'Profielgegevens',
+	'More Entries by [_1]' => 'Meer berichten van [_1]',
+	'Recent Actions' => 'Recente acties',
+	'_PROFILE_COMMENT_LENGTH' => '', # Translate - New
+	'Comment Threads' => 'Reactie threads',
+	'[_1] commented on ' => '[_1] reageerde op ',
+	'No responses to comments.' => 'Geen antwoorden op reacties.',
+
+## plugins/Motion/templates/Motion/actions.mtml
+	'[_1] is now following [_2]' => '[_1] volgt nu [_2]',
+	'[_1] favorited [_2] on [_3]' => '[_1] markeerde [_2] als favoriet op [_3]',
+
+## plugins/Motion/templates/Motion/motion_js.mtml
+	'Add userpic' => 'Voeg gebruikersafbeelding toe',
+
+## plugins/Motion/templates/Motion/widget_powered_by.mtml
 
 ## plugins/Motion/templates/Motion/user_profile_edit.mtml
 	'Go <a href="[_1]">back to the previous page</a> or <a href="[_2]">view your profile</a>.' => 'Ga <a href="[_1]">terug naar de vorige pagina</a> of <a href="[_2]">bekijk uw profiel</a>.',
 	'Change' => 'Wijzig',
 
-## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(of <a href="javascript:void(0)" onclick="[_1]">meld u aan</a>)',
-	'No posting privileges.' => 'Geen rechten om berichten te publiceren',
-
-## plugins/Motion/templates/Motion/actions.mtml
-	'[_1] is now following [_2]' => '[_1] volgt nu [_2]',
-	'[_1] favorited [_2] on [_3]' => '[_1] markeerde [_2] als favoriet op [_3]', # Translate - New
-
-## plugins/Motion/templates/Motion/motion_js.mtml
-	'Add userpic' => 'Voeg gebruikersafbeelding toe', # Translate - New
-
-## plugins/Motion/templates/Motion/widget_powered_by.mtml
-
-## plugins/Motion/templates/Motion/comment_preview.mtml
-
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 
 ## plugins/FacebookCommenters/plugin.pl
-	'Provides commenter registration through Facebook Connect.' => 'Voegt registratie van reageerders toe via Facebook Connect.', # Translate - New
-	'Set up Facebook Commenters plugin' => 'Facebook Reageerders plugin instellen', # Translate - New
-	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} reageerde op blogbericht <a href="{*post_url*}">{*post_title*}</a>.', # Translate - New
-	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Kon verhaalsjabloon niet registreren bij Facebook: [_1].  Vulde u het correcte applicatiegeheim in?', # Translate - New
-	'Could not register story template with Facebook: [_1]' => 'Kon verhaalsjabloon niet registreren bij Facebook: [_1].', # Translate - New
-	'Facebook' => 'Facebook', # Translate - New
+	'Provides commenter registration through Facebook Connect.' => 'Voegt registratie van reageerders toe via Facebook Connect.',
+	'Set up Facebook Commenters plugin' => 'Facebook Reageerders plugin instellen',
+	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} reageerde op blogbericht <a href="{*post_url*}">{*post_title*}</a>.',
+	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Kon verhaalsjabloon niet registreren bij Facebook: [_1].  Vulde u het correcte applicatiegeheim in?',
+	'Could not register story template with Facebook: [_1]' => 'Kon verhaalsjabloon niet registreren bij Facebook: [_1].',
+	'Facebook' => 'Facebook',
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Facebook applicatiesleutel', # Translate - New
-	'The key for the Facebook application associated with your blog.' => 'De sleutel voor de Facebook-applicatie geassocieerd met uw blog.', # Translate - New
-	'Edit Facebook App' => 'Facebook app bewerken', # Translate - New
-	'Facebook Application Secret' => 'Facebook applicatiegeheim', # Translate - New
-	'The secret for the Facebook application associated with your blog.' => 'Het geheim voor de Facebook-applicatie geassocieerd met uw blog.', # Translate - New
+	'Facebook Application Key' => 'Facebook applicatiesleutel',
+	'The key for the Facebook application associated with your blog.' => 'De sleutel voor de Facebook-applicatie geassocieerd met uw blog.',
+	'Edit Facebook App' => 'Facebook app bewerken',
+	'Facebook Application Secret' => 'Facebook applicatiegeheim',
+	'The secret for the Facebook application associated with your blog.' => 'Het geheim voor de Facebook-applicatie geassocieerd met uw blog.',
 
 ## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Laat reageerders zich aanmelden op Movable Type met hun eigen mixi gebruikersnaam en wachtwoord via OpenID.', # Translate - New
-	'Sign in using your mixi ID' => 'Aanmelden met uw mixi ID', # Translate - New
-	'Click the button to sign in using your mixi ID' => 'Klik op de knop om aan te melden met uw mixi ID', # Translate - New
-	'mixi' => 'mixi', # Translate - New
+	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Laat reageerders zich aanmelden op Movable Type met hun eigen mixi gebruikersnaam en wachtwoord via OpenID.',
+	'Sign in using your mixi ID' => 'Aanmelden met uw mixi ID',
+	'Click the button to sign in using your mixi ID' => 'Klik op de knop om aan te melden met uw mixi ID',
+	'mixi' => 'mixi',
 
 ## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'mixi meldde dat het aanmelden mislukte.  Probeer opnieuw.', # Translate - New
+	'mixi reported that you failed to login.  Try again.' => 'mixi meldde dat het aanmelden mislukte.  Probeer opnieuw.',
 
 ## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Er werd reeds een mixi ID geregistreerd voor deze blog.  Als u de mixi ID voor de blog wenst aan te passen, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.  Als u alle mixi gebruikers toestemming wenst te geven op uw blog te reageren (en niet enkel uw eigen mixi gebruikers), klik dan op de resetknop om deze instelling te verwijderen.', # Translate - New
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Als u reacties wenst te beperken tot uw eigen mixi gebruikers, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.', # Translate - New
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Er werd reeds een mixi ID geregistreerd voor deze blog.  Als u de mixi ID voor de blog wenst aan te passen, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.  Als u alle mixi gebruikers toestemming wenst te geven op uw blog te reageren (en niet enkel uw eigen mixi gebruikers), klik dan op de resetknop om deze instelling te verwijderen.',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Als u reacties wenst te beperken tot uw eigen mixi gebruikers, <a href="[_1]">klik dan hier</a> om u aan te melden met uw mixi account.',
 
 ## plugins/ActionStreams/blog_tmpl/sidebar.mtml
 
@@ -5575,15 +5592,15 @@ Zoekbasis: [_2]",
 	'Jabber ID' => 'Jabber ID',
 	'Profile URL' => 'URL van profiel',
 	'Netflix RSS ID' => 'Netflix RSS ID',
-	'Social Network URL' => 'Sociaal netwerk URL', # Translate - New
+	'Social Network URL' => 'Sociaal netwerk URL',
 	'Vox name' => 'Vox-naam',
 	'Gamertag' => 'Gamertag',
 
 ## plugins/ActionStreams/config.yaml
-	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Beheert account en acties van de auteurs elders op het web', # Translate - New
-	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Bent u zeker dat u ELKE gebeurtenis in ELKE action stream wenst te verbergen?', # Translate - New
-	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Bent u zeker dat u ELKE gebeurtenis in ELKE action stream wenst te tonen?', # Translate - New
-	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Verwijderde gebeurtenissen die nog steeds beschikbaar zijn via de externe service zullen opnieuw worden toegevoegd bij de volgende scan. Enkel gebeurtenissen die niet meer op uw profiel voorkomen zullen verwijderd blijven.  Bent u zeker dat u de geselecteerde gebeurtenis(sen) wenst te verwijderen?', # Translate - New
+	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Beheert account en acties van de auteurs elders op het web',
+	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Bent u zeker dat u ELKE gebeurtenis in ELKE action stream wenst te verbergen?',
+	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Bent u zeker dat u ELKE gebeurtenis in ELKE action stream wenst te tonen?',
+	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Verwijderde gebeurtenissen die nog steeds beschikbaar zijn via de externe service zullen opnieuw worden toegevoegd bij de volgende scan. Enkel gebeurtenissen die niet meer op uw profiel voorkomen zullen verwijderd blijven.  Bent u zeker dat u de geselecteerde gebeurtenis(sen) wenst te verwijderen?',
 	'Hide All' => 'Alles verbergen',
 	'Poll for new events' => 'Checken voor nieuwe gebeurtenissen',
 	'Update Events' => 'Gebeurtenissen bijwerken',
@@ -5591,10 +5608,10 @@ Zoekbasis: [_2]",
 	'Action Stream' => 'Action Stream',
 	'Main Index (Recent Actions)' => 'Hoofdindex (recente acties)',
 	'Action Archive' => 'Actie-archief',
-	'Feed - Recent Activity' => 'Feed - Recente activiteit', # Translate - New
+	'Feed - Recent Activity' => 'Feed - Recente activiteit',
 	'Find Authors Elsewhere' => 'Elders auteurs vinden',
 	'Authors Action Stream' => 'Action stream auteurs',
-	'Enabling default action streams for selected profiles...' => 'Standaard action streams inschakelen voor geselecteerde profielen...', # Translate - New
+	'Enabling default action streams for selected profiles...' => 'Standaard action streams inschakelen voor geselecteerde profielen...',
 
 ## plugins/ActionStreams/lib/ActionStreams/Upgrade.pm
 	'Updating classification of [_1] [_2] actions...' => 'Classificatie bij aan het werken voor [_1] [_2] acties...',
@@ -5605,11 +5622,12 @@ Zoekbasis: [_2]",
 
 ## plugins/ActionStreams/lib/ActionStreams/Plugin.pm
 	'Other Profiles' => 'Andere profielen',
-	'Profiles' => 'Profielen', # Translate - Case
+	'Profiles' => 'Profielen',
 	'Actions from the service [_1]' => 'Gebeurtenissen op service [_1]',
-	'Actions that are shown' => 'Gebeurtenissen die worden weergegeven', # Translate - New
-	'Actions that are hidden' => 'Gebeurtenissen die worden verborgen', # Translate - New
+	'Actions that are shown' => 'Gebeurtenissen die worden weergegeven',
+	'Actions that are hidden' => 'Gebeurtenissen die worden verborgen',
 	'No such event [_1]' => 'Geen [_1] evenement gevonden',
+	'[_1] Profile' => '[_1] profiel', # Translate - New
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
 	'No user [_1]' => 'Geen gebruiker [_1]',
@@ -5621,13 +5639,13 @@ Zoekbasis: [_2]",
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Uw gebruikersnaam of ID is vereist.',
-	'Edit a profile on a social networking or instant messaging service.' => 'Bewerk een profiel op een sociaal netwerk of instant messaging dienst.', # Translate - New
+	'Edit a profile on a social networking or instant messaging service.' => 'Bewerk een profiel op een sociaal netwerk of instant messaging dienst.',
 	'Service' => 'Service',
 	'Enter your account on the selected service.' => 'Vul uw account op de geselecteerde service in.',
 	'For example:' => 'Bijvoorbeeld:',
-	'Action Streams' => 'Action Streams', # Translate - New
-	'Select the action streams to collect from the selected service.' => 'Selecteer de action streams die opgehaald moeten worden van de geselecteerde service.', # Translate - New
-	'No streams are available for this service.' => 'Geen streams beschikbaar van deze service', # Translate - New
+	'Action Streams' => 'Action Streams',
+	'Select the action streams to collect from the selected service.' => 'Selecteer de action streams die opgehaald moeten worden van de geselecteerde service.',
+	'No streams are available for this service.' => 'Geen streams beschikbaar van deze service',
 
 ## plugins/ActionStreams/tmpl/other_profiles.tmpl
 	'The selected profile was added.' => 'Het geselecteerde profiel werd toegevoegd.',
@@ -5638,15 +5656,15 @@ Zoekbasis: [_2]",
 	'profile' => 'profiel',
 	'profiles' => 'profielen',
 	'Delete selected profiles (x)' => 'Geselecteerde profielen verwijderen (x)',
-	'to update' => 'om bij te werken', # Translate - New
+	'to update' => 'om bij te werken',
 	'Scan now for new actions' => 'Nu scannen op nieuwe gebeurtenissen',
 	'Update Now' => 'Nu bijwerken',
-	'No profiles were found.' => 'Geen profielen gevonden', # Translate - New
+	'No profiles were found.' => 'Geen profielen gevonden',
 	'external_link_target' => 'external_link_target',
 	'View Profile' => 'Profiel bekijken',
 
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
-	'Add a profile on a social networking or instant messaging service.' => 'Voeg een profiel toe op een sociaal netwerk of een instant messaging dienst.', # Translate - New
+	'Add a profile on a social networking or instant messaging service.' => 'Voeg een profiel toe op een sociaal netwerk of een instant messaging dienst.',
 	'Select a service where you already have an account.' => 'Selecteer een service waar u reeds een account heeft.',
 	'Add Service (s)' => 'Service toevoegen (s)',
 	'Add Service' => 'Service toevoegen',
@@ -5663,12 +5681,12 @@ Zoekbasis: [_2]",
 	'Hide' => 'Verbergen',
 	'Show selected events (h)' => 'Geselecteerde gebeurtenissen tonen (h)',
 	'Show' => 'Tonen',
-	'All stream actions' => 'Alle gebeurtenissen van de stream', # Translate - New
-	'Show only actions where' => 'Enkel gebeurtenissen tonen waar', # Translate - New
-	'service' => 'service', # Translate - Case
-	'visibility' => 'zichtbaarheid', # Translate - New
-	'hidden' => 'verborgen', # Translate - Case
-	'shown' => 'zichtbaar', # Translate - Case
+	'All stream actions' => 'Alle gebeurtenissen van de stream',
+	'Show only actions where' => 'Enkel gebeurtenissen tonen waar',
+	'service' => 'service',
+	'visibility' => 'zichtbaarheid',
+	'hidden' => 'verborgen',
+	'shown' => 'zichtbaar',
 	'No events could be found.' => 'Er werden geen gebeurtenissen gevonden.',
 	'Event' => 'Gebeurtenis',
 	'Shown' => 'Zichtbaar',
@@ -5677,15 +5695,15 @@ Zoekbasis: [_2]",
 
 ## plugins/ActionStreams/tmpl/widget_recent.mtml
 	'Your Recent Actions' => 'Uw recente acties',
-	'blog this' => 'blog dit', # Translate - New
+	'blog this' => 'blog dit',
 
 ## plugins/ActionStreams/tmpl/blog_config_template.tmpl
 	'Rebuild Indexes' => 'Indexen herpubliceren',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Indien geselecteerd zullen de indexen van deze blog opnieuw worden gepubliceerd telkens nieuwe action stream gebeurtenissen worden ontdekt.',
-	'Enable rebuilding' => 'Herpubliceren toestaan', # Translate - New
+	'Enable rebuilding' => 'Herpubliceren toestaan',
 
 );
 
-## New words: 631
+## New words: 93
 
 1;
