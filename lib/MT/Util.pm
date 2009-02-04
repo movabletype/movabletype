@@ -2016,7 +2016,7 @@ sub log_time {
 sub make_string_csv {
     my ( $value, $enc ) = @_;
     $value =~ s/\r|\r\n/\n/gs;
-    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) )
+    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) || ( index( $value, ',' ) > -1 ) )
         && !( $value =~ m/^".*"$/gs ) )
     {
         $value = "\"$value\"";
