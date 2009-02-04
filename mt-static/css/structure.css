@@ -4286,9 +4286,10 @@ body.dialog {
     background-color: #e7cdcd;
 }
 
-#junk-message { 
+#junk-message {
     padding-top: 26px;
     padding-bottom: 10px;
+    background-position: 12px 20px;
 }
 
 .edit-comment .comment-spam-info,
