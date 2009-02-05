@@ -1092,7 +1092,7 @@ sub grant_role {
 
     my @blogs   = split /,/, $blogs;
     my @authors = split /,/, $authors;
-    my @roles   = split /,/, $roles;
+    my @role_ids   = split /,/, $roles;
 
     require MT::Blog;
     require MT::Role;
@@ -1115,12 +1115,12 @@ sub grant_role {
         }
     }
 
-    foreach (@roles) {
-        my $id = $_;
+    my @roles;
+    foreach my $id (@role_ids) {
         $id =~ s/\D//g;
-        $_ = MT::Role->load($id);
-        if ( !$can_grant_administer && $_->has('administer_blog') ) {
-            return $app->errtrans("You don't have permission to manage blog administrator.");
+        my $role = MT::Role->load($id);
+        if ( $can_grant_administer || !$role->has('administer_blog') ) {
+            push @roles, $role;
         }
     }
     push @roles, MT::Role->load($role_id) if $role_id;
