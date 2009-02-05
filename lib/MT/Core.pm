@@ -165,6 +165,11 @@ BEGIN {
                 group => 'blog_admin',
                 order => 600,
             },
+            'blog.manage_users' => {
+                label => trans('Manage Members'),
+                group => 'blog_admin',
+                order => 700,
+            },
 
             'blog.create_post' => {
                 label => trans('Create Entries'),

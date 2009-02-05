@@ -1309,7 +1309,7 @@ sub core_menus {
             mode              => 'list_member',
             order             => 9000,
             view              => "blog",
-            permission        => 'administer_blog',
+            permission        => 'administer_blog,manage_users',
             system_permission => 'administer',
         },
         'manage:notification' => {

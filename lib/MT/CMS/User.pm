@@ -320,7 +320,7 @@ sub list_member {
     my $user  = $app->user;
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      unless $user->is_superuser() || ($perms && $perms->can_administer_blog());
+      unless $user->is_superuser() || ($perms && ($perms->can_administer_blog() || $perms->can_manage_users()) );
 
     my $super_user = 1 if $user->is_superuser();
     my $args       = {};
@@ -367,6 +367,7 @@ sub list_member {
         push @role_loop, { role_id => $r->id, role_name => $r->name, selected => $r->id == $sel_role };
     }
     $param->{role_loop} = \@role_loop;
+    $param->{can_manage} = 1;
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         if ( ( $row->{email} || '' ) !~ m/@/ ) {
@@ -1053,7 +1054,7 @@ sub revoke_role {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $perms->can_administer_blog;
+        unless ( $perms->can_administer_blog || $perms->can_manage_users );
 
     my $blog_id = $app->param('blog_id');
     my $role_id = $app->param('role_id');
@@ -1132,7 +1133,8 @@ sub grant_role {
 
     if ( !$user->is_superuser ) {
         if (   ( scalar @blogs != 1 )
-            || ( !$user->permissions( $blogs[0] )->can_administer_blog ) )
+            || ( !$user->permissions( $blogs[0] )->can_administer_blog
+                && !$user->permissions( $blogs[0] )->can_manage_users ) )
         {
             return $app->errtrans("Permission denied.");
         }
@@ -1292,7 +1294,8 @@ sub dialog_grant_role {
     my $this_user = $app->user;
     if ( !$this_user->is_superuser ) {
         if (   !$blog_id
-            || !$this_user->permissions($blog_id)->can_administer_blog )
+            || ( !$this_user->permissions($blog_id)->can_administer_blog
+                && !$this_user->permissions($blog_id)->can_manage_users ) )
         {
             return $app->errtrans("Permission denied.");
         }
@@ -1312,6 +1315,7 @@ sub dialog_grant_role {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
+        $row->{disabled} = 1 if UNIVERSAL::isa($obj, 'MT::Role') && $obj->has('administer_blog');
     };
 
     # Only show active users who are not commenters.
@@ -1413,6 +1417,7 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Blogs Selected"),
                 search_label      => $app->translate("Search Blogs"),
                 panel_description => $app->translate("Description"),
+                panel_multi       => 1,
             },
             'author' => {
                 panel_title       => $app->translate("Select Users"),
@@ -1420,6 +1425,7 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Users Selected"),
                 search_label      => $app->translate("Search Users"),
                 panel_description => $app->translate("Name"),
+                panel_multi       => 1,
             },
             'role' => {
                 panel_title       => $app->translate("Select Roles"),
@@ -1427,13 +1433,13 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Roles Selected"),
                 search_label      => $app->translate(""),
                 panel_description => $app->translate("Description"),
+                panel_multi       => 0,
             },
         };
 
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
-        $params->{panel_multi}  = 1;
 
         for ( my $i = 0 ; $i <= $#panels ; $i++ ) {
             my $source       = $panels[$i];

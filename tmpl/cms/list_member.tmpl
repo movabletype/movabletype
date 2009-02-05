@@ -96,7 +96,7 @@
     </div>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:if name="can_administer_blog">
+    <mt:if name="can_manage">
 <ul>
     <li><a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', '_type=user<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;return_args=<mt:var name="return_args" escape="url">')" class="icon-left icon-create"><__trans phrase="Add a user to this blog"></a></li>
 </ul>
