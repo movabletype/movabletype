@@ -206,11 +206,39 @@ do {
                 printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
             }
         }
-        if ($tmpl =~ /\.yaml$/) {
+        if ($tmpl =~ /(services|streams)\.yaml$/) {
+            while ($text =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) { 
+                my($msg, %args);
+                my $trans = '';
+                $args{phrase} = $1;
+                $args{phrase} =~ s/(^'+|'+$)//;
+                $args{phrase} =~ s/'/\\'/g;
+                if ($trans eq '' && $conv{$args{phrase}}) {
+                     $trans = $conv{$args{phrase}};
+                     $is_used{$args{phrase}} = 1;
+                }
+                $trans =~ s/([^\\]?)'/$1\\'/g;
+                next if ($phrase{$args{phrase}});
+                $phrase{$args{phrase}} = 1;
+                my $q = "'";
+                if ($args{phrase} =~ /\\n/) {
+                   $q = '"';
+                }
+                if ($trans) {
+                    printf "\t$q%s$q => '%s',\n", $args{phrase}, $trans; # Print out the translation if there was an existing one
+                } else {
+                    $trans = $lconv{lc $args{phrase}} || '';
+                    my $reason = $trans ? "Case" : "New"; # New translation, or just different case?
+                    printf "\t$q%s$q => '%s', # Translate - $reason\n", $args{phrase}, $trans; # Print out the translation if there was an existing one based on the lowercase string, else empty
+                }
+            }
+        }
+        elsif ($tmpl =~ /\.yaml$/) {
             while ($text =~ /\s*label:\s*(.+)/g) { 
                 my($msg, %args);
                 my $trans = '';
                 $args{phrase} = $1;
+                $args{phrase} =~ s/(^'+|'+$)//;
                 $args{phrase} =~ s/'/\\'/g;
                 if ($trans eq '' && $conv{$args{phrase}}) {
                      $trans = $conv{$args{phrase}};
