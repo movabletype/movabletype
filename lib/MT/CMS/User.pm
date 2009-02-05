@@ -1026,7 +1026,7 @@ sub remove_user_assoc {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $perms->can_administer_blog;
+        unless $perms->can_administer_blog || $perms->can_manage_users;
 
     my $blog_id = $app->param('blog_id');
     my @ids = $app->param('id');
@@ -1083,7 +1083,6 @@ sub grant_role {
 
     my $user = $app->user;
     return unless $app->validate_magic;
-
     my $blogs   = $app->param('blog')   || '';
     my $authors = $app->param('author') || '';
     my $roles   = $app->param('role')   || '';
@@ -1103,11 +1102,29 @@ sub grant_role {
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
+    push @blogs, MT::Blog->load($blog_id) if $blog_id;
+
+    my $can_grant_administer = 1;
+    if ( !$user->is_superuser ) {
+        if (   ( scalar @blogs != 1 )
+            || !$user->permissions( $blogs[0] )->can_administer_blog ) {
+            $can_grant_administer = 0;
+            if ( !$user->permissions( $blogs[0] )->can_manage_users ) {
+                return $app->errtrans("Permission denied.");
+            }
+        }
+    }
+
     foreach (@roles) {
         my $id = $_;
         $id =~ s/\D//g;
         $_ = MT::Role->load($id);
+        if ( !$can_grant_administer && $_->has('administer_blog') ) {
+            return $app->errtrans("You don't have permission to manage blog administrator.");
+        }
     }
+    push @roles, MT::Role->load($role_id) if $role_id;
+
     my $add_pseudo_new_user = 0;
     foreach (@authors) {
         my $id = $_;
@@ -1126,17 +1143,6 @@ sub grant_role {
         }
         else {
             push @authors, MT::Author->load($author_id);
-        }
-    }
-    push @blogs,   MT::Blog->load($blog_id)     if $blog_id;
-    push @roles,   MT::Role->load($role_id)     if $role_id;
-
-    if ( !$user->is_superuser ) {
-        if (   ( scalar @blogs != 1 )
-            || ( !$user->permissions( $blogs[0] )->can_administer_blog
-                && !$user->permissions( $blogs[0] )->can_manage_users ) )
-        {
-            return $app->errtrans("Permission denied.");
         }
     }
 
@@ -1315,7 +1321,10 @@ sub dialog_grant_role {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
-        $row->{disabled} = 1 if UNIVERSAL::isa($obj, 'MT::Role') && $obj->has('administer_blog');
+        $row->{disabled} = 1 if UNIVERSAL::isa($obj, 'MT::Role')
+                             && $obj->has('administer_blog')
+                             && !$this_user->is_superuser
+                             && !$this_user->permissions($blog_id)->can_administer_blog;
     };
 
     # Only show active users who are not commenters.
@@ -1417,7 +1426,6 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Blogs Selected"),
                 search_label      => $app->translate("Search Blogs"),
                 panel_description => $app->translate("Description"),
-                panel_multi       => 1,
             },
             'author' => {
                 panel_title       => $app->translate("Select Users"),
@@ -1425,7 +1433,6 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Users Selected"),
                 search_label      => $app->translate("Search Users"),
                 panel_description => $app->translate("Name"),
-                panel_multi       => 1,
             },
             'role' => {
                 panel_title       => $app->translate("Select Roles"),
@@ -1433,10 +1440,10 @@ sub dialog_grant_role {
                 items_prompt      => $app->translate("Roles Selected"),
                 search_label      => $app->translate(""),
                 panel_description => $app->translate("Description"),
-                panel_multi       => 0,
             },
         };
 
+        $params->{panel_multi}  = 1;
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
