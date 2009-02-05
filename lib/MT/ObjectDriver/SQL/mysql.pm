@@ -24,9 +24,26 @@ sub new {
             } else {
                 $sql->transform->{$col} = "binary($col)";
             }
+            $sql->transform->{$col . '__NOBINARY'} = $col;
         }
     }
     return $sql;
+}
+
+sub add_where {
+    my $stmt = shift;
+    my ( $col, $val ) = @_;
+
+    if ( my $transform = $stmt->transform ) {
+        my ($table_name, $col_name) = $col =~ m{ \A mt_(\w+)\.(\w+) }xms;
+        if ( $table_name ) {
+            my $key = join( '_', $table_name, $col_name );
+            if ( $transform->{$key . '__NOBINARY'} ) {
+                $stmt->SUPER::add_where($col . '__NOBINARY', $val);
+            }
+        }
+    }
+    return $stmt->SUPER::add_where(@_);
 }
 
 sub add_freetext_where {
