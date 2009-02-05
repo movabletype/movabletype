@@ -399,11 +399,14 @@ sub search_terms {
 
     my @terms;
     if (%def_terms) {
-
-       # If we have a term for the model's class column, add it separately, so
-       # array search() doesn't add the default class column term.
         my $type        = $app->{searchparam}{Type};
         my $model_class = MT->model($type);
+
+        delete $def_terms{blog_id}
+            unless $model_class->can('blog_id');
+
+        # If we have a term for the model's class column, add it separately, so
+        # array search() doesn't add the default class column term.
         if ( my $class_col = $model_class->properties->{class_column} ) {
             if ( $def_terms{$class_col} ) {
                 push @terms, { $class_col => delete $def_terms{$class_col} };

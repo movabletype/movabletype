@@ -341,7 +341,9 @@ sub _hdlr_results {
         #    $blog_footer = 1;
         #}
         if ( $next_object = $iter->() ) {
-            $blog_footer = $next_object->blog_id ne $this_object->blog_id ? 1 : 0;
+            if ( $next_object->can('blog') ) {
+                $blog_footer = $next_object->blog_id ne $this_object->blog_id ? 1 : 0;
+            }
         }
         else {
             $blog_footer = 1;
