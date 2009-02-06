@@ -1214,7 +1214,8 @@ sub _upload_file {
     }
     else {
         # rebless to file type
-        $asset_pkg = 'MT::Asset';
+        $asset_pkg = 'MT::Asset'
+            if $asset_pkg->isa('MT::Asset::Image');
     }
     return $app->errtrans('Uploaded file is not an image.')
         if !$is_image
