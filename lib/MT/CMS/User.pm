@@ -1040,6 +1040,7 @@ sub remove_user_assoc {
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
         unless $perms->can_administer_blog || $perms->can_manage_users;
+    my $can_remove_administrator = $user->is_superuser || $perms->can_administer_blog;
 
     my $blog_id = $app->param('blog_id');
     my @ids = $app->param('id');
@@ -1050,14 +1051,17 @@ sub remove_user_assoc {
     require MT::Permission;
     foreach my $id (@ids) {
         next unless $id;
+        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
+        next if !$can_remove_administrator && $perm->can_administer_blog;
         if ( $id =~ /PSEUDO-/ ) {
             _delete_pseudo_association($app, $id);
             next;
         }
+
         MT::Association->remove({ blog_id => $blog_id, author_id => $id });
         # these too, just in case there are no real associations
         # (ie, commenters)
-        MT::Permission->remove({ blog_id => $blog_id, author_id => $id });
+        $perm->remove;
     }
 
     $app->add_return_arg( saved => 1 );
