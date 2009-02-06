@@ -8,13 +8,13 @@
         </mt:if>
         <ul>
         <mt:if name="blog_id">
-            <li id="all-tab"><a href="<$mt:var name="script_url_plus"$>#all" onclick="showTable('all-listing');"><__trans phrase="Show All"></a></li>
+            <li id="all-tab"><a href="<$mt:var name="script_url_plus"$>#all" onclick="showTable('all-listing');"><__trans phrase="Show All Templates"></a></li>
             <li id="index-tab"><a href="<$mt:var name="script_url_plus"$>#index" onclick="showTable('index-listing');"><__trans phrase="Index Templates"></a></li>
             <li id="system-tab"><a href="<$mt:var name="script_url_plus"$>#system" onclick="showTable('system-listing');"><__trans phrase="System Templates"></a></li>
             <li id="archive-tab"><a href="<$mt:var name="script_url_plus"$>#archive" onclick="showTable('archive-listing');"><__trans phrase="Archive Templates"></a></li>
             <li id="module-tab"><a href="<$mt:var name="script_url_plus"$>#module" onclick="showTable('module-listing');"><__trans phrase="Template Modules"></a></li>
         <mt:else>
-            <li id="all-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#all" onclick="showTable('all-listing');"><__trans phrase="Show All"></a></li>
+            <li id="all-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#all" onclick="showTable('all-listing');"><__trans phrase="Show All Templates"></a></li>
             <li id="module-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#module" onclick="showTable('module-listing');"><__trans phrase="Template Modules"></a></li>
             <li id="email-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#email" onclick="showTable('email-listing');"><__trans phrase="Email Templates"></a></li>
             <li id="system-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#system" onclick="showTable('system-listing');"><__trans phrase="System Templates"></a></li>

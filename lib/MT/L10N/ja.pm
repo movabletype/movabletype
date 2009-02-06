@@ -3654,7 +3654,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Native' => '', # Translate - New
 	'Require E-mail Address for Comments via TypePad' => 'TypePad経由のコメントにメールアドレスを要求する',
 	'If enabled, visitors must allow their TypePad account to share e-mail address when commenting.' => '閲覧者はコメント投稿時にTypePadアカウントでメールアドレスを共有することを許可する必要があります。',
-	'One or more Perl module may be missing to use this authentication method.' => 'この認証方式を使うために必要なPerlモジュールが不足しているかもしれません。',
+	'One or more Perl module may be missing to use this authentication method.' => 'この認証方式に必要なPerlモジュールがいくつか不足しているようです',
 	'Setup TypePad' => 'TypePadの設定',
 	'OpenID providers disabled' => 'OpenIDプロバイダは無効です',
 	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => '必須モジュール(Digest::SHA1)がないため、OpenIDによるコメント投稿者認証はできません。',
@@ -4088,7 +4088,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'ブログのテンプレート',
-	'Show All' => 'すべてのテンプレート',
+	'Show All Templates' => 'すべてのテンプレート',
 	'Blog Publishing Settings' => 'ブログ公開設定',
 	'You have successfully deleted the checked template(s).' => '選択したテンプレートを削除しました。',
 	'Your templates have been published.' => 'テンプレートを再構築しました。',
