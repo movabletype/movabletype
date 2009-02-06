@@ -416,6 +416,12 @@ sub list_member {
     };
     $param->{screen_id} = "list-member";
 
+    my $pre_build = sub {
+        my ($param) = @_;
+        my $data = $param->{object_loop} || [];
+        _merge_default_assignments( $app, $data, undef, 'blog', $blog_id );
+    };
+
     return $app->listing(
         {
             type     => 'user',
@@ -424,6 +430,7 @@ sub list_member {
             params   => $param,
             args     => $args,
             code     => $hasher,
+            pre_build => $pre_build,
         }
     );
 }
@@ -1043,6 +1050,10 @@ sub remove_user_assoc {
     require MT::Permission;
     foreach my $id (@ids) {
         next unless $id;
+        if ( $id =~ /PSEUDO-/ ) {
+            _delete_pseudo_association($app, $id);
+            next;
+        }
         MT::Association->remove({ blog_id => $blog_id, author_id => $id });
         # these too, just in case there are no real associations
         # (ie, commenters)
@@ -1794,8 +1805,9 @@ sub _merge_default_assignments {
             $obj->id( 'PSEUDO-' . $role_id . '-' . $blog_id );
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
-            $row->{user_id}   = 'PSEUDO';
+            $row->{user_id} = 'PSEUDO';
             $row->{user_name} = MT->translate('(newly created user)');
+            $row->{user_nickname} = $app->translate('represents a user who will be created afterwards'),
             push @$data, $row;
         }
     }

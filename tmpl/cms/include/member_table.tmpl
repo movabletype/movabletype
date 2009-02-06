@@ -33,10 +33,10 @@
                 <td><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
     <mt:else>
                 <td class="<mt:if name="status_trusted">status-trusted<mt:else>user-status-enabled</mt:if> si"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="status_trusted"><__trans phrase="Trusted commenter"><mt:else><__trans phrase="Commenter"></mt:if>" width="13" height="9" /></td>
-                <td><mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" /> </mt:if><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+                <td><mt:if name="auth_icon_url"><img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" /> </mt:if><mt:if name="user_id" eq="PSEUDO"><mt:var name="user_name"><mt:else><mt:if name="has_edit_access"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">"></mt:if><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></mt:if></td>
     </mt:if>
                 <td>
-                    <mt:if name="nickname"><span class="status-name"><mt:var name="nickname" escape="html"></span></mt:if>
+                    <mt:if name="nickname"><span class="status-name"><mt:var name="nickname" escape="html"></span><mt:elseif name="user_nickname"><span class="status-name"><mt:var name="user_nickname" escape="html"></span></mt:if>
                     <mt:if name="email"><span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a></span></mt:if>
                     <mt:if name="url"><span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a></mt:if></span>
                 </td>
