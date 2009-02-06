@@ -403,7 +403,13 @@ sub list_member {
                   if $role->has( $_->[0] );
             }
             my $role_perms = join(", ", @perms);
-            push @role_loop, { role_name => $role->name, role_id => $role->id, role_perms => $role_perms };
+            my $is_removable = !$role->has('administer_blog') || $user->is_superuser || $perms->can_administer_blog();
+            push @role_loop, {
+                role_name    => $role->name,
+                role_id      => $role->id,
+                role_perms   => $role_perms,
+                is_removable => $is_removable,
+            };
         }
         $row->{role_loop} = \@role_loop;
         $row->{auth_icon_url} = $obj->auth_icon_url;
@@ -1071,6 +1077,8 @@ sub revoke_role {
     my $blog = MT::Blog->load( $blog_id );
     return $app->errtrans("Invalid request.")
         unless $blog && $role && $author;
+    return $app->errtrans("Permission denied.")
+        if !$user->is_superuser && !$perms->can_administer_blog && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
 
