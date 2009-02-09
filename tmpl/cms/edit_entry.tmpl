@@ -988,14 +988,13 @@ function listPreviousPings () {
 </mt:unless>
 <mt:include name="include/header.tmpl" id="header_include">
 
-    <mt:if name="status_spam">
+    <mt:if name="junk_log_loop">
         <mtapp:statusmsg
             id="junk-message"
             can_close="0"
             class="alert">
-            <__trans phrase="This post was classified as spam.">
+        <__trans phrase="This post was classified as spam.">
 
-        <mt:if name="junk_log_loop">
         <div class="entry-spam-info">
             <a href="javascript:void(0)" onclick="toggleHidden('entry-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
         </div>
@@ -1021,8 +1020,6 @@ function listPreviousPings () {
                 </table>
             </div>
         </div>
-        </mt:if name="junk_log_loop">
-
         </mtapp:statusmsg>
     </mt:if>
 

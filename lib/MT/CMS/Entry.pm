@@ -61,7 +61,7 @@ sub edit {
         my $blog = $app->model('blog')->load($blog_id);
         my $status = $q->param('status') || $obj->status;
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
-        if ( ($obj->status == MT::Entry::JUNK()) && $obj->junk_log ) {
+        if ( ($obj->status == MT::Entry::JUNK() || $obj->status == MT::Entry::REVIEW()) && $obj->junk_log ) {
             build_junk_table( $app, param => $param, object => $obj );
         }
         $param->{ "allow_comments_"
