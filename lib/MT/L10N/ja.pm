@@ -533,7 +533,7 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'WordPress.com',
 	'TypePad' => 'TypePad',
-	'Yahoo! JAPAN' => 'Yahoo! JAPAN', # Translate - Case
+	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
 	'livedoor' => 'ライブドア',
 	'Hatena' => 'はてな',
 	'Movable Type default' => 'Movable Type 既定',
@@ -1397,9 +1397,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => '\'[_1]\'というテンプレートが見つかりませんでした。',
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
-	'You have an error in your \'scoring_to\' attribute: [_1]' => 'scoring_to', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => '[_2]属性でエラーがありました: [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'tag属性でエラーがありました: [_1]',
 	'No such user \'[_1]\'' => 'ユーザー([_1])が見つかりません。',
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => '[_2]アーカイブにリンクするために[_1]タグを使っていますが、アーカイブを出力していません。',

@@ -6487,7 +6487,7 @@ sub _hdlr_authors {
     if ($args->{namespace}) {
         my $namespace = $args->{namespace};
         if ( my $scoring_to = $args->{scoring_to} ) {
-            return $ctx->error(MT->translate("You have an error in your '[_1]' attribute: [_2]", 'scoring_to', $scoring_to))
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $scoring_to, 'scoring_to'))
                 unless exists $ctx->{__stash}{$scoring_to};
             my $scored_object = $ctx->{__stash}{$scoring_to};
             if ($args->{min_score}) {
@@ -8114,7 +8114,7 @@ sub _hdlr_entries {
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $tag_arg));
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $tag_arg, 'tag'));
         }
     }
 
@@ -16188,7 +16188,7 @@ sub _hdlr_assets {
             };
             push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
         }
     }
 
