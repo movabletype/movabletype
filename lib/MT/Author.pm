@@ -160,13 +160,13 @@ sub set_commenter_perm {
     }
     if ($action eq 'approve') {
         $perm->remove_restrictions('comment');
-        $perm->can_comment(1) if COMMENTER eq $this->type;
+        $perm->can_comment(1);
     } elsif (($action eq 'ban') || ($action eq 'block')) {
         $perm->set_these_restrictions('comment');
-        $perm->can_comment(0) if COMMENTER eq $this->type;
+        $perm->can_comment(0);
     } elsif ($action eq 'pending') {
         $perm->remove_restrictions('comment');
-        $perm->can_comment(0) if COMMENTER eq $this->type;
+        $perm->can_comment(0);
     }
     $perm->save()
         or return $this->error(MT->translate("The approval could not be committed: [_1]", $perm->errstr));
