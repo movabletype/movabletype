@@ -416,12 +416,6 @@ sub list_member {
     };
     $param->{screen_id} = "list-member";
 
-    my $pre_build = sub {
-        my ($param) = @_;
-        my $data = $param->{object_loop} || [];
-        _merge_default_assignments( $app, $data, undef, 'blog', $blog_id );
-    };
-
     return $app->listing(
         {
             type     => 'user',
@@ -430,7 +424,13 @@ sub list_member {
             params   => $param,
             args     => $args,
             code     => $hasher,
-            pre_build => $pre_build,
+            ( !defined( $app->param('filter_key') ) || $app->param('filter_key') eq 'author' )
+              ? ( pre_build => sub {
+                    my ($param) = @_;
+                    my $data = $param->{object_loop} || [];
+                    _merge_default_assignments( $app, $data, undef, 'blog', $blog_id );
+                } )
+              : (),
         }
     );
 }
@@ -1796,6 +1796,7 @@ sub _merge_default_assignments {
     my $app = shift;
     my ( $data, $hasher, $type, $id ) = @_;
 
+    my $role_class = $app->model('role');
     if ( my $def = MT->config->DefaultAssignments ) {
         my @def = split ',', $def;
         while ( my $role_id = shift @def ) {
@@ -1812,6 +1813,13 @@ sub _merge_default_assignments {
             $row->{user_id} = 'PSEUDO';
             $row->{user_name} = MT->translate('(newly created user)');
             $row->{user_nickname} = $app->translate('represents a user who will be created afterwards'),
+            my $role = $role_class->load( $role_id );
+            my @role_loop = ( {
+                role_name    => $role->name,
+                role_id      => $role->id,
+                is_removable => 0,
+            } );
+            $row->{role_loop} = \@role_loop if @role_loop;
             push @$data, $row;
         }
     }
