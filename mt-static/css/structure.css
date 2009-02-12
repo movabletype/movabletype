@@ -4599,8 +4599,7 @@ body.dialog {
 }
 
 #formatting-help-link.disabled {
-    background: #999;
-    color: #ccc;
+    display: none;
 }
 
 /* Backup & Restore ---------------------------------------------------------------------------------- */
