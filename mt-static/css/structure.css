@@ -2567,6 +2567,13 @@ optgroup option {
 
 .log-listing-table .date { white-space: nowrap; }
 
+.log-listing-table .log-message { 
+    word-break: break-all;
+}
+.log-listing-table .log-message div { /* for Firefox */
+    width: 480px;
+    overflow: auto;
+}
 .log-listing-table tr.log-detail {
     display: none;
     margin-top: 3px;
