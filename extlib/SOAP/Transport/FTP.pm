@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: FTP.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
+# $Id: FTP.pm 148 2008-01-06 19:14:09Z kutterma $
 #
 # ======================================================================
 
@@ -12,7 +12,8 @@ package SOAP::Transport::FTP;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
+#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
+$VERSION = $SOAP::Lite::VERSION;
 
 use Net::FTP;
 use IO::File;
@@ -21,57 +22,60 @@ use URI;
 # ======================================================================
 
 package SOAP::Transport::FTP::Client;
-
+use SOAP::Lite;
 use vars qw(@ISA);
 @ISA = qw(SOAP::Client);
 
 sub new { 
-  my $self = shift;
-  my $class = ref($self) || $self;
+    my $class = shift;
+    return $class if ref $class;
 
-  unless (ref $self) {
-    my $class = ref($self) || $self;
-    my(@params, @methods);
-    while (@_) { $class->can($_[0]) ? push(@methods, shift() => shift) : push(@params, shift) }
-    $self = bless {@params} => $class;
-    while (@methods) { my($method, $params) = splice(@methods,0,2);
-      $self->$method(ref $params eq 'ARRAY' ? @$params : $params) 
+    my(@arg_from, @method_from);
+    while (@_) {
+        $class->can($_[0])
+            ? push(@method_from, shift() => shift)
+            : push(@arg_from, shift)
     }
-  }
-  return $self;
+    my $self = bless {@arg_from} => $class;
+    while (@method_from) {
+        my($method, $param_ref) = splice(@method_from,0,2);
+        $self->$method(ref $param_ref eq 'ARRAY' ? @$param_ref : $param_ref) 
+    }
+    return $self;
 }
 
 sub send_receive {
-  my($self, %parameters) = @_;
-  my($envelope, $endpoint, $action) = 
-    @parameters{qw(envelope endpoint action)};
+    my($self, %parameters) = @_;
+    my($envelope, $endpoint, $action) = 
+        @parameters{qw(envelope endpoint action)};
 
-  $endpoint ||= $self->endpoint; # ftp://login:password@ftp.something/dir/file
+    $endpoint ||= $self->endpoint; # ftp://login:password@ftp.something/dir/file
 
-  my $uri = URI->new($endpoint);
-  my($server, $auth) = reverse split /@/, $uri->authority;
-  my $dir = substr($uri->path, 1, rindex($uri->path, '/'));
-  my $file = substr($uri->path, rindex($uri->path, '/')+1);
+    my $uri = URI->new($endpoint);
+    my($server, $auth) = reverse split /@/, $uri->authority;
+    my $dir = substr($uri->path, 1, rindex($uri->path, '/'));
+    my $file = substr($uri->path, rindex($uri->path, '/')+1);
 
-  eval {
-    my $ftp = Net::FTP->new($server, %$self) or die "Can't connect to $server: $@\n";
-    $ftp->login(split /:/, $auth)            or die "Couldn't login\n";
-    $dir and ($ftp->cwd($dir) or
-              $ftp->mkdir($dir, 'recurse') and $ftp->cwd($dir) or die "Couldn't change directory to '$dir'\n");
-  
-    my $FH = IO::File->new_tmpfile; print $FH $envelope; $FH->flush; $FH->seek(0,0);
-    $ftp->put($FH => $file)                  or die "Couldn't put file '$file'\n";
-    $ftp->quit;
-  };
+    eval {
+        my $ftp = Net::FTP->new($server, %$self) or die "Can't connect to $server: $@\n";
+        $ftp->login(split /:/, $auth)            or die "Couldn't login\n";
+        $dir and ($ftp->cwd($dir)
+            or $ftp->mkdir($dir, 'recurse') and $ftp->cwd($dir)
+                or die "Couldn't change directory to '$dir'\n");
 
-  (my $code = $@) =~ s/\n$//;
+        my $FH = IO::File->new_tmpfile; print $FH $envelope; $FH->flush; $FH->seek(0,0);
+        $ftp->put($FH => $file)                  or die "Couldn't put file '$file'\n";
+        $ftp->quit;
+    };
 
-  $self->code($code);
-  $self->message($code);
-  $self->is_success(!defined $code || $code eq '');
-  $self->status($code);
+    (my $code = $@) =~ s/\n$//;
 
-  return;
+    $self->code($code);
+    $self->message($code);
+    $self->is_success(!defined $code || $code eq '');
+    $self->status($code);
+
+    return;
 }
 
 # ======================================================================
@@ -79,32 +83,3 @@ sub send_receive {
 1;
 
 __END__
-
-=head1 NAME
-
-SOAP::Transport::FTP - Client side FTP support for SOAP::Lite
-
-=head1 SYNOPSIS
-
-  use SOAP::Lite 
-    uri => 'http://my.own.site.com/My/Examples',
-    proxy => 'ftp://login:password@ftp.somewhere.com/relative/path/to/file.xml', # ftp server
-    # proxy => 'ftp://login:password@ftp.somewhere.com//absolute/path/to/file.xml', # ftp server
-  ;
-
-  print getStateName(1);
-
-=head1 DESCRIPTION
-
-=head1 COPYRIGHT
-
-Copyright (C) 2000-2001 Paul Kulchenko. All rights reserved.
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-Paul Kulchenko (paulclinger@yahoo.com)
-
-=cut

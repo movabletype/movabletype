@@ -7,6 +7,7 @@
 package MT::XMLRPCServer::Util;
 use strict;
 use Time::Local qw( timegm );
+use MT;
 use MT::Util qw( offset_time_list );
 use MT::I18N qw( encode_text first_n_text const );
 

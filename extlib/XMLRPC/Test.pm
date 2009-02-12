@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Test.pm,v 1.4 2001/09/19 18:07:54 paulk Exp $
+# $Id: Test.pm 249 2008-05-05 20:35:05Z kutterma $
 #
 # ======================================================================
 
@@ -12,7 +12,7 @@ package XMLRPC::Test;
 
 use 5.004;
 use vars qw($VERSION $TIMEOUT);
-$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
+use version; $VERSION = qv('0.710.05');
 
 $TIMEOUT = 5;
 
@@ -20,7 +20,7 @@ $TIMEOUT = 5;
 
 package My::PingPong; # we'll use this package in our tests
 
-sub new { 
+sub new {
   my $self = shift;
   my $class = ref($self) || $self;
   bless {_num=>shift} => $class;
@@ -68,14 +68,14 @@ sub run_for {
     -> proxy($proxy)
   ;
 
-  ok($s->call('My.Examples.getStateName', 1)->result eq 'Alabama'); 
-  ok($s->call('My.Examples.getStateNames', 1,4,6,13)->result =~ /^Alabama\s+Arkansas\s+Colorado\s+Illinois\s*$/); 
+  ok($s->call('My.Examples.getStateName', 1)->result eq 'Alabama');
+  ok($s->call('My.Examples.getStateNames', 1,4,6,13)->result =~ /^Alabama\s+Arkansas\s+Colorado\s+Illinois\s*$/);
 
   $r = $s->call('My.Examples.getStateList', [1,2,3,4])->result;
-  ok(ref $r && $r->[0] eq 'Alabama'); 
+  ok(ref $r && $r->[0] eq 'Alabama');
 
   $r = $s->call('My.Examples.getStateStruct', {item1 => 1, item2 => 4})->result;
-  ok(ref $r && $r->{item2} eq 'Arkansas'); 
+  ok(ref $r && $r->{item2} eq 'Arkansas');
 
   print "dispatch_from test(s)...\n";
   eval "use XMLRPC::Lite
@@ -94,7 +94,7 @@ sub run_for {
   ok(XMLRPC::Lite->autodispatched);
 
   # forget everything
-  XMLRPC::Lite->self(undef); 
+  XMLRPC::Lite->self(undef);
 
   {
     my $on_fault_was_called = 0;
@@ -123,12 +123,12 @@ sub run_for {
 
   print "Memory refresh test(s)...\n";
 
-  # Funny test. 
+  # Funny test.
   # Let's forget about ALL settings we did before with 'use XMLRPC::Lite...'
-  XMLRPC::Lite->self(undef); 
+  XMLRPC::Lite->self(undef);
   ok(!defined XMLRPC::Lite->self);
 
-  eval "use XMLRPC::Lite 
+  eval "use XMLRPC::Lite
     proxy => '$proxy'; 1" or die;
 
   print "Global settings test(s)...\n";
@@ -136,7 +136,7 @@ sub run_for {
 
   ok($s->call('My.Examples.getStateName', 1)->result eq 'Alabama');
 
-  SOAP::Trace->import(transport => 
+  SOAP::Trace->import(transport =>
     sub {$_[0]->content_type('something/wrong') if UNIVERSAL::isa($_[0] => 'HTTP::Request')}
   );
 
