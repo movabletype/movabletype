@@ -993,7 +993,11 @@ function listPreviousPings () {
             id="junk-message"
             can_close="0"
             class="alert">
+        <mt:If name="status_review">
+        <__trans phrase="This post was held for review, due to spam filtering.">
+        <mt:Else>
         <__trans phrase="This post was classified as spam.">
+        </mt:If>
 
         <div class="entry-spam-info">
             <a href="javascript:void(0)" onclick="toggleHidden('entry-feedback-rating'); toggleActive('spam-details-toggle'); return true" id="spam-details-toggle"><__trans phrase="Spam Details"></a>
