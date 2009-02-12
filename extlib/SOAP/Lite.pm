@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #                      
-# $Id: Lite.pm,v 1.44 2001/10/18 16:18:56 paulk Exp $
+# $Id: Lite.pm,v 1.47 2002/04/15 16:17:38 paulk Exp $
 #
 # ======================================================================
 
@@ -13,7 +13,7 @@ package SOAP::Lite;
 use 5.004;
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/)
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/)
   or warn "warning: unspecified/non-released version of ", __PACKAGE__, "\n";
 
 # ======================================================================
@@ -270,6 +270,7 @@ BEGIN {
               $DO_NOT_USE_XML_PARSER $DO_NOT_CHECK_MUSTUNDERSTAND 
               $DO_NOT_USE_CHARSET $DO_NOT_PROCESS_XML_IN_MIME
               $DO_NOT_USE_LWP_LENGTH_HACK $DO_NOT_CHECK_CONTENT_TYPE
+              $MAX_CONTENT_SIZE
   );  
 
   $FAULT_CLIENT = 'Client';
@@ -671,7 +672,7 @@ sub new {
       _seen => {},
       _typelookup => {
         base64 => [10, sub {$_[0] =~ /[^\x09\x0a\x0d\x20-\x7f]/}, 'as_base64'],
-        int    => [20, sub {$_[0] =~ /^[+-]?\d+$/}, 'as_int'],
+        'int'  => [20, sub {$_[0] =~ /^[+-]?\d+$/}, 'as_int'],
         float  => [30, sub {$_[0] =~ /^(-?(?:\d+(?:\.\d*)?|\.\d+|NaN|INF)|([+-]?)(?=\d|\.\d)\d*(\.\d*)?([Ee]([+-]?\d+))?)$/}, 'as_float'],
         string => [40, sub {1}, 'as_string'],
       },
@@ -897,7 +898,7 @@ sub encode_object {
     # try to call method specified for this type
     my @values = map { 
       # store null/nil attribute if value is undef
-      $attr->{qualify(xsi => $self->xmlschemaclass->nilValue)} = $self->xmlschemaclass->as_undef(1)
+      local $attr->{qualify(xsi => $self->xmlschemaclass->nilValue)} = $self->xmlschemaclass->as_undef(1)
         unless defined;
          $self->can($method) && $self->$method($_, $name || gen_name, $object->SOAP::Data::type, $attr)
       || $self->typecast($_, $name || gen_name, $object->SOAP::Data::type, $attr)
@@ -987,7 +988,7 @@ sub encode_hash {
     return $self->as_map($hash, $name || gen_name, $type, $attr);
   }
 
-  $type = 'SOAPStruct' if $self->autotype && !defined $type && exists $self->maptype->{SOAPStruct};
+  $type = 'SOAPStruct' if $self->autotype && !defined($type) && exists $self->maptype->{SOAPStruct};
   return [$name || gen_name, 
           {'xsi:type' => $self->maptypetouri($type), %$attr},
           [map {$self->encode_object($hash->{$_}, $_)} keys %$hash], 
@@ -1011,7 +1012,7 @@ sub as_map {
   my $self = shift;
   my($value, $name, $type, $attr) = @_;
   die "Not a HASH reference for 'map' type" unless UNIVERSAL::isa($value => 'HASH');
-  my $prefix = ($self->namespaces->{$SOAP::Constants::NS_APS} ||= 'xmlsoap');
+  my $prefix = ($self->namespaces->{$SOAP::Constants::NS_APS} ||= 'apachens');
   my @items = map {$self->encode_object(SOAP::Data->type(ordered_hash => [key => $_, value => $value->{$_}]), 'item', '')} keys %$value;
   return [$name, {'xsi:type' => "$prefix:Map", %$attr}, [@items], $self->gen_id($value)];
 }
@@ -1275,12 +1276,15 @@ sub final {
 
 sub start { push @{shift->{_values}}, [shift, {@_}] }
 
-sub char { shift->{_values}->[-1]->[3] .= shift }
+# string concatenation changed to arrays which should improve performance
+# for strings with many entity-encoded elements.
+# Thanks to Mathieu Longtin <mrdamnfrenchy@yahoo.com>
+sub char { push @{shift->{_values}->[-1]->[3]}, shift }
 
 sub end { 
   my $self = shift; 
   my $done = pop @{$self->{_values}};
-  $done->[2] = defined $done->[3] ? $done->[3] : '' unless ref $done->[2];
+  $done->[2] = defined $done->[3] ? join('',@{$done->[3]}) : '' unless ref $done->[2];
   undef $done->[3]; 
   @{$self->{_values}} ? (push @{$self->{_values}->[-1]->[2]}, $done)
                       : ($self->{_done} = $done);
@@ -1491,6 +1495,8 @@ sub _traverse {
   my $self = shift;
   my($pointer, $itself, $path, @path) = @_;
 
+  die "Incorrect parameter" unless $itself =~ /^\d*$/;
+
   if ($path && substr($path, 0, 1) eq '{') {
     $path = join '/', $path, shift @path while @path && $path !~ /}/;
   }
@@ -1583,7 +1589,9 @@ sub mimeparser {
 }
 
 sub is_xml {
-  $_[1] =~ /^\s*</ || $_[1] !~ /^[\w-]+:/;
+  # Added check for envelope delivery. Fairly standard with MMDF and sendmail
+  # Thanks to Chris Davies <Chris.Davies@ManheimEurope.com> 
+  $_[1] =~ /^\s*</ || $_[1] !~ /^(?:[\w-]+:|From )/;
 }
 
 sub baselocation { 
@@ -1672,7 +1680,7 @@ sub decode_object {
       $uris{$1} && 
         do { 
           $attrs->{SOAP::Utils::longname($uris{$1}, $2)} = do { 
-            my $value = delete $attrs->{$_};
+            my $value = $attrs->{$_};
             $2 ne 'type' && $2 ne 'arrayType'
               ? $value 
               : SOAP::Utils::longname($value =~ m/^($SOAP::Constants::NSMASK?):(${SOAP::Constants::NSMASK}(?:\[[\d,]*\])*)/ 
@@ -1976,8 +1984,8 @@ sub new {
     my(@params, @methods);
 
     while (@_) { my($method, $params) = splice(@_,0,2);
-      $class->can($_[0]) ? push(@methods, $method, $params) 
-                         : $^W && Carp::carp "Unrecognized parameter '$method' in new()";
+      $class->can($method) ? push(@methods, $method, $params) 
+                           : $^W && Carp::carp "Unrecognized parameter '$method' in new()";
     }
     $self = bless {
       _dispatch_to => [], 
@@ -2027,7 +2035,10 @@ sub BEGIN {
       my $self = shift->new;
       return $self->{$field} unless @_;
       local $@;
-      $self->{$field} = ref $_[0] eq 'CODE' ? shift : eval shift;
+      # commented out because that 'eval' was unsecure
+      # > ref $_[0] eq 'CODE' ? shift : eval shift;
+      # Am I paranoid enough?
+      $self->{$field} = shift; 
       Carp::croak $@ if $@;
       Carp::croak "$method() expects subroutine (CODE) or string that evaluates into subroutine (CODE)"
         unless ref $self->{$field} eq 'CODE';
@@ -2069,6 +2080,10 @@ sub find_target {
     unless $method_name;
 
   $self->on_action->(my $action = $self->action, $method_uri, $method_name);
+
+  # check to avoid security vulnerability: Protected->Unprotected::method(@parameters)
+  # see for more details: http://www.phrack.org/phrack/58/p58-0x09
+  die "Denied access to method ($method_name)\n" unless $method_name =~ /^\w+$/;
 
   my($class, $static);
   # try to bind directly
@@ -2625,7 +2640,7 @@ sub soapversion {
   die qq!$SOAP::Constants::WRONG_VERSION Supported versions:\n@{[
         join "\n", map {"  $_ ($SOAP::Constants::SOAP_VERSIONS{$_}->{NS_ENV})"} keys %SOAP::Constants::SOAP_VERSIONS
         ]}\n!
-    unless defined(my $def = $SOAP::Constants::SOAP_VERSIONS{$version});
+    unless defined($version) && defined(my $def = $SOAP::Constants::SOAP_VERSIONS{$version});
 
   foreach (keys %$def) {
     eval "\$SOAP::Constants::$_ = '$SOAP::Constants::SOAP_VERSIONS{$version}->{$_}'";
@@ -2725,7 +2740,10 @@ sub BEGIN {
       my $self = shift->new;
       return $self->{$field} unless @_;
       local $@;
-      $self->{$field} = ref $_[0] eq 'CODE' ? shift : eval shift;
+      # commented out because that 'eval' was unsecure
+      # > ref $_[0] eq 'CODE' ? shift : eval shift;
+      # Am I paranoid enough?
+      $self->{$field} = shift;
       Carp::croak $@ if $@;
       Carp::croak "$method() expects subroutine (CODE) or string that evaluates into subroutine (CODE)"
         unless ref $self->{$field} eq 'CODE';
@@ -2878,7 +2896,12 @@ sub header { SOAP::Header->new(@_) }
 
 sub hash   { +{@_} }
 
-sub instanceof { my $class = shift; eval "require $class"; $class->new(@_) }
+sub instanceof { 
+  my $class = shift; 
+  die "Incorrect class name" unless $class =~ /^(\w[\w:]*)$/; 
+  eval "require $class"; 
+  $class->new(@_); 
+}
 
 # ======================================================================
 

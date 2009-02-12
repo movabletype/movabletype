@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: TCP.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
+# $Id: TCP.pm,v 1.4 2002/04/15 19:09:57 paulk Exp $
 #
 # ======================================================================
 
@@ -12,7 +12,7 @@ package SOAP::Transport::TCP;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 use URI;
 use IO::Socket;
@@ -22,7 +22,7 @@ use SOAP::Lite;
 
 # ======================================================================
 
-package URI::tcp; # ok, lets do 'tcp://' scheme
+package URI::tcp; # ok, let's do 'tcp://' scheme
 require URI::_server; 
 @URI::tcp::ISA=qw(URI::_server);
 
@@ -71,7 +71,8 @@ sub syswrite {
   while (length $data > 0) {
     return unless $select->can_write($timeout);
     local $SIG{PIPE} = 'IGNORE';
-    my $wc = syswrite($sock, $data);
+    # added length() to make it work on Mac. Thanks to Robin Fuller <rfuller@broadjump.com>
+    my $wc = syswrite($sock, $data, length($data));
     if (defined $wc) {
       substr($data, 0, $wc) = '';
     } elsif (!IO::SessionData::WOULDBLOCK($!)) {
@@ -113,11 +114,18 @@ sub send_receive {
   my $uri = URI->new($endpoint);
 
   local($^W, $@, $!);
-  my $sock = $self->io_socket_class->new (
+  my $socket = $self->io_socket_class; 
+  eval "require $socket" or Carp::croak $@ unless UNIVERSAL::can($socket => 'new');
+  my $sock = $socket->new (
     PeerAddr => $uri->host, PeerPort => $uri->port, Proto => $uri->scheme, %$self
   );
 
   SOAP::Trace::debug($envelope);
+
+  # bytelength hack. See SOAP::Transport::HTTP.pm for details.
+  my $bytelength = SOAP::Utils::bytelength($envelope);
+  $envelope = pack('C0A*', $envelope) 
+    if !$SOAP::Constants::DO_NOT_USE_LWP_LENGTH_HACK && length($envelope) != $bytelength;
 
   my $result;
   if ($sock) {

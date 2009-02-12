@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Test.pm,v 1.8 2001/09/19 22:02:01 paulk Exp $
+# $Id: Test.pm,v 1.9 2002/04/15 22:02:01 paulk Exp $
 #
 # ======================================================================
 
@@ -12,7 +12,7 @@ package SOAP::Test;
 
 use 5.004;
 use vars qw($VERSION $TIMEOUT);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 $TIMEOUT = 5;
 
@@ -256,8 +256,9 @@ sub run_for {
 
      my $latin1 = 'привет';
      my $utf8 = pack('U*', unpack('C*', $latin1));
+     my $result = $s->echo(SOAP::Data->type(string => $utf8))->result;
 
-     ok(pack('U0A*', $s->echo(SOAP::Data->type(string => $utf8))->result) eq $utf8);
+     ok(pack('U*', unpack('C*', $result)) eq $utf8);
   }
 
   {

@@ -15,7 +15,7 @@ use vars qw(@ISA $VERSION);
 use XMLRPC::Transport::HTTP;
 
 @ISA = qw(XMLRPC::Transport::HTTP::Apache);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 my $server = __PACKAGE__->new;
 

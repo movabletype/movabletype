@@ -12,7 +12,7 @@ package SOAP::Transport::JABBER;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 use Net::Jabber 1.0021 qw(Client); 
 use URI::Escape; 

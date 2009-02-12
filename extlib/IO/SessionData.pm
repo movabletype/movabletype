@@ -11,7 +11,7 @@ use strict;
 use Carp;
 use IO::SessionSet;
 use vars '$VERSION';
-$VERSION = 1.01;
+$VERSION = 1.02;
 
 use constant BUFSIZE => 3000;
 
@@ -30,8 +30,9 @@ BEGIN {
 sub new {
   my $pack = shift;
   my ($sset,$handle,$writeonly) = @_;
-  # make the handle nonblocking
-  $handle->blocking(0);
+  # make the handle nonblocking (but check for 'blocking' method first)
+  # thanks to Jos Clijmans <jos.clijmans@recyfin.be>
+  $handle->blocking(0) if $handle->can('blocking');
   my $self = bless {
                 outbuffer   => '',
                 sset        => $sset,
@@ -88,7 +89,8 @@ sub write {
   my $rc;
   if ($self->pending) { # data in the out buffer to write
     local $SIG{PIPE}='IGNORE';
-    $rc = syswrite($handle,$self->{outbuffer});
+    # added length() to make it work on Mac. Thanks to Robin Fuller <rfuller@broadjump.com>
+    $rc = syswrite($handle,$self->{outbuffer},length($self->{outbuffer}));
 
     # able to write, so truncate out buffer apropriately
     if ($rc) {
@@ -103,7 +105,7 @@ sub write {
   }
   
   $self->adjust_state;
-
+  
   # Result code is the number of bytes successfully transmitted
   return $rc;
 }
@@ -126,7 +128,7 @@ sub close {
   my $self = shift;
   unless ($self->pending) {
     $self->sessions->delete($self);
-    close($self->handle);
+    CORE::close($self->handle);
   } else {
     $self->readable(0);
     $self->{closing}++;  # delayed close

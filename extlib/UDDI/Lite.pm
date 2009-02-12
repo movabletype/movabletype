@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm 22194 2006-01-25 22:20:57Z bchoate $
+# $Id: Lite.pm,v 1.6 2001/09/03 03:58:30 paulk Exp $
 #
 # ======================================================================
 
@@ -13,7 +13,7 @@ package UDDI::Lite;
 use 5.004;
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 use SOAP::Lite;
 

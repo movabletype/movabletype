@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: Lite.pm,v 1.2 2005/02/22 01:47:42 byrnereese Exp $
+# $Id: Lite.pm,v 1.4 2001/10/15 21:25:05 paulk Exp $
 #
 # ======================================================================
 
@@ -12,8 +12,7 @@ package XML::Parser::Lite;
 
 use strict;
 use vars qw($VERSION);
-#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name:  $ =~ /-(\d+)_([\d_]+)/);
-$VERSION = '0.65_3';
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 sub new { 
   my $self = shift;

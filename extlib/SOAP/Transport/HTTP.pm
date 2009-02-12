@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: HTTP.pm,v 1.9 2001/10/18 15:23:55 paulk Exp $
+# $Id: HTTP.pm,v 1.11 2002/04/15 17:35:11 paulk Exp $
 #
 # ======================================================================
 
@@ -12,7 +12,7 @@ package SOAP::Transport::HTTP;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name: release-0_55-public $ =~ /-(\d+)_([\d_]+)/);
 
 use SOAP::Lite;
 
@@ -226,12 +226,12 @@ sub handle {
   my $self = shift->new;
 
   if ($self->request->method eq 'POST') {
-    $self->action($self->request->header('SOAPAction'));
+    $self->action($self->request->header('SOAPAction') || undef);
   } elsif ($self->request->method eq 'M-POST') {
     return $self->response(HTTP::Response->new(510, # NOT EXTENDED
            "Expected Mandatory header with $SOAP::Constants::NS_ENV as unique URI")) 
       if $self->request->header('Man') !~ /^"$SOAP::Constants::NS_ENV";\s*ns\s*=\s*(\d+)/;
-    $self->action($self->request->header("$1-SOAPAction"));
+    $self->action($self->request->header("$1-SOAPAction") || undef);
   } else {
     return $self->response(HTTP::Response->new(405)) # METHOD NOT ALLOWED
   }
@@ -321,13 +321,21 @@ sub new {
 sub handle {
   my $self = shift->new;
 
-  my $content; binmode(STDIN); read(STDIN,$content,$ENV{'CONTENT_LENGTH'} || 0);
-  $self->request(HTTP::Request->new( 
-    $ENV{'REQUEST_METHOD'} || '' => $ENV{'SCRIPT_NAME'},
-    HTTP::Headers->new(map {(/^HTTP_(.+)/i ? $1 : $_) => $ENV{$_}} keys %ENV),
-    $content,
-  ));
-  $self->SUPER::handle;
+  my $length = $ENV{'CONTENT_LENGTH'} || 0;
+
+  if (!$length) {     
+    $self->response(HTTP::Response->new(411)) # LENGTH REQUIRED
+  } elsif (defined $SOAP::Constants::MAX_CONTENT_SIZE && $length > $SOAP::Constants::MAX_CONTENT_SIZE) {
+    $self->response(HTTP::Response->new(413)) # REQUEST ENTITY TOO LARGE
+  } else {
+    my $content; binmode(STDIN); read(STDIN,$content,$length);
+    $self->request(HTTP::Request->new( 
+      $ENV{'REQUEST_METHOD'} || '' => $ENV{'SCRIPT_NAME'},
+      HTTP::Headers->new(map {(/^HTTP_(.+)/i ? $1 : $_) => $ENV{$_}} keys %ENV),
+      $content,
+    ));
+    $self->SUPER::handle;
+  }
 
   # imitate nph- cgi for IIS (pointed by Murray Nesbitt)
   my $status = defined($ENV{'SERVER_SOFTWARE'}) && $ENV{'SERVER_SOFTWARE'}=~/IIS/
@@ -385,7 +393,9 @@ sub handle {
       $self->SUPER::handle;
       $c->send_response($self->response)
     }
-    $c->shutdown(2); # replaced ->close, thanks to Sean Meisner <Sean.Meisner@VerizonWireless.com>
+    # replaced ->close, thanks to Sean Meisner <Sean.Meisner@VerizonWireless.com>
+    # shutdown() doesn't work on AIX. close() is used in this case. Thanks to Jos Clijmans <jos.clijmans@recyfin.be>
+    UNIVERSAL::isa($c, 'shutdown') ? $c->shutdown(2) : $c->close(); 
     undef $c;
   }
 }
@@ -453,8 +463,6 @@ sub configure {
 #
 # Copyright (C) 2001 Single Source oy (marko.asplund@kronodoc.fi)
 # a FastCGI transport class for SOAP::Lite.
-#
-# $Id: HTTP.pm,v 1.9 2001/10/18 15:23:55 paulk Exp $
 #
 # ======================================================================
 
