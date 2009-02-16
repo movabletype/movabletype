@@ -2334,7 +2334,7 @@ sub init_commenter_authenticators {
     my $auths = $self->registry("commenter_authenticators") || {};
     %Commenter_Auth = %$auths;
     my $app = $self->app;
-    my $blog = $app->blog if $app;
+    my $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);

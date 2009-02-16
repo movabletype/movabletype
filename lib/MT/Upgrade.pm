@@ -701,7 +701,7 @@ sub core_upgrade_functions {
         },
         'core_set_author_auth_type' => {
             version_limit => 4.0024,
-            priority => 3.2,
+            priority => 3.1,
             updater => {
                 type => 'author',
                 label => 'Assigning user authentication type...',
