@@ -278,6 +278,7 @@ sub visible {
     }
     $ping->{__changed}{visibility} = $vis_delta;
 
+    $ping->junk_status(NOT_JUNK) if $is_visible;
     return $ping->SUPER::visible($is_visible);
 }
 
