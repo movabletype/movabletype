@@ -457,7 +457,15 @@ sub compile_tag_filter {
     foreach my $tag (@$tags) {
         my $name = $tag->name;
         my $id = $tag->id;
-        if ($tag_expr =~ s/(?<![#\d])\Q$name\E/#$id/g) {
+        if ($tag_expr =~
+                    s/  \b           # Word boundary
+                        (?<![#\d])   # Zero-width negative look-behind. 
+                                     # Matches any occurence of the next part
+                                     # *not* preceded by a digit or a hashmark (#)
+                        \Q$name\E    # The tag name, quoted for metacharacters
+                        \b           # Word boundary
+                    /#$id/gx)        # Change all matches to #$id (e.g. #932)
+        {
             $tags_used{$id} = $tag;
         }
     }
