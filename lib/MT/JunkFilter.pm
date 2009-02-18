@@ -155,6 +155,7 @@ sub task_expire_junk {
     require MT::Util;
     require MT::Comment;
     require MT::TBPing;
+    require MT::Entry;
     foreach $blog (@blogs) {
         my ( $blog_id, $expiry_age ) =
           ( $blog->id, 86400 * $blog->junk_folder_expiry );
@@ -179,6 +180,23 @@ sub task_expire_junk {
             {
                 $removed++, $_->remove for @junk;
             }
+        }
+
+        while (
+            my @junk = MT::Entry->load(
+                {   status     => MT::Entry->JUNK(),
+                    blog_id    => $blog_id,
+                    created_on => [ '19700101000000', $ts ],
+                },
+                {   range => {
+                        created_on => 1,
+                        limit      => 1000
+                    }
+                }
+            )
+            )
+        {
+            $removed++, $_->remove for @junk;
         }
     }
     $pkg->_expire_commenter_registration;
