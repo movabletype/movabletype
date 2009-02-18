@@ -17,8 +17,6 @@ sub login {
     my $class = shift;
     my ($app) = @_;
     my $q = $app->param;
-    return $app->errtrans("Invalid request.")
-        unless $q->param('blog_id');
     my $blog = $app->model('blog')->load(scalar $q->param('blog_id'));
     my $identity = $q->param('openid_url');
     if (!$identity &&
@@ -413,7 +411,8 @@ sub check_url_params {
     my $path = MT->config->CGIPath;
     if ($path =~ m!^/!) {
         # relative path, prepend blog domain
-        my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+        my ($blog_domain)
+            = ( $blog ? $blog->archive_url : $app->base ) =~ m|(.+://[^/]+)|;
         $path = $blog_domain . $path;
     }
     $path .= '/' unless $path =~ m!/$!;
