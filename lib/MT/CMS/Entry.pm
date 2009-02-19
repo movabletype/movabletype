@@ -471,7 +471,6 @@ sub list {
     my %terms;
     $terms{blog_id} = $blog_id if $blog_id;
     $terms{class} = $type;
-    $terms{status} = { not => MT->model('entry')->JUNK };
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
 
@@ -640,6 +639,11 @@ sub list {
             }
         }
     }
+
+    if ( !exists( $terms{status} ) ) {
+        $terms{status} = { not => MT->model('entry')->JUNK };
+    }
+
     require MT::Category;
     require MT::Placement;
 
