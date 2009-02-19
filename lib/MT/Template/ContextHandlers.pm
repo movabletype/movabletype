@@ -6435,7 +6435,8 @@ sub _hdlr_authors {
             push @filters, $cexpr;
         }
     }
-    if (my $role_arg = $args->{role} || $args->{roles}) {
+    my $role_arg;
+    if ($role_arg = $args->{role} || $args->{roles}) {
         if ($role_arg !~ m/\b(OR)\b|\(|\)/i) {
             my @roles = MT::Tag->split(',', $role_arg);
             $role_arg = join " or ", @roles;
@@ -6466,7 +6467,7 @@ sub _hdlr_authors {
             \%blog_terms, \%blog_args);
     } else {
         $blog_args{'unique'} = 1;
-        if (!$args->{role}) {
+        if (!$role_arg) {
             require MT::Permission;
             $args{'join'} =
                 MT::Permission->join_on(
