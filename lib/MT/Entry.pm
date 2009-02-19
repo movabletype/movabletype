@@ -348,9 +348,9 @@ sub comment_latest {
     });
 }
 
-MT::Comment->add_trigger(
-    post_save => sub {
-        my $comment = shift;
+MT::Comment->add_callback( 'post_save', 0, MT->component('core'),
+    sub {
+        my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
         my $count   = MT::Comment->count(
@@ -361,12 +361,12 @@ MT::Comment->add_trigger(
         );
         $entry->comment_count($count);
         $entry->save;
-    }
+    },
 );
 
-MT::Comment->add_trigger(
-    post_remove => sub {
-        my $comment = shift;
+MT::Comment->add_callback( 'post_remove', 0, MT->component('core'),
+    sub {
+        my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
         if ( $comment->visible ) {
@@ -374,7 +374,7 @@ MT::Comment->add_trigger(
             $entry->comment_count($count);
             $entry->save;
         }
-    }
+    },
 );
 
 sub pings {
@@ -393,9 +393,9 @@ sub pings {
     }
 }
 
-MT::TBPing->add_trigger(
-    post_save => sub {
-        my $ping = shift;
+MT::TBPing->add_callback( 'post_save', 0, MT->component('core'),
+    sub {
+        my ($cb, $ping) = @_;
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
@@ -414,9 +414,9 @@ MT::TBPing->add_trigger(
     }
 );
 
-MT::TBPing->add_trigger(
-    post_remove => sub {
-        my $ping = shift;
+MT::TBPing->add_callback( 'post_remove', 0, MT->component('core'),
+    sub {
+        my ($cb, $ping) = @_;
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id && $ping->visible ) {
