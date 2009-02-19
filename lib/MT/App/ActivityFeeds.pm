@@ -59,8 +59,7 @@ sub login {
         $app->translate( "Error loading [_1]: [_2]", $user_class, $@ ) )
         if $@;
     my $author = $user_class->load( { name => $username, type => AUTHOR } );
-    return undef unless $author->is_active;
-    if ( $author && ( ( $author->api_password || '' ) ne '' ) ) {
+    if ( $author && $author->is_active && ( ( $author->api_password || '' ) ne '' ) ) {
         my $auth_token
             = perl_sha1_digest_hex( 'feed:' . $author->api_password );
         if ( $token eq $auth_token ) {
