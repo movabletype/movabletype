@@ -461,7 +461,9 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     $app->param('blog_id')
                         && ( $app->user->is_superuser()
-                        || $app->permissions->can_edit_all_posts );
+                            || $app->permissions->can_edit_all_posts )
+                        && $app->param('filter_val') != MT::Entry::JUNK()
+                        && $app->param('filter_key') ne 'spam_entries'
                 },
             },
         },
