@@ -1427,6 +1427,17 @@ sub core_menus {
             system_permission => 'administer',
             view              => "blog",
         },
+        'prefs:ip_info' => {
+            label      => "IP Banning",
+            mode       => 'list',
+            args       => { _type => 'banlist' },
+            order      => 180,
+            permission => 'manage_feedback',
+            condition  => sub {
+                $app->config->ShowIPInformation;
+            },
+            view => "blog",
+        },
 
         'tools:plugins' => {
             label             => "Plugins",
@@ -1474,17 +1485,6 @@ sub core_menus {
             order => 700,
             mode  => "tools",
             view  => "system",
-        },
-        'tools:ip_info' => {
-            label      => "IP Banning",
-            mode       => 'list',
-            args       => { _type => 'banlist' },
-            order      => 900,
-            permission => 'manage_feedback',
-            condition  => sub {
-                $app->config->ShowIPInformation;
-            },
-            view => "blog",
         },
 
         # System menu which is actually separate
