@@ -65,7 +65,7 @@
                                         <input type="hidden" name="entry_id" value="<$mt:EntryID$>" />
                                         <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>" />
 <mt:IfCommentParent>
-                                            <input type="hidden" name="parent_id" value="<$mt:CommentParentID$>" id="comment-parent-id">
+                                            <input type="hidden" name="parent_id" value="<$mt:CommentParentID escape="html"$>" id="comment-parent-id">
 </mt:IfCommentParent>
                                         <div id="comments-open-data">
                                             <div id="comment-form-name">
@@ -83,7 +83,7 @@
                                         </div>
 <mt:IfCommentParent>
                                         <div id="comment-form-reply">
-                                            <input type="checkbox" id="comment-reply" name="comment_reply" value="<$mt:CommentParentID$>" checked="checked" onclick="mtSetCommentParentID()" />
+                                            <input type="checkbox" id="comment-reply" name="comment_reply" value="<$mt:CommentParentID escape="html"$>" checked="checked" onclick="mtSetCommentParentID()" />
                                             <label for="comment-reply" id="comment-reply-label"><__trans phrase="Replying to comment from [_1]" params="<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>"></label>
                                         </div>
 </mt:IfCommentParent>
