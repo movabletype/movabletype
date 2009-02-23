@@ -1,9 +1,9 @@
-# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::nl;
 use strict;
