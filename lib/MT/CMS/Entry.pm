@@ -1804,6 +1804,7 @@ sub open_batch_editor {
     $app->param( 'is_power_edit', 1 );
     $app->param( 'filter',        'power_edit' );
     $app->param( 'filter_val',    \@ids );
+    $app->param( 'type', $app->param('_type') );
     $app->mode(
         'list_' . ( 'entry' eq $app->param('_type') ? 'entries' : 'pages' ) );
     $app->forward( "list_entry", { type => $app->param('_type') } );
