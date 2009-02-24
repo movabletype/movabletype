@@ -1,5 +1,5 @@
 /*
-JavasScript Object Notation (JSON) Library - Copyright 2005-2008 Six Apart
+JavasScript Object Notation (JSON) Library - Copyright 2005-2009 Six Apart
 $Id$
 */
 
@@ -40,7 +40,7 @@ Array.prototype.toJSON = function( root ) {
 		root = this;
 	else if( root == this )
 		return "[]";
-	
+
 	var out = [ "[" ];
 	for( var i = 0; i < this.length; i++ ) {
 		if( out.length > 1 )
@@ -63,7 +63,7 @@ Object.prototype.toJSON = function( root ) {
 		root = this;
 	else if( root == this )
 		return "{}";
-	
+
 	var out = [ "{" ];
 	for( var i in this ) {
 		if( typeof this[ i ] == "undefined" ||
