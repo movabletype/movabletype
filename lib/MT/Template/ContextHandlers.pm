@@ -54,6 +54,8 @@ sub core_tags {
             'IfCategory?' => \&_hdlr_if_category,
             'EntryIfCategory?' => \&_hdlr_if_category,
 
+            'IfExternalUserManagement?' => \&_hdlr_if_external_user_management,
+
             # Subcategory handlers
             'SubCatIsFirst?' => \&_hdlr_sub_cat_is_first,
             'SubCatIsLast?' => \&_hdlr_sub_cat_is_last,
@@ -20098,6 +20100,20 @@ sub _hdlr_widget_manager {
     }
     return '' unless $text;
     return $ctx->build($text);
+}
+
+###########################################################################
+
+=head2 IfExternalUserManagement
+
+A conditional tag that returns true when external user management is
+turned on.
+
+=cut
+
+sub _hdlr_if_external_user_management {
+    my ($ctx) = @_;
+    return $ctx->{config}->ExternalUserManagement;
 }
 
 1;
