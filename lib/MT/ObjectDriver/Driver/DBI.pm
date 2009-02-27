@@ -9,6 +9,10 @@ package MT::ObjectDriver::Driver::DBI;
 use strict;
 use base qw( Data::ObjectDriver::Driver::DBI );
 
+sub PING_CHECK_THROTTLE () { 5 }
+
+__PACKAGE__->mk_accessors(qw( role ));
+
 sub init {
     my $driver = shift;
     my (%param) = @_;
@@ -28,6 +32,39 @@ sub start_query {
         warn "QUERY: $sql";
     }
     return $driver->SUPER::start_query(@_);
+}
+
+sub dbh_handle {
+    my $driver = shift;
+    my ($opt) = @_;
+    my $dbh = $driver->dbh;
+    if ($dbh) {
+        if ( !$dbh->{private_last_ping} || ($dbh->{private_last_ping} + PING_CHECK_THROTTLE < time) ) {
+            if ( $dbh->ping ) {
+                $dbh->{private_last_ping} = time;
+            } else {
+                $driver->dbh($dbh = undef);
+            }
+        }
+    }
+    unless ($dbh) {
+        if (my $getter = $driver->get_dbh) {
+            local $opt->{driver} = $driver;
+            $dbh = $getter->($opt);
+            $dbh->{private_last_ping} = time if $dbh;
+        } else {
+            $dbh = $driver->init_db() or die $driver->last_error;
+            $dbh->{private_last_ping} = time;
+            $driver->dbh($dbh);
+        }
+    }
+    $dbh;
+}
+*rw_handle = \&dbh_handle;
+
+sub r_handle {
+    my $driver = shift;
+    return $driver->dbh_handle( { readonly => 1 } );
 }
 
 sub configure {

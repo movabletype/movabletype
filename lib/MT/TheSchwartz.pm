@@ -8,7 +8,7 @@ package MT::TheSchwartz;
 
 use strict;
 use base qw( TheSchwartz );
-use MT::ObjectDriver::Driver::DBI;
+use MT::ObjectDriver::Driver::Cache::RAM;
 use List::Util qw( shuffle );
 
 my $instance;
@@ -105,8 +105,8 @@ sub mt_schwartz_init {
 }
 
 sub driver_for {
-    my MT::TheSchwartz $client = shift;
-    return MT::Object->dbi_driver;
+    require MT::TheSchwartz::Job;
+    return MT::TheSchwartz::Job->dbi_driver;
 }
 
 sub shuffled_databases {
@@ -135,7 +135,7 @@ sub get_server_time {
     my($driver) = @_;
     my $unixtime_sql = $driver->dbd->sql_for_unixtime;
     return $unixtime_sql if $unixtime_sql =~ m/^\d+$/;
-    return $driver->rw_handle->selectrow_array("SELECT $unixtime_sql");
+    return $driver->r_handle->selectrow_array("SELECT $unixtime_sql");
 }
 
 sub work_periodically {
@@ -168,10 +168,11 @@ sub work_periodically {
         }
 
         if ($did_work) {
-            my $driver = MT::Object->driver;
-            $driver->clear_cache
-                if $driver->can('clear_cache');
+            # Clear RAM cache
+            MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
             MT->request->reset();
+
             $did_work = 0;
             if ($OBJECT_REPORT) {
                 my $report = leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);

@@ -288,6 +288,8 @@ BEGIN {
                 path    => 1,
             },
             'ObjectDriver'  => undef,
+            'ObjectCacheLimit' => { default => 1000 },
+            'ObjectCacheDisabled'  => undef,
             'AllowedTextFilters' => undef,
             'Serializer'    => { default => 'MT', },
             'SendMailPath'  => { default => '/usr/lib/sendmail', },

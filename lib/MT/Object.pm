@@ -136,6 +136,13 @@ sub install_properties {
         $type_id = $props->{datasource};
     }
 
+    $props->{get_driver} ||= sub {
+        require MT::ObjectDriverFactory;
+        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
+        $class->get_driver($coderef);
+        return $coderef->(@_);
+    };
+
     $class->SUPER::install_properties($props);
 
     # check for any supplemental columns from other components
@@ -223,12 +230,6 @@ sub install_properties {
 
         $class->add_trigger( pre_save  => _get_date_translator(\&_ts2db, 1) );
         $class->add_trigger( post_load => _get_date_translator(\&_db2ts, 0) );
-    }
-
-    if ( exists($props->{cacheable}) && !$props->{cacheable} ) {
-        no warnings 'redefine';
-        no strict 'refs'; ## no critic
-        *{$class . '::driver'} = sub { $_[0]->dbi_driver(@_) };
     }
 
     # inherit parent's metadata setup
@@ -855,15 +856,18 @@ sub __properties { }
 
 our $DRIVER;
 sub driver {
-    require MT::ObjectDriverFactory;
-    return $DRIVER ||= MT::ObjectDriverFactory->new;
+    my $class = shift;
+    return $DRIVER ||= MT::ObjectDriverFactory->instance
+        if $class eq 'MT::Object';
+    my $driver = $class->SUPER::driver(@_);
+    return $driver;
 }
 
-# ref to the fallback driver for non-cacheable classes
-our $DBI_DRIVER;
 sub dbi_driver {
-    unless ($DBI_DRIVER) {
-        my $driver = driver(@_);
+    my $class = shift;
+    my $props = $class->properties || {};
+    unless ($props->{dbi_driver}) {
+        my $driver = $class->driver(@_);
         while ( $driver->can('fallback') ) {
             if ($driver->fallback) {
                 $driver = $driver->fallback;
@@ -871,9 +875,9 @@ sub dbi_driver {
                 last;
             }
         }
-        $DBI_DRIVER = $driver;
+        $props->{dbi_driver} = $driver;
     }
-    return $DBI_DRIVER;
+    return $props->{dbi_driver};
 }
 
 sub table_name {
@@ -1083,18 +1087,15 @@ sub inflate {
     return $obj;
 }
 
-# We override D::OD's set_values method here only allowing the
-# assignment of a column if the value given is defined. There are
-# some legacy reasons for doing this, mostly for backward
-# compatibility.
 sub set_values {
     my $obj = shift;
     my ($values) = @_;
     for my $col (keys %$values) {
-        unless ( $obj->has_column($col) ) {
-            Carp::croak("You tried to set inexistent column $col to value $values->{$col} on " . ref($obj));
+        if ( $obj->has_column($col) ) {
+            # there's no point in croaking here; just set the
+            # values that are defined; ignore any others
+            $obj->$col($values->{$col}) if defined $values->{$col};
         }
-        $obj->$col($values->{$col}) if defined $values->{$col};
     }
 }
 
@@ -1217,7 +1218,7 @@ sub to_hash {
     my $hash = {};
     my $props = $obj->properties;
     my $pfx = $obj->datasource;
-    my $values = $obj->column_values;
+    my $values = $obj->get_values;
     foreach (keys %$values) {
         $hash->{"${pfx}.$_"} = $values->{$_};
     }
@@ -1278,9 +1279,18 @@ sub install_properties {
     my ($props) = @_;
     $props->{column_defs}->{$_} ||= 'string'
         for @{ $props->{columns} };
+
+    $props->{get_driver} ||= sub {
+        require MT::ObjectDriverFactory;
+        my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
+        $class->get_driver($coderef);
+        return $coderef->(@_);
+    };
+
     $class->SUPER::install_properties(@_);
 }
 
+sub __properties { }
 sub meta_pkg { undef }
 
 *table_name = \&MT::Object::table_name;
@@ -1291,8 +1301,7 @@ sub meta_pkg { undef }
 *__parse_def = \&MT::Object::__parse_def;
 *count = \&MT::Object::count;
 *columns_of_type = \&MT::Object::columns_of_type;
-
-*driver = \&MT::Object::dbi_driver;
+*join_on = \&MT::Object::join_on;
 
 # TODO: copy this too
 sub blob_requires_zip {}

@@ -112,13 +112,13 @@ sub _set_names {
         if (!$dbh->do("SET NAMES '" . $c . "'")) {
             # 'set names' command isn't working for this verison of PostgreSQL,
             # assign SQLSetNames to 0 to prevent further errors.
-            $cfg->SQLSetNames(0, 1);
+            $cfg->SQLSetNames(0);
             return 0;
         } else {
             if (!defined $set_names) {
                 # SQLSetNames has never been assigned; we had a successful
                 # 'SET NAMES' command, so it's safe to SET NAMES in the future.
-                $cfg->SQLSetNames(1, 1);
+                $cfg->SQLSetNames(1);
             }
         }
     };
