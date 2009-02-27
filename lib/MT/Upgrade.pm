@@ -2066,6 +2066,8 @@ sub upgrade_templates {
 
     my $install = $opt{Install} || 0;
 
+    return 1 if $DryRun;
+
     my $updated = 0;
 
     my $tmpl_list;
@@ -2208,12 +2210,13 @@ sub remove_indexes {
     $self->progress($self->translate_escape('Removing unnecessary indexes...'));
 
     my $driver = MT::Object->driver;
+    my $dbh = $driver->rw_handle;
+    local $dbh->{RaiseError} = 0;
 
     if ($driver->dbd =~ m/::Pg$|::Oracle$/) {
         $driver->sql([
             'drop index mt_asset_url',
             'drop index mt_asset_file_path',
-            'drop index mt_blocklist_name',
             'drop index mt_entry_blog_id',
             'drop index mt_template_build_dynamic'
         ]);
@@ -2221,7 +2224,6 @@ sub remove_indexes {
         $driver->sql([
             'drop index mt_asset_url on mt_asset',
             'drop index mt_asset_file_path on mt_asset',
-            'drop index mt_blocklist_name on mt_blocklist',
             'drop index mt_entry_blog_id on mt_entry',
             'drop index mt_template_build_dynamic on mt_tempalte'
         ]);
@@ -2229,7 +2231,6 @@ sub remove_indexes {
         $driver->sql([
             'drop index mt_asset.mt_asset_url',
             'drop index mt_asset.mt_asset_file_path',
-            'drop index mt_blocklist.mt_blocklist_name',
             'drop index mt_entry.mt_entry_blog_id',
             'drop index mt_tempalte.mt_template_build_dynamic'
         ]);
@@ -2322,6 +2323,10 @@ sub post_schema_upgrade {
 
     my $plugin_ver = MT->config('PluginSchemaVersion') || {};
     $plugin_ver->{'core'} = $from;
+
+    if ( $DryRun ) {
+        return 1;
+    }
 
     # run any functions that define a version_limit and where the schema we're
     # upgrading from is below that limit.
@@ -2551,6 +2556,7 @@ sub run_statements {
                 } else {
                     if ($dbh && !$DryRun) {
                         my $err;
+                        local $dbh->{RaiseError} = 0;
                         $dbh->do($stmt) or $err = $dbh->errstr;
                         if ($err) {
                             # ignore drop errors; the table/sequence/constraint
@@ -2598,6 +2604,8 @@ sub core_upgrade_end {
 sub core_finish {
     my $self = shift;
 
+    return 1 if $DryRun;
+
     my $user;
     if ((ref $App) && ($App->{author})) {
         $user = $App->{author};
@@ -2608,7 +2616,7 @@ sub core_finish {
     my $old_schema = $cfg->SchemaVersion || 0;
     if ($cur_schema > $old_schema) {
         $self->progress($self->translate_escape("Database has been upgraded to version [_1].", $cur_schema)) ;
-        if ($user && !$DryRun) {
+        if ($user) {
             MT->log(MT->translate("User '[_1]' upgraded database to version [_2]", $user->name, $cur_schema));
         }
         $cfg->SchemaVersion( $cur_schema, 1 );
@@ -2622,7 +2630,7 @@ sub core_finish {
         my $old_plugin_schema = $plugin_schema->{$plugin->id} || 0;
         if ($old_plugin_schema && ($ver > $old_plugin_schema)) {
             $self->progress($self->translate_escape("Plugin '[_1]' upgraded successfully to version [_2] (schema version [_3]).", $plugin->label, $plugin->version || '-', $ver));
-            if ($user && !$DryRun) {
+            if ($user) {
                 MT->log(MT->translate("User '[_1]' upgraded plugin '[_2]' to version [_3] (schema version [_4]).", $user->name, $plugin->label, $plugin->version || '-', $ver));
             }
         } elsif ($ver && !$old_plugin_schema) {
@@ -2633,6 +2641,8 @@ sub core_finish {
         }
         $plugin_schema->{$plugin->id} = $ver;
     }
+
+    # Updates versioning in mt_config table
     if (keys %$plugin_schema) {
         $cfg->PluginSchemaVersion($plugin_schema, 1);
     }
@@ -2641,7 +2651,7 @@ sub core_finish {
     if ( !defined($cfg->MTVersion) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
     }
-    $cfg->save_config unless $DryRun;
+    $cfg->save_config;
 
     # do one last thing....
     if ((ref $App) && ($App->can('finish'))) {
@@ -3039,8 +3049,9 @@ sub core_update_records {
     my $continue = 0;
     my $driver = $class->driver;
 
-    if ($sql && $DryRun) {
-        $self->run_callbacks('SQL', $sql);
+    if ($DryRun) {
+        $self->run_callbacks('SQL', $sql) if $sql;
+        return 1;
     }
     return 1 if $DryRun;
 
