@@ -978,6 +978,10 @@ sub core_upgrade_functions {
                 },
             },
         },
+        'core_update_password_recover_template' => {
+            version_limit => 4.0068,
+            code => \&core_update_password_recover_template,
+        },
     };
 }
 
@@ -1297,6 +1301,31 @@ sub core_populate_author_auth_type {
         }
     }
 }
+
+sub core_update_password_recover_template {
+    my $self = shift;
+    $self->progress($self->translate_escape("Updating password recover email template..."));
+    require MT::DefaultTemplates;
+    my $recover_tmpl = MT::DefaultTemplates->load ({ identifier => 'recover-password' });
+    my $recover_text = MT->instance->translate_templatized($recover_tmpl->{text});
+    require MT::Template;
+    my @tmpls = MT::Template->load ({ type => 'email', identifier => 'recover-password' });
+    for my $tmpl (@tmpls) {
+        my $backup = $tmpl->clone;
+        delete $backup->{column_values}
+          ->{id};    # make sure we don't overwrite original
+        delete $backup->{changed_cols}->{id};
+        $backup->name(
+            $backup->name . ' (Backup during upgrade to version 4.24)' );
+        $backup->type('backup');
+        $backup->identifier(undef);
+        $backup->save;
+
+        $tmpl->text ($recover_text);
+        $tmpl->save;
+    }
+}
+
 
 sub migrate_nofollow_settings {
     my $self = shift;

@@ -58,7 +58,7 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
     '_USAGE_GROUP_PROFILE' => 'This screen allows you to edit the group\'s profile.',
     '_USAGE_PASSWORD_RESET' => 'You can initiate password recovery on behalf of this user. If you choose to do so, an email will be sent to directly to <strong>[_1]</strong> with a randomly generated new password.',
     '_WARNING_PASSWORD_RESET_SINGLE' => 'You are about to reset the password for "[_1]". A new password will be randomly generated and sent directly to their email address ([_2]).  Do you wish to continue?',
-    '_WARNING_PASSWORD_RESET_MULTI' => 'You are about to reset the password for the selected users. New passwords will be randomly generated and sent directly to their email address(es). Do you wish to continue?',
+    '_WARNING_PASSWORD_RESET_MULTI' => 'You are about to send email(s) to allow the selected user(s) to reset their passwords.  Do you wish to continue?',
     '_USAGE_NEW_AUTHOR' => 'From this screen you can create a new user in the system.',
     '_USAGE_NEW_GROUP' => 'From this screen you can create a new group in the system.',
     '_USAGE_ROLES' => 'From this screen you can view the roles you have for your weblogs, and create roles. You can see the details for the different roles by clicking on their names.',

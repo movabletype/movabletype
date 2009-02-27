@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::fr;
 use strict;
@@ -5229,6 +5229,33 @@ Base de recherche : [_2]",
 	'Upgrade to Feeds.App' => 'Mise à jour Feeds.App',
 	'Create a Feed Widget' => 'Créer un widget à partir d\'un flux',
 
+	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Une requête a été faite pour changer votre mot de passe dans Movable Type. Pour terminer cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe.', # Translate - New
+      'If you did not request this change, you can safely ignore this email.' => 'Si vous n\'avez pas demandé ce changement, vous pouvez ignorer cet email.', # Translate - New
+      '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
+      '[_1] contains an invalid character: [_2]' => '[_1] contient un caractère invalide : [_2]', # Translate - New
+      'Email address is required.' => 'Adresse email obligatoire', # Translate - New
+      'User not found' => 'Utilisateur introuvable', # Translate - New
+      'Password reset token not found' => 'Token de remise à zéro du mot de passe introuvable', # Translate - New
+      'Email address not found' => 'Adresse email introuvable', # Translate - New
+      'Your request to change your password has expired.' => 'Votre demande de modification de mot de passe a expirée.', # Translate - New
+      'Invalid password reset request' => 'Requête de modification de mot de passe invalide', # Translate - New
+      'Please confirm your new password' => 'Merci de confirmer votre nouveau mot de passe', # Translate - New
+      'Password do not match' => 'Le mot de passe ne correspond pas', # Translate - New
+      'Invalid [_1] parameter.' => 'Paramètre [_1] invalide', # Translate - New
+      'Blog, BlogID or Template param must be specified.' => 'Les paramètres Blog, BlogID ou Template doivent être spécifiés.', # Translate - New
+      'Error saving [_1] record # [_3]: [_2]...' => 'Erreur en enregistrant l\'enregistrement [_1] # [_3]: [_2]...', # Translate - New
+      'The email address provided is not unique.  Please enter your username.' => 'Une adresse  email n\'est pas unique. Merci de saisir votre nom de membre.', # Translate - New
+      'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Un email contenant un lien pour réinitialiser votre mot de passe a été envoyé à votre adresse email ([_1]).', # Translate - New
+      'Choose New Password' => 'Choisissez un nouveau mot de passe', # Translate - New
+      'You must set Local Archive Path.' => 'Vous devez renseigner Local Archive Path.', # Translate - New
+      'You must set a valid Archive URL.' => 'Vous devez renseigner une Archive URL valide.', # Translate - New
+      'You must set a valid Local Archive Path.' => 'Vous devez renseigner un Local Archive Path valide.', # Translate - New 
+      'Passwords do not match' => 'Les mots de passe ne correspondent pas', # Translate - New
+      'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Réinitialisation du mot de passe pour l\'utilisateur \'[_1]\' (utilisateur #[_2]) a réussi. Lien envoyé à l\'adresse suivante : [_3]', # Translate - New
+      'Updating password recover email template...' => 'Template de réinitialisation du mot de passe en cours de mise à jour...', # Translate - New
+      'The email address provided is not unique.  Please enter your username.' => 'L\'adresse email fournie n\'est pas unique. Merci de saisir votre nom d\'utilisateur.', # Translate - New
+      '_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point d\'envoyer des emails pour permettre aux utilisateurs sélectionnés de réinitialiser leurs mots de passe. Voulez-vous continuer ?',
+      "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Un lien de réinitialisation de mot de passe envoyé à [_3] pour utilisateur \'[_1]\' (utilisateur #[_2]).', 
 );
 
 ## New words: 190

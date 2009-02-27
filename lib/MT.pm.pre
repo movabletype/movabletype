@@ -1989,6 +1989,27 @@ sub find_file {
     undef;
 }
 
+sub load_global_tmpl {
+    my $app = shift;
+    my ( $arg, $blog_id ) = @_;
+    $blog_id ||= '0';
+
+    my $terms = {};
+    if ( 'HASH' eq ref($arg) ) {
+        $terms = { %$arg, blog_id => $blog_id };
+    }
+    else {
+        $terms = {
+            type => $arg,
+            blog_id => $blog_id,
+        }
+    }
+    require MT::Template;
+    my $tmpl = MT::Template->load( $terms );
+    $app->set_default_tmpl_params($tmpl) if $tmpl;
+    $tmpl;
+}
+
 sub load_tmpl {
     my $mt = shift;
     if ( exists($mt->{component}) && ( $mt->{component} ne 'Core' ) ) {
