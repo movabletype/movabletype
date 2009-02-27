@@ -106,39 +106,199 @@ sub get_syscheck_content {
 
 sub start_recover {
     my $app = shift;
+    my ($param) = @_;
+    $param ||= {};
+    $param->{'email'} = $app->param('email');
+    $param->{'return_to'} = $app->param('return_to');
     $app->add_breadcrumb( $app->translate('Password Recovery') );
-    $app->load_tmpl('dialog/recover.tmpl');
+
+    my $blog_id = $app->param('blog_id');
+    my $tmpl = $app->load_global_tmpl( { identifier => 'new_password_reset_form',
+            $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
+    if (!$tmpl) {
+        $tmpl = $app->load_tmpl( 'cms/dialog/recover.tmpl' );
+    }
+    $tmpl->param($param);
+    return $tmpl;
 }
 
 sub recover_password {
-    my $app   = shift;
-    my $q     = $app->param;
-    my $name  = $q->param('name');
-    my $class = ref $app eq 'MT::App::Upgrader' ? 'MT::BasicAuthor' : $app->model('author');
-    eval "use $class;";
-    my @author = $class->load( { name => $name } );
-    my $author;
-    foreach (@author) {
-        next unless $_->password && ( $_->password ne '(none)' );
-        $author = $_;
+    my $app      = shift;
+    my $email    = $app->param('email');
+    my $username = $app->param('name');
+
+    if ( !$email ) {
+        return $app->start_recover(
+            { error => $app->translate('Email Address is required for password recovery.'), } );
     }
 
-    my ( $rc, $res ) =
-      reset_password( $app, $author, $q->param('hint'), $name );
+    # Searching user by email (and username)
+    my $class
+        = ref $app eq 'MT::App::Upgrader'
+        ? 'MT::BasicAuthor'
+        : $app->model('author');
+    eval "use $class;";
 
-    if ($rc) {
-        $app->add_breadcrumb( $app->translate('Password Recovery') );
-        $app->load_tmpl(
-            'dialog/recover.tmpl',
-            {
-                recovered => 1,
-                email     => $author->email
+    my @all_authors = $class->load(
+        { email => $email, ( $username ? ( name => $username ) : () ) } );
+    my @authors;
+    my $user;
+    foreach (@all_authors) {
+        next unless $_->password && ( $_->password ne '(none)' );
+        push( @authors, $_ );
+    }
+    if ( !@authors ) {
+        return $app->start_recover(
+            {   error => $app->translate('User not found'),
+                ( $username ? ( not_unique_email => 1 ) : () ),
             }
         );
     }
-    else {
-        $app->error($res);
+    elsif ( @authors > 1 ) {
+        return $app->start_recover( { not_unique_email => 1, } );
     }
+    $user = pop @authors;
+
+    # Generate Token
+    require MT::Util::Captcha;
+    my $salt    = MT::Util::Captcha->_generate_code(8);
+    my $expires = time + ( 60 * 60 );
+    my $token = MT::Util::perl_sha1_digest_hex(
+        $salt . $expires . $app->config->SecretToken );
+
+    $user->password_reset($salt);
+    $user->password_reset_expires($expires);
+    $user->password_reset_return_to($app->param('return_to'))
+        if $app->param('return_to');
+    $user->save;
+
+    # Send mail to user
+    my %head = (
+        id      => 'recover_password',
+        To      => $email,
+        From    => $app->config('EmailAddressMain') || $email,
+        Subject => $app->translate("Password Recovery")
+    );
+    my $charset = $app->charset;
+    my $mail_enc = uc( $app->config('MailEncoding') || $charset );
+    $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
+
+    my $body = $app->build_email(
+        'recover-password',
+        {         link_to_login => $app->base
+                . $app->uri
+                . "?__mode=new_pw&token=$token&email="
+                . encode_url($email),
+        }
+    );
+
+    require MT::Mail;
+    MT::Mail->send( \%head, $body )
+        or return $app->error(
+        $app->translate(
+            "Error sending mail ([_1]); please fix the problem, then "
+                . "try again to recover your password.",
+            MT::Mail->errstr
+        )
+        );
+
+    return $app->start_recover( { recovered => 1, } );
+}
+
+sub new_password {
+    my $app = shift;
+    my ($param) = @_;
+    $param ||= {};
+
+    my $token = $app->param('token');
+    if ( !$token ) {
+        return $app->start_recover(
+            { error => $app->translate('Password reset token not found'), } );
+    }
+
+    my $email = $app->param('email');
+    if ( !$token ) {
+        return $app->start_recover(
+            { error => $app->translate('Email address not found'), } );
+    }
+
+    my $class = $app->model('author');
+    my @users = $class->load( { email => $email } );
+    if ( !@users ) {
+        return $app->start_recover(
+            { error => $app->translate('User not found'), } );
+    }
+
+    # comparing token
+    require MT::Util::Captcha;
+    my $user;
+    for my $u (@users) {
+        my $salt    = $u->password_reset;
+        my $expires = $u->password_reset_expires;
+        my $compare = MT::Util::perl_sha1_digest_hex(
+            $salt . $expires . $app->config->SecretToken );
+        if ( $compare eq $token ) {
+            if ( time > $u->password_reset_expires ) {
+                return $app->start_recover(
+                    {   error => $app->translate(
+                            'Your request to change your password has expired.'
+                        ),
+                    }
+                );
+            }
+            $user  = $u;
+            last;
+        }
+    }
+
+    if ( !$user ) {
+        return $app->start_recover(
+            { error => $app->translate('Invalid password reset request'), } );
+    }
+
+    # Password reset
+    my $new_password = $app->param('password');
+    if ($new_password) {
+        my $again = $app->param('password_again');
+        if ( !$again ) {
+            $param->{'error'}
+                = $app->translate('Please confirm your new password');
+        }
+        elsif ( $new_password ne $again ) {
+            $param->{'error'} = $app->translate('Passwords do not match');
+        }
+        else {
+            my $redirect = $user->password_reset_return_to || '';
+            $user->set_password($new_password);
+            $user->password_reset(undef);
+            $user->password_reset_expires(undef);
+            $user->password_reset_return_to(undef);
+            $user->save;
+            $app->param( 'username', $user->name )
+                if $user->type == MT::Author::AUTHOR();
+            $app->login;
+            if ($redirect) {
+                return $app->redirect($redirect);
+            } else{
+                return $app->return_to_dashboard( redirect => 1 );
+            }
+        }
+    }
+
+    $param->{'email'}          = $email;
+    $param->{'token'}          = $token;
+    $param->{'password'}       = $app->param('password');
+    $param->{'password_again'} = $app->param('password_again');
+    $app->add_breadcrumb( $app->translate('Password Recovery') );
+
+    my $blog_id = $app->param('blog_id');
+    my $tmpl = $app->load_global_tmpl( { identifier => 'new_password',
+            $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
+    if (!$tmpl) {
+        $tmpl = $app->load_tmpl( 'cms/dialog/new_password.tmpl' );
+    }
+    $tmpl->param($param);
+    return $tmpl;
 }
 
 sub do_list_action {
@@ -1529,14 +1689,21 @@ sub reset_password {
     return ( 0, $app->translate("User does not have email address") )
       unless $author->email;
 
-    my @pool = ( 'a' .. 'z', 0 .. 9 );
-    my $pass = '';
-    for ( 1 .. 8 ) { $pass .= $pool[ rand @pool ] }
-    $author->set_password($pass);
+    # Generate Token
+    require MT::Util::Captcha;
+    my $salt    = MT::Util::Captcha->_generate_code(8);
+    my $expires = time + ( 60 * 60 );
+    my $token = MT::Util::perl_sha1_digest_hex(
+        $salt . $expires . $app->config->SecretToken );
+
+    $author->password_reset($salt);
+    $author->password_reset_expires($expires);
+    $author->password_reset_return_to(undef);
     $author->save;
+
     my $message =
       $app->translate(
-"Password was reset for user '[_1]' (user #[_2]). Password was sent to the following address: [_3]",
+"A password reset link has been sent to [_3] for user  '[_1]' (user #[_2]).",
         $author->name, $author->id, $author->email );
     $app->log(
         {
@@ -1547,34 +1714,37 @@ sub reset_password {
         }
     );
 
-    my $address =
-      defined $author->nickname
-      ? $author->nickname . ' <' . $author->email . '>'
-      : $author->email;
+    # Send mail to user
+    my $email = $author->email;
     my %head = (
         id      => 'recover_password',
-        To      => $address,
-        From    => $app->config('EmailAddressMain') || $address,
+        To      => $email,
+        From    => $app->config('EmailAddressMain') || $email,
         Subject => $app->translate("Password Recovery")
     );
     my $charset = $app->charset;
     my $mail_enc = uc( $app->config('MailEncoding') || $charset );
     $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
-    my $body = $app->build_email( 'recover-password.tmpl',
-        { user_password => $pass, link_to_login => $app->base . $app->mt_uri } 
+    my $body = $app->build_email(
+        'recover-password',
+        {         link_to_login => $app->base
+                . $app->uri
+                . "?__mode=new_pw&token=$token&email="
+                . encode_url($email),
+        }
     );
-    $body = wrap_text( $body, 72 );
+
     require MT::Mail;
     MT::Mail->send( \%head, $body )
-      or return (
-        0,
+        or return $app->error(
         $app->translate(
             "Error sending mail ([_1]); please fix the problem, then "
-              . "try again to recover your password.",
+                . "try again to recover your password.",
             MT::Mail->errstr
         )
-      );
+        );
+
     ( 1, $message );
 }
 
