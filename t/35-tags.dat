@@ -164,7 +164,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
 { "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -411,7 +411,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
 { "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png;"}, #362
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
