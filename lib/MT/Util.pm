@@ -982,7 +982,7 @@ sub make_unique_category_basename {
 sub make_unique_author_basename {
     my ($author) = @_;
     my $name = MT::Util::dirify($author->nickname || '');
-    return "author" . $author->id if $name !~ /\w/;
+    $name = "author" if $name !~ /\w/;
 
     my $limit = MT->instance->config('AuthorBasenameLimit');
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;

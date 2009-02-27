@@ -433,14 +433,13 @@ sub can_administer {
 
 sub entry_prefs {
     my $author = shift;
-    my @prefs = split /,/, ($author->column('entry_prefs') || '');
+    my @prefs = split /,/, ((@_ ? $_[0] : $author->column('entry_prefs')) || '');
     my %prefs;
     foreach (@prefs) {
         my ($name, $value) = split /=/, $_, 2;
         $prefs{$name} = $value;
     }
     if (@_) {
-        %prefs = (%prefs, @_);
         my $pref = '';
         foreach (keys %prefs) {
             $pref .= ',' if $pref ne '';
