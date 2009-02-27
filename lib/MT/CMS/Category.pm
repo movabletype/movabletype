@@ -462,24 +462,23 @@ sub move_category {
         }
     }
     $cat->parent($new_parent_id);
-    my @siblings = $class->load(
-        {
-            parent  => $cat->parent,
-            blog_id => $cat->blog_id
+    if ( $type eq 'category' ) {    # folder is able to have a same label
+        my @siblings = $class->load(
+            {   parent  => $cat->parent,
+                blog_id => $cat->blog_id
+            }
+        );
+        foreach (@siblings) {
+            return $app->errtrans(
+                "The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.",
+                $_->label
+            ) if $_->label eq $cat->label;
         }
-    );
-    foreach (@siblings) {
-
-        # FIXME: Language should support both category / folder
-        return $app->errtrans(
-"The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.",
-            $_->label
-        ) if $_->label eq $cat->label;
     }
 
     $cat->save
       or return $app->error(
-        $app->translate( "Saving category failed: [_1]", $cat->errstr ) );
+        $app->translate( "Saving [_1] failed: [_2]", $class->class_label, $cat->errstr ) );
 }
 
 1;
