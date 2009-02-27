@@ -9,7 +9,7 @@ package MT::ConfigMgr;
 use strict;
 use base qw( MT::ErrorHandler );
 
-use vars qw( $cfg );
+our $cfg;
 sub instance {
     return $cfg if $cfg;
     $cfg = __PACKAGE__->new;
@@ -242,8 +242,10 @@ sub save_config {
             $data .= $mgr->{__settings}{$_}{key} . ' ' . $settings->{$_} . "\n";
         }
     }
-    require MT::Config;
-    my ($config) = MT::Config->load() || new MT::Config;
+
+    my $cfg_class = MT->model('config') or return;
+
+    my ($config) = $cfg_class->load() || $cfg_class->new;
 
     if ($data !~ m/schemaversion/i) {
         if ($config->id && (($config->data || '') =~ m/schemaversion/i)) {
@@ -290,9 +292,11 @@ sub read_config_file {
 sub read_config_db {
     my $class = shift;
     my $mgr = $class->instance;
-    require MT::Config;
-    my ($config) = eval { MT::Config->search };
+    my $cfg_class = MT->model('config') or return;
+
+    my ($config) = eval { $cfg_class->search };
     if ($config) {
+        my $was_dirty = $mgr->is_dirty;
         my $data = $config->data;
         my @data = split /[\r?\n]/, $data;
         my $line = 0;
@@ -305,6 +309,7 @@ sub read_config_db {
             next unless $var && defined($val);
             $mgr->set($var, $val, 1);
         }
+        $mgr->clear_dirty unless $was_dirty;
     }
     $mgr->{__read_db} = 1;
     1;
