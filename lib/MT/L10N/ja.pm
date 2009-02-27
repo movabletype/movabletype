@@ -326,6 +326,8 @@ use vars qw( @ISA %Lexicon );
 	'_USAGE_FORGOT_PASSWORD_1' => 'パスワードを再設定しました。新しいパスワードを通知します。',
 	'_USAGE_FORGOT_PASSWORD_2' => '以下のURLから、新しいパスワードを使ってMovable Typeにログインし、すぐにパスワードを変更してください。',
 	'Mail Footer' => 'メールフッター',
+	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'パスワードをリセットしようとしています。以下のリンクをクリックして、新しいパスワードを設定してください。',
+	'If you did not request this change, you can safely ignore this email.' => 'このメールに心当たりがないときは、何もせずに無視してください。',
 
 ## default_templates/main_index.mtml
 
@@ -912,6 +914,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'パスワードの再設定',
+	'Email Address is required for password recovery.' => 'メールアドレスが必要です。',
+	'User not found' => 'ユーザーが見つかりませんでした。',
+	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'メールを送信できませんでした。問題を解決してから再度パスワードの再設定を行ってください: [_1]',
+	'Password reset token not found' => 'パスワードをリセットするためのトークンが見つかりませんでした。',
+	'Email address not found' => 'メールアドレスが見つかりませんでした。',
+	'Your request to change your password has expired.' => 'パスワードのリセットを始めてから決められた時間を経過してしまいました。',
+	'Invalid password reset request' => '不正なリクエストです。',
+	'Please confirm your new password' => '新しいパスワードを確認してください。',
+	'Passwords do not match' => 'パスワードが一致していません。',
 	'That action ([_1]) is apparently not implemented!' => 'アクション([_1])が実装されていません。',
 	'General Settings' => '全般',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
@@ -950,7 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'パスワード再設定用のフレーズが設定されていないため、再設定できません。',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'パスワードの再設定に失敗しました(フレーズ: [_1])。',
 	'User does not have email address' => 'ユーザーのメールアドレスがありません。',
-	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'ユーザー\'[_1]\'(ID:[_2])のパスワードがリセットされ、メールアドレス([_3])あてに通知されました。',
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'パスワード再設定用のリンクがユーザー\'[_1]\'(ID:[_2])のメールアドレス([_3])あてに通知されました。',
 	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'メールを送信できませんでした。問題を解決してから再度パスワードの再設定を行ってください: [_1]',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">ログ</a>を参照してください。',
 	'[_1] is not a directory.' => '[_1]はディレクトリではありません。',
@@ -1706,6 +1717,7 @@ use vars qw( @ISA %Lexicon );
 	'Replacing file formats to use CategoryLabel tag...' => 'ファイルフォーマットをMTCategoryLabelに変換しています...',
 
 ## lib/MT/PluginData.pm
+	'Updating password recover email template...' => 'パスワードの再設定（メール テンプレート）を更新しています...',
 	'Plugin Data' => 'プラグインデータ',
 
 ## lib/MT/Author.pm
@@ -1821,7 +1833,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid category ID \'[_1]\'' => 'Invalid category ID \'[_1]\'',
 
 ## lib/MT/App/CMS.pm
-	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワードはランダムに生成され、直接それぞれのメールアドレスに送られます。
+	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。
 
 実行しますか?',
 	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？
@@ -1948,6 +1960,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## lib/MT/App/Search.pm
 	'Invalid [_1] parameter.' => '[_1]が不正です。',
+	'Invalid [_1] parameter.' => '[_1]パラメータが不正です。',
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
 	'Invalid format: [_1]' => '不正なformatです: [_1]',
@@ -3970,6 +3983,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'This new publishing profile will update all of your templates.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
 
+## tmpl/cms/dialog/new_password.tmpl
+	'Choose New Password' => '新しいパスワードを選択',
+
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Template Set' => 'テンプレートセットの初期化',
 	'Refresh [_1] template set' => 'テンプレートセット「[_1]」の初期化',
@@ -4005,10 +4021,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Remember these settings' => '設定を記憶',
 
 ## tmpl/cms/dialog/recover.tmpl
+	'The email address provided is not unique.  Please enter your username.' => '同じメールアドレスを持っているユーザーがいます。ユーザー名を入力してください。',
+	'An email with a link to reset your password has been sent to your email address ([_1]).' => '「[_1]」にパスワードをリセットするためのリンクを含むメールを送信しました。',
 	'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'パスワードを変更しました。新しいパスワードはメールアドレス([_1])に送信されます。',
 	'Recover (s)' => '再設定 (s)',
 	'Recover' => '再設定',
 	'Go Back (x)' => '戻る (x)',
+	'Go Back' => '戻る',
 
 ## tmpl/cms/dialog/create_association.tmpl
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',

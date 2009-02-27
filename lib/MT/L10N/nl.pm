@@ -5229,7 +5229,33 @@ Zoekbasis: [_2]",
 ## plugins/WidgetManager/WidgetManager.pl
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
 	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...',
-
+        'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Er is een verzoek ingediend om uw wachtwoord aan te passen in Movable Type.  Gelieve dit te bevestigen door op onderstaande link te klikken om een nieuw wachtwoord te kiezen.', # Translate - New
+        'If you did not request this change, you can safely ignore this email.' => 'Als u deze wijziging niet heeft aangevraagd, kunt u deze e-mail gerust negeren.', # Translate - New
+        '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
+        '[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]', # Translate - New
+        'Email address is required.' => 'E-mail adres is vereist', # Translate - New
+        'User not found' => 'Gebruiker niet gevonden', # Translate - New
+        'Password reset token not found' => 'Wachtwoord reset token niet gevonden', # Translate - New
+        'Email address not found' => 'E-mail adres niet gevonden', # Translate - New
+        'Your request to change your password has expired.' => 'Uw verzoek om uw wachtwoord aan te passen is verlopen', # Translate - New
+        'Invalid password reset request' => 'Ongeldig verzoek om wachtwoord te veranderen', # Translate - New
+        'Please confirm your new password' => 'Gelieve uw nieuwe wachtwoord te bevestigen', # Translate - New
+        'Password do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
+        'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter', # Translate - New
+        'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.', # Translate - New
+        'Error saving [_1] record # [_3]: [_2]...' => 'Fout bij opslaan [_1] record # [_3]: [_2]...', # Translate - New
+        'The email address provided is not unique.  Please enter your username.' => 'Een e-mail is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
+        'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).', # Translate - New
+        'Choose New Password' => 'Nieuw wachtwoord kiezen', # Translate - New
+        'You must set Local Archive Path.' => 'U moet een lokaal archiefpad instellen.', # Translate - New
+        'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.', # Translate - New
+        'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.', # Translate - New
+	'Passwords do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
+	'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Wachtwoord reset voor gebruiker \'[_1]\' (gebruiker #[_2]) geslaagd. Reset link verstuurd naar volgend adres: [_3]', # Translate - New
+	'Updating password recover email template...' => 'Sjabloon wachtwoordrecuperatie e-mail wordt bijgewerkt...', # Translate - New
+	'The email address provided is not unique.  Please enter your username.' => 'Het opgegeven e-mail adres is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
+	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt e-mails te versturen waarmee de geselecteerde gebruikers hun wachtwoord kunnen aanpassen. Bent u zeker?',
+	"A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Een link om het wachtwoord opnieuw in te stellen is verzonden naar [_3] voor gebruiker \'[_1]\' (gebruiker #[_2]).', 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',

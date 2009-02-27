@@ -82,7 +82,7 @@
         <input type="password" name="password" id="password" class="pw" />
     </mtapp:setting>
     <mt:if name="can_recover_password">
-    <div class="right"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></div>
+    <div class="right"><a href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>"><__trans phrase="Forgot your password?"></a></div>
     </mt:if>
     <p><label><__trans phrase="Remember me?"></label> <input type="checkbox" name="remember" value="1" accesskey="r" class="cb" /></p>
     <div class="actions-bar actions-bar-login">

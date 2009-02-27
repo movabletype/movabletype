@@ -40,6 +40,10 @@ sub init {
         red              => \&do_red,
         generate_captcha => \&generate_captcha,
 
+        start_recover    => \&start_recover,
+        recover          => \&recover,
+        new_pw           => \&new_pw,
+
         # deprecated
         cmtr_name_js   => \&commenter_name_js,
         cmtr_status_js => \&commenter_status_js,
@@ -1838,6 +1842,21 @@ sub blog {
         $app->{_blog} = MT::Blog->load( int($blog_id) );
     }
     return $app->{_blog};
+}
+
+sub start_recover {
+    require MT::CMS::Tools;
+    MT::CMS::Tools::start_recover(@_);
+}
+
+sub recover {
+    require MT::CMS::Tools;
+    MT::CMS::Tools::recover_password(@_);
+}
+
+sub new_pw {
+    require MT::CMS::Tools;
+    MT::CMS::Tools::new_password(@_);
 }
 
 1;

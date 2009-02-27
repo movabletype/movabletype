@@ -142,6 +142,10 @@ sub core_methods {
             code           => "${pkg}Tools::recover_password",
             requires_login => 0,
         },
+        'new_pw' => {
+            code => "${pkg}Tools::new_password",
+            requires_login => 0,
+        },
 
         'view_log'             => "${pkg}Log::view",
         'list_log'             => "${pkg}Log::view",

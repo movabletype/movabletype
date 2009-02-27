@@ -41,6 +41,9 @@ __PACKAGE__->install_properties({
         # meta properties
         'widgets' => 'hash meta',
         'favorite_blogs' => 'array meta',
+        'password_reset' => 'string meta',
+        'password_reset_expires' => 'string meta',
+        'password_reset_return_to' => 'string meta',
     },
     defaults => {
         type => 1,
