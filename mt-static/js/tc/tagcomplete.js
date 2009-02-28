@@ -27,8 +27,11 @@ TC.TagComplete = function( id, words )
 {
     this.id = id;
     this.tagCompleteNode = new TC.TagCompleteNode();
-    for ( var i = 0; i < words.length; i++ )
+    for ( var i = 0; i < words.length; i++ ) {
+        if ( typeof words[i] != 'string' )
+            words[i] = words[i] + '';
         this.tagCompleteNode.add( words[i] );
+    }
     this.delimiter = ' ';
     this.currentWord = '';
     this.insert_pos = -1;

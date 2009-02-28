@@ -135,6 +135,15 @@ ok(remove_html('<![CDATA[]]><script>alert("foo")</script><![CDATA[]]>'), '<![CDA
 ok(remove_html('<![CDATA[one]]><script>alert("foo")</script><![CDATA[two]]>'), '<![CDATA[one]]>alert("foo")<![CDATA[two]]>', "remove html prevents abuse, saves plain text");
 ok(remove_html('<![CDATA[<foo>]]><script>alert("foo")</script><![CDATA[two]]>'), '<![CDATA[&lt;foo>]]>alert("foo")<![CDATA[two]]>', "remove html prevents abuse, saves plain text, escapes inner < characters");
 
+ok(MT::Util::to_json({'foo' => 2}), '{"foo":2}');
+ok(MT::Util::to_json({'foo' => 1}), '{"foo":1}');
+ok(MT::Util::to_json({'foo' => 0}), '{"foo":0}');
+ok(MT::Util::to_json({'foo' => 'hoge'}), '{"foo":"hoge"}');
+ok(MT::Util::to_json({'foo' => 'ho1ge'}), '{"foo":"ho1ge"}');
+ok(MT::Util::to_json(['foo', 'bar', 'baz']), '["foo","bar","baz"]');
+ok(MT::Util::to_json(['foo', 1, 'bar', 2, 3, 4]), '["foo",1,"bar",2,3,4]');
+ok(MT::Util::to_json(['foo', 1, 'bar', { hoge => 1, moge => 'a' }]), '["foo",1,"bar",{"hoge":1,"moge":"a"}]');
+
 =pod
 
 my %dates = (
