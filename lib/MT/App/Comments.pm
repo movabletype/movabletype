@@ -344,7 +344,7 @@ sub do_signup {
     my $param = {};
     $param->{$_} = $q->param($_)
         foreach
-        qw(blog_id entry_id static email url username nickname email hint return_url );
+        qw(blog_id entry_id static email url username nickname email return_url );
 
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
 
@@ -1731,7 +1731,6 @@ sub edit_commenter_profile {
             name     => $commenter->name,
             nickname => $commenter->nickname,
             email    => $commenter->email,
-            hint     => $commenter->hint,
             url      => $commenter->url,
             blog_id  => $blog_id,
             $entry_id ? ( entry_url => $url ) : ( return_url => $url ),
@@ -1757,7 +1756,7 @@ sub save_commenter_profile {
 
     my %param
         = map { $_ => scalar( $q->param($_) ) }
-        qw( name nickname email password pass_verify hint url entry_url return_url external_auth blog_id );
+        qw( name nickname email password pass_verify url entry_url return_url external_auth blog_id );
     $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
@@ -1772,7 +1771,7 @@ sub save_commenter_profile {
 
     unless ( $param{external_auth} ) {
         my $nickname = $param{nickname};
-        unless ( $nickname && $param{email} && $param{hint} ) {
+        unless ( $nickname && $param{email} ) {
             $param{error} = $app->translate(
                 'All required fields must have valid values.');
             return $app->build_page( 'profile.tmpl', \%param );
@@ -1804,7 +1803,6 @@ sub save_commenter_profile {
         && ( $param{nickname} ne $cmntr->nickname ) ? 1 : 0;
     $cmntr->nickname( $param{nickname} ) if $param{nickname};
     $cmntr->email( $param{email} )       if $param{email};
-    $cmntr->hint( $param{hint} )         if $param{hint};
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && !$param{external_auth};

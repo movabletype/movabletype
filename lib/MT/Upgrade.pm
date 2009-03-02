@@ -1931,7 +1931,6 @@ sub seed_database {
     $author->type(MT::Author::AUTHOR());
     $author->set_password(exists $param{user_password} ? uri_unescape($param{user_password}) : 'Nelson');
     $author->email(exists $param{user_email} ? uri_unescape($param{user_email}) : '');
-    $author->hint(exists $param{user_hint} ? uri_unescape($param{user_hint}) : '');
     $author->nickname(exists $param{user_nickname} ? uri_unescape($param{user_nickname}) : '');
     $author->is_superuser(1);
     $author->can_create_blog(1);

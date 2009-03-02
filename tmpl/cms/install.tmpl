@@ -203,14 +203,6 @@ function validate(f) {
         <input type="password" class="pw" name="admin_password_confirm" />
     </mtapp:setting>
 
-    <mtapp:setting
-        id="hint"
-        label="<__trans phrase="Password recovery word/phrase">"
-        label_class="top-label"
-        hint="<__trans phrase="This word or phrase will be required to recover your password if you forget it.">">
-        <input name="hint" id="hint" class="ti" value="<mt:var name="hint" escape="html">" />
-    </mtapp:setting>
-
 </mt:if>
 
 <mt:if name="auth_mode_ldap">

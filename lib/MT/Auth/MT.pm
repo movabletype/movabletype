@@ -26,11 +26,6 @@ sub sanity_check {
             return $app->translate('Failed to verify current password.');
         }
     }
-    my $hint = $q->param('hint') || '';
-    $hint =~ s!^\s+|\s+$!!gs;
-    unless ($hint) {
-        return $app->translate('Password hint is required.');
-    }
     return '';
 }
 

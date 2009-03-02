@@ -2006,7 +2006,7 @@ sub create_user_pending {
         or return $app->error(
         $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
 
-    my ( $password, $hint, $url );
+    my ( $password, $url );
     unless ( $q->param('external_auth') ) {
         $password = $q->param('password');
         unless ($password) {
@@ -2015,14 +2015,6 @@ sub create_user_pending {
 
         if ( $q->param('password') ne $q->param('pass_verify') ) {
             return $app->error( $app->translate('Passwords do not match.') );
-        }
-
-        $hint = $q->param('hint');
-        unless ($hint) {
-            return $app->error(
-                $app->translate(
-                    "User requires password recovery word/phrase.")
-            );
         }
 
         $url = $q->param('url');
@@ -2099,7 +2091,6 @@ sub create_user_pending {
     unless ( $q->param('external_auth') ) {
         $user->set_password( $q->param('password') );
         $user->url($url)   if $url;
-        $user->hint($hint) if $hint;
     }
     else {
         $user->password('(none)');
