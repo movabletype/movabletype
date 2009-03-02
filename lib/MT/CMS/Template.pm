@@ -112,8 +112,6 @@ sub edit {
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
         $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
-        require MT::PublishOption;
-        $param->{static_maps} = $obj->build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
 
         my $filter = $app->param('filter_key');
         if ($param->{template_group} eq 'email') {
@@ -297,22 +295,18 @@ sub edit {
             $param->{archive_types} = \@archive_types;
 
             # Populate template maps for this template
+            require MT::PublishOption;
             my $maps = _populate_archive_loop( $app, $blog, $obj );
             if (@$maps) {
                 $param->{object_loop} = $param->{template_map_loop} = $maps
                   if @$maps;
                 my %at;
-                my $build_type = MT::PublishOption::DYNAMIC();
-                my $build_type_0 = 0;
                 foreach my $map ( @$maps ) {
                     $at{ $map->{archive_label} } = 1;
-                    $build_type_0 = $map->{map_build_type};
-                    $build_type = $map->{map_build_type}
-                        if MT::PublishOption::DYNAMIC() ne $map->{map_build_type};
+                    $param->{static_maps} ||= ( $map->{map_build_type} != MT::PublishOption::DYNAMIC()
+                                                && $map->{map_build_type} != MT::PublishOption::DISABLED() );
                 }
                 $param->{enabled_archive_types} = join(", ", sort keys %at);
-                $param->{static_maps} = $build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
-                $param->{build_type_0} = 1 unless $build_type_0;
             } else {
                 $param->{can_rebuild} = 0;
             }
