@@ -55,6 +55,7 @@ sub core_tags {
             'EntryIfCategory?' => \&_hdlr_if_category,
 
             'IfExternalUserManagement?' => \&_hdlr_if_external_user_management,
+            'IfCommenterRegistrationAllowed?' => \&_hdlr_if_commenter_registration_allowed,
 
             # Subcategory handlers
             'SubCatIsFirst?' => \&_hdlr_sub_cat_is_first,
@@ -20114,6 +20115,23 @@ turned on.
 sub _hdlr_if_external_user_management {
     my ($ctx) = @_;
     return $ctx->{config}->ExternalUserManagement;
+}
+
+###########################################################################
+
+=head2 IfCommenterRegistrationAllowed
+
+A conditional tag that returns true when user registration is
+turned on.
+
+=cut
+
+sub _hdlr_if_commenter_registration_allowed {
+    my ($ctx) = @_;
+    my $registration = $ctx->{config}->CommenterRegistration;
+    my $blog = $ctx->stash('blog');
+    return $registration->{Allow}
+        && ( $blog && $blog->allow_commenter_regist );
 }
 
 1;
