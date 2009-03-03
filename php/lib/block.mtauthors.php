@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
-    $localvars = array('authors', 'authors_counter', 'blog_id');
+    $localvars = array('authors', 'author', 'authors_counter', 'blog_id');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');
