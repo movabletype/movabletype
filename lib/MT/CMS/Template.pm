@@ -112,6 +112,9 @@ sub edit {
         my $published_url = $obj->published_url;
         $param->{published_url} = $published_url if $published_url;
         $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
+        require MT::PublishOption;
+        $param->{static_maps} = ( $obj->build_type != MT::PublishOption::DYNAMIC()
+                                  && $obj->build_type != MT::PublishOption::DISABLED() );
 
         my $filter = $app->param('filter_key');
         if ($param->{template_group} eq 'email') {
@@ -295,7 +298,6 @@ sub edit {
             $param->{archive_types} = \@archive_types;
 
             # Populate template maps for this template
-            require MT::PublishOption;
             my $maps = _populate_archive_loop( $app, $blog, $obj );
             if (@$maps) {
                 $param->{object_loop} = $param->{template_map_loop} = $maps
