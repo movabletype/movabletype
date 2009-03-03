@@ -2002,9 +2002,12 @@ sub create_user_pending {
     my $cfg = $app->config;
     $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
 
-    my $blog = $app->model('blog')->load( $param->{blog_id} )
-        or return $app->error(
-        $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+    my $blog;
+    if ( exists $param->{blog_id} ) {
+        $blog = $app->model('blog')->load( $param->{blog_id} )
+            or return $app->error(
+                $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+    }
 
     my ( $password, $url );
     unless ( $q->param('external_auth') ) {
@@ -2075,8 +2078,9 @@ sub create_user_pending {
         return $app->error( $app->translate("URL is invalid.") );
     }
 
-    if ( my $provider
-        = MT->effective_captcha_provider( $blog->captcha_provider ) )
+    if ( $blog
+      && ( my $provider
+        = MT->effective_captcha_provider( $blog->captcha_provider ) ) )
     {
         unless ( $provider->validate_captcha($app) ) {
             return $app->error(
