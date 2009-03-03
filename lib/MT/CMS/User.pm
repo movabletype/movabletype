@@ -1667,9 +1667,6 @@ sub save_filter {
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
           if ( !$app->param('pass') );
-        return $eh->error(
-            $app->translate("User requires password recovery word/phrase") )
-          if ( !$app->param('hint') );
     }
     my $email = $app->param('email');
     return $eh->error(

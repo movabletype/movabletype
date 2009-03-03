@@ -1992,11 +1992,14 @@ sub create_user_pending {
     my $cfg = $app->config;
     $param->{ 'auth_mode_' . $cfg->AuthenticationModule } = 1;
 
-    my $blog = $app->model('blog')->load( $param->{blog_id} )
-        or return $app->error(
-        $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+    my $blog;
+    if ( exists $param->{blog_id} ) {
+        $blog = $app->model('blog')->load( $param->{blog_id} )
+            or return $app->error(
+                $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
+    }
 
-    my ( $password, $hint, $url );
+    my ( $password, $url );
     unless ( $q->param('external_auth') ) {
         $password = $q->param('password');
         unless ($password) {
@@ -2005,14 +2008,6 @@ sub create_user_pending {
 
         if ( $q->param('password') ne $q->param('pass_verify') ) {
             return $app->error( $app->translate('Passwords do not match.') );
-        }
-
-        $hint = $q->param('hint');
-        unless ($hint) {
-            return $app->error(
-                $app->translate(
-                    "User requires password recovery word/phrase.")
-            );
         }
 
         $url = $q->param('url');
@@ -2073,8 +2068,9 @@ sub create_user_pending {
         return $app->error( $app->translate("URL is invalid.") );
     }
 
-    if ( my $provider
-        = MT->effective_captcha_provider( $blog->captcha_provider ) )
+    if ( $blog
+      && ( my $provider
+        = MT->effective_captcha_provider( $blog->captcha_provider ) ) )
     {
         unless ( $provider->validate_captcha($app) ) {
             return $app->error(
@@ -2089,7 +2085,6 @@ sub create_user_pending {
     unless ( $q->param('external_auth') ) {
         $user->set_password( $q->param('password') );
         $user->url($url)   if $url;
-        $user->hint($hint) if $hint;
     }
     else {
         $user->password('(none)');

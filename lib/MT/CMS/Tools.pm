@@ -4,7 +4,7 @@ use strict;
 use Symbol;
 
 use MT::I18N qw( encode_text wrap_text );
-use MT::Util qw( encode_url encode_html decode_html encode_js );
+use MT::Util qw( encode_url encode_html decode_html encode_js trim );
 
 sub system_check {
     my $app = shift;
@@ -140,8 +140,11 @@ sub start_recover {
 
 sub recover_password {
     my $app      = shift;
-    my $email    = $app->param('email');
+    my $email    = $app->param('email') || '';
     my $username = $app->param('name');
+
+    $email = trim($email);
+    $username = trim($username) if $username;
 
     if ( !$email ) {
         return $app->start_recover(
@@ -199,12 +202,14 @@ sub recover_password {
     my $mail_enc = uc( $app->config('MailEncoding') || $charset );
     $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
+    my $blog_id = $app->param('blog_id');
     my $body = $app->build_email(
         'recover-password',
         {         link_to_login => $app->base
                 . $app->uri
                 . "?__mode=new_pw&token=$token&email="
-                . encode_url($email),
+                . encode_url($email)
+                . ($blog_id ? "&blog_id=$blog_id" : ''),
         }
     );
 

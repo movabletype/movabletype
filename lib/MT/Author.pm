@@ -18,7 +18,6 @@ __PACKAGE__->install_properties({
         'type' => 'smallint not null',
         'email' => 'string(75)',
         'url' => 'string(255)',
-        'hint' => 'string(75)',
         'public_key' => 'text',
         'preferred_language' => 'string(50)',
         'api_password' => 'string(60)',
@@ -37,6 +36,9 @@ __PACKAGE__->install_properties({
         'auth_type' => 'string(50)',
         'userpic_asset_id' => 'integer',
         'basename' => 'string(255)',
+
+        # Deprecated; The hint is not used from 4.25 in the password recovery
+        'hint' => 'string(75)',
 
         # meta properties
         'widgets' => 'hash meta',
@@ -858,6 +860,7 @@ The author's homepage URL.
 =item * hint
 
 The answer to the question used when recovering the user's password.
+The hint is not used from 4.25 in the password recovery.
 
 =item * external_id
 

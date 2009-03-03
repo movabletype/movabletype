@@ -5256,7 +5256,7 @@ Suchbasis: [_2]",
        'Updating password recover email template...' => 'Aktualisierung des Passwort-Wiederherstellungs-Templates...',
        'The email address provided is not unique.  Please enter your username.' => 'Die angegebene E-Mail-Adresse wird bereits genutzt. Bitte geben Sie Ihren Benutzernamen ein.',
        '_WARNING_PASSWORD_RESET_MULTI' => 'Sie sind dabei Email(s) an ausgewählte Nutzer zu senden um deren Password zurück zu setzen. Möchten Sie fortfahren?',
-       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])' 
+       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])',
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Beim Einlesen von [_1] ist ein Fehler aufgetreten (zurückgegebener HTTP-Status: [_2]). Es wird die zuletzt erfolgreich eingelesene Version des Feeds verwendet.',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Beim Einlesen von [_1] ist ein Fehler aufgetreten (zurückgegebener HTTP-Status: [_2]). Es liegt keine vorherige Version des Feeds vor.',

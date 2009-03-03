@@ -304,15 +304,19 @@ TC.attachLoadEvent(init);
                 <input type="password" name="pass_verify" id="pass_verify" class="full-width" value="" />
             </div>
         </mtapp:setting>
-        <mtapp:setting
-            id="hint"
-            required="1"
-            label="<__trans phrase="Password recovery word/phrase">"
-            hint="<__trans phrase="This word or phrase will be required to recover a forgotten password.">">
-            <div class="textarea-wrapper">
-                <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
-            </div>
-        </mtapp:setting>
+        <mt:unless name="new_object">
+            <mt:if name="hint">
+                <mtapp:setting
+                    id="hint"
+                    required="0"
+                    label="<__trans phrase="Password recovery word/phrase">"
+                    hint="<__trans phrase="This word or phrase is not used in the password recovery.">">
+                    <div class="textarea-wrapper">
+                        <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
+                    </div>
+                </mtapp:setting>
+            </mt:if>
+        </mt:Unless>
         </div>
     </mt:if>
 
