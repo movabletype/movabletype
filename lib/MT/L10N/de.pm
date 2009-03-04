@@ -714,7 +714,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '[_1] Update: [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Mailversand fehlgeschlagen([_1]). Überprüfen Sie die MailTransfer-Einstellungen.',
 	'The value you entered was not a valid email address' => 'Die E-Mail-Adresse ist ungültig',
-	'The value you entered was not a valid URL' => 'Die Webadresse (URL) ist ungültig', # Translate - New # OK
+	'The value you entered was not a valid URL' => 'Die Webadresse (URL) ist ungültig',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'Die angegebene E-Mail-Adresse befindet sich bereits auf der Benachrichtigungsliste für dieses Weblog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnent \'[_1]\' (ID: [_2]) von \'[_3]\' aus Adressbuch gelöscht',
 
@@ -961,9 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => 'Kann Vorlage \'[_1]\' nicht finden',
 	'Can\'t find entry \'[_1]\'' => 'Kann Eintrag \'[_1]\' nicht finden',
 	'[_1] is not a hash.' => '[_1] ist kein Hash-Wert.',
-	'You have an error in your \'[_1]\' attribute: [_2]' => 'Fehler im \'[_1]\'-Attribut: [_2]', # Translate - New # OK
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Fehler im \'[_2]\'-Attribut: [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'Fehler im \'tag\'-Attribut: [_1]',
 	'No such user \'[_1]\'' => 'Kein Benutzer \'[_1]\'',
 	'You used <$MTEntryFlag$> without a flag.' => 'Sie haben <$MTEntryFlag$> ohne Flag verwendet.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Sie haben mit einem [_1]-Vorlagenbefehl \'[_2]\'-Archive verlinkt, ohne diese vorher zu veröffentlichen.',
@@ -1171,6 +1169,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Tags' => 'Tags verwalten',
 	'Manage Address Book' => 'Adressbuch verwalten',
 	'View Activity Log' => 'Aktivitätsprotokoll ansehen',
+	'Manage Users' => 'Benutzer verwalten',
 	'Create Entries' => 'Neuer Eintrag',
 	'Publish Entries' => 'Einträge veröffentlichen',
 	'Send Notifications' => 'Benachrichtigungen versenden',
@@ -1932,7 +1931,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'Ihre Vox-Blog-URL',
 	'Learn more about Vox.' => 'Mehr über Vox erfahren',
 	'Sign in using your Gmail account' => 'Mit Ihrem Gmail-Konto anmelden',
-	'Sign in to Movable Type with your[_1] Account[_2]' => 'Bei Movable Type mit Ihrem[_1]-Konto[_2] anmelden', # Translate - New # OK
+	'Sign in to Movable Type with your[_1] Account[_2]' => 'Bei Movable Type mit Ihrem[_1]-Konto[_2] anmelden',
 	'Turn on OpenID for your Yahoo! account now' => 'Aktivieren Sie jetzt OpenID für Ihr Yahoo!-Benutzerkonto',
 	'Your AIM or AOL Screen Name' => 'Ihr AIM- oder AOL-Bildschirmname',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Mit Ihrem AIM- oder AOL-Bildschirmnamen anmelden. Ihr Bildschirmname wird öffentlich angezeigt.',
@@ -2482,7 +2481,7 @@ use vars qw( @ISA %Lexicon );
 	'asset' => 'Asset',
 	'published' => 'veröffentlicht',
 	'unpublished' => 'nicht veröffentlicht',
-	'review' => 'zur Überprüfung', # Translate - Case # OK
+	'review' => 'zur Überprüfung',
 	'scheduled' => 'zeitgeplant',
 	'spam' => 'Spam',
 	'Select A User:' => 'Benutzerkonto wählen: ',
@@ -2571,7 +2570,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a license' => 'Creative Commons-Lizenz wählen',
 
 ## tmpl/cms/list_member.tmpl
-	'Manage Users' => 'Benutzer verwalten',
 	'Are you sure you want to remove this role?' => 'Rolle wirklich entfernen?',
 	'Add a user to this blog' => 'Benutzer zu diesem Blog hinzufügen',
 	'Show only users where' => 'Zeige nur Benutzer mit',
@@ -2690,7 +2688,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Review)' => 'Unveröffentlicht (Prüfung)',
 	'Scheduled' => 'Zu bestimmtem Zeitpunkt',
 	'Published' => 'Veröffentlicht',
-	'Unpublished (Spam)' => 'Unveröffentlicht (Spam)', # Translate - New # OK
+	'Unpublished (Spam)' => 'Unveröffentlicht (Spam)',
 	'View' => 'Ansehen',
 	'Share' => 'Teilen',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,Kommentar,Kommentare]</a>',
@@ -2731,7 +2729,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Anzeigeoptionen speichern',
 	'OK' => 'OK',
 	'Close display options' => 'Anzeigeoptionen schließen',
-	'This post was classified as spam.' => 'Dieser Eintrag wurde als Spam erfasst.', # Translate - New # OK
+	'This post was classified as spam.' => 'Dieser Eintrag wurde als Spam erfasst.',
 	'Spam Details' => 'Spam-Details',
 	'Score' => 'Bewertung',
 	'Results' => 'Treffer',
@@ -2914,8 +2912,8 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Nur zu prüfende Seiten anzeigen',
 	'Only show scheduled entries' => 'Nur zeitgeplante Einträge anzeigen',
 	'Only show scheduled pages' => 'Nur zeitgeplante Seiten anzeigen',
-	'Only show spam entries' => 'Nur Spam-Einträge anzeigen', # Translate - New # OK
-	'Only show spam pages' => 'Nur Spam-Seiten anzeigen', # Translate - New # OK
+	'Only show spam entries' => 'Nur Spam-Einträge anzeigen',
+	'Only show spam pages' => 'Nur Spam-Seiten anzeigen',
 	'View entry' => 'Eintrag ansehen',
 	'View page' => 'Seite ansehen',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Keine Einträge gefunden. Jetzt <a href="[_1]>einen Eintrag anlegen</a>.',
@@ -3399,7 +3397,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'Die URL darf keine Leerzeichen enthalten',
 	'You can not have spaces in the path.' => 'Der Pfad darf keine Leerzeichen enthalten',
 	'Path is not valid.' => 'Pfad ungültig',
-	'Site Path' => 'Lokaler Pfad', # Translate - New # OK
+	'Site Path' => 'Lokaler Pfad',
 	'Archive URL' => 'Archivadresse',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -3643,7 +3641,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blog-Vorlagen',
-	'Show All' => 'Alle zeigen',
+	'Show All Templates' => 'Alle Vorlagen anzeigen', # Translate - New # OK
 	'Blog Publishing Settings' => 'Veröffentlichtungseinstellungen',
 	'You have successfully deleted the checked template(s).' => 'Vorlage(n) erfolgreich gelöscht.',
 	'Your templates have been published.' => 'Die Vorlagen wurden veröffentlicht.',
@@ -4111,7 +4109,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Benutzer \'[_1]\' (ID:[_2]) erfolgreich registriert.',
 	'Thanks for the confirmation.  Please sign in.' => 'Danke für die Bestätigung. Bitte melden Sie sich an.',
 	'Login required' => 'Anmeldung erforderlich',
-	'Title or Content is required.' => 'Titel oder Text erforderlich', # Translate - New # OK
+	'Title or Content is required.' => 'Titel oder Text erforderlich',
 	'System template entry_response not found in blog: [_1]' => 'Systemvorlage entry_response für Blog [_1] nicht gefunden',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Neuer Eintrag \'[_1]\' zu Blog \'[_2]\' hinzugefügt.',
 	'Id or Username is required' => 'ID oder Benutzername erforderlich',
@@ -5067,12 +5065,12 @@ Suchbasis: [_2]",
 	'Select a Style' => 'Design wählen',
 	'3-Columns, Wide, Thin, Thin' => 'Dreispaltig: breit - schmal - schmal',
 	'3-Columns, Thin, Wide, Thin' => 'Dreispaltig: schmal - breit - schmal',
-	'3-Columns, Thin, Thin, Wide' => 'Dreispaltig: schmal - schmal - breit', # Translate - New # OK
+	'3-Columns, Thin, Thin, Wide' => 'Dreispaltig: schmal - schmal - breit',
 	'2-Columns, Thin, Wide' => 'Zweispaltig: schmal - breit',
 	'2-Columns, Wide, Thin' => 'Zweispaltig: breit - schmal',
 	'2-Columns, Wide, Medium' => 'Zweispaltig: breit - mittel',
 	'2-Columns, Medium, Wide' => 'Zweispaltig: mittel - breit',
-	'1-Column, Wide, Bottom' => 'Einspaltig: breit - Fußzeile', # Translate - New # OK
+	'1-Column, Wide, Bottom' => 'Einspaltig: breit - Fußzeile',
 	'None available' => 'Keine verfügbar',
 	'Applying...' => 'Wende an...',
 	'Apply Design' => 'Design übernehmen',
@@ -5340,7 +5338,7 @@ Suchbasis: [_2]",
 	'Main Column Posting Form (All Media)' => 'Hauptspalte: Eingabeformular (alle Medien)',
 	'Main Column Posting Form (Text Only, Like Twitter)' => 'Hauptspalte: Eingabeformular (nur Text, z.B. Twitter)',
 	'Main Column Registration' => 'Hauptspalte: Registrierung',
-	'Fans' => 'Fans', # Translate - New # OK
+	'Fans' => 'Fans',
 	'Popular Entries' => 'Beliebte Einträge',
 	'Elsewhere' => 'Anderswo',
 	'Following' => 'Benutzer, denen Sie folgen',
@@ -5408,7 +5406,7 @@ Suchbasis: [_2]",
 	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
 	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
 	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
-	'Note: This post is being held for approval by the site owner.' => 'Hinweis: Dieser Eintrag ist vom Betreiber der Site noch nicht freigeschaltet worden.', # Translate - New # OK
+	'Note: This post is being held for approval by the site owner.' => 'Hinweis: Dieser Eintrag ist vom Betreiber der Site noch nicht freigeschaltet worden.',
 	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Aktuelle Kommentare von <strong>[_2]</strong> zu [_3]</a>',
 	'Posted to [_1]' => 'Veröffentlicht in [_1]',
 	'[_1] posted [_2] on [_3]' => '[_1] hat [_2] auf [_3] veröfentlicht',
@@ -5523,7 +5521,7 @@ Suchbasis: [_2]",
 ## plugins/Motion/templates/Motion/sidebar.mtml
 
 ## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'veröffentlicht von [_1] auf [_2]', # Translate - New # OK
+	'posted by [_1] on [_2]' => 'veröffentlicht von [_1] auf [_2]',
 
 ## plugins/Motion/templates/Motion/banner_footer.mtml
 
@@ -5531,7 +5529,7 @@ Suchbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/comments.mtml
 	'what will you say?' => 'Was würden Sie sagen?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] alt Antwort auf den Kommentar von [_3][_4]', # Translate - New # OK
+	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] alt Antwort auf den Kommentar von [_3][_4]',
 	'Write a comment...' => 'Schreiben Sie einen Kommmentar...',
 
 ## plugins/Motion/templates/Motion/search_results.mtml
@@ -5609,19 +5607,222 @@ Suchbasis: [_2]",
 ## plugins/ActionStreams/blog_tmpl/elsewhere.mtml
 	'Find [_1] Elsewhere' => '[_1] anderswo finden',
 
+## plugins/ActionStreams/streams.yaml
+	'Currently Playing' => 'Aktuelle Spiele', # Translate - New # OK
+	'The games in your collection you\'re currently playing' => 'Die Spiele aus Ihrer Sammlung, die Sie derzeit spielen', # Translate - New # OK
+	'Comments you have made on the web' => 'Kommentare, die Sie im Web geschrieben haben', # Translate - New # OK
+	'Colors' => 'Farben', # Translate - New # OK
+	'Colors you saved' => 'Ihre gespeicherten Farben', # Translate - New # OK
+	'Palettes' => 'Paletten', # Translate - New # OK
+	'Palettes you saved' => 'Ihre gespeicherten Paletten', # Translate - New # OK
+	'Patterns' => 'Muster', # Translate - New # OK
+	'Patterns you saved' => 'Ihre gespeicherten Muster', # Translate - New # OK
+	'Favorite Palettes' => 'Lieblings-Paletten', # Translate - New # OK
+	'Palettes you saved as favorites' => 'Paletten, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Reviews' => 'Kritiken', # Translate - New # OK
+	'Your wine reviews' => 'Ihre Wein-Kritiken', # Translate - New # OK
+	'Cellar' => 'Weinkeller', # Translate - New # OK
+	'Wines you own' => 'Weine in Ihrer Sammlung', # Translate - New # OK
+	'Shopping List' => 'Shopping-Liste', # Translate - New # OK
+	'Wines you want to buy' => 'Weine, die Sie kaufen möchten', # Translate - New # OK
+	'Links' => 'Links',
+	'Your public links' => 'Ihre öffentlichen Links', # Translate - New # OK
+	'Dugg' => 'Gediggt', # Translate - New # OK
+	'Links you dugg' => 'Links, die Sie gediggt haben', # Translate - New # OK
+	'Submissions' => 'Eingereicht', # Translate - New # OK
+	'Links you submitted' => 'Links, die Sie eingereicht haben', # Translate - New # OK
+	'Found' => 'Gefunden',
+	'Photos you found' => 'Fotos, die Sie gefunden haben', # Translate - New # OK
+	'Favorites' => 'Favoriten', # Translate - New # OK
+	'Photos you marked as favorites' => 'Fotos, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Photos' => 'Fotos', # Translate - New # OK
+	'Photos you posted' => 'Fotos, die Sie veröffentlicht haben', # Translate - New # OK
+	'Likes' => 'Gefallen', # Translate - New # OK
+	'Things from your friends that you "like"' => 'Veröffentlichungen Ihrer Freude, die Ihnen gefallen haben', # Translate - New # OK
+	'Leaderboard scores' => 'Leaderboard-Scores', # Translate - New # OK
+	'Your high scores in games with leaderboards' => 'Ihre High Scores in Leaderboard-Spielen', # Translate - New # OK
+	'Posts' => 'Einträge', # Translate - New # OK
+	'Blog posts about your search term' => 'Blog-Einträge zu Ihrem Suchbegriff', # Translate - New # OK
+	'Stories' => 'Nachrichten', # Translate - New
+	'News Stories matching your search' => 'Nachrichten zu Ihrem Suchbegriff', # Translate - New # OK
+	'To read' => 'Zu lesen', # Translate - New # OK
+	'Books on your "to-read" shelf' => 'Bücher, die Sie noch lesen möchten', # Translate - New # OK
+	'Reading' => 'Aktuelle Lektüre', # Translate - New # OK
+	'Books on your "currently-reading" shelf' => 'Bücher, die Sie derzeit lesen', # Translate - New # OK
+	'Read' => 'Gelesen', # Translate - New # OK
+	'Books on your "read" shelf' => 'Bücher, die Sie bereits gelesen haben', # Translate - New # OK
+	'Shared' => 'Geteilt', # Translate - New # OK
+	'Your shared items' => 'Geteilte Artikel', # Translate - New # OK
+	'Deliveries' => 'Lieferungen', # Translate - New # OK
+	'Icon sets you were delivered' => 'Ihre gelieferten Icon-Gruppen', # Translate - New # OK
+	'Notices' => 'Hinweise', # Translate - New # OK
+	'Notices you posted' => 'Hinweise, die Sie veröffentlicht haben', # Translate - New # OK
+	'Intas' => 'Intas', # Translate - New # OK
+	'Links you saved' => 'Ihre veröffentlichten Links', # Translate - New # OK
+	'Photos you posted that were approved' => 'Fotos von Ihnen, die auf Zustimmung gestoßen sind', # Translate - New # OK
+	'Recent events' => 'Aktuelle Ereignisse', # Translate - New # OK
+	'Events from your recent events feed' => 'Ereignisse von Ihrem Aktuelle Ereignisse-Feed', # Translate - New # OK
+	'Apps you use' => 'Anwendungen', # Translate - New # OK
+	'The applications you saved as ones you use' => 'Anwendungen, die Sie einsetzen', # Translate - New # OK
+	'Videos you saved as watched' => 'Videos, die Sie gesehen haben', # Translate - New # OK
+	'Jaikus' => 'Jaikus', # Translate - New # OK
+	'Jaikus you posted' => 'Ihre Jaikus', # Translate - New # OK
+	'Games you saved as favorites' => 'Spiele, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Achievements' => 'Erfolge', # Translate - New # OK
+	'Achievements you won' => 'Erfolge, die Sie erzielt haben', # Translate - New # OK
+	'Tracks' => 'Lieder', # Translate - New # OK
+	'Songs you recently listened to (High spam potential!)' => 'Lieder, die Sie kürzlich gehört haben (hohe Spam-Gefahr!)', # Translate - New # OK
+	'Loved Tracks' => 'Lieblingslieder', # Translate - New # OK
+	'Songs you marked as "loved"' => 'Ihre Lieblingslieder', # Translate - New # OK
+	'Journal Entries' => 'Tagebuch-Einträge', # Translate - New # OK
+	'Your recent journal entries' => 'Ihre aktuellen Tagebuch-Einträge', # Translate - New # OK
+	'Events' => 'Veranstaltungen', # Translate - Case # OK
+	'The events you said you\'ll be attending' => 'Veranstaltungen, an denen Sie vorhaben teilzunehmen', # Translate - New # OK
+	'Your public posts to your journal' => 'Ihre öffentlichen Tagebuch-Einträge', # Translate - New # OK
+	'Queue' => 'Ausleihliste', # Translate - New # OK
+	'Movies you added to your rental queue' => 'Filme auf Ihrer Ausleihliste', # Translate - New # OK
+	'Recent Movies' => 'Aktuelle Filme', # Translate - New # OK
+	'Recent Rental Activity' => 'Kürzlich ausgeliehene Filme', # Translate - New # OK
+	'Kudos' => 'Kudos', # Translate - New # OK
+	'Kudos you have received' => 'Kudos, die Sie erhalten haben', # Translate - New # OK
+	'Favorite Songs' => 'Lieblings-Lieder', # Translate - New # OK
+	'Songs you marked as favorites' => 'Ihre Lieblings-Lieder', # Translate - New # OK
+	'Favorite Artists' => 'Lieblings-Musiker', # Translate - New # OK
+	'Artists you marked as favorites' => 'Ihre Lieblings-Musiker', # Translate - New # OK
+	'Stations' => 'Sender', # Translate - New # OK
+	'Radio stations you added' => 'Radiostationen, die Sie in Ihre Liste aufgenommen haben', # Translate - New # OK
+	'List' => 'Liste', # Translate - New # OK
+	'Things you put in your list' => 'Dinge auf Ihrer Liste', # Translate - New # OK
+	'Notes' => 'Notizen', # Translate - New # OK
+	'Your public notes' => 'Ihre öffentlichen Notizen', # Translate - New # OK
+	'Comments you posted' => 'Ihre Kommentare', # Translate - New # OK
+	'Articles you submitted' => 'Artikel, die Sie eingereicht haben', # Translate - New # OK
+	'Articles you liked (your votes must be public)' => 'Artikel, die Ihnen gefallen haben (bei öffentlicher Abstimmung)', # Translate - New # OK
+	'Dislikes' => 'Nicht gefallen', # Translate - New # OK
+	'Articles you disliked (your votes must be public)' => 'Artikel, die Ihnen nicht gefallen haben (bei öffentlicher Abstimmung)', # Translate - New # OK
+	'Slideshows you saved as favorites' => 'Slideshows, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Slideshows' => 'Slideshows', # Translate - New # OK
+	'Slideshows you posted' => 'Slideshows, die Sie veröffentlicht haben', # Translate - New # OK
+	'Your achievements for achievement-enabled games' => 'Ihre Achievements bei Spielen, die das Achievements-System unterstützen', # Translate - New # OK
+	'Stuff' => 'Sachen', # Translate - New # OK
+	'Things you posted' => 'Sachen, die Sie veröffentlicht haben', # Translate - New # OK
+	'Tweets' => 'Tweets', # Translate - New # OK
+	'Your public tweets' => 'Ihre öffentlichen Tweets', # Translate - New # OK
+	'Public tweets you saved as favorites' => 'Öffentliche Tweets, die Sie als Ihre Favoriten gespeichert haben', # Translate - New # OK
+	'Tweets about your search term' => 'Tweets zu Ihren Suchbegriffen', # Translate - New # OK
+	'Saved' => 'Gespeichert', # Translate - New # OK
+	'Things you saved as favorites' => 'Dinge, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Events you are watching or attending' => 'Veranstaltungen, an denen Sie teilnehmen', # Translate - New # OK
+	'Videos you posted' => 'Videos, die Sie veröffentlicht haben', # Translate - New # OK
+	'Videos you liked' => 'Videos, die Ihnen gefallen haben', # Translate - New # OK
+	'Public assets you saved as favorites' => 'Öffentliche Assets, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+	'Your public photos in your Vox library' => 'Ihre öffentlichen Fotos in Ihrer Vox-Sammlung', # Translate - New # OK
+	'Your public posts to your Vox' => 'Ihre öffentlichen Einträge auf Vox', # Translate - New # OK
+	'The posts available from the website\'s feed' => 'Die im Feed der Website verfügbaren Einträge.', # Translate - New # OK
+	'Wists' => 'Wists', # Translate - New # OK
+	'Stuff you saved' => 'Sachen, die Sie gespeichert haben', # Translate - New # OK
+	'Gamerscore' => 'Gamerscore', # Translate - New # OK
+	'Notes when your gamerscore passes an even number' => 'Benachrichtigt Sie, wenn Ihr Gamerscore eine gerade Zahl überschritten wird', # Translate - New # OK
+	'Places you reviewed' => 'Orte, über die Sie Kritiken geschrieben haben', # Translate - New # OK
+	'Videos you saved as favorites' => 'Vidoes, die Sie als Favoriten gespeichert haben', # Translate - New # OK
+
 ## plugins/ActionStreams/services.yaml
+	'1up.com' => '1up.com', # Translate - New # OK
+	'43Things' => '43Things', # Translate - New # OK
 	'Screen name' => 'Bildschirmname',
-	'User ID' => 'Benutzer-ID',
+	'backtype' => '', # Translate - New # OK
+	'Bebo' => 'Bebo', # Translate - New # OK
+	'Catster' => 'Catster', # Translate - New # OK
+	'COLOURlovers' => 'COLOURlovers', # Translate - New # OK
+	'Cork\'\'d\'' => 'Cork\'d', # Translate - New # OK
+	'Delicious' => 'Delicious', # Translate - New # OK
+	'Destructoid' => 'Destructoid', # Translate - New # OK
+	'Digg' => 'Digg', # Translate - New # OK
+	'Dodgeball' => 'Dodgeball', # Translate - New # OK
+	'Dogster' => 'Dogster', # Translate - New # OK
+	'Dopplr' => 'Dopplr', # Translate - New # OK
+	'Facebook' => 'Facebook',
+	'User ID' => 'Benutzerkennung',
+	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'Ihre Facebook-Benutzerkennung ist die Zahl in der Webadresse Ihres Profils; z.B. http://www.facebook.com/profile.php?id=24400320', # Translate - New # OK
+	'FFFFOUND!' => 'FFFFOUND!', # Translate - New # OK
+	'Flickr' => 'Flickr', # Translate - New # OK
+	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Ihre Flickr-Benutzerkennung ist NICHT Ihr Benutzername, sondern der Teil der Webadresse Ihres Profils mit dem "@"-Zeichen; z.B. 36381329@N00', # Translate - New # OK
+	'FriendFeed' => 'FriendFeed', # Translate - New # OK
+	'Gametap' => 'Gametap', # Translate - New # OK
+	'Google Blogs' => 'Google Blogs', # Translate - New # OK
 	'Search term' => 'Suchbegriff',
+	'Google News' => 'Google News', # Translate - New # OK
 	'Search for' => 'Suchen nach',
+	'Goodreads' => 'Goodreads', # Translate - New # OK
+	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'Ihre Goodreads-Benutzerkennung ist die Zahl in der Webadresse Ihres Profils; z.B. http://www.goodreads.com/user/show/123456', # Translate - New # OK
+	'Google Reader' => 'Google Reader', # Translate - New # OK
 	'Sharing ID' => 'Sharing-ID',
+	'Hi5' => 'Hi5', # Translate - New # OK
+	'IconBuffet' => 'IconBuffet', # Translate - New # OK
+	'ICQ' => 'ICQ', # Translate - New # OK
 	'UIN' => 'UIN',
+	'Identi.ca' => 'Identi.ca', # Translate - New # OK
+	'Iminta' => 'Iminta', # Translate - New # OK
+	'iStockPhoto' => 'iStockPhoto', # Translate - New # OK
+	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'Ihre istockphoto-Benutzerkennung ist die Zahl in der Webadresse Ihres Profils; z.B. http://www.istockphoto.com/user_view.php?id=1234567', # Translate - New # OK
+	'IUseThis' => 'IUseThis', # Translate - New # OK
+	'iwatchthis' => 'iwatchthis', # Translate - New # OK
+	'Jabber' => 'Jabber', # Translate - New # OK
 	'Jabber ID' => 'Jabber-ID',
+	'Jaiku' => 'Jaiku', # Translate - New # OK
+	'Kongregate' => 'Kongregate', # Translate - New # OK
+	'Last.fm' => 'Last.fm', # Translate - New # OK
+	'LinkedIn' => 'LinkedIn', # Translate - New # OK
 	'Profile URL' => 'Profil-URL',
+	'Ma.gnolia' => 'Ma.gnolia', # Translate - New # OK
+	'MOG' => 'MOG', # Translate - New # OK
+	'MSN Messenger\'' => 'MSN Messenger', # Translate - New # OK
+	'Multiply' => 'Multiply', # Translate - New # OK
+	'MySpace' => 'MySpace', # Translate - New # OK
+	'Netflix' => 'Netflix', # Translate - New # OK
 	'Netflix RSS ID' => 'Netflix RSS-ID',
+	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Ihre Netflix RSS-ID finden Sie, indem Sie auf einer beliebigen Netflix-Seite unten auf "RSS" klicken und dann den "Queue"-Link koppieren', # Translate - New # OK
+	'Netvibes' => 'Netvibes', # Translate - New # OK
+	'Newsvine' => 'Newsvine', # Translate - New # OK
+	'Ning' => 'Ning', # Translate - New # OK
 	'Social Network URL' => 'Social Network-URL',
+	'Ohloh' => 'Ohloh', # Translate - New # OK
+	'Orkut' => 'Orkut', # Translate - New # OK
+	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'Ihre Orkut-Benutzerkennung ist die Zahl in der Webadresse Ihres Profils nach "uid="; z.B. http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789', # Translate - New # OK
+	'Pandora' => 'Pandora', # Translate - New # OK
+	'Picasa Web Albums' => 'Picasa Web-Alben', # Translate - New # OK
+	'p0pulist' => 'p0pulist', # Translate - New # OK
+	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'Ihre p0pulist-Benutzerkennung ist die Zahl in der Webadresse Ihres Profil; z.B. http://p0pulist.com/list/hot_list/10000', # Translate - New # OK
+	'Pownce' => 'Pownce', # Translate - New # OK
+	'Reddit' => 'Reddit', # Translate - New # OK
+	'Skype' => 'Skype', # Translate - New # OK
+	'SlideShare' => 'SlideShare', # Translate - New # OK
+	'Smugmug' => 'Smugmug', # Translate - New # OK
+	'SonicLiving' => 'SonicLiving', # Translate - New # OK
+	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'Ihre SonicLiving-Benutzerkennung ist die Zahl in der Webadresse Ihrer Share&Subscribe-Seite; z.B. http://sonicliving.com/user/12345/feeds', # Translate - New # OK
+	'Steam' => 'Steam', # Translate - New # OK
+	'StumbleUpon' => 'StumbleUpon', # Translate - New # OK
+	'Tabblo' => 'Tabblo', # Translate - New # OK
+	'Blank should be replaced by positive sign (+).' => 'Verwenden Sie statt Leerzeichen Pluszeichen (+)', # Translate - New # OK
+	'Tribe' => 'Tribe', # Translate - New # OK
+	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'Ihre Tribe-Benutzerkennung ist die Zahl in der Webadresse Ihres Profils; z.B. http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a', # Translate - New # OK
+	'Tumblr' => 'Tumblr', # Translate - New # OK
+	'Twitter' => 'Twitter', # Translate - New # OK
+	'TwitterSearch' => 'TwitterSearch', # Translate - New # OK
+	'Uncrate' => 'Uncrate', # Translate - New # OK
+	'Upcoming' => 'Upcoming', # Translate - New # OK
+	'Viddler' => 'Viddler', # Translate - New # OK
+	'Vimeo' => 'Vimeo', # Translate - New # OK
+	'Virb' => 'Virb', # Translate - New # OK
+	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'Ihre Virb-Benutzerkennung ist die Zahl in der Webadresse Ihrer Startseite; z.B. http://www.virb.com/backend/2756504321310091/your_home', # Translate - New # OK
 	'Vox name' => 'Vox-Name',
+	'Website' => 'Website', # Translate - New # OK
+	'Xbox Live\'' => 'Xbox Live', # Translate - New # OK
 	'Gamertag' => 'Gamertag',
+	'Yahoo! Messenger\'' => 'Yahoo! Messenger', # Translate - New # OK
+	'Yelp' => 'Yelp', # Translate - New # OK
+	'YouTube' => 'YouTube', # Translate - New # OK
+	'Zooomr' => 'Zooomr', # Translate - New # OK
 
 ## plugins/ActionStreams/config.yaml
 	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Verwaltet die Benutzerkonten und Ereignisse des Autors auf anderen Websites',
@@ -5629,6 +5830,7 @@ Suchbasis: [_2]",
 	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Wirklich ALLE Ereignisse in ALLEN Action Streams anzeigen?',
 	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Gelöschte Ereignisse, die bei dem jeweiligen Web-Dienst noch aufgeführt sind, werden bei der nächsten Aktualisierung wieder hinzugefügt. Gelöscht werden nur Ereignisse, die nicht mehr in Ihrem Profil verfügbar sind. Gewählte Ereignisse wirklich löschen?',
 	'Hide All' => 'Alle verbergen',
+	'Show All' => 'Alle zeigen',
 	'Poll for new events' => 'Auf neue Ereignisse abfragen',
 	'Update Events' => 'Ereignisse aktualisieren',
 	'Recent Actions' => 'Aktuelle Aktionen',
@@ -5654,7 +5856,7 @@ Suchbasis: [_2]",
 	'Actions that are shown' => 'Angezeigte Ereignisse',
 	'Actions that are hidden' => 'Versteckte Ereignisse',
 	'No such event [_1]' => 'Kein solches Ereignis [_1]',
-	'[_1] Profile' => '[_1] Profil', # Translate - New # OK
+	'[_1] Profile' => '[_1] Profil',
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
 	'No user [_1]' => 'Kein Benutzer [_1]',
@@ -5731,6 +5933,6 @@ Suchbasis: [_2]",
 
 );
 
-## New words: 93
+## New words: 710
 
 1;

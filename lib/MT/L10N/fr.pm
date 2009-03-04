@@ -67,7 +67,7 @@ use vars qw( @ISA %Lexicon );
 	'No author available' => 'Il n\'a pas d\'auteurs disponibles',
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'L\'authentification TypePad n\'est pas activée sur ce blog. MTRemoteSignInLink ne peut être utilisé.', # Translate - New
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'L\'authentification TypePad n\'est pas activée sur ce blog. MTRemoteSignInLink ne peut être utilisé.',
 
 ## php/lib/block.mtsethashvar.php
 
@@ -619,7 +619,7 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Le fichier avec le nom \'[_1]\' existe déjà; Tentative d\'écriture dans un fichier temporaire, mais l\'ouverture a échoué : [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => 'Impossible de créer le répertoire d\'upload \'[_1]\': [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Erreur d\'écriture lors de l\'envoi de \'[_1]\' : [_2]',
-	'Uploaded file is not an image.' => 'Le fichier téléchargé n\'est pas une image', # Translate - New
+	'Uploaded file is not an image.' => 'Le fichier téléchargé n\'est pas une image',
 	'<' => '<',
 	'/' => '/',
 
@@ -714,7 +714,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '[_1] Mise à jour : [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Erreur lors de l\'envoi de l\'e-mail ([_1]); Essayer avec d\'autres paramètres pour MailTransfer ?',
 	'The value you entered was not a valid email address' => 'Vous devez saisir une adresse email valide',
-	'The value you entered was not a valid URL' => 'Vous devez saisir une URL valide', # Translate - New
+	'The value you entered was not a valid URL' => 'Vous devez saisir une URL valide',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'L\'adresse email saisie est déjà sur la liste de notification de ce blog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonné \'[_1]\' (ID:[_2]) supprimé du carnet d\'adresses par \'[_3]\'',
 
@@ -961,9 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => 'Impossible de trouver le gabarit \'[_1]\'',
 	'Can\'t find entry \'[_1]\'' => 'Impossible de trouver la note \'[_1]\'',
 	'[_1] is not a hash.' => '[_1] n\'est pas un hash',
-	'You have an error in your \'[_1]\' attribute: [_2]' => 'Vous avez une erreur dans votre attribut \'[_1]\' : [_2]', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'[_2]\' : [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'tag\': [_1]',
 	'No such user \'[_1]\'' => 'L\'utilisateur \'[_1]\' n\'existe pas',
 	'You used <$MTEntryFlag$> without a flag.' => 'Vous utilisez <$MTEntryFlag$> sans drapeau.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Vous avez utilisé un [_1] tag pour créer un lien vers \'[_2]\' archives, mais ce type d\'archive n\'est pas publié.',
@@ -1171,6 +1169,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Tags' => 'Gérer les tags',
 	'Manage Address Book' => 'Gestion de l\'annuaire',
 	'View Activity Log' => 'Afficher le journal (logs)',
+	'Manage Users' => 'Gérer les Utilisateurs',
 	'Create Entries' => 'Création d\'une note',
 	'Publish Entries' => 'Publier les notes',
 	'Send Notifications' => 'Envoyer des notifications',
@@ -1340,10 +1339,10 @@ use vars qw( @ISA %Lexicon );
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List:Util est optionnel; Il est nécessaire si vous souhaitez utiliser les possibilités de publications en mode file d\'attente',
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util est optionnel; Il est nécessaire uniquement si vous souhaitez utiliser la fonction de file d\'attente de publication.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Ce module est nécessaire si vous souhaitez pouvoir créer des vignettes pour les images envoyées.',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Ce module est nécessaire si vous souhaitez pouvoir utiliser NetPBM comme pilote d\'image pour MT.', # Translate - New
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Ce module est nécessaire si vous souhaitez pouvoir utiliser NetPBM comme pilote d\'image pour MT.',
 	'This module is required by certain MT plugins available from third parties.' => 'Ce module est nécessaire pour certains plugins MT disponibles auprès de partenaires.',
 	'This module accelerates comment registration sign-ins.' => 'Ce module accélère les enregistrements des auteurs de commentaires.',
-	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Ce module et ses dépendances sont nécessaires afin de permettre aux auteurs de commentaires d\'être authentifiés par des fournisseurs OpenID comme AOL ou Yahoo! qui nécessitent SSL.', # Translate - New
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Ce module et ses dépendances sont nécessaires afin de permettre aux auteurs de commentaires d\'être authentifiés par des fournisseurs OpenID comme AOL ou Yahoo! qui nécessitent SSL.',
 	'This module is needed to enable comment registration.' => 'Ce module est nécessaire pour activer l\'enregistrement des auteurs de commentaires.',
 	'This module enables the use of the Atom API.' => 'Ce module active l\'utilisation de l\'API Atom.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Ce module est nécessaire pour archiver les fichiers lors des opérations de sauvegarde/restauration.',
@@ -1932,7 +1931,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'L\'URL de votre blog Vox',
 	'Learn more about Vox.' => 'En savoir plus sur Vox.',
 	'Sign in using your Gmail account' => 'Identifiez-vous en utilisant votre compte Gmail',
-	'Sign in to Movable Type with your[_1] Account[_2]' => 'Identifiez-vous dans Movable Type avec votre compte [_1] [_2]', # Translate - New
+	'Sign in to Movable Type with your[_1] Account[_2]' => 'Identifiez-vous dans Movable Type avec votre compte [_1] [_2]',
 	'Turn on OpenID for your Yahoo! account now' => 'Activer OpenID pour votre compte Yahoo! maintenant',
 	'Your AIM or AOL Screen Name' => 'Votre pseudonyme AIM ou AOL.',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Identifiez-vous en utilisant votre pseudonyme AIM ou AOL. Votre pseudonyme sera affiché publiquement.',
@@ -1941,8 +1940,8 @@ use vars qw( @ISA %Lexicon );
 	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => '
 	TypePad est un système gratuit et ouvert vous proposant une identité centralisée pour commenter sur les blogs et vous identifier sur d\'autres sites. Vous pouvez vous enregistrer gratuitement.',
 	'Sign in or register with TypePad.' => 'Identifiez-vous ou créer un compte sur TypePad.',
-	'Turn on OpenID for your Yahoo! Japan account now' => 'Activer OpenID pour votre compte Yahoo! Japon maintenant', # Translate - New
-	'Your Hatena ID' => 'Votre identifiant Hatena', # Translate - New
+	'Turn on OpenID for your Yahoo! Japan account now' => 'Activer OpenID pour votre compte Yahoo! Japon maintenant',
+	'Your Hatena ID' => 'Votre identifiant Hatena',
 	'Hello, world' => 'Bonjour',
 	'Hello, [_1]' => 'Bonjour, [_1]',
 	'Message: [_1]' => 'Message: [_1]',
@@ -1967,9 +1966,9 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'WordPress.com',
 	'TypePad' => 'TypePad',
-	'Yahoo! JAPAN' => 'Yahoo! Japon', # Translate - New
-	'livedoor' => 'livedoor', # Translate - New
-	'Hatena' => 'Hatena', # Translate - New
+	'Yahoo! JAPAN' => 'Yahoo! Japon',
+	'livedoor' => 'livedoor',
+	'Hatena' => 'Hatena',
 	'Movable Type default' => 'Valeur par défaut Movable Type',
 
 ## mt-static/mt.js
@@ -2483,7 +2482,7 @@ use vars qw( @ISA %Lexicon );
 	'asset' => 'Élément',
 	'published' => 'publié',
 	'unpublished' => 'non publié',
-	'review' => 'Vérification', # Translate - Case
+	'review' => 'Vérification',
 	'scheduled' => 'programmé',
 	'spam' => 'Spam',
 	'Select A User:' => 'Sélectionner un utilisateur',
@@ -2572,7 +2571,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a license' => 'Sélectionner une licence',
 
 ## tmpl/cms/list_member.tmpl
-	'Manage Users' => 'Gérer les Utilisateurs',
 	'Are you sure you want to remove this role?' => 'Êtes-vous sûr(e) de vouloir supprimer ce rôle?',
 	'Add a user to this blog' => 'Ajouter un utilisateur à ce blog',
 	'Show only users where' => 'Afficher uniquement les utilisateurs où',
@@ -2691,7 +2689,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Review)' => 'Non publié (Vérification)',
 	'Scheduled' => 'Planifié',
 	'Published' => 'Publié',
-	'Unpublished (Spam)' => 'Non publié (Spam)', # Translate - New
+	'Unpublished (Spam)' => 'Non publié (Spam)',
 	'View' => 'Voir',
 	'Share' => 'Partager',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,commentaire,commentaires]</a>',
@@ -2732,7 +2730,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Enregistrer les options d\'affichage',
 	'OK' => 'OK',
 	'Close display options' => 'Fermer les options d\'affichage',
-	'This post was classified as spam.' => 'Cette note a été marquée comme étant du spam.', # Translate - New
+	'This post was classified as spam.' => 'Cette note a été marquée comme étant du spam.',
 	'Spam Details' => 'Détails du spam',
 	'Score' => 'Score',
 	'Results' => 'Résultats',
@@ -2915,8 +2913,8 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Afficher uniquement les pages à vérifier',
 	'Only show scheduled entries' => 'Afficher uniquement les notes planifiées',
 	'Only show scheduled pages' => 'Afficher uniquement les pages planifiées',
-	'Only show spam entries' => 'Afficher uniquement les notes indésirables (spam)', # Translate - New
-	'Only show spam pages' => 'Afficher uniquement les pages indésirables (spam)', # Translate - New
+	'Only show spam entries' => 'Afficher uniquement les notes indésirables (spam)',
+	'Only show spam pages' => 'Afficher uniquement les pages indésirables (spam)',
 	'View entry' => 'Afficher une note',
 	'View page' => 'Afficher une page',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Aucune note n\'a été trouvée. <a href="[_1]">Créer une note</a> maintenant.',
@@ -3400,7 +3398,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'Vous ne pouvez pas avoir d\'espace dans l\'URL.',
 	'You can not have spaces in the path.' => 'Vous ne pouvez pas avoir d\'espace dans le chemin.',
 	'Path is not valid.' => 'Le chemin n\'est pas valide.',
-	'Site Path' => 'Chemin du site', # Translate - New
+	'Site Path' => 'Chemin du site',
 	'Archive URL' => 'URL d\'archive',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -3644,7 +3642,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Gabarits du blog',
-	'Show All' => 'Tout afficher',
+	'Show All Templates' => 'Afficher tous les gabarits', # Translate - New
 	'Blog Publishing Settings' => 'Paramètres de publication du blog',
 	'You have successfully deleted the checked template(s).' => 'Les gabarits sélectionnés ont été supprimés.',
 	'Your templates have been published.' => 'Vos gabarits ont bien été publiés.',
@@ -4112,7 +4110,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'L\'utilisateur \'[_1]\' (ID:[_2]) a été enregistré avec succès.',
 	'Thanks for the confirmation.  Please sign in.' => 'Merci pour la confirmation. Identifiez-vous.',
 	'Login required' => 'Authentification obligatoire',
-	'Title or Content is required.' => 'Le titre ou le contenu est requis.', # Translate - New
+	'Title or Content is required.' => 'Le titre ou le contenu est requis.',
 	'System template entry_response not found in blog: [_1]' => 'Gabarit système entry_response introuvable dans le blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nouvelle note \'[_1]\' ajoutée sur le blog \'[_2]\'',
 	'Id or Username is required' => 'Id ou identifiant obligatoire',
@@ -5066,15 +5064,15 @@ Base de recherche : [_2]",
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a Style' => 'Habillages',
-	'3-Columns, Wide, Thin, Thin' => '3 colonnes (large, fin, fin)',
-	'3-Columns, Thin, Wide, Thin' => '3 colonnes (fin, large, fin)',
-	'3-Columns, Thin, Thin, Wide' => '3 colonnes (fin, fin, large)', # Translate - New
-	'2-Columns, Thin, Wide' => '2 colonnes (fin, large)',
-	'2-Columns, Wide, Thin' => '2 colonnes (large, fin)',
-	'2-Columns, Wide, Medium' => '2 colonnes (large, moyen)',
+	'3-Columns, Wide, Thin, Thin' => '3-colonnes, large, fin, fin',
+	'3-Columns, Thin, Wide, Thin' => '3-colonnes, fin, large, fin',
+	'3-Columns, Thin, Thin, Wide' => '3 colonnes (fin, fin, large)',
+	'2-Columns, Thin, Wide' => '2-colonnes, fin, large',
+	'2-Columns, Wide, Thin' => '2-colonnes, large, fin',
+	'2-Columns, Wide, Medium' => '2-Colonnes, Large, Moyen',
 	'2-Columns, Medium, Wide' => '2 colonnes (moyen, large)',
-	'1-Column, Wide, Bottom' => '1 colonne (large, pied)', # Translate - New
-	'None available' => 'Non disponible',
+	'1-Column, Wide, Bottom' => '1 colonne (large, pied)',
+	'None available' => 'Aucun disponible',
 	'Applying...' => 'Appliquer...',
 	'Apply Design' => 'Appliquer l\'habillage',
 	'Error applying theme: ' => 'Erreur en appliquant l\'habillage:',
@@ -5270,20 +5268,20 @@ Base de recherche : [_2]",
 	'URI' => 'URI',
 
 ## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite vous aide à republier les flux sur votre blog. Vous souhaitez en faire plus avec les flux dans Movable Type ? <a href="http://code.appnel.com/feeds-app" target="_blank">Évoluez vers Feeds.App</a>.', # Translate - New
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite vous aide à republier les flux sur votre blog. Vous souhaitez en faire plus avec les flux dans Movable Type ? <a href="http://code.appnel.com/feeds-app" target="_blank">Évoluez vers Feeds.App</a>.',
 	'Create a Feed Widget' => 'Créer un widget à partir d\'un flux',
 
 ## plugins/CommunityActionStreams/config.yaml
-	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Flux d\'actions pour les événements de la communauté : nouvelle note, nouveau commentaire, nouveau favori, suivi d\'un utilisateur.', # Translate - New
+	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Flux d\'actions pour les événements de la communauté : nouvelle note, nouveau commentaire, nouveau favori, suivi d\'un utilisateur.',
 
 ## plugins/Motion/config.yaml
-	'A Movable Type theme with structured entries and action streams.' => 'Un thème Movable Type avec des notes structurées et des flux d\'actions.', # Translate - New
-	'Adjusting field types for embed custom fields...' => 'Ajustement des types de champs pour les champs personnalisés d\'éléments embarqués...', # Translate - New
-	'Updating favoriting namespace for Motion...' => 'Mise à jour des espaces de nom favoris pour Motion...', # Translate - New
+	'A Movable Type theme with structured entries and action streams.' => 'Un thème Movable Type avec des notes structurées et des flux d\'actions.',
+	'Adjusting field types for embed custom fields...' => 'Ajustement des types de champs pour les champs personnalisés d\'éléments embarqués...',
+	'Updating favoriting namespace for Motion...' => 'Mise à jour des espaces de nom favoris pour Motion...',
 	'Reinstall Motion Templates' => 'Réinstaller les gabarits Motion',
 	'Motion Themes' => 'Thèmes Motion',
 	'Themes for Motion template set' => 'Thèmes pour le jeu de gabarits Motion',
-	'Motion' => 'Motion', # Translate - New
+	'Motion' => 'Motion',
 	'Post Type' => 'Type de note',
 	'Photo' => 'Photo',
 	'Embed Object' => 'Élément externe',
@@ -5314,7 +5312,7 @@ Base de recherche : [_2]",
 	'Main Column Posting Form (All Media)' => 'Formulaire de publication (Tous médias) de la colonne principale',
 	'Main Column Posting Form (Text Only, Like Twitter)' => 'Formulaire de publication (Texte uniquement, comme Twitter) de la colonne principale',
 	'Main Column Registration' => 'Inscription depuis la colonne principale',
-	'Fans' => 'Fans', # Translate - New
+	'Fans' => 'Fans',
 	'Popular Entries' => 'Notes populaires',
 	'Elsewhere' => 'Ailleurs',
 	'Following' => 'Suit',
@@ -5331,9 +5329,9 @@ Base de recherche : [_2]",
 	'Profile Widgets' => 'Widgets de profils',
 
 ## plugins/Motion/lib/Motion/Search.pm
-	'This module works with MT::App::Search.' => 'Ce module fonctionne avec MT::App::Search.', # Translate - New
-	'Specify the blog_id of a blog that has Motion template set.' => 'Indique le blog_id d\'un blog ayant un jeu de gabarits Motion.', # Translate - New
-	'Error loading template: [_1]' => 'Erreur lors du chargement d\'un gabarit : [_1]', # Translate - New
+	'This module works with MT::App::Search.' => 'Ce module fonctionne avec MT::App::Search.',
+	'Specify the blog_id of a blog that has Motion template set.' => 'Indique le blog_id d\'un blog ayant un jeu de gabarits Motion.',
+	'Error loading template: [_1]' => 'Erreur lors du chargement d\'un gabarit : [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 
@@ -5361,7 +5359,7 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/widget_about_ssite.mtml
 	'About' => 'A propos de',
-	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'Le jeu de gabarits Motion est un bel exemple du type de site que vous pouvez concevoir avec Movable Type.', # Translate - New
+	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'Le jeu de gabarits Motion est un bel exemple du type de site que vous pouvez concevoir avec Movable Type.',
 
 ## plugins/Motion/templates/Motion/entry_create.mtml
 
@@ -5375,17 +5373,17 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/single_entry.mtml
 	'By [_1] <span class="date">on [_2]</span>' => 'Par [_1] <span class="date">sur [_2]</span>',
-	'Unpublish this post' => 'Mettre cette note hors-ligne', # Translate - New
+	'Unpublish this post' => 'Mettre cette note hors-ligne',
 	'1 <span>Comment</span>' => '1 <span>commentaire</span>',
 	'# <span>Comments</span>' => '# <span>commentaires</span>',
 	'0 <span>Comments</span>' => '0 <span>commentaires</span>',
 	'1 <span>TrackBack</span>' => '1 <span>trackback</span>',
 	'# <span>TrackBacks</span>' => '# <span>trackbacks</span>',
 	'0 <span>TrackBacks</span>' => '0 <span>trackbacks</span>',
-	'Note: This post is being held for approval by the site owner.' => 'Note : cette note est en attente d\'acceptation par le propriétaire du site.', # Translate - New
-	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Commentaires les plus récents par <strong>[_2]</strong> sur [_3]</a>', # Translate - New
+	'Note: This post is being held for approval by the site owner.' => 'Note : cette note est en attente d\'acceptation par le propriétaire du site.',
+	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Commentaires les plus récents par <strong>[_2]</strong> sur [_3]</a>',
 	'Posted to [_1]' => 'Publié sur [_1]',
-	'[_1] posted [_2] on [_3]' => '[_1] a publié [_2] sur [_3]', # Translate - New
+	'[_1] posted [_2] on [_3]' => '[_1] a publié [_2] sur [_3]',
 
 ## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
 
@@ -5397,8 +5395,8 @@ Base de recherche : [_2]",
 	'(Optional)' => '(Optionnel)',
 
 ## plugins/Motion/templates/Motion/javascript.mtml
-	'Please select a file to post.' => 'Veuillez sélectionner un fichier à publier.', # Translate - New
-	'You selected an unsupported file type.' => 'Vous avez sélectionné un fichier de type non supporté.', # Translate - New
+	'Please select a file to post.' => 'Veuillez sélectionner un fichier à publier.',
+	'You selected an unsupported file type.' => 'Vous avez sélectionné un fichier de type non supporté.',
 
 ## plugins/Motion/templates/Motion/trackbacks.mtml
 
@@ -5431,10 +5429,10 @@ Base de recherche : [_2]",
 	'Not following anyone' => 'Ne suit personne',
 
 ## plugins/Motion/templates/Motion/widget_main_column_posting_form_text.mtml
-	'QuickPost' => 'QuickPost', # Translate - New
-	'Content' => 'Contenu', # Translate - New
-	'more options' => 'Plus d\'options', # Translate - Case
-	'Post' => 'Publier', # Translate - New
+	'QuickPost' => 'QuickPost',
+	'Content' => 'Contenu',
+	'more options' => 'Plus d\'options',
+	'Post' => 'Publier',
 
 ## plugins/Motion/templates/Motion/comment_preview.mtml
 
@@ -5450,17 +5448,17 @@ Base de recherche : [_2]",
 ## plugins/Motion/templates/Motion/entry_summary.mtml
 
 ## plugins/Motion/templates/Motion/widget_main_column_posting_form.mtml
-	'Text post' => 'Texte', # Translate - New
-	'Photo post' => 'Photo', # Translate - New
-	'Link post' => 'Lien', # Translate - New
-	'Embed post' => 'Élément embarqué', # Translate - New
-	'Audio post' => 'Son', # Translate - New
-	'URL of web page' => 'URL d\'une page Web', # Translate - New
-	'Select photo file' => 'Sélectionner une image ou photo', # Translate - New
-	'Only GIF, JPEG and PNG image files are supported.' => 'Les types de fichiers supportés sont GIF, JPEG, et PNG.', # Translate - New
-	'Select audio file' => 'Sélectionner un fichier sonore', # Translate - New
-	'Only MP3 audio files are supported.' => 'Le fichier doit être au format MP3.', # Translate - New
-	'Paste embed code' => 'Copiez le code de l\'élément embarqué', # Translate - New
+	'Text post' => 'Texte',
+	'Photo post' => 'Photo',
+	'Link post' => 'Lien',
+	'Embed post' => 'Élément embarqué',
+	'Audio post' => 'Son',
+	'URL of web page' => 'URL d\'une page Web',
+	'Select photo file' => 'Sélectionner une image ou photo',
+	'Only GIF, JPEG and PNG image files are supported.' => 'Les types de fichiers supportés sont GIF, JPEG, et PNG.',
+	'Select audio file' => 'Sélectionner un fichier sonore',
+	'Only MP3 audio files are supported.' => 'Le fichier doit être au format MP3.',
+	'Paste embed code' => 'Copiez le code de l\'élément embarqué',
 
 ## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
 
@@ -5497,7 +5495,7 @@ Base de recherche : [_2]",
 ## plugins/Motion/templates/Motion/sidebar.mtml
 
 ## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'publié par [_1] sur [_2]', # Translate - New
+	'posted by [_1] on [_2]' => 'publié par [_1] sur [_2]',
 
 ## plugins/Motion/templates/Motion/banner_footer.mtml
 
@@ -5505,7 +5503,7 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/comments.mtml
 	'what will you say?' => 'que direz-vous ?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] en réponse au commentaire de [_3][_4]', # Translate - New
+	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] en réponse au commentaire de [_3][_4]',
 	'Write a comment...' => 'Rédigez un commentaire ...',
 
 ## plugins/Motion/templates/Motion/search_results.mtml
@@ -5524,17 +5522,17 @@ Base de recherche : [_2]",
 	'Profile Data' => 'Données du profil',
 	'More Entries by [_1]' => 'Plus de notes par [_1]',
 	'Recent Actions' => 'Actions récentes',
-	'_PROFILE_COMMENT_LENGTH' => '_PROFILE_COMMENT_LENGTH', # Translate - New
+	'_PROFILE_COMMENT_LENGTH' => '_PROFILE_COMMENT_LENGTH',
 	'Comment Threads' => 'Fils de discussion',
 	'[_1] commented on ' => '[_1] a commenté sur',
 	'No responses to comments.' => 'Pas de réponse aux commentaires.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
 	'[_1] is now following [_2]' => '[_1] suit désormais [_2]',
-	'[_1] favorited [_2] on [_3]' => '[_1] a ajouté [_2] de [_3] dans ses favoris', # Translate - New
+	'[_1] favorited [_2] on [_3]' => '[_1] a ajouté [_2] de [_3] dans ses favoris',
 
 ## plugins/Motion/templates/Motion/motion_js.mtml
-	'Add userpic' => 'Ajouter un avatar', # Translate - New
+	'Add userpic' => 'Ajouter un avatar',
 
 ## plugins/Motion/templates/Motion/widget_powered_by.mtml
 
@@ -5545,32 +5543,32 @@ Base de recherche : [_2]",
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 
 ## plugins/FacebookCommenters/plugin.pl
-	'Provides commenter registration through Facebook Connect.' => 'Permet l\'enregistrement des auteurs de commentaires via Facebook Connect', # Translate - New
-	'Set up Facebook Commenters plugin' => 'Configurer le plugin Facebook Commenters', # Translate - New
-	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} a commenté la note <a href="{*post_url*}">{*post_title*}</a>.', # Translate - New
-	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1]. Avez-vous correctement entré le secret de l\'application ?', # Translate - New
-	'Could not register story template with Facebook: [_1]' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1].', # Translate - New
-	'Facebook' => '', # Translate - New
+	'Provides commenter registration through Facebook Connect.' => 'Permet l\'enregistrement des auteurs de commentaires via Facebook Connect',
+	'Set up Facebook Commenters plugin' => 'Configurer le plugin Facebook Commenters',
+	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} a commenté la note <a href="{*post_url*}">{*post_title*}</a>.',
+	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1]. Avez-vous correctement entré le secret de l\'application ?',
+	'Could not register story template with Facebook: [_1]' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1].',
+	'Facebook' => 'Facebook', # Translate - New
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Clé Application Facebook', # Translate - New
-	'The key for the Facebook application associated with your blog.' => 'La clé pour l\'application Facebook associée à votre blog.', # Translate - New
-	'Edit Facebook App' => 'Éditer l\'application Facebook', # Translate - New
-	'Facebook Application Secret' => 'Secret Application Facebook', # Translate - New
-	'The secret for the Facebook application associated with your blog.' => 'Le secret pour l\'application Facebook associée à votre blog.', # Translate - New
+	'Facebook Application Key' => 'Clé Application Facebook',
+	'The key for the Facebook application associated with your blog.' => 'La clé pour l\'application Facebook associée à votre blog.',
+	'Edit Facebook App' => 'Éditer l\'application Facebook',
+	'Facebook Application Secret' => 'Secret Application Facebook',
+	'The secret for the Facebook application associated with your blog.' => 'Le secret pour l\'application Facebook associée à votre blog.',
 
 ## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Permet aux auteurs de commentaires de s\'identifier sur Movable Type en utilisant leur nom d\'utilisateur mixi via OpenID.', # Translate - New
-	'Sign in using your mixi ID' => 'S\'identifier en utilisant votre identifiant mixi', # Translate - New
-	'Click the button to sign in using your mixi ID' => 'Cliquez sur le bouton pour vous identifier en utilisant votre identifiant mixi.', # Translate - New
-	'mixi' => 'mixi', # Translate - New
+	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Permet aux auteurs de commentaires de s\'identifier sur Movable Type en utilisant leur nom d\'utilisateur mixi via OpenID.',
+	'Sign in using your mixi ID' => 'S\'identifier en utilisant votre identifiant mixi',
+	'Click the button to sign in using your mixi ID' => 'Cliquez sur le bouton pour vous identifier en utilisant votre identifiant mixi.',
+	'mixi' => 'mixi',
 
 ## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'mixi n\'a pas réussi à vous identifier. Veuillez réessayer.', # Translate - New
+	'mixi reported that you failed to login.  Try again.' => 'mixi n\'a pas réussi à vous identifier. Veuillez réessayer.',
 
 ## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Un ID mixi est déjà enregistré sur ce blog. Si vous souhaitez modifier l\'ID mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi. Si vous souhaitez permettre à tous les utilisateurs mixi de commenter sur votre blog (et pas uniquement vos utilisateurs mixi), cliquez sur le bouton de réinitialisation pour retirer les paramètres.', # Translate - New
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si vous souhaitez restreindre les commentaires à uniquement vos utilisateurs mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi.', # Translate - New
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Un ID mixi est déjà enregistré sur ce blog. Si vous souhaitez modifier l\'ID mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi. Si vous souhaitez permettre à tous les utilisateurs mixi de commenter sur votre blog (et pas uniquement vos utilisateurs mixi), cliquez sur le bouton de réinitialisation pour retirer les paramètres.',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si vous souhaitez restreindre les commentaires à uniquement vos utilisateurs mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi.',
 
 ## plugins/ActionStreams/blog_tmpl/sidebar.mtml
 
@@ -5583,36 +5581,240 @@ Base de recherche : [_2]",
 ## plugins/ActionStreams/blog_tmpl/elsewhere.mtml
 	'Find [_1] Elsewhere' => 'Trouver [_1] ailleurs',
 
+## plugins/ActionStreams/streams.yaml
+	'Currently Playing' => 'En train de jouer', # Translate - New
+	'The games in your collection you\'re currently playing' => 'Les jeux de votre collection auxquels vous jouez en ce moment', # Translate - New
+	'Comments you have made on the web' => 'Commentaires que vous avez écrits sur le web', # Translate - New
+	'Colors' => 'Couleurs', # Translate - New
+	'Colors you saved' => 'Couleurs que vous avez sauvegardées', # Translate - New
+	'Palettes' => 'Palettes', # Translate - New
+	'Palettes you saved' => 'Palettes que vous avez sauvegardées', # Translate - New
+	'Patterns' => 'Motifs', # Translate - New
+	'Patterns you saved' => 'Motifs que vous avez sauvegardés', # Translate - New
+	'Favorite Palettes' => 'Palettes favorites', # Translate - New
+	'Palettes you saved as favorites' => 'Palettes que vous avez sauvegardées comme favorites', # Translate - New
+	'Reviews' => 'Critiques', # Translate - New
+	'Your wine reviews' => 'Vos critiques de vins', # Translate - New
+	'Cellar' => 'Cellier', # Translate - New
+	'Wines you own' => 'Vins que vous possédez', # Translate - New
+	'Shopping List' => 'Liste de courses', # Translate - New
+	'Wines you want to buy' => 'Vins que vous voulez acheter', # Translate - New
+	'Links' => 'Liens',
+	'Your public links' => 'Vos liens publics', # Translate - New
+	'Dugg' => 'Dugg', # Translate - New
+	'Links you dugg' => 'Liens postés sur Digg', # Translate - New
+	'Submissions' => 'Soumissions', # Translate - New
+	'Links you submitted' => 'Liens que vous avez soumis', # Translate - New
+	'Found' => 'Trouvé',
+	'Photos you found' => 'Photos que vous avez trouvées', # Translate - New
+	'Favorites' => 'Favorites', # Translate - New
+	'Photos you marked as favorites' => 'Photos que vous avez marquées comme favorites', # Translate - New
+	'Photos' => 'Photos', # Translate - New
+	'Photos you posted' => 'Photos que vous avez postées', # Translate - New
+	'Likes' => 'Likes', # Translate - New
+	'Things from your friends that you "like"' => 'Infos de vos amis que vous avez aimées', # Translate - New
+	'Leaderboard scores' => 'Scores', # Translate - New
+	'Your high scores in games with leaderboards' => 'Vos meilleurs scores dans les jeux avec championnat', # Translate - New
+	'Posts' => 'Notes', # Translate - New
+	'Blog posts about your search term' => 'Notes du blog à propos de votre recherche', # Translate - New
+	'Stories' => 'Articles', # Translate - New
+	'News Stories matching your search' => 'Nouveaux articles correspondant à votre recherche', # Translate - New
+	'To read' => 'A lire', # Translate - New
+	'Books on your "to-read" shelf' => 'Livres dans votre liste "à lire"', # Translate - New
+	'Reading' => 'En cours de lecture', # Translate - New
+	'Books on your "currently-reading" shelf' => 'Livres dans votre liste "en cours de lecture"', # Translate - New
+	'Read' => 'Lus', # Translate - New
+	'Books on your "read" shelf' => 'Livres dans votre liste "lus"', # Translate - New
+	'Shared' => 'Partagés', # Translate - New
+	'Your shared items' => 'Vos élémens partagés', # Translate - New
+	'Deliveries' => 'Livrés', # Translate - New
+	'Icon sets you were delivered' => 'Sets d\'icones livrées', # Translate - New
+	'Notices' => 'Notices', # Translate - New
+	'Notices you posted' => 'Notices postées', # Translate - New
+	'Intas' => 'Intas', # Translate - New
+	'Links you saved' => 'Liens sauvegardés', # Translate - New
+	'Photos you posted that were approved' => 'Photos postées et approuvées', # Translate - New
+	'Recent events' => 'Evénements récents', # Translate - New
+	'Events from your recent events feed' => 'Evénements de votre flux des événements récents', # Translate - New
+	'Apps you use' => 'Applications que vous utilisez', # Translate - New
+	'The applications you saved as ones you use' => 'Les applications que vous avez marquées comme utilisées', # Translate - New
+	'Videos you saved as watched' => 'Videos que vous avez saugardées comme regardées', # Translate - New
+	'Jaikus' => 'Jaikus', # Translate - New
+	'Jaikus you posted' => 'Jaikus que vous avez postés', # Translate - New
+	'Games you saved as favorites' => 'Jeux que vous avez sauvegardés comme favoris', # Translate - New
+	'Achievements' => 'Réalisations', # Translate - New
+	'Achievements you won' => 'Réalisations que vous avez atteintes', # Translate - New
+	'Tracks' => 'Morceaux', # Translate - New
+	'Songs you recently listened to (High spam potential!)' => 'Chansons que vous avez écoutées récemment (spam potentiel!)', # Translate - New
+	'Loved Tracks' => 'Morceaux aimés', # Translate - New
+	'Songs you marked as "loved"' => 'Chansons que vous avez marquées comme "aimées"', # Translate - New
+	'Journal Entries' => 'Notes du journal', # Translate - New
+	'Your recent journal entries' => 'Les notes récentes de votre journal', # Translate - New
+	'Events' => 'événéments', # Translate - Case
+	'The events you said you\'ll be attending' => 'Les événements auquels vous allez assister', # Translate - New
+	'Your public posts to your journal' => 'Les notes publiques sur votre journal', # Translate - New
+	'Queue' => 'Liste d\'attente', # Translate - New
+	'Movies you added to your rental queue' => 'Films que vous avez ajoutés à votre liste d\'attente', # Translate - New
+	'Recent Movies' => 'Films récents', # Translate - New
+	'Recent Rental Activity' => 'Films empreintés récemment', # Translate - New
+	'Kudos' => 'Kudos', # Translate - New
+	'Kudos you have received' => 'Kudos que vous avez reçus', # Translate - New
+	'Favorite Songs' => 'Chansons favorites', # Translate - New
+	'Songs you marked as favorites' => 'Chansons que vous avez marquées comme favorites', # Translate - New
+	'Favorite Artists' => 'Artistes favoris', # Translate - New
+	'Artists you marked as favorites' => 'Artistes que vous avez marqués comme favoris', # Translate - New
+	'Stations' => 'Stations', # Translate - New
+	'Radio stations you added' => 'Stations de radio que vous avez ajoutées', # Translate - New
+	'List' => 'Liste', # Translate - New
+	'Things you put in your list' => 'Choses que vous mettez sur votre liste', # Translate - New
+	'Notes' => 'Notes', # Translate - New
+	'Your public notes' => 'Vos notes publiques', # Translate - New
+	'Comments you posted' => 'Commentaires que vous avez postés', # Translate - New
+	'Articles you submitted' => 'Articles que vous avez soumis', # Translate - New
+	'Articles you liked (your votes must be public)' => 'Articles que vous avez aimés (vos votes doivent être publiques)', # Translate - New
+	'Dislikes' => 'Pas aimés', # Translate - New
+	'Articles you disliked (your votes must be public)' => 'Articles que vous n\'avez pas aimés (vos votes doivent être publiques)', # Translate - New
+	'Slideshows you saved as favorites' => 'Diaparamas que vous avez marqués comme favoris', # Translate - New
+	'Slideshows' => 'Diaporamas', # Translate - New
+	'Slideshows you posted' => 'Diaporamas que vous avez postés', # Translate - New
+	'Your achievements for achievement-enabled games' => 'Vos résultats pour les jeux avec des objectifs', # Translate - New
+	'Stuff' => 'Trucs', # Translate - New
+	'Things you posted' => 'Choses que vous avez postées', # Translate - New
+	'Tweets' => 'Tweets', # Translate - New
+	'Your public tweets' => 'Vos tweets publiques', # Translate - New
+	'Public tweets you saved as favorites' => 'Tweets publiques que vous avez sauvegardés comme favoris', # Translate - New
+	'Tweets about your search term' => 'Tweets contenant votre terme de recherche', # Translate - New
+	'Saved' => 'Sauvegardés', # Translate - New
+	'Things you saved as favorites' => 'Choses que vous avez sauvegardées comme favorites', # Translate - New
+	'Events you are watching or attending' => 'Evénements que vous regardez ou auxquels vous assistez', # Translate - New
+	'Videos you posted' => 'Videos que vous avez postées', # Translate - New
+	'Videos you liked' => 'Videos que vous avez aimées', # Translate - New
+	'Public assets you saved as favorites' => 'Assets publiques que vous avez sauvegardées comme favorites', # Translate - New
+	'Your public photos in your Vox library' => 'Vos photos publiques dans votre librairie Vox', # Translate - New
+	'Your public posts to your Vox' => 'Vos notes publiques dans votre Vox', # Translate - New
+	'The posts available from the website\'s feed' => 'Les notes publiques disponibles dans le flux du site', # Translate - New
+	'Wists' => 'Wists', # Translate - New
+	'Stuff you saved' => 'Choses que vous avez sauvegardées', # Translate - New
+	'Gamerscore' => 'Score du joueur', # Translate - New
+	'Notes when your gamerscore passes an even number' => 'Notes quand votre score dépasse un nombre pair', # Translate - New
+	'Places you reviewed' => 'Places que vous avez critiquées', # Translate - New
+	'Videos you saved as favorites' => 'Videos que vous avez sauvegardées comme favorites', # Translate - New
+
 ## plugins/ActionStreams/services.yaml
+	'1up.com' => '1up.com', # Translate - New
+	'43Things' => '43Things', # Translate - New
 	'Screen name' => 'Pseudonyme',
+	'backtype' => 'backtype', # Translate - New
+	'Bebo' => 'Bebo', # Translate - New
+	'Catster' => 'Catster', # Translate - New
+	'COLOURlovers' => 'COLOURlovers', # Translate - New
+	'Cork\'\'d\'' => 'Cork\'\'d\'', # Translate - New
+	'Delicious' => 'Delicious', # Translate - New
+	'Destructoid' => 'Destructoid', # Translate - New
+	'Digg' => 'Digg', # Translate - New
+	'Dodgeball' => 'Dodgeball', # Translate - New
+	'Dogster' => 'Dogster', # Translate - New
+	'Dopplr' => 'Dopplr', # Translate - New
+	'Facebook' => 'Facebook', # Translate - New
 	'User ID' => 'ID d\'utilisateur',
+	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'Vous pouvez trouver votre userid Facebook dans l\'URL de votre profil. Par exemple, http://www.facebook.com/profile.php?id=24400320.', # Translate - New
+	'FFFFOUND!' => 'FFFFOUND!', # Translate - New
+	'Flickr' => 'Flickr', # Translate - New
+	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Saisissez votre userid Flickr', # Translate - New
+	'FriendFeed' => 'FriendFeed', # Translate - New
+	'Gametap' => 'Gametap', # Translate - New
+	'Google Blogs' => 'Google Blogs', # Translate - New
 	'Search term' => 'Rerchercher le terme',
+	'Google News' => 'Google News', # Translate - New
 	'Search for' => 'Rechercher',
+	'Goodreads' => 'Goodreads', # Translate - New
+	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'Vous pouvez trouver votre userid Giidreads dans votre URL de profil. Par exemple, http://www.goodreads.com/user/show/123456.', # Translate - New
+	'Google Reader' => 'Google Reader', # Translate - New
 	'Sharing ID' => 'ID partagé',
+	'Hi5' => 'Hi5', # Translate - New
+	'IconBuffet' => 'IconBuffet', # Translate - New
+	'ICQ' => 'ICQ', # Translate - New
 	'UIN' => 'UIN',
+	'Identi.ca' => 'Identi.ca', # Translate - New
+	'Iminta' => 'Iminta', # Translate - New
+	'iStockPhoto' => 'iStockPhoto', # Translate - New
+	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'Vous pouvez trouver votre userid istockphoto dans l\'URL de votre profil. Par exemple, http://www.istockphoto.com/user_view.php?id=1234567.', # Translate - New
+	'IUseThis' => 'IUseThis', # Translate - New
+	'iwatchthis' => 'iwatchthis', # Translate - New
+	'Jabber' => 'Jabber', # Translate - New
 	'Jabber ID' => 'ID Jabber',
+	'Jaiku' => 'Jaiku', # Translate - New
+	'Kongregate' => 'Kongregate', # Translate - New
+	'Last.fm' => 'Last.fm', # Translate - New
+	'LinkedIn' => 'LinkedIn', # Translate - New
 	'Profile URL' => 'URL du profil',
+	'Ma.gnolia' => 'Ma.gnolia', # Translate - New
+	'MOG' => 'MOG', # Translate - New
+	'MSN Messenger\'' => 'MSN Messenger\'', # Translate - New
+	'Multiply' => 'Multiply', # Translate - New
+	'MySpace' => 'MySpace', # Translate - New
+	'Netflix' => 'Netflix', # Translate - New
 	'Netflix RSS ID' => 'ID Netflix RSS',
-	'Social Network URL' => 'URL du réseau social', # Translate - New
+	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Pour trouver votre RSS ID Netflix, cliquez sur "RSS" en bas de n\'importe quelle page sur le site de Netflix, puis copiez-collez le votre lien "Queue".', # Translate - New
+	'Netvibes' => 'Netvibes', # Translate - New
+	'Newsvine' => 'Newsvine', # Translate - New
+	'Ning' => 'Ning', # Translate - New
+	'Social Network URL' => 'URL du réseau social',
+	'Ohloh' => 'Ohloh', # Translate - New
+	'Orkut' => 'Orkut', # Translate - New
+	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'Vous pouvez trouver votre userid orkut dans l\'URL de votre profil. Par exemple, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789', # Translate - New
+	'Pandora' => 'Pandora', # Translate - New
+	'Picasa Web Albums' => 'Picasa Web Albums', # Translate - New
+	'p0pulist' => 'p0pulist', # Translate - New
+	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'Vous pouvez trouver votre user id p0pulist dans votre URL Hot List. Par exemple, http://p0pulist.com/list/hot_list/10000', # Translate - New
+	'Pownce' => 'Pownce', # Translate - New
+	'Reddit' => 'Reddit', # Translate - New
+	'Skype' => 'Skype', # Translate - New
+	'SlideShare' => 'SlideShare', # Translate - New
+	'Smugmug' => 'Smugmug', # Translate - New
+	'SonicLiving' => 'SonicLiving', # Translate - New
+	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'Vous pouvez trouver votre userid SonicLiving dans votre URL share&subscribe. Par exemple, http://sonicliving.com/user/12345/feeds', # Translate - New
+	'Steam' => 'Steam', # Translate - New
+	'StumbleUpon' => 'StumbleUpon', # Translate - New
+	'Tabblo' => 'Tabblo', # Translate - New
+	'Blank should be replaced by positive sign (+).' => 'Les espaces doivent être remplacés par un signe plus (+)', # Translate - New
+	'Tribe' => 'Tribe', # Translate - New
+	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'Vous pouvez trouver votre userid tribe dans l\'URL de votre profil. Par exemple, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.', # Translate - New
+	'Tumblr' => 'Tumblr', # Translate - New
+	'Twitter' => 'Twitter', # Translate - New
+	'TwitterSearch' => 'TwitterSearch', # Translate - New
+	'Uncrate' => 'Uncrate', # Translate - New
+	'Upcoming' => 'Upcoming', # Translate - New
+	'Viddler' => 'Viddler', # Translate - New
+	'Vimeo' => 'Vimeo', # Translate - New
+	'Virb' => 'Virb', # Translate - New
+	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'Vous pouvez trouver votre userid VIRB dans l\'URL d\'accueil. Par exemple, http://www.virb.com/backend/2756504321310091/your_home.', # Translate - New
 	'Vox name' => 'Nom Vox',
+	'Website' => 'Website', # Translate - New
+	'Xbox Live\'' => 'Xbox Live\'', # Translate - New
 	'Gamertag' => 'Gamertag',
+	'Yahoo! Messenger\'' => 'Yahoo! Messenger\'', # Translate - New
+	'Yelp' => 'Yelp', # Translate - New
+	'YouTube' => 'YouTube', # Translate - New
+	'Zooomr' => 'Zooomr', # Translate - New
 
 ## plugins/ActionStreams/config.yaml
-	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Gérer les comptes et les actions des utilisatreurs sur les sites ailleurs sur le web', # Translate - New
-	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir masquer TOUS les événement dans TOUS les flux d\'actions ?', # Translate - New
-	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir afficher TOUS les événement dans TOUS les flux d\'actions ?', # Translate - New
-	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => '', # Translate - New
+	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Gérer les comptes et les actions des utilisatreurs sur les sites ailleurs sur le web',
+	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir masquer TOUS les événement dans TOUS les flux d\'actions ?',
+	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir afficher TOUS les événement dans TOUS les flux d\'actions ?',
+	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Les événements supprimés qui sont toujours disponibles sur le service distant seront ajoutés à nouveau dans le prochain scan. Seuls les événements qui ne sont plus disponibles dans votre profil resteront supprimés. Etes-vous sûr de vouloir supprimer les événements sélectionnés?', # Translate - New
 	'Hide All' => 'Cacher tout',
+	'Show All' => 'Tout afficher',
 	'Poll for new events' => 'Emplacement pour les nouveaux événements',
 	'Update Events' => 'Mettre à jour les événements',
 	'Recent Actions' => 'Actions récentes',
 	'Action Stream' => 'Action Stream',
 	'Main Index (Recent Actions)' => 'Index principal (Actions récentes)',
 	'Action Archive' => 'Archive des actions',
-	'Feed - Recent Activity' => 'Flux - Activité récente', # Translate - New
+	'Feed - Recent Activity' => 'Flux - Activité récente',
 	'Find Authors Elsewhere' => 'Trouver les auteurs ailleurs',
 	'Authors Action Stream' => 'Action Stream des auteurs',
-	'Enabling default action streams for selected profiles...' => 'Activer les flux d\'actions par défaut des profils sélectionnés...', # Translate - New
+	'Enabling default action streams for selected profiles...' => 'Activer les flux d\'actions par défaut des profils sélectionnés...',
 
 ## plugins/ActionStreams/lib/ActionStreams/Upgrade.pm
 	'Updating classification of [_1] [_2] actions...' => 'Mise à jour de la classification des actions [_1] [_2]...',
@@ -5623,12 +5825,12 @@ Base de recherche : [_2]",
 
 ## plugins/ActionStreams/lib/ActionStreams/Plugin.pm
 	'Other Profiles' => 'Autres profils',
-	'Profiles' => 'Profiles', # Translate - Case
+	'Profiles' => 'Profiles',
 	'Actions from the service [_1]' => 'Actions pour le service [_1]',
-	'Actions that are shown' => 'Actions affichées', # Translate - New
-	'Actions that are hidden' => 'Actions masquées', # Translate - New
+	'Actions that are shown' => 'Actions affichées',
+	'Actions that are hidden' => 'Actions masquées',
 	'No such event [_1]' => 'Aucun événement [_1] trouvé',
-	'[_1] Profile' => 'Profil [_1]', # Translate - New
+	'[_1] Profile' => 'Profil [_1]',
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
 	'No user [_1]' => 'Aucun utilisateur [_1]',
@@ -5640,13 +5842,13 @@ Base de recherche : [_2]",
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Votre nom d\'utilisateur ou ID est requis.',
-	'Edit a profile on a social networking or instant messaging service.' => 'Editer un profil sur un service de réseau social ou de messagerie instantanée.', # Translate - New
+	'Edit a profile on a social networking or instant messaging service.' => 'Editer un profil sur un service de réseau social ou de messagerie instantanée.',
 	'Service' => 'Service',
 	'Enter your account on the selected service.' => 'Entrez votre compte sur le service sélectionné.',
 	'For example:' => 'Par exemple :',
-	'Action Streams' => 'Flux d\'actions', # Translate - New
-	'Select the action streams to collect from the selected service.' => 'Sélectionner le flux d\'action pour collecter les données depuis les services sélectionnées.', # Translate - New
-	'No streams are available for this service.' => 'Aucun flux n\'est disponible pour ce service.', # Translate - New
+	'Action Streams' => 'Flux d\'actions',
+	'Select the action streams to collect from the selected service.' => 'Sélectionner le flux d\'action pour collecter les données depuis les services sélectionnées.',
+	'No streams are available for this service.' => 'Aucun flux n\'est disponible pour ce service.',
 
 ## plugins/ActionStreams/tmpl/other_profiles.tmpl
 	'The selected profile was added.' => 'Le profil sélectionné a été ajouté.',
@@ -5657,15 +5859,15 @@ Base de recherche : [_2]",
 	'profile' => 'profil',
 	'profiles' => 'profiles',
 	'Delete selected profiles (x)' => 'Supprimer les profils sélectionnés (x)',
-	'to update' => 'à mettre à jour', # Translate - New
+	'to update' => 'à mettre à jour',
 	'Scan now for new actions' => 'Vérifier la présence de nouveaux événements',
 	'Update Now' => 'Mettre à jour maintenant',
-	'No profiles were found.' => 'Aucun profil n\'a été trouvé.', # Translate - New
+	'No profiles were found.' => 'Aucun profil n\'a été trouvé.',
 	'external_link_target' => 'external_link_target',
 	'View Profile' => 'Voir le profil',
 
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
-	'Add a profile on a social networking or instant messaging service.' => 'Ajouter un profil sur un service de réseau social ou de messagerie instantanée.', # Translate - New
+	'Add a profile on a social networking or instant messaging service.' => 'Ajouter un profil sur un service de réseau social ou de messagerie instantanée.',
 	'Select a service where you already have an account.' => 'Sélectionnez un service où vous avez déjà un compte.',
 	'Add Service (s)' => 'Ajouter le service (s)',
 	'Add Service' => 'Ajouter le service',
@@ -5682,12 +5884,12 @@ Base de recherche : [_2]",
 	'Hide' => 'Masquer',
 	'Show selected events (h)' => 'Afficher les événements sélectionnés (h)',
 	'Show' => 'Afficher',
-	'All stream actions' => 'Tous les flux d\'actions', # Translate - New
-	'Show only actions where' => 'Afficher uniquement les actions où', # Translate - New
-	'service' => 'le service est', # Translate - Case
-	'visibility' => 'la visibilité est', # Translate - New
-	'hidden' => 'masqué', # Translate - Case
-	'shown' => 'affiché', # Translate - Case
+	'All stream actions' => 'Tous les flux d\'actions',
+	'Show only actions where' => 'Afficher uniquement les actions où',
+	'service' => 'le service est',
+	'visibility' => 'la visibilité est',
+	'hidden' => 'masqué',
+	'shown' => 'affiché',
 	'No events could be found.' => 'Aucun événement n\'a été trouvé.',
 	'Event' => 'Événement',
 	'Shown' => 'Affiché',
@@ -5696,12 +5898,12 @@ Base de recherche : [_2]",
 
 ## plugins/ActionStreams/tmpl/widget_recent.mtml
 	'Your Recent Actions' => 'Votre activité récente',
-	'blog this' => 'bloguer ceci', # Translate - New
+	'blog this' => 'bloguer ceci',
 
 ## plugins/ActionStreams/tmpl/blog_config_template.tmpl
 	'Rebuild Indexes' => 'Republier les index',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si sélectionner, les index des blogs seront republiés lorsque de nouveaux événements du flux d\'activité seront découverts.',
-	'Enable rebuilding' => 'Activer la republication', # Translate - New
+	'Enable rebuilding' => 'Activer la republication',
 
 	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Une requête a été faite pour changer votre mot de passe dans Movable Type. Pour terminer cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe.', # Translate - New
       'If you did not request this change, you can safely ignore this email.' => 'Si vous n\'avez pas demandé ce changement, vous pouvez ignorer cet email.', # Translate - New
@@ -5732,6 +5934,6 @@ Base de recherche : [_2]",
       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Un lien de réinitialisation de mot de passe envoyé à [_3] pour utilisateur \'[_1]\' (utilisateur #[_2]).', 
 );
 
-## New words: 737
+## New words: 750
 
 1;

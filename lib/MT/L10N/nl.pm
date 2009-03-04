@@ -714,7 +714,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '[_1] update: [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); een andere MailTransfer instelling proberen?',
 	'The value you entered was not a valid email address' => 'Wat u invulde was geen geldig e-mail adres',
-	'The value you entered was not a valid URL' => 'Wat u invulde was geen geldige URL', # Translate - New
+	'The value you entered was not a valid URL' => 'Wat u invulde was geen geldige URL',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'Het e-mail adres dat u opgaf staat al op de notificatielijst van deze weblog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonnee \'[_1]\' (ID:[_2]) verwijderd uit adresboek door \'[_3]\'',
 
@@ -961,9 +961,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => 'Kan sjabloon \'[_1]\' niet vinden',
 	'Can\'t find entry \'[_1]\'' => 'Kan bericht \'[_1]\' niet vinden',
 	'[_1] is not a hash.' => '[_1] is geen hash.',
-	'You have an error in your \'[_1]\' attribute: [_2]' => 'Er staat een fout in uw \'[_1]\' attribuut: [_2]', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Er staat een fout in uw \'[_2]\' attribuut: [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'Er zit een fout in uw \'tag\' attribuut: [_1]',
 	'No such user \'[_1]\'' => 'Geen gebruiker \'[_1]\'',
 	'You used <$MTEntryFlag$> without a flag.' => 'U gebruikte <$MTEntryFlag$> zonder een vlag.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'U gebruikte een [_1] tag om te linken naar \'[_2]\' archieven, maar dat type archieven wordt niet gepubliceerd.',
@@ -1171,6 +1169,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Tags' => 'Tags beheren',
 	'Manage Address Book' => 'Adresboek beheren',
 	'View Activity Log' => 'Activiteitenlog bekijken',
+	'Manage Users' => 'Gebruikers beheren',
 	'Create Entries' => 'Berichten aanmaken',
 	'Publish Entries' => 'Berichten publiceren',
 	'Send Notifications' => 'Notificaties verzenden',
@@ -1932,7 +1931,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'URL van uw Vox blog',
 	'Learn more about Vox.' => 'Meer weten over Vox.',
 	'Sign in using your Gmail account' => 'Aanmelden met uw Gmail account',
-	'Sign in to Movable Type with your[_1] Account[_2]' => 'Aanmelden bij Movable Type met uw[_1] Account[_2]', # Translate - New
+	'Sign in to Movable Type with your[_1] Account[_2]' => 'Aanmelden bij Movable Type met uw[_1] Account[_2]',
 	'Turn on OpenID for your Yahoo! account now' => 'Nu OpenID inschakelen voor uw Yahoo! account',
 	'Your AIM or AOL Screen Name' => 'Uw AIM of AOL gebruikersnaam',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Meld u aan met uw AIM of AOL gebruikernaam.  Deze zal publiek te zien zijn.',
@@ -2482,7 +2481,7 @@ use vars qw( @ISA %Lexicon );
 	'asset' => 'mediabestand',
 	'published' => 'gepubliceerd',
 	'unpublished' => 'ongepubliceerd',
-	'review' => 'na te kijken', # Translate - Case
+	'review' => 'na te kijken',
 	'scheduled' => 'gepland',
 	'spam' => 'spam',
 	'Select A User:' => 'Selecteer een gebruiker:',
@@ -2571,7 +2570,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a license' => 'Selecteer een licentie',
 
 ## tmpl/cms/list_member.tmpl
-	'Manage Users' => 'Gebruikers beheren',
 	'Are you sure you want to remove this role?' => 'Bent u zeker dat u deze rol wenst te verwijderen?',
 	'Add a user to this blog' => 'Voeg een gebruiker toe aan deze blog',
 	'Show only users where' => 'Enkel gebruikers tonen waar',
@@ -2690,7 +2688,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Review)' => 'Niet gepubliceerd (na te kijken)',
 	'Scheduled' => 'Gepland',
 	'Published' => 'Gepubliceerd',
-	'Unpublished (Spam)' => 'Niet gepubliceerd (spam)', # Translate - New
+	'Unpublished (Spam)' => 'Niet gepubliceerd (spam)',
 	'View' => 'Bekijken',
 	'Share' => 'Delen',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,reactie,reacties]</a>',
@@ -2731,7 +2729,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Opties schermindeling opslaan',
 	'OK' => 'OK',
 	'Close display options' => 'Opties schermindeling sluiten',
-	'This post was classified as spam.' => 'Dit bericht werd geclassificeerd als spam.', # Translate - New
+	'This post was classified as spam.' => 'Dit bericht werd geclassificeerd als spam.',
 	'Spam Details' => 'Spamdetails',
 	'Score' => 'Score',
 	'Results' => 'Resultaten',
@@ -2914,8 +2912,8 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Enkel na te kijken pagina\'s tonen',
 	'Only show scheduled entries' => 'Enkel geplande berichten tonen',
 	'Only show scheduled pages' => 'Enkel geplande pagina\'s tonen',
-	'Only show spam entries' => 'Enkel spamberichten tonen', # Translate - New
-	'Only show spam pages' => 'Enkel spampagina\'s tonen', # Translate - New
+	'Only show spam entries' => 'Enkel spamberichten tonen',
+	'Only show spam pages' => 'Enkel spampagina\'s tonen',
 	'View entry' => 'Bericht bekijken',
 	'View page' => 'Pagina bekijken',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Er werden geen berichten gevonden. Nu <a href="[_1]">een bericht aanmaken</a>.',
@@ -3399,7 +3397,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'Er mogen geen spaties in de URL staan.',
 	'You can not have spaces in the path.' => 'Er mogen geen spaties in het pad staan.',
 	'Path is not valid.' => 'Pad is ongeldig',
-	'Site Path' => 'Sitepad', # Translate - New
+	'Site Path' => 'Sitepad',
 	'Archive URL' => 'Archief-URL',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -3643,7 +3641,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blogsjablonen',
-	'Show All' => 'Alles tonen',
+	'Show All Templates' => 'Alle sjablonen tonen', # Translate - New
 	'Blog Publishing Settings' => 'Blogpublicatie-instellingen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Your templates have been published.' => 'Uw sjablonen werden gepubliceerd.',
@@ -4111,7 +4109,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Gebruiker \'[_1]\' (ID:[_2]) werd met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden.',
 	'Login required' => 'Aanmelden vereist',
-	'Title or Content is required.' => 'Titel of inhoud is vereist.', # Translate - New
+	'Title or Content is required.' => 'Titel of inhoud is vereist.',
 	'System template entry_response not found in blog: [_1]' => 'Systeemsjabloon entry_response niet gevonden voor blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nieuw bericht \'[_1]\' toegevoegd aan de blog \'[_2]\'',
 	'Id or Username is required' => 'ID of gebruikersnaam is verplicht',
@@ -5067,12 +5065,12 @@ Zoekbasis: [_2]",
 	'Select a Style' => 'Selecteer een stijl',
 	'3-Columns, Wide, Thin, Thin' => '3-kolommen, breed, smal, smal',
 	'3-Columns, Thin, Wide, Thin' => '3-kolommen, smal, breed, smal',
-	'3-Columns, Thin, Thin, Wide' => '3-kolommen, smal, smal, breed', # Translate - New
+	'3-Columns, Thin, Thin, Wide' => '3-kolommen, smal, smal, breed',
 	'2-Columns, Thin, Wide' => '2-kolommen, smal, breed',
 	'2-Columns, Wide, Thin' => '2-kolommen, breed, smal',
 	'2-Columns, Wide, Medium' => '2-kolommen, breed, medium',
 	'2-Columns, Medium, Wide' => '2-kolommen, medium, breed',
-	'1-Column, Wide, Bottom' => '1 kolom, breed, onderschrift', # Translate - New
+	'1-Column, Wide, Bottom' => '1 kolom, breed, onderschrift',
 	'None available' => 'Geen beschikbaar',
 	'Applying...' => 'Wordt toegepast...',
 	'Apply Design' => 'Design toepassen',
@@ -5339,7 +5337,7 @@ Zoekbasis: [_2]",
 	'Main Column Posting Form (All Media)' => 'Hoofdkolom publicatieformulier (alle media)',
 	'Main Column Posting Form (Text Only, Like Twitter)' => 'Hoofdkolom publicatieformulier (enkel tekst, zoals Twitter)',
 	'Main Column Registration' => 'Hoofdkolom registratie',
-	'Fans' => 'Fans', # Translate - New
+	'Fans' => 'Fans',
 	'Popular Entries' => 'Populaire berichten',
 	'Elsewhere' => 'Elders',
 	'Following' => 'Volgt',
@@ -5407,7 +5405,7 @@ Zoekbasis: [_2]",
 	'1 <span>TrackBack</span>' => '1 <span>TrackBack</span>',
 	'# <span>TrackBacks</span>' => '# <span>TrackBacks</span>',
 	'0 <span>TrackBacks</span>' => '0 <span>TrackBacks</span>',
-	'Note: This post is being held for approval by the site owner.' => 'Opmerking: dit bericht wordt tegengehouden tot de eigenaar van de site het goedkeurt.', # Translate - New
+	'Note: This post is being held for approval by the site owner.' => 'Opmerking: dit bericht wordt tegengehouden tot de eigenaar van de site het goedkeurt.',
 	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Recentste reactie van <strong>[_2]</strong> op [_3]</a>',
 	'Posted to [_1]' => 'Gepubliceerd op [_1]',
 	'[_1] posted [_2] on [_3]' => '[_1] publiceerde [_2] op [_3]',
@@ -5522,7 +5520,7 @@ Zoekbasis: [_2]",
 ## plugins/Motion/templates/Motion/sidebar.mtml
 
 ## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'gepubliceerd door [_1] op [_2]', # Translate - New
+	'posted by [_1] on [_2]' => 'gepubliceerd door [_1] op [_2]',
 
 ## plugins/Motion/templates/Motion/banner_footer.mtml
 
@@ -5530,7 +5528,7 @@ Zoekbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/comments.mtml
 	'what will you say?' => 'wat zegt u?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2]als antwoord op reactie van [_3][_4]', # Translate - New
+	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2]als antwoord op reactie van [_3][_4]',
 	'Write a comment...' => 'Laat een reactie achter...',
 
 ## plugins/Motion/templates/Motion/search_results.mtml
@@ -5608,19 +5606,222 @@ Zoekbasis: [_2]",
 ## plugins/ActionStreams/blog_tmpl/elsewhere.mtml
 	'Find [_1] Elsewhere' => 'Elders [_1] vinden',
 
+## plugins/ActionStreams/streams.yaml
+	'Currently Playing' => 'Nu aan het spelen', # Translate - New
+	'The games in your collection you\'re currently playing' => 'De spelletjes in uw collectie die u momenteel aan het spelen bent', # Translate - New
+	'Comments you have made on the web' => 'Reacties die u elders op het web heeft achtergelaten', # Translate - New
+	'Colors' => 'Kleuren', # Translate - New
+	'Colors you saved' => 'Kleuren die u heeft opgeslagen', # Translate - New
+	'Palettes' => 'Paletten', # Translate - New
+	'Palettes you saved' => 'Paletten die u heeft opgeslagen', # Translate - New
+	'Patterns' => 'Patronen', # Translate - New
+	'Patterns you saved' => 'Patronen die u heeft opgeslagen', # Translate - New
+	'Favorite Palettes' => 'Favoriete paletten', # Translate - New
+	'Palettes you saved as favorites' => 'Paletten die u heeft opgeslagen als favorieten', # Translate - New
+	'Reviews' => 'Besprekingen', # Translate - New
+	'Your wine reviews' => 'Uw wijnbesprekingen', # Translate - New
+	'Cellar' => 'Kelder', # Translate - New
+	'Wines you own' => 'Wijnen die u bezit', # Translate - New
+	'Shopping List' => 'Boodschappenlijstje', # Translate - New
+	'Wines you want to buy' => 'Wijnen die u wenst te kopen', # Translate - New
+	'Links' => 'Links',
+	'Your public links' => 'Uw publieke links', # Translate - New
+	'Dugg' => 'Dugg', # Translate - New
+	'Links you dugg' => 'Links die u \'dugg\' op Digg', # Translate - New
+	'Submissions' => 'Ingediend', # Translate - New
+	'Links you submitted' => 'Links die u indiende', # Translate - New
+	'Found' => 'Gevonden',
+	'Photos you found' => 'Foto\'s die u vond', # Translate - New
+	'Favorites' => 'Favorieten', # Translate - New
+	'Photos you marked as favorites' => 'Foto\'s die u aanmerkte als favorieten', # Translate - New
+	'Photos' => 'Foto\'s', # Translate - New
+	'Photos you posted' => 'Foto\'s die u publiceerde', # Translate - New
+	'Likes' => 'Geappreciëerd', # Translate - New
+	'Things from your friends that you "like"' => 'Dingen van uw vrienden die u appreciëerde', # Translate - New
+	'Leaderboard scores' => 'Scores in de rangschikkingen', # Translate - New
+	'Your high scores in games with leaderboards' => 'Uw hoogste score in spelletjes met een rangschikking', # Translate - New
+	'Posts' => 'Berichten', # Translate - New
+	'Blog posts about your search term' => 'Blogberichten over uw zoekterm', # Translate - New
+	'Stories' => 'Nieuws', # Translate - New
+	'News Stories matching your search' => 'Nieuwsberichten over uw zoekterm', # Translate - New
+	'To read' => 'Te lezen', # Translate - New
+	'Books on your "to-read" shelf' => 'Boeken op uw \'te lezen\' boekenplank', # Translate - New
+	'Reading' => 'Aan het lezen', # Translate - New
+	'Books on your "currently-reading" shelf' => 'Boeken op uw \'momenteel aan het lezen\' boekenplank', # Translate - New
+	'Read' => 'Gelezen', # Translate - New
+	'Books on your "read" shelf' => 'Boeken op uw \'gelezen\' boekenplank', # Translate - New
+	'Shared' => 'Gedeeld', # Translate - New
+	'Your shared items' => 'Uw gedeelde items', # Translate - New
+	'Deliveries' => 'Leveringen', # Translate - New
+	'Icon sets you were delivered' => 'Icoonsets die u geleverd werden', # Translate - New
+	'Notices' => 'Berichtjes', # Translate - New
+	'Notices you posted' => 'Berichtjes die u plaatste', # Translate - New
+	'Intas' => 'Intas', # Translate - New
+	'Links you saved' => 'Links die u bewaarde', # Translate - New
+	'Photos you posted that were approved' => 'Foto\'s die u publiceerde en die werden goedgekeurd', # Translate - New
+	'Recent events' => 'Recente gebeurtenissen', # Translate - New
+	'Events from your recent events feed' => 'Gebeurtenissen uit uw feed met recente gebeurtenissen', # Translate - New
+	'Apps you use' => 'Applicaties die u gebruikt', # Translate - New
+	'The applications you saved as ones you use' => 'De applicaties die u heeft opgeslagen als applicaties die u gebruikt', # Translate - New
+	'Videos you saved as watched' => 'Video\'s die u heeft opgeslagen als bekeken', # Translate - New
+	'Jaikus' => 'Jaikus', # Translate - New
+	'Jaikus you posted' => 'Jaikus die u publiceerde', # Translate - New
+	'Games you saved as favorites' => 'Spelletjes die u heeft opgeslagen als favorieten', # Translate - New
+	'Achievements' => 'Mijlpalen', # Translate - New
+	'Achievements you won' => 'Mijlpalen die u bereikt heeft', # Translate - New
+	'Tracks' => 'Tracks', # Translate - New
+	'Songs you recently listened to (High spam potential!)' => 'Liedjes waar u recent naar geluisterd heeft (hoge kans op spam!)', # Translate - New
+	'Loved Tracks' => 'Geliefde tracks', # Translate - New
+	'Songs you marked as "loved"' => 'Tracks waarvan u heeft aangegeven dat u ervan houdt', # Translate - New
+	'Journal Entries' => 'Dagboekberichten', # Translate - New
+	'Your recent journal entries' => 'Uw laatste berichten uit uw dagboek', # Translate - New
+	'Events' => 'Gebeurtenissen', # Translate - Case
+	'The events you said you\'ll be attending' => 'De evenementen waarvan u gezegd hebt dat u er zal zijn', # Translate - New
+	'Your public posts to your journal' => 'Uw publieke berichten op uw dagboek', # Translate - New
+	'Queue' => 'Wachtrij', # Translate - New
+	'Movies you added to your rental queue' => 'Films toegevoegd aan uw huurwachtrij', # Translate - New
+	'Recent Movies' => 'Recente films', # Translate - New
+	'Recent Rental Activity' => 'Recente huuractiviteit', # Translate - New
+	'Kudos' => 'Kudos', # Translate - New
+	'Kudos you have received' => 'Kudos die u heeft ontvangen', # Translate - New
+	'Favorite Songs' => 'Favoriete liedjes', # Translate - New
+	'Songs you marked as favorites' => 'Liedjes die u heeft aangemerkt als favorieten', # Translate - New
+	'Favorite Artists' => 'Favoriete artiesten', # Translate - New
+	'Artists you marked as favorites' => 'Artiesten die u heeft aangemerkt als favorieten', # Translate - New
+	'Stations' => 'Zenders', # Translate - New
+	'Radio stations you added' => 'Radiozenders die u heeft toegevoegd', # Translate - New
+	'List' => 'Lijst', # Translate - New
+	'Things you put in your list' => 'Dingen die u in uw lijst heeft gezet', # Translate - New
+	'Notes' => 'Berichtjes', # Translate - New
+	'Your public notes' => 'Uw publieke berichtjes', # Translate - New
+	'Comments you posted' => 'Reacties die u gepubliceerd heeft', # Translate - New
+	'Articles you submitted' => 'Artikels die u heeft ingediend', # Translate - New
+	'Articles you liked (your votes must be public)' => 'Artikels die u heeft aangemerkt als favorieten', # Translate - New
+	'Dislikes' => 'Afgekeurd', # Translate - New
+	'Articles you disliked (your votes must be public)' => 'Artikels waar u een afkeer voor heeft laten blijken (stemmen moeten publiek zijn)', # Translate - New
+	'Slideshows you saved as favorites' => 'Diavoorstellingen die u als favorieten heeft opgeslagen', # Translate - New
+	'Slideshows' => 'Diavoorstellingen', # Translate - New
+	'Slideshows you posted' => 'Diavoorstellingen die u publiceerde', # Translate - New
+	'Your achievements for achievement-enabled games' => 'Uw mijlpalen in spelletjes die mijlpalen hebben', # Translate - New
+	'Stuff' => 'Dinges', # Translate - New
+	'Things you posted' => 'Dingen die u publiceerde', # Translate - New
+	'Tweets' => 'Tweets', # Translate - New
+	'Your public tweets' => 'Uw publieke tweets', # Translate - New
+	'Public tweets you saved as favorites' => 'Publieke tweets die u opgeslagen heeft als favorieten', # Translate - New
+	'Tweets about your search term' => 'Tweets over uw zoekterm', # Translate - New
+	'Saved' => 'Opgeslagen', # Translate - New
+	'Things you saved as favorites' => 'Dingen die u heeft opgeslagen als favorieten', # Translate - New
+	'Events you are watching or attending' => 'Evenementen die u bekijkt of bijwoont', # Translate - New
+	'Videos you posted' => 'Video\'s die u publiceerde', # Translate - New
+	'Videos you liked' => 'Video\'s die u goed vond', # Translate - New
+	'Public assets you saved as favorites' => 'Publieke mediabestanden die u opsloeg als favorieten', # Translate - New
+	'Your public photos in your Vox library' => 'Uw publieke foto\'s in uw Vox bibliotheek', # Translate - New
+	'Your public posts to your Vox' => 'Uw publieke berichten op uw Vox', # Translate - New
+	'The posts available from the website\'s feed' => 'De berichten beschikbaar op de feed van de website', # Translate - New
+	'Wists' => 'Wists', # Translate - New
+	'Stuff you saved' => 'Dingen die u opsloeg', # Translate - New
+	'Gamerscore' => 'Gamerscore', # Translate - New
+	'Notes when your gamerscore passes an even number' => 'Berichtjes over wanneer uw gamerscore een even getal passeert', # Translate - New
+	'Places you reviewed' => 'Plaatsen die u heeft besproken', # Translate - New
+	'Videos you saved as favorites' => 'Video\'s die u heeft opgeslagen als favorieten', # Translate - New
+
 ## plugins/ActionStreams/services.yaml
+	'1up.com' => '1up.com', # Translate - New
+	'43Things' => '43Things', # Translate - New
 	'Screen name' => 'Nickname',
+	'backtype' => 'backtype', # Translate - New
+	'Bebo' => 'Bebo', # Translate - New
+	'Catster' => 'Catster', # Translate - New
+	'COLOURlovers' => 'COLOURlovers', # Translate - New
+	'Cork\'\'d\'' => 'Cork\'\'d\'', # Translate - New
+	'Delicious' => 'Delicious', # Translate - New
+	'Destructoid' => 'Destructoid', # Translate - New
+	'Digg' => 'Digg', # Translate - New
+	'Dodgeball' => 'Dodgeball', # Translate - New
+	'Dogster' => 'Dogster', # Translate - New
+	'Dopplr' => 'Dopplr', # Translate - New
+	'Facebook' => 'Facebook',
 	'User ID' => 'Gebruikers ID',
+	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'U kunt uw Facebook userid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.facebook.com/profile.php?id=24400320.', # Translate - New
+	'FFFFOUND!' => 'FFFFOUND', # Translate - New
+	'Flickr' => 'Flickr', # Translate - New
+	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Vul uw Flickr userid in (dit bevat een "@", bijvoorbeeld 36381329@N00). Het Flickr userid is niet de gebruikersnaam in uw photostream', # Translate - New
+	'FriendFeed' => 'FriendFied', # Translate - New
+	'Gametap' => 'Gametap', # Translate - New
+	'Google Blogs' => 'Google Blogs', # Translate - New
 	'Search term' => 'Zoekterm',
+	'Google News' => 'Google News', # Translate - New
 	'Search for' => 'Zoeken naar',
+	'Goodreads' => 'Goodreads', # Translate - New
+	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'U kunt uw Goodreads userid vinden in de URL van uw profiel.  Bijvoorbeeld http://www.goodreads.com/user/show/123456.', # Translate - New
+	'Google Reader' => 'Google Reader', # Translate - New
 	'Sharing ID' => 'Sharing ID',
+	'Hi5' => 'Hi5', # Translate - New
+	'IconBuffet' => 'IconBuffet', # Translate - New
+	'ICQ' => 'ICQ', # Translate - New
 	'UIN' => 'UIN',
+	'Identi.ca' => 'Identi.ca', # Translate - New
+	'Iminta' => 'Iminta', # Translate - New
+	'iStockPhoto' => 'iStockPhoto', # Translate - New
+	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'U kunt uw iStockPhoto userid vinden in de URL van uw profiel.  Bijvoorbeeld, http://www.istockphoto.com/user_view.php?id=1234567.', # Translate - New
+	'IUseThis' => 'iUseThis', # Translate - New
+	'iwatchthis' => 'iwatchthis', # Translate - New
+	'Jabber' => 'Jabber', # Translate - New
 	'Jabber ID' => 'Jabber ID',
+	'Jaiku' => 'Jaiku', # Translate - New
+	'Kongregate' => 'Kongregate', # Translate - New
+	'Last.fm' => 'Last.fm', # Translate - New
+	'LinkedIn' => 'LinkedIn', # Translate - New
 	'Profile URL' => 'URL van profiel',
+	'Ma.gnolia' => 'Ma.gnolia', # Translate - New
+	'MOG' => 'MOG', # Translate - New
+	'MSN Messenger\'' => 'MSN Messenger', # Translate - New
+	'Multiply' => 'Multiply', # Translate - New
+	'MySpace' => 'MySpace', # Translate - New
+	'Netflix' => 'Netflix', # Translate - New
 	'Netflix RSS ID' => 'Netflix RSS ID',
+	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Om uw Netflix RSS ID terug te vinden, moet u op "RSS" klikken onderaan éénder welke pagina op de Netflix site en dan uw "Queue" link knippen en plakken.', # Translate - New
+	'Netvibes' => 'Netvibes', # Translate - New
+	'Newsvine' => 'Newsvine', # Translate - New
+	'Ning' => 'Ning', # Translate - New
 	'Social Network URL' => 'Sociaal netwerk URL',
+	'Ohloh' => 'Ohloh', # Translate - New
+	'Orkut' => 'Orkut', # Translate - New
+	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'U kunt uw Orkut uid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789', # Translate - New
+	'Pandora' => 'Pandora', # Translate - New
+	'Picasa Web Albums' => 'Picasa Web Albums', # Translate - New
+	'p0pulist' => 'p0pulist', # Translate - New
+	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'U kunt uw p0pulist userid terugvinden in de URL van uw Hot List.  Bijvoorbeeld, http://p0pulist.com/list/hot_list/10000', # Translate - New
+	'Pownce' => 'Pownce', # Translate - New
+	'Reddit' => 'Reddit', # Translate - New
+	'Skype' => 'Skype', # Translate - New
+	'SlideShare' => 'SlideShare', # Translate - New
+	'Smugmug' => 'Smugmug', # Translate - New
+	'SonicLiving' => 'SonicLiving', # Translate - New
+	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'U kunt uw SonicLiving userid vinden in uw share&subscribe URL.  Bijvoorbeeld, http://sonicliving.com/user/12345/feeds', # Translate - New
+	'Steam' => 'Steam', # Translate - New
+	'StumbleUpon' => 'StumbleUpon', # Translate - New
+	'Tabblo' => 'Tabblo', # Translate - New
+	'Blank should be replaced by positive sign (+).' => 'Blank moet vervangen worden met een plusteken (+)', # Translate - New
+	'Tribe' => 'Tribe', # Translate - New
+	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'U kunt uw tribe userid terugvingen in de URL van uw profiel.  Bijvoorbeeld, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.', # Translate - New
+	'Tumblr' => 'Tumblr', # Translate - New
+	'Twitter' => 'Twitter', # Translate - New
+	'TwitterSearch' => 'TwitterSearch', # Translate - New
+	'Uncrate' => 'Uncrate', # Translate - New
+	'Upcoming' => 'Upcoming', # Translate - New
+	'Viddler' => 'Viddler', # Translate - New
+	'Vimeo' => 'Vimeo', # Translate - New
+	'Virb' => 'Virb', # Translate - New
+	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'U kunt uw VIRB userid in uw home URL terugvinden.  Bijvoorbeeld, http://www.virb.com/backend/2756504321310091/your_home.', # Translate - New
 	'Vox name' => 'Vox-naam',
+	'Website' => 'Website', # Translate - New
+	'Xbox Live\'' => 'Xbox Live\'', # Translate - New
 	'Gamertag' => 'Gamertag',
+	'Yahoo! Messenger\'' => 'Yahoo! Messenger\'', # Translate - New
+	'Yelp' => 'Yelp', # Translate - New
+	'YouTube' => 'YouTube', # Translate - New
+	'Zooomr' => 'Zooomr', # Translate - New
 
 ## plugins/ActionStreams/config.yaml
 	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Beheert account en acties van de auteurs elders op het web',
@@ -5628,6 +5829,7 @@ Zoekbasis: [_2]",
 	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Bent u zeker dat u ELKE gebeurtenis in ELKE action stream wenst te tonen?',
 	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Verwijderde gebeurtenissen die nog steeds beschikbaar zijn via de externe service zullen opnieuw worden toegevoegd bij de volgende scan. Enkel gebeurtenissen die niet meer op uw profiel voorkomen zullen verwijderd blijven.  Bent u zeker dat u de geselecteerde gebeurtenis(sen) wenst te verwijderen?',
 	'Hide All' => 'Alles verbergen',
+	'Show All' => 'Alles tonen',
 	'Poll for new events' => 'Checken voor nieuwe gebeurtenissen',
 	'Update Events' => 'Gebeurtenissen bijwerken',
 	'Recent Actions' => 'Recente acties',
@@ -5653,7 +5855,7 @@ Zoekbasis: [_2]",
 	'Actions that are shown' => 'Gebeurtenissen die worden weergegeven',
 	'Actions that are hidden' => 'Gebeurtenissen die worden verborgen',
 	'No such event [_1]' => 'Geen [_1] evenement gevonden',
-	'[_1] Profile' => '[_1] profiel', # Translate - New
+	'[_1] Profile' => '[_1] profiel',
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
 	'No user [_1]' => 'Geen gebruiker [_1]',
@@ -5730,6 +5932,6 @@ Zoekbasis: [_2]",
 
 );
 
-## New words: 93
+## New words: 710
 
 1;
