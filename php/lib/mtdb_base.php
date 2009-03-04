@@ -589,9 +589,7 @@ class MTDatabaseBase extends ezsql {
                 }
             } else {
                 $not_clause = preg_match('/\bNOT\b/i', $category_arg);
-                $labels = array();
-                if (!$not_clause)
-                    $labels = preg_split('/\s*\b(?:AND|OR)\b\s|[\s*(?:|&)\s*]/i',$category_arg);
+                $labels = preg_split('/\s*\b(?:AND|OR|NOT)\b\s|[\s*(?:|&)\s*]/i',$category_arg);
                 if ($blog_ctx_arg)
                     $cats =& $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => $cat_class, 'label' => $labels)));
                 else
