@@ -27,7 +27,7 @@ isa_ok($mt, 'MT', 'Is MT');
     my $cache_path = sprintf("%04d/%02d", $year + 1900, $mon + 1);
 #    is($asset->class, 'Image', 'class');
     is($asset->class_label, 'Image', 'class_label');
-    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], "t/site/assets_c/$cache_path/test-thumb-640x480.jpg", 'thumbnail');
+    is(($asset->thumbnail_file({Height => 100, Width => 100}))[0], "t/site/assets_c/$cache_path/test-thumb-640x480-1.jpg", 'thumbnail');
     is($asset->image_width, 640, 'image_width'); 
     is($asset->image_height, 480, 'height');
     is($asset->as_html, '<form mt:asset-id="1" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://narnia.na/nana/images/test.jpg">View image</a></form>', 'as_html');

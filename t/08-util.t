@@ -13,7 +13,7 @@ use strict;
 my $mt = MT->new;
 $mt->config('NoHTMLEntities', 1);
 
-BEGIN { plan tests => 96 };
+BEGIN { plan tests => 104 };
 
 ok(substr_wref("Sabado", 0, 3), "Sab"); #1
 ok(substr_wref("S&agrave;bado", 0, 3), "S&agrave;b"); #2
