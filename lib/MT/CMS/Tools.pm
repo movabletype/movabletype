@@ -274,6 +274,7 @@ sub new_password {
         }
         else {
             my $redirect = $user->password_reset_return_to || '';
+
             $user->set_password($new_password);
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
@@ -281,11 +282,21 @@ sub new_password {
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
-            $app->login;
-            if ($redirect) {
-                return $app->redirect($redirect);
-            } else{
+
+            if (ref $app eq 'MT::App::CMS' && !$redirect) {
+                $app->login;
                 return $app->return_to_dashboard( redirect => 1 );
+            } else {
+                if (!$redirect) {
+                    my $cfg = $app->config;
+                    $redirect = $cfg->ReturnToURL || '';
+                }
+                $app->make_commenter_session($user);
+                if ($redirect) {
+                    return $app->redirect($redirect);
+                } else {
+                    return $app->redirect_to_edit_profile();
+                }
             }
         }
     }
