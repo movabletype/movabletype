@@ -113,6 +113,7 @@ sub start_recover {
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password_reset_form',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {
@@ -222,7 +223,7 @@ sub new_password {
     }
 
     my $email = $app->param('email');
-    if ( !$token ) {
+    if ( !$email ) {
         return $app->start_recover(
             { error => $app->translate('Email address not found'), } );
     }
@@ -308,6 +309,7 @@ sub new_password {
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'}        = $blog_id if $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {
