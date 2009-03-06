@@ -107,9 +107,11 @@ sub get_syscheck_content {
 sub start_recover {
     my $app = shift;
     my ($param) = @_;
+    my $cfg = $app->config;
     $param ||= {};
     $param->{'email'} = $app->param('email');
-    $param->{'return_to'} = $app->param('return_to');
+    $param->{'return_to'} = $app->param('return_to') || $cfg->ReturnToURL || '';
+    $param->{'can_signin'} = (ref $app eq 'MT::App::CMS') ? 1 : 0;
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
