@@ -10,6 +10,8 @@ use strict;
 use MT::Util qw( decode_url is_valid_email escape_unicode );
 use MT::I18N qw( encode_text );
 
+sub password_exists { 0 }
+
 sub handle_sign_in {
     my $class = shift;
     my ($app, $auth_type) = @_;
