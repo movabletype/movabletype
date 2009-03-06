@@ -2028,8 +2028,14 @@ sub load_global_tmpl {
             blog_id => $blog_id,
         }
     }
+    my $args;
+    if (ref $blog_id eq 'ARRAY') {
+       $args->{sort} = 'blog_id';
+       $args->{direction} = 'descend';
+       $args->{limit} = 1;
+    }
     require MT::Template;
-    my $tmpl = MT::Template->load( $terms );
+    my $tmpl = MT::Template->load( $terms, $args);
     $app->set_default_tmpl_params($tmpl) if $tmpl;
     $tmpl;
 }
