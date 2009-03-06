@@ -107,7 +107,7 @@
 
 <mt:if name="entry_url">
 <p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">#_login"></p>
-<mt:else>
+<mt:elseif name="return_url">
 <p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">#_login"></p>
 </mt:else></mt:if>
 
