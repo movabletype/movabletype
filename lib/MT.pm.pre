@@ -2013,7 +2013,10 @@ sub find_file {
 sub load_global_tmpl {
     my $app = shift;
     my ( $arg, $blog_id ) = @_;
-    $blog_id ||= $app->param('blog_id') || '0';
+    $blog_id
+        = $blog_id ? [ $blog_id, 0 ]
+        : MT->app->blog ? [ MT->app->blog->id, 0 ]
+        :                 0;
 
     my $terms = {};
     if ( 'HASH' eq ref($arg) ) {
