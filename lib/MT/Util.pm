@@ -257,7 +257,7 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt;
+    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
