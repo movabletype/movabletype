@@ -292,8 +292,7 @@ sub is_superuser {
             $author->permissions(0)->can_edit_templates(@_);
         }
     } else {
-        $author->permissions(0)->can_administer() ||
-            $author->SUPER::is_superuser();
+        $author->permissions(0)->can_administer();
     }
 }
 
