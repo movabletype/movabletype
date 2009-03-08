@@ -2472,8 +2472,12 @@ sub cookies {
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
-    return wantarray ? %{ $app->{cookies} } : $app->{cookies}
-        if $app->{cookies};
+    if ( $app->{cookies} ) {
+        return wantarray ? %{ $app->{cookies} } : $app->{cookies};
+    }
+    else {
+        return wantarray ? () : undef;
+    }
 }
 
 sub show_error {
