@@ -1122,7 +1122,7 @@ sub session_state {
     if ( $sessobj && $commenter ) {
         $c = {
             sid     => $sessobj->id,
-            name    => $commenter->nickname,
+            name    => $commenter->nickname || $app->translate('(Display Name not set)'),
             url     => $commenter->url,
             email   => $commenter->email,
             userpic => scalar $commenter->userpic_url,
