@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::nl;
 use strict;
@@ -63,17 +63,20 @@ use vars qw( @ISA %Lexicon );
 	'Category Daily' => 'per categorie per dag',
 	'Category Weekly' => 'per categorie per week',
 
-## php/lib/block.mtauthorhaspage.php
-	'No author available' => 'Geen auteur beschikbaar',
+## php/lib/block.mtif.php
 
 ## php/lib/function.mtremotesigninlink.php
 	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'TypePad authenticatie is niet ingeschakeld op deze blog.  MTRemoteSignInLink kan niet gebruikt worden.',
 
+## php/lib/block.mtauthorhaspage.php
+	'No author available' => 'Geen auteur beschikbaar',
+
 ## php/lib/block.mtsethashvar.php
 
-## php/lib/block.mtif.php
-
 ## php/lib/block.mtauthorhasentry.php
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtcommentauthorlink.php
 
@@ -86,9 +89,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid index.' => 'Ongeldige index.',
 	'\'[_1]\' is not an array.' => '\'[_1]\' is geen array.',
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' is geen geldige functie.',
-
-## php/lib/function.mtproductname.php
-	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
@@ -338,9 +338,8 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/entry.mtml
 
 ## default_templates/recover-password.mtml
-	'_USAGE_FORGOT_PASSWORD_1' => 'U hebt een nieuw Movable Type-wachtwoord aangevraagd. Uw wachtwoord is in het systeem gewijzigd; hier is het nieuwe wachtwoord:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Met dit nieuwe wachtwoord moet u zich op Movable Type kunnen aanmelden via de onderstaande URL. Zodra u zich hebt aangemeld, kunt u uw wachtwoord veranderen in iets dat u makkelijker kunt onthouden.',
-	'Mail Footer' => 'Footer voor e-mail',
+	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Er is een verzoek ingediend om uw wachtwoord aan te passen in Movable Type.  Gelieve dit te bevestigen door op onderstaande link te klikken om een nieuw wachtwoord te kiezen.',
+	'If you did not request this change, you can safely ignore this email.' => 'Als u deze wijziging niet heeft aangevraagd, kunt u deze e-mail gerust negeren.',
 
 ## default_templates/javascript.mtml
 	'moments ago' => 'ogenblikken geleden',
@@ -535,7 +534,6 @@ use vars qw( @ISA %Lexicon );
 	'The category basename \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Categoriebasisnaam \'[_1]\' conflicteert met een andere categoriewith another category. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke basisnaam hebben.',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Categorie \'[_1]\' aangemaakt door \'[_2]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Categorie \'[_1]\' (ID:[_2]) verwijderd door \'[_3]\'',
-	'Saving category failed: [_1]' => 'Categorie opslaan mislukt: [_1]',
 
 ## lib/MT/CMS/User.pm
 	'Users' => 'Gebruikers',
@@ -581,11 +579,10 @@ use vars qw( @ISA %Lexicon );
 	'You cannot delete your own user record.' => 'U kunt uw eigen gebruikersgegevens niet verwijderen.',
 	'You have no permission to delete the user [_1].' => 'U heeft geen rechten om gebruiker [_1] te verwijderen.',
 	'User requires username' => 'Gebruiker vereist gebruikersnaam',
-	'[_1] contains an invalid character: [_2]' => '[_1] bevat ongeldig karakter: [_2]',
+	'[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]',
 	'User requires display name' => 'Gebruiker heeft een getoonde naam nodig',
 	'A user with the same name already exists.' => 'Er bestaat al een gebruiker met die naam.',
 	'User requires password' => 'Gebruiker vereist wachtwoord',
-	'User requires password recovery word/phrase' => 'Gebruiker heeft een woord/uitdrukking nodig om het wachtwoord te kunnen terugvinden',
 	'Email Address is required for password recovery' => 'E-mail adres is vereist voor het terugvinden van een wachtwoord',
 	'Email Address is invalid.' => 'E-mail adres is ongeldig.',
 	'URL is invalid.' => 'URL is ongeldig.',
@@ -720,6 +717,15 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'Wachtwoord terugvinden',
+	'Email Address is required for password recovery.' => 'E-mail adres is vereist om het wachtwoord te kunnen terugvinden.',
+	'User not found' => 'Gebruiker niet gevonden',
+	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Fout bij verzenden van e-mail ([_1]);  gelieve het probleem op te lossen en probeer dan opnieuw om uw wachtwoord terug te vinden.',
+	'Password reset token not found' => 'Wachtwoord reset token niet gevonden',
+	'Email address not found' => 'E-mail adres niet gevonden',
+	'Your request to change your password has expired.' => 'Uw verzoek om uw wachtwoord aan te passen is verlopen',
+	'Invalid password reset request' => 'Ongeldig verzoek om wachtwoord te veranderen',
+	'Please confirm your new password' => 'Gelieve uw nieuwe wachtwoord te bevestigen',
+	'Passwords do not match' => 'Wachtwoorden komen niet overeen',
 	'That action ([_1]) is apparently not implemented!' => 'Die handeling ([_1]) is blijkbaar niet geïmplementeerd!',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Ongeldige poging het wachtwoord terug te vinden; kan geen wachtwoorden terugvinden in deze configuratie',
 	'Invalid author_id' => 'Ongeldig author_id',
@@ -757,8 +763,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'Gebruiker heeft geen wachtwoordhint ingesteld; kan wachtwoord niet recupereren',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Ongeldige poging om wachtwoord te recupereren (gebruikte hint \'[_1]\')',
 	'User does not have email address' => 'Gebruiker heeft geen e-mail adres',
-	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Wachtwoord werd opnieuw ingesteld voor gebruiker \'[_1]\' (gebruiker #[_2]). Wachtwoord werd naar dit e-mail adres verstuurd: [_3]',
-	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Fout bij verzenden van e-mail ([_1]);  gelieve het probleem op te lossen en probeer dan opnieuw om uw wachtwoord terug te vinden.',
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Een verzoek om het wachtwoord re resetten is naar [_3] gestuurd voor gebruiker \'[_1\' (gebruiker #[_2]).', # Translate - New
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Sommige objecten werden niet gerecupereerd omdat hun ouder-objecten niet werden teruggezet.  Gedetailleerde informatie is te vinden in het <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activiteitenlog</a>.',
 	'[_1] is not a directory.' => '[_1] is geen map.',
 	'Error occured during restore process.' => 'Er deed zich een fout voor tijdens het restore-proces.',
@@ -1027,6 +1032,7 @@ use vars qw( @ISA %Lexicon );
 	'Date-Based Author Archives' => 'Datum-gebaseerde auteursactieven',
 	'Date-Based Category Archives' => 'Datum-gebaseerde categorie-archieven',
 	'OpenID Accepted' => 'OpenID welkom',
+	'Mail Footer' => 'Footer voor e-mail',
 	'Comment throttle' => 'Beperking reacties',
 	'Commenter Confirm' => 'Bevestiging reageerder',
 	'Commenter Notify' => 'Notificatie reageerder',
@@ -1060,6 +1066,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: [_2]' => '[_1]: [_2]',
 	'Moving metadata storage for categories...' => 'Metadata opslag voor categoriën wordt verplaatst...',
 	'Upgrading metadata storage for [_1]' => 'Metadata opslag voor [_1] wordt bijgewerkt',
+	'Updating password recover email template...' => 'Sjabloon wachtwoordrecuperatie e-mail wordt bijgewerkt...',
 	'Migrating Nofollow plugin settings...' => 'Nofollow plugin instellingen worden gemigreerd',
 	'Updating system search template records...' => 'Systeemzoeksjablonen worden bijgewerkt...',
 	'Custom ([_1])' => 'Gepersonaliseerd ([_1])',
@@ -1273,7 +1280,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
 ## lib/MT/App/Search.pm
-	'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter.',
+	'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter',
 	'Invalid type: [_1]' => 'Ongeldig type: [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Zoeken: opslaan resultaten in cache mislukt.  [_1] is niet beschikbar [_2]',
 	'Invalid format: [_1]' => 'Ongeldig formaat: [_1]',
@@ -1372,7 +1379,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid category ID \'[_1]\'' => 'Ongeldig categorie-ID \'[_1]\'',
 
 ## lib/MT/App/CMS.pm
-	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt het wachtwoord opnieuw in te stellen voor de geselecteerde gebruikers.  Nieuwe wachtwoorden zullen willekeurig worden gegenereerd en rechtstreeks naar hun e-mail adres worden verzonden.\n\nWenst u verder te gaan?',
+	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt e-mails te versturen waarmee de geselecteerde gebruikers hun wachtwoord kunnen aanpassen. Bent u zeker?',
 	'_WARNING_DELETE_USER_EUM' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker tot \'wees\' maakt.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies verwijderen.  Bent u zeker dat u deze gebruiker(s) wenst te verwijderen?\nGebruikers die nog bestaan in de externe directory zullen zichzelf weer kunnen aanmaken.',
 	'_WARNING_DELETE_USER' => 'Een gebruiker verwijderen is een actie die niet ongedaan gemaakt kan worden en die alle berichten van de gebruiker in \'wezen\' verandert.  Als u een gebruiker wenst weg te halen of zijn toegang tot het systeem wenst te blokkeren, is het aanbevolen alternatief al zijn permissies te verwijderen.  Bent u zeker dat u deze gebruiker wenst te verwijderen?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Deze actie zal de sjablonen van de geselecteerde blog(s) terugzetten naar de fabrieksinstellingen. Bent u zeker dat u de sjabonen van de geselecteerde blog(s) wenst te verversen?',
@@ -1631,10 +1638,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid login attempt from user \'[_1]\'' => 'Ongeldige poging tot aanmelden van gebruiker \'[_1]\'',
 	'User \'[_1]\' (ID:[_2]) logged out' => 'Gebruiker \'[_1]\' (ID:[_2]) werd afgemeld',
 	'User requires password.' => 'Gebruiker heeft wachtwoord nodig.',
-	'User requires password recovery word/phrase.' => 'Gebruiker heeft woord/zin om het wachtwoord terug te vinden nodig.',
-	'User requires username.' => 'Gebruiker heeft gebruikersnaam nodig.',
 	'User requires display name.' => 'Gebruiker heeft getoonde naam nodig.',
-	'Email Address is required for password recovery.' => 'E-mail adres is vereist om het wachtwoord te kunnen terugvinden.',
+	'User requires username.' => 'Gebruiker heeft gebruikersnaam nodig.',
 	'Something wrong happened when trying to process signup: [_1]' => 'Er ging iets mis bij het verwerken van de registratie: [_1]',
 	'New Comment Added to \'[_1]\'' => 'Nieuwe reactie achtergelaten op \'[_1]\'',
 	'Close' => 'Sluiten',
@@ -1760,7 +1765,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Failed to verify current password.' => 'Verificatie huidig wachtwoord mislukt.',
-	'Password hint is required.' => 'Wachtwoordhint is vereist.',
 
 ## lib/MT/ImportExport.pm
 	'No Blog' => 'Geen blog',
@@ -1771,6 +1775,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning permissions for new user...' => 'Permissies worden toegekend aan nieuwe gebruiker...',
 	'Saving permission failed: [_1]' => 'Permissies opslaan mislukt: [_1]',
 	'Creating new category (\'[_1]\')...' => 'Nieuwe categorie wordt aangemaakt (\'[_1]\')...',
+	'Saving category failed: [_1]' => 'Categorie opslaan mislukt: [_1]',
 	'Invalid status value \'[_1]\'' => 'Ongeldige statuswaarde \'[_1]\'',
 	'Invalid allow pings value \'[_1]\'' => 'Ongeldige instelling voor het toelaten van pings \'[_1]\'',
 	'Can\'t find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Kan geen bestaand bericht vinden met tijdstip \'[_1]\'... reacties worden overgeslagen, verder naar volgende bericht.',
@@ -1854,7 +1859,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => 'Er deed zich een fout voor bij het publiceren van [_1] \'[_2]\': [_3]',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het publiceren van datum-gebaseerd archief \'[_1]\': [_2]',
 	'Renaming tempfile \'[_1]\' failed: [_2]' => 'Tijdelijk bestand \'[_1]\' van naam veranderen mislukt: [_2]',
-	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moeten opgegeven zijn.',
+	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.',
 	'Template \'[_1]\' does not have an Output File.' => 'Sjabloon \'[_1]\' heeft geen uitvoerbestand.',
 	'An error occurred while publishing scheduled entries: [_1]' => 'Er deed zich een fout voor bij het publiceren van van geplande berichten: [_1]',
 
@@ -2729,6 +2734,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Opties schermindeling opslaan',
 	'OK' => 'OK',
 	'Close display options' => 'Opties schermindeling sluiten',
+	'This post was held for review, due to spam filtering.' => 'Dit bericht werd in de moderatiewachtrij geplaatst door de spamfilter.', # Translate - New
 	'This post was classified as spam.' => 'Dit bericht werd geclassificeerd als spam.',
 	'Spam Details' => 'Spamdetails',
 	'Score' => 'Score',
@@ -2926,7 +2932,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/calendar.tmpl
 	'_LOCALE_WEEK_START' => '1',
-	'S|M|T|W|T|F|S' => 'M|D|W|D|V|Z|Z',
+	'S|M|T|W|T|F|S' => 'Z|M|D|W|D|V|Z',
 	'January' => 'Januari',
 	'Febuary' => 'Februari',
 	'March' => 'Maart',
@@ -3285,11 +3291,11 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this category (s)' => 'Wijzigingen aan deze categorie opslaan (s)',
 
 ## tmpl/cms/dialog/recover.tmpl
-	'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'Uw wachtwoord is veranderd en het nieuwe wachtwoord is naar uw e-mailadres ([_1]) gestuurd.',
-	'Password recovery word/phrase' => 'Woord/uitdrukking om wachtwoord terug te vinden',
+	'The email address provided is not unique.  Please enter your username.' => 'Het opgegeven e-mail adres is niet uniek.  Gelieve uw gebruikersnaam op te geven.',
+	'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).',
+	'Go Back (x)' => 'Ga terug (x)',
 	'Recover (s)' => 'Terugvinden (s)',
 	'Recover' => 'Terugvinden',
-	'Go Back (x)' => 'Ga terug (x)',
 
 ## tmpl/cms/dialog/restore_end.tmpl
 	'An error occurred during the restore process: [_1] Please check your restore file.' => 'Er deed zich een fout voor tijdens het terugzetten: [_1] Gelieve uw restore-bestand na te kijken.',
@@ -3313,6 +3319,11 @@ use vars qw( @ISA %Lexicon );
 	'Insert (s)' => 'Invoegen (s)',
 	'Insert' => 'Invoegen',
 	'No assets could be found.' => 'Kon geen mediabestand vinden',
+
+## tmpl/cms/dialog/new_password.tmpl
+	'Choose New Password' => 'Nieuw wachtwoord kiezen',
+	'Confirm Password' => 'Wachtwoord bevestigen',
+	'Change Password' => 'Wachtwoord wijzigen',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Template Set' => 'Sjabloonset verversen',
@@ -3641,7 +3652,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Blogsjablonen',
-	'Show All Templates' => 'Alle sjablonen tonen', # Translate - New
+	'Show All Templates' => 'Alle sjablonen tonen',
 	'Blog Publishing Settings' => 'Blogpublicatie-instellingen',
 	'You have successfully deleted the checked template(s).' => 'Verwijdering van geselecteerde sjabloon/sjablonen is geslaagd.',
 	'Your templates have been published.' => 'Uw sjablonen werden gepubliceerd.',
@@ -3679,7 +3690,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a password for your account.' => 'Kies een wachtwoord voor uw account.',
 	'Password Confirm' => 'Wachtwoord bevestigen',
 	'Repeat the password for confirmation.' => 'Herhaal het wachtwoord ter bevestiging.',
-	'This word or phrase will be required to recover your password if you forget it.' => 'Dit woord of deze uitdrukking zal gevraagd worden om uw wachtwoord terug te vinden als u het mocht vergeten.',
 	'Your LDAP username.' => 'Uw LDAP gebruikersnaam.',
 	'Enter your LDAP password.' => 'Geef uw LDAP wachtwoord op.',
 
@@ -3763,15 +3773,14 @@ use vars qw( @ISA %Lexicon );
 	'The image associated with this user.' => 'De afbeelding verbonden aan deze gebruiker',
 	'Select Userpic' => 'Selecteer foto gebruiker',
 	'Remove Userpic' => 'Verwijder foto gebruiker',
-	'Change Password' => 'Wachtwoord wijzigen',
 	'Current Password' => 'Huidig wachtwoord',
 	'Existing password required to create a new password.' => 'Bestaand wachtwoord vereist om een nieuw wachtwoord aan te maken',
 	'Initial Password' => 'Initiëel wachtwoord',
 	'Enter preferred password.' => 'Gekozen wachtwoord invoeren',
 	'New Password' => 'Nieuw wachtwoord',
 	'Enter the new password.' => 'Vul het nieuwe wachtwoord in',
-	'Confirm Password' => 'Wachtwoord bevestigen',
-	'This word or phrase will be required to recover a forgotten password.' => 'Dit woord of deze uitdrukking zal gebruikt worden om een vergeten wachtwoord terug te halen.',
+	'Password recovery word/phrase' => 'Woord/uitdrukking om wachtwoord terug te vinden',
+	'This word or phrase is not used in the password recovery.' => 'Dit woord of deze uitdrukking wordt niet gebruikt in het woord of de uitdrukking voor het terugvinden van het wachtwoord.', # Translate - New
 	'Preferred language of this user.' => 'Voorkeurstaal van deze gebruiker',
 	'Text Format' => 'Tekstformaat',
 	'Preferred text format option.' => 'Voorkeursoptie tekstformaat',
@@ -3918,8 +3927,8 @@ use vars qw( @ISA %Lexicon );
 	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => 'Waarschuwing: één of meer van uw sjablonen staan ingesteld om dynamisch gepubliceerd te worden met PHP, terwijl uw server side include methode mogelijk niet compatibel is met dynamisch publiceren.',
 	'You must set a valid Site URL.' => 'U moet een geldige URL instellen voor uw site.',
 	'You must set a valid Local Site Path.' => 'U moet een geldig lokaal site-pad instellen.',
-	'You must set Local Archive Path.' => 'U moet een lokaal archiefpad instellen',
-	'You must set a valid Archive URL.' => 'U moet een geldige archiefurl instellen.',
+	'You must set Local Archive Path.' => 'U moet een lokaal archiefpad instellen.',
+	'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.',
 	'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.',
 	'Publishing Paths' => 'Publicatiepaden',
 	'The URL of your website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/blog/' => 'De URL van uw website.  Zet er geen bestandsnaam in (m.a.w. laat index.html weg).  Voorbeeld: http://www.voorbeeld.com/blog/',
@@ -3986,7 +3995,6 @@ use vars qw( @ISA %Lexicon );
 	'Your login name.' => 'Uw gebruikersnaam.',
 	'The name appears on your comment.' => 'Deze naam verschijnt onder uw reactie',
 	'Select a password for yourself.' => 'Kies een wachtwoord voor uzelf.',
-	'This word or phrase will be required to recover the password if you forget it.' => 'Dit woord of deze uitdrukking zal gevraagd worden om uw wachtwoord terug te vinden als u het bent verloren.',
 	'The URL of your website. (Optional)' => 'De URL van uw website. (Optioneel)',
 	'Register' => 'Registreer',
 
@@ -4011,7 +4019,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/comment/profile.tmpl
 	'Your Profile' => 'Uw profiel',
-	'Password recovery' => 'Wachtwoord terugvinden',
 	'Return to the <a href="[_1]">original page</a>.' => 'Keer terug naar de <a href="[_1]">oorspronkelijke pagina</a>.',
 
 ## tmpl/include/chromeless_footer.tmpl
@@ -4055,6 +4062,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/config.yaml
 	'Community Settings' => 'Community instellingen',
+	'Pending Entries' => 'Berichten in wachtrij', # Translate - New
+	'Spam Entries' => 'Spamberichten', # Translate - New
 	'Following Users' => 'Gevolgde gebruikers',
 	'Being Followed' => 'Wordt gevolgd door',
 	'Sanitize' => 'Schoonmaakfilter',
@@ -4070,6 +4079,8 @@ use vars qw( @ISA %Lexicon );
 	'Profile View' => 'Profiel bekijken',
 	'Profile Edit Form' => 'Bewerkingsformulier profiel',
 	'Profile Feed' => 'Profielfeed',
+	'New Password Form' => 'Formulier nieuw wachtwoord', # Translate - New
+	'New Password Reset Form' => 'Formulier nieuw wachtwoord resetten', # Translate - New
 	'Form Field' => 'Veld in formulier',
 	'Status Message' => 'Statusboodschap',
 	'Simple Header' => 'Eenvoudige hoofding',
@@ -4108,13 +4119,13 @@ use vars qw( @ISA %Lexicon );
 	'Your confirmation have expired. Please register again.' => 'Uw bevestiging is verlopen.  Gelieve opnieuw te registeren.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Gebruiker \'[_1]\' (ID:[_2]) werd met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden.',
+	'[_1] registered to Movable Type.' => '[_1] geregistreerd bij Movable Type', # Translate - New
 	'Login required' => 'Aanmelden vereist',
 	'Title or Content is required.' => 'Titel of inhoud is vereist.',
 	'System template entry_response not found in blog: [_1]' => 'Systeemsjabloon entry_response niet gevonden voor blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nieuw bericht \'[_1]\' toegevoegd aan de blog \'[_2]\'',
 	'Id or Username is required' => 'ID of gebruikersnaam is verplicht',
 	'Unknown user' => 'Onbekende gebruiker',
-	'Cannot edit profile.' => 'Kan profiel niet bewerken.',
 	'Recent Entries from [_1]' => 'Recente berichten van [_1]',
 	'Responses to Comments from [_1]' => 'Antwoorden op reacties van [_1]',
 	'Actions from [_1]' => 'Acties van [_1]',
@@ -4164,6 +4175,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/profile_error.mtml
 	'ERROR MSG HERE' => 'FOUTBOODSCHAP HIER',
 
+## addons/Community.pack/templates/global/new_password.mtml
+
 ## addons/Community.pack/templates/global/new_entry_email.mtml
 	'A new entry \'[_1]([_2])\' has been posted on your blog [_3].' => 'Een nieuw bericht  \'[_1]([_2])\' werd gepubliceerd op uw blog [_3].',
 	'Author name: [_1]' => 'Auteursnaam: [_1]',
@@ -4179,6 +4192,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/password_reset_form.mtml
 	'Reset Password' => 'Wachtwoord opnieuw instellen',
+	'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'Uw wachtwoord is veranderd en het nieuwe wachtwoord is naar uw e-mailadres ([_1]) gestuurd.',
 	'Back to the original page' => 'Terug naar de oorspronkelijke pagina',
 
 ## addons/Community.pack/templates/global/signin.mtml
@@ -4225,6 +4239,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/navigation.mtml
 	'Home' => 'Hoofdpagina',
+
+## addons/Community.pack/templates/global/new_password_reset_form.mtml
 
 ## addons/Community.pack/templates/global/login_form_module.mtml
 	'Logged in as <a href="[_1]">[_2]</a>' => 'Aangemeld als <a href="[_1]">[_2]</a>',
@@ -4643,8 +4659,6 @@ use vars qw( @ISA %Lexicon );
 ## addons/Commercial.pack/templates/professional/entry_metadata.mtml
 
 ## addons/Commercial.pack/templates/professional/entry.mtml
-
-## addons/Commercial.pack/templates/professional/recover-password.mtml
 
 ## addons/Commercial.pack/templates/professional/javascript.mtml
 
@@ -5227,33 +5241,7 @@ Zoekbasis: [_2]",
 ## plugins/WidgetManager/WidgetManager.pl
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
 	'Moving storage of Widget Manager [_1]...' => 'Opslagruimte van Widget Manager aan het overzetten [_1]...',
-        'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Er is een verzoek ingediend om uw wachtwoord aan te passen in Movable Type.  Gelieve dit te bevestigen door op onderstaande link te klikken om een nieuw wachtwoord te kiezen.', # Translate - New
-        'If you did not request this change, you can safely ignore this email.' => 'Als u deze wijziging niet heeft aangevraagd, kunt u deze e-mail gerust negeren.', # Translate - New
-        '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
-        '[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]', # Translate - New
-        'Email address is required.' => 'E-mail adres is vereist', # Translate - New
-        'User not found' => 'Gebruiker niet gevonden', # Translate - New
-        'Password reset token not found' => 'Wachtwoord reset token niet gevonden', # Translate - New
-        'Email address not found' => 'E-mail adres niet gevonden', # Translate - New
-        'Your request to change your password has expired.' => 'Uw verzoek om uw wachtwoord aan te passen is verlopen', # Translate - New
-        'Invalid password reset request' => 'Ongeldig verzoek om wachtwoord te veranderen', # Translate - New
-        'Please confirm your new password' => 'Gelieve uw nieuwe wachtwoord te bevestigen', # Translate - New
-        'Password do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
-        'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter', # Translate - New
-        'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.', # Translate - New
-        'Error saving [_1] record # [_3]: [_2]...' => 'Fout bij opslaan [_1] record # [_3]: [_2]...', # Translate - New
-        'The email address provided is not unique.  Please enter your username.' => 'Een e-mail is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
-        'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).', # Translate - New
-        'Choose New Password' => 'Nieuw wachtwoord kiezen', # Translate - New
-        'You must set Local Archive Path.' => 'U moet een lokaal archiefpad instellen.', # Translate - New
-        'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.', # Translate - New
-        'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.', # Translate - New
-	'Passwords do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
-	'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Wachtwoord reset voor gebruiker \'[_1]\' (gebruiker #[_2]) geslaagd. Reset link verstuurd naar volgend adres: [_3]', # Translate - New
-	'Updating password recover email template...' => 'Sjabloon wachtwoordrecuperatie e-mail wordt bijgewerkt...', # Translate - New
-	'The email address provided is not unique.  Please enter your username.' => 'Het opgegeven e-mail adres is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
-	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt e-mails te versturen waarmee de geselecteerde gebruikers hun wachtwoord kunnen aanpassen. Bent u zeker?',
-	"A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Een link om het wachtwoord opnieuw in te stellen is verzonden naar [_3] voor gebruiker \'[_1]\' (gebruiker #[_2]).', 
+
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
 	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
 	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
@@ -5324,6 +5312,7 @@ Zoekbasis: [_2]",
 	'Login Form' => 'Aanmeldformulier',
 	'Register Confirmation' => 'Bevestiging registratie',
 	'Password Reset' => 'Wachtwoord vernieuwen',
+	'New Password Form' => 'Formulier nieuw wachtwoord', # Translate - New
 	'User Profile' => 'Gebruikersprofiel',
 	'Actions (Local)' => 'Acties (lokaal)',
 	'Comment Detail' => 'Details reactie',
@@ -5386,8 +5375,6 @@ Zoekbasis: [_2]",
 	'About' => 'Over',
 	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'De Motion sjabloonset is een goed voorbeeld van het soort site dat met Movable Type gebouwd kan worden.',
 
-## plugins/Motion/templates/Motion/entry_create.mtml
-
 ## plugins/Motion/templates/Motion/comment_detail.mtml
 
 ## plugins/Motion/templates/Motion/register.mtml
@@ -5414,7 +5401,6 @@ Zoekbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/password_reset.mtml
 	'Reset Password' => 'Wachtwoord opnieuw instellen',
-	'Back to the original page' => 'Terug naar de oorspronkelijke pagina',
 
 ## plugins/Motion/templates/Motion/form_field.mtml
 	'(Optional)' => '(optioneel)',
@@ -5426,6 +5412,8 @@ Zoekbasis: [_2]",
 ## plugins/Motion/templates/Motion/trackbacks.mtml
 
 ## plugins/Motion/templates/Motion/archive_index.mtml
+
+## plugins/Motion/templates/Motion/new_password.mtml
 
 ## plugins/Motion/templates/Motion/entry_listing_author.mtml
 	'Archived Entries from [_1]' => 'Gearchiveerde berichten van [_1]',
@@ -5446,6 +5434,7 @@ Zoekbasis: [_2]",
 	'Remove service' => 'Service verwijderen',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
+	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Aanmelden</a>', # Translate - New
 	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
 	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(of <a href="javascript:void(0)" onclick="[_1]">meld u aan</a>)',
 	'No posting privileges.' => 'Geen rechten om berichten te publiceren',
@@ -5463,7 +5452,7 @@ Zoekbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'Favorited [_1] on [_2]' => 'Maakte [_1] favoriet op [_2]',
+	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet', # Translate - New
 	'No recent actions.' => 'Geen recente acties.',
 
 ## plugins/Motion/templates/Motion/main_index.mtml
@@ -5547,7 +5536,7 @@ Zoekbasis: [_2]",
 	'Profile Data' => 'Profielgegevens',
 	'More Entries by [_1]' => 'Meer berichten van [_1]',
 	'Recent Actions' => 'Recente acties',
-	'_PROFILE_COMMENT_LENGTH' => '', # Translate - New
+	'_PROFILE_COMMENT_LENGTH' => '10', # Translate - New
 	'Comment Threads' => 'Reactie threads',
 	'[_1] commented on ' => '[_1] reageerde op ',
 	'No responses to comments.' => 'Geen antwoorden op reacties.',
@@ -5579,6 +5568,7 @@ Zoekbasis: [_2]",
 	'Facebook Application Key' => 'Facebook applicatiesleutel',
 	'The key for the Facebook application associated with your blog.' => 'De sleutel voor de Facebook-applicatie geassocieerd met uw blog.',
 	'Edit Facebook App' => 'Facebook app bewerken',
+	'Create Facebook App' => 'Facebook app aanmaken', # Translate - New
 	'Facebook Application Secret' => 'Facebook applicatiegeheim',
 	'The secret for the Facebook application associated with your blog.' => 'Het geheim voor de Facebook-applicatie geassocieerd met uw blog.',
 
@@ -5599,6 +5589,9 @@ Zoekbasis: [_2]",
 
 ## plugins/ActionStreams/blog_tmpl/main_index.mtml
 
+## plugins/ActionStreams/blog_tmpl/actions.mtml
+	'Recent Actions' => 'Recente acties',
+
 ## plugins/ActionStreams/blog_tmpl/archive.mtml
 
 ## plugins/ActionStreams/blog_tmpl/banner_footer.mtml
@@ -5607,221 +5600,221 @@ Zoekbasis: [_2]",
 	'Find [_1] Elsewhere' => 'Elders [_1] vinden',
 
 ## plugins/ActionStreams/streams.yaml
-	'Currently Playing' => 'Nu aan het spelen', # Translate - New
-	'The games in your collection you\'re currently playing' => 'De spelletjes in uw collectie die u momenteel aan het spelen bent', # Translate - New
-	'Comments you have made on the web' => 'Reacties die u elders op het web heeft achtergelaten', # Translate - New
-	'Colors' => 'Kleuren', # Translate - New
-	'Colors you saved' => 'Kleuren die u heeft opgeslagen', # Translate - New
-	'Palettes' => 'Paletten', # Translate - New
-	'Palettes you saved' => 'Paletten die u heeft opgeslagen', # Translate - New
-	'Patterns' => 'Patronen', # Translate - New
-	'Patterns you saved' => 'Patronen die u heeft opgeslagen', # Translate - New
-	'Favorite Palettes' => 'Favoriete paletten', # Translate - New
-	'Palettes you saved as favorites' => 'Paletten die u heeft opgeslagen als favorieten', # Translate - New
-	'Reviews' => 'Besprekingen', # Translate - New
-	'Your wine reviews' => 'Uw wijnbesprekingen', # Translate - New
-	'Cellar' => 'Kelder', # Translate - New
-	'Wines you own' => 'Wijnen die u bezit', # Translate - New
-	'Shopping List' => 'Boodschappenlijstje', # Translate - New
-	'Wines you want to buy' => 'Wijnen die u wenst te kopen', # Translate - New
+	'Currently Playing' => 'Nu aan het spelen',
+	'The games in your collection you\'re currently playing' => 'De spelletjes in uw collectie die u momenteel aan het spelen bent',
+	'Comments you have made on the web' => 'Reacties die u elders op het web heeft achtergelaten',
+	'Colors' => 'Kleuren',
+	'Colors you saved' => 'Kleuren die u heeft opgeslagen',
+	'Palettes' => 'Paletten',
+	'Palettes you saved' => 'Paletten die u heeft opgeslagen',
+	'Patterns' => 'Patronen',
+	'Patterns you saved' => 'Patronen die u heeft opgeslagen',
+	'Favorite Palettes' => 'Favoriete paletten',
+	'Palettes you saved as favorites' => 'Paletten die u heeft opgeslagen als favorieten',
+	'Reviews' => 'Besprekingen',
+	'Your wine reviews' => 'Uw wijnbesprekingen',
+	'Cellar' => 'Kelder',
+	'Wines you own' => 'Wijnen die u bezit',
+	'Shopping List' => 'Boodschappenlijstje',
+	'Wines you want to buy' => 'Wijnen die u wenst te kopen',
 	'Links' => 'Links',
-	'Your public links' => 'Uw publieke links', # Translate - New
-	'Dugg' => 'Dugg', # Translate - New
-	'Links you dugg' => 'Links die u \'dugg\' op Digg', # Translate - New
-	'Submissions' => 'Ingediend', # Translate - New
-	'Links you submitted' => 'Links die u indiende', # Translate - New
+	'Your public links' => 'Uw publieke links',
+	'Dugg' => 'Dugg',
+	'Links you dugg' => 'Links die u \'dugg\' op Digg',
+	'Submissions' => 'Ingediend',
+	'Links you submitted' => 'Links die u indiende',
 	'Found' => 'Gevonden',
-	'Photos you found' => 'Foto\'s die u vond', # Translate - New
-	'Favorites' => 'Favorieten', # Translate - New
-	'Photos you marked as favorites' => 'Foto\'s die u aanmerkte als favorieten', # Translate - New
-	'Photos' => 'Foto\'s', # Translate - New
-	'Photos you posted' => 'Foto\'s die u publiceerde', # Translate - New
-	'Likes' => 'Geappreciëerd', # Translate - New
-	'Things from your friends that you "like"' => 'Dingen van uw vrienden die u appreciëerde', # Translate - New
-	'Leaderboard scores' => 'Scores in de rangschikkingen', # Translate - New
-	'Your high scores in games with leaderboards' => 'Uw hoogste score in spelletjes met een rangschikking', # Translate - New
-	'Posts' => 'Berichten', # Translate - New
-	'Blog posts about your search term' => 'Blogberichten over uw zoekterm', # Translate - New
-	'Stories' => 'Nieuws', # Translate - New
-	'News Stories matching your search' => 'Nieuwsberichten over uw zoekterm', # Translate - New
-	'To read' => 'Te lezen', # Translate - New
-	'Books on your "to-read" shelf' => 'Boeken op uw \'te lezen\' boekenplank', # Translate - New
-	'Reading' => 'Aan het lezen', # Translate - New
-	'Books on your "currently-reading" shelf' => 'Boeken op uw \'momenteel aan het lezen\' boekenplank', # Translate - New
-	'Read' => 'Gelezen', # Translate - New
-	'Books on your "read" shelf' => 'Boeken op uw \'gelezen\' boekenplank', # Translate - New
-	'Shared' => 'Gedeeld', # Translate - New
-	'Your shared items' => 'Uw gedeelde items', # Translate - New
-	'Deliveries' => 'Leveringen', # Translate - New
-	'Icon sets you were delivered' => 'Icoonsets die u geleverd werden', # Translate - New
-	'Notices' => 'Berichtjes', # Translate - New
-	'Notices you posted' => 'Berichtjes die u plaatste', # Translate - New
-	'Intas' => 'Intas', # Translate - New
-	'Links you saved' => 'Links die u bewaarde', # Translate - New
-	'Photos you posted that were approved' => 'Foto\'s die u publiceerde en die werden goedgekeurd', # Translate - New
-	'Recent events' => 'Recente gebeurtenissen', # Translate - New
-	'Events from your recent events feed' => 'Gebeurtenissen uit uw feed met recente gebeurtenissen', # Translate - New
-	'Apps you use' => 'Applicaties die u gebruikt', # Translate - New
-	'The applications you saved as ones you use' => 'De applicaties die u heeft opgeslagen als applicaties die u gebruikt', # Translate - New
-	'Videos you saved as watched' => 'Video\'s die u heeft opgeslagen als bekeken', # Translate - New
-	'Jaikus' => 'Jaikus', # Translate - New
-	'Jaikus you posted' => 'Jaikus die u publiceerde', # Translate - New
-	'Games you saved as favorites' => 'Spelletjes die u heeft opgeslagen als favorieten', # Translate - New
-	'Achievements' => 'Mijlpalen', # Translate - New
-	'Achievements you won' => 'Mijlpalen die u bereikt heeft', # Translate - New
-	'Tracks' => 'Tracks', # Translate - New
-	'Songs you recently listened to (High spam potential!)' => 'Liedjes waar u recent naar geluisterd heeft (hoge kans op spam!)', # Translate - New
-	'Loved Tracks' => 'Geliefde tracks', # Translate - New
-	'Songs you marked as "loved"' => 'Tracks waarvan u heeft aangegeven dat u ervan houdt', # Translate - New
-	'Journal Entries' => 'Dagboekberichten', # Translate - New
-	'Your recent journal entries' => 'Uw laatste berichten uit uw dagboek', # Translate - New
-	'Events' => 'Gebeurtenissen', # Translate - Case
-	'The events you said you\'ll be attending' => 'De evenementen waarvan u gezegd hebt dat u er zal zijn', # Translate - New
-	'Your public posts to your journal' => 'Uw publieke berichten op uw dagboek', # Translate - New
-	'Queue' => 'Wachtrij', # Translate - New
-	'Movies you added to your rental queue' => 'Films toegevoegd aan uw huurwachtrij', # Translate - New
-	'Recent Movies' => 'Recente films', # Translate - New
-	'Recent Rental Activity' => 'Recente huuractiviteit', # Translate - New
-	'Kudos' => 'Kudos', # Translate - New
-	'Kudos you have received' => 'Kudos die u heeft ontvangen', # Translate - New
-	'Favorite Songs' => 'Favoriete liedjes', # Translate - New
-	'Songs you marked as favorites' => 'Liedjes die u heeft aangemerkt als favorieten', # Translate - New
-	'Favorite Artists' => 'Favoriete artiesten', # Translate - New
-	'Artists you marked as favorites' => 'Artiesten die u heeft aangemerkt als favorieten', # Translate - New
-	'Stations' => 'Zenders', # Translate - New
-	'Radio stations you added' => 'Radiozenders die u heeft toegevoegd', # Translate - New
-	'List' => 'Lijst', # Translate - New
-	'Things you put in your list' => 'Dingen die u in uw lijst heeft gezet', # Translate - New
-	'Notes' => 'Berichtjes', # Translate - New
-	'Your public notes' => 'Uw publieke berichtjes', # Translate - New
-	'Comments you posted' => 'Reacties die u gepubliceerd heeft', # Translate - New
-	'Articles you submitted' => 'Artikels die u heeft ingediend', # Translate - New
-	'Articles you liked (your votes must be public)' => 'Artikels die u heeft aangemerkt als favorieten', # Translate - New
-	'Dislikes' => 'Afgekeurd', # Translate - New
-	'Articles you disliked (your votes must be public)' => 'Artikels waar u een afkeer voor heeft laten blijken (stemmen moeten publiek zijn)', # Translate - New
-	'Slideshows you saved as favorites' => 'Diavoorstellingen die u als favorieten heeft opgeslagen', # Translate - New
-	'Slideshows' => 'Diavoorstellingen', # Translate - New
-	'Slideshows you posted' => 'Diavoorstellingen die u publiceerde', # Translate - New
-	'Your achievements for achievement-enabled games' => 'Uw mijlpalen in spelletjes die mijlpalen hebben', # Translate - New
-	'Stuff' => 'Dinges', # Translate - New
-	'Things you posted' => 'Dingen die u publiceerde', # Translate - New
-	'Tweets' => 'Tweets', # Translate - New
-	'Your public tweets' => 'Uw publieke tweets', # Translate - New
-	'Public tweets you saved as favorites' => 'Publieke tweets die u opgeslagen heeft als favorieten', # Translate - New
-	'Tweets about your search term' => 'Tweets over uw zoekterm', # Translate - New
-	'Saved' => 'Opgeslagen', # Translate - New
-	'Things you saved as favorites' => 'Dingen die u heeft opgeslagen als favorieten', # Translate - New
-	'Events you are watching or attending' => 'Evenementen die u bekijkt of bijwoont', # Translate - New
-	'Videos you posted' => 'Video\'s die u publiceerde', # Translate - New
-	'Videos you liked' => 'Video\'s die u goed vond', # Translate - New
-	'Public assets you saved as favorites' => 'Publieke mediabestanden die u opsloeg als favorieten', # Translate - New
-	'Your public photos in your Vox library' => 'Uw publieke foto\'s in uw Vox bibliotheek', # Translate - New
-	'Your public posts to your Vox' => 'Uw publieke berichten op uw Vox', # Translate - New
-	'The posts available from the website\'s feed' => 'De berichten beschikbaar op de feed van de website', # Translate - New
-	'Wists' => 'Wists', # Translate - New
-	'Stuff you saved' => 'Dingen die u opsloeg', # Translate - New
-	'Gamerscore' => 'Gamerscore', # Translate - New
-	'Notes when your gamerscore passes an even number' => 'Berichtjes over wanneer uw gamerscore een even getal passeert', # Translate - New
-	'Places you reviewed' => 'Plaatsen die u heeft besproken', # Translate - New
-	'Videos you saved as favorites' => 'Video\'s die u heeft opgeslagen als favorieten', # Translate - New
+	'Photos you found' => 'Foto\'s die u vond',
+	'Favorites' => 'Favorieten',
+	'Photos you marked as favorites' => 'Foto\'s die u aanmerkte als favorieten',
+	'Photos' => 'Foto\'s',
+	'Photos you posted' => 'Foto\'s die u publiceerde',
+	'Likes' => 'Geappreciëerd',
+	'Things from your friends that you "like"' => 'Dingen van uw vrienden die u appreciëerde',
+	'Leaderboard scores' => 'Scores in de rangschikkingen',
+	'Your high scores in games with leaderboards' => 'Uw hoogste score in spelletjes met een rangschikking',
+	'Posts' => 'Berichten',
+	'Blog posts about your search term' => 'Blogberichten over uw zoekterm',
+	'Stories' => 'Nieuws',
+	'News Stories matching your search' => 'Nieuwsberichten over uw zoekterm',
+	'To read' => 'Te lezen',
+	'Books on your "to-read" shelf' => 'Boeken op uw \'te lezen\' boekenplank',
+	'Reading' => 'Aan het lezen',
+	'Books on your "currently-reading" shelf' => 'Boeken op uw \'momenteel aan het lezen\' boekenplank',
+	'Read' => 'Gelezen',
+	'Books on your "read" shelf' => 'Boeken op uw \'gelezen\' boekenplank',
+	'Shared' => 'Gedeeld',
+	'Your shared items' => 'Uw gedeelde items',
+	'Deliveries' => 'Leveringen',
+	'Icon sets you were delivered' => 'Icoonsets die u geleverd werden',
+	'Notices' => 'Berichtjes',
+	'Notices you posted' => 'Berichtjes die u plaatste',
+	'Intas' => 'Intas',
+	'Links you saved' => 'Links die u bewaarde',
+	'Photos you posted that were approved' => 'Foto\'s die u publiceerde en die werden goedgekeurd',
+	'Recent events' => 'Recente gebeurtenissen',
+	'Events from your recent events feed' => 'Gebeurtenissen uit uw feed met recente gebeurtenissen',
+	'Apps you use' => 'Applicaties die u gebruikt',
+	'The applications you saved as ones you use' => 'De applicaties die u heeft opgeslagen als applicaties die u gebruikt',
+	'Videos you saved as watched' => 'Video\'s die u heeft opgeslagen als bekeken',
+	'Jaikus' => 'Jaikus',
+	'Jaikus you posted' => 'Jaikus die u publiceerde',
+	'Games you saved as favorites' => 'Spelletjes die u heeft opgeslagen als favorieten',
+	'Achievements' => 'Mijlpalen',
+	'Achievements you won' => 'Mijlpalen die u bereikt heeft',
+	'Tracks' => 'Tracks',
+	'Songs you recently listened to (High spam potential!)' => 'Liedjes waar u recent naar geluisterd heeft (hoge kans op spam!)',
+	'Loved Tracks' => 'Geliefde tracks',
+	'Songs you marked as "loved"' => 'Tracks waarvan u heeft aangegeven dat u ervan houdt',
+	'Journal Entries' => 'Dagboekberichten',
+	'Your recent journal entries' => 'Uw laatste berichten uit uw dagboek',
+	'Events' => 'Gebeurtenissen',
+	'The events you said you\'ll be attending' => 'De evenementen waarvan u gezegd hebt dat u er zal zijn',
+	'Your public posts to your journal' => 'Uw publieke berichten op uw dagboek',
+	'Queue' => 'Wachtrij',
+	'Movies you added to your rental queue' => 'Films toegevoegd aan uw huurwachtrij',
+	'Recent Movies' => 'Recente films',
+	'Recent Rental Activity' => 'Recente huuractiviteit',
+	'Kudos' => 'Kudos',
+	'Kudos you have received' => 'Kudos die u heeft ontvangen',
+	'Favorite Songs' => 'Favoriete liedjes',
+	'Songs you marked as favorites' => 'Liedjes die u heeft aangemerkt als favorieten',
+	'Favorite Artists' => 'Favoriete artiesten',
+	'Artists you marked as favorites' => 'Artiesten die u heeft aangemerkt als favorieten',
+	'Stations' => 'Zenders',
+	'Radio stations you added' => 'Radiozenders die u heeft toegevoegd',
+	'List' => 'Lijst',
+	'Things you put in your list' => 'Dingen die u in uw lijst heeft gezet',
+	'Notes' => 'Berichtjes',
+	'Your public notes' => 'Uw publieke berichtjes',
+	'Comments you posted' => 'Reacties die u gepubliceerd heeft',
+	'Articles you submitted' => 'Artikels die u heeft ingediend',
+	'Articles you liked (your votes must be public)' => 'Artikels die u heeft aangemerkt als favorieten',
+	'Dislikes' => 'Afgekeurd',
+	'Articles you disliked (your votes must be public)' => 'Artikels waar u een afkeer voor heeft laten blijken (stemmen moeten publiek zijn)',
+	'Slideshows you saved as favorites' => 'Diavoorstellingen die u als favorieten heeft opgeslagen',
+	'Slideshows' => 'Diavoorstellingen',
+	'Slideshows you posted' => 'Diavoorstellingen die u publiceerde',
+	'Your achievements for achievement-enabled games' => 'Uw mijlpalen in spelletjes die mijlpalen hebben',
+	'Stuff' => 'Dinges',
+	'Things you posted' => 'Dingen die u publiceerde',
+	'Tweets' => 'Tweets',
+	'Your public tweets' => 'Uw publieke tweets',
+	'Public tweets you saved as favorites' => 'Publieke tweets die u opgeslagen heeft als favorieten',
+	'Tweets about your search term' => 'Tweets over uw zoekterm',
+	'Saved' => 'Opgeslagen',
+	'Things you saved as favorites' => 'Dingen die u heeft opgeslagen als favorieten',
+	'Events you are watching or attending' => 'Evenementen die u bekijkt of bijwoont',
+	'Videos you posted' => 'Video\'s die u publiceerde',
+	'Videos you liked' => 'Video\'s die u goed vond',
+	'Public assets you saved as favorites' => 'Publieke mediabestanden die u opsloeg als favorieten',
+	'Your public photos in your Vox library' => 'Uw publieke foto\'s in uw Vox bibliotheek',
+	'Your public posts to your Vox' => 'Uw publieke berichten op uw Vox',
+	'The posts available from the website\'s feed' => 'De berichten beschikbaar op de feed van de website',
+	'Wists' => 'Wists',
+	'Stuff you saved' => 'Dingen die u opsloeg',
+	'Gamerscore' => 'Gamerscore',
+	'Notes when your gamerscore passes an even number' => 'Berichtjes over wanneer uw gamerscore een even getal passeert',
+	'Places you reviewed' => 'Plaatsen die u heeft besproken',
+	'Videos you saved as favorites' => 'Video\'s die u heeft opgeslagen als favorieten',
 
 ## plugins/ActionStreams/services.yaml
-	'1up.com' => '1up.com', # Translate - New
-	'43Things' => '43Things', # Translate - New
+	'1up.com' => '1up.com',
+	'43Things' => '43Things',
 	'Screen name' => 'Nickname',
-	'backtype' => 'backtype', # Translate - New
-	'Bebo' => 'Bebo', # Translate - New
-	'Catster' => 'Catster', # Translate - New
-	'COLOURlovers' => 'COLOURlovers', # Translate - New
-	'Cork\'\'d\'' => 'Cork\'\'d\'', # Translate - New
-	'Delicious' => 'Delicious', # Translate - New
-	'Destructoid' => 'Destructoid', # Translate - New
-	'Digg' => 'Digg', # Translate - New
-	'Dodgeball' => 'Dodgeball', # Translate - New
-	'Dogster' => 'Dogster', # Translate - New
-	'Dopplr' => 'Dopplr', # Translate - New
+	'backtype' => 'backtype',
+	'Bebo' => 'Bebo',
+	'Catster' => 'Catster',
+	'COLOURlovers' => 'COLOURlovers',
+	'Cork\'\'d\'' => 'Cork\'\'d\'',
+	'Delicious' => 'Delicious',
+	'Destructoid' => 'Destructoid',
+	'Digg' => 'Digg',
+	'Dodgeball' => 'Dodgeball',
+	'Dogster' => 'Dogster',
+	'Dopplr' => 'Dopplr',
 	'Facebook' => 'Facebook',
 	'User ID' => 'Gebruikers ID',
-	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'U kunt uw Facebook userid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.facebook.com/profile.php?id=24400320.', # Translate - New
-	'FFFFOUND!' => 'FFFFOUND', # Translate - New
-	'Flickr' => 'Flickr', # Translate - New
-	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Vul uw Flickr userid in (dit bevat een "@", bijvoorbeeld 36381329@N00). Het Flickr userid is niet de gebruikersnaam in uw photostream', # Translate - New
-	'FriendFeed' => 'FriendFied', # Translate - New
-	'Gametap' => 'Gametap', # Translate - New
-	'Google Blogs' => 'Google Blogs', # Translate - New
+	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'U kunt uw Facebook userid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.facebook.com/profile.php?id=24400320.',
+	'FFFFOUND!' => 'FFFFOUND',
+	'Flickr' => 'Flickr',
+	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Vul uw Flickr userid in (dit bevat een "@", bijvoorbeeld 36381329@N00). Het Flickr userid is niet de gebruikersnaam in uw photostream',
+	'FriendFeed' => 'FriendFied',
+	'Gametap' => 'Gametap',
+	'Google Blogs' => 'Google Blogs',
 	'Search term' => 'Zoekterm',
-	'Google News' => 'Google News', # Translate - New
+	'Google News' => 'Google News',
 	'Search for' => 'Zoeken naar',
-	'Goodreads' => 'Goodreads', # Translate - New
-	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'U kunt uw Goodreads userid vinden in de URL van uw profiel.  Bijvoorbeeld http://www.goodreads.com/user/show/123456.', # Translate - New
-	'Google Reader' => 'Google Reader', # Translate - New
+	'Goodreads' => 'Goodreads',
+	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'U kunt uw Goodreads userid vinden in de URL van uw profiel.  Bijvoorbeeld http://www.goodreads.com/user/show/123456.',
+	'Google Reader' => 'Google Reader',
 	'Sharing ID' => 'Sharing ID',
-	'Hi5' => 'Hi5', # Translate - New
-	'IconBuffet' => 'IconBuffet', # Translate - New
-	'ICQ' => 'ICQ', # Translate - New
+	'Hi5' => 'Hi5',
+	'IconBuffet' => 'IconBuffet',
+	'ICQ' => 'ICQ',
 	'UIN' => 'UIN',
-	'Identi.ca' => 'Identi.ca', # Translate - New
-	'Iminta' => 'Iminta', # Translate - New
-	'iStockPhoto' => 'iStockPhoto', # Translate - New
-	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'U kunt uw iStockPhoto userid vinden in de URL van uw profiel.  Bijvoorbeeld, http://www.istockphoto.com/user_view.php?id=1234567.', # Translate - New
-	'IUseThis' => 'iUseThis', # Translate - New
-	'iwatchthis' => 'iwatchthis', # Translate - New
-	'Jabber' => 'Jabber', # Translate - New
+	'Identi.ca' => 'Identi.ca',
+	'Iminta' => 'Iminta',
+	'iStockPhoto' => 'iStockPhoto',
+	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'U kunt uw iStockPhoto userid vinden in de URL van uw profiel.  Bijvoorbeeld, http://www.istockphoto.com/user_view.php?id=1234567.',
+	'IUseThis' => 'iUseThis',
+	'iwatchthis' => 'iwatchthis',
+	'Jabber' => 'Jabber',
 	'Jabber ID' => 'Jabber ID',
-	'Jaiku' => 'Jaiku', # Translate - New
-	'Kongregate' => 'Kongregate', # Translate - New
-	'Last.fm' => 'Last.fm', # Translate - New
-	'LinkedIn' => 'LinkedIn', # Translate - New
+	'Jaiku' => 'Jaiku',
+	'Kongregate' => 'Kongregate',
+	'Last.fm' => 'Last.fm',
+	'LinkedIn' => 'LinkedIn',
 	'Profile URL' => 'URL van profiel',
-	'Ma.gnolia' => 'Ma.gnolia', # Translate - New
-	'MOG' => 'MOG', # Translate - New
-	'MSN Messenger\'' => 'MSN Messenger', # Translate - New
-	'Multiply' => 'Multiply', # Translate - New
-	'MySpace' => 'MySpace', # Translate - New
-	'Netflix' => 'Netflix', # Translate - New
+	'Ma.gnolia' => 'Ma.gnolia',
+	'MOG' => 'MOG',
+	'MSN Messenger\'' => 'MSN Messenger',
+	'Multiply' => 'Multiply',
+	'MySpace' => 'MySpace',
+	'Netflix' => 'Netflix',
 	'Netflix RSS ID' => 'Netflix RSS ID',
-	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Om uw Netflix RSS ID terug te vinden, moet u op "RSS" klikken onderaan éénder welke pagina op de Netflix site en dan uw "Queue" link knippen en plakken.', # Translate - New
-	'Netvibes' => 'Netvibes', # Translate - New
-	'Newsvine' => 'Newsvine', # Translate - New
-	'Ning' => 'Ning', # Translate - New
+	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Om uw Netflix RSS ID terug te vinden, moet u op "RSS" klikken onderaan éénder welke pagina op de Netflix site en dan uw "Queue" link knippen en plakken.',
+	'Netvibes' => 'Netvibes',
+	'Newsvine' => 'Newsvine',
+	'Ning' => 'Ning',
 	'Social Network URL' => 'Sociaal netwerk URL',
-	'Ohloh' => 'Ohloh', # Translate - New
-	'Orkut' => 'Orkut', # Translate - New
-	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'U kunt uw Orkut uid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789', # Translate - New
-	'Pandora' => 'Pandora', # Translate - New
-	'Picasa Web Albums' => 'Picasa Web Albums', # Translate - New
-	'p0pulist' => 'p0pulist', # Translate - New
-	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'U kunt uw p0pulist userid terugvinden in de URL van uw Hot List.  Bijvoorbeeld, http://p0pulist.com/list/hot_list/10000', # Translate - New
-	'Pownce' => 'Pownce', # Translate - New
-	'Reddit' => 'Reddit', # Translate - New
-	'Skype' => 'Skype', # Translate - New
-	'SlideShare' => 'SlideShare', # Translate - New
-	'Smugmug' => 'Smugmug', # Translate - New
-	'SonicLiving' => 'SonicLiving', # Translate - New
-	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'U kunt uw SonicLiving userid vinden in uw share&subscribe URL.  Bijvoorbeeld, http://sonicliving.com/user/12345/feeds', # Translate - New
-	'Steam' => 'Steam', # Translate - New
-	'StumbleUpon' => 'StumbleUpon', # Translate - New
-	'Tabblo' => 'Tabblo', # Translate - New
-	'Blank should be replaced by positive sign (+).' => 'Blank moet vervangen worden met een plusteken (+)', # Translate - New
-	'Tribe' => 'Tribe', # Translate - New
-	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'U kunt uw tribe userid terugvingen in de URL van uw profiel.  Bijvoorbeeld, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.', # Translate - New
-	'Tumblr' => 'Tumblr', # Translate - New
-	'Twitter' => 'Twitter', # Translate - New
-	'TwitterSearch' => 'TwitterSearch', # Translate - New
-	'Uncrate' => 'Uncrate', # Translate - New
-	'Upcoming' => 'Upcoming', # Translate - New
-	'Viddler' => 'Viddler', # Translate - New
-	'Vimeo' => 'Vimeo', # Translate - New
-	'Virb' => 'Virb', # Translate - New
-	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'U kunt uw VIRB userid in uw home URL terugvinden.  Bijvoorbeeld, http://www.virb.com/backend/2756504321310091/your_home.', # Translate - New
+	'Ohloh' => 'Ohloh',
+	'Orkut' => 'Orkut',
+	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'U kunt uw Orkut uid terugvinden in de URL van uw profiel.  Bijvoorbeeld, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789',
+	'Pandora' => 'Pandora',
+	'Picasa Web Albums' => 'Picasa Web Albums',
+	'p0pulist' => 'p0pulist',
+	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'U kunt uw p0pulist userid terugvinden in de URL van uw Hot List.  Bijvoorbeeld, http://p0pulist.com/list/hot_list/10000',
+	'Pownce' => 'Pownce',
+	'Reddit' => 'Reddit',
+	'Skype' => 'Skype',
+	'SlideShare' => 'SlideShare',
+	'Smugmug' => 'Smugmug',
+	'SonicLiving' => 'SonicLiving',
+	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'U kunt uw SonicLiving userid vinden in uw share&subscribe URL.  Bijvoorbeeld, http://sonicliving.com/user/12345/feeds',
+	'Steam' => 'Steam',
+	'StumbleUpon' => 'StumbleUpon',
+	'Tabblo' => 'Tabblo',
+	'Blank should be replaced by positive sign (+).' => 'Blank moet vervangen worden met een plusteken (+)',
+	'Tribe' => 'Tribe',
+	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'U kunt uw tribe userid terugvingen in de URL van uw profiel.  Bijvoorbeeld, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.',
+	'Tumblr' => 'Tumblr',
+	'Twitter' => 'Twitter',
+	'TwitterSearch' => 'TwitterSearch',
+	'Uncrate' => 'Uncrate',
+	'Upcoming' => 'Upcoming',
+	'Viddler' => 'Viddler',
+	'Vimeo' => 'Vimeo',
+	'Virb' => 'Virb',
+	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'U kunt uw VIRB userid in uw home URL terugvinden.  Bijvoorbeeld, http://www.virb.com/backend/2756504321310091/your_home.',
 	'Vox name' => 'Vox-naam',
-	'Website' => 'Website', # Translate - New
-	'Xbox Live\'' => 'Xbox Live\'', # Translate - New
+	'Website' => 'Website',
+	'Xbox Live\'' => 'Xbox Live\'',
 	'Gamertag' => 'Gamertag',
-	'Yahoo! Messenger\'' => 'Yahoo! Messenger\'', # Translate - New
-	'Yelp' => 'Yelp', # Translate - New
-	'YouTube' => 'YouTube', # Translate - New
-	'Zooomr' => 'Zooomr', # Translate - New
+	'Yahoo! Messenger\'' => 'Yahoo! Messenger\'',
+	'Yelp' => 'Yelp',
+	'YouTube' => 'YouTube',
+	'Zooomr' => 'Zooomr',
 
 ## plugins/ActionStreams/config.yaml
 	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Beheert account en acties van de auteurs elders op het web',
@@ -5832,13 +5825,11 @@ Zoekbasis: [_2]",
 	'Show All' => 'Alles tonen',
 	'Poll for new events' => 'Checken voor nieuwe gebeurtenissen',
 	'Update Events' => 'Gebeurtenissen bijwerken',
-	'Recent Actions' => 'Recente acties',
 	'Action Stream' => 'Action Stream',
 	'Main Index (Recent Actions)' => 'Hoofdindex (recente acties)',
 	'Action Archive' => 'Actie-archief',
 	'Feed - Recent Activity' => 'Feed - Recente activiteit',
 	'Find Authors Elsewhere' => 'Elders auteurs vinden',
-	'Authors Action Stream' => 'Action stream auteurs',
 	'Enabling default action streams for selected profiles...' => 'Standaard action streams inschakelen voor geselecteerde profielen...',
 
 ## plugins/ActionStreams/lib/ActionStreams/Upgrade.pm
@@ -5864,6 +5855,9 @@ Zoekbasis: [_2]",
 	'[_1] updating [_2] events for [_3]' => '[_1] [_2] evenementen aan het bijwerken voor [_3]',
 	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Fout bij het updaten van evenementen voor [_1]\'s [_2] stream (type [_3] ident [_4]: [5]',
 	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'Kon klasse [_1] voor stream [_2] [_3] niet laden: [_4]',
+	'No URL to fetch for [_1] results' => 'Geen URL binnen te halen voor [_1] resultaten', # Translate - New
+	'Could not fetch [_1]: [_2]' => 'Kon [_1] niet binnenhalen: [_2]', # Translate - New
+	'Aborted fetching [_1]: [_2]' => 'Ophalen [_1] geannuleerd: [_2]', # Translate - New
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Uw gebruikersnaam of ID is vereist.',
@@ -5894,8 +5888,7 @@ Zoekbasis: [_2]",
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
 	'Add a profile on a social networking or instant messaging service.' => 'Voeg een profiel toe op een sociaal netwerk of een instant messaging dienst.',
 	'Select a service where you already have an account.' => 'Selecteer een service waar u reeds een account heeft.',
-	'Add Service (s)' => 'Service toevoegen (s)',
-	'Add Service' => 'Service toevoegen',
+	'Add Profile (s)' => 'Profiel Toevoegen (s)', # Translate - New
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
 	'The selected events were deleted.' => 'De geselecteerde gebeurtenissen werden verwijderd.',
@@ -5932,6 +5925,6 @@ Zoekbasis: [_2]",
 
 );
 
-## New words: 710
+## New words: 95
 
 1;
