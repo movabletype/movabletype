@@ -2013,7 +2013,7 @@ sub create_user_pending {
                 $app->translate( "Can\'t load blog #[_1].", $param->{blog_id} ) );
     }
 
-    my ( $password, $url, $nickname, $email );
+    my ( $password, $url );
     unless ( $q->param('external_auth') ) {
         $password = $q->param('password');
         unless ($password) {
@@ -2028,55 +2028,46 @@ sub create_user_pending {
         if ( $url && (!is_url($url) || ($url =~ m/[<>]/)) ) {
             return $app->error( $app->translate("URL is invalid.") );
         }
+    }
 
-        $nickname = $q->param('nickname');
-        unless ($nickname) {
-            return $app->error(
-                $app->translate("User requires display name.") );
-        }
-        elsif ( $nickname =~ m/([<>])/ ) {
-            return $app->error(
-                $app->translate(
-                    "[_1] contains an invalid character: [_2]",
-                    $app->translate("Display Name"),
-                    encode_html($1)
-                )
-            );
-        }
-        if ( $nickname =~ m/([<>])/ ) {
-            return $app->error(
-                $app->translate(
-                    "[_1] contains an invalid character: [_2]",
-                    $app->translate("Display Name"),
-                    encode_html($1)
-                )
-            );
-        }
+    my $nickname = $q->param('nickname');
+    if ( !$nickname && !($q->param('external_auth')) ) {
+        return $app->error(
+            $app->translate("User requires display name.") );
+    }
+    if ( $nickname && $nickname =~ m/([<>])/ ) {
+        return $app->error(
+            $app->translate(
+                "[_1] contains an invalid character: [_2]",
+                $app->translate("Display Name"),
+                encode_html($1)
+            )
+        );
+    }
 
-        $email = $q->param('email');
-        if ($email) {
-            unless ( is_valid_email($email) ) {
-                delete $param->{email};
-                return $app->error(
-                    $app->translate("Email Address is invalid.") );
-            }
-            if ( $email =~ m/([<>])/ ) {
-                return $app->error(
-                    $app->translate(
-                        "[_1] contains an invalid character: [_2]",
-                        $app->translate("Email Address"),
-                        encode_html($1)
-                    )
-                );
-            }
-        }
-        else {
+    my $email = $q->param('email');
+    if ($email) {
+        unless ( is_valid_email($email) ) {
             delete $param->{email};
             return $app->error(
+                $app->translate("Email Address is invalid.") );
+        }
+        if ( $email =~ m/([<>])/ ) {
+            return $app->error(
                 $app->translate(
-                    "Email Address is required for password recovery.")
+                    "[_1] contains an invalid character: [_2]",
+                    $app->translate("Email Address"),
+                    encode_html($1)
+                )
             );
         }
+    }
+    elsif ( !($q->param('external_auth')) ) {
+        delete $param->{email};
+        return $app->error(
+            $app->translate(
+                "Email Address is required for password recovery.")
+        );
     }
 
     my $name = $q->param('username');
