@@ -353,6 +353,7 @@ MT::Comment->add_callback( 'post_save', 0, MT->component('core'),
         my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
+        $entry->clear_cache('comment_latest');
         my $count   = MT::Comment->count(
             {
                 entry_id => $comment->entry_id,
@@ -369,6 +370,7 @@ MT::Comment->add_callback( 'post_remove', 0, MT->component('core'),
         my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
+        $entry->clear_cache('comment_latest');
         if ( $comment->visible ) {
             my $count = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
             $entry->comment_count($count);
