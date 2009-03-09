@@ -727,6 +727,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) logged out' => 'ユーザー\'[_1]\'(ID[_2])がログアウトしました。',
 	'User requires password.' => 'パスワードは必須です。',
 	'Passwords do not match.' => '入力したパスワードが一致しません。',
+	'This word or phrase is not used in the password recovery.' => 'パスワード再設定用のフレーズは使用されていません。',
 	'User requires password recovery word/phrase.' => 'パスワード再設定用のフレーズは必須です。',
 	'URL is invalid.' => 'URLが不正です。',
 	'User requires username.' => 'ユーザー名は必須です。',
