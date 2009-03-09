@@ -4871,7 +4871,7 @@ sub _include_module {
     my $cache_driver;
     if ($cache_enabled) {
         my $tmpl_mod = $tmpl->modified_on;
-        my $tmpl_ts = MT::Util::ts2epoch($blog, $tmpl_mod);
+        my $tmpl_ts = MT::Util::ts2epoch($tmpl->blog_id ? $tmpl->blog : undef, $tmpl_mod);
         if (($ttl == 0) || (time - $tmpl_ts < $ttl)) {
             $ttl = time - $tmpl_ts;
         }
