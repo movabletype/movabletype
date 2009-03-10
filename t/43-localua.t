@@ -9,5 +9,4 @@ $ENV{CONFIG} = 't/mt.cfg';
 my $ua = LWP::UserAgent::Local->new({ScriptAlias => '/'});
 my $req = HTTP::Request->new(GET => 'http://localhost/mt-atom.cgi/weblog/blog_id=1');
 my $resp = $ua->request($req);
-print $resp->headers_as_string(), $resp->content();
-ok($resp->content(), "$resp->content");
+ok($resp->content(), "resp->content");
