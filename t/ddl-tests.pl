@@ -243,7 +243,15 @@ sub _def {
 sub is_def {
     my ($got, $expected, $reason) = @_;
 
-    for my $field (qw( not_null auto key )) {
+    my $ddl_class = MT::Object->driver->dbd->ddl_class;
+    my @fields;
+    if ( $ddl_class =~ m/Pg/xms ) {
+        @fields = qw( not_null key);
+    } else {
+        @fields = qw( not_null auto key);
+    }
+
+    for my $field (@fields) {
         if ($expected->{$field} xor $got->{$field}) {
             fail($reason);
             diag($expected->{$field}
@@ -259,7 +267,6 @@ sub is_def {
         return;
     }
 
-    my $ddl_class     = MT::Object->driver->dbd->ddl_class;
     my $got_type      = $ddl_class->type2db($got);
     my $expected_type = $ddl_class->type2db($expected);
     if (!defined $got_type || $expected_type ne $got_type) {
