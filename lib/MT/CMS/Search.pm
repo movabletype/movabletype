@@ -392,7 +392,7 @@ sub do_search_replace {
     my $class = $app->model($api->{object_type} || $type);
     my %param = %$list_pref;
     my $limit = $q->param('limit') || 125;    # FIXME: mt.cfg setting?
-    $limit =~ s/\D//g;
+    $limit =~ s/\D//g if $limit ne 'all';
     my $matches;
     $date_col = $api->{date_column} || 'created_on';
     if ( ( $do_search && $search ne '' ) || $show_all || $do_replace ) {
