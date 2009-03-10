@@ -6,19 +6,8 @@ use warnings;
 use Test::More tests => 3;
 use CGI;
 
-use lib 'extlib';
-use lib 't/lib';
-use lib 'lib';
-
-use MT::Test;
-use MT;
-use MT::Plugin;
-use MT::Entry;
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::App::CMS;
-use MT::Permission;
-
-use lib 't';
-require 'test-common.pl';
 
 ### Test app callbacks
 
