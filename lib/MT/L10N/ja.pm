@@ -2050,7 +2050,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'remove' => '削除',
 	'enable' => '有効に',
 	'disable' => '無効に',
-	'You did not select any [_1] to [_2].' => '削除する[_1]が選択されていません。',
+	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
