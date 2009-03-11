@@ -123,12 +123,15 @@ sub get_syscheck_content {
 sub start_recover {
     my $app = shift;
     my ($param) = @_;
+    my $cfg = $app->config;
     $param ||= {};
     $param->{'email'} = $app->param('email');
-    $param->{'return_to'} = $app->param('return_to');
+    $param->{'return_to'} = $app->param('return_to') || $cfg->ReturnToURL || '';
+    $param->{'can_signin'} = (ref $app eq 'MT::App::CMS') ? 1 : 0;
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password_reset_form',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {
@@ -238,7 +241,7 @@ sub new_password {
     }
 
     my $email = $app->param('email');
-    if ( !$token ) {
+    if ( !$email ) {
         return $app->start_recover(
             { error => $app->translate('Email address not found'), } );
     }
@@ -290,6 +293,7 @@ sub new_password {
         }
         else {
             my $redirect = $user->password_reset_return_to || '';
+
             $user->set_password($new_password);
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
@@ -297,11 +301,21 @@ sub new_password {
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
-            $app->login;
-            if ($redirect) {
-                return $app->redirect($redirect);
-            } else{
+
+            if (ref $app eq 'MT::App::CMS' && !$redirect) {
+                $app->login;
                 return $app->return_to_dashboard( redirect => 1 );
+            } else {
+                if (!$redirect) {
+                    my $cfg = $app->config;
+                    $redirect = $cfg->ReturnToURL || '';
+                }
+                $app->make_commenter_session($user);
+                if ($redirect) {
+                    return $app->redirect($redirect);
+                } else {
+                    return $app->redirect_to_edit_profile();
+                }
             }
         }
     }
@@ -313,6 +327,7 @@ sub new_password {
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'}        = $blog_id if $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {

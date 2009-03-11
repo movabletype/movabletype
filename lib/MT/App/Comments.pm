@@ -1857,6 +1857,12 @@ sub new_pw {
     MT::CMS::Tools::new_password(@_);
 }
 
+sub redirect_to_edit_profile {
+    my $app = shift;
+    return $app->redirect(
+        $app->uri( mode => 'edit_profile' ) );
+}
+
 1;
 __END__
 

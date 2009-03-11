@@ -13,6 +13,8 @@ use MT::I18N qw( encode_text );
 sub NS_OPENID_AX   { "http://openid.net/srv/ax/1.0" }
 sub NS_OPENID_SREG { "http://openid.net/extensions/sreg/1.1" }
 
+sub password_exists { 0 }
+
 sub login {
     my $class = shift;
     my ($app) = @_;

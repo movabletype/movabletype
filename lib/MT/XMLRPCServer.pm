@@ -78,7 +78,7 @@ sub _fault {
     my $enc = $mt->config('PublishCharset');
     SOAP::Fault->faultcode(1)->faultstring(
         SOAP::Data->type(
-            string => encode_text($_[0], $enc, 'utf-8')));
+            string => _encode_text_for_soap($_[0], $enc, 'utf-8')));
 }
 
 ## This is sort of a hack. XML::Parser automatically makes everything

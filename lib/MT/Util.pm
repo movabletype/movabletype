@@ -257,7 +257,7 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt;
+    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
@@ -982,7 +982,18 @@ sub make_unique_category_basename {
 sub make_unique_author_basename {
     my ($author) = @_;
     my $name = MT::Util::dirify($author->nickname || '');
-    $name = "author" if $name !~ /\w/;
+    if ( !$name || ( $name !~ /\w/ ) ) {
+        if ( $author->id ) {
+            $name = "author" . $author->id;
+        }
+        else {
+            require Digest::MD5;
+            $name = "author" . substr(
+                Digest::MD5::md5_hex($author->name ),
+                0, 5
+            );
+        }
+    }
 
     my $limit = MT->instance->config('AuthorBasenameLimit');
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;

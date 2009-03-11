@@ -1108,16 +1108,34 @@ sub session_state {
     my $blog_id = $blog->id if $blog;
 
     my ( $c, $commenter );
-    if ( $blog_id && $blog ) {
-        ( my $sessobj, $commenter ) = $app->get_commenter_session();
-        if ( $sessobj && $commenter ) {
+    ( my $sessobj, $commenter ) = $app->get_commenter_session();
+    if ( $sessobj && $commenter ) {
+        $c = {
+            sid     => $sessobj->id,
+            name    => $commenter->nickname || $app->translate('(Display Name not set)'),
+            url     => $commenter->url,
+            email   => $commenter->email,
+            userpic => scalar $commenter->userpic_url,
+            profile => "",                              # profile link url
+            is_authenticated => 1,
+            is_author =>
+                ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
+            is_trusted       => 0,
+            is_anonymous     => 0,
+            can_post         => 0,
+            can_comment      => 0,
+            is_banned        => 0,
+        };
+        if ( $blog_id && $blog ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
             my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
+            $c->{is_banned} = $banned;
 
             if ($banned) {
                 $sessobj->remove;
+                delete $c->{sid};
             }
             else {
                 $sessobj->start( time + $app->config->CommentSessionTimeout )
@@ -1130,25 +1148,11 @@ sub session_state {
             $can_comment = 0
                 unless $blog->allow_unreg_comments
                     || $blog->allow_reg_comments;
-            my $can_post
+            $c->{can_comment} = $can_comment;
+            $c->{can_post}
                 = ( $blog_perms && $blog_perms->can_create_post ) ? 1 : 0;
-            $c = {
-                sid     => $sessobj->id,
-                name    => $commenter->nickname,
-                url     => $commenter->url,
-                email   => $commenter->email,
-                userpic => scalar $commenter->userpic_url,
-                profile => "",                              # profile link url
-                is_authenticated => 1,
-                is_trusted =>
-                    ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
-                is_author =>
-                    ( $commenter->type == MT::Author::AUTHOR() ? 1 : 0 ),
-                is_anonymous => 0,
-                is_banned    => $banned,
-                can_comment  => $can_comment,
-                can_post     => $can_post,
-            };
+            $c->{is_trusted} =
+                ( $commenter->is_trusted($blog_id) ? 1 : 0 ),
         }
     }
 
@@ -2016,6 +2020,46 @@ sub create_user_pending {
         }
     }
 
+    my $nickname = $q->param('nickname');
+    if ( !$nickname && !($q->param('external_auth')) ) {
+        return $app->error(
+            $app->translate("User requires display name.") );
+    }
+    if ( $nickname && $nickname =~ m/([<>])/ ) {
+        return $app->error(
+            $app->translate(
+                "[_1] contains an invalid character: [_2]",
+                $app->translate("Display Name"),
+                encode_html($1)
+            )
+        );
+    }
+
+    my $email = $q->param('email');
+    if ($email) {
+        unless ( is_valid_email($email) ) {
+            delete $param->{email};
+            return $app->error(
+                $app->translate("Email Address is invalid.") );
+        }
+        if ( $email =~ m/([<>])/ ) {
+            return $app->error(
+                $app->translate(
+                    "[_1] contains an invalid character: [_2]",
+                    $app->translate("Email Address"),
+                    encode_html($1)
+                )
+            );
+        }
+    }
+    elsif ( !($q->param('external_auth')) ) {
+        delete $param->{email};
+        return $app->error(
+            $app->translate(
+                "Email Address is required for password recovery.")
+        );
+    }
+
     my $name = $q->param('username');
     if ( defined $name ) {
         $name =~ s/(^\s+|\s+$)//g;
@@ -2034,35 +2078,6 @@ sub create_user_pending {
     return $app->error(
         $app->translate("A user with the same name already exists.") )
         if $existing;
-
-    my $nickname = $q->param('nickname');
-    unless ($nickname) {
-        return $app->error( $app->translate("User requires display name.") );
-    } elsif ( $nickname =~ m/([<>])/) {
-        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
-    }
-    if ( $nickname =~ m/([<>])/) {
-        return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Display Name"), encode_html( $1 ) ) );
-    }
-
-    my $email = $q->param('email');
-    if ($email) {
-        unless ( is_valid_email($email) ) {
-            delete $param->{email};
-            return $app->error(
-                $app->translate("Email Address is invalid.") );
-        }
-        if ( $email =~ m/([<>])/) {
-            return $app->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) ) );
-        }
-    }
-    else {
-        delete $param->{email};
-        return $app->error(
-            $app->translate(
-                "Email Address is required for password recovery.")
-        );
-    }
 
     if ( $url && (!is_url($url) || ($url =~ m/[<>]/)) ) {
         return $app->error( $app->translate("URL is invalid.") );
@@ -2442,8 +2457,12 @@ sub cookies {
         eval "use $class;";
         $app->{cookies} = $class->fetch;
     }
-    return wantarray ? %{ $app->{cookies} } : $app->{cookies}
-        if $app->{cookies};
+    if ( $app->{cookies} ) {
+        return wantarray ? %{ $app->{cookies} } : $app->{cookies};
+    }
+    else {
+        return wantarray ? () : undef;
+    }
 }
 
 sub show_error {

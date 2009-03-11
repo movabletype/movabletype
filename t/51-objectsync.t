@@ -27,10 +27,14 @@ if ($@) {
     skip "MT::LDAP is not found.  Did you enable Enterprise Pack?", $number;
 }
 
+if (MT->config->AuthenticationModule ne 'LDAP') {
+   skip "AuthenticationModule is not LDAP mode.", $number;
+}
+
 require MT::Author;
 require MT::Auth;
 require MT::LDAP;
-MT::Test->import( qw( :db :test ) );
+MT::Test->import( qw( :db :data ) );
 
 &ldapdelete( name => 'Bob D' );
 &ldapdelete( name => 'Axl Rose' );

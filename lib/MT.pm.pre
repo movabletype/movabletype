@@ -2019,7 +2019,10 @@ sub find_file {
 sub load_global_tmpl {
     my $app = shift;
     my ( $arg, $blog_id ) = @_;
-    $blog_id ||= '0';
+    $blog_id
+        = $blog_id ? [ $blog_id, 0 ]
+        : MT->app->blog ? [ MT->app->blog->id, 0 ]
+        :                 0;
 
     my $terms = {};
     if ( 'HASH' eq ref($arg) ) {
@@ -2031,8 +2034,14 @@ sub load_global_tmpl {
             blog_id => $blog_id,
         }
     }
+    my $args;
+    if (ref $blog_id eq 'ARRAY') {
+       $args->{sort} = 'blog_id';
+       $args->{direction} = 'descend';
+       $args->{limit} = 1;
+    }
     require MT::Template;
-    my $tmpl = MT::Template->load( $terms );
+    my $tmpl = MT::Template->load( $terms, $args);
     $app->set_default_tmpl_params($tmpl) if $tmpl;
     $tmpl;
 }

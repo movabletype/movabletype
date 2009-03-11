@@ -456,15 +456,34 @@ sub compile_tag_filter {
     my %tags_used;
     foreach my $tag (@$tags) {
         my $name = $tag->name;
+        ## FIXME: this implementation can't handle tags which starts
+        ## with hash mark and numbers related. because they could break
+        ## our mid-compiled expression. now just skip them.
+        next if $name =~ /^\s*\#\d+\s*$/;
         my $id = $tag->id;
-        if ($tag_expr =~
-                    s/  \b           # Word boundary
-                        (?<![#\d])   # Zero-width negative look-behind. 
-                                     # Matches any occurence of the next part
-                                     # *not* preceded by a digit or a hashmark (#)
-                        \Q$name\E    # The tag name, quoted for metacharacters
-                        \b           # Word boundary
-                    /#$id/gx)        # Change all matches to #$id (e.g. #932)
+
+        ## search for tags from expression and replace them with its IDs.
+        ## allowed only existing tag name and some logical operators
+        ## ( AND, OR, NOT, and round brackets ).
+        if ($tag_expr =~ s/
+                (
+                    \sAND\s
+                    | \sOR\s
+                    | \s?NOT\s
+                    | \(
+                    | \A
+                )
+                \s*?
+                \Q$name\E
+                \s*?
+                (
+                    \Z
+                    | \)
+                    | \sAND\s
+                    | \sOR\s
+                    | \sNOT\s
+                )
+            /$1#$id$2/igx) # Change all matches to #$id (e.g. #932)
         {
             $tags_used{$id} = $tag;
         }

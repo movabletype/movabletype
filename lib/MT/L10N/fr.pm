@@ -63,17 +63,20 @@ use vars qw( @ISA %Lexicon );
 	'Category Daily' => 'Par catégories et jours',
 	'Category Weekly' => 'Par catégories et semaines',
 
+## php/lib/block.mtif.php
+
+## php/lib/function.mtremotesigninlink.php
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'L\'authentification TypePad n\'est pas activée sur ce blog. MTRemoteSignInLink ne peut être utilisé.',
+
 ## php/lib/block.mtauthorhaspage.php
 	'No author available' => 'Il n\'a pas d\'auteurs disponibles',
 
-## php/lib/function.mtremotesigninlink.php
-	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'L\'authentification TypePad n\'est pas activée sur ce blog. MTRemoteSignInLink ne peut être utilisé.', # Translate - New
-
 ## php/lib/block.mtsethashvar.php
 
-## php/lib/block.mtif.php
-
 ## php/lib/block.mtauthorhasentry.php
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtcommentauthorlink.php
 
@@ -86,9 +89,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid index.' => 'Index invalide',
 	'\'[_1]\' is not an array.' => '\'[_1]\' n\'est pas un tableau',
 	'\'[_1]\' is not a valid function.' => '\'[_1]\' n\'est pas une fonction valide',
-
-## php/lib/function.mtproductname.php
-	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" doit être utilisé en combinaison avec l\'espace de nom.',
@@ -338,9 +338,8 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/entry.mtml
 
 ## default_templates/recover-password.mtml
-	'_USAGE_FORGOT_PASSWORD_1' => 'Vous avez demandé à récupérer votre mot de passe Movable Type. Votre mot de passe a été changé au niveau du système ; le nouveau mot de passe est le suivant:',
-	'_USAGE_FORGOT_PASSWORD_2' => 'Ce nouveau mot de passe devrait vous permettre d\'ouvrir une session Movable Type via l\'URL ci-dessous. Vous pourrez changer ce mot de passe une fois la session ouverte.',
-	'Mail Footer' => 'Pied des mails',
+	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Une requête a été faite pour changer votre mot de passe dans Movable Type. Pour terminer cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe.',
+	'If you did not request this change, you can safely ignore this email.' => 'Si vous n\'avez pas demandé ce changement, vous pouvez ignorer cet email.',
 
 ## default_templates/javascript.mtml
 	'moments ago' => 'il y a quelques instants',
@@ -535,7 +534,6 @@ use vars qw( @ISA %Lexicon );
 	'The category basename \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Le nom de base de la catégorie \'[_1]\' est en conflit avec une autre catégorie. Les catégories racines et les sous-catégories qui ont le même parent doivent avoir des noms de base uniques.',
 	'Category \'[_1]\' created by \'[_2]\'' => 'Catégorie \'[_1]\' créée par \'[_2]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Catégorie \'[_1]\' (ID:[_2]) supprimée par \'[_3]\'',
-	'Saving category failed: [_1]' => 'Échec lors de la sauvegarde des catégories : [_1]',
 
 ## lib/MT/CMS/User.pm
 	'Users' => 'Utilisateurs',
@@ -585,7 +583,6 @@ use vars qw( @ISA %Lexicon );
 	'User requires display name' => 'Un nom d\'affichage est nécessaire pour l\'utilisateur',
 	'A user with the same name already exists.' => 'Un utilisateur possédant ce nom existe déjà.',
 	'User requires password' => 'L\'utilisateur a besoin d\'un mot de passe',
-	'User requires password recovery word/phrase' => 'L\'utilisateur a besoin d\'une phrase de récupération de mot de passe',
 	'Email Address is required for password recovery' => 'L\'adresse email est nécessaire pour récupérer le mot de passe',
 	'Email Address is invalid.' => 'L\'adresse email n\'est pas valide.',
 	'URL is invalid.' => 'L\'URL n\'est pas valide.',
@@ -619,7 +616,7 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => 'Le fichier avec le nom \'[_1]\' existe déjà; Tentative d\'écriture dans un fichier temporaire, mais l\'ouverture a échoué : [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => 'Impossible de créer le répertoire d\'upload \'[_1]\': [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'Erreur d\'écriture lors de l\'envoi de \'[_1]\' : [_2]',
-	'Uploaded file is not an image.' => 'Le fichier téléchargé n\'est pas une image', # Translate - New
+	'Uploaded file is not an image.' => 'Le fichier téléchargé n\'est pas une image',
 	'<' => '<',
 	'/' => '/',
 
@@ -714,12 +711,21 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '[_1] Mise à jour : [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Erreur lors de l\'envoi de l\'e-mail ([_1]); Essayer avec d\'autres paramètres pour MailTransfer ?',
 	'The value you entered was not a valid email address' => 'Vous devez saisir une adresse email valide',
-	'The value you entered was not a valid URL' => 'Vous devez saisir une URL valide', # Translate - New
+	'The value you entered was not a valid URL' => 'Vous devez saisir une URL valide',
 	'The e-mail address you entered is already on the Notification List for this blog.' => 'L\'adresse email saisie est déjà sur la liste de notification de ce blog.',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => 'Abonné \'[_1]\' (ID:[_2]) supprimé du carnet d\'adresses par \'[_3]\'',
 
 ## lib/MT/CMS/Tools.pm
 	'Password Recovery' => 'Récupération de mot de passe',
+	'Email Address is required for password recovery.' => 'Une adresse email est obligatoire pour récupérer le mot de passe.',
+	'User not found' => 'Utilisateur introuvable',
+	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Erreur d\'envoi du mail ([_1]); merci de corriger le problème, puis essayez à nouveau de récupérer votre mot de passe.',
+	'Password reset token not found' => 'Token de remise à zéro du mot de passe introuvable',
+	'Email address not found' => 'Adresse email introuvable',
+	'Your request to change your password has expired.' => 'Votre demande de modification de mot de passe a expirée.',
+	'Invalid password reset request' => 'Requête de modification de mot de passe invalide',
+	'Please confirm your new password' => 'Merci de confirmer votre nouveau mot de passe',
+	'Passwords do not match' => 'Les mots de passe ne correspondent pas',
 	'That action ([_1]) is apparently not implemented!' => 'Cette action ([_1]) n\'est visiblement pas implémentée!',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Tentative de récupération de mot de passe invalide; impossible de récupérer le mot de passe dans cette configuration',
 	'Invalid author_id' => 'auteur_id incorrect',
@@ -757,8 +763,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'L\'utilisateur n\'a pas fourni d\'indice de mot de passe; impossible de récupérer le mot de passe',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Tentative invalide de récupération du mot de passe (indice de \'utilisateur \'[_1]\')',
 	'User does not have email address' => 'L\'utilisateur n\'a pas d\'adresse email',
-	'Password was reset for user \'[_1]\' (user #[_2]). Password was sent to the following address: [_3]' => 'Le mot de passe a été réinitialisé pour l\'utilisateur \'[_1]\' (utilisateur #[_2]). Le mot de passe a été envoyé à l\'adresse suivante: [_3]',
-	'Error sending mail ([_1]); please fix the problem, then try again to recover your password.' => 'Erreur d\'envoi du mail ([_1]); merci de corriger le problème, puis essayez à nouveau de récupérer votre mot de passe.',
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Un lien de réinitialisation du mot de passe a été envoyé à [_3] concernant l\'utilisateur \'[_1]\' (utilisateur #[_2]).', # Translate - New
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Certains objets n\'ont pas été restaurés car leurs objets parents n\'ont pas été restaurés. Des informations détaillées se trouvent dans le <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">journal d\'activité</a>.',
 	'[_1] is not a directory.' => '[_1] n\'est pas un répertoire.',
 	'Error occured during restore process.' => 'Une erreur s\'est produite pendant la procédure de restauration.',
@@ -961,9 +966,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find template \'[_1]\'' => 'Impossible de trouver le gabarit \'[_1]\'',
 	'Can\'t find entry \'[_1]\'' => 'Impossible de trouver la note \'[_1]\'',
 	'[_1] is not a hash.' => '[_1] n\'est pas un hash',
-	'You have an error in your \'[_1]\' attribute: [_2]' => 'Vous avez une erreur dans votre attribut \'[_1]\' : [_2]', # Translate - New
 	'You have an error in your \'[_2]\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'[_2]\' : [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'Vous avez une erreur dans votre attribut \'tag\': [_1]',
 	'No such user \'[_1]\'' => 'L\'utilisateur \'[_1]\' n\'existe pas',
 	'You used <$MTEntryFlag$> without a flag.' => 'Vous utilisez <$MTEntryFlag$> sans drapeau.',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => 'Vous avez utilisé un [_1] tag pour créer un lien vers \'[_2]\' archives, mais ce type d\'archive n\'est pas publié.',
@@ -1029,6 +1032,7 @@ use vars qw( @ISA %Lexicon );
 	'Date-Based Author Archives' => 'Archives des Auteurs par Dates',
 	'Date-Based Category Archives' => 'Archives des Catégories par Dates',
 	'OpenID Accepted' => 'OpenID Accepté',
+	'Mail Footer' => 'Pied des mails',
 	'Comment throttle' => 'Limitation des commentaires',
 	'Commenter Confirm' => 'Confirmation du commentateur',
 	'Commenter Notify' => 'Notification du commentateur',
@@ -1062,6 +1066,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: [_2]' => '[_1]: [_2]',
 	'Moving metadata storage for categories...' => 'Déplacement du stockage des métadonnées pour les catégories en cours...',
 	'Upgrading metadata storage for [_1]' => 'Mise à jour du stockage des métadonnées pour [_1]',
+	'Updating password recover email template...' => 'Template de réinitialisation du mot de passe en cours de mise à jour...',
 	'Migrating Nofollow plugin settings...' => 'Migration des paramètres du plugin Nofollow...',
 	'Updating system search template records...' => 'Mise à jour des données du gabarit de recherche du système...',
 	'Custom ([_1])' => '([_1]) personnalisé ',
@@ -1114,7 +1119,7 @@ use vars qw( @ISA %Lexicon );
 	'Mapping template ID [_1] to [_2].' => 'Lien du gabarit [_1] vers [_2].',
 	'Error loading class: [_1].' => 'Erreur de chargement de classe : [_1].',
 	'Assigning entry comment and TrackBack counts...' => 'Attribution des nombres de commentaires et trackbacks...',
-	'Error saving [_1] record # [_3]: [_2]...' => 'Erreur lors de la sauvegarde de l\'enregistrement [_1] # [_3]: [_2]...',
+	'Error saving [_1] record # [_3]: [_2]...' => 'Erreur en enregistrant l\'enregistrement [_1] # [_3]: [_2]...',
 	'Creating entry category placements...' => 'Création des placements des catégories des notes...',
 	'Updating category placements...' => 'Modification des placements de catégories...',
 	'Assigning comment/moderation settings...' => 'Mise en place des paramètres commentaire/modération ...',
@@ -1171,6 +1176,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Tags' => 'Gérer les tags',
 	'Manage Address Book' => 'Gestion de l\'annuaire',
 	'View Activity Log' => 'Afficher le journal (logs)',
+	'Manage Users' => 'Gérer les Utilisateurs',
 	'Create Entries' => 'Création d\'une note',
 	'Publish Entries' => 'Publier les notes',
 	'Send Notifications' => 'Envoyer des notifications',
@@ -1274,7 +1280,7 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile could not be updated: [_1]' => 'Le profil de l\'auteur de commentaires n\'a pu être modifié: [_1]',
 
 ## lib/MT/App/Search.pm
-	'Invalid [_1] parameter.' => 'Paramètre [_1] invalide.',
+	'Invalid [_1] parameter.' => 'Paramètre [_1] invalide',
 	'Invalid type: [_1]' => 'Type invalide : [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => 'Recherche : échec sur stockage des résultats en cache. [_1] n\'est pas disponible : [_2]',
 	'Invalid format: [_1]' => 'Format invalide : [_1]',
@@ -1340,10 +1346,10 @@ use vars qw( @ISA %Lexicon );
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List:Util est optionnel; Il est nécessaire si vous souhaitez utiliser les possibilités de publications en mode file d\'attente',
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Util est optionnel; Il est nécessaire uniquement si vous souhaitez utiliser la fonction de file d\'attente de publication.',
 	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'Ce module est nécessaire si vous souhaitez pouvoir créer des vignettes pour les images envoyées.',
-	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Ce module est nécessaire si vous souhaitez pouvoir utiliser NetPBM comme pilote d\'image pour MT.', # Translate - New
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'Ce module est nécessaire si vous souhaitez pouvoir utiliser NetPBM comme pilote d\'image pour MT.',
 	'This module is required by certain MT plugins available from third parties.' => 'Ce module est nécessaire pour certains plugins MT disponibles auprès de partenaires.',
 	'This module accelerates comment registration sign-ins.' => 'Ce module accélère les enregistrements des auteurs de commentaires.',
-	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Ce module et ses dépendances sont nécessaires afin de permettre aux auteurs de commentaires d\'être authentifiés par des fournisseurs OpenID comme AOL ou Yahoo! qui nécessitent SSL.', # Translate - New
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Ce module et ses dépendances sont nécessaires afin de permettre aux auteurs de commentaires d\'être authentifiés par des fournisseurs OpenID comme AOL ou Yahoo! qui nécessitent SSL.',
 	'This module is needed to enable comment registration.' => 'Ce module est nécessaire pour activer l\'enregistrement des auteurs de commentaires.',
 	'This module enables the use of the Atom API.' => 'Ce module active l\'utilisation de l\'API Atom.',
 	'This module is required in order to archive files in backup/restore operation.' => 'Ce module est nécessaire pour archiver les fichiers lors des opérations de sauvegarde/restauration.',
@@ -1373,7 +1379,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid category ID \'[_1]\'' => 'ID de catégorie invalide : \'[_1]\'',
 
 ## lib/MT/App/CMS.pm
-	'_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point de ré-initialiser le mot de passe des utilisateurs sélectionnés. Les nouveaux mots de passe sont générés automatiquement et seront envoyés directement aux utilisateurs par e-mail. Êtes-vous sûr de vouloir continuer ?',
+	'_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point d\'envoyer des emails pour permettre aux utilisateurs sélectionnés de réinitialiser leurs mots de passe. Voulez-vous continuer ?',
 	'_WARNING_DELETE_USER_EUM' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous voulez retirer un utilisateur ou lui supprimer ses accès nous vous recommandons de désactiver son compte. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ? Attention, il pourra se créer un nouvel accès s\'il existe encore dans le répertoire externe',
 	'_WARNING_DELETE_USER' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous souhaitez retirer un utilisateur ou lui supprimer ses accès nous vous recommandons de désactiver son compte. Êtes-vous sûr(e) de vouloir supprimer cet utilisateur ?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'Cette action rétablira les gabarits par défaut pour le(s) blog(s) sélectionné(s). Etes-vous sûr de vouloir rafraîchir les gabarits de ce(s) blog(s) ?',
@@ -1632,10 +1638,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid login attempt from user \'[_1]\'' => 'Tentative d\'authentification invalide de l\'utilisateur \'[_1]\'',
 	'User \'[_1]\' (ID:[_2]) logged out' => 'L\'utilisateur \'[_1]\' (ID:[_2]) s\'est déconnecté',
 	'User requires password.' => 'L\'utilisateur doit avoir un mot de passe.',
-	'User requires password recovery word/phrase.' => 'L\'utilisateur doit avoir un indice de récupération du mot de passe.',
-	'User requires username.' => 'L\'utilisateur doit avoir un nom d\'utilisateur.',
 	'User requires display name.' => 'L\'utilisateur doit avoir un nom public.',
-	'Email Address is required for password recovery.' => 'Une adresse email est obligatoire pour récupérer le mot de passe.',
+	'User requires username.' => 'L\'utilisateur doit avoir un nom d\'utilisateur.',
 	'Something wrong happened when trying to process signup: [_1]' => 'Un problème s\'est produit en essayant de soumettre l\'inscription: [_1]',
 	'New Comment Added to \'[_1]\'' => 'Nouveau commentaire ajouté à \'[_1]\'',
 	'Close' => 'Fermer',
@@ -1761,7 +1765,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Failed to verify current password.' => 'Erreur lors de la vérification du mot de passe.',
-	'Password hint is required.' => 'L\'indice de mot de passe est requis.',
 
 ## lib/MT/ImportExport.pm
 	'No Blog' => 'Pas de Blog',
@@ -1772,6 +1775,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning permissions for new user...' => 'Mise en place des autorisations pour le nouvel utilisateur...',
 	'Saving permission failed: [_1]' => 'Échec lors de la sauvegarde des droits des utilisateurs : [_1]',
 	'Creating new category (\'[_1]\')...' => 'Création d\'une nouvelle catégorie (\'[_1]\')...',
+	'Saving category failed: [_1]' => 'Échec lors de la sauvegarde des catégories : [_1]',
 	'Invalid status value \'[_1]\'' => 'Valeur du statut invalide \'[_1]\'',
 	'Invalid allow pings value \'[_1]\'' => 'Valeur du ping invalide\'[_1]\'',
 	'Can\'t find existing entry with timestamp \'[_1]\'... skipping comments, and moving on to next entry.' => 'Impossible de trouver une note avec la date \'[_1]\'... abandon de ces commentaires, et passage à la note suivante.',
@@ -1855,7 +1859,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred publishing [_1] \'[_2]\': [_3]' => 'Une erreur s\'est produite lors de la publication [_1] \'[_2]\': [_3]',
 	'An error occurred publishing date-based archive \'[_1]\': [_2]' => 'Une erreur s\'est produite en publiant l\'archive par dates \'[_1]\': [_2]',
 	'Renaming tempfile \'[_1]\' failed: [_2]' => 'Le renommage de tempfile \'[_1]\' a échoué: [_2]',
-	'Blog, BlogID or Template param must be specified.' => 'Les paramètres Blog, BlodID ou Gabarit doivent être spécifiés.',
+	'Blog, BlogID or Template param must be specified.' => 'Les paramètres Blog, BlogID ou Template doivent être spécifiés.',
 	'Template \'[_1]\' does not have an Output File.' => 'Le gabarit \'[_1]\' n\'a pas de fichier de sortie.',
 	'An error occurred while publishing scheduled entries: [_1]' => 'Une erreur s\'est produite en publiant les notes planifiées: [_1]',
 
@@ -1932,7 +1936,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Vox Blog URL' => 'L\'URL de votre blog Vox',
 	'Learn more about Vox.' => 'En savoir plus sur Vox.',
 	'Sign in using your Gmail account' => 'Identifiez-vous en utilisant votre compte Gmail',
-	'Sign in to Movable Type with your[_1] Account[_2]' => 'Identifiez-vous dans Movable Type avec votre compte [_1] [_2]', # Translate - New
+	'Sign in to Movable Type with your[_1] Account[_2]' => 'Identifiez-vous dans Movable Type avec votre compte [_1] [_2]',
 	'Turn on OpenID for your Yahoo! account now' => 'Activer OpenID pour votre compte Yahoo! maintenant',
 	'Your AIM or AOL Screen Name' => 'Votre pseudonyme AIM ou AOL.',
 	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'Identifiez-vous en utilisant votre pseudonyme AIM ou AOL. Votre pseudonyme sera affiché publiquement.',
@@ -1941,8 +1945,8 @@ use vars qw( @ISA %Lexicon );
 	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => '
 	TypePad est un système gratuit et ouvert vous proposant une identité centralisée pour commenter sur les blogs et vous identifier sur d\'autres sites. Vous pouvez vous enregistrer gratuitement.',
 	'Sign in or register with TypePad.' => 'Identifiez-vous ou créer un compte sur TypePad.',
-	'Turn on OpenID for your Yahoo! Japan account now' => 'Activer OpenID pour votre compte Yahoo! Japon maintenant', # Translate - New
-	'Your Hatena ID' => 'Votre identifiant Hatena', # Translate - New
+	'Turn on OpenID for your Yahoo! Japan account now' => 'Activer OpenID pour votre compte Yahoo! Japon maintenant',
+	'Your Hatena ID' => 'Votre identifiant Hatena',
 	'Hello, world' => 'Bonjour',
 	'Hello, [_1]' => 'Bonjour, [_1]',
 	'Message: [_1]' => 'Message: [_1]',
@@ -1967,9 +1971,9 @@ use vars qw( @ISA %Lexicon );
 	'AIM' => 'AIM',
 	'WordPress.com' => 'WordPress.com',
 	'TypePad' => 'TypePad',
-	'Yahoo! JAPAN' => 'Yahoo! Japon', # Translate - New
-	'livedoor' => 'livedoor', # Translate - New
-	'Hatena' => 'Hatena', # Translate - New
+	'Yahoo! JAPAN' => 'Yahoo! Japon',
+	'livedoor' => 'livedoor',
+	'Hatena' => 'Hatena',
 	'Movable Type default' => 'Valeur par défaut Movable Type',
 
 ## mt-static/mt.js
@@ -2483,7 +2487,7 @@ use vars qw( @ISA %Lexicon );
 	'asset' => 'Élément',
 	'published' => 'publié',
 	'unpublished' => 'non publié',
-	'review' => 'Vérification', # Translate - Case
+	'review' => 'Vérification',
 	'scheduled' => 'programmé',
 	'spam' => 'Spam',
 	'Select A User:' => 'Sélectionner un utilisateur',
@@ -2572,7 +2576,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a license' => 'Sélectionner une licence',
 
 ## tmpl/cms/list_member.tmpl
-	'Manage Users' => 'Gérer les Utilisateurs',
 	'Are you sure you want to remove this role?' => 'Êtes-vous sûr(e) de vouloir supprimer ce rôle?',
 	'Add a user to this blog' => 'Ajouter un utilisateur à ce blog',
 	'Show only users where' => 'Afficher uniquement les utilisateurs où',
@@ -2691,7 +2694,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Review)' => 'Non publié (Vérification)',
 	'Scheduled' => 'Planifié',
 	'Published' => 'Publié',
-	'Unpublished (Spam)' => 'Non publié (Spam)', # Translate - New
+	'Unpublished (Spam)' => 'Non publié (Spam)',
 	'View' => 'Voir',
 	'Share' => 'Partager',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => '<a href="[_2]">[quant,_1,commentaire,commentaires]</a>',
@@ -2732,7 +2735,8 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Enregistrer les options d\'affichage',
 	'OK' => 'OK',
 	'Close display options' => 'Fermer les options d\'affichage',
-	'This post was classified as spam.' => 'Cette note a été marquée comme étant du spam.', # Translate - New
+	'This post was held for review, due to spam filtering.' => 'Cette note a été retenue pour vérification, à cause du filtrage spam.', # Translate - New
+	'This post was classified as spam.' => 'Cette note a été marquée comme étant du spam.',
 	'Spam Details' => 'Détails du spam',
 	'Score' => 'Score',
 	'Results' => 'Résultats',
@@ -2915,8 +2919,8 @@ use vars qw( @ISA %Lexicon );
 	'Only show pages for review' => 'Afficher uniquement les pages à vérifier',
 	'Only show scheduled entries' => 'Afficher uniquement les notes planifiées',
 	'Only show scheduled pages' => 'Afficher uniquement les pages planifiées',
-	'Only show spam entries' => 'Afficher uniquement les notes indésirables (spam)', # Translate - New
-	'Only show spam pages' => 'Afficher uniquement les pages indésirables (spam)', # Translate - New
+	'Only show spam entries' => 'Afficher uniquement les notes indésirables (spam)',
+	'Only show spam pages' => 'Afficher uniquement les pages indésirables (spam)',
 	'View entry' => 'Afficher une note',
 	'View page' => 'Afficher une page',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'Aucune note n\'a été trouvée. <a href="[_1]">Créer une note</a> maintenant.',
@@ -2929,7 +2933,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/calendar.tmpl
 	'_LOCALE_WEEK_START' => '1',
-	'S|M|T|W|T|F|S' => 'L|M|M|J|V|S|D',
+	'S|M|T|W|T|F|S' => 'D|L|M|M|J|V|S',
 	'January' => 'Janvier',
 	'Febuary' => 'Février',
 	'March' => 'Mars',
@@ -3288,11 +3292,11 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to this category (s)' => 'Enregistrer les modifications de cette catégorie (s)',
 
 ## tmpl/cms/dialog/recover.tmpl
-	'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'Votre mot de passe a été modifié et a été envoyé à votre adresse e-mail([_1]).',
-	'Password recovery word/phrase' => 'Indice de récupération du mot de passe',
+	'The email address provided is not unique.  Please enter your username.' => 'L\'adresse email fournie n\'est pas unique. Merci de saisir votre nom d\'utilisateur.',
+	'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Un email contenant un lien pour réinitialiser votre mot de passe a été envoyé à votre adresse email ([_1]).',
+	'Go Back (x)' => 'Retour (x)',
 	'Recover (s)' => 'Récupérer (s)',
 	'Recover' => 'Récupérer',
-	'Go Back (x)' => 'Retour (x)',
 
 ## tmpl/cms/dialog/restore_end.tmpl
 	'An error occurred during the restore process: [_1] Please check your restore file.' => 'Une erreur s\'est produite pendant la procédure de restauration: [_1] Merci de vérifier votre fichier de restauration.',
@@ -3316,6 +3320,11 @@ use vars qw( @ISA %Lexicon );
 	'Insert (s)' => 'Insérer (s)',
 	'Insert' => 'Insérer',
 	'No assets could be found.' => 'Aucun élément n\'a été trouvé.',
+
+## tmpl/cms/dialog/new_password.tmpl
+	'Choose New Password' => 'Choisissez un nouveau mot de passe',
+	'Confirm Password' => 'Mot de passe (confirmation) *',
+	'Change Password' => 'Changer de Mot de passe',
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Template Set' => 'Réactualiser le Groupe de Gabarits',
@@ -3400,7 +3409,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'Vous ne pouvez pas avoir d\'espace dans l\'URL.',
 	'You can not have spaces in the path.' => 'Vous ne pouvez pas avoir d\'espace dans le chemin.',
 	'Path is not valid.' => 'Le chemin n\'est pas valide.',
-	'Site Path' => 'Chemin du site', # Translate - New
+	'Site Path' => 'Chemin du site',
 	'Archive URL' => 'URL d\'archive',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -3644,7 +3653,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'Gabarits du blog',
-	'Show All' => 'Tout afficher',
+	'Show All Templates' => 'Afficher tous les gabarits',
 	'Blog Publishing Settings' => 'Paramètres de publication du blog',
 	'You have successfully deleted the checked template(s).' => 'Les gabarits sélectionnés ont été supprimés.',
 	'Your templates have been published.' => 'Vos gabarits ont bien été publiés.',
@@ -3682,7 +3691,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a password for your account.' => 'Sélectionnez un Mot de Passe pour votre compte.',
 	'Password Confirm' => 'Mot de passe (confirmation)',
 	'Repeat the password for confirmation.' => 'Répétez votre mot de passe pour confirmer.',
-	'This word or phrase will be required to recover your password if you forget it.' => 'Ce mot ou cette expression vous seront nécessaires pour retrouver votre mot de passe. Ne les oubliez pas.',
 	'Your LDAP username.' => 'Votre nom d\'utilisateur LDAP.',
 	'Enter your LDAP password.' => 'Saisissez votre mot de passe LDAP.',
 
@@ -3766,15 +3774,14 @@ use vars qw( @ISA %Lexicon );
 	'The image associated with this user.' => 'L\'image associée à cet utilisateur.',
 	'Select Userpic' => 'Sélectionner l\'image de l\'utilisateur',
 	'Remove Userpic' => 'Supprimer l\'image de l\'utilisateur',
-	'Change Password' => 'Changer de Mot de passe',
 	'Current Password' => 'Mot de passe actuel',
 	'Existing password required to create a new password.' => 'Mot de passe actuel nécessaire pour créer un nouveau mot de passe.',
 	'Initial Password' => 'Mot de passe *',
 	'Enter preferred password.' => 'Saisissez le mot de passe préféré.',
 	'New Password' => 'Nouveau mot de passe',
 	'Enter the new password.' => 'Saisissez le nouveau mot de passe.',
-	'Confirm Password' => 'Mot de passe (confirmation) *',
-	'This word or phrase will be required to recover a forgotten password.' => 'Ce mot ou cette phrase sera nécessaire pour récupérer un mot de passe oublié.',
+	'Password recovery word/phrase' => 'Indice de récupération du mot de passe',
+	'This word or phrase is not used in the password recovery.' => 'Ce mot ou cette phrase n\'est pas utilisé dans la récupération du mot de passe.', # Translate - New
 	'Preferred language of this user.' => 'Langue préférée de cet utilisateur.',
 	'Text Format' => 'Format du texte',
 	'Preferred text format option.' => 'Option de format de texte préféré.',
@@ -3921,9 +3928,9 @@ use vars qw( @ISA %Lexicon );
 	'Warning: one or more of your templates is set to publish dynamically using PHP, however your server side include method may not be compatible with dynamic publishing.' => 'Attention : au moins un de vos gabarits est marqué pour publication dynamique via PHP, cependant votre méthode d\'inclusion côté serveur peut ne pas être compatible avec une publication dynamique.',
 	'You must set a valid Site URL.' => 'Vous devez spécifier une URL valide.',
 	'You must set a valid Local Site Path.' => 'Vous devez spécifier un chemin local d\'accès valide.',
-	'You must set Local Archive Path.' => 'Vous devez spécifier un chemin local d\'archives.',
-	'You must set a valid Archive URL.' => 'Vous devez spécifier une URL d\'archives valide.',
-	'You must set a valid Local Archive Path.' => 'Vous devez spécifier un chemin local d\'archives valide.',
+	'You must set Local Archive Path.' => 'Vous devez renseigner Local Archive Path.',
+	'You must set a valid Archive URL.' => 'Vous devez renseigner une Archive URL valide.',
+	'You must set a valid Local Archive Path.' => 'Vous devez renseigner un Local Archive Path valide.',
 	'Publishing Paths' => 'Chemins de publication',
 	'The URL of your website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/blog/' => 'L\'URL de votre site web. Ne mettez pas un nom de fichier (par exemple excluez index.html). Exemple : http://www.exemple.com/blog/',
 	'Unlock this blog&rsquo;s site URL for editing' => 'Déverrouillez l\'URL du site de ce blog pour le modifier',
@@ -3989,7 +3996,6 @@ use vars qw( @ISA %Lexicon );
 	'Your login name.' => 'Votre nom d\'utilisateur.',
 	'The name appears on your comment.' => 'Le nom apparaît dans votre commentaire.',
 	'Select a password for yourself.' => 'Sélectionnez un mot de passe pour vous.',
-	'This word or phrase will be required to recover the password if you forget it.' => 'Ce mot ou cette expression vous seront demandés pour retrouver le mot de passe si vous l\'oubliez.',
 	'The URL of your website. (Optional)' => 'URL de votre site internet (en option)',
 	'Register' => 'S\'enregistrer',
 
@@ -4014,7 +4020,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/comment/profile.tmpl
 	'Your Profile' => 'Votre profil',
-	'Password recovery' => 'Récupération de mot de passe',
 	'Return to the <a href="[_1]">original page</a>.' => 'Retourner sur la <a href="[_1]">page originale</a>.',
 
 ## tmpl/include/chromeless_footer.tmpl
@@ -4058,6 +4063,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/config.yaml
 	'Community Settings' => 'Réglages de la communauté',
+	'Pending Entries' => 'Notes en attente', # Translate - New
+	'Spam Entries' => 'Notes indésirables', # Translate - New
 	'Following Users' => 'Utilisateurs suiveurs',
 	'Being Followed' => 'Être suivi',
 	'Sanitize' => 'Nettoyer',
@@ -4073,6 +4080,8 @@ use vars qw( @ISA %Lexicon );
 	'Profile View' => 'Vue du profil',
 	'Profile Edit Form' => 'Formulaire de modification du profil',
 	'Profile Feed' => 'Flux du profil',
+	'New Password Form' => 'Nouveau formulaire de mot de passe', # Translate - New
+	'New Password Reset Form' => 'Nouveau formulaire de réinitialisation du mot de passe', # Translate - New
 	'Form Field' => 'Champ de formulaire',
 	'Status Message' => 'Message de statut',
 	'Simple Header' => 'Tête de page simple',
@@ -4111,13 +4120,13 @@ use vars qw( @ISA %Lexicon );
 	'Your confirmation have expired. Please register again.' => 'Votre confirmation a expiré. Merci de vous inscrire à nouveau.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'L\'utilisateur \'[_1]\' (ID:[_2]) a été enregistré avec succès.',
 	'Thanks for the confirmation.  Please sign in.' => 'Merci pour la confirmation. Identifiez-vous.',
+	'[_1] registered to Movable Type.' => '[_1] s\'est enregistré(e) à Movable Type.', # Translate - New
 	'Login required' => 'Authentification obligatoire',
-	'Title or Content is required.' => 'Le titre ou le contenu est requis.', # Translate - New
+	'Title or Content is required.' => 'Le titre ou le contenu est requis.',
 	'System template entry_response not found in blog: [_1]' => 'Gabarit système entry_response introuvable dans le blog: [_1]',
 	'New entry \'[_1]\' added to the blog \'[_2]\'' => 'Nouvelle note \'[_1]\' ajoutée sur le blog \'[_2]\'',
 	'Id or Username is required' => 'Id ou identifiant obligatoire',
 	'Unknown user' => 'Utilisateur inconnu',
-	'Cannot edit profile.' => 'Impossible de modifier le profil.',
 	'Recent Entries from [_1]' => 'Notes récentes de [_1]',
 	'Responses to Comments from [_1]' => 'Réponses aux commentaires de [_1]',
 	'Actions from [_1]' => 'Actions de [_1]',
@@ -4167,6 +4176,8 @@ use vars qw( @ISA %Lexicon );
 ## addons/Community.pack/templates/global/profile_error.mtml
 	'ERROR MSG HERE' => 'MSG ERREUR ICI',
 
+## addons/Community.pack/templates/global/new_password.mtml
+
 ## addons/Community.pack/templates/global/new_entry_email.mtml
 	'A new entry \'[_1]([_2])\' has been posted on your blog [_3].' => 'Une nouvelle note \'[_1]([_2])\' a été postée sur votre blog [_3].',
 	'Author name: [_1]' => 'Nom de l\'auteur: [_1]',
@@ -4182,6 +4193,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/password_reset_form.mtml
 	'Reset Password' => 'Initialiser le mot de passe',
+	'Your password has been changed, and the new password has been sent to your email address ([_1]).' => 'Votre mot de passe a été modifié et a été envoyé à votre adresse e-mail([_1]).',
 	'Back to the original page' => 'Retour à la page initiale',
 
 ## addons/Community.pack/templates/global/signin.mtml
@@ -4228,6 +4240,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/templates/global/navigation.mtml
 	'Home' => 'Accueil',
+
+## addons/Community.pack/templates/global/new_password_reset_form.mtml
 
 ## addons/Community.pack/templates/global/login_form_module.mtml
 	'Logged in as <a href="[_1]">[_2]</a>' => 'Identifié comme <a href="[_1]">[_2]</a>',
@@ -4647,8 +4661,6 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Commercial.pack/templates/professional/entry.mtml
 
-## addons/Commercial.pack/templates/professional/recover-password.mtml
-
 ## addons/Commercial.pack/templates/professional/javascript.mtml
 
 ## addons/Commercial.pack/templates/professional/archive_index.mtml
@@ -5066,15 +5078,15 @@ Base de recherche : [_2]",
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
 	'Select a Style' => 'Habillages',
-	'3-Columns, Wide, Thin, Thin' => '3 colonnes (large, fin, fin)',
-	'3-Columns, Thin, Wide, Thin' => '3 colonnes (fin, large, fin)',
-	'3-Columns, Thin, Thin, Wide' => '3 colonnes (fin, fin, large)', # Translate - New
-	'2-Columns, Thin, Wide' => '2 colonnes (fin, large)',
-	'2-Columns, Wide, Thin' => '2 colonnes (large, fin)',
-	'2-Columns, Wide, Medium' => '2 colonnes (large, moyen)',
+	'3-Columns, Wide, Thin, Thin' => '3-colonnes, large, fin, fin',
+	'3-Columns, Thin, Wide, Thin' => '3-colonnes, fin, large, fin',
+	'3-Columns, Thin, Thin, Wide' => '3 colonnes (fin, fin, large)',
+	'2-Columns, Thin, Wide' => '2-colonnes, fin, large',
+	'2-Columns, Wide, Thin' => '2-colonnes, large, fin',
+	'2-Columns, Wide, Medium' => '2-Colonnes, Large, Moyen',
 	'2-Columns, Medium, Wide' => '2 colonnes (moyen, large)',
-	'1-Column, Wide, Bottom' => '1 colonne (large, pied)', # Translate - New
-	'None available' => 'Non disponible',
+	'1-Column, Wide, Bottom' => '1 colonne (large, pied)',
+	'None available' => 'Aucun disponible',
 	'Applying...' => 'Appliquer...',
 	'Apply Design' => 'Appliquer l\'habillage',
 	'Error applying theme: ' => 'Erreur en appliquant l\'habillage:',
@@ -5270,20 +5282,20 @@ Base de recherche : [_2]",
 	'URI' => 'URI',
 
 ## plugins/feeds-app-lite/mt-feeds.pl
-	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite vous aide à republier les flux sur votre blog. Vous souhaitez en faire plus avec les flux dans Movable Type ? <a href="http://code.appnel.com/feeds-app" target="_blank">Évoluez vers Feeds.App</a>.', # Translate - New
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite vous aide à republier les flux sur votre blog. Vous souhaitez en faire plus avec les flux dans Movable Type ? <a href="http://code.appnel.com/feeds-app" target="_blank">Évoluez vers Feeds.App</a>.',
 	'Create a Feed Widget' => 'Créer un widget à partir d\'un flux',
 
 ## plugins/CommunityActionStreams/config.yaml
-	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Flux d\'actions pour les événements de la communauté : nouvelle note, nouveau commentaire, nouveau favori, suivi d\'un utilisateur.', # Translate - New
+	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Flux d\'actions pour les événements de la communauté : nouvelle note, nouveau commentaire, nouveau favori, suivi d\'un utilisateur.',
 
 ## plugins/Motion/config.yaml
-	'A Movable Type theme with structured entries and action streams.' => 'Un thème Movable Type avec des notes structurées et des flux d\'actions.', # Translate - New
-	'Adjusting field types for embed custom fields...' => 'Ajustement des types de champs pour les champs personnalisés d\'éléments embarqués...', # Translate - New
-	'Updating favoriting namespace for Motion...' => 'Mise à jour des espaces de nom favoris pour Motion...', # Translate - New
+	'A Movable Type theme with structured entries and action streams.' => 'Un thème Movable Type avec des notes structurées et des flux d\'actions.',
+	'Adjusting field types for embed custom fields...' => 'Ajustement des types de champs pour les champs personnalisés d\'éléments embarqués...',
+	'Updating favoriting namespace for Motion...' => 'Mise à jour des espaces de nom favoris pour Motion...',
 	'Reinstall Motion Templates' => 'Réinstaller les gabarits Motion',
 	'Motion Themes' => 'Thèmes Motion',
 	'Themes for Motion template set' => 'Thèmes pour le jeu de gabarits Motion',
-	'Motion' => 'Motion', # Translate - New
+	'Motion' => 'Motion',
 	'Post Type' => 'Type de note',
 	'Photo' => 'Photo',
 	'Embed Object' => 'Élément externe',
@@ -5301,6 +5313,7 @@ Base de recherche : [_2]",
 	'Login Form' => 'Formulaire d\'identification',
 	'Register Confirmation' => 'Confirmation d\'inscription',
 	'Password Reset' => 'Réinitialisation du mot de passe',
+	'New Password Form' => 'Nouveau formulaire de mot de passe', # Translate - New
 	'User Profile' => 'Profil de l\'utilisateur',
 	'Actions (Local)' => 'Actions (locales)',
 	'Comment Detail' => 'Détail du Commentaire',
@@ -5314,7 +5327,7 @@ Base de recherche : [_2]",
 	'Main Column Posting Form (All Media)' => 'Formulaire de publication (Tous médias) de la colonne principale',
 	'Main Column Posting Form (Text Only, Like Twitter)' => 'Formulaire de publication (Texte uniquement, comme Twitter) de la colonne principale',
 	'Main Column Registration' => 'Inscription depuis la colonne principale',
-	'Fans' => 'Fans', # Translate - New
+	'Fans' => 'Fans',
 	'Popular Entries' => 'Notes populaires',
 	'Elsewhere' => 'Ailleurs',
 	'Following' => 'Suit',
@@ -5331,9 +5344,9 @@ Base de recherche : [_2]",
 	'Profile Widgets' => 'Widgets de profils',
 
 ## plugins/Motion/lib/Motion/Search.pm
-	'This module works with MT::App::Search.' => 'Ce module fonctionne avec MT::App::Search.', # Translate - New
-	'Specify the blog_id of a blog that has Motion template set.' => 'Indique le blog_id d\'un blog ayant un jeu de gabarits Motion.', # Translate - New
-	'Error loading template: [_1]' => 'Erreur lors du chargement d\'un gabarit : [_1]', # Translate - New
+	'This module works with MT::App::Search.' => 'Ce module fonctionne avec MT::App::Search.',
+	'Specify the blog_id of a blog that has Motion template set.' => 'Indique le blog_id d\'un blog ayant un jeu de gabarits Motion.',
+	'Error loading template: [_1]' => 'Erreur lors du chargement d\'un gabarit : [_1]',
 
 ## plugins/Motion/tmpl/edit_linkpost.tmpl
 
@@ -5361,9 +5374,7 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/widget_about_ssite.mtml
 	'About' => 'A propos de',
-	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'Le jeu de gabarits Motion est un bel exemple du type de site que vous pouvez concevoir avec Movable Type.', # Translate - New
-
-## plugins/Motion/templates/Motion/entry_create.mtml
+	'The Motion Template Set is a great example of the type of site you can build with Movable Type.' => 'Le jeu de gabarits Motion est un bel exemple du type de site que vous pouvez concevoir avec Movable Type.',
 
 ## plugins/Motion/templates/Motion/comment_detail.mtml
 
@@ -5375,34 +5386,35 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/single_entry.mtml
 	'By [_1] <span class="date">on [_2]</span>' => 'Par [_1] <span class="date">sur [_2]</span>',
-	'Unpublish this post' => 'Mettre cette note hors-ligne', # Translate - New
+	'Unpublish this post' => 'Mettre cette note hors-ligne',
 	'1 <span>Comment</span>' => '1 <span>commentaire</span>',
 	'# <span>Comments</span>' => '# <span>commentaires</span>',
 	'0 <span>Comments</span>' => '0 <span>commentaires</span>',
 	'1 <span>TrackBack</span>' => '1 <span>trackback</span>',
 	'# <span>TrackBacks</span>' => '# <span>trackbacks</span>',
 	'0 <span>TrackBacks</span>' => '0 <span>trackbacks</span>',
-	'Note: This post is being held for approval by the site owner.' => 'Note : cette note est en attente d\'acceptation par le propriétaire du site.', # Translate - New
-	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Commentaires les plus récents par <strong>[_2]</strong> sur [_3]</a>', # Translate - New
+	'Note: This post is being held for approval by the site owner.' => 'Note : cette note est en attente d\'acceptation par le propriétaire du site.',
+	'<a href="[_1]">Most recent comment by <strong>[_2]</strong> on [_3]</a>' => '<a href="[_1]">Commentaires les plus récents par <strong>[_2]</strong> sur [_3]</a>',
 	'Posted to [_1]' => 'Publié sur [_1]',
-	'[_1] posted [_2] on [_3]' => '[_1] a publié [_2] sur [_3]', # Translate - New
+	'[_1] posted [_2] on [_3]' => '[_1] a publié [_2] sur [_3]',
 
 ## plugins/Motion/templates/Motion/widget_tag_cloud.mtml
 
 ## plugins/Motion/templates/Motion/password_reset.mtml
 	'Reset Password' => 'Initialiser le mot de passe',
-	'Back to the original page' => 'Retour à la page initiale',
 
 ## plugins/Motion/templates/Motion/form_field.mtml
 	'(Optional)' => '(Optionnel)',
 
 ## plugins/Motion/templates/Motion/javascript.mtml
-	'Please select a file to post.' => 'Veuillez sélectionner un fichier à publier.', # Translate - New
-	'You selected an unsupported file type.' => 'Vous avez sélectionné un fichier de type non supporté.', # Translate - New
+	'Please select a file to post.' => 'Veuillez sélectionner un fichier à publier.',
+	'You selected an unsupported file type.' => 'Vous avez sélectionné un fichier de type non supporté.',
 
 ## plugins/Motion/templates/Motion/trackbacks.mtml
 
 ## plugins/Motion/templates/Motion/archive_index.mtml
+
+## plugins/Motion/templates/Motion/new_password.mtml
 
 ## plugins/Motion/templates/Motion/entry_listing_author.mtml
 	'Archived Entries from [_1]' => 'Notes archivés de [_1]',
@@ -5423,6 +5435,7 @@ Base de recherche : [_2]",
 	'Remove service' => 'Retirer le service',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
+	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Identifiez-vous</a>', # Translate - New
 	'Not a member? <a href="[_1]">Register</a>' => 'Pas encore membre? <a href="[_1]">Enregistrez-vous</a>',
 	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(ou <a href="javascript:void(0)" onclick="[_1]">Identifiez-vous</a>)',
 	'No posting privileges.' => 'Pas les droits nécessaires pour publier.',
@@ -5431,16 +5444,16 @@ Base de recherche : [_2]",
 	'Not following anyone' => 'Ne suit personne',
 
 ## plugins/Motion/templates/Motion/widget_main_column_posting_form_text.mtml
-	'QuickPost' => 'QuickPost', # Translate - New
-	'Content' => 'Contenu', # Translate - New
-	'more options' => 'Plus d\'options', # Translate - Case
-	'Post' => 'Publier', # Translate - New
+	'QuickPost' => 'QuickPost',
+	'Content' => 'Contenu',
+	'more options' => 'Plus d\'options',
+	'Post' => 'Publier',
 
 ## plugins/Motion/templates/Motion/comment_preview.mtml
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] a commenté sur [_2]',
-	'Favorited [_1] on [_2]' => 'Aime [_1] sur [_2]',
+	'[_1] favorited [_2]' => '[_1] apprécie [_2]', # Translate - New
 	'No recent actions.' => 'Plus d\'actions récentes.',
 
 ## plugins/Motion/templates/Motion/main_index.mtml
@@ -5450,17 +5463,17 @@ Base de recherche : [_2]",
 ## plugins/Motion/templates/Motion/entry_summary.mtml
 
 ## plugins/Motion/templates/Motion/widget_main_column_posting_form.mtml
-	'Text post' => 'Texte', # Translate - New
-	'Photo post' => 'Photo', # Translate - New
-	'Link post' => 'Lien', # Translate - New
-	'Embed post' => 'Élément embarqué', # Translate - New
-	'Audio post' => 'Son', # Translate - New
-	'URL of web page' => 'URL d\'une page Web', # Translate - New
-	'Select photo file' => 'Sélectionner une image ou photo', # Translate - New
-	'Only GIF, JPEG and PNG image files are supported.' => 'Les types de fichiers supportés sont GIF, JPEG, et PNG.', # Translate - New
-	'Select audio file' => 'Sélectionner un fichier sonore', # Translate - New
-	'Only MP3 audio files are supported.' => 'Le fichier doit être au format MP3.', # Translate - New
-	'Paste embed code' => 'Copiez le code de l\'élément embarqué', # Translate - New
+	'Text post' => 'Texte',
+	'Photo post' => 'Photo',
+	'Link post' => 'Lien',
+	'Embed post' => 'Élément embarqué',
+	'Audio post' => 'Son',
+	'URL of web page' => 'URL d\'une page Web',
+	'Select photo file' => 'Sélectionner une image ou photo',
+	'Only GIF, JPEG and PNG image files are supported.' => 'Les types de fichiers supportés sont GIF, JPEG, et PNG.',
+	'Select audio file' => 'Sélectionner un fichier sonore',
+	'Only MP3 audio files are supported.' => 'Le fichier doit être au format MP3.',
+	'Paste embed code' => 'Copiez le code de l\'élément embarqué',
 
 ## plugins/Motion/templates/Motion/widget_monthly_archives.mtml
 
@@ -5497,7 +5510,7 @@ Base de recherche : [_2]",
 ## plugins/Motion/templates/Motion/sidebar.mtml
 
 ## plugins/Motion/templates/Motion/widget_recent_entries.mtml
-	'posted by [_1] on [_2]' => 'publié par [_1] sur [_2]', # Translate - New
+	'posted by [_1] on [_2]' => 'publié par [_1] sur [_2]',
 
 ## plugins/Motion/templates/Motion/banner_footer.mtml
 
@@ -5505,7 +5518,7 @@ Base de recherche : [_2]",
 
 ## plugins/Motion/templates/Motion/comments.mtml
 	'what will you say?' => 'que direz-vous ?',
-	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] en réponse au commentaire de [_3][_4]', # Translate - New
+	'[_1] [_2]in reply to comment from [_3][_4]' => '[_1] [_2] en réponse au commentaire de [_3][_4]',
 	'Write a comment...' => 'Rédigez un commentaire ...',
 
 ## plugins/Motion/templates/Motion/search_results.mtml
@@ -5524,17 +5537,17 @@ Base de recherche : [_2]",
 	'Profile Data' => 'Données du profil',
 	'More Entries by [_1]' => 'Plus de notes par [_1]',
 	'Recent Actions' => 'Actions récentes',
-	'_PROFILE_COMMENT_LENGTH' => '_PROFILE_COMMENT_LENGTH', # Translate - New
+	'_PROFILE_COMMENT_LENGTH' => '10',
 	'Comment Threads' => 'Fils de discussion',
 	'[_1] commented on ' => '[_1] a commenté sur',
 	'No responses to comments.' => 'Pas de réponse aux commentaires.',
 
 ## plugins/Motion/templates/Motion/actions.mtml
 	'[_1] is now following [_2]' => '[_1] suit désormais [_2]',
-	'[_1] favorited [_2] on [_3]' => '[_1] a ajouté [_2] de [_3] dans ses favoris', # Translate - New
+	'[_1] favorited [_2] on [_3]' => '[_1] a ajouté [_2] de [_3] dans ses favoris',
 
 ## plugins/Motion/templates/Motion/motion_js.mtml
-	'Add userpic' => 'Ajouter un avatar', # Translate - New
+	'Add userpic' => 'Ajouter un avatar',
 
 ## plugins/Motion/templates/Motion/widget_powered_by.mtml
 
@@ -5545,36 +5558,40 @@ Base de recherche : [_2]",
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
 
 ## plugins/FacebookCommenters/plugin.pl
-	'Provides commenter registration through Facebook Connect.' => 'Permet l\'enregistrement des auteurs de commentaires via Facebook Connect', # Translate - New
-	'Set up Facebook Commenters plugin' => 'Configurer le plugin Facebook Commenters', # Translate - New
-	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} a commenté la note <a href="{*post_url*}">{*post_title*}</a>.', # Translate - New
-	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1]. Avez-vous correctement entré le secret de l\'application ?', # Translate - New
-	'Could not register story template with Facebook: [_1]' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1].', # Translate - New
-	'Facebook' => '', # Translate - New
+	'Provides commenter registration through Facebook Connect.' => 'Permet l\'enregistrement des auteurs de commentaires via Facebook Connect',
+	'Set up Facebook Commenters plugin' => 'Configurer le plugin Facebook Commenters',
+	'{*actor*} commented on the blog post <a href="{*post_url*}">{*post_title*}</a>.' => '{*actor*} a commenté la note <a href="{*post_url*}">{*post_title*}</a>.',
+	'Could not register story template with Facebook: [_1]. Did you enter the correct application secret?' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1]. Avez-vous correctement entré le secret de l\'application ?',
+	'Could not register story template with Facebook: [_1]' => 'Impossible d\'enregistrer le modèle d\'histoire avec Facebook : [_1].',
+	'Facebook' => 'Facebook', # Translate - Case
 
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
-	'Facebook Application Key' => 'Clé Application Facebook', # Translate - New
-	'The key for the Facebook application associated with your blog.' => 'La clé pour l\'application Facebook associée à votre blog.', # Translate - New
-	'Edit Facebook App' => 'Éditer l\'application Facebook', # Translate - New
-	'Facebook Application Secret' => 'Secret Application Facebook', # Translate - New
-	'The secret for the Facebook application associated with your blog.' => 'Le secret pour l\'application Facebook associée à votre blog.', # Translate - New
+	'Facebook Application Key' => 'Clé Application Facebook',
+	'The key for the Facebook application associated with your blog.' => 'La clé pour l\'application Facebook associée à votre blog.',
+	'Edit Facebook App' => 'Éditer l\'application Facebook',
+	'Create Facebook App' => 'Créer une application Facebook', # Translate - New
+	'Facebook Application Secret' => 'Secret Application Facebook',
+	'The secret for the Facebook application associated with your blog.' => 'Le secret pour l\'application Facebook associée à votre blog.',
 
 ## plugins/mixiComment/mixiComment.pl
-	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Permet aux auteurs de commentaires de s\'identifier sur Movable Type en utilisant leur nom d\'utilisateur mixi via OpenID.', # Translate - New
-	'Sign in using your mixi ID' => 'S\'identifier en utilisant votre identifiant mixi', # Translate - New
-	'Click the button to sign in using your mixi ID' => 'Cliquez sur le bouton pour vous identifier en utilisant votre identifiant mixi.', # Translate - New
-	'mixi' => 'mixi', # Translate - New
+	'Allows commenters to sign in to Movable Type 4 using their own mixi username and password via OpenID.' => 'Permet aux auteurs de commentaires de s\'identifier sur Movable Type en utilisant leur nom d\'utilisateur mixi via OpenID.',
+	'Sign in using your mixi ID' => 'S\'identifier en utilisant votre identifiant mixi',
+	'Click the button to sign in using your mixi ID' => 'Cliquez sur le bouton pour vous identifier en utilisant votre identifiant mixi.',
+	'mixi' => 'mixi',
 
 ## plugins/mixiComment/lib/mixiComment/App.pm
-	'mixi reported that you failed to login.  Try again.' => 'mixi n\'a pas réussi à vous identifier. Veuillez réessayer.', # Translate - New
+	'mixi reported that you failed to login.  Try again.' => 'mixi n\'a pas réussi à vous identifier. Veuillez réessayer.',
 
 ## plugins/mixiComment/tmpl/config.tmpl
-	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Un ID mixi est déjà enregistré sur ce blog. Si vous souhaitez modifier l\'ID mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi. Si vous souhaitez permettre à tous les utilisateurs mixi de commenter sur votre blog (et pas uniquement vos utilisateurs mixi), cliquez sur le bouton de réinitialisation pour retirer les paramètres.', # Translate - New
-	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si vous souhaitez restreindre les commentaires à uniquement vos utilisateurs mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi.', # Translate - New
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'Un ID mixi est déjà enregistré sur ce blog. Si vous souhaitez modifier l\'ID mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi. Si vous souhaitez permettre à tous les utilisateurs mixi de commenter sur votre blog (et pas uniquement vos utilisateurs mixi), cliquez sur le bouton de réinitialisation pour retirer les paramètres.',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'Si vous souhaitez restreindre les commentaires à uniquement vos utilisateurs mixi, <a href="[_1]">cliquez ici</a> pour vous identifier en utilisant votre compte mixi.',
 
 ## plugins/ActionStreams/blog_tmpl/sidebar.mtml
 
 ## plugins/ActionStreams/blog_tmpl/main_index.mtml
+
+## plugins/ActionStreams/blog_tmpl/actions.mtml
+	'Recent Actions' => 'Actions récentes',
 
 ## plugins/ActionStreams/blog_tmpl/archive.mtml
 
@@ -5583,36 +5600,238 @@ Base de recherche : [_2]",
 ## plugins/ActionStreams/blog_tmpl/elsewhere.mtml
 	'Find [_1] Elsewhere' => 'Trouver [_1] ailleurs',
 
+## plugins/ActionStreams/streams.yaml
+	'Currently Playing' => 'En train de jouer',
+	'The games in your collection you\'re currently playing' => 'Les jeux de votre collection auxquels vous jouez en ce moment',
+	'Comments you have made on the web' => 'Commentaires que vous avez écrits sur le web',
+	'Colors' => 'Couleurs',
+	'Colors you saved' => 'Couleurs que vous avez sauvegardées',
+	'Palettes' => 'Palettes',
+	'Palettes you saved' => 'Palettes que vous avez sauvegardées',
+	'Patterns' => 'Motifs',
+	'Patterns you saved' => 'Motifs que vous avez sauvegardés',
+	'Favorite Palettes' => 'Palettes favorites',
+	'Palettes you saved as favorites' => 'Palettes que vous avez sauvegardées comme favorites',
+	'Reviews' => 'Critiques',
+	'Your wine reviews' => 'Vos critiques de vins',
+	'Cellar' => 'Cellier',
+	'Wines you own' => 'Vins que vous possédez',
+	'Shopping List' => 'Liste de courses',
+	'Wines you want to buy' => 'Vins que vous voulez acheter',
+	'Links' => 'Liens',
+	'Your public links' => 'Vos liens publics',
+	'Dugg' => 'Dugg',
+	'Links you dugg' => 'Liens postés sur Digg',
+	'Submissions' => 'Soumissions',
+	'Links you submitted' => 'Liens que vous avez soumis',
+	'Found' => 'Trouvé',
+	'Photos you found' => 'Photos que vous avez trouvées',
+	'Favorites' => 'Favorites',
+	'Photos you marked as favorites' => 'Photos que vous avez marquées comme favorites',
+	'Photos' => 'Photos',
+	'Photos you posted' => 'Photos que vous avez postées',
+	'Likes' => 'Likes',
+	'Things from your friends that you "like"' => 'Infos de vos amis que vous avez aimées',
+	'Leaderboard scores' => 'Scores',
+	'Your high scores in games with leaderboards' => 'Vos meilleurs scores dans les jeux avec championnat',
+	'Posts' => 'Notes',
+	'Blog posts about your search term' => 'Notes du blog à propos de votre recherche',
+	'Stories' => 'Articles',
+	'News Stories matching your search' => 'Nouveaux articles correspondant à votre recherche',
+	'To read' => 'A lire',
+	'Books on your "to-read" shelf' => 'Livres dans votre liste "à lire"',
+	'Reading' => 'En cours de lecture',
+	'Books on your "currently-reading" shelf' => 'Livres dans votre liste "en cours de lecture"',
+	'Read' => 'Lus',
+	'Books on your "read" shelf' => 'Livres dans votre liste "lus"',
+	'Shared' => 'Partagés',
+	'Your shared items' => 'Vos élémens partagés',
+	'Deliveries' => 'Livrés',
+	'Icon sets you were delivered' => 'Sets d\'icones livrées',
+	'Notices' => 'Notices',
+	'Notices you posted' => 'Notices postées',
+	'Intas' => 'Intas',
+	'Links you saved' => 'Liens sauvegardés',
+	'Photos you posted that were approved' => 'Photos postées et approuvées',
+	'Recent events' => 'Evénements récents',
+	'Events from your recent events feed' => 'Evénements de votre flux des événements récents',
+	'Apps you use' => 'Applications que vous utilisez',
+	'The applications you saved as ones you use' => 'Les applications que vous avez marquées comme utilisées',
+	'Videos you saved as watched' => 'Videos que vous avez saugardées comme regardées',
+	'Jaikus' => 'Jaikus',
+	'Jaikus you posted' => 'Jaikus que vous avez postés',
+	'Games you saved as favorites' => 'Jeux que vous avez sauvegardés comme favoris',
+	'Achievements' => 'Réalisations',
+	'Achievements you won' => 'Réalisations que vous avez atteintes',
+	'Tracks' => 'Morceaux',
+	'Songs you recently listened to (High spam potential!)' => 'Chansons que vous avez écoutées récemment (spam potentiel!)',
+	'Loved Tracks' => 'Morceaux aimés',
+	'Songs you marked as "loved"' => 'Chansons que vous avez marquées comme "aimées"',
+	'Journal Entries' => 'Notes du journal',
+	'Your recent journal entries' => 'Les notes récentes de votre journal',
+	'Events' => 'événéments',
+	'The events you said you\'ll be attending' => 'Les événements auquels vous allez assister',
+	'Your public posts to your journal' => 'Les notes publiques sur votre journal',
+	'Queue' => 'Liste d\'attente',
+	'Movies you added to your rental queue' => 'Films que vous avez ajoutés à votre liste d\'attente',
+	'Recent Movies' => 'Films récents',
+	'Recent Rental Activity' => 'Films empreintés récemment',
+	'Kudos' => 'Kudos',
+	'Kudos you have received' => 'Kudos que vous avez reçus',
+	'Favorite Songs' => 'Chansons favorites',
+	'Songs you marked as favorites' => 'Chansons que vous avez marquées comme favorites',
+	'Favorite Artists' => 'Artistes favoris',
+	'Artists you marked as favorites' => 'Artistes que vous avez marqués comme favoris',
+	'Stations' => 'Stations',
+	'Radio stations you added' => 'Stations de radio que vous avez ajoutées',
+	'List' => 'Liste',
+	'Things you put in your list' => 'Choses que vous mettez sur votre liste',
+	'Notes' => 'Notes',
+	'Your public notes' => 'Vos notes publiques',
+	'Comments you posted' => 'Commentaires que vous avez postés',
+	'Articles you submitted' => 'Articles que vous avez soumis',
+	'Articles you liked (your votes must be public)' => 'Articles que vous avez aimés (vos votes doivent être publiques)',
+	'Dislikes' => 'Pas aimés',
+	'Articles you disliked (your votes must be public)' => 'Articles que vous n\'avez pas aimés (vos votes doivent être publiques)',
+	'Slideshows you saved as favorites' => 'Diaparamas que vous avez marqués comme favoris',
+	'Slideshows' => 'Diaporamas',
+	'Slideshows you posted' => 'Diaporamas que vous avez postés',
+	'Your achievements for achievement-enabled games' => 'Vos résultats pour les jeux avec des objectifs',
+	'Stuff' => 'Trucs',
+	'Things you posted' => 'Choses que vous avez postées',
+	'Tweets' => 'Tweets',
+	'Your public tweets' => 'Vos tweets publiques',
+	'Public tweets you saved as favorites' => 'Tweets publiques que vous avez sauvegardés comme favoris',
+	'Tweets about your search term' => 'Tweets contenant votre terme de recherche',
+	'Saved' => 'Sauvegardés',
+	'Things you saved as favorites' => 'Choses que vous avez sauvegardées comme favorites',
+	'Events you are watching or attending' => 'Evénements que vous regardez ou auxquels vous assistez',
+	'Videos you posted' => 'Videos que vous avez postées',
+	'Videos you liked' => 'Videos que vous avez aimées',
+	'Public assets you saved as favorites' => 'Assets publiques que vous avez sauvegardées comme favorites',
+	'Your public photos in your Vox library' => 'Vos photos publiques dans votre librairie Vox',
+	'Your public posts to your Vox' => 'Vos notes publiques dans votre Vox',
+	'The posts available from the website\'s feed' => 'Les notes publiques disponibles dans le flux du site',
+	'Wists' => 'Wists',
+	'Stuff you saved' => 'Choses que vous avez sauvegardées',
+	'Gamerscore' => 'Score du joueur',
+	'Notes when your gamerscore passes an even number' => 'Notes quand votre score dépasse un nombre pair',
+	'Places you reviewed' => 'Places que vous avez critiquées',
+	'Videos you saved as favorites' => 'Videos que vous avez sauvegardées comme favorites',
+
 ## plugins/ActionStreams/services.yaml
+	'1up.com' => '1up.com',
+	'43Things' => '43Things',
 	'Screen name' => 'Pseudonyme',
+	'backtype' => 'backtype',
+	'Bebo' => 'Bebo',
+	'Catster' => 'Catster',
+	'COLOURlovers' => 'COLOURlovers',
+	'Cork\'\'d\'' => 'Cork\'\'d\'',
+	'Delicious' => 'Delicious',
+	'Destructoid' => 'Destructoid',
+	'Digg' => 'Digg',
+	'Dodgeball' => 'Dodgeball',
+	'Dogster' => 'Dogster',
+	'Dopplr' => 'Dopplr',
+	'Facebook' => 'Facebook',
 	'User ID' => 'ID d\'utilisateur',
+	'You can find your Facebook userid within your profile URL.  For example, http://www.facebook.com/profile.php?id=24400320.' => 'Vous pouvez trouver votre userid Facebook dans l\'URL de votre profil. Par exemple, http://www.facebook.com/profile.php?id=24400320.',
+	'FFFFOUND!' => 'FFFFOUND!',
+	'Flickr' => 'Flickr',
+	'Enter your Flickr userid which contains "@" in it, e.g. 36381329@N00.  Flickr userid is NOT the username in the URL of your photostream.' => 'Saisissez votre userid Flickr',
+	'FriendFeed' => 'FriendFeed',
+	'Gametap' => 'Gametap',
+	'Google Blogs' => 'Google Blogs',
 	'Search term' => 'Rerchercher le terme',
+	'Google News' => 'Google News',
 	'Search for' => 'Rechercher',
+	'Goodreads' => 'Goodreads',
+	'You can find your Goodreads userid within your profile URL. For example, http://www.goodreads.com/user/show/123456.' => 'Vous pouvez trouver votre userid Giidreads dans votre URL de profil. Par exemple, http://www.goodreads.com/user/show/123456.',
+	'Google Reader' => 'Google Reader',
 	'Sharing ID' => 'ID partagé',
+	'Hi5' => 'Hi5',
+	'IconBuffet' => 'IconBuffet',
+	'ICQ' => 'ICQ',
 	'UIN' => 'UIN',
+	'Identi.ca' => 'Identi.ca',
+	'Iminta' => 'Iminta',
+	'iStockPhoto' => 'iStockPhoto',
+	'You can find your istockphoto userid within your profile URL.  For example, http://www.istockphoto.com/user_view.php?id=1234567.' => 'Vous pouvez trouver votre userid istockphoto dans l\'URL de votre profil. Par exemple, http://www.istockphoto.com/user_view.php?id=1234567.',
+	'IUseThis' => 'IUseThis',
+	'iwatchthis' => 'iwatchthis',
+	'Jabber' => 'Jabber',
 	'Jabber ID' => 'ID Jabber',
+	'Jaiku' => 'Jaiku',
+	'Kongregate' => 'Kongregate',
+	'Last.fm' => 'Last.fm',
+	'LinkedIn' => 'LinkedIn',
 	'Profile URL' => 'URL du profil',
+	'Ma.gnolia' => 'Ma.gnolia',
+	'MOG' => 'MOG',
+	'MSN Messenger\'' => 'MSN Messenger\'',
+	'Multiply' => 'Multiply',
+	'MySpace' => 'MySpace',
+	'Netflix' => 'Netflix',
 	'Netflix RSS ID' => 'ID Netflix RSS',
-	'Social Network URL' => 'URL du réseau social', # Translate - New
+	'To find your Netflix RSS ID, click "RSS" at the bottom of any page on the Netflix site, then copy and paste in your "Queue" link.' => 'Pour trouver votre RSS ID Netflix, cliquez sur "RSS" en bas de n\'importe quelle page sur le site de Netflix, puis copiez-collez le votre lien "Queue".',
+	'Netvibes' => 'Netvibes',
+	'Newsvine' => 'Newsvine',
+	'Ning' => 'Ning',
+	'Social Network URL' => 'URL du réseau social',
+	'Ohloh' => 'Ohloh',
+	'Orkut' => 'Orkut',
+	'You can find your orkut uid within your profile URL. For example, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789' => 'Vous pouvez trouver votre userid orkut dans l\'URL de votre profil. Par exemple, http://www.orkut.com/Main#Profile.aspx?rl=ls&uid=1234567890123456789',
+	'Pandora' => 'Pandora',
+	'Picasa Web Albums' => 'Picasa Web Albums',
+	'p0pulist' => 'p0pulist',
+	'You can find your p0pulist user id within your Hot List URL. for example, http://p0pulist.com/list/hot_list/10000' => 'Vous pouvez trouver votre user id p0pulist dans votre URL Hot List. Par exemple, http://p0pulist.com/list/hot_list/10000',
+	'Pownce' => 'Pownce',
+	'Reddit' => 'Reddit',
+	'Skype' => 'Skype',
+	'SlideShare' => 'SlideShare',
+	'Smugmug' => 'Smugmug',
+	'SonicLiving' => 'SonicLiving',
+	'You can find your SonicLiving userid within your share&subscribe URL. For example, http://sonicliving.com/user/12345/feeds' => 'Vous pouvez trouver votre userid SonicLiving dans votre URL share&subscribe. Par exemple, http://sonicliving.com/user/12345/feeds',
+	'Steam' => 'Steam',
+	'StumbleUpon' => 'StumbleUpon',
+	'Tabblo' => 'Tabblo',
+	'Blank should be replaced by positive sign (+).' => 'Les espaces doivent être remplacés par un signe plus (+)',
+	'Tribe' => 'Tribe',
+	'You can find your tribe userid within your profile URL.  For example, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.' => 'Vous pouvez trouver votre userid tribe dans l\'URL de votre profil. Par exemple, http://people.tribe.net/dcdc61ed-696a-40b5-80c1-e9a9809a726a.',
+	'Tumblr' => 'Tumblr',
+	'Twitter' => 'Twitter',
+	'TwitterSearch' => 'TwitterSearch',
+	'Uncrate' => 'Uncrate',
+	'Upcoming' => 'Upcoming',
+	'Viddler' => 'Viddler',
+	'Vimeo' => 'Vimeo',
+	'Virb' => 'Virb',
+	'You can find your VIRB userid within your home URL.  For example, http://www.virb.com/backend/2756504321310091/your_home.' => 'Vous pouvez trouver votre userid VIRB dans l\'URL d\'accueil. Par exemple, http://www.virb.com/backend/2756504321310091/your_home.',
 	'Vox name' => 'Nom Vox',
+	'Website' => 'Website',
+	'Xbox Live\'' => 'Xbox Live\'',
 	'Gamertag' => 'Gamertag',
+	'Yahoo! Messenger\'' => 'Yahoo! Messenger\'',
+	'Yelp' => 'Yelp',
+	'YouTube' => 'YouTube',
+	'Zooomr' => 'Zooomr',
 
 ## plugins/ActionStreams/config.yaml
-	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Gérer les comptes et les actions des utilisatreurs sur les sites ailleurs sur le web', # Translate - New
-	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir masquer TOUS les événement dans TOUS les flux d\'actions ?', # Translate - New
-	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir afficher TOUS les événement dans TOUS les flux d\'actions ?', # Translate - New
-	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => '', # Translate - New
+	'Manages authors\' accounts and actions on sites elsewhere around the web' => 'Gérer les comptes et les actions des utilisatreurs sur les sites ailleurs sur le web',
+	'Are you sure you want to hide EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir masquer TOUS les événement dans TOUS les flux d\'actions ?',
+	'Are you sure you want to show EVERY event in EVERY action stream?' => 'Êtes-vous sûr de vouloir afficher TOUS les événement dans TOUS les flux d\'actions ?',
+	'Deleted events that are still available from the remote service will be added back in the next scan. Only events that are no longer available from your profile will remain deleted. Are you sure you want to delete the selected event(s)?' => 'Les événements supprimés qui sont toujours disponibles sur le service distant seront ajoutés à nouveau dans le prochain scan. Seuls les événements qui ne sont plus disponibles dans votre profil resteront supprimés. Etes-vous sûr de vouloir supprimer les événements sélectionnés?',
 	'Hide All' => 'Cacher tout',
+	'Show All' => 'Tout afficher',
 	'Poll for new events' => 'Emplacement pour les nouveaux événements',
 	'Update Events' => 'Mettre à jour les événements',
-	'Recent Actions' => 'Actions récentes',
 	'Action Stream' => 'Action Stream',
 	'Main Index (Recent Actions)' => 'Index principal (Actions récentes)',
 	'Action Archive' => 'Archive des actions',
-	'Feed - Recent Activity' => 'Flux - Activité récente', # Translate - New
+	'Feed - Recent Activity' => 'Flux - Activité récente',
 	'Find Authors Elsewhere' => 'Trouver les auteurs ailleurs',
-	'Authors Action Stream' => 'Action Stream des auteurs',
-	'Enabling default action streams for selected profiles...' => 'Activer les flux d\'actions par défaut des profils sélectionnés...', # Translate - New
+	'Enabling default action streams for selected profiles...' => 'Activer les flux d\'actions par défaut des profils sélectionnés...',
 
 ## plugins/ActionStreams/lib/ActionStreams/Upgrade.pm
 	'Updating classification of [_1] [_2] actions...' => 'Mise à jour de la classification des actions [_1] [_2]...',
@@ -5623,12 +5842,12 @@ Base de recherche : [_2]",
 
 ## plugins/ActionStreams/lib/ActionStreams/Plugin.pm
 	'Other Profiles' => 'Autres profils',
-	'Profiles' => 'Profiles', # Translate - Case
+	'Profiles' => 'Profiles',
 	'Actions from the service [_1]' => 'Actions pour le service [_1]',
-	'Actions that are shown' => 'Actions affichées', # Translate - New
-	'Actions that are hidden' => 'Actions masquées', # Translate - New
+	'Actions that are shown' => 'Actions affichées',
+	'Actions that are hidden' => 'Actions masquées',
 	'No such event [_1]' => 'Aucun événement [_1] trouvé',
-	'[_1] Profile' => 'Profil [_1]', # Translate - New
+	'[_1] Profile' => 'Profil [_1]',
 
 ## plugins/ActionStreams/lib/ActionStreams/Tags.pm
 	'No user [_1]' => 'Aucun utilisateur [_1]',
@@ -5637,16 +5856,19 @@ Base de recherche : [_2]",
 	'[_1] updating [_2] events for [_3]' => '[_1] mets à jour [_2] événements pour [_3]',
 	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Erreur lors de la mise à jour des événements pour le flux [_2] de [_1] (type [_3] ident [_4]) : [_5]',
 	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'Impossible de charger la classe [_1] pour le flux [_2] [_3] : [_4]',
+	'No URL to fetch for [_1] results' => 'Aucune URL à joindre pour les résultats [_1]', # Translate - New
+	'Could not fetch [_1]: [_2]' => 'Impossible de joindre [_1] : [_2]', # Translate - New
+	'Aborted fetching [_1]: [_2]' => 'Opération abandonnée [_1] : [_2]', # Translate - New
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Votre nom d\'utilisateur ou ID est requis.',
-	'Edit a profile on a social networking or instant messaging service.' => 'Editer un profil sur un service de réseau social ou de messagerie instantanée.', # Translate - New
+	'Edit a profile on a social networking or instant messaging service.' => 'Editer un profil sur un service de réseau social ou de messagerie instantanée.',
 	'Service' => 'Service',
 	'Enter your account on the selected service.' => 'Entrez votre compte sur le service sélectionné.',
 	'For example:' => 'Par exemple :',
-	'Action Streams' => 'Flux d\'actions', # Translate - New
-	'Select the action streams to collect from the selected service.' => 'Sélectionner le flux d\'action pour collecter les données depuis les services sélectionnées.', # Translate - New
-	'No streams are available for this service.' => 'Aucun flux n\'est disponible pour ce service.', # Translate - New
+	'Action Streams' => 'Flux d\'actions',
+	'Select the action streams to collect from the selected service.' => 'Sélectionner le flux d\'action pour collecter les données depuis les services sélectionnées.',
+	'No streams are available for this service.' => 'Aucun flux n\'est disponible pour ce service.',
 
 ## plugins/ActionStreams/tmpl/other_profiles.tmpl
 	'The selected profile was added.' => 'Le profil sélectionné a été ajouté.',
@@ -5657,18 +5879,17 @@ Base de recherche : [_2]",
 	'profile' => 'profil',
 	'profiles' => 'profiles',
 	'Delete selected profiles (x)' => 'Supprimer les profils sélectionnés (x)',
-	'to update' => 'à mettre à jour', # Translate - New
+	'to update' => 'à mettre à jour',
 	'Scan now for new actions' => 'Vérifier la présence de nouveaux événements',
 	'Update Now' => 'Mettre à jour maintenant',
-	'No profiles were found.' => 'Aucun profil n\'a été trouvé.', # Translate - New
+	'No profiles were found.' => 'Aucun profil n\'a été trouvé.',
 	'external_link_target' => 'external_link_target',
 	'View Profile' => 'Voir le profil',
 
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
-	'Add a profile on a social networking or instant messaging service.' => 'Ajouter un profil sur un service de réseau social ou de messagerie instantanée.', # Translate - New
+	'Add a profile on a social networking or instant messaging service.' => 'Ajouter un profil sur un service de réseau social ou de messagerie instantanée.',
 	'Select a service where you already have an account.' => 'Sélectionnez un service où vous avez déjà un compte.',
-	'Add Service (s)' => 'Ajouter le service (s)',
-	'Add Service' => 'Ajouter le service',
+	'Add Profile (s)' => 'Ajouter le Profil (s)', # Translate - New
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
 	'The selected events were deleted.' => 'Les événements sélectionnés ont été supprimés.',
@@ -5682,12 +5903,12 @@ Base de recherche : [_2]",
 	'Hide' => 'Masquer',
 	'Show selected events (h)' => 'Afficher les événements sélectionnés (h)',
 	'Show' => 'Afficher',
-	'All stream actions' => 'Tous les flux d\'actions', # Translate - New
-	'Show only actions where' => 'Afficher uniquement les actions où', # Translate - New
-	'service' => 'le service est', # Translate - Case
-	'visibility' => 'la visibilité est', # Translate - New
-	'hidden' => 'masqué', # Translate - Case
-	'shown' => 'affiché', # Translate - Case
+	'All stream actions' => 'Tous les flux d\'actions',
+	'Show only actions where' => 'Afficher uniquement les actions où',
+	'service' => 'le service est',
+	'visibility' => 'la visibilité est',
+	'hidden' => 'masqué',
+	'shown' => 'affiché',
 	'No events could be found.' => 'Aucun événement n\'a été trouvé.',
 	'Event' => 'Événement',
 	'Shown' => 'Affiché',
@@ -5696,42 +5917,15 @@ Base de recherche : [_2]",
 
 ## plugins/ActionStreams/tmpl/widget_recent.mtml
 	'Your Recent Actions' => 'Votre activité récente',
-	'blog this' => 'bloguer ceci', # Translate - New
+	'blog this' => 'bloguer ceci',
 
 ## plugins/ActionStreams/tmpl/blog_config_template.tmpl
 	'Rebuild Indexes' => 'Republier les index',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si sélectionner, les index des blogs seront republiés lorsque de nouveaux événements du flux d\'activité seront découverts.',
-	'Enable rebuilding' => 'Activer la republication', # Translate - New
+	'Enable rebuilding' => 'Activer la republication',
 
-	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Une requête a été faite pour changer votre mot de passe dans Movable Type. Pour terminer cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe.', # Translate - New
-      'If you did not request this change, you can safely ignore this email.' => 'Si vous n\'avez pas demandé ce changement, vous pouvez ignorer cet email.', # Translate - New
-      '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
-      '[_1] contains an invalid character: [_2]' => '[_1] contient un caractère invalide : [_2]', # Translate - New
-      'Email address is required.' => 'Adresse email obligatoire', # Translate - New
-      'User not found' => 'Utilisateur introuvable', # Translate - New
-      'Password reset token not found' => 'Token de remise à zéro du mot de passe introuvable', # Translate - New
-      'Email address not found' => 'Adresse email introuvable', # Translate - New
-      'Your request to change your password has expired.' => 'Votre demande de modification de mot de passe a expirée.', # Translate - New
-      'Invalid password reset request' => 'Requête de modification de mot de passe invalide', # Translate - New
-      'Please confirm your new password' => 'Merci de confirmer votre nouveau mot de passe', # Translate - New
-      'Password do not match' => 'Le mot de passe ne correspond pas', # Translate - New
-      'Invalid [_1] parameter.' => 'Paramètre [_1] invalide', # Translate - New
-      'Blog, BlogID or Template param must be specified.' => 'Les paramètres Blog, BlogID ou Template doivent être spécifiés.', # Translate - New
-      'Error saving [_1] record # [_3]: [_2]...' => 'Erreur en enregistrant l\'enregistrement [_1] # [_3]: [_2]...', # Translate - New
-      'The email address provided is not unique.  Please enter your username.' => 'Une adresse  email n\'est pas unique. Merci de saisir votre nom de membre.', # Translate - New
-      'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Un email contenant un lien pour réinitialiser votre mot de passe a été envoyé à votre adresse email ([_1]).', # Translate - New
-      'Choose New Password' => 'Choisissez un nouveau mot de passe', # Translate - New
-      'You must set Local Archive Path.' => 'Vous devez renseigner Local Archive Path.', # Translate - New
-      'You must set a valid Archive URL.' => 'Vous devez renseigner une Archive URL valide.', # Translate - New
-      'You must set a valid Local Archive Path.' => 'Vous devez renseigner un Local Archive Path valide.', # Translate - New 
-      'Passwords do not match' => 'Les mots de passe ne correspondent pas', # Translate - New
-      'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Réinitialisation du mot de passe pour l\'utilisateur \'[_1]\' (utilisateur #[_2]) a réussi. Lien envoyé à l\'adresse suivante : [_3]', # Translate - New
-      'Updating password recover email template...' => 'Template de réinitialisation du mot de passe en cours de mise à jour...', # Translate - New
-      'The email address provided is not unique.  Please enter your username.' => 'L\'adresse email fournie n\'est pas unique. Merci de saisir votre nom d\'utilisateur.', # Translate - New
-      '_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point d\'envoyer des emails pour permettre aux utilisateurs sélectionnés de réinitialiser leurs mots de passe. Voulez-vous continuer ?',
-      "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Un lien de réinitialisation de mot de passe envoyé à [_3] pour utilisateur \'[_1]\' (utilisateur #[_2]).', 
 );
 
-## New words: 737
+## New words: 91
 
 1;

@@ -1206,7 +1206,7 @@ sub clear_cache {
 
     if (@_) {
         $oc = $oc->{$key};
-        delete $oc->{shift} if $oc;
+        delete $oc->{ $_[0] } if $oc;
     } else {
         delete $oc->{$key};
     }
