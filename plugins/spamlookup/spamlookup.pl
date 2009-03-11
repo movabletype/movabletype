@@ -15,7 +15,7 @@ use MT::Plugin;
 use vars qw($VERSION);
 sub BEGIN {
     @MT::Plugin::SpamLookup::ISA = ('MT::Plugin');
-    $VERSION = '2.11';
+    $VERSION = '2.12';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup({
         name => 'SpamLookup - Lookups',

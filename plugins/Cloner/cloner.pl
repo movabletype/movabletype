@@ -14,7 +14,7 @@ use strict;
 use MT 4;
 use base 'MT::Plugin';
 use MT::Util qw( encode_html );
-our $VERSION = '2.0';
+our $VERSION = '2.1';
 
 my $plugin = MT::Plugin::Cloner->new({
     name        => "Blog Cloner",
