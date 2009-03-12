@@ -5229,7 +5229,34 @@ Suchbasis: [_2]",
 	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type?' => 'Mit Feeds.App Lite können Sie Feedinhalte in Ihre Blogs integrieren. Noch mehr Möglichkeiten erhalten Sie durch ein',
 	'Upgrade to Feeds.App' => 'Upgrade auf Feeds.App',
 	'Create a Feed Widget' => 'Feed-Widget anlegen',
-
+	
+       '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
+       '[_1] contains an invalid character: [_2]' => '[_1] beinhaltet ein ungültiges Schriftzeichen: [_2]', # Translate - New
+       'Email address is required.' => 'Bitte geben Sie Ihre E-Mail-Adresse ein.', # Translate - New
+       'User not found' => 'Dieser Benutzer wurde nicht gefunden', # Translate - New
+       'Password reset token not found' => 'Der Passwort Reset Token wurde nicht gefunden', # Translate - New
+       'Email address not found' => 'Diese E-Mail-Adresse wurde nicht gefunden', # Translate - New
+       'Your request to change your password has expired.' => 'Ihre Anfrage auf Änderung Ihres Passwortes ist ausgelaufen.', # Translate - New
+       'Invalid password reset request' => 'Ungültige Passwort Reset Anfrage', # Translate - New
+       'Please confirm your new password' => 'Bitte bestätigen Sie Ihr neues Passwort', # Translate - New
+       'Password do not match' => 'Die Passwörter stimmen nicht überein', # Translate - New
+       'Invalid [_1] parameter.' => 'Ungültiger [_1] Parameter.', # Translate - New
+       'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID oder Template Parameter müssen spezifiziert werden.', # Translate - New
+       'Error saving [_1] record # [_3]: [_2]...' => 'Error saving [_1] record # [_3]: [_2]...', # Translate - New
+       'The email address provided is not unique.  Please enter your username.' => 'Diese E-Mail-Adresse wird bereits verwendet. Bitte geben Sie Ihren Benutzernamen ein.', # Translate - New
+       'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Es wurde eine E-Mail mit einem Link zur Zurücksetzung Ihres Passwortes an Ihre Adresse gesendet([_1]).', # Translate - New
+       'Choose New Password' => 'Wählen Sie Ihr neues Passwort', # Translate - New
+       'You must set Local Archive Path.' => 'Bitte definieren Sie Ihren Local Archive Path.', # Translate - New
+       'You must set a valid Archive URL.' => 'Bitte definieren Sie eine gültige Archive URL.', # Translate - New
+       'You must set a valid Local Archive Path.' => 'Bitte definieren Sie einen gültigen Local Archive Path.', # Translate - New 
+       'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Es wurde eine Anfrage zur Änderung Ihres Passwortes in Movable Type gestellt. Bitte klicken Sie auf untenstehenden Link und wählen Sie ein neues Passwort aus um diesen Prozess abzuschließen.',
+       'If you did not request this change, you can safely ignore this email.' => 'Wenn Sie diese Änderung nicht wünschen können Sie diese E-Mail bedenkenlos ignorieren.',
+       'Passwords do not match' => 'Passwörter stimmen nicht überein.',
+       'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Das Zurücksetzen des Passwortes für Benutzer \'[_1]\' (Benutzer #[_2]) war erfolgreich. Ein Wiederherstellungs-Link wurde an folgende Adresse gesendet',
+       'Updating password recover email template...' => 'Aktualisierung des Passwort-Wiederherstellungs-Templates...',
+       'The email address provided is not unique.  Please enter your username.' => 'Die angegebene E-Mail-Adresse wird bereits genutzt. Bitte geben Sie Ihren Benutzernamen ein.',
+       '_WARNING_PASSWORD_RESET_MULTI' => 'Sie sind dabei Email(s) an ausgewählte Nutzer zu senden um deren Password zurück zu setzen. Möchten Sie fortfahren?',
+       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])' 
 );
 
 ## New words: 361

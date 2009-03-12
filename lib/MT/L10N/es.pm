@@ -5228,6 +5228,28 @@ Búsqueda base: [_2]",
 	'Upgrade to Feeds.App' => 'Actualícese a Feeds.App',
 	'Create a Feed Widget' => 'Crear un widget de fuente',
 
+	'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Se ha recibido una petición para cambiar su contraseña de Movable Type. Para completar el proceso y seleccionar una nueva contraseña, haga clic en el enlace.', # Translate - New
+        'If you did not request this change, you can safely ignore this email.' => 'Si no solicitó este cambio, ignore este mensaje.', # Translate - New
+        '%f-thumb-%wx%h-%i%x' => '%f-miniatura-%wx%h-%i%x', # Translate - New
+        '[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]', # Translate - New
+        'Email address is required.' => 'El correo electrónico es obligatorio.', # Translate - New
+        'User not found' => 'Usuario no encontrado', # Translate - New
+        'Password reset token not found' => 'Token para el reinicio de la contraseña no encontrado', # Translate - New
+        'Email address not found' => 'Dirección de correo no encontrada', # Translate - New
+        'Your request to change your password has expired.' => 'Expiró su solicitud de cambio de contraseña.', # Translate - New
+        'Invalid password reset request' => 'Solicitud de reinicio de contraseña no válida', # Translate - New
+        'Please confirm your new password' => 'Por favor, confirme su nueva contraseña', # Translate - New
+        'Password do not match' => 'La contraseña no coincide', # Translate - New
+        'Invalid [_1] parameter.' => 'Parámetro [_1] no válido', # Translate - New
+        'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.', # Translate - New
+        'Error saving [_1] record # [_3]: [_2]...' => 'Error guardando registro [_1] # [_3]: [_2]...', # Translate - New
+        'The email address provided is not unique.  Please enter your username.' => 'El correo no es único. Por favor, introduzca el usuario.', # Translate - New
+        'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Se ha enviado a su dirección de correo ([_1]) un correo con el enlace para reiniciar la contraseña', # Translate - New
+        'Choose New Password' => 'Seleccione la nueva contraseña', # Translate - New
+        'You must set Local Archive Path.' => 'Debe indicar la ruta local de archivos.', # Translate - New
+        'You must set a valid Archive URL.' => 'Debe indicar una URL de archivos válida.', # Translate - New
+        'You must set a valid Local Archive Path.' => 'Debe indicar una ruta local de archivos válida.', # Translate - New
+
 );
 
 ## New words: 190
