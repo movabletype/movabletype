@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::nl;
 use strict;
@@ -1753,7 +1753,7 @@ use vars qw( @ISA %Lexicon );
 	'Couldn\'t save the session' => 'Kon de sessie niet opslaan',
 	'Couldn\'t get public key from url provided' => 'Kon geen publieke sleutel vinden via de opgegeven url',
 	'No public key could be found to validate registration.' => 'Er kon geen publieke sleutel gevonden worden om de registratie te valideren.',
-	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypePad signatuur verificatie retourneerde [_1] in [_2] seconden bij het verifi�ren van [_3] met [_4]',
+	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypePad signatuur verificatie retourneerde [_1] in [_2] seconden bij het verifiëren van [_3] met [_4]',
 	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'De TypePad signatuur is vervallen ([_1] seconden oud).  Kijk na of de klok van uw server juist staat.',
 
 ## lib/MT/Auth/OpenID.pm
@@ -2648,7 +2648,7 @@ use vars qw( @ISA %Lexicon );
 	'Native' => 'Ingebouwd',
 	'Require E-mail Address for Comments via TypePad' => 'E-mail adres vereisen voor reacties via TypePad',
 	'If enabled, visitors must allow their TypePad account to share e-mail address when commenting.' => 'Indien ingeschakeld, moeten bezoekers die met hun TypePad account zijn aangemeld hun e-mail adres met u delen als ze een reactie willen achterlaten.',
-	'One or more Perl module may be missing to use this authentication method.' => 'Mogelijk ontbreken ��n of meer Perl modules om deze authenticatiemethode te kunnen gebruiken.',
+	'One or more Perl module may be missing to use this authentication method.' => 'Mogelijk ontbreken één of meer Perl modules om deze authenticatiemethode te kunnen gebruiken.',
 	'Setup TypePad' => 'TypePad instellen',
 	'OpenID providers disabled' => 'OpenID providers uitgeschakeld',
 	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => 'Vereiste module (Digest::SHA1) voor OpenID reageerders-authenticatie ontbreekt.',
