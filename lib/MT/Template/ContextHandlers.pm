@@ -9499,28 +9499,76 @@ sub _hdlr_entry_tb_id {
 
 =head2 EntryLink
 
-Outputs the URL for the current entry in context.
+Outputs absolute URL pointing to an archive page related to the the current entry in context.
 
-B<Attributes:>
+By default the tag will generate a URL to the "Preferred Archive" type specified in the blog's Publishing Settings (which is usually the Entry archive), but the link can be modified by specifying the desired archive type.
+
+=head4 Attributes
 
 =over 4
 
-=item * type (optional)
-
 =item * archive_type (optional)
 
-Identifies the archive type to use when creating the link. For instance,
-to link to the appropriate Monthly archive for the current entry (assuming
-Monthly archives are published), you can use this:
+=item * type (optional, alias of archive_type)
 
-    <$MTEntryLink type="Monthly"$>
+Identifies the archive type to use when creating the link. Valid archive types are case sensitive:
 
-or to link to other entries by the current author (assuming Author
-archives are published):
+=over 4
 
-    <$MTEntryLink type="Author"$>
+=item * Category
+
+=item * Monthly
+
+=item * Weekly
+
+=item * Daily
+
+=item * Individual
+
+=item * Author
+
+=item * Yearly
+
+=item * Author-Daily
+
+=item * Author-Weekly
+
+=item * Author-Monthly
+
+=item * Author-Yearly
+
+=item * Category-Daily
+
+=item * Category-Weekly
+
+=item * Category-Monthly
+
+=item * Category-Yearly
 
 =back
+
+=head4 Examples
+
+Link to the main category archive of the entry in context:
+
+    <a href="<$mt:EntryLink type="Category"$>"><$mt:EntryCategory$></a>
+
+Link to the appropriate Monthly archive for the current entry (assuming
+Monthly archives are published), you can use this:
+
+    <a href="<$mt:EntryLink type="Monthly"$>"><$mt:EntryDate format="%B %Y"$> Archives</a>
+
+Link to other entries by the current author (assuming Author archives are published):
+
+    <a href="<$mt:EntryLink type="Author"$>"><$mt:EntryAuthorDisplayName$></a>
+
+=head4 Related Tags
+
+=item * L<EntryPermalink>
+
+=back
+
+=for tags entry, function, template tag
 
 =cut
 
