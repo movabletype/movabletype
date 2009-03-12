@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -122,7 +122,8 @@ sub edit {
         $param->{published_url} = $published_url if $published_url;
         $param->{saved_rebuild} = 1 if $q->param('saved_rebuild');
         require MT::PublishOption;
-        $param->{static_maps} = $obj->build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
+        $param->{static_maps} = ( $obj->build_type != MT::PublishOption::DYNAMIC()
+                                  && $obj->build_type != MT::PublishOption::DISABLED() );
 
         my $filter = $app->param('filter_key');
         if ($param->{template_group} eq 'email') {
@@ -161,7 +162,10 @@ sub edit {
                 $seen{$type}{$mod} = 1;
                 my $other = MT::Template->load(
                     {
-                        blog_id => [ $obj->blog_id, 0 ],
+                        blog_id => ( $tag->[1]->{global}
+                          ? 0
+                          : [ $obj->blog_id, 0 ]
+                        ),
                         name    => $mod,
                         type    => $type,
                     }, {
@@ -309,17 +313,12 @@ sub edit {
                 $param->{object_loop} = $param->{template_map_loop} = $maps
                   if @$maps;
                 my %at;
-                my $build_type = MT::PublishOption::DYNAMIC();
-                my $build_type_0 = 0;
                 foreach my $map ( @$maps ) {
                     $at{ $map->{archive_label} } = 1;
-                    $build_type_0 = $map->{map_build_type};
-                    $build_type = $map->{map_build_type}
-                        if MT::PublishOption::DYNAMIC() ne $map->{map_build_type};
+                    $param->{static_maps} ||= ( $map->{map_build_type} != MT::PublishOption::DYNAMIC()
+                                                && $map->{map_build_type} != MT::PublishOption::DISABLED() );
                 }
                 $param->{enabled_archive_types} = join(", ", sort keys %at);
-                $param->{static_maps} = $build_type == MT::PublishOption::DYNAMIC() ? 0 : 1;
-                $param->{build_type_0} = 1 unless $build_type_0;
             } else {
                 $param->{can_rebuild} = 0;
             }
@@ -901,7 +900,9 @@ sub preview {
 
     # Default case; works for index templates (other template types should
     # have defined $archive_file by now).
-    $archive_file = File::Spec->catfile( $blog_path, $preview_tmpl->outfile )
+    my $outfile = $preview_tmpl->outfile;
+    my ($path_in_outfile) = $outfile =~ m/^(.*\/)/;
+    $archive_file = File::Spec->catfile( $blog_path, $outfile )
         unless defined $archive_file;
 
     ( $orig_file, $path ) = File::Basename::fileparse( $archive_file );
@@ -965,7 +966,7 @@ sub preview {
     if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
         $param{preview_file} = $preview_basename;
         my $preview_url = $archive_url;
-        $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
+        $preview_url =~ s! / \Q$orig_file\E ( /? ) $!/$path_in_outfile$preview_basename$file_ext$1!x;
 
         # We also have to translate the URL used for the
         # published file to be on the MT app domain.
@@ -1582,7 +1583,7 @@ sub build_template_table {
         my $blog = $blogs{ $tmpl->blog_id } ||=
           MT::Blog->load( $tmpl->blog_id ) if $tmpl->blog_id;
 
-        my $row = $tmpl->column_values;
+        my $row = $tmpl->get_values;
         $row->{name} = '' if !defined $row->{name};
         $row->{name} =~ s/^\s+|\s+$//g;
         $row->{name} = "(" . $app->translate("No Name") . ")"
@@ -1767,9 +1768,11 @@ sub refresh_all_templates {
                     MT::TemplateMap->remove({
                         template_id => $tmpl->id,
                     });
+                    $tmpl->name( $tmpl->name
+                            . ' (Backup from '
+                            . $ts . ') '
+                            . $tmpl->type );
                     $tmpl->type('backup');
-                    $tmpl->name(
-                        $tmpl->name . ' (Backup from ' . $ts . ')' );
                     $tmpl->identifier(undef);
                     $tmpl->rebuild_me(0);
                     $tmpl->linked_file(undef);
@@ -1956,7 +1959,8 @@ sub refresh_individual_templates {
     my $tmpl_ids   = {};
     my $tmpls      = {};
     foreach my $tmpl (@$tmpl_list) {
-        $tmpl->{text} = $app->translate_templatized( $tmpl->{text} );
+        $tmpl->{text} = $app->translate_templatized( $tmpl->{text} )
+            if ( $tmpl->{type} !~ m/^widgetset$/ );
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
         if ( $tmpl->{type} !~ m/^(archive|individual|page|category|index|custom|widget)$/ )

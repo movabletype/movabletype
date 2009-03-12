@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -89,7 +89,7 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtauthordisplayname.php
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypeKey認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'ブログでTypePad認証を有効にしていないので、MTRemoteSignInLinkは利用できません。',
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
@@ -155,8 +155,11 @@ use vars qw( @ISA %Lexicon );
 	'Scalar::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'Scalar::Utilのインストールは必須ではありません。再構築キューを利用する場合に必要となります。',
 	'List::Util is optional; It is needed if you want to use the Publish Queue feature.' => 'List::Utilのインストールは必須ではありません。再構築キューを利用する場合に必要となります。',
 	'Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.' => 'Image::Magickのインストールは必須ではありません。アップロードした画像のサムネイルを作成する場合に必要となります。',
+	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
+	'This module is needed if you would like to be able to use NetPBM as the image driver for MT.' => 'MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Storable is optional; it is required by certain MT plugins available from third parties.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
+	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
 	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcachedのインストールは必須ではありません。Movable Type のキャッシング機能として memcached サーバーを利用する場合に必要となります。',
@@ -491,12 +494,20 @@ use vars qw( @ISA %Lexicon );
 	'Sign in' => 'サインイン',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 	'Your LiveJournal Username' => 'あなたのLiveJournalのユーザー名',
-	'Sign in using your Vox blog URL' => 'あなたのVoxブログのURL',
 	'Learn more about LiveJournal.' => 'LiveJournalについて詳しくはこちら',
 	'Your Vox Blog URL' => 'Vox',
 	'Learn more about Vox.' => 'Voxについて詳しくはこちら',
-	'TypeKey is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypeKeyはブログにコメントを投稿したり他のWebサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
-	'Sign in or register with TypeKey.' => 'TypeKeyでサインイン(登録)',
+	'Sign in using your Gmail account' => 'Gmailのアカウントでログインする',
+	'Sign in to Movable Type with your[_1] Account[_2]' => '[_1] アカウント[_2]',
+	'Turn on OpenID for your Yahoo! account now' => 'Yahoo!のアカウントをOpenIDにする',
+	'Your AIM or AOL Screen Name' => 'AIMまたはAOLのスクリーンネーム',
+	'Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.' => 'AIMまたはAOLのスクリーンネームでサインインします。スクリーンネームは公開されます。',
+	'Your Wordpress.com Username' => 'Wordpress.comのユーザー名',
+	'Sign in using your WordPress.com username.' => 'Wordpress.comのユーザー名でサインインします。',
+	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のWebサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
+	'Sign in or register with TypePad.' => 'TypePadでサインイン(登録)',
+	'Turn on OpenID for your Yahoo! Japan account now' => 'Yahoo! JAPANのOpenIDを取得してください。',
+	'Your Hatena ID' => 'はてなID',
 	'Hello, world' => 'Hello, world',
 	'Hello, [_1]' => '[_1]',
 	'Got an error: [_1]' => 'エラーが発生しました: [_1]',
@@ -519,7 +530,14 @@ use vars qw( @ISA %Lexicon );
 	'OpenID' => 'OpenID',
 	'LiveJournal' => 'LiveJournal',
 	'Vox' => 'Vox',
-	'TypeKey' => 'TypeKey',
+	'Google' => 'Google',
+	'Yahoo!' => 'Yahoo!',
+	'AIM' => 'AIM',
+	'WordPress.com' => 'WordPress.com',
+	'TypePad' => 'TypePad',
+	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
+	'livedoor' => 'ライブドア',
+	'Hatena' => 'はてな',
 	'Movable Type default' => 'Movable Type 既定',
 
 ## lib/MT.pm.pre
@@ -604,9 +622,11 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Entry.pm
 	'Entries' => 'ブログ記事',
 	'Category' => 'カテゴリ',
+	'record does not exist.' => 'ブログがありません。',
 	'Draft' => '下書き',
-	'Review' => 'レビュー',
+	'Review' => '承認待ち',
 	'Future' => '日時指定',
+	'Spam' => 'スパム',
 
 ## lib/MT/Plugin/JunkFilter.pm
 	'[_1]: [_2][_3] from rule [_4][_5]' => '[_1]: ルール[_4][_5]による判定スコア - [_2][_3]',
@@ -707,12 +727,15 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (ID:[_2]) logged out' => 'ユーザー\'[_1]\'(ID[_2])がログアウトしました。',
 	'User requires password.' => 'パスワードは必須です。',
 	'Passwords do not match.' => '入力したパスワードが一致しません。',
+	'This word or phrase is not used in the password recovery.' => 'パスワード再設定用のフレーズは使用されていません。',
 	'User requires password recovery word/phrase.' => 'パスワード再設定用のフレーズは必須です。',
 	'URL is invalid.' => 'URLが不正です。',
 	'User requires username.' => 'ユーザー名は必須です。',
-	'[_1] contains an invalid character: [_2]' => '[_1]に不正な文字( [_2] )が含まれています。',
+	'[_1] contains an invalid character: [_2]' => '[_1]には不正な文字が含まれています: [_2]',
+	'Username' => 'ユーザー名',
 	'A user with the same name already exists.' => '同名のユーザーがすでに存在します。',
 	'User requires display name.' => '表示名は必須です。',
+	'Display Name' => '表示する名前',
 	'Email Address is invalid.' => '不正なメールアドレスです。',
 	'Email Address is required for password recovery.' => 'メールアドレスは必須です。',
 	'Text entered was wrong.  Try again.' => '入力された文字列が正しくありません。',
@@ -722,7 +745,7 @@ use vars qw( @ISA %Lexicon );
 	'Close' => '閉じる',
 	'Go Back' => '戻る',
 	'The file you uploaded is too large.' => 'アップロードしたファイルは大きすぎます。',
-	'Unknown action [_1]' => '[_1]はできません。',
+	'Unknown action [_1]' => '不明なアクション: [_1]',
 	'Permission denied.' => '権限がありません。',
 	'Warnings and Log Messages' => '警告とメッセージ',
 	'Removed [_1].' => '[_1]を削除しました。',
@@ -959,6 +982,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] Update: [_2]' => '更新通知: [_1] - [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'The value you entered was not a valid email address' => 'メールアドレスが不正です。',
+	'The value you entered was not a valid URL' => 'URLが不正です。',
 	'The e-mail address you entered is already on the Notification List for this blog.' => '入力されたメールアドレスはすでに通知リストに含まれています。',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => '\'[_3]\'がアドレス帳から\'[_1]\'(ID:[_2])を削除しました。',
 
@@ -982,8 +1006,6 @@ use vars qw( @ISA %Lexicon );
 	'Description' => '説明',
 	'Label' => '名前',
 	'Log Message' => 'ログ',
-	'Username' => 'ユーザー名',
-	'Display Name' => '表示する名前',
 	'Site URL' => 'サイトURL',
 	'Site Root' => 'サイトパス',
 	'Search & Replace' => '検索/置換',
@@ -1060,7 +1082,6 @@ use vars qw( @ISA %Lexicon );
 	'User requires password' => 'パスワードは必須です。',
 	'User requires password recovery word/phrase' => 'パスワード再設定用のフレーズは必須です。',
 	'Email Address is required for password recovery' => 'メールアドレスはパスワードを再設定できるようにするために必要です。',
-	'Website URL is invalid' => 'URLが不完全です。',
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を作成しました。',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がユーザー\'[_1]\'(ID:[_2])を削除しました。',
 
@@ -1096,6 +1117,7 @@ use vars qw( @ISA %Lexicon );
 	'File with name \'[_1]\' already exists; Tried to write to tempfile, but open failed: [_2]' => '\'[_1]\'という名前のファイルが既に存在します。テンポラリファイルに書き込むこともできませんでした: [_2]',
 	'Could not create upload path \'[_1]\': [_2]' => '[_1]を作成できませんでした: [_2]',
 	'Error writing upload to \'[_1]\': [_2]' => 'アップロードされたファイルを[_1]に書き込めませんでした: [_2]',
+	'Uploaded file is not an image.' => 'アップロードしたファイルは画像ではありません。',
 	'<' => '<',
 
 ## lib/MT/CMS/Import.pm
@@ -1344,6 +1366,7 @@ use vars qw( @ISA %Lexicon );
 	'User with the same name \'[_1]\' found (ID:[_2]).  Restore replaced this user with the data backed up.' => '\'[_1]\': 同名のユーザーが見つかりました(ID: [_2])。バックアップ時のユーザーデータを既存ユーザーのデータで置き換えて、他のデータを復元します。',
 	'Tag \'[_1]\' exists in the system.' => '\'[_1]\'というタグはすでに存在します。',
 	'[_1] records restored...' => '[_1]件復元されました...',
+	'The role \'[_1]\' has been renamed to \'[_2]\' because a role with the same name already exists.' => 'ロール「[_1]」はすでに存在するため、「[_2]」という名前に変わりました。',
 
 ## lib/MT/ObjectScore.pm
 	'Object Score' => 'オブジェクトのスコア',
@@ -1361,7 +1384,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of a comment; perhaps you mistakenly placed it outside of an \'MTComments\' container?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of a ping; perhaps you mistakenly placed it outside of an \'MTPings\' container?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '[_1]をAssetのコンテキスト外で利用しようとしました。MTAssetsコンテナの外部に配置していませんか?',
-	'You used an \'[_1]\' tag outside of the context of an page; perhaps you mistakenly placed it outside of an \'MTPages\' container?' => '[_1]をコンテキスト外で利用しようとしました。MTPagesコンテナの外部に配置していませんか?',
+	'You used an \'[_1]\' tag outside of the context of a page; perhaps you mistakenly placed it outside of a \'MTPages\' container?' => '[_1]をPageのコンテキスト外で利用しようとしました。MTPagesコンテナの外部に配置していませんか?',
 
 ## lib/MT/Template/ContextHandlers.pm
 	'All About Me' => 'All About Me',
@@ -1387,12 +1410,11 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'[_1] is not a hash.' => '[_1]はハッシュではありません。',
 	'You have an error in your \'[_2]\' attribute: [_1]' => '[_2]属性でエラーがありました: [_1]',
-	'You have an error in your \'tag\' attribute: [_1]' => 'tag属性でエラーがありました: [_1]',
 	'No such user \'[_1]\'' => 'ユーザー([_1])が見つかりません。',
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
 	'You used an [_1] tag for linking into \'[_2]\' archives, but that archive type is not published.' => '[_2]アーカイブにリンクするために[_1]タグを使っていますが、アーカイブを出力していません。',
 	'Could not create atom id for entry [_1]' => 'ブログ記事のAtom IDを作成できませんでした。',
-	'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.' => 'To enable comment registration, you need to add a TypeKey token in your weblog config or user profile.',
+	'To enable comment registration, you need to add a TypePad token in your weblog config or user profile.' => 'コメント投稿者を登録するためにTypePadトークンをブログの設定またはユーザーのプロフィールに設定してください。',
 	'The MTCommentFields tag is no longer available; please include the [_1] template module instead.' => 'MTCommentFieldsタグは利用できません。代わりにテンプレートモジュール「[_1]」をインクルードしてください。',
 	'Comment Form' => 'コメント入力フォーム',
 	'You used an [_1] tag without a date context set up.' => '[_1]を日付コンテキストの外部で利用しようとしました。',
@@ -1404,7 +1426,6 @@ use vars qw( @ISA %Lexicon );
 	'No such category \'[_1]\'' => '[_1]というカテゴリはありません。',
 	'[_1] cannot be used without publishing Category archive.' => 'カテゴリアーカイブを公開していないので[_1]は使えません。',
 	'<\$MTCategoryTrackbackLink\$> must be used in the context of a category, or with the \'category\' attribute to the tag.' => '<\$MTCategoryTrackbackLink\$>はカテゴリのコンテキストかまたはcategory属性とともに利用してください。',
-	'You failed to specify the label attribute for the [_1] tag.' => '[_1]タグにlabel属性が設定されていません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 	'MT[_1] must be used in a [_2] context' => 'MT[_1]は[_2]のコンテキスト外部では利用できません。',
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
@@ -1413,7 +1434,7 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load user.' => 'ユーザーをロードできませんでした。',
 	'Division by zero.' => 'ゼロ除算エラー',
 	'name is required.' => 'nameを指定してください。',
-	'Specified WidgetSet not found.' => '指定されたウィジェットセットは存在しません。',
+	'Specified WidgetSet \'[_1]\' not found.' => 'ウィジェットセット「[_1]」が見つかりません。',
 	'Can\'t find included template widget \'[_1]\'' => 'ウィジェット「[_1]」が見つかりません。',
 
 ## lib/MT/Folder.pm
@@ -1429,14 +1450,15 @@ use vars qw( @ISA %Lexicon );
 	'Couldn\'t save the session' => 'セッションを保存できませんでした。',
 	'Couldn\'t get public key from url provided' => '指定されたURLから公開キーを取得できませんでした。',
 	'No public key could be found to validate registration.' => '登録状況を検査するための公開キーが見つかりませんでした。',
-	'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypeKey signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]',
-	'The TypeKey signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'TypeKeyの署名が古すぎます([_1]秒経過)。サーバーの時刻が正しいことを確認してください。',
+	'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]' => 'TypePad signature verif\'n returned [_1] in [_2] seconds verifying [_3] with [_4]',
+	'The TypePad signature is out of date ([_1] seconds old). Ensure that your server\'s clock is correct' => 'TypePadの署名が古すぎます([_1]秒経過)。サーバーの時刻が正しいことを確認してください。',
 
 ## lib/MT/Auth/MT.pm
 	'Failed to verify current password.' => '現在のパスワードを確認できません。',
 	'Password hint is required.' => 'パスワード・ヒントを入力してください。',
 
 ## lib/MT/Auth/OpenID.pm
+	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
 	'The address entered does not appear to be an OpenID' => '入力されたアドレスはOpenIDではありません。',
 	'The text entered does not appear to be a web address' => 'Webのアドレスを入力してください。',
 	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',
@@ -1454,6 +1476,7 @@ use vars qw( @ISA %Lexicon );
 	'My Text Format' => 'My Text Format',
 
 ## lib/MT/Asset.pm
+	'Could not remove asset file [_1] from filesystem: [_2]' => 'アイテムのファイル[_1]をファイルシステム上から削除できませんでした: [_2]',
 	'Location' => '場所',
 
 ## lib/MT/XMLRPCServer.pm
@@ -1693,11 +1716,10 @@ use vars qw( @ISA %Lexicon );
 	'Assigning embedded flag to asset placements...' => 'アイテムの関連付けの有無を設定しています...',
 	'Updating template build types...' => 'テンプレートのビルドオプションを設定しています...',
 	'Replacing file formats to use CategoryLabel tag...' => 'ファイルフォーマットをMTCategoryLabelに変換しています...',
-	'Assigning all permissions to blog administrator...' => 'ブログ管理者に権限を設定しています...',
-	'Recover permissions of system administrators...' => 'システム管理者の権限を復元しています...',
 	'Updating password recover email template...' => 'パスワードの再設定（メール テンプレート）を更新しています...',
 
 ## lib/MT/PluginData.pm
+	'Updating password recover email template...' => 'パスワードの再設定（メール テンプレート）を更新しています...',
 	'Plugin Data' => 'プラグインデータ',
 
 ## lib/MT/Author.pm
@@ -1730,6 +1752,7 @@ use vars qw( @ISA %Lexicon );
 	'[quant,_1,hour,hours]' => '[quant,_1,時間,時間]',
 	'[quant,_1,day,days], [quant,_2,hour,hours]' => '[quant,_1,日,日], [quant,_2,時間,時間]',
 	'[quant,_1,day,days]' => '[quant,_1,日,日]',
+	'Invalid domain: \'[_1]\'' => 'ドメイン「[_1]」が不正です。',
 
 ## lib/MT/Import.pm
 	'Can\'t rewind' => 'ポインタを先頭に移動できません',
@@ -1815,7 +1838,8 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_PASSWORD_RESET_MULTI' => '選択されたユーザーのパスワードを再設定しようとしています。パスワード再設定用のリンクが直接それぞれのメールアドレスに送られます。
 
 実行しますか?',
-	'_WARNING_DELETE_USER_EUM' => "ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？\nLDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。",
+	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？
+LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを製品出荷時の状態に戻します。テンプレートを初期化してもよろしいですか?',
 	'Published [_1]' => '公開されている[_1]',
@@ -1894,7 +1918,6 @@ use vars qw( @ISA %Lexicon );
 	'General' => '全般',
 	'Feedback' => 'コミュニケーション',
 	'Registration' => '登録 / 認証',
-	'Spam' => 'スパム',
 	'Web Services' => 'ウェブサービス',
 	'Plugins' => 'プラグイン',
 	'Import' => 'インポート',
@@ -1924,7 +1947,6 @@ use vars qw( @ISA %Lexicon );
 	'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.' => 'トラックバック機能や更新通知機能を利用する場合に必要となります。',
 	'This module is needed if you wish to use the MT XML-RPC server implementation.' => 'XML-RPC による作業を行う場合に必要となります。',
 	'This module is needed if you would like to be able to overwrite existing files when you upload.' => 'ファイルのアップロードを行う際に上書きを行う場合は必要となります。',
-	'This module is needed if you would like to be able to create thumbnails of uploaded images.' => 'アップロードした画像のサムネイルを作成する場合に必要となります。',
 	'This module is required by certain MT plugins available from third parties.' => '外部プラグインの利用の際に必要となる場合があります。',
 	'This module accelerates comment registration sign-ins.' => 'コメント投稿時のサインインが高速になります。',
 	'This module is needed to enable comment registration.' => 'コメントの認証機能を利用する場合に必要となります。',
@@ -1945,7 +1967,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid format: [_1]' => '不正なformatです: [_1]',
 	'Unsupported type: [_1]' => '[_1]はサポートされていません。',
 	'Invalid query: [_1]' => '不正なクエリーです: [_1]',
-	'No search term was specified.' => '検索ワードを指定してください。',
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
@@ -2029,7 +2050,7 @@ use vars qw( @ISA %Lexicon );
 	'remove' => '削除',
 	'enable' => '有効に',
 	'disable' => '無効に',
-	'You did not select any [_1] to [_2].' => '削除する[_1]が選択されていません。',
+	'You did not select any [_1] to [_2].' => '[_2]する[_1]が選択されていません。',
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
 	'Are you certain you want to remove this role? By doing so you will be taking away the permissions currently assigned to any users and groups associated with this role.' => 'このロールを本当に削除してもよろしいですか? ロールを通じて権限を付与されているすべてのユーザーとグループから権限を剥奪することになります。',
@@ -2119,6 +2140,9 @@ use vars qw( @ISA %Lexicon );
 	'_ERROR_CGI_PATH' => '環境設定ファイルの CGIPath の項目の設定に問題があるか、または設定がありません。詳細については、Movable Type マニュアルの<a href="javascript:void(0)">インストールと設定</a>の章を確認してください。',
 	'An error occurred' => 'エラーが発生しました。',
 
+## tmpl/include/chromeless_footer.tmpl
+	'<a href="[_1]">Movable Type</a> version [_2]' => '<a href="[_1]">Movable Type</a> version [_2]',
+
 ## tmpl/comment/error.tmpl
 	'Go Back (s)' => '戻る (s)',
 
@@ -2167,8 +2191,8 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type Activity Log' => 'Movable Type システムログ',
 
 ## tmpl/feeds/feed_page.tmpl
-	'Published' => '公開',
 	'Unpublished' => '下書き',
+	'Published' => '公開',
 	'Unpublish' => '公開を取りやめる',
 	'More like this' => '他にも...',
 	'From this blog' => 'このブログから',
@@ -2370,6 +2394,7 @@ use vars qw( @ISA %Lexicon );
 	'Comment authentication is not available because one of the needed modules, MIME::Base64 or LWP::UserAgent is not installed. Talk to your host about getting this module installed.' => 'コメント認証のために必要なモジュール、MIME::Base64 or LWP::UserAgent がインストールされていません。これらのモジュールのインストールに関して管理者に確認してください。',
 	'Accept Comments' => 'コメント許可',
 	'If enabled, comments will be accepted.' => 'コメントを受け付ける',
+	'Setup Registration' => '登録／認証の設定',
 	'Commenting Policy' => 'コメントポリシー',
 	'Immediately approve comments from' => '即時公開する条件',
 	'Specify what should happen to comments after submission. Unapproved comments are held for moderation.' => '受け付けたコメントを公開する条件を選んでください。未公開のコメントは認証待ちのものです。',
@@ -2457,6 +2482,7 @@ use vars qw( @ISA %Lexicon );
 	'Unpublished (Draft)' => '未公開(原稿)',
 	'Unpublished (Review)' => '未公開(承認待ち)',
 	'Scheduled' => '日時指定',
+	'Unpublished (Spam)' => '未公開(スパム)',
 	'View' => '表示',
 	'Share' => '共有',
 	'<a href="[_2]">[quant,_1,comment,comments]</a>' => 'コメント<a href="[_2]">[quant,_1,件,件]</a>',
@@ -2483,13 +2509,12 @@ use vars qw( @ISA %Lexicon );
 	'Enter the link address:' => 'リンクするURLを入力:',
 	'Enter the text to link to:' => 'リンクのテキストを入力:',
 	'Your entry screen preferences have been saved.' => 'ブログ記事作成画面の設定を保存しました。',
-	'Your entry screen preferences have been saved. Please refresh the page to reorder the custom fields.' => 'ブログ記事作成画面の設定を保存しました。カスタムフィールドを表示するために画面を更新してください。',
 	'Are you sure you want to use the Rich Text editor?' => 'リッチテキストエディタを使用しますか?',
 	'Remove' => '削除',
 	'Make primary' => 'メインカテゴリにする',
 	'Display Options' => '表示オプション',
 	'Fields' => 'フィールド',
-	'Body' => '本文',
+	'Metadata' => 'メタデータ',
 	'Top' => '上',
 	'Both' => '両方',
 	'Bottom' => '下',
@@ -2499,6 +2524,12 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => '表示オプションを保存',
 	'OK' => 'OK',
 	'Close display options' => '表示オプションを閉じる',
+	'This post was held for review, due to spam filtering.' => 'この投稿はスパムフィルタリングにより承認待ちになっています。',
+	'This post was classified as spam.' => 'この投稿はスパムと判定されました。',
+	'Spam Details' => 'スパムの詳細',
+	'Score' => 'スコア',
+	'Results' => '結果',
+	'Body' => '本文',
 	'Extended' => '続き',
 	'Format:' => 'フォーマット:',
 	'(comma-delimited list)' => '（カンマ区切りリスト）',
@@ -2759,9 +2790,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/tools_content_nav.tmpl
 
-## tmpl/cms/include/chromeless_footer.tmpl
-	'<a href="[_1]">Movable Type</a> version [_2]' => '<a href="[_1]">Movable Type</a> version [_2]',
-
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'ヘルプ',
 	'Hi [_1],' => 'こんにちは[_1]さん',
@@ -2961,10 +2989,12 @@ use vars qw( @ISA %Lexicon );
 	'Only show unpublished pages' => '未公開のウェブページを表示',
 	'Only show published entries' => '公開中のブログ記事を表示',
 	'Only show published pages' => '公開中のウェブページを表示',
-	'Only show entries for review' => 'レビュー中のブログ記事を表示',
-	'Only show pages for review' => 'レビュー中のウェブページを表示',
+	'Only show entries for review' => '承認待ちのブログ記事を表示',
+	'Only show pages for review' => '承認待ちのウェブページを表示',
 	'Only show scheduled entries' => '指定日投稿されるブログ記事を表示',
 	'Only show scheduled pages' => '指定日投稿されるウェブページを表示',
+	'Only show spam entries' => 'スパム指定されているブログ記事のみを表示',
+	'Only show spam pages' => 'スパム指定されているウェブページのみを表示',
 	'View entry' => 'ブログ記事を見る',
 	'View page' => 'ウェブページを表示',
 	'No entries could be found. <a href="[_1]">Create an entry</a> now.' => 'ブログ記事が見つかりませんでした。<a href="[_1]">ブログ記事の作成</a>',
@@ -3227,7 +3257,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '最後にブログ記事を書いたのは[_2]です(ブログ: <a href="[_3]">[_4]</a> - <a href="[_1]">編集</a>)。',
-	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが[quant,_2,件,件]あります。',
+	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが<a href="[_1]">[quant,_2,件,件]</a>あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a><br />コメント<a href="[_3]">[quant,_4,件,件]</a>',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a>',
 	'Edit your profile' => 'ユーザー情報の編集',
@@ -3435,6 +3465,7 @@ use vars qw( @ISA %Lexicon );
 	'Name your blog. The blog name can be changed at any time.' => 'ブログ名を付けてください。この名前はいつでも変更できます。',
 	'Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/' => '公開するURLを入力してください。ファイル名（index.html など）は含めないでください。例: http://www.example.com/weblog/ ',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'インデックスページ（index.html）を配置するパスを入力してください。絶対パス (/で始まる) を推奨しますが、Movable Typeがインストールされた場所からの相対パスも使えます。例: /home/melody/public_html/weblog',
+	'Blog language.' => 'ブログの言語',
 	'Create Blog (s)' => 'ブログを作成 (s)',
 
 ## tmpl/cms/edit_role.tmpl
@@ -3532,10 +3563,7 @@ use vars qw( @ISA %Lexicon );
 	'Unapproved' => '未公開',
 	'Reported as Spam' => 'スパムとして報告',
 	'View all comments with this status' => 'このステータスのすべてのコメントを見る',
-	'Spam Details' => 'スパムの詳細',
 	'Total Feedback Rating: [_1]' => '最終レーティング: [_1]',
-	'Score' => 'スコア',
-	'Results' => '結果',
 	'The name of the person who posted the comment' => 'このコメント投稿者の名前',
 	'(Trusted)' => '（承認済み）',
 	'Ban Commenter' => 'コメント投稿者を禁止',
@@ -3637,9 +3665,10 @@ use vars qw( @ISA %Lexicon );
 	'Authentication Methods' => '認証方式',
 	'Note: You have selected to accept comments from authenticated commenters only but authentication is not enabled. In order to receive authenticated comments, you must enable authentication.' => '注: 認証されたコメント投稿者からのコメントだけを許可する設定になっていますが、コメント認証が有効になっていません。',
 	'Native' => '', # Translate - New
-	'Require E-mail Address for Comments via TypeKey' => 'TypeKey経由のコメントにメールアドレスを要求する',
-	'If enabled, visitors must allow their TypeKey account to share e-mail address when commenting.' => '閲覧者はコメント投稿時にTypeKeyアカウントでメールアドレスを共有することを許可する必要があります。',
-	'Setup TypeKey' => 'TypeKeyの設定',
+	'Require E-mail Address for Comments via TypePad' => 'TypePad経由のコメントにメールアドレスを要求する',
+	'If enabled, visitors must allow their TypePad account to share e-mail address when commenting.' => '閲覧者はコメント投稿時にTypePadアカウントでメールアドレスを共有することを許可する必要があります。',
+	'One or more Perl module may be missing to use this authentication method.' => 'この認証方式に必要なPerlモジュールがいくつか不足しているようです',
+	'Setup TypePad' => 'TypePadの設定',
 	'OpenID providers disabled' => 'OpenIDプロバイダは無効です',
 	'Required module (Digest::SHA1) for OpenID commenter authentication is missing.' => '必須モジュール(Digest::SHA1)がないため、OpenIDによるコメント投稿者認証はできません。',
 
@@ -3677,15 +3706,15 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/cfg_web_services.tmpl
 	'Web Services Settings' => 'ウェブサービス設定',
 	'Six Apart Services' => 'シックス・アパートのサービス',
-	'Your TypeKey token is used to access Six Apart services like its free Authentication service.' => 'TypeKeyのトークンは、認証などのシックス・アパートが提供するサービスにアクセスするために利用されます。',
-	'TypeKey is enabled.' => 'TypeKeyが有効です。',
-	'TypeKey token:' => 'TypeKeyのトークン:',
-	'Clear TypeKey Token' => 'TypeKeyのトークンを削除',
+	'Your TypePad token is used to access Six Apart services like its free Authentication service.' => 'TypePadのトークンは、認証などのシックス・アパートが提供するサービスにアクセスするために利用されます。',
+	'TypePad is enabled.' => 'TypePadは有効です。',
+	'TypePad token:' => 'TypePadのトークン:',
+	'Clear TypePad Token' => 'TypePadのトークンを削除',
 	'Please click the Save Changes button below to disable authentication.' => '保存ボタンをクリックして認証を無効にしてください。',
-	'TypeKey is not enabled.' => 'TypeKeyは有効ではありません。',
+	'TypePad is not enabled.' => 'TypePadは有効ではありません。',
 	'or' => '', # Translate - New
-	'Obtain TypeKey token' => 'TypeKeyのトークンを取得',
-	'Please click the Save Changes button below to enable TypeKey.' => '保存ボタンをクリックしてTypeKeyを有効にしてください。',
+	'Obtain TypePad token' => 'Typepadのトークンを取得',
+	'Please click the Save Changes button below to enable TypePad.' => '保存ボタンをクリックしてTypePadを有効にしてください。',
 	'External Notifications' => '更新通知',
 	'Notify of blog updates' => '更新通知先',
 	'When this blog is updated, Movable Type will automatically notify the selected sites.' => 'このブログが更新されたときに、選択したサイトに自動的に通知します。',
@@ -3701,6 +3730,7 @@ use vars qw( @ISA %Lexicon );
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'ユーザー画像をアップロードするディレクトリに書き込めないようです。ユーザー画像をアップロードするために、[_1]にWebサーバーから書き込めるようにしてください。',
+	'Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type\'s userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver.' => 'Image::Magickがインストールされていないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magickをインストールするか、他のイメージドライバを使用する設定を行う必要があります。',
 	'Your dashboard is empty!' => 'ダッシュボードが空です。',
 
 ## tmpl/cms/popup/rebuilt.tmpl
@@ -3855,6 +3885,7 @@ use vars qw( @ISA %Lexicon );
 	'Show only pages where' => 'ウェブページを表示: ',
 	'published' => '公開',
 	'unpublished' => '未公開',
+	'review' => '承認待ち',
 	'scheduled' => '指定日公開',
 	'Select A User:' => 'ユーザーを選択:',
 	'User Search...' => 'ユーザーを検索',
@@ -3908,6 +3939,8 @@ use vars qw( @ISA %Lexicon );
 	'To proceed, you must authenticate properly with your LDAP server.' => 'LDAPサーバーで認証を受けないと先に進めません。',
 	'The name used by this user to login.' => 'ログイン時に使用するユーザー名です。',
 	'The user&rsquo;s email address.' => 'ユーザーのメールアドレスです。',
+	'The email address used in the From: header of each email sent from the system.' => 'システムから送信されるメールのFromアドレスとして利用されるアドレスです。',
+	'Use this as system email address' => 'システムのメールアドレスとして利用する',
 	'The user&rsquo;s preferred language.' => 'ユーザーの表示用の言語',
 	'Select a password for your account.' => 'パスワードを入力してください。',
 	'This word or phrase will be required to recover your password if you forget it.' => '入力したフレーズは、パスワードを忘れて再設定するときに必要になります。',
@@ -4022,6 +4055,7 @@ use vars qw( @ISA %Lexicon );
 	'You can not have spaces in the URL.' => 'URLには空白を含めないでください。',
 	'You can not have spaces in the path.' => 'パスには空白を含めないでください。',
 	'Path is not valid.' => 'パスが不正です。',
+	'Site Path' => 'サイトパス',
 
 ## tmpl/cms/dialog/restore_start.tmpl
 	'Restoring...' => '復元...',
@@ -4073,7 +4107,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Blog Templates' => 'ブログのテンプレート',
-	'Show All' => 'すべてのテンプレート',
+	'Show All Templates' => 'すべてのテンプレート',
 	'Blog Publishing Settings' => 'ブログ公開設定',
 	'You have successfully deleted the checked template(s).' => '選択したテンプレートを削除しました。',
 	'Your templates have been published.' => 'テンプレートを再構築しました。',
@@ -4103,11 +4137,11 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/Markdown/SmartyPants.pl
 	'Easily translates plain punctuation characters into \'smart\' typographic punctuation.' => '記号を「スマート」に置き換えます。',
-	'Markdown With SmartyPants' => 'Markdown + SmartyPants',
 
 ## plugins/Markdown/Markdown.pl
 	'A plain-text-to-HTML formatting plugin.' => 'テキストをHTMLに整形するプラグインです。',
 	'Markdown' => 'Markdown',
+	'Markdown With SmartyPants' => 'Markdown + SmartyPants',
 
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'テキストをHTMLに整形します。',
@@ -4197,6 +4231,12 @@ use vars qw( @ISA %Lexicon );
 	'This action can only be run for a single blog at a time.' => '一度にひとつのブログしか選択できません。',
 	'Invalid blog_id' => '不正なブログID',
 	'Clone Blog' => 'ブログの複製',
+
+## plugins/GoogleBlogSearch/config.yaml
+	'Search term' => '検索ワード',
+
+## plugins/GoogleNews/config.yaml
+	'Search for' => '検索ワード',
 
 );
 

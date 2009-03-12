@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -229,6 +229,8 @@ sub build {
     my $page_layout;
     if (my $blog_id = $tmpl->blog_id) {
         $ctx->stash('blog_id', $blog_id);
+        $ctx->stash('local_blog_id', $blog_id)
+            unless $ctx->stash('local_blog_id');
         my $blog = $ctx->stash('blog');
         unless ($blog) {
             $blog = MT::Blog->load($blog_id) or
@@ -237,6 +239,8 @@ sub build {
             $ctx->stash('blog', $blog);
         } else {
             $ctx->stash('blog_id', $blog->id);
+            $ctx->stash('local_blog_id', $blog->id)
+                unless $ctx->stash('local_blog_id');
         }
         MT->config->TimeOffset($blog->server_offset);
         $page_layout = $blog->page_layout;
@@ -460,6 +464,19 @@ sub _resync_to_db {
 sub _sync_from_disk {
     my $tmpl = shift;
     my $lfile = $tmpl->linked_file;
+    if ($lfile eq '*') {
+        require MT::DefaultTemplates;
+        my $blog = $tmpl->blog;
+        my $set = MT::DefaultTemplates->templates( $blog ? $blog->template_set : () );
+        my ($set_tmpl) = grep { ($_->{type} eq $tmpl->type) && ($_->{identifier} eq $tmpl->identifier) } @$set;
+        if ($set_tmpl) {
+            my $c = $set_tmpl->{text};
+            $c = '' unless defined $c;
+            $c = MT->translate_templatized($c) if $c =~ m/<(?:mt|_)_trans\b/i;
+            return $c;
+        }
+        return;
+    }
     unless (File::Spec->file_name_is_absolute($lfile)) {
         if ($tmpl->blog_id) {
             my $blog = MT::Blog->load($tmpl->blog_id)
@@ -481,13 +498,14 @@ sub _sync_from_disk {
     close FH;
     $tmpl->linked_file_size($size);
     $tmpl->linked_file_mtime($mtime);
-    $c;
+    return $c;
 }
 
 sub _sync_to_disk {
     my $tmpl = shift;
     my($text) = @_;
     my $lfile = $tmpl->linked_file;
+    return 1 if $lfile eq '*';
     my $cfg = MT->config;
     if ($cfg->SafeMode) {
         ## Check for a set of extensions that aren't allowed.

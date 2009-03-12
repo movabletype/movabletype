@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -22,8 +22,12 @@ BEGIN {
         *decode = sub {
             _handle(decode => @_);
         };
+        *encode = sub {
+            _handle(encode => @_);
+        };
     } else {
         *decode = \&Encode::decode;
+        *encode = \&Encode::encode;
     }
 };
 
@@ -156,6 +160,16 @@ data to render a dropdown list of languages that MT supports.
 Dropdown lists appear on User Profile, System Settings, and the
 start page of the wizard, among others.
 
+=head2 decode($enc, $text)
+
+Decode the given I<text> from the charset specified in I<enc>
+to UTF-8 string.
+
+=head2 encode($enc, $text)
+
+Encode the given I<text> that is a UTF-8 string to the charset
+specified in I<enc>.
+
 =head1 LICENSE
 
 The license that applies is the one you agreed to when downloading
@@ -163,7 +177,6 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
-All rights reserved.
+Please see the I<MT> manpage for author, copyright, and license information.
 
 =cut

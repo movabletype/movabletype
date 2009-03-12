@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -100,9 +100,9 @@ sub id {
 
 sub version_slug {
     return MT->translate_templatized(<<"SLUG");
-<MT_TRANS phrase="Powered by [_1]" params="$PRODUCT_NAME">
-<MT_TRANS phrase="Version [_1]" params="$VERSION_ID">
-<MT_TRANS phrase="http://www.sixapart.com/movabletype/">
+<__trans phrase="Powered by [_1]" params="$PRODUCT_NAME">
+<__trans phrase="Version [_1]" params="$VERSION_ID">
+<__trans phrase="http://www.sixapart.com/movabletype/">
 SLUG
 }
 
@@ -175,13 +175,33 @@ sub run_app {
     eval {
         eval "require $class; 1;" or die $@;
         if ($fast_cgi) {
+            my ($max_requests, $max_time, $cfg);
             while ( my $cgi = new CGI::Fast ) {
                 $app = $class->new( %$param, CGIObject => $cgi )
                   or die $class->errstr;
+
+                $app->{fcgi_startup_time} ||= time;
+                $app->{fcgi_request_count} = ( $app->{fcgi_request_count} || 0 ) + 1;
+
+                unless ( $cfg ) {
+                    $cfg = $app->config;
+                    $max_requests = $cfg->FastCGIMaxRequests;
+                    $max_time = $cfg->FastCGIMaxTime;
+                }
+
                 local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                 $pkg->set_instance($app);
                 $app->init_request( CGIObject => $cgi );
                 $app->run;
+
+                # Check for timeout for this process
+                if ( $max_time && ( time - $app->{fcgi_startup_time} >= $max_time ) ) {
+                    last;
+                }
+                # Check for max executions for this process
+                if ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
+                    last;
+                }
             }
         }
         else {
@@ -1175,6 +1195,7 @@ sub init {
     ## the rest of the initialization process.
     $mt->init_config( \%param ) or return;
     $mt->init_lang_defaults(@_) or return;
+    require MT::Plugin;
     $mt->init_addons(@_)       or return;
     $mt->init_config_from_db( \%param ) or return;
     $mt->init_plugins(@_)       or return;
@@ -1257,7 +1278,6 @@ sub init_plugins {
     # This should always be MT::Compat::v(MAJOR_RELEASE_VERSION - 1).
     require MT::Compat::v3;
 
-    require MT::Plugin;
     my $cfg          = $mt->config;
     my $use_plugins  = $cfg->UsePlugins;
     my @PluginPaths  = $cfg->PluginPath;
@@ -1823,6 +1843,7 @@ sub update_ping_list {
         my @cstack;
         my ($text) = @_;
         while (1) {
+            return '' unless $text;
             $text =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
             my($msg, $close, $section, %args) = ($1, $2, $3);
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
@@ -2040,7 +2061,10 @@ sub find_file {
 sub load_global_tmpl {
     my $app = shift;
     my ( $arg, $blog_id ) = @_;
-    $blog_id ||= '0';
+    $blog_id
+        = $blog_id ? [ $blog_id, 0 ]
+        : MT->app->blog ? [ MT->app->blog->id, 0 ]
+        :                 0;
 
     my $terms = {};
     if ( 'HASH' eq ref($arg) ) {
@@ -2052,8 +2076,14 @@ sub load_global_tmpl {
             blog_id => $blog_id,
         }
     }
+    my $args;
+    if (ref $blog_id eq 'ARRAY') {
+       $args->{sort} = 'blog_id';
+       $args->{direction} = 'descend';
+       $args->{limit} = 1;
+    }
     require MT::Template;
-    my $tmpl = MT::Template->load( $terms );
+    my $tmpl = MT::Template->load( $terms, $args);
     $app->set_default_tmpl_params($tmpl) if $tmpl;
     $tmpl;
 }
@@ -2383,11 +2413,13 @@ sub init_commenter_authenticators {
     my $self = shift;
     my $auths = $self->registry("commenter_authenticators") || {};
     %Commenter_Auth = %$auths;
+    my $app = $self->app;
+    my $blog = $app->blog if $app->isa('MT::App');
     foreach my $auth ( keys %$auths ) {
         if ( my $c = $auths->{$auth}->{condition} ) {
             $c = $self->handler_to_coderef($c);
             if ( $c ) {
-                delete $Commenter_Auth{$auth} unless $c->();
+                delete $Commenter_Auth{$auth} unless $c->($blog);
             }
         }
     }
@@ -2459,6 +2491,7 @@ OpenID
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_openid.png',
             logo_small        => 'images/comment/openid_logo.png',
+            order => 10,
         },
         'LiveJournal' => {
             class      => 'MT::Auth::LiveJournal',
@@ -2473,8 +2506,7 @@ OpenID
 <fieldset>
 <mtapp:setting
     id="livejournal_display"
-    label="<__trans phrase="Your LiveJournal Username">"
-    hint="<__trans phrase="Sign in using your Vox blog URL">">
+    label="<__trans phrase="Your LiveJournal Username">">
 <input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/livejournal_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 300px; font-size: 110%;" />
 </mtapp:setting>
 <div class="actions-bar actions-bar-login">
@@ -2493,6 +2525,7 @@ LiveJournal
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_livejournal.png',
             logo_small        => 'images/comment/livejournal_logo.png',
+            order => 11,
         },
         'Vox' => {
             class      => 'MT::Auth::Vox',
@@ -2526,13 +2559,151 @@ Vox
             condition         => \&_openid_commenter_condition,
             logo              => 'images/comment/signin_vox.png',
             logo_small        => 'images/comment/vox_logo.png',
+            order => 12,
+        },
+        'Google' => {
+            label => 'Google',
+            class => 'MT::Auth::GoogleOpenId',
+            login_form => <<EOT,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="https://www.google.com/accounts/o8/id" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Google" />
+<fieldset>
+<mtapp:setting
+    id="GoogleOpenId_display"
+    hint="<__trans phrase="Sign in using your Gmail account">">
+    <p><__trans phrase="Sign in to Movable Type with your[_1] Account[_2]" params='<br /><strong style="font-size:16px;"><img alt="Google" src="<mt:var name="static_uri">images/comment/google_transparent.gif" width="75" height="32" style="vertical-align:middle;" />%%</strong>'></p>
+</mtapp:setting>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
+</div>
+</fieldset>
+</form>
+EOT
+            condition => sub {
+                eval "require Digest::SHA1;";
+                return 0 if $@;
+                eval "require Crypt::SSLeay;";
+                return 0 if $@;
+                return 1;
+            },
+            login_form_params => \&_commenter_auth_params,
+            logo => 'images/comment/google.png',
+            logo_small => 'images/comment/google_logo.png',
+            order => 13,
+        },
+        'Yahoo' => {
+            class => 'MT::Auth::Yahoo',
+            label => 'Yahoo!',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            login_form => <<YAHOO,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="yahoo.com" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Yahoo" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0">
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/yahoo-button.png" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.com/"><__trans phrase="Turn on OpenID for your Yahoo! account now"></a></p>
+</fieldset>
+</form>
+YAHOO
+            order => 14,
+        },
+        AIM => {
+            class => 'MT::Auth::AIM',
+            label => 'AIM',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/aim.png',
+            logo_small => 'images/comment/aim_logo.png',
+            login_form => <<AOLAIM,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="AIM" />
+<fieldset>
+<mtapp:setting id="aim_display" label="<__trans phrase="Your AIM or AOL Screen Name">">
+<input name="openid_userid" style="background: #fff 
+url('<mt:var name="static_uri">images/comment/aim_logo.png') 
+no-repeat left; padding-left: 18px; padding-bottom: 1px; 
+border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
+<p class="hint"><__trans phrase="Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly."></p>
+</mtapp:setting>
+<div class="actions-bar actions-bar-login">
+<p class="actions-bar-inner pkg actions">
+    <button class="primary-button" type="submit" name="submit"><__trans phrase="Sign In"></button>
+</p>
+</div>
+</fieldset>
+</form>
+AOLAIM
+            order => 15,
+        },
+        'WordPress' => {
+            class => 'MT::Auth::WordPress',
+            label => 'WordPress.com',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/wordpress.png',
+            logo_small => 'images/comment/wordpress_logo.png', 
+            login_form => <<WORDPRESS,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="WordPress" />
+<fieldset>
+<mtapp:setting
+    id="wordpress_display"
+    label="<__trans phrase="Your Wordpress.com Username">">
+<input name="openid_userid" style="background: #fff 
+    url('<mt:var name="static_uri">images/comment/wordpress_logo.png') 
+no-repeat left; padding-left: 18px; padding-bottom: 1px; 
+border: 1px solid #5694b6; width: 304px; font-size: 110%;" />
+<p class="hint"><__trans phrase="Sign in using your WordPress.com username."></p>
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input type="submit" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+</fieldset>
+</form>
+WORDPRESS
+            order => 16,
         },
         'TypeKey' => {
             class      => 'MT::Auth::TypeKey',
-            label      => 'TypeKey',
+            label      => 'TypePad',
             login_form => <<TypeKey,
-<p class="hint"><__trans phrase="TypeKey is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free."></p>
-<p><img src="<mt:var name="static_uri">images/comment/blue_goto.png"> <a href="<mt:var name="tk_signin_url">"><__trans phrase="Sign in or register with TypeKey."></a></p>
+<p class="hint"><__trans phrase="TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free."></p>
+<p><img src="<mt:var name="static_uri">images/comment/blue_goto.png"> <a href="<mt:var name="tk_signin_url">"><__trans phrase="Sign in or register with TypePad."></a></p>
 TypeKey
             login_form_params => sub {
                 my ( $key, $blog_id, $entry_id, $static ) = @_;
@@ -2551,8 +2722,108 @@ TypeKey
                     { static => $static } );
                 return $params;
             },
-            logo => 'images/comment/signin_typekey.png',
-            logo_small        => 'images/comment/typekey_logo.png',
+            logo => 'images/comment/signin_typepad.png',
+            logo_small => 'images/comment/typepad_logo.png',
+            condition => sub {
+                my ($blog) = @_;
+                return 1 unless $blog;
+                return $blog->remote_auth_token ? 1 : 0;
+            },
+            order => 17,
+        },
+        'YahooJP' => {
+            class => 'MT::Auth::Yahoo',
+            label => 'Yahoo! JAPAN',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/yahoo.png',
+            logo_small => 'images/comment/favicon_yahoo.png',
+            login_form => <<YAHOO,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="yahoo.jp" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="YahooJP" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0">
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/yahoojp-button.png" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+<p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png" /> <a href="http://openid.yahoo.co.jp/"><__trans phrase="Turn on OpenID for your Yahoo! Japan account now"></a></p>
+</fieldset>
+</form>
+YAHOO
+            order => 18,
+        },
+        'livedoor' => {
+            class => 'MT::Auth::OpenID',
+            label => 'livedoor',
+            login_form_params => \&_commenter_auth_params,
+            condition => \&_openid_commenter_condition,
+            logo => 'images/comment/signin_livedoor.png',
+            logo_small => 'images/comment/livedoor_logo.png',
+            login_form => <<LIVEDOOR,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="openid_url" value="livedoor.com" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="livedoor" />
+<fieldset>
+<mtapp:setting
+    id="yahoo_display"
+    show_label="0">
+</mtapp:setting>
+<div class="pkg">
+  <p class="left">
+    <input src="<mt:var name="static_uri">images/comment/livedoor-button.gif" type="image" name="submit" value="<__trans phrase="Sign In">" />
+  </p>
+</div>
+</fieldset>
+</form>
+LIVEDOOR
+            order => 20,
+        },
+        'Hatena' => {
+            class      => 'MT::Auth::Hatena',
+            label      => 'Hatena',
+            login_form => <<HATENA,
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="login_external" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="key" value="Hatena" />
+<fieldset>
+<mtapp:setting
+    id="vox_display"
+    label="<__trans phrase="Your Hatena ID">">
+<input name="openid_userid" style="background: #fff url('<mt:var name="static_uri">images/comment/hatena_logo.png') no-repeat 2px center; padding: 2px 2px 2px 20px; border: 1px solid #5694b6; width: 200px; font-size: 110%; vertical-align: middle" />
+</mtapp:setting>
+<div class="actions-bar actions-bar-login">
+    <div class="actions-bar-inner pkg actions">
+        <button
+            type="submit"
+            class="primary-button"
+            ><__trans phrase="Sign in"></button>
+    </div>
+</div>
+</fieldset>
+</form>
+HATENA
+            login_form_params => \&_commenter_auth_params,
+            condition         => \&_openid_commenter_condition,
+            logo              => 'images/comment/signin_hatena.png',
+            logo_small        => 'images/comment/hatena_logo.png',
+            order => 21,
         },
     };
 }
@@ -2658,8 +2929,12 @@ sub handler_to_coderef {
 
     my $hdlr_pkg = $name;
     my $method;
-    if ( $hdlr_pkg =~ s/(->|::)([^:]+)$// ) {    # strip routine name
-        $method = $2 if $1 eq '->';
+    # strip routine name
+    if ( $hdlr_pkg =~ s/->(\w+)$// ) {
+        $method = $1;
+    }
+    else {
+        $hdlr_pkg =~ s/::[^:]+$//
     }
     if ( !defined(&$name) && !$pkg->can( 'AUTOLOAD' ) ) {
 
@@ -3182,16 +3457,16 @@ passed through to the C<maketext> method of the active localization module.
 
 =head2 MT->translate_templatized($str)
 
-Translates a string that has embedded E<lt>MT_TRANSE<gt> tags. These
+Translates a string that has embedded E<lt>__transE<gt> tags. These
 tags identify the portions of the string that require localization.
 Each tag is processed separately and passed through the MT->translate
 method. Examples (used in your application's HTML::Template templates):
 
-    <p><MT_TRANS phrase="Hello, world"></p>
+    <p><__trans phrase="Hello, world"></p>
 
 and
 
-    <p><MT_TRANS phrase="Hello, [_1]" params="<TMPL_VAR NAME=NAME>"></p>
+    <p><__trans phrase="Hello, [_1]" params="<TMPL_VAR NAME=NAME>"></p>
 
 =head2 $mt->trans_error( $str[, $arg1, $arg2] )
 
@@ -3584,8 +3859,8 @@ locations, an ugly error is thrown to the user.
 Used internally by the L<build_page> method to render the output
 of a L<MT::Template> object (the first parameter) using the parameter
 data (the second parameter). It additionally calls the L<process_mt_template>
-method (to process any E<lt>MT_ACTIONE<gt> and E<lt>MT_X:YE<gt> marker tags)
-and then L<translate_templatized> (to process any E<lt>MT_TRANSE<gt> tags).
+method (to process any E<lt>__actionE<gt> tags)
+and then L<translate_templatized> (to process any E<lt>__transE<gt> tags).
 
 =head2 $app->process_mt_template($str)
 
@@ -3802,7 +4077,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2009 Six Apart.
 All rights reserved.
 
 =cut

@@ -1846,7 +1846,7 @@ sub build_comment_table {
     my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
 
     while ( my $obj = $iter->() ) {
-        my $row = $obj->column_values;
+        my $row = $obj->get_values;
         $row->{author_display} = $row->{author};
         $row->{author_display} =
           substr_text( $row->{author_display}, 0, $author_max_len ) . '...'

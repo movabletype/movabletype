@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1300,7 +1300,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb_h = $max_dim;
     $dest;
     $thumb_name = $static_file_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$format;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'png')) {
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'png', true)) {
         return '';
     }
     $basename = basename($dest);
@@ -1312,19 +1312,24 @@ function userpic_url($asset, $blog, $author) {
     return $url;
 }
 
-# for compatibility...
-function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto', $id = 0) {
-    require_once('thumbnail_lib.php');
-    $thumb = new Thumbnail($src);
+function get_thumbnail_file($asset, $blog, $args) {
+    # Parse args
+    $width = 0;
+    $height = 0;
+    $scale = 0;
+    $square = false;
+    $format = '%f-thumb-%wx%h-%i%x';
+    if (isset($args['width']))
+        $width = $args['width'];
+    if (isset($args['height']))
+        $height = $args['height'];
+    if (isset($args['scale']))
+        $scale = $args['scale'];
+    if (isset($args['format']))
+        $format = $args['format'];
+    if (isset($args['square']))
+        $square = ((int)$args['square'] == 1) ? true : false;
 
-    $thumb_w = $width;
-    $thumb_h = $height;
-    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $id, $scale, null, $dest_type);
-
-    return array($thumb_w, $thumb_h);
-}
-
-function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, $format = '%f-thumb-%wx%h-%i%x') {
     # Get parameter
     $site_path = $blog['blog_site_path'];
     $site_path = preg_replace('/\/$/', '', $site_path);
@@ -1352,7 +1357,7 @@ function get_thumbnail_file($asset, $blog, $width = 0, $height = 0, $scale = 0, 
     $thumb_w = $width;
     $thumb_h = $height;
     $dest;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name)) {
+    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'auto', $square )) {
         return '';
     }
 
@@ -1570,6 +1575,18 @@ function mkpath($path, $mode = 0777) {
     // for php4
     is_dir(dirname($path)) || mkpath(dirname($path), $mode);
     return is_dir($path) || @mkdir($path, $mode);
+}
+
+# for compatibility...
+function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto', $id = 0, $scale = false) {
+    require_once('thumbnail_lib.php');
+    $thumb = new Thumbnail($src);
+
+    $thumb_w = $width;
+    $thumb_h = $height;
+    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $id, $scale, null, $dest_type, $scale);
+
+    return array($thumb_w, $thumb_h);
 }
 
 ?>

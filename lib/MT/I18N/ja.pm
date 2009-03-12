@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -83,6 +83,12 @@ sub guess_encoding_jcode {
     }
     $enc = $class->_conv_enc_label($enc);
     return $enc;
+}
+
+sub encode_jcode {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    return $class->encode_text_jcode($text, 'utf-8', $enc);
 }
 
 sub decode_jcode {

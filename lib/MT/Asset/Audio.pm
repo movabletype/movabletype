@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,14 @@ use base qw( MT::Asset );
 __PACKAGE__->install_properties( { class_type => 'audio', } );
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
-sub extensions { [qr/mp3/i, qr/ogg/i, qr/aiff?/i, qr/wav/i, qr/wma/i, qr/aac/i ] }
+sub extensions {
+    my $pkg = shift;
+    return $pkg->SUPER::extensions(
+        [   qr/mp3/i, qr/ogg/i, qr/aiff?/i, qr/wav/i,
+            qr/wma/i, qr/aac/i, qr/flac/i,  qr/m4a/i
+        ]
+    );
+}
 
 sub class_label {
     MT->translate('Audio');

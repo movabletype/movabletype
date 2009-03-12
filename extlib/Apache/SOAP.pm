@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: SOAP.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
+# $Id: SOAP.pm 249 2008-05-05 20:35:05Z kutterma $
 #
 # ======================================================================
 
@@ -15,9 +15,13 @@ use vars qw(@ISA $VERSION);
 use SOAP::Transport::HTTP;
 
 @ISA = qw(SOAP::Transport::HTTP::Apache);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+use version; $VERSION = qv('0.710.05');
 
 my $server = __PACKAGE__->new;
+
+sub server {
+    return $server;
+}
 
 sub handler {
   $server->configure(@_);
@@ -67,20 +71,20 @@ Apache::SOAP - mod_perl-based SOAP server with minimum configuration
 
 =head1 DESCRIPTION
 
-This Apache Perl module provides the ability to add support for SOAP (Simple 
-Object Access Protocol) protocol with easy configuration (either in .conf or 
+This Apache Perl module provides the ability to add support for SOAP (Simple
+Object Access Protocol) protocol with easy configuration (either in .conf or
 in .htaccess file). This functionality should give you lightweight option
 for hosting SOAP services and greatly simplify configuration aspects. This
 module inherites functionality from SOAP::Transport::HTTP::Apache component
 of SOAP::Lite module.
- 
+
 =head1 CONFIGURATION
 
 The module can be placed in <Location>, <Directory>, <Files>, <FilesMatch>
 directives in main server configuration areas or directly in .htaccess file.
 
-All parameters should be quoted and can be separated with commas or spaces 
-for lists ("a, b, c") and with 'wide arrows' and commas for hash parameters 
+All parameters should be quoted and can be separated with commas or spaces
+for lists ("a, b, c") and with 'wide arrows' and commas for hash parameters
 ("key1 => value1, key2 => value2").
 
 All options that you can find in SOAP::Transport::HTTP::Apache component
@@ -91,20 +95,34 @@ ones.
 
 =item dispatch_to (LIST)
 
-Specifies path to directory that contains Perl modules you'd like to give 
+Specifies path to directory that contains Perl modules you'd like to give
 access to, or just list of modules (for preloaded modules).
 
   PerlSetVar dispatch_to "/Your/Path/To/Deployed/Modules, Module::Name, Module::method"
 
 =item options (HASH)
 
-Specifies list of options for your module, for example threshold for 
-compression. Future versions will support more options. See 
+Specifies list of options for your module, for example threshold for
+compression. Future versions will support more options. See
 SOAP::Transport::HTTP documentation for other options.
 
   PerlSetVar options "compress_threshold => 10000"
 
 =back
+
+=head1 METHODS/SUBROUTINES
+
+=head2 server
+
+ my $server = Apache::XMLRPC::Lite->server();
+
+Returns the server object.
+
+Useful if you need to manipulate the server object from your code.
+
+=head2 handle
+
+Request handler. Called by apache.
 
 =head1 DEPENDENCIES
 

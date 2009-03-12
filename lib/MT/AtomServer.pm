@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -873,9 +873,15 @@ sub _upload_to_asset {
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local);
-    my $is_image  = defined($w)
-      && defined($h)
-      && $asset_pkg->isa('MT::Asset::Image');
+    my $is_image = 0;
+    if ( defined($w) && defined($h) ) {
+        $is_image = 1
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    else {
+        # rebless to file type
+        $asset_pkg = 'MT::Asset';
+    }
     my $asset;
     if (!($asset = $asset_pkg->load(
                 { file_path => $local, blog_id => $blog->id })))

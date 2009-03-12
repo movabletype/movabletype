@@ -62,6 +62,8 @@ sub dashboard {
                 File::Spec->catdir( $app->static_file_path, 'support' );
         }
     }
+    eval { require MT::Image; MT::Image->new or die; };
+    $param->{can_use_userpic} = $@ ? 0 : 1;
 
     # We require that the determination of the 'single blog mode'
     # state be done PRIOR to the generation of the widgets

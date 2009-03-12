@@ -90,6 +90,7 @@
         help_page="blog_settings_feedback"
         help_section="accept_comments_from">
         <input type="checkbox" name="allow_comments" value="1" id="allow_comments" onclick="toggleHidden('commenting-policy'); toggleHidden('commenting-display-options'); return true"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="If enabled, comments will be accepted."></label>
+        <div><a href="<mt:var name="script_url">?__mode=cfg_registration&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Setup Registration"></a></div>
     </mtapp:setting>
 
 </fieldset>

@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: POP3.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
+# $Id: POP3.pm 153 2008-01-07 22:33:46Z kutterma $
 #
 # ======================================================================
 
@@ -12,7 +12,8 @@ package SOAP::Transport::POP3;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
+$VERSION = $SOAP::Lite::VERSION;
 
 use Net::POP3; 
 use URI; 
@@ -29,23 +30,25 @@ use vars qw(@ISA $AUTOLOAD);
 sub DESTROY { my $self = shift; $self->quit if $self->{_pop3server} }
 
 sub new {
-  my $self = shift;
-    
-  unless (ref $self) {
-    my $class = ref($self) || $self;
+    my $class = shift;
+    return $class if ref $class;
+
     my $address = shift;
     Carp::carp "URLs without 'pop://' scheme are deprecated. Still continue" 
       if $address =~ s!^(pop://)?!pop://!i && !$1;
     my $server = URI->new($address);
-    $self = $class->SUPER::new(@_);
-    $self->{_pop3server} = Net::POP3->new($server->host_port) or Carp::croak "Can't connect to '@{[$server->host_port]}': $!";
-    my $method = !$server->auth || $server->auth eq '*' ? 'login' : 
-                  $server->auth eq '+APOP' ? 'apop' : 
-                  Carp::croak "Unsupported authentication scheme '@{[$server->auth]}'";
-    $self->{_pop3server}->$method(split /:/, $server->user) or Carp::croak "Can't authenticate to '@{[$server->host_port]}' with '$method' method"
-      if defined $server->user;
-  }
-  return $self;
+    my $self = $class->SUPER::new(@_);
+    $self->{_pop3server} = Net::POP3->new($server->host_port)
+        or Carp::croak "Can't connect to '@{[$server->host_port]}': $!";
+    my $method = ! $server->auth || $server->auth eq '*'
+        ? 'login'
+        : $server->auth eq '+APOP'
+            ? 'apop'
+            : Carp::croak "Unsupported authentication scheme '@{[$server->auth]}'";
+    $self->{_pop3server}->$method( split m{:}, $server->user() )
+        or Carp::croak "Can't authenticate to '@{[$server->host_port]}' with '$method' method"
+            if defined $server->user;
+    return $self;
 }
 
 sub AUTOLOAD {
@@ -60,7 +63,9 @@ sub AUTOLOAD {
 sub handle {
   my $self = shift->new;
   my $messages = $self->list or return;
-  foreach my $msgid (keys %$messages) {
+  # fixes [ 1416700 ] POP3 Processes Messages Out of Order
+  foreach my $msgid (sort { $a <=> $b } (keys(%{$messages}) ) ) {
+  # foreach my $msgid (keys %$messages) {
     $self->SUPER::handle(join '', @{$self->get($msgid)});
   } continue {
     $self->delete($msgid);

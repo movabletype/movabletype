@@ -1,12 +1,12 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 # $Id$
 
 function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
-    $localvars = array('authors', 'authors_counter', 'blog_id');
+    $localvars = array('authors', 'author', 'authors_counter', 'blog_id');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');
@@ -28,6 +28,14 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
         }
         if (!isset($args['need_entry'])) {
             $args['need_entry'] = 1;
+        }
+        if (isset($args['scoring_to'])) {
+            $args['_scoring_to_obj'] = $ctx->stash($args['scoring_to']);
+            if (is_null($args['_scoring_to_obj'])) {
+                $ctx->restore($localvars);
+                $repeat = false;
+                return;
+            }
         }
         $authors = $ctx->mt->db->fetch_authors($args);
         $ctx->stash('authors', $authors);

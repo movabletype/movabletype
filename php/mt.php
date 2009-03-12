@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2004-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -510,6 +510,7 @@ class MT {
 
         // start populating our stash
         $ctx->stash('blog_id', $blog_id);
+        $ctx->stash('local_blog_id', $blog_id);
         $ctx->stash('blog', $blog);
         $ctx->stash('build_template_id', $tpl_id);
 
@@ -678,6 +679,7 @@ class MT {
             $blog =& $db->fetch_blog($this->blog_id);
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
+            $ctx->stash('local_blog_id', $this->blog_id);
             $this->configure_paths($blog['blog_site_path']);
         }
         return $ctx->display($tpl, $cid);
@@ -693,6 +695,7 @@ class MT {
             $blog =& $db->fetch_blog($this->blog_id);
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
+            $ctx->stash('local_blog_id', $this->blog_id);
             $this->configure_paths($blog['blog_site_path']);
         }
         return $ctx->fetch($tpl, $cid);
@@ -730,6 +733,7 @@ class MT {
             $mtphpdir = $this->config('PHPDir');
             $ctx =& $this->context();
             $ctx->stash('blog_id', $this->blog_id);
+            $ctx->stash('local_blog_id', $this->blog_id);
             $ctx->stash('blog', $this->db->fetch_blog($this->blog_id));
             $ctx->stash('error_message', $errstr."<!-- file: $errfile; line: $errline; code: $errno -->");
             $ctx->stash('error_code', $errno);

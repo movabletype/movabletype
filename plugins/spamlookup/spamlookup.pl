@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -15,7 +15,7 @@ use MT::Plugin;
 use vars qw($VERSION);
 sub BEGIN {
     @MT::Plugin::SpamLookup::ISA = ('MT::Plugin');
-    $VERSION = '2.11';
+    $VERSION = '2.12';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup({
         name => 'SpamLookup - Lookups',

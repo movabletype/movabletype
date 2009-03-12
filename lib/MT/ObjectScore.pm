@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,7 +12,7 @@ use base qw( MT::Object );
 __PACKAGE__->install_properties({
     column_defs => {
         'id'           => 'integer not null auto_increment',
-        'namespace'    => 'string(255) not null',
+        'namespace'    => 'string(100) not null',
         'object_id'    => 'integer',
         'author_id'    => 'integer',
         'score'        => 'float',

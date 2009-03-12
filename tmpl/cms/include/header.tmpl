@@ -43,16 +43,6 @@
 <mt:else>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:unless>
-    <script type="text/javascript">
-        /* <![CDATA[ */
-        __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
-        CMSScriptURI = '<$mt:var name="mt_url"$>';
-        ScriptURI = '<$mt:var name="script_url"$>';
-        ScriptBaseURI = '<$mt:var name="script_base_url"$>';
-        StaticURI = '<$mt:var name="static_uri"$>';
-        HelpBaseURI = '<$mt:var name="help_url"$>';
-        /* ]]> */
-    </script>
 </mt:setvarblock>
 <$mt:var name="html_head"$>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -176,7 +166,7 @@
                 <mt:if name="blog_id">
                     <mt:if name="can_rebuild">
                     <mt:unless name="dynamic_all">
-                        <li id="rebuild-site" class="nav-link"><a href="javascript:void(0)" title="<__trans phrase="Publish Site">" onclick="window.open('<$mt:var name="mt_url"$>?__mode=rebuild_confirm&amp;blog_id=<$mt:var name="blog_id"$>', 'rebuild_blog_<$mt:BlogID$>', 'width=400,height=400,resizable=yes'); return false"><span><__trans phrase="Publish"></span></a></li>
+                        <li id="rebuild-site" class="nav-link"><a href="javascript:void(0)" title="<__trans phrase="Publish Site">" onclick="doRebuild('<$mt:var name="blog_id"$>');return false;"><span><__trans phrase="Publish"></span></a></li>
                     </mt:unless>
                     </mt:if>
                         <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View"></span></a></li>

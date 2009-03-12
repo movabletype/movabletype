@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -59,6 +59,13 @@ sub decode {
     my $meth = 'decode_' . ($PKG || $class->_load_module);
     $class->$meth(@_);
 }
+
+sub encode {
+    my $class = shift;
+    my $meth = 'encode_' . ($PKG || $class->_load_module);
+    $class->$meth(@_);
+}
+
 sub guess_encoding {
     my $class = shift;
     my $meth = 'guess_encoding_' . ($PKG || $class->_load_module);
@@ -104,6 +111,7 @@ sub convert_high_ascii {
     my $meth = "convert_high_ascii_" . ($PKG || $class->_load_module);
     $class->$meth(@_);
 }
+
 sub decode_utf8 {
     my $class = shift;
     my $meth = "decode_utf8_" . ($PKG || $class->_load_module);
@@ -131,6 +139,12 @@ sub uppercase {
 # Dumb default methods (charset ignorant)
 
 sub decode_perl {
+    my $class = shift;
+    my ($enc, $text) = @_;
+    $text;
+}
+
+sub encode_perl {
     my $class = shift;
     my ($enc, $text) = @_;
     $text;

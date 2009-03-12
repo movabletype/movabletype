@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -344,7 +344,7 @@ sub do_signup {
     my $param = {};
     $param->{$_} = $q->param($_)
         foreach
-        qw(blog_id entry_id static email url username nickname email hint return_url );
+        qw(blog_id entry_id static email url username nickname email return_url );
 
     my $filter_result = $app->run_callbacks( 'api_save_filter.author', $app );
 
@@ -1350,53 +1350,7 @@ sub preview { my $app = shift; do_preview( $app, $app->{query}, @_ ) }
 
 sub _make_commenter {
     my $app    = shift;
-    my %params = @_;
-    require MT::Author;
-    my $cmntr = MT::Author->load(
-        {   name      => $params{name},
-            type      => MT::Author::COMMENTER,
-            auth_type => $params{auth_type},
-        }
-    );
-    if ( !$cmntr ) {
-        $cmntr = $app->model('author')->new();
-        $cmntr->set_values(
-            {   email     => $params{email},
-                name      => $params{name},
-                nickname  => $params{nickname},
-                password  => "(none)",
-                type      => MT::Author::COMMENTER,
-                url       => $params{url},
-                auth_type => $params{auth_type},
-                (   $params{external_id}
-                    ? ( external_id => $params{external_id} )
-                    : ()
-                ),
-                (   $params{remote_auth_username}
-                    ? ( remote_auth_username =>
-                            $params{remote_auth_username} )
-                    : ()
-                ),
-            }
-        );
-        $cmntr->save();
-    }
-    else {
-        $cmntr->set_values(
-            {   email    => $params{email},
-                nickname => $params{nickname},
-                password => "(none)",
-                type     => MT::Author::COMMENTER,
-                url      => $params{url},
-                (   $params{external_id}
-                    ? ( external_id => $params{external_id} )
-                    : ()
-                ),
-            }
-        );
-        $cmntr->save();
-    }
-    return $cmntr;
+    return $app->make_commenter(@_);
 }
 
 # TBD: Move this to MT::Session and store expiration date in
@@ -1511,10 +1465,9 @@ sub session_js {
 
     my ( $state, $commenter ) = $app->session_state;
 
-    require JSON;
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
-    my $json = JSON::objToJson($state);
+    my $json = MT::Util::to_json($state);
     $app->print( "$jsonp(" . $json . ");\n" );
     return undef;
 }
@@ -1673,7 +1626,7 @@ sub do_preview {
         ## Serialize comment state, then hex-encode it.
         require MT::Serialize;
         my $ser   = MT::Serialize->new( $cfg->Serializer );
-        my $state = $comment->column_values;
+        my $state = $comment->get_values;
         $state->{static} = $q->param('static');
         $ctx->stash( 'comment_state', unpack 'H*',
             $ser->serialize( \$state ) );
@@ -1779,7 +1732,6 @@ sub edit_commenter_profile {
             name     => $commenter->name,
             nickname => $commenter->nickname,
             email    => $commenter->email,
-            hint     => $commenter->hint,
             url      => $commenter->url,
             blog_id  => $blog_id,
             $entry_id ? ( entry_url => $url ) : ( return_url => $url ),
@@ -1805,7 +1757,7 @@ sub save_commenter_profile {
 
     my %param
         = map { $_ => scalar( $q->param($_) ) }
-        qw( name nickname email password pass_verify hint url entry_url return_url external_auth blog_id );
+        qw( name nickname email password pass_verify url entry_url return_url external_auth blog_id );
     $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
@@ -1820,7 +1772,7 @@ sub save_commenter_profile {
 
     unless ( $param{external_auth} ) {
         my $nickname = $param{nickname};
-        unless ( $nickname && $param{email} && $param{hint} ) {
+        unless ( $nickname && $param{email} ) {
             $param{error} = $app->translate(
                 'All required fields must have valid values.');
             return $app->build_page( 'profile.tmpl', \%param );
@@ -1852,7 +1804,6 @@ sub save_commenter_profile {
         && ( $param{nickname} ne $cmntr->nickname ) ? 1 : 0;
     $cmntr->nickname( $param{nickname} ) if $param{nickname};
     $cmntr->email( $param{email} )       if $param{email};
-    $cmntr->hint( $param{hint} )         if $param{hint};
     $cmntr->url( $param{url} )           if $param{url};
     $cmntr->set_password( $param{password} )
         if $param{password} && !$param{external_auth};
@@ -1905,6 +1856,12 @@ sub recover {
 sub new_pw {
     require MT::CMS::Tools;
     MT::CMS::Tools::new_password(@_);
+}
+
+sub redirect_to_edit_profile {
+    my $app = shift;
+    return $app->redirect(
+        $app->uri( mode => 'edit_profile' ) );
 }
 
 1;
@@ -2019,6 +1976,8 @@ be saved. The callback has the following signature:
         ...
     }
 
+=back
+
 =head1 SPAM PROTECTION
 
 Spam filtering (or "Junk" filtering in MT terminology) is handled using
@@ -2029,4 +1988,4 @@ refer to that module for further documentation.
 
 Please see the I<MT> manpage for author, copyright, and license information.
 
-=back
+=cut

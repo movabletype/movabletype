@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -53,7 +53,7 @@ sub add_column {
     my $ddl = shift;
     my @stmts = $ddl->add_column_sql(@_);
     push @stmts, $ddl->index_column_sql(@_);
-    return @stmts; 
+    return @stmts;
 }
 
 sub alter_column {
@@ -347,7 +347,7 @@ sub drop_column_sql {
     return "ALTER TABLE $table_name DROP ${field_prefix}_$name";
 }
 
-sub column_sql { 
+sub column_sql {
     my $ddl = shift;
     my ($class, $name) = @_;
 

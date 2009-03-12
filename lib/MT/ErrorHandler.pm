@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,8 +12,10 @@ use vars qw( $ERROR );
 sub new    { bless {}, shift }
 sub error  {
     my $class = shift;
-    my $msg = $_[0] || '';
-    $msg .= "\n" if ($msg ne '') && ($msg !~ /\n$/);
+    my $msg = @_ ? $_[0] : '';
+    if (defined $msg) {
+        $msg .= "\n" if ($msg ne '') && ($msg !~ /\n$/);
+    }
     if (ref($class)) {
         $class->{_errstr} = $msg;
     } else {

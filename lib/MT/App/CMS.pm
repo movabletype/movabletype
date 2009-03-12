@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -465,7 +465,9 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     $app->param('blog_id')
                         && ( $app->user->is_superuser()
-                        || $app->permissions->can_edit_all_posts );
+                            || $app->permissions->can_edit_all_posts )
+                        && $app->param('filter_val') != MT::Entry::JUNK()
+                        && $app->param('filter_key') ne 'spam_entries'
                 },
             },
         },
@@ -1313,7 +1315,7 @@ sub core_menus {
             mode              => 'list_member',
             order             => 9000,
             view              => "blog",
-            permission        => 'administer_blog',
+            permission        => 'administer_blog,manage_users',
             system_permission => 'administer',
         },
         'manage:notification' => {
@@ -1429,6 +1431,17 @@ sub core_menus {
             system_permission => 'administer',
             view              => "blog",
         },
+        'prefs:ip_info' => {
+            label      => "IP Banning",
+            mode       => 'list',
+            args       => { _type => 'banlist' },
+            order      => 180,
+            permission => 'manage_feedback',
+            condition  => sub {
+                $app->config->ShowIPInformation;
+            },
+            view => "blog",
+        },
 
         'tools:plugins' => {
             label             => "Plugins",
@@ -1476,17 +1489,6 @@ sub core_menus {
             order => 700,
             mode  => "tools",
             view  => "system",
-        },
-        'tools:ip_info' => {
-            label      => "IP Banning",
-            mode       => 'list',
-            args       => { _type => 'banlist' },
-            order      => 900,
-            permission => 'manage_feedback',
-            condition  => sub {
-                $app->config->ShowIPInformation;
-            },
-            view => "blog",
         },
 
         # System menu which is actually separate
@@ -2482,7 +2484,7 @@ sub load_template_prefs {
 
 sub _parse_entry_prefs {
     my $app = shift;
-    my ( $prefs, $param ) = @_;
+    my ( $prefs, $param, $fields ) = @_;
 
     my @p = split /,/, $prefs;
     for my $p (@p) {
@@ -2492,6 +2494,7 @@ sub _parse_entry_prefs {
                 $param->{ 'disp_prefs_height_' . $name } = $num;
             }
             $param->{ 'disp_prefs_show_' . $name } = 1;
+            push @$fields, { name => $name };
         }
         else {
             $p = 'Default' if lc($p) eq 'basic';
@@ -2502,15 +2505,18 @@ sub _parse_entry_prefs {
                     )
                 {
                     $param->{ 'disp_prefs_show_' . $def } = 1;
+                    push @$fields, { name => $def };
                 }
                 if ( lc($p) eq 'advanced' ) {
                     foreach my $def (qw(excerpt feedback)) {
                         $param->{ 'disp_prefs_show_' . $def } = 1;
+                        push @$fields, { name => $def };
                     }
                 }
             }
             else {
                 $param->{ 'disp_prefs_show_' . $p } = 1;
+                push @$fields, { name => $p };
             }
         }
     }
@@ -2528,30 +2534,18 @@ sub load_entry_prefs {
         $prefs = $app->load_default_entry_prefs;
         ( $prefs, $pos ) = split /\|/, $prefs;
         $is_from_db = 0;
-        $app->_parse_entry_prefs( $prefs, \%param );
-        my @fields;
-        foreach ( keys %param ) {
-            if (m/^disp_prefs_show_(.+)/) {
-                push @fields, { name => $1 };
-            }
-        }
+        $app->_parse_entry_prefs( $prefs, \%param, \my @fields );
         $param{disp_prefs_default_fields} = \@fields;
     }
     else {
         ( $prefs, $pos ) = split /\|/, $prefs;
     }
-    $app->_parse_entry_prefs( $prefs, \%param );
+    $app->_parse_entry_prefs( $prefs, \%param, \my @custom_fields );
     if ($is_from_db) {
         my $default_prefs = $app->load_default_entry_prefs;
         ( $default_prefs, my ($default_pos) ) = split /\|/, $default_prefs;
         $pos ||= $default_pos;
-        $app->_parse_entry_prefs( $default_prefs, \my %def_param );
-        my @fields;
-        foreach ( keys %def_param ) {
-            if (m/^disp_prefs_show_(.+)/) {
-                push @fields, { name => $1 };
-            }
-        }
+        $app->_parse_entry_prefs( $default_prefs, \my %def_param, \my @fields );
         if ( $prefs eq 'Default' ) {
             foreach my $p ( keys %param ) {
                 delete $param{$p} if $p =~ m/^disp_prefs_show_/;
@@ -2569,6 +2563,7 @@ sub load_entry_prefs {
         && !exists $param{'disp_prefs_Advanced'} )
     {
         $param{'disp_prefs_Custom'} = 1;
+        $param{disp_prefs_custom_fields} = \@custom_fields if @custom_fields;
     }
     if ( lc $pos eq 'both' ) {
         $param{'position_actions_top'}    = 1;
@@ -2584,6 +2579,7 @@ sub load_entry_prefs {
 sub _convert_word_chars {
     my ( $app, $s ) = @_;
     return '' if !defined($s) || ( $s eq '' );
+
     return $s if 'utf-8' ne lc( $app->charset );
 
     my $blog = $app->blog;
@@ -2593,56 +2589,14 @@ sub _convert_word_chars {
         : MT->config->NwcSmartReplace;
     return $s if $smart_replace == 2;
 
-    if ($smart_replace) {
-
-        # html character entity replacements
-        $s =~ s/\342\200\231/&#8217;/g;
-        $s =~ s/\342\200\230/&#8216;/g;
-        $s =~ s/\342\200\246/&#133;/g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/&#8212;/g;
-        $s =~ s/\342\200\234/&#8220;/g;
-        $s =~ s/\342\200\235/&#8221;/g;
-    }
-    else {
-
-        # ascii equivalent replacements
-        $s =~ s/\342\200[\230\231]/'/g;
-        $s =~ s/\342\200\246/.../g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/--/g;
-        $s =~ s/\342\200[\234\235]/"/g;
-    }
-
-    # While we're fixing Word, remove processing instructions with
-    # colons, as they can break PHP.
-    $s =~ s{ <\? xml:namespace [^>]*> }{}ximsg;
-
-    $s;
+    require MT::Util;
+    return MT::Util::convert_word_chars($s, $smart_replace);
 }
 
 sub _translate_naughty_words {
-    my $app     = shift;
-    my ($entry) = @_;
-    my $blog    = $app->blog;
-    return if $blog->smart_replace == 2;
-
-    my $fields = $blog->smart_replace_fields;
-    return unless $fields;
-
-    my @fields = split( /\s*,\s*/, $fields || '' );
-    foreach my $field (@fields) {
-        if ( $entry->can($field) ) {
-            if ( $field eq 'tags' ) {
-                my @tags
-                    = map { _convert_word_chars( $app, $_ ) } $entry->tags;
-                $entry->set_tags(@tags);
-            }
-            else {
-                $entry->$field( _convert_word_chars( $app, $entry->$field ) );
-            }
-        }
-    }
+    my ($app, $entry) = @_;
+    require MT::Util;
+    return MT::Util::translate_naughty_words($entry);
 }
 
 sub autosave_session_obj {
@@ -2884,6 +2838,13 @@ sub _entry_prefs_from_params {
         $prefs .= ',' if $prefs ne '';
         $prefs .= $_;
         $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
+    }
+    if ( $type && lc $type eq 'custom' ) {
+        my @fields = split /,/, $q->param('custom_prefs');
+        foreach (@fields) {
+            $prefs .= ',' if $prefs ne '';
+            $prefs .= $_;
+        }
     }
     $prefs .= '|' . $q->param('bar_position');
     $prefs;

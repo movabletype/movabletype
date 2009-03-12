@@ -31,7 +31,7 @@ close F;
 $test_json =~ s/^ *#.*$//mg;
 $test_json =~ s/# *\d+ *(?:TBD.*)? *$//mg;
 
-my $test_suite = JSON::jsonToObj($test_json);
+my $test_suite = JSON::from_json($test_json);
 
 # Ok. We are now ready to test!
 plan tests => (scalar(@$test_suite) * 2) + 3;
@@ -65,7 +65,7 @@ my %const = (
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
-$test_suite = JSON::jsonToObj($test_json);
+$test_suite = JSON::from_json($test_json);
 
 $ctx->{current_timestamp} = '20040816135142';
 

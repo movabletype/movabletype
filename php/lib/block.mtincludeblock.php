@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -17,10 +17,10 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
         $name = $args['var'];
         $name or $name = 'contents';
         $oldval = $vars[$name];
-        $vars[$name] = $content;
+
+        $vars[$name] = $args['token_fn'];
         $content = smarty_function_mtinclude($args, $ctx);
         $vars[$name] = $oldval;
     }
     return $content;
 }
-?>

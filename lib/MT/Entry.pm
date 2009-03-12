@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -47,6 +47,7 @@ __PACKAGE__->install_properties({
         'template_id' => 'integer',
         'comment_count' => 'integer',
         'ping_count' => 'integer',
+        'junk_log' => 'string meta',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
@@ -107,6 +108,7 @@ sub HOLD ()    { 1 }
 sub RELEASE () { 2 }
 sub REVIEW ()  { 3 }
 sub FUTURE ()  { 4 }
+sub JUNK ()    { 5 }
 
 use Exporter;
 *import = \&Exporter::import;
@@ -145,7 +147,8 @@ sub status_text {
     $s == HOLD ? "Draft" :
         $s == RELEASE ? "Publish" :
             $s == REVIEW ? "Review" : 
-            $s == FUTURE ? "Future" : '';
+                $s == FUTURE ? "Future" :
+                    $s == JUNK ? "Spam" : '';
 }
 
 sub status_int {
@@ -153,7 +156,8 @@ sub status_int {
     $s eq 'draft' ? HOLD :
         $s eq 'publish' ? RELEASE :
             $s eq 'review' ? REVIEW :
-                $s eq 'future' ? FUTURE : undef;
+                $s eq 'future' ? FUTURE :
+                    $s eq 'junk' ? JUNK : undef;
 }
 
 sub authored_on_obj {
@@ -344,11 +348,12 @@ sub comment_latest {
     });
 }
 
-MT::Comment->add_trigger(
-    post_save => sub {
-        my $comment = shift;
+MT::Comment->add_callback( 'post_save', 0, MT->component('core'),
+    sub {
+        my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
+        $entry->clear_cache('comment_latest');
         my $count   = MT::Comment->count(
             {
                 entry_id => $comment->entry_id,
@@ -357,20 +362,21 @@ MT::Comment->add_trigger(
         );
         $entry->comment_count($count);
         $entry->save;
-    }
+    },
 );
 
-MT::Comment->add_trigger(
-    post_remove => sub {
-        my $comment = shift;
+MT::Comment->add_callback( 'post_remove', 0, MT->component('core'),
+    sub {
+        my ($cb, $comment) = @_;
         my $entry   = MT::Entry->load( $comment->entry_id )
             or return;
+        $entry->clear_cache('comment_latest');
         if ( $comment->visible ) {
             my $count = $entry->comment_count > 0 ? $entry->comment_count - 1 : 0;
             $entry->comment_count($count);
             $entry->save;
         }
-    }
+    },
 );
 
 sub pings {
@@ -389,9 +395,9 @@ sub pings {
     }
 }
 
-MT::TBPing->add_trigger(
-    post_save => sub {
-        my $ping = shift;
+MT::TBPing->add_callback( 'post_save', 0, MT->component('core'),
+    sub {
+        my ($cb, $ping) = @_;
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id ) {
@@ -410,9 +416,9 @@ MT::TBPing->add_trigger(
     }
 );
 
-MT::TBPing->add_trigger(
-    post_remove => sub {
-        my $ping = shift;
+MT::TBPing->add_callback( 'post_remove', 0, MT->component('core'),
+    sub {
+        my ($cb, $ping) = @_;
         require MT::Trackback;
         if ( my $tb = MT::Trackback->load( $ping->tb_id ) ) {
             if ( $tb->entry_id && $ping->visible ) {
@@ -429,9 +435,7 @@ MT::TBPing->add_trigger(
 sub archive_file {
     my $entry = shift;
     my($at) = @_;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     unless ($at) {
         $at = $blog->archive_type_preferred || $blog->archive_type;
         return '' if !$at || $at eq 'None';
@@ -448,9 +452,7 @@ sub archive_file {
 
 sub archive_url {
     my $entry = shift;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     my $url = $blog->archive_url || "";
     $url .= '/' unless $url =~ m!/$!;
     $url . $entry->archive_file(@_);
@@ -458,9 +460,7 @@ sub archive_url {
 
 sub permalink {
     my $entry = shift;
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     my $url = $entry->archive_url($_[0]);
     my $effective_archive_type = ($_[0]
         || $blog->archive_type_preferred
@@ -474,9 +474,7 @@ sub permalink {
 
 sub all_permalinks {
     my $entry = shift;
-    my $blog = $entry->blog || return $entry->error(MT->translate(
-                                                    "Load of blog failed: [_1]",
-                                                    MT::Blog->errstr));
+    my $blog = $entry->blog || return;
     my @at = split /,/, $blog->archive_type;
     return unless @at;
     my @urls;
@@ -506,9 +504,7 @@ sub get_excerpt {
     my($words) = @_;
     return $entry->excerpt if $entry->excerpt;
     my $excerpt = MT->apply_text_filters($entry->text, $entry->text_filters);
-    my $blog = $entry->blog() || return $entry->error(MT->translate(
-                                                     "Load of blog failed: [_1]",
-                                                     MT::Blog->errstr));
+    my $blog = $entry->blog() || return;
     MT::I18N::first_n_text($excerpt, $words || $blog->words_in_excerpt || MT::I18N::const('DEFAULT_LENGTH_ENTRY_EXCERPT')) . '...';
 }
 
@@ -753,7 +749,8 @@ sub blog {
         require MT::Blog;
         MT::Blog->load($blog_id) or
             $entry->error(MT->translate(
-            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr));
+            "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr
+                || MT->translate("record does not exist.")));
     });
 }
 
@@ -781,6 +778,7 @@ sub to_hash {
 #trans('Draft')
 #trans('Review')
 #trans('Future')
+#trans('Spam')
 
 1;
 __END__

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -69,12 +69,13 @@ sub compile {
     # Other namespaces (like 'Foo') would require the colon.
     # Tag and attributes are case-insensitive. So you can write:
     #   <mtfoo>...</MTFOO>
-    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)[\$/]?>)!gis) {
-        my($whole_tag, $prefix, $tag) = ($1, $2, $3);
+    while ($text =~ m!(<\$?(MT:?)((?:<[^>]+?>|"(?:<[^>]+?>|.)*?"|'(?:<[^>]+?>|.)*?'|.)+?)([-]?)[\$/]?>)!gis) {
+        my($whole_tag, $prefix, $tag, $space_eater) = ($1, $2, $3, $4);
         ($tag, my($args)) = split /\s+/, $tag, 2;
         my $sec_start = pos $text;
         my $tag_start = $sec_start - length $whole_tag;
         _text_block($state, $pos, $tag_start) if $pos < $tag_start;
+        $state->{space_eater} = $space_eater;
         $args ||= '';
         # Structure of a node:
         #   tag name, attribute hashref, contained tokens, template text,
@@ -260,7 +261,12 @@ sub _consume_up_to {
 sub _text_block {
     my $text = substr ${ $_[0]->{text} }, $_[1], $_[2] - $_[1];
     if ((defined $text) && ($text ne '')) {
+        return if $_[0]->{space_eater} && ($text =~ m/^\s+$/s);
+        $text =~ s/^\s+//s if $_[0]->{space_eater};
         my $rec = NODE->new(tag => 'TEXT', nodeValue => $text, parentNode => $_[0]->{tokens}, template => $_[0]->{tmpl});
+        # Avoids circular reference between NODE and TOKENS, MT::Template.
+        weaken($rec->parentNode);
+        weaken($rec->template);
         push @{ $_[0]->{tokens} }, $rec;
     }
 }

@@ -432,9 +432,9 @@ function mtUserOnLoad() {
                 if (u && u.sid && cf.sid)
                     cf.sid.value = u.sid;
             }
-            if (cf.post.disabled)
+            if (cf.post && cf.post.disabled)
                 cf.post.disabled = false;
-            if (cf.preview_button.disabled)
+            if (cf.preview_button && cf.preview_button.disabled)
                 cf.preview_button.disabled = false;
             mtRequestSubmitted = false;
         }
@@ -451,6 +451,8 @@ function mtUserOnLoad() {
 </mt:Ignore>
 <mt:IfBlog>
 function mtEntryOnLoad() {
+    var cf = document['comments_form'];
+    if (cf && cf.preview) cf.preview.value = '';
     <mt:Unless tag="IfPingsAccepted">mtHide('trackbacks-info');</mt:Unless>
     <mt:Unless tag="IfCommentsAccepted">mtHide('comments-open');</mt:Unless>
     mtFireEvent('usersignin');

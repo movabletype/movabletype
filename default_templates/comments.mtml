@@ -13,7 +13,7 @@
     <h2 class="comments-header"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
     <div class="comments-content">
         </mt:CommentsHeader>
-        <div id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent>">
+        <div id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent><mt:IfCommenterIsEntryAuthor> entry-author-comment</mt:IfCommenterIsEntryAuthor>">
             <div class="inner">
                 <div class="comment-header">
                     <div class="asset-meta">
@@ -59,7 +59,7 @@
                 <input type="hidden" name="static" value="1" />
                 <input type="hidden" name="entry_id" value="<$mt:EntryID$>" />
                 <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>" />
-                <input type="hidden" name="parent_id" value="<$mt:CommentParentID$>" id="comment-parent-id" />
+                <input type="hidden" name="parent_id" value="<$mt:CommentParentID escape="html"$>" id="comment-parent-id" />
                 <input type="hidden" name="armor" value="1" />
                 <input type="hidden" name="preview" value="" />
                 <input type="hidden" name="sid" value="" />

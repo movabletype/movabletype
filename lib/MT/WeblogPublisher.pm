@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -504,8 +504,8 @@ sub rebuild_deleted_entry {
                     ArchiveType => $at,
                     Blog        => $blog->id,
                     (
-                        $archiver->author_based()
-                        ? ( author_id => $entry->author->id )
+                        $archiver->author_based() && $entry->author_id
+                        ? ( author_id => $entry->author_id )
                         : ()
                     ),
                     ( $archiver->date_based() ? ( startdate => $start ) : () ),
@@ -519,7 +519,7 @@ sub rebuild_deleted_entry {
             }
             else {
                 if ( $app->config('RebuildAtDelete') ) {
-                    if ( $archiver->author_based() ) {
+                    if ( $archiver->author_based() && $entry->author_id ) {
                         if ( $archiver->date_based() ) {
                             $rebuild_recipe{$at}{ $entry->author->id }
                               { $start . $end }{'Start'} = $start;
@@ -1099,6 +1099,7 @@ sub rebuild_file {
     local $ctx->{current_timestamp_end} = $end   if $end;
 
     $ctx->{__stash}{blog} = $blog;
+    $ctx->{__stash}{local_blog_id} = $blog->id;
 
     require MT::FileInfo;
 

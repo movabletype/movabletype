@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -18,7 +18,6 @@ __PACKAGE__->install_properties({
         'type' => 'smallint not null',
         'email' => 'string(75)',
         'url' => 'string(255)',
-        'hint' => 'string(75)',
         'public_key' => 'text',
         'preferred_language' => 'string(50)',
         'api_password' => 'string(60)',
@@ -37,6 +36,9 @@ __PACKAGE__->install_properties({
         'auth_type' => 'string(50)',
         'userpic_asset_id' => 'integer',
         'basename' => 'string(255)',
+
+        # Deprecated; The hint is not used from 4.25 in the password recovery
+        'hint' => 'string(75)',
 
         # meta properties
         'widgets' => 'hash meta',
@@ -163,13 +165,13 @@ sub set_commenter_perm {
     }
     if ($action eq 'approve') {
         $perm->remove_restrictions('comment');
-        $perm->can_comment(1) if COMMENTER eq $this->type;
+        $perm->can_comment(1);
     } elsif (($action eq 'ban') || ($action eq 'block')) {
         $perm->set_these_restrictions('comment');
-        $perm->can_comment(0) if COMMENTER eq $this->type;
+        $perm->can_comment(0);
     } elsif ($action eq 'pending') {
         $perm->remove_restrictions('comment');
-        $perm->can_comment(0) if COMMENTER eq $this->type;
+        $perm->can_comment(0);
     }
     $perm->save()
         or return $this->error(MT->translate("The approval could not be committed: [_1]", $perm->errstr));
@@ -235,8 +237,10 @@ sub save {
             }
         }
         # Generate basename
-        my $basename = MT::Util::make_unique_author_basename($auth);
-        $auth->basename($basename);
+        unless ($auth->basename()) {
+            my $basename = MT::Util::make_unique_author_basename($auth);
+            $auth->basename($basename);
+        }
     }
 
     my $privs;
@@ -288,8 +292,7 @@ sub is_superuser {
             $author->permissions(0)->can_edit_templates(@_);
         }
     } else {
-        $author->permissions(0)->can_administer() ||
-            $author->SUPER::is_superuser();
+        $author->permissions(0)->can_administer();
     }
 }
 
@@ -738,7 +741,7 @@ sub userpic_url {
         $author->userpic_thumbnail_options(),
         %param,
     );
-    if ($info[0] !~ m!^https?://!) {
+    if (($info[0] || '') !~ m!^https?://!) {
         my $static_host = MT->instance->static_path;
         if ($static_host =~ m!^https?://!) {
             $static_host =~ s!^(https?://[^/]+?)!$1!;
@@ -857,6 +860,7 @@ The author's homepage URL.
 =item * hint
 
 The answer to the question used when recovering the user's password.
+The hint is not used from 4.25 in the password recovery.
 
 =item * external_id
 

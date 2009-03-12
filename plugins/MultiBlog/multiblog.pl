@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,7 +13,7 @@ use warnings;
 
 use base qw( MT::Plugin );
 
-our $VERSION = '2.0';
+our $VERSION = '2.1';
 my $plugin  = MT::Plugin::MultiBlog->new({
     id          =>  'multiblog',
     name        =>  'MultiBlog',

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -103,6 +103,33 @@ __PACKAGE__->install_properties({
 });
 
 
+package Ddltest::ShortIndex;
+use base qw( MT::Object );
+
+__PACKAGE__->install_properties({
+    column_defs => {
+        id => 'integer not null auto_increment',
+        foo => 'string(25)',
+        bar => 'string(25)',
+    },
+    indexes => {
+        foo => 1,
+        short => {
+            columns => [ 'foo(10)' ],
+        },
+        short_short => {
+            columns => [ qw( foo(10) bar(10) ) ],
+        },
+        short_multi => {
+            columns => [ qw( foo bar(10) ) ],
+        },
+    },
+    datasource  => 'ddltest_shortindex',
+    primary_key => 'id',
+    cacheable   => 0,
+});
+
+
 package Ddltest::Fixable;
 use base qw( MT::Object );
 
@@ -168,7 +195,7 @@ sub _01_create_table : Tests(2) {
     diag($dbh->errstr || $DBI::errstr) if !$res;
 }
 
-sub _02_create_indexes : Tests(5) {
+sub _02_create_indexes : Tests(6) {
     my $self = shift;
 
     my $driver    = MT::Object->dbi_driver;
@@ -177,7 +204,7 @@ sub _02_create_indexes : Tests(5) {
 
     my @index_sql = $ddl_class->index_table_sql('Ddltest');
     ok(@index_sql, 'Index Table SQL for Ddltest is available');
-    is(scalar @index_sql, 3, 'Index Table SQL has 4 statements');
+    is(scalar @index_sql, 3, 'Index Table SQL has three statements');
     for my $index_sql (@index_sql) {
         my $res = $dbh->do($index_sql);
         ok($res, 'Driver could perform Index Table SQL for Ddltest');
@@ -216,7 +243,15 @@ sub _def {
 sub is_def {
     my ($got, $expected, $reason) = @_;
 
-    for my $field (qw( not_null auto key )) {
+    my $ddl_class = MT::Object->driver->dbd->ddl_class;
+    my @fields;
+    if ( $ddl_class =~ m/Pg/xms ) {
+        @fields = qw( not_null key);
+    } else {
+        @fields = qw( not_null auto key);
+    }
+
+    for my $field (@fields) {
         if ($expected->{$field} xor $got->{$field}) {
             fail($reason);
             diag($expected->{$field}
@@ -232,7 +267,6 @@ sub is_def {
         return;
     }
 
-    my $ddl_class     = MT::Object->driver->dbd->ddl_class;
     my $got_type      = $ddl_class->type2db($got);
     my $expected_type = $ddl_class->type2db($expected);
     if (!defined $got_type || $expected_type ne $got_type) {
@@ -394,6 +428,38 @@ sub invalid_type : Tests(3) {
     ok(!defined $ddl_class->column_defs('Ddltest::InvalidType'), 'Ddltest::InvalidType table has no column defs');
 
     ok(!eval { $ddl_class->create_table_sql('Ddltest::InvalidType') }, 'Ddltest::InvalidType cannot make creation sql');
+}
+
+sub short_index : Tests(4) {
+    my $self = shift;
+
+    my $ddl_class = MT::Object->driver->dbd->ddl_class;
+    SKIP: {
+        skip('Only mysql supports shortened indexes', 4)
+            if $ddl_class !~ m{ mysql \z }xms;
+
+        $self->reset_table_for('Ddltest::ShortIndex');
+
+        my $index_defs = $ddl_class->index_defs('Ddltest::ShortIndex');
+        is($index_defs->{foo}, 1, 'Class with short indexes can have regular indexes too');
+        is_deeply($index_defs->{short}, {
+            columns => [ 'foo' ],
+            sizes   => { foo => 10 },
+        }, 'Class can have a single column with a shortened index');
+        is_deeply($index_defs->{short_short}, {
+            columns => [ qw( foo bar ) ],
+            sizes   => {
+                foo => 10,
+                bar => 10,
+            },
+        }, 'Class can have multiple shortened columns in an index');
+        is_deeply($index_defs->{short_multi}, {
+            columns => [ qw( foo bar ) ],
+            sizes   => {
+                bar => 10,
+            },
+        }, 'Class can have mixed shortened and regular columns in an index');
+    }
 }
 
 sub fixable : Tests(12) {

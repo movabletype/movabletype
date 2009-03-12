@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,6 +7,16 @@
 
 global $Lexicon_es;
 $Lexicon_es = array(
+## php/lib/function.mtwidgetmanager.php
+	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
+	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
+
+## php/lib/function.mtvar.php
+	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
+	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
+	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
+
 ## php/lib/function.mtassettype.php
 	'image' => 'Imagen',
 	'Image' => 'Imagen',
@@ -17,21 +27,14 @@ $Lexicon_es = array(
 	'video' => 'Vídeo',
 	'Video' => 'Vídeo',
 
-## php/lib/function.mtvar.php
-	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
-	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
-	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
-	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
-
-## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
-	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
-
 ## php/lib/thumbnail_lib.php
-	'GD support has not been available. Please install GD support.' => 'No tiene soporte de GD. Por favor, instale GD.', # Translate - New
+	'GD support has not been available. Please install GD support.' => 'No tiene soporte de GD. Por favor, instale GD.',
 
 ## php/lib/function.mtcommentauthor.php
 	'Anonymous' => 'Anónimo',
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
 	'Page' => 'Página',
@@ -51,29 +54,26 @@ $Lexicon_es = array(
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
 
-## php/lib/block.mtsethashvar.php
-
 ## php/lib/block.mtif.php
 
 ## php/lib/function.mtremotesigninlink.php
-	'TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'La autentificación en TypeKey no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
+	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
 
 ## php/lib/block.mtauthorhaspage.php
 	'No author available' => 'Ningún autor disponible',
+
+## php/lib/block.mtsethashvar.php
 
 ## php/lib/block.mtauthorhasentry.php
 
 ## php/lib/function.mtproductname.php
 	'[_1] [_2]' => '[_1] [_2]',
 
+## php/lib/function.mtcommentauthorlink.php
+
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
-
-## php/lib/function.mtcommentauthorlink.php
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
 
 ## php/lib/function.mtsetvar.php
 	'\'[_1]\' is not a hash.' => '\'[_1]\' no es un hash.',
@@ -90,13 +90,13 @@ $Lexicon_es = array(
 
 ## php/lib/function.mtauthordisplayname.php
 
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Responder',
-
 ## php/lib/function.mtentryclasslabel.php
 	'page' => 'página',
 	'entry' => 'entrada',
 	'Entry' => 'Entrada',
+
+## php/lib/function.mtcommentreplytolink.php
+	'Reply' => 'Responder',
 
 ## php/mt.php.pre
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',

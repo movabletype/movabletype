@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -18,6 +18,16 @@ sub init {
     $opts->{RaiseError} = 0;
     $driver->connect_options($opts);
     $driver;
+}
+
+sub start_query {
+    my $driver = shift;
+    my ($sql, $bind) = @_;
+    if ($MT::DebugMode && $MT::DebugMode & 4) {
+        $sql =~ s/\r?\n/ /g;
+        warn "QUERY: $sql";
+    }
+    return $driver->SUPER::start_query(@_);
 }
 
 sub configure {
@@ -84,6 +94,13 @@ sub remove_all {
     my $driver = shift;
     my ($class) = @_;
     return $driver->direct_remove($class);
+}
+
+sub direct_remove {
+    my $driver = shift;
+    my ($class, $orig_terms, $orig_args) = @_;
+    $class->call_trigger('pre_direct_remove', $orig_terms, $orig_args);
+    $driver->SUPER::direct_remove(@_);
 }
 
 sub count_group_by {
@@ -587,6 +604,8 @@ in the $value parameter is what was calculated from the database.
 For example, in count_group_by method, $value holds the count for each
 group, while in sum_group_by method, $value holds the sum for each group.
 @returnvals parameter holds the additional data that wiil be retured.
+
+=back
 
 =head1 AUTHOR & COPYRIGHT
 

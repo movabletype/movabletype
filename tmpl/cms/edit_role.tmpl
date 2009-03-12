@@ -284,6 +284,7 @@ TC.attachLoadEvent( rectifyAll );
             <li><label for="permission-edit_notifications"><input id="permission-edit_notifications" type="checkbox" onclick="checkPerms(this);" class="edit_notifications cb" name="permission" value="edit_notifications"<mt:if name="have_access-edit_notifications"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-edit_notifications" escape="html"></label></li>
 </mt:if>
             <li><label for="permission-view_blog_log"><input id="permission-view_blog_log" type="checkbox" onclick="checkPerms(this);" class="view_blog_log cb" name="permission" value="view_blog_log"<mt:if name="have_access-view_blog_log"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-view_blog_log" escape="html"></label></li>
+            <li><label for="permission-manage_users"><input id="permission-manage_users" type="checkbox" onclick="checkPerms(this);" class="manage_users cb" name="permission" value="manage_users"<mt:if name="have_access-manage_users"> checked="checked"</mt:if><mt:if name="id"><mt:unless name="is_enabled"> disabled="disabled"</mt:unless></mt:if> /> <mt:var name="prompt-manage_users" escape="html"></label></li>
         </ul>
     </mtapp:setting>
 

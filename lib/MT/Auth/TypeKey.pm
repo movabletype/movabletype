@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -9,6 +9,8 @@ use strict;
 
 use MT::Util qw( decode_url is_valid_email escape_unicode );
 use MT::I18N qw( encode_text );
+
+sub password_exists { 0 }
 
 sub handle_sign_in {
     my $class = shift;
@@ -63,13 +65,14 @@ sub handle_sign_in {
     $url .= $name;
 
     # Signature was valid, so create a session, etc.
-    $cmntr = $app->_make_commenter(
+    $cmntr = $app->make_commenter(
         email => $email,
         nickname => $nick,
         name => $name,
         url => $url,
         auth_type => $auth_type,
     );
+    return 0 unless $cmntr;
     $session = $app->make_commenter_session($cmntr);
     unless ($session) {
         $app->error($app->errstr() || $app->translate("Couldn't save the session"));
@@ -187,14 +190,14 @@ sub _validate_signature {
     $timer = time - $timer;
 
     $app->log({
-        message => $app->translate("TypeKey signature verif'n returned [_1] in [_2] seconds verifying [_3] with [_4]",
+        message => $app->translate("TypePad signature verif'n returned [_1] in [_2] seconds verifying [_3] with [_4]",
             ($valid ? "VALID" : "INVALID"), $timer, $msg, $sig_str),
         class => 'system',
         level => MT::Log::WARNING(),
     }) unless $valid;
 
     $app->log({
-        message => $app->translate("The TypeKey signature is out of date ([_1] seconds old). Ensure that your server's clock is correct", ($params{ts} - time)),
+        message => $app->translate("The TypePad signature is out of date ([_1] seconds old). Ensure that your server's clock is correct", ($params{ts} - time)),
         class => 'system',
         level => MT::Log::WARNING(),
     }) unless ($params{ts} + $SIG_WINDOW >= time);

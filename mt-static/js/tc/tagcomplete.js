@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) Open Source (C) 2004-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -27,8 +27,11 @@ TC.TagComplete = function( id, words )
 {
     this.id = id;
     this.tagCompleteNode = new TC.TagCompleteNode();
-    for ( var i = 0; i < words.length; i++ )
+    for ( var i = 0; i < words.length; i++ ) {
+        if ( typeof words[i] != 'string' )
+            words[i] = words[i] + '';
         this.tagCompleteNode.add( words[i] );
+    }
     this.delimiter = ' ';
     this.currentWord = '';
     this.insert_pos = -1;

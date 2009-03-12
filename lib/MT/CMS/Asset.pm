@@ -400,10 +400,8 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        require JSON;
-        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
         $param->{tags_js} =
-          $json->objToJson(
+          MT::Util::to_json(
             MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
 
@@ -655,7 +653,7 @@ sub build_asset_hasher {
         }
 
         @$row{keys %$meta} = values %$meta;
-        $row->{metadata_json} = JSON::objToJson($meta);
+        $row->{metadata_json} = MT::Util::to_json($meta);
         $row;
     };
 }
@@ -686,7 +684,7 @@ sub build_asset_table {
     my @data;
     my $hasher = build_asset_hasher($app);
     while ( my $obj = $iter->() ) {
-        my $row = $obj->column_values;
+        my $row = $obj->get_values;
         $hasher->($obj, $row);
         $row->{object} = $obj;
         push @data, $row;
@@ -1209,14 +1207,26 @@ sub _upload_file {
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
-    my $is_image  = defined($w)
-      && defined($h)
-      && $asset_pkg->isa('MT::Asset::Image');
+    my $is_image = 0;
+    if ( defined($w) && defined($h) ) {
+        $is_image = 1
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    else {
+        # rebless to file type
+        $asset_pkg = 'MT::Asset'
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    return $app->errtrans('Uploaded file is not an image.')
+        if !$is_image
+        && exists( $upload_param{require_type} )
+        && $upload_param{require_type} eq 'image';
     my $asset;
     if (
         !(
             $asset = $asset_pkg->load(
-                { file_path => $asset_file, blog_id => $blog_id }
+                { file_path => $asset_file, blog_id => $blog_id },
+                { binary => { file_path => 1 } }
             )
         )
       )

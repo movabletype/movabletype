@@ -4,7 +4,7 @@ use warnings;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More;
 use MT::Test;
-use JSON qw(jsonToObj);
+use JSON;
 use MT::Tag;
 
 my $file = '<t/49-tagsplit.dat';
@@ -12,7 +12,7 @@ open TEST, $file or die "Can't open $file: $!";
 local $/ = undef;
 my $test_data = <TEST>;
 close TEST;
-my $tests = jsonToObj($test_data);
+my $tests = JSON::from_json($test_data);
 plan tests => scalar(keys %$tests) * 2;
 
 foreach my $delim (',', ' ') {

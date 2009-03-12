@@ -32,24 +32,7 @@
 { "r" : "1", "t" : "<MTBlogs><MTBlogTimezone no_colon=\"1\"></MTBlogs>", "e" : "-0330"}, #31
 { "r" : "1", "t" : "<MTBlogs><MTBlogEntryCount></MTBlogs>", "e" : "6"}, #32
 { "r" : "1", "t" : "<MTBlogs><MTBlogCommentCount></MTBlogs>", "e" : "9"}, #33
-{ "r" : "0", "t" : "<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>
-<MTBlogCCLicenseImage>
-<MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/
-http://creativecommons.org/images/public/somerights20.gif
-<!--
-<rdf:RDF xmlns=\"http://web.resource.org/cc/\"
-         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
-         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><
-Work rdf:about=\"http://narnia.na/nana/\">
-<dc:title>none</dc:title>
-<dc:description>Narnia None Test Blog</dc:description>
-<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />
-</Work>
-<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">
-</License>
-</rdf:RDF>
--->
-"}, #34 TBD
+{ "r" : "0", "t" : "<MTBlogs><MTBlogIfCCLicense><MTBlogCCLicenseURL>\n<MTBlogCCLicenseImage>\n<MTCCLicenseRDF></MTBlogIfCCLicense></MTBlogs>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/\nhttp://creativecommons.org/images/public/somerights20.gif\n<!--\n<rdf:RDF xmlns=\"http://web.resource.org/cc/\"\n         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"><\nWork rdf:about=\"http://narnia.na/nana/\">\n<dc:title>none</dc:title>\n<dc:description>Narnia None Test Blog</dc:description>\n<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />\n</Work>\n<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">\n</License>\n</rdf:RDF>\n-->\n"}, #34 TBD
 { "r" : "1", "t" : "<MTArchiveList archive_type=\"Monthly\"><MTArchiveListHeader>(Header)</MTArchiveListHeader><MTArchiveListFooter>(Footer)</MTArchiveListFooter><MTArchiveTitle>|</MTArchiveList>", "e" : "(Header)January 1978|January 1965|January 1964|January 1963|January 1962|(Footer)January 1961|"}, #35
 { "r" : "1", "t" : "<MTEntries lastn=\"10\"> * <MTEntryTitle></MTEntries>", "e" : " * A Rainy Day * Verse 5 * Verse 4 * Verse 3 * Verse 2 * Verse 1"}, #36
 { "r" : "1", "t" : "<MTInclude module=\"blog-name\">", "e" : "none"}, #37
@@ -64,22 +47,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTBlogLanguage>", "e" : "en_us"}, #46
 { "r" : "1", "t" : "<MTBlogCCLicenseURL>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/"}, #47
 { "r" : "1", "t" : "<MTBlogCCLicenseImage>", "e" : "http://creativecommons.org/images/public/somerights20.gif"}, #48
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTCCLicenseRDF></MTEntries>", "e" : "<!--
-<rdf:RDF xmlns=\"http://web.resource.org/cc/\"
-         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
-         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">
-<Work rdf:about=\"http://narnia.na/nana/archives/1965/01/verse-5.html\">
-<dc:title>Verse 5</dc:title>
-<dc:description></dc:description>
-<dc:creator>Chucky Dee</dc:creator>
-<dc:date>1965-01-31T07:45:01-03:30</dc:date>
-<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />
-</Work>
-<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">
-</License>
-</rdf:RDF>
--->
-"}, #49
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTCCLicenseRDF></MTEntries>", "e" : "<!--\n<rdf:RDF xmlns=\"http://web.resource.org/cc/\"\n         xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\n         xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n<Work rdf:about=\"http://narnia.na/nana/archives/1965/01/verse-5.html\">\n<dc:title>Verse 5</dc:title>\n<dc:description></dc:description>\n<dc:creator>Chucky Dee</dc:creator>\n<dc:date>1965-01-31T07:45:01-03:30</dc:date>\n<license rdf:resource=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\" />\n</Work>\n<License rdf:about=\"http://creativecommons.org/licenses/by-nc-sa/2.0/\">\n</License>\n</rdf:RDF>\n-->\n"}, #49
 { "r" : "1", "t" : "<MTBlogIfCCLicense>1</MTBlogIfCCLicense>", "e" : "1"}, #50
 { "r" : "1", "t" : "<MTEntries category=\"foo\"><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #51
 { "r" : "1", "t" : "<MTEntries author=\"Bob D\"><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #52
@@ -99,22 +67,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorLink></MTEntries>", "e" : "<a href=\"http://chuckd.com/\">Chucky Dee</a>"}, #66
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryID></MTEntries>", "e" : "1"}, #67
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackLink></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-tb.cgi/1"}, #68
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--
-<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
-         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"
-         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">
-<rdf:Description
-    rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
-    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"
-    dc:title=\"A Rainy Day\"
-    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"
-    dc:subject=\"\"
-    dc:description=\"A story of a stroll.\"
-    dc:creator=\"Chucky Dee\"
-    dc:date=\"1978-01-31T07:45:00-03:30\" />
-</rdf:RDF>
--->
-"}, #69
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackData></MTEntries>", "e" : "<!--\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n         xmlns:trackback=\"http://madskills.com/public/xml/rss/module/trackback/\"\n         xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n<rdf:Description\n    rdf:about=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    trackback:ping=\"http://narnia.na/cgi-bin/mt-tb.cgi/1\"\n    dc:title=\"A Rainy Day\"\n    dc:identifier=\"http://narnia.na/nana/archives/1978/01/a-rainy-day.html\"\n    dc:subject=\"\"\n    dc:description=\"A story of a stroll.\"\n    dc:creator=\"Chucky Dee\"\n    dc:date=\"1978-01-31T07:45:00-03:30\" />\n</rdf:RDF>\n-->\n"}, #69
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryLink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"}, #70
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryPermalink archive_type=\"Individual\"></MTEntries>", "e" : "http://narnia.na/nana/archives/1978/01/a-rainy-day.html"}, #71
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCategory></MTEntries>", "e" : ""}, #72
@@ -142,9 +95,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle encode_url=\"1\"></MTEntries>", "e" : "A%20Rainy%20Day"}, #94
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle upper_case=\"1\"></MTEntries>", "e" : "A RAINY DAY"}, #95
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle lower_case=\"1\"></MTEntries>", "e" : "a rainy day"}, #96
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\" strip_linefeeds=\"1\">
-<MTEntryTitle>
-</MTEntries>", "e" : "A Rainy Day"}, #97
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\" strip_linefeeds=\"1\">\n<MTEntryTitle>\n</MTEntries>", "e" : "A Rainy Day"}, #97
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle space_pad=\"30\"></MTEntries>", "e" : "                   A Rainy Day"}, #98
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle space_pad=\"-30\"></MTEntries>", "e" : "A Rainy Day                   "}, #99
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTitle zero_pad=\"30\"></MTEntries>", "e" : "0000000000000000000A Rainy Day"}, #100
@@ -164,7 +115,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
 { "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -411,7 +362,7 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<MTEntries id='1'><MTEntryAssets><$MTAssetID$></MTEntryAssets></MTEntries>", "e" : "1"}, #359
 { "r" : "1", "t" : "<MTPages id='20'><MTPageAssets><$MTAssetID$></MTPageAssets></MTPages>", "e" : "2"}, #360
 { "r" : "1", "t" : "<MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>", "e" : "MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;"}, #361
-{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typekey_logo.png;"}, #362
+{ "r" : "1", "t" : "<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>", "e" : ":;:;:;:;:;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;MT:http://narnia.na/cgi-bin/mt-static/images/comment/mt_logo.png;:;TypeKey:http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png;"}, #362
 { "r" : "1", "t" : "<MTAuthors need_entry='0' ><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Melody;"}, #363
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='disabled'><MTAuthorName>;</MTAuthors>", "e" : "Hiro Nakamura;"}, #364
 { "r" : "1", "t" : "<MTAuthors need_entry='0' status='enabled or disabled'><MTAuthorName>;</MTAuthors>", "e" : "Chuck D;Bob D;Hiro Nakamura;Melody;"}, #365
@@ -472,5 +423,8 @@ Work rdf:about=\"http://narnia.na/nana/\">
 { "r" : "1", "t" : "<mt:setvar name='foo' value='c'><mt:setvar name='bar' value='xxx'><mt:if name='foo' eq='a'>value is a.<mt:else><mt:if name='bar' eq='aaa'><mt:else eq='c'>value is c<mt:else eq='xxx'>value is xxx.</mt:if></mt:if>", "e" : "value is xxx."}, #420
 { "r" : "1", "t" : "<mt:setvar name='foo' value='c'><mt:setvar name='bar' value='xxx'><mt:if name='foo' eq='a'>value is a.<mt:elseif name='bar' eq='aaa'><mt:else eq='c'>value is c<mt:else eq='xxx'>value is xxx.</mt:if>", "e" : "value is xxx."}, #421
 { "r" : "1", "t" : "<mt:var name='foo' value='2'><mt:if name='foo' eq='1'>incorrect<mt:else eq='2'>correct<mt:else eq='3'>incorrect</mt:if>", "e" : "correct" }, #422
-{ "r" : "1", "t" : "<mt:var name='foo1' value='foo-1'><mt:var name='foo2' value='foo-2'><mt:if name='foo1' eq='abc'>incorrect-1<mt:else eq='def'>incorrect-2<mt:else eq='foo-1'>CORRECT-1<mt:if name='foo2' eq='ghi'>incorrect-3<mt:else eq='foo-2'>CORRECT-2<mt:else>incorrect-4</mt:if><mt:else eq='foo-2'>incorrect-5<mt:else>incorrect-6</mt:if>", "e" : "CORRECT-1CORRECT-2"} #423
+{ "r" : "1", "t" : "<mt:var name='foo1' value='foo-1'><mt:var name='foo2' value='foo-2'><mt:if name='foo1' eq='abc'>incorrect-1<mt:else eq='def'>incorrect-2<mt:else eq='foo-1'>CORRECT-1<mt:if name='foo2' eq='ghi'>incorrect-3<mt:else eq='foo-2'>CORRECT-2<mt:else>incorrect-4</mt:if><mt:else eq='foo-2'>incorrect-5<mt:else>incorrect-6</mt:if>", "e" : "CORRECT-1CORRECT-2"}, #423
+{ "r" : "1", "t" : "<mt:entries limit='1'><mt:EntryTitle></mt:Entries>", "e" : "A Rainy Day" }, #424
+{ "r" : "1", "t" : "<mt:entries category='NOT foo'><mt:EntryTitle>;</mt:Entries>", "e" : "A Rainy Day;Verse 5;Verse 4;Verse 2;Verse 1;" }, #425
+{ "r" : "1", "t" : "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>", "e" : "Verse 5" } #426
 ]

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -14,7 +14,7 @@ use strict;
 use MT 4;
 use base 'MT::Plugin';
 use MT::Util qw( encode_html );
-our $VERSION = '2.0';
+our $VERSION = '2.1';
 
 my $plugin = MT::Plugin::Cloner->new({
     name        => "Blog Cloner",

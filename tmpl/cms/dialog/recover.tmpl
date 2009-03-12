@@ -30,7 +30,7 @@
             title="<__trans phrase="Go Back (x)">"
             class="primary-button"
             ><__trans phrase="Go Back"></a>
-        <mt:Else>
+        <mt:ElseIf name="can_signin">
         <a
             href="<$mt:var name="script_url"$>"
             accesskey="s"
@@ -53,7 +53,7 @@
     id="email"
     label="<__trans phrase="Email Address">"
     label_class="top-label">
-    <input type="text" name="email" id="email" class="ti" value="<mt:var name="email">" />
+    <input type="text" name="email" id="email" class="ti" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 
 <mt:If name="not_unique_email">
@@ -61,7 +61,7 @@
     id="name"
     label="<__trans phrase="Username">"
     label_class="top-label">
-    <input type="text" name="name" id="name" class="ti" value="<mt:var name="name">" />
+    <input type="text" name="name" id="name" class="ti" value="<mt:var name="name" escape="html">" />
 </mtapp:setting>
 </mt:If>
 
@@ -86,4 +86,4 @@
 </form>
 </mt:if>
 
-<mt:include name="cms/include/chromeless_footer.tmpl">
+<mt:include name="include/chromeless_footer.tmpl">

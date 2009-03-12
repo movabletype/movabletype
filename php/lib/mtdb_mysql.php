@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,9 +24,8 @@ class MTDatabase_mysql extends MTDatabaseBase {
         return $sql;
     }
     function limit_by_day_sql($column, $days) {
-        $days -= 1;
         return 'date_add(' . $column .', interval ' . 
-            $days . ' day) >= current_date()';
+            $days . ' day) >= current_timestamp';
     }
 
     function query_start($query)

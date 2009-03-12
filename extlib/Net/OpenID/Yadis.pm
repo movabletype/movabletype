@@ -7,24 +7,22 @@ $VERSION = "0.05";
 
 use base qw(Exporter);
 use Carp ();
-use URI::Fetch 0.02;
+use Net::OpenID::URIFetch;
 use XML::Simple;
 use Net::OpenID::Yadis::Service;
 
 @EXPORT = qw(YR_HEAD YR_GET YR_XRDS);
 
 use constant {
-    YR_HEAD => 0,
     YR_GET => 1,
     YR_XRDS => 2,
 };
 
 use fields (
-            'cache',           # the Cache object sent to URI::Fetch
-            '_ua',             # Custom LWP::UserAgent instance to use
             'last_errcode',    # last error code we got
             'last_errtext',    # last error code we got
             'debug',           # debug flag or codeblock
+            'consumer',        # consumer object
             'identity_url',    # URL to be identified
             'xrd_url',         # URL of XRD file
             'xrd_objects',     # Yadis XRD decoded objects
@@ -35,8 +33,7 @@ sub new {
     $self = fields::new( $self ) unless ref $self;
     my %opts = @_;
 
-    $self->ua              ( delete $opts{ua}              );
-    $self->cache           ( delete $opts{cache}           );
+    $self->consumer(delete($opts{consumer}));
 
     $self->{debug} = delete $opts{debug};
 
@@ -45,11 +42,11 @@ sub new {
     return $self;
 }
 
-sub cache   { &_getset; }
+sub consumer { &_getset; }
+
 sub identity_url { &_getset; }
 sub xrd_url { &_getset; }
 sub xrd_objects { _pack_array(&_getset); }
-sub _ua { &_getset; }
 sub _getset {
     my $self = shift;
     my $param = (caller(1))[3];
@@ -111,48 +108,35 @@ sub _clear_err {
     $self->{last_errcode} = '';
 }
 
-sub ua {
-    my $self = shift;
-    my $ua = shift if @_;
-    Carp::croak("Too many parameters") if @_;
-
-    if (($ua) || (!$self->{_ua})) {
-        $self->{_ua} = Net::OpenID::Yadis::UA->new($ua);
-    }
-
-    $self->{_ua}->{'ua'};
-}
-
 sub _get_contents {
     my $self = shift;
-
     my  ($url, $final_url_ref, $content_ref, $headers_ref) = @_;
-    $final_url_ref ||= do { my $dummy; \$dummy; };
 
-    my $ures = URI::Fetch->fetch($url,
-                                 UserAgent        => $self->_ua,
-                                 Cache            => $self->_ua->force_head ? undef : $self->cache,
-                                 ContentAlterHook =>  sub {my $htmlref = shift;$$htmlref =~ s/<body\b.*//is;},
-                                 )
-        or return $self->_fail("url_fetch_error", "Error fetching URL: " . URI::Fetch->errstr);
+    my $alter_hook = sub {
+        my $htmlref = shift;
+        $$htmlref =~ s/<body\b.*//is;
+    };
 
-    if ($ures->status == URI::Fetch::URI_GONE()) {
-        return $self->_fail("url_gone");
+    my $res = Net::OpenID::URIFetch->fetch($url, $self->consumer, $alter_hook);
+
+    if ($res) {
+        $$final_url_ref = $res->final_uri;
+        my $headers = $res->headers;
+        foreach my $k (keys %$headers) {
+            $headers_ref->{$k} ||= $headers->{$k};
+        }
+        $$content_ref = $res->content;
+        return 1;
     }
-
-    my $res = $ures->http_response;
-
-    $$final_url_ref = $res->request->uri->as_string;
-    $res->headers->scan(sub{$headers_ref->{lc($_[0])} ||= $_[1];});
-    $$content_ref = $ures->content;
-
-    return 1;
+    else {
+        return undef;
+    }
 }
 
 sub discover {
     my $self = shift;
     my $url = shift or return $self->_fail("empty_url");
-    my $count = shift || YR_HEAD;                              # $count = YR_HEAD:HEAD request YR_GET:GET request YR_XRDS:XRDS request
+    my $count = shift || YR_GET;
     Carp::croak("Too many parameters") if @_;
 
     # trim whitespace
@@ -163,8 +147,6 @@ sub discover {
     my $final_url;
     my %headers;
 
-    $self->_ua->force_head(1) if ($count == YR_HEAD);
-
     my $xrd;
     $self->_get_contents($url, \$final_url, \$xrd, \%headers) or return;
 
@@ -172,14 +154,15 @@ sub discover {
 
     my $doc_url;
     if (($doc_url = $headers{'x-yadis-location'} || $headers{'x-xrds-location'}) && ($count < YR_XRDS)) {
-        return $self->discover($doc_url,YR_XRDS);
-    } elsif ($headers{'content-type'} eq 'application/xrds+xml') {
-        return $self->discover($final_url,YR_XRDS) if ((!$xrd) && ($count == YR_HEAD));
+        return $self->discover($doc_url, YR_XRDS);
+    }
+    elsif ( (split /;\s*/, $headers{'content-type'})[0] eq 'application/xrds+xml') {
         $self->xrd_url($final_url);
         return $self->parse_xrd($xrd);
     }
-
-    return $count == YR_HEAD ? $self->discover($final_url,YR_GET) : $self->_fail($count == YR_GET ? "no_yadis_document" :"too_many_hops");
+    else {
+        return $self->_fail($count == YR_GET ? "no_yadis_document" : "too_many_hops");
+    }
 }
 
 sub parse_xrd {
@@ -224,7 +207,7 @@ sub services {
     my @protocols;
     my $code_ref;
     my $protocol = undef;
-    
+
     Carp::croak("You haven't called the discover method yet") unless $self->xrd_objects;
 
     foreach my $option (@_) {
@@ -257,52 +240,6 @@ sub services {
     wantarray ? @servers : \@servers;
 }
 
-package Net::OpenID::Yadis::UA;
-
-# This module is decolation module to LWP::UserAgent.
-# This add application/xrds+xml HTTP header and GET method to request object used in URI::Fetch.
-
-use strict;
-use warnings;
-use LWP::UserAgent;
-use vars qw($AUTOLOAD $lwpclass);
-
-BEGIN {
-    eval "use LWPx::ParanoidAgent;";
-    $lwpclass = $@ ? "LWP::UserAgent" : "LWPx::ParanoidAgent";
-}
-
-sub new {
-    my $class = shift;
-    my $ua = shift;
-    unless ($ua) {
-        $ua = $lwpclass->new;
-        $ua->timeout(10);
-    }
-    bless {ua => $ua,force_head => 0},$class;
-}
-
-sub request {
-    my $self = shift;
-    my $req = shift;
-    $req->header('Accept' => 'application/xrds+xml');
-    $req->method($self->force_head ? "HEAD" : "GET");
-    $self->force_head(0);
-    $self->{'ua'}->request($req);
-}
-
-sub force_head {
-    $_[0]->{'force_head'} = $_[1] if defined($_[1]);
-    $_[0]->{'force_head'};
-}
-
-sub AUTOLOAD {
-    my $self = shift;
-    return if $AUTOLOAD =~ /::DESTROY$/;
-    $AUTOLOAD =~ s/.*:://;
-    $self->{'ua'}->$AUTOLOAD(@_);
-}
-
 1;
 __END__
 
@@ -315,9 +252,8 @@ Net::OpenID::Yadis - Perform Yadis discovery on URLs
   use Net::OpenID::Yadis;
   
   my $disc = Net::OpenID::Yadis->new(
-                                         ua => $ua,       # LWP::UserAgent (or similar) object
-                                         cache => $cache  # Cache object
-                                     );
+      consumer => $consumer, # Net::OpenID::Consumer object
+  );
 
   my $xrd = $disc->discover("http://id.example.com/") or Carp::croak($disc->err);
 
@@ -350,6 +286,9 @@ XRDS-based service discovery on URLs.
 This module was originally developed by OHTSUKA Ko-hei as L<Net::Yadis::Discovery>,
 but was forked and simplified for inclusion in the core OpenID Consumer package.
 
+This simplified version is tailored for the needs of Net::OpenID::Consumer; for other
+uses, L<Net::Yadis::Discovery> is probably a better choice.
+
 =head1 CONSTRUCTOR
 
 =over 4
@@ -358,8 +297,8 @@ but was forked and simplified for inclusion in the core OpenID Consumer package.
 
 my $disc = Net::OpenID::Yadis->new([ %opts ]);
 
-You can set the C<ua> and C<cache> in the constructor.  See the corresponding 
-method descriptions below.
+You can set the C<consumer> in the constructor.  See the corresponding 
+method description below.
 
 =back
 
@@ -369,20 +308,14 @@ This module exports three constant values to use with discover method.
 
 =over 4
 
-=item C<YR_HEAD>
-
-If you set this value to option argument of discover method, module check Yadis 
-URL start from HTTP HEAD request.
-
 =item C<YR_GET>
 
-If you set this, module check Yadis URL start from HTTP GET request.
+If you set this, module check Yadis URL start from HTTP GET request. This is the default.
 
 =item C<YR_XRDS>
 
-If you set this, this module consider Yadis URL as Yadis Resource Descriptor 
-URL.
-If not so, error returns.
+If you set this, this module consider Yadis URL as Yadis Resource Descriptor URL.
+If not so, an error is returned.
 
 =back
 
@@ -390,26 +323,11 @@ If not so, error returns.
 
 =over 4
 
-=item $disc->B<ua>($user_agent)
+=item $disc->B<consumer>($consumer)
 
-=item $disc->B<ua>
+=item $disc->B<consumer>
 
-Getter/setter for the LWP::UserAgent (or subclass) instance which will
-be used when web donwloads are needed.  It's highly recommended that
-you use LWPx::ParanoidAgent, or at least read its documentation so
-you're aware of why you should care.
-
-=item $disc->B<cache>($cache)
-
-=item $disc->B<cache>
-
-Getter/setter for the optional (but recommended!) cache instance you
-want to use for storing fetched parts of pages.
-
-The $cache object can be anything that has a -E<gt>get($key) and
--E<gt>set($key,$value) methods.  See L<URI::Fetch> for more
-information.  This cache object is just passed to L<URI::Fetch>
-directly.
+Get or set the Net::OpenID::Consumer object that this object is associated with.
 
 =item $disc->B<discover>($url,[$request_method])
 
@@ -523,6 +441,8 @@ This is free software. IT COMES WITHOUT WARRANTY OF ANY KIND.
 Yadis website:  L<http://yadis.org/>
 
 L<Net::OpenID::Yadis::Service>
+
+L<Net::OpenID::Consumer>
 
 =head1 AUTHORS
 

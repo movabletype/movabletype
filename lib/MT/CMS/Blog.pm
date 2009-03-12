@@ -53,7 +53,11 @@ sub edit {
             if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
                 $c = $app->handler_to_coderef($c);
                 if ( $c ) {
-                    $cmtauth{$auth}->{disabled} = 1 unless $c->();
+                    my $reason;
+                    $cmtauth{$auth}->{disabled} = 1 unless $c->( $blog, \$reason );
+                    $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
+                    delete $cmtauth{TypeKey}
+                        if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
                 }
             }
         }
@@ -76,18 +80,12 @@ sub edit {
                 )
               )
             {
-                push @cmtauth_loop, $cmtauth{$_};
+                # force plugin auth schemes to show after native auth schemes
+                $cmtauth{$_}{order} = ($cmtauth{$_}{order} || 0) + 100;
             }
+            push @cmtauth_loop, $cmtauth{$_};
         }
-        unshift @cmtauth_loop, $cmtauth{'TypeKey'}
-          if exists( $cmtauth{'TypeKey'} )
-          && $blog->remote_auth_token;
-        unshift @cmtauth_loop, $cmtauth{'Vox'}
-          if exists $cmtauth{'Vox'};
-        unshift @cmtauth_loop, $cmtauth{'LiveJournal'}
-          if exists $cmtauth{'LiveJournal'};
-        unshift @cmtauth_loop, $cmtauth{'OpenID'}
-          if exists $cmtauth{'OpenID'};
+        @cmtauth_loop = sort { $a->{order} <=> $b->{order} } @cmtauth_loop;
 
         $param->{cmtauth_loop} = \@cmtauth_loop;
 
@@ -1344,11 +1342,6 @@ sub pre_save {
               }
               keys %$ping_servers;
             $obj->update_pings( join( ',', @pings_list ) );
-        }
-        if ( $screen eq 'cfg_entry' ) {
-            my %param = $_[0] ? %{ $_[0] } : ();
-            my $pref_param = $app->load_entry_prefs;
-            %param = ( %param, %$pref_param );
         }
         if ( $screen eq 'cfg_trackbacks' ) {
             if ( my $pings = $app->param('allow_pings') ) {

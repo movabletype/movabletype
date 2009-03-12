@@ -104,7 +104,7 @@
                     </select>
                 </td>
         <mt:else>
-                <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_review"> status-review</mt:if><mt:if name="status_future"> status-future</mt:if>">
+                <td class="status si<mt:if name="status_draft"> status-draft</mt:if><mt:if name="status_publish"> status-publish</mt:if><mt:if name="status_review"> status-review</mt:if><mt:if name="status_future"> status-future</mt:if><mt:if name="status_spam"> status-spam</mt:if>">
             <mt:if name="status_draft">
                     <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=1" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show unpublished entries"><mt:else><__trans phrase="Only show unpublished pages"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Unpublished (Draft)">" width="9" height="9" /></a>
             </mt:if>
@@ -116,6 +116,9 @@
             </mt:if>
             <mt:if name="status_future">
                     <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=4" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show scheduled entries"><mt:else><__trans phrase="Only show scheduled pages"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Scheduled">" width="9" height="9" /></a>
+            </mt:if>
+            <mt:if name="status_spam">
+                    <a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type"><mt:if name="blog_id">&amp;blog_id=<$mt:var name="blog_id"$></mt:if>&amp;filter=status&amp;filter_val=5" title="<mt:if name="object_type" eq="entry"><__trans phrase="Only show spam entries"><mt:else><__trans phrase="Only show spam pages"></mt:if>"><img src="<$mt:var name="static_uri"$>images/spacer.gif" alt="<__trans phrase="Spam">" width="9" height="9" /></a>
             </mt:if>
                 </td>
         </mt:if>

@@ -126,7 +126,6 @@ sub seed_database {
     $author->type(MT::Author::AUTHOR());
     $author->set_password(exists $param{user_password} ? uri_unescape($param{user_password}) : 'Nelson');
     $author->email(exists $param{user_email} ? uri_unescape($param{user_email}) : '');
-    $author->hint(exists $param{user_hint} ? uri_unescape($param{user_hint}) : '');
     $author->nickname(exists $param{user_nickname} ? uri_unescape($param{user_nickname}) : '');
     $author->is_superuser(1);
     $author->can_create_blog(1);
@@ -184,6 +183,12 @@ sub seed_database {
     require MT::Role;
     my ($blog_admin_role) = MT::Role->load_by_permission("administer_blog");
     MT::Association->link( $blog => $blog_admin_role => $author );
+
+    if ($param{use_system_email}) {
+        my $cfg = MT->config;
+        $cfg->EmailAddressMain(uri_unescape($param{user_email}), 1);
+        $cfg->save;
+    }
 
     1;
 }

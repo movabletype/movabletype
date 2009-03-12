@@ -61,6 +61,9 @@ sub edit {
         my $blog = $app->model('blog')->load($blog_id);
         my $status = $q->param('status') || $obj->status;
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
+        if ( ($obj->status == MT::Entry::JUNK() || $obj->status == MT::Entry::REVIEW()) && $obj->junk_log ) {
+            build_junk_table( $app, param => $param, object => $obj );
+        }
         $param->{ "allow_comments_"
               . ( $q->param('allow_comments') || $obj->allow_comments || 0 )
           } = 1;
@@ -230,12 +233,15 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
-        require JSON;
-        my $json = JSON->new( autoconv => 0 ); # stringifies numbers this way
-        $param->{tags_js} =
-          $json->objToJson(
-            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Entry', private => 1 )
-          );
+        my $tags_js = MT::Util::to_json(
+            MT::Tag->cache(
+                blog_id => $blog_id,
+                class   => 'MT::Entry',
+                private => 1
+            )
+        );
+        $tags_js =~ s!/!\\/!g;
+        $param->{tags_js} = $tags_js;
 
         $param->{can_edit_categories} = $perms->can_edit_categories;
     }
@@ -362,6 +368,14 @@ sub edit {
     }
 
     $param->{object_type}  = $type;
+    $param->{field_loop} ||= [ map { {
+        field_name => $_,
+        field_id => $_,
+        lock_field => ($_ eq 'title' or $_ eq 'text'),
+        show_field => ($_ eq 'title' or $_ eq 'text') ? 1 : $param->{"disp_prefs_show_$_"},
+        field_label => $app->translate( ucfirst( $_ ) ),
+    } }
+        qw( title text tags excerpt keywords ) ];
     $param->{quickpost_js} = MT::CMS::Entry::quickpost_js($app, $type);
     if ( 'page' eq $type ) {
         $param->{search_label} = $app->translate('pages');
@@ -372,13 +386,62 @@ sub edit {
     1;
 }
 
+sub build_junk_table {
+    my $app = shift;
+    my (%args) = @_;
+
+    my $param = $args{param};
+    my $obj   = $args{object};
+
+    # if ( defined $obj->junk_score ) {
+    #     $param->{junk_score} =
+    #       ( $obj->junk_score > 0 ? '+' : '' ) . $obj->junk_score;
+    # }
+    my $log = $obj->junk_log || '';
+    my @log = split /\r?\n/, $log;
+    my @junk;
+    for ( my $i = 0 ; $i < scalar(@log) ; $i++ ) {
+        my $line = $log[$i];
+        $line =~ s/(^\s+|\s+$)//g;
+        next unless $line;
+        last if $line =~ m/^--->/;
+        my ( $test, $score, $log );
+        ($test) = $line =~ m/^([^:]+?):/;
+        if ( defined $test ) {
+            ($score) = $test =~ m/\(([+-]?\d+?(?:\.\d*?)?)\)/;
+            $test =~ s/\(.+\)//;
+        }
+        if ( defined $score ) {
+            $score =~ s/\+//;
+            $score .= '.0' unless $score =~ m/\./;
+            $score = ( $score > 0 ? '+' : '' ) . $score;
+        }
+        $log = $line;
+        $log =~ s/^[^:]+:\s*//;
+        $log = encode_html($log);
+        for ( my $j = $i + 1 ; $j < scalar(@log) ; $j++ ) {
+            my $line = encode_html( $log[$j] );
+            if ( $line =~ m/^\t+(.*)$/s ) {
+                $i = $j;
+                $log .= "<br />" . $1;
+            }
+            else {
+                last;
+            }
+        }
+        push @junk, { test => $test, score => $score, log => $log };
+    }
+    $param->{junk_log_loop} = \@junk;
+    \@junk;
+}
+
 sub list {
     my $app = shift;
     my ($param) = @_;
     $param ||= {};
 
     require MT::Entry;
-    my $type = $param->{type} || MT::Entry->class_type;
+    my $type = $app->param('type') || MT::Entry->class_type;
     my $pkg = $app->model($type) or return "Invalid request.";
 
     my $q     = $app->param;
@@ -421,9 +484,13 @@ sub list {
     }
 
     my %arg;
+    $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
+    $arg{direction} = 'descend';
     my $filter_key = $q->param('filter_key') || '';
     my $filter_col = $q->param('filter')     || '';
     my $filter_val = $q->param('filter_val');
+    my $iter_method;
+    my $total;
 
     # check blog_id for deciding to apply category filter or not
     my ( $filter_name, $filter_value );    # human-readable versions
@@ -514,7 +581,23 @@ sub list {
                 );
             }
             else {
-                $terms{$filter_col} = $filter_val;
+                if ( $pkg->is_meta_column($filter_col) ) {
+                    my $meta_rec = MT::Meta->metadata_by_name($pkg, $filter_col);
+                    my $type_col = $meta_rec->{type};
+                    my $type_id  = $meta_rec->{name};
+                    my $meta_terms = {
+                        $type_col => $filter_val,
+                        type      => $type_id,
+                    };
+                    $total = $pkg->meta_pkg->count( $meta_terms );
+                    my @result = $pkg->search_by_meta( $filter_col, $filter_val, {}, \%arg );
+                    $iter_method = sub {
+                        return shift @result;
+                    };
+                }
+                elsif ( $pkg->has_column($filter_col) ) {
+                    $terms{$filter_col} = $filter_val;
+                }
             }
             $param{filter_args} = "&filter=" . encode_url($filter_col) . "&filter_val=" . encode_url($filter_val);
 
@@ -556,12 +639,16 @@ sub list {
             }
         }
     }
+
+    if ( !exists( $terms{status} ) ) {
+        $terms{status} = { not => MT->model('entry')->JUNK };
+    }
+
     require MT::Category;
     require MT::Placement;
 
-    my $total = $pkg->count( \%terms, \%arg ) || 0;
-    $arg{'sort'} = $type eq 'page' ? 'modified_on' : 'authored_on';
-    $arg{direction} = 'descend';
+    $total = $pkg->count( \%terms, \%arg ) || 0
+        unless defined $total;
     $arg{limit}     = $limit + 1;
     if ( $total <= $limit ) {
         delete $arg{limit};
@@ -577,7 +664,7 @@ sub list {
         $arg{offset} = $offset if $offset;
     }
 
-    my $iter = $pkg->load_iter( \%terms, \%arg );
+    my $iter = $iter_method || $pkg->load_iter( \%terms, \%arg );
 
     my $is_power_edit = $q->param('is_power_edit');
     if ($is_power_edit) {
@@ -851,7 +938,7 @@ sub preview {
     return $app->error($app->translate('Can\'t load template.')) unless $tmpl;
 
     # translates naughty words when PublishCharset is NOT UTF-8
-    $app->_translate_naughty_words($entry);
+    MT::Util::translate_naughty_words($entry);
 
     $entry->convert_breaks( scalar $q->param('convert_breaks') );
         
@@ -1272,7 +1359,7 @@ $ao
     }
     my $is_new = $obj->id ? 0 : 1;
 
-    $app->_translate_naughty_words($obj);
+    MT::Util::translate_naughty_words($obj);
 
     $obj->modified_by( $author->id ) unless $is_new;
 
@@ -1717,6 +1804,7 @@ sub open_batch_editor {
     $app->param( 'is_power_edit', 1 );
     $app->param( 'filter',        'power_edit' );
     $app->param( 'filter_val',    \@ids );
+    $app->param( 'type', $app->param('_type') );
     $app->mode(
         'list_' . ( 'entry' eq $app->param('_type') ? 'entries' : 'pages' ) );
     $app->forward( "list_entry", { type => $app->param('_type') } );

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -53,6 +53,9 @@ sub core_tags {
 
             'IfCategory?' => \&_hdlr_if_category,
             'EntryIfCategory?' => \&_hdlr_if_category,
+
+            'IfExternalUserManagement?' => \&_hdlr_if_external_user_management,
+            'IfCommenterRegistrationAllowed?' => \&_hdlr_if_commenter_registration_allowed,
 
             # Subcategory handlers
             'SubCatIsFirst?' => \&_hdlr_sub_cat_is_first,
@@ -768,9 +771,21 @@ sub _fltr_nofollowfy {
 
 Applies one or more text format filters.
 
-B<Example:>
+=head4 Values
 
-    <$mt:EntryBody convert_breaks="0" filters="filter1, filter2, filter3"$>
+See the list of acceptable values in the L<AllowedTextFilters|/documentation/appendices/config-directives/allowedtextfilters.html> config directive docs
+
+=head4 Examples
+
+Remove the default text filter specified in the Edit Entry screen (Rich Text, Markdown, etc) by setting convert_breaks="0" and then use the filter attribute to specify the desired filter.
+
+    <$mt:EntryBody convert_breaks="0" filters="__default__"$>
+
+If you want to use Markdown for the body, but Markdown with SmartyPants for the extended entry, do this:
+
+    <$mt:EntryMore convert_breaks="0" filters="markdown_with_smartypants"$>
+
+If you want no formatting on L<EntryBody> or L<EntryMore> (extended) text, just use convert_breaks="0".
 
 =cut
 
@@ -3555,8 +3570,7 @@ sub _hdlr_get_var {
     }
 
     if (ref($value) && $args->{to_json}) {
-        require JSON;
-        return JSON::objToJson($value);
+        return MT::Util::to_json($value);
     }
     return defined $value ? $value : "";
 }
@@ -4239,6 +4253,8 @@ If specified, outputs the "normalized" form of the tag. A normalized
 tag has been stripped of any spaces and punctuation and is only
 lowercase.
 
+=back
+
 =over 4
 
 =item * quote (optional; default "0")
@@ -4320,9 +4336,9 @@ sub _hdlr_tag_count {
 =head2 IfTypeKeyToken
 
 A conditional tag that is true when the current blog in context has been
-configured with a TypeKey token.
+configured with a TypePad token.
 
-=for tags comments, typekey
+=for tags comments, typepad
 
 =cut
 
@@ -4597,7 +4613,7 @@ tag used to include this "Some Module" template module, like so:
     <$mt:Var name="contents"$>
     (footer stuff)
 
-B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached
+B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached.
 
 +B<Attributes:>
 
@@ -4615,12 +4631,19 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
 =cut
 
 sub _hdlr_include_block {
-    my($ctx, @param) = @_;
-    my $contents = $ctx->slurp(@param);
-    my $args = $param[0];
+    my($ctx, $args, $cond) = @_;
     my $name = delete $args->{var} || 'contents';
-    local $ctx->{__stash}{vars}{$name} = $contents;
-    return $ctx->tag('include', @param);
+    # defer the evaluation of the child tokens until used inside
+    # the block (so any variables/context changes made in that template
+    # affect the contained template code)
+    my $tokens = $ctx->stash('tokens');
+    local $ctx->{__stash}{vars}{$name} = sub {
+        my $builder = $ctx->stash('builder');
+        my $html = $builder->build($ctx, $tokens, $cond);
+        return $ctx->error($builder->errstr) unless defined $html;
+        return $html;
+    };
+    return $ctx->tag('include', $args, $cond);
 }
 
 ###########################################################################
@@ -4664,6 +4687,11 @@ filename to load.
 
 Used to include a template from another blog in the system. Use in
 conjunction with the module, widget or identifier attributes.
+
+=item * local (optional)
+
+Forces an Include of a template that exists in the blog that is being
+published.
 
 =item * global (optional; default "0")
 
@@ -4774,7 +4802,14 @@ sub _include_module {
         $type = 'widget';
         $tmpl_name =~ s/^Widget: ?//;
     }
-    my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+    my $blog_id = defined($arg->{blog_id})
+      ? $arg->{blog_id}
+      : ( $arg->{global} )
+        ? 0 
+        : defined($ctx->{__stash}{blog_id})
+          ? $ctx->{__stash}{blog_id}
+          : 0;
+    $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
     my $stash_id = 'template_' . $type . '::' . $blog_id . '::' . $tmpl_name;
     return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
         if $include_stack{$stash_id};
@@ -4872,7 +4907,7 @@ sub _include_module {
     my $cache_driver;
     if ($cache_enabled) {
         my $tmpl_mod = $tmpl->modified_on;
-        my $tmpl_ts = MT::Util::ts2epoch($blog, $tmpl_mod);
+        my $tmpl_ts = MT::Util::ts2epoch($tmpl->blog_id ? $tmpl->blog : undef, $tmpl_mod);
         if (($ttl == 0) || (time - $tmpl_ts < $ttl)) {
             $ttl = time - $tmpl_ts;
         }
@@ -4966,13 +5001,15 @@ sub _include_file {
         $tokens = $cref;
     } else {
         my $blog = $ctx->stash('blog');
-        if ($blog->id != $blog_id) {
+        if ($blog && $blog->id != $blog_id) {
             $blog = MT::Blog->load($blog_id)
                 or return $ctx->error(MT->translate(
                     "Can't find blog for id '[_1]", $blog_id));
         }
-        my @paths = ($file, map File::Spec->catfile($_, $file),
-                            $blog->site_path, $blog->archive_path);
+        my @paths = ($file);
+        push @paths, map { File::Spec->catfile($_, $file) }
+            ($blog->site_path, $blog->archive_path)
+            if $blog;
         my $path;
         for my $p (@paths) {
             $path = $p, last if -e $p && -r _;
@@ -5276,6 +5313,8 @@ B<NOTE:> Only one of the 'template' or 'entry_id' attributes can be specified
 at a time.
 
 B<Attributes:>
+
+=over 4
 
 =item * template
 
@@ -5663,9 +5702,9 @@ sub _hdlr_set_hashvar {
 
 =head2 SetVar
 
-A function tag used to set the value of a template variable. This tag
-is considered deprecated in favor of L<Var>, which can be used to both
-retrieve and assign template variables.
+A function tag used to set the value of a template variable.
+
+For simply setting variables you can use the L<Var> tag with a value attribute to assign template variables.
 
 B<Attributes:>
 
@@ -5696,7 +5735,7 @@ for the template variable.
 
 =back
 
-=for tags deprecated
+=for tags
 
 =cut
 
@@ -5833,6 +5872,7 @@ sub _hdlr_set_var {
           ? $existing->[ $index ] 
           : undef;
     }
+    $existing = '' unless defined $existing;
 
     if ($args->{prepend}) {
         $val = $val . $existing;
@@ -6308,7 +6348,12 @@ Supported values: display_name, name, created_on.
 
 Supported values: ascend, descend.
 
-=item * role
+=item * any_type (optional; default "0")
+
+Pass a value of '1' for this attribute to cause it to select users of
+any type associated with the blog, including commenters.
+
+=item * roles
 
 A the role used to select users by.
 eg: "Editor" or multiple roles "Author, Contributor" or exclude roles "!(Editor)".
@@ -6318,6 +6363,14 @@ eg: "Editor" or multiple roles "Author, Contributor" or exclude roles "!(Editor)
 Identifies whether the author(s) must have published an entry
 to be included or not.
 
+=item * need_association (optional; default "0")
+
+Identifies whether the author(s) must have explicit association
+to the blog(s) in context.  This attribute can be used to
+exclude system administrators who do not have explicit association
+to the blog(s).  This attribute requires blog context which
+can be created by include_blogs, exclude_blogs, and blog_ids.
+
 =item * status (optional; default "enabled")
 
 Supported values: enabled, disabled.
@@ -6326,6 +6379,12 @@ Supported values: enabled, disabled.
 
 Used in conjunction with the "min*", "max*" attributes to
 select authors based on a particular scoring mechanism.
+
+=item * scoring_to
+
+If 'namespace' is also specified, filters the authors based on
+the score within that namespace. This attribute specifies which 
+type of object to look up. the object has to be specified in context.
 
 =item * min_score
 
@@ -6412,7 +6471,8 @@ sub _hdlr_authors {
             push @filters, $cexpr;
         }
     }
-    if (my $role_arg = $args->{role} || $args->{roles}) {
+    my $role_arg;
+    if ($role_arg = $args->{role} || $args->{roles}) {
         if ($role_arg !~ m/\b(OR)\b|\(|\)/i) {
             my @roles = MT::Tag->split(',', $role_arg);
             $role_arg = join " or ", @roles;
@@ -6443,60 +6503,83 @@ sub _hdlr_authors {
             \%blog_terms, \%blog_args);
     } else {
         $blog_args{'unique'} = 1;
-        if (!$args->{role}) {
+        if (!$role_arg) {
             require MT::Permission;
             $args{'join'} =
-                MT::Permission->join_on( 'author_id', undef, \%blog_args );
-            push @filters, sub {
-                $_[0]->permissions($blog_id)->can_administer_blog
-                    || $_[0]->permissions($blog_id)->can_post;
-            };
-        }
-    }
-
-    if ($args->{namespace}) {
-        my $namespace = $args->{namespace};
-
-        my $need_join = 0;
-        if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
-            $need_join = 1;
-        } else {
-            for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
-                if ($args->{$f}) {
-                    $need_join = 1;
-                    last;
-                }
+                MT::Permission->join_on(
+                  'author_id',
+                  exists($args->{need_association}) && $args->{need_association}
+                    ? \%blog_terms
+                    : undef,
+                  \%blog_args
+                );
+            if ( ! $args->{any_type} ) {
+                push @filters, sub {
+                    $_[0]->permissions($blog_id)->can_administer_blog
+                        || $_[0]->permissions($blog_id)->can_post;
+                };
             }
         }
-        if ($need_join) {
-            $args{join} = MT->model('objectscore')->join_on(undef,
-                {
-                    object_id => \'=author_id',
-                    object_ds => 'author',
-                    namespace => $namespace,
-                }, {
-                    unique => 1,
-            });
+    }
+    if ($args->{namespace}) {
+        my $namespace = $args->{namespace};
+        if ( my $scoring_to = $args->{scoring_to} ) {
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $scoring_to, 'scoring_to'))
+                unless exists $ctx->{__stash}{$scoring_to};
+            my $scored_object = $ctx->{__stash}{$scoring_to};
+            if ($args->{min_score}) {
+                push @filters, sub { $scored_object->get_score($namespace, $_[0]) >= $args->{min_score}; };
+            }
+            if ($args->{max_score}) {
+                push @filters, sub { $scored_object->get_score($namespace, $_[0]) <= $args->{max_score}; };
+            }
+            if ( !exists $args->{max_score} && !exists $args->{min_score} ) {
+                push @filters, sub { defined $scored_object->get_score($namespace, $_[0]); };
+            }
         }
+        else {
+            my $need_join = 0;
+            if ($args->{sort_by} && ($args->{sort_by} eq 'score' || $args->{sort_by} eq 'rate')) {
+                $need_join = 1;
+            }
+            else {
+                for my $f qw( min_score max_score min_rate max_rate min_count max_count scored_by ) {
+                    if ($args->{$f}) {
+                        $need_join = 1;
+                        last;
+                    }
+                }
+            }
+            if ($need_join) {
+                $args{join} = MT->model('objectscore')->join_on(undef,
+                    {
+                        object_id => \'=author_id',
+                        object_ds => 'author',
+                        namespace => $namespace,
+                    }, {
+                        unique => 1,
+                });
+            }
 
-        # Adds a rate or score filter to the filter list.
-        if ($args->{min_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
-        }
-        if ($args->{max_score}) {
-            push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
-        }
-        if ($args->{min_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
-        }
-        if ($args->{max_rate}) {
-            push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
-        }
-        if ($args->{min_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
-        }
-        if ($args->{max_count}) {
-            push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+            # Adds a rate or score filter to the filter list.
+            if ($args->{min_score}) {
+                push @filters, sub { $_[0]->score_for($namespace) >= $args->{min_score}; };
+            }
+            if ($args->{max_score}) {
+                push @filters, sub { $_[0]->score_for($namespace) <= $args->{max_score}; };
+            }
+            if ($args->{min_rate}) {
+                push @filters, sub { $_[0]->score_avg($namespace) >= $args->{min_rate}; };
+            }
+            if ($args->{max_rate}) {
+                push @filters, sub { $_[0]->score_avg($namespace) <= $args->{max_rate}; };
+            }
+            if ($args->{min_count}) {
+                push @filters, sub { $_[0]->vote_for($namespace) >= $args->{min_count}; };
+            }
+            if ($args->{max_count}) {
+                push @filters, sub { $_[0]->vote_for($namespace) <= $args->{max_count}; };
+            }
         }
     }
 
@@ -6514,6 +6597,9 @@ sub _hdlr_authors {
         } elsif (MT::Author->has_column($args->{sort_by})) {
             $args{'sort'} = $args->{sort_by};
         }
+    }
+    if ($args->{'limit'}) {
+        $args{limit} = $args->{limit};
     }
 
     if ($re_sort) {
@@ -7508,6 +7594,8 @@ B<Attributes:>
 If specified, forces the trailing "index" filename to be left on any
 entry permalink published in the RDF block.
 
+=back
+
 =for tags blogs, creativecommons
 
 =cut
@@ -7851,7 +7939,7 @@ sub _hdlr_entries {
 
     my $class_type = $args->{class_type} || 'entry';
     my $class = MT->model($class_type);
-    my $cat_class_type = $class_type eq 'entry' ? 'category' : 'folder';
+    my $cat_class_type = $class->container_type();
     my $cat_class = MT->model($cat_class_type);
 
     my %fields;
@@ -7899,14 +7987,15 @@ sub _hdlr_entries {
             my $archiver = MT->publisher->archiver($at);
             if ( $archiver && $archiver->group_based ) {
                 $entries = $archiver->archive_group_entries( $ctx, %$args );
-                # $ctx->stash( 'entries', $entries );
             }
         }
     }
     if ( $entries && scalar @$entries ) {
         my $entry = @$entries[0];
-        $entries = undef
-            if $entry->class ne $class_type;
+        if ( ! $entry->isa( $class ) ) {
+            # class types do not match; we can't use stashed entries
+            undef $entries;
+        }
     }
     local $ctx->{__stash}{entries};
 
@@ -7969,40 +8058,37 @@ sub _hdlr_entries {
             $cats = [ @{ $category_arg->[0] } ];
             $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => $is_and,
                 children => 
-                    $class_type eq 'entry' ?
+                    $cat_class_type eq 'category' ?
                         ($args->{include_subcategories} ? 1 : 0) :
                         ($args->{include_subfolders} ? 1 : 0)
             });
         } else {
             if (($category_arg !~ m/\b(AND|OR|NOT)\b|[(|&]/i) &&
-                (($class_type eq 'entry' && !$args->{include_subcategories}) ||
-                 ($class_type ne 'entry' && !$args->{include_subfolders})))
+                (($cat_class_type eq 'category' && !$args->{include_subcategories}) ||
+                 ($cat_class_type ne 'category' && !$args->{include_subfolders})))
             {
-                if ($blog_terms{blog_id}) {
-                    $cats = [ $cat_class->load(\%blog_terms, \%blog_args) ];
-                } else {
-                    my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $class_type);
-                    if (@cats) {
-                        $cats = \@cats;
-                        $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => 0 });
-                    }
+                my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $cat_class_type);
+                if (@cats) {
+                    $cats = \@cats;
                 }
+                $cexpr = $ctx->compile_category_filter($category_arg, $cats);
             } else {
-                my @cats = $cat_class->load(\%blog_terms, \%blog_args);
+                my @cats;
+                my @args_cat = split /\s*\b(?:AND|OR|NOT)\b\s|[\s*(?:|&)\s*]/i, $category_arg;
+                @args_cat = grep { $_ } @args_cat;
+                for my $c (@args_cat) {
+                    my @categories = cat_path_to_category($c, [ \%blog_terms, \%blog_args ], $cat_class_type);
+                    push @cats, @categories;
+                }
                 if (@cats) {
                     $cats = \@cats;
                     $cexpr = $ctx->compile_category_filter($category_arg, $cats,
-                        { children => $class_type eq 'entry' ?
+                        { children => $cat_class_type eq 'category' ?
                             ($args->{include_subcategories} ? 1 : 0) :
                             ($args->{include_subfolders} ? 1 : 0)
                         });
                 }
             }
-            $cexpr ||= $ctx->compile_category_filter($category_arg, $cats,
-                { children => $class_type eq 'entry' ?
-                    ($args->{include_subcategories} ? 1 : 0) :
-                    ($args->{include_subfolders} ? 1 : 0) 
-                });
         }
         if ($cexpr) {
             my %map;
@@ -8027,7 +8113,7 @@ sub _hdlr_entries {
             }
             push @filters, sub { $cexpr->( $preloader->($_[0]->id) ) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $class_type eq 'entry' ? 'category' : 'folder'));
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $category_arg, $cat_class_type));
         }
     }
     # Adds a tag filter to the filters list.
@@ -8074,9 +8160,9 @@ sub _hdlr_entries {
                 if ($tag_arg !~ m/\bNOT\b/i) {
                     return '' unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on( 'object_id', {
-                            tag_id => \@tag_ids, object_datasource => 'entry',
-                            %blog_terms
-                        }, { %blog_args, unique => 1 } );
+                        tag_id => \@tag_ids, object_datasource => 'entry',
+                        %blog_terms
+                    }, { %blog_args, unique => 1 } );
                     if (my $last = $args->{lastn} || $args->{limit}) {
                         $args{limit} = $last;
                     }
@@ -8084,7 +8170,7 @@ sub _hdlr_entries {
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $tag_arg));
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $tag_arg, 'tag'));
         }
     }
 
@@ -8098,6 +8184,22 @@ sub _hdlr_entries {
             push @filters, sub { $_[0]->author_id == $author->id };
         } else {
             $terms{author_id} = $author->id;
+        }
+    }
+
+    if ( my $f = MT::Component->registry("tags", "filters", "Entries") ) {
+        foreach my $set ( @$f ) {
+            foreach my $fkey ( keys %$set ) {
+                if (exists $args->{$fkey}) {
+                    my $h = $set->{$fkey}{code} ||= MT->handler_to_coderef( $set->{$fkey}{handler} );
+                    next unless ref($h) eq 'CODE';
+
+                    local $ctx->{filters} = \@filters;
+                    local $ctx->{terms} = \%terms;
+                    local $ctx->{args} = \%args;
+                    $h->($ctx, $args, $cond);
+                }
+            }
         }
     }
 
@@ -8508,6 +8610,7 @@ sub _hdlr_entries {
         local $ctx->{__stash}{blog_id} = $e->blog_id;
         local $ctx->{__stash}{entry} = $e;
         local $ctx->{current_timestamp} = $e->authored_on;
+        local $ctx->{current_timestamp_end} = $e->authored_on;
         local $ctx->{modification_timestamp} = $e->modified_on;
         my $this_day = substr $e->authored_on, 0, 8;
         my $next_day = $this_day;
@@ -8522,14 +8625,10 @@ sub _hdlr_entries {
             %$cond,
             DateHeader => ($this_day ne $last_day),
             DateFooter => $footer,
-            EntriesHeader => $class_type eq 'entry' ?
-                (!$i) : (),
-            EntriesFooter => $class_type eq 'entry' ?
-                (!defined $entries[$i+1]) : (),
-            PagesHeader => $class_type ne 'entry' ?
-                (!$i) : (),
-            PagesFooter => $class_type ne 'entry' ?
-                (!defined $entries[$i+1]) : (),
+            EntriesHeader => !$i,
+            EntriesFooter => !defined $entries[$i+1],
+            PagesHeader => !$i,
+            PagesFooter => !defined $entries[$i+1],
         });
         return $ctx->error( $builder->errstr ) unless defined $out;
         $last_day = $this_day;
@@ -9485,28 +9584,76 @@ sub _hdlr_entry_tb_id {
 
 =head2 EntryLink
 
-Outputs the URL for the current entry in context.
+Outputs absolute URL pointing to an archive page related to the the current entry in context.
 
-B<Attributes:>
+By default the tag will generate a URL to the "Preferred Archive" type specified in the blog's Publishing Settings (which is usually the Entry archive), but the link can be modified by specifying the desired archive type.
+
+=head4 Attributes
 
 =over 4
 
-=item * type (optional)
-
 =item * archive_type (optional)
 
-Identifies the archive type to use when creating the link. For instance,
-to link to the appropriate Monthly archive for the current entry (assuming
-Monthly archives are published), you can use this:
+=item * type (optional, alias of archive_type)
 
-    <$MTEntryLink type="Monthly"$>
+Identifies the archive type to use when creating the link. Valid archive types are case sensitive:
 
-or to link to other entries by the current author (assuming Author
-archives are published):
+=over 4
 
-    <$MTEntryLink type="Author"$>
+=item * Category
+
+=item * Monthly
+
+=item * Weekly
+
+=item * Daily
+
+=item * Individual
+
+=item * Author
+
+=item * Yearly
+
+=item * Author-Daily
+
+=item * Author-Weekly
+
+=item * Author-Monthly
+
+=item * Author-Yearly
+
+=item * Category-Daily
+
+=item * Category-Weekly
+
+=item * Category-Monthly
+
+=item * Category-Yearly
 
 =back
+
+=head4 Examples
+
+Link to the main category archive of the entry in context:
+
+    <a href="<$mt:EntryLink type="Category"$>"><$mt:EntryCategory$></a>
+
+Link to the appropriate Monthly archive for the current entry (assuming
+Monthly archives are published), you can use this:
+
+    <a href="<$mt:EntryLink type="Monthly"$>"><$mt:EntryDate format="%B %Y"$> Archives</a>
+
+Link to other entries by the current author (assuming Author archives are published):
+
+    <a href="<$mt:EntryLink type="Author"$>"><$mt:EntryAuthorDisplayName$></a>
+
+=head4 Related Tags
+
+=item * L<EntryPermalink>
+
+=back
+
+=for tags entry, function, template tag
 
 =cut
 
@@ -9753,8 +9900,8 @@ sub _hdlr_entry_categories {
 
 =head2 TypeKeyToken
 
-Outputs the configured TypeKey token for the current blog in context.
-If the blog has not been configured to use TypeKey, this will output
+Outputs the configured TypePad token for the current blog in context.
+If the blog has not been configured to use TypePad, this will output
 an empty string.
 
 =cut
@@ -9829,7 +9976,7 @@ sub _hdlr_sign_out_link {
 
 =head2 RemoteSignInLink
 
-Outputs a link to the MT Comment script to allow signing in to a TypeKey
+Outputs a link to the MT Comment script to allow signing in to a TypePad
 configured blog. B<NOTE: This is deprecated in favor of L<SignInLink>.>
 
 =for tags deprecated
@@ -9844,22 +9991,22 @@ sub _hdlr_remote_sign_in_link {
         if defined $blog && !(ref $blog);
     return $ctx->error(MT->translate('Can\'t load blog #[_1].', $ctx->stash('blog_id'))) unless $blog;
     my $auths = $blog->commenter_authenticators;
-    return $ctx->error(MT->translate("TypeKey authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
+    return $ctx->error(MT->translate("TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can't be used."))
         if $auths !~ /TypeKey/;
     
     my $rem_auth_token = $blog->effective_remote_auth_token();
-    return $ctx->error(MT->translate("To enable comment registration, you need to add a TypeKey token in your weblog config or user profile."))
+    return $ctx->error(MT->translate("To enable comment registration, you need to add a TypePad token in your weblog config or user profile."))
         unless $rem_auth_token;
     my $needs_email = $blog->require_typekey_emails ? "&amp;need_email=1" : "";
     my $signon_url = $cfg->SignOnURL;
     my $path = _hdlr_cgi_path($ctx);
     my $comment_script = $cfg->CommentScript;
-    my $static_arg = $args->{static} ? "static=" . $args->{static} : "static=0";
+    my $static_arg = $args->{static} ? "static=" . encode_url( encode_url( $args->{static} ) ) : "static=0";
     my $e = $ctx->stash('entry');
     my $tk_version = $cfg->TypeKeyVersion ? "&amp;v=" . $cfg->TypeKeyVersion : "";
     my $language = "&amp;lang=" . ($args->{lang} || $cfg->DefaultLanguage || $blog->language);
     return "$signon_url$needs_email$language&amp;t=$rem_auth_token$tk_version&amp;_return=$path$comment_script%3f__mode=handle_sign_in%26key=TypeKey%26$static_arg" .
-        ($e ? "%26entry_id=" . $e->id : '');
+        ($e ? "%26entry_id=" . $e->id : '%26blog_id=' . $blog->id);
 }
 
 ###########################################################################
@@ -11662,8 +11809,7 @@ sub _hdlr_user_session_state {
     return 'null' unless $app->can('session_state');
 
     my ( $state, $commenter ) = $app->session_state();
-    require JSON;
-    my $json = JSON::objToJson($state);
+    my $json = MT::Util::to_json($state);
     return $json;
 }
 
@@ -12514,9 +12660,6 @@ sub _hdlr_archives {
 
     my $archiver = MT->publisher->archiver($at);
     return '' unless $archiver;
-    my $map_class = MT->model('templatemap');
-    my $map = $map_class->load({ archive_type => $at, blog_id => $blog->id });
-    return '' unless $map;
 
     my $save_stamps;
     if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
@@ -13406,9 +13549,60 @@ sub _hdlr_calendar_cell_num {
 
 =head2 Categories
 
-Produces a list of categories defined for the current blog.
+Produces a list of categories defined for the current blog. This tag 
+produces output for every category with no regard to their hierarchical 
+structure.
 
-=for tags multiblog
+=head4 Attributes
+
+=over
+
+=item * `show_empty`
+
+    Setting this optional attribute to true (1) will include categories with 
+    no entries assigned. The default is false (0), where only categories with 
+    entries assigned.
+
+=item * `glue`
+
+    A string used to join the output of the separate iterations of MTCategories. 
+    This can be as simple as a comma and space (", ") to list out category labels 
+    or complex HTML markup to be inserted between the markup generated by MTCategories.
+
+=back
+
+=head4 Example
+
+List out the categories used on at least one blog entry, separated by commas:
+
+    Categories: <mt:Categories glue=", "><mt:categorylabel /></mt:Categories>
+
+List all categories and link to categories it the category has one or more entries:
+
+    <MTCategories show_empty="1">
+        <mt:if name="__first__">
+    <ul>
+        </mt:if>
+        <mt:if tag="CategoryCount" gte="1">
+        <li><a href="<$MTCategoryArchiveLink$>"><$MTCategoryLabel$></a></li>
+        <mt:else>
+        <li><$MTCategoryLabel$></li>
+        </mt:if>
+        <mt:if name="__last__">
+    </ul>
+        </mt:if>
+    </MTCategories>
+
+=head4 Related
+
+=over
+
+=item * [Template Loop Meta Variables](/documentation/designer/loop-meta-variables.html) 
+offer conditionals for odd, even, first, last, and counter.
+
+=back
+
+=for tags block, categories, category, entrycategories, template tag, multiblog
 
 =cut
 
@@ -15072,7 +15266,13 @@ L<TopLevelCategories>.
 
 =item * category
 
-Specifies a specific category by name for which to return subcategories.
+Specifies a specific category by name for which to return subcategories. 
+If subcategory label contains a slash (such as if the category was 
+"Mickey/Minnie Mouse"), this will be recognized as the divider specifying
+a category and subcategory. To avoid this issue surround the value of the 
+category attribute with square brackets:
+
+    category="[Mickey/Minnie Mouse]"
 
 =item * glue
 
@@ -15433,6 +15633,18 @@ current category and its ancestors. This tag is provided for convenience
 and is the equivalent of the following template tags:
 
     <mt:ParentCategories glue="/"><mt:CategoryBasename /></mt:ParentCategories>
+
+B<Attributes:>
+
+=over 4
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying an
+underscore will convert any dashes to underscores. Specifying a dash will
+convert any underscores to dashes.
+
+=back
 
 B<Example:>
 
@@ -15915,8 +16127,8 @@ B<Attributes:>
 =item * type
 
 Specifies a particular type(s) of asset to select. This may be
-one of image, audio, video (if unspecified, will select all asset
-types). Supports a comma-delimited list.
+one of image, audio, video, or file(a generic for unrecognized file types). 
+If unspecified, will select all asset types. Supports a comma-delimited list.
 
 =item * file_ext
 
@@ -16099,7 +16311,7 @@ sub _hdlr_assets {
             };
             push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
         } else {
-            return $ctx->error(MT->translate("You have an error in your 'tag' attribute: [_1]", $args->{tags} || $args->{tag}));
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
         }
     }
 
@@ -17128,6 +17340,7 @@ sub _hdlr_asset_thumbnail_link {
     $arg{Width} = $args->{width} if $args->{width};
     $arg{Height} = $args->{height} if $args->{height};
     $arg{Scale} = $args->{scale} if $args->{scale};
+    $arg{Square} = $args->{square} if $args->{square}; 
     my ($url, $w, $h) = $a->thumbnail_url(%arg);
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ($args->{new_window}) {
@@ -17253,11 +17466,18 @@ B<Attributes unique to the Pages tag:>
 
 =over 4
 
-=item * folder
+=item * folder or folders (optional)
 
-Use folder label, not basename.
+This attribute allows you to filter the pages based on their folder label.
+Please see the mt:Entries analogous category/categories attributes of
+for details.
 
-=item * include_subfolders
+=item * no_folder (optional)
+
+This attribute filters the pages to return only those not contained in
+a folder.
+
+=item * include_subfolders (optional)
 
 Specify '1' to cause all pages that may exist within subfolders to the
 folder in context to be included.
@@ -18262,6 +18482,17 @@ sub _hdlr_folder_count {
 
 The path to the folder, relative to the L<BlogURL>.
 
+B<Attributes:>
+
+=item * separator
+
+Valid values are "_" and "-", dash is the default value. Specifying an
+underscore will convert any dashes to underscores. Specifying a dash will
+convert any underscores to dashes.
+
+=back
+
+
 B<Example:>
 
 For the folder "Bar" in a folder "Foo" C<E<lt>$mt:FolderPath$E<gt>>
@@ -18306,6 +18537,9 @@ B<Example:>
 =cut
 
 sub _hdlr_if_folder {
+    my ($ctx) = @_;
+    my $e = $ctx->stash('entry');
+    return undef if ($e && !defined $e->category);
     return undef unless &_check_folder(@_);
     return _hdlr_if_category(@_);
 }
@@ -19692,9 +19926,9 @@ to show than currently appearing in the page.
 
 sub _hdlr_if_more_results {
     my ($ctx) = @_;
-    my $limit = $ctx->stash('limit');
-    my $offset = $ctx->stash('offset');
-    my $count = $ctx->stash('count');
+    my $limit = $ctx->stash('limit') || 0;
+    my $offset = $ctx->stash('offset') || 0;
+    my $count = $ctx->stash('count') || 0;
     return $limit + $offset >= $count ? 0 : 1;
 }
 
@@ -19727,10 +19961,6 @@ The page number is set to __value__ standard variable in each iteration.
 The tag also sets __odd__, __even__, __first__, __last__ and __counter__
 standard variables. 
 
-=for tags pagination
-
-=back
-
 B<Example:>
 
     M
@@ -19742,6 +19972,8 @@ B<Example:>
 produces:
 
     "Mooooooooovable Type" where each "o" is a link to the page.
+
+=for tags pagination
 
 =cut
 
@@ -19988,6 +20220,37 @@ sub _hdlr_widget_manager {
     }
     return '' unless $text;
     return $ctx->build($text);
+}
+
+###########################################################################
+
+=head2 IfExternalUserManagement
+
+A conditional tag that returns true when external user management is
+turned on.
+
+=cut
+
+sub _hdlr_if_external_user_management {
+    my ($ctx) = @_;
+    return $ctx->{config}->ExternalUserManagement;
+}
+
+###########################################################################
+
+=head2 IfCommenterRegistrationAllowed
+
+A conditional tag that returns true when user registration is
+turned on.
+
+=cut
+
+sub _hdlr_if_commenter_registration_allowed {
+    my ($ctx) = @_;
+    my $registration = $ctx->{config}->CommenterRegistration;
+    my $blog = $ctx->stash('blog');
+    return $registration->{Allow}
+        && ( $blog && $blog->allow_commenter_regist );
 }
 
 1;

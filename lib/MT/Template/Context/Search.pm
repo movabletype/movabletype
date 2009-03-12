@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -341,7 +341,9 @@ sub _hdlr_results {
         #    $blog_footer = 1;
         #}
         if ( $next_object = $iter->() ) {
-            $blog_footer = $next_object->blog_id ne $this_object->blog_id ? 1 : 0;
+            if ( $next_object->can('blog') ) {
+                $blog_footer = $next_object->blog_id ne $this_object->blog_id ? 1 : 0;
+            }
         }
         else {
             $blog_footer = 1;

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -7,6 +7,7 @@
 package MT::XMLRPCServer::Util;
 use strict;
 use Time::Local qw( timegm );
+use MT;
 use MT::Util qw( offset_time_list );
 use MT::I18N qw( encode_text first_n_text const );
 
@@ -77,7 +78,7 @@ sub _fault {
     my $enc = $mt->config('PublishCharset');
     SOAP::Fault->faultcode(1)->faultstring(
         SOAP::Data->type(
-            string => encode_text($_[0], $enc, 'utf-8')));
+            string => _encode_text_for_soap($_[0], $enc, 'utf-8')));
 }
 
 ## This is sort of a hack. XML::Parser automatically makes everything
@@ -98,6 +99,17 @@ sub no_utf8 {
     for (@_) {
         next if ref;
         $_ = pack 'C0A*', $_;
+    }
+}
+
+## SOAP::Lite 0.7 or above, expects string with UTF8 flag for response data.
+sub _encode_text_for_soap {
+    if ($] > 5.007) {
+        require Encode;
+        return Encode::decode('utf-8', encode_text(@_));
+    }
+    else {
+        return encode_text(@_);
     }
 }
 
@@ -574,7 +586,7 @@ sub getUsersBlogs {
         next unless $blog;
         push @res, { url => SOAP::Data->type(string => $blog->site_url),
                      blogid => SOAP::Data->type(string => $blog->id),
-                     blogName => SOAP::Data->type(string => encode_text($blog->name, undef, 'utf-8')) };
+                     blogName => SOAP::Data->type(string => _encode_text_for_soap($blog->name, undef, 'utf-8')) };
     }
     \@res;
 }
@@ -595,7 +607,7 @@ sub getUserInfo {
     { userid => SOAP::Data->type(string => $author->id),
       firstname => SOAP::Data->type(string => $fname),
       lastname => SOAP::Data->type(string => $lname),
-      nickname => SOAP::Data->type(string => encode_text($author->nickname, undef, 'utf-8')),
+      nickname => SOAP::Data->type(string => _encode_text_for_soap($author->nickname, undef, 'utf-8')),
       email => SOAP::Data->type(string => $author->email),
       url => SOAP::Data->type(string => $author->url) };
 }
@@ -623,25 +635,25 @@ sub _get_entries {
         $row->{ $param{page} ? 'page_id' : 'postid' } =
             SOAP::Data->type(string => $entry->id);
         if ($class eq 'blogger') {
-            $row->{content} = SOAP::Data->type(string => encode_text($entry->text, undef, 'utf-8'));
+            $row->{content} = SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8'));
         } else {
-            $row->{title} = SOAP::Data->type(string => encode_text($entry->title, undef, 'utf-8'));
+            $row->{title} = SOAP::Data->type(string => _encode_text_for_soap($entry->title, undef, 'utf-8'));
             unless ($titles_only) {
                 require MT::Tag;
                 my $tag_delim = chr($author->entry_prefs->{tag_delim});
                 my $tags = MT::Tag->join($tag_delim, $entry->tags);
-                $row->{description} = SOAP::Data->type(string => encode_text($entry->text, undef, 'utf-8'));
+                $row->{description} = SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8'));
                 my $link = $entry->permalink;
                 $row->{link} = SOAP::Data->type(string => $link);
                 $row->{permaLink} = SOAP::Data->type(string => $link),
-                $row->{mt_basename} = SOAP::Data->type(string => encode_text($entry->basename, undef, 'utf-8'));
+                $row->{mt_basename} = SOAP::Data->type(string => _encode_text_for_soap($entry->basename, undef, 'utf-8'));
                 $row->{mt_allow_comments} = SOAP::Data->type(int => $entry->allow_comments);
                 $row->{mt_allow_pings} = SOAP::Data->type(int => $entry->allow_pings);
                 $row->{mt_convert_breaks} = SOAP::Data->type(string => $entry->convert_breaks);
-                $row->{mt_text_more} = SOAP::Data->type(string => encode_text($entry->text_more, undef, 'utf-8'));
-                $row->{mt_excerpt} = SOAP::Data->type(string => encode_text($entry->excerpt, undef, 'utf-8'));
-                $row->{mt_keywords} = SOAP::Data->type(string => encode_text($entry->keywords, undef, 'utf-8'));
-                $row->{mt_tags} = SOAP::Data->type(string => encode_text($tags, undef, 'utf-8'));
+                $row->{mt_text_more} = SOAP::Data->type(string => _encode_text_for_soap($entry->text_more, undef, 'utf-8'));
+                $row->{mt_excerpt} = SOAP::Data->type(string => _encode_text_for_soap($entry->excerpt, undef, 'utf-8'));
+                $row->{mt_keywords} = SOAP::Data->type(string => _encode_text_for_soap($entry->keywords, undef, 'utf-8'));
+                $row->{mt_tags} = SOAP::Data->type(string => _encode_text_for_soap($tags, undef, 'utf-8'));
             }
         }
         push @res, $row;
@@ -775,13 +787,13 @@ sub _get_entry {
             [ map { $_->[0] } @cat_ids ]);
     }
 
-    my $basename = SOAP::Data->type(string => encode_text($entry->basename, undef, 'utf-8'));
+    my $basename = SOAP::Data->type(string => _encode_text_for_soap($entry->basename, undef, 'utf-8'));
     {
         dateCreated => SOAP::Data->type(dateTime => $co),
         userid => SOAP::Data->type(string => $entry->author_id),
         ($param{page} ? 'page_id' : 'postid') => SOAP::Data->type(string => $entry->id),
-        description => SOAP::Data->type(string => encode_text($entry->text, undef, 'utf-8')),
-        title => SOAP::Data->type(string => encode_text($entry->title, undef, 'utf-8')),
+        description => SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8')),
+        title => SOAP::Data->type(string => _encode_text_for_soap($entry->title, undef, 'utf-8')),
         mt_basename => $basename,
         wp_slug => $basename,
         link => SOAP::Data->type(string => $link),
@@ -790,10 +802,10 @@ sub _get_entry {
         mt_allow_comments => SOAP::Data->type(int => $entry->allow_comments),
         mt_allow_pings => SOAP::Data->type(int => $entry->allow_pings),
         mt_convert_breaks => SOAP::Data->type(string => $entry->convert_breaks),
-        mt_text_more => SOAP::Data->type(string => encode_text($entry->text_more, undef, 'utf-8')),
-        mt_excerpt => SOAP::Data->type(string => encode_text($entry->excerpt, undef, 'utf-8')),
-        mt_keywords => SOAP::Data->type(string => encode_text($entry->keywords, undef, 'utf-8')),
-        mt_tags => SOAP::Data->type(string => encode_text($tags, undef, 'utf-8')),
+        mt_text_more => SOAP::Data->type(string => _encode_text_for_soap($entry->text_more, undef, 'utf-8')),
+        mt_excerpt => SOAP::Data->type(string => _encode_text_for_soap($entry->excerpt, undef, 'utf-8')),
+        mt_keywords => SOAP::Data->type(string => _encode_text_for_soap($entry->keywords, undef, 'utf-8')),
+        mt_tags => SOAP::Data->type(string => _encode_text_for_soap($tags, undef, 'utf-8')),
     }
 }
 
@@ -859,7 +871,7 @@ sub getCategoryList {
     my @data;
     while (my $cat = $iter->()) {
         push @data, {
-            categoryName => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
+            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
             categoryId => SOAP::Data->type(string => $cat->id)
         };
     }
@@ -882,12 +894,12 @@ sub getCategories {
     while (my $cat = $iter->()) {
         my $url = File::Spec->catfile($blog->site_url, archive_file_for( undef, $blog, 'Category', $cat ));
         push @data, {
-            categoryId => SOAP::Data->type(string => encode_text($cat->id, undef, 'utf-8')),
-            parentId => ($cat->parent_category ? SOAP::Data->type(string => encode_text($cat->parent_category->id, undef, 'utf-8')) : undef),
-            categoryName => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
-            title => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
-            description => SOAP::Data->type(string => encode_text($cat->description, undef, 'utf-8')),
-            htmlUrl => SOAP::Data->type(string => encode_text($url, undef, 'utf-8')),
+            categoryId => SOAP::Data->type(string => _encode_text_for_soap($cat->id, undef, 'utf-8')),
+            parentId => ($cat->parent_category ? SOAP::Data->type(string => _encode_text_for_soap($cat->parent_category->id, undef, 'utf-8')) : undef),
+            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
+            title => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
+            description => SOAP::Data->type(string => _encode_text_for_soap($cat->description, undef, 'utf-8')),
+            htmlUrl => SOAP::Data->type(string => _encode_text_for_soap($url, undef, 'utf-8')),
         };
     }
     \@data;
@@ -907,7 +919,7 @@ sub getTagList {
     my @data;
     while (my $tag = $iter->()) {
         push @data, {
-            tagName => SOAP::Data->type(string => encode_text($tag->name, undef, 'utf-8')),
+            tagName => SOAP::Data->type(string => _encode_text_for_soap($tag->name, undef, 'utf-8')),
             tagId => SOAP::Data->type(string => $tag->id)
         };
     }
@@ -930,7 +942,7 @@ sub getPostCategories {
     for my $cat (@$cats) {
         my $is_primary = $prim && $cat->id == $prim->id ? 1 : 0;
         push @data, {
-            categoryName => SOAP::Data->type(string => encode_text($cat->label, undef, 'utf-8')),
+            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
             categoryId => SOAP::Data->type(string => $cat->id),
             isPrimary => SOAP::Data->type(boolean => $is_primary),
         };
@@ -990,7 +1002,7 @@ sub getTrackbackPings {
     my @data;
     while (my $ping = $iter->()) {
         push @data, {
-            pingTitle => SOAP::Data->type(string => encode_text($ping->title, undef, 'utf-8')),
+            pingTitle => SOAP::Data->type(string => _encode_text_for_soap($ping->title, undef, 'utf-8')),
             pingURL => SOAP::Data->type(string => $ping->source_url),
             pingIP => SOAP::Data->type(string => $ping->ip),
         };
@@ -1152,9 +1164,15 @@ sub newMediaObject {
 
     require MT::Asset;
     my $asset_pkg = MT::Asset->handler_for_file($local_basename);
-    my $is_image  = defined($w)
-      && defined($h)
-      && $asset_pkg->isa('MT::Asset::Image');
+    my $is_image = 0;
+    if ( defined($w) && defined($h) ) {
+        $is_image = 1
+            if $asset_pkg->isa('MT::Asset::Image');
+    }
+    else {
+        # rebless to file type
+        $asset_pkg = 'MT::Asset';
+    }
     my $asset;
     if (!($asset = $asset_pkg->load(
                 { file_path => $local_file, blog_id => $blog_id })))

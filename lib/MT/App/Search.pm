@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -154,6 +154,8 @@ sub init_request {
                 $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
                     if $blog_id;
             }
+            return $app->error( $app->translate('Invalid request.') )
+                if !exists $app->{searchparam}{IncludeBlogs} || !%{$app->{searchparam}{IncludeBlogs}};
         }
     }
     else {
@@ -170,7 +172,7 @@ sub generate_cache_keys {
     $key .= lc($_) . encode_url( $q->param($_) ) foreach @p;
     $count_key .= lc($_) . encode_url( $q->param($_) )
         foreach grep { ( 'limit' ne lc($_) ) && ( 'offset' ne lc($_) ) } @p;
-    $app->{cache_keys} = { result => $key, count => $count_key };
+    $app->{cache_keys} = { result => $key, count => $count_key, content_type => "HTTP_CONTENT_TYPE::$key" };
 }
 
 sub init_cache_driver {
@@ -249,7 +251,7 @@ sub create_blog_list {
     ## If IncludeBlogs has not been set, we need to build a list of
     ## the blogs to search. If ExcludeBlogs was set, exclude any blogs
     ## set in that list from our final list.
-    unless ( exists $blog_list{IncludeBlogs} ) {
+    if ( %{$blog_list{ExcludeBlogs}} && !%{$blog_list{IncludeBlogs}} ) {
         my $exclude = $blog_list{ExcludeBlogs};
         my $iter    = $app->model('blog')->load_iter;
         while ( my $blog = $iter->() ) {
@@ -271,6 +273,10 @@ sub check_cache {
         if exists $cache->{ $app->{cache_keys}{count} };
     my $result = $cache->{ $app->{cache_keys}{result} }
         if exists $cache->{ $app->{cache_keys}{result} };
+    if ( exists $cache->{ $app->{cache_keys}{content_type} } ) {
+        my $content_type = $cache->{ $app->{cache_keys}{content_type} };
+        $app->{response_content_type} = $content_type;
+    }
 
     ( $count, $result );
 }
@@ -307,12 +313,19 @@ sub process {
             if $format !~ /\w+/;
     }
     my $method = "render";
-    $method .= $format if $format && $app->can( $method . $format );
+    if ( $format ) {
+        $method .= $format if $app->can( $method . $format );
+    }
+    elsif ( my $tmpl_name = $app->param('Template') ) {
+        $method .= $tmpl_name if $app->can( $method . $tmpl_name );
+    }
+
     $out = $app->$method( $count, $iter );
+    return $app->error( $app->errstr ) unless defined $out;
 
     my $result;
     if ( ref($out) && ( $out->isa('MT::Template') ) ) {
-        defined( $result = $app->build_page($out) )
+        defined( $result = $out->build() )
             or return $app->error( $out->errstr );
     }
     else {
@@ -386,11 +399,14 @@ sub search_terms {
 
     my @terms;
     if (%def_terms) {
-
-       # If we have a term for the model's class column, add it separately, so
-       # array search() doesn't add the default class column term.
         my $type        = $app->{searchparam}{Type};
         my $model_class = MT->model($type);
+
+        delete $def_terms{blog_id}
+            unless $model_class->can('blog_id');
+
+        # If we have a term for the model's class column, add it separately, so
+        # array search() doesn't add the default class column term.
         if ( my $class_col = $model_class->properties->{class_column} ) {
             if ( $def_terms{$class_col} ) {
                 push @terms, { $class_col => delete $def_terms{$class_col} };
@@ -454,7 +470,7 @@ sub _cache_out {
 
     my $result;
     if ( ref($out) && ( $out->isa('MT::Template') ) ) {
-        defined( $result = $app->build_page($out) )
+        defined( $result = $out->build() )
             or die $out->errstr;
     }
     else {
@@ -464,14 +480,20 @@ sub _cache_out {
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{result},
         $out, $app->config->SearchCacheTTL );
+    if ( exists( $app->{response_content_type} )
+      && ( 'text/html' ne $app->{response_content_type} ) )
+    {
+        $cache_driver->set( $app->{cache_keys}{content_type},
+            $app->{response_content_type}, $app->config->SearchCacheTTL );
+    }
 }
 
 sub _log_search {
     my ( $cb, $app, $count_ref, $iter_ref ) = @_;
 
     #FIXME: template name may not be 'feed' for search feed
-    unless ( $app->param('template')
-        && ( 'feed' eq $app->param('template') ) )
+    unless ( $app->param('Template')
+        && ( 'feed' eq $app->param('Template') ) )
     {
         my $blog_id = $app->first_blog_id();
         require MT::Log;
@@ -590,6 +612,7 @@ sub load_search_tmpl {
             or
             return $app->errtrans( "Opening local file '[_1]' failed: [_2]",
             $filename, "$!" );
+        $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
 
@@ -607,6 +630,7 @@ sub load_search_tmpl {
             # load template from search_template path
             # template_paths method does the magic
             $tmpl = $app->load_tmpl( $app->config->SearchDefaultTemplate );
+            $tmpl->text( $app->translate_templatized( $tmpl->text ) );
         }
     }
     return $app->error( $app->errstr )
@@ -627,7 +651,7 @@ sub render {
         or return $app->error( $app->errstr );
     my $tmpl = $app->load_search_tmpl(@arguments)
         or return $app->error( $app->errstr );
-    $tmpl;
+    return $tmpl;
 }
 
 sub renderjs {
@@ -653,6 +677,18 @@ sub renderjs {
     my $next_link = $ctx->_hdlr_next_link();
     return $app->json_result(
         { content => $content, next_url => $next_link } );
+}
+
+#FIXME: template name may not be 'feed' for search feed
+sub renderfeed {
+    my $app = shift;
+    my $tmpl = $app->render(@_);
+    my $out = $app->build_page($tmpl);
+    my $ctx = $tmpl->context;
+    if ( my $content_type = $ctx->stash('content_type') ) {
+        $app->{response_content_type} = $content_type;
+    }
+    return $out;
 }
 
 sub query_parse {
@@ -1028,6 +1064,8 @@ below, to prevent itself overwriting throttle set up in the callback
 whose priority is higher than itself.
 
     return $$result if defined $$result;
+
+=back
 
 =head1 AUTHOR & COPYRIGHT
 

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -59,8 +59,7 @@ sub login {
         $app->translate( "Error loading [_1]: [_2]", $user_class, $@ ) )
         if $@;
     my $author = $user_class->load( { name => $username, type => AUTHOR } );
-    return undef unless $author && $author->is_active;
-    if ( $author && ( ( $author->api_password || '' ) ne '' ) ) {
+    if ( $author && $author->is_active && ( ( $author->api_password || '' ) ne '' ) ) {
         my $auth_token
             = perl_sha1_digest_hex( 'feed:' . $author->api_password );
         if ( $token eq $auth_token ) {

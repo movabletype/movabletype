@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,6 +24,24 @@ sub as_limit {
     die "Non-numerics in limit/offset clause ($n, $o)" if ($o =~ /\D/) || (($n ne 'ALL') && ($n =~ /\D/));
     return sprintf "LIMIT %s%s\n", $n,
            ($o ? " OFFSET " . int($o) : "");
+}
+
+sub _mk_term {
+    my $stmt = shift;
+    my ($col, $val) = @_;
+
+    if (ref $val eq 'HASH') {
+        if (!exists $val->{op}) {
+            if (exists $val->{like}) {
+                my $cols = $stmt->binary;
+                if (!$cols || !exists $cols->{$col}) {
+                    $val = { op => 'ILIKE', value => $val->{like} };
+                }
+            }
+        }
+    }
+
+    $stmt->SUPER::_mk_term($col, $val);
 }
 
 1;

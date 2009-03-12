@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,6 +10,8 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( trim browser_language );
+use MT::I18N qw( encode_text );
+
 
 sub id {'wizard'}
 
@@ -174,6 +176,11 @@ sub init_core_registry {
                 label =>
                     'This module is needed if you would like to be able to create thumbnails of uploaded images.',
             },
+            'IPC::Run' => {
+                link => 'http://search.cpan.org/dist/IPC-Run',
+                label =>
+                    'This module is needed if you would like to be able to use NetPBM as the image driver for MT.',
+            },
             'Storable' => {
                 link => 'http://search.cpan.org/dist/Storable',
                 label =>
@@ -183,6 +190,11 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/Crypt-DSA',
                 label =>
                     'This module accelerates comment registration sign-ins.',
+            },
+            'Crypt::SSLeay' => {
+                link => 'http://search.cpan.org/dist/Crypt-SSLeay',
+                label =>
+                    'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.',
             },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
@@ -617,6 +629,7 @@ sub configure {
             $cfg->DBSocket( $param{dbsocket} ) if $param{dbsocket};
             $cfg->DBHost( $param{dbserver} )
                 if $param{dbserver} && ( $param{dbtype} ne 'oracle' );
+            my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
 
@@ -637,12 +650,20 @@ sub configure {
             # test loading of object driver with these parameters...
             require MT::ObjectDriverFactory;
             my $od = MT::ObjectDriverFactory->new($driver);
+
+            $cfg->PublishCharset( $current_charset );
+
             eval { $od->rw_handle; };    ## to test connection
             if ( my $err = $@ ) {
                 $err_msg
                     = $app->translate(
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
+                if ( $param{publish_charset} ne $current_charset ) {
+                    # $param{publish_charset} is sometimes undef which forces encode_text
+                    # to guess_encode which should handle all of the cases.
+                    $err = encode_text( $err, $param{publish_charset}, $current_charset );
+                }
                 $err_more = $err;
             }
             else {

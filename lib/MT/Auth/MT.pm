@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -25,11 +25,6 @@ sub sanity_check {
         if ( !$auth->is_valid_password( $author, $q->param('old_pass') ) ) {
             return $app->translate('Failed to verify current password.');
         }
-    }
-    my $hint = $q->param('hint') || '';
-    $hint =~ s!^\s+|\s+$!!gs;
-    unless ($hint) {
-        return $app->translate('Password hint is required.');
     }
     return '';
 }

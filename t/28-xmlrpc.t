@@ -508,6 +508,7 @@ my @apis = (
                 'markdown' => 1,
                 'markdown_with_smartypants' => 1,
                 'textile_2' => 1,
+                '__sanitize__' => 1,
             );
             foreach my $res ( @$result ) {
                 is(1, delete( $tf{$res->{key}} ), $res->{key});

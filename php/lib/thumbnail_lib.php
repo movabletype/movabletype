@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -28,7 +28,7 @@ class Thumbnail {
     #   [1] thumbnail height
     #   [2] thumbnail width for file name
     #   [3] thumbnail width for file name
-    function _calculate_size ($width, $height, $scale) {
+    function _calculate_size ($width, $height, $scale, $square) {
         # Calculate thumbnail size
         $thumb_w = $this->src_w;
         $thumb_h = $this->src_h;
@@ -40,6 +40,18 @@ class Thumbnail {
             $thumb_h = $this->src_h * $scale / 100;
             $thumb_w_name = $thumb_w;
             $thumb_h_name = $thumb_h;
+        } elseif ($square) {
+            if ($width > 0) {
+                $thumb_w = $width;
+                $thumb_h = $width;
+                $thumb_w_name = $width;
+                $thumb_h_name = $width;
+            } else {
+                $thumb_w = $height;
+                $thumb_h = $height;
+                $thumb_w_name = $height;
+                $thumb_h_name = $height;
+            }
         } elseif ($width > 0 || $height > 0) {
             $thumb_w_name = 'auto';
             $thumb_h_name = 'auto';
@@ -93,7 +105,7 @@ class Thumbnail {
     }
 
     # Load or generate a thumbnail.
-    function get_thumbnail (&$dest, &$width, &$height, $id, $scale = 0, $format = '%f-thumb-%wx%h-%i%x', $dest_type = 'auto') {
+    function get_thumbnail (&$dest, &$width, &$height, $id, $scale = 0, $format = '%f-thumb-%wx%h-%i%x', $dest_type = 'auto', $square = false) {
         if (empty($this->src_file)) return false;
         if (!file_exists($this->src_file)) return false;
         if (!$this->is_available()) {
@@ -125,7 +137,7 @@ class Thumbnail {
         }
 
         # Calculate thumbnail size
-        list ($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name) = $this->_calculate_size($width, $height, $scale);
+        list ($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name) = $this->_calculate_size($width, $height, $scale, $square);
         $width = $thumb_w;
         $height = $thumb_h;
 
@@ -133,7 +145,6 @@ class Thumbnail {
         if (empty($dest)) {
             $dest = $this->_make_dest_name($thumb_w_name, $thumb_h_name, $format, $dest_type, $id);
         }
-
         # Generate
         if(!file_exists($dest)) {
             $dir_name = dirname($dest);
@@ -144,10 +155,27 @@ class Thumbnail {
                 return false;
             }
 
+            # if square modifier is enable, crop & resize
+            $src_x = 0;
+            $src_y = 0;
+            $target_w = $this->src_w;
+            $target_h = $this->src_h;
+            if ($square) {
+                if ($this->src_w > $this->src_h) {
+                    $src_x = (int)($this->src_w - $this->src_h) / 2;
+                    $src_y = 0;
+                    $target_w = $this->src_h;
+                } else {
+                    $src_x = 0;
+                    $src_y = (int)($this->src_h - $this->src_w) / 2;
+                    $target_h = $this->src_w;
+                }
+            }
+
             # Create thumbnail
             $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
-            $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, 0, 0,
-                    $thumb_w, $thumb_h, $this->src_w, $this->src_h);
+            $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, $src_x, $src_y,
+                    $thumb_w, $thumb_h, $target_w, $target_h);
 
             $output = $this->src_type;
             if ($dest_type != 'auto') {

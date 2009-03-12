@@ -4,7 +4,7 @@
 # SOAP::Lite is free software; you can redistribute it
 # and/or modify it under the same terms as Perl itself.
 #
-# $Id: TCP.pm,v 1.3 2001/08/11 19:09:57 paulk Exp $
+# $Id: TCP.pm 51 2004-11-14 19:30:50Z byrnereese $
 #
 # ======================================================================
 
@@ -12,7 +12,8 @@ package SOAP::Transport::TCP;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = eval sprintf("%d.%s", q$Name: release-0_52-public $ =~ /-(\d+)_([\d_]+)/);
+#$VERSION = sprintf("%d.%s", map {s/_//g; $_} q$Name$ =~ /-(\d+)_([\d_]+)/);
+$VERSION = $SOAP::Lite::VERSION;
 
 use URI;
 use IO::Socket;
@@ -22,7 +23,7 @@ use SOAP::Lite;
 
 # ======================================================================
 
-package URI::tcp; # ok, lets do 'tcp://' scheme
+package URI::tcp; # ok, let's do 'tcp://' scheme
 require URI::_server; 
 @URI::tcp::ISA=qw(URI::_server);
 
@@ -71,7 +72,8 @@ sub syswrite {
   while (length $data > 0) {
     return unless $select->can_write($timeout);
     local $SIG{PIPE} = 'IGNORE';
-    my $wc = syswrite($sock, $data);
+    # added length() to make it work on Mac. Thanks to Robin Fuller <rfuller@broadjump.com>
+    my $wc = syswrite($sock, $data, length($data));
     if (defined $wc) {
       substr($data, 0, $wc) = '';
     } elsif (!IO::SessionData::WOULDBLOCK($!)) {
@@ -113,11 +115,18 @@ sub send_receive {
   my $uri = URI->new($endpoint);
 
   local($^W, $@, $!);
-  my $sock = $self->io_socket_class->new (
+  my $socket = $self->io_socket_class; 
+  eval "require $socket" or Carp::croak $@ unless UNIVERSAL::can($socket => 'new');
+  my $sock = $socket->new (
     PeerAddr => $uri->host, PeerPort => $uri->port, Proto => $uri->scheme, %$self
   );
 
   SOAP::Trace::debug($envelope);
+
+  # bytelength hack. See SOAP::Transport::HTTP.pm for details.
+  my $bytelength = SOAP::Utils::bytelength($envelope);
+  $envelope = pack('C0A*', $envelope) 
+    if !$SOAP::Constants::DO_NOT_USE_LWP_LENGTH_HACK && length($envelope) != $bytelength;
 
   my $result;
   if ($sock) {
@@ -214,34 +223,3 @@ sub handle {
 1;
 
 __END__
-
-=head1 NAME
-
-SOAP::Transport::TCP - Server/Client side TCP support for SOAP::Lite
-
-=head1 SYNOPSIS
-
-  use SOAP::Transport::TCP;
-
-  my $daemon = SOAP::Transport::TCP::Server
-    -> new (LocalAddr => 'localhost', LocalPort => 82, Listen => 5, Reuse => 1)
-    -> objects_by_reference(qw(My::PersistentIterator My::SessionIterator My::Chat))
-    -> dispatch_to('/Your/Path/To/Deployed/Modules', 'Module::Name', 'Module::method') 
-  ;
-  print "Contact to SOAP server at ", join(':', $daemon->sockhost, $daemon->sockport), "\n";
-  $daemon->handle;
-
-=head1 DESCRIPTION
-
-=head1 COPYRIGHT
-
-Copyright (C) 2000-2001 Paul Kulchenko. All rights reserved.
-
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
-
-=head1 AUTHOR
-
-Paul Kulchenko (paulclinger@yahoo.com)
-
-=cut

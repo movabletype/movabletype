@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -205,7 +205,7 @@ sub upgrade {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = objToJson($steps);
+        $json_steps = MT::Util::to_json($steps);
     }
 
     $param{up_to_date} = $json_steps ? 0 : 1;
@@ -215,7 +215,7 @@ sub upgrade {
 }
 
 my @keys
-    = qw( admin_email hint preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id );
+    = qw( admin_email preferred_language admin_nickname admin_username initial_user initial_password initial_nickname initial_email initial_hint initial_lang initial_external_id use_system_email );
 
 sub init_user {
     my $app = shift;
@@ -241,9 +241,9 @@ sub init_user {
     my $initial_password    = '';
     my $initial_nickname    = $app->param('admin_nickname') || '';
     my $initial_email       = $app->param('admin_email') || '';
-    my $initial_hint        = $app->param('hint') || '';
     my $initial_lang        = $app->param('preferred_language');
     my $initial_external_id = '';
+    my $initial_use_system  = 0;
 
     require MT::Auth;
     my $mode = $app->config("AuthenticationModule");
@@ -311,16 +311,18 @@ sub init_user {
                 = $app->translate("The e-mail address is required.");
             return $app->build_page( 'install.tmpl', \%param );
         }
-        $initial_hint =~ s!^\s+|\s+$!!gs;
     }
+
+    $initial_use_system = 1
+        if $param{use_system_email};
 
     $param{initial_user}        = $initial_user;
     $param{initial_password}    = $initial_password;
     $param{initial_nickname}    = $initial_nickname;
     $param{initial_email}       = $initial_email;
-    $param{initial_hint}        = $initial_hint;
     $param{initial_lang}        = $initial_lang;
     $param{initial_external_id} = $initial_external_id;
+    $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
     $app->init_blog( \%param );
 }
@@ -407,9 +409,11 @@ sub init_blog {
         user_password    => uri_escape( $param{initial_password} ),
         user_email       => uri_escape( $param{initial_email} ),
         user_lang        => $param{initial_lang},
-        user_hint        => uri_escape( $param{initial_hint} ),
         user_external_id => $param{initial_external_id},
     };
+    if ( my $email_system = $param{initial_use_system} || $param{use_system_email} ) {
+        $new_user->{'use_system_email'} = $email_system;
+    }
     $new_blog = {
         blog_name         => uri_escape( $param{blog_name} ),
         blog_url          => uri_escape( $param{blog_url} ),
@@ -441,7 +445,7 @@ sub init_blog {
     $steps = $app->response->{steps};
     my $json_steps;
     if ( $steps && @$steps ) {
-        $json_steps = objToJson($steps);
+        $json_steps = MT::Util::to_json($steps);
     }
 
     $param{installing}    = $install_mode;
@@ -487,7 +491,7 @@ sub run_actions {
     }
 
     my $steps = $app->param('steps');
-    $steps = jsonToObj($steps);
+    $steps = JSON::from_json($steps);
 
     my $start = time;
     my @steps = (@$steps);
@@ -542,7 +546,7 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print( ' JSON:' . objToJson( $app->response ) );
+    $app->print( ' JSON:' . MT::Util::to_json( $app->response ) );
 }
 
 sub response {

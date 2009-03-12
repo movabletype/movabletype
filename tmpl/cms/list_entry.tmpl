@@ -121,18 +121,12 @@ function setFilterCol(choice) {
     sel.className = "filter-" + choice;
     if (choice != 'none') {
         var fld = getByID('filter-col');
-        if (choice == 'status')
-            fld.selectedIndex = 0;
-        else if (choice == 'author_id')
-            fld.selectedIndex = 1;
-        else if (choice == 'exacttag')
-            fld.selectedIndex = 2;
-        else if (choice == 'normalizedtag')
-            fld.selectedIndex = 3;
-        else if (choice == 'category_id')
-            fld.selectedIndex = 4;
-        else if (choice == 'asset_id')
-            fld.selectedIndex = <mt:if name="category_loop">5<mt:else>4</mt:if>;
+        for (var i = 0; i < fld.options.length; i++) {
+            if (fld.options[i].value == choice) {
+                fld.selectedIndex = i;
+                break;
+            }
+        }
         col_span = getByID("filter-text-col");
         if (fld.selectedIndex > -1 && col_span)
             col_span.innerHTML = '<strong>' + fld.options[fld.selectedIndex].text + '</strong>';
@@ -207,13 +201,18 @@ TC.attachLoadEvent( init );
     <mt:if name="entry_asset_loop">
                     <option value="asset_id"><__trans phrase="asset"></option>
     </mt:if>
+    <mt:loop name="quickfilter_loop">
+                    <option value="<mt:var name="filter" escape="html">"><mt:var name="label" escape="html"></option>
+    </mt:loop>
                 </select>
                 <__trans phrase="is">
                 <span id="filter-status" style="display: none">
                     <select id="status-val" name="filter_val" onchange="enableFilterButton()">
                         <option value="2"><__trans phrase="published"></option>
                         <option value="1"><__trans phrase="unpublished"></option>
+                        <mt:if name="object_type" eq="entry"><option value="3"><__trans phrase="review"></option></mt:if>
                         <option value="4"><__trans phrase="scheduled"></option>
+                        <mt:if name="object_type" eq="entry"><option value="5"><__trans phrase="spam"></option></mt:if>
                     </select>
                 </span>
                 <span id="filter-exacttag" style="display: none">
@@ -242,6 +241,18 @@ TC.attachLoadEvent( init );
                         </optgroup>
                     </select>
                 </span>
+    <mt:loop name="quickfilter_loop">
+                <span id="filter-<mt:var name="filter" escape="html">" style="display: none">
+        <mt:if name="type" eq="select">
+                        <select id="<mt:var name="filter">-val" name="filter_val" onchange="enableFilterButton(this)">
+                            <option value="">Select...</option>
+            <mt:loop name="options">
+                            <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
+            </mt:loop>
+                        </select>
+        </mt:if>
+                </span>
+    </mt:loop>
             <!-- end of filter form -->
             <span class="buttons">
                 <a href="javascript:void(0)"

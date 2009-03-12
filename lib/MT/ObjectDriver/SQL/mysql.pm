@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -24,9 +24,26 @@ sub new {
             } else {
                 $sql->transform->{$col} = "binary($col)";
             }
+            $sql->transform->{$col . '__NOBINARY'} = $col;
         }
     }
     return $sql;
+}
+
+sub _mk_term {
+    my $stmt = shift;
+    my ($col, $val) = @_;
+
+    if ( my $transform = $stmt->transform ) {
+        my ($table_name, $col_name) = $col =~ m{ \A mt_(\w+)\.(\w+) }xms;
+        if ( $table_name ) {
+            my $key = join( '_', $table_name, $col_name );
+            if ( $transform->{$key . '__NOBINARY'} ) {
+                $stmt->add_where($col . '__NOBINARY', $val);
+            }
+        }
+    }
+    return $stmt->SUPER::_mk_term(@_);
 }
 
 sub add_freetext_where {

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -29,6 +29,7 @@ sub new {
 sub init {
     my $ctx = shift;
     weaken($ctx->{config} = MT->config);
+    $ctx->stash('vars', {});
     $ctx->init_handlers();
     $ctx;
 }
@@ -81,7 +82,9 @@ sub init_handlers {
                         $prev_hdlr = $h->{$tag};
                     }
                     if (ref($block->{$orig_tag}) eq 'HASH') {
-                        $h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                        if ( $block->{$orig_tag}{handler} ) {
+                            $h->{$tag} = [ $block->{$orig_tag}{handler}, $type, $prev_hdlr ];
+                        }
                     } else {
                         $h->{$tag} = [ $block->{$orig_tag}, $type, $prev_hdlr ];
                     }
@@ -181,7 +184,15 @@ sub tag {
     my $tag = lc shift;
     my ($h) = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
     local $ctx->{__stash}{tag} = $tag;
-    return $h->($ctx, @_);
+    my ($args, $cond) = @_;
+    $args ||= {};
+    my $out = $h->($ctx, $args, $cond);
+    if (defined $out) {
+        if (my $ph = $ctx->post_process_handler) {
+            $out = $ph->( $ctx, $args, $out );
+        }
+    }
+    return $out;
 }
 
 sub handler_for {
@@ -445,8 +456,35 @@ sub compile_tag_filter {
     my %tags_used;
     foreach my $tag (@$tags) {
         my $name = $tag->name;
+        ## FIXME: this implementation can't handle tags which starts
+        ## with hash mark and numbers related. because they could break
+        ## our mid-compiled expression. now just skip them.
+        next if $name =~ /^\s*\#\d+\s*$/;
         my $id = $tag->id;
-        if ($tag_expr =~ s/(?<![#\d])\Q$name\E/#$id/g) {
+
+        ## search for tags from expression and replace them with its IDs.
+        ## allowed only existing tag name and some logical operators
+        ## ( AND, OR, NOT, and round brackets ).
+        if ($tag_expr =~ s/
+                (
+                    \sAND\s
+                    | \sOR\s
+                    | \s?NOT\s
+                    | \(
+                    | \A
+                )
+                \s*?
+                \Q$name\E
+                \s*?
+                (
+                    \Z
+                    | \)
+                    | \sAND\s
+                    | \sOR\s
+                    | \sNOT\s
+                )
+            /$1#$id$2/igx) # Change all matches to #$id (e.g. #932)
+        {
             $tags_used{$id} = $tag;
         }
     }
@@ -626,8 +664,8 @@ sub _no_page_error {
     my $tag_name = $ctx->stash('tag');
     $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
     return $ctx->error(MT->translate(
-        "You used an '[_1]' tag outside of the context of an page; " .
-        "perhaps you mistakenly placed it outside of an 'MTPages' container?",
+        "You used an '[_1]' tag outside of the context of a page; " .
+        "perhaps you mistakenly placed it outside of a 'MTPages' container?",
         $tag_name
     ));
 }

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -60,10 +60,11 @@ sub set_score {
     my $term = {
         namespace => $namespace,
         object_id => $obj->id,
-        ( $ip ? ( ip => $ip ) : () ),
-        ( $user ? ( author_id => $user->id ) : ( author_id => 0 ) ),
         object_ds => $obj->datasource,
     };
+    $term->{ip} = $ip if $ip && !$user;
+    $term->{author_id} = $user->id if $user;
+
     my $s = @{ $obj->_load_score_data($term) }[0];
     return $obj->error( MT->translate('Already scored for this object.') )
       if $s && !$overwrite;

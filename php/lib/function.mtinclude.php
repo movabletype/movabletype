@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -25,6 +25,8 @@ function smarty_function_mtinclude($args, &$ctx) {
 
     $blog_id = $args['blog_id'];
     $blog_id or $blog_id = $ctx->stash('blog_id');
+    if ($args['local'])
+        $blog_id = $ctx->stash('local_blog_id');
     $blog = $ctx->mt->db->fetch_blog($blog_id);
 
     // When the module name starts by 'Widget', it converts to 'Widget' from 'Module'.

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -43,7 +43,9 @@ in memcached or in MT::Session table.
 
 =head1 SYNOPSIS
 
-    my $cache = MT::Cache::Negotiate->new({ttl => 10});
+    # MT::Cache::Session uses the 'kind' parameter
+    # which accepts namespace of the cache
+    my $cache = MT::Cache::Negotiate->new( ttl => 10, kind => 'XX' );
     my $data = $cache->get($key);
     $cache->set($key => $value);
     my $hash = $cache->get_multi($key1, $key2);

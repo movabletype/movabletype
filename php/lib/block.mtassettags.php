@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -12,21 +12,6 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         require_once("MTUtil.php");
         $asset = $ctx->stash('asset');
         $blog_id = $asset['asset_blog_id'];
-        $tags = $ctx->mt->db->fetch_asset_tags(array('blog_id' => $blog_id));
-        if (!is_array($tags)) $tags = array();
-
-        $min = 0; $max = 0;
-        $all_count = 0;
-        $tagnames = '';
-        foreach ($tags as $tag) {
-            $count = $tag['tag_count'];
-            if ($count > $max) $max = $count;
-            if ($count < $min or $min == 0) $min = $count;
-            $all_count += $count;
-        }
-        $ctx->stash('tag_min_count', $min);
-        $ctx->stash('tag_max_count', $max);
-        $ctx->stash('all_tag_count', $all_count);
 
         $tags = $ctx->mt->db->fetch_asset_tags(array('asset_id' => $asset['asset_id'], 'blog_id' => $blog_id));
         if (!is_array($tags)) $tags = array();

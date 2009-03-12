@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -323,9 +323,14 @@ my @CORE_OPT = (
 
     [ 'Image::Magick', 0, 0, translate('Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.') ],
 
+    [ 'GD', 0, 0, translate('This module is needed if you would like to be able to create thumbnails of uploaded images.')],
+    [ 'IPC::Run', 0, 0, translate('This module is needed if you would like to be able to use NetPBM as the image driver for MT.')],
+
     [ 'Storable', 0, 0, translate('Storable is optional; it is required by certain MT plugins available from third parties.')],
 
     [ 'Crypt::DSA', 0, 0, translate('Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.')],
+
+    [ 'Crypt::SSLeay', 0, 0, translate('This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.')],
 
     [ 'MIME::Base64', 0, 0, translate('MIME::Base64 is required in order to enable comment registration.')],
 

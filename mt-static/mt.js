@@ -1,5 +1,5 @@
 /*
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -36,7 +36,7 @@ function restore () {
 }
 
 function doRebuild (blogID, otherParams) {
-    window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild', 'width=400,height=400,resizable=yes');
+    window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild_blog_' + blogID, 'width=400,height=400,resizable=yes');
 }
 
 function openManual (section, page) {

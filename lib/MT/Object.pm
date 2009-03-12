@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1205,7 +1205,7 @@ sub clear_cache {
 
     if (@_) {
         $oc = $oc->{$key};
-        delete $oc->{shift} if $oc;
+        delete $oc->{ $_[0] } if $oc;
     } else {
         delete $oc->{$key};
     }
@@ -1368,6 +1368,8 @@ by declaring your class, and inheriting from I<MT::Object>:
     use strict;
 
     use base 'MT::Object';
+
+=over 4
 
 =item * __PACKAGE__->install_properties($args)
 
@@ -1559,6 +1561,8 @@ the class type of the package.
 
 Defines the name of the class column (default is 'class') for storing
 classed objects (see 'class_type' above).
+
+=back
 
 =back
 
@@ -2245,7 +2249,7 @@ propery.
 This method returns all the C<column_defs> of the property of the
 object.
 
-=item Class->index_defs()
+=item * Class->index_defs()
 
 This method returns all the index definitions assigned to this class.
 This is the 'indexes' member of the properties installed for the class.

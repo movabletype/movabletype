@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -25,7 +25,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time make_string_csv browser_language );
+                 weaken log_time make_string_csv browser_language sanitize_embed );
 
 {
 my $Has_Weaken;
@@ -257,7 +257,7 @@ sub relative_date {
         }
     }
     my $mt = MT->instance;
-    my $user = $mt->user if $mt;
+    my $user = $mt->user if $mt->isa('MT::App');
     return $fmt ? format_ts($fmt, $ts, $blog, $user ? $user->preferred_language : undef ) : "";
 }
 
@@ -326,6 +326,7 @@ sub format_ts {
     if ($lang eq 'ja') {
         $format =~ s!%B %Y!$Languages{$lang}->[6]!g;
         $format =~ s!%B %E,? %Y!$Languages{$lang}->[4]!ig;
+        $format =~ s!%b. %e, %Y!$Languages{$lang}->[4]!ig;
         $format =~ s!%B %E!$Languages{$lang}->[7]!ig;
     }
     elsif ($lang eq 'it') {
@@ -981,7 +982,18 @@ sub make_unique_category_basename {
 sub make_unique_author_basename {
     my ($author) = @_;
     my $name = MT::Util::dirify($author->nickname || '');
-    return "author" . $author->id if $name !~ /\w/;
+    if ( !$name || ( $name !~ /\w/ ) ) {
+        if ( $author->id ) {
+            $name = "author" . $author->id;
+        }
+        else {
+            require Digest::MD5;
+            $name = "author" . substr(
+                Digest::MD5::md5_hex($author->name ),
+                0, 5
+            );
+        }
+    }
 
     my $limit = MT->instance->config('AuthorBasenameLimit');
     $limit = 15 if $limit < 15; $limit = 250 if $limit > 250;
@@ -1678,7 +1690,7 @@ sub dsa_verify {
     if ($has_crypt_dsa && !$param{ForcePerl}) {
         $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
         $param{Signature} = bless $param{Signature}, 'Crypt::DSA::Signature';
-        Crypt::DSA->new->verify(%param);
+        return Crypt::DSA->new->verify(%param);
     } else {
         require Math::BigInt;
 
@@ -1692,26 +1704,26 @@ sub dsa_verify {
                 unless $param{Message};
             $dgst = perl_sha1_digest($param{Message});
         }
-    Carp::croak "dsa_verify: Need a Signature"
-        unless $sig = $param{Signature};
-    my $r = new Math::BigInt($sig->{r});
-    my $s = new Math::BigInt($sig->{'s'});
-    my $p = new Math::BigInt($key->{p});
-    my $q = new Math::BigInt($key->{'q'});
-    my $g = new Math::BigInt($key->{g});
-    my $pub_key = new Math::BigInt($key->{pub_key});
-    my $u2 = $s->bmodinv($q);
+        Carp::croak "dsa_verify: Need a Signature"
+            unless $sig = $param{Signature};
+        my $r = new Math::BigInt($sig->{r});
+        my $s = new Math::BigInt($sig->{'s'});
+        my $p = new Math::BigInt($key->{p});
+        my $q = new Math::BigInt($key->{'q'});
+        my $g = new Math::BigInt($key->{g});
+        my $pub_key = new Math::BigInt($key->{pub_key});
+        my $u2 = $s->bmodinv($q);
 
-    my $u1 = new Math::BigInt("0x" . unpack("H*", $dgst));
+        my $u1 = new Math::BigInt("0x" . unpack("H*", $dgst));
 
-    $u1 = $u1->bmul($u2)->bmod($q);
-    $u2 = $r->bmul($u2)->bmod($q);
-    my $t1 = $g->bmodpow($u1, $p);
-    my $t2 = $pub_key->bmodpow($u2, $p);
-    $u1 = $t1->bmul($t2)->bmod($key->{p});
-    $u1 = $u1->bmod($key->{'q'});
-    my $result = $u1->bcmp($sig->{r});
-    return defined($result) ? $result == 0 : 0;
+        $u1 = $u1->bmul($u2)->bmod($q);
+        $u2 = $r->bmul($u2)->bmod($q);
+        my $t1 = $g->bmodpow($u1, $p);
+        my $t2 = $pub_key->bmodpow($u2, $p);
+        $u1 = $t1->bmul($t2)->bmod($key->{p});
+        $u1 = $u1->bmod($key->{'q'});
+        my $result = $u1->bcmp($sig->{r});
+        return defined($result) ? $result == 0 : 0;
     }
 }
 }
@@ -1973,6 +1985,53 @@ sub get_newsbox_html {
     return $result;
 }
 
+sub sanitize_embed {
+    my ($str, $opt) = @_;
+
+    $opt ||= {};
+    my $eh = $opt->{error_handler};
+    my $blog = $opt->{blog};
+
+    # Check for valid domains...
+
+    my @domains = extract_domains($str);
+
+    my @whitelist = map { lc $_ } split /\s+/s,
+        (MT->config('EmbedDomainWhitelist') || '');
+
+    my $re = '';
+    foreach my $d ( @whitelist ) {
+        $re .= '|' unless $re eq '';
+        $re .= '(?:\A|\.)' . quotemeta($d);
+    }
+    $re = qr/($re)$/;
+
+    foreach my $d ( @domains ) {
+        unless ($d =~ m/$re/) {
+            my $err = MT->translate("Invalid domain: '[_1]'", $d);
+            return $eh->error($err) if $err;
+            die $err;
+        }
+    }
+
+
+    # Sanitize embed content
+
+    require MT::Sanitize;
+
+    my $gspec = ($blog ? $blog->sanitize_spec : undef) || MT->config('GlobalSanitizeSpec');
+
+    my $spec = $gspec . ',embed * !style,object id classid width height,param/ name value,script src type,div';
+    my $sanitized = MT::Sanitize->sanitize($str, $spec);
+
+    # Don't permit any actual script inside a script tag (external
+    # script loads are okay for the sake of an embed, as long as the
+    # domain is permitted), but arbitrary script code is not okay.
+    $sanitized =~ s!(<script[^>]*>)(?:.+?)(</script>)!$1$2!igs;
+
+    return $sanitized;
+}
+
 sub log_time {
     return format_ts(
         '[%Y-%m-%d %H:%M:%S]',
@@ -1995,12 +2054,140 @@ sub log_time {
 sub make_string_csv {
     my ( $value, $enc ) = @_;
     $value =~ s/\r|\r\n/\n/gs;
-    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) )
+    if ( ( ( index( $value, '"' ) > -1 ) || ( index( $value, '\n' ) > -1 ) || ( index( $value, ',' ) > -1 ) )
         && !( $value =~ m/^".*"$/gs ) )
     {
         $value = "\"$value\"";
     }
     return MT::I18N::encode_text( $value, undef, $enc );
+}
+
+sub convert_word_chars {
+    my ( $s, $smart_replace ) = @_;
+
+    return '' unless $s;
+    return $s if $smart_replace == 2;
+
+    if ($smart_replace) {
+        # html character entity replacements
+        $s =~ s/\342\200\231/&#8217;/g;
+        $s =~ s/\342\200\230/&#8216;/g;
+        $s =~ s/\342\200\246/&#133;/g;
+        $s =~ s/\342\200\223/-/g;
+        $s =~ s/\342\200\224/&#8212;/g;
+        $s =~ s/\342\200\234/&#8220;/g;
+        $s =~ s/\342\200\235/&#8221;/g;
+    }
+    else {
+        # ascii equivalent replacements
+        $s =~ s/\342\200[\230\231]/'/g;
+        $s =~ s/\342\200\246/.../g;
+        $s =~ s/\342\200\223/-/g;
+        $s =~ s/\342\200\224/--/g;
+        $s =~ s/\342\200[\234\235]/"/g;
+    }
+
+    # While we're fixing Word, remove processing instructions with
+    # colons, as they can break PHP.
+    $s =~ s{ <\? xml:namespace [^>]*> }{}ximsg;
+
+    return $s;
+}
+
+sub translate_naughty_words {
+    my ($entry) = @_;
+
+    my $app = MT->instance;
+    return if 'utf-8' ne lc( $app->charset );
+
+    my $blog = $entry->blog;
+
+    my $fields = $blog->smart_replace_fields;
+    return unless $fields;
+
+    my $smart_replace
+        = $blog
+        ? $blog->smart_replace
+        : $app->config->NwcSmartReplace;
+    return if $smart_replace == 2;
+
+    my @fields = split( /\s*,\s*/, $fields || '' );
+    foreach my $field (@fields) {
+        if ( $entry->has_column($field) ) {
+            $entry->column($field, convert_word_chars($entry->column($field), $smart_replace));
+        } elsif ( $field eq 'tags' ) {
+            my @tags
+                = map { convert_word_chars( $_, $smart_replace ) }
+                    $entry->tags;
+            $entry->set_tags(@tags);
+        }
+    }
+}
+
+sub _pre_to_json {
+    my ( $ref ) = @_;
+    if ( 'ARRAY' eq ref($ref) ) {
+        my @tmp;
+        foreach ( @$ref ) {
+            next unless defined $_;
+            if ( ref($_) ) {
+                push @tmp, _pre_to_json($_);
+            }
+            else {
+                # Do not decode numeric values because 
+                # they may be used as a boolean value in JavaScript.
+                if ( $_ !~ /^\d+$/ ) {
+                    push @tmp, MT::I18N::decode( MT->config->PublishCharset, $_ );
+                }
+                else {
+                    push @tmp, 0 + $_;
+                }
+            }
+        }
+        return \@tmp;
+    }
+    elsif ( 'HASH' eq ref($ref) ) {
+        my %tmp;
+        while ( my ( $k, $v ) = each %$ref ) {
+            next unless defined $v;
+            if ( ref($v) ) {
+                $tmp{$k} = _pre_to_json($v);
+            }
+            else {
+                # Do not decode numeric values because 
+                # they may be used as a boolean value in JavaScript.
+                if ( $v !~ /^\d+$/ ) {
+                    $tmp{$k} = MT::I18N::decode( MT->config->PublishCharset, $v );
+                }
+                else {
+                    $tmp{$k} = 0 + $v;
+                }
+            }
+        }
+        return \%tmp;
+    }
+    elsif ( 'SCALAR' eq ref($ref) ) {
+        # Do not decode numeric values because 
+        # they may be used as a boolean value in JavaScript.
+        my $tmp;
+        if ( $$ref !~ /^\d+$/ ) {
+            $tmp = MT::I18N::decode( MT->config->PublishCharset, $$ref );
+        }
+        else {
+            $tmp = 0 + $$ref;
+        }
+        return \$tmp;
+    }
+    return $ref;
+}
+
+sub to_json {
+    my ( $orig_val, $args ) = @_;
+    require MT::I18N;
+    my $value = _pre_to_json( $orig_val );
+    require JSON;
+    my $js = JSON::to_json($value, $args);
+    return MT::I18N::encode( MT->config->PublishCharset, $js );
 }
 
 1;
@@ -2185,6 +2372,13 @@ Content will be sanitized based on pre-defined rules.
 =head2 log_time
 
 Returns the current server time in log specific format.
+
+=head2 to_json($reference)
+
+Wrapper method to JSON::to_json which decodes any string value
+in I<reference> to UTF-8 strings as JSON::to_json requires.
+It then encodes back to the charset specified in PublishCharset
+for MT to render json strings properly.
 
 =head1 AUTHOR & COPYRIGHTS
 

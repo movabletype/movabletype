@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,10 +13,12 @@ __PACKAGE__->install_properties( { class_type => 'video', } );
 
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
-    [
-        qr/mov/i, qr/avi/i, qr/3gp/i, qr/asf/i, qr/mp4/i, qr/qt/i,
-        qr/wmv/i, qr/asx/i, qr/asf/,  qr/mpg/i
-    ];
+    my $pkg = shift;
+    return $pkg->SUPER::extensions(
+        [   qr/mov/i, qr/avi/i, qr/3gp/i, qr/asf/i, qr/mp4/i, qr/qt/i,
+            qr/wmv/i, qr/asx/i,  qr/mpg/i, qr/flv/i, qr/mkv/i, qr/ogm/i
+        ]
+    );
 }
 
 sub class_label {

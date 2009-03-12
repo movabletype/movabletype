@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -120,7 +120,7 @@ sub archive_group_entries {
     my $blog = $ctx->stash('blog');
     my $a = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
-    if ( $limit eq 'auto' ) {
+    if ( $limit && ( $limit eq 'auto' ) ) {
         my $blog = $ctx->stash('blog');
         $limit = $blog->entries_on_index if $blog;
     }

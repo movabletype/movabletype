@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -35,12 +35,18 @@ sub process {
 
     my $format = $app->param('format') || q();
     my $method = "render";
-    $method .= $format if $format && $app->can($method . $format);
+    if ( $format ) {
+        $method .= $format if $app->can( $method . $format );
+    }
+    elsif ( my $tmpl_name = $app->param('Template') ) {
+        $method .= $tmpl_name if $app->can( $method . $tmpl_name );
+    }
+
     $out = $app->$method( $count, $iter );
 
     my $result;
     if (ref($out) && ($out->isa('MT::Template'))) {
-        defined( $result = $app->build_page($out) )
+        defined( $result = $out->build() )
             or return $app->error($out->errstr);
     }
     else {

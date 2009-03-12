@@ -697,7 +697,7 @@ sub list {
     my %dtmpl = map { $_->{type} => $_ } @$dtmpl;
 
     while ( my $obj = $iter->() ) {
-        my $row = $obj->column_values;
+        my $row = $obj->get_values;
         if ( my $ts = $obj->created_on ) {
             $row->{created_on_formatted} =
               format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );

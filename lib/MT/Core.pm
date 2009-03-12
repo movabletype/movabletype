@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -164,6 +164,11 @@ BEGIN {
                 label => trans('View Activity Log'),
                 group => 'blog_admin',
                 order => 600,
+            },
+            'blog.manage_users' => {
+                label => trans('Manage Users'),
+                group => 'blog_admin',
+                order => 700,
             },
 
             'blog.create_post' => {
@@ -523,6 +528,12 @@ BEGIN {
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
             'EnableAddressBook' => { default => 0 },
             'SingleCommunity' => { default => 0 },
+            'DefaultTemplateSet' => { default => 'mt_blog' },
+
+            'AssetFileTypes' => { type    => 'HASH' },
+
+            'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
+            'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -1139,7 +1150,6 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2008 Six Apart.
-All rights reserved.
+Please see the I<MT> manpage for author, copyright, and license information.
 
 =cut

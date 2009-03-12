@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -45,7 +45,19 @@ require MT::Asset::Audio;
 require MT::Asset::Video;
 
 sub extensions {
-    undef;
+    my $pkg = shift;
+    return undef unless @_;
+
+    my ($this_pkg) = caller;
+    my ($ext)      = @_;
+    return \@$ext unless MT->config('AssetFileTypes');
+
+    my @custom_ext = map {qr/$_/i}
+        split( /\s*,\s*/, MT->config('AssetFileTypes')->{$this_pkg} );
+    my %seen;
+    my ($new_ext) = grep { ++$seen{$_} < 2 }[ @$ext, @custom_ext ];
+
+    return \@$new_ext;
 }
 
 # This property is a meta-property.
@@ -110,7 +122,20 @@ sub remove {
         require MT::FileMgr;
         my $fmgr = $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
         my $file = $asset->file_path;
-        $fmgr->delete($file);
+        unless ($fmgr->delete($file)) {
+            my $app = MT->instance;
+            $app->log(
+                {
+                    message => $app->translate(
+                        "Could not remove asset file [_1] from filesystem: [_2]",
+                        $file, $fmgr->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'asset',
+                    category => 'delete',
+                }
+            );
+        }
         $asset->remove_cached_files;
 
         # remove children.
@@ -161,7 +186,20 @@ sub remove_cached_files {
                     $basename . '-thumb-*' . $ext);
                 my @files = glob($cache_glob);
                 foreach my $file (@files) {
-                    $fmgr->delete($file);
+                    unless ($fmgr->delete($file)) {
+                        my $app = MT->instance;
+                        $app->log(
+                            {
+                                message => $app->translate(
+                                    "Could not remove asset file [_1] from filesystem: [_2]",
+                                    $file, $fmgr->errstr
+                                ),
+                                level    => MT::Log::ERROR(),
+                                class    => 'asset',
+                                category => 'delete',
+                            }
+                        );
+                    }
                 }
             }
         }

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -788,8 +788,12 @@ sub to_xml {
     unless ( UNIVERSAL::isa( $obj, 'MT::Log' ) ) {
         if ( $obj->properties
           && ( my $ccol = $obj->properties->{class_column} ) ) {
-            my $class = $obj->$ccol;
-            $elem = $class if $class;
+            if ( my $class = $obj->$ccol ) {
+                # use class_type value instead if
+                # the value resolves to a Perl package
+                $elem = $class
+                    if defined( MT->model($class) );
+            }
         }
     }
 
@@ -1295,6 +1299,24 @@ sub parents {
     };
 }
 
+package MT::IPBanList;
+
+sub parents {
+    my $obj = shift;
+    {
+        blog_id => MT->model('blog'),
+    };
+}
+
+package MT::Blocklist;
+
+sub parents {
+    my $obj = shift;
+    {
+        blog_id => MT->model('blog'),
+    };
+}
+
 1;
 __END__
 
@@ -1450,6 +1472,8 @@ $asset has new url and path.
 
 $callback is a code reference which will print out the passed paramter.
 Callback method can use this to communicate with users.
+
+=back
 
 =head1 AUTHOR & COPYRIGHT
 

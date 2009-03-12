@@ -31,7 +31,7 @@
         <mt:if name="can_create_association">
         <li>
             <mt:if name="status_enabled">
-            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
+            <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id" escape="url">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
             <mt:else name="edit_author_id" eq="PSEUDO">
             <a href="javascript:void(0)" onclick="return openDialog(this.form, 'dialog_grant_role', 'author_id=<mt:var name="edit_author_id">&amp;return_args=<mt:var name="return_args" escape="url">%26author_id=<mt:var name="edit_author_id">')" class="icon-left icon-create"><__trans phrase="Grant Permission"></a>
             <mt:else>

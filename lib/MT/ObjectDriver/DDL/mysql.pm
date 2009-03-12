@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -28,6 +28,7 @@ sub index_defs {
 
     my $bags = {};
     my $unique = {};
+    my $sizes = {};
     while (my $row = $sth->fetchrow_hashref) {
         my $key = $row->{'Key_name'};
         next unless $key =~ m/^(mt_)?\Q$field_prefix\E_/;
@@ -38,13 +39,17 @@ sub index_defs {
         # ignore fulltext or other unrecognized indexes for now
         next unless $type eq 'BTREE';
 
-        my $seq = $row->{'Seq_in_index'};
-        my $col = $row->{'Column_name'};
+        my $seq        = $row->{'Seq_in_index'};
+        my $col        = $row->{'Column_name'};
         my $non_unique = $row->{'Non_unique'};
-        my $null = $row->{'Null'};
+        my $null       = $row->{'Null'};
+        my $size       = $row->{'Sub_part'};
+
         $key =~ s/^mt_\Q$field_prefix\E_//;
         $col =~ s/^\Q$field_prefix\E_//;
+
         $unique->{$key} = 1 unless $non_unique;
+        $sizes->{$key}->{$col} = $size if defined $size;
         my $idx_bag = $bags->{$key} ||= [];
         $idx_bag->[$seq - 1] = $col;
     }
@@ -56,14 +61,17 @@ sub index_defs {
     my $defs = {};
     foreach my $key (keys %$bags) {
         my $cols = $bags->{$key};
+        my %sizes = %{ $sizes->{$key} || {} };
         if ($unique->{$key}) {
-            $defs->{$key} = { columns => $cols, unique => 1 };
+            $defs->{$key} = { columns => $cols, unique => 1,
+                %sizes ? (sizes => \%sizes) : (), };
         }
         else {
-            if ((@$cols == 1) && ($key eq $cols->[0])) {
+            if ((@$cols == 1) && ($key eq $cols->[0]) && !%sizes) {
                 $defs->{$key} = 1;
             } else {
-                $defs->{$key} = { columns => $cols };
+                $defs->{$key} = { columns => $cols,
+                    %sizes ? (sizes => \%sizes) : (), };
             }
         }
     }
@@ -72,7 +80,7 @@ sub index_defs {
 }
 
 sub column_defs {
-    my $ddl = shift; 
+    my $ddl = shift;
     my ($class) = @_;
 
     my $driver = $class->driver;
@@ -156,7 +164,7 @@ sub db2type {
 
 sub type2db {
     my $ddl = shift;
-    my ($def) = @_; 
+    my ($def) = @_;
     return undef if !defined $def;
     my $type = $def->{type};
     if ($type eq 'string') {

@@ -74,7 +74,7 @@ sub new {
     # The 2.0 spec section 4.1.2 requires that we support these namespace values
     # but act like it's a normal 1.1 request.
     # We do this by just pretending that ns wasn't set at all.
-    if ($ns eq 'http://openid.net/signon/1.1' || $ns eq 'http://openid.net/signon/1.0') {
+    if ($ns && ($ns eq 'http://openid.net/signon/1.1' || $ns eq 'http://openid.net/signon/1.0')) {
         $ns = undef;
     }
 

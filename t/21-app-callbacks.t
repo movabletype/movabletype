@@ -7,13 +7,13 @@ use Test::More tests => 3;
 use CGI;
 
 use lib qw( t/lib t );
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 BEGIN { require 'test-common.pl'; print "after test-config\n"; }
 
 use MT::Test qw( :cms :db :data );
 
 use MT::Plugin;
 use MT::Entry;
-use MT::Permission;
 
 ### Test app callbacks
 

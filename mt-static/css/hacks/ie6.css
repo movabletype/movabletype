@@ -1,5 +1,6 @@
 .dashboard #main-content {
     margin-left: 5px;
+    overflow: hidden;
 }
 
 #dialog-container {
@@ -48,4 +49,10 @@
 
 .widget-close-link {
     margin-right: 5px; /* http://www.jaymeblackmon.com/ie6-double-margin-bug-fix */
+}
+
+.edit-category .field-top-label .field-content, 
+.edit-folder .field-top-label .field-content { 
+    float: left ! important;
+    margin-left: 0 ! important;
 }

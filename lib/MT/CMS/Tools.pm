@@ -4,7 +4,7 @@ use strict;
 use Symbol;
 
 use MT::I18N qw( encode_text wrap_text );
-use MT::Util qw( encode_url encode_html decode_html encode_js );
+use MT::Util qw( encode_url encode_html decode_html encode_js trim );
 
 sub system_check {
     my $app = shift;
@@ -107,12 +107,16 @@ sub get_syscheck_content {
 sub start_recover {
     my $app = shift;
     my ($param) = @_;
+    my $cfg = $app->config;
     $param ||= {};
     $param->{'email'} = $app->param('email');
-    $param->{'return_to'} = $app->param('return_to');
+    $param->{'return_to'} = $app->param('return_to') || $cfg->ReturnToURL || '';
+    $param->{'can_signin'} = (ref $app eq 'MT::App::CMS') ? 1 : 0;
+
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password_reset_form',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {
@@ -124,8 +128,11 @@ sub start_recover {
 
 sub recover_password {
     my $app      = shift;
-    my $email    = $app->param('email');
+    my $email    = $app->param('email') || '';
     my $username = $app->param('name');
+
+    $email = trim($email);
+    $username = trim($username) if $username;
 
     if ( !$email ) {
         return $app->start_recover(
@@ -183,12 +190,14 @@ sub recover_password {
     my $mail_enc = uc( $app->config('MailEncoding') || $charset );
     $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
+    my $blog_id = $app->param('blog_id');
     my $body = $app->build_email(
         'recover-password',
         {         link_to_login => $app->base
                 . $app->uri
                 . "?__mode=new_pw&token=$token&email="
-                . encode_url($email),
+                . encode_url($email)
+                . ($blog_id ? "&blog_id=$blog_id" : ''),
         }
     );
 
@@ -217,7 +226,7 @@ sub new_password {
     }
 
     my $email = $app->param('email');
-    if ( !$token ) {
+    if ( !$email ) {
         return $app->start_recover(
             { error => $app->translate('Email address not found'), } );
     }
@@ -269,6 +278,7 @@ sub new_password {
         }
         else {
             my $redirect = $user->password_reset_return_to || '';
+
             $user->set_password($new_password);
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
@@ -276,11 +286,21 @@ sub new_password {
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
-            $app->login;
-            if ($redirect) {
-                return $app->redirect($redirect);
-            } else{
+
+            if (ref $app eq 'MT::App::CMS' && !$redirect) {
+                $app->login;
                 return $app->return_to_dashboard( redirect => 1 );
+            } else {
+                if (!$redirect) {
+                    my $cfg = $app->config;
+                    $redirect = $cfg->ReturnToURL || '';
+                }
+                $app->make_commenter_session($user);
+                if ($redirect) {
+                    return $app->redirect($redirect);
+                } else {
+                    return $app->redirect_to_edit_profile();
+                }
             }
         }
     }
@@ -292,6 +312,7 @@ sub new_password {
     $app->add_breadcrumb( $app->translate('Password Recovery') );
 
     my $blog_id = $app->param('blog_id');
+    $param->{'blog_id'}        = $blog_id if $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password',
             $blog_id ? ( blog_id => $app->param('blog_id') ) : () } );
     if (!$tmpl) {
@@ -1088,7 +1109,7 @@ sub restore_premature_cancel {
     $app->validate_magic() or return;
 
     require JSON;
-    my $deferred = JSON::jsonToObj( $app->param('deferred_json') )
+    my $deferred = JSON::from_json( $app->param('deferred_json') )
       if $app->param('deferred_json');
     my $param = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
@@ -1302,8 +1323,7 @@ sub adjust_sitepath {
     my $param = {};
     if ( scalar $q->param('redirect') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
-        require JSON;
-        $param->{blogs_meta} = JSON::objToJson( \%blogs_meta );
+        $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
     }
     else {
@@ -1344,7 +1364,7 @@ sub dialog_restore_upload {
     my $deferred = {};
     require JSON;
     my $objects_json = $q->param('objects_json') if $q->param('objects_json');
-    $deferred = JSON::jsonToObj( $q->param('deferred_json') )
+    $deferred = JSON::from_json( $q->param('deferred_json') )
       if $q->param('deferred_json');
 
     my ($fh) = $app->upload_info('file');
@@ -1359,7 +1379,7 @@ sub dialog_restore_upload {
     $param->{redirect}       = 1;
     $param->{is_dirty}       = $q->param('is_dirty');
     $param->{objects_json}   = $objects_json if defined($objects_json);
-    $param->{deferred_json}  = JSON::objToJson($deferred) if defined($deferred);
+    $param->{deferred_json}  = MT::Util::to_json($deferred) if defined($deferred);
     $param->{blogs_meta}     = $q->param('blogs_meta');
     $param->{schema_version} = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
@@ -1391,7 +1411,7 @@ sub dialog_restore_upload {
     $app->print( $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
     if ( defined $objects_json ) {
-        my $objects_tmp = JSON::jsonToObj($objects_json);
+        my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
         # { MT::CLASS#OLD_ID => NEW_ID }
@@ -1426,7 +1446,7 @@ sub dialog_restore_upload {
         }
     }
 
-    my $assets = JSON::jsonToObj( decode_html($assets_json) )
+    my $assets = JSON::from_json( decode_html($assets_json) )
       if ( defined($assets_json) && $assets_json );
     $assets = [] if !defined($assets);
     my $asset;
@@ -1439,7 +1459,7 @@ sub dialog_restore_upload {
     if ($is_asset) {
         $asset = shift @$assets;
         $asset->{fh} = $fh;
-        my $blogs_meta = JSON::jsonToObj( $q->param('blogs_meta') || '{}' );
+        my $blogs_meta = JSON::from_json( $q->param('blogs_meta') || '{}' );
         MT::BackupRestore->_restore_asset_multi( $asset, $objects,
             $error_assets, sub { $app->print(@_); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
@@ -1475,7 +1495,7 @@ sub dialog_restore_upload {
         }
     }
     $param->{files}  = join( ',', @files );
-    $param->{assets} = encode_html( JSON::objToJson($assets) );
+    $param->{assets} = encode_html( MT::Util::to_json($assets) );
     $param->{name}   = $file_next;
     if ( 0 < scalar(@files) ) {
         $param->{last} = 0;
@@ -1527,8 +1547,8 @@ sub dialog_restore_upload {
     else {
         my %objects_json;
         %objects_json = map { $_ => $objects->{$_}->id } keys %$objects;
-        $param->{objects_json}  = JSON::objToJson( \%objects_json );
-        $param->{deferred_json} = JSON::objToJson($deferred);
+        $param->{objects_json}  = MT::Util::to_json( \%objects_json );
+        $param->{deferred_json} = MT::Util::to_json($deferred);
 
         $param->{error} = join( '; ', @errors );
         if ( defined($blog_ids) && scalar(@$blog_ids) ) {
@@ -1914,8 +1934,7 @@ sub restore_upload_manifest {
             $param->{is_asset} = 1;
         }
     }
-    require JSON;
-    $assets_json = encode_url( JSON::objToJson($assets) )
+    $assets_json = encode_url( MT::Util::to_json($assets) )
       if scalar(@$assets) > 0;
     $param->{files}       = join( ',', @$files );
     $param->{assets}      = $assets_json;

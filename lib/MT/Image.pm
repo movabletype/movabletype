@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -269,7 +269,7 @@ sub scale {
     my $type = $image->{type};
     my($out, $err);
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
+    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
     my @scale = ("${pbm}pnmscale", '-width', $w, '-height', $h);
     my @out;
     for my $try (qw( ppm pnm )) {
@@ -280,13 +280,13 @@ sub scale {
     if ($type eq 'gif') {
         push @quant, ([ "${pbm}ppmquant", 256 ], '|');
     }
-    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
+    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef ), '|',
         \@scale, '|',
         @quant,
         \@out, \$out, \$err)
         or return $image->error(MT->translate(
             "Scaling to [_1]x[_2] failed: [_3]", $w, $h, $err));
-    ($image->{width}, $image->{height}) = ($w, $h);
+    ($image->{width}, $image->{height}, $image->{data}) = ($w, $h, $out);
     wantarray ? ($out, $w, $h) : $out;
 }
 
@@ -294,12 +294,12 @@ sub crop {
     my $image = shift;
     my %param = @_;
     my ($size, $x, $y) = @param{qw( Size X Y )};
-    
+
     my($w, $h) = $image->get_dimensions(@_);
     my $type = $image->{type};
     my($out, $err);
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
+    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
 
     my @crop = ("${pbm}pnmcut", $x, $y, $size, $size);
     my @out;
@@ -311,13 +311,13 @@ sub crop {
     if ($type eq 'gif') {
         push @quant, ([ "${pbm}ppmquant", 256 ], '|');
     }
-    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
+    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef), '|',
         \@crop, '|',
         @quant,
         \@out, \$out, \$err)
         or return $image->error(MT->translate(
             "Cropping to [_1]x[_1] failed: [_2]", $size, $err));
-    ($image->{width}, $image->{height}) = ($w, $h);
+    ($image->{width}, $image->{height}, $image->{data}) = ($w, $h, $out);
     wantarray ? ($out, $w, $h) : $out;
 }
 
@@ -330,7 +330,7 @@ sub convert {
 
     my($out, $err);
     my $pbm = $image->_find_pbm or return;
-    my @in = ("$pbm${type}topnm", ($image->{file} ? $image->{file} : ()));
+    my @in = ("$pbm${type}topnm", ($image->{data} ? () : $image->{file} ? $image->{file} : ()));
 
     my @out;
     for my $try (qw( ppm pnm )) {
@@ -341,11 +341,12 @@ sub convert {
     if ($type eq 'gif') {
         push @quant, ([ "${pbm}ppmquant", 256 ], '|');
     }
-    IPC::Run::run(\@in, '<', ($image->{file} ? \undef : \$image->{data}), '|',
+    IPC::Run::run(\@in, '<', ($image->{data} ? \$image->{data} : \undef ), '|',
         @quant,
         \@out, \$out, \$err)
         or return $image->error(MT->translate(
             "Converting to [_1] failed: [_2]", $type, $err));
+    $image->{data} = $out;
     $out;
 }
 

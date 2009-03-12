@@ -2,7 +2,7 @@ package MT::CMS::User;
 
 use strict;
 
-use MT::Util qw( format_ts relative_date is_url encode_url encode_html );
+use MT::Util qw( format_ts relative_date is_valid_email is_url encode_url encode_html );
 use MT::Author;
 
 sub edit {
@@ -45,6 +45,8 @@ sub edit {
         $param->{can_recover_password} = MT::Auth->can_recover_password;
         $param->{languages} = MT::I18N::languages_list( $app, $obj->preferred_language )
           unless exists $param->{langauges};
+        eval { require MT::Image; MT::Image->new or die; };
+        $param->{can_use_userpic} = $@ ? 0 : 1;
     } else {
         $param->{create_personal_weblog} =
           $app->config->NewUserAutoProvisioning ? 1 : 0
@@ -224,7 +226,7 @@ sub list {
     my ( @data, %authors, %entry_count_refs );
     my $entry_class = $app->model('entry');
     while ( my $au = $author_iter->() ) {
-        my $row = $au->column_values;
+        my $row = $au->get_values;
         $row->{name} = '(unnamed)' if !$row->{name};
         $authors{ $au->id } ||= $au;
         $row->{id}    = $au->id;
@@ -318,7 +320,7 @@ sub list_member {
     my $user  = $app->user;
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      unless $user->is_superuser() || ($perms && $perms->can_administer_blog());
+      unless $user->is_superuser() || ($perms && ($perms->can_administer_blog() || $perms->can_manage_users()) );
 
     my $super_user = 1 if $user->is_superuser();
     my $args       = {};
@@ -365,6 +367,7 @@ sub list_member {
         push @role_loop, { role_id => $r->id, role_name => $r->name, selected => $r->id == $sel_role };
     }
     $param->{role_loop} = \@role_loop;
+    $param->{can_manage} = 1;
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         if ( ( $row->{email} || '' ) !~ m/@/ ) {
@@ -400,7 +403,13 @@ sub list_member {
                   if $role->has( $_->[0] );
             }
             my $role_perms = join(", ", @perms);
-            push @role_loop, { role_name => $role->name, role_id => $role->id, role_perms => $role_perms };
+            my $is_removable = !$role->has('administer_blog') || $user->is_superuser || $perms->can_administer_blog();
+            push @role_loop, {
+                role_name    => $role->name,
+                role_id      => $role->id,
+                role_perms   => $role_perms,
+                is_removable => $is_removable,
+            };
         }
         $row->{role_loop} = \@role_loop;
         $row->{auth_icon_url} = $obj->auth_icon_url;
@@ -415,6 +424,13 @@ sub list_member {
             params   => $param,
             args     => $args,
             code     => $hasher,
+            ( !defined( $app->param('filter_key') ) || $app->param('filter_key') eq 'author' )
+              ? ( pre_build => sub {
+                    my ($param) = @_;
+                    my $data = $param->{object_loop} || [];
+                    _merge_default_assignments( $app, $data, undef, 'blog', $blog_id );
+                } )
+              : (),
         }
     );
 }
@@ -423,9 +439,11 @@ sub list_association {
     my $app = shift;
 
     my $blog_id   = $app->param('blog_id');
+    $app->return_to_dashboard( redirect => 1 )
+      if $blog_id;
+
     my $author_id = $app->param('author_id');
     my $role_id   = $app->param('role_id');
-
     my $this_user = $app->user;
     if ( !$this_user->is_superuser ) {
         if (
@@ -794,6 +812,11 @@ sub set_object_status {
             next;
         }
         next if $new_status == $obj->status;
+        my $create_blog
+            = (    $new_status == MT::Author::ACTIVE()
+                && $type eq 'author'
+                && $app->config->NewUserAutoProvisioning
+                && $obj->status == MT::Author::PENDING() ) ? 1 : 0;
         $obj->status($new_status);
         $obj->save;
         $saved++;
@@ -801,6 +824,10 @@ sub set_object_status {
             if ( $new_status == MT::Author::ACTIVE() ) {
                 push @sync, $obj;
             }
+        }
+        if ($create_blog) {
+            # provision new user with a personal blog
+            $app->run_callbacks( 'new_user_provisioning', $obj );
         }
     }
     my $unchanged = 0;
@@ -1012,7 +1039,8 @@ sub remove_user_assoc {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $perms->can_administer_blog;
+        unless $perms->can_administer_blog || $perms->can_manage_users;
+    my $can_remove_administrator = $user->is_superuser || $perms->can_administer_blog;
 
     my $blog_id = $app->param('blog_id');
     my @ids = $app->param('id');
@@ -1023,10 +1051,17 @@ sub remove_user_assoc {
     require MT::Permission;
     foreach my $id (@ids) {
         next unless $id;
+        my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
+        next if !$can_remove_administrator && $perm->can_administer_blog;
+        if ( $id =~ /PSEUDO-/ ) {
+            _delete_pseudo_association($app, $id);
+            next;
+        }
+
         MT::Association->remove({ blog_id => $blog_id, author_id => $id });
         # these too, just in case there are no real associations
         # (ie, commenters)
-        MT::Permission->remove({ blog_id => $blog_id, author_id => $id });
+        $perm->remove;
     }
 
     $app->add_return_arg( saved => 1 );
@@ -1040,7 +1075,7 @@ sub revoke_role {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $perms->can_administer_blog;
+        unless ( $perms->can_administer_blog || $perms->can_manage_users );
 
     my $blog_id = $app->param('blog_id');
     my $role_id = $app->param('role_id');
@@ -1057,6 +1092,8 @@ sub revoke_role {
     my $blog = MT::Blog->load( $blog_id );
     return $app->errtrans("Invalid request.")
         unless $blog && $role && $author;
+    return $app->errtrans("Permission denied.")
+        if !$user->is_superuser && !$perms->can_administer_blog && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
 
@@ -1069,7 +1106,6 @@ sub grant_role {
 
     my $user = $app->user;
     return unless $app->validate_magic;
-
     my $blogs   = $app->param('blog')   || '';
     my $authors = $app->param('author') || '';
     my $roles   = $app->param('role')   || '';
@@ -1079,7 +1115,7 @@ sub grant_role {
 
     my @blogs   = split /,/, $blogs;
     my @authors = split /,/, $authors;
-    my @roles   = split /,/, $roles;
+    my @role_ids   = split /,/, $roles;
 
     require MT::Blog;
     require MT::Role;
@@ -1089,11 +1125,29 @@ sub grant_role {
         $id =~ s/\D//g;
         $_ = MT::Blog->load($id);
     }
-    foreach (@roles) {
-        my $id = $_;
-        $id =~ s/\D//g;
-        $_ = MT::Role->load($id);
+    push @blogs, MT::Blog->load($blog_id) if $blog_id;
+
+    my $can_grant_administer = 1;
+    if ( !$user->is_superuser ) {
+        if (   ( scalar @blogs != 1 )
+            || !$user->permissions( $blogs[0] )->can_administer_blog ) {
+            $can_grant_administer = 0;
+            if ( !$user->permissions( $blogs[0] )->can_manage_users ) {
+                return $app->errtrans("Permission denied.");
+            }
+        }
     }
+
+    my @roles;
+    foreach my $id (@role_ids) {
+        $id =~ s/\D//g;
+        my $role = MT::Role->load($id);
+        if ( $can_grant_administer || !$role->has('administer_blog') ) {
+            push @roles, $role;
+        }
+    }
+    push @roles, MT::Role->load($role_id) if $role_id;
+
     my $add_pseudo_new_user = 0;
     foreach (@authors) {
         my $id = $_;
@@ -1112,16 +1166,6 @@ sub grant_role {
         }
         else {
             push @authors, MT::Author->load($author_id);
-        }
-    }
-    push @blogs,   MT::Blog->load($blog_id)     if $blog_id;
-    push @roles,   MT::Role->load($role_id)     if $role_id;
-
-    if ( !$user->is_superuser ) {
-        if (   ( scalar @blogs != 1 )
-            || ( !$user->permissions( $blogs[0] )->can_administer_blog ) )
-        {
-            return $app->errtrans("Permission denied.");
         }
     }
 
@@ -1279,7 +1323,8 @@ sub dialog_grant_role {
     my $this_user = $app->user;
     if ( !$this_user->is_superuser ) {
         if (   !$blog_id
-            || !$this_user->permissions($blog_id)->can_administer_blog )
+            || ( !$this_user->permissions($blog_id)->can_administer_blog
+                && !$this_user->permissions($blog_id)->can_manage_users ) )
         {
             return $app->errtrans("Permission denied.");
         }
@@ -1299,6 +1344,10 @@ sub dialog_grant_role {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
+        $row->{disabled} = 1 if UNIVERSAL::isa($obj, 'MT::Role')
+                             && $obj->has('administer_blog')
+                             && !$this_user->is_superuser
+                             && !$this_user->permissions($blog_id)->can_administer_blog;
     };
 
     # Only show active users who are not commenters.
@@ -1324,6 +1373,7 @@ sub dialog_grant_role {
         $app->listing(
             {
                 terms    => $terms,
+                args     => { sort => 'name' },
                 type     => $type,
                 code     => $hasher,
                 params   => $params,
@@ -1416,10 +1466,10 @@ sub dialog_grant_role {
             },
         };
 
+        $params->{panel_multi}  = 1;
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
-        $params->{panel_multi}  = 1;
 
         for ( my $i = 0 ; $i <= $#panels ; $i++ ) {
             my $source       = $panels[$i];
@@ -1617,15 +1667,16 @@ sub save_filter {
     if ( !$app->param('id') ) {    # it's a new object
         return $eh->error( $app->translate("User requires password") )
           if ( !$app->param('pass') );
-        return $eh->error(
-            $app->translate("User requires password recovery word/phrase") )
-          if ( !$app->param('hint') );
     }
     my $email = $app->param('email');
     return $eh->error(
         MT->translate("Email Address is required for password recovery") )
       unless $email;
-    if ( $email =~ m/([<>])/) {
+    if ( !is_valid_email($email) ) {
+        return $eh->error( $app->translate("Email Address is invalid.") );
+    }
+
+    if ( $email =~ m/([<>])/ ) {
         return $eh->error( $app->translate("[_1] contains an invalid character: [_2]", $app->translate("Email Address"), encode_html( $1 ) ) );
     }
 
@@ -1711,6 +1762,13 @@ sub post_save {
                 $app->start_session();
             }
         }
+        if (   $original->status == MT::Author::PENDING()
+            && $obj->status == MT::Author::ACTIVE()
+            && $app->config->NewUserAutoProvisioning )
+        {
+            # provision new user with a personal blog
+            $app->run_callbacks( 'new_user_provisioning', $obj );
+        }
     }
     1;
 }
@@ -1735,6 +1793,7 @@ sub _merge_default_assignments {
     my $app = shift;
     my ( $data, $hasher, $type, $id ) = @_;
 
+    my $role_class = $app->model('role');
     if ( my $def = MT->config->DefaultAssignments ) {
         my @def = split ',', $def;
         while ( my $role_id = shift @def ) {
@@ -1746,10 +1805,18 @@ sub _merge_default_assignments {
             $obj->role_id($role_id);
             $obj->blog_id($blog_id);
             $obj->id( 'PSEUDO-' . $role_id . '-' . $blog_id );
-            my $row = $obj->column_values();
+            my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
-            $row->{user_id}   = 'PSEUDO';
+            $row->{user_id} = 'PSEUDO';
             $row->{user_name} = MT->translate('(newly created user)');
+            $row->{user_nickname} = $app->translate('represents a user who will be created afterwards'),
+            my $role = $role_class->load( $role_id );
+            my @role_loop = ( {
+                role_name    => $role->name,
+                role_id      => $role->id,
+                is_removable => 0,
+            } );
+            $row->{role_loop} = \@role_loop if @role_loop;
             push @$data, $row;
         }
     }

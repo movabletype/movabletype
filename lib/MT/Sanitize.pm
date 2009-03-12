@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2002-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2002-2009 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -99,8 +99,10 @@ sub sanitize {
                     my @attrs;
                     while ($inside =~ m/([:\w]+)\s*=\s*(['"])(.*?)\2/gs) {
                         my ($attr, $q, $val) = (lc($1), $2, $3);
+                        # javascript event attributes explicitly not allowed
+                        next if $attr =~ m/^on/;
                         if ($ok_tags->{'*'}{$attr} ||
-                           (ref $ok_tags->{$name} && $ok_tags->{$name}{$attr})) {
+                           (ref $ok_tags->{$name} && ($ok_tags->{$name}{'*'} || $ok_tags->{$name}{$attr}) && !exists($ok_tags->{$name}{'!' . $attr}))) {
                             my $dec_val = decode_html($val);
                             if ($attr =~ m/^(src|href|dynsrc)$/) {
                                 $dec_val =~ s/&#0*58(?:=;|[^0-9])/:/;
@@ -206,7 +208,5 @@ C<parse_spec> method if rules are not provided).
 =head1 AUTHOR & COPYRIGHT
 
 Please see L<MT/AUTHOR & COPYRIGHT>.
-
-=cut
 
 =cut

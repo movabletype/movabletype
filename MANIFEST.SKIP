@@ -50,7 +50,17 @@ mt-static/themes/unity-tricolor
 #?package=MTOS ^mt-static/themes/tristan-blue
 #?package=MTOS ^mt-static/themes/tristan-blue-4.2
 #?package=MTOS ^mt-static/plugins/feeds-app-lite
+#?package=MTOS ^mt-static/plugins/Motion
+#?package=MTOS ^mt-static/jquery/themes/Motion
+#?package=MTOS ^mt-static/plugins/ActionStreams
+#?package=MTOS ^mt-static/plugins/FacebookCommenters
+#?package=MTOS ^mt-static/plugins/mixiComment
 #?package=MTOS ^plugins/feeds-app-lite
+#?package=MTOS ^plugins/Motion
+#?package=MTOS ^plugins/ActionStreams
+#?package=MTOS ^plugins/FacebookCommenters
+#?package=MTOS ^plugins/CommunityActionStreams
+#?package=MTOS ^plugins/mixiComment
 #?package=MTOS ^plugins/CustomFields
 
 #?package=MTCOM ^COPYING
@@ -62,6 +72,16 @@ mt-static/themes/unity-tricolor
 #?package=MTCOM ^mt-cp.cgi
 #?package=MTCOM ^mt-static/themes/tristan-blue
 #?package=MTCOM ^mt-static/themes/tristan-blue-4.2
+#?package=MTCOM ^mt-static/plugins/Motion
+#?package=MTCOM ^mt-static/jquery/themes/Motion
+#?package=MTCOM ^mt-static/plugins/ActionStreams
+#?package=MTCOM ^mt-static/plugins/FacebookCommenters
+#?package=MTCOM ^mt-static/plugins/mixiComment
+#?package=MTCOM ^plugins/Motion
+#?package=MTCOM ^plugins/ActionStreams
+#?package=MTCOM ^plugins/FacebookCommenters
+#?package=MTCOM ^plugins/CommunityActionStreams
+#?package=MTCOM ^plugins/mixiComment
 
 #?package=MTE ^COPYING
 #?package=MTE ^COPYRIGHT
@@ -163,3 +183,5 @@ Makefile
 index\.html\..*
 readme\.html\..*
 build-language-stamp
+^mt-config.cgi$
+

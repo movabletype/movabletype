@@ -1,5 +1,5 @@
 # TypePad AntiSpam Plugin for Movable Type
-# Copyright (C) 2008, Six Apart, Ltd.
+# Copyright (C) 2008-2009, Six Apart, Ltd.
 # Derived from Tim Appnel's MT Akismet plugin for Movable Type.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.

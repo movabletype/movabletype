@@ -1,39 +1,39 @@
 <entry>
-  <title type="html"><TMPL_VAR NAME=LOG.MESSAGE ESCAPE=HTML></title>
-  <published><TMPL_VAR NAME=LOG.COMMENT.CREATED_ON_ISO></published>
-  <updated><TMPL_VAR NAME=LOG.COMMENT.MODIFIED_ON_ISO></updated>
-  <id><TMPL_VAR NAME=LOG.ATOM_ID></id>
-  <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>#c<TMPL_VAR NAME=LOG.COMMENT.ID>"/><TMPL_ELSE><link type="text/html" rel="alternate" href="<TMPL_VAR NAME=LOG.PERMALINK>"/></TMPL_IF>
+  <title type="html"><mt:var name="log.message" escape="html"></title>
+  <published><mt:var name="log.comment.created_on_iso"></published>
+  <updated><mt:var name="log.comment.modified_on_iso"></updated>
+  <id><mt:var name="log.atom_id"></id>
+  <mt:if name="log.comment.entry.status_is_2"><link type="text/html" rel="alternate" href="<mt:var name="log.comment.entry.permalink">#c<mt:var name="log.comment.id">"/><mt:else><link type="text/html" rel="alternate" href="<mt:var name="log.permalink">"/></mt:if>
   <author>
-  <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
-    <name><TMPL_VAR NAME=LOG.COMMENT.AUTHOR></name>
-    <TMPL_IF NAME=LOG.COMMENT.URL><uri><TMPL_VAR NAME=LOG.COMMENT.URL></uri></TMPL_IF>
-    <TMPL_IF NAME=LOG.COMMENT.EMAIL><uri><TMPL_VAR NAME=LOG.COMMENT.EMAIL></uri></TMPL_IF>
-  <TMPL_ELSE>
-    <name>(<MT_TRANS phrase="system">)</name>
-  </TMPL_IF>
+  <mt:if name="log.comment.author">
+    <name><mt:var name="log.comment.author"></name>
+    <mt:if name="log.comment.url"><uri><mt:var name="log.comment.url"></uri></mt:if>
+    <mt:if name="log.comment.email"><uri><mt:var name="log.comment.email"></uri></mt:if>
+  <mt:else>
+    <name>(<__trans phrase="system">)</name>
+  </mt:if>
   </author>
   <content type="html">
     &lt;div class="content"&gt;
-        <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
-        &lt;p style="float:right;"&gt;&lt;img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/success.gif" alt="<MT_TRANS phrase="Published">" width="9" height="9" /&gt;&lt;a href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<MT_TRANS phrase="Published">&lt;/a&gt;&lt;/p&gt;
-        <TMPL_ELSE>
-        &lt;p style="float:right;"&gt;&lt;img src="<TMPL_VAR NAME=STATIC_URI>images/status_icons/draft.gif" alt="<MT_TRANS phrase="Unpublished">" width="9" height="9" /&gt;&lt;href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<MT_TRANS phrase="Unpublished">&lt;/a&gt;&lt;/p&gt;
-        </TMPL_IF>
+        <mt:if name="log.comment.visible">
+        &lt;p style="float:right;"&gt;&lt;img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="Published">" width="9" height="9" /&gt;&lt;a href="<mt:var name="log.comment.entry.permalink">"&gt;<__trans phrase="Published">&lt;/a&gt;&lt;/p&gt;
+        <mt:else>
+        &lt;p style="float:right;"&gt;&lt;img src="<mt:var name="static_uri">images/status_icons/draft.gif" alt="<__trans phrase="Unpublished">" width="9" height="9" /&gt;&lt;href="<mt:var name="log.comment.entry.permalink">"&gt;<__trans phrase="Unpublished">&lt;/a&gt;&lt;/p&gt;
+        </mt:if>
 
         &lt;p&gt;
-        &lt;b&gt;<MT_TRANS phrase="Blog">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.BLOG.SITE_URL>"&gt;<TMPL_VAR NAME=LOG.COMMENT.BLOG.NAME ESCAPE=HTML>&lt;/a&gt;&lt;br /&gt;
-        <TMPL_IF NAME=LOG.COMMENT.ENTRY.STATUS_IS_2>
-        &lt;b&gt;<MT_TRANS phrase="Entry">:&lt;/b&gt; &lt;a href="<TMPL_VAR NAME=LOG.COMMENT.ENTRY.PERMALINK>"&gt;<TMPL_IF NAME=LOG.COMMENT.ENTRY.TITLE><TMPL_VAR NAME=LOG.COMMENT.ENTRY.TITLE ESCAPE=HTML><TMPL_ELSE>(<MT_TRANS phrase="Untitled">)</TMPL_IF>&lt;/a&gt;&lt;br /&gt;
-        <TMPL_ELSE>
-        &lt;b&gt;<MT_TRANS phrase="Entry">:&lt;/b&gt; <TMPL_IF NAME=LOG.COMMENT.ENTRY.TITLE><TMPL_VAR NAME=LOG.COMMENT.ENTRY.TITLE ESCAPE=HTML><TMPL_ELSE>(<MT_TRANS phrase="Untitled">)</TMPL_IF>&lt;br /&gt;
-        </TMPL_IF>
-        &lt;b&gt;<MT_TRANS phrase="Commenter">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=HTML>&lt;br /&gt;
-        &lt;b&gt;<MT_TRANS phrase="Email">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=HTML>&lt;br /&gt;
-        &lt;b&gt;<MT_TRANS phrase="URL">:&lt;/b&gt; <TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=HTML>&lt;br /&gt;
+        &lt;b&gt;<__trans phrase="Blog">:&lt;/b&gt; &lt;a href="<mt:var name="log.comment.blog.site_url">"&gt;<mt:var name="log.comment.blog.name" escape="html">&lt;/a&gt;&lt;br /&gt;
+        <mt:if name="log.comment.entry.status_is_2">
+        &lt;b&gt;<__trans phrase="Entry">:&lt;/b&gt; &lt;a href="<mt:var name="log.comment.entry.permalink">"&gt;<mt:if name="log.comment.entry.title"><mt:var name="log.comment.entry.title" escape="html"><mt:else>(<__trans phrase="Untitled">)</mt:if>&lt;/a&gt;&lt;br /&gt;
+        <mt:else>
+        &lt;b&gt;<__trans phrase="Entry">:&lt;/b&gt; <mt:if name="log.comment.entry.title"><mt:var name="log.comment.entry.title" escape="html"><mt:else>(<__trans phrase="Untitled">)</mt:if>&lt;br /&gt;
+        </mt:if>
+        &lt;b&gt;<__trans phrase="Commenter">:&lt;/b&gt; <mt:var name="log.comment.author" escape="html">&lt;br /&gt;
+        &lt;b&gt;<__trans phrase="Email">:&lt;/b&gt; <mt:var name="log.comment.email" escape="html">&lt;br /&gt;
+        &lt;b&gt;<__trans phrase="URL">:&lt;/b&gt; <mt:var name="log.comment.url" escape="html">&lt;br /&gt;
         &lt;/p&gt;
 
-      <TMPL_VAR NAME=LOG.COMMENT.TEXT_HTML ESCAPE=HTML>
+      <mt:var name="log.comment.text_html" escape="html">
       &lt;hr /&gt;
     &lt;/div&gt;
 
@@ -41,55 +41,55 @@
     &lt;div class="actions" style="float:left;width:49%;"&gt;
 
         &lt;ul&gt;
-            &lt;strong&gt;<MT_TRANS phrase="Actions">:&lt;/strong&gt;&lt;br /&gt;
+            &lt;strong&gt;<__trans phrase="Actions">:&lt;/strong&gt;&lt;br /&gt;
     
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=comment&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"><MT_TRANS phrase="Edit">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="log.comment.id">&amp;blog_id=<mt:var name="log.comment.blog_id">"><__trans phrase="Edit">&lt;/a&gt;&lt;/li&gt;
 
-            <TMPL_IF NAME=LOG.COMMENT.VISIBLE>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
-            <TMPL_ELSE>
-            <mt:If name="log.comment.junk_status" eq="-1">
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=not_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
-            <mt:Else>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=approve_item&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Publish">&lt;/a&gt;&lt;/li&gt;
-            </mt:If>
-            </TMPL_IF>
-            &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=handle_junk&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;id=<TMPL_VAR NAME=LOG.COMMENT.ID>&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<TMPL_VAR NAME=LOG.COMMENT.ID>%26blog_id%3D<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;feed_token=<TMPL_VAR NAME=FEED_TOKEN>"&gt;<MT_TRANS phrase="Junk">&lt;/a&gt;&lt;/li&gt;
+            <mt:if name="log.comment.visible">
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=unapprove_item&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;id=<mt:var name="log.comment.id">&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<mt:var name="log.comment.id">%26blog_id%3D<mt:var name="log.comment.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            <mt:else>
+            <mt:if name="log.comment.junk_status" eq="-1">
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=not_junk&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;id=<mt:var name="log.comment.id">&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<mt:var name="log.comment.id">%26blog_id%3D<mt:var name="log.comment.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            <mt:else>
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=approve_item&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;id=<mt:var name="log.comment.id">&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<mt:var name="log.comment.id">%26blog_id%3D<mt:var name="log.comment.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            </mt:if>
+            </mt:if>
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=handle_junk&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;id=<mt:var name="log.comment.id">&amp;return_args=__mode%3Dview%26_type%3Dcomment%26id%3D<mt:var name="log.comment.id">%26blog_id%3D<mt:var name="log.comment.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Junk">&lt;/a&gt;&lt;/li&gt;
 
-          <TMPL_IF NAME=LOOP_ACTIONS>
-          <TMPL_LOOP NAME=LOOP_ACTIONS>
-          &lt;li&gt;&lt;a href="<TMPL_VAR NAME=LINK>"&gt;<TMPL_VAR NAME=LABEL>&lt;/a&gt;&lt;/li&gt;
-          </TMPL_LOOP>
-          </TMPL_IF>
+          <mt:if name="loop_actions">
+          <mt:loop name="loop_actions">
+          &lt;li&gt;&lt;a href="<mt:var name="link">"&gt;<mt:var name="label">&lt;/a&gt;&lt;/li&gt;
+          </mt:loop>
+          </mt:if>
         &lt;/ul&gt;
     &lt;/div&gt;
 
     &lt;div class="discovery" style="float:right;width:49%;"&gt;
 
         &lt;ul&gt;
-        &lt;strong&gt;<MT_TRANS phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
+        &lt;strong&gt;<__trans phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comments&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="log.comment.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=list_comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;filter_key=_comments_by_entry&amp;filter_val=<TMPL_VAR NAME=LOG.COMMENT.ENTRY_ID>"&gt;<MT_TRANS phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="log.comment.entry_id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
-        <TMPL_IF NAME=LOG.COMMENT.AUTHOR.AUTHENTICATED>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=view&amp;_type=commenter&amp;id=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR.ID>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;tab=comments"&gt;<MT_TRANS phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;
-        </TMPL_IF>
+        <mt:if name="log.comment.author.authenticated">
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="log.comment.author.id">&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;tab=comments"&gt;<__trans phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;
+        </mt:if>
 
-        <TMPL_IF NAME=LOG.COMMENT.AUTHOR>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<TMPL_VAR NAME=LOG.COMMENT.AUTHOR ESCAPE=URL>&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>"&gt;<MT_TRANS phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
-        </TMPL_IF>
+        <mt:if name="log.comment.author">
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="log.comment.author" escape="url">&amp;blog_id=<mt:var name="log.comment.blog_id">"&gt;<__trans phrase="By commenter name">&lt;/a&gt;&lt;/li&gt;
+        </mt:if>
 
-        <TMPL_IF NAME=LOG.COMMENT.EMAIL>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;search=<TMPL_VAR NAME=LOG.COMMENT.EMAIL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
-        </TMPL_IF>
+        <mt:if name="log.comment.email">
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;search=<mt:var name="log.comment.email" escape="url">&amp;is_limited=1&amp;search_cols=email&amp;do_search=1"&gt;<__trans phrase="By commenter email">&lt;/a&gt;&lt;/li&gt;
+        </mt:if>
 
-        <TMPL_IF NAME=LOG.COMMENT.URL>
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;_type=comment&amp;search=<TMPL_VAR NAME=LOG.COMMENT.URL ESCAPE=URL>&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<MT_TRANS phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
-        </TMPL_IF>
+        <mt:if name="log.comment.url">
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;_type=comment&amp;search=<mt:var name="log.comment.url" escape="url">&amp;is_limited=1&amp;search_cols=url&amp;do_search=1"&gt;<__trans phrase="By commenter URL">&lt;/a&gt;&lt;/li&gt;
+        </mt:if>
 
-        &lt;li&gt;&lt;a href="<TMPL_VAR NAME=MT_URL>?__mode=search_replace&amp;_type=comment&amp;from=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;to=<TMPL_VAR NAME=LOG.COMMENT.CREATED_ON>&amp;show_all=1&amp;blog_id=<TMPL_VAR NAME=LOG.COMMENT.BLOG_ID>&amp;do_search=1"&gt;<MT_TRANS phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=comment&amp;from=<mt:var name="log.comment.created_on">&amp;to=<mt:var name="log.comment.created_on">&amp;show_all=1&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;do_search=1"&gt;<__trans phrase="On this day">&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       
     &lt;/div&gt;
