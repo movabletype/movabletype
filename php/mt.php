@@ -201,6 +201,7 @@ class MT {
 
         $cfg = array();
         $type_array = array('pluginpath', 'alttemplate', 'outboundtrackbackdomains', 'memcachedservers');
+        $type_hash  = array('commenterregistration');
         if ($fp = file($file)) {
             foreach ($fp as $line) {
                 // search through the file
@@ -211,6 +212,10 @@ class MT {
                         $value = trim($regs[2]);
                         if (in_array($key, $type_array)) {
                             $cfg[$key][] = $value;
+                        }
+                        elseif (in_array($key, $type_hash)) {
+                            $hash = preg_split('/\=/', $value, 2);
+                            $cfg[$key][strtolower(trim($hash[0]))] = trim($hash[1]);
                         } else {
                             $cfg[$key] = $value;
                         }
@@ -384,6 +389,8 @@ class MT {
             $cfg['usersessioncookiepath'] = 'DEFAULT';
         isset($cfg['usersessioncookietimeout']) or
             $cfg['usersessioncookietimeout'] = 60*60*4;
+        isset($cfg['commenterregistration']) or
+            $cfg['commenterregistration'] = array('allow' => 1 );
     }
 
     function configure_paths($blog_site_path) {
