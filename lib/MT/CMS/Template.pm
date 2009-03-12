@@ -999,7 +999,10 @@ sub preview {
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
     $param{name} = $tmpl->name;
-    $q->param( 'build_dynamic', $tmpl->build_dynamic );
+    if ( $type ne 'index' ) {
+        $q->param( 'build_dynamic', $tmpl->build_dynamic );
+        $q->param( 'build_type', $tmpl->build_type );
+    }
     my $cols = $tmpl->column_names;
     for my $col (@$cols) {
         push @data,

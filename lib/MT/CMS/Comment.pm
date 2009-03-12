@@ -1684,6 +1684,7 @@ sub set_item_visible {
                         }
                         unless (
                             $perms->can_manage_feedback
+                            || $perms->can_edit_all_posts
                             || ( $perms->can_publish_post
                                 && ( $obj_parent->author_id == $author->id ) )
                           )
@@ -1713,6 +1714,7 @@ sub set_item_visible {
                     }
                     unless (
                         $perms->can_manage_feedback
+                        || $perms->can_edit_all_posts
                         || ( $perms->can_publish_post
                             && ( $entry->author_id == $author->id ) )
                       )

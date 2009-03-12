@@ -176,7 +176,7 @@ sub save {
         # If this is a new blog, set the preferences, archive settings
         # and template set to the defaults.
         if ( !$obj->id ) {
-            $obj->language( $app->user->preferred_language );
+            $obj->language( $q->param('blog_language') || $app->user->preferred_language );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
             $obj->page_layout('layout-wtt');
@@ -980,7 +980,7 @@ sub delete {
                                         join => MT::Placement->join_on(
                                             'entry_id',
                                             { category_id => $id },
-                                            { unqiue      => 1 }
+                                            { unique      => 1 }
                                         )
                                     }
                                 );

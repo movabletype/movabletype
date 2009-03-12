@@ -56,6 +56,7 @@ sub handle {
         }
         my $apps = $app->config->AtomApp;
         if (my $class = $apps->{$subapp}) {
+            eval "require $class;";
             bless $app, $class;
         }
         my $out = $app->handle_request;

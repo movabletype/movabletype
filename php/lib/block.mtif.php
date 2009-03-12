@@ -77,18 +77,16 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        require_once("function.mtsetvar.php");
-        if(isset($args['tag'])) {
-            smarty_function_mtsetvar(array('name' => '__cond_tag__', 'value' => $args['tag']), $ctx);
-        }
+        if(isset($args['tag']))
+            $ctx->__stash['__cond_tag__'] = $args['tag'];
         else {
             if (isset($args['name']))
                 $var_key = $args['name'];
             else if(isset($args['var']))
                 $var_key = $args['var'];
-            smarty_function_mtsetvar(array('name' => '__cond_name__', 'value' => $var_key), $ctx);
+            $ctx->__stash['__cond_name__'] = $var_key;
         }
-        smarty_function_mtsetvar(array('name' => '__cond_value__', 'value' => $val), $ctx);
+        $ctx->__stash['__cond_value__'] = $val;
 
         if ( array_key_exists('op', $args) ) {
             $op = $args['op'];
@@ -145,4 +143,3 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

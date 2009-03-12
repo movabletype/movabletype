@@ -533,7 +533,7 @@ sub core_list_actions {
                 label      => "Unpublish TrackBack(s)",
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
-                permission => 'manage_feedback,publish_post',
+                permission => 'edit_all_posts,manage_feedback,publish_post',
             },
         },
         'comment' => {
@@ -541,7 +541,7 @@ sub core_list_actions {
                 label      => "Unpublish Comment(s)",
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
-                permission => 'manage_feedback,publish_post',
+                permission => 'edit_all_posts,manage_feedback,publish_post',
                 condition  => sub {
                     return 1;
                 },
@@ -1880,7 +1880,9 @@ sub build_page {
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
-        $param->{page_actions} ||= $app->page_actions( $app->mode );
+        # Using a sub here to delay the loading of page actions, since not all
+        # templates actually utilize them.
+        $param->{page_actions} ||= sub { $app->page_actions( $app->mode ) };
     }
 
     $app->SUPER::build_page( $page, $param );
@@ -2424,6 +2426,7 @@ sub load_default_entry_prefs {
     my $perm
         = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
     my %default = %{ $app->config->DefaultEntryPrefs };
+    %default = map { lc $_ => $default{$_} } keys %default;
     if ( $perm && $perm->entry_prefs ) {
         $prefs = $perm->entry_prefs;
     }
@@ -2439,9 +2442,8 @@ sub load_default_entry_prefs {
             );
             my @p;
             foreach my $p ( keys %map ) {
-                push @p,
-                    $map{$p} . ':' . ( $default{$p} || $default{ lc $p } )
-                    if ( $default{$p} || $default{ lc $p } );
+                push @p, $map{$p} . ':' . $default{ lc $p }
+                    if $default{ lc $p };
             }
             $prefs = join ',', @p;
             $prefs ||= 'Custom';
@@ -2627,7 +2629,14 @@ sub _translate_naughty_words {
     my @fields = split( /\s*,\s*/, $fields || '' );
     foreach my $field (@fields) {
         if ( $entry->can($field) ) {
-            $entry->$field( _convert_word_chars( $app, $entry->$field ) );
+            if ( $field eq 'tags' ) {
+                my @tags
+                    = map { _convert_word_chars( $app, $_ ) } $entry->tags;
+                $entry->set_tags(@tags);
+            }
+            else {
+                $entry->$field( _convert_word_chars( $app, $entry->$field ) );
+            }
         }
     }
 }

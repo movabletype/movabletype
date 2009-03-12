@@ -24,6 +24,7 @@ sub init {
     $app->SUPER::init(@_);
     $app->{mt_dir} ||= $ENV{MT_HOME} || $param{Directory};
     $app->{is_admin} = 1;
+    $app->{plugin_template_path} = '';
     $app->add_methods(
         pre_start => \&pre_start,
         run_step  => \&run_step,
@@ -136,6 +137,11 @@ sub init_core_registry {
                 link => 'http://search.cpan.org/dist/LWP',
                 label =>
                     'This module is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
+            },
+            'HTML::Parser' => {
+                link => 'http://search.cpan.org/dist/HTML-Parser',
+                label =>
+                    'HTML::Parser is optional; It is needed if you wish to use the TrackBack system, the weblogs.com ping, or the MT Recently Updated ping.',
             },
             'SOAP::Lite' => {
                 link    => 'http://search.cpan.org/dist/SOAP-Lite',

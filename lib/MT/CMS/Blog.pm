@@ -46,10 +46,16 @@ sub edit {
         $param->{ "moderate_pings_" . ( $obj->moderate_pings || 0 ) } = 1;
 
         my $cmtauth_reg = $app->registry('commenter_authenticators');
+        my %cmtauth;
         foreach my $auth ( keys %$cmtauth_reg ) {
-            $cmtauth_reg->{$auth}->{disabled} = 1
-              if exists( $cmtauth_reg->{$auth}->{condition} )
-              && !( $cmtauth_reg->{$auth}->{condition}->() );
+            my %auth = %{$cmtauth_reg->{$auth}};
+            $cmtauth{$auth} = \%auth;
+            if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
+                $c = $app->handler_to_coderef($c);
+                if ( $c ) {
+                    $cmtauth{$auth}->{disabled} = 1 unless $c->();
+                }
+            }
         }
         if ( my $auths = $blog->commenter_authenticators ) {
             foreach ( split ',', $auths ) {
@@ -57,31 +63,31 @@ sub edit {
                     $param->{enabled_MovableType} = 1;
                 }
                 else {
-                    $cmtauth_reg->{$_}->{enabled} = 1;
+                    $cmtauth{$_}->{enabled} = 1;
                 }
             }
         }
         my @cmtauth_loop;
-        foreach ( keys %$cmtauth_reg ) {
-            $cmtauth_reg->{$_}->{key} = $_;
+        foreach ( keys %cmtauth ) {
+            $cmtauth{$_}->{key} = $_;
             if (
                 UNIVERSAL::isa(
-                    $cmtauth_reg->{$_}->{plugin}, 'MT::Plugin'
+                    $cmtauth{$_}->{plugin}, 'MT::Plugin'
                 )
               )
             {
-                push @cmtauth_loop, $cmtauth_reg->{$_};
+                push @cmtauth_loop, $cmtauth{$_};
             }
         }
-        unshift @cmtauth_loop, $cmtauth_reg->{'TypeKey'}
-          if exists( $cmtauth_reg->{'TypeKey'} )
+        unshift @cmtauth_loop, $cmtauth{'TypeKey'}
+          if exists( $cmtauth{'TypeKey'} )
           && $blog->remote_auth_token;
-        unshift @cmtauth_loop, $cmtauth_reg->{'Vox'}
-          if exists $cmtauth_reg->{'Vox'};
-        unshift @cmtauth_loop, $cmtauth_reg->{'LiveJournal'}
-          if exists $cmtauth_reg->{'LiveJournal'};
-        unshift @cmtauth_loop, $cmtauth_reg->{'OpenID'}
-          if exists $cmtauth_reg->{'OpenID'};
+        unshift @cmtauth_loop, $cmtauth{'Vox'}
+          if exists $cmtauth{'Vox'};
+        unshift @cmtauth_loop, $cmtauth{'LiveJournal'}
+          if exists $cmtauth{'LiveJournal'};
+        unshift @cmtauth_loop, $cmtauth{'OpenID'}
+          if exists $cmtauth{'OpenID'};
 
         $param->{cmtauth_loop} = \@cmtauth_loop;
 
@@ -296,6 +302,8 @@ sub edit {
         @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
         $param->{'template_set_loop'} = $sets;
         $param->{'template_set_index'} = $#$sets;
+
+        $param->{languages} = $app->languages_list( $app->current_language );
     }
 
     if (   !$param->{site_path}
@@ -1553,7 +1561,7 @@ sub post_save {
         if ($path_changed) {
             update_dynamicity( $app, $obj );
             $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
-                or return $app->publish_error();
+                or $app->publish_error();
         }
 
         cfg_archives_save($app, $obj) or return;

@@ -1,4 +1,4 @@
-# $Id: NoUnicodeExt.pm,v 1.3 2003/07/30 13:39:23 matt Exp $
+# $Id: NoUnicodeExt.pm,v 1.3 2003-07-30 13:39:23 matt Exp $
 
 package XML::SAX::PurePerl::Reader;
 use strict;

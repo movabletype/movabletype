@@ -208,7 +208,7 @@ class MTViewer extends Smarty {
     function _hdlr_if($args, $content, &$ctx, &$repeat, $cond_tag = 1) {
         if (!isset($content)) {
             if (!isset($args['elseif'])) {
-                $ctx->localize(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional'));
+                $ctx->localize(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional', '__cond_name__', '__cond_value__', '__cond_tag__'));
                 unset($ctx->_tpl_vars['conditional']);
                 unset($ctx->_tpl_vars['else_content']);
                 unset($ctx->_tpl_vars['elseif_content']);
@@ -249,26 +249,22 @@ class MTViewer extends Smarty {
             return '';
         }
         if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
-            $vars =& $ctx->__stash['vars'];
-            if ( array_key_exists('__cond_tag__', $vars) ) {
-                $tag = $vars['__cond_tag__'];
-                unset($vars['__cond_tag__']);
+            $stash =& $ctx->__stash;
+            if ( array_key_exists('__cond_tag__', $stash) ) {
+                $tag = $stash['__cond_tag__'];
                 if ( isset($tag) && $tag )
                     $args['tag'] = $tag;
             }
-            else if ( array_key_exists('__cond_name__', $vars) ) {
-                $name = $vars['__cond_name__'];
-                unset($vars['__cond_name__']);
+            else if ( array_key_exists('__cond_name__', $stash) ) {
+                $name = $stash['__cond_name__'];
                 if ( isset($name) && $name )
                     $args['name'] = $name;
             }
-            if ( array_key_exists('__cond_value__', $vars) ) {
-                $value = $vars['__cond_value__'];
-                unset($vars['__cond_value__']);
+            if ( array_key_exists('__cond_value__', $stash) ) {
+                $value = $stash['__cond_value__'];
                 if ( isset($value) && $value )
                     $args['value'] = $value;
             }
-            $ctx->__stash['vars'] =& $vars;
         }
         if (count($args) >= 1) { # else-if case
             require_once("block.mtif.php");

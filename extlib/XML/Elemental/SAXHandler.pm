@@ -3,15 +3,21 @@ use strict;
 use warnings;
 
 use vars qw($VERSION);
-$VERSION = '0.1';
+$VERSION = '0.11';
 
 use base qw( XML::SAX::Base );
+
+use Scalar::Util qw(weaken);
 
 my %defaults = (
                 Document   => 'XML::Elemental::Document',
                 Element    => 'XML::Elemental::Element',
                 Characters => 'XML::Elemental::Characters'
 );
+
+# We work with direct references to the underlying HASH data
+# rather then the methods for better parsing performance.
+# Dangerous? Perhaps.
 
 sub new {
     my $self = shift->SUPER::new(@_);
@@ -64,6 +70,8 @@ sub end_element { pop(@{$_[0]->{__stack}}) }
 
 sub end_document {
     delete $_[0]->{__stack};
+    $_[0]->{__doc}->{contents} = $_[0]->{__doc}->{contents}->[0];
+    weaken($_[0]->{__doc}->{contents}->{parent} = $_[0]->{__doc});
     $_[0]->{__doc};
 }
 

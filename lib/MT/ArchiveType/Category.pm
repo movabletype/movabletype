@@ -39,10 +39,10 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class                      => "category-archive",
-        category_archive                   => 1,
-        archive_template                   => 1,
-        archive_listing                    => 1,
+        archive_class              => "category-archive",
+        category_archive           => 1,
+        archive_template           => 1,
+        archive_listing            => 1,
         'module_category_archives' => 1,
     };
 }
@@ -132,7 +132,7 @@ sub archive_group_entries {
         {
             join => [
                 'MT::Placement', 'entry_id',
-                { category_id => $c->id }, { unqiue => 1 }
+                { category_id => $c->id }, { unique => 1 }
             ],
             'sort'      => 'authored_on',
             'direction' => 'descend',

@@ -296,7 +296,7 @@ class MT {
                     if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
                         $key = strtolower(trim($regs[1]));
                         $value = trim($regs[2]);
-                        if (($key == 'PluginSwitch') || ($key == 'PluginSchemaVersion')) { # special case for hash
+                        if (($key === 'pluginswitch') || ($key === 'pluginschemaversion')) { # special case for hash
                             if (preg_match('/^(.+)=(.+)$/', $value, $match))
                                 $cfg[$key][trim($match[1])] = trim($match[2]);
                         } else {
@@ -570,11 +570,11 @@ class MT {
 
             if ($at == 'Category') {
                 $vars =& $ctx->__stash['vars'];
-                $vars['archive_class']                    = "category-archive";
-                $vars['category_archive']                 = 1;
-                $vars['archive_template']                 = 1;
-                $vars['archive_listing']                  = 1;
-                $vars['module_category-monthly_archives'] = 1;
+                $vars['archive_class']            = "category-archive";
+                $vars['category_archive']         = 1;
+                $vars['archive_template']         = 1;
+                $vars['archive_listing']          = 1;
+                $vars['module_category_archives'] = 1;
             }
         }
 

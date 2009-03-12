@@ -1,4 +1,4 @@
-# $Id: ParserFactory.pm,v 1.13 2002/11/19 18:25:47 matt Exp $
+# $Id: ParserFactory.pm,v 1.14 2008-08-04 04:51:29 grant Exp $
 
 package XML::SAX::ParserFactory;
 
@@ -33,11 +33,9 @@ sub parser {
         $version = " $1";
     }
 
-    {
-        no strict 'refs';
-        if (!keys %{"${parser_class}::"}) {
-            eval "use $parser_class $version;";
-        }
+    if (!$parser_class->can('new')) {
+        eval "require $parser_class $version;";
+        die $@ if $@;
     }
 
     return $parser_class->new(@parser_params);

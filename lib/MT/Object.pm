@@ -1098,6 +1098,13 @@ sub set_values {
     }
 }
 
+sub get_values {
+    my $obj = shift;
+    # returns a copy of column_values, as accessing column_values directly
+    # can be problematic.
+    return { %{ $obj->column_values } };
+}
+
 sub column_def {
     my $obj = shift;
     my ($name) = @_;
@@ -2076,6 +2083,21 @@ object I<en masse>. The former returns a hash reference mapping column
 names to their values in this object. For example:
 
     $values = $obj->column_values()
+
+=over 4
+
+=item * $obj->set_values()
+
+=back
+
+C<get_values> is similar to C<column_values>, in that it returns a hash
+reference of column names and values, but it returns a new hash reference,
+and a copy of the data rather that the hash reference that MT::Object uses
+internally. This is a safer way to access this data, if you intend to also
+modify the values.
+
+    my $data = $obj->get_values;
+    $data->{$_} = lc $data->{$_} for keys %$data;
 
 =over 4
 

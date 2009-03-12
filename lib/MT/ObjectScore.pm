@@ -17,7 +17,7 @@ __PACKAGE__->install_properties({
         'author_id'    => 'integer',
         'score'        => 'float',
         'object_ds'    => 'string(50) not null',
-        'ip'           => 'string(16)',
+        'ip'           => 'string(50)',
     },
     indexes => {
         # usually used to remove all scores for a given object

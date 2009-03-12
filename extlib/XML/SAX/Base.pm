@@ -57,7 +57,11 @@ sub end_prefix_mapping {
             $self->{Methods}->{'end_prefix_mapping'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->end_prefix_mapping(@_) };
             if ($@) {
                 die $@;
@@ -71,7 +75,11 @@ sub end_prefix_mapping {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_prefix_mapping(@_) };
             if ($@) {
                 die $@;
@@ -118,7 +126,11 @@ sub internal_entity_decl {
             $self->{Methods}->{'internal_entity_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DeclHandler'} and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DeclHandler'} 
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DeclHandler'}->internal_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -132,7 +144,11 @@ sub internal_entity_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->internal_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -184,7 +200,11 @@ sub characters {
             $self->{Methods}->{'characters'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->characters(@_) };
             if ($@) {
                 die $@;
@@ -198,7 +218,11 @@ sub characters {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->characters(@_) };
             if ($@) {
                 die $@;
@@ -212,7 +236,11 @@ sub characters {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->characters(@_) };
             if ($@) {
                 die $@;
@@ -264,7 +292,11 @@ sub start_element {
             $self->{Methods}->{'start_element'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->start_element(@_) };
             if ($@) {
                 die $@;
@@ -278,7 +310,11 @@ sub start_element {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->start_element(@_) };
             if ($@) {
                 die $@;
@@ -292,7 +328,11 @@ sub start_element {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_element(@_) };
             if ($@) {
                 die $@;
@@ -339,7 +379,11 @@ sub external_entity_decl {
             $self->{Methods}->{'external_entity_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DeclHandler'} and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DeclHandler'} 
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DeclHandler'}->external_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -353,7 +397,11 @@ sub external_entity_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->external_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -400,7 +448,11 @@ sub xml_decl {
             $self->{Methods}->{'xml_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->xml_decl(@_) };
             if ($@) {
                 die $@;
@@ -414,7 +466,11 @@ sub xml_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->xml_decl(@_) };
             if ($@) {
                 die $@;
@@ -461,7 +517,11 @@ sub entity_decl {
             $self->{Methods}->{'entity_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -475,7 +535,11 @@ sub entity_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -522,7 +586,11 @@ sub end_dtd {
             $self->{Methods}->{'end_dtd'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->end_dtd(@_) };
             if ($@) {
                 die $@;
@@ -536,7 +604,11 @@ sub end_dtd {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_dtd(@_) };
             if ($@) {
                 die $@;
@@ -583,7 +655,11 @@ sub unparsed_entity_decl {
             $self->{Methods}->{'unparsed_entity_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->unparsed_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -597,7 +673,11 @@ sub unparsed_entity_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->unparsed_entity_decl(@_) };
             if ($@) {
                 die $@;
@@ -649,7 +729,11 @@ sub processing_instruction {
             $self->{Methods}->{'processing_instruction'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->processing_instruction(@_) };
             if ($@) {
                 die $@;
@@ -663,7 +747,11 @@ sub processing_instruction {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->processing_instruction(@_) };
             if ($@) {
                 die $@;
@@ -677,7 +765,11 @@ sub processing_instruction {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->processing_instruction(@_) };
             if ($@) {
                 die $@;
@@ -724,7 +816,11 @@ sub attribute_decl {
             $self->{Methods}->{'attribute_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DeclHandler'} and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DeclHandler'} 
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DeclHandler'}->attribute_decl(@_) };
             if ($@) {
                 die $@;
@@ -738,7 +834,11 @@ sub attribute_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->attribute_decl(@_) };
             if ($@) {
                 die $@;
@@ -785,7 +885,11 @@ sub fatal_error {
             $self->{Methods}->{'fatal_error'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ErrorHandler'} and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ErrorHandler'} 
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ErrorHandler'}->fatal_error(@_) };
             if ($@) {
                 die $@;
@@ -799,7 +903,11 @@ sub fatal_error {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->fatal_error(@_) };
             if ($@) {
                 die $@;
@@ -851,7 +959,11 @@ sub end_cdata {
             $self->{Methods}->{'end_cdata'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->end_cdata(@_) };
             if ($@) {
                 die $@;
@@ -865,7 +977,11 @@ sub end_cdata {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->end_cdata(@_) };
             if ($@) {
                 die $@;
@@ -879,7 +995,11 @@ sub end_cdata {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_cdata(@_) };
             if ($@) {
                 die $@;
@@ -926,7 +1046,11 @@ sub start_entity {
             $self->{Methods}->{'start_entity'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->start_entity(@_) };
             if ($@) {
                 die $@;
@@ -940,7 +1064,11 @@ sub start_entity {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_entity(@_) };
             if ($@) {
                 die $@;
@@ -987,7 +1115,11 @@ sub start_prefix_mapping {
             $self->{Methods}->{'start_prefix_mapping'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->start_prefix_mapping(@_) };
             if ($@) {
                 die $@;
@@ -1001,7 +1133,11 @@ sub start_prefix_mapping {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_prefix_mapping(@_) };
             if ($@) {
                 die $@;
@@ -1048,7 +1184,11 @@ sub error {
             $self->{Methods}->{'error'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ErrorHandler'} and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ErrorHandler'} 
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ErrorHandler'}->error(@_) };
             if ($@) {
                 die $@;
@@ -1062,7 +1202,11 @@ sub error {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->error(@_) };
             if ($@) {
                 die $@;
@@ -1114,7 +1258,11 @@ sub start_document {
             $self->{Methods}->{'start_document'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->start_document(@_) };
             if ($@) {
                 die $@;
@@ -1128,7 +1276,11 @@ sub start_document {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->start_document(@_) };
             if ($@) {
                 die $@;
@@ -1142,7 +1294,11 @@ sub start_document {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_document(@_) };
             if ($@) {
                 die $@;
@@ -1194,7 +1350,11 @@ sub ignorable_whitespace {
             $self->{Methods}->{'ignorable_whitespace'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->ignorable_whitespace(@_) };
             if ($@) {
                 die $@;
@@ -1208,7 +1368,11 @@ sub ignorable_whitespace {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->ignorable_whitespace(@_) };
             if ($@) {
                 die $@;
@@ -1222,7 +1386,11 @@ sub ignorable_whitespace {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->ignorable_whitespace(@_) };
             if ($@) {
                 die $@;
@@ -1274,7 +1442,11 @@ sub end_document {
             $self->{Methods}->{'end_document'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->end_document(@_) };
             if ($@) {
                 die $@;
@@ -1288,7 +1460,11 @@ sub end_document {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->end_document(@_) };
             if ($@) {
                 die $@;
@@ -1302,7 +1478,11 @@ sub end_document {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_document(@_) };
             if ($@) {
                 die $@;
@@ -1354,7 +1534,11 @@ sub start_cdata {
             $self->{Methods}->{'start_cdata'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->start_cdata(@_) };
             if ($@) {
                 die $@;
@@ -1368,7 +1552,11 @@ sub start_cdata {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->start_cdata(@_) };
             if ($@) {
                 die $@;
@@ -1382,7 +1570,11 @@ sub start_cdata {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_cdata(@_) };
             if ($@) {
                 die $@;
@@ -1434,7 +1626,11 @@ sub set_document_locator {
             $self->{Methods}->{'set_document_locator'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->set_document_locator(@_) };
             if ($@) {
                 die $@;
@@ -1448,7 +1644,11 @@ sub set_document_locator {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->set_document_locator(@_) };
             if ($@) {
                 die $@;
@@ -1462,7 +1662,11 @@ sub set_document_locator {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->set_document_locator(@_) };
             if ($@) {
                 die $@;
@@ -1509,7 +1713,11 @@ sub attlist_decl {
             $self->{Methods}->{'attlist_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->attlist_decl(@_) };
             if ($@) {
                 die $@;
@@ -1523,7 +1731,11 @@ sub attlist_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->attlist_decl(@_) };
             if ($@) {
                 die $@;
@@ -1570,7 +1782,11 @@ sub start_dtd {
             $self->{Methods}->{'start_dtd'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->start_dtd(@_) };
             if ($@) {
                 die $@;
@@ -1584,7 +1800,11 @@ sub start_dtd {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->start_dtd(@_) };
             if ($@) {
                 die $@;
@@ -1631,7 +1851,11 @@ sub resolve_entity {
             $self->{Methods}->{'resolve_entity'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'EntityResolver'} and $callbacks->{'EntityResolver'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'EntityResolver'} 
+        	and $callbacks->{'EntityResolver'}->can('AUTOLOAD')
+        	and $callbacks->{'EntityResolver'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'EntityResolver'}->resolve_entity(@_) };
             if ($@) {
                 die $@;
@@ -1645,7 +1869,11 @@ sub resolve_entity {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->resolve_entity(@_) };
             if ($@) {
                 die $@;
@@ -1692,7 +1920,11 @@ sub entity_reference {
             $self->{Methods}->{'entity_reference'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->entity_reference(@_) };
             if ($@) {
                 die $@;
@@ -1706,7 +1938,11 @@ sub entity_reference {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->entity_reference(@_) };
             if ($@) {
                 die $@;
@@ -1753,7 +1989,11 @@ sub element_decl {
             $self->{Methods}->{'element_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DeclHandler'} and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DeclHandler'} 
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DeclHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DeclHandler'}->element_decl(@_) };
             if ($@) {
                 die $@;
@@ -1767,7 +2007,11 @@ sub element_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->element_decl(@_) };
             if ($@) {
                 die $@;
@@ -1814,7 +2058,11 @@ sub notation_decl {
             $self->{Methods}->{'notation_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->notation_decl(@_) };
             if ($@) {
                 die $@;
@@ -1828,7 +2076,11 @@ sub notation_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->notation_decl(@_) };
             if ($@) {
                 die $@;
@@ -1875,7 +2127,11 @@ sub skipped_entity {
             $self->{Methods}->{'skipped_entity'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->skipped_entity(@_) };
             if ($@) {
                 die $@;
@@ -1889,7 +2145,11 @@ sub skipped_entity {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->skipped_entity(@_) };
             if ($@) {
                 die $@;
@@ -1941,7 +2201,11 @@ sub end_element {
             $self->{Methods}->{'end_element'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ContentHandler'} and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ContentHandler'} 
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ContentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ContentHandler'}->end_element(@_) };
             if ($@) {
                 die $@;
@@ -1955,7 +2219,11 @@ sub end_element {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->end_element(@_) };
             if ($@) {
                 die $@;
@@ -1969,7 +2237,11 @@ sub end_element {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_element(@_) };
             if ($@) {
                 die $@;
@@ -2016,7 +2288,11 @@ sub doctype_decl {
             $self->{Methods}->{'doctype_decl'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DTDHandler'} and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DTDHandler'} 
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DTDHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DTDHandler'}->doctype_decl(@_) };
             if ($@) {
                 die $@;
@@ -2030,7 +2306,11 @@ sub doctype_decl {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->doctype_decl(@_) };
             if ($@) {
                 die $@;
@@ -2082,7 +2362,11 @@ sub comment {
             $self->{Methods}->{'comment'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'DocumentHandler'} and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'DocumentHandler'} 
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'DocumentHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'DocumentHandler'}->comment(@_) };
             if ($@) {
                 die $@;
@@ -2096,7 +2380,11 @@ sub comment {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->comment(@_) };
             if ($@) {
                 die $@;
@@ -2110,7 +2398,11 @@ sub comment {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->comment(@_) };
             if ($@) {
                 die $@;
@@ -2157,7 +2449,11 @@ sub end_entity {
             $self->{Methods}->{'end_entity'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'LexicalHandler'} and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'LexicalHandler'} 
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'LexicalHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'LexicalHandler'}->end_entity(@_) };
             if ($@) {
                 die $@;
@@ -2171,7 +2467,11 @@ sub end_entity {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->end_entity(@_) };
             if ($@) {
                 die $@;
@@ -2218,7 +2518,11 @@ sub warning {
             $self->{Methods}->{'warning'} = sub { $method->($handler, @_) };
             return $method->($handler, @_);
         }
-        elsif (defined $callbacks->{'ErrorHandler'} and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'ErrorHandler'} 
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD')
+        	and $callbacks->{'ErrorHandler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'ErrorHandler'}->warning(@_) };
             if ($@) {
                 die $@;
@@ -2232,7 +2536,11 @@ sub warning {
             }
             return $res;
         }
-        elsif (defined $callbacks->{'Handler'} and $callbacks->{'Handler'}->can('AUTOLOAD') ) {
+        elsif (defined $callbacks->{'Handler'} 
+        	and $callbacks->{'Handler'}->can('AUTOLOAD')
+        	and $callbacks->{'Handler'}->can('AUTOLOAD') ne (UNIVERSAL->can('AUTOLOAD') || '')
+        	)
+        {
             my $res = eval { $callbacks->{'Handler'}->warning(@_) };
             if ($@) {
                 die $@;
@@ -2500,6 +2808,7 @@ sub set_handler {
     $handler_type ||= 'Handler';
     $self->{Methods} = {} if $self->{Methods};
     $self->{$handler_type} = $new_handler;
+    $self->{ParseOptions}->{$handler_type} = $new_handler;
     return 1;
 }
 

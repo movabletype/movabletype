@@ -1,4 +1,4 @@
-# $Id: DocumentLocator.pm,v 1.3 2005/10/14 20:31:20 matt Exp $
+# $Id: DocumentLocator.pm,v 1.3 2005-10-14 20:31:20 matt Exp $
 
 package XML::SAX::DocumentLocator;
 use strict;

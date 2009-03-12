@@ -221,10 +221,16 @@ sub create_default_blog {
 sub create_default_templates {
     my $blog = shift;
 
+    my $app = MT->instance;
+    my $curr_lang = $app->current_language;
+    $app->set_language($blog->language);
+
     require MT::DefaultTemplates;
     my $tmpl_list = MT::DefaultTemplates->templates( @_ );
-    return $blog->error(MT->translate("No default templates were found."))
-        if !$tmpl_list || (ref($tmpl_list) ne 'ARRAY') || (!@$tmpl_list);
+    if ( !$tmpl_list || (ref($tmpl_list) ne 'ARRAY') || (!@$tmpl_list) ) {
+        $app->set_language($curr_lang);
+        return $blog->error(MT->translate("No default templates were found."));
+    }
 
     require MT::Template;
     my @arch_tmpl;
@@ -292,6 +298,7 @@ sub create_default_templates {
         $tmpl_list
     );
 
+    $app->set_language($curr_lang);
     return $blog;
 }
 
@@ -872,8 +879,18 @@ sub clone_with_children {
             my @old_widgets = split /,/, $tmpl->modulesets;
             $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
             my @new_widgets;
-            push @new_widgets, $tmpl_map{$_}
-                foreach @old_widgets;
+            foreach ( @old_widgets ) {
+                if ( exists $tmpl_map{$_} ) {
+                    push @new_widgets, $tmpl_map{$_};
+                }
+                else {
+                    my $global_widget = MT::Template->load( $_ );
+                    push @new_widgets, $_
+                      if $global_widget
+                      && $global_widget->blog_id == 0
+                      && $global_widget->type eq 'widget'
+                }
+            }
             $tmpl->modulesets( join(',', @new_widgets) );
             $tmpl->save;
         }

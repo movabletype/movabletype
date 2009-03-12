@@ -45,6 +45,7 @@ sub init {
         cmtr_status_js => \&commenter_status_js,
     );
     $app->{template_dir} = 'comment';
+    $app->{plugin_template_path} = '';
     $app->init_commenter_authenticators;
     $app->init_captcha_providers();
     MT->add_callback( 'CommentThrottleFilter', 1, undef,

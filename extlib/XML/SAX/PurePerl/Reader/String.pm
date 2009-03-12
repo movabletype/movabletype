@@ -1,4 +1,4 @@
-# $Id: String.pm,v 1.5 2003/07/30 13:39:23 matt Exp $
+# $Id: String.pm,v 1.6 2008-08-04 03:35:44 grant Exp $
 
 package XML::SAX::PurePerl::Reader::String;
 
@@ -15,23 +15,40 @@ use XML::SAX::PurePerl::Reader qw(
 
 @ISA = ('XML::SAX::PurePerl::Reader');
 
-use constant DISCARDED => 7;
+use constant DISCARDED  => 8;
+use constant STRING     => 9;
+use constant USED       => 10;
+use constant CHUNK_SIZE => 2048;
 
 sub new {
     my $class = shift;
     my $string = shift;
     my @parts;
-    @parts[BUFFER, EOF, LINE, COLUMN, DISCARDED] =
-        ($string,   0,   1,    0,       '');
+    @parts[BUFFER, EOF, LINE, COLUMN, DISCARDED, STRING, USED] =
+        ('',   0,   1,    0,       0, $string, 0);
     return bless \@parts, $class;
 }
 
-sub read_more () { }
+sub read_more () {
+    my $self = shift;
+    if ($self->[USED] >= length($self->[STRING])) {
+        $self->[EOF]++;
+        return 0;
+    }
+    my $bytes = CHUNK_SIZE;
+    if ($bytes > (length($self->[STRING]) - $self->[USED])) {
+       $bytes = (length($self->[STRING]) - $self->[USED]);
+    }
+    $self->[BUFFER] .= substr($self->[STRING], $self->[USED], $bytes);
+    $self->[USED] += $bytes;
+    return 1;
+ }
+
 
 sub move_along {
-    my $self = shift;
-    my $discarded = substr($self->[BUFFER], 0, $_[0], '');
-    $self->[DISCARDED] .= $discarded;
+    my($self, $bytes) = @_;
+    my $discarded = substr($self->[BUFFER], 0, $bytes, '');
+    $self->[DISCARDED] += length($discarded);
     
     # Wish I could skip this lot - tells us where we are in the file
     my $lines = $discarded =~ tr/\n//;
@@ -55,7 +72,7 @@ sub set_encoding {
 
 sub bytepos {
     my $self = shift;
-    length($self->[DISCARDED]);
+    $self->[DISCARDED];
 }
 
 1;

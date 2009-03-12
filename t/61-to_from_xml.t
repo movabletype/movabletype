@@ -224,11 +224,20 @@ sub finish {
     use MT::TBPing;
     MT::TBPing->remove({tb_id=>2, blog_id=>1,id=>2});
     
-    use MT::Role;
-    MT::Role->remove;
-    
     use MT::Association;
-    MT::Association->remove;
+    use MT::Role;
+    my $ba = MT::Role->load( { name => 'Blog Administrator' } );
+    my $ed = MT::Role->load( { name => 'Editor' } );
+    my $au = MT::Role->load( { name => 'Author' } );
+    MT::Association->remove(
+        { author_id => $chuck->id, blog_id => 1, role_id => $ba->id },
+    );
+    MT::Association->remove(
+        { author_id => $bob->id, blog_id => 1, role_id => $ed->id },
+    );
+    MT::Association->remove(
+        { author_id => $mel->id, blog_id => 1, role_id => $au->id },
+    );
 }
         
 sub setup {
@@ -267,57 +276,14 @@ sub setup {
         $ping->save
     }
 
-    my @default_roles = (
-        # { name => 'System Administrator',
-        #   perms => ['administer'] },
-        # { name => 'System Designer',
-        #   perms => ['edit_templates', 'rebuild'] },
-        { name => 'Weblog Administrator',
-          description => 'Can administer the weblog.',
-          perms => ['administer_blog'] },
-        { name => 'Designer',
-          description => 'Can edit, manage and rebuild weblog templates.',
-          perms => ['edit_templates', 'rebuild'] },
-        { name => 'Editor',
-          description => 'Can edit all entries/categories/tags on a weblog and rebuild.',
-          perms => ['edit_all_posts', 'edit_categories', 'rebuild', 'edit_tags'], },
-        { name => 'Editor (can upload)',
-          description => 'Can upload files, edit all entries/categories/tags on a weblog and rebuild.',
-          perms => ['edit_all_posts', 'edit_categories', 'edit_tags', 'rebuild', 'upload'], },
-        { name => 'Publisher',
-          description => 'Can upload files, edit all entries/categories/tags on a weblog, rebuild and send notifications.',
-          perms => ['edit_all_posts', 'edit_categories', 'edit_tags', 'send_notifications', 'rebuild', 'upload'], },
-#        { name => 'Writer',
-#          description => 'Can create entries and edit their own.',
-#          perms => ['post'], },
-#        { name => 'Writer (can upload)',
-#          description => 'Can create entries, edit their own and upload files.',
-#          perms => ['post', 'upload'], },
-        # { name => 'System Blog Administrator',
-        #   perms => ['administer_blog'] },
-    );
-
-    require MT::Role;
-    foreach my $r (@default_roles) {
-        my $role = MT::Role->new();
-        $role->name(MT->translate($r->{name}));
-        $role->description(MT->translate($r->{description}));
-        $role->clear_full_permissions;
-        $role->set_these_permissions($r->{perms});
-        if ($r->{name} =~ m/^System/) {
-            $role->is_system(1);
-        }
-        $role->save;
-    }
-
     require MT::Association;
     my $b1 = MT::Blog->load(1);
-    my $r = MT::Role->load({ name => 'Weblog Administrator' });
-    MT::Association->link($chuck => $r => $b1); # Chuck is a weblog admin
+    my $r = MT::Role->load({ name => 'Blog Administrator' });
+    MT::Association->link($chuck => $r => $b1); # Chuck is a blog admin
 
-    my $r2 = MT::Role->load({ name => 'Publisher' });
-    MT::Association->link($bob => $r2 => $b1); # Bob is a publisher
+    my $r2 = MT::Role->load({ name => 'Editor' });
+    MT::Association->link($bob => $r2 => $b1); # Bob is a editor
 
-    my $r3 = MT::Role->load({ name => 'Writer' });
-    MT::Association->link($mel => $r3 => $b1); # Melody is a writer
+    my $r3 = MT::Role->load({ name => 'Author' });
+    MT::Association->link($mel => $r3 => $b1); # Melody is a author
 }

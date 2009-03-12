@@ -1,4 +1,4 @@
-# $Id: DebugHandler.pm,v 1.3 2001/11/24 17:47:53 matt Exp $
+# $Id: DebugHandler.pm,v 1.3 2001-11-24 17:47:53 matt Exp $
 
 package XML::SAX::PurePerl::DebugHandler;
 

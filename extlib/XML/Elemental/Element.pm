@@ -2,20 +2,41 @@ package XML::Elemental::Element;
 use strict;
 use base qw( XML::Elemental::Node );
 
-__PACKAGE__->mk_accessors(qw( name parent contents attributes ));
-
 sub new {
-    my $self = shift->SUPER::new(@_);
-    $self->{attributes} ||= {};
-    $self->{contents}   ||= [];
-    $self;
+    my $self = bless {}, $_[0];
+    $self->{attribute} = {};
+    $self->{contents}  = [];
+    return $self;
 }
 
 sub text_content {
     return '' unless defined $_[0]->{contents};
-    join('',
-         map { $_->can('text_content') ? $_->text_content : $_->data }
-           @{$_[0]->contents});
+    return
+      join('',
+           map { $_->can('text_content') ? $_->text_content : $_->data }
+             @{$_[0]->contents});
+}
+
+sub name {
+    $_[0]->{name} = $_[1] if @_ > 1;
+    return $_[0]->{name};
+}
+
+sub parent {
+    $_[0]->{parent} = $_[1] if @_ > 1;
+    return $_[0]->{parent};
+}
+
+sub contents {
+    $_[0]->{contents} ||= [];
+    $_[0]->{contents} = $_[1] if @_ > 1;
+    return $_[0]->{contents};
+}
+
+sub attributes {
+    $_[0]->{attributes} ||= {};
+    $_[0]->{attributes} = $_[1] if @_ > 1;
+    return $_[0]->{attributes};
 }
 
 1;
@@ -50,10 +71,11 @@ namespace-qualified name into its individual parts. If you
 are setting the element name it B<must> be in this same
 notation.
 
-=item $element->parent([$object])
+=item $element->parent([$element])
 
-Returns a reference to the parent object. If a parameter is
-passed the parent is set.
+Returns a the parent element object. If a object parameter
+is passed the parent is set. The object is assumed to be or
+have an interface like L<XML::Elemental::Element>.
 
 =item $element->contents([\@children])
 
@@ -64,7 +86,7 @@ all the direct siblings are (re)set.
 
 =item $element->attributes([\%attributes])
 
-Returns a hash reference of key-value pairs representing the
+Returns a HASH reference of key-value pairs representing the
 tag's attributes. It returns a reference to an empty hash if
 the element does not have any attributes. If a parameter is
 passed all attributes are (re)set. Like the element name,
@@ -72,12 +94,27 @@ keys must be in Clarkian notation.
 
 =item $element->text_content
 
-A method that returns the character data of all siblings.
+A method that returns the character data of all siblings as
+a string.
 
 =item $element->root
 
-A method that returns a reference to the Elemental Document
-object.
+Inherited from L<XML::Elemental::Node>, returns the top most
+object ancestor. Typically this will be a
+L<XML::Element::Document> object.
+
+=item $element->ancestors
+
+Inherited from L<XML::Elemental::Node>, returns an ordered
+array of elements starting with the closest ancestor and
+ending with the root.
+
+=item $element->in_element($element)
+
+Inherited from L<XML::Elemental::Node>, this method will
+test if the required L<XML::Elemental::Element> parameter is
+an ancestor of the current object and return a boolean
+value.
 
 =head1 AUTHOR & COPYRIGHT
 

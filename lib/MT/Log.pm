@@ -27,7 +27,7 @@ __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
         'message' => 'text',
-        'ip' => 'string(16)',
+        'ip' => 'string(50)',
         'blog_id' => 'integer',
         'author_id' => 'integer',
         'level' => 'integer',

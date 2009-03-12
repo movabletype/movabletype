@@ -1484,8 +1484,11 @@ sub _get_options_html {
             || ''
     );
     if ( my $p = $authenticator->{login_form_params} ) {
-        my $params = $p->( $key, $blog_id, $entry_id || undef, $static, );
-        $tmpl->param($params) if $params;
+        $p = $app->handler_to_coderef($p);
+        if ( $p ) {
+            my $params = $p->( $key, $blog_id, $entry_id || undef, $static, );
+            $tmpl->param($params) if $params;
+        }
     }
     my $html = $tmpl->output();
     if ( UNIVERSAL::isa( $authenticator, 'MT::Plugin' )
@@ -1505,14 +1508,11 @@ sub external_authenticators {
 
     my @external_authenticators;
 
-    my $ca_reg = $app->registry("commenter_authenticators");
+    my %cas = map { $_->{key} => $_ } $app->commenter_authenticators;
 
     my @auths = split ',', $blog->commenter_authenticators;
     my %otherauths;
     foreach my $key (@auths) {
-        next
-            if exists( $ca_reg->{$key}->{condition} )
-                && !( $ca_reg->{$key}->{condition}->() );
         if ( $key eq 'MovableType' ) {
             $param->{enabled_MovableType} = 1;
             $param->{default_signin}      = 'MovableType';
@@ -1527,8 +1527,9 @@ sub external_authenticators {
             $param->{can_recover_password} = MT::Auth->can_recover_password;
             next;
         }
-        my $auth = $ca_reg->{$key};
-        next unless $auth;
+
+        my $auth = $cas{$key} or next;
+
         if (   $key ne 'TypeKey'
             && $key ne 'OpenID'
             && $key ne 'Vox'

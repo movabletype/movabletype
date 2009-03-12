@@ -3719,8 +3719,7 @@ sub _tag_sort {
 
 =head2 Tags
 
-A container tags used for listing all previously assigned entry tags for
-the blog in context.
+A container tag used for listing all tags in use on the blog in context.
 
 B<Attributes:>
 
@@ -3736,7 +3735,9 @@ would print out each tag name separated by a comma and a space.
 
 =item * type
 
-The kind of object for which to show tags. By default the entry tags are shown.
+The kind of object for which to show tags. Valid values in a default
+installation are C<entry> (the default), C<page>, C<asset>, C<audio>,
+C<video> and C<image>. Plugins can extend this to other object classes.
 
 =item * sort_by
 
@@ -3902,13 +3903,14 @@ sub _hdlr_tags {
 =head2 TagSearchLink
 
 A variable tag that outputs a link to a tag search for the entry tag in
-context. The tag context is created by either an L<EntryTags> or a L<Tags>
-block.
+context. This tag can be used whenever a tag context is present (e.g.
+within an L<Tags>, L<EntryTags>, L<PageTags> or L<AssetTags> block.
 
 Like all variable tags, you can apply any of the supported global modifiers
 to L<TagSearchLink> to do further transformations.
 
-The example below shows each tag in a cloud tag linked to a search for other entries with that tag assigned. It can just as easily be used to link entry tags within an L<EntryTags> loop
+The example below shows each tag in a cloud tag linked to a search for other
+entries with that tag assigned.
 
     <h1>Tag cloud</h1>
     <div id="tagcloud">
@@ -3981,7 +3983,8 @@ sub _hdlr_tag_search_link {
 A variable tag which returns a number from 1 to 6 (by default) which
 represents the rating of the entry tag in context in terms of usage
 where '1' is used for the most often used tags, '6' for the least often.
-The tag context is created by either an L<EntryTags> or an L<Tags> block.
+This tag can be used anytime a tag context exists (e.g. within an L<Tags>,
+L<EntryTags>, L<PageTags> or L<AssetTags> block).
 
 This is suitable for creating "tag clouds" in which L<TagRank> can
 determine what level of header (h1 - h6) to apply to the tag.
@@ -4100,8 +4103,9 @@ sub _hdlr_tag_rank {
 
 =head2 EntryTags
 
-A container tag used to output infomation about the entry tags assigned
-to the entry in context.
+A container tag used to output infomation about the tags assigned
+to the entry in context. This tag's functionality is analogous
+to that of L<PageTags>.
 
 To avoid printing out the leading text when no entry tags are assigned you
 can use the L<EntryIfTagged> conditional block to first test for entry tags
@@ -4119,6 +4123,51 @@ A text string that is used to join each of the items together. For example:
     <mt:EntryTags glue=", "><$mt:TagName$></mt:EntryTags>
 
 would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block.  The default is 0 which suppresses
+the output of private tags.  If set to 1, the tags will be displayed.  
+
+One example of its use is in publishing a list of related entries to the
+current entry.
+
+    <mt:EntryIfTagged>
+        <mt:EntryID setvar="curentry">
+
+        <mt:SetVarBlock name="relatedtags">
+            <mt:EntryTags include_private="1" glue=" OR ">
+                <mt:TagName />
+            </mt:EntryTags>
+        </mt:SetVarBlock>
+        <mt:Var name="relatedtags" strip_linefeeds="1" setvar="relatedtags">
+
+        <mt:SetVarBlock name="listitems">
+            <mt:Entries tags="$relatedtags" unique="1">
+                <mt:Unless tag="EntryID" eq="$curentry">
+                    <li>
+                        <a href="<mt:EntryPermalink />">
+                            <mt:EntryTitle />
+                        </a>
+                    </li>
+                </mt:Unless>
+            </mt:Entries>
+       </mt:SetVarBlock>
+
+       <mt:If name="listitems">
+          <h3>Related Blog Entries</h3>
+          <ul>
+             <$mt:Var name="listitems"$>
+          </ul>
+       </mt:If>
+    </mt:EntryIfTagged>
+
+In the code sample above, the related entries list is created using the
+entry tags of the entry currently in context, built as a boolean C<OR>
+statement for the L<Entries> tag and stored in the C<$relatedtags> MT
+template variable.  Without including private tags in that list, you
+would miss entries that are similarly tagged on the back end.
 
 =back
 
@@ -4550,7 +4599,7 @@ tag used to include this "Some Module" template module, like so:
 
 B<Important:> Modules used as IncludeBlocks should never be processed as a Server Side Include or be cached
 
-=head4 Attributes:
++B<Attributes:>
 
 =over 4
 
@@ -7252,7 +7301,7 @@ sub _hdlr_blog_host {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $host = $blog->site_url;
-    if ($host =~ m!^https?://([^/:]+)(:\d+)?/!) {
+    if ($host =~ m!^https?://([^/:]+)(:\d+)?/?!) {
         if ($args->{signature}) {
             # using '_' to replace '.' since '-' is a valid
             # letter for domains
@@ -7791,14 +7840,6 @@ sub _hdlr_entries {
 
     my $cfg = $ctx->{config};
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $entries = $ctx->stash('entries');
-    if ($at && !$entries) {
-        my $archiver = MT->publisher->archiver($at);
-        if ( $archiver && $archiver->group_based ) {
-            $entries = $archiver->archive_group_entries( $ctx, %$args );
-            # $ctx->stash( 'entries', $entries );
-        }
-    }
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
@@ -7820,38 +7861,52 @@ sub _hdlr_entries {
         }
     }
 
-    if ($entries && @$entries) {
-        my $entry = @$entries[0];
-        $entries = undef if $entry->class ne $class_type;
+    my $use_stash = 1;
 
-        # For the stock Entries/Pages tags, clear any prepopulated
-        # entries list (placed by archive publishing) if we're invoked
-        # with any of the following attributes. A plugin tag may
-        # prepopulate the entries stash and then invoke this handler
-        # to permit further filtering of the entries.
-        my $tag = lc $ctx->stash('tag');
-        if ($entries && (($tag eq 'entries') || ($tag eq 'pages'))) {
-            foreach my $args_key ('category', 'categories', 'tag', 'tags',
-                'author') {
-                if (exists($args->{$args_key})) {
-                    $entries = undef;
-                    last;
-                }
+    # For the stock Entries/Pages tags, clear any prepopulated
+    # entries list (placed by archive publishing) if we're invoked
+    # with any of the following attributes. A plugin tag may
+    # prepopulate the entries stash and then invoke this handler
+    # to permit further filtering of the entries.
+    my $tag = lc $ctx->stash('tag');
+    if (($tag eq 'entries') || ($tag eq 'pages')) {
+        foreach my $args_key ('category', 'categories', 'tag', 'tags',
+            'author') {
+            if (exists($args->{$args_key})) {
+                $use_stash = 0;
+                last;
             }
         }
-        if ( $entries ) {
-            foreach my $args_key ('id', 'days', 'recently_commented_on',
-                'include_subcategories', 'include_blogs', 'exclude_blogs',
-                'blog_ids') {
-                if (exists($args->{$args_key})) {
-                    $entries = undef;
-                    last;
-                }
+    }
+    if ( $use_stash ) {
+        foreach my $args_key ('id', 'days', 'recently_commented_on',
+            'include_subcategories', 'include_blogs', 'exclude_blogs',
+            'blog_ids') {
+            if (exists($args->{$args_key})) {
+                $use_stash = 0;
+                last;
             }
         }
-        if ( $entries && %fields ) {
-            $entries = undef;
+    }
+    if ( $use_stash && %fields ) {
+        $use_stash = 0;
+    }
+
+    my $entries;
+    if ( $use_stash ) {
+        $entries = $ctx->stash('entries');
+        if ( !$entries && $at ) {
+            my $archiver = MT->publisher->archiver($at);
+            if ( $archiver && $archiver->group_based ) {
+                $entries = $archiver->archive_group_entries( $ctx, %$args );
+                # $ctx->stash( 'entries', $entries );
+            }
         }
+    }
+    if ( $entries && scalar @$entries ) {
+        my $entry = @$entries[0];
+        $entries = undef
+            if $entry->class ne $class_type;
     }
     local $ctx->{__stash}{entries};
 
@@ -8015,12 +8070,16 @@ sub _hdlr_entries {
                 $map{$_->tag_id} = 1 for @ot_ids;
                 \%map;
             };
-            if (!$entries && @tag_ids) {
+            if (!$entries) {
                 if ($tag_arg !~ m/\bNOT\b/i) {
+                    return '' unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on( 'object_id', {
                             tag_id => \@tag_ids, object_datasource => 'entry',
                             %blog_terms
                         }, { %blog_args, unique => 1 } );
+                    if (my $last = $args->{lastn} || $args->{limit}) {
+                        $args{limit} = $last;
+                    }
                 }
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
@@ -13366,25 +13425,55 @@ sub _hdlr_categories {
     my $class = MT->model($class_type);
     my $entry_class = MT->model(
         $class_type eq 'category' ? 'entry' : 'page');
-
-    # issue a single count_group_by for all categories
-    my $cnt_iter = MT::Placement->count_group_by(
-        {%terms},
-        {
-            group => ['category_id'],
-            join  => $entry_class->join_on(
-                undef,
-                {
-                    id     => \'=placement_entry_id',
-                    status => MT::Entry::RELEASE()
-                }
-            ),
-        }
-    ); 
     my %counts;
-    while (my ($count, $cat_id) = $cnt_iter->()) {
-        $counts{$cat_id} = $count;
+    my $count_tag = $class_type eq 'category' ? 'CategoryCount'
+                  :                             'FolderCount'
+                  ;
+    my $uncompiled = $ctx->stash('uncompiled') || '';
+    my $count_all = 0;
+    if (!$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i) {
+        $count_all = 1;
     }
+
+    ## Supplies a routine that will yield the number of entries associated
+    ## with the category in context in the most efficient manner.
+    ## If we can determine counts will be gathered for all categories,
+    ## a 'count_group_by' request is done for MT::Placement to fetch counts
+    ## with a single query (storing them in %counts). 
+    ## Otherwise, counts are collected on an as-needed basis, using the
+    ## 'entry_count' method in MT::Category.
+    my $counts_fetched = 0;
+    my $entry_count_of = sub {
+          my $cat = shift;
+          return delay(sub{$cat->entry_count})
+              unless $count_all;
+          return $cat->entry_count(defined $counts{$cat->id} ? $counts{$cat->id} : 0)
+              if $counts_fetched;
+          return $cat->cache_property(
+              'entry_count',
+              sub{
+                  # issue a single count_group_by for all categories
+                  my $cnt_iter = MT::Placement->count_group_by(
+                      {%terms},
+                      {
+                          group => ['category_id'],
+                          join  => $entry_class->join_on(
+                              undef,
+                              {
+                                  id     => \'=placement_entry_id',
+                                  status => MT::Entry::RELEASE(),
+                              }
+                          ),
+                      }
+                  ); 
+                  while (my ($count, $cat_id) = $cnt_iter->()) {
+                      $counts{$cat_id} = $count;
+                  }
+                  $counts_fetched = 1;
+                  $counts{$cat->id};
+              }
+        );
+    };
 
     my $iter = $class->load_iter(\%terms, \%args);
     my $res = '';
@@ -13397,11 +13486,21 @@ sub _hdlr_categories {
     local $ctx->{inside_mt_categories} = 1;
     my $i = 0;
     my $cat = $iter->();
+    if ( !$args->{show_empty} ) {
+        while ( defined $cat && !$entry_count_of->($cat) ) {
+            $cat = $iter->();
+        }
+    }
     my $n = $args->{lastn};
     my $vars = $ctx->{__stash}{vars} ||= {};
     while (defined($cat)) {
         $i++;
         my $next_cat = $iter->();
+        if ( !$args->{show_empty} ) {
+            while ( defined $next_cat && !$entry_count_of->($next_cat) ) {
+                $next_cat = $iter->();
+            }
+        }
         my $last;
         $last = 1 if $n && ($i >= $n);
         $last = 1 unless defined $next_cat;
@@ -13418,8 +13517,7 @@ sub _hdlr_categories {
         local $vars->{__odd__} = ($i % 2) == 1;
         local $vars->{__even__} = ($i % 2) == 0;
         local $vars->{__counter__} = $i;
-        $ctx->{__stash}{category_count} = $counts{$cat->id};
-        $cat = $next_cat,next unless $ctx->{__stash}{category_count} || $args->{show_empty};
+        $ctx->{__stash}{category_count} = $entry_count_of->($cat);
         defined(my $out = $builder->build($ctx, $tokens,
             { %$cond,
               ArchiveListHeader => $i == 1,
@@ -13427,6 +13525,7 @@ sub _hdlr_categories {
             or return $ctx->error( $builder->errstr );
         $res .= $glue if defined $glue && length($res) && length($out);
         $res .= $out;
+        last if $last;
         $cat = $next_cat;
     }
     $res;
@@ -13585,17 +13684,8 @@ sub _hdlr_category_count {
         or return $ctx->error(MT->translate(
             "You used an [_1] tag outside of the proper context.",
             '<$MT' . $ctx->stash('tag') . '$>'));
-    my($count);
-    unless ($count = $ctx->stash('category_count')) {
-        my $class = MT->model(
-            $ctx->stash('tag') =~ m/Category/ig ? 'entry' : 'page');
-        my @args = ({ blog_id => $ctx->stash ('blog_id'),
-                      status => MT::Entry::RELEASE() },
-                    { 'join' => [ 'MT::Placement', 'entry_id',
-                                  { category_id => $cat->id } ] });
-        require MT::Placement;
-        $count = scalar $class->count(@args);
-    }
+    my $count = $ctx->stash('category_count');
+    $count = $cat->entry_count unless defined $count;
     return $ctx->count_format($count, $args);
 }
 
@@ -13980,14 +14070,13 @@ sub _hdlr_if_category {
     my $entry_context = $tag =~ m/(entry|page)if(category|folder)/;
     return $ctx->_no_entry_error() if $entry_context && !$e;
     my $name = $args->{name} || $args->{label};
-    if (!defined $name) {
-        return $ctx->error(MT->translate("You failed to specify the label attribute for the [_1] tag.", $tag));
-    }
     my $primary = $args->{type} && ($args->{type} eq 'primary');
     my $secondary = $args->{type} && ($args->{type} eq 'secondary');
+    $entry_context ||= ($primary || $secondary);
     my $cat = $entry_context ? $e->category : ($ctx->stash('category') || $ctx->stash('archive_category'));
     if (!$cat && $e && !$entry_context) {
         $cat = $e->category;
+        $entry_context = 1;
     }
     my $cats;
     if ($cat && ($primary || !$entry_context)) {
@@ -13998,6 +14087,9 @@ sub _hdlr_if_category {
     if ($secondary && $cat) {
         my @cats = grep { $_->id != $cat->id } @$cats;
         $cats = \@cats;
+    }
+    if (!defined $name) {
+        return @$cats ? 1 : 0;
     }
     foreach my $cat (@$cats) {
         return 1 if $cat->label eq $name;
@@ -16415,12 +16507,13 @@ sub _hdlr_asset {
 =head2 AssetTags
 
 A container tag used to output infomation about the asset tags assigned
-to the asset in context.
+to the asset in context. This tag's functionality is analogous
+to that of L<EntryTags> and its attributes are identical.
 
 To avoid printing out the leading text when no asset tags are assigned you
-can use the L<AssetIfTagged> conditional block to first test for asset tags
+can use the L<AssetIfTagged> conditional block to first test for tags
 on the asset. You can also use the L<AssetIfTagged> conditional block with
-the tag attribute to test for the assignment of a particular entry tag.
+the tag attribute to test for the assignment of a particular tag.
 
 B<Attributes:>
 
@@ -16433,6 +16526,13 @@ A text string that is used to join each of the items together. For example:
     <mt:AssetTags glue=", "><$mt:TagName$></mt:AssetTags>
 
 would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
 
 =back
 
@@ -17242,8 +17342,14 @@ sub _hdlr_page_next {
 
 =head2 PageTags
 
-A container tag which create a context about the assigned tags. Analogous
-to L<EntryTags>.
+A container tag used to output infomation about the tags assigned
+to the page in context. This tag's functionality is analogous
+to that of L<EntryTags> and its attributes are identical.
+
+To avoid printing out the leading text when no page tags are assigned you
+can use the L<PageIfTagged> conditional block to first test for tags
+on the page. You can also use the L<PageIfTagged> conditional block with
+the tag attribute to test for the assignment of a particular tag.
 
 B<Attributes:>
 
@@ -17251,8 +17357,18 @@ B<Attributes:>
 
 =item * glue
 
-A string used to join the output of the separate iterations of
-this tag.
+A text string that is used to join each of the items together. For example:
+
+    <mt:PageTags glue=", "><$mt:TagName$></mt:PageTags>
+
+would print out each tag name separated by a comma and a space.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
 
 =back
 
@@ -19855,7 +19971,7 @@ sub _hdlr_widget_manager {
     my $tmpl = MT::Template->load({ name => $tmpl_name,
                                     blog_id => $blog_id ? [ 0, $blog_id ] : 0,
                                     type => 'widgetset' })
-        or return $ctx->error(MT->translate("Specified WidgetSet not found."));
+        or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
     my $text = $tmpl->text;
     return $ctx->build($text) if $text;
 

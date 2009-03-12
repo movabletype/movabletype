@@ -39,6 +39,7 @@ sub template_params {
         archive_template          => 1,
         archive_listing           => 1,
         archive_class             => "datebased-monthly-archive",
+        datebased_archive         => 1,
     };
 }
 

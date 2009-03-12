@@ -6,14 +6,14 @@
 <mt:setvarblock name="html_head" prepend="1">
     <mt:unless name="cfg_exists">
     <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
-        <mt:unless name="optimize_ui">
+        <mt:if name="mt_debug">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/reset.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/utilities.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/messaging.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/chromeless.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
         <mt:else>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/simple.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-        </mt:unless>
+        </mt:if>
     <!--[if IE]>
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
     <![endif]-->

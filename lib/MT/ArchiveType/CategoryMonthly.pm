@@ -38,11 +38,12 @@ sub dynamic_template {
 
 sub template_params {
     return {
-        archive_class            => "category-monthly-archive",
-        category_monthly_archive => 1,
+        archive_class                      => "category-monthly-archive",
+        category_monthly_archive           => 1,
         'module_category-monthly_archives' => 1,
         archive_template                   => 1,
         archive_listing                    => 1,
+        datebased_archive                  => 1,
     };
 }
 

@@ -43,6 +43,7 @@ sub template_params {
         'module_author-monthly_archives' => 1,
         archive_template                 => 1,
         archive_listing                  => 1,
+        datebased_archive                => 1,
     };
 }
 
