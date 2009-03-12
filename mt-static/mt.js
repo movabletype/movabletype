@@ -36,7 +36,7 @@ function restore () {
 }
 
 function doRebuild (blogID, otherParams) {
-    window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild', 'width=400,height=400,resizable=yes');
+    window.open(CMSScriptURI + '?__mode=rebuild_confirm&blog_id=' + blogID + '&' + otherParams, 'rebuild_blog_' + blogID, 'width=400,height=400,resizable=yes');
 }
 
 function openManual (section, page) {
