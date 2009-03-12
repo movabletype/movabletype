@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtifcommenterregistrationallowed($args, $content, &$ctx, &$repeat) {
-    $registration = $ctx->mt->config('CommenterRegistration');
+    $registration = $ctx->mt->config('commenterregistration');
     $blog = $ctx->stash('blog');
     return $registration['Allow'] && ($blog && $blog['blog_allow_commenter_regist']);
 }
