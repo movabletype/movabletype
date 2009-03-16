@@ -264,9 +264,6 @@ sub _text_block {
         return if $_[0]->{space_eater} && ($text =~ m/^\s+$/s);
         $text =~ s/^\s+//s if $_[0]->{space_eater};
         my $rec = NODE->new(tag => 'TEXT', nodeValue => $text, parentNode => $_[0]->{tokens}, template => $_[0]->{tmpl});
-        # Avoids circular reference between NODE and TOKENS, MT::Template.
-        weaken($rec->parentNode);
-        weaken($rec->template);
         push @{ $_[0]->{tokens} }, $rec;
     }
 }
