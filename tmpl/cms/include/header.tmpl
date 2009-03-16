@@ -23,6 +23,16 @@
 <mt:if name="local_lang_id" ne="en-us">
     <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
 </mt:if>
+     <script type="text/javascript">
+         /* <![CDATA[ */
+         __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+         CMSScriptURI = '<$mt:var name="mt_url"$>';
+         ScriptURI = '<$mt:var name="script_url"$>';
+         ScriptBaseURI = '<$mt:var name="script_base_url"$>';
+         StaticURI = '<$mt:var name="static_uri"$>';
+         HelpBaseURI = '<$mt:var name="help_url"$>';
+         /* ]]> */
+     </script>
 <mt:unless name="optimize_ui">
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
