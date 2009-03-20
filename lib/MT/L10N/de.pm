@@ -5310,7 +5310,7 @@ Suchbasis: [_2]",
        'Updating password recover email template...' => 'Aktualisierung des Passwort-Wiederherstellungs-Templates...',
        'The email address provided is not unique.  Please enter your username.' => 'Die angegebene E-Mail-Adresse wird bereits genutzt. Bitte geben Sie Ihren Benutzernamen ein.',
        '_WARNING_PASSWORD_RESET_MULTI' => 'Sie sind dabei Email(s) an ausgewählte Nutzer zu senden um deren Password zurück zu setzen. Möchten Sie fortfahren?',
-       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])' 
+       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])', 
 ## plugins/CommunityActionStreams/config.yaml
 	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Action Streams für Community-Ereignisse: Eintrag hinzufügen, Kommentar hinzufügen, Favoriten hinzufügen, Benutzer folgen',
 
