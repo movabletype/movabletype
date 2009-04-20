@@ -12,7 +12,7 @@ sub BEGIN {
     my ($dir, $orig_dir);
     require File::Spec;
     if (!($dir = $ENV{MT_HOME})) {
-        if ($0 =~ m!(.*([/\\]))!) {
+        if (($ENV{SCRIPT_FILENAME} || $0) =~ m!(.*([/\\]))!) {
             $orig_dir = $dir = $1;
             my $slash = $2;
             $dir =~ s!(?:[/\\]|^)(?:plugins[/\\].*|tools[/\\])$!$slash!;
