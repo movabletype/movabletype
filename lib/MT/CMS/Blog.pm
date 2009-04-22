@@ -301,7 +301,8 @@ sub edit {
         $param->{'template_set_loop'} = $sets;
         $param->{'template_set_index'} = $#$sets;
 
-        $param->{languages} = $app->languages_list( $app->current_language );
+        require MT::I18N;
+        $param->{languages} = MT::I18N::languages_list( $app, $app->current_language );
     }
 
     if (   !$param->{site_path}
