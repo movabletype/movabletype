@@ -1,4 +1,4 @@
-# $Id: ErrorHandler.pm,v 1.1 2003/09/08 00:00:50 btrott Exp $
+# $Id: ErrorHandler.pm 1 2006-08-16 05:19:58Z miyagawa $
 
 package XML::Atom::ErrorHandler;
 use strict;

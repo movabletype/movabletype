@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Feed.pm 106 2008-11-14 22:04:41Z swistow $
 
 package XML::Atom::Feed;
 use strict;
@@ -67,23 +67,8 @@ sub find_feeds {
 }
 
 sub element_name { 'feed' }
+*language = \&lang; # legacy
 
-sub language {
-    my $feed = shift;
-    if (LIBXML) {
-        my $elem = $feed->elem;
-        if (@_) {
-            $elem->setAttributeNS('http://www.w3.org/XML/1998/namespace',
-                'lang', $_[0]);
-        }
-        return $elem->getAttributeNS('http://www.w3.org/XML/1998/namespace', 'lang');
-    } else {
-        if (@_) {
-            $feed->elem->setAttribute('xml:lang', $_[0]);
-        }
-        return $feed->elem->getAttribute('xml:lang');
-    }
-}
 
 sub version {
     my $feed = shift;
@@ -152,6 +137,7 @@ sub add_entry_xpath {
 }
 
 __PACKAGE__->mk_elem_accessors(qw( generator ));
+__PACKAGE__->mk_xml_attr_accessors(qw( lang base ));
 
 __PACKAGE__->_rename_elements('modified' => 'updated');
 __PACKAGE__->_rename_elements('tagline' => 'subtitle');

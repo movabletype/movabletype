@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Util.pm 89 2007-10-04 20:28:06Z miyagawa $
 
 package XML::Atom::Util;
 use strict;
@@ -7,7 +7,7 @@ use XML::Atom;
 use vars qw( @EXPORT_OK @ISA );
 use Encode;
 use Exporter;
-@EXPORT_OK = qw( set_ns hack_unicode_entity first nodelist childlist textValue iso2dt encode_xml remove_default_ns create_element );
+@EXPORT_OK = qw( set_ns first nodelist childlist textValue iso2dt encode_xml create_element );
 @ISA = qw( Exporter );
 
 our %NS_MAP = (
@@ -35,14 +35,6 @@ sub set_ns {
 sub ns_to_version {
     my $ns = shift;
     $NS_VERSION{$ns};
-}
-
-sub hack_unicode_entity {
-    my $data = shift;
-    Encode::_utf8_on($data);
-    $data =~ s/&#x(\w{4});/chr(hex($1))/eg;
-    Encode::_utf8_off($data) unless $XML::Atom::ForceUnicode;
-    $data;
 }
 
 sub first {
@@ -112,19 +104,6 @@ sub encode_xml {
     my($str) = @_;
     $str =~ s!($RE)!$Map{$1}!g;
     $str;
-}
-
-sub remove_default_ns {
-    my($node) = @_;
-    if (ref($node) =~ /Element$/ && $node->nodeName =~ /^default\d*:/) {
-       my $ns = $node->getNamespace;
-        if ($ns and my $uri = $ns->getData) {
-            $node->setNamespace($uri, '');
-        }
-    }
-    for my $n ($node->childNodes) {
-        remove_default_ns($n);
-    }
 }
 
 sub create_element {

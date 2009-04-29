@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Client.pm 109 2009-01-07 01:59:33Z miyagawa $
 
 package XML::Atom::Client;
 use strict;
@@ -71,7 +71,7 @@ sub createEntry {
     return $client->error("Must pass a PostURI before posting")
         unless $uri;
     my $req = HTTP::Request->new(POST => $uri);
-    $req->content_type('application/x.atom+xml');
+    $req->content_type($entry->content_type);
     my $xml = $entry->as_xml;
     _utf8_off($xml);
     $req->content_length(length $xml);
@@ -86,7 +86,7 @@ sub updateEntry {
     my $client = shift;
     my($url, $entry) = @_;
     my $req = HTTP::Request->new(PUT => $url);
-    $req->content_type('application/x.atom+xml');
+    $req->content_type($entry->content_type);
     my $xml = $entry->as_xml;
     _utf8_off($xml);
     $req->content_length(length $xml);
@@ -135,7 +135,7 @@ sub munge_request {
     my $client = shift;
     my($req) = @_;
     $req->header(
-        Accept => 'application/x.atom+xml, application/xml, text/xml, */*',
+        Accept => 'application/atom+xml, application/x.atom+xml, application/xml, text/xml, */*',
     );
     my $nonce = $client->make_nonce;
     my $nonce_enc = encode_base64($nonce, '');
@@ -173,10 +173,12 @@ SOAP
         $req->method('POST');
         $req->content_type('text/xml');
     } else {
-        $req->header('X-WSSE', sprintf
-          qq(UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"),
-          $client->username || '', $digest, $nonce_enc, $now);
-        $req->header('Authorization', 'WSSE profile="UsernameToken"');
+        if ($client->username) {
+            $req->header('X-WSSE', sprintf
+              qq(UsernameToken Username="%s", PasswordDigest="%s", Nonce="%s", Created="%s"),
+              $client->username || '', $digest, $nonce_enc, $now);
+            $req->header('Authorization', 'WSSE profile="UsernameToken"');
+        }
     }
 }
 

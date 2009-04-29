@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Entry.pm 106 2008-11-14 22:04:41Z swistow $
 
 package XML::Atom::Entry;
 use strict;
@@ -25,6 +25,7 @@ sub content {
 }
 
 __PACKAGE__->mk_elem_accessors(qw( summary source ));
+__PACKAGE__->mk_xml_attr_accessors(qw( lang base ));
 
 __PACKAGE__->_rename_elements('issued' => 'published');
 __PACKAGE__->_rename_elements('modified' => 'updated');
