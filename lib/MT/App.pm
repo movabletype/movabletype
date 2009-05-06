@@ -447,6 +447,8 @@ sub listing {
         $param->{object_loop} = \@data;
 
         # handle pagination
+$limit += 0;
+$offset += 0;
         my $pager = {
             offset        => $offset,
             limit         => $limit,
@@ -2523,6 +2525,7 @@ sub show_error {
     }
     local $param->{error} = $error;
     $tmpl->param($param);
+    $app->run_callbacks('template_param.error', $app, $tmpl->param, $tmpl);
     my $out = $tmpl->output;
     if ( !defined $out ) {
         $error = '<pre>' . $error . '</pre>' unless $error =~ m/<pre>/;
@@ -2531,6 +2534,7 @@ sub show_error {
             . encode_html( $tmpl->errstr )
             . "'. Giving up. Original error was: $error";
     }
+    $app->run_callbacks('template_output.error', $app, \$out, $tmpl->param, $tmpl);
     return $app->l10n_filter($out);
 }
 
