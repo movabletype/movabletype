@@ -138,6 +138,26 @@ sub get_server_time {
     return $driver->r_handle->selectrow_array("SELECT $unixtime_sql");
 }
 
+sub work_until_done {
+    my TheSchwartz $client = shift;
+    if ( ! $client ) {
+        return;
+    }
+    my $cap = MT->config('SchwartzClientDeadline'); # in seconds
+    my $deadline;
+    if ( $cap ) {
+        $deadline = time() + $cap;
+        while ( time() < $deadline ) {
+            $client->work_once or last;
+        }
+    }
+    else {
+        while ( 1 ) {
+            $client->work_once or last;
+        }
+    }
+}
+
 sub work_periodically {
     my TheSchwartz $client = shift;
     my ($delay) = @_;
