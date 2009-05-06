@@ -1656,6 +1656,7 @@ sub do_preview {
                 {   'body_class'                => 'mt-comment-pending',
                     'comment_response_template' => 1,
                     'comment_pending'           => 1,
+                    'return_to'                 => $entry->permalink || '',
                     'system_template'           => 1
                 }
             );
@@ -1667,6 +1668,7 @@ sub do_preview {
                 {   'body_class'                => 'mt-comment-error',
                     'comment_response_template' => 1,
                     'comment_error'             => 1,
+                    'return_to'                 => $app->param('return_url') || '',
                     'system_template'           => 1
                 }
             );
