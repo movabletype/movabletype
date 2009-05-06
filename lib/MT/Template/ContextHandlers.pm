@@ -4965,7 +4965,7 @@ sub _include_file {
         $tokens = $cref;
     } else {
         my $blog = $ctx->stash('blog');
-        if ($blog && $blog->id != $blog_id) {
+        if ($blog && $blog_id && $blog->id != $blog_id) {
             $blog = MT::Blog->load($blog_id)
                 or return $ctx->error(MT->translate(
                     "Can't find blog for id '[_1]", $blog_id));
