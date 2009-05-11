@@ -17,7 +17,7 @@ my $load      = 10;
 my $verbose   = 0;
 my $scoreboard;
 my $randomize_jobs = 0;
-my $trace_objects = 0;
+my $trace_objects  = 0;
 
 require Getopt::Long;
 Getopt::Long::GetOptions(
@@ -30,28 +30,76 @@ Getopt::Long::GetOptions(
     "leak"         => \$trace_objects,
 );
 
-if ( $trace_objects ) {
+if ($trace_objects) {
     require Devel::Leak::Object;
-    Devel::Leak::Object->import( qw{ GLOBAL_bless } );
+    Devel::Leak::Object->import(qw{ GLOBAL_bless });
 }
 
+my $proc_process_table = eval {
+    require Proc::ProcessTable;
+    1;
+};
+my $memory_module;
+eval {
+    require Sys::MemInfo;
+    $memory_module = q{Sys::MemInfo};
+};
+
+$@ = undef;
+
 my %cfg;
-$cfg{verbose} = $verbose;
+$cfg{verbose}    = $verbose;
 $cfg{scoreboard} = $scoreboard;
 $cfg{prioritize} = 1;
-$cfg{randomize} = $randomize_jobs;
+$cfg{randomize}  = $randomize_jobs;
 
 require MT::Bootstrap;
 require MT;
 
 my $mt = MT->new() or die MT->errstr;
+if ( MT->config('RPTProcessCap') && $proc_process_table ) {
+    my $t = new Proc::ProcessTable;
+    my $rpt_count;
+    foreach my $p ( @{ $t->table } ) {
+        my $cmd = $p->cmndline;
+        if ( $cmd =~ /^perl/ && $cmd =~ /run-periodic-tasks/ ) {
+            $rpt_count += 1;
+        }
+    }
+    if ( $rpt_count > MT->config('RPTProcessCap') ) {
+        $rpt_count = $rpt_count - 1;    # Don't report this RPT
+        die "$rpt_count processes already running; cancelling RPT launch\n";
+    }
+}
+if ( MT->config('RPTFreeMemoryLimit') && $memory_module ) {
+    my $limit = MT->config('RPTFreeMemoryLimit');
+    my $decoded_limit;
+    if ( $limit =~ /^\d+[KGM]B?$/ ) {
+        my $multiplier = 1;
+        ( $limit =~ /GB?$/ ) and $multiplier = 1073741824;
+        ( $limit =~ /MB?$/ ) and $multiplier = 1048576;
+        ( $limit =~ /KB?$/ ) and $multiplier = 1024;
+        $limit =~ s/[KGM]B?$//;
+        $limit = $limit * $multiplier;
+    }
+    if ( $limit =~ /\d+/ ) {
+        my $free;
+        if ( $memory_module eq q{Sys::MemInfo} ) {
+            $free = Sys::MemInfo::get("freemem");
+        }
+        if ( $free < $limit ) {
+            die
+                "Free memory of $free bytes below limit; cancelling RPT launch\n";
+        }
+    }
+}
 
-$mt->{vtbl} = { };
-$mt->{is_admin} = 0;
-$mt->{template_dir} = 'cms';
-$mt->{user_class} = 'MT::Author';
+$mt->{vtbl}                 = {};
+$mt->{is_admin}             = 0;
+$mt->{template_dir}         = 'cms';
+$mt->{user_class}           = 'MT::Author';
 $mt->{plugin_template_path} = 'tmpl';
-$mt->run_callbacks('init_app', $mt);
+$mt->run_callbacks( 'init_app', $mt );
 
 my $client = eval {
     require MT::TheSchwartz;
@@ -60,13 +108,15 @@ my $client = eval {
     $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
     $c;
 };
-if ((my $error = $@) && $verbose) {
+if ( ( my $error = $@ ) && $verbose ) {
     print STDERR "Error initializing TheSchwartz: $error\n";
 }
 
-if ($daemonize && $client) {
+if ( $daemonize && $client ) {
     $client->work_periodically($sleep);
-} else {
+}
+else {
+
     # First, run periodic tasks
     $mt->run_tasks();
     $client->work_until_done if $client;
