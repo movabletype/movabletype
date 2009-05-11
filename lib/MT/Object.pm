@@ -1256,6 +1256,7 @@ sub search_by_meta {
     };
     my $meta_class = $class->meta_pkg;
     my $meta_pk = $meta_class->primary_key_tuple;
+    $meta_pk = [ $meta_pk->[0] ]; # we only need the first column, that's the id
     my @metaobjs = $meta_class->search(
         $meta_terms, { %$args, fetchonly => $meta_pk }
     );
