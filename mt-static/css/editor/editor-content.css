@@ -91,19 +91,3 @@ blockquote, ol, ul {
 ol { list-style: decimal outside; }
 ul { list-style: disc outside; }
 .item { list-style: none; }
-
-.small, .small img { width: 160px; }
-.medium, .medium img { padding-bottom: 5px; width: 230px; }
-.large, .large img { width: 452px; }
-.photo-left { float: left; margin: 5px 10px 10px 0; }
-.photo-center { margin: 5px 0 10px; }
-.photo-right { float: right; margin: 0 0 10px 10px; }
-.photo-right,
-.photo-left,
-.photo-center { clear: both; background: #fcfcfc none repeat scroll 0%; border: 1px solid #dfe4eb; font-size:10px; paddi
-ng: 5px 5px 12px; text-align: center; }
-.thumb { width: 125px; }
-.photo-breakout img { margin-bottom: 3px; }
-.photo-breakout span.caption { clear: both; display: block; text-align: left; margin: 0 3px; }
-span.byline { display: block; width: 60%; float: right; text-align: right; margin-bottom: .75em; }
-a.full-size-popup { display: block; width: 40%; float: left; margin-bottom: .75em; text-align: left; }
