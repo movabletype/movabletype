@@ -38,6 +38,7 @@ __PACKAGE__->install_properties({
             unique => 1,
         },
     },
+    role => q{global},
 });
 
 sub class_label {
