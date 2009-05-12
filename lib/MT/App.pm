@@ -725,7 +725,7 @@ sub init_request {
     my @req_vars = qw(mode __path_info _blog redirect login_again
         no_print_body response_code response_content_type response_message
         author cgi_headers breadcrumbs goback cache_templates warning_trace
-        cookies _errstr request_method requires_login );
+        cookies _errstr request_method requires_login __host );
     delete $app->{$_} foreach @req_vars;
     $app->user(undef);
     if ( $ENV{MOD_PERL} ) {
