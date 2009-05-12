@@ -135,10 +135,13 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
+	if ( my $blog_id = $q->param('blog_id') ) {
+	    $q->param('IncludeBlogs', $blog_id);
+    }
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
-            $app->{searchparam}{IncludeBlogs} = $list;
+            $app->{searchparam}{IncludeBlogs} = $list if ($list && %$list);
         }
         else {
             my $blog_list = $app->create_blog_list(%no_override);
@@ -147,15 +150,8 @@ sub init_request {
                     && %$blog_list
                     && $blog_list->{IncludeBlogs}
                     && %{ $blog_list->{IncludeBlogs} };
-            if ( !exists( $app->{searchparam}{IncludeBlogs} )
-                && ( my $blog_id = $q->param('blog_id') ) )
-            {
-                $blog_id =~ s/\D//g;
-                $app->{searchparam}{IncludeBlogs}{$blog_id} = 1
-                    if $blog_id;
-            }
             return $app->error( $app->translate('Invalid request.') )
-                if !exists $app->{searchparam}{IncludeBlogs} || !%{$app->{searchparam}{IncludeBlogs}};
+                if ! $processed && ( !exists $app->{searchparam}{IncludeBlogs} || !%{$app->{searchparam}{IncludeBlogs}} );
         }
     }
     else {
@@ -251,7 +247,7 @@ sub create_blog_list {
     ## If IncludeBlogs has not been set, we need to build a list of
     ## the blogs to search. If ExcludeBlogs was set, exclude any blogs
     ## set in that list from our final list.
-    if ( %{$blog_list{ExcludeBlogs}} && !%{$blog_list{IncludeBlogs}} ) {
+    unless ( %{$blog_list{IncludeBlogs}} ) {
         my $exclude = $blog_list{ExcludeBlogs};
         my $iter    = $app->model('blog')->load_iter;
         while ( my $blog = $iter->() ) {
@@ -999,6 +995,7 @@ sub _default_takedown {
     if ( my $cache_driver = $app->{cache_driver} ) {
         $cache_driver->purge_stale( 2 * $app->config->SearchCacheTTL );
     }
+    delete $app->{searchparam};
     1;
 }
 
