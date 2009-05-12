@@ -107,7 +107,6 @@ sub start_element {
                             $self->{skip} += 1;
                         }
                         else {
-                            $self->{callback}->("\n");
                             MT->log({ message => MT->translate(
                                 "User with the same name '[_1]' found (ID:[_2]).  Restore replaced this user with the data backed up.",
                                                   $obj->name, $obj->id),
