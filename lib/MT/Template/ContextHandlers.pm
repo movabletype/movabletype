@@ -16203,30 +16203,38 @@ sub _hdlr_assets {
                     binary => { name => 1 },
                     join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id, object_datasource => MT::Asset->datasource }]
         }) ];
-        my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
-        if ($cexpr) {
-            my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
-            my $preloader = sub {
-                my ($entry_id) = @_;
-                my $terms = {
-                    tag_id            => \@tag_ids,
-                    object_id         => $entry_id,
-                    object_datasource => $class->datasource,
-                    %blog_terms,
+        if (!scalar @$tags) {
+            return '';
+        }
+        elsif (scalar @$tags == 1) {
+            $args{join} = [ 'MT::ObjectTag', 'object_id', { tag_id => $tags->[0]->id, object_datasource => MT::Asset->datasource }, { unique => 1 } ];
+        }
+        else {
+            my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
+            if ($cexpr) {
+                my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
+                my $preloader = sub {
+                    my ($entry_id) = @_;
+                    my $terms = {
+                        tag_id            => \@tag_ids,
+                        object_id         => $entry_id,
+                        object_datasource => $class->datasource,
+                        %blog_terms,
+                    };
+                    my $args = {
+                        %blog_args,
+                        fetchonly => ['tag_id'],
+                        no_triggers => 1,
+                    };
+                    my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
+                    my %map;
+                    $map{ $_->tag_id } = 1 for @ot_ids;
+                    \%map;
                 };
-                my $args = {
-                    %blog_args,
-                    fetchonly => ['tag_id'],
-                    no_triggers => 1,
-                };
-                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
-                my %map;
-                $map{ $_->tag_id } = 1 for @ot_ids;
-                \%map;
-            };
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
-        } else {
-            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
+                push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+            } else {
+                return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
+            }            
         }
     }
 
