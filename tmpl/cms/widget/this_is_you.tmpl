@@ -6,16 +6,36 @@
         <h4><mt:var name="author_display_name" escape="html"></h4>
         <ul class="user-stats-list">
         <mt:if name="last_post_id">
+            <mt:if name="last_post_can_edit">
             <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name" escape="html"$>"></li>
+            <mt:else>
+            <li><__trans phrase="Your last entry was [_1] in <a href="[_2]">[_3]</a>." params="<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name" escape="html"$>"></li>
+            </mt:if>
         </mt:if>
         <mt:if name="draft_count">
+            <mt:if name="can_list_entries">
             <li><__trans phrase="You have <a href="[_1]">[quant,_2,draft,drafts]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter=status&amp;filter_val=1%%<mt:var name="draft_count">"></li>
+            <mt:else>
+            <li><__trans phrase="You have [quant,_1,draft,drafts]." params="<mt:var name="draft_count">"></li>
+            </mt:if>
         </mt:if>
         <mt:if name="publish_count">
             <mt:if name="comment_count">
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">"></li>
+                <mt:if name="can_list_entries">
+                <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">"></li>
+                <mt:else>
+                    <mt:if name="can_list_comments">
+                    <li><__trans phrase="You've written [quant,_1,entry,entries] with <a href="[_2]">[quant,_3,comment,comments]</a>." params="<mt:var name="publish_count">%%<mt:var name="script_url">?__mode=list_comment&amp;filter_key=my_posts%%<mt:var name="comment_count">"></li>
+                    <mt:else>
+                    <li><__trans phrase="You've written [quant,_1,entry,entries] with [quant,_2,comment,comments]." params="<mt:var name="publish_count">%%<mt:var name="comment_count">"></li>
+                    </mt:if>
+                </mt:if>
             <mt:else>
-            <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">"></li>
+                <mt:if name="can_list_entries">
+                <li><__trans phrase="You've written <a href="[_1]">[quant,_2,entry,entries]</a>." params="<mt:var name="script_url">?__mode=list_entry&amp;filter_key=my_posts%%<mt:var name="publish_count">"></li>
+                <mt:else>
+                <li><__trans phrase="You've written [quant,_1,entry,entries]." params="<mt:var name="publish_count">"></li>
+                </mt:if>
             </mt:if>
         </mt:if>
         </ul>
