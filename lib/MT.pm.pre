@@ -2251,6 +2251,7 @@ sub new_ua {
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
     my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout || $cfg->PingTimeout;
     my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy || $cfg->PingProxy;
+    my $sec_proxy = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy || $cfg->PingNoProxy;
     my $agent = $opt->{agent} || 'MovableType/' . $MT::VERSION;
     my $interface = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface || $cfg->PingInterface;
@@ -2270,6 +2271,9 @@ sub new_ua {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
         $ua->no_proxy(@domains) if @domains;
+    }
+    if ( defined $sec_proxy ) {
+        $ua->proxy ( https => $sec_proxy );
     }
     return $ua;
 }
