@@ -2154,10 +2154,21 @@ sub update_entry_status {
     my %rebuild_these;
     require MT::Entry;
 
+    my $app_author = $app->user;
+    my $perms      = $app->permissions;
+
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
           or return $app->errtrans(
             "One of the entries ([_1]) did not actually exist", $id );
+
+        return $app->error( $app->translate('Permission denied.') )
+            unless $app_author->is_superuser
+                || ( ( $entry->class eq 'entry' )
+                    && $perms && $perms->can_edit_entry( $entry, $app_author, 1 ) )
+                || ( ( $entry->class eq 'page' )
+                    && $perms && $perms->can_manage_pages );
+
         if ( $app->config('DeleteFilesAtRebuild')
             && ( MT::Entry::RELEASE() eq $entry->status ) )
         {
