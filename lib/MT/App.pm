@@ -1107,7 +1107,7 @@ sub permissions {
 sub session_state {
     my $app     = shift;
     my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $blog_id = $blog ? $blog->id : 0;
 
     my ( $c, $commenter );
     ( my $sessobj, $commenter ) = $app->get_commenter_session();
