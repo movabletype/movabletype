@@ -446,22 +446,40 @@ sub list {
 
     my $q     = $app->param;
     my $perms = $app->permissions;
-    if ( $type eq 'page' ) {
-        if ( $perms
-            && ( !$perms->can_manage_pages ) )
-        {
-            return $app->errtrans("Permission denied.");
-        }
-    }
-    else {
-        if (
-            $perms
-            && (   !$perms->can_edit_all_posts
-                && !$perms->can_create_post
-                && !$perms->can_publish_post )
-          )
-        {
-            return $app->errtrans("Permission denied.");
+    unless ($app->user->is_superuser) {
+        if ( $type eq 'page' ) {
+            if ( $app->param('blog_id') ) {
+                return $app->errtrans("Permission denied.")
+                    unless $perms && $perms->can_manage_pages;
+            } else {
+                require MT::Permission;
+                my @blogs
+                    = map { $_->blog_id }
+                    grep {
+                    $_->can_manage_pages
+                    } MT::Permission->load(
+                    { author_id => $app->user->id } );
+                return $app->errtrans("Permission denied.") unless @blogs;
+            }
+        } else {
+            if ( $app->param('blog_id') ) {
+                return $app->errtrans("Permission denied.")
+                    unless $perms && ( 
+                               $perms->can_create_post
+                            || $perms->can_publish_post
+                            || $perms->can_edit_all_posts );
+            } else {
+                require MT::Permission;
+                my @blogs
+                    = map { $_->blog_id }
+                    grep {
+                    $_->can_create_post
+                        || $_->can_publish_post
+                        || $_->can_edit_all_posts
+                    } MT::Permission->load(
+                    { author_id => $app->user->id } );
+                return $app->errtrans("Permission denied.") unless @blogs;
+            }
         }
     }
 
