@@ -1837,24 +1837,6 @@ sub build_blog_table {
                 { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() }
               )
         ) || 0;
-        $row->{num_authors} = 0;
-
-        # FIXME: This isn't efficient
-        my $iter = MT::Permission->load_iter(
-            {
-                blog_id => [ 0, $blog_id ],
-
-                #    role_mask => [ 2, undef ]
-                #}, {
-                #    range_incl => { 'role_mask' => 1 }
-            }
-        );
-        my %a;
-        while ( my $p = $iter->() ) {
-            next if exists $a{ $p->author_id };
-            $a{ $p->author_id } = 1;
-            $row->{num_authors}++ if $p->can_create_post;
-        }
         if ( $author->is_superuser ) {
             $row->{can_create_post}       = 1;
             $row->{can_edit_entries}      = 1;
