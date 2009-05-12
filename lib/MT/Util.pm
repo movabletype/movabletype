@@ -463,7 +463,7 @@ sub offset_time {
     } else {
         $offset = MT->config->TimeOffset;
     }
-    $offset += 1 if (localtime $ts)[8];
+    $offset += 1 if $blog && (localtime $ts)[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
     $ts;
