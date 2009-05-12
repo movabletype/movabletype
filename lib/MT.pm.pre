@@ -1363,6 +1363,7 @@ sub _init_plugins_core {
                             $Plugins{$plugin_dir}{enabled} = 0;
                             next;
                         }
+                        next if exists $Plugins{$plugin_dir};
                         my $id = lc $plugin_dir;
                         $id =~ s/\.\w+$//;
                         my $p = $pclass->new(
