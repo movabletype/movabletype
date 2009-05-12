@@ -32,22 +32,7 @@ sub system_check {
     $param{user_count} = $author_class->count(
         { type => MT::Author::AUTHOR() } );
 
-    # commeters: users with only comment permission and MT::Author::COMMENTER
-    my $cmntrs = $author_class->count(
-        { type => MT::Author::COMMENTER() } );
-
-    my @perms = $app->model('permission')->load(
-      {
-        permissions => "%'comment'%", 
-        blog_id     => '0',
-      },
-      {
-        'like' => { 'permissions' => 1 },
-        'not'  => { 'blog_id'     => 1 },
-      }
-    );
-    @perms = grep { $_->permissions =~ m/'comment'/ } @perms;
-    $param{commenter_count} = scalar(@perms) + $cmntrs;
+    $param{commenter_count} = q[N/A];
     $param{screen_id} = "system-check";
 
     require MT::Memcached;
