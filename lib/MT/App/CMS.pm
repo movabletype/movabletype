@@ -61,10 +61,7 @@ sub core_methods {
         'list_template' => "${pkg}Template::list",
         'list_widget'   => "${pkg}Template::list_widget",
         'list_page'     => "${pkg}Page::list",
-        'list_comment'  => {
-            handler    => "${pkg}Comment::list",
-            permission => 'view_feedback',
-        },
+        'list_comment'  => "${pkg}Comment::list",
         'list_member'      => "${pkg}User::list_member",
         'list_user'        => "${pkg}User::list",
         'list_author'      => "${pkg}User::list",
@@ -240,10 +237,7 @@ sub core_methods {
         'list_pings'    => "${pkg}TrackBack::list",
         'list_entries'  => "${pkg}Entry::list",
         'list_pages'    => "${pkg}Page::list",
-        'list_comments' => {
-            handler    => "${pkg}Comment::list",
-            permission => 'view_feedback',
-        },
+        'list_comments' => "${pkg}Comment::list",
         'list_authors'      => "${pkg}User::list",
         'list_assets'       => "${pkg}Asset::list",
         'list_cat'          => "${pkg}Category::list",
@@ -1247,20 +1241,14 @@ sub core_menus {
                     my $perms
                         = $app->user->permissions( $app->param('blog_id') );
                     return 1
-                        if $perms->can_create_post
-                            || $perms->can_manage_feedback
-                            || $perms->can_edit_all_posts
-                            || $perms->can_comment;
+                        if $perms && $perms->can_view_feedback;
                 }
                 else {
                     require MT::Permission;
                     my @blogs
                         = map { $_->blog_id }
                         grep {
-                               $_->can_create_post
-                            || $_->can_manage_feedback
-                            || $_->can_edit_all_posts
-                            || $_->can_comment
+                            $_->can_view_feedback
                         } MT::Permission->load(
                         { author_id => $app->user->id } );
                     return 1 if @blogs;
