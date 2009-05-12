@@ -83,6 +83,9 @@ sub get {
 sub set {
     my $sess = shift;
     my ($var, $val) = @_;
+    if ( $sess->kind eq q{US} and $var eq q{US} ) {
+        $sess->name($val);
+    }
     my $data = $sess->thaw_data;
     $sess->{__dirty} = 1;
     $data->{$var} = $val;
