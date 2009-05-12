@@ -58,6 +58,7 @@ __PACKAGE__->install_properties({
         modified_on => 1,
         authored_on => 1,
         # For lookups 
+        comment_count => 1,
         blog_basename => {
             columns => [ 'blog_id', 'basename' ],
         },
