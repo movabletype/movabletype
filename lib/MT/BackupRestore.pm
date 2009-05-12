@@ -92,6 +92,13 @@ sub core_backup_instructions {
         'ts_funcmap'    => {
             'skip' => 1
         },
+        # group and touch object should be skipped too; touch object creates issues with restore process (https://roundup.apperceptive.com/issues/issue11526)
+        'touch' => {
+            'skip' => 1
+        },
+        'group' => {
+            'skip' => 1
+        },
     };
 }
 
@@ -218,8 +225,11 @@ sub _default_terms_args {
 sub backup {
     my $class = shift;
     my ($blog_ids, $printer, $splitter, $finisher, $progress, $size, $enc, $metadata) = @_;
-    push @$blog_ids, '0'
-        if defined($blog_ids) && scalar(@$blog_ids);
+
+	# removed global items from backup for blog-specific backups as this creates multiple copies of global items
+	# when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
+	# push @$blog_ids, '0' if defined($blog_ids) && scalar(@$blog_ids);
+
     my $obj_to_backup = $class->_populate_obj_to_backup( $blog_ids );
 
     my $header .= "<movabletype xmlns='" . NS_MOVABLETYPE . "'\n";
