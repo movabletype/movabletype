@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2009 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -4965,7 +4965,7 @@ sub _include_file {
         $tokens = $cref;
     } else {
         my $blog = $ctx->stash('blog');
-        if ($blog && $blog_id && $blog->id != $blog_id) {
+        if ($blog && $blog->id != $blog_id) {
             $blog = MT::Blog->load($blog_id)
                 or return $ctx->error(MT->translate(
                     "Can't find blog for id '[_1]", $blog_id));
@@ -8004,19 +8004,19 @@ sub _hdlr_entries {
                 (($cat_class_type eq 'category' && !$args->{include_subcategories}) ||
                  ($cat_class_type ne 'category' && !$args->{include_subfolders})))
             {
-                my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $cat_class_type);
-                if (@cats) {
-                    $cats = \@cats;
+                if ($blog_terms{blog_id}) {
+                    my %cat_blog_terms = %blog_terms;
+                    $cat_blog_terms{label} = $category_arg;
+                    $cats = [ $cat_class->load(\%cat_blog_terms, \%blog_args) ];
+                } else {
+                    my @cats = cat_path_to_category($category_arg, [ \%blog_terms, \%blog_args ], $cat_class_type);
+                    if (@cats) {
+                        $cats = \@cats;
+                        $cexpr = $ctx->compile_category_filter(undef, $cats, { 'and' => 0 });
+                    }
                 }
-                $cexpr = $ctx->compile_category_filter($category_arg, $cats);
             } else {
-                my @cats;
-                my @args_cat = split /\s*\b(?:AND|OR|NOT)\b\s|[\s*(?:|&)\s*]/i, $category_arg;
-                @args_cat = grep { $_ } @args_cat;
-                for my $c (@args_cat) {
-                    my @categories = cat_path_to_category($c, [ \%blog_terms, \%blog_args ], $cat_class_type);
-                    push @cats, @categories;
-                }
+                my @cats = $cat_class->load(\%blog_terms, \%blog_args);
                 if (@cats) {
                     $cats = \@cats;
                     $cexpr = $ctx->compile_category_filter($category_arg, $cats,
@@ -8026,6 +8026,11 @@ sub _hdlr_entries {
                         });
                 }
             }
+            $cexpr ||= $ctx->compile_category_filter($category_arg, $cats,
+                { children => $cat_class_type eq 'category' ?
+                    ($args->{include_subcategories} ? 1 : 0) :
+                    ($args->{include_subfolders} ? 1 : 0) 
+                });
         }
         if ($cexpr) {
             my %map;
@@ -8097,9 +8102,12 @@ sub _hdlr_entries {
                 if ($tag_arg !~ m/\bNOT\b/i) {
                     return '' unless @tag_ids;
                     $args{join} = MT::ObjectTag->join_on( 'object_id', {
-                        tag_id => \@tag_ids, object_datasource => 'entry',
-                        %blog_terms
-                    }, { %blog_args, unique => 1 } );
+                            tag_id => \@tag_ids, object_datasource => 'entry',
+                            %blog_terms
+                        }, { %blog_args, unique => 1 } );
+                    if (my $last = $args->{lastn} || $args->{limit}) {
+                        $args{limit} = $last;
+                    }
                 }
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
@@ -16203,38 +16211,30 @@ sub _hdlr_assets {
                     binary => { name => 1 },
                     join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id, object_datasource => MT::Asset->datasource }]
         }) ];
-        if (!scalar @$tags) {
-            return '';
-        }
-        elsif (scalar @$tags == 1) {
-            $args{join} = [ 'MT::ObjectTag', 'object_id', { tag_id => $tags->[0]->id, object_datasource => MT::Asset->datasource }, { unique => 1 } ];
-        }
-        else {
-            my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
-            if ($cexpr) {
-                my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
-                my $preloader = sub {
-                    my ($entry_id) = @_;
-                    my $terms = {
-                        tag_id            => \@tag_ids,
-                        object_id         => $entry_id,
-                        object_datasource => $class->datasource,
-                        %blog_terms,
-                    };
-                    my $args = {
-                        %blog_args,
-                        fetchonly => ['tag_id'],
-                        no_triggers => 1,
-                    };
-                    my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
-                    my %map;
-                    $map{ $_->tag_id } = 1 for @ot_ids;
-                    \%map;
+        my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
+        if ($cexpr) {
+            my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
+            my $preloader = sub {
+                my ($entry_id) = @_;
+                my $terms = {
+                    tag_id            => \@tag_ids,
+                    object_id         => $entry_id,
+                    object_datasource => $class->datasource,
+                    %blog_terms,
                 };
-                push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
-            } else {
-                return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
-            }            
+                my $args = {
+                    %blog_args,
+                    fetchonly => ['tag_id'],
+                    no_triggers => 1,
+                };
+                my @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
+                my %map;
+                $map{ $_->tag_id } = 1 for @ot_ids;
+                \%map;
+            };
+            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+        } else {
+            return $ctx->error(MT->translate("You have an error in your '[_2]' attribute: [_1]", $args->{tags} || $args->{tag}, 'tag'));
         }
     }
 
