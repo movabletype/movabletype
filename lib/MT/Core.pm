@@ -816,12 +816,11 @@ sub remove_expired_sessions {
     require MT::Session;
 
     my $expired = MT->config->UserSessionTimeout;
-    my @sesss = MT::Session->load(
-        { kind => 'US', start => [ undef, time - $expired ] },
+    MT::Session->remove(
+        { kind  => 'US',
+          start => [ undef, time - $expired ],
+          data  => { not_like => '%remember-%' } },
         { range => { start => 1 } } );
-    foreach my $s (@sesss) {
-        $s->remove if !$s->get('remember');
-    }
     return '';
 }
 
