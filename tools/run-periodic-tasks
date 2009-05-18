@@ -8,7 +8,7 @@
 
 use strict;
 
-use lib 'lib', '../lib';
+use lib 'lib', '../lib', 'extlib', '../extlib';
 
 my $daemonize = 0;
 my $sleep     = 5;
@@ -29,6 +29,7 @@ Getopt::Long::GetOptions(
     "verbose"      => \$verbose,
     "leak"         => \$trace_objects,
 );
+require MT::TheSchwartz;
 
 if ($trace_objects) {
     require Devel::Leak::Object;
@@ -38,11 +39,6 @@ if ($trace_objects) {
 my $proc_process_table = eval {
     require Proc::ProcessTable;
     1;
-};
-my $memory_module;
-eval {
-    require Sys::MemInfo;
-    $memory_module = q{Sys::MemInfo};
 };
 
 $@ = undef;
@@ -57,7 +53,7 @@ require MT::Bootstrap;
 require MT;
 
 my $mt = MT->new() or die MT->errstr;
-if ( MT->config('RPTProcessCap') && $proc_process_table ) {
+if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
     my $t = new Proc::ProcessTable;
     my $rpt_count;
     foreach my $p ( @{ $t->table } ) {
@@ -71,26 +67,19 @@ if ( MT->config('RPTProcessCap') && $proc_process_table ) {
         die "$rpt_count processes already running; cancelling RPT launch\n";
     }
 }
-if ( MT->config('RPTFreeMemoryLimit') && $memory_module ) {
+
+if ( MT->config('RPTFreeMemoryLimit') ) {
     my $limit = MT->config('RPTFreeMemoryLimit');
-    my $decoded_limit;
-    if ( $limit =~ /^\d+[KGM]B?$/ ) {
-        my $multiplier = 1;
-        ( $limit =~ /GB?$/ ) and $multiplier = 1073741824;
-        ( $limit =~ /MB?$/ ) and $multiplier = 1048576;
-        ( $limit =~ /KB?$/ ) and $multiplier = 1024;
-        $limit =~ s/[KGM]B?$//;
-        $limit = $limit * $multiplier;
+    if ( $limit and ! MT::TheSchwartz::_has_enough_swap($limit) ) {
+        die
+            "Free memory below RPT limit; cancelling RPT launch\n";
     }
-    if ( $limit =~ /\d+/ ) {
-        my $free;
-        if ( $memory_module eq q{Sys::MemInfo} ) {
-            $free = Sys::MemInfo::get("freemem");
-        }
-        if ( $free < $limit ) {
-            die
-                "Free memory of $free bytes below limit; cancelling RPT launch\n";
-        }
+}
+if ( MT->config('RPTFreeSwapLimit') ) {
+    my $swaplimit = MT->config('RPTSwapMemoryLimit');
+    if ( $swaplimit and ! MT::TheSchwartz::_has_enough_swap($swaplimit) ) {
+        die
+            "Free swap memory below RPT limit; cancelling RPT launch\n";
     }
 }
 
