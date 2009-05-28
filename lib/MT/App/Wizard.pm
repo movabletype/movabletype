@@ -84,6 +84,15 @@ sub init_request {
         }
     }
 
+    # If mt-check.cgi exists, redirect to errro screen
+    my $cfg_exists = $app->is_config_exists();
+    if ($cfg_exists) {
+        my %param;
+        $param{cfg_exists} = 1;
+        $app->mode('pre_start');
+        return $app->build_page( "start.tmpl", \%param );
+    }
+
     $app->param( 'next_step', $new_step );
     $app->mode('run_step');
 }
@@ -335,15 +344,12 @@ sub pre_start {
     my %param;
 
     eval { use File::Spec; };
-    my ( $cfg, $cfg_exists, $static_file_path );
+    my ( $static_file_path );
     if ( !$@ ) {
-        $cfg = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
-        $cfg_exists |= 1 if -f $cfg;
-
         $static_file_path = File::Spec->catfile( $app->static_file_path );
     }
 
-    $param{cfg_exists}        = $cfg_exists;
+    $param{cfg_exists}        = $app->is_config_exists;
     $param{valid_static_path} = 1
         if $app->is_valid_static_path( $app->static_path );
     $param{mt_static_exists} = $app->mt_static_exists;
@@ -1095,6 +1101,19 @@ sub is_valid_static_path {
         and ( $response->content_length() != 0 )
         && ( $response->content =~ m/function\s+openManual/s );
 }
+
+sub is_config_exists {
+    my $app = shift;
+
+    eval { use File::Spec; };
+    my ( $cfg, $cfg_exists, $static_file_path );
+    if ( !$@ ) {
+        $cfg = File::Spec->catfile( $app->{mt_dir}, 'mt-config.cgi' );
+        $cfg_exists |= 1 if -f $cfg;
+    }
+    return $cfg_exists;
+}
+
 1;
 __END__
 

@@ -181,7 +181,7 @@
             id="uri_invalid"
             can_close="0"
             class="error">
-            <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to"$>">
+            <__trans phrase="<strong>Error(1): '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html"$>" escape="html">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="file_invalid">
@@ -189,7 +189,7 @@
             id="file_invalid"
             can_close="0"
             class="error">
-            <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to"$>">
+            <__trans phrase="<strong>Error(2): '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html"$>" escape="html">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -223,7 +223,7 @@
                 label_class="top-label"
                 show_hint="1"
                 hint="$hintfoo">
-                <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri"$>" size="">
+                <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="">
             </mtapp:setting>
             <br/>
             <mtapp:setting
@@ -232,7 +232,7 @@
                 label_class="top-label"
                 show_hint="1"
                 hint="$hintfp">
-                <input type="text" name="set_static_file_to" id="set_static_file_to" class="ti" value="<$mt:var name="set_static_file_to" default="$static_file_path"$>" size="">
+                <input type="text" name="set_static_file_to" id="set_static_file_to" class="ti" value="<$mt:var name="set_static_file_to" default="$static_file_path" escape="html"$>" size="">
             </mtapp:setting>
         </fieldset>
     </div>
