@@ -75,3 +75,5 @@ my $result = $ie->import_contents(%param);
 # check if the blog has entries and comments
 ok (MT::Entry->count({ blog_id => $blog->id }) > 0, "We have entries again");
 ok (MT::Comment->count({ blog_id => $blog->id }) > 0, "We have comments again");
+
+unlink("test_import.txt");
