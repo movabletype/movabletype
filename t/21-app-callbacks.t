@@ -8,6 +8,7 @@ use CGI;
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::App::CMS;
+use MT::Test qw(:db :data);
 
 ### Test app callbacks
 
