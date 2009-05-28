@@ -9,9 +9,9 @@ use lib 'lib';
 
 use Test::More;
 
-# plan tests => 14;
-plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
-exit;
+plan tests => 14;
+#plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
+#exit;
 
 use HTTP::Response;
 use Net::Ping;
