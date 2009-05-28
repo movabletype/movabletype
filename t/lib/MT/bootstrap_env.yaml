@@ -1,0 +1,99 @@
+name: Bootstrap Test Data
+version: 0.1
+blogs:
+    blog_narnia:
+        values:
+            name: 'Narnia Blog'
+            site_url: 'http://narnia.na/nana/'
+            archive_url: 'http://narnia.na/nana/archives/'
+            site_path: 't/site/'
+            archive_path: 't/site/archives/'
+            archive_type: 'Individual,Monthly,Weekly,Daily,Category,Page'
+            archive_type_preferred: 'Individual'
+            description: "Narnia None Test Blog"
+            custom_dynamic_templates: 'custom'
+            convert_paras: 1
+            allow_reg_comments: 1
+            allow_unreg_comments: 0
+            allow_pings: 1
+            sort_order_posts: 'descend'
+            sort_order_comments: 'ascend'
+            remote_auth_token: 'token'
+            convert_paras_comments: 1
+            google_api_key: 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1'
+            cc_license: 'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif'
+            server_offset: '-3.5'
+            children_modified_on: '20000101000000'
+            language: 'en_us'
+            file_extension: 'html'
+users:
+    user_chuckd:
+        type: author
+        values:
+            id: 2
+            name: 'Chuck D'
+            nickname: 'Chucky Dee'
+            email: 'chuckd@example.com'
+            url: 'http://chuckd.com/'
+            api_password: 'seecret'
+            auth_type: 'MT'
+            created_on: '197801310745000'
+            password: 'bass'
+        roles:
+            blog_narnia:
+                - 'Blog Administrator'
+    user_bobd:
+        type: author
+        values:
+            id: 3
+            name: 'Bob D'
+            nickname: 'Dylan'
+            email: 'bobd@example.com'
+            auth_type: 'MT'
+            created_on: '19780131075000'
+            password: 'flute'
+        roles:
+            blog_narnia:
+                - 'Author'
+    user_johnd:
+        type: commenter
+        values:
+            id: 4
+            name: 'John Doe'
+            nickname: 'John Doe'
+            email: 'jdoe@doe.com'
+            auth_type: 'TypeKey'
+            created_on: '19780131080000'
+            password: '(none)'
+    user_hiro:
+        type: author
+        values:
+            id: 5
+            name: 'Hiro Nakamura'
+            nickname: 'Hiro'
+            email: 'hiro@heroes.com'
+            auth_type: 'MT'
+            created_on: '19780131081000'
+            password: 'time'
+            status: 2
+        roles:
+            blog_narnia:
+                - 'Blog Administrator'
+categories:
+    cat_foo:
+        values:
+            id: 1
+            label: 'foo'
+            description: 'bar'
+            author: user_chuckd
+            blog: blog_narnia
+    cat_bar:
+        values:
+            id: 2
+            label: 'bar'
+            description: 'foo'
+            author: user_chuckd
+            blog: blog_narnia
+entries:
+trackbacks:
+pings:
