@@ -76,6 +76,11 @@
         };
 
         function updatePage(raw_range, clean_range, total_count) {
+            if (raw_range == null || clean_range == null || total_count == null) {
+                getByID("stats-summary-"+activeStatsPanel).innerHTML = '';
+                return;
+            }
+
             var str;
             var from = raw_range.match(/^(\d\d\d\d\d\d\d\d)/)[1];
             var to;
