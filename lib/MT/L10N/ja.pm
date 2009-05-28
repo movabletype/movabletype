@@ -3827,6 +3827,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Create widget template' => 'ウィジェットテンプレートを作成',
 	'Widget Template' => 'ウィジェットテンプレート',
 	'Widget Templates' => 'ウィジェットテンプレート',
+	'widget templates' => 'ウィジェットテンプレート',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Movable Typeからログアウトしました。',
