@@ -12585,7 +12585,7 @@ sub _hdlr_archives {
     return '' unless $archiver;
 
     my $save_stamps;
-    if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
+    if (!$ctx->{inside_archive_list} || $ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
         $save_stamps = 1;
     }
 
