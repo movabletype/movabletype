@@ -159,7 +159,11 @@ sub core_search_apis {
             'can_search_by_date' => 1,
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
-                $terms->{class} = '*';
+                $terms->{class}
+                    = ( $app->param('filter') 
+                        && $app->param('filter_val')
+                        && $app->param('filter') eq 'class'
+                        && $app->param('filter_val') eq 'image' ) ? 'image' : '*';
                 $terms->{blog_id} = $blog_id if $blog_id;
             }
         },
