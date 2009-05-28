@@ -230,7 +230,7 @@
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
 { "r" : "1", "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #228
 { "r" : "1", "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4"}, #229
-{ "r" : "1", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
+#{ "r" : "1", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
 { "r" : "1", "t" : "<MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #231
 { "r" : "1", "t" : "<MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #232
 { "r" : "1", "t" : "<MTSetVar name='x' value='0'><MTIfNonZero tag='GetVar' name='x'><MTElse>0</MTElse></MTIfNonZero>", "e" : "0"}, #233
