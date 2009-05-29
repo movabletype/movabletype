@@ -1,4 +1,11 @@
 <$mt:setvar name="show_display_options_link" value="1"$>
+<script type="text/javascript">
+function restoreBarPosition() {
+    var current_bar_position = '<mt:if name="position_actions_top">top<mt:elseif name="position_actions_bottom">bottom<mt:elseif name="position_actions_both">both<mt:else>top</mt:if>';
+    setBarPosition( current_bar_position );
+    getByID( 'actions-radio-' + current_bar_position ).checked = 'checked';
+}
+</script>
 <mtapp:widget
     id="display-options-widget"
     class="display-options-widget autolayout-flyout-smart hidden"
@@ -25,8 +32,8 @@
             label="<__trans phrase="View">"
             label_class="display-options">
             <ul>
-                <li><input type="radio" name="verbosity" value="compact" <mt:unless name="VIEW_EXPANDED">checked="checked"</mt:unless> id="view-compact" class="rb" /> <label for="view-compact"><__trans phrase="Compact"></label></li>
-                <li><input type="radio" name="verbosity" value="expanded" <mt:if name="VIEW_EXPANDED">checked="checked"</mt:if> id="view-expanded" class="rb" /> <label for="view-expanded"><__trans phrase="Expanded"></label></li>
+                <li><input type="radio" name="actions" value="both" id="actions-radio-both" <mt:if name="position_actions_both">checked="checked"</mt:if> id="view-actions-both" class="rb" onclick="setBarPosition(this)" /> <label for="view-actions-both"><__trans phrase="Both"></label></li>
+                <li><input type="radio" name="actions" value="below" id="actions-radio-bottom" <mt:unless name="position_actions_both"><mt:if name="position_actions_bottom">checked="checked"</mt:if></mt:unless> id="view-actions-top" class="rb" onclick="setBarPosition('bottom')" /> <label for="view-actions-top"><__trans phrase="Bottom"></label></li>
             </ul>
         </mtapp:setting>
 </mt:if>
@@ -60,6 +67,7 @@
                     ><__trans phrase="Save"></a>
                 <a href="javascript:void(0)" mt:command="close-flyout"
                     title="<__trans phrase="Close display options">"
+                    onclick="restoreBarPosition()"
                     ><__trans phrase="Cancel"></a>
             </div>
         </div>
