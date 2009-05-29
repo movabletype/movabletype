@@ -858,7 +858,7 @@ our $DRIVER;
 sub driver {
     my $class = shift;
     return $DRIVER ||= MT::ObjectDriverFactory->instance
-        if $class eq 'MT::Object';
+        if UNIVERSAL::isa($class, 'MT::Object');
     my $driver = $class->SUPER::driver(@_);
     return $driver;
 }

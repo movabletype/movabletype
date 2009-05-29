@@ -1037,7 +1037,9 @@ sub init_config_from_db {
     $cfg->read_config_db();
 
     # Tell any instantiated drivers to reconfigure themselves as necessary
-    MT::ObjectDriverFactory->configure;
+    require MT::ObjectDriverFactory;
+    my $driver = MT::ObjectDriverFactory->instance;
+    $driver->configure if $driver;
 
     1;
 }
