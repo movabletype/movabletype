@@ -27,18 +27,27 @@
     	var s = getByID('search-bar-search-field');
     	var r = getByID('search-bar-replace-fields');
     	var sa = getByID('search-bar-advanced-search');
-    	var ra = getByID('search-bar-advanced-replace');
+    	var lf = getByID('limited-fields');
+    	var dr = getByID('date-range');
     	if (s && r) {
     		if (selection.value == 'search') {
-    			s.style.display = 'block';
-    			sa.style.display = 'block';
+    			s.style.display = '';
+    			sa.style.display = '';
     			r.style.display = 'none';
-    			ra.style.display = 'none';
+                if ( getByID('is_limited').checked )
+                    lf.style.display = '';
+                else
+                    lf.style.display = 'none';
+                if ( getByID('is_dateranged').checked )
+                    dr.style.display = '';
+                getByID('limited-fields-label').innerHTML = '<__trans phrase="Search Fields:">';
     		} else if (selection.value == 'replace') {
-    			r.style.display = 'block';
-    			ra.style.display = 'block';
-    			s.style.display = 'none';
-    			sa.style.display = 'none';
+                r.style.display = '';
+                s.style.display = 'none';
+                sa.style.display = 'none';
+                lf.style.display = '';
+                dr.style.display = 'none';
+                getByID('limited-fields-label').innerHTML = '<__trans phrase="Replace Fields:">';
     		}
     	}
     }
@@ -220,24 +229,6 @@
             <label for="is_junk"><input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Reported as Spam?"></label>
 </mt:if>
         </div>
-
-<mt:if name="have_results">
-        <div id="search-bar-advanced-replace">
-            <label><input type="checkbox" name="replace-case" value="1"<mt:if name="case"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Case Sensitive"></label>
-            &nbsp;
-            <label><input type="checkbox" name="replace-is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Regex Match"></label>
-            &nbsp;
-            <label><input type="checkbox" name="replace-is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Limited Fields"></label>
-    <mt:if name="can_search_by_date">
-            &nbsp;
-            <label><input type="checkbox" name="replace-is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Date Range"></label>
-    </mt:if>
-    <mt:if name="can_search_junk">
-            &nbsp;
-            <label><input type="checkbox" name="replace-is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> disabled="disabled" class="cb" /> <__trans phrase="Reported as Spam?"></label>
-    </mt:if>
-        </div>
-</mt:if>
     </div>
 </div>
 
@@ -246,7 +237,7 @@
     <div id="<mt:var name="object_type">-fields">
         <ul>
         <mt:loop name="search_cols">
-            <mt:if name="__first__"><li class="first"><__trans phrase="Search Fields:"></li></mt:if>
+            <mt:if name="__first__"><li class="first"><span id="limited-fields-label"><__trans phrase="Search Fields:"></span></li></mt:if>
             <li><label for="search_cols-<mt:var name="field" escape="html">"><input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label" escape="html"></label></li>
         </mt:loop>
         </ul>
