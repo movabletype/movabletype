@@ -40,14 +40,12 @@
                     lf.style.display = 'none';
                 if ( getByID('is_dateranged').checked )
                     dr.style.display = '';
-                getByID('limited-fields-label').innerHTML = '<__trans phrase="Search Fields:">';
     		} else if (selection.value == 'replace') {
                 r.style.display = '';
                 s.style.display = 'none';
                 sa.style.display = 'none';
-                lf.style.display = '';
+                lf.style.display = 'none';
                 dr.style.display = 'none';
-                getByID('limited-fields-label').innerHTML = '<__trans phrase="Replace Fields:">';
     		}
     	}
     }
@@ -237,7 +235,7 @@
     <div id="<mt:var name="object_type">-fields">
         <ul>
         <mt:loop name="search_cols">
-            <mt:if name="__first__"><li class="first"><span id="limited-fields-label"><__trans phrase="Search Fields:"></span></li></mt:if>
+            <mt:if name="__first__"><li class="first"><__trans phrase="Search Fields:"></li></mt:if>
             <li><label for="search_cols-<mt:var name="field" escape="html">"><input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <mt:var name="label" escape="html"></label></li>
         </mt:loop>
         </ul>

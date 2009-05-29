@@ -3786,7 +3786,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Date Range' => '日付範囲',
 	'Reported as Spam?' => 'スパムコメント/トラックバック',
 	'Search Fields:' => '検索対象フィールド:',
-	'Replace Fields:' => '置換対象フィールド:',
 	'_DATE_FROM' => '開始日',
 	'_DATE_TO' => '終了日',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
