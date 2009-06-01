@@ -36,7 +36,6 @@ ok ($bad_out =~ /Load of blog '1000' failed/, "Failed as expected");
 # write the file and make sure no funny characters are there
 open OUT, ">test_import.txt";
 foreach my $line (split "\n", $good_out) {
-/);     next if ($line =~ /
 	chomp $line;
 	print OUT "$line\n";
 }
