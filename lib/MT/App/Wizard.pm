@@ -86,7 +86,7 @@ sub init_request {
 
     # If mt-check.cgi exists, redirect to errro screen
     my $cfg_exists = $app->is_config_exists();
-    if ($cfg_exists) {
+    if ($cfg_exists && lc $step ne 'seed' && lc $mode ne 'retry') {
         my %param;
         $param{cfg_exists} = 1;
         $app->mode('pre_start');
