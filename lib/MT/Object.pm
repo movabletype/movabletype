@@ -557,9 +557,11 @@ sub has_column {
 
 sub _post_save_save_metadata {
     my $obj = shift;
+    my ($orig_obj) = @_;
     if (defined $obj && exists $obj->{__meta}) {
         $obj->{__meta}->set_primary_keys($obj);
         $obj->{__meta}->save;
+        $orig_obj->{__meta} = $obj->{__meta};
     }
 }
 
@@ -891,6 +893,10 @@ sub clone_all {
     if ($clone->properties->{meta_installed}) {
         $clone->init_meta();
         $clone->meta( $obj->meta );
+        for my $meta ( keys %{ $clone->{__meta}->{__objects} } ) {
+            $clone->{__meta}->{__objects}{$meta}->{changed_cols}
+                = $obj->{__meta}->{__objects}->{$meta}->{changed_cols} || {};
+        }
     }
     return $clone;
 }
