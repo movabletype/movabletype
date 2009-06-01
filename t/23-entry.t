@@ -11,7 +11,10 @@ use Test::More tests => 31;
 
 use MT;
 use MT::Blog;
+use MT::Category;
+use MT::Comment;
 use MT::Entry;
+use MT::Placement;
 
 use vars qw( $DB_DIR $T_CFG );
 
@@ -44,15 +47,57 @@ is(MT::Entry::status_int('Future'), 4, 'Future 4');
 my $author = $entry->author;
 isa_ok($author, 'MT::Author');
 is($author->name, 'Chuck D', 'name');
-#ok($author->id, 1);
 
-## Test next and previous.
-## Test category, categories, and is_in_category.
-## Test permalink, archive_url, archive_file.
-## Test text_filters.
-## Test comments, comment_count, ping_count.
+## Test category, categories, and is_in_category
+my $cat = new MT::Category;
+$cat->blog_id($entry->blog_id);
+$cat->label('foo');
+$cat->description('bar');
+$cat->author_id($author->id);
+$cat->parent(0);
+$cat->save or die "Couldn't save category record 1: " . $cat->errstr;
 
-## Test entry auto-generation.
+my $cat2 = new MT::Category;
+$cat2->blog_id($entry->blog_id);
+$cat2->label('foo2');
+$cat2->description('bar2');
+$cat2->author_id($author->id);
+$cat2->parent(0);
+$cat2->save or die "Couldn't save category record 1: " . $cat2->errstr;
+
+my $place = MT::Placement->new;
+$place->entry_id($entry->id);
+$place->blog_id($entry->blog_id);
+$place->category_id($cat->id);
+$place->is_primary(1);
+$place->save or die "Couldn't save placement record: " . $place->errstr;
+
+my $place2 = MT::Placement->new;
+$place2->entry_id($entry->id);
+$place2->blog_id($entry->blog_id);
+$place2->category_id($cat2->id);
+$place2->is_primary(0);
+$place2->save or die "Couldn't save placement record: " . $place2->errstr;
+
+my $category = $entry->category;
+ok ($category, "Primary category " . $category->label . " exists");
+
+my @categories = $entry->categories;
+ok(@categories, "Multiple cateogires exist ");
+
+my @places = MT::Placement->load();
+
+## Test permalink, archive_url, archive_file
+ok ($entry->permalink, "Permalink exists");
+ok ($entry->archive_url, "Archive URL exists");
+ok ($entry->archive_file, "Archive file exists");
+
+## Test comments, comment_count
+ok ($entry->comment_count, "Entry comment_count exists");
+my @comments = @{$entry->comments};
+ok (@comments, "Multiple comments exist");
+
+## Test entry auto-generation
 $entry->excerpt('');
 is($entry->excerpt, '', 'excerpt empty');
 is($entry->get_excerpt, $entry->text . '...', 'get_excerpt');
@@ -63,7 +108,7 @@ $entry->convert_breaks('textile_2');
 $entry->text("Foo _bar_ baz");
 is($entry->get_excerpt, 'Foo bar baz...', 'get_excerpt');
 
-## Test TrackBack object generation.
+## Test TrackBack object generation
 $entry->allow_pings(1);
 ok($entry->save, 'save');
 my $tb = MT::Trackback->load({ entry_id => $entry->id });
