@@ -2923,7 +2923,6 @@ sub takedown {
     $app->request->finish;
     delete $app->{request};
 
-    $app->{request_read_config} = 1;
 }
 
 sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }
