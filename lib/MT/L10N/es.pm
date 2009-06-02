@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id$
+# $Id:$
 
 package MT::L10N::es;
 use strict;
@@ -725,7 +725,7 @@ use vars qw( @ISA %Lexicon );
 	'Your request to change your password has expired.' => 'Expiró su solicitud de cambio de contraseña.',
 	'Invalid password reset request' => 'Solicitud de reinicio de contraseña no válida',
 	'Please confirm your new password' => 'Por favor, confirme su nueva contraseña',
-	'Passwords do not match' => 'Las contraseñas no coinciden', # Translate - New
+	'Passwords do not match' => 'Las contraseñas no coinciden',
 	'That action ([_1]) is apparently not implemented!' => '¡La acción ([_1]) aparentemente no está implementada!',
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'Intento de recuperación de contraseña no válido; no se pudo recuperar la clave con esta configuración',
 	'Invalid author_id' => 'author_id no válido',
@@ -763,7 +763,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'El usuario no ha configurado una pista para la contraseña; no se pudo recuperar',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Intento inválido de recuperación de la contraseña (pista usada \'[_1]\')',
 	'User does not have email address' => 'El usario sin dirección de correo electrónico',
-	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Se ha envíado el enlace del reinicio de la contraseña para el usuario \'[_1]\' a [_3] (usario #[_2]).', # Translate - New
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Se ha envíado el enlace del reinicio de la contraseña para el usuario \'[_1]\' a [_3] (usario #[_2]).',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Algunos objetos no se restauraron porque sus objetos padres no se restauraron. Dispone de información detallada en el <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">registro de actividad</a>.',
 	'[_1] is not a directory.' => '[_1] no es un directorio.',
 	'Error occured during restore process.' => 'Ocurrió un error durante el proceso de restauración.',
@@ -1066,7 +1066,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1]: [_2]' => '[_1]: [_2]',
 	'Moving metadata storage for categories...' => 'Migrando los metadatos de las categorías...',
 	'Upgrading metadata storage for [_1]' => 'Migrando los metadatos de [_1]',
-	'Updating password recover email template...' => 'Actualizando la plantilla del correo de recuperación de contraseña...', # Translate - New
+	'Updating password recover email template...' => 'Actualizando la plantilla del correo de recuperación de contraseña...',
 	'Migrating Nofollow plugin settings...' => 'Migrando ajustes de la extensión Nofollow...',
 	'Updating system search template records...' => 'Actualizando registros de las plantillas de búsqueda del sistema...',
 	'Custom ([_1])' => 'Personalizado ([_1])',
@@ -2111,7 +2111,8 @@ que la dirección provista es correcta y le pertenece.',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página',
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type necesita que JavaScript esté disponible en el navegador. Por favor, active JavaScript y recargue esta página para continuar.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Este asistente le ayudará a configurar las opciones básicas necesarias para ejecutar Movable Type.',
-	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Error: \'[_1]\' no ha sido encontrado.</strong> Por favor,mueva sus archivos estáticos al primer directorio o corrija la configuración si no es correcta.',
+	'<strong>Error(1): \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Error(1): \'[_1]\' no se pudo encontrar.</strong>  Por favor, mueva los ficheros estáticos al primer directorio o corrija la configuración si no es correcta.', # Translate - New
+	'<strong>Error(2): \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Error(2): \'[_1]\' no se pudo encontrar.</strong>  Por favor, mueva sus ficheros estátitocs al primer directorio o corrija la configuración si no es correcta.', # Translate - New
 	'Configure Static Web Path' => 'Configurar ruta del web estático',
 	'Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Type viene con un directorio nombrado [_1] el cual contiene un número de archivos importantes tales como imágenes, archivos javascript y hojas de estilo en cascadas.',
 	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => 'El directorio [_1] está en el directorio principal de Movable Type que recide en el script de instalación, pero depende de la configuración de su web server, el directorio [_1] no es accesible en este lugar y debe ser removido a un lugar de web accesible (e.g., su documento de raíz del directorio web)',
@@ -2736,7 +2737,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Save display options' => 'Guardar opciones de visualización',
 	'OK' => 'Aceptar',
 	'Close display options' => 'Cerrar opciones de visualización',
-	'This post was held for review, due to spam filtering.' => 'Esta entrada está retenida para su aprobación, debido al filtro antispam.', # Translate - New
+	'This post was held for review, due to spam filtering.' => 'Esta entrada está retenida para su aprobación, debido al filtro antispam.',
 	'This post was classified as spam.' => 'Esta entrada fue clasificada como spam.',
 	'Spam Details' => 'Detalles de spam',
 	'Score' => 'Puntuación',
@@ -3236,6 +3237,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Create widget template' => 'Crear plantilla de widget',
 	'Widget Template' => 'Plantilla de widget',
 	'Widget Templates' => 'Plantillas de widget',
+	'widget templates' => 'Plantillas de widget', # Translate - Case
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => 'Ha añadido [_1] a su agenda de direcciones.',
@@ -3782,7 +3784,7 @@ que la dirección provista es correcta y le pertenece.',
 	'New Password' => 'Nueva contraseña',
 	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'Password recovery word/phrase' => 'Palabra/frase para la recuperación de contraseña',
-	'This word or phrase is not used in the password recovery.' => 'Esta palabra o frase no se usa en la recuperación de la contraseña.', # Translate - New
+	'This word or phrase is not used in the password recovery.' => 'Esta palabra o frase no se usa en la recuperación de la contraseña.',
 	'Preferred language of this user.' => 'Idioma preferido por este usuario.',
 	'Text Format' => 'Formato de texto',
 	'Preferred text format option.' => 'Opción de formato de texto preferido.',
@@ -3850,9 +3852,14 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => 'La <a href="[_1]">última entrada</a> estaba [_2] en <a href="[_3]">[_4]</a>.',
+	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Su última entrada fue [_1] en <a href="[_2]">[_3]</a>.', # Translate - New
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'Tiene <a href="[_1]">[quant,_2,borrador,borradores]</a>.',
+	'You have [quant,_1,draft,drafts].' => 'Tiene [quant,_1,borrador,borradores].', # Translate - New
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'Usted ha escrito <a href="[_1]">[quant,_2,entrada,entradas]</a> con <a href="[_3]">[quant,_4,comentario,comentarios]</a>.',
+	'You\'ve written [quant,_1,entry,entries] with <a href="[_2]">[quant,_3,comment,comments]</a>.' => 'Ha escrito [quant,_1,entrada,entradas] con <a href="[_2]">[quant,_3,comentario,comentarios]</a>.', # Translate - New
+	'You\'ve written [quant,_1,entry,entries] with [quant,_2,comment,comments].' => 'Ha escrito [quant,_1,entrada,entradas] con [quant,_2,comentario,comentarios].', # Translate - New
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'Usted ha escrito <a href="[_1]">[quant,_2,entrada,entradas]</a>.',
+	'You\'ve written [quant,_1,entry,entries].' => 'Ha escrito [quant,_1,entrada,entradas].', # Translate - New
 	'Edit your profile' => 'Edite su perfil',
 
 ## tmpl/cms/widget/new_install.tmpl
@@ -3900,6 +3907,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Total Users' => 'Usuarios Totales',
 	'Active Users' => 'Usuarios Activos',
 	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => 'Los usuarios que se hayan identificado a lo largo de los últimos 90 días son considerados como activos según la licence Movable Type.',
+	'Memcache Status' => 'Estado de memcache', # Translate - New
+	'Server Model' => 'Modelo de servidor', # Translate - New
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly.' => 'Movable Type no ha podido encontrar el script nombrado \'mt-check.cgi\'. Para resolver este problema, asegurese de que el script mt-check.cgi script existe y/o que la configuración de los parámetros de MTCheckScript este correctamente referenciado.',
 
 ## tmpl/cms/restore.tmpl
@@ -4064,8 +4073,8 @@ que la dirección provista es correcta y le pertenece.',
 
 ## addons/Community.pack/config.yaml
 	'Community Settings' => 'Configuración de la comunidad',
-	'Pending Entries' => 'Entradas pendientes', # Translate - New
-	'Spam Entries' => 'Entradas spam', # Translate - New
+	'Pending Entries' => 'Entradas pendientes',
+	'Spam Entries' => 'Entradas spam',
 	'Following Users' => 'Usuarios que sigue',
 	'Being Followed' => 'Seguidores',
 	'Sanitize' => 'Esterilizar',
@@ -4081,8 +4090,8 @@ que la dirección provista es correcta y le pertenece.',
 	'Profile View' => 'Ver perfil',
 	'Profile Edit Form' => 'Formulario de edición del perfil',
 	'Profile Feed' => 'Sindicación del perfil',
-	'New Password Form' => 'Formulario de nueva contraseña', # Translate - New
-	'New Password Reset Form' => 'Formulario de reinicio de contraseña', # Translate - New
+	'New Password Form' => 'Formulario de nueva contraseña',
+	'New Password Reset Form' => 'Formulario de reinicio de contraseña',
 	'Form Field' => 'Campo del formulario',
 	'Status Message' => 'Mensaje de estado',
 	'Simple Header' => 'Cabecera simple',
@@ -4121,7 +4130,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Your confirmation have expired. Please register again.' => 'Su confirmación ha caducado. Por favor, regístrese de nuevo.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'El usuario \'[_1]\' (ID:[_2]) se registró con éxito.',
 	'Thanks for the confirmation.  Please sign in.' => 'Gracias por la confirmación. Por favor, inicie la sesión.',
-	'[_1] registered to Movable Type.' => '[_1] se registró en Movable Type.', # Translate - New
+	'[_1] registered to Movable Type.' => '[_1] se registró en Movable Type.',
 	'Login required' => 'Requerido inicio de sesión',
 	'Title or Content is required.' => 'El título o contenido es obligatorio.',
 	'System template entry_response not found in blog: [_1]' => 'La plantilla del sistema entry_response no se encontró en el blog: [_1]',
@@ -5290,7 +5299,6 @@ Búsqueda base: [_2]",
 	'A Movable Type theme with structured entries and action streams.' => 'Tema de Movable Type con entradas estructuradas y torrentes de acciones.',
 	'Adjusting field types for embed custom fields...' => 'Ajustando los tipos de campos para campos personalizados embebidos...',
 	'Updating favoriting namespace for Motion...' => 'Actualizando el espacio de nombres de los favoritos para Motion...',
-	'Reinstall Motion Templates' => 'Reinstalar plantillas de Motion',
 	'Motion Themes' => 'Temas de Motion',
 	'Themes for Motion template set' => 'Temas para el conjunto de plantillas Motion',
 	'Motion' => 'Motion',
@@ -5310,8 +5318,8 @@ Búsqueda base: [_2]",
 	'Profile Feed' => 'Sindicación del perfil',
 	'Login Form' => 'Formulario de inicio de sesión',
 	'Register Confirmation' => 'Confirmación de registro',
-	'Password Reset' => 'Reiniciar contraseña',
-	'New Password Form' => 'Formulario de nueva contraseña', # Translate - New
+	'New Password Reset Form' => 'Formulario de reinicio de contraseña',
+	'New Password Form' => 'Formulario de nueva contraseña',
 	'User Profile' => 'Perfil del usuario',
 	'Actions (Local)' => 'Acciones (local)',
 	'Comment Detail' => 'Detalle del comentario',
@@ -5433,7 +5441,7 @@ Búsqueda base: [_2]",
 	'Remove service' => 'Eliminar servicio',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Identifíquese</a>', # Translate - New
+	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Identifíquese</a>',
 	'Not a member? <a href="[_1]">Register</a>' => '¿No es miembro? <a href="[_1]">Registrarse</a>',
 	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(o <a href="javascript:void(0)" onclick="[_1]">identifíquese</a>)',
 	'No posting privileges.' => 'Sin privilegios de publicación.',
@@ -5451,7 +5459,7 @@ Búsqueda base: [_2]",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] comentó en [_2]',
-	'[_1] favorited [_2]' => '[_1] marcó como favorito [_2]', # Translate - New
+	'[_1] favorited [_2]' => '[_1] marcó como favorito [_2]',
 	'No recent actions.' => 'Ninguna acción reciente',
 
 ## plugins/Motion/templates/Motion/main_index.mtml
@@ -5567,7 +5575,7 @@ Búsqueda base: [_2]",
 	'Facebook Application Key' => 'Clave de la aplicación de Facebook',
 	'The key for the Facebook application associated with your blog.' => 'La clave de la aplicación de Facebook asociada con su blog.',
 	'Edit Facebook App' => 'Editar aplicación de Facebook',
-	'Create Facebook App' => 'Crear aplicación de Facebook', # Translate - New
+	'Create Facebook App' => 'Crear aplicación de Facebook',
 	'Facebook Application Secret' => 'Secreto de la aplicación de Facebook',
 	'The secret for the Facebook application associated with your blog.' => 'El secreto de la aplicación de Facebook asociada con su blog.',
 
@@ -5854,9 +5862,9 @@ Búsqueda base: [_2]",
 	'[_1] updating [_2] events for [_3]' => '[_1] actualizando [_2] eventos para [_3]',
 	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Error actualizando eventos para el torrente [_2] de [_1] (tipo [_3] ident [_4]): [_5]',
 	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'No se pudo cargar la clase [_1] del torrente [_2] [_3]: [_4]',
-	'No URL to fetch for [_1] results' => 'Sin URL para obtener resultados de [_1]', # Translate - New
-	'Could not fetch [_1]: [_2]' => 'No se pudo obtener [_1]: [_2]', # Translate - New
-	'Aborted fetching [_1]: [_2]' => 'Se abortó durante la obtención de [_1]: [_2]', # Translate - New
+	'No URL to fetch for [_1] results' => 'Sin URL para obtener resultados de [_1]',
+	'Could not fetch [_1]: [_2]' => 'No se pudo obtener [_1]: [_2]',
+	'Aborted fetching [_1]: [_2]' => 'Se abortó durante la obtención de [_1]: [_2]',
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'El usuario o el ID es obligatorio.',
@@ -5887,7 +5895,7 @@ Búsqueda base: [_2]",
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
 	'Add a profile on a social networking or instant messaging service.' => 'Añadir un perfil de una red social o servicio de mensajería instantánea.',
 	'Select a service where you already have an account.' => 'Seleccione un servicio donde ya tenga una cuenta.',
-	'Add Profile (s)' => 'Añadir perfil (s)', # Translate - New
+	'Add Profile (s)' => 'Añadir perfil (s)',
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
 	'The selected events were deleted.' => 'Se borraron los eventos seleccionados.',
@@ -5924,6 +5932,6 @@ Búsqueda base: [_2]",
 
 );
 
-## New words: 100
+## New words: 110
 
 1;
