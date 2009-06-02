@@ -6365,7 +6365,7 @@ If 'namespace' is also specified, filters the authors based on
 the score within that namespace. This specifies the maximum score
 to consider the author for inclusion.
 
-=item * min_rank
+=item * min_rate
 
 If 'namespace' is also specified, filters the authors based on
 the rank within that namespace. This specifies the minimum rank
@@ -10431,7 +10431,7 @@ If 'namespace' is also specified, filters the comments based on
 the score within that namespace. This specifies the maximum score
 to consider the comment for inclusion.
 
-=item * min_rank
+=item * min_rate
 
 If 'namespace' is also specified, filters the comments based on
 the rank within that namespace. This specifies the minimum rank
