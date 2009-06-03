@@ -24,6 +24,9 @@ sub wrap {
             $use_caching = 0 if (defined $props->{cacheable}) && (!$props->{cacheable});
         }
     }
+    elsif (!$CACHE_ENABLED) {
+        $use_caching = 0;
+    }
 
     if ( $use_caching ) {
         ## If running under mod_perl, using request->pnotes; otherwise,

@@ -361,6 +361,7 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Comment->remove;
     };
+    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     1;
