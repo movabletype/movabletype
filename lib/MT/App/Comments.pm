@@ -44,6 +44,8 @@ sub init {
         recover          => \&recover,
         new_pw           => \&new_pw,
 
+        comment_block    => \&comment_block,
+
         # deprecated
         cmtr_name_js   => \&commenter_name_js,
         cmtr_status_js => \&commenter_status_js,
@@ -1472,6 +1474,61 @@ sub session_js {
     $app->print( "$jsonp(" . $json . ");\n" );
     return undef;
 }
+
+sub comment_block {
+    my ($app) = shift;
+    $app->{no_print_body} = 1;
+    $app->response_code(200);
+    $app->response_message('OK');
+    $app->send_http_header('text/javascript');
+
+    require MT::Entry;
+    require MT::Comment;
+    require MT::Template;
+    require MT::Template::Context;
+
+    my $entry_id = $app->param('entry_id');
+    return '1;' if ( !$entry_id );
+    my $entry = MT::Entry->load($entry_id);
+    return '1;' if ( !$entry );
+    my $offset = $app->param('offset');
+    $offset ||= 0;
+
+    if ( $offset !~ /^\d+$/ ) {
+        $offset = 0;
+    }
+    my $limit = $app->param('limit');
+    $limit ||= 100;
+    if ( $limit !~ /^\d+$/ ) {
+        $limit = 100;
+    }
+    my $direction = 'ascend';
+    if ( $app->param('direction') eq 'descend' ) {
+        $direction = 'descend';
+    }
+    my $method = $app->param('method');
+    $method ||= 'displayComments';
+    my $tmpl = MT::Template->load(
+        {   name    => 'Comment Block',
+            blog_id => $entry->blog_id
+        }
+    );
+    return '1;' if ( !$tmpl );
+    my $total = MT::Comment->count( { entry_id => $entry_id, visible => 1 } );
+    my @comments = MT::Comment->load( { entry_id => $entry_id, visible => 1 },
+        { limit => $limit, offset => $offset, direction => $direction } );
+    my $ctx = MT::Template::Context->new;
+    $ctx->stash( 'entry',    $entry );
+    $ctx->stash( 'entry_id', $entry->id );
+    $ctx->stash( 'comments', \@comments );
+    $ctx->var( 'commentTotal',     $total );
+    $ctx->var( 'commentLimit',     $limit );
+    $ctx->var( 'commentOffset',    $offset );
+    $ctx->var( 'commentDirection', $direction );
+    $app->print( $tmpl->build($ctx) );
+    return 1;
+}
+
 
 # deprecated
 sub _commenter_status {
