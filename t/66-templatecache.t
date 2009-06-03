@@ -15,6 +15,7 @@ use MT::Entry;
 use MT::Template;
 use MT::Template::Context;
 use MT::Test qw(:db :data);
+use MT::Util qw(offset_time_list);
 
 my $mt = MT->new or die MT->errstr;
 
@@ -35,18 +36,21 @@ $include->save;
 my $tmpl = MT::Template->new;
 $tmpl->blog_id($blog->id);
 $tmpl->text('<mt:include module="Included Template">');
-
 my $ctx = MT::Template::Context->new;
-
 my $out1 = $tmpl->build($ctx, {});
-is($out1, "hello", "Test template successfully built");
+ok($out1 eq "hello", "Test template successfully built");
 
-$tmpl->text('<mt:include module="Included Template"> yay');
-$tmpl->save;
-
+my @ts = offset_time_list(time, $blog->id);
+my $ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+MT::Request->instance->reset;
+$include->text('hello yay');
+$include->modified_on($ts);
+$include->save;
+MT::Touch->touch($blog->id, 'entry');
 my $out2 = $tmpl->build($ctx, {});
-is($out2, "hello", "Test template should be the same");
+ok($out2 eq "hello", "Test template should be the same");
 
+MT::Request->instance->reset;
 my $entry = MT::Entry->new;
 $entry->text("Hello");
 $entry->blog_id($blog->id);
@@ -54,8 +58,12 @@ $entry->status(MT::Entry::RELEASE());
 $entry->title("Hello");
 $entry->author_id(2);
 $entry->save;
-
+MT::Touch->touch($blog->id, 'template');
+MT::Touch->touch($blog->id, 'entry');
+@ts = offset_time_list(time, $blog->id);
+$ts = sprintf '%04d%02d%02d%02d%02d%02d', $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
+$tmpl->modified_on($ts);
+$tmpl->save;
 $mt->rebuild( BlogId => $blog->id, Force  => 1 ) || print "Rebuild error: ", $mt->errstr;
-
 my $out3 = $tmpl->build($ctx, {});
-is($out3, "hello yay", "Test template should be the same");
+ok($out3 ne "hello yay", "Test template should be different");
