@@ -34,6 +34,23 @@ sub BEGIN {
         if $orig_dir && ($orig_dir ne $dir);
 }
 
+my $fcgi_exit_requested = 0;
+my $fcgi_handling_request = 0;
+
+sub fcgi_sig_handler {
+    my $sig = shift;
+    $fcgi_exit_requested = $sig;
+    if ($fcgi_handling_request) {
+        # With exit requested flag set, FastCGI loop will exit when it is done.
+        print STDERR "Movable Type: SIG$sig caught. Exiting gracefully after current request.\n";
+    }
+    else {
+        # Not currently handling a request, so just go ahead and exit.
+        print STDERR "Movable Type: SIG$sig caught. Exiting gracefully.\n";
+        exit(1);
+    }
+}
+
 sub import {
     my ($pkg, %param) = @_;
 
@@ -47,11 +64,11 @@ sub import {
         my $not_fast_cgi = 0;
         $not_fast_cgi ||= exists $ENV{$_}
             for qw(HTTP_HOST GATEWAY_INTERFACE SCRIPT_FILENAME SCRIPT_URL);
-         my $fast_cgi = defined $param{FastCGI} ? $param{FastCGI} : (!$not_fast_cgi);
-         if ($fast_cgi) {
-             eval 'require CGI::Fast;';
-             $fast_cgi = 0 if $@;
-         }
+        my $fast_cgi = defined $param{FastCGI} ? $param{FastCGI} : (!$not_fast_cgi);
+        if ($fast_cgi) {
+            eval 'require CGI::Fast;';
+            $fast_cgi = 0 if $@;
+        }
 
         # ready to run now... run inside an eval block so we can gracefully
         # die if something bad happens
@@ -62,8 +79,21 @@ sub import {
             eval "# line " . __LINE__ . " " . __FILE__ . "\nrequire $class; 1;" or die $@;
             if ($fast_cgi) {
                 $ENV{FAST_CGI} = 1;
+                # Signal handling needs FAIL_ACCEPT_ON_INTR set:
+                # "If set, Accept will fail if interrupted. It not set, it
+                # will just keep on waiting."
+                require FCGI;
+                $CGI::Fast::Ext_Request = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, \%ENV, 0, FCGI::FAIL_ACCEPT_ON_INTR());
                 my ($max_requests, $max_time, $cfg);
-                while (my $cgi = new CGI::Fast) {
+                # catch SIGUSR1 and SIGTERM and allow request to finish before
+                # exiting.
+                # TODO: handle SIGPIPE more gracefully.
+                $SIG{USR1} = \&fcgi_sig_handler;
+                $SIG{TERM} = \&fcgi_sig_handler;
+                $SIG{PIPE} = 'IGNORE';
+                # we set the "handling request" flag so the signal handler can exit
+                # immediately when requests aren't being handled.
+                while ($fcgi_handling_request = (my $cgi = new CGI::Fast)) {
                     $app = $class->new( %param, CGIObject => $cgi )
                         or die $class->errstr;
 
@@ -80,13 +110,21 @@ sub import {
                     MT->set_instance($app);
                     $app->init_request(CGIObject => $cgi);
                     $app->run;
+                    # force closing of connection here
+                    $CGI::Fast::Ext_Request->Finish();
 
+                    $fcgi_handling_request = 0;
+                    # Check for caught signal
+                    if ( $fcgi_exit_requested ) {
+                        print STDERR "Movable Type: FastCGI request loop exiting. Caught signal SIG$fcgi_exit_requested.\n";
+                        last;
+                    }
                     # Check for timeout for this process
-                    if ( $max_time && ( time - $app->{fcgi_startup_time} >= $max_time ) ) {
+                    elsif ( $max_time && ( time - $app->{fcgi_startup_time} >= $max_time ) ) {
                         last;
                     }
                     # Check for max executions for this process
-                    if ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
+                    elsif ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
                         last;
                     }
                 }
