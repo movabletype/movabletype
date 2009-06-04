@@ -96,7 +96,7 @@ sub init_request {
         my $val = $q->param($param);
         next unless defined $val && ($val ne '');
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if $val !~ m/^(\d+,?)+$/;
+            if ($val !~ m/^(\d+,?)+$/ && $val ne 'all');
     }
 
     my $params = $app->registry( $app->mode, 'params' );
@@ -220,6 +220,13 @@ sub create_blog_list {
     }
 
     my %blog_list;
+     
+    ## If IncludeBlogs is all, then set IncludeBlogs to ""
+    ## this will get all the blogs by default later on 
+    if ($q->param('IncludeBlogs') eq 'all') {
+        $q->param('IncludeBlogs', '');
+    }
+    
     ## Combine user-selected included/excluded blogs
     ## with config file settings.
     for my $type (qw( IncludeBlogs ExcludeBlogs )) {
