@@ -44,7 +44,7 @@ sub init {
         recover          => \&recover,
         new_pw           => \&new_pw,
 
-        comment_block    => \&comment_block,
+        comment_listing    => \&comment_listing,
 
         # deprecated
         cmtr_name_js   => \&commenter_name_js,
@@ -1475,7 +1475,7 @@ sub session_js {
     return undef;
 }
 
-sub comment_block {
+sub comment_listing {
     my ($app) = shift;
     $app->{no_print_body} = 1;
     $app->response_code(200);
@@ -1509,7 +1509,7 @@ sub comment_block {
     my $method = $app->param('method');
     $method ||= 'displayComments';
     my $tmpl = MT::Template->load(
-        {   name    => 'Comment Block',
+        {   name    => 'Comment Listing (Dynamic)',
             blog_id => $entry->blog_id
         }
     );
