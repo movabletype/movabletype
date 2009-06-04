@@ -98,6 +98,10 @@ BEGIN {
             },
         },
         'system' => {
+        	'comment_listing_dynamic' => {
+        		label => 'Comment Listing (Dynamic)',
+        		description_label => 'Improved listing of comments.'
+        	},
             'comment_response' => {
                 label => 'Comment Response',
                 description_label => 'Displays error, pending or confirmation message for comments.'
