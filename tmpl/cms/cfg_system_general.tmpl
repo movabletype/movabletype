@@ -61,4 +61,32 @@ function validate (f) {
 
 </form>
 
+<br><br>
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<input type="hidden" name="__mode" value="cfg_system" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<fieldset>
+    <mtapp:setting
+        id="to_email_address"
+        label="<__trans phrase="Send Email To">"
+        hint="<__trans phrase="The email address where you want to send test email to.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="to_email_address" name="to_email_address" class="full-width" />
+        </div>
+    </mt:app:setting>
+</fieldset>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="primary-button"
+        ><__trans phrase="Send Test Email"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
 <mt:include name="include/footer.tmpl">
