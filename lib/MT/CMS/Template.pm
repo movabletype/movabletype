@@ -2089,8 +2089,14 @@ sub publish_index_templates {
             $perms->can_rebuild;
 
     my $blog = $app->blog;
+    
+    require MT::Blog;
     my $templates = MT->model('template')->lookup_multi([ $app->param('id') ]);
     TEMPLATE: for my $tmpl (@$templates) {
+    	return $app->errtrans("Cannot publish a global template.") if ($tmpl->id == 0);
+    	unless ($blog) {
+            $blog = MT::Blog->load($tmpl->blog_id);
+        }
         next TEMPLATE if !defined $tmpl;
         next TEMPLATE if $tmpl->blog_id != $blog->id;
         next TEMPLATE unless $tmpl->build_type;
