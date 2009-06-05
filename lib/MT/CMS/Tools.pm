@@ -407,6 +407,25 @@ sub cfg_system_general {
             delete $param{new_user_template_blog_id};
         }
     }
+    
+    if ($app->param('to_email_address')) {
+        return $app->errtrans("Please enter a valid email address") 
+          unless (MT::Util::is_valid_email($app->param('to_email_address')));
+       
+        my %head = (
+            To => $app->param('to_email_address'),
+            From => $cfg->EmailAddressMain,
+            Subject => $app->translate("Test email from Movable Type")
+        );
+
+        my $body = $app->translate(
+            "This is the test email sent by your installation of Movable Type."
+        );
+
+        require MT::Mail;
+        MT::Mail->send( \%head, $body ) or die("Email was not sent properly.");
+    }
+    
     $param{system_email_address} = $cfg->EmailAddressMain;
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
