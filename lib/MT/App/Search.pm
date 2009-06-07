@@ -526,8 +526,16 @@ sub first_blog_id {
 
     my $blog_id;
     if ( $q->param('IncludeBlogs') ) {
-        my @ids = split ',', $q->param('IncludeBlogs');
-        $blog_id = $ids[0];
+        # if IncludeBlogs is empty or all, get the first blog id available
+        if ( $q->param('IncludeBlogs') eq '' || $q->param('IncludeBlogs') eq 'all') {
+            my @blogs = $app->model('blog')->load();
+            $blog_id = $blogs[0];
+        }
+        # all other normal requests with a list of blog ids
+        else {
+            my @ids = split ',', $q->param('IncludeBlogs');
+            $blog_id = $ids[0];
+        }
     }
     elsif ( exists( $app->{searchparam}{IncludeBlogs} )
         && keys( %{ $app->{searchparam}{IncludeBlogs} } ) )
@@ -570,7 +578,7 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
-    my $blog_id = $app->first_blog_id();
+    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
