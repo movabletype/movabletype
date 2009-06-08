@@ -5929,6 +5929,7 @@ Suchbasis: [_2]",
 	'Rebuild Indexes' => 'Indizes neu aufbauen',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Falls aktiviert, werden die Indizes dieses Blogs neu aufgebaut, wenn neue Action Stream-Ereignisse eintreffen',
 	'Enable rebuilding' => 'Neuaufbau aktivieren',
+	'Clone of [_1]' => 'Klon von [_1]', # Translate - New
 
 );
 

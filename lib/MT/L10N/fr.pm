@@ -5930,6 +5930,7 @@ Base de recherche : [_2]",
 	'Rebuild Indexes' => 'Republier les index',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si sélectionner, les index des blogs seront republiés lorsque de nouveaux événements du flux d\'activité seront découverts.',
 	'Enable rebuilding' => 'Activer la republication',
+	'Clone of [_1]' => 'Clone de [_1]', # Translate - New
 
 );
 
