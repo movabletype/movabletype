@@ -5929,6 +5929,7 @@ Zoekbasis: [_2]",
 	'Rebuild Indexes' => 'Indexen herpubliceren',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Indien geselecteerd zullen de indexen van deze blog opnieuw worden gepubliceerd telkens nieuwe action stream gebeurtenissen worden ontdekt.',
 	'Enable rebuilding' => 'Herpubliceren toestaan',
+	'Clone of [_1]' => 'Kloon van [_1]', # Translate - New
 
 );
 

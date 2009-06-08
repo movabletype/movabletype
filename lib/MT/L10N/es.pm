@@ -5928,6 +5928,7 @@ Búsqueda base: [_2]",
 	'Rebuild Indexes' => 'Reconstruir índices',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si se selecciona, los índices de este blog se reconstruirán al descubrir nuevos eventos de los torrentes de acciones.',
 	'Enable rebuilding' => 'Activar reconstrucción',
+	'Clone of [_1]' => 'Clon de [_1]', # Translate - New
 
 );
 
