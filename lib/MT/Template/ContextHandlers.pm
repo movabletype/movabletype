@@ -20125,7 +20125,9 @@ sub _hdlr_widget_manager {
     require MT::Template;
     my $tmpl = MT::Template->load({ name => $tmpl_name,
                                     blog_id => $blog_id ? [ 0, $blog_id ] : 0,
-                                    type => 'widgetset' })
+                                    type => 'widgetset' },
+                                  { sort => 'blog_id',
+                                    direction => 'descend' })
         or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
     my $text = $tmpl->text;
     return $ctx->build($text) if $text;
