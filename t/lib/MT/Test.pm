@@ -7,7 +7,7 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT =
-  qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks );
+  qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks );
 
 use strict;
 
@@ -285,6 +285,21 @@ sub init_memcached {
             $MEMCACHED_FAKE->{$key} = 0;
         }
     };
+    *MT::Memcached::inflate = sub {
+		my $driver = shift;
+		my($class, $data) = @_;
+		$class->inflate($data);
+    };
+    *MT::Memcached::deflate = sub {
+		my $driver = shift;
+		my($obj) = @_;
+		$obj->deflate;
+    };
+    # make sure things will pull from Memcached instead of RAM
+    eval {
+    	require MT::ObjectDriver::Driver::Cache::RAM;
+	    MT::ObjectDriver::Driver::Cache::RAM->Disabled(1);
+	};
 }
 
 sub init_newdb {
@@ -1492,6 +1507,12 @@ sub tmpl_out_like {
     my ( $text, $param, $ctx_h, $re, $name ) = @_;
 
     return like( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
+}
+
+sub tmpl_out_unlike {
+    my ( $text, $param, $ctx_h, $re, $name ) = @_;
+
+    return unlike( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
 }
 
 sub _run_rpt {
