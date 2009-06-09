@@ -4,11 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 9;
-
-BEGIN {
-        $ENV{MT_APP} = 'MT::App::Search';
-}
+use Test::More tests => 8;
 
 use MT;
 use MT::Author;
@@ -20,7 +16,7 @@ use MT::Role;
 use MT::Tag;
 use MT::Template;
 use MT::Template::Context;
-use MT::Test qw( :app :db :data );
+use MT::Test qw( :db :data );
 
 # Adding another blog since MT::Test only creates one blog
 my $blog = MT::Blog->new();
@@ -145,9 +141,5 @@ $tmpl->blog_id ('1');
 $tmpl->text ('<mt:Tags include_blogs="all"><mt:TagName>, </mt:Tags>');
 ok ($tmpl->output, "Template tag works correctly: " . $tmpl->output);
 
-# test for IncludeBlogs=all in searches
-my $app = _run_app( 'MT::App::Search', { search => "drizzly", IncludeBlogs => "all" } );
-my $good_out = delete $app->{__test_output};
-ok ($good_out, "Data is present: $good_out");
 
 
