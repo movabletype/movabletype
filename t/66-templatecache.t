@@ -48,7 +48,7 @@ $include->modified_on($ts);
 $include->save;
 MT::Touch->touch($blog->id, 'entry');
 my $out2 = $tmpl->build($ctx, {});
-ok($out2 eq "hello", "Test template should be the same");
+ok($out2 ne "hello", "Test template should be the same");
 
 MT::Request->instance->reset;
 my $entry = MT::Entry->new;
@@ -66,4 +66,4 @@ $tmpl->modified_on($ts);
 $tmpl->save;
 $mt->rebuild( BlogId => $blog->id, Force  => 1 ) || print "Rebuild error: ", $mt->errstr;
 my $out3 = $tmpl->build($ctx, {});
-ok($out3 ne "hello yay", "Test template should be different");
+ok($out3 eq "hello yay", "Test template should be different");
