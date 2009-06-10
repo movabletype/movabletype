@@ -5229,6 +5229,7 @@ sub _hdlr_file_template {
         'x' => "<MTBlogFileExtension>",
         'y' => "<MTArchiveDate format='%Y'>",  # year
         'Y' => "<MTArchiveDate format='%y'>",  # 2-digit year
+        'p' => "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>", # current page number
     );
     $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
     # now build this template and return result
