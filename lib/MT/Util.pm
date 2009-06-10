@@ -31,7 +31,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
 my $Has_Weaken;
 sub weaken {
     no warnings;
-    my $disable_cache = MT->config->DisableObjectCache;
+    my $disable_cache = MT->instance->config('DisableObjectCache');
 
     return if $disable_cache;
     if (!$disable_cache && UNIVERSAL::isa($_[0], 'MT::Object')) {
