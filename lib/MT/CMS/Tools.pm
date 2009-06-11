@@ -409,6 +409,8 @@ sub cfg_system_general {
     }
     
     if ($app->param('to_email_address')) {
+    	return $app->errtrans("You don't have a system email address configured.  Please set this first, save it, then try the test email again.")
+    	  unless ($cfg->EmailAddressMain);
         return $app->errtrans("Please enter a valid email address") 
           unless (MT::Util::is_valid_email($app->param('to_email_address')));
        
