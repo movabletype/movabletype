@@ -6589,7 +6589,7 @@ sub _hdlr_authors {
         }
         push @authors, $author;
         $count++;
-        if ($n && ($count > $n)) {
+        if ($n && ($count >= $n)) {
             $iter->end;
             last;
         }
