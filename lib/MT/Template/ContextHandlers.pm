@@ -6300,9 +6300,14 @@ B<Attributes:>
 
 =over 4
 
-=item * display_name
+=item * user_id
 
-Specifies a particular author to select.
+Specifies a particular author to select by unique id number. This attribute
+takes precedence over all others.
+
+=item * username
+
+Specifies a particular author to select by unique username.
 
 =item * lastn
 
@@ -6421,10 +6426,16 @@ sub _hdlr_authors {
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
     my (@filters, %terms, %args);
-
-    if ($args->{display_name}) {
-        $terms{nickname} = $args->{display_name};
+    
+    if (defined $args->{username} || defined $args->{user_id}) {
+      if(my $user_id = $args->{user_id}) {
+        return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
+        $terms{id} = $args->{user_id};
+      } else {
+        $terms{name} = $args->{username};
+      }
     }
+    
     if (my $status_arg = $args->{status} || 'enabled') {
         if ($status_arg !~ m/\b(OR)\b|\(|\)/i) {
             my @status = MT::Tag->split(',', $status_arg);
@@ -6464,7 +6475,7 @@ sub _hdlr_authors {
         }
     }
 
-    if (defined $args->{need_entry} ? $args->{need_entry} : 1) {
+    if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{user_id} || defined $args->{username})) {
         $blog_args{'unique'} = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
         $args{'join'} = MT::Entry->join_on('author_id',
@@ -6575,12 +6586,13 @@ sub _hdlr_authors {
     } else{
         $args{'direction'} = $args->{sort_order} || 'ascend';
     }
-
+    
+    my @authors;
     my $iter = MT::Author->load_iter(\%terms, \%args);
     my $count = 0;
     my $next = $iter->();
     my $n = $args->{lastn};
-    my @authors;
+    
     AUTHOR: while ($next) {
         my $author = $next;
         $next = $iter->();
@@ -6594,7 +6606,7 @@ sub _hdlr_authors {
             last;
         }
     }
-
+    
     if ($re_sort && (scalar @authors)) {
         my $col = $args->{sort_by};
         my $namespace = $args->{'namespace'};
