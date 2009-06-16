@@ -352,7 +352,7 @@
 { "r" : "1", "t" : "<MTAuthors sort_by='nickname'><MTAuthorDisplayName>;</MTAuthors>", "e" : "Chucky Dee;Dylan;"}, #349
 { "r" : "1", "t" : "<MTAuthors sort_by='email'><MTAuthorEmail>;</MTAuthors>", "e" : "bobd@example.com;chuckd@example.com;"}, #350
 { "r" : "1", "t" : "<MTAuthors sort_by='url'><MTAuthorURL>;</MTAuthors>", "e" : ";http://chuckd.com/;"}, #351
-{ "r" : "1", "t" : "<MTAuthors display_name=\"Chucky Dee\"><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #352
+{ "r" : "1", "t" : "<MTAuthors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</MTAuthors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #352
 { "r" : "0", "t" : "<MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>", "e" : "Watching the River Flow" }, #353
 { "r" : "1", "t" : "<MTAuthors sort_by='display_name' sort_order='descend'><MTAuthorID>;</MTAuthors>", "e" : "3;2;"}, #354
 { "r" : "1", "t" : "<MTArchives><MTArchiveLabel></MTArchives>", "e" : "EntryMonthlyWeeklyDailyCategoryPage"}, #355
@@ -426,5 +426,8 @@
 { "r" : "1", "t" : "<mt:var name='foo1' value='foo-1'><mt:var name='foo2' value='foo-2'><mt:if name='foo1' eq='abc'>incorrect-1<mt:else eq='def'>incorrect-2<mt:else eq='foo-1'>CORRECT-1<mt:if name='foo2' eq='ghi'>incorrect-3<mt:else eq='foo-2'>CORRECT-2<mt:else>incorrect-4</mt:if><mt:else eq='foo-2'>incorrect-5<mt:else>incorrect-6</mt:if>", "e" : "CORRECT-1CORRECT-2"}, #423
 { "r" : "1", "t" : "<mt:entries limit='1'><mt:EntryTitle></mt:Entries>", "e" : "A Rainy Day" }, #424
 { "r" : "1", "t" : "<mt:entries category='NOT foo'><mt:EntryTitle>;</mt:Entries>", "e" : "A Rainy Day;Verse 5;Verse 4;Verse 2;Verse 1;" }, #425
-{ "r" : "1", "t" : "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>", "e" : "Verse 5" } #426
+{ "r" : "1", "t" : "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>", "e" : "Verse 5" }, #426
+{ "r" : "1", "t" : "<mt:authors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #427
+{ "r" : "1", "t" : "<mt:authors user_id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #428
+{ "r" : "1", "t" : "<mt:authors user_id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"} #429
 ]
