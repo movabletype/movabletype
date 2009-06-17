@@ -58,7 +58,7 @@ __PACKAGE__->install_properties({
         modified_on => 1,
         # For lookups 
         comment_count => 1,
-		# TODO: Figure out how we benefit from this (from Percona-Advance recommendation)
+
         auth_stat_class => {
             columns => [ 'author_id', 'status', 'class' ],
         },
@@ -90,8 +90,7 @@ __PACKAGE__->install_properties({
         blog_stat_date => {
             columns => ['blog_id', 'class', 'status', 'authored_on', 'id'],
         },
-		# TODO: Figure out how we benefit from this (from Percona-Advance recommendation)
-		# TODO: Figure out why this looks surprisingly like tag_count
+		
 		dd_entry_tag_count => {
 			columns => ['blog_id', 'status', 'class', 'id'],
 		},
