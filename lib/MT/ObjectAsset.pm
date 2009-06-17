@@ -23,7 +23,7 @@ __PACKAGE__->install_properties({
         blog_obj => {
             columns => ['blog_id', 'object_ds', 'object_id'],
         },
-		# TODO: Figure out how we benefit from this (from Percona-Advance recommendation)
+		
 		id_ds => {
 			columns => ['object_id', 'object_ds'],
 		},
