@@ -428,6 +428,6 @@
 { "r" : "1", "t" : "<mt:entries category='NOT foo'><mt:EntryTitle>;</mt:Entries>", "e" : "A Rainy Day;Verse 5;Verse 4;Verse 2;Verse 1;" }, #425
 { "r" : "1", "t" : "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>", "e" : "Verse 5" }, #426
 { "r" : "1", "t" : "<mt:authors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #427
-{ "r" : "1", "t" : "<mt:authors user_id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #428
-{ "r" : "1", "t" : "<mt:authors user_id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"} #429
+{ "r" : "1", "t" : "<mt:authors id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #428
+{ "r" : "1", "t" : "<mt:authors id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"} #429
 ]
