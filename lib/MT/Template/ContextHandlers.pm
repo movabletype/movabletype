@@ -6300,7 +6300,7 @@ B<Attributes:>
 
 =over 4
 
-=item * user_id
+=item * id
 
 Specifies a particular author to select by unique id number. This attribute
 takes precedence over all others.
@@ -6427,10 +6427,10 @@ sub _hdlr_authors {
         or return $ctx->error($ctx->errstr);
     my (@filters, %terms, %args);
     
-    if (defined $args->{username} || defined $args->{user_id}) {
-      if(my $user_id = $args->{user_id}) {
+    if (defined $args->{username} || defined $args->{id}) {
+      if(my $user_id = $args->{id}) {
         return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
-        $terms{id} = $args->{user_id};
+        $terms{id} = $args->{id};
       } else {
         $terms{name} = $args->{username};
       }
@@ -6475,7 +6475,7 @@ sub _hdlr_authors {
         }
     }
 
-    if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{user_id} || defined $args->{username})) {
+    if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{id} || defined $args->{username})) {
         $blog_args{'unique'} = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
         $args{'join'} = MT::Entry->join_on('author_id',
