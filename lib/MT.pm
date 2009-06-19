@@ -544,7 +544,7 @@ sub add_plugin {
         if ( my $settings = $plugin->{registry}{config_settings} ) {
             $settings = $plugin->{registry}{config_settings} = $settings->()
               if ref($settings) eq 'CODE';
-            $class->config->define($settings);
+            $class->config->define($settings) if $settings;
         }
     }
     push @Components, $plugin;
@@ -827,16 +827,20 @@ sub init_config {
     my $mt = shift;
     my ($param) = @_;
 
-    my $cfg_file = $mt->find_config($param);
-    return $mt->error(
-"Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
-    ) unless $cfg_file;
-    $cfg_file = File::Spec->rel2abs($cfg_file);
+    unless ($mt->{cfg_file}) {
+        my $cfg_file = $mt->find_config($param);
+
+        return $mt->error(
+            "Missing configuration file. Maybe you forgot to move mt-config.cgi-original to mt-config.cgi?"
+        ) unless $cfg_file;
+        $cfg_file = File::Spec->rel2abs($cfg_file);
+        $mt->{cfg_file} = $cfg_file;
+    }
 
     # translate the config file's location to an absolute path, so we
     # can use that directory as a basis for calculating other relative
     # paths found in the config file.
-    my $config_dir = $mt->{config_dir} = dirname($cfg_file);
+    my $config_dir = $mt->{config_dir} = dirname($mt->{cfg_file});
 
     # store the mt_dir (home) as an absolute path; fallback to the config
     # directory if it isn't set.
@@ -849,21 +853,22 @@ sub init_config {
     # also make note of the active application path; this is derived by
     # checking the PWD environment variable, the dirname of $0,
     # the directory of SCRIPT_FILENAME and lastly, falls back to mt_dir
-    $mt->{app_dir} = $ENV{PWD} || "";
-    $mt->{app_dir} = dirname($0)
-      if !$mt->{app_dir}
-      || !File::Spec->file_name_is_absolute( $mt->{app_dir} );
-    $mt->{app_dir} = dirname( $ENV{SCRIPT_FILENAME} )
-      if $ENV{SCRIPT_FILENAME}
-      && ( !$mt->{app_dir}
-        || ( !File::Spec->file_name_is_absolute( $mt->{app_dir} ) ) );
-    $mt->{app_dir} ||= $mt->{mt_dir};
-    $mt->{app_dir} = File::Spec->rel2abs( $mt->{app_dir} );
+    unless ($mt->{app_dir}) {
+        $mt->{app_dir} = $ENV{PWD} || "";
+        $mt->{app_dir} = dirname($0)
+          if !$mt->{app_dir}
+          || !File::Spec->file_name_is_absolute( $mt->{app_dir} );
+        $mt->{app_dir} = dirname( $ENV{SCRIPT_FILENAME} )
+          if $ENV{SCRIPT_FILENAME}
+          && ( !$mt->{app_dir}
+            || ( !File::Spec->file_name_is_absolute( $mt->{app_dir} ) ) );
+        $mt->{app_dir} ||= $mt->{mt_dir};
+        $mt->{app_dir} = File::Spec->rel2abs( $mt->{app_dir} );
+    }
 
     my $cfg = $mt->config;
     $cfg->define( $mt->registry('config_settings') );
-    $cfg->read_config($cfg_file) or return $mt->error( $cfg->errstr );
-    $mt->{cfg_file} = $cfg_file;
+    $cfg->read_config($mt->{cfg_file}) or return $mt->error( $cfg->errstr );
 
     my @mt_paths = $cfg->paths;
     for my $meth (@mt_paths) {
@@ -880,6 +885,7 @@ sub init_config {
                 $cfg->$meth( \@paths );
             }
             else {
+                next if ref($path); # unexpected referene, ignore
                 if ( !File::Spec->file_name_is_absolute($path) ) {
                     $path = File::Spec->catfile( $config_dir, $path );
                     $cfg->$meth($path);
@@ -1053,10 +1059,17 @@ sub init_config_from_db {
     my $mt = shift;
     my ($param) = @_;
     my $cfg = $mt->config;
-    $cfg->read_config_db();
 
     # Tell any instantiated drivers to reconfigure themselves as necessary
-    MT::ObjectDriverFactory->configure;
+    require MT::ObjectDriverFactory;
+    if (MT->config('ObjectDriver')) {
+        my $driver = MT::ObjectDriverFactory->instance;
+        $driver->configure if $driver;
+    } else {
+        MT::ObjectDriverFactory->configure();
+    }
+
+    $cfg->read_config_db();
 
     1;
 }
@@ -1196,7 +1209,7 @@ sub init {
     $mt->init_config( \%param ) or return;
     $mt->init_lang_defaults(@_) or return;
     require MT::Plugin;
-    $mt->init_addons(@_)       or return;
+    $mt->init_addons(@_)        or return;
     $mt->init_config_from_db( \%param ) or return;
     $mt->init_plugins(@_)       or return;
     $plugins_installed = 1;
@@ -1404,6 +1417,7 @@ sub _init_plugins_core {
                             $Plugins{$plugin_dir}{enabled} = 0;
                             next;
                         }
+                        next if exists $Plugins{$plugin_dir};
                         my $id = lc $plugin_dir;
                         $id =~ s/\.\w+$//;
                         my $p = $pclass->new(
@@ -1417,8 +1431,7 @@ sub _init_plugins_core {
                         # rebless? based on config?
                         local $plugin_sig = $plugin_dir;
                         MT->add_plugin($p);
-                        $p->init_callbacks()
-                            if $pclass eq 'MT::Plugin';
+                        $p->init_callbacks();
                         next;
                     }
 
@@ -2295,6 +2308,7 @@ sub new_ua {
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
     my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout || $cfg->PingTimeout;
     my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy || $cfg->PingProxy;
+    my $sec_proxy = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy || $cfg->PingNoProxy;
     my $agent = $opt->{agent} || 'MovableType/' . $MT::VERSION;
     my $interface = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface || $cfg->PingInterface;
@@ -2314,6 +2328,9 @@ sub new_ua {
         $ua->proxy( http => $proxy );
         my @domains = split( /,\s*/, $no_proxy ) if $no_proxy;
         $ua->no_proxy(@domains) if @domains;
+    }
+    if ( defined $sec_proxy ) {
+        $ua->proxy ( https => $sec_proxy );
     }
     return $ua;
 }
@@ -3046,11 +3063,7 @@ sub refresh_cache {
     $cache_driver->flush_all();
 }
 
-sub DESTROY {
-    # save_config here so not to miss any dirty config change to persist
-    # particulary for those which does not construct MT::App.
-    $_[0]->config->save_config();
-}
+sub DESTROY { }
 
 1;
 
