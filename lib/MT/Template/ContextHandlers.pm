@@ -1,6 +1,6 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
-# This program is distributed under the terms of the
-# GNU General Public License, version 2.
+# Movable Type (r) (C) 2001-2009 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
 #
 # $Id$
 
@@ -6398,7 +6398,7 @@ If 'namespace' is also specified, filters the authors based on
 the score within that namespace. This specifies the maximum score
 to consider the author for inclusion.
 
-=item * min_rank
+=item * min_rate
 
 If 'namespace' is also specified, filters the authors based on
 the rank within that namespace. This specifies the minimum rank
@@ -8073,13 +8073,7 @@ sub _hdlr_entries {
                 }
                 $cexpr = $ctx->compile_category_filter($category_arg, $cats);
             } else {
-                my @cats;
-                my @args_cat = split /\s*\b(?:AND|OR|NOT)\b\s|[\s*(?:|&)\s*]/i, $category_arg;
-                @args_cat = grep { $_ } @args_cat;
-                for my $c (@args_cat) {
-                    my @categories = cat_path_to_category($c, [ \%blog_terms, \%blog_args ], $cat_class_type);
-                    push @cats, @categories;
-                }
+                my @cats = $cat_class->load(\%blog_terms, \%blog_args);
                 if (@cats) {
                     $cats = \@cats;
                     $cexpr = $ctx->compile_category_filter($category_arg, $cats,
@@ -10508,7 +10502,7 @@ If 'namespace' is also specified, filters the comments based on
 the score within that namespace. This specifies the maximum score
 to consider the comment for inclusion.
 
-=item * min_rank
+=item * min_rate
 
 If 'namespace' is also specified, filters the comments based on
 the rank within that namespace. This specifies the minimum rank
@@ -12662,7 +12656,7 @@ sub _hdlr_archives {
     return '' unless $archiver;
 
     my $save_stamps;
-    if ($ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
+    if (!$ctx->{inside_archive_list} || $ctx->{current_archive_type} && $arg_at && ($ctx->{current_archive_type} eq $arg_at)) {
         $save_stamps = 1;
     }
 

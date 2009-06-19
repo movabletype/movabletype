@@ -124,6 +124,24 @@ sub this_is_you_widget {
         $param->{comment_count} = $count;
     }
 
+    require MT::Permission;
+    my @perm = MT::Permission->load(
+        { author_id => $app->user->id } );
+    my @blogs
+        = map { $_->blog_id }
+        grep {
+        $_->can_create_post
+            || $_->can_publish_post
+            || $_->can_edit_all_posts
+        } @perm;
+    $param->{can_list_entries} = @blogs ? 1: 0;
+    @blogs
+        = map { $_->blog_id }
+        grep {
+            $_->can_view_feedback
+        } @perm;
+    $param->{can_list_comments} = @blogs ? 1 : 0;
+
     my $last_post = MT::Entry->load(
         {
             author_id => $user->id,
@@ -140,6 +158,10 @@ sub this_is_you_widget {
         $param->{last_post_blog_id} = $last_post->blog_id;
         $param->{last_post_blog_name} = encode_html($last_post->blog->name);
         $param->{last_post_ts}      = $last_post->authored_on;
+        my $perms = MT::Permission->load( 
+            { blog_id => $last_post->blog_id, author_id => $app->user->id } );
+        $param->{last_post_can_edit}
+            = $perms && $perms->can_edit_entry($last_post, $app->user);
     }
 
     if (my ($url) = $user->userpic_url()) {

@@ -7,7 +7,7 @@ use warnings;
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test;
 
-use Test::More tests => 181;
+use Test::More tests => 180;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -51,7 +51,6 @@ use_ok('MT::App::Comments');
 use_ok('MT::App::NotifyList');
 use_ok('MT::App::Trackback');
 use_ok('MT::App::Upgrader');
-use_ok('MT::App::Viewer');
 use_ok('MT::App::Wizard');
 
 # Search apps

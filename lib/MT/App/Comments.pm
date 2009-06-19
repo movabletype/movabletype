@@ -890,6 +890,8 @@ sub post {
         $app->translate( "An error occurred: [_1]", $app->errstr() ) )
         unless $comment;
 
+    $app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter );
+    
     my $remember = $q->param('bakecookie') || 0;
     $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
     if ( $commenter && $remember ) {
@@ -1657,6 +1659,7 @@ sub do_preview {
                 {   'body_class'                => 'mt-comment-pending',
                     'comment_response_template' => 1,
                     'comment_pending'           => 1,
+                    'return_to'                 => $entry->permalink || '',
                     'system_template'           => 1
                 }
             );
@@ -1668,6 +1671,7 @@ sub do_preview {
                 {   'body_class'                => 'mt-comment-error',
                     'comment_response_template' => 1,
                     'comment_error'             => 1,
+                    'return_to'                 => $app->param('return_url') || '',
                     'system_template'           => 1
                 }
             );

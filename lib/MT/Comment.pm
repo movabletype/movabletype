@@ -32,18 +32,14 @@ __PACKAGE__->install_properties({
         'parent_id' => 'integer',
     },
     indexes => {
-        created_on => 1,
         entry_visible => {
             columns => [ 'entry_id', 'visible', 'created_on' ],
         },
+		author => 1,
         email => 1,
         commenter_id => 1,
-        parent_id => 1,
         last_moved_on => 1, # used for junk expiration
-        # For comment throttle check
-        blog_ip_date => {
-            columns => [ 'blog_id', 'ip', 'created_on' ],
-        },
+
         # For URL lookups to aid spam filtering
         blog_url => {
             columns => [ 'blog_id', 'visible', 'url' ],
@@ -54,11 +50,11 @@ __PACKAGE__->install_properties({
         blog_visible => {
             columns => [ 'blog_id', 'visible', 'created_on', 'id' ],
         },
+		dd_coment_vis_mod => {
+			columns => [ 'visible', 'modified_on' ],
+		},
         visible_date => {
             columns => [ 'visible', 'created_on' ],
-        },
-        junk_date => {
-            columns => [ 'junk_status', 'created_on' ],
         },
     },
     meta => 1,

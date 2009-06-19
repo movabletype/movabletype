@@ -763,7 +763,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'Erinnerungsfrage nicht gesetzt; neues Passwort kann deshalb nicht angefordert werden',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Ungültiger Versuch einer Passwortanforderung (verwendeter Erinnerungssatz: \'[_1]\'',
 	'User does not have email address' => 'Benutzer hat keine E-Mail-Adresse',
-	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Link zum Zurücksetzen des Passworts für Benutzer \'[_1]\' (#[_2]) an [_3] geschickt.', # Translate - New # OK
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Link zum Zurücksetzen des Passworts für Benutzer \'[_1]\' (#[_2]) an [_3] geschickt.',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Einige Objekte wurden nicht wiederhergestellt, da ihre Elternobjekte ebenfalls nicht widerhergestellt wurden. Details finden Sie im <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">Aktivitätsprotokoll</a>.',
 	'[_1] is not a directory.' => '[_1] ist kein Verzeichnis.',
 	'Error occured during restore process.' => 'Bei der Wiederherstellung ist ein Fehler aufgetreten.',
@@ -2109,7 +2109,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Um mit dem Konfigurationshelfer eine neue Konfigurationsdatei zu erzeugen, entfernen Sie die vorhandene Konfigurationsdatei und laden Sie diese Seite neu.',
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type erfordert JavaScript. Bitte aktivieren Sie es in Ihren Browsereinstellungen und laden diese Seite dann neu.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Dieser Konfigurationshelfer hilft Ihnen, die zum Betrieb von Movable Type erforderlichen Grundeinstellungen vorzunehmen.',
-	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Fehler: \'[_1]\' konnte nicht gefunden werden.</strong> Bitte kopieren Sie erst die statischen Dateien in den Ordner oder überprüfen Sie, falls das bereits geschehen ist, die Einstellungen.',
+	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Fehler: \'[_1]\' nicht gefunden.</strong> Bitte verschieben Sie die statischen Dateien erst in das Verzeichnis oder überprüfen Sie die Einstellungen.', # Translate - New # OK
 	'Configure Static Web Path' => 'Statischen Web-Pfad konfigurieren',
 	'Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Type wird mit einem Verzeichnis namens [_1] ausgeliefert, das einige wichtige Bild-, JavaScript- und Stylesheet-Dateien enthält.',
 	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => 'Der [_1]-Ordner befindet sich im Hauptverzeichnis von Movable Type, ist aufgrund der Serverkonfiguration vom Webserver aber nicht erreichbar. Verschieben Sie den Ordner [_1] daher an einen Ort, auf dem der Webserver zugreifen kann (z.B. Document Root).',
@@ -2734,7 +2734,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Anzeigeoptionen speichern',
 	'OK' => 'OK',
 	'Close display options' => 'Anzeigeoptionen schließen',
-	'This post was held for review, due to spam filtering.' => 'Dieser Eintrag wurde vom Spam-Filter zur Moderation zurückgehalten.', # Translate - New # OK
+	'This post was held for review, due to spam filtering.' => 'Dieser Eintrag wurde vom Spam-Filter zur Moderation zurückgehalten.',
 	'This post was classified as spam.' => 'Dieser Eintrag wurde als Spam erfasst.',
 	'Spam Details' => 'Spam-Details',
 	'Score' => 'Bewertung',
@@ -3234,6 +3234,7 @@ use vars qw( @ISA %Lexicon );
 	'Create widget template' => 'Widgetvorlage anlegen',
 	'Widget Template' => 'Widgetvorlage',
 	'Widget Templates' => 'Widgetvorlagen',
+	'widget templates' => 'Widgetvorlagen', # Translate - Case # OK
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => '[_1] zum Adressbuch hinzugefügt.',
@@ -3780,7 +3781,7 @@ use vars qw( @ISA %Lexicon );
 	'New Password' => 'Neues Passwort',
 	'Enter the new password.' => 'Neues Passwort eingeben',
 	'Password recovery word/phrase' => 'Erinnerungssatz',
-	'This word or phrase is not used in the password recovery.' => 'Dieser Ausdruck ist nicht Teil des Erinnerungssatzes', # Translate - New # OK
+	'This word or phrase is not used in the password recovery.' => 'Dieser Ausdruck ist nicht Teil des Erinnerungssatzes',
 	'Preferred language of this user.' => 'Bevorzugte Sprache des Benutzers',
 	'Text Format' => 'Textformatierung',
 	'Preferred text format option.' => 'Bevorzugte Formatierungsoption',
@@ -3848,9 +3849,14 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => 'Ihr <a href="[_1]">letzter Eintrag</a> war [_2] in <a href="[_3]">[_4]</a>',
+ 	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Ihr letzter Eintrag war [_1] auf <a href="[_2"]>[_3]</a>.', # Translate - New # OK
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'Sie haben <a href="[_1]>[quant,_2,Entwurf,Entwürfe]</a>.',
+	'You have [quant,_1,draft,drafts].' => 'Sie haben [quant,_1,Entwurf,Entwürfe].', # Translate - New # OK
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'Sie haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a> mit <a href="[_3]">[quant,_4,Kommentar,Kommentaren]</a> geschrieben.',
+	'You\'ve written [quant,_1,entry,entries] with <a href="[_2]">[quant,_3,comment,comments]</a>.' => 'Sie haben [quant,_1,Eintrag,Einträge] mit <a href="[_2]">[quant,_3,Kommentar,Kommentaren]</a> geschrieben.', # Translate - New # OK
+	'You\'ve written [quant,_1,entry,entries] with [quant,_2,comment,comments].' => 'Sie haben [quant,_1,Eintrag,Einträge] mit [quant,_2,Kommentar,Kommentaren] geschrieben.', # Translate - New # OK
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'Sie haben <a href="[_1]">[quant,_2,Eintrag,Einträge]</a> geschrieben.',
+	'You\'ve written [quant,_1,entry,entries].' => 'Sie haben [quant,_1,Eintrag,Einträge] geschrieben.', # Translate - New # OK
 	'Edit your profile' => 'Profil bearbeiten',
 
 ## tmpl/cms/widget/new_install.tmpl
@@ -3898,6 +3904,8 @@ use vars qw( @ISA %Lexicon );
 	'Total Users' => 'Benutzer insgesamt',
 	'Active Users' => 'Aktive Benutzer',
 	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => 'Benutzer, die sich innerhalb der letzten 90 Tage eingeloggt haben, gelten nach den Movable Type-Lizenzbedingungen als <strong>aktiv</strong>.',
+	'Memcache Status' => 'Memcache-Status', # Translate - New # OK
+	'Server Model' => 'Server-Modell', # Translate - New # OK
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly.' => 'Movable Type konnte die Datei \'mt-check.cgi\' nicht finden. Stellen Sie sicher, daß die Datei vorhanden ist und MTCheckScript die richtigen Pfadangaben enthält.',
 
 ## tmpl/cms/restore.tmpl
@@ -4062,8 +4070,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/config.yaml
 	'Community Settings' => 'Community',
-	'Pending Entries' => 'Wartende Einträge', # Translate - New # OK
-	'Spam Entries' => 'Spam-Einträge', # Translate - New # OK
+	'Pending Entries' => 'Wartende Einträge',
+	'Spam Entries' => 'Spam-Einträge',
 	'Following Users' => 'Benutzern folgen',
 	'Being Followed' => 'Gefolgt werden',
 	'Sanitize' => 'Bereinigen',
@@ -4072,15 +4080,15 @@ use vars qw( @ISA %Lexicon );
 	'Most Popular Entries' => 'Beliebteste Einträge',
 	'Registrations' => 'Registrierungen',
 	'Login Form' => 'Anmeldeformular',
-	'Password Reset Form' => 'Formular zum Zurücksetzen des Passworts', # Translate - Improved (3) # OK
+	'Password Reset Form' => 'Formular zum Zurücksetzen des Passworts',
 	'Registration Form' => 'Registrierungsformular',
 	'Registration Confirmation' => 'Registrierungsbestätigung',
 	'Profile Error' => 'Profilfehler',
 	'Profile View' => 'Profilansicht',
-	'Profile Edit Form' => 'Formular zur Profilbearbeitung', # Translate - Improved (3) # OK
-	'Profile Feed' => 'Profil-Feed', 
-	'New Password Form' => 'Formular zur Anforderung neuer Passwörter', # Translate - New # OK
-	'New Password Reset Form' => 'Formular zum Zurücksetzen neuer Passwörter', # Translate - New # OK
+	'Profile Edit Form' => 'Formular zur Profilbearbeitung',
+	'Profile Feed' => 'Profil-Feed',
+	'New Password Form' => 'Formular zur Anforderung neuer Passwörter',
+	'New Password Reset Form' => 'Formular zum Zurücksetzen neuer Passwörter',
 	'Form Field' => 'Formularfeld',
 	'Status Message' => 'Statusnachricht',
 	'Simple Header' => 'Einfache Kopfzeile',
@@ -4094,12 +4102,12 @@ use vars qw( @ISA %Lexicon );
 	'New entry notification' => 'Eintragsbenachrichtigung',
 	'Community Blog' => 'Community-Blog',
 	'Atom ' => 'Atom ',
-	'Entry Response' => 'Antwort auf Eintrag', # Translate - Improved (2) # OK
+	'Entry Response' => 'Antwort auf Eintrag',
 	'Displays error, pending or confirmation message when submitting an entry.' => 'Zeigt Bestätigungs-, Moderations- und Fehlermeldungen zu neuen Beiträgen an.',
 	'Comment Detail' => 'Kommentardetails',
 	'Entry Detail' => 'Eintragsdetails',
 	'Entry Metadata' => 'Eintrags-Metadaten',
-	'Page Detail' => 'Seitendetails', # Translate - Improved (2) # OK
+	'Page Detail' => 'Seitendetails',
 	'Entry Form' => 'Eintragsformular',
 	'Content Navigation' => 'Inhaltsnavigation',
 	'Activity Widgets' => 'Aktivitäten-Widgets',
@@ -4119,7 +4127,7 @@ use vars qw( @ISA %Lexicon );
 	'Your confirmation have expired. Please register again.' => 'Ihre Anmeldung ist abgelaufen. Bitte registrieren Sie sich erneut.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Benutzer \'[_1]\' (ID:[_2]) erfolgreich registriert.',
 	'Thanks for the confirmation.  Please sign in.' => 'Danke für die Bestätigung. Bitte melden Sie sich an.',
-	'[_1] registered to Movable Type.' => '[_1] hat sich bei Movable Type registriert', # Translate - New # OK
+	'[_1] registered to Movable Type.' => '[_1] hat sich bei Movable Type registriert',
 	'Login required' => 'Anmeldung erforderlich',
 	'Title or Content is required.' => 'Titel oder Text erforderlich',
 	'System template entry_response not found in blog: [_1]' => 'Systemvorlage entry_response für Blog [_1] nicht gefunden',
@@ -5283,34 +5291,7 @@ Suchbasis: [_2]",
 ## plugins/feeds-app-lite/mt-feeds.pl
 	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Mit Feeds.App Lite binden Sie externe Newsfeeds in Ihre Blogs ein. Noch mehr Möglichkeiten erhalten Sie durch ein <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade auf Feeds.App</a>.',
 	'Create a Feed Widget' => 'Feed-Widget anlegen',
-	
-       '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
-       '[_1] contains an invalid character: [_2]' => '[_1] beinhaltet ein ungültiges Schriftzeichen: [_2]', # Translate - New
-       'Email address is required.' => 'Bitte geben Sie Ihre E-Mail-Adresse ein.', # Translate - New
-       'User not found' => 'Dieser Benutzer wurde nicht gefunden', # Translate - New
-       'Password reset token not found' => 'Der Passwort Reset Token wurde nicht gefunden', # Translate - New
-       'Email address not found' => 'Diese E-Mail-Adresse wurde nicht gefunden', # Translate - New
-       'Your request to change your password has expired.' => 'Ihre Anfrage auf Änderung Ihres Passwortes ist ausgelaufen.', # Translate - New
-       'Invalid password reset request' => 'Ungültige Passwort Reset Anfrage', # Translate - New
-       'Please confirm your new password' => 'Bitte bestätigen Sie Ihr neues Passwort', # Translate - New
-       'Password do not match' => 'Die Passwörter stimmen nicht überein', # Translate - New
-       'Invalid [_1] parameter.' => 'Ungültiger [_1] Parameter.', # Translate - New
-       'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID oder Template Parameter müssen spezifiziert werden.', # Translate - New
-       'Error saving [_1] record # [_3]: [_2]...' => 'Error saving [_1] record # [_3]: [_2]...', # Translate - New
-       'The email address provided is not unique.  Please enter your username.' => 'Diese E-Mail-Adresse wird bereits verwendet. Bitte geben Sie Ihren Benutzernamen ein.', # Translate - New
-       'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Es wurde eine E-Mail mit einem Link zur Zurücksetzung Ihres Passwortes an Ihre Adresse gesendet([_1]).', # Translate - New
-       'Choose New Password' => 'Wählen Sie Ihr neues Passwort', # Translate - New
-       'You must set Local Archive Path.' => 'Bitte definieren Sie Ihren Local Archive Path.', # Translate - New
-       'You must set a valid Archive URL.' => 'Bitte definieren Sie eine gültige Archive URL.', # Translate - New
-       'You must set a valid Local Archive Path.' => 'Bitte definieren Sie einen gültigen Local Archive Path.', # Translate - New 
-       'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Es wurde eine Anfrage zur Änderung Ihres Passwortes in Movable Type gestellt. Bitte klicken Sie auf untenstehenden Link und wählen Sie ein neues Passwort aus um diesen Prozess abzuschließen.',
-       'If you did not request this change, you can safely ignore this email.' => 'Wenn Sie diese Änderung nicht wünschen können Sie diese E-Mail bedenkenlos ignorieren.',
-       'Passwords do not match' => 'Passwörter stimmen nicht überein.',
-       'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Das Zurücksetzen des Passwortes für Benutzer \'[_1]\' (Benutzer #[_2]) war erfolgreich. Ein Wiederherstellungs-Link wurde an folgende Adresse gesendet',
-       'Updating password recover email template...' => 'Aktualisierung des Passwort-Wiederherstellungs-Templates...',
-       'The email address provided is not unique.  Please enter your username.' => 'Die angegebene E-Mail-Adresse wird bereits genutzt. Bitte geben Sie Ihren Benutzernamen ein.',
-       '_WARNING_PASSWORD_RESET_MULTI' => 'Sie sind dabei Email(s) an ausgewählte Nutzer zu senden um deren Password zurück zu setzen. Möchten Sie fortfahren?',
-       "A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Ein Passwort-Wiederherstellungs-Link für den Benutzer \'[_1]\' wurde an [_3] gesendet. (Benutzer #[_2])', 
+
 ## plugins/CommunityActionStreams/config.yaml
 	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Action Streams für Community-Ereignisse: Eintrag hinzufügen, Kommentar hinzufügen, Favoriten hinzufügen, Benutzer folgen',
 
@@ -5318,7 +5299,6 @@ Suchbasis: [_2]",
 	'A Movable Type theme with structured entries and action streams.' => 'Ein Movable Type-Thema mit strukturierten Einträgen und Action Streams.',
 	'Adjusting field types for embed custom fields...' => 'Passe Feldtypen für eingebettete individuelle Felder an...',
 	'Updating favoriting namespace for Motion...' => 'Aktualisieren Favoriten-Namespace für Motion...',
-	'Reinstall Motion Templates' => 'Motion-Vorlagen neu installieren',
 	'Motion Themes' => 'Motion-Designs',
 	'Themes for Motion template set' => 'Designs für die Motion-Vorlagengruppe',
 	'Motion' => 'Motion',
@@ -5338,8 +5318,8 @@ Suchbasis: [_2]",
 	'Profile Feed' => 'Profil-Feed',
 	'Login Form' => 'Anmeldeformular',
 	'Register Confirmation' => 'Registrierungs-Bestätigung',
-	'Password Reset' => 'Passwort zurücksetzen',
-	'New Password Form' => 'Formular für neues Passwort', # Translate - New # OK
+	'New Password Reset Form' => 'Formular zum Zurücksetzen neuer Passwörter',
+	'New Password Form' => 'Formular für neues Passwort',
 	'User Profile' => 'Benutzerprofil',
 	'Actions (Local)' => 'Aktionen (lokal)',
 	'Comment Detail' => 'Kommentardetails',
@@ -5461,7 +5441,7 @@ Suchbasis: [_2]",
 	'Remove service' => 'Dienst entfernen',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Anmelden</a>', # Translate - New # OK
+	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Anmelden</a>',
 	'Not a member? <a href="[_1]">Register</a>' => 'Noch kein Mitglied? <a href="[_1]>Registieren</a>',
 	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(oder <a href="javascript:void(0)" onclick="[_1]">anmelden</a>)',
 	'No posting privileges.' => 'Keine Veröffentlichungs-Rechte.',
@@ -5479,7 +5459,7 @@ Suchbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] kommentierte auf [_2]',
-	'[_1] favorited [_2]' => '[_1] hat [_2] zum Favoriten gemacht', # Translate - New # OK
+	'[_1] favorited [_2]' => '[_1] hat [_2] zum Favoriten gemacht',
 	'No recent actions.' => 'Keine aktuellen Aktionen',
 
 ## plugins/Motion/templates/Motion/main_index.mtml
@@ -5563,7 +5543,7 @@ Suchbasis: [_2]",
 	'Profile Data' => 'Profil-Daten',
 	'More Entries by [_1]' => 'Weitere Einträge von [_1]',
 	'Recent Actions' => 'Aktuelle Aktionen',
-	'_PROFILE_COMMENT_LENGTH' => '10', # Translate - New # OK
+	'_PROFILE_COMMENT_LENGTH' => '10',
 	'Comment Threads' => 'Kommentar-Threads',
 	'[_1] commented on ' => '[_1] kommentierte',
 	'No responses to comments.' => 'Keine Kommentarantworten',
@@ -5594,8 +5574,8 @@ Suchbasis: [_2]",
 ## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
 	'Facebook Application Key' => 'Facebook Application Key',
 	'The key for the Facebook application associated with your blog.' => 'Der Application Key der mit Ihrem Blog verknüpften Facebook-Anwendung',
-	'Edit Facebook App' => 'Facebook-Anwendung bearbeiten', # Translate - Improved (2) # OK
-	'Create Facebook App' => 'Facebook-Anwendung erstellen', # Translate - New # OK
+	'Edit Facebook App' => 'Facebook-Anwendung bearbeiten',
+	'Create Facebook App' => 'Facebook-Anwendung erstellen',
 	'Facebook Application Secret' => 'Facebook Application Secret',
 	'The secret for the Facebook application associated with your blog.' => 'Das Application Secret der mit Ihrem Blog verknüpften Facebook-Anwendung',
 
@@ -5749,7 +5729,7 @@ Suchbasis: [_2]",
 	'1up.com' => '1up.com',
 	'43Things' => '43Things',
 	'Screen name' => 'Bildschirmname',
-	'backtype' => 'backtype', # Translate - New # OK
+	'backtype' => 'backtype',
 	'Bebo' => 'Bebo',
 	'Catster' => 'Catster',
 	'COLOURlovers' => 'COLOURlovers',
@@ -5882,9 +5862,9 @@ Suchbasis: [_2]",
 	'[_1] updating [_2] events for [_3]' => '[_1] aktualisiert [_2]-Ereignisse für [_3]',
 	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Fehler bei der Aktualisierung der Ereignisse für [_1]s [_2]-Stream (Typ [_3], Ident [_4]): [_5]',
 	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'Konnte Klasse [_1] für Stream [_2] [_3] nicht laden: [_4]',
-	'No URL to fetch for [_1] results' => 'Keine URL zum Einlesen von [_1]-Ergebnissen', # Translate - New # OK
-	'Could not fetch [_1]: [_2]' => '[_1] konnte nicht einlesen gewerden: [_2]', # Translate - New # OK
-	'Aborted fetching [_1]: [_2]' => 'Einlesen von [_1] abgebrochen: [_2]', # Translate - New # OK
+	'No URL to fetch for [_1] results' => 'Keine URL zum Einlesen von [_1]-Ergebnissen',
+	'Could not fetch [_1]: [_2]' => '[_1] konnte nicht einlesen gewerden: [_2]',
+	'Aborted fetching [_1]: [_2]' => 'Einlesen von [_1] abgebrochen: [_2]',
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Ihr Benutzername oder Ihre ID ist erforderlich.',
@@ -5915,7 +5895,7 @@ Suchbasis: [_2]",
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
 	'Add a profile on a social networking or instant messaging service.' => 'Profil bei einem Social Network oder Instant Messaging-Dienst hinzufügen',
 	'Select a service where you already have an account.' => 'Wählen Sie einen Dienst, bei dem Sie bereits ein Benutzerkonto haben.',
-	'Add Profile (s)' => 'Profil hinzufügen (s)', # Translate - New # OK
+	'Add Profile (s)' => 'Profil hinzufügen (s)',
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
 	'The selected events were deleted.' => 'Die gewählten Ereignisse wurden gelöscht.',
@@ -5949,9 +5929,10 @@ Suchbasis: [_2]",
 	'Rebuild Indexes' => 'Indizes neu aufbauen',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Falls aktiviert, werden die Indizes dieses Blogs neu aufgebaut, wenn neue Action Stream-Ereignisse eintreffen',
 	'Enable rebuilding' => 'Neuaufbau aktivieren',
+	'Clone of [_1]' => 'Klon von [_1]', # Translate - New
 
 );
 
-## New words: 96
+## New words: 110
 
 1;

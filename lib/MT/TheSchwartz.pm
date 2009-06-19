@@ -8,7 +8,7 @@ package MT::TheSchwartz;
 
 use strict;
 use base qw( TheSchwartz );
-use MT::ObjectDriver::Driver::DBI;
+use MT::ObjectDriver::Driver::Cache::RAM;
 use List::Util qw( shuffle );
 
 my $instance;
@@ -105,8 +105,8 @@ sub mt_schwartz_init {
 }
 
 sub driver_for {
-    my MT::TheSchwartz $client = shift;
-    return MT::Object->dbi_driver;
+    require MT::TheSchwartz::Job;
+    return MT::TheSchwartz::Job->dbi_driver;
 }
 
 sub shuffled_databases {
@@ -126,6 +126,86 @@ sub is_database_dead {
     return 0;
 }
 
+sub _has_enough_swap {
+    my $memory_module;
+    eval {
+        require Sys::MemInfo;
+        $memory_module = q{Sys::MemInfo};
+    };
+
+    my ($mem_limit) = @_;
+    if ( !defined($mem_limit) ) {
+        $mem_limit = MT->config('SchwartzSwapMemoryLimit');
+    }
+
+    if ( $mem_limit && $memory_module ) {
+        my $decoded_limit;
+        if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
+            my $multiplier = 1;
+            ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
+            $mem_limit =~ s/[KGM]B?$//;
+            $mem_limit = $mem_limit * $multiplier;
+        }
+        if ( $mem_limit =~ /\d+/ ) {
+            my $swap;
+            if ( $memory_module eq q{Sys::MemInfo} ) {
+                $swap = Sys::MemInfo::get("freeswap");
+            }
+
+            # not enough swap, lets get out of here!
+            if ( $swap < $mem_limit ) {
+                return 0;
+            }
+        }
+    }
+
+    # default to returning true
+    # i.e., yes there is enough
+    return 1;
+}
+
+sub _has_enough_memory {
+    my $memory_module;
+    eval {
+        require Sys::MemInfo;
+        $memory_module = q{Sys::MemInfo};
+    };
+
+    my ($mem_limit) = @_;
+    if ( !defined($mem_limit) ) {
+        $mem_limit = MT->config('SchwartzFreeMemoryLimit');
+    }
+
+    if ( $mem_limit && $memory_module ) {
+        my $decoded_limit;
+        if ( $mem_limit =~ /^\d+[KGM]B?$/ ) {
+            my $multiplier = 1;
+            ( $mem_limit =~ /GB?$/ ) and $multiplier = 1073741824;
+            ( $mem_limit =~ /MB?$/ ) and $multiplier = 1048576;
+            ( $mem_limit =~ /KB?$/ ) and $multiplier = 1024;
+            $mem_limit =~ s/[KGM]B?$//;
+            $mem_limit = $mem_limit * $multiplier;
+        }
+        if ( $mem_limit =~ /\d+/ ) {
+            my $free;
+            if ( $memory_module eq q{Sys::MemInfo} ) {
+                $free = Sys::MemInfo::get("freemem");
+            }
+
+            # not enough free, lets get out of here!
+            if ( $free < $mem_limit ) {
+                return 0;
+            }
+        }
+    }
+
+    # default to returning true
+    # i.e., yes there is enough
+    return 1;
+}
+
 # Replacement for TheSchwartz::get_server_time
 # to simply return value from dbd->sql_for_unixtime
 # if it is a plain number (the driver has no function,
@@ -135,7 +215,35 @@ sub get_server_time {
     my($driver) = @_;
     my $unixtime_sql = $driver->dbd->sql_for_unixtime;
     return $unixtime_sql if $unixtime_sql =~ m/^\d+$/;
-    return $driver->rw_handle->selectrow_array("SELECT $unixtime_sql");
+    return $driver->r_handle->selectrow_array("SELECT $unixtime_sql");
+}
+
+sub work_until_done {
+    my TheSchwartz $client = shift;
+    if ( ! $client ) {
+        return;
+    }
+    my $cap = MT->config('SchwartzClientDeadline'); # in seconds
+    my $mem_limit = MT->config('SchwartzFreeMemoryLimit');
+    $mem_limit ||= 0;
+    my $swap_limit = MT->config('SchwartzSwapMemoryLimit');
+    $swap_limit ||= 0;
+    my $deadline;
+    if ( $cap ) {
+        $deadline = time() + $cap;
+        while ( time() < $deadline ) {
+            $client->work_once or last;
+            last unless _has_enough_memory( $mem_limit );
+            last unless _has_enough_memory( $swap_limit );
+        }
+    }
+    else {
+        while ( 1 ) {
+            $client->work_once or last;
+            last unless _has_enough_memory( $mem_limit );
+            last unless _has_enough_swap( $swap_limit );
+        }
+    }
 }
 
 sub work_periodically {
@@ -168,10 +276,11 @@ sub work_periodically {
         }
 
         if ($did_work) {
-            my $driver = MT::Object->driver;
-            $driver->clear_cache
-                if $driver->can('clear_cache');
+            # Clear RAM cache
+            MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
             MT->request->reset();
+
             $did_work = 0;
             if ($OBJECT_REPORT) {
                 my $report = leak_report(\%obj_start, \%obj_pre, \%Devel::Leak::Object::OBJECT_COUNT);

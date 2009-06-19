@@ -1962,6 +1962,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## lib/MT/App/Search.pm
 	'Invalid [_1] parameter.' => '[_1]パラメータが不正です。',
+	'Invalid [_1] parameter.' => '[_1]パラメータが不正です。',
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Search: failed storing results in cache.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
 	'Invalid format: [_1]' => '不正なformatです: [_1]',
@@ -2558,6 +2559,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Total Users' => '全ユーザー数',
 	'Active Users' => 'アクティブユーザー数',
 	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => '90日以内にログインしたユーザーがMovable Typeの使用許諾に基づいてアクティブとみなされます。',
+	'Memcache Status' => 'Memcacheの状態',
+	'Server Model' => 'サーバーモデル',
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly.' => 'mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。',
 
 ## tmpl/cms/list_ping.tmpl
@@ -3257,9 +3260,14 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => '最後にブログ記事を書いたのは[_2]です(ブログ: <a href="[_3]">[_4]</a> - <a href="[_1]">編集</a>)。',
+	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => '最後にブログ記事を書いたのは[_1]です(ブログ: <a href="[_2]">[_3]</a>)',
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => '下書きが<a href="[_1]">[quant,_2,件,件]</a>あります。',
+	'You have [quant,_1,draft,drafts].' => '下書きが[quant,_1,件,件]あります。',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a><br />コメント<a href="[_3]">[quant,_4,件,件]</a>',
+	'You\'ve written [quant,_1,entry,entries] with <a href="[_2]">[quant,_3,comment,comments]</a>.' => 'ブログ記事[quant,_1,件,件]<br />コメント<a href="[_2]">[quant,_3,件,件]</a>',
+	'You\'ve written [quant,_1,entry,entries] with [quant,_2,comment,comments].' => 'ブログ記事[quant,_1,件,件]<br />コメント[quant,_2,件,件]',
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'ブログ記事<a href="[_1]">[quant,_2,件,件]</a>',
+	'You\'ve written [quant,_1,entry,entries].' => 'ブログ記事[quant,_1,件,件]',
 	'Edit your profile' => 'ユーザー情報の編集',
 
 ## tmpl/cms/widget/new_user.tmpl
@@ -3778,7 +3786,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Limited Fields' => '項目を指定する',
 	'Date Range' => '日付範囲',
 	'Reported as Spam?' => 'スパムコメント/トラックバック',
-	'Search Fields:' => '検索対象フィールド',
+	'Search Fields:' => '検索対象フィールド:',
 	'_DATE_FROM' => '開始日',
 	'_DATE_TO' => '終了日',
 	'Successfully replaced [quant,_1,record,records].' => '[quant,_1,件,件]のデータを置き換えました。',
@@ -3820,6 +3828,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Create widget template' => 'ウィジェットテンプレートを作成',
 	'Widget Template' => 'ウィジェットテンプレート',
 	'Widget Templates' => 'ウィジェットテンプレート',
+	'widget templates' => 'ウィジェットテンプレート',
 
 ## tmpl/cms/login.tmpl
 	'Your Movable Type session has ended.' => 'Movable Typeからログアウトしました。',

@@ -171,6 +171,23 @@ sub list {
     my $user  = $app->user;
     my $admin = $user->is_superuser
       || ( $perms && $perms->can_administer_blog );
+
+    unless ($app->user->is_superuser) {
+        if ( $app->param('blog_id') ) {
+            return $app->errtrans("Permission denied.")
+                unless $perms && $perms->can_view_feedback;
+        } else {
+            require MT::Permission;
+            my @blogs
+                = map { $_->blog_id }
+                grep {
+                    $_->can_view_feedback
+                } MT::Permission->load(
+                { author_id => $app->user->id } );
+            return $app->errtrans("Permission denied.") unless @blogs;
+        }
+    }
+
     my $can_empty_junk = $admin
       || ( $perms && $perms->can_manage_feedback )
       ? 1 : 0;

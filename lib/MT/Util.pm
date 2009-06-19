@@ -31,6 +31,15 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
 my $Has_Weaken;
 sub weaken {
     no warnings;
+    my $disable_cache = MT->instance->config('DisableObjectCache');
+
+    return if $disable_cache;
+    if (!$disable_cache && UNIVERSAL::isa($_[0], 'MT::Object')) {
+        if (my $props = $_[0]->properties) {
+            return  if (defined $props->{cacheable}) && (!$props->{cacheable});
+        }
+    }
+
     return Scalar::Util::weaken($_[0]) if $Has_Weaken;
     $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0;
     Scalar::Util::weaken($_[0]) if $Has_Weaken;
@@ -463,7 +472,7 @@ sub offset_time {
     } else {
         $offset = MT->config->TimeOffset;
     }
-    $offset += 1 if (localtime $ts)[8];
+    $offset += 1 if $blog && (localtime $ts)[8];
     $offset *= -1 if $dir && $dir eq '-';
     $ts += $offset * 3600;
     $ts;

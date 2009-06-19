@@ -108,15 +108,10 @@ sub set_defaults {
 
 sub remove_sessions {
     my $auth = shift;
+    return if ( ! $auth or ! $auth->id );
     require MT::Session;
-    my $sess_iter = MT::Session->load_iter({ kind => 'US' });
-    my @sess;
-    while (my $sess = $sess_iter->()) {
-        my $id = $sess->get('author_id');
-        next unless $id == $auth->id;
-        push @sess, $sess;
-    }
-    $_->remove foreach @sess;
+    my $sess_iter = MT::Session->remove({ kind => 'US', name => $auth->id });
+    return 1;
 }
 
 sub set_password {
@@ -437,14 +432,13 @@ sub can_administer {
 
 sub entry_prefs {
     my $author = shift;
-    my @prefs = split /,/, ($author->column('entry_prefs') || '');
+    my @prefs = split /,/, ((@_ ? $_[0] : $author->column('entry_prefs')) || '');
     my %prefs;
     foreach (@prefs) {
         my ($name, $value) = split /=/, $_, 2;
         $prefs{$name} = $value;
     }
     if (@_) {
-        %prefs = (%prefs, @_);
         my $pref = '';
         foreach (keys %prefs) {
             $pref .= ',' if $pref ne '';

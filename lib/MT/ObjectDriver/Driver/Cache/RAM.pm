@@ -9,17 +9,32 @@ package MT::ObjectDriver::Driver::Cache::RAM;
 use strict;
 use warnings;
 
-use base qw( MT::Object::BaseCache );
+use base qw( Data::ObjectDriver::Driver::BaseCache );
 
-sub MAX_CACHE_SIZE () { 1000 }
+my $cache_limit;
+sub MAX_CACHE_SIZE () {
+    return $cache_limit if defined $cache_limit;
+    return $cache_limit = MT->config->ObjectCacheLimit || 1000;
+}
 
 my %Cache;
 
+my $trigger_installed;
 sub init {
     my $driver = shift;
     my %param  = @_;
     $param{cache} ||= 1; # hack
+
+    unless (defined $trigger_installed) {
+        MT->add_callback( 'takedown', 9, undef, \&_takedown );
+        $trigger_installed = 1;
+    }
+
     $driver->SUPER::init(%param);
+}
+
+sub takedown {
+    __PACKAGE__->clear_cache;
 }
 
 sub get_from_cache {
@@ -36,8 +51,6 @@ sub get_from_cache {
 sub add_to_cache {
     my $driver = shift;
 
-    return if !$driver->is_cacheable($_[1]);
-
     if (scalar keys %Cache > MAX_CACHE_SIZE) {
         $driver->clear_cache();
     }
@@ -52,8 +65,6 @@ sub add_to_cache {
 
 sub update_cache {
     my $driver = shift;
-
-    return if !$driver->is_cacheable($_[1]);
 
     $driver->start_query('RAMCACHE_SET ?', \@_);
     my $ret = $Cache{$_[0]} = $_[1];
@@ -77,9 +88,9 @@ sub remove_from_cache {
 sub clear_cache {
     my $driver = shift;
 
-    $driver->start_query('RAMCACHE_CLEAR');
+    $driver->start_query('RAMCACHE_CLEAR') if ref $driver;
     %Cache = ();
-    $driver->end_query(undef);
+    $driver->end_query(undef) if ref $driver;
 
     return;
 }

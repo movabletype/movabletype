@@ -1960,7 +1960,8 @@ sub archive_file_for {
             $cache->{ $blog->id . $at } = $map if $map;
         }
     }
-    my $file_tmpl = $map->file_template if $map;
+    my $file_tmpl;
+    $file_tmpl = $map->file_template if $map;
     unless ($file_tmpl) {
         if ( my $tmpls = $archiver->default_archive_templates ) {
             my ($default) = grep { $_->{default} } @$tmpls;

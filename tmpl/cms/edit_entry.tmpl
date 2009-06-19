@@ -490,6 +490,11 @@
         Editor.strings.enterEmailAddress = '<__trans phrase="Enter email address:" escape="js">';
         Editor.strings.enterLinkAddress = '<__trans phrase="Enter the link address:" escape="js">';
         Editor.strings.enterTextToLinkTo = '<__trans phrase="Enter the text to link to:" escape="js">';
+        function restoreBarPosition() {
+            var current_bar_position = '<mt:if name="position_actions_both">both<mt:elseif name="position_actions_top">top<mt:elseif name="position_actions_bottom">bottom<mt:else>top</mt:if>';
+            setBarPosition( current_bar_position );
+            getByID( 'bar_position_' + current_bar_position ).checked = 'checked';
+        }
         /* ]]> */
     </script>
 </mt:setvarblock>
@@ -969,6 +974,7 @@ function listPreviousPings () {
                         title="<__trans phrase="Save display options">"
                         ><__trans phrase="OK"></a>
                     <a href="javascript:void(0)"
+                        onclick="restoreBarPosition();"
                         mt:command="close-flyout"
                         title="<__trans phrase="Close display options">"
                         ><__trans phrase="Cancel"></a>

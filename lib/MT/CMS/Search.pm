@@ -159,7 +159,11 @@ sub core_search_apis {
             'can_search_by_date' => 1,
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
-                $terms->{class} = '*';
+                $terms->{class}
+                    = ( $app->param('filter') 
+                        && $app->param('filter_val')
+                        && $app->param('filter') eq 'class'
+                        && $app->param('filter_val') eq 'image' ) ? 'image' : '*';
                 $terms->{blog_id} = $blog_id if $blog_id;
             }
         },
@@ -196,7 +200,7 @@ sub core_search_apis {
                 return 1 if $author->is_superuser;
                 if ($blog_id) {
                     my $perm = $author->permissions($blog_id);
-                    return $perm->can_administer_blog;
+                    return $perm->can_administer_blog || $perm->can_manage_users;
                 }
                 return 0;
             },
@@ -383,6 +387,7 @@ sub do_search_replace {
     ## Sometimes we need to pass in the search columns like 'title,text', so
     ## we look for a comma (not a valid character in a column name) and split
     ## on it if it's there.
+    my $plain_search = $search;
     if ( ($search || '') ne '' ) {
         $search = quotemeta($search) unless $is_regex;
         $search = '(?i)' . $search   unless $case;
@@ -391,7 +396,14 @@ sub do_search_replace {
     my $api   = $search_api->{$type};
     my $class = $app->model($api->{object_type} || $type);
     my %param = %$list_pref;
-    my $limit = $q->param('limit') || 125;    # FIXME: mt.cfg setting?
+    my $limit;
+    # type-specific directives override global CMSSearchLimit
+    my $directive = 'CMSSearchLimit' . ucfirst($type);
+	$limit = MT->config->$directive || MT->config->CMSSearchLimit || 125;
+	# don't allow passed limit to be higher than config limit
+	if ($q->param('limit') && ($q->param('limit') < $limit)) {
+		$limit = $q->param('limit');
+	}
     $limit =~ s/\D//g if $limit ne 'all';
     my $matches;
     $date_col = $api->{date_column} || 'created_on';
@@ -404,7 +416,7 @@ sub do_search_replace {
             if ($blog_id) {
                 my $perm = $author->permissions($blog_id);
                 return $app->errtrans('Permission denied.')
-                    unless $perm->can_administer_blog;
+                    unless $perm->can_administer_blog || $perm->can_manage_users;
             }
             $blog_id = 0;
         }
@@ -438,6 +450,22 @@ sub do_search_replace {
                   [ $datefrom . '000000', $dateto . '235959' ];
             }
         }
+        my @terms;
+        # MT::Object doesn't like multi-term hashes within arrays
+        if (%terms) {
+        	for my $key (keys %terms) {
+        		push(@terms, { $key => $terms{$key} });
+        	}
+        	push(@terms, '-and');
+        }
+        my @col_terms;
+        my $query_string = "%$plain_search%";
+        for my $col (@cols) {
+			push(@col_terms, { $col => { like => $query_string } }, '-or' );
+        }
+        delete $col_terms[$#col_terms];
+        push(@terms, \@col_terms);
+        $args{limit} = $limit + 1;
         my $iter;
         if ($do_replace) {
             $iter = sub {
@@ -450,13 +478,13 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
-                $iter = $class->load_iter( \%terms, \%args ) or die $class->errstr;
+                $iter = $class->load_iter( \@terms, \%args ) or die $class->errstr;
             }
             else {
 
                 my @streams;
                 if ( $author->is_superuser ) {
-                    @streams = ( { iter => $class->load_iter( \%terms, \%args ) } );
+                    @streams = ( { iter => $class->load_iter( \@terms, \%args ) } );
                 } 
                 else {
                     # Get an iter for each accessible blog
@@ -466,12 +494,10 @@ sub do_search_replace {
                     );
                     if (@perms) {
                         @streams = map {
+                            $terms[0]{blog_id} = $_->blog_id;
                             {
                                 iter => $class->load_iter(
-                                    {
-                                        blog_id => $_->blog_id,
-                                        %terms
-                                    },
+                                    \@terms,
                                     \%args
                                 )
                             }

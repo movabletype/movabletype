@@ -21,23 +21,61 @@ our $drivers = [
 
 our @drivers;
 
-#sub init {
-#    @drivers = ();
-#    __PACKAGE__->new();
-#}
-
 sub new {
     my $pkg = shift;
+    my $get_driver = $pkg->driver_for_class();
+    return $get_driver->();
+}
+
+our $DRIVER;
+sub instance {
+    my $pkg = shift;
+    $DRIVER = $pkg->new unless $DRIVER;
+    return $DRIVER;
+}
+
+# Returns a coderef for an object driver that is suitable
+# for the $class given. $class is optional
+sub driver_for_class {
+    my $pkg = shift;
+    my ($class) = @_;
+    require MT::ObjectDriver::Driver::CacheWrapper;
+    my $driver_code = MT::ObjectDriver::Driver::CacheWrapper->wrap(
+        sub {
+            my $cfg = MT->config;
+            my $Password = $cfg->DBPassword;
+            my $Username = $cfg->DBUser;
+            my $dbd = $pkg->dbd_class;
+            my $driver = MT::ObjectDriver::Driver::DBI->new(
+                dbd => $dbd,
+                dsn => $dbd->dsn_from_config($cfg),
+                reuse_dbh => 1,
+                ($Username ? ( username => $Username) : ()),
+                ($Password ? ( password => $Password) : ()),
+            );
+            push @drivers, $driver;
+            return $driver;
+        }, $class
+    );
+    return $driver_code;
+}
+
+our $dbd_class;
+sub dbd_class {
+    return $dbd_class if defined $dbd_class;
+    my $pkg = shift;
+
     my ($type) = @_;
     $type ||= MT->config('ObjectDriver');
 
-    my $class;
+    my $dbd_class;
     foreach my $driver (@$drivers) {
         if ((lc $type) =~ m/^$driver->[0]$/) {
-            $class = $driver->[1];
+            $dbd_class = $driver->[1];
             last;
         }
     }
+
     unless ( $class ) {
         my $all_drivers = MT->registry("object_drivers");
         foreach my $driver ( %$all_drivers ) {
@@ -56,37 +94,28 @@ sub new {
     eval "use $class;";
     die "Unsupported driver $type: $@" if $@;
 
-    my $cfg = MT->config;
-    my $Password ||= $cfg->DBPassword;
-    my $Username = $cfg->DBUser;
-
-    my $dbi_driver = MT::ObjectDriver::Driver::DBI->new(
-        dsn => $class->dsn_from_config($cfg),
-        ($Username ? ( username => $Username) : ()),
-        ($Password ? ( password => $Password) : ()),
-        ($class ? ( dbd => $class) : ()),
-    );
-
-    require MT::ObjectDriver::Driver::Cache::RAM;
-    require MT::Memcached;
-
-    my $driver;
-    if (MT::Memcached->is_available) {
-        require Data::ObjectDriver::Driver::Cache::Memcached;
-        $driver = MT::ObjectDriver::Driver::Cache::RAM->new(
-            fallback => Data::ObjectDriver::Driver::Cache::Memcached->new(
-                cache => MT::Memcached->instance,
-                fallback => $dbi_driver,
-            ),
-        );
-    } else {
-        $driver = MT::ObjectDriver::Driver::Cache::RAM->new(
-            fallback => $dbi_driver,
-        );
+    unless ( $dbd_class ) {
+        my $all_drivers = MT->registry("object_drivers");
+        foreach my $driver ( %$all_drivers ) {
+            if ( my $re = $all_drivers->{$driver}{match} ) {
+                if ( (lc $type) =~ m/^$re$/ ) {
+                    $dbd_class = $all_drivers->{$driver}{config_package};
+                    last;
+                }
+            }
+        }
     }
 
-    push @drivers, $driver;
-    return $driver;
+    $dbd_class ||= $type;
+    die "Unsupported driver $type" unless $dbd_class;
+
+    $dbd_class = 'MT::ObjectDriver::Driver::DBD::' . $dbd_class
+        unless $dbd_class =~ m/::/;
+
+    eval "use $dbd_class;";
+    die "Unsupported driver $type: $@" if $@;
+
+    return $dbd_class;
 }
 
 sub configure {
@@ -95,14 +124,7 @@ sub configure {
 }
 
 sub cleanup {
-    @drivers = ();
-    if ( my $driver = $MT::Object::DRIVER ) {
-        if ( my $dbh = $driver->dbh ) {
-            $dbh->disconnect;
-        }
-        $MT::Object::DRIVER = undef;
-        $MT::Object::DBI_DRIVER = undef;
-    }
+    undef $DRIVER;
 }
 
 1;
@@ -111,10 +133,6 @@ __END__
 =head1 NAME
 
 MT::ObjectDriverFactory
-
-=head1 METHODS
-
-TODO
 
 =head1 AUTHOR & COPYRIGHT
 

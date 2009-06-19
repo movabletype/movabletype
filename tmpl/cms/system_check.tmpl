@@ -36,6 +36,34 @@
 </mtapp:setting>
 
 <mtapp:setting
+    id="memcached_enabled"
+    label="<__trans phrase="Memcache Status">"
+    label_class="top-label"
+    content_class="field-content-text">
+    <div class="info">
+        Memcache is <em><mt:if name="memcached_enabled">configured<mt:else>disabled</mt:if></em>.<mt:if name="memcached_enabled"><br />
+        Memcache Server is <em><mt:if name="memcached_active">available<mt:else>unavailable</mt:if></em>.
+        </mt:if>
+    </div>
+</mtapp:setting>
+
+<mtapp:setting
+    id="memcached_enabled"
+    label="<__trans phrase="Server Model">"
+    label_class="top-label"
+    content_class="field-content-text">
+    <div class="info">
+        <mt:if name="server_modperl">
+            mod_perl
+        <mt:else name="server_fastcgi">
+            FastCGI
+        <mt:else>
+            CGI
+        </mt:if>
+    </div>
+</mtapp:setting>
+
+<mtapp:setting
     id="system_check"
     label="System Info (MTCheck)"
     label_class="top-label"

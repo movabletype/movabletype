@@ -446,22 +446,40 @@ sub list {
 
     my $q     = $app->param;
     my $perms = $app->permissions;
-    if ( $type eq 'page' ) {
-        if ( $perms
-            && ( !$perms->can_manage_pages ) )
-        {
-            return $app->errtrans("Permission denied.");
-        }
-    }
-    else {
-        if (
-            $perms
-            && (   !$perms->can_edit_all_posts
-                && !$perms->can_create_post
-                && !$perms->can_publish_post )
-          )
-        {
-            return $app->errtrans("Permission denied.");
+    unless ($app->user->is_superuser) {
+        if ( $type eq 'page' ) {
+            if ( $app->param('blog_id') ) {
+                return $app->errtrans("Permission denied.")
+                    unless $perms && $perms->can_manage_pages;
+            } else {
+                require MT::Permission;
+                my @blogs
+                    = map { $_->blog_id }
+                    grep {
+                    $_->can_manage_pages
+                    } MT::Permission->load(
+                    { author_id => $app->user->id } );
+                return $app->errtrans("Permission denied.") unless @blogs;
+            }
+        } else {
+            if ( $app->param('blog_id') ) {
+                return $app->errtrans("Permission denied.")
+                    unless $perms && ( 
+                               $perms->can_create_post
+                            || $perms->can_publish_post
+                            || $perms->can_edit_all_posts );
+            } else {
+                require MT::Permission;
+                my @blogs
+                    = map { $_->blog_id }
+                    grep {
+                    $_->can_create_post
+                        || $_->can_publish_post
+                        || $_->can_edit_all_posts
+                    } MT::Permission->load(
+                    { author_id => $app->user->id } );
+                return $app->errtrans("Permission denied.") unless @blogs;
+            }
         }
     }
 
@@ -2136,10 +2154,21 @@ sub update_entry_status {
     my %rebuild_these;
     require MT::Entry;
 
+    my $app_author = $app->user;
+    my $perms      = $app->permissions;
+
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
           or return $app->errtrans(
             "One of the entries ([_1]) did not actually exist", $id );
+
+        return $app->error( $app->translate('Permission denied.') )
+            unless $app_author->is_superuser
+                || ( ( $entry->class eq 'entry' )
+                    && $perms && $perms->can_edit_entry( $entry, $app_author, 1 ) )
+                || ( ( $entry->class eq 'page' )
+                    && $perms && $perms->can_manage_pages );
+
         if ( $app->config('DeleteFilesAtRebuild')
             && ( MT::Entry::RELEASE() eq $entry->status ) )
         {

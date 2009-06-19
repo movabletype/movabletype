@@ -291,8 +291,11 @@ sub do_unserialization {
     my $dataref = shift;
 
     return $dataref unless defined $$dataref;
-    $$dataref =~ s/^([ABCINS]{3})://;
-    my $prefix = $1;
+    my $prefix;
+    if ( $$dataref =~ m/^([ABCINS]{3}):/ ) {
+        $$dataref =~ s/^([ABCINS]{3})://;
+        $prefix = $1;
+    }
     unless (defined $prefix) {
         return $dataref;
     }

@@ -576,7 +576,7 @@ sub clone_with_children {
 
     # Cloning blog
     my $new_blog = $blog->clone($params);
-    $new_blog->name(MT->translate($blog_name ? $blog_name : "Clone of [_1]", $blog->name));
+    $new_blog->name($blog_name ? $blog_name : MT->translate("Clone of [_1]", $blog->name));
     delete $new_blog->{column_values}->{id};
     delete $new_blog->{changed_cols}->{id};
     $new_blog->save or die $new_blog->errstr;

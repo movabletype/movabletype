@@ -763,7 +763,7 @@ use vars qw( @ISA %Lexicon );
 	'User has not set pasword hint; cannot recover password' => 'Gebruiker heeft geen wachtwoordhint ingesteld; kan wachtwoord niet recupereren',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'Ongeldige poging om wachtwoord te recupereren (gebruikte hint \'[_1]\')',
 	'User does not have email address' => 'Gebruiker heeft geen e-mail adres',
-	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Een verzoek om het wachtwoord re resetten is naar [_3] gestuurd voor gebruiker \'[_1\' (gebruiker #[_2]).', # Translate - New
+	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'Een verzoek om het wachtwoord re resetten is naar [_3] gestuurd voor gebruiker \'[_1\' (gebruiker #[_2]).',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => 'Sommige objecten werden niet gerecupereerd omdat hun ouder-objecten niet werden teruggezet.  Gedetailleerde informatie is te vinden in het <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activiteitenlog</a>.',
 	'[_1] is not a directory.' => '[_1] is geen map.',
 	'Error occured during restore process.' => 'Er deed zich een fout voor tijdens het restore-proces.',
@@ -2109,7 +2109,7 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Om een nieuw configuratiebestand aan te maken met de Wizard moet u het huidige configuratiebestand verwijderen en deze pagina vernieuwen.',
 	'Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed.' => 'Movable Type vereist dat JavaScript ingeschakeld is in uw browser.  Gelieve het in te schakelen en herlaad deze pagina om opnieuw te proberen.',
 	'This wizard will help you configure the basic settings needed to run Movable Type.' => 'Deze wizard zal u helpen met het configureren van de basisinstellingen om Movable Type te doen werken.',
-	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Fout: \'[_1]\' werd niet gevonden.</strong>  Gelieve uw statische bestanden eerst te verplaatsen naar de map of corrigeer de instelling als ze niet juist is.',
+	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => '<strong>Fout: \'[_1]\' werd niet gevonden.</strong>  Gelieve eerst uw statische bestanden in de map te plaatsen of pas de instelling aan als deze niet juist is.', # Translate - New
 	'Configure Static Web Path' => 'Statisch webpad instellen',
 	'Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Type wordt geleverd met een map genaamd [_1] die een aantal belangrijke bestanden bevat zoals afbeeldingen, javascript bestanden en stylesheets.',
 	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => 'De map [_1] bevindt zich in de hoofdmap van Movable Type waar ook dit wizard script zich bevindt, maar door de configuratie van uw webserver is de [_1] map niet toegankelijk op deze locatie en moet deze dus verplaatst worden naar een locatie die toegankelijk is vanop het web (m.a.w. uw document root map).',
@@ -2734,7 +2734,7 @@ use vars qw( @ISA %Lexicon );
 	'Save display options' => 'Opties schermindeling opslaan',
 	'OK' => 'OK',
 	'Close display options' => 'Opties schermindeling sluiten',
-	'This post was held for review, due to spam filtering.' => 'Dit bericht werd in de moderatiewachtrij geplaatst door de spamfilter.', # Translate - New
+	'This post was held for review, due to spam filtering.' => 'Dit bericht werd in de moderatiewachtrij geplaatst door de spamfilter.',
 	'This post was classified as spam.' => 'Dit bericht werd geclassificeerd als spam.',
 	'Spam Details' => 'Spamdetails',
 	'Score' => 'Score',
@@ -3234,6 +3234,7 @@ use vars qw( @ISA %Lexicon );
 	'Create widget template' => 'Widgetsjabloon aanmaken',
 	'Widget Template' => 'Widgetsjabloon',
 	'Widget Templates' => 'Widgetsjablonen',
+	'widget templates' => 'widgetsjablonen', # Translate - Case
 
 ## tmpl/cms/list_notification.tmpl
 	'You have added [_1] to your address book.' => 'U heeft [_1] toegevoegd aan uw adresboek.',
@@ -3780,7 +3781,7 @@ use vars qw( @ISA %Lexicon );
 	'New Password' => 'Nieuw wachtwoord',
 	'Enter the new password.' => 'Vul het nieuwe wachtwoord in',
 	'Password recovery word/phrase' => 'Woord/uitdrukking om wachtwoord terug te vinden',
-	'This word or phrase is not used in the password recovery.' => 'Dit woord of deze uitdrukking wordt niet gebruikt in het woord of de uitdrukking voor het terugvinden van het wachtwoord.', # Translate - New
+	'This word or phrase is not used in the password recovery.' => 'Dit woord of deze uitdrukking wordt niet gebruikt in het woord of de uitdrukking voor het terugvinden van het wachtwoord.',
 	'Preferred language of this user.' => 'Voorkeurstaal van deze gebruiker',
 	'Text Format' => 'Tekstformaat',
 	'Preferred text format option.' => 'Voorkeursoptie tekstformaat',
@@ -3848,9 +3849,14 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>.' => 'Uw <a href="[_1]">laatste bericht</a> was [_2] op <a href="[_3]">[_4]</a>.',
+	'Your last entry was [_1] in <a href="[_2]">[_3]</a>.' => 'Uw laatste bericht was [_1] in <a href="[_2]">[_3]</a>.', # Translate - New
 	'You have <a href="[_1]">[quant,_2,draft,drafts]</a>.' => 'U heeft <a href="[_1]">[quant,_2,kladbericht, kladberichten]</a>.',
+	'You have [quant,_1,draft,drafts].' => 'U heeft [quant,_1,kladbericht,kladberichten].', # Translate - New
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a> with <a href="[_3]">[quant,_4,comment,comments]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven met <a href="[_3]">[quant,_4,reactie,reacties]</a>.',
+	'You\'ve written [quant,_1,entry,entries] with <a href="[_2]">[quant,_3,comment,comments]</a>.' => 'U heeft [quant,_1,bericht,berichten] met <a href="[_2]">[quant,_3,reactie,reacties]</a>.', # Translate - New
+	'You\'ve written [quant,_1,entry,entries] with [quant,_2,comment,comments].' => 'U heeft [quant,_1,bericht,berichten] geschreven met [quant,_2,reactie,reacties].', # Translate - New
 	'You\'ve written <a href="[_1]">[quant,_2,entry,entries]</a>.' => 'U heeft <a href="[_1]">[quant,_2,bericht,berichten]</a> geschreven.',
+	'You\'ve written [quant,_1,entry,entries].' => 'U heeft [quant,_1,bericht,berichten] geschreven.', # Translate - New
 	'Edit your profile' => 'Bewerk uw profiel',
 
 ## tmpl/cms/widget/new_install.tmpl
@@ -3898,6 +3904,8 @@ use vars qw( @ISA %Lexicon );
 	'Total Users' => 'Totaal aantal gebruikers',
 	'Active Users' => 'Actieve gebruikers',
 	'Users who have logged in within 90 days are considered <strong>active</strong> in Movable Type license agreement.' => 'Gebruikers die zich in de afgelopen 90 dagen hebben aangemeld worden als <strong>actief</strong> beschouwd voor de Movable Type licentieovereenkomst.',
+	'Memcache Status' => 'Memcache Status', # Translate - New
+	'Server Model' => 'Servertype', # Translate - New
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, please ensure that the mt-check.cgi script exists and/or the CheckScript configuration parameter references it properly.' => 'Movable Type kon het script met de naam \'mt-check.cgi\' niet vinden.  Om dit probleem op te lossen, gelieve te controleren dat het mt-check.cgi script bestaat en/of dat de MTCheckScript configuratieparameter er op de juiste manier naar verwijst.',
 
 ## tmpl/cms/restore.tmpl
@@ -4062,8 +4070,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Community.pack/config.yaml
 	'Community Settings' => 'Community instellingen',
-	'Pending Entries' => 'Berichten in wachtrij', # Translate - New
-	'Spam Entries' => 'Spamberichten', # Translate - New
+	'Pending Entries' => 'Berichten in wachtrij',
+	'Spam Entries' => 'Spamberichten',
 	'Following Users' => 'Gevolgde gebruikers',
 	'Being Followed' => 'Wordt gevolgd door',
 	'Sanitize' => 'Schoonmaakfilter',
@@ -4079,8 +4087,8 @@ use vars qw( @ISA %Lexicon );
 	'Profile View' => 'Profiel bekijken',
 	'Profile Edit Form' => 'Bewerkingsformulier profiel',
 	'Profile Feed' => 'Profielfeed',
-	'New Password Form' => 'Formulier nieuw wachtwoord', # Translate - New
-	'New Password Reset Form' => 'Formulier nieuw wachtwoord resetten', # Translate - New
+	'New Password Form' => 'Formulier nieuw wachtwoord',
+	'New Password Reset Form' => 'Formulier nieuw wachtwoord resetten',
 	'Form Field' => 'Veld in formulier',
 	'Status Message' => 'Statusboodschap',
 	'Simple Header' => 'Eenvoudige hoofding',
@@ -4119,7 +4127,7 @@ use vars qw( @ISA %Lexicon );
 	'Your confirmation have expired. Please register again.' => 'Uw bevestiging is verlopen.  Gelieve opnieuw te registeren.',
 	'User \'[_1]\' (ID:[_2]) has been successfully registered.' => 'Gebruiker \'[_1]\' (ID:[_2]) werd met succes geregistreerd.',
 	'Thanks for the confirmation.  Please sign in.' => 'Bedankt voor de bevestiging.  Gelieve u aan te melden.',
-	'[_1] registered to Movable Type.' => '[_1] geregistreerd bij Movable Type', # Translate - New
+	'[_1] registered to Movable Type.' => '[_1] geregistreerd bij Movable Type',
 	'Login required' => 'Aanmelden vereist',
 	'Title or Content is required.' => 'Titel of inhoud is vereist.',
 	'System template entry_response not found in blog: [_1]' => 'Systeemsjabloon entry_response niet gevonden voor blog: [_1]',
@@ -5283,33 +5291,7 @@ Zoekbasis: [_2]",
 ## plugins/feeds-app-lite/mt-feeds.pl
 	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Lite maakt het mogelijk feeds te herpubliceren op uw blog.  Meer doen met feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgraden naar Feeds.App</a>.',
 	'Create a Feed Widget' => 'Feedwidget aanmaken',
-        'A request has been made to change your password in Movable Type. To complete this process click on the link below to select a new password.' => 'Er is een verzoek ingediend om uw wachtwoord aan te passen in Movable Type.  Gelieve dit te bevestigen door op onderstaande link te klikken om een nieuw wachtwoord te kiezen.', # Translate - New
-        'If you did not request this change, you can safely ignore this email.' => 'Als u deze wijziging niet heeft aangevraagd, kunt u deze e-mail gerust negeren.', # Translate - New
-        '%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x', # Translate - New
-        '[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]', # Translate - New
-        'Email address is required.' => 'E-mail adres is vereist', # Translate - New
-        'User not found' => 'Gebruiker niet gevonden', # Translate - New
-        'Password reset token not found' => 'Wachtwoord reset token niet gevonden', # Translate - New
-        'Email address not found' => 'E-mail adres niet gevonden', # Translate - New
-        'Your request to change your password has expired.' => 'Uw verzoek om uw wachtwoord aan te passen is verlopen', # Translate - New
-        'Invalid password reset request' => 'Ongeldig verzoek om wachtwoord te veranderen', # Translate - New
-        'Please confirm your new password' => 'Gelieve uw nieuwe wachtwoord te bevestigen', # Translate - New
-        'Password do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
-        'Invalid [_1] parameter.' => 'Ongeldige [_1] parameter', # Translate - New
-        'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.', # Translate - New
-        'Error saving [_1] record # [_3]: [_2]...' => 'Fout bij opslaan [_1] record # [_3]: [_2]...', # Translate - New
-        'The email address provided is not unique.  Please enter your username.' => 'Een e-mail is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
-        'An email with a link to reset your password has been sent to your email address ([_1]).' => 'Er is een e-mail met een link om uw wachtwoord aan te passen doorgestuurd naar uw e-mail adres ([_1]).', # Translate - New
-        'Choose New Password' => 'Nieuw wachtwoord kiezen', # Translate - New
-        'You must set Local Archive Path.' => 'U moet een lokaal archiefpad instellen.', # Translate - New
-        'You must set a valid Archive URL.' => 'U moet een geldige archief URL instellen.', # Translate - New
-        'You must set a valid Local Archive Path.' => 'U moet een geldig lokaal archiefpad instellen.', # Translate - New
-	'Passwords do not match' => 'Wachtwoorden komen niet overeen', # Translate - New
-	'Password reset for user \'[_1]\' (user #[_2]) was successful. Recovery link sent to the following address: [_3]' => 'Wachtwoord reset voor gebruiker \'[_1]\' (gebruiker #[_2]) geslaagd. Reset link verstuurd naar volgend adres: [_3]', # Translate - New
-	'Updating password recover email template...' => 'Sjabloon wachtwoordrecuperatie e-mail wordt bijgewerkt...', # Translate - New
-	'The email address provided is not unique.  Please enter your username.' => 'Het opgegeven e-mail adres is niet uniek.  Gelieve uw gebruikersnaam op te geven.', # Translate - New
-	'_WARNING_PASSWORD_RESET_MULTI' => 'U staat op het punt e-mails te versturen waarmee de geselecteerde gebruikers hun wachtwoord kunnen aanpassen. Bent u zeker?',
-	"A password reset link has been sent to [_3] for user '[_1]' (user #[_2])." => 'Een link om het wachtwoord opnieuw in te stellen is verzonden naar [_3] voor gebruiker \'[_1]\' (gebruiker #[_2]).', 
+
 ## plugins/CommunityActionStreams/config.yaml
 	'Action streams for community events: add entry, add comment, add favorite, follow user.' => 'Action streams voor community events: bericht toevoegen, reactie toevoegen, favoriet toevoegen, gebruiker volgen.',
 
@@ -5317,7 +5299,6 @@ Zoekbasis: [_2]",
 	'A Movable Type theme with structured entries and action streams.' => 'Een Movable Type thema met gestructureerde berichten en action streams.',
 	'Adjusting field types for embed custom fields...' => 'Veldtypes aan het aanpassen voor gepersonaliseerde velden van type embed...',
 	'Updating favoriting namespace for Motion...' => 'Favoriting namespace aan het bijwerken voor Motion...',
-	'Reinstall Motion Templates' => 'Motion sjablonen opnieuw installeren',
 	'Motion Themes' => 'Motion sjablonen',
 	'Themes for Motion template set' => 'Thema\'s voor de Motion sjabloonset',
 	'Motion' => 'Motion',
@@ -5337,8 +5318,8 @@ Zoekbasis: [_2]",
 	'Profile Feed' => 'Profielfeed',
 	'Login Form' => 'Aanmeldformulier',
 	'Register Confirmation' => 'Bevestiging registratie',
-	'Password Reset' => 'Wachtwoord vernieuwen',
-	'New Password Form' => 'Formulier nieuw wachtwoord', # Translate - New
+	'New Password Reset Form' => 'Formulier nieuw wachtwoord resetten',
+	'New Password Form' => 'Formulier nieuw wachtwoord',
 	'User Profile' => 'Gebruikersprofiel',
 	'Actions (Local)' => 'Acties (lokaal)',
 	'Comment Detail' => 'Details reactie',
@@ -5460,7 +5441,7 @@ Zoekbasis: [_2]",
 	'Remove service' => 'Service verwijderen',
 
 ## plugins/Motion/templates/Motion/widget_main_column_registration.mtml
-	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Aanmelden</a>', # Translate - New
+	'<a href="javascript:void(0)" onclick="[_1]">Sign In</a>' => '<a href="javascript:void(0)" onclick="[_1]">Aanmelden</a>',
 	'Not a member? <a href="[_1]">Register</a>' => 'Nog geen lid? <a href="[_1]">Registreer nu</a>',
 	'(or <a href="javascript:void(0)" onclick="[_1]">Sign In</a>)' => '(of <a href="javascript:void(0)" onclick="[_1]">meld u aan</a>)',
 	'No posting privileges.' => 'Geen rechten om berichten te publiceren',
@@ -5478,7 +5459,7 @@ Zoekbasis: [_2]",
 
 ## plugins/Motion/templates/Motion/actions_local.mtml
 	'[_1] commented on [_2]' => '[_1] reageerde op [_2]',
-	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet', # Translate - New
+	'[_1] favorited [_2]' => '[1] markeerde [_2] als favoriet',
 	'No recent actions.' => 'Geen recente acties.',
 
 ## plugins/Motion/templates/Motion/main_index.mtml
@@ -5562,7 +5543,7 @@ Zoekbasis: [_2]",
 	'Profile Data' => 'Profielgegevens',
 	'More Entries by [_1]' => 'Meer berichten van [_1]',
 	'Recent Actions' => 'Recente acties',
-	'_PROFILE_COMMENT_LENGTH' => '10', # Translate - New
+	'_PROFILE_COMMENT_LENGTH' => '10',
 	'Comment Threads' => 'Reactie threads',
 	'[_1] commented on ' => '[_1] reageerde op ',
 	'No responses to comments.' => 'Geen antwoorden op reacties.',
@@ -5594,7 +5575,7 @@ Zoekbasis: [_2]",
 	'Facebook Application Key' => 'Facebook applicatiesleutel',
 	'The key for the Facebook application associated with your blog.' => 'De sleutel voor de Facebook-applicatie geassocieerd met uw blog.',
 	'Edit Facebook App' => 'Facebook app bewerken',
-	'Create Facebook App' => 'Facebook app aanmaken', # Translate - New
+	'Create Facebook App' => 'Facebook app aanmaken',
 	'Facebook Application Secret' => 'Facebook applicatiegeheim',
 	'The secret for the Facebook application associated with your blog.' => 'Het geheim voor de Facebook-applicatie geassocieerd met uw blog.',
 
@@ -5881,9 +5862,9 @@ Zoekbasis: [_2]",
 	'[_1] updating [_2] events for [_3]' => '[_1] [_2] evenementen aan het bijwerken voor [_3]',
 	'Error updating events for [_1]\'s [_2] stream (type [_3] ident [_4]): [_5]' => 'Fout bij het updaten van evenementen voor [_1]\'s [_2] stream (type [_3] ident [_4]: [5]',
 	'Could not load class [_1] for stream [_2] [_3]: [_4]' => 'Kon klasse [_1] voor stream [_2] [_3] niet laden: [_4]',
-	'No URL to fetch for [_1] results' => 'Geen URL binnen te halen voor [_1] resultaten', # Translate - New
-	'Could not fetch [_1]: [_2]' => 'Kon [_1] niet binnenhalen: [_2]', # Translate - New
-	'Aborted fetching [_1]: [_2]' => 'Ophalen [_1] geannuleerd: [_2]', # Translate - New
+	'No URL to fetch for [_1] results' => 'Geen URL binnen te halen voor [_1] resultaten',
+	'Could not fetch [_1]: [_2]' => 'Kon [_1] niet binnenhalen: [_2]',
+	'Aborted fetching [_1]: [_2]' => 'Ophalen [_1] geannuleerd: [_2]',
 
 ## plugins/ActionStreams/tmpl/dialog_edit_profile.tmpl
 	'Your user name or ID is required.' => 'Uw gebruikersnaam of ID is vereist.',
@@ -5914,7 +5895,7 @@ Zoekbasis: [_2]",
 ## plugins/ActionStreams/tmpl/dialog_add_profile.tmpl
 	'Add a profile on a social networking or instant messaging service.' => 'Voeg een profiel toe op een sociaal netwerk of een instant messaging dienst.',
 	'Select a service where you already have an account.' => 'Selecteer een service waar u reeds een account heeft.',
-	'Add Profile (s)' => 'Profiel Toevoegen (s)', # Translate - New
+	'Add Profile (s)' => 'Profiel Toevoegen (s)',
 
 ## plugins/ActionStreams/tmpl/list_profileevent.tmpl
 	'The selected events were deleted.' => 'De geselecteerde gebeurtenissen werden verwijderd.',
@@ -5948,9 +5929,10 @@ Zoekbasis: [_2]",
 	'Rebuild Indexes' => 'Indexen herpubliceren',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Indien geselecteerd zullen de indexen van deze blog opnieuw worden gepubliceerd telkens nieuwe action stream gebeurtenissen worden ontdekt.',
 	'Enable rebuilding' => 'Herpubliceren toestaan',
+	'Clone of [_1]' => 'Kloon van [_1]', # Translate - New
 
 );
 
-## New words: 95
+## New words: 110
 
 1;

@@ -318,7 +318,7 @@ sub save_widgetset {
         $obj->modulesets( join ',', @inst );
     }
     else {
-        @inst = split /,/, $obj->modulesets;
+        @inst = split /,/, ($obj->modulesets || '');
     }
 
     my @widgets = MT::Template->load(

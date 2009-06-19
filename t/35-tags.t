@@ -13,7 +13,7 @@ $| = 1;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
 use Test::More;
-use JSON;
+use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
 use MT::Template::Context;
@@ -31,7 +31,9 @@ close F;
 $test_json =~ s/^ *#.*$//mg;
 $test_json =~ s/# *\d+ *(?:TBD.*)? *$//mg;
 
-my $test_suite = JSON::from_json($test_json);
+my $json = new JSON;
+$json->loose(1); # allows newlines inside strings
+my $test_suite = $json->decode($test_json);
 
 # Ok. We are now ready to test!
 plan tests => (scalar(@$test_suite) * 2) + 3;
@@ -65,7 +67,7 @@ my %const = (
 );
 
 $test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
-$test_suite = JSON::from_json($test_json);
+$test_suite = $json->decode($test_json);
 
 $ctx->{current_timestamp} = '20040816135142';
 
