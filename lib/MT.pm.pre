@@ -843,7 +843,8 @@ sub init_config {
     my $cfg = $mt->config;
     $cfg->define( $mt->registry('config_settings') );
     $cfg->read_config($mt->{cfg_file}) or return $mt->error( $cfg->errstr );
-
+    $mt->init_config_from_db;
+    
     my @mt_paths = $cfg->paths;
     for my $meth (@mt_paths) {
         my $path = $cfg->get( $meth, undef );
