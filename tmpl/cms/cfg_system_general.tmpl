@@ -36,7 +36,6 @@ function validate (f) {
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
-
     <mtapp:setting
         id="system_email_address"
         label="<__trans phrase="System Email">"
@@ -46,8 +45,38 @@ function validate (f) {
             <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> class="full-width" />
         </div>
     </mt:app:setting>
-
+    <mtapp:setting
+        id="system_debug_mode"
+        label="<__trans phrase="Debug Mode">"
+        hint="<__trans phrase="Set the DebugMode according to the documentation.">"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_debug_mode" name="system_debug_mode" value="<mt:var name="system_debug_mode" escape="html">" />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging"
+        label="<__trans phrase="Performance Logging">"
+        hint="<__trans phrase="Turn off performance logging.">"
+        show_hint="1">
+        <input type="checkbox" id="system_performance_logging" name="system_performance_logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_path"
+        label="<__trans phrase="Log Paths">"
+        hint="<__trans phrase="Paths where logs are placed.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="system_performance_logging_path" name="system_performance_logging_path"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> class="full-width" />
+        </div>
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_threshold"
+        label="<__trans phrase="Logging Threshold">"
+        hint="<__trans phrase="Logging threshold for the App">"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_performance_logging_threshold" name="system_performance_logging_threshold" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+    </mt:app:setting>
 </fieldset>
+
 
 <mt:setvarblock name="action_buttons">
     <button
