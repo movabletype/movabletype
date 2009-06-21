@@ -1172,6 +1172,39 @@ sub save_cfg_system_feedback {
 
     $app->validate_magic or return;
     my $cfg = $app->config;
+    
+    # construct the message to the activity log
+    my @meta_messages = ();
+    if ($app->param('comment_disable')) {
+        push(@meta_messages, 'Allow comments is on');
+    } else {
+        push(@meta_messages, 'Allow comments is off');
+    } 
+    if ($app->param('ping_disable')) {
+        push(@meta_messages, 'Allow trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow trackbacks is off');
+    }
+    if ($app->param('disable_notify_ping')) {
+        push(@meta_messages, 'Allow outbound trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow outbound trackbacks is off');
+    }
+    push(@meta_messages, 'Outbound trackback limit is ' . $app->param('trackback_send')) 
+        if ($app->param('trackback_send') =~ /\w+/);
+    
+    # throw the messages in the activity log
+    if (scalar(@meta_messages) > 0) {
+        my $message = join(', ', @meta_messages);
+        $app->log({
+            message  => 'System Settings Changes Took Place',
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            metadata => $message,
+        });
+    }
+    
+    # actually assign the changes
     $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
     $cfg->AllowPings(    ( $app->param('ping_disable')    ? 0 : 1 ), 1 );
     $cfg->DisableNotificationPings(
