@@ -843,7 +843,6 @@ sub init_config {
     my $cfg = $mt->config;
     $cfg->define( $mt->registry('config_settings') );
     $cfg->read_config($mt->{cfg_file}) or return $mt->error( $cfg->errstr );
-    $mt->init_config_from_db;
     
     my @mt_paths = $cfg->paths;
     for my $meth (@mt_paths) {
@@ -878,14 +877,6 @@ sub init_config {
 
     return $mt->trans_error("Bad ObjectDriver config")
       unless $cfg->ObjectDriver;
-
-    if ( $MT::DebugMode = $cfg->DebugMode ) {
-        require Data::Dumper;
-        $Data::Dumper::Terse    = 1;
-        $Data::Dumper::Maxdepth = 4;
-        $Data::Dumper::Sortkeys = 1;
-        $Data::Dumper::Indent   = 1;
-    }
 
     if ($cfg->PerformanceLogging && $cfg->ProcessMemoryCommand) {
         $mt->log_times();
@@ -1164,6 +1155,7 @@ sub init {
     require MT::Plugin;
     $mt->init_addons(@_)        or return;
     $mt->init_config_from_db( \%param ) or return;
+    $mt->init_debug_mode or return;
     $mt->init_plugins(@_)       or return;
     $plugins_installed = 1;
     $mt->init_schema();
@@ -1174,6 +1166,20 @@ sub init {
 
     $mt->run_callbacks('post_init', $mt, \%param);
     return $mt;
+}
+
+sub init_debug_mode {
+    my $mt = shift;
+    my $cfg = $mt->config;
+
+    # init the debug mode
+    if ( $MT::DebugMode = $cfg->DebugMode ) {
+        require Data::Dumper;
+        $Data::Dumper::Terse    = 1;
+        $Data::Dumper::Maxdepth = 4;
+        $Data::Dumper::Sortkeys = 1;
+        $Data::Dumper::Indent   = 1;
+    }
 }
 
 sub init_callbacks {
