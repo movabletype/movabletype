@@ -1155,7 +1155,7 @@ sub init {
     require MT::Plugin;
     $mt->init_addons(@_)        or return;
     $mt->init_config_from_db( \%param ) or return;
-    $mt->init_debug_mode or return;
+    $mt->init_debug_mode;
     $mt->init_plugins(@_)       or return;
     $plugins_installed = 1;
     $mt->init_schema();
