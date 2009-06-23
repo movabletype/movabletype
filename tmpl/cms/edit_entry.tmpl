@@ -491,7 +491,7 @@
         Editor.strings.enterLinkAddress = '<__trans phrase="Enter the link address:" escape="js">';
         Editor.strings.enterTextToLinkTo = '<__trans phrase="Enter the text to link to:" escape="js">';
         function restoreBarPosition() {
-            var current_bar_position = '<mt:if name="position_actions_top">top<mt:elseif name="position_actions_bottom">bottom<mt:elseif name="position_actions_both">both<mt:else>top</mt:if>';
+            var current_bar_position = '<mt:if name="position_actions_both">both<mt:elseif name="position_actions_top">top<mt:elseif name="position_actions_bottom">bottom<mt:else>top</mt:if>';
             setBarPosition( current_bar_position );
             getByID( 'bar_position_' + current_bar_position ).checked = 'checked';
         }
