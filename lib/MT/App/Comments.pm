@@ -891,8 +891,6 @@ sub post {
         $app->translate( "An error occurred: [_1]", $app->errstr() ) )
         unless $comment;
 
-    $app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter );
-    
     my $remember = $q->param('bakecookie') || 0;
     $remember = 0 if $remember eq 'Forget Info';    # another value for '0'
     if ( $commenter && $remember ) {
@@ -976,6 +974,9 @@ sub post {
         }
         );
     if ( $comment->id && !$comment->is_junk ) {
+        
+        $app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter );
+        
         $app->log(
             {   message => $app->translate(
                     'Comment on "[_1]" by [_2].', $entry->title,
