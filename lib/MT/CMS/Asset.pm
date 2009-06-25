@@ -1243,10 +1243,28 @@ sub _upload_file {
     }
     my $original = $asset->clone;
     $asset->url($asset_url);
+    
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
+
+        if (lc($id) ne lc($ext)) {
+            my $real_ext = lc($id);
+            $asset->file_ext($real_ext);
+            $asset_file =~ s/$ext/$real_ext/;
+            $asset->file_path($asset_file);
+            $local_basename =~ s/$ext/$real_ext/;
+            $asset->file_name($local_basename);
+            $asset_url =~ s/$ext/$real_ext/;
+            $url =~ s/$ext/$real_ext/;
+            $asset->url($asset_url);
+            my $target_file = $local_file;
+            $target_file =~ s/$ext/$real_ext/;
+            system("mv $local_file $target_file");
+            $local_file = $target_file;
+        }
     }
+    
     $asset->mime_type($mimetype) if $mimetype;
     $asset->save;
     $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
