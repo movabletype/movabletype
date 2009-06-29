@@ -526,7 +526,7 @@ BEGIN {
             
             ## Stats settings
             'StatsCacheTTL' => { default => 15 }, # in minutes
-            'StatsCachePublishing' => { default => 'OnLoad' }, # Off|Scheduled|OnLoad
+            'StatsCachePublishing' => { default => 'OnLoad' }, # Off|OnLoad
 
             # Basename settings
             'AuthorBasenameLimit' => { default => 30 },
@@ -649,10 +649,6 @@ BEGIN {
             'mt_sync' => {
                 label => "Synchronizes content to other server(s).",
                 class => 'MT::Worker::Sync',
-            },
-            'mt_stats' => {
-              label => 'Generates the application stats in an interval that is user-determined',
-              class => 'MT::Worker::GenerateStats',
             },
         },
         archivers => {
