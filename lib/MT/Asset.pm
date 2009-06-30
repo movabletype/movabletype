@@ -356,7 +356,7 @@ sub enclose {
     my ($html) = @_;
     my $id = $asset->id;
     my $type = $asset->class;
-    return qq{<form mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type" style="display: inline;">$html</form>};
+    return $html;
 }
 
 # Return a HTML snippet of form options for inserting this asset
