@@ -687,17 +687,10 @@ sub save {
         my ($yr, $w) = $dt->week;
         $entry->week_number($yr * 100 + $w);
     }
-
-    my $sync_assets = $entry->is_changed('text')
-        || $entry->is_changed('text_more');
-
     unless ($entry->SUPER::save(@_)) {
         print STDERR "error during save: " . $entry->errstr . "\n";
         die $entry->errstr;
     }
-
-    $entry->sync_assets() if $sync_assets;
-
     if (!$entry->atom_id && (($entry->status || 0) != HOLD)) {
         $entry->atom_id($entry->make_atom_id());
         $entry->SUPER::save(@_) if $entry->atom_id;
