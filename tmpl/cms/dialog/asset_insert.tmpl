@@ -4,6 +4,58 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
 </mt:setvarblock>
 <script type="text/javascript">
 /* <![CDATA[ */
+
+// remove the no assets text if it's there
+var Node = window.parent.document.getElementById("empty-asset-list");
+if (Node) {
+    Node.parentNode.removeChild(Node);
+} 
+
+// make sure the asset isn't there already
+var Asset = window.parent.document.getElementById("list-asset-<mt:AssetID>");
+if (Asset) {
+    // do nothing
+}
+else {
+    // add the asset's id to the include_asset_ids hidden input
+    var asset_ids = window.parent.document.getElementById("include_asset_ids").value;
+    window.parent.document.getElementById("include_asset_ids").value = asset_ids + ",<mt:AssetID>";
+
+    // create the link to the asset page with asset name as label
+    var myAssetLink = window.document.createElement('a');
+    myAssetLink.setAttribute('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
+    myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName> '));
+
+    // create the remove link icon
+    var myRemoveIcon = window.document.createElement('img');
+    myRemoveIcon.setAttribute('src', '<mt:StaticWebPath>images/status_icons/view.gif');
+
+    // create the remove link for this asset
+    var myRemoveLink = window.document.createElement('a');
+    myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
+    myRemoveLink.appendChild(myRemoveIcon);
+
+    // create the asset list item
+    var myElement = window.document.createElement('li');
+    myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
+    <mt:If tag="AssetType" eq="image">
+        myElement.setAttribute('onmouseover', 'javascript:displayImage("list-image-<mt:AssetID>")');
+        myElement.setAttribute('onmouseout','javascript:hideImage("list-image-<mt:AssetID>")');
+    </mt:If>
+    myElement.appendChild(myAssetLink);
+    myElement.appendChild(myRemoveLink);
+    window.parent.document.getElementById("asset-list").appendChild(myElement);
+
+    // create the image thumbnail if it exists
+    <mt:If tag="AssetType" eq="image">
+        var myImageElement = window.document.createElement('img');
+        myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
+        myImageElement.setAttribute('src', '<mt:AssetThumbnailURL height="100">');
+        myImageElement.setAttribute('style', 'display:none');
+        window.parent.document.getElementById("asset-list").appendChild(myImageElement);
+    </mt:If>
+}
+
 <mt:var name="insert_script">
 closeDialog();
 /* ]]> */
