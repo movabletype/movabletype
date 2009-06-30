@@ -233,7 +233,6 @@ sub insert {
     my $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
         {
-            
             upload_html => $text || '',
             edit_field => scalar $app->param('edit_field') || '',
         },
@@ -450,11 +449,8 @@ sub start_upload_entry {
     $q->param( '_type', 'entry' );
     defined( my $text = _process_post_upload($app) ) or return;
     $q->param( 'text', $text );
-
-    # strip any asset id
+    $q->param ('asset_id', $q->param('id'));
     $q->param( 'id', 0 );
-
-    # clear tags value
     $app->param( 'tags', '' );
     $app->forward("view");
 }
