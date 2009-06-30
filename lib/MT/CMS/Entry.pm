@@ -174,6 +174,32 @@ sub edit {
         $param->{authored_on_time} = $q->param('authored_on_time')
           || POSIX::strftime( "%H:%M:%S", @now );
     }
+    
+    ## show the necessary associated assets
+    if ($type eq 'entry' || $type eq 'page') {
+       require MT::Asset;
+       require MT::ObjectAsset;
+       my $assets =();
+       if ($q->param('asset_id') && !$id) {
+           my $asset = MT::Asset->load($q->param('asset_id'));
+           my $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
+           push @{$assets}, $asset_1;
+       }
+       if ($id) {
+           my @assets = MT::Asset->load({ class => '*' },
+                                        { join => MT::ObjectAsset->join_on(undef, {asset_id => \'= asset_id', object_ds => 'entry', object_id => $id })});
+           foreach my $asset (@assets) {
+               my $asset_1;
+               if ($asset->class eq 'image') {
+                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Height=>100)};
+               } else {
+                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
+               }
+               push @{$assets}, $asset_1;
+           }
+       }
+       $param->{asset_loop} = $assets;
+    }
 
     ## Load categories and process into loop for category pull-down.
     require MT::Placement;
@@ -1396,6 +1422,37 @@ $ao
             $class->class_label, $obj->errstr
         )
       );
+
+    ## look if any assets have been included/removed from this entry
+    require MT::Asset;
+    require MT::ObjectAsset;
+    my $include_asset_ids = $app->param('include_asset_ids');
+    my @asset_ids = split(',', $include_asset_ids);
+    my $obj_assets = ();
+    my @obj_assets = MT::ObjectAsset->load({ object_ds => 'entry', object_id => $obj->id });
+    foreach my $obj_asset (@obj_assets) {
+        my $asset_id = $obj_asset->asset_id;
+        $obj_assets->{$asset_id} = 1;
+    }
+    my $seen = ();
+    foreach my $asset_id (@asset_ids) {
+        my $obj_asset = MT::ObjectAsset->load({ asset_id => $asset_id, object_ds => 'entry', object_id => $obj->id });
+        unless ($obj_asset) {
+            my $obj_asset = new MT::ObjectAsset;
+            $obj_asset->blog_id($blog_id);
+            $obj_asset->asset_id($asset_id);
+            $obj_asset->object_ds('entry');
+            $obj_asset->object_id($obj->id);
+            $obj_asset->save;
+        }
+        $seen->{$asset_id} = 1;
+    }
+    foreach my $asset_id (keys %{$obj_assets}) {
+        unless ($seen->{$asset_id}) {
+            my $obj_asset = MT::ObjectAsset->load({ asset_id => $asset_id, object_ds => 'entry', object_id => $obj->id });
+            $obj_asset->remove;
+        }
+    }
 
     my $message;
     if ($is_new) {
