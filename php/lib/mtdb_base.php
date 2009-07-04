@@ -87,7 +87,7 @@ class MTDatabaseBase extends ezsql {
                        and ((fileinfo_url = '%1\$s' or fileinfo_url = '%1\$s/') or (fileinfo_url like '%1\$s/$escindex%%'))
                    and blog_id = fileinfo_blog_id
                    and template_id = fileinfo_template_id
-                   and template_identifier != 'backup'
+                   and template_type != 'backup'
                  order by length(fileinfo_url) asc
             ";
             $rows = $this->get_results(sprintf($sql,$p), ARRAY_A);
