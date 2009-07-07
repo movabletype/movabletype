@@ -419,6 +419,22 @@ ul { list-style: disc outside; }
     vertical-align: middle;
 }
 
+#comment-nav {
+  float: left;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+#comment-nav #prev-comments {
+  float: left;
+}
+
+#comment-nav #next-comments {
+  float: right;
+}
+
 #comment-submit {
     font-weight: bold;
 }
