@@ -78,6 +78,483 @@ function mtFireEvent(eventName,param) {
     return;
 }
 
+if(!this.JSON){JSON={};}(function(){function f(n){return n<10?'0'+n:n;}if(typeof Date.prototype.toJSON!=='function'){Date.prototype.toJSON=function(key){return this.getUTCFullYear()+'-'+f(this.getUTCMonth()+1)+'-'+f(this.getUTCDate())+'T'+f(this.getUTCHours())+':'+f(this.getUTCMinutes())+':'+f(this.getUTCSeconds())+'Z';};String.prototype.toJSON=Number.prototype.toJSON=Boolean.prototype.toJSON=function(key){return this.valueOf();};}var cx=/[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,escapable=/[\\\"\x00-\x1f\x7f-\x9f\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]/g,gap,indent,meta={'\b':'\\b','\t':'\\t','\n':'\\n','\f':'\\f','\r':'\\r','"':'\\"','\\':'\\\\'},rep;function quote(string){escapable.lastIndex=0;return escapable.test(string)?'"'+string.replace(escapable,function(a){var c=meta[a];return typeof c==='string'?c:'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);})+'"':'"'+string+'"';}function str(key,holder){var i,k,v,length,mind=gap,partial,value=holder[key];if(value&&typeof value==='object'&&typeof value.toJSON==='function'){value=value.toJSON(key);}if(typeof rep==='function'){value=rep.call(holder,key,value);}switch(typeof value){case'string':return quote(value);case'number':return isFinite(value)?String(value):'null';case'boolean':case'null':return String(value);case'object':if(!value){return'null';}gap+=indent;partial=[];if(Object.prototype.toString.apply(value)==='[object Array]'){length=value.length;for(i=0;i<length;i+=1){partial[i]=str(i,value)||'null';}v=partial.length===0?'[]':gap?'[\n'+gap+partial.join(',\n'+gap)+'\n'+mind+']':'['+partial.join(',')+']';gap=mind;return v;}if(rep&&typeof rep==='object'){length=rep.length;for(i=0;i<length;i+=1){k=rep[i];if(typeof k==='string'){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}else{for(k in value){if(Object.hasOwnProperty.call(value,k)){v=str(k,value);if(v){partial.push(quote(k)+(gap?': ':':')+v);}}}}v=partial.length===0?'{}':gap?'{\n'+gap+partial.join(',\n'+gap)+'\n'+mind+'}':'{'+partial.join(',')+'}';gap=mind;return v;}}if(typeof JSON.stringify!=='function'){JSON.stringify=function(value,replacer,space){var i;gap='';indent='';if(typeof space==='number'){for(i=0;i<space;i+=1){indent+=' ';}}else if(typeof space==='string'){indent=space;}rep=replacer;if(replacer&&typeof replacer!=='function'&&(typeof replacer!=='object'||typeof replacer.length!=='number')){throw new Error('JSON.stringify');}return str('',{'':value});};}if(typeof JSON.parse!=='function'){JSON.parse=function(text,reviver){var j;function walk(holder,key){var k,v,value=holder[key];if(value&&typeof value==='object'){for(k in value){if(Object.hasOwnProperty.call(value,k)){v=walk(value,k);if(v!==undefined){value[k]=v;}else{delete value[k];}}}}return reviver.call(holder,key,value);}cx.lastIndex=0;if(cx.test(text)){text=text.replace(cx,function(a){return'\\u'+('0000'+a.charCodeAt(0).toString(16)).slice(-4);});}if(/^[\],:{}\s]*$/.test(text.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g,'@').replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,']').replace(/(?:^|:|,)(?:\s*\[)+/g,''))){j=eval('('+text+')');return typeof reviver==='function'?walk({'':j},''):j;}throw new SyntaxError('JSON.parse');};}}());
+
+var MT = window.MT || {};
+
+MT.cons = function () {
+  return {
+    LOG : 'log',
+    WARN : 'warn',
+    DEBUG : 'debug',
+    INFO : 'info',
+    ERR : 'error',
+    JSON : 'json'
+  };
+}();
+
+<mt:Ignore>
+/**
+ * Used for base functionality related to MT
+ * 
+ * @package MT
+ * @class core
+ * @global
+ * @param {Object} o optional configuration object
+ * Options:
+ */
+</mt:Ignore>
+MT.core = function (o) {
+  var _debug = true;
+  
+  return {
+    <mt:Ignore>
+    /**
+     * Makes remote call and handles response
+     * 
+     * @param {String} url The URL endpoint
+     * @param {String} respType The type of response expected
+     * @param {Function} respHandler The function to handle the response
+     * @return void
+     */
+    </mt:Ignore>
+    connect : function (url,respType,respHandler) {
+      var xh = mtGetXmlHttp();
+      if (!xh) return false;
+      
+      xh.onreadystatechange = function() {
+        if ( xh.readyState == 4 ) {
+          if ( xh.status && ( xh.status != 200 ) ) {
+            // error - ignore
+          } else {
+            switch (respType) {
+              case 'json':
+                respHandler(JSON.parse(xh.responseText));
+                break;
+                
+              case 'xml':
+                break;
+                
+              case 'text':
+                break;
+            }
+          }
+        }
+      };
+      
+      xh.open('GET',url);
+      xh.send(null);
+    },
+    
+    getEl : function (id) {
+      return document.getElementById(id) || false;
+    },
+    
+    addEvent : function (el,type,func,obj) {
+      if(!obj && document.addEventListener) {
+        el.addEventListener(type,func,false);
+      } else if(obj && document.addEventListener) {
+        obj.addEventListener(type,function () {
+          func.call(obj,event);
+        },false);
+      } else {
+        obj.attachEvent(type,function () {
+          func.call(obj,event);
+        });
+      }
+    },
+    
+    log : function (level,msg) {
+      if(console && _debug) {
+        switch(level) {
+          case 'warn':
+          case 'debug':
+          case 'info':
+          case 'error':
+          case 'log':
+            console[level](msg);
+            break;
+            
+          default:
+            return false; 
+        }
+      } else {
+        return false;
+      }
+    }
+  }
+}();
+
+<mt:Ignore>
+/**
+ * Utilities class
+ * 
+ * @package MT
+ * @class util
+ * @global
+ * Options:
+ */
+</mt:Ignore>
+MT.util = function () {
+  <mt:Ignore>
+  /**
+   * Tests objects to verify if they are DOM nodes
+   * 
+   * @param {Object} obj The object to be tested
+   * @return {String} the values 'element'|'textnode'|'whitespace'
+   */
+   </mt:Ignore>
+  return {
+    toggleVisibility : {
+      show : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])==='element') {
+            arguments[i].style.display = '';
+          } else {
+            M.getEl(arguments[i]).style.display = '';
+          }
+        }
+      },
+      
+      hide : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])==='element') {
+            arguments[i].style.display = 'none';
+          } else {
+            M.getEl(arguments[i]).style.display = 'none';
+          }
+        }
+      }
+    },
+    
+    checkNodeType : function (obj) {
+      if (obj.nodeName){
+        switch (obj.nodeType) {
+          case 1: return 'element';
+          case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
+        }
+      }
+    }
+  }
+}();
+
+<mt:Ignore>
+/**
+ * mtPaginateComments takes the currently generated static page and either:
+ *  - Attempts to find an individual comment link in the query string
+ *  - If no link is found, the static page loads
+ * In either case, the pagination event is set
+ */
+</mt:Ignore>
+(function () {
+  var M = MT.core,
+      c = MT.cons,
+      u = MT.util,
+      cache,
+      direction,
+      currentComments,
+      commentAnchor,
+      commentArrId,
+      commentsPerPage,
+      commentsTotalPages,
+      loadingIcon,
+      pageNum,
+      commentsOffset,
+      totalComments,
+      nextLink,
+      prevLink,
+      entryID,
+      commentContentDiv,
+      nav,
+      currentCommentsDiv;
+            
+  M.addEvent(window,'load',_init);
+  
+  /**
+   * Initializes the class
+   * 
+   * @return void
+   */
+  function _init () {
+    cache = {};
+    commentAnchor = '';
+    commentArrId = '';
+    commentsPerPage = 50;
+    currentComments = '';
+    direction = 'ascend';
+    entryID = MT.entryID;
+    totalComments = MT.entryCommentCount;
+    commentsTotalPages = Math.ceil(totalComments / commentsPerPage);
+    loadingIcon = "<img src='<$MTBlogURL$>images/comment-loader.gif' alt='Loading' />";
+    pageNum = 1;
+    
+    commentContentDiv = M.getEl("comments-content");
+    nav = M.getEl("comment-nav");
+    currentCommentsDiv = M.getEl("current-comments");
+    
+    _setCommentOffset(false);
+    
+    M.log(c.LOG,_getCommentOffset());
+    
+    _checkForAnchor();
+		
+		_setCurrentComments();
+    
+    if (commentsPerPage < totalComments) {
+      M.addEvent(nav,'click',_handleEvents);
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Checks for an existing anchor tag in the query string
+   * If found, it looks for it on the current page
+   * If that fails, it tries to find it in comment list and loads
+   * the desired page
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _checkForAnchor() {
+    var found = String(window.location).match( /#comment-(\d{1,6})/ );
+		
+		if (found) {
+		  M.log(c.DEBUG,found);
+			if (!M.getEl(found[0]).hasOwnProperty('className')) {
+				if (_findIdMatch(found[1])) {
+    			pageNum = Math.floor(commentArrId / commentsPerPage) + 1;
+    			M.log(c.DEBUG,pageNum);
+    			
+    			_setCommentOffset(true);
+    			M.log(c.DEBUG,_getCommentsOffset());
+    			_updateComments();
+    		}
+			}
+		}
+  }
+  
+  <mt:Ignore>
+  /**
+   * Sets commentsOffset (i.e. the offset number to the remote list)
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _setCommentOffset(urlHasAnchor) {
+    commentsOffset = urlHasAnchor ? Math.floor(commentArrId / commentsPerPage) * 100 : commentsPerPage * (pageNum-1);
+  }
+  
+  <mt:Ignore>
+  /**
+   * Gets the commentsOffset (i.e. the offset number to the remote list)
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _getCommentOffset() {
+    return commentsOffset;
+  }
+  
+  <mt:Ignore>
+  /**
+   * General event handler
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _handleEvents (e) {
+    var origin = e.target,
+        parentId = origin.parentNode.hasOwnProperty('id') || origin.parentNode.id;
+
+    switch(origin.nodeName) {
+      case 'A':
+        switch (parentId) {
+          case 'prev-comments':
+            e.preventDefault();
+            _previousPage();
+            break;
+          case 'next-comments':
+            e.preventDefault();
+            _nextPage();
+            return false; // for Safari
+            break;
+        }
+        break;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Determines appropriate action based on the id of the parent
+   * clicked link. Decrements pageNum based on id.
+   * 
+   * @param {String} id the id of the parent of the clicked link
+   * @return void
+   */
+  </mt:Ignore>
+  function _nextPage() {
+    if(pageNum < commentsTotalPages) {
+      pageNum++;
+      _updateComments();
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Determines appropriate action based on the id of the parent
+   * clicked link. Increments/decrements pageNum based on id.
+   * 
+   * @param {String} id the id of the parent of the clicked link
+   * @return void
+   */
+  </mt:Ignore>
+  function _previousPage() {
+    if(pageNum > 1) {
+      pageNum--;
+      _updateComments();
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Searches for a particular comment in the list of ids
+   * 
+   * @param {String} id The id for which to search
+   * @return {Boolean} true, if found, false otherwise
+   */
+  </mt:Ignore>
+  function _findIdMatch (id) {
+    var len = MT.commentIds.length;
+    
+  	while (len--) {
+  		if (MT.commentIds[len] == id) {
+  			commentAnchor = "#comment-" + id;
+  			commentArrId = len;
+  			M.log(c.DEBUG,commentArrId);
+  			return true;
+  		}
+  	}
+  	
+  	return false;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Sets the current comment counts on the page
+   *
+   * @return void
+   */
+  </mt:Ignore>
+  function _setCurrentComments() {
+    var commentsOnPage = pageNum != commentsTotalPages ? commentsOffset + commentsPerPage : totalComments;
+    
+    _setCurrentCommentsContent([commentsOffset+1," - ",commentsOnPage].join(''));
+  }
+  
+  <mt:Ignore>
+  /**
+   * Sets the "current-comments" element with the HTML value
+   * 
+   * @param {String|Element} currentCommentsHTML The content to be set
+   * @return void
+   */
+  </mt:Ignore>
+  function _setCurrentCommentsContent(currentCommentsHTML) {
+    currentCommentsDiv.innerHTML = currentCommentsHTML;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Sets the content of the comment list
+   * 
+   * @param {String|Element} commentHTML The content to be set 
+   * @return void
+   */
+  </mt:Ignore>
+  function _setCommentContent(commentHTML) {
+    commentContentDiv.innerHTML = commentHTML;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Hides the comment navigation
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _hideNav() {
+    u.toggleVisibility.hide(nav);
+  }
+  
+  <mt:Ignore>
+  /**
+   * Shows the navigation
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _showNav() {
+    u.toggleVisibility.show(nav);
+  }
+  
+  <mt:Ignore>
+  /**
+   * Builds the appropriate URL to make a remote call to get the
+   * next set of comments
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _updateComments() {
+    var comments, jsonUrl;
+    _hideNav();
+    _setCurrentCommentsContent(loadingIcon);
+    _setCommentOffset(false);
+    
+    jsonUrl = [
+        "<$mt:CGIPath$>mt-comments.cgi?__mode=comment_listing&direction=",
+        direction,
+        "&entry_id=",
+        entryID,
+        "&limit=",
+        commentsPerPage,
+        "&offset=",
+        commentsOffset
+      ].join('');
+  	
+  	if (!commentAnchor) {
+      commentAnchor = "#comment-content";
+    }
+    
+    if(cache.hasOwnProperty(jsonUrl)) {
+      _refreshComments(cache[jsonUrl]);
+    } else {
+      M.connect(jsonUrl,c.JSON,function (json) {
+        cache[jsonUrl] = json.comments;
+    	  _refreshComments(json.comments);
+      });
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Refreshes the comment data with the current
+   * 
+   * @param {String} commentData The data used to replace current comments
+   * @return void
+   */
+  </mt:Ignore>
+  function _refreshComments(commentData) {
+    _setCommentContent(commentData);
+    _setCurrentComments();
+    window.location = commentAnchor;
+    _showNav();
+  }
+})();
+
 <mt:Ignore>
 /***
  * Displays a relative date.
