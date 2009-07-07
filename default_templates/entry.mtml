@@ -6,6 +6,13 @@
     <mt:EntryPrevious><link rel="prev bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryPrevious>
     <mt:EntryNext><link rel="next bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryNext>
     <$mt:EntryTrackbackData$>
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+	    <script type="text/javascript">
+         MT.entryID = <$mt:EntryID$>;
+         MT.entryCommentCount = <$mt:EntryCommentCount$>;
+         MT.commentIds = [<mt:Comments sort_order="ascend" glue=","><mt:CommentID></mt:Comments>];
+	    </script>
+	  </mt:If>
     <title><$mt:EntryTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
 </head>
 <body id="<$mt:BlogTemplateSetID$>" class="mt-entry-archive <$mt:Var name="page_layout"$>">
