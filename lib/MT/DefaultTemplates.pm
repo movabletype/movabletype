@@ -124,6 +124,9 @@ BEGIN {
             },
         },
         'module' => {
+            'comment_detail' => {
+                label => 'Comment Detail',
+            },
             'banner_header' => {
                 label => 'Banner Header',
             },
