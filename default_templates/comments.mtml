@@ -2,45 +2,35 @@
 <!-- Display comments for the entry/page or commenting form if entry/page is accepting comments -->
 </mt:Ignore>
 <mt:IfCommentsActive>
+<$mt:Var name="comments_per_page" value="50"$>
 <div id="comments" class="comments">
 
 
     <mt:Ignore>
     <!-- Display comments -->
     </mt:Ignore>
-    <mt:Comments>
+    <mt:Comments lastn="$comments_per_page" sort_order="ascend">
         <mt:CommentsHeader>
     <h2 class="comments-header"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
-    <div class="comments-content">
+    <div id="comments-content" class="comments-content">
         </mt:CommentsHeader>
-        <div id="comment-<$mt:CommentID$>" class="comment<mt:IfCommentParent> comment-reply</mt:IfCommentParent><mt:IfCommenterIsEntryAuthor> entry-author-comment</mt:IfCommenterIsEntryAuthor>">
-            <div class="inner">
-                <div class="comment-header">
-                    <div class="asset-meta">
-                        <span class="byline">
-                            <$mt:CommentAuthorIdentity$>
-        <mt:IfCommentParent>
-                            <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>">
-        <mt:Else>
-                            <span class="vcard author"><$mt:CommentAuthorLink$></span>
-        </mt:IfCommentParent>
-                            | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
-        <mt:IfCommentsAccepted>
-                            | <$mt:CommentReplyToLink$>
-        </mt:IfCommentsAccepted>
-                        </span>
-                    </div>
-                </div>
-                <div class="comment-content">
-                    <$mt:CommentBody$>
-                </div>
-            </div>
-        </div>
+        <$mt:Include module="<__trans phrase="Comment Detail">"$>
         <mt:CommentsFooter>
     </div>
         </mt:CommentsFooter>
     </mt:Comments>
-
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+    	<mt:Ignore><__trans phrase="The data is modified by the paginate script"></mt:Ignore>
+    	<ul id="comment-nav">
+    	 <li id="prev-comments">
+    	   <a href="javascript://" title="Older Comments">Older Comments</a>
+  	   </li>
+  	   <li id="next-comments">
+  	     <a href="javascript://" title="Newer Comments">Newer Comments</a>
+  	   </li>
+      </ul>
+      <div id="current-comments"></div>
+    </mt:If>
 
     <mt:Ignore>
     <!-- Display commenting form if entry/page is accepting comments -->
