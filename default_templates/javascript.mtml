@@ -367,7 +367,7 @@ MT.util = function () {
   </mt:Ignore>
   function _handleEvents (e) {
     var origin = e.target,
-        parentId = origin.parentNode.hasOwnProperty('id') || origin.parentNode.id;
+        parentId = origin.parentNode.hasOwnProperty('id') && origin.parentNode.id;
 
     switch(origin.nodeName) {
       case 'A':
