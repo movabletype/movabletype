@@ -182,6 +182,7 @@ sub list {
     @class_loop = sort { $a->{class_label} cmp $b->{class_label} } @class_loop;
 
     my $dialog_view = $app->param('dialog_view') ? 1 : 0;
+    my $no_insert = $app->param('no_insert') ? 1 : 0;
     my $perms = $app->permissions;
     my %carry_params = map { $_ => $app->param($_) || '' }
         (qw( edit_field upload_mode require_type next_mode asset_select ));
@@ -211,6 +212,7 @@ sub list {
                 is_image         => defined $class_filter
                   && $class_filter eq 'image' ? 1 : 0,
                 dialog_view      => $dialog_view,
+                no_insert        => $no_insert,
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
@@ -228,7 +230,7 @@ sub list {
 
 sub insert {
     my $app  = shift;
-    my $text = _process_post_upload( $app );
+    my $text = $app->param('no_insert') ? "" : _process_post_upload( $app );
     return unless defined $text;
     my $tmpl = $app->load_tmpl(
         'dialog/asset_insert.tmpl',
@@ -344,7 +346,7 @@ sub complete_insert {
       or return $app->errtrans('No permissions');
 
     # caller wants asset without any option step, so insert immediately
-    if ($app->param('asset_select')) {
+    if ($app->param('asset_select') || $app->param('no_insert')) {
         $app->param( 'id', $asset->id );
         return insert($app);
     }
