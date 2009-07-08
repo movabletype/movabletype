@@ -86,11 +86,12 @@ sub dump_line {
         if ($_->[1] =~ m/^total\b/) {
             $dur = $_->[2];
         }
-        if ($dur >= $threshold) {
-            push @lines, sprintf("%s=%.5f", $_->[1], $dur);
-        }
+        #if ($dur >= $threshold) {
+        #    push @lines, sprintf("%s=%.5f", $_->[1], $dur);
+        #}
         $total += $_->[0];
     }
+    return '' if ($total < $threshold);
     push @lines, sprintf("Total=%.5f", $total);
     my @times = localtime(time);
     my $mon = ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec')[$times[4]];
@@ -105,6 +106,7 @@ sub dump_line {
 
     return "[$ts] $hostname pt-times: " . join(", ", @lines) . "\n";
 }
+
 
 sub dump {
     my $self = shift;
@@ -121,6 +123,7 @@ sub dump {
         }
         $total += $_->[0];
     }
+    return '' if ($total < $threshold);
     $lines .= sprintf("%s - %.5f --Total-- %s\n", $$, $total, $self->{uri});
     return $lines;
 }
