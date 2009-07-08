@@ -191,7 +191,7 @@ sub edit {
            foreach my $asset (@assets) {
                my $asset_1;
                if ($asset->class eq 'image') {
-                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Height=>100)};
+                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Width=>100)};
                } else {
                    $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
                }

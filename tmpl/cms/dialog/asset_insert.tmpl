@@ -28,19 +28,21 @@ else {
 
     // create the remove link icon
     var myRemoveIcon = window.document.createElement('img');
-    myRemoveIcon.setAttribute('src', '<mt:StaticWebPath>images/status_icons/view.gif');
+    myRemoveIcon.setAttribute('src', '<mt:StaticWebPath>images/status_icons/close.gif');
+    myRemoveIcon.setAttribute('alt', 'Remove asset');
 
     // create the remove link for this asset
     var myRemoveLink = window.document.createElement('a');
     myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
+	myRemoveLink.setAttribute('class', 'remove-asset');
     myRemoveLink.appendChild(myRemoveIcon);
 
     // create the asset list item
     var myElement = window.document.createElement('li');
     myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
     <mt:If tag="AssetType" eq="image">
-        myElement.setAttribute('onmouseover', 'javascript:displayImage("list-image-<mt:AssetID>")');
-        myElement.setAttribute('onmouseout','javascript:hideImage("list-image-<mt:AssetID>")');
+        myElement.setAttribute('onmouseover', 'javascript:show("list-image-<mt:AssetID>")');
+        myElement.setAttribute('onmouseout','javascript:hide("list-image-<mt:AssetID>")');
     </mt:If>
     myElement.appendChild(myAssetLink);
     myElement.appendChild(myRemoveLink);
@@ -50,9 +52,10 @@ else {
     <mt:If tag="AssetType" eq="image">
         var myImageElement = window.document.createElement('img');
         myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
-        myImageElement.setAttribute('src', '<mt:AssetThumbnailURL height="100">');
+        myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100">');
         myImageElement.setAttribute('style', 'display:none');
-        window.parent.document.getElementById("asset-list").appendChild(myImageElement);
+        myImageElement.setAttribute('class', 'list-image');
+        myElement.appendChild(myImageElement);
     </mt:If>
 }
 
