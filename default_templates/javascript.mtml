@@ -164,8 +164,18 @@ MT.core = function (o) {
       }
     },
     
+    <mt:Ignore>
+    /**
+     * Basic logging function
+     * 
+     * @param {String} level The log level (WARN|DEBUG|INFO|ERROR|LOG)
+     * Specified by one of the MT constants
+     * @param {String} msg The log message
+     * @return void
+     */
+    </mt:Ignore>
     log : function (level,msg) {
-      if(console && _debug) {
+      if(_debug && window.console) {
         switch(level) {
           case 'warn':
           case 'debug':
@@ -196,23 +206,39 @@ MT.core = function (o) {
  */
 </mt:Ignore>
 MT.util = function () {
-  <mt:Ignore>
-  /**
-   * Tests objects to verify if they are DOM nodes
-   * 
-   * @param {Object} obj The object to be tested
-   * @return {String} the values 'element'|'textnode'|'whitespace'
-   */
-   </mt:Ignore>
   return {
     toggleVisibility : {
       show : function () {
         var i = arguments.length;
         while(i--) {
           if(MT.util.checkNodeType(arguments[i])==='element') {
+            arguments[i].style.visibility = 'visible';
+          } else {
+            MT.core.getEl(arguments[i]).style.visibility = 'visible';
+          }
+        }
+      },
+      
+      hide : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])==='element') {
+            arguments[i].style.visibility = 'hidden';
+          } else {
+            MT.core.getEl(arguments[i]).style.visibility = 'hidden';
+          }
+        }
+      }
+    },
+    
+    toggleDisplay : {
+      show : function () {
+        var i = arguments.length;
+        while(i--) {
+          if(MT.util.checkNodeType(arguments[i])==='element') {
             arguments[i].style.display = '';
           } else {
-            M.getEl(arguments[i]).style.display = '';
+            MT.core.getEl(arguments[i]).style.display = '';
           }
         }
       },
@@ -223,12 +249,20 @@ MT.util = function () {
           if(MT.util.checkNodeType(arguments[i])==='element') {
             arguments[i].style.display = 'none';
           } else {
-            M.getEl(arguments[i]).style.display = 'none';
+            MT.core.getEl(arguments[i]).style.display = 'none';
           }
         }
       }
     },
     
+    <mt:Ignore>
+    /**
+     * Tests objects to verify if they are DOM nodes
+     * 
+     * @param {Object} obj The object to be tested
+     * @return {String} the values 'element'|'textnode'|'whitespace'
+     */
+    </mt:Ignore>
     checkNodeType : function (obj) {
       if (obj.nodeName){
         switch (obj.nodeType) {
@@ -287,7 +321,7 @@ MT.util = function () {
     entryID = MT.entryID;
     totalComments = MT.entryCommentCount;
     commentsTotalPages = Math.ceil(totalComments / commentsPerPage);
-    loadingIcon = "<img src='<$MTBlogURL$>images/comment-loader.gif' alt='Loading' />";
+    loadingIcon = "<img src='<$MTStaticWebPath$>images/indicator.white.gif' alt='Loading' />";
     pageNum = 1;
     
     commentContentDiv = M.getEl("comments-content");
@@ -301,7 +335,7 @@ MT.util = function () {
     _checkForAnchor();
 		
 		_setCurrentComments();
-    
+    _toggleNavLinks();
     if (commentsPerPage < totalComments) {
       M.addEvent(nav,'click',_handleEvents);
     }
@@ -367,7 +401,7 @@ MT.util = function () {
   </mt:Ignore>
   function _handleEvents (e) {
     var origin = e.target,
-        parentId = origin.parentNode.hasOwnProperty('id') && origin.parentNode.id;
+        parentId = u.checkNodeType(origin.parentNode)==='element' && origin.parentNode.getAttribute('id') && origin.parentNode.id;
 
     switch(origin.nodeName) {
       case 'A':
@@ -375,14 +409,32 @@ MT.util = function () {
           case 'prev-comments':
             e.preventDefault();
             _previousPage();
+            _toggleNavLinks();
             break;
           case 'next-comments':
             e.preventDefault();
             _nextPage();
-            return false; // for Safari
+            _toggleNavLinks();
             break;
         }
         break;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Toggles the visibility of the navigation links
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _toggleNavLinks () {
+    if((+pageNum) === (+commentsTotalPages)) {
+      u.toggleVisibility.show('prev-comments');
+      u.toggleVisibility.hide('next-comments');
+    } else if((+pageNum) === 1) {
+      u.toggleVisibility.hide('prev-comments');
+      u.toggleVisibility.show('next-comments');
     }
   }
   
@@ -395,7 +447,7 @@ MT.util = function () {
    * @return void
    */
   </mt:Ignore>
-  function _nextPage() {
+  function _nextPage () {
     if(pageNum < commentsTotalPages) {
       pageNum++;
       _updateComments();
@@ -431,9 +483,8 @@ MT.util = function () {
     
   	while (len--) {
   		if (MT.commentIds[len] == id) {
-  			commentAnchor = "#comment-" + id;
+  			commentAnchor = "comment-" + id;
   			commentArrId = len;
-  			M.log(c.DEBUG,commentArrId);
   			return true;
   		}
   	}
@@ -486,7 +537,7 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _hideNav() {
-    u.toggleVisibility.hide(nav);
+    u.toggleDisplay.hide(nav);
   }
   
   <mt:Ignore>
@@ -497,7 +548,7 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _showNav() {
-    u.toggleVisibility.show(nav);
+    u.toggleDisplay.show(nav);
   }
   
   <mt:Ignore>
@@ -526,7 +577,7 @@ MT.util = function () {
       ].join('');
   	
   	if (!commentAnchor) {
-      commentAnchor = "#comment-content";
+      commentAnchor = "comment-content";
     }
     
     if(cache.hasOwnProperty(jsonUrl)) {
@@ -548,9 +599,10 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _refreshComments(commentData) {
+    M.log(c.DEBUG,commentAnchor);
     _setCommentContent(commentData);
     _setCurrentComments();
-    window.location = commentAnchor;
+    window.location.hash = commentAnchor;
     _showNav();
   }
 })();
