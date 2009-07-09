@@ -240,8 +240,7 @@ sub insert {
         },
     );
     my $ctx = $tmpl->context;
-    my $id = $app->param('id')
-        or return $app->errtrans("Invalid request.");
+    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT::Asset->load( $id );
     $ctx->stash('asset', $asset);
     return $tmpl;
@@ -291,7 +290,6 @@ sub asset_userpic {
 
 sub start_upload {
     my $app = shift;
-
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
@@ -325,7 +323,6 @@ sub upload_file {
 sub complete_insert {
     my $app = shift;
     my (%args) = @_;
-
     my $asset = $args{asset};
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
@@ -335,8 +332,7 @@ sub complete_insert {
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
-    $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0
-      unless defined $args{is_image};
+    $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0 unless defined $args{is_image};
 
     require MT::Blog;
     my $blog = $asset->blog
@@ -350,7 +346,7 @@ sub complete_insert {
         $app->param( 'id', $asset->id );
         return insert($app);
     }
-
+    
     my $param = {
         asset_id            => $asset->id,
         bytes               => $args{bytes},
@@ -360,16 +356,14 @@ sub complete_insert {
         middle_path         => $app->param('middle_path') || '',
         extra_path          => $app->param('extra_path') || '',
     };
-    for my $field (qw( direct_asset_insert edit_field entry_insert site_path
-      asset_select )) {
+    for my $field (qw( direct_asset_insert edit_field entry_insert site_path asset_select )) {
         $param->{$field} = scalar $app->param($field) || '';
     }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
         $param->{height} = $asset->image_height;
     }
-    if ( !$app->param('asset_select')
-      && ($perms->can_create_post || $app->user->is_superuser) ) {
+    if ( !$app->param('asset_select') && ($perms->can_create_post || $app->user->is_superuser) ) {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
             $app->param( 'id', $asset->id );
@@ -377,7 +371,6 @@ sub complete_insert {
         }
         $param->{options_snippet} = $html;
     }
-
     if ($perms) {
         my $pref_param = $app->load_entry_prefs( $perms->entry_prefs );
         %$param = ( %$param, %$pref_param );
@@ -401,11 +394,9 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} =
-          MT::Util::to_json(
-            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
+        $param->{tags_js} = MT::Util::to_json( MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
-
+    $param->{'no_insert'} = $app->param('no_insert');
     $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
 }
 
@@ -1098,7 +1089,8 @@ sub _upload_file {
                         entry_insert => $q->param('entry_insert'),
                         edit_field   => $app->param('edit_field'),
                         middle_path  => $middle_path,
-                        fname        => $basename
+                        fname        => $basename,
+                        no_insert    => $q->param('no_insert'),
                     }
                 );
             }
@@ -1241,7 +1233,7 @@ sub _upload_file {
     }
     my $original = $asset->clone;
     $asset->url($asset_url);
-    
+
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
@@ -1262,8 +1254,9 @@ sub _upload_file {
             $local_file = $target_file;
         }
     }
-    
+
     $asset->mime_type($mimetype) if $mimetype;
+
     $asset->save;
     $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
 

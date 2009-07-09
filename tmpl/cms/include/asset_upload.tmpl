@@ -45,6 +45,9 @@ function setExtraPath(sel) {
     <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
     <input type="hidden" name="require_type" value="<mt:var name="require_type" escape="html">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mt:if name="no_insert">
+    <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
+    </mt:if>
     <mt:if name="user_id">
     <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
     </mt:if>
