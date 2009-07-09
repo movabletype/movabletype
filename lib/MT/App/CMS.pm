@@ -144,8 +144,10 @@ sub core_methods {
             requires_login => 0,
         },
 
+        'view_rpt_log'         => "${pkg}RptLog::view",
         'view_log'             => "${pkg}Log::view",
         'list_log'             => "${pkg}Log::view",
+        'reset_rpt_log'        => "${pkg}RptLog::reset",
         'reset_log'            => "${pkg}Log::reset",
         'export_log'           => "${pkg}Log::export",
         'export_notification'  => "${pkg}AddressBook::export",
