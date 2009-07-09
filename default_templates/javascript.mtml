@@ -429,12 +429,20 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _toggleNavLinks () {
-    if((+pageNum) === (+commentsTotalPages)) {
+    if(pageNum < commentsTotalPages) {
       u.toggleVisibility.show('prev-comments');
-      u.toggleVisibility.hide('next-comments');
-    } else if((+pageNum) === 1) {
-      u.toggleVisibility.hide('prev-comments');
+    }
+    
+    if(pageNum > 1) {
       u.toggleVisibility.show('next-comments');
+    }
+    
+    if(pageNum===1) {
+      u.toggleVisibility.hide('prev-comments');
+    }
+    
+    if(pageNum===commentsTotalPages) {
+      u.toggleVisibility.hide('next-comments');
     }
   }
   
@@ -577,7 +585,7 @@ MT.util = function () {
       ].join('');
   	
   	if (!commentAnchor) {
-      commentAnchor = "comment-content";
+      commentAnchor = "comments-content";
     }
     
     if(cache.hasOwnProperty(jsonUrl)) {
