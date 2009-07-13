@@ -32,7 +32,7 @@ sub edit {
     my $type = $q->param('_type');
     my $blog = $app->blog;
     my $cfg = $app->config;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
     if ($blog) {
@@ -1298,20 +1298,20 @@ sub add_map {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
@@ -1327,9 +1327,11 @@ sub pre_save {
     }
 
     $obj->text($text);
-
+    
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    
     # update text heights if necessary
-    if ( my $perms = $app->permissions ) {
+    if ( $perms ) {
         my $prefs = $perms->template_prefs || '';
         my $text_height = $app->param('text_height');
         if ( defined $text_height ) {
@@ -1616,7 +1618,7 @@ sub dialog_publishing_profile {
     $app->assert( $blog ) or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
@@ -1636,7 +1638,7 @@ sub dialog_refresh_templates {
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser()
             || $app->user->can_edit_templates()
@@ -1923,7 +1925,7 @@ sub refresh_individual_templates {
     require MT::Util;
 
     my $user = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->error(
         $app->translate(
             "Permission denied.")
@@ -2037,7 +2039,7 @@ sub clone_templates {
     my ($app) = @_;
 
     my $user = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->error(
         $app->translate(
             "Permission denied.")
@@ -2082,7 +2084,7 @@ sub publish_index_templates {
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
@@ -2116,7 +2118,7 @@ sub publish_archive_templates {
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
       unless $app->user->is_superuser
       || $perms->can_administer_blog
