@@ -19999,6 +19999,13 @@ sub _hdlr_pager_link {
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
 
+    ## PAOLO ADDED ##
+    my $category = $ctx->stash('category');
+    my $author = $ctx->stash('author');
+    my $date_start = $ctx->stash('date_start');
+    my $date_end = $ctx->stash('date_end');
+    ## END OF ADDED ##
+
     my $link = $ctx->context_script($args);
 
     if ( $link ) {
@@ -20010,7 +20017,16 @@ sub _hdlr_pager_link {
         }
     }
     $link .= "limit=$limit";
-    $link .= "&offset=$offset" if $offset;
+    
+    ## PAOLO ADDED ##
+    #$link .= "&offset=$offset" if $offset;
+    $link .= "&category=$category" if $category;
+    $link .= "&author=$author" if $author;
+    $link .= "&date_start=$date_start" if $date_start;
+    $link .= "&date_end=$date_end" if $date_end;
+    $link .= "&page=$page" if $page;
+    ## END OF ADDED ##
+
     return $link;
 }
 

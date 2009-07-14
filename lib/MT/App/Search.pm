@@ -51,7 +51,7 @@ sub core_methods {
 
 sub core_parameters {
     my $app = shift;
-    return {
+    my $core = {
         params => [
             qw( searchTerms search count limit startIndex offset
                 category author )
@@ -74,6 +74,15 @@ sub core_parameters {
         },
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
+    
+    ## PAOLO FROM COMCASTSEARCH ##
+    my @filters = ($app->param('filter'), $app->param('filter_on'));
+    if (@filters) {
+        $core->{types}->{entry}->{columns} = { map { $_ => 'like' } @filters };
+    }
+    ## END OF COMCASTSEARCH ##
+
+    $core;
 }
 
 sub init_request {
@@ -83,6 +92,13 @@ sub init_request {
     $app->mode('tag') if $app->param('tag');
 
     my $q = $app->param;
+
+    ## PAOLO ADDED ##
+    my $page = $q->param('page') if $q->param('page');
+    my $limit = $q->param('limit') if $q->param('limit');
+    my $offset = ($page - 1) * $limit if ($page && $limit);
+    $q->param('offset', $offset) if $offset;
+    ## END OF ADDED ##
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
@@ -297,7 +313,8 @@ sub process {
         return $out;
     }
     my $iter;
-    if ( $app->param('searchTerms') || $app->param('search') ) {
+    if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') 
+         || $app->param('author') || $app->param('date_start') || $app->param('date_end') ) {
         my @arguments = $app->search_terms();
         return $app->error( $app->errstr ) if $app->errstr;
 
@@ -375,6 +392,30 @@ sub execute {
 sub search_terms {
     my $app = shift;
     my $q   = $app->param;
+
+    ## PAOLO FROM COMCASTSEARCH ##
+    if (!$app->param('search')) {
+        if ($app->param('author') || $app->param('date_start') || $app->param('date_end') || $app->param('category')) {
+            $app->param('search', '%');
+        }
+    }
+    if (my $limit = $app->param('limit_by')) {
+        if ($limit eq 'all') {
+            # this is the default behavior
+        } 
+        else {
+            my $search = $app->param('search');
+            my @words = split(/ +/, $search);
+            if ($limit eq 'any') {
+                $search = join(' OR ', @words);
+            } 
+            elsif ($limit eq 'exclude') {
+                $search = 'NOT ' . join(' NOT ', @words);
+            }
+            $app->param('search', $search);
+        }
+	}
+    ## END OF COMCASTSEARCH ##
 
     my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
@@ -465,7 +506,44 @@ sub search_terms {
         @sort   ? ( 'sort'   => \@sort )  : (),
     );
 
+    ## PAOLO FROM COMCASTSEARCH ##
+    my $terms = \@terms;
+    if ($app->param('date_start') || $app->param('date_end')) {
+        my $date_start = parse_date($app->param('date_start'));
+        my $date_end = parse_date($app->param('date_end'));
+    		
+        if ($date_start && $date_end) {
+            $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
+        } 
+        elsif ($date_start) {
+            $terms->[1]->{authored_on} = { '>=' => $date_start };		
+        } 
+        elsif ($date_end) {
+            $terms->[1]->{authored_on} = { '<=' => $date_end };	
+        }
+    }
+    	
+    # incorporate entries found by author name, from process()
+    if ($app->{'author_entry_ids'}) {
+        push(@{$terms->[2]}, '-or', { 'id' => $app->{'author_entry_ids'} });
+        delete $app->{'author_entry_ids'};
+    }
+    ## END OF COMCASTSEARCH ##
+
     ( \@terms, \%args );
+}
+
+sub parse_date {
+	my ($date_str) = @_;
+	return '' unless $date_str;
+	require MT::DateTime;
+	my %attr;
+	@attr{qw(month day year)} = split(/\//, $date_str);
+	if (length($attr{year}) == 2) {
+		$attr{year} = '20' . $attr{year};
+	}
+	my $dt = MT::DateTime->new(%attr);
+	return MT::DateTime::_param2ts({ value => $dt, type => 'datetime' });
 }
 
 sub _cache_out {
@@ -578,6 +656,14 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
+    ## PAOLO ADDED ##
+    $ctx->stash( 'page', $q->param('page') ) if $q->param('page');
+    $ctx->stash( 'author', $q->param('author') ) if $q->param('author');
+    $ctx->stash( 'category', $q->param('category') ) if $q->param('category');
+    $ctx->stash( 'date_start', $q->param('date_start') ) if $q->param('date_start');
+    $ctx->stash( 'date_end', $q->param('date_end') ) if $q->param('date_end');
+    ## END OF ADDED ##
+
     my $blog_id = $q->param('blog_id') || $app->first_blog_id();
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
@@ -585,6 +671,19 @@ sub prepare_context {
         $ctx->stash( 'blog_id', $blog_id );
         $ctx->stash( 'blog',    $blog );
     }
+    
+    ## PAOLO FROM COMCASTSEARCH ##
+    for my $key (qw( limit_by date_start date_end author category )) {
+        if (my $val = $app->param($key)) {
+            $ctx->stash('search_' . $key, $val);
+        }
+        my @filters = ($app->param('filter'), $app->param('filter_on'));
+        if (@filters) {
+            $ctx->stash('search_filters', \@filters);
+        }
+    }
+    ## END OF COMCASTSEARCH ##
+    
     $ctx;
 }
 
@@ -884,7 +983,7 @@ sub _join_category {
 
     # search for exact match
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { label => 1 }, {} );
+        = $app->_query_parse_core( $lucene_struct, { id => 1, label => 1 }, {} );
     return unless $terms && @$terms;
     push @$terms, '-and',
         {
@@ -917,7 +1016,7 @@ sub _join_author {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { nickname => 'like' },
+        = $app->_query_parse_core( $lucene_struct, { id => 1, nickname => 'like' },
         {} );
     return unless $terms && @$terms;
     push @$terms, '-and', { id => \'= entry_author_id', };
