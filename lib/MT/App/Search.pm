@@ -314,7 +314,7 @@ sub process {
     }
     my $iter;
     if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') 
-         || $app->param('author') || $app->param('date_start') || $app->param('date_end') ) {
+         || $app->param('author') || $app->param('year') || $app->param('month') || $app->param('day') ) {
         my @arguments = $app->search_terms();
         return $app->error( $app->errstr ) if $app->errstr;
 
@@ -393,7 +393,13 @@ sub search_terms {
     my $app = shift;
     my $q   = $app->param;
 
-    ## PAOLO FROM COMCASTSEARCH ##
+    ## PAOLO ADD ##
+    if (!$app->param('search')) {
+        if ($app->param('author') || $app->param('category')
+            || $app->param('year') || $app->param('month') || $app->param('day') ) {
+            $app->param('search', '%');
+        }
+    }
     if (my $limit = $app->param('limit_by')) {
         if ($limit eq 'all') {
             # this is the default behavior
@@ -409,8 +415,8 @@ sub search_terms {
             }
             $app->param('search', $search);
         }
-	}
-    ## END OF COMCASTSEARCH ##
+    }
+    ## END OF ADD ##
 
     my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
@@ -501,44 +507,29 @@ sub search_terms {
         @sort   ? ( 'sort'   => \@sort )  : (),
     );
 
-    ## PAOLO FROM COMCASTSEARCH ##
+    ## PAOLO ADDED ##
     my $terms = \@terms;
-    if ($app->param('date_start') || $app->param('date_end')) {
-        my $date_start = parse_date($app->param('date_start'));
-        my $date_end = parse_date($app->param('date_end'));
-    		
-        if ($date_start && $date_end) {
-            $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
-        } 
-        elsif ($date_start) {
-            $terms->[1]->{authored_on} = { '>=' => $date_start };		
-        } 
-        elsif ($date_end) {
-            $terms->[1]->{authored_on} = { '<=' => $date_end };	
+    my ($date_start, $date_end);
+    if ($app->param('date_at') && $app->param('year')) {
+        my $year = $app->param('year');
+        my $month = $app->param('month') ? $app->param('month') : '01';
+        my $day = $app->param('day') ? $app->param('day') : '01';
+        my $date_at = $app->param('date_at');
+        require MT::Util;
+        if ($date_at =~ /Daily/i) {
+            ($date_start, $date_end) = MT::Util::start_end_day($year . $month . $day);
+        } elsif ($date_at =~ /Weekly/i) {
+            ($date_start, $date_end) = MT::Util::start_end_week($year . $month . $day);
+        } elsif ($date_at =~ /Monthly/i) {
+            ($date_start, $date_end) = MT::Util::start_end_month($year . $month . $day);
+        } else {
+            ($date_start, $date_end) = MT::Util::start_end_year($year . $month . $day);
         }
+        $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
     }
-    	
-    # incorporate entries found by author name, from process()
-    if ($app->{'author_entry_ids'}) {
-        push(@{$terms->[2]}, '-or', { 'id' => $app->{'author_entry_ids'} });
-        delete $app->{'author_entry_ids'};
-    }
-    ## END OF COMCASTSEARCH ##
+    ## END OF ADD ##
 
     ( \@terms, \%args );
-}
-
-sub parse_date {
-	my ($date_str) = @_;
-	return '' unless $date_str;
-	require MT::DateTime;
-	my %attr;
-	@attr{qw(month day year)} = split(/\//, $date_str);
-	if (length($attr{year}) == 2) {
-		$attr{year} = '20' . $attr{year};
-	}
-	my $dt = MT::DateTime->new(%attr);
-	return MT::DateTime::_param2ts({ value => $dt, type => 'datetime' });
 }
 
 sub _cache_out {
@@ -651,14 +642,6 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
-    ## PAOLO ADDED ##
-    $ctx->stash( 'page', $q->param('page') ) if $q->param('page');
-    $ctx->stash( 'author', $q->param('author') ) if $q->param('author');
-    $ctx->stash( 'category', $q->param('category') ) if $q->param('category');
-    $ctx->stash( 'date_start', $q->param('date_start') ) if $q->param('date_start');
-    $ctx->stash( 'date_end', $q->param('date_end') ) if $q->param('date_end');
-    ## END OF ADDED ##
-
     my $blog_id = $q->param('blog_id') || $app->first_blog_id();
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
@@ -668,7 +651,7 @@ sub prepare_context {
     }
     
     ## PAOLO FROM COMCASTSEARCH ##
-    for my $key (qw( limit_by date_start date_end author category )) {
+    for my $key (qw( limit_by author category page year month day date_at )) {
         if (my $val = $app->param($key)) {
             $ctx->stash('search_' . $key, $val);
         }

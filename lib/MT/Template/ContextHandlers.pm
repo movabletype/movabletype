@@ -20000,10 +20000,12 @@ sub _hdlr_pager_link {
     $offset = ( $page - 1 ) * $limit;
 
     ## PAOLO ADDED ##
-    my $category = $ctx->stash('category');
-    my $author = $ctx->stash('author');
-    my $date_start = $ctx->stash('date_start');
-    my $date_end = $ctx->stash('date_end');
+    my $category = $ctx->stash('search_category');
+    my $author = $ctx->stash('search_author');
+    my $year = $ctx->stash('search_year');
+    my $month = $ctx->stash('search_month');
+    my $day = $ctx->stash('search_day');
+    my $date_at = $ctx->stash('search_date_at');
     ## END OF ADDED ##
 
     my $link = $ctx->context_script($args);
@@ -20017,14 +20019,16 @@ sub _hdlr_pager_link {
         }
     }
     $link .= "limit=$limit";
-    
+
     ## PAOLO ADDED ##
     #$link .= "&offset=$offset" if $offset;
     $link .= "&category=$category" if $category;
     $link .= "&author=$author" if $author;
-    $link .= "&date_start=$date_start" if $date_start;
-    $link .= "&date_end=$date_end" if $date_end;
     $link .= "&page=$page" if $page;
+    $link .= "&year=$year" if $year;
+    $link .= "&month=$month" if $month;
+    $link .= "&day=$day" if $day;
+    $link .= "&date_at=$date_at" if $date_at;
     ## END OF ADDED ##
 
     return $link;
