@@ -394,11 +394,6 @@ sub search_terms {
     my $q   = $app->param;
 
     ## PAOLO FROM COMCASTSEARCH ##
-    if (!$app->param('search')) {
-        if ($app->param('author') || $app->param('date_start') || $app->param('date_end') || $app->param('category')) {
-            $app->param('search', '%');
-        }
-    }
     if (my $limit = $app->param('limit_by')) {
         if ($limit eq 'all') {
             # this is the default behavior
