@@ -1,5 +1,5 @@
 #############################################################################
-# Copyright å© 2008-2009 Six Apart Ltd.
+# Copyright Â© 2008-2009 Six Apart Ltd.
 # $Id$
 
 package MT::Test;
@@ -17,6 +17,17 @@ use File::Spec;
 use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
+
+MT->add_callback( 'post_init', 1, undef, \&add_plugin_test_libs );
+
+sub add_plugin_test_libs {
+    require MT::Plugin;
+    my @p = MT::Plugin->select;
+    foreach my $p (@p) {
+        my $t_lib = File::Spec->catdir( $p->path, 't', 'lib' );
+        unshift @INC, $t_lib if ( -d $t_lib );
+    }
+}
 
 use Test::More;
 use Test::Deep qw( eq_deeply );
@@ -286,20 +297,21 @@ sub init_memcached {
         }
     };
     *MT::Memcached::inflate = sub {
-		my $driver = shift;
-		my($class, $data) = @_;
-		$class->inflate($data);
+        my $driver = shift;
+        my ( $class, $data ) = @_;
+        $class->inflate($data);
     };
     *MT::Memcached::deflate = sub {
-		my $driver = shift;
-		my($obj) = @_;
-		$obj->deflate;
+        my $driver = shift;
+        my ($obj) = @_;
+        $obj->deflate;
     };
+
     # make sure things will pull from Memcached instead of RAM
     eval {
-    	require MT::ObjectDriver::Driver::Cache::RAM;
-	    MT::ObjectDriver::Driver::Cache::RAM->Disabled(1);
-	};
+        require MT::ObjectDriver::Driver::Cache::RAM;
+        MT::ObjectDriver::Driver::Cache::RAM->Disabled(1);
+    };
 }
 
 sub init_newdb {
@@ -362,13 +374,12 @@ sub init_upgrade {
         Blog    => {}
     );
 
-    MT->config->PluginSchemaVersion ({});
+    MT->config->PluginSchemaVersion( {} );
     MT::Upgrade->do_upgrade(
-        App     => __PACKAGE__,
-        User    => {},
-        Blog    => {}
+        App  => __PACKAGE__,
+        User => {},
+        Blog => {}
     );
-    
 
     eval {
 
@@ -376,7 +387,6 @@ sub init_upgrade {
         MT::Entry->remove;
         MT::Comment->remove;
     };
-    require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     1;
@@ -506,27 +516,36 @@ sub init_data {
       map { MT::Role->load( { name => $_ } ) }
       ( 'Blog Administrator', 'Author' );
 
-    unless ($admin_role && $author_role) {
+    unless ( $admin_role && $author_role ) {
         my @default_roles = (
-            { name => 'Blog Administrator',
-              description => 'Can administer the blog.',
-              role_mask => 2**12,
-              perms => ['administer_blog'] },
-            { name => 'Author',
-              description => 'Can create entries, edit their own, upload files and publish.',
-              perms => ['comment', 'create_post', 'publish_post', 'upload', 'send_notifications'], },
+            {
+                name        => 'Blog Administrator',
+                description => 'Can administer the blog.',
+                role_mask   => 2**12,
+                perms       => ['administer_blog']
+            },
+            {
+                name => 'Author',
+                description =>
+'Can create entries, edit their own, upload files and publish.',
+                perms => [
+                    'comment',      'create_post',
+                    'publish_post', 'upload',
+                    'send_notifications'
+                ],
+            },
         );
 
         foreach my $r (@default_roles) {
             my $role = MT::Role->new();
-            $role->name(MT->translate($r->{name}));
-            $role->description(MT->translate($r->{description}));
+            $role->name( MT->translate( $r->{name} ) );
+            $role->description( MT->translate( $r->{description} ) );
             $role->clear_full_permissions;
-            $role->set_these_permissions($r->{perms});
-            if ($r->{name} =~ m/^System/) {
+            $role->set_these_permissions( $r->{perms} );
+            if ( $r->{name} =~ m/^System/ ) {
                 $role->is_system(1);
             }
-            $role->role_mask($r->{role_mask}) if exists $r->{role_mask};
+            $role->role_mask( $r->{role_mask} ) if exists $r->{role_mask};
             $role->save;
         }
         require MT::Object;
@@ -1516,58 +1535,7 @@ sub tmpl_out_unlike {
 }
 
 sub _run_rpt {
-    my $daemonize = 0;
-    my $sleep     = 5;
-    my $help      = 0;
-    my $load      = 10;
-    my $verbose   = 0;
-    my $scoreboard;
-    my $randomize_jobs = 0;
-    my $trace_objects  = 0;
-
-    if ($trace_objects) {
-        require Devel::Leak::Object;
-        Devel::Leak::Object->import(qw{ GLOBAL_bless });
-    }
-
-    my %cfg;
-    $cfg{verbose}    = $verbose;
-    $cfg{scoreboard} = $scoreboard;
-    $cfg{prioritize} = 1;
-    $cfg{randomize}  = $randomize_jobs;
-
-    require MT::Bootstrap;
-    require MT;
-
-    my $mt = MT->instance() or die MT->errstr;
-
-    $mt->{vtbl}                 = {};
-    $mt->{is_admin}             = 0;
-    $mt->{template_dir}         = 'cms';
-    $mt->{user_class}           = 'MT::Author';
-    $mt->{plugin_template_path} = 'tmpl';
-    $mt->run_callbacks( 'init_app', $mt );
-
-    my $client = eval {
-        require MT::TheSchwartz;
-        my $c = MT::TheSchwartz->new(%cfg);
-        no warnings 'once';
-        $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
-        $c;
-    };
-    if ( ( my $error = $@ ) && $verbose ) {
-        print STDERR "Error initializing TheSchwartz: $error\n";
-    }
-
-    if ( $daemonize && $client ) {
-        $client->work_periodically($sleep);
-    }
-    else {
-
-        # First, run periodic tasks
-        $mt->run_tasks();
-        $client->work_until_done if $client;
-    }
+    `perl ./tools/run-periodic-tasks`;
 
     1;
 }
