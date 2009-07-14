@@ -510,19 +510,19 @@ sub search_terms {
     ## PAOLO ADDED ##
     my $terms = \@terms;
     my ($date_start, $date_end);
-    if ($app->param('date_at') && $app->param('year')) {
+    if ($app->param('archive_type') && $app->param('year')) {
         my $year = $app->param('year');
         my $month = $app->param('month') ? $app->param('month') : '01';
         my $day = $app->param('day') ? $app->param('day') : '01';
-        my $date_at = $app->param('date_at');
+        my $archive_type = $app->param('archive_type');
         require MT::Util;
-        if ($date_at =~ /Daily/i) {
+        if ($archive_type =~ /Daily/i) {
             ($date_start, $date_end) = MT::Util::start_end_day($year . $month . $day);
-        } elsif ($date_at =~ /Weekly/i) {
+        } elsif ($archive_type =~ /Weekly/i) {
             ($date_start, $date_end) = MT::Util::start_end_week($year . $month . $day);
-        } elsif ($date_at =~ /Monthly/i) {
+        } elsif ($archive_type =~ /Monthly/i) {
             ($date_start, $date_end) = MT::Util::start_end_month($year . $month . $day);
-        } else {
+        } elsif ($archive_type =~ /Yearly/i) {
             ($date_start, $date_end) = MT::Util::start_end_year($year . $month . $day);
         }
         $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
@@ -651,7 +651,7 @@ sub prepare_context {
     }
     
     ## PAOLO FROM COMCASTSEARCH ##
-    for my $key (qw( limit_by author category page year month day date_at )) {
+    for my $key (qw( limit_by author category page year month day archive_type )) {
         if (my $val = $app->param($key)) {
             $ctx->stash('search_' . $key, $val);
         }

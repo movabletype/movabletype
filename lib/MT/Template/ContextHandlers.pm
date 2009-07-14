@@ -20005,7 +20005,7 @@ sub _hdlr_pager_link {
     my $year = $ctx->stash('search_year');
     my $month = $ctx->stash('search_month');
     my $day = $ctx->stash('search_day');
-    my $date_at = $ctx->stash('search_date_at');
+    my $archive_type = $ctx->stash('search_archive_type');
     ## END OF ADDED ##
 
     my $link = $ctx->context_script($args);
@@ -20028,7 +20028,7 @@ sub _hdlr_pager_link {
     $link .= "&year=$year" if $year;
     $link .= "&month=$month" if $month;
     $link .= "&day=$day" if $day;
-    $link .= "&date_at=$date_at" if $date_at;
+    $link .= "&archive_type=$archive_type" if $archive_type;
     ## END OF ADDED ##
 
     return $link;
