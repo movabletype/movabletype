@@ -308,10 +308,10 @@ sub process {
         unless $app->throttle_control( \@messages );
 
     my ( $count, $out ) = $app->check_cache();
-    if ( defined $out ) {
-        $app->run_callbacks( 'search_cache_hit', $count, $out );
-        return $out;
-    }
+    #if ( defined $out ) {
+    #    $app->run_callbacks( 'search_cache_hit', $count, $out );
+    #    return $out;
+    #}
     my $iter;
     if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') 
          || $app->param('author') || $app->param('year') || $app->param('month') || $app->param('day') ) {
@@ -393,13 +393,7 @@ sub search_terms {
     my $app = shift;
     my $q   = $app->param;
 
-    ## PAOLO ADD ##
-    if (!$app->param('search')) {
-        if ($app->param('author') || $app->param('category')
-            || $app->param('year') || $app->param('month') || $app->param('day') ) {
-            $app->param('search', '%');
-        }
-    }
+    ## PAOLO FROM ADD ##
     if (my $limit = $app->param('limit_by')) {
         if ($limit eq 'all') {
             # this is the default behavior
@@ -470,7 +464,7 @@ sub search_terms {
     my $parsed = $app->query_parse(%$columns);
     return $app->errtrans( 'Invalid query: [_1]',
         encode_html($search_string) )
-        unless $parsed && %$parsed;
+        if ((!$parsed || !(%$parsed)) && !($app->param ('year') && $app->param('archive_type')));
 
     push @terms, $parsed->{terms} if exists $parsed->{terms};
 
@@ -650,7 +644,7 @@ sub prepare_context {
         $ctx->stash( 'blog',    $blog );
     }
     
-    ## PAOLO FROM COMCASTSEARCH ##
+    ## PAOLO ADDED ##
     for my $key (qw( limit_by author category page year month day archive_type )) {
         if (my $val = $app->param($key)) {
             $ctx->stash('search_' . $key, $val);
@@ -660,7 +654,8 @@ sub prepare_context {
             $ctx->stash('search_filters', \@filters);
         }
     }
-    ## END OF COMCASTSEARCH ##
+    $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
+    ## END OF ADDED ##
     
     $ctx;
 }
@@ -704,14 +699,20 @@ sub load_search_tmpl {
     }
     else {
 
+        my $tmpl_id = $q->param ('template_id');
+        if ($tmpl_id && $tmpl_id =~ /^\d+$/) {
+            $tmpl = $app->model('template')->lookup ($tmpl_id);
+        }
+
         # load default template
         # first look for appropriate blog_id
-        if ( my $blog_id = $ctx->stash('blog_id') ) {
-
-            # look for 'search_results'
+        elsif ( my $blog_id = $ctx->stash('blog_id') ) {
             my $tmpl_class = $app->model('template');
-            $tmpl = $tmpl_class->load(
-                { blog_id => $blog_id, type => 'search_results' } );
+            if ($tmpl_id) {
+                $tmpl = $tmpl_class->load({ blog_id => $blog_id, id => $tmpl_id });
+            } else {
+                $tmpl = $tmpl_class->load({ blog_id => $blog_id, type => 'search_results' });
+            }
         }
         unless ($tmpl) {
 
