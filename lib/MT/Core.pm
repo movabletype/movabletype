@@ -364,7 +364,7 @@ BEGIN {
                 default => 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
             'GenerateTrackBackRSS' => { default => 0, },
-            'RaiseError'           => { default => 1, },
+            'DBIRaiseError'        => { default => 1, },
             
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
