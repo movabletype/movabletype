@@ -75,12 +75,10 @@ sub core_parameters {
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
     
-    ## PAOLO FROM COMCASTSEARCH ##
     my @filters = ($app->param('filter'), $app->param('filter_on'));
     if (@filters) {
         $core->{types}->{entry}->{columns} = { map { $_ => 'like' } @filters };
     }
-    ## END OF COMCASTSEARCH ##
 
     $core;
 }
@@ -93,12 +91,14 @@ sub init_request {
 
     my $q = $app->param;
 
-    ## PAOLO ADDED ##
-    my $page = $q->param('page') if $q->param('page');
-    my $limit = $q->param('limit') if $q->param('limit');
+    my $cfg = $app->config;
+    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
+    my $blog = $app->model('blog')->load($blog_id);
+    my $page = $q->param('page') ? $q->param('page') : 1;
+    my $limit = $q->param('limit') ? $q->param('limit') : ($blog->entries_on_index ? $blog->entries_on_index : $cfg->SearchMaxResults );
     my $offset = ($page - 1) * $limit if ($page && $limit);
+    $q->param('limit', $limit) if $limit;
     $q->param('offset', $offset) if $offset;
-    ## END OF ADDED ##
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
@@ -393,7 +393,6 @@ sub search_terms {
     my $app = shift;
     my $q   = $app->param;
 
-    ## PAOLO FROM ADD ##
     if (my $limit = $app->param('limit_by')) {
         if ($limit eq 'all') {
             # this is the default behavior
@@ -410,7 +409,6 @@ sub search_terms {
             $app->param('search', $search);
         }
     }
-    ## END OF ADD ##
 
     my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
@@ -501,7 +499,6 @@ sub search_terms {
         @sort   ? ( 'sort'   => \@sort )  : (),
     );
 
-    ## PAOLO ADDED ##
     my $terms = \@terms;
     my ($date_start, $date_end);
     if ($app->param('archive_type') && $app->param('year')) {
@@ -521,7 +518,6 @@ sub search_terms {
         }
         $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
     }
-    ## END OF ADD ##
 
     ( \@terms, \%args );
 }
@@ -644,8 +640,8 @@ sub prepare_context {
         $ctx->stash( 'blog',    $blog );
     }
     
-    ## PAOLO ADDED ##
-    for my $key (qw( limit_by author category page year month day archive_type )) {
+    # some basic search parameters
+    for my $key (qw( limit_by author category page year month day archive_type template_id )) {
         if (my $val = $app->param($key)) {
             $ctx->stash('search_' . $key, $val);
         }
@@ -654,8 +650,25 @@ sub prepare_context {
             $ctx->stash('search_filters', \@filters);
         }
     }
+
+    # now we need to figure out the archive types
     $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
-    ## END OF ADDED ##
+    $ctx->{current_timestamp}    = MT::Util::epoch2ts( $blog_id, time);
+    $ctx->var('datebased_archive', 1) if ($app->param('archive_type') && 
+                                          ( $app->param('archive_type') =~ /Daily/i || $app->param('archive_type') =~ /Weekly/i
+                                            || $app->param('archive_type') =~ /Monthly/i || $app->param('archive_type') =~ /Yearly/i ));
+    if ($app->param('author')) {
+        require MT::Author;
+        my $author = MT::Author->load($app->param('author'));
+        $ctx->stash('author', $author);
+        $ctx->var('author_archive', 1);
+    }
+    if ($app->param('category')) {
+        require MT::Category;
+        my $category = MT::Category->load($app->param('category'));
+        $ctx->stash('category', $category);
+        $ctx->var('category_archive', 1);
+    }
     
     $ctx;
 }
