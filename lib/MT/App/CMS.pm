@@ -196,7 +196,8 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
-        'dialog_publishing_profile' =>
+        'dialog_clone_blog' => "${pkg}Common::clone_blog",
+                'dialog_publishing_profile' =>
             "${pkg}Template::dialog_publishing_profile",
         'refresh_all_templates' => "${pkg}Template::refresh_all_templates",
         'preview_template'      => "${pkg}Template::preview",
@@ -626,6 +627,13 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+            },
+            clone_blog => {
+                label => "Clone Blog",
+                code => "${pkg}Common::clone_blog",
+                permission => 'administer',
+                max => 1,
+                dialog => 1,
             },
         },
         'template' => {
