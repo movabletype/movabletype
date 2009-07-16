@@ -105,7 +105,7 @@ MT.cons = function () {
  */
 </mt:Ignore>
 MT.core = function (o) {
-  var _debug = true;
+  var _debug = false;
   
   return {
     <mt:Ignore>
@@ -312,10 +312,14 @@ MT.util = function () {
    * @return void
    */
   function _init () {
+    if(!MT.entryCommentCount) {
+      return;
+    }
+    
     cache = {};
     commentAnchor = '';
     commentArrId = '';
-    commentsPerPage = 50;
+    commentsPerPage = MT.commentsPerPage || 50;
     currentComments = '';
     direction = 'ascend';
     entryID = MT.entryID;
@@ -429,11 +433,11 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _toggleNavLinks () {
-    if(pageNum < commentsTotalPages) {
+    if(pageNum <= commentsTotalPages) {
       u.toggleVisibility.show('prev-comments');
     }
     
-    if(pageNum > 1) {
+    if(pageNum >= 1) {
       u.toggleVisibility.show('next-comments');
     }
     
@@ -610,6 +614,7 @@ MT.util = function () {
     M.log(c.DEBUG,commentAnchor);
     _setCommentContent(commentData);
     _setCurrentComments();
+    window.location.hash = '';
     window.location.hash = commentAnchor;
     _showNav();
   }
