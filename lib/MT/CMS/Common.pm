@@ -1104,9 +1104,9 @@ sub clone_blog {
   my $base = $app->config('DefaultSiteURL') || $app->base;
   
   $param->{'blog_id'} = $blog->id;
-  $param->{'new_blog_name'} = $app->param('blog_name') || 'Clone of ' . MT::Util::encode_html($blog->name);
+  $param->{'new_blog_name'} = $app->param('new_blog_name') || 'Clone of ' . MT::Util::encode_html($blog->name);
   $param->{'site_url'} =  $app->param('site_url') || $base . '/clone';
-  $param->{'site_path'}  = $blog->site_path . '_clone';
+  $param->{'site_path'} = $app->param('site_path') || $blog->site_path . '_clone';
   
   my $clone = $app->param('clone');
   
@@ -1257,11 +1257,16 @@ HTML
   my $new_blog;
   eval {
     $new_blog = $blog->clone({
+      BlogName => ($blog_name),
       Children => 1,
       Except => ({ site_path => 1, site_url => 1 }),
       Callback => sub { _progress($app, @_) },
       Classes => ($cloning_prefs)
     });
+    
+    $new_blog->site_path($param->{'site_path'});
+    $new_blog->site_url($param->{'site_url'});
+    $new_blog->save();
   };
   if (my $err = $@) {
     $app->print($app->translate_templatized(qq{<p class="error-message"><MT_TRANS phrase="Error">: $err</p>}));
@@ -1323,9 +1328,9 @@ sub _progress {
 #   }
 # 
 #   $app->request('progress_ids',$ids);
-  my $ids = $app->request('progress_ids') || {};
-  use Data::Dumper;
-  MT->log(Data::Dumper->Dump([$ids]));
+   my $ids = $app->request('progress_ids') || {};
+#   use Data::Dumper;
+#   MT->log(Data::Dumper->Dump([$ids]));
   my ($str, $id) = each %{$ids};
   if ($id && $ids->{$id}) {
     require MT::Util;
