@@ -1,6 +1,14 @@
 <mt:setvar name="page_title" value="<__trans phrase="Clone Blog">">
 <mt:include name="dialog/header.tmpl">
 <style type="text/css">
+fieldset {
+  margin-bottom: 0;
+}
+
+.field {
+  margin-bottom: .8em;
+}
+
 .field-header label {
   color:#777777;
 }
@@ -279,9 +287,13 @@
             _disableButtons(origin);
             break;
           case 'clone-settings-form':
-            _verifyForm(origin);
-            _prepAction(origin);
-            _disableButtons(origin);
+            if(_verifyForm(origin)) {;
+              _prepAction(origin);
+              _disableButtons(origin);
+            } else {
+              e.preventDefault();
+              return false;
+            }
             break;
           default:
             e.preventDefault();
