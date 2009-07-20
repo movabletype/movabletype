@@ -308,12 +308,12 @@ sub process {
         unless $app->throttle_control( \@messages );
 
     my ( $count, $out ) = $app->check_cache();
-    #if ( defined $out ) {
-    #    $app->run_callbacks( 'search_cache_hit', $count, $out );
-    #    return $out;
-    #}
+    if ( defined $out ) {
+        $app->run_callbacks( 'search_cache_hit', $count, $out );
+        return $out;
+    }
     my $iter;
-    if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') 
+    if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') || $app->param('archive_type')
          || $app->param('author') || $app->param('year') || $app->param('month') || $app->param('day') ) {
         my @arguments = $app->search_terms();
         return $app->error( $app->errstr ) if $app->errstr;
@@ -462,7 +462,7 @@ sub search_terms {
     my $parsed = $app->query_parse(%$columns);
     return $app->errtrans( 'Invalid query: [_1]',
         encode_html($search_string) )
-        if ((!$parsed || !(%$parsed)) && !($app->param ('year') && $app->param('archive_type')));
+        if ((!$parsed || !(%$parsed)) && !$app->param('archive_type'));
 
     push @terms, $parsed->{terms} if exists $parsed->{terms};
 
@@ -516,6 +516,7 @@ sub search_terms {
         } elsif ($archive_type =~ /Yearly/i) {
             ($date_start, $date_end) = MT::Util::start_end_year($year . $month . $day);
         }
+        $app->param('context_date_start', $date_start);
         $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
     }
 
@@ -652,8 +653,9 @@ sub prepare_context {
     }
 
     # now we need to figure out the archive types
+    $ctx->stash('archive_count', $count) if ($app->param('archive_type'));
     $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
-    $ctx->{current_timestamp}    = MT::Util::epoch2ts( $blog_id, time);
+    $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
     $ctx->var('datebased_archive', 1) if ($app->param('archive_type') && 
                                           ( $app->param('archive_type') =~ /Daily/i || $app->param('archive_type') =~ /Weekly/i
                                             || $app->param('archive_type') =~ /Monthly/i || $app->param('archive_type') =~ /Yearly/i ));
