@@ -7882,6 +7882,12 @@ sub _hdlr_entries {
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
 
+    # for the case that we want to use mt:Entries with mt-search
+    # send to MT::Template::Search if searh results are found
+    my $results_iter = $ctx->stash('results');
+    require MT::Template::Context::Search;
+    return MT::Template::Context::Search::_hdlr_results($ctx, $args, $cond) if ($results_iter);
+
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
     %terms = %blog_terms;
