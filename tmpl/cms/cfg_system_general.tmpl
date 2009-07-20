@@ -9,6 +9,13 @@
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="test_mail_sent">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Test email was sent.">
+        </mtapp:statusmsg>
+    </mt:if>
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"

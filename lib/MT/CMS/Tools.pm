@@ -432,6 +432,7 @@ sub cfg_system_general {
             level    => MT::Log::INFO(),
             class    => 'system',
         });
+        $param{test_mail_sent} = 1;
     }
     
     $param{system_email_address} = $cfg->EmailAddressMain;
