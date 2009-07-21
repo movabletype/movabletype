@@ -102,6 +102,46 @@ BEGIN {
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
         },
+        summaries => {
+        	'author' => {
+        		entry_count => {
+        			type => 'integer',
+        			code => '$Core::MT::Summary::Author::summarize_entry_count',
+                    expires => {
+                        'MT::Entry' => {
+                            id_column => 'author_id',
+                            code => '$Core::MT::Summary::Author::expire_entry_count',
+                        },
+                    },
+        		},
+        		comment_count => {
+        			type => 'integer',
+        			code => '$Core::MT::Summary::Author::summarize_comment_count',
+                    expires => {
+                        'MT::Comment' => {
+                            id_column => 'commenter_id',
+                            code => '$Core::MT::Summary::Author::expire_comment_count',
+                        },
+                        'MT::Entry' => {
+                            id_column => 'author_id',
+                            code => '$Core::MT::Summary::Author::expire_comment_count_entry',
+                        },
+                    },
+        		},
+        	},
+			'entry' => {
+				all_assets => {
+					type => 'string',
+					code => '$Core::MT::Summary::Entry::summarize_all_assets',
+					expires => {
+						'MT::ObjectAsset' => {
+							 id_column => 'object_id',
+							 code => '$Core::MT::Summary::expire_all',
+						}
+					}
+				}
+			},
+        },
         backup_instructions => \&load_backup_instructions,
         permissions => {
             'system.administer' => {
@@ -650,6 +690,14 @@ BEGIN {
                 label => "Synchronizes content to other server(s).",
                 class => 'MT::Worker::Sync',
             },
+            'mt_summarize' => {
+                label => "Refreshes object summaries.",
+                class => 'MT::Worker::Summarize',
+            },
+            'mt_summary_watcher' => {
+                label => "Adds Summarize workers to queue.",
+                class => 'MT::Worker::SummaryWatcher',
+            }
         },
         archivers => {
             'zip' => {
@@ -769,6 +817,19 @@ sub load_core_tasks {
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
               }
+        },
+        'AddSummaryWatcher' => {
+            label     => 'Add Summary Watcher to queue',
+            frequency => 2 * 60, # every other minute
+            code      => sub {
+                require MT::TheSchwartz;
+                require TheSchwartz::Job;
+                my $job = TheSchwartz::Job->new();
+                $job->funcname('MT::Worker::SummaryWatcher');
+                $job->uniqkey( 1 );
+                $job->priority( 4 );
+                MT::TheSchwartz->insert($job);
+            },
         },
         'JunkExpiration' => {
             label     => 'Junk Folder Expiration',

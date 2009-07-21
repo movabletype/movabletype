@@ -92,12 +92,20 @@ our($Registry, $RegistryById);
 #--------------------------------------#
 # Public Class Methods
 
+sub _meta_args {
+	my $class = shift;
+	my ($pkg, $which) = @_;
+	$which ||= 'meta';
+	my $meth = $which . '_args';
+	$pkg->$meth;
+}
+
 sub install {
     my $class = shift;
-    my ($pkg, $params) = @_;
+    my ($pkg, $params, $which) = @_;
 
     ## add base class defs, if they exist
-    my $base_args = $pkg->meta_args;
+    my $base_args = $class->_meta_args($pkg, $which);
     if ($base_args) {
         while ( my ($k, $v) = each (%{ $base_args }) ) {
             $params->{$k} = $v;
@@ -122,7 +130,7 @@ sub install {
     }
 
     ## build subclass
-    $class->_build_subclass($pkg, $params);
+    $class->_build_subclass($pkg, $params, $which);
 
     return $params->{fields};
 }
@@ -183,7 +191,7 @@ sub has_own_metadata_of {
 sub normalize_type {
     my $pkg = shift;
     my ($type) = @_;
-    return $Types{ $TypesByName{ $type } } || TYPE_VBLOB;
+    return $Types{ $TypesByName{ $type } || TYPE_VBLOB };
 }
 
 #--------------------------------------#
@@ -207,9 +215,9 @@ sub _load_inheritance {
 
 sub _build_subclass {
     my $class = shift;
-    my ($pkg, $meta) = @_;
+    my ($pkg, $meta, $which) = @_;
 
-    my $subclass = $pkg->meta_pkg;
+    my $subclass = $pkg->meta_pkg($which);
     return unless $subclass;
 
     no strict 'refs'; ## no critic

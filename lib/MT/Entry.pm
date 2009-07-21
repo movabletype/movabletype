@@ -9,7 +9,8 @@ package MT::Entry;
 use strict;
 
 use MT::Tag; # Holds MT::Taggable
-use base qw( MT::Object MT::Taggable MT::Scorable );
+use MT::Summary; # Holds MT::Summarizable
+use base qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable );
 
 use MT::Blog;
 use MT::Author;
@@ -107,6 +108,7 @@ __PACKAGE__->install_properties({
     child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
     audit => 1,
     meta => 1,
+    summary => 1,
     datasource => 'entry',
     primary_key => 'id',
     class_type => 'entry',
@@ -148,6 +150,24 @@ sub cache_key {
         ($entry_id, $key) = ($_[0]->id, $_[1]);
     }
     return sprintf "entry%s-%d", $key, $entry_id;
+}
+
+sub author_id {
+    my $entry = shift;
+    if ( scalar @_ ) {
+        $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
+            unless exists( $entry->{__orig_value}->{author_id} );
+    }
+    return $entry->SUPER::author_id( @_ );
+}
+
+sub status {
+    my $entry = shift;
+    if ( scalar @_ ) {
+        $entry->{__orig_value}->{status} = $entry->SUPER::status
+            unless exists( $entry->{__orig_value}->{status} );
+    }
+    return $entry->SUPER::status( @_ );
 }
 
 sub status_text {

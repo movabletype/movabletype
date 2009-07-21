@@ -63,6 +63,15 @@ sub scored_by {
     });
 }
 
+sub score {
+    my $objectscore = shift;
+    if ( scalar @_ ) {
+        $objectscore->{__orig_value}->{score} = $objectscore->score
+            unless exists( $objectscore->{__orig_value}->{score} );
+    }
+    return $objectscore->SUPER::score( @_ );
+}
+
 1;
 __END__
 

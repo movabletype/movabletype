@@ -25,8 +25,8 @@ sub install_pre_init_properties {
     @PRE_INIT_PROPS = ();
 
     foreach my $def (@PRE_INIT_META) {
-        my ($class, $meta) = @$def;
-        $class->install_meta($meta);
+        my ($class, $meta, $which) = @$def;
+        $class->install_meta($meta, $which);
     }
     @PRE_INIT_META = ();
 }
@@ -53,9 +53,12 @@ sub install_properties {
     }
 
     my %meta;
+    my %summary;
 
     my $super_props = $class->SUPER::properties();
-    $props->{meta} = 1 if $super_props && $super_props->{meta};
+    for my $which (qw( meta summary )) {
+	    $props->{$which} = 1 if $super_props && $super_props->{$which};
+	}
 
     if ($props->{meta}) {
         # yank out any meta columns before we start working on column_defs
@@ -135,7 +138,15 @@ sub install_properties {
     } else {
         $type_id = $props->{datasource};
     }
-
+    
+    if ($props->{summary}) {
+    	my $type_summaries = MT->registry('summaries', $type_id);
+    	%summary = map { $_ => 
+    			($type_summaries->{$_}->{type} =~ /(string|integer)/)
+    			? "$1 indexed meta" : "$type_summaries->{$_}->{type} meta"
+    		} keys %$type_summaries;
+    }
+    
     $props->{get_driver} ||= sub {
         require MT::ObjectDriverFactory;
         my $coderef = MT::ObjectDriverFactory->driver_for_class($class);
@@ -233,10 +244,19 @@ sub install_properties {
     }
 
     # inherit parent's metadata setup
-    if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
-        $class->install_meta({ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) });
-        $class->add_trigger( post_remove => \&remove_meta );
-    }
+	if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
+		$class->install_meta(
+			{ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) },
+			'meta'
+		);
+		$class->add_trigger( post_remove => \&remove_meta );
+	}
+	if ($props->{summary}) { # if ($super_props && $super_props->{meta_installed}) {
+		$class->install_meta(
+			{ ( %summary ? ( column_defs => \%summary ) : ( columns => [] ) ) },
+			'summary'
+		);
+	}
 
     return $props;
 }
@@ -392,29 +412,37 @@ sub add_class {
 sub new {
     my $class = shift;
     my $obj = $class->SUPER::new(@_);
-    if ($obj->properties->{meta_installed}) {
-        $obj->init_meta();
-    }
+    for my $which (qw( meta summary )) {
+		if ($obj->properties->{$which . '_installed'}) {
+			$obj->init_meta($which);
+		}
+	}
     return $obj;
 }
 
 sub init_meta {
     my $obj = shift;
-    require MT::Meta::Proxy;
-    $obj->{__meta} = MT::Meta::Proxy->new($obj);
+    my ($which) = @_;
+    $which ||= 'meta';
+    my $class = 'MT::' . ucfirst($which) . '::Proxy';
+    eval("require $class;");
+    $obj->{"__$which"} = $class->new($obj);
 }
 
 sub install_meta {
     my $class = shift;
-    my ($params) = @_;
+    my ($params, $which) = @_;
+    $which ||= 'meta';
+    my $installed = $which . '_installed';
+    my $meta_class = 'MT::' . ucfirst($which);
     if ( ( $class ne 'MT::Config' ) && (!$MT::plugins_installed) ) {
-        push @PRE_INIT_META, [$class, $params];
+        push @PRE_INIT_META, [$class, $params, $which];
         return;
     }
 
-    require MT::Meta;
+	eval("require $meta_class");
     my $pkg = ref $class || $class;
-    if (!$pkg->SUPER::properties->{meta_installed}) {
+    if (!$pkg->SUPER::properties->{$installed}) {
         $pkg->add_trigger( post_save => \&_post_save_save_metadata );
         $pkg->add_trigger( post_load => \&_post_load_initialize_metadata );
     }
@@ -441,7 +469,7 @@ sub install_meta {
             $type =~ s/\s.*//; # take first keyword, ignoring anything after
             $type .= '_indexed'
                 if $cols->{$col} =~ m/\bindexed\b/;
-            $type = MT::Meta->normalize_type($type);
+            $type = $meta_class->normalize_type($type);
 
             push @{ $params->{fields} }, {
                 name => $col,
@@ -451,19 +479,20 @@ sub install_meta {
         }
     }
 
-    $params->{datasource} ||= $class->datasource . '_meta';
+    $params->{datasource} ||= $class->datasource . "_$which";
 
-    if ($props->{meta_installed} && !@{ $params->{fields} }) {
+    if ($props->{$installed} && !@{ $params->{fields} }) {
         return 1;
     }
 
-    if (my $fields = MT::Meta->install($pkg, $params)) {
+    if (my $fields = $meta_class->install($pkg, $params, $which)) {
         # we may have inherited meta fields so lets update with
         # the fields returned by MT::Meta
-        $props->{fields}->{$_} = $fields->{$_} for keys %$fields;
+        my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
+        $props->{$which_fields}->{$_} = $fields->{$_} for keys %$fields;
     }
 
-    return $props->{meta_installed} = 1;
+    return $props->{$installed} = 1;
 }
 
 sub meta_args {
@@ -509,43 +538,93 @@ sub meta_args {
     };
 }
 
+sub summary_args {
+    my $class = shift;
+    my $id_field = $class->datasource . '_id';
+    return {
+        key         => $class->datasource,
+        column_defs => {
+            $id_field         => 'integer not null',
+            type              => 'string(255) not null',
+            class             => 'string(75) not null',
+            vchar_idx         => 'string(255)',
+            vinteger_idx      => 'integer',
+            vblob             => 'blob',
+            vclob             => 'text',
+            expired           => 'smallint',
+        },
+        columns => [ $id_field, qw(
+            type
+            class
+            vchar_idx
+            vinteger_idx
+            vblob
+            vclob
+            expired
+        ) ],
+        indexes => {
+            id_class    => { columns => [ $id_field, 'class' ] },
+            type_vchar => { columns => [ 'type', 'vchar_idx'     ] },
+            type_vint  => { columns => [ 'type', 'vinteger_idx'  ] },
+        },
+        primary_key => [ $id_field, 'type' ],
+    };
+}
+
 sub has_meta {
     my $obj = shift;
     return $obj->is_meta_column(@_) if @_;
     return $obj->properties->{meta_installed} ? 1 : 0;
 }
 
+sub has_summary {
+    my $obj = shift;
+    return $obj->is_summary(@_) if @_;
+    return $obj->properties->{summary_installed} ? 1 : 0;
+}
+
 sub _post_load_initialize_metadata {
     my $obj = shift;
-    if (defined $obj && $obj->properties->{meta_installed}) {
-        $obj->init_meta();
-        $obj->{__meta}->set_primary_keys($obj);
-    }
+    for my $which (qw( meta summary )) {
+		if (defined $obj && $obj->properties->{$which . '_installed'}) {
+			$obj->init_meta($which);
+			$obj->{"__$which"}->set_primary_keys($obj);
+		}
+	}
 }
 
 sub is_meta_column {
     my $obj = shift;
-    my ($field) = @_;
-
+    my ($field, $which) = @_;
+	$which ||= 'meta';
+	my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
     my $props = $obj->properties;
-    return unless $props->{meta_installed};
+    return unless $props->{$which . '_installed'};
 
-    my $meta = $obj->meta_pkg;
-    return 1 if $props->{fields}{$field};
+    my $meta = $obj->meta_pkg($which);
+    return 1 if $props->{$which_fields}{$field};
 
     return;
 }
 
+sub is_summary {
+	my $obj = shift;
+	$obj->is_meta_column($_[0], 'summary');
+}
+
 sub meta_pkg {
     my $class = shift;
+    my ($which) = @_;
+    $which ||= 'meta';
+    my $pkg = $which . '_pkg';
     my $props = $class->properties;
-    return unless $props->{meta}; # this only works for meta-enabled classes
+    return unless $props->{$which}; # this only works for meta-enabled classes
 
-    return $props->{meta_pkg} if $props->{meta_pkg};
+    return $props->{$pkg} if $props->{$pkg};
 
     my $meta = ref $class || $class;
-    $meta .= '::Meta';
-    return $props->{meta_pkg} = $meta;
+    $meta .= '::' . ucfirst($which);
+    return $props->{$pkg} = $meta;
 }
 
 sub has_column {
@@ -563,6 +642,10 @@ sub _post_save_save_metadata {
         $obj->{__meta}->save;
         $orig_obj->{__meta} = $obj->{__meta};
     }
+    if (defined $obj && exists $obj->{__summary}) {
+        $obj->{__summary}->set_primary_keys($obj);
+        $orig_obj->{__summary} = $obj->{__summary};
+    }
 }
 
 sub meta {
@@ -575,6 +658,15 @@ sub meta {
            ref($name) eq 'HASH' ? $obj->{__meta}->set_hash(@_)
              :                    $obj->{__meta}->get($name) )
          :                   $obj->{__meta}->get_hash;
+}
+
+sub summary {
+    my $obj = shift;
+    my ( $terms, $value ) = @_;
+	$obj->{__summary}->set_primary_keys($obj);
+	return undef if (!$obj->{__summary});
+	return $obj->{__summary}->set( $terms, $value ) if (scalar @_ == 2);
+	return $obj->{__summary}->get($terms);
 }
 
 sub meta_obj {
@@ -719,6 +811,7 @@ sub save {
     if (my $err = $@) {
         return $obj->error($err);
     }
+    delete $obj->{__orig_value};
     return $res;
 }
 
@@ -726,8 +819,13 @@ sub remove {
     my $obj = shift;
     my(@args) = @_;
     if (!ref $obj) {
-        $obj->remove_meta( @args ) if $obj->has_meta;
+    	for my $which (qw( meta summary )) {
+    		my $meth = "remove_$which";
+    		my $has = "has_$which";
+	        $obj->$meth( @args ) if $obj->$has;
+	    }
         $obj->remove_scores( @args ) if $obj->isa('MT::Scorable');
+        MT->run_callbacks($obj . '::pre_remove_multi', @args);
         return $obj->driver->direct_remove($obj, @args);
     } else {
         return $obj->driver->remove($obj, @args);
@@ -970,7 +1068,12 @@ sub join_on {
 
 sub remove_meta {
     my $obj = shift;
-    my $mpkg = $obj->meta_pkg or return;
+    my $which;
+	if ($_[0] && !ref($_[0]) && (($_[0] || '') =~ /meta|summary/)) {
+		$which = shift;
+	}
+	$which ||= 'meta';
+	my $mpkg = $obj->meta_pkg($which || 'meta') or return;
     if ( ref $obj ) {
         my $id_field = $obj->datasource . '_id';
         return $mpkg->remove({ $id_field => $obj->id });
@@ -1001,6 +1104,11 @@ sub remove_meta {
         }
         return 1;
     }
+}
+
+sub remove_summary {
+	my $obj = shift;
+	$obj->remove_meta('summary', @_);
 }
 
 sub remove_scores {
@@ -1077,9 +1185,12 @@ sub set_by_key {
 sub deflate {
     my $obj = shift;
     my $data = $obj->SUPER::deflate();
-    if ($obj->has_meta()) {
-        $data->{meta} = $obj->{__meta}->deflate_meta();
-    }
+    for my $which (qw( meta summary )) {
+    	my $meth = "has_$which";
+		if ($obj->$meth()) {
+			$data->{$which} = $obj->{"__$which"}->deflate_meta();
+		}
+	}
     return $data;
 }
 
@@ -1087,9 +1198,12 @@ sub inflate {
     my $class = shift;
     my ($data) = @_;
     my $obj = $class->SUPER::inflate(@_);
-    if ($class->has_meta()) {
-        $obj->{__meta}->inflate_meta($data->{meta});
-    }
+    for my $which (qw( meta summary )) {
+    	my $meth = "has_$which";
+		if ($class->$meth()) {
+			$obj->{"__$which"}->inflate_meta($data->{$which});
+		}
+	}
     return $obj;
 }
 

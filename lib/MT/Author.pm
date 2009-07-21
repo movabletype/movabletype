@@ -7,7 +7,9 @@
 package MT::Author;
 
 use strict;
-use base qw( MT::Object MT::Scorable );
+
+use MT::Summary; # Holds MT::Summarizable
+use base qw( MT::Object MT::Scorable MT::Summarizable );
 
 __PACKAGE__->install_properties({
     column_defs => {
@@ -64,6 +66,7 @@ __PACKAGE__->install_properties({
         basename => 1,
     },
     meta => 1,
+    summary => 1,
     child_classes => ['MT::Permission', 'MT::Association'],
     datasource => 'author',
     primary_key => 'id',

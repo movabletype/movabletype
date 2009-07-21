@@ -286,9 +286,9 @@ sub construct {
         $object_types{$k} = $_[1] if scalar @_ > 1;
         return $object_types{$k} if exists $object_types{$k};
 
-        if ($k =~ m/^(.+):meta$/) {
+        if ($k =~ m/^(.+):(meta|summary)$/) {
             my $ppkg = $pkg->model($1);
-            my $mpkg = $ppkg->meta_pkg;
+            my $mpkg = $ppkg->meta_pkg($2);
             return $mpkg ? $object_types{$k} = $mpkg : undef;
         }
 
@@ -1188,6 +1188,7 @@ sub init_callbacks {
         'build_file_filter' => sub { MT->publisher->queue_build_file_filter(@_) },
         'cms_upload_file' => \&core_upload_file_to_sync,
         'api_upload_file' => \&core_upload_file_to_sync,
+        'post_init' => '$Core::MT::Summary::Triggers::post_init_add_triggers',
     });
 }
 

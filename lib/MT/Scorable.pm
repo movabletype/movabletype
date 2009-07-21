@@ -73,6 +73,8 @@ sub set_score {
         $s = MT::ObjectScore->new;
         $s->set_values($term);
     }
+    $s->{__orig_value}->{score} = $s->score
+        unless exists( $s->{__orig_value}->{score} );
     $s->score($score);
     $s->save
       or return $obj->error(

@@ -300,6 +300,8 @@ sub core_tags {
             AuthorUserpic => \&_hdlr_author_userpic,
             AuthorUserpicURL => \&_hdlr_author_userpic_url,
             AuthorBasename => \&_hdlr_author_basename,
+            AuthorCommentCount => '$Core::MT::Summary::Author::_hdlr_author_comment_count',
+            AuthorEntriesCount => '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 
             BlogID => \&_hdlr_blog_id,
             BlogName => \&_hdlr_blog_name,
@@ -16181,11 +16183,15 @@ sub _hdlr_assets {
         my $e = $ctx->stash('entry')
             or return $ctx->_no_entry_error();
 
-        require MT::ObjectAsset;
-        my @assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
-            asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
-        return '' unless @assets;
-        $assets = \@assets;
+        if ($e->has_summary('all_assets')) {
+            @$assets = $e->get_summary_objs('all_assets' => 'MT::Asset');
+        }
+        else {
+            require MT::ObjectAsset;
+            @$assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
+                asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
+        }
+        return '' unless @$assets;
     } else {
         $assets = $ctx->stash('assets');
     }
