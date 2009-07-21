@@ -294,7 +294,7 @@ sub work_periodically {
 
 our %persistent;
 BEGIN {
-    %persistent = map { $_ => 1 } qw( MT::Callback MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serializer TheSchwartz::Job TheSchwartz::JobHandle );
+    %persistent = map { $_ => 1 } qw( MT::Callback MT::Task MT::Plugin MT::Component MT::ArchiveType MT::TaskMgr MT::WeblogPublisher MT::Serialize TheSchwartz::Job TheSchwartz::JobHandle );
 }
 sub leak_report {
     my ($start, $pre, $post) = @_;
