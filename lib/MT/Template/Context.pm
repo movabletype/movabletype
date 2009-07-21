@@ -263,6 +263,9 @@ sub handler_for {
                 if (ref $code eq 'HASH') {
                     $code = $code->{code} ||= MT->handler_to_coderef($code->{handler});
                 }
+                elsif (defined $code and ! ref $code) {
+                    $code = MT->handler_to_coderef($code);
+                }
                 $str = $code->($str, $val, $ctx);
             }
         }
