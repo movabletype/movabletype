@@ -18,7 +18,7 @@ __PACKAGE__->install_properties({
         'nickname' => 'string(255)',
         'password' => 'string(60) not null',
         'type' => 'smallint not null',
-        'email' => 'string(75)',
+        'email' => 'string(127)',
         'url' => 'string(255)',
         'public_key' => 'text',
         'preferred_language' => 'string(50)',

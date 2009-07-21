@@ -22,7 +22,7 @@ __PACKAGE__->install_properties({
         'commenter_id' => 'integer',
         'visible' => 'boolean',
         'junk_status' => 'smallint',
-        'email' => 'string(75)',
+        'email' => 'string(127)',
         'url' => 'string(255)',
         'text' => 'text',
         'ip' => 'string(50)',
