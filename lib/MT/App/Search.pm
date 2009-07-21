@@ -410,6 +410,19 @@ sub search_terms {
         }
     }
 
+    # check if archive type is legal
+    if ($app->param('archive_type')) {
+        my $at = $app->param('archive_type');
+        my $checked = 0;
+        for my $valid_at (qw( Index Daily Weekly Monthly Yearly Author Category 
+                              Author-Daily Author-Weekly Author-Monthly Author-Yearly
+                              Category-Daily Category-Weekly Category-Monthly Category-Yearly )) {
+    	    $checked = 1 if ($at eq $valid_at);
+        }
+        return return $app->errtrans( 'Invalid archive type' )
+            unless ($checked);
+    }
+
     my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
