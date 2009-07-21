@@ -3457,7 +3457,14 @@ sub _hdlr_get_var {
                 local $ctx->{__stash}{tokens} = $value;
                 local $args->{name} = undef;
                 local $args->{var} = undef;
-                $ctx->var($_, $args->{$_}) for keys %{$args || {}};
+                # Pass through SetVarTemplate arguments as variables
+                # so that they do not affect the global stash
+                my $vars = $ctx->{__stash}{vars} ||= {};
+                my @names = keys %$args;
+                my @var_names;
+                push @var_names, lc $_ for @names;
+                local @{$vars}{@var_names};
+                $vars->{lc($_)} = $args->{$_} for @names;
                 $value = _hdlr_pass_tokens(@_) or return;
             } elsif (ref($value) eq 'ARRAY') {
                 if ( defined $index ) {
