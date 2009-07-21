@@ -438,8 +438,8 @@ sub search_terms {
         : ();
     delete $def_terms{'plugin'};
 
-    if ( exists $app->{searchparam}{IncludeBlogs} ) {
-        $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
+    if ( my $incl_blogs = $app->{searchparam}{IncludeBlogs} ) {
+        $def_terms{blog_id} = [ keys %$incl_blogs ] if %$incl_blogs;
     }
 
     my @terms;
