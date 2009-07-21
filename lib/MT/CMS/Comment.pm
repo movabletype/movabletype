@@ -172,6 +172,8 @@ sub list {
     my $admin = $user->is_superuser
       || ( $perms && $perms->can_administer_blog );
 
+	my %perms;
+	
     unless ($app->user->is_superuser) {
         if ( $app->param('blog_id') ) {
             return $app->errtrans("Permission denied.")
@@ -276,8 +278,18 @@ sub list {
         # Permissions
         $row->{has_edit_access} = $state_editable
           || ( $entry && ( $user->id == $entry->author_id ) );
-        $row->{can_edit_entry} = $state_entry_editable
-          || ( $entry && ($user->id == $entry->author_id ) );
+		if (!$row->{has_edit_access}) {
+			$perms->{$obj->blog_id} ||= MT->model('permission')->load({
+				blog_id => $obj->blog_id,
+				author_id => $app->user->id
+			});
+			if ($perms->{$obj->blog_id}) {
+				$row->{has_edit_access} = 
+					$perms->{$obj->blog_id}->can_edit_all_posts
+					|| $perms->{$obj->blog_id}->can_manage_feedback;
+			}
+		}
+        $row->{can_edit_entry} = $row->{has_edit_access};
         $row->{can_edit_commenter} = $user->is_superuser ? 1 : 0;
         if ( !$row->{can_edit_commenter} && $row->{commenter_id} ) {
             my $cmntr = $cmntrs{ $row->{commenter_id} };
