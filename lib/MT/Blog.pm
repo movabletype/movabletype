@@ -592,14 +592,16 @@ sub clone_with_children {
         $callback->($state, "perms");
         require MT::Permission;
         $iter = MT::Permission->load_iter({blog_id => $old_blog_id});
+
         while (my $perm = $iter->()) {
             $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'perms')
                 if $counter && ($counter % 100 == 0);
             $counter++;
-            delete $perm->{column_values}->{id};
-            delete $perm->{changed_cols}->{id};
-            $perm->blog_id($new_blog_id);
-            $perm->save or die $perm->errstr;
+            my $new_perm = $perm->clone();
+            delete $new_perm->{column_values}->{id};
+            delete $new_perm->{changed_cols}->{id};
+            $new_perm->blog_id($new_blog_id);
+            $new_perm->save or die $new_perm->errstr;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'perms');
     }
@@ -615,10 +617,11 @@ sub clone_with_children {
             $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'assoc')
                 if $counter && ($counter % 100 == 0);
             $counter++;
-            delete $assoc->{column_values}->{id};
-            delete $assoc->{changed_cols}->{id};
-            $assoc->blog_id($new_blog_id);
-            $assoc->save or die $assoc->errstr;
+            my $new_assoc = $assoc->clone();
+            delete $new_assoc->{column_values}->{id};
+            delete $new_assoc->{changed_cols}->{id};
+            $new_assoc->blog_id($new_blog_id);
+            $new_assoc->save or die $new_assoc->errstr;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'assoc');
     }
@@ -645,11 +648,12 @@ sub clone_with_children {
                 if $counter && ($counter % 100 == 0);
             $counter++;
             my $entry_id = $entry->id;
-            delete $entry->{column_values}->{id};
-            delete $entry->{changed_cols}->{id};
-            $entry->blog_id($new_blog_id);
-            $entry->save or die $entry->errstr;
-            $entry_map{$entry_id} = $entry->id;
+            my $new_entry = $entry->clone();
+            delete $new_entry->{column_values}->{id};
+            delete $new_entry->{changed_cols}->{id};
+            $new_entry->blog_id($new_blog_id);
+            $new_entry->save or die $new_entry->errstr;
+            $entry_map{$entry_id} = $new_entry->id;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'entries');
 
@@ -667,16 +671,17 @@ sub clone_with_children {
                 $counter++;
                 my $cat_id = $cat->id;
                 my $old_parent = $cat->parent;
-                delete $cat->{column_values}->{id};
-                delete $cat->{changed_cols}->{id};
-                $cat->blog_id($new_blog_id);
+                my $new_cat = $cat->clone();
+                delete $new_cat->{column_values}->{id};
+                delete $new_cat->{changed_cols}->{id};
+                $new_cat->blog_id($new_blog_id);
                 # temporarily wipe the parent association
                 # to avoid constraint issues.
-                $cat->parent(0);
-                $cat->save or die $cat->errstr;
-                $cat_map{$cat_id} = $cat->id;
+                $new_cat->parent(0);
+                $new_cat->save or die $new_cat->errstr;
+                $cat_map{$cat_id} = $new_cat->id;
                 if ($old_parent) {
-                    $cat_parents{$cat->id} = $old_parent;
+                    $cat_parents{$new_cat->id} = $old_parent;
                 }
             }
             # reassign the new category parents
@@ -700,12 +705,13 @@ sub clone_with_children {
                 $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'places')
                     if $counter && ($counter % 100 == 0);
                 $counter++;
-                delete $place->{column_values}->{id};
-                delete $place->{changed_cols}->{id};
-                $place->blog_id($new_blog_id);
-                $place->category_id($cat_map{$place->category_id});
-                $place->entry_id($entry_map{$place->entry_id});
-                $place->save or die $place->errstr;
+                my $new_place = $place->clone();
+                delete $new_place->{column_values}->{id};
+                delete $new_place->{changed_cols}->{id};
+                $new_place->blog_id($new_blog_id);
+                $new_place->category_id($cat_map{$place->category_id});
+                $new_place->entry_id($entry_map{$place->entry_id});
+                $new_place->save or die $new_place->errstr;
             }
             $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'places');
         }
@@ -721,11 +727,13 @@ sub clone_with_children {
                 $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'comments')
                     if $counter && ($counter % 100 == 0);
                 $counter++;
-                delete $comment->{column_values}->{id};
-                delete $comment->{changed_cols}->{id};
-                $comment->entry_id($entry_map{$comment->entry_id});
-                $comment->blog_id($new_blog_id);
-                $comment->save or die $comment->errstr;
+                
+                my $new_comment = $comment->clone();
+                delete $new_comment->{column_values}->{id};
+                delete $new_comment->{changed_cols}->{id};
+                $new_comment->entry_id($entry_map{$comment->entry_id});
+                $new_comment->blog_id($new_blog_id);
+                $new_comment->save or die $new_comment->errstr;
             }
             $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'comments');
         }
@@ -743,11 +751,12 @@ sub clone_with_children {
                     $callback->($state . " " . MT->translate("[_1] records processed...", $counter), "tags")
                         if $counter && ($counter % 100 == 0);
                     $counter++;
-                    delete $entry_tag->{column_values}->{id};
-                    delete $entry_tag->{changed_cols}->{id};
-                    $entry_tag->blog_id($new_blog_id);
-                    $entry_tag->object_id($entry_map{$entry_tag->object_id});
-                    $entry_tag->save or die $entry_tag->errstr;
+                    my $new_entry_tag = $entry_tag->clone();
+                    delete $new_entry_tag->{column_values}->{id};
+                    delete $new_entry_tag->{changed_cols}->{id};
+                    $new_entry_tag->blog_id($new_blog_id);
+                    $new_entry_tag->object_id($entry_map{$entry_tag->object_id});
+                    $new_entry_tag->save or die $new_entry_tag->errstr;
                 }
                 $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tags');
             }
@@ -768,8 +777,9 @@ sub clone_with_children {
                 if $counter && ($counter % 100 == 0);
             $counter++;
             my $tb_id = $tb->id;
-            delete $tb->{column_values}->{id};
-            delete $tb->{changed_cols}->{id};
+            my $new_tb = $tb->clone();
+            delete $new_tb->{column_values}->{id};
+            delete $new_tb->{changed_cols}->{id};
 
             if ($tb->category_id) {
                 if (my $cid = $cat_map{$tb->category_id}) {
@@ -815,13 +825,13 @@ sub clone_with_children {
             # A trackback wasn't created when saving the entry/category,
             # (perhaps trackbacks are now disabled for the entry/category?)
             # so create one now
-            $tb->entry_id($entry_map{$tb->entry_id})
+            $new_tb->entry_id($entry_map{$tb->entry_id})
                 if $tb->entry_id && $entry_map{$tb->entry_id};
-            $tb->category_id($cat_map{$tb->category_id})
+            $new_tb->category_id($cat_map{$tb->category_id})
                 if $tb->category_id && $cat_map{$tb->category_id};
-            $tb->blog_id($new_blog_id);
-            $tb->save or die $tb->errstr;
-            $tb_map{$tb_id} = $tb->id;
+            $new_tb->blog_id($new_blog_id);
+            $new_tb->save or die $new_tb->errstr;
+            $tb_map{$tb_id} = $new_tb->id;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tbs');
 
@@ -836,11 +846,12 @@ sub clone_with_children {
                 $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'pings')
                     if $counter && ($counter % 100 == 0);
                 $counter++;
-                delete $ping->{column_values}->{id};
-                delete $ping->{changed_cols}->{id};
-                $ping->tb_id($tb_map{$ping->tb_id});
-                $ping->blog_id($new_blog_id);
-                $ping->save or die $ping->errstr;
+                my $new_ping = $ping->clone();
+                delete $new_ping->{column_values}->{id};
+                delete $new_ping->{changed_cols}->{id};
+                $new_ping->tb_id($tb_map{$ping->tb_id});
+                $new_ping->blog_id($new_blog_id);
+                $new_ping->save or die $new_ping->errstr;
             }
             $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'pings');
         }
@@ -859,15 +870,16 @@ sub clone_with_children {
                 if $counter && ($$counter % 100 == 0);
             my $tmpl_id = $tmpl->id;
             $$counter++;
-            delete $tmpl->{column_values}->{id};
-            delete $tmpl->{changed_cols}->{id};
+            my $new_tmpl = $tmpl->clone();
+            delete $new_tmpl->{column_values}->{id};
+            delete $new_tmpl->{changed_cols}->{id};
             # linked_file won't be cloned for now because
             # new blog does not have site_path - breaks relative path
-            delete $tmpl->{column_values}->{linked_file};
-            delete $tmpl->{column_values}->{linked_file_mtime};
-            delete $tmpl->{column_values}->{linked_file_size};
-            $tmpl->blog_id($new_blog_id);
-            $tmpl->save or die $tmpl->errstr;
+            delete $new_tmpl->{column_values}->{linked_file};
+            delete $new_tmpl->{column_values}->{linked_file_mtime};
+            delete $new_tmpl->{column_values}->{linked_file_size};
+            $new_tmpl->blog_id($new_blog_id);
+            $new_tmpl->save or die $new_tmpl->errstr;
             $tmpl_map->{$tmpl_id} = $tmpl->id;
         };
         $counter = 0;
