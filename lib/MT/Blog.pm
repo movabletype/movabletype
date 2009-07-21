@@ -286,6 +286,7 @@ sub create_default_templates {
                 $map->template_id($tmpl->id);
                 $map->file_template($m->{file_template}) if $m->{file_template};
                 $map->blog_id($tmpl->blog_id);
+                $map->build_type( $m->{build_type} ) if defined $m->{build_type};
                 $map->save;
             }
         }
