@@ -368,6 +368,7 @@ MT::Comment->add_callback( 'post_save', 0, MT->component('core'),
                 visible  => 1,
             }
         );
+        return unless ( $entry->comment_count != $count );
         $entry->comment_count($count);
         $entry->save;
     },
