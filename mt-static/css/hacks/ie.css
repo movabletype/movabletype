@@ -103,3 +103,6 @@ button.big-button {
     margin-bottom: 0;
 }
 
+ul#asset-list li a.remove-asset {
+	top: -4px;
+}

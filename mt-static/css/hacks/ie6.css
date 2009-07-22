@@ -56,3 +56,8 @@
     float: left ! important;
     margin-left: 0 ! important;
 }
+
+ul#asset-list li a.remove-asset {
+	top: -1px;
+	right: 13px;
+}
