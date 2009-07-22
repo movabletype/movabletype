@@ -1271,6 +1271,7 @@ HTML
   if (my $err = $@) {
     $app->print($app->translate_templatized(qq{<p class="error-message"><MT_TRANS phrase="Error">: $err</p>}));
   } else {
+  	$app->add_return_arg('__mode' => 'list_blog');
     my $return_url = $app->return_uri;
     my $blog_url = $app->uri(mode => 'dashboard', args => {
       blog_id => $new_blog->id
