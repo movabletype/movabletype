@@ -41,17 +41,16 @@ else {
     var myElement = window.document.createElement('li');
     myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
     <mt:If tag="AssetType" eq="image">
-        myElement.setAttribute('onmouseover', 'javascript:show("list-image-<mt:AssetID>")');
-        myElement.setAttribute('onmouseout','javascript:hide("list-image-<mt:AssetID>")');
+        myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
+        myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
     </mt:If>
     myElement.appendChild(myAssetLink);
     myElement.appendChild(myRemoveLink);
-    window.parent.document.getElementById("asset-list").appendChild(myElement);
 
     // I HATE IE!
     if (document.attachEvent) {
         var oldLis = window.parent.document.getElementById("asset-list").innerHTML;
-        var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="javascript:show("list-image-<mt:AssetID>")" onmouseout="javascript:hide("list-image-<mt:AssetID>")">' 
+        var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="show(\'list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'list-image-<mt:AssetID>\', window.parent.document)">' 
                      + myElement.innerHTML + '</li>';
         window.parent.document.getElementById("asset-list").innerHTML = oldLis + newLi;
     } 
@@ -64,8 +63,7 @@ else {
         var myImageElement = window.document.createElement('img');
         myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
         myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100">');
-        myImageElement.setAttribute('style', 'display:none');
-        myImageElement.setAttribute('class', 'list-image');
+        myImageElement.setAttribute('class', 'list-image hidden');
         myElement.appendChild(myImageElement);
     </mt:If>
 }

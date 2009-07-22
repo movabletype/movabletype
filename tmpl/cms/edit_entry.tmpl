@@ -484,8 +484,8 @@
             <mt:if name="asset_loop">
                 <mt:loop name="asset_loop">
                     <li id="list-asset-<mt:var name="asset_id">"
-                        <mt:if name="asset_thumb">onmouseover="javascript:show('list-image-<mt:var name="asset_id">')"
-                                                  onmouseout="javascript:hide('list-image-<mt:var name="asset_id">')"</mt:if> >
+                        <mt:if name="asset_thumb">onmouseover="show('list-image-<mt:var name="asset_id">')"
+                                                  onmouseout="hide('list-image-<mt:var name="asset_id">')"</mt:if> >
                         <a href="<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:var name="asset_id">" class="asset-title">
                             <mt:var name="asset_name">
                         </a>
