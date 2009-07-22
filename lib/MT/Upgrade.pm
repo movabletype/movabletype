@@ -982,6 +982,14 @@ sub core_upgrade_functions {
             version_limit => 4.0068,
             code => \&core_update_password_recover_template,
         },
+        'core_disable_cloner_plugin' => {
+            version_limit => 4.0073,
+            code => sub {
+            	my $cfg = MT->config;
+                $cfg->PluginSwitch("Cloner/cloner.pl=0", 1);
+                $cfg->save_config;
+            }
+        },
     };
 }
 
