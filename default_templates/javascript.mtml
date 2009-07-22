@@ -146,21 +146,27 @@ MT.core = function (o) {
       xh.send(null);
     },
     
-    getEl : function (id) {
-      return document.getElementById(id) || false;
+    getEl : function (el) {
+      return MT.util.checkNodeType(el)==='element' ? id : (document.getElementById(el) || false);
     },
     
     addEvent : function (el,type,func,obj) {
       if(!obj && document.addEventListener) {
         el.addEventListener(type,func,false);
       } else if(obj && document.addEventListener) {
-        obj.addEventListener(type,function () {
+        el.addEventListener(type,function () {
           func.call(obj,event);
         },false);
       } else {
-        obj.attachEvent(type,function () {
-          func.call(obj,event);
-        });
+        if(obj) {
+          el.attachEvent('on' + type,function () {
+            func.call(obj,event);
+          });
+        } else {
+          el.attachEvent('on' + type,function () {          
+            func.call(el,event);
+          });
+        }
       }
     },
     
@@ -210,6 +216,7 @@ MT.util = function () {
     toggleVisibility : {
       show : function () {
         var i = arguments.length;
+        
         while(i--) {
           if(MT.util.checkNodeType(arguments[i])==='element') {
             arguments[i].style.visibility = 'visible';
@@ -264,7 +271,7 @@ MT.util = function () {
      */
     </mt:Ignore>
     checkNodeType : function (obj) {
-      if (obj.nodeName){
+      if (obj && obj.nodeName){
         switch (obj.nodeType) {
           case 1: return 'element';
           case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
@@ -335,7 +342,6 @@ MT.util = function () {
     _setCommentOffset(false);
     
     M.log(c.LOG,_getCommentOffset());
-    
     _checkForAnchor();
 		
 		_setCurrentComments();
@@ -404,19 +410,36 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _handleEvents (e) {
-    var origin = e.target,
-        parentId = u.checkNodeType(origin.parentNode)==='element' && origin.parentNode.getAttribute('id') && origin.parentNode.id;
+    var origin = e.target || e.srcElement,
+        parentId;
+        
+    // stupid IE
+    origin = origin.id && M.getEl(origin.id) || false;
 
+    if(origin) {
+      parentId = u.checkNodeType(origin.parentNode)==='element' && origin.parentNode.getAttribute('id') && origin.parentNode.id;
+    } else {
+      return false;
+    }
+    
     switch(origin.nodeName) {
       case 'A':
         switch (parentId) {
           case 'prev-comments':
-            e.preventDefault();
+            if(e.preventDefault) {
+              e.preventDefault();
+            } else {
+              e.returnValue =	false;
+            }
             _previousPage();
             _toggleNavLinks();
             break;
           case 'next-comments':
-            e.preventDefault();
+            if(e.preventDefault) {
+              e.preventDefault();
+            } else {
+              e.returnValue =	false;
+            }
             _nextPage();
             _toggleNavLinks();
             break;
@@ -433,11 +456,11 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _toggleNavLinks () {
-    if(pageNum <= commentsTotalPages) {
+    if(pageNum <= commentsTotalPages && pageNum !== 1) {
       u.toggleVisibility.show('prev-comments');
     }
     
-    if(pageNum >= 1) {
+    if(pageNum >= 1 && pageNum !== commentsTotalPages) {
       u.toggleVisibility.show('next-comments');
     }
     
