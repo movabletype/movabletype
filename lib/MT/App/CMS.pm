@@ -764,16 +764,16 @@ sub core_list_filters {
                         {   created_on  => [ $ts, undef ],
                             junk_status => MT::Comment::NOT_JUNK(),
                         },
-                        { range_incl => { created_on => 1 }, unique => 1 }
+                        { 
+                            range_incl => { created_on => 1 }, 
+                            unique => 1, 
+                            sort => 'created_on', 
+                            direction => 'descend' 
+                        }
                     );
-
-                    # Since we're selecting content from the mt_entry
-                    # table, but we want to sort by the joined
-                    # 'comment_created_on' column, we have to specify the
-                    # sort column as a reference and a full field name,
-                    # to prevent MT from adding a 'entry_' prefix to
-                    # the column name.
-                    $args->{sort} = [ { column => \'comment_created_on' } ];
+                    
+                    # entries should be sorted by the authored_on column in descending order
+                    $args->{sort} = [ { column => 'authored_on' } ];
                     $args->{direction} = 'descend';
                 },
             },
