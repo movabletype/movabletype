@@ -53,6 +53,7 @@ BEGIN {
             'author'          => 'MT::Author',
             'asset'           => 'MT::Asset',
             'file'            => 'MT::Asset',
+            'asset.file'      => 'MT::Asset',
             'asset.image'     => 'MT::Asset::Image',
             'image'           => 'MT::Asset::Image',
             'asset.audio'     => 'MT::Asset::Audio',
