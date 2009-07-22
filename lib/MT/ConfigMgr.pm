@@ -247,8 +247,8 @@ sub save_config {
 
     my ($config) = $cfg_class->load() || $cfg_class->new;
 
-    if ($data !~ m/schemaversion/i) {
-        if ($config->id && (($config->data || '') =~ m/mtversion/i)) {
+    if ($data !~ m/^schemaversion/im) {
+        if ($config->id && (($config->data || '') =~ m/^schemaversion/im)) {
             require Carp;
             MT->log(Carp::longmess("Caught attempt to clear SchemaVersion setting. New config settings were:\n$data"));
             return;
