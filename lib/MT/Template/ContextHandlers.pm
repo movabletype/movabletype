@@ -6509,6 +6509,9 @@ sub _hdlr_authors {
             }
         }
     }
+    if ($args->{'needs_userpic'}) {
+        push @filters, sub { $_[0]->userpic_asset_id > 0; };
+    }
     if ($args->{namespace}) {
         my $namespace = $args->{namespace};
         if ( my $scoring_to = $args->{scoring_to} ) {
