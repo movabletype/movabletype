@@ -1223,7 +1223,7 @@ sub print_status_page {
   }
   
   if($app->param('clone_prefs_categories')) {
-    $cloning_prefs->{'MT::MT::Category'} = 0;
+    $cloning_prefs->{'MT::Category'} = 0;
   }
   
   if($app->param('clone_prefs_entries_pages')) {
