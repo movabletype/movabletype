@@ -285,6 +285,16 @@ sub save {
         $blog_id = $obj->id;
     }
 
+    # if we are saving/publishing a template, make sure to log on activity log
+    if ( $type eq 'template' ) {
+        my $blog = $app->model('blog')->load($obj->blog_id);
+        $app->log({
+            message => $app->translate("'" . $app->user->name . "' edited the template '" . $obj->name . "' in the blog '" . $blog->name . "'"),
+            level   => MT::Log::INFO(),
+            blog_id => $blog->id,
+        });
+    }
+
     # TODO: convert this to use $app->call_return();
     # then templates can determine the page flow.
     if ( $type eq 'notification' ) {
