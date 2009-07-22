@@ -288,11 +288,18 @@ sub save {
     # if we are saving/publishing a template, make sure to log on activity log
     if ( $type eq 'template' ) {
         my $blog = $app->model('blog')->load($obj->blog_id);
-        $app->log({
-            message => $app->translate("'" . $app->user->name . "' edited the template '" . $obj->name . "' in the blog '" . $blog->name . "'"),
-            level   => MT::Log::INFO(),
-            blog_id => $blog->id,
-        });
+        if ($blog) {
+            $app->log({
+                message => $app->translate("'" . $app->user->name . "' edited the template '" . $obj->name . "' in the blog '" . $blog->name . "'"),
+                level   => MT::Log::INFO(),
+                blog_id => $blog->id,
+            });
+        } else {
+            $app->log({
+                message => $app->translate("'" . $app->user->name . "' edited the global template '" . $obj->name . "'"),
+                level   => MT::Log::INFO(),
+            });
+        }
     }
 
     # TODO: convert this to use $app->call_return();
