@@ -1154,19 +1154,21 @@ sub update_welcome_message {
 sub dialog_select_weblog {
     my $app = shift;
 
-    #return $app->errtrans("Permission denied.")
-    #    unless $app->user->is_superuser;
-
     my $favorites = $app->param('select_favorites');
     my %favorite;
     my $confirm_js;
     my $terms = {};
     my $args  = {};
     if ($favorites) {
-        my $auth = $app->user or return;
-        if ( my @favs = @{ $auth->favorite_blogs || [] } ) {
-            $terms->{id} = \@favs;
-            $args->{not}{id} = 1;
+       my $auth = $app->user or return; 
+       my @favs = @{ $auth->favorite_blogs };
+       if ( @favs ) {
+           $terms->{id} = { not => \@favs };
+        }
+       unless ( $auth->is_superuser ) {
+           use MT::Permission;
+           $args->{join} = MT::Permission->join_on( 'blog_id',
+               { author_id => $auth->id } );
         }
         $confirm_js = 'saveFavorite';
     }
