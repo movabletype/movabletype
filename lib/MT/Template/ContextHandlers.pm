@@ -6483,7 +6483,10 @@ sub _hdlr_authors {
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         }
     }
-
+    # if need_entry is NOT defined AND any_type=1, then need_entry=0
+    unless (defined $args->{need_entry}) {
+        $args->{need_entry} = 0 if (defined $args->{any_type} && $args->{any_type} == 1);
+    }
     if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{id} || defined $args->{username})) {
         $blog_args{'unique'} = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
