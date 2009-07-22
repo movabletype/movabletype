@@ -1159,18 +1159,19 @@ sub dialog_select_weblog {
     my $confirm_js;
     my $terms = {};
     my $args  = {};
+    my $auth = $app->user or return; 
+
     if ($favorites) {
-       my $auth = $app->user or return; 
-       my @favs = @{ $auth->favorite_blogs };
-       if ( @favs ) {
-           $terms->{id} = { not => \@favs };
-        }
-       unless ( $auth->is_superuser ) {
-           use MT::Permission;
-           $args->{join} = MT::Permission->join_on( 'blog_id',
-               { author_id => $auth->id } );
+        my @favs = @{ $auth->favorite_blogs };
+        if ( @favs ) {
+            $terms->{id} = { not => \@favs };
         }
         $confirm_js = 'saveFavorite';
+    }
+    unless ( $auth->is_superuser ) {
+        use MT::Permission;
+        $args->{join} = MT::Permission->join_on( 'blog_id',
+            { author_id => $auth->id } );
     }
 
     my $hasher = sub {
