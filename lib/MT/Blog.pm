@@ -737,7 +737,7 @@ sub clone_with_children {
             }
             $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'comments');
         }
-
+        
         if ((!exists $classes->{'MT::ObjectTag'}) || $classes->{'MT::ObjectTag'}) {
             # conditionally do MT::ObjectTag since it is only
             # available with MT 3.3.
@@ -761,6 +761,43 @@ sub clone_with_children {
                 $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tags');
             }
         }
+    } 
+    elsif ((!exists $classes->{'MT::Category'}) || $classes->{'MT::Category'}) {
+        # Cloning CATEGORY records
+        my $state = MT->translate("Cloning categories for blog...");
+        $callback->($state, "cats");
+        $counter = 0;
+        require MT::Category;
+        $iter = MT::Category->load_iter({ blog_id => $old_blog_id, class => '*' });
+        my %cat_parents;
+        while (my $cat = $iter->()) {
+            $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'cats')
+                if $counter && ($counter % 100 == 0);
+            $counter++;
+            my $cat_id = $cat->id;
+            my $old_parent = $cat->parent;
+            my $new_cat = $cat->clone();
+            delete $new_cat->{column_values}->{id};
+            delete $new_cat->{changed_cols}->{id};
+            $new_cat->blog_id($new_blog_id);
+            # temporarily wipe the parent association
+            # to avoid constraint issues.
+            $new_cat->parent(0);
+            $new_cat->save or die $new_cat->errstr;
+            $cat_map{$cat_id} = $new_cat->id;
+            if ($old_parent) {
+                $cat_parents{$new_cat->id} = $old_parent;
+            }
+        }
+        # reassign the new category parents
+        foreach (keys %cat_parents) {
+            my $cat = MT::Category->load($_);
+            if ($cat) {
+                $cat->parent($cat_map{$cat_parents{$cat->id}});
+                $cat->save or die $cat->errstr;
+            }
+        }
+        $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'cats');
     }
 
     if ((!exists $classes->{'MT::Trackback'}) || $classes->{'MT::Trackback'}) {
