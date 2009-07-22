@@ -235,7 +235,7 @@ sub stats_generation_handler {
   my $app = shift;
   my ($param) = @_;
   
-  if(MT->config('StatsCachePublishing') eq 'Off') {
+  if( lc( MT->config('StatsCachePublishing') ) eq 'off' ) {
     return;
   }
 
@@ -253,8 +253,8 @@ sub stats_generation_handler {
     my $path = File::Spec->catfile( $param->{support_path}, $file );
 
     my $time = ( stat($path) )[9] if -f $path;
-    
-    if (MT->config('StatsCachePublishing') eq 'OnLoad') {
+
+    if ( lc( MT->config('StatsCachePublishing') ) eq 'onload' ) {
       if ( !$time || ( time - $time > $cache_time )) {
         unless (generate_dashboard_stats($app,$param,$tab,$tab_id,$path) ) {
           delete $param->{stat_url}->{$tab_id};
