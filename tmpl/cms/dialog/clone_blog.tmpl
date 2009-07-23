@@ -62,16 +62,27 @@ fieldset {
           id="site-url"
           label="<__trans phrase="Site URL">">
             <span id="site-url"><mt:var name="site_url" escape="html"></span>
+            <mt:if name="site_url_warning">
+              <p>
+                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
+                <span class="alert-warning-inline">
+                  <__trans phrase="This is set to the same URL as the original blog. Would you like to <a href="javascript:history.back()" id="site-url-back-link">go back</a> and change it?">
+                </span>
+              </p>
+            </mt:if>
         </mtapp:setting>
         <mtapp:setting
           id="site-path"
           label="<__trans phrase="Site Root">">
             <span id="site-path"><mt:var name="site_path" escape="html"></span>
-        </mtapp:setting>
-        <mtapp:setting
-          id="overwrite"
-          label="<__trans phrase="Overwrite">">
-            <span id="site-path"><mt:if name="overwrite" eq="on"><__trans phrase="Overwrite Original Paths"><mt:else><__trans phrase="Preserve Original Paths"></mt:if></span>
+            <mt:if name="site_path_warning">
+              <p>
+                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
+                <span class="alert-warning-inline">
+                  <__trans phrase="This will overwrite the original blog. Would you like to <a href="javascript:history.back()" id="site-path-back-link">go back</a> and change it?">
+                </span>
+              </p>
+            </mt:if>
         </mtapp:setting>
       </fieldset>
       <fieldset>
@@ -89,6 +100,12 @@ fieldset {
           accesskey="s"
           title="<__trans phrase="Clone">"
           class="primary-button"><__trans phrase="Clone"></button>
+        <button
+          type="submit"
+          onclick="history.back()"
+          accesskey="x"
+          title="<__trans phrase="Back">"
+          class="secondary-button"><__trans phrase="Back"></button>
         <button
           type="submit"
           onclick="closeDialog(); return false"
@@ -128,25 +145,10 @@ fieldset {
             <div class="hint">
               <__trans phrase="Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog">
             </div>
-            <p style="visibility: hidden;">
-              <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
-              <span class="alert-warning-inline">
-                <__trans phrase="If this is set to the same path as the original blog, it will overwrite it.">
-              </span>
-            </p>
         </mtapp:setting>
       </fieldset>
       <fieldset>
         <h3><__trans phrase="Clone Settings"></h3>
-        <mtapp:setting
-          id="overwrite"
-          required="0"
-          label="<__trans phrase="Overwrite">"
-          warning="<__trans phrase="If this option is set, any matching path settings will overwrite the original blog.">"
-          show_warning="1"
-          show_hint="1">
-            <input name="overwrite" id="overwrite" <mt:if name="overwrite">checked="<mt:var name="overwrite">"</mt:if> type="checkbox" />
-        </mtapp:setting>
         <mtapp:setting
           id="clone_prefs"
           label="<__trans phrase="Exclusions">"
@@ -205,7 +207,7 @@ fieldset {
    */
   </mt:Ignore>
   function _init (e) {
-    addEvent(document.getElementById('overwrite'),'click',_handleEvents);
+    //addEvent(document.getElementById('overwrite'),'click',_handleEvents);
     addEvent(document.getElementById('clone-prefs-fields'),'click',_handleEvents);
     
     var i = document.forms.length;
@@ -248,6 +250,36 @@ fieldset {
   
   <mt:Ignore>
   /**
+   * Cross-browser solution for stopping event propagation
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _stopPropagation (e) {
+    if(e.stopPropagation) {
+      e.stopPropagation();
+    } else {
+      e.cancelBubble = true;
+    }
+  }
+  
+  /**
+   * Cross-browser solution for stopping event actions
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  function _preventDefault (e) {
+    if(e.preventDefault) {
+      e.preventDefault();
+    } else {
+      e.returnValue = false;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
    * General event handler
    * 
    * @param {Event} e The event object
@@ -269,13 +301,14 @@ fieldset {
             switch (parent.id) {
               case 'overwrite-field':
                 _showHideOverwriteWarnings(origin.checked,document.getElementById('site-path-field'));
-                e.stopPropagation();
+                _stopPropagation(e);
                 break;
               case 'clone-prefs-fields':
                 _enforceCloningConstraints(origin,parent);
-                e.stopPropagation();
+                _stopPropagation(e);
                 break;
               default:
+                _stopPropagation(e);
             }
             break;
         }
@@ -291,12 +324,12 @@ fieldset {
               _prepAction(origin);
               _disableButtons(origin);
             } else {
-              e.preventDefault();
+              _preventDefault(e);
               return false;
             }
             break;
           default:
-            e.preventDefault();
+            _preventDefault(e);
         }
         break;
     }
