@@ -1530,7 +1530,7 @@ sub post_save {
         if ( $obj->$blog_field() ne $original->$blog_field() ) {
                 my $old = $original->$blog_field() ? $original->$blog_field() : "none";
                 my $new = $obj->$blog_field() ? $obj->$blog_field() : "none";
-                push(@meta_messages, "$blog_field changed from $old to $new");
+                push(@meta_messages, $app->translate("[_1] changed from [_2] to [_3]", $blog_field, $old, $new));
         }
     }
 
@@ -1539,7 +1539,7 @@ sub post_save {
         my $meta_message = join(", ", @meta_messages);
         $app->log({
             message => $app->translate("Saved Blog Changes"),
-            metadata => $app->translate($meta_message),
+            metadata => $meta_message,
             level    => MT::Log::INFO(),
             blog_id => $obj->id,
         });

@@ -428,7 +428,7 @@ sub cfg_system_general {
         MT::Mail->send( \%head, $body ) or return $app->error( $app->translate("Mail was not properly sent") );
         
         $app->log({
-            message => $app->translate('Test e-mail was successfully sent to ' . $app->param('to_email_address')),
+            message => $app->translate('Test e-mail was successfully sent to [_1]', $app->param('to_email_address')),
             level    => MT::Log::INFO(),
             class    => 'system',
         });
@@ -455,25 +455,25 @@ sub save_cfg_system_general {
 
     # construct the message to the activity log
     my @meta_messages = (); 
-    push(@meta_messages, 'Email address is ' . $app->param('system_email_address')) 
+    push(@meta_messages, $app->translate('Email address is [_1]', $app->param('system_email_address'))) 
         if ($app->param('system_email_address') =~ /\w+/);
-    push(@meta_messages, 'Debug mode is ' . $app->param('system_debug_mode')) 
+    push(@meta_messages, $app->translate('Debug mode is [_1]', $app->param('system_debug_mode')))
         if ($app->param('system_debug_mode') =~ /\d+/);
     if ($app->param('system_performance_logging')) {
-        push(@meta_messages, 'Performance logging is on');
+        push(@meta_messages, $app->translate('Performance logging is on'));
     } else {
-        push(@meta_messages, 'Performance logging is off');
+        push(@meta_messages, $app->translate('Performance logging is off'));
     }
-    push(@meta_messages, 'Performance log path is ' . $app->param('system_performance_logging_path'))
+    push(@meta_messages, $app->translate('Performance log path is [_1]', $app->param('system_performance_logging_path')))
         if ($app->param('system_performance_logging_path') =~ /\w+/);
-    push(@meta_messages, 'Performance log threshold is ' . $app->param('system_performance_logging_threshold'))
+    push(@meta_messages, $app->translate('Performance log threshold is [_1]', $app->param('system_performance_logging_threshold')))
         if ($app->param('system_performance_logging_threshold') =~ /\d+/);
     
     # throw the messages in the activity log
     if (scalar(@meta_messages) > 0) {
         my $message = join(', ', @meta_messages);
         $app->log({
-            message  => 'System Settings Changes Took Place',
+            message  => $app->translate('System Settings Changes Took Place'),
             level    => MT::Log::INFO(),
             class    => 'system',
             metadata => $message,
