@@ -564,8 +564,8 @@ sub summary_args {
         ) ],
         indexes => {
             id_class    => { columns => [ $id_field, 'class' ] },
-            type_vchar => { columns => [ 'type', 'vchar_idx'     ] },
-            type_vint  => { columns => [ 'type', 'vinteger_idx'  ] },
+            class_vchar => { columns => [ 'class', 'vchar_idx'     ] },
+            class_vint  => { columns => [ 'class', 'vinteger_idx'  ] },
         },
         primary_key => [ $id_field, 'type' ],
     };
