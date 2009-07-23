@@ -3704,9 +3704,9 @@ ul#asset-list li img.list-image {
 	border: 1px solid #e7eff3;
 }
 
-p#asset-notice {
-	font-size: 11px;
-	color: #999;
+.notice {
+    font-size: 11px;
+    color: #999;
 }
 
 /* Icon Links ---------------------------------------------------------------------------------- */

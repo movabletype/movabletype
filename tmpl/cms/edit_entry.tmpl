@@ -504,7 +504,7 @@
         </ul>
         <input type="hidden" id="include_asset_ids" name="include_asset_ids" 
                value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
-        <p id="asset-notice"><__trans phrase="The published order of these assets can be changed using template tag modifiers." escape="html"></p>
+        <p class="notice"><__trans phrase="The published order of these assets can be changed using [_1]template tag modifiers[_2]." params="<a href="javascript:void(0)" onclick="return openManual('appendices', 'modifiers')">%%</a>"></p>
     </mtapp:widget>
 </div>
 </mt:if>

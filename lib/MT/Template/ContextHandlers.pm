@@ -6337,8 +6337,9 @@ any type associated with the blog, including commenters.
 
 =item * roles
 
-A comma separated list of roles used to select users by.
-eg: "Author, Commenter".
+List of roles used to select users by. Comma separated
+(eg: "Author, Commenter"), or using conditional logic
+(eg: "Author OR Commenter" or "!(Author)")
 
 =item * need_entry (optional; default "1")
 
