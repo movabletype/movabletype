@@ -290,13 +290,13 @@ sub save {
         my $blog = $app->model('blog')->load($obj->blog_id);
         if ($blog) {
             $app->log({
-                message => $app->translate("'" . $app->user->name . "' edited the template '" . $obj->name . "' in the blog '" . $blog->name . "'"),
+                message => $app->translate("'[_1]' edited the template '[_2]' in the blog '[_3]'",  $app->user->name, $obj->name, $blog->name),
                 level   => MT::Log::INFO(),
                 blog_id => $blog->id,
             });
         } else {
             $app->log({
-                message => $app->translate("'" . $app->user->name . "' edited the global template '" . $obj->name . "'"),
+                message => $app->translate("'[_1]' edited the global template '[_2]'", $app->user->name, $obj->name),
                 level   => MT::Log::INFO(),
             });
         }
