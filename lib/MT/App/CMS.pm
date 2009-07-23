@@ -771,10 +771,6 @@ sub core_list_filters {
                             direction => 'descend' 
                         }
                     );
-                    
-                    # entries should be sorted by the authored_on column in descending order
-                    $args->{sort} = [ { column => 'authored_on' } ];
-                    $args->{direction} = 'descend';
                 },
             },
             _by_date => {
