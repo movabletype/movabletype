@@ -471,6 +471,7 @@
 </div>
 
 <mt:if name="object_type" like="(entry|page)">
+<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
     <mtapp:widget
         id="asset_container"
         label="Assets">
@@ -505,6 +506,7 @@
                value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
         <p id="asset-notice"><__trans phrase="The published order of these assets can be changed using template tag modifiers." escape="html"></p>
     </mtapp:widget>
+</div>
 </mt:if>
 
     <mt:if name="object_type" eq="page">
@@ -548,9 +550,10 @@ var orig_text_format;
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
 orig_text_format = cur_text_format;
 var customizable_fields = [<mt:loop name="field_loop" glue=","><mt:unless name="system_field"><mt:unless name="lock_field">'<mt:var name="field_id" escape="js">'<mt:else><mt:if name="use_field">'<mt:var name="field_id" escape="js">'</mt:if></mt:unless></mt:unless></mt:loop>];
-<mt:unless name="object_type" eq="page">customizable_fields.push('category');
-</mt:unless>customizable_fields.push('publishing');
+<mt:unless name="object_type" eq="page">customizable_fields.push('category');</mt:unless>
+customizable_fields.push('publishing');
 customizable_fields.push('feedback');
+customizable_fields.push('assets');
 var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
 
 function savedEntryOptions(c) {
@@ -985,6 +988,7 @@ function listPreviousPings () {
                         </mt:if>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_publishing"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Publishing"></label></li>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Feedback"></label></li>
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Assets"></label></li>
                     </ul>
                 </mtapp:setting>
                 <mtapp:setting
