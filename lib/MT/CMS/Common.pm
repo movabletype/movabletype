@@ -1230,6 +1230,7 @@ sub print_status_page {
   my($blog) = $_[1];
   my($param) = $_[2];
   my($cloning_prefs) = {};
+  $| = 1;
 
   if($app->param('clone_prefs_comments')) {
     $cloning_prefs->{'MT::Comment'} = 0;
@@ -1327,41 +1328,22 @@ HTML
 }
 
 sub _progress {
-  my $app = $_[0];
-  my($param) = $_[1];
-  
-#   my $ids = $app->request('progress_ids') || {};
-#   my ($str,$id) = @_;
-#   
-#   use Data::Dumper;
-#   MT->log(Data::Dumper->Dump([$str]));
-# 
-#   if ($id && $ids->{$id}) {
-#     push(@{$param->{'clone_log_msgs'}},$str);
-#   } elsif ($id) {
-#     $ids->{$id} = 1;
-#     push(@{$param->{'clone_log_msgs'}},$str);
-#   } else {
-#     push(@{$param->{'clone_log_msgs'}},$str);
-#   }
-# 
-#   $app->request('progress_ids',$ids);
-   my $ids = $app->request('progress_ids') || {};
-#   use Data::Dumper;
-#   MT->log(Data::Dumper->Dump([$ids]));
-  my ($str, $id) = each %{$ids};
-  if ($id && $ids->{$id}) {
-    require MT::Util;
-    my $str_js = MT::Util::encode_js($str);
-    $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
-  } elsif ($id) {
-    $ids->{$id} = 1;
-    $app->print(qq{<li id="$id">$str</li>\n});
-  } else {
-    $app->print("<li>$str</li>");
-  }
+    my $app = shift;
+    my $ids = $app->request('progress_ids') || {};
 
-  $app->request('progress_ids', $ids);
+    my ($str, $id) = @_;
+    if ($id && $ids->{$id}) {
+        require MT::Util;
+        my $str_js = MT::Util::encode_js($str);
+        $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
+    } elsif ($id) {
+        $ids->{$id} = 1;
+        $app->print(qq{<li id="$id">$str</li>\n});
+    } else {
+        $app->print("<li>$str</li>");
+    }
+
+    $app->request('progress_ids', $ids);
 }
 
 sub not_junk_test {
