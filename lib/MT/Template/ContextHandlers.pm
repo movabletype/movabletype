@@ -16538,6 +16538,9 @@ sub _hdlr_assets {
         $row_count = 0 if $row_count > $per_row;
         $i++;
     }
+    if (!@assets) {
+        return _hdlr_pass_tokens_else(@_);
+    }
 
     $res;
 }
