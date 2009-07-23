@@ -1126,9 +1126,25 @@ sub clone_blog {
   $param->{'site_url'} =  $app->param('site_url') || $base . '_clone';
   $param->{'site_path'} = $app->param('site_path') || $blog->site_path . '_clone';
   
-  my $clone = $app->param('Back') ? 0 : $app->param('clone');
+  if($app->param('clone_prefs_entries_pages')) {
+    $param->{'clone_prefs_entries_pages'} = $app->param('clone_prefs_entries_pages');
+  }
+  
+  if($app->param('clone_prefs_comments')) {
+    $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
+  }
+  
+  if($app->param('clone_prefs_trackbacks')) {
+    $param->{'clone_prefs_trackbacks'} = $app->param('clone_prefs_trackbacks');
+  }
+  
+  if($app->param('clone_prefs_categories')) {
+    $param->{'clone_prefs_categories'} = $app->param('clone_prefs_categories');
+  }
+  
+  my $clone = $app->param('back_to_form') ? 0 : $app->param('clone');
   $param = _has_valid_form($app,$blog,$param);
-
+  
   if ($blog_id && $clone && $param->{'isValidForm'}) {
     print_status_page($app,$blog,$param);
     return;
@@ -1136,22 +1152,6 @@ sub clone_blog {
     # build form
     $param->{'verify'} = 1;
     $param->{'system_msg'} = 1;
-    
-    if($app->param('clone_prefs_entries_pages')) {
-      $param->{'clone_prefs_entries_pages'} = $app->param('clone_prefs_entries_pages');
-    }
-    
-    if($app->param('clone_prefs_comments')) {
-      $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
-    }
-    
-    if($app->param('clone_prefs_trackbacks')) {
-      $param->{'clone_prefs_trackbacks'} = $app->param('clone_prefs_trackbacks');
-    }
-    
-    if($app->param('clone_prefs_categories')) {
-      $param->{'clone_prefs_categories'} = $app->param('clone_prefs_categories');
-    }
   }
     
   my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
@@ -1177,11 +1177,11 @@ sub _has_valid_form {
   }
   
   if((!$param->{'clone_prefs_comments'} || !$param->{'clone_prefs_trackbacks'}) && $param->{'clone_prefs_entries_pages'}) {
-    if(!$param->{'clone_prefs_comments'} && !$param->{'clone_prefs_comments'}) {
-      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if trackbacks or comments are cloned"));
-    } elsif(!$param->{'clone_prefs_comments'}) {
+    if(!$param->{'clone_prefs_comments'} && !$param->{'clone_prefs_trackbacks'}) {
+      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments and trackbacks are cloned"));
+    } elsif($param->{'clone_prefs_comments'}) {
       push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments are cloned"));
-    } elsif(!$param->{'clone_prefs_trackbacks'}) {
+    } elsif($param->{'clone_prefs_trackbacks'}) {
       push(@{$param->{'errors'}},$app->translate("Entries must be cloned if trackbacks are cloned"));
     }
   }
