@@ -1510,7 +1510,7 @@ sub comment_listing {
     my $method = $app->param('method');
     $method ||= 'displayComments';
     my $tmpl = MT::Template->load(
-        {   name    => 'Comment Listing (Dynamic)',
+        {   name    => 'Comment Listing',
             blog_id => $entry->blog_id
         }
     );

@@ -98,8 +98,8 @@ BEGIN {
             },
         },
         'system' => {
-            'comment_listing_dynamic' => {
-                label => 'Comment Listing (Dynamic)',
+            'comment_listing' => {
+                label => 'Comment Listing',
                 description_label => 'Improved listing of comments.'
             },
             'comment_response' => {

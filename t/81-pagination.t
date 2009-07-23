@@ -21,7 +21,7 @@ my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
     my $tmpl = MT::Template->load(
         {   
-            name    => 'Comment Listing (Dynamic)',
+            name    => 'Comment Listing',
             blog_id => $blog->id,
         }
     );
@@ -36,7 +36,7 @@ TEXT
 
         $tmpl = MT::Template->new;
         $tmpl->blog_id($blog->id);
-        $tmpl->name('Comment Listing (Dynamic)');
+        $tmpl->name('Comment Listing');
         $tmpl->text($text);
         $tmpl->save;
     }
