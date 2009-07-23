@@ -1118,56 +1118,24 @@ sub clone_blog {
   my $blog = MT::Blog->load($blog_id)
     or return $app->error($app->translate("Invalid blog_id"));
   
-  my $base = $app->config('DefaultSiteURL') || $app->base;
+  my $base = $blog->site_url || $app->config('DefaultSiteURL') || $app->base;
+  $base =~ s/\/$//;
   
   $param->{'blog_id'} = $blog->id;
   $param->{'new_blog_name'} = $app->param('new_blog_name') || 'Clone of ' . MT::Util::encode_html($blog->name);
-  $param->{'site_url'} =  $app->param('site_url') || $base . '/clone';
+  $param->{'site_url'} =  $app->param('site_url') || $base . '_clone';
   $param->{'site_path'} = $app->param('site_path') || $blog->site_path . '_clone';
   
-  my $clone = $app->param('clone');
-  
-  if ($blog_id && $clone && _has_valid_form($app,$blog,$param)) {
+  my $clone = $app->param('Back') ? 0 : $app->param('clone');
+  $param = _has_valid_form($app,$blog,$param);
+
+  if ($blog_id && $clone && $param->{'isValidForm'}) {
     print_status_page($app,$blog,$param);
-#     my $new_blog;
-#     $param->{'clone'} = 1;
-#     $param->{'clone_log_msgs'} = [];
-# 
-#     $new_blog = $blog->clone({
-#       Children => 1,
-#       BlogName => $param->{'new_blog_name'},
-#       Except => ({ site_path => 1, site_url => 1 }),
-#       #Callback => sub { _progress($app,\%param) }
-#     });
-#     
-#     if (my $err = $@) {
-#       $param->{'errors'} = $app->translate(qq{<p class="error-message"><MT_TRANS phrase="Error">: $err</p>});
-#     } else {
-#       $new_blog->site_path($param->{'site_path'});
-#       $new_blog->site_url($param->{'site_url'});
-#       $new_blog->save();
-#       
-#       my $return_url = $app->return_uri;
-#       my $blog_url = $app->uri(
-#         mode => 'dashboard',
-#         args => {
-#           blog_id => $new_blog->id
-#       });
-#       
-#       my $setting_url = $app->uri(
-#         mode => 'view',
-#         args => {
-#           blog_id => $new_blog->id,
-#           _type => 'blog',
-#           id => $new_blog->id
-#       });
-#     }
+    return;
   } elsif ($app->param('verify')) {
     # build form
     $param->{'verify'} = 1;
     $param->{'system_msg'} = 1;
-
-    $param->{'overwrite'} = $app->param('overwrite');
     
     if($app->param('clone_prefs_entries_pages')) {
       $param->{'clone_prefs_entries_pages'} = $app->param('clone_prefs_entries_pages');
@@ -1197,13 +1165,13 @@ sub _has_valid_form {
   my($param) = $_[2];
   
   if($blog->site_url eq $param->{'site_url'}) {
-    push(@{$param->{'errors'}},$app->translate("The Site URL matches the original blog")) unless($param->{'override'});
+    $param->{'site_url_warning'} = 1;
   } elsif(!$param->{'site_url'}) {
     push(@{$param->{'errors'}},$app->translate("You need to specify a Site URL"));
   }
   
   if($blog->site_path eq $param->{'site_path'}) {
-    push(@{$param->{'errors'}},$app->translate("The Site Path matches the original blog"));
+    $param->{'site_path_warning'} = 1;
   } elsif(!$param->{'site_path'}) {
     push(@{$param->{'errors'}},$app->translate("You need to specify a Site Path"));
   }
@@ -1218,11 +1186,9 @@ sub _has_valid_form {
     }
   }
    
-  if($param->{'errors'}) {
-    return 0;
-  } else {
-    return 1;
-  }
+  $param->{'isValidForm'} = $param->{'errors'} ? 0 : 1;
+
+  return $param;
 }
 
 sub print_status_page {
@@ -1237,7 +1203,9 @@ sub print_status_page {
   }
   
   if($app->param('clone_prefs_trackbacks')) {
+    # need to exclude both Trackbacks and Pings
     $cloning_prefs->{'MT::Trackback'} = 0;
+    $cloning_prefs->{'MT::TBPing'} = 0;
   }
   
   if($app->param('clone_prefs_categories')) {
