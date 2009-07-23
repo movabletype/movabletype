@@ -66,7 +66,7 @@ fieldset {
               <p>
                 <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
                 <span class="alert-warning-inline">
-                  <__trans phrase="This is set to the same URL as the original blog. Would you like to <a href="javascript:history.back()" id="site-url-back-link">go back</a> and change it?">
+                  <__trans phrase="This is set to the same URL as the original blog.">
                 </span>
               </p>
             </mt:if>
@@ -79,7 +79,7 @@ fieldset {
               <p>
                 <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
                 <span class="alert-warning-inline">
-                  <__trans phrase="This will overwrite the original blog. Would you like to <a href="javascript:history.back()" id="site-path-back-link">go back</a> and change it?">
+                  <__trans phrase="This will overwrite the original blog.">
                 </span>
               </p>
             </mt:if>
@@ -101,8 +101,9 @@ fieldset {
           title="<__trans phrase="Clone">"
           class="primary-button"><__trans phrase="Clone"></button>
         <button
+          name="back_to_form"
+          value="1"
           type="submit"
-          onclick="history.back()"
           accesskey="x"
           title="<__trans phrase="Back">"
           class="secondary-button"><__trans phrase="Back"></button>
@@ -207,6 +208,7 @@ fieldset {
    */
   </mt:Ignore>
   function _init (e) {
+    _enforceCloningConstraints(document.getElementById('clone-prefs-entries-pages'),document.getElementById('clone-prefs-fields'));
     //addEvent(document.getElementById('overwrite'),'click',_handleEvents);
     addEvent(document.getElementById('clone-prefs-fields'),'click',_handleEvents);
     
