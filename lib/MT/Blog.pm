@@ -580,6 +580,8 @@ sub clone_with_children {
     $new_blog->name($blog_name ? $blog_name : MT->translate("Clone of [_1]", $blog->name));
     delete $new_blog->{column_values}->{id};
     delete $new_blog->{changed_cols}->{id};
+    $new_blog->modified_on(undef);
+    $new_blog->created_on(undef);
     $new_blog->save or die $new_blog->errstr;
     $new_blog_id = $new_blog->id;
     $callback->(MT->translate("Cloned blog... new id is [_1].",
