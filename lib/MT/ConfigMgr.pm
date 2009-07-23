@@ -318,7 +318,7 @@ sub read_config_db {
 sub DESTROY {
     # save_config here so not to miss any dirty config change to persist
     # particularly for those which does not construct MT::App.
-    $_[0]->save_config unless UNIVERSAL::isa( MT->instance, 'MT::App' );
+    $_[0]->save_config;
 }
 
 use vars qw( $AUTOLOAD );
