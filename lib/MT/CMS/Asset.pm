@@ -1238,7 +1238,7 @@ sub _upload_file {
         $asset->image_width($w);
         $asset->image_height($h);
 
-        if (lc($id) ne lc($ext)) {
+        if (lc($id) ne lc($ext) && ! ( lc($ext) eq 'jpeg' && lc($id) eq 'jpg' )) {
             my $real_ext = lc($id);
             $asset->file_ext($real_ext);
             $asset_file =~ s/$ext/$real_ext/;
