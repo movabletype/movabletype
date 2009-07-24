@@ -24,7 +24,7 @@ else {
     // create the link to the asset page with asset name as label
     var myAssetLink = window.document.createElement('a');
     myAssetLink.setAttribute('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
-    myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName> '));
+    myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
 
     // create the remove link icon
     var myRemoveIcon = window.document.createElement('img');
@@ -62,7 +62,7 @@ else {
     <mt:If tag="AssetType" eq="image">
         var myImageElement = window.document.createElement('img');
         myImageElement.setAttribute('id', 'list-image-<mt:AssetID>');
-        myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100">');
+        myImageElement.setAttribute('src', '<mt:AssetThumbnailURL width="100" encode_js="1">');
         myImageElement.setAttribute('class', 'list-image hidden');
         myElement.appendChild(myImageElement);
     </mt:If>
