@@ -12,7 +12,18 @@
     <mt:Comments lastn="$comments_per_page" sort_order="ascend">
         <mt:CommentsHeader>
     <h2 class="comments-header"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></h2>
-    <div id="comments-content" class="comments-content">
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+    <ul id="top-comment-nav">
+      <li id="top-prev-comments">
+        <a href="javascript://" id="top-prev-comments-link" title="<__trans phrase="Older Comments">">&lt;&lt;&nbsp;<__trans phrase="Older Comments"></a>
+      </li>
+      <li id="top-num-comments"><span id="top-current-comments"></span></li>
+      <li id="top-next-comments">
+        <a href="javascript://" id="top-next-comments-link" title="<__trans phrase="Newer Comments">"><__trans phrase="Newer Comments">&nbsp;&gt;&gt;</a>
+      </li>
+    </ul>
+    </mt:If>
+    <div id="comments-content" class="comments-content" style="clear: left;">
         </mt:CommentsHeader>
         <$mt:Include module="<__trans phrase="Comment Detail">"$>
         <mt:CommentsFooter>
@@ -22,14 +33,14 @@
     <mt:If tag="EntryCommentCount" gt="$comments_per_page">
     	<mt:Ignore><__trans phrase="The data is modified by the paginate script"></mt:Ignore>
     	<ul id="comment-nav">
-    	 <li id="prev-comments">
-    	   <a href="javascript://" id="prev-comments-link" title="<__trans phrase="Older Comments">">&lt;&lt;&nbsp;<__trans phrase="Older Comments"></a>
-  	   </li>
-  	   <li id="next-comments">
-  	     <a href="javascript://" id="next-comments-link" title="<__trans phrase="Newer Comments">"><__trans phrase="Newer Comments">&nbsp;&gt;&gt;</a>
-  	   </li>
+        <li id="prev-comments">
+          <a href="javascript://" id="prev-comments-link" title="<__trans phrase="Older Comments">">&lt;&lt;&nbsp;<__trans phrase="Older Comments"></a>
+        </li>
+        <li id="num-comments"><span id="current-comments"></span></li>
+        <li id="next-comments">
+          <a href="javascript://" id="next-comments-link" title="<__trans phrase="Newer Comments">"><__trans phrase="Newer Comments">&nbsp;&gt;&gt;</a>
+        </li>
       </ul>
-      <div id="current-comments" style="text-align: center;"></div>
     </mt:If>
 
     <mt:Ignore>
