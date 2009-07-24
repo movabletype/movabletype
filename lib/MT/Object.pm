@@ -987,14 +987,17 @@ sub table_name {
 
 sub clone_all {
     my $obj = shift;
+    my ($param) = @_;
     my $clone = $obj->SUPER::clone_all();
     if ($clone->properties->{meta_installed}) {
         $clone->init_meta();
         $clone->meta( $obj->meta );
-        for my $meta ( keys %{ $clone->{__meta}->{__objects} } ) {
-            $clone->{__meta}->{__objects}{$meta}->{changed_cols}
-                = $obj->{__meta}->{__objects}->{$meta}->{changed_cols} || {};
-        }
+        if (!$param || !ref($param) || (ref($param) ne 'HASH') || !$param->{wantmeta}) {
+			for my $meta ( keys %{ $clone->{__meta}->{__objects} } ) {
+				$clone->{__meta}->{__objects}{$meta}->{changed_cols}
+					= $obj->{__meta}->{__objects}->{$meta}->{changed_cols} || {};
+			}
+		}
     }
     return $clone;
 }
@@ -1002,7 +1005,9 @@ sub clone_all {
 sub clone {
     my $obj = shift;
     my($param) = @_;
-    my $clone = $obj->clone_all();
+    # pass wantmeta to indicate that it should clone all metadata regardless of
+    # changed status
+    my $clone = $obj->clone_all({ wantmeta => 1 });
 
     ## If the caller has listed a set of columns not to copy to the clone,
     ## delete them from the clone.
