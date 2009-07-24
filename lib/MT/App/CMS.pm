@@ -2446,6 +2446,7 @@ sub load_default_entry_prefs {
                 Tags       => 'tags',
                 Publishing => 'publishing',
                 Feedback   => 'feedback',
+                Assets     => 'assets',
             );
             my @p;
             foreach my $p ( keys %map ) {
@@ -2502,7 +2503,7 @@ sub _parse_entry_prefs {
             if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
                 $param->{ 'disp_prefs_' . $p } = 1;
                 foreach my $def (
-                    qw(title body category tags keywords feedback publishing )
+                    qw( title body category tags keywords feedback publishing assets )
                     )
                 {
                     $param->{ 'disp_prefs_show_' . $def } = 1;
