@@ -419,20 +419,31 @@ ul { list-style: disc outside; }
     vertical-align: middle;
 }
 
-#comment-nav {
-  float: left;
+#top-comment-nav, #comment-nav {
   list-style: none;
-  margin: 0;
-  padding: 0;
   width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
+  text-align: center;
 }
 
-#comment-nav #prev-comments {
-  float: left;
+#top-comment-nav li, #comment-nav li {
+  display: inline;
+  padding: 0;
 }
 
-#comment-nav #next-comments {
-  float: right;
+#top-prev-comments, #prev-comments {
+  text-align: left;
+  margin: 0 1em 0 0;
+}
+
+#top-next-comments, #next-comments {
+  text-align: right;
+  margin: 0 0 0 1em;
+}
+
+#top-num-comments, #num-comments {
+  text-align: center;
 }
 
 #comment-submit {
