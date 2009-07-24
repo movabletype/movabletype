@@ -232,13 +232,28 @@ sub insert {
     my $app  = shift;
     my $text = $app->param('no_insert') ? "" : _process_post_upload( $app );
     return unless defined $text;
-    my $tmpl = $app->load_tmpl(
-        'dialog/asset_insert.tmpl',
-        {
-            upload_html => $text || '',
-            edit_field => scalar $app->param('edit_field') || '',
-        },
-    );
+    my $file_ext_changes = $app->param('changed_file_ext');
+    my ($ext_from, $ext_to) = split(",", $file_ext_changes) if $file_ext_changes;
+    my $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
+    my $tmpl;
+    if ($extension_message) {
+        $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {
+                upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+                extension_message => $extension_message,
+            },
+        );
+    } else {
+       $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {
+                upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+            },
+        );
+    }
     my $ctx = $tmpl->context;
     my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT::Asset->load( $id );
@@ -362,6 +377,9 @@ sub complete_insert {
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
         $param->{height} = $asset->image_height;
+    } if ($app->param('changed_file_ext')) {
+        my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+        $param->{extension_message} = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
     }
     if ( !$app->param('asset_select') && ($perms->can_create_post || $app->user->is_superuser) ) {
         my $html = $asset->insert_options($param);
@@ -1252,6 +1270,7 @@ sub _upload_file {
             $target_file =~ s/$ext/$real_ext/;
             system("mv $local_file $target_file");
             $local_file = $target_file;
+            $app->param("changed_file_ext", "$ext,$real_ext");
         }
     }
 
