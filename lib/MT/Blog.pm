@@ -904,12 +904,11 @@ sub clone_with_children {
             { blog_id => $old_blog_id, type => { not => 'widgetset' } }
         );
         my $tmpl_processor = sub {
-            my ( $new_blog_id, $counter, $tmpl, $tmpl_map ) = @_;
+            my ( $new_blog_id, $counter, $tmpl, $new_tmpl, $tmpl_map ) = @_;
             $callback->($state . " " . MT->translate("[_1] records processed...", $$counter), 'tmpls')
                 if $counter && ($$counter % 100 == 0);
             my $tmpl_id = $tmpl->id;
             $$counter++;
-            my $new_tmpl = $tmpl->clone();
             delete $new_tmpl->{column_values}->{id};
             delete $new_tmpl->{changed_cols}->{id};
             # linked_file won't be cloned for now because
@@ -919,18 +918,20 @@ sub clone_with_children {
             delete $new_tmpl->{column_values}->{linked_file_size};
             $new_tmpl->blog_id($new_blog_id);
             $new_tmpl->save or die $new_tmpl->errstr;
-            $tmpl_map->{$tmpl_id} = $tmpl->id;
+            $tmpl_map->{$tmpl_id} = $new_tmpl->id;
         };
         $counter = 0;
         while (my $tmpl = $iter->()) {
-            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
+            my $new_tmpl = $tmpl->clone();
+            $tmpl_processor->($new_blog_id, \$counter, $tmpl, $new_tmpl, \%tmpl_map);
         }
         $iter = MT::Template->load_iter(
             { blog_id => $old_blog_id, type => 'widgetset' }
         );
         while (my $tmpl = $iter->()) {
             my @old_widgets = split /,/, $tmpl->modulesets;
-            $tmpl_processor->($new_blog_id, \$counter, $tmpl, \%tmpl_map);
+            my $new_tmpl = $tmpl->clone();
+            $tmpl_processor->($new_blog_id, \$counter, $tmpl, $new_tmpl, \%tmpl_map);
             my @new_widgets;
             foreach ( @old_widgets ) {
                 if ( exists $tmpl_map{$_} ) {
@@ -944,8 +945,8 @@ sub clone_with_children {
                       && $global_widget->type eq 'widget'
                 }
             }
-            $tmpl->modulesets( join(',', @new_widgets) );
-            $tmpl->save;
+            $new_tmpl->modulesets( join(',', @new_widgets) );
+            $new_tmpl->save;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tmpls');
 
@@ -958,11 +959,12 @@ sub clone_with_children {
             $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'tmplmaps')
                 if $counter && ($counter % 100 == 0);
             $counter++;
-            delete $map->{column_values}->{id};
-            delete $map->{changed_cols}->{id};
-            $map->template_id($tmpl_map{$map->template_id});
-            $map->blog_id($new_blog_id);
-            $map->save or die $map->errstr;
+            my $new_map = $map->clone();
+            delete $new_map->{column_values}->{id};
+            delete $new_map->{changed_cols}->{id};
+            $new_map->template_id($tmpl_map{$map->template_id});
+            $new_map->blog_id($new_blog_id);
+            $new_map->save or die $new_map->errstr;
         }
         $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'tmplmaps');
     }
