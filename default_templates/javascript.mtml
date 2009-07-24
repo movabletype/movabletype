@@ -105,7 +105,7 @@ MT.cons = function () {
  */
 </mt:Ignore>
 MT.core = function (o) {
-  var _debug = false;
+  var _debug = true;
   
   return {
     <mt:Ignore>
@@ -264,6 +264,25 @@ MT.util = function () {
     
     <mt:Ignore>
     /**
+     * Finds the nearest defining (i.e. with an id) parent to the given element
+     * 
+     * @param {HTMLElement} origin the node from which to start the search
+     * @return {HTMLElement|Boolean} The parent node with an id attribute or false
+     */
+    </mt:Ignore>
+    findDefiningParent : function (origin) {
+      if(MT.util.checkNodeType(origin)==='element') {
+        for(var node=origin.parentNode;node.parentNode;node=node.parentNode) {
+          if((node.hasAttribute && node.hasAttribute('id')) || node.getAttribute('id')) {
+            return node;
+          }
+        }
+      }
+      return false;
+    },
+    
+    <mt:Ignore>
+    /**
      * Tests objects to verify if they are DOM nodes
      * 
      * @param {Object} obj The object to be tested
@@ -304,12 +323,12 @@ MT.util = function () {
       pageNum,
       commentsOffset,
       totalComments,
-      nextLink,
-      prevLink,
       entryID,
       commentContentDiv,
+      topNav,
       nav,
-      currentCommentsDiv;
+      currentCommentsSpan,
+      topCurrentCommentsSpan;
             
   M.addEvent(window,'load',_init);
   
@@ -323,6 +342,24 @@ MT.util = function () {
       return;
     }
     
+    _initializeVariables();
+    _setCommentOffset(false);
+    _checkForAnchor();
+		_setCurrentComments();
+    _toggleNavLinks();
+    _initializeEvents();
+    
+    M.log(c.LOG,_getCommentOffset());
+  }
+  
+  <mt:Ignore>
+  /**
+   * Initializes variables to their initial values
+   * 
+   * @return void
+   */
+  </mt:Ignore>
+  function _initializeVariables() {
     cache = {};
     commentAnchor = '';
     commentArrId = '';
@@ -336,18 +373,16 @@ MT.util = function () {
     pageNum = 1;
     
     commentContentDiv = M.getEl("comments-content");
+    topNav = M.getEl("top-comment-nav");
     nav = M.getEl("comment-nav");
-    currentCommentsDiv = M.getEl("current-comments");
-    
-    _setCommentOffset(false);
-    
-    M.log(c.LOG,_getCommentOffset());
-    _checkForAnchor();
-		
-		_setCurrentComments();
-    _toggleNavLinks();
+    currentCommentsSpan = M.getEl("current-comments");
+    topCurrentCommentsSpan = M.getEl("top-current-comments");
+  }
+  
+  function _initializeEvents() {
     if (commentsPerPage < totalComments) {
       M.addEvent(nav,'click',_handleEvents);
+      M.addEvent(topNav,'click',_handleEvents);
     }
   }
   
@@ -410,6 +445,7 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _handleEvents (e) {
+    M.log(c.DEBUG,e);
     var origin = e.target || e.srcElement,
         parentId;
         
@@ -426,6 +462,7 @@ MT.util = function () {
       case 'A':
         switch (parentId) {
           case 'prev-comments':
+          case 'top-prev-comments':
             if(e.preventDefault) {
               e.preventDefault();
             } else {
@@ -435,6 +472,7 @@ MT.util = function () {
             _toggleNavLinks();
             break;
           case 'next-comments':
+          case 'top-next-comments':
             if(e.preventDefault) {
               e.preventDefault();
             } else {
@@ -456,20 +494,25 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _toggleNavLinks () {
+    M.log(c.DEBUG,M.getEl('top-prev-comments'));
     if(pageNum <= commentsTotalPages && pageNum !== 1) {
       u.toggleVisibility.show('prev-comments');
+      u.toggleVisibility.show('top-prev-comments');
     }
     
     if(pageNum >= 1 && pageNum !== commentsTotalPages) {
       u.toggleVisibility.show('next-comments');
+      u.toggleVisibility.show('top-next-comments');
     }
     
     if(pageNum===1) {
       u.toggleVisibility.hide('prev-comments');
+      u.toggleVisibility.hide('top-prev-comments');
     }
     
     if(pageNum===commentsTotalPages) {
       u.toggleVisibility.hide('next-comments');
+      u.toggleVisibility.hide('top-next-comments');
     }
   }
   
@@ -549,7 +592,8 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _setCurrentCommentsContent(currentCommentsHTML) {
-    currentCommentsDiv.innerHTML = currentCommentsHTML;
+    currentCommentsSpan.innerHTML = currentCommentsHTML;
+    topCurrentCommentsSpan.innerHTML = currentCommentsHTML;
   }
   
   <mt:Ignore>
@@ -573,6 +617,7 @@ MT.util = function () {
   </mt:Ignore>
   function _hideNav() {
     u.toggleDisplay.hide(nav);
+    u.toggleDisplay.hide(topNav);
   }
   
   <mt:Ignore>
@@ -584,6 +629,7 @@ MT.util = function () {
   </mt:Ignore>
   function _showNav() {
     u.toggleDisplay.show(nav);
+    u.toggleDisplay.show(topNav);
   }
   
   <mt:Ignore>
@@ -637,7 +683,7 @@ MT.util = function () {
     M.log(c.DEBUG,commentAnchor);
     _setCommentContent(commentData);
     _setCurrentComments();
-    window.location.hash = '';
+    window.location.hash = 'reset';
     window.location.hash = commentAnchor;
     _showNav();
   }
