@@ -1268,7 +1268,7 @@ sub _upload_file {
             $asset->url($asset_url);
             my $target_file = $local_file;
             $target_file =~ s/$ext/$real_ext/;
-            system("mv $local_file $target_file");
+            rename($local_file, $target_file);
             $local_file = $target_file;
             $app->param("changed_file_ext", "$ext,$real_ext");
         }
