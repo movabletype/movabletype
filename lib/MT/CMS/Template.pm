@@ -2082,6 +2082,34 @@ sub clone_templates {
     $app->call_return;
 }
 
+sub publish_templates_from_search {
+    my $app = shift;
+    my $blog = $app->blog;
+    require MT::Blog;
+
+    my $templates = MT->model('template')->lookup_multi([ $app->param('id') ]);
+    my @at_ids;
+    $app->param('from_search', 1);
+    TEMPLATE: for my $tmpl (@$templates) {
+        return $app->errtrans("Cannot publish a global template.") if ($tmpl->blog_id == 0);
+        if ($tmpl->type eq 'index') {
+            $app->param('id', $tmpl->id); 
+            publish_index_templates($app);
+        }
+        elsif ($tmpl->type eq 'archive' || $tmpl->type eq 'individual' || $tmpl eq 'page') {
+            push(@at_ids, $tmpl->id);
+        }
+    }
+
+    if (scalar(@at_ids) > 0) {
+        $app->param('id', @at_ids);
+        publish_archive_templates($app) if (scalar(@at_ids) > 0);
+    }
+    else {
+        $app->call_return();
+    }
+}
+
 sub publish_index_templates {
     my $app = shift;
     $app->validate_magic or return;
@@ -2094,12 +2122,12 @@ sub publish_index_templates {
             $perms->can_rebuild;
 
     my $blog = $app->blog;
-    
+
     require MT::Blog;
     my $templates = MT->model('template')->lookup_multi([ $app->param('id') ]);
     TEMPLATE: for my $tmpl (@$templates) {
-    	return $app->errtrans("Cannot publish a global template.") if ($tmpl->id == 0);
-    	unless ($blog) {
+        return $app->errtrans("Cannot publish a global template.") if ($tmpl->blog_id == 0);
+        unless ($blog) {
             $blog = MT::Blog->load($tmpl->blog_id);
         }
         next TEMPLATE if !defined $tmpl;
@@ -2113,7 +2141,7 @@ sub publish_index_templates {
         );
     }
 
-    $app->call_return( published => 1 );
+    $app->call_return( published => 1 ) unless ($app->param('from_search'));
 }
 
 sub publish_archive_templates {
@@ -2130,7 +2158,7 @@ sub publish_archive_templates {
     my @ids = $app->param('id');
     if (scalar @ids == 1) {
         # we also support a list of comma-delimited ids like this
-        @ids = split /,/, $ids[0];
+        @ids = split ",", $ids[0];
     }
     return $app->error($app->translate("Invalid request."))
         unless @ids;
@@ -2160,33 +2188,6 @@ sub publish_archive_templates {
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id => scalar $app->param('blog_id'),
-                id => join(",", @ids),
-                reedit => $reedit,
-            }
-        );
-    } else {
-        my $mode = $reedit ? 'view' : 'list';
-        $return_args = $app->uri_params(
-            mode => $mode,
-            args => {
-                _type     => 'template',
-                blog_id   => scalar $app->param('blog_id'),
-                published => 1,
-                ( $reedit ? ( saved => 1 )       : () ),
-                ( $reedit ? ( id    => $reedit ) : () ),
-            }
-        );
-    }
-    $return_args =~ s/^\?//;
-
-    $app->return_args( $return_args );
-    return $app->call_return unless %ats;
-
-    $app->param( 'template_id', $tmpl_id );
-    $app->param( 'single_template', 1 ); # forces fullscreen mode
-    $app->param( 'type', join(",", keys %ats) );
-    return MT::CMS::Blog::start_rebuild_pages($app);
 }
 
 sub save_widget {

@@ -205,6 +205,8 @@ sub core_methods {
             "${pkg}Template::publish_index_templates",
         'publish_archive_templates' =>
             "${pkg}Template::publish_archive_templates",
+        'publish_templates_from_search' =>
+            "${pkg}Template::publish_templates_from_search",
 
         ## Comment Replies
         reply         => "${pkg}Comment::reply",
