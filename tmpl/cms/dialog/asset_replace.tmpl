@@ -28,6 +28,13 @@ function submit_form(f, command) {
     <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
     </mt:if>
     <div class="error-message">
+    <mt:if name="extension_message">
+        <mtapp:statusmsg
+            id="extension-changed"
+            class="success">
+            <mt:var name="extension_message">
+        </mtapp:statusmsg>
+    </mt:if>
     <mtapp:statusmsg
         id="error-message"
         class="alert"

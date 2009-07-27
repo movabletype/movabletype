@@ -1019,6 +1019,32 @@ sub _upload_file {
         ## Local Archive Path setting. So we should be safe.
         ($local_file) = $local_file =~ /(.+)/s;
 
+        require MT::Image;
+
+        my $real_fh;
+        unless ($has_overwrite) {
+            my ($w_temp, $h_temp, $ext_temp, $write_file_temp) = MT::Image->check_upload(
+                Fh => $fh, Fmgr => $fmgr, Local => $local_file,
+                Max => $upload_param{max_size},
+                MaxDim => $upload_param{max_image_dimension}
+            );
+            if ($w_temp && $h_temp && $ext_temp) {
+                my $ext_old = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+                if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )) {
+                    $ext_temp = lc($ext_temp);
+                    my $target_file = $local_file;
+                    $target_file =~ s/$ext_old/$ext_temp/;
+                    $relative_path =~ s/$ext_old/$ext_temp/;
+                    $asset_file =~ s/$ext_old/$ext_temp/;
+                    $basename =~ s/$ext_old/$ext_temp/;
+                    rename($local_file, $target_file);
+                    $local_file =~ s/$ext_old/$ext_temp/;
+                    $real_fh =~ s/$ext_old/$ext_temp/;
+                    $app->param("changed_file_ext", "$ext_old,$ext_temp");
+                }
+            }
+        }
+
         ## If $local_file already exists, we try to write the upload to a
         ## tempfile, then ask for confirmation of the upload.
         if ( $fmgr->exists($local_file) ) {
@@ -1097,6 +1123,8 @@ sub _upload_file {
                   );
                 close $tmp_fh;
                 my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
+                my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+                my $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
                 return $app->load_tmpl(
                     'dialog/asset_replace.tmpl',
                     {
@@ -1109,6 +1137,7 @@ sub _upload_file {
                         middle_path  => $middle_path,
                         fname        => $basename,
                         no_insert    => $q->param('no_insert'),
+                        extension_message => $extension_message,
                     }
                 );
             }
@@ -1153,7 +1182,6 @@ sub _upload_file {
           $unique_basename );
     }
 
-    require MT::Image;
     my ($w, $h, $id, $write_file) = MT::Image->check_upload(
         Fh => $fh, Fmgr => $fmgr, Local => $local_file,
         Max => $upload_param{max_size},
@@ -1255,23 +1283,6 @@ sub _upload_file {
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
-
-        if (lc($id) ne lc($ext) && ! ( lc($ext) eq 'jpeg' && lc($id) eq 'jpg' )) {
-            my $real_ext = lc($id);
-            $asset->file_ext($real_ext);
-            $asset_file =~ s/$ext/$real_ext/;
-            $asset->file_path($asset_file);
-            $local_basename =~ s/$ext/$real_ext/;
-            $asset->file_name($local_basename);
-            $asset_url =~ s/$ext/$real_ext/;
-            $url =~ s/$ext/$real_ext/;
-            $asset->url($asset_url);
-            my $target_file = $local_file;
-            $target_file =~ s/$ext/$real_ext/;
-            rename($local_file, $target_file);
-            $local_file = $target_file;
-            $app->param("changed_file_ext", "$ext,$real_ext");
-        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
