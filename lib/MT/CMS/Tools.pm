@@ -451,7 +451,7 @@ sub cfg_system_general {
     close FH;
     my $config_warning = join(", ", @config_warnings) if (@config_warnings);
     
-    $param{config_warning} = $app->translate("The following are set in mt-config.cgi. Remove them from there to use this feature: [_1]", $config_warning) if $config_warning;
+    $param{config_warning} = $app->translate("These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.", $config_warning) if $config_warning;
     $param{system_email_address} = $cfg->EmailAddressMain;
     $param{system_debug_mode}    = $cfg->DebugMode;        
     $param{system_performance_logging} = $cfg->PerformanceLogging;
