@@ -886,6 +886,7 @@ sub _set_start_upload_params {
 sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
+    require MT::Image;
 
     if (my $perms = $app->permissions) {
         return $app->error( $app->translate("Permission denied.") )
@@ -1018,8 +1019,6 @@ sub _upload_file {
         ## issues above, and we have to assume that we can trust the user's
         ## Local Archive Path setting. So we should be safe.
         ($local_file) = $local_file =~ /(.+)/s;
-
-        require MT::Image;
 
         my $real_fh;
         unless ($has_overwrite) {
