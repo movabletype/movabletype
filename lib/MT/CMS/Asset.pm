@@ -1136,7 +1136,7 @@ sub _upload_file {
                         edit_field   => $app->param('edit_field'),
                         middle_path  => $middle_path,
                         fname        => $basename,
-                        no_insert    => $q->param('no_insert'),
+                        no_insert    => $q->param('no_insert') || "",
                         extension_message => $extension_message,
                     }
                 );
