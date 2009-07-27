@@ -23,6 +23,13 @@
             <__trans phrase="Your settings have been saved.">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="config_warning">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="config_warning">
+        </mtapp:statusmsg>
+    </mt:if>
 </MTSetVarBlock>
 <MTSetVarBlock name="content_nav">
     <mt:include name="include/cfg_system_content_nav.tmpl">

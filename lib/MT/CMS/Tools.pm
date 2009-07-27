@@ -435,6 +435,23 @@ sub cfg_system_general {
         $param{test_mail_sent} = 1;
     }
     
+    my @config_warnings;
+    my $config_file = $app->find_config;
+    open FH, $config_file or return $app->error(MT->translate( "Error opening file '[_1]'", $config_file ));
+    while (<FH>) {
+        chomp;
+        next if !/\S/ || /^#/;
+        my ($var, $val) = $_ =~ /^\s*(\S+)\s+(.*)$/;
+        $val =~ s/\s*$// if defined($val);
+        next unless $var && defined($val);
+        push @config_warnings, $var
+            if ( $var eq 'EmailAddressMain' || $var eq 'DebugMode' || $var eq 'PerformanceLogging' 
+                 || $var eq 'PerformanceLoggingPath' || $var eq 'PerformanceLoggingThreshold' );
+    }
+    close FH;
+    my $config_warning = join(", ", @config_warnings) if (@config_warnings);
+    
+    $param{config_warning} = $app->translate("The following are set in mt-config.cgi. Remove them from there to use this feature: [_1]", $config_warning) if $config_warning;
     $param{system_email_address} = $cfg->EmailAddressMain;
     $param{system_debug_mode}    = $cfg->DebugMode;        
     $param{system_performance_logging} = $cfg->PerformanceLogging;
