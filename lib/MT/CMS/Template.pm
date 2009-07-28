@@ -2188,6 +2188,35 @@ sub publish_archive_templates {
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
+                blog_id => scalar $app->param('blog_id'),
+                id => join(",", @ids),
+                reedit => $reedit,
+                from_search => $app->param('from_search'),
+            }
+        );
+    } else {
+        my $mode = $reedit ? 'view' : 'list';
+        $mode = 'search_replace' if $app->param('from_search');
+        $return_args = $app->uri_params(
+            mode => $mode,
+            args => {
+                _type     => 'template',
+                blog_id   => scalar $app->param('blog_id'),
+                published => 1,
+                ( $reedit ? ( saved => 1 )       : () ),
+                ( $reedit ? ( id    => $reedit ) : () ),
+            }
+        );
+    }
+    $return_args =~ s/^\?//;
+
+    $app->return_args( $return_args );
+    return $app->call_return unless %ats;
+
+    $app->param( 'template_id', $tmpl_id );
+    $app->param( 'single_template', 1 ); # forces fullscreen mode
+    $app->param( 'type', join(",", keys %ats) );
+    return MT::CMS::Blog::start_rebuild_pages($app);
 }
 
 sub save_widget {
