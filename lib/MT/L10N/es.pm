@@ -6013,7 +6013,7 @@ Búsqueda base: [_2]",
        'Performance log path is [_1]' => 'La ruta de los históricos de rendimiento es [_1]', # Translate - New
        'Performance log threshold is [_1]' => 'El umbral del histórico de rendimiento es [_1]', # Translate - New
        'System Settings Changes Took Place' => 'Se realizaron cambios en la configuración del sistema', # Translate - New
-       'You can find an explanation of the various debug modes in the <a  href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Puede encontrar una explicación de los diferentes modos de depuración en la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentación</a>', # Translate - New
+       'You can find an explanation of the various debug modes in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Puede encontrar una explicación de los diferentes modos de depuración en la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentación</a>', # Translate - New
        'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'Se puede modificar el orden publicado de estos elementos utilizando los [_1]modificadores de etiquetas de plantilla[_2]', # Translate - New
        'This is set to the same URL as the original blog.' => 'La URL coincide con la original del blog.', # Translate - New
        'This will overwrite the original blog.' => 'Esto sobreescribirá el blog original.', # Translate - New
