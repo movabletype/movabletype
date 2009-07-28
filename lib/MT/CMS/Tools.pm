@@ -436,19 +436,10 @@ sub cfg_system_general {
     }
     
     my @config_warnings;
-    my $config_file = $app->find_config;
-    open FH, $config_file or return $app->error(MT->translate( "Error opening file '[_1]'", $config_file ));
-    while (<FH>) {
-        chomp;
-        next if !/\S/ || /^#/;
-        my ($var, $val) = $_ =~ /^\s*(\S+)\s+(.*)$/;
-        $val =~ s/\s*$// if defined($val);
-        next unless $var && defined($val);
-        push @config_warnings, $var
-            if ( $var eq 'EmailAddressMain' || $var eq 'DebugMode' || $var eq 'PerformanceLogging' 
-                 || $var eq 'PerformanceLoggingPath' || $var eq 'PerformanceLoggingThreshold' );
+    for my $config_directive ( qw( EmailAddressMain DebugMode PerformanceLogging 
+                                   PerformanceLoggingPath PerformanceLoggingThreshold ) ) {
+        push(@config_warnings, $config_directive) if $app->config->is_readonly($config_directive);
     }
-    close FH;
     my $config_warning = join(", ", @config_warnings) if (@config_warnings);
     
     $param{config_warning} = $app->translate("These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.", $config_warning) if $config_warning;
