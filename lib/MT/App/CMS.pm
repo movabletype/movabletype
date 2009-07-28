@@ -1453,13 +1453,6 @@ sub core_menus {
             permission        => "view_blog_log",
             system_permission => "view_log",
         },
-        'tools:schwartz' => {
-            label      => "Schwartz Errors",
-            order      => 300,
-            mode       => "view_rpt_log",
-            view       => "system",
-            permission => "administer_blog",
-        },
         'tools:import' => {
             label      => "Import",
             order      => 400,
