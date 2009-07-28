@@ -6000,6 +6000,25 @@ Base de recherche : [_2]",
 	'Rebuild Indexes' => 'Republier les index',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si sélectionner, les index des blogs seront republiés lorsque de nouveaux événements du flux d\'activité seront découverts.',
 	'Enable rebuilding' => 'Activer la republication',
+	
+       'Extension changed from [_1] to [_2]' => 'L\'extention a été modifié de [_1] en [_2]', # Translate - New
+       '[_1] changed from [_2] to [_3]' => '[_1] a été modifié de [_2] en [_3]', # Translate - New
+       '\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' a édité le gabarit \'[_2]\' du blog \'[_3]\'', # Translate - New
+       '\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' a édité le gabarit global \'[_2]\'', # Translate - New
+       'Entries must be cloned if comments and trackbacks are cloned' => 'Les notes doivent être dupliquées si les commentaires et les trackbacks le sont', # Translate - New
+       'Test e-mail was successfully sent to [_1]' => 'Email de test envoyé avec succès à [_1]', # Translate - New
+       'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Ces paramètres sont surclassés par une valeur dans le fichier de configuration MT [_1]. Retirez la valeur du fichier de configuration afin de contrôler la valeur sur cette page.', # Translate - New
+       'Email address is [_1]' => 'L\'adresse email est [_1]', # Translate - New
+       'Debug mode is [_1]' => 'Le mode debug est [_1]', # Translate - New
+       'Performance logging is on' => 'Les logs de performance sont activés', # Translate - New
+       'Performance logging is off' => 'Les logs de performance sont désactivés', # Translate - New
+       'Performance log path is [_1]' => 'Le chemin des logs de performance est [_1]', # Translate - New
+       'Performance log threshold is [_1]' => 'La limite des logs de performance est [_1]', # Translate - New
+       'System Settings Changes Took Place' => 'Les modifications des paramètres système ont été appliqués', # Translate - New
+       'You can find an explanation of the various debug modes in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Vous pouvez trouver une explication sur les nombreux modes debug dans la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>', # Translate - New
+       'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'L\'ordre de publication de ces éléments peut être modifié en utilisant [_1] tags de modification de gabarits [_2]', # Translate - New
+       'This is set to the same URL as the original blog.' => 'La valeur est la même URL que le blog original', # Translate - New
+       'This will overwrite the original blog.' => 'Cela réecrira le blog original', # Translate - New 
 
 );
 

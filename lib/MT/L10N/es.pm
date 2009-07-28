@@ -5998,6 +5998,25 @@ Búsqueda base: [_2]",
 	'Rebuild Indexes' => 'Reconstruir índices',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Si se selecciona, los índices de este blog se reconstruirán al descubrir nuevos eventos de los torrentes de acciones.',
 	'Enable rebuilding' => 'Activar reconstrucción',
+	
+	'Extension changed from [_1] to [_2]' => 'La extensión cambió de [_1] a [_2]', # Translate - New
+       '[_1] changed from [_2] to [_3]' => '[_1] cambió de [_2] a [_3]', # Translate - New
+       '\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' editó la plantilla \'[_2]\' en el blog \'[_3]\'', # Translate - New
+       '\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' editó la plantilla global \'[_2]\'', # Translate - New
+       'Entries must be cloned if comments and trackbacks are cloned' => 'Las entradas deben clonarse si se clonan los comentarios y trackbacks', # Translate - New
+       'Test e-mail was successfully sent to [_1]' => 'El correo de prueba se envió correctamente a [_1]', # Translate - New
+       'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Estas opciones están redefinidas por un valor en el fichero de configuración de MT: [_1]. Para controlar el valor en esta página, elimine el valor del fichero de configuración.', # Translate - New
+       'Email address is [_1]' => 'La dirección de correo es [_1]', # Translate - New
+       'Debug mode is [_1]' => 'El modo de depuración es [_1]', # Translate - New
+       'Performance logging is on' => 'El histórico de rendimiento está activado', # Translate - New
+       'Performance logging is off' => 'El histórico de rendimiento está desactivado', # Translate - New
+       'Performance log path is [_1]' => 'La ruta de los históricos de rendimiento es [_1]', # Translate - New
+       'Performance log threshold is [_1]' => 'El umbral del histórico de rendimiento es [_1]', # Translate - New
+       'System Settings Changes Took Place' => 'Se realizaron cambios en la configuración del sistema', # Translate - New
+       'You can find an explanation of the various debug modes in the <a  href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Puede encontrar una explicación de los diferentes modos de depuración en la <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentación</a>', # Translate - New
+       'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'Se puede modificar el orden publicado de estos elementos utilizando los [_1]modificadores de etiquetas de plantilla[_2]', # Translate - New
+       'This is set to the same URL as the original blog.' => 'La URL coincide con la original del blog.', # Translate - New
+       'This will overwrite the original blog.' => 'Esto sobreescribirá el blog original.', # Translate - New
 
 );
 
