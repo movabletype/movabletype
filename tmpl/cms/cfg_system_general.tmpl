@@ -106,7 +106,7 @@ function validate (f) {
 
 <br><br>
 
-<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
 <input type="hidden" name="__mode" value="cfg_system" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
