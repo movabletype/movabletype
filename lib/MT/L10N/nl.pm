@@ -5999,6 +5999,26 @@ Zoekbasis: [_2]",
 	'Rebuild Indexes' => 'Indexen herpubliceren',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Indien geselecteerd zullen de indexen van deze blog opnieuw worden gepubliceerd telkens nieuwe action stream gebeurtenissen worden ontdekt.',
 	'Enable rebuilding' => 'Herpubliceren toestaan',
+	
+	'Extension changed from [_1] to [_2]' => 'Extensie gewijzigd van [_1] in [_2]', # Translate - New
+        '[_1] changed from [_2] to [_3]' => '[_1] gewijzigd van [_2] in [_3]', # Translate - New
+        '\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' wijzigde sjabloon \'[_2]\' in de blog \'[_3]\'', # Translate - New
+        '\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' wijzigde het globale sjabloon \'[_2]\'', # Translate - New
+        'Entries must be cloned if comments and trackbacks are cloned' => 'Berichten moeten worden gekloond als reacties en trackbacks worden gekloond', # Translate - New
+        'Test e-mail was successfully sent to [_1]' => 'Test e-mail met succes verzonden naar [_1]', # Translate - New
+        'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Volgende instelling(en) worden genegeerd wegens een waarde in het MT configuratiebestand: [_1].  Haal de instelling weg uit het configuratiebestand om ze vanop deze pagina te kunnen beheren.', # Translate - New
+        'Email address is [_1]' => 'E-mail adres is [_1]', # Translate - New
+        'Debug mode is [_1]' => 'Debugmodus is [_1]', # Translate - New
+        'Performance logging is on' => 'Performantielogging staat aan', # Translate - New
+        'Performance logging is off' => 'Performantielogging staat uit', # Translate - New
+        'Performance log path is [_1]' => 'Performantielogpad is [_1]', # Translate - New
+        'Performance log threshold is [_1]' => 'Performantielogdrempel is [_1]', # Translate - New
+        'System Settings Changes Took Place' => 'Wijzigingen aan systeeminstellingen werden uitgevoerd', # Translate - New
+        'You can find an explanation of the various debug modes in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Uitleg over de verschillende debug modi kan gevonden worden in de <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentatie</a>.', # Translate - New
+        'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'De publicatievolgorde van deze mediabestanden kan gewijzigd worden via [_1]argumenten in de sjabloontags[_2].', # Translate - New
+        'This is set to the same URL as the original blog.' => 'Dit staat ingesteld op dezelfde URL als de oorspronkelijke blog.', # Translate - New
+        'This will overwrite the original blog.' => 'Dit zal de oorspronkelijke blog overschrijven.', # Translate - New
+
 
 );
 
