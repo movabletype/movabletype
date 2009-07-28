@@ -97,6 +97,7 @@ sub import {
                     $app = $class->new( %param, CGIObject => $cgi )
                         or die $class->errstr;
 
+                    $ENV{FAST_CGI} = 1;
                     $app->{fcgi_startup_time} ||= time;
                     $app->{fcgi_request_count} = ( $app->{fcgi_request_count} || 0 ) + 1;
 
