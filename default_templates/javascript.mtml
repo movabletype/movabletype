@@ -105,7 +105,7 @@ MT.cons = function () {
  */
 </mt:Ignore>
 MT.core = function (o) {
-  var _debug = true;
+  var _debug = false;
   
   return {
     <mt:Ignore>
@@ -313,6 +313,7 @@ MT.util = function () {
       c = MT.cons,
       u = MT.util,
       cache,
+      isLoading,
       direction,
       currentComments,
       commentAnchor,
@@ -348,8 +349,6 @@ MT.util = function () {
 		_setCurrentComments();
     _toggleNavLinks();
     _initializeEvents();
-    
-    M.log(c.LOG,_getCommentOffset());
   }
   
   <mt:Ignore>
@@ -361,6 +360,7 @@ MT.util = function () {
   </mt:Ignore>
   function _initializeVariables() {
     cache = {};
+    isLoading = false;
     commentAnchor = '';
     commentArrId = '';
     commentsPerPage = MT.commentsPerPage || 50;
@@ -369,12 +369,14 @@ MT.util = function () {
     entryID = MT.entryID;
     totalComments = MT.entryCommentCount;
     commentsTotalPages = Math.ceil(totalComments / commentsPerPage);
-    loadingIcon = "<img src='<$MTStaticWebPath$>images/indicator.white.gif' alt='Loading' />";
     pageNum = 1;
+    
+    loadingIcon = "<img title='Loading...' src='<$MTStaticWebPath$>images/indicator.white.gif' alt='Loading' />";
     
     commentContentDiv = M.getEl("comments-content");
     topNav = M.getEl("top-comment-nav");
     nav = M.getEl("comment-nav");
+    
     currentCommentsSpan = M.getEl("current-comments");
     topCurrentCommentsSpan = M.getEl("top-current-comments");
   }
@@ -397,17 +399,17 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _checkForAnchor() {
-    var found = String(window.location).match( /#comment-(\d{1,6})/ );
+    var found = String(window.location.hash).match( /comment-(\d{1,6})/ );
 		
 		if (found) {
 		  M.log(c.DEBUG,found);
 			if (!M.getEl(found[0]).hasOwnProperty('className')) {
 				if (_findIdMatch(found[1])) {
     			pageNum = Math.floor(commentArrId / commentsPerPage) + 1;
-    			M.log(c.DEBUG,pageNum);
-    			
-    			_setCommentOffset(true);
-    			M.log(c.DEBUG,_getCommentsOffset());
+    			M.log(c.DEBUG,'Comment Array Id: ' + commentArrId);
+    			M.log(c.DEBUG,'Comments Per Page: ' + commentsPerPage);
+    			M.log(c.DEBUG,'Page Number: ' + pageNum);
+    			M.log(c.DEBUG,'Comment Offset: ' + _getCommentOffset());
     			_updateComments();
     		}
 			}
@@ -421,8 +423,8 @@ MT.util = function () {
    * @return void
    */
   </mt:Ignore>
-  function _setCommentOffset(urlHasAnchor) {
-    commentsOffset = urlHasAnchor ? Math.floor(commentArrId / commentsPerPage) * 100 : commentsPerPage * (pageNum-1);
+  function _setCommentOffset() {
+    commentsOffset = commentsPerPage * (pageNum-1);
   }
   
   <mt:Ignore>
@@ -445,7 +447,6 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _handleEvents (e) {
-    M.log(c.DEBUG,e);
     var origin = e.target || e.srcElement,
         parentId;
         
@@ -468,8 +469,9 @@ MT.util = function () {
             } else {
               e.returnValue =	false;
             }
-            _previousPage();
-            _toggleNavLinks();
+            if(!isLoading) {
+              _previousPage();
+            }
             break;
           case 'next-comments':
           case 'top-next-comments':
@@ -478,8 +480,9 @@ MT.util = function () {
             } else {
               e.returnValue =	false;
             }
-            _nextPage();
-            _toggleNavLinks();
+            if(!isLoading) {
+              _nextPage();
+            }
             break;
         }
         break;
@@ -505,12 +508,12 @@ MT.util = function () {
       u.toggleVisibility.show('top-next-comments');
     }
     
-    if(pageNum===1) {
+    if(pageNum===1 || nav.style.visibility==='hidden') {
       u.toggleVisibility.hide('prev-comments');
       u.toggleVisibility.hide('top-prev-comments');
     }
     
-    if(pageNum===commentsTotalPages) {
+    if(pageNum===commentsTotalPages || nav.style.visibility==='hidden') {
       u.toggleVisibility.hide('next-comments');
       u.toggleVisibility.hide('top-next-comments');
     }
@@ -610,30 +613,6 @@ MT.util = function () {
   
   <mt:Ignore>
   /**
-   * Hides the comment navigation
-   * 
-   * @return void
-   */
-  </mt:Ignore>
-  function _hideNav() {
-    u.toggleDisplay.hide(nav);
-    u.toggleDisplay.hide(topNav);
-  }
-  
-  <mt:Ignore>
-  /**
-   * Shows the navigation
-   * 
-   * @return void
-   */
-  </mt:Ignore>
-  function _showNav() {
-    u.toggleDisplay.show(nav);
-    u.toggleDisplay.show(topNav);
-  }
-  
-  <mt:Ignore>
-  /**
    * Builds the appropriate URL to make a remote call to get the
    * next set of comments
    * 
@@ -642,9 +621,9 @@ MT.util = function () {
   </mt:Ignore>
   function _updateComments() {
     var comments, jsonUrl;
-    _hideNav();
+    isLoading = true;
     _setCurrentCommentsContent(loadingIcon);
-    _setCommentOffset(false);
+    _setCommentOffset();
     
     jsonUrl = [
         "<$mt:CGIPath$>mt-comments.cgi?__mode=comment_listing&direction=",
@@ -654,7 +633,7 @@ MT.util = function () {
         "&limit=",
         commentsPerPage,
         "&offset=",
-        commentsOffset
+        _getCommentOffset()
       ].join('');
   	
   	if (!commentAnchor) {
@@ -663,10 +642,12 @@ MT.util = function () {
     
     if(cache.hasOwnProperty(jsonUrl)) {
       _refreshComments(cache[jsonUrl]);
+      isLoading = false;
     } else {
       M.connect(jsonUrl,c.JSON,function (json) {
         cache[jsonUrl] = json.comments;
     	  _refreshComments(json.comments);
+    	  isLoading = false;
       });
     }
   }
@@ -680,12 +661,11 @@ MT.util = function () {
    */
   </mt:Ignore>
   function _refreshComments(commentData) {
-    M.log(c.DEBUG,commentAnchor);
     _setCommentContent(commentData);
     _setCurrentComments();
     window.location.hash = 'reset';
     window.location.hash = commentAnchor;
-    _showNav();
+    _toggleNavLinks();
   }
 })();
 
