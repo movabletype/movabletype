@@ -1768,9 +1768,9 @@ use vars qw( @ISA %Lexicon );
 	'No blog was selected to clone.' => 'Kein Blog zum Klonen ausgewählt.',
 	'This action can only be run on a single blog at a time.' => 'Diese Aktion kann nur für jeweils ein Blog ausgeführt werden.', # Translate - New # OK
 	'Invalid blog_id' => 'Ungültige blog_id',
-	'The Site URL matches the original blog' => 'Die Site-URL entspricht der des Original-Blogs', # Translate - New # OK
+	'The Site URL matches the original blog' => 'Die Site-URL entspricht der des Ursprungsblogs', # Translate - New # OK
 	'You need to specify a Site URL' => 'Geben Sie eine Site-URL an', # Translate - New # OK
-	'The Site Path matches the original blog' => 'Der Site-Path entspricht dem des Original-Blogs', # Translate - New # OK
+	'The Site Path matches the original blog' => 'Der Site-Path entspricht dem des Ursprungsblogs', # Translate - New # OK
 	'You need to specify a Site Path' => 'Geben Sie einen Site-Path an.', # Translate - New # OK
 	'Entries must be cloned if trackbacks or comments are cloned' => 'Zum Klonen von TrackBacks oder Kommentaren müssen auch die Einträge geklont werden.', # Translate - New # OK
 	'Entries must be cloned if comments are cloned' => 'Zum Klonen von Kommentarren müssen auch die Einträge geklont werden.', # Translate - New # OK
@@ -5999,6 +5999,24 @@ Suchbasis: [_2]",
 	'Rebuild Indexes' => 'Indizes neu aufbauen',
 	'If selected, this blog\'s indexes will be rebuilt when new action stream events are discovered.' => 'Falls aktiviert, werden die Indizes dieses Blogs neu aufgebaut, wenn neue Action Stream-Ereignisse eintreffen',
 	'Enable rebuilding' => 'Neuaufbau aktivieren',
+	       'Extension changed from [_1] to [_2]' => 'Erweiterung von [_1] in [_2] geändert', # Translate - New # OK
+       '[_1] changed from [_2] to [_3]' => '[_1] von [_2] in [_3] geändert', # Translate - New # OK
+       '\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '\'[_1]\' hat die Vorlage \'[_2]\' im Blog \'[_3]\' bearbeitet', # Translate - New # OK
+       '\'[_1]\' edited the global template \'[_2]\'' => '\'[_1]\' hat die globale Vorlage \'[_2]\' bearbeitet', # Translate - New # OK
+       'Entries must be cloned if comments and trackbacks are cloned' => 'Zum Klonen der TrackBacks und Kommentare müssen auch die Einträge geklont werden.', # Translate - New # OK
+       'Test e-mail was successfully sent to [_1]' => 'Testmail erfolgreich an [_1] verschickt', # Translate - New # OK
+       'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Diese Einstellungen werden von einer Angabe in der MT-Konfigurationsdatei außer Kraft gesetzt: [_1]. Um diese Einstellungen an dieser Stelle vornehmen zu können, entfernen Sie die Angabe aus der Konfigurationsdatei.', # Translate - New # OK
+       'Email address is [_1]' => 'Die E-Mail-Adresse lautet [_1]', # Translate - New # OK
+       'Debug mode is [_1]' => 'Der Debug-Modus ist [_1]', # Translate - New # OK
+       'Performance logging is on' => 'Performance-Logging ist aktiviert', # Translate - New # OK
+       'Performance logging is off' => 'Performance-Logging ist deaktiviert', # Translate - New # OK
+       'Performance log path is [_1]' => 'Die Performance-Logs liegen im Pfad [_1]', # Translate - New # OK
+       'Performance log threshold is [_1]' => 'Der Schwellenwert für Performance-Logging ist [_1]', # Translate - New # OK
+       'System Settings Changes Took Place' => 'Die Systemeinstellungen wurden geändert', # Translate - New # OK
+       'You can find an explanation of the various debug modes in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>' => 'Eine Beschreibung der verschiedenen Debug-Modi finden Sie in der <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Dokumentation</a>', # Translate - New # OK
+       'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'Die Reihenfolge, in der diese Assets veröffentlicht werden, kann mittels [_1]Template Tag Modifiers[_2] beeinflusst werden.', # Translate - New # OK
+       'This is set to the same URL as the original blog.' => 'Die URL entspricht der des Ursprungsblogs.', # Translate - New # OK
+       'This will overwrite the original blog.' => 'Das Ursprungsblog wird überschrieben.', # Translate - New # OK
 
 );
 
