@@ -109,10 +109,12 @@ sub _macrofreeze {
                   push(@stack, ['REF' => $$value]);
                 } elsif ($ref eq 'ARRAY') {
                   $frozen .= 'A' . pack('N', scalar(@$value));
-                  push(@stack, ['ARRAY' => @$value]);
+                  push(@stack, ['ARRAY' => @$value])
+                    if scalar @$value;                  
                 } elsif ($ref eq 'HASH') {
-                  $frozen .= 'H' . pack('N', scalar(keys %$value)); 
-                  push(@stack, ['HASH' => %$value]);
+                  $frozen .= 'H' . pack('N', scalar(keys %$value));
+                  push(@stack, ['HASH' => %$value])
+                    if scalar keys %$value;
                 } else {
                   die "Unexpected type '$ref' in _macrofreeze\n";
                 }
