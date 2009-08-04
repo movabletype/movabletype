@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::fr;
 use strict;
@@ -1654,7 +1654,6 @@ use vars qw( @ISA %Lexicon );
 	'Select Roles' => 'Sélectionnez des rôles',
 	'Role Name' => 'Nom du rôle',
 	'Roles Selected' => 'Rôles sélectionnés',
-	'' => '', # Translate - New
 	'Grant Permissions' => 'Ajouter des autorisations',
 	'You cannot delete your own association.' => 'Vous ne pouvez pas supprimer votre propre association.',
 	'You cannot delete your own user record.' => 'Vous ne pouvez pas effacer vos propres données Utilisateur.',
@@ -2556,7 +2555,7 @@ use vars qw( @ISA %Lexicon );
 	'Log Paths' => 'Chemins des logs', # Translate - New
 	'Paths where logs are placed.' => 'Chemins où les logs seront placés', # Translate - New
 	'Logging Threshold' => 'Limite des logs', # Translate - New
-	'Logging threshold for the App' => 'Limite des logs pour \'application', # Translate - New
+	'Logging threshold for the App' => 'Limite des logs pour l\'application', # Translate - New
 	'Send Email To' => 'Envoyer un email à', # Translate - New
 	'The email address where you want to send test email to.' => 'Adresse email à laquelle vous souhaitez envoyer un email de test.', # Translate - New
 
