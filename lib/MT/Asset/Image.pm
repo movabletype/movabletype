@@ -260,6 +260,8 @@ sub as_html {
     my ($param) = @_;
     my $text    = '';
 
+    my $app = MT->instance;
+    $param->{enclose} = 0 unless ($app->param('edit_field') =~ /^customfield/);
     $param->{enclose} = 1 unless exists $param->{enclose};
 
     if ( $param->{include} ) {

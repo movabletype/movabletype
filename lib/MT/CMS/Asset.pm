@@ -1034,6 +1034,7 @@ sub _upload_file {
                     my $target_file = $local_file;
                     $target_file =~ s/$ext_old/$ext_temp/;
                     $relative_path =~ s/$ext_old/$ext_temp/;
+                    $relative_url =~ s/$ext_old/$ext_temp/;
                     $asset_file =~ s/$ext_old/$ext_temp/;
                     $basename =~ s/$ext_old/$ext_temp/;
                     rename($local_file, $target_file);
