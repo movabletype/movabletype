@@ -1272,6 +1272,7 @@ sub _upload_file {
         $asset->file_name($local_basename);
         $asset->file_ext($ext);
         $asset->blog_id($blog_id);
+        $asset->label($local_basename);
         $asset->created_by( $app->user->id );
     }
     else {
