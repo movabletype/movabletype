@@ -730,7 +730,7 @@ sub load_search_tmpl {
             return $app->errtrans( 'No such template' )
                 unless ($tmpl);
             return $app->errtrans( 'template_id cannot be a global template' )
-                if ($tmpl->blog_id == 1);
+                if ($tmpl->blog_id == 0);
             return $app->errtrans( 'Output file cannot be asp or php' )
                 if ($tmpl->outfile && !$app->config->SearchAlwaysAllowTemplateID 
                     && ($tmpl->outfile =~ /\.asp/i || $tmpl->outfile =~ /\.php/i));
