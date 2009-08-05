@@ -65,7 +65,10 @@ sub core_parameters {
                     text_more => 'like'
                 },
                 'sort' => 'authored_on',
-                terms  => { status => 2, class => '*' }, #MT::Entry::RELEASE()
+                terms  => { 
+                    status => 2,  #MT::Entry::RELEASE()
+                    class => $app->param('template_id') ? 'entry' : '*', 
+                },
                 filter_types => {
                     author   => \&_join_author,
                     category => \&_join_category,
@@ -721,24 +724,47 @@ sub load_search_tmpl {
         $tmpl->text( $app->translate_templatized( $tmpl->text ) );
     }
     else {
-
         my $tmpl_id = $q->param ('template_id');
         if ($tmpl_id && $tmpl_id =~ /^\d+$/) {
             $tmpl = $app->model('template')->lookup ($tmpl_id);
+            return $app->errtrans( 'No such template' )
+                unless ($tmpl);
+            return $app->errtrans( 'template_id cannot be a global template' )
+                if ($tmpl->blog_id == 1);
+            return $app->errtrans( 'Output file cannot be asp or php' )
+                if ($tmpl->outfile && !$app->config->SearchAlwaysAllowTemplateID 
+                    && ($tmpl->outfile =~ /\.asp/i || $tmpl->outfile =~ /\.php/i));
+
+            if ($q->param('archive_type')) {
+                my $at = $q->param('archive_type');
+                my $archiver = MT->publisher->archiver($at);
+                return return $app->errtrans( 'You must pass a valid archive_type with the template_id' )
+                    unless ($archiver || $at eq 'Index');
+
+                if ($at ne 'Index') {
+                    return $app->errtrans( 'Template must have identifier entry_listing for non-Index archive types' )
+                        if ($tmpl->identifier ne 'entry_listing');
+                    my $blog = $app->model('blog')->load($tmpl->blog_id);
+                    return $app->errtrans( 'Blog file extension cannot be asp or php for these archives' )
+                        if (!$app->config->SearchAlwaysAllowTemplateID
+                            && ($blog->file_extension =~ /^php$/i || $blog->file_extension =~ /^asp$/i));
+                } else {
+                    return $app->errtrans( 'Template must have identifier main_index for Index archive type' )
+                        if ($tmpl->identifier ne 'main_index');
+                }
+            }
+            else {
+                return $app->errtrans( 'You must pass a valid archive_type with the template_id' );
+            }
         }
 
         # load default template
         # first look for appropriate blog_id
         elsif ( my $blog_id = $ctx->stash('blog_id') ) {
             my $tmpl_class = $app->model('template');
-            if ($tmpl_id) {
-                $tmpl = $tmpl_class->load({ blog_id => $blog_id, id => $tmpl_id });
-            } else {
-                $tmpl = $tmpl_class->load({ blog_id => $blog_id, type => 'search_results' });
-            }
+            $tmpl = $tmpl_class->load({ blog_id => $blog_id, type => 'search_results' });
         }
         unless ($tmpl) {
-
             # load template from search_template path
             # template_paths method does the magic
             $tmpl = $app->load_tmpl( $app->config->SearchDefaultTemplate );
