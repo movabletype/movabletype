@@ -67,7 +67,7 @@ sub core_parameters {
                 'sort' => 'authored_on',
                 terms  => { 
                     status => 2,  #MT::Entry::RELEASE()
-                    class => $app->param('template_id') ? 'entry' : '*', 
+                    class => $app->param('archive_type') ? 'entry' : '*', 
                 },
                 filter_types => {
                     author   => \&_join_author,
