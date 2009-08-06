@@ -474,11 +474,11 @@
 <div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
     <mtapp:widget
         id="asset_container"
-        label="Assets">
+        label="<__trans phrase="Assets">">
 		<div class="asset-list-header">
         	<a href="javascript:void(0)" class="add-new-asset-link" 
            onclick="openDialog(null,'list_assets','_type=asset&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1');return false;">
-            	Add New
+            	<__trans phrase="Add New">
         	</a>
 		</div>
         <ul id="asset-list" name="asset-list">
@@ -499,7 +499,7 @@
                     </li>
                 </mt:loop>
             <mt:else>
-                <li id="empty-asset-list">No asset(s) associated with this <mt:var name="object_type"></li>
+                <li id="empty-asset-list"><__trans phrase="No asset(s) associated with this [_1]" params="<mt:var name="object_type">"></li>
             </mt:if>
         </ul>
         <input type="hidden" id="include_asset_ids" name="include_asset_ids" 
