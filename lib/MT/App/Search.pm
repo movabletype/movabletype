@@ -743,14 +743,14 @@ sub load_search_tmpl {
 
                 if ($at ne 'Index') {
                     return $app->errtrans( 'Template must have identifier entry_listing for non-Index archive types' )
-                        if ($tmpl->identifier ne 'entry_listing');
+                        unless ($app->config->SearchAlwaysAllowTemplateID || $tmpl->identifier eq 'entry_listing');
                     my $blog = $app->model('blog')->load($tmpl->blog_id);
                     return $app->errtrans( 'Blog file extension cannot be asp or php for these archives' )
                         if (!$app->config->SearchAlwaysAllowTemplateID
                             && ($blog->file_extension =~ /^php$/i || $blog->file_extension =~ /^asp$/i));
                 } else {
                     return $app->errtrans( 'Template must have identifier main_index for Index archive type' )
-                        if ($tmpl->identifier ne 'main_index');
+                        unless ($app->config->SearchAlwaysAllowTemplateID || $tmpl->identifier eq 'main_index');
                 }
             }
             else {
