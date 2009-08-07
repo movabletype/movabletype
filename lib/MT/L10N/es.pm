@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::es;
 use strict;
@@ -6017,7 +6017,15 @@ Búsqueda base: [_2]",
        'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'Se puede modificar el orden publicado de estos elementos utilizando los [_1]modificadores de etiquetas de plantilla[_2]', # Translate - New
        'This is set to the same URL as the original blog.' => 'La URL coincide con la original del blog.', # Translate - New
        'This will overwrite the original blog.' => 'Esto sobreescribirá el blog original.', # Translate - New
-
+       'No such template' => 'Esa plantilla no existe', # Translate - New
+        'template_id cannot be a global template' => 'template_id no puede ser una plantilla global', # Translate - New
+        'Output file cannot be asp or php' => 'El fichero de salida no puede ser asp o php', # Translate - New
+        'You must pass a valid archive_type with the template_id' => 'Debe pasar un tipo de archivo (archive_type) válido con el template_id', # Translate - New
+        'Template must have identifier entry_listing for non-Index archive types' => 'La plantilla debe tener un identificador entry_listing para los tipos de archivos que no sean índices', # Translate - New
+        'Blog file extension cannot be asp or php for these archives' => 'El fichero del blog no puede ser asp o php para estos archivos', # Translate - New
+        'Template must have identifier main_index for Index archive type' => 'La plantilla debe tener un identificador main_index para el tipo de archivos índices', # Translate - New
+        'Add New' => 'Añadir nuevo', # Translate - Case
+        'No asset(s) associated with this [_1]' => 'No existe/n elemento/s asociados a [_1]', # Translate - New
 );
 
 ## New words: 379

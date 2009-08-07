@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -6017,7 +6017,15 @@ Suchbasis: [_2]",
        'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'Die Reihenfolge, in der diese Assets veröffentlicht werden, kann mittels [_1]Template Tag Modifiers[_2] beeinflusst werden.', # Translate - New # OK
        'This is set to the same URL as the original blog.' => 'Die URL entspricht der des Ursprungsblogs.', # Translate - New # OK
        'This will overwrite the original blog.' => 'Das Ursprungsblog wird überschrieben.', # Translate - New # OK
-
+       'No such template' => 'Keine solche Vorlage', # Translate - New
+       'template_id cannot be a global template' => 'template_id kann keine globale Vorlage sein.', # Translate - New
+       'Output file cannot be asp or php' => 'Die Ausgabedatei darf weder ASP noch PHP sein.', # Translate - New
+       'You must pass a valid archive_type with the template_id' => 'template_id erfordert ein gültiges archive_type-Parameter.', # Translate - New
+       'Template must have identifier entry_listing for non-Index archive types' => 'Für Nicht-Index-Archive sind in der Vorlage eine entry_listing-Angabe erforderlich.', # Translate - New
+       'Blog file extension cannot be asp or php for these archives' => 'Dateien dieses Archivs dürfen weder auf .asp noch auf .php enden.', # Translate - New
+       'Template must have identifier main_index for Index archive type' => 'Für Index-Archive sind in der Vorlage eine main_index-Angabe erforderlich. ', # Translate - New
+       'Add New' => 'Neues Asset', # Translate - Case
+       'No asset(s) associated with this [_1]' => 'Keine Assets verknüpft ', # Translate - New
 );
 
 ## New words: 379
