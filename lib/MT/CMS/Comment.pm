@@ -315,6 +315,16 @@ sub list {
     };
 
     my %terms;
+
+    if ( !$app->param('blog_id') && !$app->user->is_superuser ) {
+        require MT::Permission;
+        $terms{blog_id} = [
+            map { $_->blog_id }
+              grep { $_->can_view_feedback }
+              MT::Permission->load( { author_id => $app->user->id } )
+        ];
+    }
+
     my $filter_col = $app->param('filter');
     if ( $filter_col && ( my $val = $app->param('filter_val') ) ) {
         if ( $filter_col eq 'status' ) {
