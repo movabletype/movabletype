@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Meta.pm 71460 2008-01-18 18:01:06Z ykerherve $
+# $Id$
 
 package MT::Meta;
 
