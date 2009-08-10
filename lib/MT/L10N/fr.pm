@@ -6018,7 +6018,15 @@ Base de recherche : [_2]",
        'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'L\'ordre de publication de ces éléments peut être modifié en utilisant [_1] tags de modification de gabarits [_2]', # Translate - New
        'This is set to the same URL as the original blog.' => 'La valeur est la même URL que le blog original', # Translate - New
        'This will overwrite the original blog.' => 'Cela réecrira le blog original', # Translate - New 
-
+       'No such template' => 'Aucun gabarit', # Translate - New
+       'template_id cannot be a global template' => 'template_id ne peut pas être un gabarit global', # Translate - New
+       'Output file cannot be asp or php' => 'Le fichier de sortie ne peut pas être asp ou php', # Translate - New
+       'You must pass a valid archive_type with the template_id' => 'Vous devez communiquer un archive_type valide avec un template_id', # Translate - New
+       'Template must have identifier entry_listing for non-Index archive types' => 'Les gabarits doivent avoir un identifiant entry_listing pour des types d\'archives sans index', # Translate - New
+       'Blog file extension cannot be asp or php for these archives' => 'L\'extention de fichiers d\'un blog ne peut pas être asp ou php', # Translate - New
+       'Template must have identifier main_index for Index archive type' => 'Les gabarits doivent avoir un identifiant main_undex pour les archives de type Index', # Translate - New
+       'Add New' => 'Nouvel élément', # Translate - Case
+       'No asset(s) associated with this [_1]' => 'Aucun élément associé avec ce [_1]', # Translate - New
 );
 
 ## New words: 379

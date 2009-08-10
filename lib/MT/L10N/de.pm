@@ -301,7 +301,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/signin.mtml
 	'Sign In' => 'Anmelden',
-	'You are signed in as ' => 'Sie sind angemeldet als',
+	'You are signed in as ' => 'Sie sind angemeldet als ',
 	'sign out' => 'abmelden',
 	'You do not have permission to sign in to this blog.' => 'Sie haben keine Berechtigung zur Anmeldung an diesem Blog.',
 
