@@ -1,8 +1,8 @@
-# Movable Type (r) (C) 2001-2009 Six Apart, Ltd. All Rights Reserved.
-# This code cannot be redistributed without permission from www.sixapart.com.
-# For more information, consult your Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
 #
-# $Id: Proxy.pm 71506 2008-01-18 23:13:43Z ykerherve $
+# $Id$
 
 package MT::Summary::Triggers;
 use strict;
