@@ -711,6 +711,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Invalid archive type' => 'アーカイブの種類が不正です。',
 	'Invalid value: [_1]' => '不正な値です: [_1]',
 	'No column was specified to search for [_1].' => '[_1]で検索するカラムが指定されていません。',
+	'No such template' => 'テンプレートがありません。', # Translate - New
+	'template_id cannot be a global template' => 'template_id にグローバルテンプレートは指定できません。', # Translate - New
+	'Output file cannot be asp or php' => '出力ファイル名にaspやphpは指定できません。', # Translate - New
+	'You must pass a valid archive_type with the template_id' => 'template_idとarchive_typeを指定してください。', # Translate - New
+	'Template must have identifier entry_listing for non-Index archive types' => 'インデックス以外のテンプレートでは、entry_listingのテンプレートしか指定できません。', # Translate - New
+	'Blog file extension cannot be asp or php for these archives' => 'このアーカイブでaspやphpを出力ファイル名に指定することはできません。', # Translate - New
+	'Template must have identifier main_index for Index archive type' => 'main_indexのテンプレートしか指定できません。', # Translate - New
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'タイムアウトしました。お手数ですが検索をやり直してください。',
 
 ## lib/MT/App/Trackback.pm
@@ -1061,6 +1068,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## lib/MT/CMS/Asset.pm
 	'Files' => 'ファイル',
+	'Extension changed from [_1] to [_2]' => '拡張子を[_1]から[_2]に変更しました。', # Translate - New
 	'Can\'t load file #[_1].' => 'ID:[_1]のファイルをロードできません。',
 	'No permissions' => '権限がありません。',
 	'File \'[_1]\' uploaded by \'[_2]\'' => '\'[_2]\'がファイル\'[_1]\'をアップロードしました。',
@@ -1110,6 +1118,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Selected Blog' => '選択されたブログ',
 	'Type a blog name to filter the choices below.' => 'ブログ名を入力して絞り込み',
 	'Blog Name' => 'ブログ名',
+	'[_1] changed from [_2] to [_3]' => '[_1]を[_2]から[_3]へ変更しました。', # Translate - New
 	'Saved Blog Changes' => 'ブログへの変更内容',
 	'Saving permissions failed: [_1]' => '権限を保存できませんでした: [_1]',
 	'Blog \'[_1]\' (ID:[_2]) created by \'[_3]\'' => '\'[_3]\'がブログ\'[_1]\'(ID:[_2])を作成しました。',
@@ -1167,6 +1176,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Invalid ID [_1]' => 'ID [_1]は不正です。',
 	'Save failed: [_1]' => '保存できませんでした: [_1]',
 	'Saving object failed: [_1]' => 'オブジェクトを保存できませんでした: [_1]',
+	'\'[_1]\' edited the template \'[_2]\' in the blog \'[_3]\'' => '[_1] が ブログ [_3] のテンプレート「[_2]」を編集しました。', # Translate - New
+	'\'[_1]\' edited the global template \'[_2]\'' => '[_1] がグローバルテンプレート [_2] を編集しました。', # Translate - New
 	'Invalid parameter' => '不正なパラメータです。',
 	'Load failed: [_1]' => 'ロードできませんでした: [_1]',
 	'(no reason given)' => '(原因は不明)',
@@ -1184,7 +1195,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You need to specify a Site URL' => 'サイトURLを指定してください。',
 	'The Site Path matches the original blog' => '元のブログと同じサイトパスです。',
 	'You need to specify a Site Path' => 'サイトパスを指定してください。',
-	'Entries must be cloned if trackbacks or comments are cloned' => 'コメントまたはトラックバックを複製するときはブログ記事も複製しなければなりません。',
+	'Entries must be cloned if comments and trackbacks are cloned' => 'コメントまたはトラックバックを複製するときはブログ記事も複製しなければなりません。',
 	'Entries must be cloned if comments are cloned' => 'コメントを複製するときはブログ記事も複製しなければなりません。',
 	'Entries must be cloned if trackbacks are cloned' => 'トラックバックを複製するときはブログ記事も複製しなければなりません。',
 
@@ -1348,7 +1359,16 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Please enter a valid email address' => '正しいメールアドレスを入力してください。',
 	'Test email from Movable Type' => 'Movable Type からのテストメールです',
 	'This is the test email sent by your installation of Movable Type.' => 'Movable Type から送信されたテストメールです。',
-	'Mail was not properly sent' => 'メールを送信しました',
+	'Mail was not properly sent' => 'メールを送信できませんでした',
+	'Test e-mail was successfully sent to [_1]' => 'テストメールを [_1] に送信しました。', # Translate - New
+	'These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'この設定よりも[_1]に指定されている値の方が優先されます。このページで設定を行う場合はファイルから値を削除してください。', # Translate - New
+	'Email address is [_1]' => 'メールアドレス: [_1]', # Translate - New
+	'Debug mode is [_1]' => 'デバッグモード: [_1]', # Translate - New
+	'Performance logging is on' => 'パフォーマンスログ: ON', # Translate - New
+	'Performance logging is off' => 'パフォーマンスログ: OFF', # Translate - New
+	'Performance log path is [_1]' => 'パフォーマンスログのパス: [_1]', # Translate - New
+	'Performance log threshold is [_1]' => 'パフォーマンスログのしきい値: [_1]', # Translate - New
+	'System Settings Changes Took Place' => 'システム設定への更新', # Translate - New
 	'Invalid password recovery attempt; can\'t recover password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
 	'Backup & Restore' => 'バックアップ/復元',
@@ -2641,6 +2661,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/dialog/clone_blog.tmpl
 	'Verify Blog Settings' => 'ブログの設定を確認する',
+	'This is set to the same URL as the original blog.' => '元のブログと同じURLが設定されています。', # Translate - New
+	'This will overwrite the original blog.' => 'このままにしておくと元のブログを上書きしてしまいます。', # Translate - New
 	'This is set to the same URL as the original blog. Would you like to <a href="javascript:history.back()" id="site-url-back-link">go back</a> and change it?' => '元のブログと同じURLが設定されています。<a href="javascript:history.back()" id="site-url-back-link">戻って設定を変更</a>しますか?',
 	'This will overwrite the original blog. Would you like to <a href="javascript:history.back()" id="site-path-back-link">go back</a> and change it?' => 'このままにしておくと元のブログを上書きしてしまいます。<a href="javascript:history.back()" id="site-path-back-link">戻って設定を変更</a>しますか?',
 	'Exclusions' => '除外',
@@ -3004,7 +3026,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Accept' => '受信設定',
 	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
 	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
-	'The published order of these assets can be changed using template tag modifiers.' => '公開するときの並び順はテンプレートタグのモディファイアで変更できます。',
+	'No asset(s) associated with this [_1]' => '[_1] 二関連づけられたアイテムはありません。', # Translate - New
+	'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => '公開するときの並び順は[_1]テンプレートタグのモディファイア[_2]で変更できます。',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていないブログ記事への変更は失われます。',
 	'You have unsaved changes to this page that will be lost.' => '保存されていないウェブページへの変更は失われます。',
 	'Enter the link address:' => 'リンクするURLを入力:',
