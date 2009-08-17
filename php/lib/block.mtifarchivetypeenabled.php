@@ -13,11 +13,18 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         $at or $at = $args['archive_type'];
         $at = preg_quote($at);
         $blog_at = ',' . $blog['blog_archive_type'] . ',';
-        $enabled = preg_match("/,$at,/", $blog_at);
-        $map = $ctx->mt->db->fetch_templatemap(
-            array('type' => $at, 'blog_id' => $blog['blog_id']));
-        if (empty($map))
-            $enabled = 0;
+        $enabled = 0;
+        $at_exists = preg_match("/,$at,/", $blog_at);
+        if ($at_exists) {
+            $maps = $ctx->mt->db->fetch_templatemap(
+                array('type' => $at, 'blog_id' => $blog['blog_id']));
+            if (!empty($maps)) {
+                foreach ($maps as $map) {
+                    if ($map['templatemap_build_type'])
+                        $enabled++;
+                }
+            }
+        }
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $enabled);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
