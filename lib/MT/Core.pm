@@ -584,6 +584,13 @@ BEGIN {
 
             'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
             'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
+
+            'RPTFreeMemoryLimit' => undef,
+            'RPTProcessCap' => undef,
+            'RPTSwapMemoryLimit' => undef,
+            'SchwartzClientDeadline' => undef,
+            'SchwartzFreeMemoryLimit' => undef,
+            'SchwartzSwapMemoryLimit' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
