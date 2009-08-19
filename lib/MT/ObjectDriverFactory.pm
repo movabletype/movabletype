@@ -112,6 +112,7 @@ sub cleanup {
     if ( my $driver = $MT::Object::DRIVER ) {
         if ( my $dbh = $driver->dbh ) {
             $dbh->disconnect;
+            $driver->dbh(undef);
         }
         $MT::Object::DRIVER = undef;
         $MT::Object::DBI_DRIVER = undef;
@@ -119,6 +120,7 @@ sub cleanup {
     foreach my $driver (@drivers) {
         if ( my $dbh = $driver->dbh ) {
             $dbh->disconnect;
+            $driver->dbh(undef);
         }
     }
     @drivers = ();
