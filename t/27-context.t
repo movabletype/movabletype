@@ -100,7 +100,7 @@ $ts = sprintf "%04d.%02d.%02d %02d:%02d:%02d", @ts;
 is(build($ctx, '<$MTEntryTitle$>'), $entry->title, 'MTEntryTitle');
 is(build($ctx, '<$MTEntryAuthor$>'), $entry->author->name, 'MTEntryAuthor');
 is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
-is(build($ctx, '<$MTEntryCommentCount$>'), 0, 'MTEntryCommentCount');
+is(build($ctx, '<$MTEntryCommentCount$>'), 3, 'MTEntryCommentCount');
 is(build($ctx, '<$MTEntryDate format="%Y.%m.%d %H:%M:%S"$>'), $ts, 'MTEntryDate format');
 
 is(build($ctx, '<$MTEntryBody words="2"$>'), first_n_words($entry->text, 2), 'MTEntryBody words 2');

@@ -6,7 +6,7 @@ use warnings;
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test;
 
-use Test::More tests => 38;
+use Test::More tests => 39;
 
 # required modules in MT check
 use_ok('CGI::Cookie');
@@ -51,3 +51,4 @@ use_ok('Mail::Sendmail');
 use_ok('HTML::Parser');
 use_ok('File::Temp');
 use_ok('Net::LDAP');
+use_ok('XML::Parser');

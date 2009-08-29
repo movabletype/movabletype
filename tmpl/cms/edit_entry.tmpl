@@ -469,6 +469,46 @@
     </mtapp:widget>
     <mt:if name="agent_ie"><div>&nbsp;<!-- IE Duplicate Characters Bug -->&nbsp;</div></mt:if>
 </div>
+
+<mt:if name="object_type" like="(entry|page)">
+<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> class="hidden"</mt:unless>>
+    <mtapp:widget
+        id="asset_container"
+        label="Assets">
+		<div class="asset-list-header">
+        	<a href="javascript:void(0)" class="add-new-asset-link" 
+           onclick="openDialog(null,'list_assets','_type=asset&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1');return false;">
+            	Add New
+        	</a>
+		</div>
+        <ul id="asset-list" name="asset-list">
+            <mt:if name="asset_loop">
+                <mt:loop name="asset_loop">
+                    <li id="list-asset-<mt:var name="asset_id">"
+                        <mt:if name="asset_thumb">onmouseover="show('list-image-<mt:var name="asset_id">')"
+                                                  onmouseout="hide('list-image-<mt:var name="asset_id">')"</mt:if> >
+                        <a href="<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:var name="asset_id">" class="asset-title">
+                            <mt:var name="asset_name">
+                        </a>
+                        <a href="javascript:removeAssetFromList(<mt:var name="asset_id">)" class="remove-asset">
+                            <img src="<mt:StaticWebPath>images/status_icons/close.gif" alt="Remove asset" />
+                        </a>
+	                    <mt:if name="asset_thumb">
+	                        <img id="list-image-<mt:var name="asset_id">" class="list-image" src="<mt:var name="asset_thumb">" style="display:none" /> 
+	                    </mt:if>
+                    </li>
+                </mt:loop>
+            <mt:else>
+                <li id="empty-asset-list">No asset(s) associated with this <mt:var name="object_type"></li>
+            </mt:if>
+        </ul>
+        <input type="hidden" id="include_asset_ids" name="include_asset_ids" 
+               value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
+        <p class="notice"><__trans phrase="The published order of these assets can be changed using [_1]template tag modifiers[_2]." params="<a href="javascript:void(0)" onclick="return openManual('appendices', 'modifiers')">%%</a>"></p>
+    </mtapp:widget>
+</div>
+</mt:if>
+
     <mt:if name="object_type" eq="page">
         <$MTApp:PageActions from="edit_page"$>
     <mt:else>
@@ -510,9 +550,10 @@ var orig_text_format;
 var cur_text_format = '<mt:var name="convert_breaks" escape="js">';
 orig_text_format = cur_text_format;
 var customizable_fields = [<mt:loop name="field_loop" glue=","><mt:unless name="system_field"><mt:unless name="lock_field">'<mt:var name="field_id" escape="js">'<mt:else><mt:if name="use_field">'<mt:var name="field_id" escape="js">'</mt:if></mt:unless></mt:unless></mt:loop>];
-<mt:unless name="object_type" eq="page">customizable_fields.push('category');
-</mt:unless>customizable_fields.push('publishing');
+<mt:unless name="object_type" eq="page">customizable_fields.push('category');</mt:unless>
+customizable_fields.push('publishing');
 customizable_fields.push('feedback');
+customizable_fields.push('assets');
 var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
 
 function savedEntryOptions(c) {
@@ -947,6 +988,7 @@ function listPreviousPings () {
                         </mt:if>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-publishing" value="publishing" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_publishing"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Publishing"></label></li>
                         <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Feedback"></label></li>
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Assets"></label></li>
                     </ul>
                 </mtapp:setting>
                 <mtapp:setting

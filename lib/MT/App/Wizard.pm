@@ -263,6 +263,11 @@ sub init_core_registry {
                 label =>
                     'This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.',
             },
+            'XML::Parser' => {
+                link => 'http://search.cpan.org/dist/Text-Balanced',
+                label =>
+                    'This module required for action streams.',
+            },
         },
         required_packages => {
             'Image::Size' => {

@@ -9,7 +9,8 @@ package MT::Entry;
 use strict;
 
 use MT::Tag; # Holds MT::Taggable
-use base qw( MT::Object MT::Taggable MT::Scorable );
+use MT::Summary; # Holds MT::Summarizable
+use base qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable );
 
 use MT::Blog;
 use MT::Author;
@@ -58,7 +59,7 @@ __PACKAGE__->install_properties({
         modified_on => 1,
         # For lookups 
         comment_count => 1,
-		# TODO: Figure out how we benefit from this (from Percona-Advance recommendation)
+
         auth_stat_class => {
             columns => [ 'author_id', 'status', 'class' ],
         },
@@ -90,8 +91,7 @@ __PACKAGE__->install_properties({
         blog_stat_date => {
             columns => ['blog_id', 'class', 'status', 'authored_on', 'id'],
         },
-		# TODO: Figure out how we benefit from this (from Percona-Advance recommendation)
-		# TODO: Figure out why this looks surprisingly like tag_count
+		
 		dd_entry_tag_count => {
 			columns => ['blog_id', 'status', 'class', 'id'],
 		},
@@ -108,6 +108,7 @@ __PACKAGE__->install_properties({
     child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
     audit => 1,
     meta => 1,
+    summary => 1,
     datasource => 'entry',
     primary_key => 'id',
     class_type => 'entry',
@@ -149,6 +150,24 @@ sub cache_key {
         ($entry_id, $key) = ($_[0]->id, $_[1]);
     }
     return sprintf "entry%s-%d", $key, $entry_id;
+}
+
+sub author_id {
+    my $entry = shift;
+    if ( scalar @_ ) {
+        $entry->{__orig_value}->{author_id} = $entry->SUPER::author_id
+            unless exists( $entry->{__orig_value}->{author_id} );
+    }
+    return $entry->SUPER::author_id( @_ );
+}
+
+sub status {
+    my $entry = shift;
+    if ( scalar @_ ) {
+        $entry->{__orig_value}->{status} = $entry->SUPER::status
+            unless exists( $entry->{__orig_value}->{status} );
+    }
+    return $entry->SUPER::status( @_ );
 }
 
 sub status_text {
@@ -369,6 +388,7 @@ MT::Comment->add_callback( 'post_save', 0, MT->component('core'),
                 visible  => 1,
             }
         );
+        return unless ( $entry->comment_count != $count );
         $entry->comment_count($count);
         $entry->save;
     },
@@ -688,17 +708,10 @@ sub save {
         my ($yr, $w) = $dt->week;
         $entry->week_number($yr * 100 + $w);
     }
-
-    my $sync_assets = $entry->is_changed('text')
-        || $entry->is_changed('text_more');
-
     unless ($entry->SUPER::save(@_)) {
         print STDERR "error during save: " . $entry->errstr . "\n";
         die $entry->errstr;
     }
-
-    $entry->sync_assets() if $sync_assets;
-
     if (!$entry->atom_id && (($entry->status || 0) != HOLD)) {
         $entry->atom_id($entry->make_atom_id());
         $entry->SUPER::save(@_) if $entry->atom_id;

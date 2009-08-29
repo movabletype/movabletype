@@ -19,7 +19,12 @@ sub init {
     $param{prefix} ||= 'mt_';
     $driver->SUPER::init(%param);
     my $opts = $driver->connect_options || {};
-    $opts->{RaiseError} = 0;
+    
+    require MT;
+    my $mt = MT->instance;
+    my $cfg = $mt->config;
+    $opts->{RaiseError} = $cfg->DBIRaiseError;
+    
     $driver->connect_options($opts);
     $driver;
 }

@@ -22,6 +22,17 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:unless name="template_type" eq="system"><mt:unless name="template_type" eq="email">
+    
+    <mt:if name="publish_from_search">
+    <mt:if name="blog_id">
+        <a href="javascript:void(0)"
+            onclick="doForMarkedInThisWindow(getByID('<$mt:var name="template_type" default="template"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">', 'id', 'publish_templates_from_search', {}, '<__trans phrase="to publish" escape="js">'); return false;"
+            accesskey="a"
+            title="<__trans phrase="Publish selected templates (a)">"
+            ><__trans phrase="Publish"></a>
+    </mt:if>
+    </mt:if>
+    
     <mt:if name="template_type" eq="index">
         <a href="javascript:void(0)"
             onclick="doForMarkedInThisWindow(getByID('<$mt:var name="template_type" default="template"$>-listing-form'), '<__trans phrase="template" escape="js">', '<__trans phrase="templates" escape="js">', 'id', 'publish_index_templates', {}, '<__trans phrase="to publish" escape="js">'); return false;"

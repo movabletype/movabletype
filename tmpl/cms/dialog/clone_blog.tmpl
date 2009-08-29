@@ -1,0 +1,550 @@
+<mt:setvar name="page_title" value="<__trans phrase="Clone Blog">">
+<mt:include name="dialog/header.tmpl">
+<style type="text/css">
+fieldset {
+  margin-bottom: 0;
+}
+
+.field {
+  margin-bottom: .8em;
+}
+
+.field-header label {
+  color:#777777;
+}
+
+.field-content {
+  margin-left: 130px;
+}
+</style>
+<mt:if name="clone">
+  <fieldset>
+    <h3><__trans phrase="Cloning blog '[_1]'..." params="<mt:var name="blog_name">"</h3>
+  
+    <div class="modal_width" id="dialog-clone-weblog">
+    
+      <div id="msg-container" style="height: 310px; overflow: auto; overflow-x: auto">
+        <ul>
+          <mt:loop name="clone_log_msgs">
+            <li><mt:var name="__value__"></li>
+          </mt:loop>
+          <mt:ignore><__trans phrase="This is where the status updates go"></mt:ignore>
+        </ul>
+      </div>
+      <p>
+        <strong>
+          <__trans phrase="Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">return to the blog listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_2]');\">configure the Site root and URL of the new blog</a>." params="$return_url%%$setting_url">
+        </strong>
+      </p>
+    </div>
+  <mt:else name="verify">
+    <!-- Verification Form -->
+    <form name='clone-verification-form' id='clone-verification-form' method="post" action="<mt:var name="script_url">">
+      <fieldset>
+        <h3><__trans phrase="Verify Blog Settings"></h3>
+        <input type="hidden" name="clone" value="1" />
+        <input type="hidden" name="__mode" value="dialog_clone_blog" />
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name">" />
+        <input type="hidden" name="site_url" value="<mt:var name="site_url">" />
+        <input type="hidden" name="site_path" value="<mt:var name="site_path">" />
+        <input type="hidden" name="overwrite" value="<mt:var name="overwrite">" />
+        <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages">" />
+        <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments">" />
+        <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks">" />
+        <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories">" />
+        <mtapp:setting
+          id="blog-name"
+          label="<__trans phrase="Blog Name">">
+            <span id="blog-name"><mt:var name="new_blog_name" escape="html"></span>
+        </mtapp:setting>
+        <mtapp:setting
+          id="site-url"
+          label="<__trans phrase="Site URL">">
+            <span id="site-url"><mt:var name="site_url" escape="html"></span>
+            <mt:if name="site_url_warning">
+              <p>
+                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
+                <span class="alert-warning-inline">
+                  <__trans phrase="This is set to the same URL as the original blog.">
+                </span>
+              </p>
+            </mt:if>
+        </mtapp:setting>
+        <mtapp:setting
+          id="site-path"
+          label="<__trans phrase="Site Root">">
+            <span id="site-path"><mt:var name="site_path" escape="html"></span>
+            <mt:if name="site_path_warning">
+              <p>
+                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif"/>
+                <span class="alert-warning-inline">
+                  <__trans phrase="This will overwrite the original blog.">
+                </span>
+              </p>
+            </mt:if>
+        </mtapp:setting>
+      </fieldset>
+      <fieldset>
+        <h3><__trans phrase="Exclusions"></h3>
+        <ul>
+        <mt:if name="clone_prefs_entries_pages" eq="on"><li><__trans phrase="Exclude Entries/Pages"></li></mt:if>
+        <mt:if name="clone_prefs_comments" eq="on"><li><__trans phrase="Exclude Comments"></li></mt:if>
+        <mt:if name="clone_prefs_trackbacks" eq="on"><li><__trans phrase="Exclude Trackbacks"></li></mt:if>
+        <mt:if name="clone_prefs_categories" eq="on"><li><__trans phrase="Exclude Categories"></li></mt:if>
+        </ul>
+      </fieldset>
+      <mt:setvarblock name="action_buttons">
+        <button
+          type="submit"
+          accesskey="s"
+          title="<__trans phrase="Clone">"
+          class="primary-button"><__trans phrase="Clone"></button>
+        <button
+          name="back_to_form"
+          value="1"
+          type="submit"
+          accesskey="x"
+          title="<__trans phrase="Back">"
+          class="secondary-button"><__trans phrase="Back"></button>
+        <button
+          type="submit"
+          onclick="closeDialog(); return false"
+          accesskey="x"
+          title="<__trans phrase="Cancel">"
+          class="secondary-button"><__trans phrase="Cancel"></button>
+      </mt:setvarblock>
+      <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </form>
+  <mt:else>
+    <!-- Clone Form -->
+    <form name='clone-settings-form' id='clone-settings-form' method="post" action="<mt:var name="script_url">">
+      <fieldset>
+        <h3><__trans phrase="Blog Details"></h3>
+        <input type="hidden" name="verify" value="1" />
+        <input type="hidden" name="__mode" value="dialog_clone_blog" />
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <mtapp:setting
+          id="blog-name"
+          required="1"
+          label="<__trans phrase="Blog Name">">
+            <input name="new_blog_name" id="blog-name" value="<mt:var name="new_blog_name" escape="html">" type="text" size="50" />
+        </mtapp:setting>
+        <mtapp:setting
+          id="site-url"
+          required="1"
+          label="<__trans phrase="Site URL">"
+          hint="<__trans phrase="Enter the new URL of your public website. Example: http://www.example.com/weblog/">"
+          show_hint="1">
+            <input name="site_url" id="site-url" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
+        </mtapp:setting>
+        <mtapp:setting
+          id="site-path"
+          required="1"
+          label="<__trans phrase="Site Root">">
+            <input name="site_path" id="site-path" value="<mt:var name="site_path" escape="html">" type="text" size="50" />
+            <div class="hint">
+              <__trans phrase="Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog">
+            </div>
+        </mtapp:setting>
+      </fieldset>
+      <fieldset>
+        <h3><__trans phrase="Clone Settings"></h3>
+        <mtapp:setting
+          id="clone_prefs"
+          label="<__trans phrase="Exclusions">"
+          hint="<__trans phrase="Mark the settings that you want cloning to skip">"
+          content_class="field-content-text">
+          <ul id="clone-prefs-fields">
+            <li>
+              <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages">"</mt:if> class="cb" />
+              <label for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label></li>
+            <li>
+              <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="cb" />
+              <label for="clone-prefs-comments"><__trans phrase="Comments"></label>
+            </li>
+            <li>
+              <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="cb" />
+              <label for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
+            </li>
+            <li>
+              <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="cb" />
+              <label for="clone-prefs-categories"><__trans phrase="Categories"></label>
+            </li>
+          </ul>
+        </mtapp:setting>
+      </fieldset>
+      <mt:setvarblock name="action_buttons">
+        <button
+          type="submit"
+          accesskey="s"
+          title="<__trans phrase="Confirm">"
+          class="primary-button"
+          ><__trans phrase="Confirm"></button>
+        <button
+          type="submit"
+          onclick="closeDialog(); return false"
+          accesskey="x"
+          title="<__trans phrase="Cancel">"
+          class="secondary-button"
+          ><__trans phrase="Cancel"></button>
+      </mt:setvarblock>
+      <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </form>
+    <!-- END Clone Form -->
+</mt:if>
+<script type="text/javascript">
+(function () {
+  var eventRegistry = [];
+  
+  addEvent(window,'load',_init,false);
+  addEvent(window,'unload',_cleanup,false);
+  
+  <mt:Ignore>
+  /**
+   * Initializes the class
+   * @param e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _init (e) {
+    _enforceCloningConstraints(document.getElementById('clone-prefs-entries-pages'),document.getElementById('clone-prefs-fields'));
+    //addEvent(document.getElementById('overwrite'),'click',_handleEvents);
+    addEvent(document.getElementById('clone-prefs-fields'),'click',_handleEvents);
+    
+    var i = document.forms.length;
+    
+    while(i--) {
+      addEvent(document.forms[i],'submit',_handleEvents);
+    }
+    
+    delete count;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Handles the removal of events and any additional cleanup
+   * @param {Event} e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _cleanup (e) {
+    _removeAllEvents();
+  }
+  
+  <mt:Ignore>
+  /**
+   * Description
+   * 
+   * @constructor
+   * @param
+   * @return
+   */
+  </mt:Ignore>
+  function _removeAllEvents() {
+    var len = eventRegistry.length,
+        reg;
+    while(len--) {
+      reg = eventRegistry[len];
+      reg.el.removeEventListener(reg.type,reg.func,reg.capture)
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Cross-browser solution for stopping event propagation
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _stopPropagation (e) {
+    if(e.stopPropagation) {
+      e.stopPropagation();
+    } else {
+      e.cancelBubble = true;
+    }
+  }
+  
+  /**
+   * Cross-browser solution for stopping event actions
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  function _preventDefault (e) {
+    if(e.preventDefault) {
+      e.preventDefault();
+    } else {
+      e.returnValue = false;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * General event handler
+   * 
+   * @param {Event} e The event object
+   * @return void
+   */
+  </mt:Ignore>
+  function _handleEvents (e) {
+    var origin = e.target,
+        type = e.type,
+        parent = findDefiningParent(origin.parentNode);
+
+    switch(type) {
+      case 'click':
+        switch(origin.nodeName) {
+          case 'A':
+            break;
+            
+          case 'INPUT':
+            switch (parent.id) {
+              case 'overwrite-field':
+                _showHideOverwriteWarnings(origin.checked,document.getElementById('site-path-field'));
+                _stopPropagation(e);
+                break;
+              case 'clone-prefs-fields':
+                _enforceCloningConstraints(origin,parent);
+                _stopPropagation(e);
+                break;
+              default:
+                _stopPropagation(e);
+            }
+            break;
+        }
+        break;
+        
+      case 'submit':
+        switch(origin.getAttribute('id')) {
+          case 'clone-verification-form':
+            _disableButtons(origin);
+            break;
+          case 'clone-settings-form':
+            if(_verifyForm(origin)) {;
+              _prepAction(origin);
+              _disableButtons(origin);
+            } else {
+              _preventDefault(e);
+              return false;
+            }
+            break;
+          default:
+            _preventDefault(e);
+        }
+        break;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Description
+   * 
+   * @param {HTMLElement} form 
+   * @return {Boolean} 
+   */
+  </mt:Ignore>
+  function _verifyForm(form) {
+    return true;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Description
+   * 
+   * @param {HTMLElement} form
+   * @return
+   */
+  </mt:Ignore>
+  function _prepAction(form) {
+    var prefsEntries = document.getElementById('clone-prefs-entries-pages'),
+        prefsComments = document.getElementById('clone-prefs-comments'),
+        prefsCategories = document.getElementById('clone-prefs-categories'),
+        prefsTrackbacks = document.getElementById('clone-prefs-trackbacks');
+        
+    prefsComments.disabled = false;
+    prefsTrackbacks.disabled = false;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Description
+   * 
+   * @param {HTMLElement} form
+   * @return void
+   */
+  </mt:Ignore>
+  function _disableButtons(form) {
+    var buttons = form.getElementsByTagName('button'),
+        len = buttons.length;
+    
+    while(len--) {
+      buttons[len].disable = true;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Description
+   * 
+   * @param {HTMLElement} input
+   * @param {HTMLElement} prefFields
+   * @return void
+   */
+  </mt:Ignore>
+  function _enforceCloningConstraints(input,prefFields) {
+    switch(input.id) {
+      case 'clone-prefs-entries-pages':
+        var inputEls = prefFields.getElementsByTagName('input'),
+            len = inputEls && inputEls.length;
+        
+        while(len--) {
+          switch(inputEls[len].id) {
+            case 'clone-prefs-comments':
+            case 'clone-prefs-trackbacks':
+              if(input.checked) {
+                inputEls[len].disabled = true;
+                inputEls[len].checked = true;
+              } else {
+                inputEls[len].disabled = false;
+              }
+              break;
+            default:
+              // no-op
+          }
+        }
+        break;
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Shows and hides warnings when the Overwrite checkbox is clicked
+   *  
+   * @param {Boolean} state the current state of the checkbox (i.e. checked or unchecked)
+   * @param {HTMLElement} sitePathDiv
+   * @return void
+   */
+  </mt:Ignore>
+  function _showHideOverwriteWarnings(state,sitePathDiv) {
+    var warning = findElement(sitePathDiv,'class','alert-warning-inline','span');
+    if(state && warning) {
+      warning.parentNode.style.visibility = 'visible';
+    } else if(warning) {
+      warning.parentNode.style.visibility = 'hidden';
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Finds the nearest defining (i.e. with an id) parent to the given element
+   * 
+   * @param {HTMLElement} origin the node from which to start the search
+   * @return {HTMLElement|Boolean} The parent node with an id attribute or false
+   */
+  </mt:Ignore>
+  function findDefiningParent(origin) {
+    for(var node=origin.parentNode;node.parentNode;node=node.parentNode) {
+      if((node.hasAttribute && node.hasAttribute('id')) || node.getAttribute('id')) {
+        return node;
+      }
+    }
+    
+    return false;
+  }
+  
+  <mt:Ignore>
+  /**
+   * Toggles the visibility of a given element using the CSS 'visibility' property
+   * (NB: 'hidden' elements still consume page real-estate, which can be functionally
+   * more useful in form verification).
+   * 
+   * @param {HTMLElement} el the element to toggle
+   * @param {Boolean} visible determines whether to show or hide the element
+   * @return void
+   */
+  </mt:Ignore>
+  function toggleVisibility(el,visible) {
+    if(checkNodeType(el)==='element') {
+      el.style.visibility = visible ? 'visible' : 'hidden';
+    }
+  }
+  
+  function checkNodeType (obj) {
+    if (obj.nodeName){
+      switch (obj.nodeType) {
+        case 1: return 'element';
+        case 3: return (/\S/).test(obj.nodeValue) ? 'textnode' : 'whitespace';
+      }
+    }
+  }
+  
+  <mt:Ignore>
+  /**
+   * Performs a basic search based on the given parameters
+   * 
+   * @param {HTMLElement} rootEl the element from where the search starts
+   * @param {String} attr the defining attribute for which to search
+   * @param {String} attrVal the defining value of the attribute
+   * @param {String} nodeName the name of the node
+   * @return {HTMLElement|false} returns the element or false if not found
+   */
+  </mt:Ignore>
+  function findElement(rootEl,attr,attrVal,nodeName) {
+    var els = rootEl.getElementsByTagName(nodeName),
+        len = els.length;
+
+    while(len--) {
+      if(els[len].getAttributeNode(attr).nodeValue && els[len].getAttributeNode(attr).nodeValue===attrVal) {
+        return els[len];
+      }
+    }
+    
+    return false
+  }
+  
+  <mt:Ignore>
+  /**
+   * Adds an eventListener to an element
+   * 
+   * @param {HTMLElement} el the element to which the event needs attaching
+   * @param {String} type the type of event
+   * @param {Function} func the function to execute when the event fires
+   * @param {Object} obj if given, the function scope is reassigned to the object
+   * @return void
+   */
+  </mt:Ignore>
+  function addEvent(el,type,func,obj) {
+    if(!obj && document.addEventListener) {
+      eventRegistry.push({
+        'el' : el,
+        'type' : type,
+        'func' : func,
+        'capture' : false
+      });
+      
+      el.addEventListener(type,func,false);
+    } else if(obj && document.addEventListener) {
+      var anonFunc = function (event) {
+        func.call(obj,event);
+      };
+      
+      eventRegistry.push({
+        'el' : el,
+        'type' : type,
+        'func' : anonFunc,
+        'capture' : false
+      });
+      
+      el.addEventListener(type,anonFunc,false);
+      delete anonFunc;
+    } else {
+      el.attachEvent(type,function (event) {
+        func.call(obj,event);
+      });
+    }
+  }
+})();
+</script>
+<mt:include name="dialog/footer.tmpl">

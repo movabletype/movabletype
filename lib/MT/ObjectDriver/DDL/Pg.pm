@@ -103,23 +103,30 @@ sub column_defs {
     return undef unless $dbh;
 
     local $dbh->{RaiseError} = 0;
-    my $attr = $dbh->func($table_name, 'table_attributes') or return undef;
-    return undef unless @$attr;
+    my $sth = $dbh->column_info( undef, undef, $table_name, undef );
+    my $attr = $sth->fetchall_hashref('COLUMN_NAME') or return undef;
+    return undef if $sth->err;
+    return undef unless %$attr;
+
+    my @pri_keys = $dbh->primary_key( undef, undef, $table_name );
+    $attr->{$_}->{PRIMARY_KEY} = 0 for keys %$attr;
+    $attr->{$_}->{PRIMARY_KEY} = 1 for @pri_keys;
 
     my $defs = {};
-    foreach my $col (@$attr) {
-        my $coltype = $ddl->db2type($col->{TYPE});
-        my $colname = lc $col->{NAME};
+    foreach my $field_name (keys %$attr) {
+        my $col = $attr->{$field_name};
+        my $coltype = $ddl->db2type($col->{DATA_TYPE});
+        my $colname = lc $col->{COLUMN_NAME};
         $colname =~ s/^\Q$field_prefix\E_//i;
         $defs->{$colname}{type} = $coltype;
         if ( $coltype eq 'string') {
-            if (defined $col->{SIZE}) {
-                $defs->{$colname}{size} = $col->{SIZE};
+            if (defined $col->{COLUMN_SIZE}) {
+                $defs->{$colname}{size} = $col->{COLUMN_SIZE};
             } else {
                 $defs->{$colname}{type} = 'text';
             }
         }
-        if ( $col->{NOTNULL} ) {
+        unless ( $col->{NULLABLE} ) {
             $defs->{$colname}{not_null} = 1;
         }
         if ( $col->{PRIMARY_KEY} ) {

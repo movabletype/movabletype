@@ -7,12 +7,16 @@
 package MT::Serialize;
 
 use strict;
-our $VERSION = 2;
+our $VERSION = 4;
 
 {
     my %Types = (
-        Storable => [ \&_freeze_storable, \&_thaw_storable ],
-        MT       => [ \&_freeze_mt_2,     \&_thaw_mt    ],
+        Storable => [ \&_freeze_storable,    \&_thaw_storable ],
+        JSON     => [ \&_freeze_json,        \&_thaw_json ],
+        MT       => [ \&_freeze_mt_2,        \&_thaw_mt    ],
+        MT2      => [ \&_freeze_mt_2,        \&_thaw_mt    ],
+        MTS      => [ \&_freeze_mt_storable, \&_thaw_mt    ],
+        MTJ      => [ \&_freeze_mt_json,     \&_thaw_mt    ],
     );
 
     sub new {
@@ -43,6 +47,9 @@ sub unserialize {
 sub _freeze_storable { require Storable; Storable::freeze(@_) }
 sub _thaw_storable   { require Storable; Storable::thaw(@_)   }
 
+sub _freeze_json { require JSON; JSON::encode_json(${$_[0]}) }
+sub _thaw_json   { require JSON; \JSON::decode_json(shift) }
+
 # for compatibility, in case this routine is referenced directly
 # by plugins...
 sub _freeze_mt {
@@ -62,70 +69,88 @@ sub _freeze_mt_1 {
     $frozen;
 }
 
-sub _freeze_mt_2 {
-    my($ref) = @_;
+sub _macrofreeze {
+    my $value = shift;
+    my $ref_cnt = 1; # for compatibility with the existing algorithm
+    my %refs;
+    my $frozen = '';
+    my @stack;
 
-    # version 2 signature: 'SERG' + packed long 0 + packed long protocol
-    my $ref_cnt = 0;
-    my %refs = ( $ref => $ref_cnt++ );
-    my $freezer;
+    while (1) {
+        if (@stack) {
+          my $top = $stack[-1];
+          if ($top->[0] eq 'ARRAY' || $top->[0] eq 'REF') {
+            $value = splice @$top, 1, 1;
+          } elsif ($top->[0] eq 'HASH') {
+            (my($key), $value) = splice @$top, 1, 2;
+            $frozen .= pack('N', length($key)) . $key;
+          } else {
+            die "Unexpected type '@{[$top->[0]]}' in _macrofreeze\n";
+          } 
+          pop @stack if @$top <= 1;
+        }
 
-    # The ice tray freezes a single element, yielding a frozen cube
-    my %ice_tray = (
-        'HASH' => sub {
-            my $v = shift;
-            my $cube = 'H' . pack('N', scalar(keys %$v));
-            for my $k (keys %$v) {
-                my $kv = $v->{$k};
-                $cube .= pack('N', length($k)) . $k .
-                    $freezer->($kv);
-            }
-            $cube;
-        },
-        'ARRAY' => sub {
-            my $v = shift;
-            my $cube = 'A' . pack('N', scalar(@$v));
-            $cube .= $freezer->($_) foreach @$v;
-            $cube;
-        },
-        'SCALAR' => sub {
-            my $v = shift;
-            no_utf8($$v);
-            'S' . pack('N', length($$v)) . $$v;
-        },
-        'REF' => sub {
-            my $v = shift;
-            'R' . $freezer->($$v);
-        },
-    );
-
-    $freezer = sub {
-        my ($value) = @_;
-        my $frozen;
         my $ref = ref $value;
+    
         if ($ref) {
             if (exists $refs{$value}) {
-                $frozen = 'P' . pack('N', $refs{$value});
+                $frozen .= 'P' . pack('N', $refs{$value});
             } else {
                 $refs{$value} = $ref_cnt++;
-                if (!exists $ice_tray{$ref}) {
+                if ($ref !~ /^(HASH|ARRAY|SCALAR|REF)$/) {
                     # unknown reference type-- CODE or foreign package?
                     $value = \undef; $ref = 'REF';
                 }
-                $frozen = $ice_tray{$ref}->($value);
+                if ($ref eq 'SCALAR') {
+                  no_utf8($$value);
+                  $frozen .= 'S' . pack('N', length($$value)) . $$value;
+                } elsif ($ref eq 'REF') {
+                  $frozen .= 'R';
+                  push(@stack, ['REF' => $$value]);
+                } elsif ($ref eq 'ARRAY') {
+                  $frozen .= 'A' . pack('N', scalar(@$value));
+                  push(@stack, ['ARRAY' => @$value]);
+                } elsif ($ref eq 'HASH') {
+                  $frozen .= 'H' . pack('N', scalar(keys %$value)); 
+                  push(@stack, ['HASH' => %$value]);
+                } else {
+                  die "Unexpected type '$ref' in _macrofreeze\n";
+                }
             }
         } else {
             if (defined $value) {
                 no_utf8($value);
-                $frozen = '-' . pack('N', length($value)) . $value;
+                $frozen .= '-' . pack('N', length($value)) . $value;
             } else {
-                $frozen = 'U';
+                $frozen .= 'U';
             }
         }
-        $frozen;
-    };
+        last if !@stack;
+    }
+    return $frozen;
+}
 
-    'SERG' . pack('N', 0) . pack('N', 2) . $freezer->($$ref);
+sub _freeze_mt_2 {
+    my($ref) = @_;
+
+    # version 2 signature: 'SERG' + packed long 0 + packed long protocol
+    'SERG' . pack('N', 0) . pack('N', 2) . _macrofreeze($$ref);
+}
+
+sub _freeze_mt_storable {
+    my($ref) = @_;
+
+    # version 3 signature: 'SERG' + packed long 0 + packed long protocol
+    require Storable;
+    'SERG' . pack('N', 0) . pack('N', 3) . Storable::nfreeze($$ref);
+}
+
+sub _freeze_mt_json {
+    my($ref) = @_;
+
+    # version 3 signature: 'SERG' + packed long 0 + packed long protocol
+    require JSON;
+    'SERG' . pack('N', 0) . pack('N', 4) . JSON::encode_json($$ref);
 }
 
 sub no_utf8 {
@@ -172,75 +197,131 @@ sub _thaw_mt_1 {
     \$thawed;
 }
 
-sub _thaw_mt_2 {
-    my($frozen) = @_;
-    return unless substr($frozen, 0, 4) eq 'SERG';
+sub _macrowave {
+    @_ == 2 or die "_macrowave expects: \$frozen, \$pos\n";
+    my($frozen, $pos) = @_;
+    my $refs = [undef];
+    my $len = length $frozen;
+    my(@stack, $value);
+    while ($pos < $len) {
+      my $type = substr($frozen, $pos, 1); $pos++;
 
-    my $thawed;
-    my @refs = (\$thawed);
-    my $heater;
-    my $pos = 12;  # skips past signature and version block
-
-    # The microwave thaws and pops out an element
-    my %microwave = (
-        'H' => sub {   # hashref
+      my $newref;
+      $value = 
+      $type eq 'H' ? do {   # hashref
             my $keys = unpack 'N', substr($frozen, $pos, 4);
             $pos += 4;
             my $values = {};
-            push @refs, $values;
-            for (my $k = 0; $k < $keys; $k++ ) {
-                my $key_name_len = unpack 'N', substr($frozen, $pos, 4);
-                my $key_name = substr($frozen, $pos + 4, $key_name_len);
-                $pos += 4 + $key_name_len;
-                $values->{$key_name} = $heater->();
-            }
+            push @$refs, $values;
+            $newref = [$values, $keys];
             $values;
-        },
-        'A' => sub {   # arrayref
+        } :
+      $type eq 'A' ? do {   # arrayref
             my $array_count = unpack 'N', substr($frozen, $pos, 4);
             $pos += 4;
             my $values = [];
-            push @refs, $values;
-            for (my $a = 0; $a < $array_count; $a++) {
-                push @$values, $heater->();
-            }
+            push @$refs, $values;
+            $newref = [$values, $array_count];
             $values;
-        },
-        'S' => sub {   # scalarref
+        } :
+      $type eq 'S' ? do {   # scalarref
             my $slen = unpack 'N', substr($frozen, $pos, 4);
             my $col_val = substr($frozen, $pos+4, $slen);
             $pos += 4 + $slen;
-            push @refs, \$col_val;
+            push @$refs, \$col_val;
             \$col_val;
-        },
-        'R' => sub {   # refref
-            my $value;
-            push @refs, \$value;
-            $value = $heater->();
-            \$value;
-        },
-        '-' => sub {   # scalar value
+        } :
+      $type eq 'R' ? do {   # refref
+            my $value = \(undef);
+            push @$refs, $value;
+            $newref = [$value, 1];
+            $value;
+        } :
+      $type eq  '-' ? do {   # scalar value
             my $slen = unpack 'N', substr($frozen, $pos, 4);
             my $col_val = substr($frozen, $pos+4, $slen);
             $pos += 4 + $slen;
             $col_val;
-        },
-        'U' => sub {   # undef
+        } :
+      $type eq 'U' ? do {   # undef
             undef;
-        },
-        'P' => sub {   # pointer to known ref
+        } :
+      $type eq 'P' ? do {   # pointer to known ref
             my $ptr = unpack 'N', substr($frozen, $pos, 4);
             $pos += 4;
-            $refs[$ptr];
+            $refs->[$ptr];
+        } :
+      undef;
+
+      # if there is something on the stack, it has to be a complex ref (ARRAY, HASH, REF), then process it
+      if (@stack) {
+        my $top = $stack[-1];
+        my $more = --$top->[1];
+        if (ref $top->[0] eq 'HASH') {
+          $top->[0]->{$top->[2]} = $value;
+        } elsif (ref $top->[0] eq 'ARRAY') {
+          push(@{$top->[0]}, $value);
+        } elsif (ref $top->[0] eq 'REF') {
+          ${$top->[0]} = $value;
+        } else {
+          die "Unexpected reference type in _macrowave @$top; expected HASH, ARRAY, or REF\n"; 
         }
-    );
+      }
 
-    $heater = sub {
-        my $type = substr($frozen, $pos, 1); $pos++;
-        exists $microwave{$type} ? $microwave{$type}->() : undef;
-    };
+      push(@stack, $newref) if $newref;
+      # pop all completed elements
+      while (@stack && $stack[-1]->[1] == 0) {
+        $value = $stack[-1]->[0];
+        pop(@stack); 
+      }
 
-    $thawed = $heater->();
+      # if the top one is hash, process next key
+      if (@stack && $stack[-1]->[1] > 0 && ref $stack[-1]->[0] eq 'HASH') {
+        my $key_name_len = unpack 'N', substr($frozen, $pos, 4);
+        $stack[-1]->[2] = substr($frozen, $pos + 4, $key_name_len);
+        $pos += 4 + $key_name_len;
+      }
+
+      last if !@stack; # if nothing on the stack, we're done here 
+    }
+    return $value;
+}
+
+sub _thaw_mt_2 { # MT
+    my($frozen) = @_;
+    return unless substr($frozen, 0, 4) eq 'SERG';
+
+    my $thawed;
+    my $pos = 12;  # skips past signature and version block
+
+    # The microwave thaws and pops out an element
+    $thawed = _macrowave($frozen, $pos);
+    $thawed = {} unless defined $thawed;
+    \$thawed;
+}
+
+sub _thaw_mt_3 { # Storable
+    my($frozen) = @_;
+    return unless substr($frozen, 0, 4) eq 'SERG';
+
+    my $thawed;
+    my $pos = 12;  # skips past signature and version block
+
+    require Storable;
+    $thawed = Storable::thaw(substr($frozen, $pos));
+    $thawed = {} unless defined $thawed;
+    \$thawed;
+}
+
+sub _thaw_mt_4 { # JSON
+    my($frozen) = @_;
+    return unless substr($frozen, 0, 4) eq 'SERG';
+
+    my $thawed;
+    my $pos = 12;  # skips past signature and version block
+
+    require JSON;
+    $thawed = JSON::decode_json(substr($frozen, $pos));
     $thawed = {} unless defined $thawed;
     \$thawed;
 }

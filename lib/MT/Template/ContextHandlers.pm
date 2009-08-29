@@ -301,6 +301,8 @@ sub core_tags {
             AuthorUserpicURL => \&_hdlr_author_userpic_url,
             AuthorBasename => \&_hdlr_author_basename,
             AuthorEntryCount => \&_hdlr_author_entry_count,
+            AuthorCommentCount => '$Core::MT::Summary::Author::_hdlr_author_comment_count',
+            AuthorEntriesCount => '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 
             BlogID => \&_hdlr_blog_id,
             BlogName => \&_hdlr_blog_name,
@@ -3493,7 +3495,14 @@ sub _hdlr_get_var {
                 local $ctx->{__stash}{tokens} = $value;
                 local $args->{name} = undef;
                 local $args->{var} = undef;
-                $ctx->var($_, $args->{$_}) for keys %{$args || {}};
+                # Pass through SetVarTemplate arguments as variables
+                # so that they do not affect the global stash
+                my $vars = $ctx->{__stash}{vars} ||= {};
+                my @names = keys %$args;
+                my @var_names;
+                push @var_names, lc $_ for @names;
+                local @{$vars}{@var_names};
+                $vars->{lc($_)} = $args->{$_} for @names;
                 $value = _hdlr_pass_tokens(@_) or return;
             } elsif (ref($value) eq 'ARRAY') {
                 if ( defined $index ) {
@@ -5243,8 +5252,8 @@ sub _hdlr_file_template {
         'c' => "<MTSubCategoryPath $sep>",
         '-c' => "<MTSubCategoryPath separator='-'>",
         '_c' => "<MTSubCategoryPath separator='_'>",
-        'C' => "<MTCategoryBasename $dir>",
-        '-C' => "<MTCategoryBasename dirify='-'>",
+        'C' => "<MTCategoryBasename $sep>",
+        '-C' => "<MTCategoryBasename separator='-'>",
         'd' => "<MTArchiveDate format='%d'>",
         'D' => "<MTArchiveDate format='%e' trim='1'>",
         'e' => "<MTEntryID pad='1'>",
@@ -5265,6 +5274,7 @@ sub _hdlr_file_template {
         'x' => "<MTBlogFileExtension>",
         'y' => "<MTArchiveDate format='%Y'>",  # year
         'Y' => "<MTArchiveDate format='%y'>",  # 2-digit year
+        'p' => "<mt:PagerBlock><mt:IfCurrentPage><mt:Var name='__value__'></mt:IfCurrentPage></mt:PagerBlock>", # current page number
     );
     $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
     # now build this template and return result
@@ -6332,9 +6342,14 @@ B<Attributes:>
 
 =over 4
 
-=item * display_name
+=item * id
 
-Specifies a particular author to select.
+Specifies a particular author to select by unique id number. This attribute
+takes precedence over all others.
+
+=item * username
+
+Specifies a particular author to select by unique username.
 
 =item * lastn
 
@@ -6355,8 +6370,9 @@ any type associated with the blog, including commenters.
 
 =item * roles
 
-A the role used to select users by.
-eg: "Editor" or multiple roles "Author, Contributor" or exclude roles "!(Editor)".
+List of roles used to select users by. Comma separated
+(eg: "Author, Commenter"), or using conditional logic
+(eg: "Author OR Commenter" or "!(Author)")
 
 =item * need_entry (optional; default "1")
 
@@ -6453,10 +6469,16 @@ sub _hdlr_authors {
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
     my (@filters, %terms, %args);
-
-    if ($args->{display_name}) {
-        $terms{nickname} = $args->{display_name};
+    
+    if (defined $args->{username} || defined $args->{id}) {
+      if(my $user_id = $args->{id}) {
+        return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
+        $terms{id} = $args->{id};
+      } else {
+        $terms{name} = $args->{username};
+      }
     }
+    
     if (my $status_arg = $args->{status} || 'enabled') {
         if ($status_arg !~ m/\b(OR)\b|\(|\)/i) {
             my @status = MT::Tag->split(',', $status_arg);
@@ -6495,8 +6517,11 @@ sub _hdlr_authors {
             push @filters, sub { $cexpr->($_[0]->id, \%map) };
         }
     }
-
-    if (defined $args->{need_entry} ? $args->{need_entry} : 1) {
+    # if need_entry is NOT defined AND any_type=1, then need_entry=0
+    unless (defined $args->{need_entry}) {
+        $args->{need_entry} = 0 if (defined $args->{any_type} && $args->{any_type} == 1);
+    }
+    if ((defined $args->{need_entry} ? $args->{need_entry} : 1) && !(defined $args->{id} || defined $args->{username})) {
         $blog_args{'unique'} = 1;
         $blog_terms{'status'} = MT::Entry::RELEASE();
         $args{'join'} = MT::Entry->join_on('author_id',
@@ -6520,6 +6545,9 @@ sub _hdlr_authors {
                 };
             }
         }
+    }
+    if ($args->{'needs_userpic'}) {
+        push @filters, sub { $_[0]->userpic_asset_id > 0; };
     }
     if ($args->{namespace}) {
         my $namespace = $args->{namespace};
@@ -6607,12 +6635,13 @@ sub _hdlr_authors {
     } else{
         $args{'direction'} = $args->{sort_order} || 'ascend';
     }
-
+    
+    my @authors;
     my $iter = MT::Author->load_iter(\%terms, \%args);
     my $count = 0;
     my $next = $iter->();
     my $n = $args->{lastn};
-    my @authors;
+    
     AUTHOR: while ($next) {
         my $author = $next;
         $next = $iter->();
@@ -6621,12 +6650,12 @@ sub _hdlr_authors {
         }
         push @authors, $author;
         $count++;
-        if ($n && ($count > $n)) {
+        if ($n && ($count >= $n)) {
             $iter->end;
             last;
         }
     }
-
+    
     if ($re_sort && (scalar @authors)) {
         my $col = $args->{sort_by};
         my $namespace = $args->{'namespace'};
@@ -7931,6 +7960,12 @@ sub _hdlr_entries {
     my $blog_id = $ctx->stash('blog_id');
     my $blog = $ctx->stash('blog');
     my (@filters, %blog_terms, %blog_args, %terms, %args);
+
+    # for the case that we want to use mt:Entries with mt-search
+    # send to MT::Template::Search if searh results are found
+    my $results_iter = $ctx->stash('results');
+    require MT::Template::Context::Search;
+    return MT::Template::Context::Search::_hdlr_results($ctx, $args, $cond) if ($results_iter);
 
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
@@ -10600,6 +10635,8 @@ sub _hdlr_comments {
 
     my $so = lc ($args->{sort_order} || ($blog ? $blog->sort_order_comments : undef) || 'ascend');
     my $no_resort;
+   
+    # if old comments are present in the stash
     if ($comments) {
         my $n = $args->{lastn};
         my $col = lc($args->{sort_by} || 'created_on');
@@ -10637,7 +10674,9 @@ sub _hdlr_comments {
                 @comments[$#comments-$max..$#comments] :
                 @comments[0..$max];
         }
-    } else {
+    } 
+    # if there are no comments in the stash
+    else {
         $terms{visible} = 1;
         $ctx->set_blog_load_context($args, \%terms, \%args)
             or return $ctx->error($ctx->errstr);
@@ -10647,10 +10686,14 @@ sub _hdlr_comments {
         ## otherwise, grab the N most recent comments for the entire blog.
         my $n = $args->{lastn};
         if (my $e = $ctx->stash('entry')) {
-            ## Sort in descending order, then grab the first $n ($n most
-            ## recent) comments.
+            ## Sort in descending order unless sort_order is specified
+            ## then grab the first $n ($n mos recent) comments.
             $args{'sort'} = 'created_on';
-            $args{'direction'} = 'descend';
+            if ($so) {
+                $args{'direction'} = $so;
+            } else {
+                $args{'direction'} = 'descend';
+            }
             my $cmts = $e->comments(\%terms, \%args);
             my $offset = $args->{offset} || 0;
             if (@filters) {
@@ -10681,15 +10724,23 @@ sub _hdlr_comments {
             } else {
                 @comments = @$cmts;
             }
-        } else {
+        } 
+        # else look for most recent comments in the entire blog
+        else {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
-            if ($args->{lastn} || $args->{offset}) {
-                $args{'direction'} =  'descend';
-                $so = 'descend';
+            #if ($args->{lastn} || $args->{offset}) {
+            #    $args{'direction'} =  'descend';
+            #    $so = 'descend';
+            #} else {
+            #    $args{'direction'} =  'ascend';
+            #    $no_resort = 1
+            #        unless $args->{sort_order} || $args->{sort_by};
+            #}
+            $args{'sort'} = 'created_on';
+            if ($so) {
+                $args{'direction'} = $so;
             } else {
-                $args{'direction'} =  'ascend';
-                $no_resort = 1
-                    unless $args->{sort_order} || $args->{sort_by};
+                $args{'direction'} = 'descend';
             }
 
             require MT::Comment;
@@ -16210,11 +16261,15 @@ sub _hdlr_assets {
         my $e = $ctx->stash('entry')
             or return $ctx->_no_entry_error();
 
-        require MT::ObjectAsset;
-        my @assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
-            asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
-        return '' unless @assets;
-        $assets = \@assets;
+        if ($e->has_summary('all_assets')) {
+            @$assets = $e->get_summary_objs('all_assets' => 'MT::Asset');
+        }
+        else {
+            require MT::ObjectAsset;
+            @$assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
+                asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
+        }
+        return '' unless @$assets;
     } else {
         $assets = $ctx->stash('assets');
     }
@@ -16554,6 +16609,9 @@ sub _hdlr_assets {
         $row_count++;
         $row_count = 0 if $row_count > $per_row;
         $i++;
+    }
+    if (!@assets) {
+        return _hdlr_pass_tokens_else(@_);
     }
 
     $res;
@@ -20041,6 +20099,14 @@ sub _hdlr_pager_link {
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
 
+    my $category = $ctx->stash('search_category');
+    my $author = $ctx->stash('search_author');
+    my $year = $ctx->stash('search_year');
+    my $month = $ctx->stash('search_month');
+    my $day = $ctx->stash('search_day');
+    my $archive_type = $ctx->stash('search_archive_type');
+    my $template_id = $ctx->stash('search_template_id');
+
     my $link = $ctx->context_script($args);
 
     if ( $link ) {
@@ -20052,7 +20118,17 @@ sub _hdlr_pager_link {
         }
     }
     $link .= "limit=$limit";
-    $link .= "&offset=$offset" if $offset;
+
+    #$link .= "&offset=$offset" if $offset;
+    $link .= "&category=$category" if $category;
+    $link .= "&author=$author" if $author;
+    $link .= "&page=$page" if $page;
+    $link .= "&year=$year" if $year;
+    $link .= "&month=$month" if $month;
+    $link .= "&day=$day" if $day;
+    $link .= "&archive_type=$archive_type" if $archive_type;
+    $link .= "&template_id=$template_id" if $template_id;
+
     return $link;
 }
 
@@ -20196,7 +20272,9 @@ sub _hdlr_widget_manager {
     require MT::Template;
     my $tmpl = MT::Template->load({ name => $tmpl_name,
                                     blog_id => $blog_id ? [ 0, $blog_id ] : 0,
-                                    type => 'widgetset' })
+                                    type => 'widgetset' },
+                                  { sort => 'blog_id',
+                                    direction => 'descend' })
         or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
     my $text = $tmpl->text;
     return $ctx->build($text) if $text;

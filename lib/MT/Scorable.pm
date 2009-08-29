@@ -46,7 +46,7 @@ sub get_score {
 
 sub set_score {
     my $obj = shift;
-    my ( $namespace, $user, $score, $overwrite ) = @_;
+    my ( $namespace, $user, $score, $overwrite, $blog ) = @_;
 
     return $obj->error( MT->translate('Object must be saved first.') )
       unless $obj->id;
@@ -73,7 +73,16 @@ sub set_score {
         $s = MT::ObjectScore->new;
         $s->set_values($term);
     }
+    $s->{__orig_value}->{score} = $s->score
+        unless exists( $s->{__orig_value}->{score} );
     $s->score($score);
+    if ($blog) {
+		$blog = MT->model('blog')->load($blog) unless ref($blog);
+    	require MT::Util;
+        my $ts = MT::Util::epoch2ts($blog, time);
+        $s->created_on($ts);
+        $s->modified_on($ts);
+    }
     $s->save
       or return $obj->error(
         MT->translate(

@@ -36,7 +36,7 @@ $json->loose(1); # allows newlines inside strings
 my $test_suite = $json->decode($test_json);
 
 # Ok. We are now ready to test!
-plan tests => (scalar(@$test_suite) * 2) + 3;
+plan tests => (scalar(@$test_suite)) + 3;
 
 my $blog_name_tmpl = MT::Template->load({name => "blog-name", blog_id => 1});
 ok($blog_name_tmpl, "'blog-name' template found");
@@ -85,8 +85,6 @@ foreach my $test_item (@$test_suite) {
     is($result, $test_item->{e}, "perl test " . $num++);
 }
 
-php_tests($test_suite);
-
 sub build {
     my($ctx, $markup) = @_;
     my $b = $ctx->stash('builder');
@@ -97,180 +95,4 @@ sub build {
     print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
         unless defined $res;
     return $res;
-}
-
-sub php_tests {
-    my ($test_suite) = @_;
-    my $test_script = <<'PHP';
-<?php
-include_once("php/mt.php");
-include_once("php/lib/MTUtil.php");
-require "t/lib/JSON.php";
-
-$cfg_file = '<CFG_FILE>';
-
-$const = array(
-    'CFG_FILE' => $cfg_file,
-    'VERSION_ID' => VERSION_ID,
-    'CURRENT_WORKING_DIRECTORY' => '',
-    'STATIC_CONSTANT' => '',
-    'DYNAMIC_CONSTANT' => '1',
-    'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
-    'DAYS_CONSTANT2' => '<DAYS_CONSTANT2>',
-    'CURRENT_YEAR' => strftime("%Y"),
-    'CURRENT_MONTH' => strftime("%m"),
-);
-
-$output_results = 0;
-
-$mt = new MT(1, $cfg_file);
-$ctx =& $mt->context();
-
-$path = $mt->config['mtdir'];
-if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1);
-if (substr($path, strlen($path) - 2, 2) == '/t')
-    $path = substr($path, 0, strlen($path) - 2);
-$const['CURRENT_WORKING_DIRECTORY'] = $path;
-
-$db = $mt->db();
-$ctx->mt->db = &$db;
-$ctx->stash('blog_id', 1);
-$blog = $db->fetch_blog(1);
-$ctx->stash('blog', $blog);
-$ctx->stash('current_timestamp', '20040816135142');
-$mt->init_plugins();
-$entry = $db->fetch_entry(1);
-
-$suite = load_tests();
-
-run($ctx, $suite);
-
-function run(&$ctx, $suite) {
-    $test_num = 0;
-    global $entry;
-    global $mt;
-    global $tmpl;
-    foreach ($suite as $test_item) {
-        $mt->db->savedqueries = array();
-        if ( preg_match('/MT(Entry|Link)/', $test_item->t) 
-          && !preg_match('/MT(Comments|Pings)/', $test_item->t) )
-        {
-            $ctx->stash('entry', $entry);
-        }
-        else {
-            $ctx->__stash['entry'] = null;
-        }
-        if ( preg_match('/MTEntries|MTPages/', $test_item->t) ) {
-            $ctx->__stash['entries'] = null;
-            $ctx->__stash['author'] = null;
-            $ctx->__stash['category'] = null;
-        }
-        if ( preg_match('/MTCategoryArchiveLink/', $test_item->t) ) {
-            $ctx->stash('current_archive_type', 'Category');
-        } else {
-            $ctx->stash('current_archive_type', '');
-        }
-        $test_num++;
-        if ($test_item->r == 1) {
-            $tmpl = $test_item->t;
-            $result = build($ctx, $test_item->t);
-            ok($result, $test_item->e, $test_num);
-        } else {
-            echo "ok - php test $test_num\n";
-        }
-    }
-}
-
-function load_tests() {
-    $suite = cleanup(file_get_contents('t/35-tags.dat'));
-    $json = new JSON();
-    global $const;
-    foreach ($const as $c => $r) {
-        $suite = preg_replace('/' . $c . '/', $r, $suite);
-    }
-    $suite = $json->decode($suite);
-    return $suite;
-}
-
-function cleanup($tmpl) {
-    # Translating perl array/hash structures to PHP...
-    # This is not a general solution... it's custom built for our input.
-    $tmpl = preg_replace('/^ *#.*$/m', '', $tmpl);
-    $tmpl = preg_replace('/# *\d+ *(?:TBD.*)? *$/m', '', $tmpl);
-    return $tmpl;
-}
-
-function build(&$ctx, $tmpl) {
-    if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-        ob_start();
-        $ctx->_eval('?>' . $_var_compiled);
-        $_contents = ob_get_contents();
-        ob_end_clean();
-        return $_contents;
-    } else {
-        return $ctx->error("Error compiling template module '$module'");
-    }
-}
-
-function ok($str, $that, $test_num) {
-    global $mt;
-    global $tmpl;
-    $str = trim($str);
-    $that = trim($that);
-    if ($str === $that) {
-        echo "ok - php test $test_num\n";
-        return true;
-    } else {
-        echo "not ok - php test $test_num\n".
-             "#     expected: $that\n".
-             "#          got: $str\n";
-        return false;
-    }
-}
-
-?>
-PHP
-
-    $test_script =~ s/<\Q$_\E>/$const{$_}/g for keys %const;
-
-    # now run the test suite through PHP!
-    my $pid = open2(\*IN, \*OUT, "php");
-    print OUT $test_script;
-    close OUT;
-    select IN;
-    $| = 1;
-    select STDOUT;
-
-    my @lines;
-    my $num = 1;
-
-    my $test = sub {
-        while (@lines) {
-            my $result = shift @lines;
-            if ($result =~ m/^ok/) {
-                pass($result);
-            } elsif ($result =~ m/^not ok/) {
-                fail($result);
-            } elsif ($result =~ m/^#/) {
-                print STDERR $result . "\n";
-            } else {
-                print $result . "\n";
-            }
-        }
-    };
-
-    my $output = '';
-    while (<IN>) {
-        $output .= $_;
-        if ($output =~ m/\n/) {
-            my @new_lines = split /\n/, $output;
-            $output = pop @new_lines;
-            push @lines, @new_lines;
-        }
-        $test->() if @lines;
-    }
-    push @lines, $output if $output ne '';
-    close IN;
-    $test->() if @lines;
 }

@@ -172,6 +172,8 @@ sub list {
     my $admin = $user->is_superuser
       || ( $perms && $perms->can_administer_blog );
 
+	my %perms;
+	
     unless ($app->user->is_superuser) {
         if ( $app->param('blog_id') ) {
             return $app->errtrans("Permission denied.")
@@ -276,8 +278,18 @@ sub list {
         # Permissions
         $row->{has_edit_access} = $state_editable
           || ( $entry && ( $user->id == $entry->author_id ) );
-        $row->{can_edit_entry} = $state_entry_editable
-          || ( $entry && ($user->id == $entry->author_id ) );
+		if (!$row->{has_edit_access}) {
+			$perms->{$obj->blog_id} ||= MT->model('permission')->load({
+				blog_id => $obj->blog_id,
+				author_id => $app->user->id
+			});
+			if ($perms->{$obj->blog_id}) {
+				$row->{has_edit_access} = 
+					$perms->{$obj->blog_id}->can_edit_all_posts
+					|| $perms->{$obj->blog_id}->can_manage_feedback;
+			}
+		}
+        $row->{can_edit_entry} = $row->{has_edit_access};
         $row->{can_edit_commenter} = $user->is_superuser ? 1 : 0;
         if ( !$row->{can_edit_commenter} && $row->{commenter_id} ) {
             my $cmntr = $cmntrs{ $row->{commenter_id} };
@@ -1172,6 +1184,39 @@ sub save_cfg_system_feedback {
 
     $app->validate_magic or return;
     my $cfg = $app->config;
+    
+    # construct the message to the activity log
+    my @meta_messages = ();
+    if ($app->param('comment_disable')) {
+        push(@meta_messages, 'Allow comments is on');
+    } else {
+        push(@meta_messages, 'Allow comments is off');
+    } 
+    if ($app->param('ping_disable')) {
+        push(@meta_messages, 'Allow trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow trackbacks is off');
+    }
+    if ($app->param('disable_notify_ping')) {
+        push(@meta_messages, 'Allow outbound trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow outbound trackbacks is off');
+    }
+    push(@meta_messages, 'Outbound trackback limit is ' . $app->param('trackback_send')) 
+        if ($app->param('trackback_send') =~ /\w+/);
+    
+    # throw the messages in the activity log
+    if (scalar(@meta_messages) > 0) {
+        my $message = join(', ', @meta_messages);
+        $app->log({
+            message  => 'System Settings Changes Took Place',
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            metadata => $message,
+        });
+    }
+    
+    # actually assign the changes
     $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
     $cfg->AllowPings(    ( $app->param('ping_disable')    ? 0 : 1 ), 1 );
     $cfg->DisableNotificationPings(

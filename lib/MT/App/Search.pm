@@ -51,7 +51,7 @@ sub core_methods {
 
 sub core_parameters {
     my $app = shift;
-    return {
+    my $core = {
         params => [
             qw( searchTerms search count limit startIndex offset
                 category author )
@@ -74,6 +74,13 @@ sub core_parameters {
         },
         cache_driver => { 'package' => 'MT::Cache::Negotiate', },
     };
+    
+    my @filters = ($app->param('filter'), $app->param('filter_on'));
+    if (@filters) {
+        $core->{types}->{entry}->{columns} = { map { $_ => 'like' } @filters };
+    }
+
+    $core;
 }
 
 sub init_request {
@@ -83,6 +90,15 @@ sub init_request {
     $app->mode('tag') if $app->param('tag');
 
     my $q = $app->param;
+
+    my $cfg = $app->config;
+    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
+    my $blog = $app->model('blog')->load($blog_id);
+    my $page = $q->param('page') ? $q->param('page') : 1;
+    my $limit = $q->param('limit') ? $q->param('limit') : ($blog->entries_on_index ? $blog->entries_on_index : $cfg->SearchMaxResults );
+    my $offset = ($page - 1) * $limit if ($page && $limit);
+    $q->param('limit', $limit) if $limit;
+    $q->param('offset', $offset) if $offset;
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
@@ -96,7 +112,7 @@ sub init_request {
         my $val = $q->param($param);
         next unless defined $val && ($val ne '');
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if $val !~ m/^(\d+,?)+$/;
+            if ($val !~ m/^(\d+,?)+$/ && $val ne 'all');
     }
 
     my $params = $app->registry( $app->mode, 'params' );
@@ -220,6 +236,13 @@ sub create_blog_list {
     }
 
     my %blog_list;
+     
+    ## If IncludeBlogs is all, then set IncludeBlogs to ""
+    ## this will get all the blogs by default later on 
+    if ($q->param('IncludeBlogs') eq 'all') {
+        $q->param('IncludeBlogs', '');
+    }
+    
     ## Combine user-selected included/excluded blogs
     ## with config file settings.
     for my $type (qw( IncludeBlogs ExcludeBlogs )) {
@@ -290,7 +313,8 @@ sub process {
         return $out;
     }
     my $iter;
-    if ( $app->param('searchTerms') || $app->param('search') ) {
+    if ( $app->param('searchTerms') || $app->param('search') || $app->param('category') || $app->param('archive_type')
+         || $app->param('author') || $app->param('year') || $app->param('month') || $app->param('day') ) {
         my @arguments = $app->search_terms();
         return $app->error( $app->errstr ) if $app->errstr;
 
@@ -369,6 +393,31 @@ sub search_terms {
     my $app = shift;
     my $q   = $app->param;
 
+    if (my $limit = $app->param('limit_by')) {
+        if ($limit eq 'all') {
+            # this is the default behavior
+        } 
+        else {
+            my $search = $app->param('search');
+            my @words = split(/ +/, $search);
+            if ($limit eq 'any') {
+                $search = join(' OR ', @words);
+            } 
+            elsif ($limit eq 'exclude') {
+                $search = 'NOT ' . join(' NOT ', @words);
+            }
+            $app->param('search', $search);
+        }
+    }
+
+    # check if archive type is legal
+    if ($app->param('archive_type')) {
+        my $at = $app->param('archive_type');
+        my $archiver = MT->publisher->archiver($at);
+        return return $app->errtrans( 'Invalid archive type' )
+            unless ($archiver || $at eq 'Index');
+    }
+
     my $search_string = $q->param('searchTerms') || $q->param('search');
     $app->{search_string} = $search_string;
     my $offset = $q->param('startIndex') || $q->param('offset') || 0;
@@ -389,8 +438,8 @@ sub search_terms {
         : ();
     delete $def_terms{'plugin'};
 
-    if ( exists $app->{searchparam}{IncludeBlogs} ) {
-        $def_terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
+    if ( my $incl_blogs = $app->{searchparam}{IncludeBlogs} ) {
+        $def_terms{blog_id} = [ keys %$incl_blogs ] if %$incl_blogs;
     }
 
     my @terms;
@@ -421,7 +470,7 @@ sub search_terms {
     my $parsed = $app->query_parse(%$columns);
     return $app->errtrans( 'Invalid query: [_1]',
         encode_html($search_string) )
-        unless $parsed && %$parsed;
+        if ((!$parsed || !(%$parsed)) && !$app->param('archive_type'));
 
     push @terms, $parsed->{terms} if exists $parsed->{terms};
 
@@ -457,6 +506,27 @@ sub search_terms {
         $offset ? ( 'offset' => $offset ) : (),
         @sort   ? ( 'sort'   => \@sort )  : (),
     );
+
+    my $terms = \@terms;
+    my ($date_start, $date_end);
+    if ($app->param('archive_type') && $app->param('year')) {
+        my $year = $app->param('year');
+        my $month = $app->param('month') ? $app->param('month') : '01';
+        my $day = $app->param('day') ? $app->param('day') : '01';
+        my $archive_type = $app->param('archive_type');
+        require MT::Util;
+        if ($archive_type =~ /Daily/i) {
+            ($date_start, $date_end) = MT::Util::start_end_day($year . $month . $day);
+        } elsif ($archive_type =~ /Weekly/i) {
+            ($date_start, $date_end) = MT::Util::start_end_week($year . $month . $day);
+        } elsif ($archive_type =~ /Monthly/i) {
+            ($date_start, $date_end) = MT::Util::start_end_month($year . $month . $day);
+        } elsif ($archive_type =~ /Yearly/i) {
+            ($date_start, $date_end) = MT::Util::start_end_year($year . $month . $day);
+        }
+        $app->param('context_date_start', $date_start);
+        $terms->[1]->{authored_on} = { between => [ $date_start, $date_end ] };
+    }
 
     ( \@terms, \%args );
 }
@@ -519,8 +589,16 @@ sub first_blog_id {
 
     my $blog_id;
     if ( $q->param('IncludeBlogs') ) {
-        my @ids = split ',', $q->param('IncludeBlogs');
-        $blog_id = $ids[0];
+        # if IncludeBlogs is empty or all, get the first blog id available
+        if ( $q->param('IncludeBlogs') eq '' || $q->param('IncludeBlogs') eq 'all') {
+            my @blogs = $app->model('blog')->load();
+            $blog_id = $blogs[0];
+        }
+        # all other normal requests with a list of blog ids
+        else {
+            my @ids = split ',', $q->param('IncludeBlogs');
+            $blog_id = $ids[0];
+        }
     }
     elsif ( exists( $app->{searchparam}{IncludeBlogs} )
         && keys( %{ $app->{searchparam}{IncludeBlogs} } ) )
@@ -563,13 +641,45 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
-    my $blog_id = $app->first_blog_id();
+    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
         $ctx->stash( 'blog_id', $blog_id );
         $ctx->stash( 'blog',    $blog );
     }
+    
+    # some basic search parameters
+    for my $key (qw( limit_by author category page year month day archive_type template_id )) {
+        if (my $val = $app->param($key)) {
+            $ctx->stash('search_' . $key, $val);
+        }
+        my @filters = ($app->param('filter'), $app->param('filter_on'));
+        if (@filters) {
+            $ctx->stash('search_filters', \@filters);
+        }
+    }
+
+    # now we need to figure out the archive types
+    $ctx->stash('archive_count', $count) if ($app->param('archive_type'));
+    $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
+    $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
+    $ctx->var('datebased_archive', 1) if ($app->param('archive_type') && 
+                                          ( $app->param('archive_type') =~ /Daily/i || $app->param('archive_type') =~ /Weekly/i
+                                            || $app->param('archive_type') =~ /Monthly/i || $app->param('archive_type') =~ /Yearly/i ));
+    if ($app->param('author')) {
+        require MT::Author;
+        my $author = MT::Author->load($app->param('author'));
+        $ctx->stash('author', $author);
+        $ctx->var('author_archive', 1);
+    }
+    if ($app->param('category')) {
+        require MT::Category;
+        my $category = MT::Category->load($app->param('category'));
+        $ctx->stash('category', $category);
+        $ctx->var('category_archive', 1);
+    }
+    
     $ctx;
 }
 
@@ -612,14 +722,20 @@ sub load_search_tmpl {
     }
     else {
 
+        my $tmpl_id = $q->param ('template_id');
+        if ($tmpl_id && $tmpl_id =~ /^\d+$/) {
+            $tmpl = $app->model('template')->lookup ($tmpl_id);
+        }
+
         # load default template
         # first look for appropriate blog_id
-        if ( my $blog_id = $ctx->stash('blog_id') ) {
-
-            # look for 'search_results'
+        elsif ( my $blog_id = $ctx->stash('blog_id') ) {
             my $tmpl_class = $app->model('template');
-            $tmpl = $tmpl_class->load(
-                { blog_id => $blog_id, type => 'search_results' } );
+            if ($tmpl_id) {
+                $tmpl = $tmpl_class->load({ blog_id => $blog_id, id => $tmpl_id });
+            } else {
+                $tmpl = $tmpl_class->load({ blog_id => $blog_id, type => 'search_results' });
+            }
         }
         unless ($tmpl) {
 
@@ -869,7 +985,7 @@ sub _join_category {
 
     # search for exact match
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { label => 1 }, {} );
+        = $app->_query_parse_core( $lucene_struct, { id => 1, label => 1 }, {} );
     return unless $terms && @$terms;
     push @$terms, '-and',
         {
@@ -902,7 +1018,7 @@ sub _join_author {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { nickname => 'like' },
+        = $app->_query_parse_core( $lucene_struct, { id => 1, nickname => 'like' },
         {} );
     return unless $terms && @$terms;
     push @$terms, '-and', { id => \'= entry_author_id', };

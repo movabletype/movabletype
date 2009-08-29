@@ -124,6 +124,19 @@ sub configure {
 }
 
 sub cleanup {
+    if ( my $driver = $MT::Object::DRIVER ) {
+        if ( my $dbh = $driver->dbh ) {
+            $dbh->disconnect;
+        }
+        $MT::Object::DRIVER = undef;
+        $MT::Object::DBI_DRIVER = undef;
+    }
+    foreach my $driver (@drivers) {
+        if ( my $dbh = $driver->dbh ) {
+            $dbh->disconnect;
+        }
+    }
+    @drivers = ();
     undef $DRIVER;
 }
 

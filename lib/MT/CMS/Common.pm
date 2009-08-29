@@ -285,6 +285,23 @@ sub save {
         $blog_id = $obj->id;
     }
 
+    # if we are saving/publishing a template, make sure to log on activity log
+    if ( $type eq 'template' ) {
+        my $blog = $app->model('blog')->load($obj->blog_id);
+        if ($blog) {
+            $app->log({
+                message => $app->translate("'[_1]' edited the template '[_2]' in the blog '[_3]'",  $app->user->name, $obj->name, $blog->name),
+                level   => MT::Log::INFO(),
+                blog_id => $blog->id,
+            });
+        } else {
+            $app->log({
+                message => $app->translate("'[_1]' edited the global template '[_2]'", $app->user->name, $obj->name),
+                level   => MT::Log::INFO(),
+            });
+        }
+    }
+
     # TODO: convert this to use $app->call_return();
     # then templates can determine the page flow.
     if ( $type eq 'notification' ) {
@@ -1076,6 +1093,225 @@ sub delete {
             error => $app->translate("System templates can not be deleted.") );
     }
     $app->call_return;
+}
+
+sub clone_blog {
+  my $app = shift;
+  my($param) = {};
+  my $user = $app->user;
+  
+  return $app->error($app->translate("Permission denied.")) unless $user->is_superuser;
+
+  my @id = $app->param('blog_id') || $app->param('id');
+  
+  if (!@id) {
+    return $app->error($app->translate("No blog was selected to clone."));
+  }
+  
+  if (scalar @id > 1) {
+    return $app->error($app->translate("This action can only be run on a single blog at a time."));
+  }
+  
+  # Get blog_id from params and validate
+  require MT::Blog;
+  my $blog_id = shift @id;
+  my $blog = MT::Blog->load($blog_id)
+    or return $app->error($app->translate("Invalid blog_id"));
+  
+  my $base = $blog->site_url || $app->config('DefaultSiteURL') || $app->base;
+  $base =~ s/\/$//;
+  
+  $param->{'blog_id'} = $blog->id;
+  $param->{'new_blog_name'} = $app->param('new_blog_name') || 'Clone of ' . MT::Util::encode_html($blog->name);
+  $param->{'site_url'} =  $app->param('site_url') || $base . '_clone';
+  $param->{'site_path'} = $app->param('site_path') || $blog->site_path . '_clone';
+  
+  if($app->param('clone_prefs_entries_pages')) {
+    $param->{'clone_prefs_entries_pages'} = $app->param('clone_prefs_entries_pages');
+  }
+  
+  if($app->param('clone_prefs_comments')) {
+    $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
+  }
+  
+  if($app->param('clone_prefs_trackbacks')) {
+    $param->{'clone_prefs_trackbacks'} = $app->param('clone_prefs_trackbacks');
+  }
+  
+  if($app->param('clone_prefs_categories')) {
+    $param->{'clone_prefs_categories'} = $app->param('clone_prefs_categories');
+  }
+  
+  my $clone = $app->param('back_to_form') ? 0 : $app->param('clone');
+  $param = _has_valid_form($app,$blog,$param);
+  
+  if ($blog_id && $clone && $param->{'isValidForm'}) {
+    print_status_page($app,$blog,$param);
+    return;
+  } elsif ($app->param('verify')) {
+    # build form
+    $param->{'verify'} = 1;
+    $param->{'system_msg'} = 1;
+  }
+    
+  my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
+  
+  return $tmpl;
+}
+
+sub _has_valid_form {
+  my($app) = $_[0];
+  my($blog) = $_[1];
+  my($param) = $_[2];
+  
+  if($blog->site_url eq $param->{'site_url'}) {
+    $param->{'site_url_warning'} = 1;
+  } elsif(!$param->{'site_url'}) {
+    push(@{$param->{'errors'}},$app->translate("You need to specify a Site URL"));
+  }
+  
+  if($blog->site_path eq $param->{'site_path'}) {
+    $param->{'site_path_warning'} = 1;
+  } elsif(!$param->{'site_path'}) {
+    push(@{$param->{'errors'}},$app->translate("You need to specify a Site Path"));
+  }
+  
+  if((!$param->{'clone_prefs_comments'} || !$param->{'clone_prefs_trackbacks'}) && $param->{'clone_prefs_entries_pages'}) {
+    if(!$param->{'clone_prefs_comments'} && !$param->{'clone_prefs_trackbacks'}) {
+      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments and trackbacks are cloned"));
+    } elsif($param->{'clone_prefs_comments'}) {
+      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments are cloned"));
+    } elsif($param->{'clone_prefs_trackbacks'}) {
+      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if trackbacks are cloned"));
+    }
+  }
+   
+  $param->{'isValidForm'} = $param->{'errors'} ? 0 : 1;
+
+  return $param;
+}
+
+sub print_status_page {
+  my($app) = $_[0];
+  my($blog) = $_[1];
+  my($param) = $_[2];
+  my($cloning_prefs) = {};
+  $| = 1;
+
+  if($app->param('clone_prefs_comments')) {
+    $cloning_prefs->{'MT::Comment'} = 0;
+  }
+  
+  if($app->param('clone_prefs_trackbacks')) {
+    # need to exclude both Trackbacks and Pings
+    $cloning_prefs->{'MT::Trackback'} = 0;
+    $cloning_prefs->{'MT::TBPing'} = 0;
+  }
+  
+  if($app->param('clone_prefs_categories')) {
+    $cloning_prefs->{'MT::Category'} = 0;
+  }
+  
+  if($app->param('clone_prefs_entries_pages')) {
+    $cloning_prefs->{'MT::Entry'} = 0;
+  }
+
+  my $blog_name = $param->{'new_blog_name'};
+  
+  # Set up and commence app output
+  $app->{no_print_body} = 1;
+  $app->send_http_header;
+  my $html_head = <<'SCRIPT';
+<script type="text/javascript">
+function progress(str, id) {
+    var el = getByID(id);
+    if (el) el.innerHTML = str;
+}
+</script>
+SCRIPT
+
+  $app->print($app->build_page('dialog/header.tmpl', { page_title => $app->translate("Clone Blog"), html_head => $html_head }));
+  $app->print($app->translate_templatized(<<"HTML"));
+<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
+
+<div class="modal_width" id="dialog-clone-weblog">
+
+<div id="msg-container" style="height: 310px; overflow: auto; overflow-x: auto">
+<ul>
+HTML
+
+  my $new_blog;
+  eval {
+    $new_blog = $blog->clone({
+      BlogName => ($blog_name),
+      Children => 1,
+      Except => ({ site_path => 1, site_url => 1 }),
+      Callback => sub { _progress($app, @_) },
+      Classes => ($cloning_prefs)
+    });
+    
+    $new_blog->site_path($param->{'site_path'});
+    $new_blog->site_url($param->{'site_url'});
+    $new_blog->save();
+  };
+  if (my $err = $@) {
+    $app->print($app->translate_templatized(qq{<p class="error-message"><MT_TRANS phrase="Error">: $err</p>}));
+  } else {
+  	$app->add_return_arg('__mode' => 'list_blog');
+    my $return_url = $app->return_uri;
+    my $blog_url = $app->uri(mode => 'dashboard', args => {
+      blog_id => $new_blog->id
+    });
+    my $setting_url = $app->uri(mode => 'view', args => {
+      blog_id => $new_blog->id,
+      _type => 'blog',
+      id => $new_blog->id
+    });
+
+    $app->print($app->translate_templatized(<<"HTML"));
+</ul>
+</div>
+
+<p><strong><__trans phrase="Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">return to the blog listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_2]');\">configure the Site root and URL of the new blog</a>." params="$return_url%%$setting_url"></strong></p>
+
+<form method="GET">
+  <div class="actions-bar">
+    <div class="actions-bar-inner pkg actions">
+    <button
+      onclick="closeDialog('$return_url'); return false"
+      type="submit"
+      accesskey="x"
+      class="primary-button"
+      ><__trans phrase="Close"></button>
+    </div>
+  </div>
+</form>
+
+</div>
+
+HTML
+  }
+
+  $app->print($app->build_page('dialog/footer.tmpl'));
+}
+
+sub _progress {
+    my $app = shift;
+    my $ids = $app->request('progress_ids') || {};
+
+    my ($str, $id) = @_;
+    if ($id && $ids->{$id}) {
+        require MT::Util;
+        my $str_js = MT::Util::encode_js($str);
+        $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
+    } elsif ($id) {
+        $ids->{$id} = 1;
+        $app->print(qq{<li id="$id">$str</li>\n});
+    } else {
+        $app->print("<li>$str</li>");
+    }
+
+    $app->request('progress_ids', $ids);
 }
 
 sub not_junk_test {

@@ -497,6 +497,7 @@ sub handle {
         binmode(STDIN);
         while (read(STDIN,$buffer,$length)) {
             $content .= $buffer;
+            last if $!;
         }
 
         $self->request(HTTP::Request->new(

@@ -98,6 +98,10 @@ BEGIN {
             },
         },
         'system' => {
+            'comment_listing' => {
+                label => 'Comment Listing',
+                description_label => 'Improved listing of comments.'
+            },
             'comment_response' => {
                 label => 'Comment Response',
                 description_label => 'Displays error, pending or confirmation message for comments.'
@@ -120,6 +124,9 @@ BEGIN {
             },
         },
         'module' => {
+            'comment_detail' => {
+                label => 'Comment Detail',
+            },
             'banner_header' => {
                 label => 'Banner Header',
             },

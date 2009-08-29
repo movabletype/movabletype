@@ -1155,21 +1155,24 @@ sub update_welcome_message {
 sub dialog_select_weblog {
     my $app = shift;
 
-    #return $app->errtrans("Permission denied.")
-    #    unless $app->user->is_superuser;
-
     my $favorites = $app->param('select_favorites');
     my %favorite;
     my $confirm_js;
     my $terms = {};
     my $args  = {};
+    my $auth = $app->user or return; 
+
     if ($favorites) {
-        my $auth = $app->user or return;
-        if ( my @favs = @{ $auth->favorite_blogs || [] } ) {
-            $terms->{id} = \@favs;
-            $args->{not}{id} = 1;
+        my @favs = @{ $auth->favorite_blogs };
+        if ( @favs ) {
+            $terms->{id} = { not => \@favs };
         }
         $confirm_js = 'saveFavorite';
+    }
+    unless ( $auth->is_superuser ) {
+        use MT::Permission;
+        $args->{join} = MT::Permission->join_on( 'blog_id',
+            { author_id => $auth->id } );
     }
 
     my $hasher = sub {
@@ -1510,6 +1513,39 @@ sub post_save {
       || $app->user->can_create_blog
       || ( $perms && $perms->can_edit_config );
 
+    # check to see what changed and add a flag to meta_messages
+    my @meta_messages = ();
+    for my $blog_field (qw( name description archive_path archive_type_preferred site_path site_url days_on_index entries_on_index 
+                            file_extension email_new_comments allow_comment_html autolink_urls sort_order_posts sort_order_comments 
+                            allow_comments_default server_offset convert_paras convert_paras_comments allow_pings_default status_default
+                            allow_anon_comments words_in_excerpt moderate_unreg_comments moderate_pings allow_unreg_comments
+                            allow_reg_comments allow_pings manual_approve_commenters require_comment_emails junk_folder_expiry ping_weblogs
+                            mt_update_key language welcome_msg google_api_key email_new_pings ping_blogs ping_technorati ping_google
+                            ping_others autodiscover_links sanitize_spec cc_license is_dynamic remote_auth_token custom_dynamic_templates 
+                            junk_score_threshold internal_autodiscovery basename_limit use_comment_confirmation
+                            allow_commenter_regist archive_url archive_path old_style_archive_links archive_tmpl_daily archive_tmpl_weekly
+                            archive_tmpl_monthly archive_tmpl_category archive_tmpl_individual image_default_wrap_text image_default_align
+                            image_default_thumb image_default_width image_default_wunits image_default_constrain image_default_popup 
+                            commenter_authenticators require_typekey_emails nofollow_urls follow_auth_links update_pings captcha_provider
+                            publish_queue nwc_smart_replace nwc_replace_field template_set page_layout include_system include_cache )) {
+        if ( $obj->$blog_field() ne $original->$blog_field() ) {
+                my $old = $original->$blog_field() ? $original->$blog_field() : "none";
+                my $new = $obj->$blog_field() ? $obj->$blog_field() : "none";
+                push(@meta_messages, $app->translate("[_1] changed from [_2] to [_3]", $blog_field, $old, $new));
+        }
+    }
+
+    # log all of the changes we can possible log
+    if (scalar(@meta_messages) > 0) {
+        my $meta_message = join(", ", @meta_messages);
+        $app->log({
+            message => $app->translate("Saved Blog Changes"),
+            metadata => $meta_message,
+            level    => MT::Log::INFO(),
+            blog_id => $obj->id,
+        });
+    }
+    
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_publish_profile' ) {
         if ( my $dcty = $app->param('dynamicity') ) {

@@ -9,11 +9,25 @@
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="test_mail_sent">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Test email was sent.">
+        </mtapp:statusmsg>
+    </mt:if>
     <mt:if name="saved">
         <mtapp:statusmsg
             id="saved"
             class="success">
             <__trans phrase="Your settings have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="config_warning">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="config_warning">
         </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
@@ -36,7 +50,6 @@ function validate (f) {
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
-
     <mtapp:setting
         id="system_email_address"
         label="<__trans phrase="System Email">"
@@ -46,8 +59,38 @@ function validate (f) {
             <input id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> class="full-width" />
         </div>
     </mt:app:setting>
-
+    <mtapp:setting
+        id="system_debug_mode"
+        label="<__trans phrase="Debug Mode">"
+        hint="<__trans phrase='You can find an explanation of the various debug modes in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">documentation</a>'>"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_debug_mode" name="system_debug_mode" value="<mt:var name="system_debug_mode" escape="html">" />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging"
+        label="<__trans phrase="Performance Logging">"
+        hint="<__trans phrase="Turns on or off performance logging.">"
+        show_hint="1">
+        <input type="checkbox" id="system_performance_logging" name="system_performance_logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_path"
+        label="<__trans phrase="Log Paths">"
+        hint="<__trans phrase="Paths where logs are placed.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="system_performance_logging_path" name="system_performance_logging_path"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> class="full-width" />
+        </div>
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_threshold"
+        label="<__trans phrase="Logging Threshold">"
+        hint="<__trans phrase="Logging threshold for the App">"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_performance_logging_threshold" name="system_performance_logging_threshold" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+    </mt:app:setting>
 </fieldset>
+
 
 <mt:setvarblock name="action_buttons">
     <button
@@ -59,6 +102,32 @@ function validate (f) {
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
+</form>
+
+<br><br>
+
+<form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<input type="hidden" name="__mode" value="cfg_system" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<fieldset>
+    <mtapp:setting
+        id="to_email_address"
+        label="<__trans phrase="Send Email To">"
+        hint="<__trans phrase="The email address where you want to send test email to.">"
+        show_hint="1">
+        <div class="textarea-wrapper">
+            <input id="to_email_address" name="to_email_address" class="full-width" />
+        </div>
+    </mt:app:setting>
+</fieldset>
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        class="primary-button"
+        ><__trans phrase="Send Test Email"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 <mt:include name="include/footer.tmpl">

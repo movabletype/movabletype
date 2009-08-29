@@ -271,6 +271,22 @@ sub search_replace {
     $param->{screen_id}    = "search-replace";
     $param->{search_tabs}  = $app->search_apis($blog_id ? 'blog' : 'system');
     $param->{entry_type}  = $app->param('entry_type');
+    
+    if ($app->param('_type') =~ /entry|page|comment|template/) {
+        if ($app->param('blog_id')) {
+            my $perms = $app->permissions;
+            $param->{can_republish} = $perms->can_rebuild || $app->user->is_superuser;
+            $param->{can_empty_junk} = $perms->can_rebuild || $app->user->is_superuser;
+            $param->{state_editable} = $perms->can_rebuild || $app->user->is_superuser;
+            $param->{publish_from_search} = $perms->can_rebuild || $app->user->is_superuser;
+        } else {
+            $param->{can_republish} = 1;
+            $param->{can_empty_junk} = 1;
+            $param->{state_editable} = 1;
+            $param->{publish_from_search} = 1;
+            }
+    }
+    
     my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
     my $placeholder = $tmpl->getElementById('search_results');
     $placeholder->innerHTML(delete $param->{results_template});

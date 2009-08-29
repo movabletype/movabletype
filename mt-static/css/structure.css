@@ -3667,6 +3667,48 @@ body.preview-screen {
 }
 
 
+/* Asset List ---------------------------------------------------------------------------------- */
+
+#asset_container .widget-content-inner {
+	padding: 0px 10px 10px;
+}
+
+.asset-list-header {
+	background: #cddee7;
+	padding: 2px 4px;
+}
+
+.add-new-asset-link {
+    padding-left: 11px;
+    background: url('../images/status_icons/create.gif') no-repeat left center;
+}
+
+ul#asset-list li {
+	line-height: 22px;
+	border-bottom: 1px dotted #CDDEE7;
+	position: relative;
+	padding: 0 15px 0 4px;
+}
+
+ul#asset-list li a.remove-asset {
+	position: absolute;
+	top: 6px;
+	right: 3px;
+}
+
+ul#asset-list li img.list-image {
+	position: absolute;
+	left: -117px;
+	top: 0;
+	padding: 5px;
+	border: 1px solid #e7eff3;
+}
+
+.notice {
+    font-size: 11px;
+    color: #999;
+}
+
 /* Icon Links ---------------------------------------------------------------------------------- */
 
 .icon-left {

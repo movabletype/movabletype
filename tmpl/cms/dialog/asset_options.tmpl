@@ -65,6 +65,15 @@
     </script>
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
+
+<mt:if name="extension_message">
+    <mtapp:statusmsg
+        id="extension-changed"
+        class="success">
+        <mt:var name="extension_message">
+    </mtapp:statusmsg>
+</mt:if>
+
 <form action="<mt:var name="script_url">" method="post" onsubmit="return presubmit(this)">
     <input type="hidden" name="__mode" value="" />
     <input type="hidden" name="id" value="<mt:var name="asset_id">" />

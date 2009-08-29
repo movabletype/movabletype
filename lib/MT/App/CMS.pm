@@ -144,8 +144,10 @@ sub core_methods {
             requires_login => 0,
         },
 
+        'view_rpt_log'         => "${pkg}RptLog::view",
         'view_log'             => "${pkg}Log::view",
         'list_log'             => "${pkg}Log::view",
+        'reset_rpt_log'        => "${pkg}RptLog::reset",
         'reset_log'            => "${pkg}Log::reset",
         'export_log'           => "${pkg}Log::export",
         'export_notification'  => "${pkg}AddressBook::export",
@@ -194,7 +196,8 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
-        'dialog_publishing_profile' =>
+        'dialog_clone_blog' => "${pkg}Common::clone_blog",
+                'dialog_publishing_profile' =>
             "${pkg}Template::dialog_publishing_profile",
         'refresh_all_templates' => "${pkg}Template::refresh_all_templates",
         'preview_template'      => "${pkg}Template::preview",
@@ -202,6 +205,8 @@ sub core_methods {
             "${pkg}Template::publish_index_templates",
         'publish_archive_templates' =>
             "${pkg}Template::publish_archive_templates",
+        'publish_templates_from_search' =>
+            "${pkg}Template::publish_templates_from_search",
 
         ## Comment Replies
         reply         => "${pkg}Comment::reply",
@@ -625,6 +630,13 @@ sub core_list_actions {
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
             },
+            clone_blog => {
+                label => "Clone Blog",
+                code => "${pkg}Common::clone_blog",
+                permission => 'administer',
+                max => 1,
+                dialog => 1,
+            },
         },
         'template' => {
             refresh_tmpl_templates => {
@@ -754,17 +766,13 @@ sub core_list_filters {
                         {   created_on  => [ $ts, undef ],
                             junk_status => MT::Comment::NOT_JUNK(),
                         },
-                        { range_incl => { created_on => 1 }, unique => 1 }
+                        { 
+                            range_incl => { created_on => 1 }, 
+                            unique => 1, 
+                            sort => 'created_on', 
+                            direction => 'descend' 
+                        }
                     );
-
-                    # Since we're selecting content from the mt_entry
-                    # table, but we want to sort by the joined
-                    # 'comment_created_on' column, we have to specify the
-                    # sort column as a reference and a full field name,
-                    # to prevent MT from adding a 'entry_' prefix to
-                    # the column name.
-                    $args->{sort} = [ { column => \'comment_created_on' } ];
-                    $args->{direction} = 'descend';
                 },
             },
             _by_date => {
@@ -1447,34 +1455,34 @@ sub core_menus {
         },
         'tools:import' => {
             label      => "Import",
-            order      => 300,
+            order      => 400,
             mode       => "start_import",
             view       => "blog",
             permission => "administer_blog",
         },
         'tools:export' => {
             label      => "Export",
-            order      => 400,
+            order      => 500,
             mode       => "start_export",
             view       => "blog",
             permission => "administer_blog",
         },
         'tools:backup' => {
             label      => "Backup",
-            order      => 500,
+            order      => 600,
             mode       => "start_backup",
             permission => "administer_blog",
         },
         'tools:restore' => {
             label      => "Restore",
-            order      => 600,
+            order      => 700,
             mode       => "start_restore",
             permission => "administer_blog",
             view       => "system",
         },
         'tools:system_information' => {
             label => "System Information",
-            order => 700,
+            order => 800,
             mode  => "tools",
             view  => "system",
         },
@@ -2433,6 +2441,7 @@ sub load_default_entry_prefs {
                 Tags       => 'tags',
                 Publishing => 'publishing',
                 Feedback   => 'feedback',
+                Assets     => 'assets',
             );
             my @p;
             foreach my $p ( keys %map ) {
@@ -2489,7 +2498,7 @@ sub _parse_entry_prefs {
             if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
                 $param->{ 'disp_prefs_' . $p } = 1;
                 foreach my $def (
-                    qw(title body category tags keywords feedback publishing )
+                    qw( title body category tags keywords feedback publishing assets )
                     )
                 {
                     $param->{ 'disp_prefs_show_' . $def } = 1;

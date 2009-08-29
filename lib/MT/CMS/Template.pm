@@ -32,7 +32,7 @@ sub edit {
     my $type = $q->param('_type');
     my $blog = $app->blog;
     my $cfg = $app->config;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
     if ($blog) {
@@ -1308,20 +1308,20 @@ sub add_map {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
     return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return ($perms && $perms->can_edit_templates) || (!$perms && $app->user->can_edit_templates);
 }
 
@@ -1337,9 +1337,11 @@ sub pre_save {
     }
 
     $obj->text($text);
-
+    
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    
     # update text heights if necessary
-    if ( my $perms = $app->permissions ) {
+    if ( $perms ) {
         my $prefs = $perms->template_prefs || '';
         my $text_height = $app->param('text_height');
         if ( defined $text_height ) {
@@ -1626,7 +1628,7 @@ sub dialog_publishing_profile {
     $app->assert( $blog ) or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
@@ -1646,7 +1648,7 @@ sub dialog_refresh_templates {
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser()
             || $app->user->can_edit_templates()
@@ -1829,6 +1831,7 @@ sub refresh_all_templates {
 
             my $terms = {};
             $terms->{blog_id} = $blog_id;
+            # FIXME Enumeration of types
             $terms->{type} = $val->{type};
             if ( $val->{type} =~
                 m/^(archive|individual|page|category|index|custom|widget|widgetset)$/ )
@@ -1889,6 +1892,7 @@ sub refresh_all_templates {
                 $tmpl->identifier( $val->{identifier} );
                 $tmpl->type( $val->{type} )
                   ; # fixes mismatch of types for cases like "archive" => "individual"
+                $tmpl->build_type( $val->{build_type} ) if defined $val->{build_type};
                 $tmpl->linked_file('');
                 $tmpl->save;
             }
@@ -1909,6 +1913,7 @@ sub refresh_all_templates {
                         identifier => $val->{identifier},
                         outfile    => $val->{outfile},
                         rebuild_me => $val->{rebuild_me},
+                        build_type => (defined($val->{build_type}) ? $val->{build_type} : 1),
                     }
                 );
                 $tmpl->blog_id($blog_id);
@@ -1933,7 +1938,7 @@ sub refresh_individual_templates {
     require MT::Util;
 
     my $user = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->error(
         $app->translate(
             "Permission denied.")
@@ -2047,7 +2052,7 @@ sub clone_templates {
     my ($app) = @_;
 
     my $user = $app->user;
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->error(
         $app->translate(
             "Permission denied.")
@@ -2087,20 +2092,54 @@ sub clone_templates {
     $app->call_return;
 }
 
+sub publish_templates_from_search {
+    my $app = shift;
+    my $blog = $app->blog;
+    require MT::Blog;
+
+    my $templates = MT->model('template')->lookup_multi([ $app->param('id') ]);
+    my @at_ids;
+    $app->param('from_search', 1);
+    TEMPLATE: for my $tmpl (@$templates) {
+        return $app->errtrans("Cannot publish a global template.") if ($tmpl->blog_id == 0);
+        if ($tmpl->type eq 'index') {
+            $app->param('id', $tmpl->id); 
+            publish_index_templates($app);
+        }
+        elsif ($tmpl->type eq 'archive' || $tmpl->type eq 'individual' || $tmpl eq 'page') {
+            push(@at_ids, $tmpl->id);
+        }
+    }
+
+    if (scalar(@at_ids) > 0) {
+        $app->param('id', @at_ids);
+        publish_archive_templates($app) if (scalar(@at_ids) > 0);
+    }
+    else {
+        $app->call_return();
+    }
+}
+
 sub publish_index_templates {
     my $app = shift;
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
             $perms->can_rebuild;
 
     my $blog = $app->blog;
+
+    require MT::Blog;
     my $templates = MT->model('template')->lookup_multi([ $app->param('id') ]);
     TEMPLATE: for my $tmpl (@$templates) {
+        return $app->errtrans("Cannot publish a global template.") if ($tmpl->blog_id == 0);
+        unless ($blog) {
+            $blog = MT::Blog->load($tmpl->blog_id);
+        }
         next TEMPLATE if !defined $tmpl;
         next TEMPLATE if $tmpl->blog_id != $blog->id;
         next TEMPLATE unless $tmpl->build_type;
@@ -2112,7 +2151,7 @@ sub publish_index_templates {
         );
     }
 
-    $app->call_return( published => 1 );
+    $app->call_return( published => 1 ) unless ($app->param('from_search'));
 }
 
 sub publish_archive_templates {
@@ -2120,7 +2159,7 @@ sub publish_archive_templates {
     $app->validate_magic or return;
 
     # permission check
-    my $perms = $app->permissions;
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->errtrans("Permission denied.")
       unless $app->user->is_superuser
       || $perms->can_administer_blog
@@ -2129,7 +2168,7 @@ sub publish_archive_templates {
     my @ids = $app->param('id');
     if (scalar @ids == 1) {
         # we also support a list of comma-delimited ids like this
-        @ids = split /,/, $ids[0];
+        @ids = split ",", $ids[0];
     }
     return $app->error($app->translate("Invalid request."))
         unless @ids;
@@ -2162,10 +2201,12 @@ sub publish_archive_templates {
                 blog_id => scalar $app->param('blog_id'),
                 id => join(",", @ids),
                 reedit => $reedit,
+                from_search => $app->param('from_search'),
             }
         );
     } else {
         my $mode = $reedit ? 'view' : 'list';
+        $mode = 'search_replace' if $app->param('from_search');
         $return_args = $app->uri_params(
             mode => $mode,
             args => {

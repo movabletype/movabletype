@@ -1,3 +1,4 @@
+<mt:if name="config.StatsCachePublishing" ne="Off">
 <mt:unless name="tab"><mt:setvar name="tab" value="entry"></mt:unless>
 <mt:if name="tab" eq="tag"><mt:unless name="tag_cloud"><mt:var name="tab" value="entry"></mt:unless></mt:if>
 <mt:setvarblock name="html_head" append="1">
@@ -140,3 +141,4 @@
     <mt:var name="blog_stats">
 
 </mtapp:widget>
+</mt:if>

@@ -202,7 +202,7 @@ sub mt_blog_stats_widget {
     my ( $tmpl, $param ) = @_;
 
     # For stats shown on this page
-    generate_dashboard_stats($app, $param) or return;
+    stats_generation_handler($app, $param) or return;
 
     my $tabs = $app->registry('blog_stats_tabs') or return;
     $tabs = $app->filter_conditional_list($tabs, 'dashboard', ($param->{widget_scope} || ''));
@@ -229,6 +229,83 @@ sub mt_blog_stats_widget {
         $param->{blog_stats} = $param->{main};
         $param->{tab_html_head} .= $param->{html_head};
     }
+}
+
+sub stats_generation_handler {
+  my $app = shift;
+  my ($param) = @_;
+  
+  if( lc( MT->config('StatsCachePublishing') ) eq 'off' ) {
+    return;
+  }
+
+  my $cache_time = 60 * MT->config('StatsCacheTTL'); # cache for x minutes
+
+  my $stats_static_path = create_stats_directory($app,$param) or return;
+
+  my $tabs = $app->registry('blog_stats_tabs') or return;
+  
+  while (my ($tab_id, $tab) = each %$tabs) {
+    next if !$tab->{stats};
+    
+    my $file = "${tab_id}.xml";
+    $param->{stat_url}->{$tab_id} = $stats_static_path . '/' . $file;
+    my $path = File::Spec->catfile( $param->{support_path}, $file );
+
+    my $time = ( stat($path) )[9] if -f $path;
+
+    if ( lc( MT->config('StatsCachePublishing') ) eq 'onload' ) {
+      if ( !$time || ( time - $time > $cache_time )) {
+        unless (generate_dashboard_stats($app,$param,$tab,$tab_id,$path) ) {
+          delete $param->{stat_url}->{$tab_id};
+        }
+      }
+    } else {
+      return;
+    }
+  }
+
+  1;
+}
+
+sub create_stats_directory {
+  my $app = shift;
+  my ($param) = @_;
+  
+  my $blog_id = $app->blog ? $app->blog->id : 0;
+  my $user    = $app->user;
+  my $user_id = $user->id;
+  
+  my $static_path      = $app->static_path;
+  my $static_file_path = $app->static_file_path;
+
+  if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
+    $param->{static_file_path} = $static_file_path;
+  } else {
+    return;
+  }
+
+  my $low_dir = sprintf("%03d", $user_id % 1000);
+  my $sub_dir = sprintf("%03d", $blog_id % 1000);
+  my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
+  $param->{support_path} =
+    File::Spec->catdir( $static_file_path, 'support', 'dashboard', 'stats',
+      $top_dir, $sub_dir, $low_dir); 
+
+  require MT::FileMgr;
+  my $fmgr = MT::FileMgr->new('Local');
+  unless ( $fmgr->exists( $param->{support_path} ) ) {
+    $fmgr->mkpath( $param->{support_path} );
+    unless ( $fmgr->exists( $param->{support_path} ) ) {
+      # the path didn't exist - change the warning a little
+      $param->{support_path} =
+        File::Spec->catdir( $app->static_file_path, 'support' );
+      return;
+    }
+  }
+
+  return $static_path . 'support/dashboard/stats/' .
+      $top_dir . '/' . $sub_dir . '/' . $low_dir;
 }
 
 sub mt_blog_stats_widget_entry_tab {
@@ -271,65 +348,15 @@ sub mt_blog_stats_widget_entry_tab {
 
 sub generate_dashboard_stats {
     my $app = shift;
-    my ($param) = @_;
+    my ($param,$tab,$tab_id,$path) = @_;
 
-    my $cache_time = 60 * 15;    # cache for 15 minutes
+    my $gen_stats = $tab->{stats};
+    $gen_stats = $app->handler_to_coderef($gen_stats);
 
-    my $blog_id = $app->blog ? $app->blog->id : 0;
-    my $user    = $app->user;
-    my $user_id = $user->id;
+    my %counts = $gen_stats->($app,$tab);
 
-    my $static_path      = $app->static_path;
-    my $static_file_path = $app->static_file_path;
-
-    if ( -f File::Spec->catfile( $static_file_path, "mt.js" ) ) {
-        $param->{static_file_path} = $static_file_path;
-    }
-    else {
-        return;
-    }
-
-    my $low_dir = sprintf("%03d", $user_id % 1000);
-    my $sub_dir = sprintf("%03d", $blog_id % 1000);
-    my $top_dir = $blog_id > $sub_dir ? $blog_id - $sub_dir : 0;
-    $param->{support_path} =
-      File::Spec->catdir( $static_file_path, 'support', 'dashboard', 'stats',
-        $top_dir, $sub_dir, $low_dir); 
-
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    unless ( $fmgr->exists( $param->{support_path} ) ) {
-        $fmgr->mkpath( $param->{support_path} );
-        unless ( $fmgr->exists( $param->{support_path} ) ) {
-            # the path didn't exist - change the warning a little
-            $param->{support_path} =
-                File::Spec->catdir( $app->static_file_path, 'support' );
-            return;
-        }
-    }
-
-    my $stats_static_path = $static_path . 'support/dashboard/stats/' .
-        $top_dir . '/' . $sub_dir . '/' . $low_dir;
-
-    my $tabs = $app->registry('blog_stats_tabs') or return;
-    while (my ($tab_id, $tab) = each %$tabs) {
-        my $file = "${tab_id}.xml";
-        $param->{stat_url}->{$tab_id} = $stats_static_path . '/' . $file;
-        my $path = File::Spec->catfile( $param->{support_path}, $file );
-
-        my $time = ( stat($path) )[9] if -f $path;
-
-        if ( !$time || ( time - $time > $cache_time ) ) {
-            my $gen_stats = $tab->{stats};
-            next if !$gen_stats;
-            $gen_stats = $app->handler_to_coderef($gen_stats);
-
-            my %counts = $gen_stats->($app, $tab);
-
-            unless ( create_dashboard_stats_file( $app, $path, \%counts ) ) {
-                delete $param->{stat_url}->{$tab_id};
-            }
-        }
+    unless ( create_dashboard_stats_file( $app, $path, \%counts ) ) {
+        delete $param->{stat_url}->{$tab_id};
     }
 
     1;
@@ -340,14 +367,7 @@ sub create_dashboard_stats_file {
     my ( $file, $data ) = @_;
 
     my $support_dir = File::Spec->catdir( $app->static_file_path, "support" );
-    if ( !-d $support_dir ) {
-        mkdir( $support_dir, 0777 );
-        if ($!) {
-            $app->log("Failed to create 'support' directory.");
-            return;
-        }
-    }
-
+    
     local *FOUT;
     if ( !open( FOUT, ">$file" ) ) {
         return;

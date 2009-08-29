@@ -8,7 +8,15 @@ package MT::Meta::Proxy;
 use strict;
 use warnings;
 
-use MT::Meta;
+sub META_CLASS { 'MT::Meta' }
+
+sub META_WHICH { 'meta' };
+
+BEGIN {
+	my $meta_class = __PACKAGE__->META_CLASS();
+	eval("require $meta_class;");
+}
+
 use MT::Serialize;
 
 my $serializer = MT::Serialize->new('MT');
@@ -31,7 +39,7 @@ sub is_changed {
         return 0 unless exists $proxy->{__objects}{$col};
         my $pkg  = $proxy->{pkg};
         my $meta = $proxy->{__objects}{$col};
-        my $field = MT::Meta->metadata_by_name($pkg, $col)
+        my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $col)
             or return 0;
         my $type = $field->{type}
             or return 0;
@@ -57,13 +65,15 @@ sub get {
     my $proxy = shift;
     my ($col) = @_;
 
-    $proxy->lazy_load_objects;
-
+    $proxy->lazier_load_objects;
     if (exists $proxy->{__objects}->{$col}) {
+    	if (!$proxy->{__loaded}->{$col}) {
+    		$proxy->load_objects($col);
+    	}
         my $pkg  = $proxy->{pkg};
         my $meta = $proxy->{__objects}->{$col};
 
-        my $field = MT::Meta->metadata_by_name($pkg, $col)
+        my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $col)
             or Carp::croak("Metadata $col on $pkg not found.");
         my $type = $field->{type}
             or Carp::croak("$col not found on $pkg meta fields");
@@ -122,7 +132,7 @@ sub get_collection {
 
 sub meta_pkg {
     my $proxy = shift;
-    return $proxy->{pkg}->meta_pkg;
+    return $proxy->{pkg}->meta_pkg($proxy->META_WHICH());
 }
 
 sub create_meta_object {
@@ -132,7 +142,7 @@ sub create_meta_object {
     my $pkg = $proxy->{pkg};
     my $meta = $proxy->meta_pkg->new;
 
-    my $field = MT::Meta->metadata_by_name($pkg, $col)
+    my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $col)
         or Carp::croak("there's no field $col on $pkg");
 
     my $type_id = $field->{type_id}
@@ -153,10 +163,17 @@ sub set {
     # xxx When you update the metadata, you have to preserve the
     # original data as well. This should be eliminated by adding the
     # update optimization for metadata columns
-    $proxy->lazy_load_objects;
+    $proxy->lazier_load_objects;
 
     $proxy->{__objects}->{$col} = $proxy->create_meta_object($col, $value);
-    $proxy->get($col);
+    
+    $proxy->{__loaded}->{$col} = 1;
+    if (%{$proxy->{__loaded}}) {
+		$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+	} else {
+		delete $proxy->{__pkeys}->{type};
+	}
+	$proxy->get($col);
 }
 
 sub save {
@@ -173,12 +190,13 @@ sub save {
 
         ## primary key from core object
         foreach my $pkey (keys %{ $proxy->{__pkeys} } ) {
+        	next if ($pkey eq 'type');
             my $pval = $proxy->{__pkeys}->{$pkey};
             $meta_obj->$pkey($pval);
         }
 
         my $pkg = $proxy->{pkg};
-        my $meta = MT::Meta->metadata_by_name($pkg, $field)
+        my $meta = $proxy->META_CLASS()->metadata_by_name($pkg, $field)
             or Carp::croak("Metadata $field on $pkg not found.");
         my $type = $meta->{type};
 
@@ -191,11 +209,15 @@ sub save {
         }
         else {
             serialize_blob($field, $meta_obj) if $meta_is_blob;
-            if ($MT::Meta::REPLACE_ENABLED) {
-                $meta_obj->replace;
-            } 
-            else {
-                $meta_obj->save;
+            my $meta_class = $proxy->META_CLASS();
+            {
+				no strict 'refs';
+				if (${"${meta_class}::REPLACE_ENABLED"}) {
+					$meta_obj->replace;
+				} 
+				else {
+					$meta_obj->save;
+				}
             }
             unserialize_blob($meta_obj) if $meta_is_blob;
         }
@@ -246,18 +268,42 @@ sub lazy_load_objects {
     $proxy->load_objects if ! exists $proxy->{__objects} && $proxy->{__pkeys};
 }
 
+sub lazier_load_objects {
+	my $proxy = shift;
+	require MT::Memcached;
+	return $proxy->lazy_load_objects if MT::Memcached->is_available;
+	if (! exists $proxy->{__objects} && $proxy->{__pkeys}) {
+		my $meta_pkg = $proxy->meta_pkg;
+		my @objs = $meta_pkg->search(
+			$proxy->{__pkeys},
+			{
+				fetchonly => [ 'type' ]
+			}
+		);
+		for my $obj (@objs) {
+			$proxy->{__objects}->{$obj->type} = $meta_pkg->new;
+		}
+		$proxy->{__loaded} = {};
+	}
+}
+
 sub load_objects {
     my $proxy = shift;
 
+    return unless $proxy->{__pkeys};
+	my ($col) = @_;
     my $pkg = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
-    my @objs  = $meta_pkg->search($proxy->{__pkeys});
+    my @objs  = $meta_pkg->search({
+		%{$proxy->{__pkeys}},
+		$col ? ( type => $col ) : ()
+	});
 
     foreach my $meta_obj (@objs) {
         my $type_id = $meta_obj->type;
 
-        my $field = MT::Meta->metadata_by_id($pkg, $type_id)
+        my $field = $proxy->META_CLASS()->metadata_by_id($pkg, $type_id)
             or next;
 
         my $name  = $field->{name};
@@ -273,6 +319,11 @@ sub load_objects {
             }
         }
         $proxy->{__objects}->{$name} = $meta_obj;
+        $proxy->{__loaded} ||= {};
+        if (!$proxy->{__loaded}->{$name}) {
+        	$proxy->{__loaded}->{$name} = 1;
+        	$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+        }
     }
 }
 
@@ -352,15 +403,16 @@ sub serialize_blob {
 sub deflate_meta {
     my $proxy = shift;
 
-    ## Load all metadata for the object, so that we can store it. Odds are,
-    ## we've already got it anyway.
-    $proxy->lazy_load_objects;
+    $proxy->lazier_load_objects;
 
     my $meta = {};
     for my $field (keys %{ $proxy->{__objects} } ) {
         next if $field eq '';
-        $meta->{$field} = $proxy->get($field);
+        if ($proxy->{__loaded}->{$field}) {
+	        $meta->{$field} = $proxy->get($field);
+	    }
     }
+    $meta->{__loaded} = $proxy->{__loaded};
     $meta;
 }
 
@@ -368,11 +420,13 @@ sub inflate_meta {
     my $proxy = shift;
     my($deflated) = @_;
     for my $key (keys %$deflated) {
+        next if ($key eq '__loaded');
         my $value = eval { $proxy->create_meta_object($key, $deflated->{$key}) };
         next if $@; ## probably 2 versions of the code using the same memcached
         $proxy->{__objects}{$key} = $value;
         $proxy->{__objects}{$key}{changed_cols} = {};
     }
+    $proxy->{__loaded} = $deflated->{__loaded};
 }
 
 sub refresh {

@@ -418,6 +418,33 @@ ul { list-style: disc outside; }
     vertical-align: middle;
 }
 
+#top-comment-nav, #comment-nav {
+  list-style: none;
+  width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
+  text-align: center;
+}
+
+#top-comment-nav li, #comment-nav li {
+  display: inline;
+  padding: 0;
+}
+
+#top-prev-comments, #prev-comments {
+  text-align: left;
+  margin: 0 1em 0 0;
+}
+
+#top-next-comments, #next-comments {
+  text-align: right;
+  margin: 0 0 0 1em;
+}
+
+#top-num-comments, #num-comments {
+  text-align: center;
+}
+
 #comment-submit {
     font-weight: bold;
 }

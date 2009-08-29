@@ -53,6 +53,7 @@ BEGIN {
             'author'          => 'MT::Author',
             'asset'           => 'MT::Asset',
             'file'            => 'MT::Asset',
+            'asset.file'      => 'MT::Asset',
             'asset.image'     => 'MT::Asset::Image',
             'image'           => 'MT::Asset::Image',
             'asset.audio'     => 'MT::Asset::Audio',
@@ -101,6 +102,46 @@ BEGIN {
             'ts_error'      => 'MT::TheSchwartz::Error',
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
+        },
+        summaries => {
+        	'author' => {
+        		entry_count => {
+        			type => 'integer',
+        			code => '$Core::MT::Summary::Author::summarize_entry_count',
+                    expires => {
+                        'MT::Entry' => {
+                            id_column => 'author_id',
+                            code => '$Core::MT::Summary::Author::expire_entry_count',
+                        },
+                    },
+        		},
+        		comment_count => {
+        			type => 'integer',
+        			code => '$Core::MT::Summary::Author::summarize_comment_count',
+                    expires => {
+                        'MT::Comment' => {
+                            id_column => 'commenter_id',
+                            code => '$Core::MT::Summary::Author::expire_comment_count',
+                        },
+                        'MT::Entry' => {
+                            id_column => 'author_id',
+                            code => '$Core::MT::Summary::Author::expire_comment_count_entry',
+                        },
+                    },
+        		},
+        	},
+			'entry' => {
+				all_assets => {
+					type => 'string',
+					code => '$Core::MT::Summary::Entry::summarize_all_assets',
+					expires => {
+						'MT::ObjectAsset' => {
+							 id_column => 'object_id',
+							 code => '$Core::MT::Summary::expire_all',
+						}
+					}
+				}
+			},
         },
         backup_instructions => \&load_backup_instructions,
         permissions => {
@@ -364,7 +405,8 @@ BEGIN {
                 default => 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
             'GenerateTrackBackRSS' => { default => 0, },
-
+            'DBIRaiseError'        => { default => 0, },
+            
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
             'NoOverride'          => { default => '', },
@@ -522,6 +564,10 @@ BEGIN {
             'UserpicAllowRect' => { default => 0 },
             'UserpicMaxUpload' => { default => 0 },
             'UserpicThumbnailSize' => { default => 100 },
+            
+            ## Stats settings
+            'StatsCacheTTL' => { default => 15 }, # in minutes
+            'StatsCachePublishing' => { default => 'OnLoad' }, # Off|OnLoad
 
             # Basename settings
             'AuthorBasenameLimit' => { default => 30 },
@@ -530,7 +576,7 @@ BEGIN {
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
             'EnableAddressBook' => { default => 0 },
-            'SingleCommunity' => { default => 0 },
+            'SingleCommunity' => { default => 1 },
             'DefaultTemplateSet' => { default => 'mt_blog' },
 
             'AssetFileTypes' => { type    => 'HASH' },
@@ -645,6 +691,14 @@ BEGIN {
                 label => "Synchronizes content to other server(s).",
                 class => 'MT::Worker::Sync',
             },
+            'mt_summarize' => {
+                label => "Refreshes object summaries.",
+                class => 'MT::Worker::Summarize',
+            },
+            'mt_summary_watcher' => {
+                label => "Adds Summarize workers to queue.",
+                class => 'MT::Worker::SummaryWatcher',
+            }
         },
         archivers => {
             'zip' => {
@@ -764,6 +818,19 @@ sub load_core_tasks {
             code      => sub {
                 MT->instance->publisher->publish_future_posts;
               }
+        },
+        'AddSummaryWatcher' => {
+            label     => 'Add Summary Watcher to queue',
+            frequency => 2 * 60, # every other minute
+            code      => sub {
+                require MT::TheSchwartz;
+                require TheSchwartz::Job;
+                my $job = TheSchwartz::Job->new();
+                $job->funcname('MT::Worker::SummaryWatcher');
+                $job->uniqkey( 1 );
+                $job->priority( 4 );
+                MT::TheSchwartz->insert($job);
+            },
         },
         'JunkExpiration' => {
             label     => 'Junk Folder Expiration',

@@ -234,6 +234,7 @@ class MTDatabase_mysql extends MTDatabaseBase {
             where
                 D.entry_class='$class'
                 and A.objecttag_object_datasource='entry'
+                and B.objecttag_object_datasource='entry'
                 and C.tag_id=A.objecttag_tag_id
                 and entry_status = 2
                 $tag_filter

@@ -182,6 +182,7 @@ sub list {
     @class_loop = sort { $a->{class_label} cmp $b->{class_label} } @class_loop;
 
     my $dialog_view = $app->param('dialog_view') ? 1 : 0;
+    my $no_insert = $app->param('no_insert') ? 1 : 0;
     my $perms = $app->permissions;
     my %carry_params = map { $_ => $app->param($_) || '' }
         (qw( edit_field upload_mode require_type next_mode asset_select ));
@@ -211,6 +212,7 @@ sub list {
                 is_image         => defined $class_filter
                   && $class_filter eq 'image' ? 1 : 0,
                 dialog_view      => $dialog_view,
+                no_insert        => $no_insert,
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
@@ -228,19 +230,32 @@ sub list {
 
 sub insert {
     my $app  = shift;
-    my $text = _process_post_upload( $app );
+    my $text = $app->param('no_insert') ? "" : _process_post_upload( $app );
     return unless defined $text;
-    my $tmpl = $app->load_tmpl(
-        'dialog/asset_insert.tmpl',
-        {
-            
-            upload_html => $text || '',
-            edit_field => scalar $app->param('edit_field') || '',
-        },
-    );
+    my $file_ext_changes = $app->param('changed_file_ext');
+    my ($ext_from, $ext_to) = split(",", $file_ext_changes) if $file_ext_changes;
+    my $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
+    my $tmpl;
+    if ($extension_message) {
+        $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {
+                upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+                extension_message => $extension_message,
+            },
+        );
+    } else {
+       $tmpl = $app->load_tmpl(
+            'dialog/asset_insert.tmpl',
+            {
+                upload_html => $text || '',
+                edit_field => scalar $app->param('edit_field') || '',
+            },
+        );
+    }
     my $ctx = $tmpl->context;
-    my $id = $app->param('id')
-        or return $app->errtrans("Invalid request.");
+    my $id = $app->param('id') or return $app->errtrans("Invalid request.");
     my $asset = MT::Asset->load( $id );
     $ctx->stash('asset', $asset);
     return $tmpl;
@@ -290,7 +305,6 @@ sub asset_userpic {
 
 sub start_upload {
     my $app = shift;
-
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
@@ -324,7 +338,6 @@ sub upload_file {
 sub complete_insert {
     my $app = shift;
     my (%args) = @_;
-
     my $asset = $args{asset};
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
@@ -334,8 +347,7 @@ sub complete_insert {
     }
     return $app->errtrans('Invalid request.') unless $asset;
 
-    $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0
-      unless defined $args{is_image};
+    $args{is_image} = $asset->isa('MT::Asset::Image') ? 1 : 0 unless defined $args{is_image};
 
     require MT::Blog;
     my $blog = $asset->blog
@@ -345,11 +357,11 @@ sub complete_insert {
       or return $app->errtrans('No permissions');
 
     # caller wants asset without any option step, so insert immediately
-    if ($app->param('asset_select')) {
+    if ($app->param('asset_select') || $app->param('no_insert')) {
         $app->param( 'id', $asset->id );
         return insert($app);
     }
-
+    
     my $param = {
         asset_id            => $asset->id,
         bytes               => $args{bytes},
@@ -359,16 +371,17 @@ sub complete_insert {
         middle_path         => $app->param('middle_path') || '',
         extra_path          => $app->param('extra_path') || '',
     };
-    for my $field (qw( direct_asset_insert edit_field entry_insert site_path
-      asset_select )) {
+    for my $field (qw( direct_asset_insert edit_field entry_insert site_path asset_select )) {
         $param->{$field} = scalar $app->param($field) || '';
     }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
         $param->{height} = $asset->image_height;
+    } if ($app->param('changed_file_ext')) {
+        my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+        $param->{extension_message} = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
     }
-    if ( !$app->param('asset_select')
-      && ($perms->can_create_post || $app->user->is_superuser) ) {
+    if ( !$app->param('asset_select') && ($perms->can_create_post || $app->user->is_superuser) ) {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
             $app->param( 'id', $asset->id );
@@ -376,7 +389,6 @@ sub complete_insert {
         }
         $param->{options_snippet} = $html;
     }
-
     if ($perms) {
         my $pref_param = $app->load_entry_prefs( $perms->entry_prefs );
         %$param = ( %$param, %$pref_param );
@@ -400,11 +412,9 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} =
-          MT::Util::to_json(
-            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
+        $param->{tags_js} = MT::Util::to_json( MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
-
+    $param->{'no_insert'} = $app->param('no_insert');
     $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
 }
 
@@ -450,11 +460,8 @@ sub start_upload_entry {
     $q->param( '_type', 'entry' );
     defined( my $text = _process_post_upload($app) ) or return;
     $q->param( 'text', $text );
-
-    # strip any asset id
+    $q->param ('asset_id', $q->param('id'));
     $q->param( 'id', 0 );
-
-    # clear tags value
     $app->param( 'tags', '' );
     $app->forward("view");
 }
@@ -879,6 +886,7 @@ sub _set_start_upload_params {
 sub _upload_file {
     my $app = shift;
     my (%upload_param) = @_;
+    require MT::Image;
 
     if (my $perms = $app->permissions) {
         return $app->error( $app->translate("Permission denied.") )
@@ -1012,6 +1020,30 @@ sub _upload_file {
         ## Local Archive Path setting. So we should be safe.
         ($local_file) = $local_file =~ /(.+)/s;
 
+        my $real_fh;
+        unless ($has_overwrite) {
+            my ($w_temp, $h_temp, $ext_temp, $write_file_temp) = MT::Image->check_upload(
+                Fh => $fh, Fmgr => $fmgr, Local => $local_file,
+                Max => $upload_param{max_size},
+                MaxDim => $upload_param{max_image_dimension}
+            );
+            if ($w_temp && $h_temp && $ext_temp) {
+                my $ext_old = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+                if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )) {
+                    $ext_temp = lc($ext_temp);
+                    my $target_file = $local_file;
+                    $target_file =~ s/$ext_old/$ext_temp/;
+                    $relative_path =~ s/$ext_old/$ext_temp/;
+                    $asset_file =~ s/$ext_old/$ext_temp/;
+                    $basename =~ s/$ext_old/$ext_temp/;
+                    rename($local_file, $target_file);
+                    $local_file =~ s/$ext_old/$ext_temp/;
+                    $real_fh =~ s/$ext_old/$ext_temp/;
+                    $app->param("changed_file_ext", "$ext_old,$ext_temp");
+                }
+            }
+        }
+
         ## If $local_file already exists, we try to write the upload to a
         ## tempfile, then ask for confirmation of the upload.
         if ( $fmgr->exists($local_file) ) {
@@ -1090,6 +1122,8 @@ sub _upload_file {
                   );
                 close $tmp_fh;
                 my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
+                my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+                my $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
                 return $app->load_tmpl(
                     'dialog/asset_replace.tmpl',
                     {
@@ -1100,7 +1134,9 @@ sub _upload_file {
                         entry_insert => $q->param('entry_insert'),
                         edit_field   => $app->param('edit_field'),
                         middle_path  => $middle_path,
-                        fname        => $basename
+                        fname        => $basename,
+                        no_insert    => $q->param('no_insert') || "",
+                        extension_message => $extension_message,
                     }
                 );
             }
@@ -1145,7 +1181,6 @@ sub _upload_file {
           $unique_basename );
     }
 
-    require MT::Image;
     my ($w, $h, $id, $write_file) = MT::Image->check_upload(
         Fh => $fh, Fmgr => $fmgr, Local => $local_file,
         Max => $upload_param{max_size},
@@ -1243,11 +1278,14 @@ sub _upload_file {
     }
     my $original = $asset->clone;
     $asset->url($asset_url);
+
     if ($is_image) {
         $asset->image_width($w);
         $asset->image_height($h);
     }
+
     $asset->mime_type($mimetype) if $mimetype;
+
     $asset->save;
     $app->run_callbacks( 'cms_post_save.asset', $app, $asset, $original );
 

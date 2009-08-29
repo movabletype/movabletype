@@ -300,10 +300,12 @@ sub check_type {
 
     my $class = MT->model($type);
 
-    # handle schema updates for meta table
-    if ($class->meta_pkg) {
-        $self->check_type($type . ':meta');
-    }
+    # handle schema updates for meta tables
+    for my $which (qw( meta summary )) {
+		if ($class->meta_pkg($which)) {
+			$self->check_type($type . ":$which");
+		}
+	}
 
     if (my $result = $self->type_diff($type)) {
         if ($result->{fix}) {

@@ -20,7 +20,7 @@ __PACKAGE__->install_properties( {
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
     my $pkg = shift;
-    return $pkg->SUPER::extensions( [ qr/gif/i, qr/jpe?g/i, qr/png/i, ] );
+    return $pkg->SUPER::extensions( [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, ] );
 }
 
 sub class_label {
