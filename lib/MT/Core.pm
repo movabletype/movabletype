@@ -406,6 +406,7 @@ BEGIN {
             },
             'GenerateTrackBackRSS' => { default => 0, },
             'DBIRaiseError'        => { default => 0, },
+            'SearchAlwaysAllowTemplateID' => { default => 0, },
             
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
@@ -583,6 +584,13 @@ BEGIN {
 
             'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
             'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
+
+            'RPTFreeMemoryLimit' => undef,
+            'RPTProcessCap' => undef,
+            'RPTSwapMemoryLimit' => undef,
+            'SchwartzClientDeadline' => undef,
+            'SchwartzFreeMemoryLimit' => undef,
+            'SchwartzSwapMemoryLimit' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

@@ -1,6 +1,8 @@
-# Movable Type (r) (C) 2001-2009 Six Apart, Ltd. All Rights Reserved.
-# This code cannot be redistributed without permission from www.sixapart.com.
-# For more information, consult your Movable Type license.
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 
 package MT::Worker::SummaryWatcher;
 
@@ -13,9 +15,11 @@ use TheSchwartz::Job;
 sub work {
     my $class                = shift;
     my TheSchwartz::Job $job = shift;
-    my $registry             = MT->registry;
+    #my $registry            = MT->registry;
+    my $registry            = MT->registry("summaries");
     use Data::Dumper;
-    for my $summarizable ( keys %{ $registry->{summaries} } ) {
+    #for my $summarizable ( keys %{ $registry->{summaries} } ) {
+    for my $summarizable ( keys %{ $registry } ) {
         my $meta_pkg = MT->model($summarizable)->meta_pkg('summary');
         my $summ_iter
             = $meta_pkg->search( { expired => MT::Summary::NEEDS_JOB(), } );
@@ -23,10 +27,11 @@ sub work {
         my $id_field = ( $class->class_type || $class->datasource ) . '_id';
         while ( my $summary = $summ_iter->() ) {
             my $priority
-                = $registry->{summaries}->{$summarizable}->{ $summary->class }
+#                = $registry->{summaries}->{$summarizable}->{ $summary->class }
+                = $registry->{$summarizable}->{ $summary->class }
                 ->{priority};
             $priority ||= undef;
-            my $id         = $summary->$id_field;
+            my $id        = $summary->$id_field;
             my $class_type = MT->model($summarizable)->class_type
                 || MT->model($summarizable)->datasource;
             MT::Summarizable->insert_summarize_worker( $class_type, $id,

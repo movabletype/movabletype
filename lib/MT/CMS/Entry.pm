@@ -180,12 +180,28 @@ sub edit {
        require MT::Asset;
        require MT::ObjectAsset;
        my $assets =();
-       if ($q->param('asset_id') && !$id) {
+       if ($q->param('reedit') && $q->param('include_asset_ids')) {
+           my $include_asset_ids = $app->param('include_asset_ids');
+           my @asset_ids = split(',', $include_asset_ids);
+           foreach my $asset_id (@asset_ids) {
+               my $asset = MT::Asset->load($asset_id);
+               if ($asset) {
+                   my $asset_1;
+                   if ($asset->class eq 'image') {
+                       $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Width=>100)};
+                   } else {
+                       $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
+                   }
+                   push @{$assets}, $asset_1;
+               }
+           }
+       }
+       elsif ($q->param('asset_id') && !$id) {
            my $asset = MT::Asset->load($q->param('asset_id'));
            my $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
            push @{$assets}, $asset_1;
        }
-       if ($id) {
+       elsif ($id) {
            my @assets = MT::Asset->load({ class => '*' },
                                         { join => MT::ObjectAsset->join_on(undef, {asset_id => \'= asset_id', object_ds => 'entry', object_id => $id })});
            foreach my $asset (@assets) {
@@ -200,7 +216,7 @@ sub edit {
        }
        $param->{asset_loop} = $assets;
     }
-
+    
     ## Load categories and process into loop for category pull-down.
     require MT::Placement;
     my $cat_id = $param->{category_id};
@@ -1119,7 +1135,7 @@ sub preview {
           };
     }
     for my $data (
-        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags )
+        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags include_asset_ids )
       )
     {
         push @data,

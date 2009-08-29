@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Proxy.pm 71506 2008-01-18 23:13:43Z ykerherve $
+# $Id$
 
 package MT::Meta::Proxy;
 use strict;

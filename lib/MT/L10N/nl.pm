@@ -6018,8 +6018,16 @@ Zoekbasis: [_2]",
         'The published order of these assets can be changed using [_1]template tag modifiers[_2].' => 'De publicatievolgorde van deze mediabestanden kan gewijzigd worden via [_1]argumenten in de sjabloontags[_2].', # Translate - New
         'This is set to the same URL as the original blog.' => 'Dit staat ingesteld op dezelfde URL als de oorspronkelijke blog.', # Translate - New
         'This will overwrite the original blog.' => 'Dit zal de oorspronkelijke blog overschrijven.', # Translate - New
-
-
+        'No such template' => 'Sjabloon bestaat niet', # Translate - New
+       'template_id cannot be a global template' => 'template_id mag geen systeemsjabloon zijn', # Translate - New
+       'Output file cannot be asp or php' => 'Uitvoerbestand mag geen asp of php zijn', # Translate - New
+       'You must pass a valid archive_type with the template_id' => 'U moet een geldig archieftype doorgeven met het template_id', # Translate - New
+       'Template must have identifier entry_listing for non-Index archive types' => 'Sjabloon moet de identifier \'entry_listing\' hebben voor niet-index archieftypes', # Translate - New
+       'Blog file extension cannot be asp or php for these archives' => 'Blogextensie kan niet asp of php zijn voor deze archieven', # Translate - New
+       'Template must have identifier main_index for Index archive type' => 'Sjabloon moet de identifier \'main_index\' hebben voor het index archieftype', # Translate - New
+       'Add New' => 'Nieuw toevogen', # Translate - Case
+       'No asset(s) associated with this [_1]' => 'Geen mediabestan(en) geassociëerd met [_1]', # Translate - New
+	
 );
 
 ## New words: 379

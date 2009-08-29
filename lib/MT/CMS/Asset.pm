@@ -1034,6 +1034,7 @@ sub _upload_file {
                     my $target_file = $local_file;
                     $target_file =~ s/$ext_old/$ext_temp/;
                     $relative_path =~ s/$ext_old/$ext_temp/;
+                    $relative_url =~ s/$ext_old/$ext_temp/;
                     $asset_file =~ s/$ext_old/$ext_temp/;
                     $basename =~ s/$ext_old/$ext_temp/;
                     rename($local_file, $target_file);
@@ -1271,6 +1272,7 @@ sub _upload_file {
         $asset->file_name($local_basename);
         $asset->file_ext($ext);
         $asset->blog_id($blog_id);
+        $asset->label($local_basename);
         $asset->created_by( $app->user->id );
     }
     else {

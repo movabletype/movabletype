@@ -123,6 +123,7 @@ sub start_recover {
     if (!$tmpl) {
         $tmpl = $app->load_tmpl( 'cms/dialog/recover.tmpl' );
     }
+    $param->{system_template} = 1;
     $tmpl->param($param);
     return $tmpl;
 }
@@ -319,6 +320,7 @@ sub new_password {
     if (!$tmpl) {
         $tmpl = $app->load_tmpl( 'cms/dialog/new_password.tmpl' );
     }
+    $param->{system_template} = 1;
     $tmpl->param($param);
     return $tmpl;
 }

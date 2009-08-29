@@ -411,7 +411,7 @@ sub scale {
     my $image = shift;
     my($w, $h) = $image->get_dimensions(@_);
     my $src = $image->{gd};
-    my $gd = GD::Image->new($w, $h);
+    my $gd = GD::Image->new($w, $h, 1);  # True color image (24 bit)
     $gd->copyResampled($src, 0, 0, 0, 0, $w, $h, $image->{width}, $image->{height});
     ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $w, $h);
     wantarray ? ($image->blob, $w, $h) : $image->blob;
@@ -422,7 +422,7 @@ sub crop {
     my %param = @_;
     my ($size, $x, $y) = @param{qw( Size X Y )};
     my $src = $image->{gd};
-    my $gd = GD::Image->new($size, $size);
+    my $gd = GD::Image->new($size, $size, 1);  # True color image (24 bit)
     $gd->copy($src, 0, 0, $x, $y, $size, $size);
     ($image->{gd}, $image->{width}, $image->{height}) = ($gd, $size, $size);
     wantarray ? ($image->blob, $size, $size) : $image->blob;

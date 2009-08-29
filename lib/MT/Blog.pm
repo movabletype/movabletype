@@ -500,7 +500,18 @@ sub has_archive_type {
     my $blog = shift;
     my ($type) = @_;
     my %at = map { lc $_ => 1 } split(/,/, $blog->archive_type);
-    return exists $at{lc $type} ? 1 : 0;
+    return 0 unless exists $at{lc $type};
+
+    my $result = 0;
+    require MT::TemplateMap;
+    my @maps = MT::TemplateMap->load({blog_id => $blog->id,
+                                      archive_type => $type});
+    return 0 unless @maps;
+    require MT::PublishOption;
+    foreach my $map (@maps) {  
+        $result++ if $map->build_type != MT::PublishOption::DISABLED();
+    }
+    return $result;
 }
 
 sub accepts_registered_comments {

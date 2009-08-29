@@ -348,7 +348,8 @@ sub as_html {
     my $text = sprintf '<a href="%s">%s</a>',
         MT::Util::encode_html($asset->url),
         MT::Util::encode_html($fname);
-    return $asset->enclose($text);
+    my $app = MT->instance;
+    return $app->param('edit_field') =~ /^customfield/ ? $asset->enclose($text) : $text;
 }
 
 sub enclose {
@@ -356,7 +357,7 @@ sub enclose {
     my ($html) = @_;
     my $id = $asset->id;
     my $type = $asset->class;
-    return $html;
+    return qq{<form mt:asset-id="$id" class="mt-enclosure mt-enclosure-$type" style="display: inline;">$html</form>};
 }
 
 # Return a HTML snippet of form options for inserting this asset
