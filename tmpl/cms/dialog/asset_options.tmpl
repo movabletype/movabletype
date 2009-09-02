@@ -98,22 +98,22 @@
     <div>
         <div id="asset_details">
     <mtapp:setting
-        id="file_name"
+        id="label"
         label_class="top-label"
-        label="<__trans phrase="Name">">
-        <input type="text" name="label" id="file_name" value="<mt:var name="fname" escape="html">" class="full-width">
+        label="<__trans phrase="Label">">
+        <input type="text" name="label" id="label" value="<mt:var name="fname" escape="html">" class="larger-text">
     </mtapp:setting>
     <mtapp:setting
-        id="file_desc"
+        id="description"
         label_class="top-label"
         label="<__trans phrase="Description">">
-        <textarea name="description" id="file_desc" cols="" rows="" class="full-width short"></textarea>
+        <textarea name="description" id="description" cols="" rows="" class="larger-text"></textarea>
     </mtapp:setting>
     <mtapp:setting
-        id="file_tags"
+        id="tags"
         label_class="top-label"
         label="<__trans phrase="Tags">">
-        <input type="text" name="tags" id="file_tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" />
+        <input type="text" name="tags" id="tags" class="larger-text" value="" mt:watch-change="1" autocomplete="0" />
     </mtapp:setting>
         </div>
     <mt:unless name="asset_select">

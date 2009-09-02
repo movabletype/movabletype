@@ -3,20 +3,16 @@
 <mt:include name="include/chromeless_header.tmpl">
 
 <form method="post">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="step" value="cfg_dir" />
-<input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">">
-<input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
-<input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
-
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="step" value="cfg_dir" />
+    <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">">
+    <input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
+    <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:unless name="success">
-<p>
-<__trans phrase="You should configure you temporary directory settings.">
-</p>
+    <p><__trans phrase="You should configure you temporary directory settings."></p>
 <mt:else>
-<div><__trans phrase="Your TempDir has been successfully configured. Click 'Continue' below to continue configuration."></div>
+    <p><__trans phrase="Your TempDir has been successfully configured. Click 'Continue' below to continue configuration."></p>
 </mt:unless>
-
 
 <mt:if name="not_found_error">
     <mtapp:statusmsg
@@ -42,44 +38,56 @@
     </mtapp:statusmsg>
 </mt:if>
 
-<fieldset>
+    <fieldset>
+    <!-- TempDir -->
+        <mtapp:setting
+            id="temp_dir"
+            label="<__trans phrase="TempDir">"
+            label_class="top-label"
+            hint="<__trans phrase="The physical path for temporary directory.">">
+            <input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
+        </mtapp:setting>
 
-<!-- TempDir -->
+        <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
+            <button
+                name="continue"
+                type="submit"
+                onclick="go('next_step');"
+                class="continue action primary-button"
+                ><__trans phrase="Continue"></button>
 
-    <mtapp:setting
-        id="temp_dir"
-        label="<__trans phrase="TempDir">"
-        label_class="top-label"
-        hint="<__trans phrase="The physical path for temporary directory.">">
-<input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" /><br />
-    </mtapp:setting>
+            <button
+                name="test"
+                type="submit"
+                onclick="go('test')"
+                class="test action primary-button"
+                ><__trans phrase="Test"></button>
 
-<div id="goback" <mt:unless name="success">style="display: none"</mt:unless>>
-<div class="left">
-<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
-</div>
+            <button
+                name="back"
+                type="submit"
+                onclick="this.form.reset(); go('previous_step');"
+                class="goback action"
+                ><__trans phrase="Back"></button>
+        </div>
 
-<div class="right">
-<input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" name="continue" onclick="go('next_step')" />
-</div>
+        <div id="submit" class="actions-bar" <mt:if name="success">style="display: none"</mt:if>>
+            <button
+                name="test"
+                type="submit"
+                value="1"
+                onclick="go('test')"
+                class="test action primary-button"
+                ><__trans phrase="Send Test Email"></button>
 
-<div class="right">
-<input name="test" type="submit" class="sb" value="<__trans phrase="Test">" onclick="go('test')" />
-</div>
-
-</div>
-
-<div id="submit" class="action-buttons" <mt:if name="success">style="display: none"</mt:if>>
-<div class="left">
-<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step')" />
-</div>
-<div class="right">
-<input name="test" type="submit" class="sb" value="<__trans phrase="Test">" onclick="go('test')" />
-</div>
-</div>
-
-
-</fieldset>
+            <button
+                name="back"
+                type="submit"
+                onclick="this.form.reset(); go('previous_step');"
+                class="goback action"
+                ><__trans phrase="Back"></button>
+        </div>
+    </fieldset>
 </form>
 <script type="text/javascript">
 /* <![CDATA[ */

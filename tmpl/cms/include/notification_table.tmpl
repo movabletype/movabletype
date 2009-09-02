@@ -27,13 +27,13 @@
                 <span id="note-url-field-<mt:var name="id">" style="display: none">
                     <input type="text" name="note-url-<mt:var name="id">" id="note-url-<mt:var name="id">" value="<mt:var name="url" escape="html">" />
                     <span class="buttons">
-                        <a href="javascript:void(0)"
+                        <button
                             onclick="submit_edit(<mt:var name="id">); return false;"
                             title="<__trans phrase="Save changes">"
-                            ><__trans phrase="Save"></a>
-                        <a href="javascript:void(0)"
+                            ><__trans phrase="Save"></button>
+                        <button
                             onclick="cancel_edit(<mt:var name="id">); return false;"
-                            ><__trans phrase="Cancel"></a>
+                            ><__trans phrase="Cancel"></button>
                     </span>
                 </span>
             </td>

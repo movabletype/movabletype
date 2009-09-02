@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Entry.pm 109168 2009-08-16 16:34:33Z fyoshimatsu $
+# $Id: Entry.pm 110424 2009-09-01 07:29:52Z ytakayama $
 package MT::Template::Tags::Entry;
 
 use strict;
@@ -363,6 +363,8 @@ sub _hdlr_entries {
             undef $entries;
         }
     }
+    $entries = undef unless defined $entries && scalar @$entries;
+
     local $ctx->{__stash}{entries};
 
     # handle automatic offset based on 'offset' query parameter

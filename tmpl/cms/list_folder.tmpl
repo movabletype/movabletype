@@ -76,11 +76,12 @@ function setMoveMode (id) {
     </div>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <button
-        onclick="doRemoveItems(getByID('folder-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
-        accesskey="x"
-        title="<__trans phrase="Delete selected folders (x)">"
-        ><__trans phrase="Delete"></button>
+    <a href="javascript:void(0)"
+       onclick="doRemoveItems(getByID('folder-listing-form'), '<mt:var name="object_label" lower_case="1" escape="js">', '<mt:var name="object_label_plural" lower_case="1" escape="js">'); return false;"
+       accesskey="x"
+       title="<__trans phrase="Delete selected folders (x)">"
+       class="button"
+       ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="content_header">
@@ -183,7 +184,7 @@ function setMoveMode (id) {
                                 <button
                                     type="submit"
                                     class="small-button"
-                                    title="<__trans phrase="Create Folder">" 
+                                    title="<__trans phrase="Create Subfolder">" 
                                     ><__trans phrase="Create"></button> 
                                 <button
                                     class="small-button mt-cancel-action"

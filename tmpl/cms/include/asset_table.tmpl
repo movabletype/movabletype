@@ -13,15 +13,14 @@
         <mt:setvarblock name="table_header">
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th class="file-status" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                <th class="file-status si">&nbsp;</th>
                 <th class="file-name primary-col"><__trans phrase="Title"></th>
     <mt:unless name="blog_view">
-                <th class="weblog"><__trans phrase="Website/Blog"></th>
+                <th class="blog"><__trans phrase="Website/Blog"></th>
     </mt:unless>
                 <th class="file-size"><__trans phrase="Size"></th>
                 <th class="created-by"><__trans phrase="Created By"></th>
                 <th class="created-on"><__trans phrase="Created On"></th>
-                <th class="view status-view"><__trans phrase="View"></th>
             </tr>
         </mt:setvarblock>
         <thead>
@@ -65,7 +64,7 @@
                     </div>
                 </td>
     <mt:unless name="blog_view">
-                <td class="weblog"><a href="<mt:var name="script_url">?__mode=list_asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+                <td class="blog"><a href="<mt:var name="script_url">?__mode=list_asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
     </mt:unless>
                 <td class="file-size" title="<mt:var name="file_size">">
     <mt:if name="asset_type" eq="image">
@@ -79,7 +78,6 @@
                 </td>
                 <td class="created-by"><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
                 <td class="created-on"><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
-                <td class="view status-view"><mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
             </tr>
     <mt:if __last__>
         </tbody>

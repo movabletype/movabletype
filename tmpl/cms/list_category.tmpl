@@ -77,11 +77,12 @@ function setMoveMode (id) {
     </div>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <button
-        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="category" escape="js">', '<__trans phrase="categories" escape="js">'); return false;"
-        accesskey="x"
-        title="<__trans phrase="Delete selected category (x)">"
-        ><__trans phrase="Delete"></button>
+    <a href="javascript:void(0)"
+       onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="category" escape="js">', '<__trans phrase="categories" escape="js">'); return false;"
+       accesskey="x"
+       class="button"
+       title="<__trans phrase="Delete selected category (x)">"
+       ><__trans phrase="Delete"></a>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$MTApp:PageActions from="list_cat"$>

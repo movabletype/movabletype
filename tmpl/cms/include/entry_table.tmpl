@@ -28,6 +28,7 @@
 
 <mt:if name="is_power_edit">
     <$mt:setvar name="hide_pager" value="1"$>
+    <mt:setvarblock name="original_blog_id"><mt:var name="blog_id"></mt:setvarblock>
 </mt:if>
 
 <mtapp:listing
@@ -49,7 +50,11 @@
                 <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
                 <th class="author"><__trans phrase="Author"></th>
         <mt:unless name="blog_view">
-                <th class="weblog"><__trans phrase="Website/Blog"></th>
+            <mt:if name="object_type" eq="entry">
+                <th class="blog"><__trans phrase="Blog"></th>
+            <mt:else>
+                <th class="blog"><__trans phrase="Website/Blog"></th>
+            </mt:if>
         </mt:unless>
                 <th class="datetime"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></th>
         <mt:unless name="is_power_edit">
@@ -136,12 +141,20 @@
         </mt:if>
                 <td class="category">
         <mt:if name="is_editable">
+            <mt:if name="entry_blog_id" eq="$original_blog_id">
                     <select name="category_id_<$mt:var name="id"$>">
                         <option value=""><__trans phrase="None"></option>
-            <mt:loop name="row_category_loop">
+                <mt:loop name="row_category_loop">
                         <option value="<$mt:var name="category_id"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
-            </mt:loop>
+                </mt:loop>
                     </select>
+            <mt:else>
+                <mt:if name="object_type" eq="entry">
+                    <$mt:var name="category_label" escape="html" default="-"$>
+                <mt:else>
+                    <$mt:var name="category_label" escape="html" default="(root)"$>
+                </mt:if>
+            </mt:if>
         <mt:else>
             <mt:if name="object_type" eq="entry">
                 <$mt:var name="category_label" escape="html" default="-"$>

@@ -51,27 +51,29 @@ input,
 textarea {
     font-size: 14px;
 }
-
 textarea { 
     min-height: 5em;
 }
-
 select { 
     width: 100%;
-    height: 2em;
-    padding: 2px;
+    padding: 3px;
     border: 1px solid #c8c2be;
-    font-size: 11px;
+    font-size: 12px;
     -moz-border-radius: 3px;
     -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
-
+.listing-filter select, 
+.actions-bar select { 
+    height: 2em;
+    padding: 2px;
+    font-size: 11px;    
+}
 input[type="text"], 
 input[type="password"], 
 textarea { 
-    width: 28em;
+    width: 100%;
     padding: 3px;
     border: 1px solid #c8c2be;
     -moz-box-sizing: border-box;
@@ -81,9 +83,6 @@ textarea {
     -khtml-border-radius: 3px;
     -webkit-border-radius: 3px;
     border-radius: 3px;
-}
-input[type="text"] { 
-    width: 100%;
 }
 input[type="password"] { 
     width: 15em;
@@ -100,7 +99,7 @@ input.extra-path {
 input.smaller-text { 
     width: 3.5em;
 }
-input.larger-text { 
+.larger-text { 
     width: 100%;
 }
 

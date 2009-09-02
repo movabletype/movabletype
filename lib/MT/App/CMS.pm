@@ -498,7 +498,6 @@ sub core_list_actions {
                 order     => 500,
                 condition => sub {
                     return 0 if $app->mode eq 'view';
-                    return 0 if !$app->blog || ($app->blog && !$app->blog->is_blog);
                     $app->param('blog_id')
                         && $app->can_do('open_batch_entry_editor_via_list')
                         && $app->param('filter_val') != MT::Entry::JUNK()

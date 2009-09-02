@@ -57,20 +57,26 @@
 
     <fieldset>
         <h3><__trans phrase="Exclusions"></h3>
-        <ul>
+        <mtapp:setting
+            id="clone_prefs"
+            class="field-no-header"
+            label="<__trans phrase="Exclusions">"
+            content_class="field-content-text">
+            <ul id="clone-prefs-fields">
     <mt:if name="clone_prefs_entries_pages" eq="on">
-            <li><__trans phrase="Exclude Entries/Pages"></li>
+                <li><__trans phrase="Exclude Entries/Pages"></li>
     </mt:if>
     <mt:if name="clone_prefs_comments" eq="on">
-            <li><__trans phrase="Exclude Comments"></li>
+                <li><__trans phrase="Exclude Comments"></li>
     </mt:if>
     <mt:if name="clone_prefs_trackbacks" eq="on">
-            <li><__trans phrase="Exclude Trackbacks"></li>
+                <li><__trans phrase="Exclude Trackbacks"></li>
     </mt:if>
     <mt:if name="clone_prefs_categories" eq="on">
-            <li><__trans phrase="Exclude Categories"></li>
+                <li><__trans phrase="Exclude Categories/Folders"></li>
     </mt:if>
-        </ul>
+            </ul>
+        </mtapp:setting>
     </fieldset>
 
     <mt:setvarblock name="action_buttons">
@@ -98,7 +104,7 @@
 
 <mt:else>
 
-<h2><__trans phrase="Clone Blog Setting"></h2>
+<h2><__trans phrase="Clone Blog Settings"></h2>
 <!-- Clone Form -->
 <form name='clone-settings-form' id='clone-settings-form' method="post" action="<mt:var name="script_url">">
     <fieldset>
@@ -160,7 +166,7 @@
                 </li>
                 <li>
                     <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="cb" />
-                    <label for="clone-prefs-categories"><__trans phrase="Categories"></label>
+                    <label for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
                 </li>
             </ul>
         </mtapp:setting>

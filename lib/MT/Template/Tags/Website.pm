@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Website.pm 108025 2009-07-30 10:09:16Z asawada $
+# $Id: Website.pm 110446 2009-09-01 11:00:00Z ytakayama $
 package MT::Template::Tags::Website;
 
 use strict;
@@ -500,6 +500,37 @@ sub _hdlr_website_theme_id {
     my $blog = $ctx->stash('blog');
     return $ctx->_no_website_error() unless $blog;
     return $blog->theme_id;
+}
+
+###########################################################################
+
+=head2 BlogParentWebsite
+
+A container tag which loads parent website of blog in the current context.
+
+=for tags websites blogs
+
+=cut
+
+sub _hdlr_blog_parent_website {
+    my($ctx, $args, $cond) = @_;
+
+    my $blog = $ctx->stash('blog');
+    return $ctx->_no_blog_error() unless $blog;
+
+    my $builder = $ctx->stash('builder');
+    my $tokens = $ctx->stash('tokens');
+
+    require MT::Website;
+    my $website = $blog->website();
+
+    my $res = '';
+    local $ctx->{__stash}{blog} = $website;
+    local $ctx->{__stash}{blog_id} = $website->id;
+    defined(my $out = $builder->build($ctx, $tokens, $cond))
+        or return $ctx->error($builder->errstr);
+    $res .= $out;
+    $res;
 }
 
 1;

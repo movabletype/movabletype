@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Category.pm 109737 2009-08-21 23:22:07Z daiello $
+# $Id: Category.pm 110256 2009-08-31 03:58:17Z asawada $
 package MT::Theme::Category;
 use strict;
 use MT;
@@ -124,7 +124,7 @@ sub folder_export_template {
     for my $cat ( @$list ) {
         $cat->{checked} = $saved ? $checked_ids{$cat->{category_id}} : 1;
     }
-    my %param = ( folders => $list );
+    my %param = ( categories => $list );
     return $app->load_tmpl( 'include/theme_exporters/folder.tmpl', \%param);
 }
 

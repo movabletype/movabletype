@@ -3,8 +3,8 @@
         <thead>
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th class="display-name"><__trans phrase="Category Name"></th>
-                <th class="description primary-col"><__trans phrase="Description"></th>
+                <th class="display-name"><__trans phrase="Folder Name"></th>
+                <th class="path primary-col"><__trans phrase="Path"></th>
             </tr>
         </thead>
         <tbody>
@@ -23,12 +23,12 @@
                     />
                 </td>
                 <td class="display-name">
-                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                    <span>
                         <mt:var name="category_label" escape="html">
                     <span>
                 </td>
-                <td class="description">
-                    <mt:var name="category_description">
+                <td class="path">
+                    <em><__trans phrase="Site URL"></em>/<mt:var name="category_selector_label">
                 </td>
     </mt:if>
             </tr>
@@ -42,10 +42,12 @@ jQuery('.category-tree').click( function(){
     var cat = this;
     if ( $(cat).attr('checked') ) {
         var parent = jQuery( '#default_category_' + jQuery(cat).attr('category_parent') );
-        var path_ids = jQuery(cat).attr('category_path').toString().slice(1,-1).split(')(');
-        jQuery.each(path_ids, function() {
-            jQuery("#default_categories #default_category_" + this ).attr('checked','checked');
-        });
+        if ( parent ) {
+            var path_ids = jQuery(cat).attr('category_path').toString().slice(1,-1).split(')(');
+            jQuery.each(path_ids, function() {
+                jQuery("#default_categories #default_category_" + this ).attr('checked','checked');
+            });
+        }
     }
     else {
         var id = jQuery(cat).attr('value');

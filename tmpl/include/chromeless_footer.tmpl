@@ -8,6 +8,9 @@ if (window.jQuery) {
     function hideByID(id) {
         jQuery('#'+id).hide();
     }
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
 }
 /* ]]> */
 </script>

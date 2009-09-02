@@ -58,6 +58,7 @@ sub core_tags {
             'IfWebsite?'          => '$Core::MT::Template::Tags::Website::_hdlr_website_id',
             'WebsiteIfCCLicense?' => '$Core::MT::Template::Tags::Website::_hdlr_website_if_cc_license',
             'WebsiteHasBlog?'      => '$Core::MT::Template::Tags::Website::_hdlr_website_has_blog',
+            BlogParentWebsite  => '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
 
             ## Author
             Authors            => '$Core::MT::Template::Tags::Author::_hdlr_authors',

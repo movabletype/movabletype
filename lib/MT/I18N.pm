@@ -14,7 +14,7 @@ use vars qw(@ISA @EXPORT_OK);
 @ISA = qw(Exporter);
 @EXPORT_OK = qw(encode_text substr_text length_text guess_encoding const
                 wrap_text first_n_text break_up_text convert_high_ascii
-                lowercase uppercase);
+                lowercase uppercase utf8_off);
 
 my %Supported_Languages = map {$_ => 1} ( qw( en_us ja ) );
 
@@ -26,20 +26,17 @@ sub first_n { _handle(first_n => @_) }
 sub first_n_text { _handle(first_n => @_) } # for backward compatibility
 
 sub substr_text {
-    my $class = shift;
     my ($text, $startpos, $length, $enc) = @_;
     $text = substr($text, $startpos, $length);
     $text;
 }
 
 sub length_text {
-    my $class = shift;
     my ($text, $enc) = @_;
     return length($text);
 }
 
 sub break_up_text {
-    my $class = shift;
     MT::Util::break_up_text( @_ );
 }
 
@@ -104,29 +101,27 @@ my %HighASCII = (
 my $HighASCIIRE = join '|', keys %HighASCII;
 
 sub convert_high_ascii {
-    my $class = shift;
     my ($s) = @_;
     $s =~ s/($HighASCIIRE)/$HighASCII{$1}/g;
     $s;
 }
 
-#sub decode_utf8 {
+ #sub decode_utf8 {
 #    my $class = shift;
 #    Encode::decode_utf8(@_);
 #}
 
 sub utf8_off {
-    my $class = shift;
-    Encode::_utf8_off(@_);
+    my ( $text ) = @_;
+    Encode::_utf8_off($text);
+    return $text;
 }
 
 sub lowercase {
-    my $class = shift;
     return lc $_[0];
 }
 
 sub uppercase {
-    my $class = shift;
     return uc $_[0];
 }
 

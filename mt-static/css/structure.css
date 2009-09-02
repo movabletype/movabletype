@@ -6,7 +6,7 @@ body {
 
 body {
     position: relative;
-    height: auto ! important;
+    height: auto;
     min-height: 100%;
     color: #2b2b2b;
     background-color: #f8fbf8;
@@ -63,6 +63,7 @@ textarea {
 textarea { 
     width: 28em;
     min-height: 5em;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 select { 
     padding: 3px;
@@ -76,8 +77,9 @@ select {
 .listing-filter select, 
 .actions-bar select { 
     height: 2em;
+    margin-right: 3px;
     padding: 2px;
-    font-size: 11px;    
+    font-size: 11px;
 }
 input[type="text"], 
 input[type="password"], 
@@ -105,12 +107,28 @@ input.extra-path {
     margin-left: 5px;
 }
 
-input.smaller-text { 
+input[type="text"].smaller-text { 
     width: 3.5em;
 }
-.larger-text { 
+input[type="text"].larger-text, 
+textarea.larger-text { 
     width: 100%;
 }
+
+.create-inline input[type="text"] { 
+    font-size: 11px;
+}
+
+#notification-listing-table input[type="text"], 
+.batch-edit .title input[type="text"], 
+.batch-edit .datetime input[type="text"] { 
+    width: 100%;
+}
+
+#notification-listing-table .url input[type="text"] { 
+    width: 60%;
+}
+
 
 /* - Component */
 .hint { 
@@ -752,8 +770,10 @@ ul.menu-nav > li.last-child.top-menu-open .toggle-button {
     border-bottom-radius: 0;
 }
 
-ul.menu-nav a.dashboard-link.first-child { 
+ul.menu-nav a.dashboard-link { 
     border: 1px solid #c8c2be;
+}
+ul.menu-nav a.dashboard-link.first-child { 
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     -khtml-border-radius: 5px;
@@ -940,8 +960,6 @@ fieldset {
 }
 
 .field-header label {
-    display: block;
-    margin-top: 3px;
     color: #7b7c7d;
     font-weight: bold;
 }
@@ -949,7 +967,7 @@ fieldset {
 .field-left-label .field-header {
     float: left;
     width: 12em;
-    margin-top: 3px;
+    margin-top: 5px;
     margin-right: 10px;
     text-align: right;
 }
@@ -961,15 +979,25 @@ fieldset {
     margin-bottom: 3px;
 }
 
+.field-inline, 
+.field-inline .field-header, 
+.field-inline .field-content { 
+    display: inline;
+}
+
+.field-inline { 
+    margin-right: 10px;
+}
+
+.field-content-text {
+    padding-top: 5px;
+}
+
 .field-no-header .field-header {
     display: none;
 }
 .field-no-header .field-content {
     margin-left: 0;
-}
-
-.field-content-text {
-    padding-top: 5px;
 }
 
 .field .hint {
@@ -1123,18 +1151,8 @@ button.action:hover {
     margin-left: 8px;
 }
 
-.listing .delete {
-    padding-right: 9px;
-    background: url(../images/status_icons/close-disabled.gif) no-repeat right center;
-    text-decoration: none;
-}
-
-.listing .focus .delete {
-    background-image: url(../images/status_icons/close.gif);
-    text-decoration: none;
-}
-.listing .delete span {
-    display: none;
+.listing-filter .buttons button { 
+    margin-left: 5px;
 }
 
 optgroup {
@@ -1518,8 +1536,12 @@ optgroup option {
 .listing-filter { 
     margin-bottom: 10px;
 }
-.listing-filter input[type="text"]{ 
+.listing-filter input[type="text"] { 
     width: 30%;
+}
+
+.listing-filter .buttons { 
+    margin-left: 5px;
 }
 
 .listing-filter #filter-title, 
@@ -1652,13 +1674,27 @@ optgroup option {
     margin-top: 2px;
 }
 
+/* -- Create Inline */
+.list-notification .create-inline,
+.edit-template .create-inline,
+.list-banlist .create-inline {
+    display: none;
+    padding: 8px 10px;
+    background-color: #dcdddd;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
 /* -- List Status Icons */
 .listing .status-view { text-align: center; }
 .listing .status-view span { display: none; }
 .listing .group-status-enabled img { background: no-repeat center center; }
 .listing .group-status-disabled img { background: no-repeat center center; }
 
-.listing .si img {
+.listing .si img, 
+.listing .view img {
     background-repeat: no-repeat;
     background-position: center center;
 }
@@ -1695,10 +1731,6 @@ optgroup option {
 
 /* -- List Entry */
 /* --- Batch Edit */
-.batch-edit .title input[type="text"], 
-.batch-edit .datetime input[type="text"] { 
-    width: 100%;
-}
 .batch-edit .author { 
     vertical-align: middle;
 }
@@ -1949,26 +1981,48 @@ td .actions-link {
     height: 18px;
 }
 
+/* -- List Notification */
+.list-notification .create-inline input[type="text"] { 
+    width: 25%;
+}
+
 /* -- List Revision */
-tr.current-revision { 
+
+#entry-revision-listing, 
+#template-revision-listing { 
+    margin-bottom: 0;
+    padding: 0;
+}
+
+#entry-revision-listing-table, 
+#table-revision-listing-table { 
+    table-layout: fixed;
+}
+
+.list-revision-dialog tr.current-revision { 
     background-color: #f2f2b0 ! important;
 }
 
 .list-revision-dialog .datetime { 
-    width: 28%;
+    width: 25%;
 }
 
-#entry-revision-listing, 
-#template-revision-listing { 
-    position: relative;
-    padding-bottom: 20px;
+.list-revision-dialog .note { 
+    width: 50%;
 }
 
 /* -- List Log */
+#log-listing-table .blog { 
+    width: 18%;
+}
+
+#log-listing-table .action-by,
+#log-listing-table .datetime { 
+    width: 12%;
+}
 .log-detail-parent:hover { 
     cursor: pointer;
 }
-
 .log-detail-parent .toggle-button { 
     margin-right: 5px;
     background: transparent url(../images/spinner-big-right.gif) center no-repeat;
@@ -1993,6 +2047,11 @@ tr.current-revision {
     border: 1px solid #e5e4e6;
     background-color: #f6f9f3;
     color: #7b7c7d;
+}
+
+/* -- List Association */
+#association-listing-table .blog { 
+    width: 30%; 
 }
 
 /* -- List on Dialog */
@@ -2075,7 +2134,6 @@ td.sub-label label {
 }
 .edit-entry #title-field #title {
     outline: none;
-    width: 100%;
     padding: 2px 3px;
     border: 1px solid #c8c2be;
     font-size: 200%;
@@ -2157,8 +2215,8 @@ td.sub-label label {
 }
 
 * html #tags_completion {
-    top:-21px;
-    left:592px;
+    top: -21px;
+    left: 592px;
 }
 
 #tags_completion div {
@@ -2469,7 +2527,7 @@ td.sub-label label {
 }
 
 /* -- Feedbacks Widget */
-.allow-feedback { 
+.allow-feedback li { 
     position: relative;
 }
 
@@ -2671,13 +2729,17 @@ table.templatemap-listing-table {
 
 #template-options {
     position: relative;
-    background: #E7F0F6;
+    background-color: #dcdddd;
     padding: 1px 10px;
     margin-bottom: 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .edit-template #template-options input[type="text"] { 
-    width: 80%; 
+    width: 80%;
 }
 
 #template-options-header {
@@ -2693,22 +2755,28 @@ table.templatemap-listing-table {
 #template-options #template-options-header h3 {
     display: inline-block;
     margin: 0;
+    font-size: 13px;
+    text-shadow: none;
 }
 
 #template-options #template-options-header h3 a {
-    background: url('../images/arrow-right-blue.gif') no-repeat left center;
-    padding-left: 11px;
+    background: url(../images/arrow-right-gray.gif) no-repeat left center;
+    padding-left: 13px;
+    color: #7B7C7D;
+    text-decoration: none;
 }
-
+#template-options #template-options-header h3 a:hover { 
+    text-decoration: underline;
+}
 #template-options.active #template-options-header h3 a {
-    background-image: url('../images/arrow-down-blue.gif');
+    background-image: url(../images/arrow-down-gray.gif);
 }
 
 #template-options .template-options-summary {
     position: absolute;
     top: 12px;
     right: 0;
-    color: #888;
+    color: #2b2b2b;
     text-align: right;
     width: 400px;
 }
@@ -2743,17 +2811,17 @@ table.templatemap-listing-table {
 
 #caching-field li li {
     display: inline-block;
-    width: 24%;
+    width: 30%;
     margin: .5em 0 0;
 }
 
 #cache-time-value,
 #cache-time-unit {
-    font-size: 12px;
     vertical-align: middle;
 }
 
-#cache-time-value {
+#template-options input#cache-time-value {
+    width: 3.5em;
     text-align: center;
 }
 
@@ -3096,6 +3164,10 @@ input#system_performance_logging_threshold {
     margin-right: 10px;
 }
 
+#list-plugins .setting-advanced { 
+    display: none;
+}
+
 #list-plugins .actions-bar {
     margin-bottom: 10px;
     text-align: right;
@@ -3310,8 +3382,13 @@ div.template-group-content.active {
 }
 
 /* -- Default Category */
-#default_categories-table .category-name { 
-    width: 45%;
+#default_categories-table .display-name { 
+    width: 40%;
+}
+
+/* -- Default Folder */
+#default_folders-table .display-name { 
+    width: 35%;
 }
 
 /* - Search Replace */
@@ -3460,13 +3537,13 @@ div.template-group-content.active {
 .mt-dialog-overlay {
     display: none;
     position: absolute;
-    top: 0%;
-    left: 0%;
+    top: 0;
+    left: 0;
     width: 100%;
     min-width: 950px;
-    height: 200%;
-    background-color: #aaa;
-    z-index: 1000;
+    height: 100%;
+    background-color: #9EA1A3;
+    z-index: 3000;
     -moz-opacity: 0.5;
     opacity: 0.5;
     filter: alpha(opacity=30);
@@ -3480,12 +3557,12 @@ div.template-group-content.active {
     width: 650px;
     margin-left: -325px;
     background: #fff;
-    z-index: 1001;
-    border: 1px solid #aaa;
-    -moz-box-shadow: rgba(0,0,0,1) 0 4px 30px;
-    -webkit-box-shadow: rgba(0,0,0,1) 0 4px 30px;
-    -khtml-box-shadow: rgba(0,0,0,1) 0 4px 30px;
-    box-shadow: rgba(0,0,0,1) 0 4px 30px;
+    z-index: 3001;
+    border: 1px solid #9EA1A3;
+    -moz-box-shadow: #2b2b2b 0 3px 10px;
+    -webkit-box-shadow: #2b2b2b 0 3px 10px;
+    -khtml-box-shadow: #2b2b2b 0 3px 10px;
+    box-shadow: #2b2b2b 0 3px 10px;
 }
 
 .mt-dialog span {
@@ -3586,9 +3663,6 @@ body.dialog {
     color: #2b2b2b;
 }
 
-.dialog .listing-filter { 
-}
-
 .dialog #modal-search .search-query { 
     width: 50%;
 }
@@ -3650,11 +3724,20 @@ body.dialog {
     margin-bottom: .25em;
 }
 
+/* -- Asset Option */
+#asset_details { 
+    margin-bottom: 30px;
+}
+
 #new_entry_prefs {
     border: 1px solid #c8c2be;
     background-color: #dcdddd;
     padding: 10px;
     position: relative;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
 .new-asset #new_entry_prefs {
@@ -4019,6 +4102,19 @@ body.dialog {
 .icon-mini-new-asset    { background-image: url('../images/nav_icons/mini/asset-new.gif'); }
 
 .icon-mini-delete span { display: none; }
+
+.listing .delete {
+    padding-right: 9px;
+    background: url(../images/status_icons/close-disabled.gif) no-repeat right center;
+    text-decoration: none;
+}
+.listing .focus .delete {
+    background-image: url(../images/status_icons/close.gif);
+    text-decoration: none;
+}
+.listing .delete span {
+    display: none;
+}
 
 .tt-dynamic span,
 .tt-linked span,

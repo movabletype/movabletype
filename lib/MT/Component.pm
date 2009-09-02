@@ -417,25 +417,28 @@ sub _init_l10n_handle {
     my $c = shift;
     my ($lang) = @_;
     my $l10n_reg = $c->registry('l10n_lexicon') || {};
-    my $id = $c->id;
-    $id =~ s/[\W]//g;
-    my $base_class = ( $c->l10n_class || join('::', $id, 'L10N') );
-    return unless $base_class;
-
+    my $base_class = $c->l10n_class;
+    if ( !$base_class ) {
+        my $id = $c->id;
+        $id =~ s/[\W]//g;
+        return if $id !~ /^[a-zA-Z]/;
+        $base_class = join('::', $id, 'L10N');
+    }
     $c->_generate_l10n_module( $base_class, 'MT::Plugin::L10N' );
     ## we need en_us because he is the default language.
     ## TBD: ... is it truth?
     my $en_us = join '::', $base_class, 'en_us';
     my $en_us_lexicon = $c->registry('l10n_lexicon','en_us') || {};
     $c->_generate_l10n_module($en_us, $base_class, $en_us_lexicon);
-    for my $lang_tag ( (keys %$l10n_reg, $lang) ) {
-        next if $lang_tag =~ /en[-_]?us/i;
+    my $lang_tag = lc $lang;
+    $lang_tag =~ s/-/_/g;
+    if ( $lang_tag ne 'en_us' ) {
         my $lexicon = $c->registry( 'l10n_lexicon', $lang_tag );
         my $class = join '::', $base_class, $lang_tag;
         $c->_generate_l10n_module($class, $en_us, $lexicon);
     }
     require Locale::Maketext;
-    return Locale::Maketext::get_handle( $base_class, $lang );
+    return Locale::Maketext::get_handle( $base_class, $lang_tag );
 }
 
 sub _generate_l10n_module {

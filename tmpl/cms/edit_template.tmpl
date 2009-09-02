@@ -659,7 +659,7 @@ function toggleCache(id) {
             <ul id="cache-options">
                 <li><input type="radio" value="0" name="cache_expire_type" id="no-cache" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>> <label for="no-cache"><__trans phrase="No caching"></label></li>
                 <li><input type="radio" value="1" name="cache_expire_type" id="expire-time" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
-                    <input type="text" id="cache-time-value" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
+                    <input type="text" id="cache-time-value" class="smaller-text" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
                     <select id="cache-time-unit" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
                         <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
                         <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>

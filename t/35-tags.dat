@@ -448,5 +448,6 @@
 { "r" : "1", "t" : "<MTBlogRelativeURL id='1'>", "e" : "/nana/"}, #445
 { "r" : "1", "t" : "<MTBlogSitePath is='1'>", "e" : "t/site/"}, #446
 { "r" : "1", "t" : "<MTBlogArchiveURL id='1'>", "e" : "http://narnia.na/nana/archives/"}, #447
-{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:Websites>", "e" : "true"} #448
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:Websites>", "e" : "true"}, #448
+{ "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"} #449
 ]

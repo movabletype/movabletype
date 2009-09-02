@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Search.pm 109781 2009-08-24 06:58:59Z ytakayama $
+# $Id: Search.pm 110280 2009-08-31 07:49:30Z ytakayama $
 package MT::CMS::Search;
 
 use strict;
@@ -148,7 +148,7 @@ sub core_search_apis {
         },
         'asset' => {
             'order' => 600,
-            'permission' => 'manage_assets',
+            'permission' => 'edit_assets',
             'label' => 'Assets',
             'handler' => '$Core::MT::CMS::Asset::build_asset_table',
             'perm_check' => sub {

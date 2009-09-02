@@ -244,20 +244,20 @@ function activatePlugin(flag, plugin_sig) {
 
                 <div id="plugin<mt:var name="plugin_id">-content" class="plugin-content">
 
-                    <ul class="plugin-tabs-list"> <!-- Plugin Tab -->
-                        <li><a href="#plugin<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments"><__trans phrase="Info"></a></li>
+                    <ul class="plugin-tabs-list tabs"> <!-- Plugin Tab -->
+                        <li class="tab"><a href="#plugin<mt:var name="plugin_id">-info" class="icon-mini-left icon-mini-comments"><__trans phrase="Info"></a></li>
         <mt:if name="plugin_resources">
-                        <li><a href="#plugin<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates"><__trans phrase="Resources"></a></li>
+                        <li class="tab"><a href="#plugin<mt:var name="plugin_id">-resources" class="icon-mini-left icon-mini-templates"><__trans phrase="Resources"></a></li>
         </mt:if>
         <mt:if name="can_config">
             <mt:if name="plugin_config_html">
-                        <li><a href="#plugin<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings"><__trans phrase="Settings"></a></li>
+                        <li class="tab"><a href="#plugin<mt:var name="plugin_id">-config" class="icon-mini-left icon-mini-settings"><__trans phrase="Settings"></a></li>
             </mt:if>
             <mt:if name="plugin_config_link">
                 <mt:if name="plugin_config_html">
-                        <li><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
+                        <li class="tab"><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
                 <mt:else>
-                        <li><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
+                        <li class="tab"><a href="<mt:var name="plugin_page">" class="icon-mini-left icon-mini-settings"><__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">"></a></li>
                 </mt:if>
             </mt:if>
         </mt:if>

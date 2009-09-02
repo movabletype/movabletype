@@ -120,6 +120,10 @@ $.mtQuickFilter = function() {
  */
 $.mtDisplayOptions = function() {
     $('div#display-options-widget').css('position', 'absolute').hide();
+    // for ie6 tweaks
+    if (!$.support.style && !$.support.objectAll) {
+        if ($.fn.bgiframe) $('div#display-options-widget').bgiframe();
+    }
 
     $('a.display-options-link').click(function() {
         $('a.display-options-link').toggleClass('display-options-link-open');
@@ -275,8 +279,8 @@ function open_dialog(href, opts) {
             }
         });
     }
-    // for ie tweaks
-    if (!$.support.boxModel) {
+    // for ie6 tweaks
+    if (!$.support.style && !$.support.objectAll) {
         if ($.fn.bgiframe) $('.mt-dialog-overlay').bgiframe();
         if ($.fn.exFixed) $('.mt-dialog').exFixed();
     }

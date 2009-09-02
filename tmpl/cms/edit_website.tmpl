@@ -150,11 +150,13 @@ function dirify_blog_name(fld) {
     id="blog_language"
     label="<__trans phrase="Language">"
     hint="<__trans phrase="Blog language.">"
-    show_warning="1"
-    warning="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">">
-    <select name="blog_language" id="blog_language" class="se"><mt:loop name="languages">
-        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+    show_warning="1">
+    <select name="blog_language" id="blog_language" class="se">
+    <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+    </mt:loop>
     </select>
+    <p class="hint"><__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules."></p>
 </mtapp:setting>
 
 <mt:setvarblock name="action_buttons">

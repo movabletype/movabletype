@@ -257,7 +257,7 @@ sub backup {
 
     my $files = {};
     _loop_through_objects(
-        $printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files);
+        $printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files, $header);
 
     my $else_xml = MT->run_callbacks('Backup', $blog_ids, $progress);
     $printer->($else_xml) if $else_xml ne '1';
@@ -267,7 +267,7 @@ sub backup {
 }
 
 sub _loop_through_objects {
-    my ($printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files) = @_;
+    my ($printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files, $header) = @_;
 
     my $counter = 1;
     my $bytes = 0;
@@ -329,7 +329,7 @@ sub _loop_through_objects {
                 $bytes += $printer->($object->to_xml(undef, \@metacolumns) . "\n");
                 $records++;
                 if ($size && ($bytes >= $size)) {
-                    $splitter->(++$counter);
+                    $splitter->(++$counter, $header);
                     $bytes = 0;
                 }
                 if ( $class eq $author_pkg ) {

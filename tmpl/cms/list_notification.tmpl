@@ -153,11 +153,11 @@
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-<a href="javascript:void(0)"
+<button
     onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="contact" escape="js">', '<__trans phrase="contacts" escape="js">'); return false;"
     accesskey="x"
     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-    ><__trans phrase="Delete"></a>
+    ><__trans phrase="Delete"></button>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <ul class="action-link-list">
@@ -173,14 +173,14 @@
 <input type="hidden" name="_type" value="notification" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="id" value="" />  
+<input type="hidden" name="id" value="" />
 <mtapp:setting
     id="email"
     label="<__trans phrase="Email">"
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="email" id="email" value="<mt:var name="email" escape="html">" />
+    <input type="text" name="email" id="email" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 <mtapp:setting
     id="website"
@@ -188,14 +188,8 @@
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="url" id="url" value="<mt:var name="url" escape="html">">
+    <input type="text" name="url" id="url" value="<mt:var name="url" escape="html">">
 </mtapp:setting>
-<mtapp:setting
-    id="actions"
-    label="<__trans phrase="Actions">"
-    label_class="inline field-no-header"
-    hint=""
-    show_hint="0">
     <span class="buttons">
         <button
             type="submit"
@@ -206,7 +200,6 @@
             class="small-button mt-cancel-action"
             ><__trans phrase="Cancel"></button> 
     </span>
-</mtapp:setting>
 </form>
 </div>
 <mt:include name="include/notification_table.tmpl">

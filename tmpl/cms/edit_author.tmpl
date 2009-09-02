@@ -325,7 +325,7 @@ TC.attachLoadEvent(init);
         hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
         <select name="text_format" id="text_format" class="se">
         <mt:loop name="text_filters">
-            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
+            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Website/Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
         </mt:loop>
         </select>
     </mtapp:setting>

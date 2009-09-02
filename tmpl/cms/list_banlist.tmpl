@@ -50,6 +50,13 @@ function cancelCreateMode () {
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <mt:if name="show_ip_info">
+    <ul id="create-ip" class="action-link-list">
+        <li><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban IP Address"></a></li>
+    </ul>
+    </mt:if>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <div id="create-inline-ipban" class="create-inline">
@@ -108,6 +115,7 @@ function cancelCreateMode () {
     </tbody>
     </mt:if>
 </mtapp:listing>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery.mtCheckbox();
 

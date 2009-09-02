@@ -1,4 +1,5 @@
 <$mt:var name="pager" value="$hide_pager" default="0"$>
+<div id="selector" class="selector listing">
 <mtapp:listing
     hide_pager="$pager"
     show_actions="$show_actions"
@@ -28,8 +29,8 @@
     <mt:if name="__last__">
         </tbody>
     </mt:if>
-    <mt:if name="dialog">
-        <mt:include name="include/pagination.tmpl">
-    </mt:if>
 </mtapp:listing>
 
+<mt:include name="include/pagination.tmpl">
+
+</div>

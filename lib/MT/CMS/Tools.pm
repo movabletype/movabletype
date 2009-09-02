@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Tools.pm 109576 2009-08-20 09:59:52Z ytakayama $
+# $Id: Tools.pm 110531 2009-09-02 08:01:37Z ytakayama $
 package MT::CMS::Tools;
 
 use strict;
@@ -863,7 +863,8 @@ sub backup {
         $printer =
           sub { my ($data) = @_; print $fh $data; return length($data); };
         $splitter = sub {
-            my ($findex) = @_;
+            my ($findex, $header) = @_;
+
             print $fh '</movabletype>';
             close $fh;
             my $filename =
@@ -880,10 +881,6 @@ sub backup {
                 url      => $url,
                 filename => $file . "-$findex.xml"
               };
-            my $header .=
-              "<movabletype xmlns='"
-              . MT::BackupRestore::NS_MOVABLETYPE() . "'>\n";
-            $header = "<?xml version='1.0'?>\n$header";
             print $fh $header;
         };
         $finisher = sub {

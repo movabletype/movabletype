@@ -2583,7 +2583,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Global Templates' => 'グローバルテンプレートを初期化',
 	'Revert modifications of theme templates' => 'テーマテンプレートの変更の取り消し',
-	'Reset to theme defaults' => 'デファオルトテーマのリセット',
+	'Reset to theme defaults' => 'デフォルトテーマのリセット',
 	'Deletes all existing templates and install the selected theme\'s default.' => '全テンプレートを削除して、既定となっているテーマをインストールします。',
 	'Refresh global templates' => 'グローバルテンプレートを初期化',
 	'Reset to factory defaults' => '初期状態にリセット',

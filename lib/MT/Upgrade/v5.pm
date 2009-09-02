@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: v5.pm 110099 2009-08-28 02:03:59Z ytakayama $
+# $Id: v5.pm 110115 2009-08-28 04:05:43Z asawada $
 
 package MT::Upgrade::v5;
 
@@ -24,6 +24,11 @@ sub upgrade_functions {
             version_limit => 5.0004,
             priority      => 3.1,
             code          => \&_v5_migrate_system_privilege,
+        },
+        'v5_migrate_theme_privilege' => {
+            version_limit => 5.0014,
+            priority      => 3.1,
+            code          => \&_v5_migrate_theme_privilege,
         },
         'v5_migrate_mtview' => {
             version_limit => 5.0004,

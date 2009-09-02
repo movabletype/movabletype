@@ -46,9 +46,14 @@ sub preprocess_native_tags {
     # Explicity set blog_id for MTInclude if not specified
     # so that it never gets a multiblog context from MTMultiBlog
     elsif ($tag eq 'include' and ! exists $args->{blog_id}) {
-        my $local_blog_id = $ctx->stash('local_blog_id');
-        if (defined $local_blog_id) {
-            $args->{blog_id} = $ctx->stash('local_blog_id');
+        if ( $ctx->stash('multiblog_context') && !$args->{local} ) {
+            $args->{blog_id} = $ctx->stash('blog_id');
+        }
+        else {
+            my $local_blog_id = $ctx->stash('local_blog_id');
+            if (defined $local_blog_id) {
+                $args->{blog_id} = $ctx->stash('local_blog_id');
+            }
         }
     }
     # If no include_blogs/exclude_blogs specified look for a 

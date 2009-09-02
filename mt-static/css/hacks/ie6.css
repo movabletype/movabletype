@@ -1,45 +1,74 @@
 /* - Generic */
+body { 
+    height: 100% ! important;
+}
+
 /* -- Form */
 input.text, 
 input.password, 
 textarea { 
-    border: 1px solid #c8c2be;
-    background-color: #F8FBF8;
     width: 380px;
+    border: 1px solid #c8c2be;
 }
-input.password { 
-    width: 15em;
+
+.list-notification .create-inline input.text { 
+    width: 25%;
 }
-input.extra-path { 
-    width: 12em;
+
+#notification-listing-table input.text, 
+.batch-edit table input.text { 
+    width: 100%;
+}
+
+#notification-listing-table .url input.text { 
+    width: 60%;
+}
+
+input.smaller-text { 
+    width: 3.5em ! important;
+}
+input.larger-text, 
+textarea.larger-text { 
+    width: 100% ! important;
 }
 
 /* - App Header */
+/* -- Brand */
+#brand a,
+.preview-screen #brand {
+    background-image: none ! important;
+    text-align: center;
+}
+
+#brand a span { 
+    display: inline-block;
+    width: 170px;
+    height: 25px;
+    margin-top: 5px;
+    background: transparent url(../../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+}
+
+.website #brand a span {
+    background-image: url(../../images/logo/movable-type-brand-logo-website.png);
+}
+.system #brand a span {
+    background-image: url(../../images/logo/movable-type-brand-logo-system.png);
+}
+
+
+
 /* -- Menu bar, Content Nav */
-.website #selector-nav #current-website em, 
-.blog #selector-nav #current-website em { 
+#selector-nav #current-website em { 
     background-color: #839B5C;
 }
-.website #selector-nav #current-blog em { 
-    background-color: #7B7C7D;
-}
-.blog #selector-nav #current-blog em { 
+#selector-nav #current-blog em { 
     background-color: #5C909B;
 }
 #selector-nav #current-website em { 
     margin-right: -4px;
 }
 #selector-nav .selector { 
-    width: 250px;
-}
-#selector-nav #system-overview.show-selector #system-selector, 
-#selector-nav #current-website.show-selector #website-selector, 
-#selector-nav #current-blog.show-selector #blog-selector, 
-#selector-nav .show-selector .selector li { 
-    display: block;
-}
-#selector-nav #current-website.show-selector #blog-selector { 
-    display: none;
+    width: 300px;
 }
 
 /* - Navigation Menu */
@@ -68,20 +97,54 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
 }
 
 /* - Actions Bar */
-.dialog .actions-bar {
-    height: 22px;
+button { 
+    line-height: 1.1;
 }
 
+.actions-bar { 
+    height: 25px;
+}
 
-ul#asset-list li a.remove-asset {
+.chromeless .actions-bar button { 
+    float: right;
+    margin-left: 12px;
+}
+.chromeless .actions-bar button.goback { 
+    margin-left: 0;
+}
+
+ul#asset-list li a.remove-asset { 
    top: -1px;
    right: 13px;
 }
+/* - Footer */
+#footer { 
+    position: static;
+    margin-top: 0;
+}
+
+/* - Modal Dialog */
+html#dialog { 
+    border: 0 ! important;
+}
+
+/* - for IE6 Duplicate Characters Bug */
+#related-content { 
+    margin-left: -3px;
+}
 
 /* - haslayout */
+#content-header, 
 .msg, 
+.plugin, 
+.field-content ul, 
 .listing-screen .actions-bar, 
 #editor .editor-header, 
-.widget-header { 
+.widget-header, 
+.allow-feedback li, 
+.dialog #selector, 
+#template-options-header, 
+#template-options .field, 
+#related-content {  
     zoom: 1;
 }

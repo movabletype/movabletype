@@ -1,9 +1,29 @@
 /* - Generic */
-/* -- Form */
+input, 
+select, 
+textarea { 
+    padding: 0 ! important;
+}
+
 .edit-entry #title-field #title, 
+.edit-template #title-field #title, 
 .edit-entry input.text, 
-.edit-entry textarea { 
-    width: 97%;
+.edit-entry input.password, 
+.edit-entry textarea, 
+.edit-template input.text, 
+.edit-template input.password, 
+.edit-template textarea { 
+    width: 99%;
+}
+
+.widget input.text, 
+.widget input.password, 
+.widget textarea { 
+    width: 98%;
+}
+
+#template-options input.text { 
+    width: 80%;
 }
 
 /* -- Button */
@@ -17,6 +37,12 @@ button.action {
     padding: 0 auto;
     height: 23px;
 }
+
+/* - Component */
+.icon-left { 
+    background-position: left 2px;
+}
+
 
 /* - App Header */
 #header { 
@@ -72,20 +98,22 @@ ul#asset-list li a.remove-asset {
 
 /* - fake display: inline-block; */
 .ui-tabs-nav li, 
-.object-nav li, 
+ul.tabs li, 
 #utility-nav li, 
 #selector-nav .current, 
-#caching-field li li, 
-#permission-list ul li, 
-#utility-nav li, 
-#menu-bar-list li, 
-#screen-nav li,
+.object-nav li, 
 #editor .editor-header .tab, 
 #field-convert_breaks, 
-.settings-screen ul#editor-fields li, 
-#basename-field .field-content #basename-lock, 
 #template-options #template-options-header h3, 
-.edit-author #system_permissions-field li { 
+#caching-field li li, 
+#permission-list li, 
+.settings-screen ul#editor-fields li, 
+.edit-author #system_permissions-field li, 
+.template-group-header h3, 
+#search-bar-advanced-search li, 
+.search-replace .advanced-options li, 
+.dialog .selected-items .items a .remove, 
+.mt-beta #footer #msg-beta p { 
     display: inline;
     height: 1%;
 }

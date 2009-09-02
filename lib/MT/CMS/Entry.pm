@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Entry.pm 109752 2009-08-22 02:50:07Z fyoshimatsu $
+# $Id: Entry.pm 110443 2009-09-01 10:23:11Z ytakayama $
 package MT::CMS::Entry;
 
 use strict;
@@ -476,6 +476,7 @@ sub edit {
     }
 
     $param->{object_type}  = $type;
+    $param->{object_label} = $class->class_label;
     $param->{field_loop} ||= [ map { {
         field_name => $_,
         field_id => $_,
@@ -1767,7 +1768,7 @@ sub save_entries {
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
     for my $p (@p) {
-        next unless $p =~ /^category_id_(\d+)/;
+        next unless $p =~ /^author_id_(\d+)/;
         my $id    = $1;
         my $entry = MT::Entry->load($id)
             or next;
@@ -2168,6 +2169,8 @@ sub build_entry_table {
                 );
                 $row->{row_author_id} = $obj->author_id,
              }
+
+            $row->{entry_blog_id} = $obj->blog_id;
         }
         if ( my $blog = $blogs{ $obj->blog_id } ||=
             MT::Blog->load( $obj->blog_id ) )
