@@ -1,0 +1,32 @@
+<mt:Ignore><!-- 
+#
+#  The sidebar is made up of one or two columns.
+#  For 2-column designs, just beta.
+#  For 3-column designs, beta and gamma.
+#
+--></mt:Ignore>
+
+
+<div id="beta">
+    <div id="beta-inner">
+
+<mt:If name="page_columns" eq="2">
+    <mt:Ignore><!-- Use the 2-column layout Sidebar if page layout is layout-wt or layout-tw. --></mt:Ignore>
+    <$mt:WidgetSet name="<__trans phrase="2-column layout - Sidebar">"$>
+<mt:Else name="page_columns" eq="3">
+    <mt:Ignore><!-- Use the 3-column layout Primary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>
+    <$mt:WidgetSet name="<__trans phrase="3-column layout - Primary Sidebar">"$>
+</mt:If>
+
+    </div>
+</div>
+
+
+<mt:If name="page_columns" eq="3">
+    <mt:Ignore><!-- Use the 3-column layout Secondary Sidebar if page layout is layout-wtt or layout-twt. --></mt:Ignore>
+<div id="gamma">
+    <div id="gamma-inner">
+    <$mt:WidgetSet name="<__trans phrase="3-column layout - Secondary Sidebar">"$>
+    </div>
+</div>
+</mt:If>

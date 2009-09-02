@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>CodePress - Real Time Syntax Highlighting Editor written in JavaScript</title>
+<meta name="description" content="CodePress - source code editor window">
+<script type="text/javascript">
+	var loc = location.href;
+	var params = loc.substring( loc.indexOf( "?" ) + 1 );
+    var c = params.split( "&" );
+	for ( var i = 0, len = c.length; i < len && len > 0; i++ ) {
+	    var v = c[ i ].split( "=" );
+        if ( v.length != 2 )
+            continue;
+        switch ( v[ 0 ] ) {
+            case "engine":
+            case "language":
+                eval( v[ 0 ] + "=unescape('" + v[ 1 ].replace( /\+/g, " " ).replace( /'|"|<|>/g, '' ) + "')" );
+                break;
+        }
+    }
+    
+    if ( window.engine )
+        engine = engine.replace( /'|"|<|>/g, '' );
+
+    if ( window.language )
+        language = language.replace( /'|"|<|>/g, '' );
+
+	var ts = ( new Date ).getTime();
+
+	if ( window.language == null || window.language == '' )
+        language = 'generic';
+
+    if ( !window.engine ) {
+        var ua = navigator.userAgent;
+        if ( ua.match( 'MSIE' ) )
+            engine = 'msie';
+        else if( ua.match( 'Opera' ) )
+            engine = 'opera'; 
+        else if( ua.match( 'Gecko' ) )
+            engine = 'gecko';
+        else
+            engine = 'older';
+	}
+
+    document.write('<link type="text/css" href="codepress.css?ts='+ts+'" rel="stylesheet" />');
+	document.write('<link type="text/css" href="languages/'+language+'.css?ts='+ts+'" rel="stylesheet" id="cp-lang-style" />');
+	document.write('<scr'+'ipt type="text/javascript" src="engines/'+engine+'.js?ts='+ts+'"></scr'+'ipt>');
+	document.write('<scr'+'ipt type="text/javascript" src="languages/'+language+'.js?ts='+ts+'"></scr'+'ipt>');
+	document.write('<scr'+'ipt type="text/javascript" src="languages/mt.js?ts='+ts+'"></scr'+'ipt>');
+</script>
+</head>
+<script type="text/javascript">
+    switch ( engine ) {
+        case "msie":
+        case "gecko":
+            document.write( '<body><pre> </pre></body>' );
+            break;
+        case "opera":
+            document.write( '<body></body>' );
+            break;
+    }
+</script>
+</html>

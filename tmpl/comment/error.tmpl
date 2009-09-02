@@ -1,0 +1,21 @@
+<mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<mtapp:statusmsg
+    id="generic-error"
+    class="error">
+    <mt:var name="error">
+</mtapp:statusmsg>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        onclick="<mt:var name="goback">"
+        accesskey="s"
+        title="<__trans phrase="Go Back (s)">"
+        class="go-back action primary-button"
+        ><__trans phrase="Go Back"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+<mt:include name="include/chromeless_footer.tmpl">

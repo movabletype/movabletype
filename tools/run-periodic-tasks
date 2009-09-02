@@ -1,0 +1,114 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id: run-periodic-tasks 3531 2009-03-12 09:11:52Z fumiakiy $
+
+use strict;
+
+use lib 'lib', '../lib', 'extlib', '../extlib';
+
+my $daemonize = 0;
+my $sleep     = 5;
+my $help      = 0;
+my $load      = 10;
+my $verbose   = 0;
+my $scoreboard;
+my $randomize_jobs = 0;
+my $trace_objects  = 0;
+
+require Getopt::Long;
+Getopt::Long::GetOptions(
+    "daemon"       => \$daemonize,
+    "sleep=i"      => \$sleep,
+    "load=i"       => \$load,
+    "scoreboard=s" => \$scoreboard,
+    "randomly"     => \$randomize_jobs,
+    "verbose"      => \$verbose,
+    "leak"         => \$trace_objects,
+);
+require MT::TheSchwartz;
+
+if ($trace_objects) {
+    require Devel::Leak::Object;
+    Devel::Leak::Object->import(qw{ GLOBAL_bless });
+}
+
+my $proc_process_table = eval {
+    require Proc::ProcessTable;
+    1;
+};
+
+$@ = undef;
+
+my %cfg;
+$cfg{verbose}    = $verbose;
+$cfg{scoreboard} = $scoreboard;
+$cfg{prioritize} = 1;
+$cfg{randomize}  = $randomize_jobs;
+
+require MT::Bootstrap;
+require MT;
+
+my $mt = MT->new() or die MT->errstr;
+if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
+    my $t = new Proc::ProcessTable;
+    my $rpt_count;
+    foreach my $p ( @{ $t->table } ) {
+        my $cmd = $p->cmndline;
+        if ( $cmd =~ /^perl/ && $cmd =~ /run-periodic-tasks/ ) {
+            $rpt_count += 1;
+        }
+    }
+    if ( $rpt_count > MT->config('RPTProcessCap') ) {
+        $rpt_count = $rpt_count - 1;    # Don't report this RPT
+        die "$rpt_count processes already running; cancelling RPT launch\n";
+    }
+}
+
+if ( MT->config('RPTFreeMemoryLimit') ) {
+    my $limit = MT->config('RPTFreeMemoryLimit');
+    if ( $limit and ! MT::TheSchwartz::_has_enough_swap($limit) ) {
+        die
+            "Free memory below RPT limit; cancelling RPT launch\n";
+    }
+}
+if ( MT->config('RPTFreeSwapLimit') ) {
+    my $swaplimit = MT->config('RPTSwapMemoryLimit');
+    if ( $swaplimit and ! MT::TheSchwartz::_has_enough_swap($swaplimit) ) {
+        die
+            "Free swap memory below RPT limit; cancelling RPT launch\n";
+    }
+}
+
+$mt->{vtbl}                 = {};
+$mt->{is_admin}             = 0;
+$mt->{template_dir}         = 'cms';
+$mt->{user_class}           = 'MT::Author';
+$mt->{plugin_template_path} = 'tmpl';
+$mt->run_callbacks( 'init_app', $mt );
+
+my $client = eval {
+    require MT::TheSchwartz;
+    my $c = MT::TheSchwartz->new(%cfg);
+    no warnings 'once';
+    $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
+    $c;
+};
+if ( ( my $error = $@ ) && $verbose ) {
+    print STDERR "Error initializing TheSchwartz: $error\n";
+}
+
+if ( $daemonize && $client ) {
+    $client->work_periodically($sleep);
+}
+else {
+
+    # First, run periodic tasks
+    $mt->run_tasks();
+    $client->work_until_done if $client;
+}
+
+1;

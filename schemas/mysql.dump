@@ -1,0 +1,323 @@
+--  $Id: mysql.dump 1098 2007-12-12 01:47:58Z hachi $
+
+create table mt_author (
+    author_id integer not null auto_increment primary key,
+    author_name varchar(50) not null,
+    author_type tinyint not null,
+    author_nickname varchar(50),
+    author_password varchar(60) not null,
+    author_email varchar(75) not null,
+    author_url varchar(255),
+    author_can_create_blog tinyint,
+    author_can_view_log tinyint,
+    author_hint varchar(75),
+    author_created_by integer,
+    author_public_key text,
+    author_preferred_language varchar(50),
+    author_remote_auth_username varchar(50),
+    author_remote_auth_token varchar(50),
+    unique (author_name, author_type),
+    index (author_email)
+);
+
+create table mt_blog (
+    blog_id integer not null auto_increment primary key,
+    blog_name varchar(255) not null,
+    blog_description text,
+    blog_site_path varchar(255),
+    blog_site_url varchar(255),
+    blog_archive_path varchar(255),
+    blog_archive_url varchar(255),
+    blog_archive_type varchar(255),
+    blog_archive_type_preferred varchar(25),
+    blog_days_on_index smallint,
+    blog_entries_on_index smallint,
+    blog_language varchar(5),
+    blog_suspicious_url_count integer,
+    blog_suspicious_entry_age integer,
+    blog_junk_folder_expiry integer,
+    blog_junk_score_threshold float,
+    blog_file_extension varchar(10),
+    blog_email_new_comments tinyint,
+    blog_email_new_pings tinyint,
+    blog_allow_comment_html tinyint,
+    blog_autolink_urls tinyint,
+    blog_sort_order_posts varchar(8),
+    blog_sort_order_comments varchar(8),
+    blog_allow_comments_default tinyint,
+    blog_allow_pings_default tinyint,
+    blog_server_offset float,
+    blog_convert_paras varchar(30),
+    blog_convert_paras_comments varchar(30),
+    blog_status_default tinyint,
+    blog_allow_anon_comments tinyint,
+    blog_allow_reg_comments tinyint,
+    blog_allow_unreg_comments tinyint,
+    blog_allow_pings tinyint,
+    blog_moderate_unreg_comments tinyint,
+    blog_require_comment_emails tinyint,
+    blog_manual_approve_commenters tinyint,
+    blog_moderate_pings tinyint,
+    blog_words_in_excerpt smallint,
+    blog_ping_technorati tinyint,
+    blog_ping_weblogs tinyint,
+    blog_ping_blogs tinyint,
+    blog_ping_others text,
+    blog_mt_update_key varchar(30),
+    blog_autodiscover_links tinyint,
+    blog_welcome_msg text,
+    blog_old_style_archive_links tinyint,
+    blog_archive_tmpl_monthly varchar(255),
+    blog_archive_tmpl_weekly varchar(255),
+    blog_archive_tmpl_daily varchar(255),
+    blog_archive_tmpl_individual varchar(255),
+    blog_archive_tmpl_category varchar(255),
+    blog_google_api_key varchar(32),
+    blog_sanitize_spec varchar(255),
+    blog_cc_license varchar(255),
+    blog_is_dynamic tinyint,
+    blog_remote_auth_token varchar(50),	
+    blog_children_modified_on datetime,
+    blog_custom_dynamic_templates varchar(25),
+    index (blog_name)
+);
+
+create table mt_category (
+    category_id integer not null auto_increment primary key,
+    category_blog_id integer not null,
+    category_allow_pings tinyint,
+    category_label varchar(100) not null,
+    category_description text,
+    category_author_id integer,
+    category_ping_urls text,
+    category_parent integer,
+);
+
+create table mt_comment (
+    comment_id integer not null auto_increment primary key,
+    comment_blog_id integer not null,
+    comment_entry_id integer not null,
+    comment_ip varchar(16),
+    comment_author varchar(100),
+    comment_email varchar(75),
+    comment_url varchar(255),
+    comment_commenter_id integer,
+    comment_visible tinyint,
+    comment_junk_status tinyint not null default 0,
+    comment_junk_log text,
+    comment_junk_score float,
+    comment_text text,
+    comment_last_moved_on timestamp not null,
+    comment_created_on datetime not null,
+    comment_modified_on timestamp not null,
+    comment_created_by integer,
+    comment_modified_by integer,
+    index (comment_created_on),
+    index (comment_entry_id),
+    index (comment_blog_id),
+    index (comment_junk_status)
+);
+
+create table mt_entry (
+    entry_id integer not null auto_increment primary key,
+    entry_blog_id integer not null,
+    entry_status tinyint not null,
+    entry_author_id integer not null,
+    entry_allow_comments tinyint,
+    entry_allow_pings tinyint,
+    entry_convert_breaks varchar(30),
+    entry_category_id integer,
+    entry_title varchar(255),
+    entry_excerpt text,
+    entry_text text,
+    entry_text_more text,
+    entry_to_ping_urls text,
+    entry_pinged_urls text,
+    entry_keywords text,
+    entry_tangent_cache text,
+    entry_created_on datetime not null,
+    entry_modified_on timestamp not null,
+    entry_created_by integer,
+    entry_modified_by integer,
+    entry_basename varchar(50) not null,
+    entry_week_number integer,
+    index (entry_blog_id),
+    index (entry_status),
+    index (entry_author_id),
+    index (entry_created_on),
+    index (entry_basename),
+    index (entry_week_number)
+);
+
+create table mt_ipbanlist (
+    ipbanlist_id integer not null auto_increment primary key,
+    ipbanlist_blog_id integer not null,
+    ipbanlist_ip varchar(15) not null,
+    ipbanlist_created_on datetime not null,
+    ipbanlist_modified_on timestamp not null,
+    ipbanlist_created_by integer,
+    ipbanlist_modified_by integer,
+    index (ipbanlist_blog_id),
+    index (ipbanlist_ip)
+);
+
+create table mt_log (
+    log_id integer not null auto_increment primary key,
+    log_message varchar(255),
+    log_ip varchar(16),
+    log_blog_id integer default 0 not null,
+    log_created_on datetime not null,
+    log_modified_on timestamp not null,
+    log_created_by integer,
+    log_modified_by integer,
+    index (log_created_on)
+);
+
+create table mt_notification (
+    notification_id integer not null auto_increment primary key,
+    notification_blog_id integer not null,
+    notification_name varchar(50),
+    notification_email varchar(75),
+    notification_url varchar(255),
+    notification_created_on datetime not null,
+    notification_modified_on timestamp not null,
+    notification_created_by integer,
+    notification_modified_by integer,
+    index (notification_blog_id)
+);
+
+create table mt_permission (
+    permission_id integer not null auto_increment primary key,
+    permission_author_id integer not null,
+    permission_blog_id integer not null,
+    permission_role_mask smallint,
+    permission_entry_prefs varchar(255),
+    unique (permission_blog_id, permission_author_id)
+);
+
+create table mt_placement (
+    placement_id integer not null auto_increment primary key,
+    placement_entry_id integer not null,
+    placement_blog_id integer not null,
+    placement_category_id integer not null,
+    placement_is_primary tinyint not null,
+    index (placement_entry_id),
+    index (placement_category_id),
+    index (placement_is_primary)
+);
+
+create table mt_plugindata (
+    plugindata_id integer not null auto_increment primary key,
+    plugindata_plugin varchar(50) not null,
+    plugindata_key varchar(255) not null,
+    plugindata_data mediumtext,
+    index (plugindata_plugin),
+    index (plugindata_key)
+);
+
+create table mt_template (
+    template_id integer not null auto_increment primary key,
+    template_blog_id integer not null,
+    template_name varchar(50) not null,
+    template_type varchar(25) not null,
+    template_outfile varchar(255),
+    template_rebuild_me tinyint default 1,
+    template_text text,
+    template_linked_file varchar(255),
+    template_linked_file_mtime varchar(10),
+    template_linked_file_size mediumint,
+    template_created_on datetime not null,
+    template_modified_on timestamp not null,
+    template_created_by integer,
+    template_modified_by integer,
+    template_build_dynamic tinyint,
+    unique (template_blog_id, template_name),
+    index (template_type)
+);
+
+create table mt_templatemap (
+    templatemap_id integer not null auto_increment primary key,
+    templatemap_blog_id integer not null,
+    templatemap_template_id integer not null,
+    templatemap_archive_type varchar(25) not null,
+    templatemap_file_template varchar(255),
+    templatemap_is_preferred tinyint not null,
+    index (templatemap_blog_id),
+    index (templatemap_template_id),
+    index (templatemap_archive_type),
+    index (templatemap_is_preferred)
+);
+
+create table mt_trackback (
+    trackback_id integer not null auto_increment primary key,
+    trackback_blog_id integer not null,
+    trackback_title varchar(255),
+    trackback_description text,
+    trackback_rss_file varchar(255),
+    trackback_url varchar(255),
+    trackback_entry_id integer not null,
+    trackback_category_id integer not null,
+    trackback_passphrase varchar(30),
+    trackback_is_disabled tinyint default 0,
+    trackback_created_on datetime not null,
+    trackback_modified_on timestamp not null,
+    trackback_created_by integer,
+    trackback_modified_by integer,
+    index (trackback_blog_id),
+    index (trackback_entry_id),
+    index (trackback_category_id),
+    index (trackback_created_on)
+);
+
+create table mt_tbping (
+    tbping_id integer not null auto_increment primary key,
+    tbping_blog_id integer not null,
+    tbping_tb_id integer not null,
+    tbping_title varchar(255),
+    tbping_excerpt text,
+    tbping_source_url varchar(255),
+    tbping_ip varchar(15) not null,
+    tbping_blog_name varchar(255),
+    tbping_visible tinyint,
+    tbping_junk_log text,
+    tbping_junk_status tinyint not null default 0,
+    tbping_junk_score float,
+    tbping_last_moved_on timestamp not null,
+    tbping_created_on datetime not null,
+    tbping_modified_on timestamp not null,
+    tbping_created_by integer,
+    tbping_modified_by integer,
+    index (tbping_blog_id),
+    index (tbping_tb_id),
+    index (tbping_ip),
+    index (tbping_junk_status),
+    index (tbping_created_on),
+    index (tbping_last_moved_on)
+);
+
+create table mt_session (
+    session_id varchar(80) not null primary key,
+    session_data text,
+    session_email varchar(255),
+    session_name varchar(255),
+    session_start int not null,
+    session_kind varchar(2),
+    index (session_start)
+);
+
+create table mt_fileinfo (
+    fileinfo_id integer primary key auto_increment,
+    fileinfo_blog_id integer not null,
+    fileinfo_entry_id integer,
+    fileinfo_url varchar(255),
+    fileinfo_file_path text,
+    fileinfo_template_id integer,
+    fileinfo_templatemap_id integer,
+    fileinfo_archive_type varchar(255),
+    fileinfo_category_id integer,
+    fileinfo_startdate varchar(80),
+    fileinfo_virtual tinyint,
+    index(fileinfo_blog_id),
+    index(fileinfo_entry_id),
+    index(fileinfo_url)
+);

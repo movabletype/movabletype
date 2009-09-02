@@ -1,0 +1,83 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Reply to comment">"$>
+<$mt:include name="dialog/header.tmpl"$>
+<mt:if name="closing">
+<script type="text/javascript">
+/* <![CDATA[ */
+parent.jQuery.fn.mtDialog.close('<mt:var name="return_url" escape="js">');
+/* ]]> */
+</script>
+</mt:if>
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+</mt:if>
+<form action="<mt:var name="script_url">" method="post" name="comments_form" id="comments-form" class="<mt:if name="preview_html">preview</mt:if>">
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="reply_to" value="<mt:var name="reply_to" escape="html">" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:if name="return_url"><mt:var name="return_url" escape="html"><mt:else><mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if>" />
+    <div id="comment">
+        <p class="comment-meta"><__trans phrase="On [_1], [_2] commented on [_3]" params="<span class="comment-date"><$mt:var name="comment_created_on"$></span>%%<span class="commenter-name"><$mt:var name="commenter_name" escape="html"$></span>%%<span class="entry-title"><$mt:var name="entry_title" escape="html" escape="html"$></span>"></p>
+        <div class="comment-body">
+            <$mt:var name="comment_text"$>
+        </div>
+    </div>
+<mt:if name="preview_html">
+    <div id="comment-preview">
+        <div class="intro"><__trans phrase="Preview of your comment"></div>
+        <div id="reply-body">
+            <mt:var name="preview_html">
+        </div>
+    </div>
+</mt:if>
+
+    <mtapp:Setting
+        id="comment-reply"
+        label="<__trans phrase="Your reply:">"
+        label_class="top_label"
+        hint="The username used to login">
+        <textarea id="comment-reply" name="comment-reply"><mt:var name="text" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+        <button
+           mt:command="submit"
+           mt:mode="reply"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Submit reply (s)">"
+           id="action publish-comment-action"
+           class="save action primary-button"
+           ><__trans phrase="Submit"></button>
+        <button
+           mt:command="submit"
+           mt:mode="reply_preview"
+           type="submit"
+           accesskey="v"
+           title="<__trans phrase="Preview reply (v)">"
+           id="preview-comment-action"
+           class="preview action"
+           ><__trans phrase="Preview"></button>
+        <button
+           onclick="DOM.removeClassName( DOM.getElement('comments-form'), 'preview' ); return false"
+           type="submit"
+           accesskey="r"
+           title="<__trans phrase="Re-edit reply (r)">"
+           id="re-edit-comment-action"
+           class="action"
+           ><__trans phrase="Re-edit"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="Cancel (x)">"
+           class="action mt-close-dialog"
+           ><__trans phrase="Cancel"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+<mt:include name="dialog/footer.tmpl">

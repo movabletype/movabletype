@@ -1,0 +1,17 @@
+/*  $Id: styles.css 1098 2007-12-12 01:47:58Z hachi $  */
+
+/* codebase */
+@import url("css/reset.css");
+/*@import url("css/fonts.css");*/
+
+/* layout */
+@import url("css/structure.css");
+
+/* messaging */
+@import url("css/messaging.css");
+
+/* branding */
+/*@import url("css/paint.css");*/
+
+/* utilities */
+@import url("css/utilities.css");

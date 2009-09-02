@@ -1,0 +1,218 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) (C) 2001-2009 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id: make-dists 3531 2009-03-12 09:11:52Z fumiakiy $
+
+use strict;
+use lib 'extlib', 'lib';
+use ExtUtils::Manifest qw( maniread manicopy mkmanifest );
+use File::Copy;
+use File::Find;
+use File::Spec::Functions;
+use File::Basename;
+use Getopt::Long;
+
+my $langlist = '';
+my $stamp = '';
+my $package = '';
+my $license = '';
+my $silent = 0;
+
+no warnings;
+# WHY, oh why?
+*ExtUtils::Manifest::cp = sub {
+    my ($srcFile, $dstFile) = @_;
+    my ($perm,$access,$mod) = (stat $srcFile)[2,8,9];
+    copy($srcFile,$dstFile);
+    utime $access, $mod, $dstFile;
+    # chmod a+rX-w,go-w
+    chmod(  0644 | ( $perm & 0111 ? 0111 : 0 ),  $dstFile )
+      unless ($^O eq 'MacOS');
+};
+use warnings;
+
+# disables resource fork handling for tar command on OS X
+$ENV{COPYFILE_DISABLE} = 'true';
+
+GetOptions(
+    'language:s' => \$langlist,
+    'package:s' => \$package,
+    'silent' => \$silent,
+    'license:s' => \$license,
+    'stamp:s' => \$stamp,
+) or die "ERROR: Couldn't get the command-line options";
+
+my %options;
+
+my $make = 'make';
+$make .= ' -s' if $silent;
+$ExtUtils::Manifest::Quiet = $silent;
+$ExtUtils::Manifest::Verbose = ! $silent;
+
+my $skip = 'MANIFEST.SKIP';
+my $skip_bak = "$skip.bak";
+
+my $orig = eval {
+    verbose_command("$make clean");
+    verbose_command("$make lib/MT.pm");
+    require MT;
+    $package . '-' . MT->VERSION;
+} or die "ERROR: Failed to get version from package $package";
+
+my $skip_rules = `cat $skip`;
+if ($skip_rules =~ m/^#\?/m) { # conditional rule
+    move($skip, $skip_bak);
+}
+
+my @languages = split(/,/, $langlist);
+@languages = qw( en_US nl fr de es ja ) unless @languages;
+for my $lang (@languages) {
+    $options{language} = $lang;
+    $options{package} = $package;
+    $options{license} = $license;
+
+    print join(" ", @languages), "\n";
+    my $short_lang = $lang;
+    # If there are not any _'s in the language double it: xx_XX.
+    my $long_lang = ($lang =~ /_/ ? $lang : $lang . '_' . uc($lang));
+    # ..unless we are Japanese.
+    $long_lang = 'ja' if ($lang eq 'ja');
+
+    # Override the distribution name if we are given a stamp.
+    my $distname = defined $stamp && $stamp ne ''
+        ? $stamp
+        : $orig . '-' . $long_lang;
+
+    print "---------------- Building $lang ----------------\n";
+    verbose_command("$make clean");  # to clean MT.pm
+    verbose_command($make);
+
+    make_manifest_skip($skip_rules, $skip);
+
+    mkmanifest();
+
+    # Copy files for non-GPL license since we will be modifying the content
+    manicopy(maniread(), $distname, ( $license eq 'GPL' ? 'best' : 'cp' ));
+
+    if (($license || '') ne 'GPL') {
+        assign_license( $distname );
+    }
+
+    verbose_command("find $distname -name .exists | xargs rm");
+    verbose_command("chmod +x $distname/*.cgi"); 
+    verbose_command("chmod +x $distname/tools/*"); 
+
+    my $options = $silent ? 'cf' : 'cvf';
+    verbose_command("tar $options $distname.tar --wildcards --exclude '*.zip' $distname");
+    $options = $silent ? '-q' : '';
+    verbose_command("gzip $options --best $distname.tar");
+    $options = $silent ? '-rq' : '-r';
+    verbose_command("zip $options $distname.zip $distname -x $distname/extras/\*.gz");
+
+    verbose_command("rm -rf $distname");
+    unlink("MANIFEST");
+}
+
+END {
+    move($skip_bak, $skip) if -e $skip_bak;
+}
+
+sub assign_license {
+    my ($dir) = @_;
+    find( { wanted => \&process_file_for_license, no_chdir => 1 },
+        $dir );
+}
+
+sub process_file_for_license {
+    my $file = $_;
+
+    # skip any '.git', '.svn' directory
+    return if $file =~ m! / \. !x;
+
+    # must be a file, not a directory
+    return unless -f $file;
+
+    # must have a source file extension or be a utility script (extensionless)
+    return unless $file =~ m! / ( [A-Za-z0-9_.-]+ \. ( pl | php | pm | cgi | js | t ) | [a-z0-9_-] + ) $ !x;
+
+    my $content;
+    open FIN, "<$file";
+    {
+        local $/;
+        $content = <FIN>;
+    }
+    close FIN;
+
+    my $open = quotemeta('# Movable Type (r) Open Source (C)');
+
+    # skip file if it doesn't contain the Open Source license
+    return unless $content =~ m/$open/;
+
+    my $close = quotemeta('# GNU General Public License, version 2.');
+
+    # non-distributable license text
+    my $license = <<EOT;
+
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+EOT
+    chomp($license);
+
+    if ($content =~ s{$open (\d+(-\d+)?).*?$close}
+        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se) {
+
+        ## print "applying license changes to $file...\n"; return;
+
+        open FOUT, ">$file";
+        print FOUT $content;
+        close FOUT;
+    }
+}
+
+sub make_manifest_skip {
+    my ($rules, $file) = @_;
+    my @rules = split /\n/, $rules;
+
+    my @result;
+    foreach my $rule (@rules) {
+        if ($rule =~ m/^#\?([^=]+)=([^ ]+) +(.+)$/) {
+            # a conditional rule
+            my $var = $1;
+            my $val = $2;
+            my $skip = $3;
+
+            if (($options{$var} || '') eq $val) {
+                push @result, $skip;
+            }
+        }
+        push @result, $rule;
+    }
+
+    my $result = join "\n", @result;
+
+    local *FOUT;
+    open *FOUT, ">$file";
+    print FOUT $result;
+    close FOUT;
+}
+
+sub verbose_command {
+    my $command = shift;
+    print 'Execute:', "  $command" unless $silent;
+    system $command;
+    if( $? == -1 ) {
+        die "ERROR: Failed to execute: $!";
+    }
+    elsif( $? & 127 ) {
+        die sprintf( "ERROR: Child died with signal %d, with%s coredump\n",
+            ( $? & 127 ), ( $? & 128 ? '' : 'out' )
+        );
+    }
+    else {
+#        printf "Child exited with value %d\n", $? >> 8;
+    }
+    return $command;
+}

@@ -1,0 +1,93 @@
+[%# widgets with a block like cityscape. Also does Unity with rounded corners and different gamma colors %]
+[%+ INCLUDE widget/columns.css.tt %]
+
+[%+ IF theme.find_file('corner-left') %]
+[%+ INCLUDE widget/round_corners.css.tt %]
+[% END %]
+
+
+.widget a,
+.archive-widget .widget-list .item {
+    color: [% theme.widget.beta.link.color || theme.default.link.color %];
+}
+
+[% IF theme.widget.gamma.link_color %]
+#gamma .widget a {
+    color: [% theme.widget.gamma.link_color %];
+}
+[% END %]
+
+.widget-header {
+    padding: 5px 15px;
+    font-size: 12px;
+    font-weight: bold;
+[% font_family = theme.widget.header.font.family ||  theme.default.header.font.family || theme.default.font.family || 'arial' %]
+    font-family: [% FONT_FAMILIES.$font_family || font_family %];
+[% IF theme.find_file('widget-header') %]
+    background: [% PROCESS bg_image file='widget-header' %] repeat top left [% theme.widget.header.background %];
+[% ELSE %]
+    background-color: [% theme.widget.header.background %];
+[% END %]
+}
+
+[% IF theme.widget.gamma.header.background_color %]
+#gamma .widget-header {
+    background-color: [% theme.widget.gamma.header.background_color %];
+}
+[% END %]
+
+[% IF theme.widget.header.border.style != 'none' %]
+.widget .widget-header {
+    border-left: 1px solid [% theme.widget.header.border.color || '#fff' %];
+}
+
+.layout-tw .widget .widget-header {
+    border-left-width: 0;
+}
+
+.layout-twt #beta .widget-header,
+.layout-tw .widget-header {
+    border: 0;
+}
+
+.embed-asset-widget .widget-header {
+    margin-bottom: 10px;
+}
+[% END %]
+
+[% IF theme.widget.gamma.link_color %]
+#gamma .widget-header,
+#gamma .widget-header a,
+[% END %]
+.widget-header,
+.widget-header a {
+    text-decoration: none;
+    color: [% theme.widget.header.color || '#fff' %];
+}
+
+.widget-header .edit a {
+    border-left-color: [% theme.widget.header.color || '#fff' %]
+}
+
+[% IF theme.widget.gamma.link_color %]
+#gamma .widget-header a:hover,
+[% END %]
+.widget .widget-header a:hover {
+    text-decoration: underline;
+}
+
+.widget-content {
+    padding: 0 15px;
+}
+
+.media-stream-widget img {
+    border: 1px solid #999;
+}
+
+[% IF theme.default.link.weight != 'bold' %][%# overwrites default where it's set to bold. %]
+.widget-header .edit a,
+.archive-widget .widget-list .item a,
+.archive-widget .widget-list .item {
+    font-weight: normal;
+}
+[% END %]

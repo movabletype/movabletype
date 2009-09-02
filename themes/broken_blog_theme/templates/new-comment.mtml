@@ -1,0 +1,19 @@
+<mt:If name="unapproved"><__trans phrase="An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>"><mt:Else><__trans phrase="A new comment has been posted on your blog [_1], on entry #[_2] ([_3])." params="<$mt:BlogName$>%%<$mt:EntryID$>%%<$mt:EntryTitle$>"></mt:If>
+
+<$mt:CommentBody remove_html="1" wrap_text="72"$>
+
+<__trans phrase="Commenter name: [_1]" params="<$mt:CommentAuthor$>"> 
+<__trans phrase="Commenter email address: [_1]" params="<$mt:CommentEmail$>">
+<__trans phrase="Commenter URL: [_1]" params="<$mt:CommentURL$>">
+<__trans phrase="Commenter IP address: [_1]" params="<$mt:CommentIP$>">
+
+<mt:If name="unapproved"><mt:If name="state_editable"><__trans phrase="Approve comment:">
+  <<$mt:Var name="approve_url"$>></mt:If></mt:If>
+<mt:If name="view_url"><__trans phrase="View comment:">
+  <<$mt:Var name="view_url"$>></mt:If>
+<__trans phrase="Edit comment:">
+  <<$mt:Var name="edit_url"$>>
+<mt:If name="state_editable"><__trans phrase="Report comment as spam:">
+  <<$mt:Var name="spam_url"$>></mt:If>
+
+<$mt:Include module="<__trans phrase="Mail Footer">"$>

@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+    <meta name="generator" content="<$MTProductName version="1"$>" />
+<mt:IfBlog>
+    <mt:IfNonEmpty tag="Link" template="styles">
+    <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+    <mt:else>
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    </mt:IfNonEmpty>
+<mt:else>
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+</mt:IfBlog>
+<MTIgnore>
+ ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">
+</MTIgnore>
+<MTNoSearch><MTElse>
+    <link type="application/atom+xml" rel="alternate" title="<MT_TRANS phrase="Blog Search Results">" href="<$MTCGIPath$><$MTSearchScript$>?<MTIfStraightSearch>search<MTElse>tag</MTElse></MTIfStraightSearch>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+</MTElse></MTNoSearch>      
+    <title><MT_TRANS phrase="Search Results"></title>
+</head>
+<body class="<MTNoSearch>layout-one-column<MTElse>layout-two-column-right</MTElse></MTNoSearch> mt-search-results">
+   <div id="container">
+      <div id="container-inner" class="pkg">
+      
+         <div id="banner">
+            <div id="banner-inner" class="pkg">
+               <h1 id="banner-header"><MT_TRANS phrase="Blog search"></h1>
+            </div>
+         </div>
+
+         <div id="pagebody">
+            <div id="pagebody-inner" class="pkg">
+               <div id="alpha">
+                  <div id="alpha-inner" class="pkg">
+
+<MTIgnore>
+  ##########  <MT_TRANS phrase="STRAIGHT SEARCHES GET THE SEARCH QUERY FORM">
+</MTIgnore>
+                      <MTIfStraightSearch>
+                      <h2 class="search-results-header"><MT_TRANS phrase="Search this site"></h2>
+                      <form method="post" action="<$MTCGIPath$><$MTSearchScript$>" id="search-form">
+                         <input type="hidden" name="IncludeBlogs" value="<$MTSearchIncludeBlogs$>" />
+                         <p><input type="text" size="30" name="search" id="search" value="<$MTSearchString$>" /> <input type="submit" value="<MT_TRANS phrase="Search">" /></p>
+                         <p id="search-options"><input type="checkbox" name="CaseSearch" /> <MT_TRANS phrase="Match case"> <input type="checkbox" name="RegexSearch" /> <MT_TRANS phrase="Regex search"></p>
+                      </form>
+                      </MTIfStraightSearch>
+                     
+<MTIgnore>
+    ##########  <MT_TRANS phrase="SEARCH RESULTS DISPLAY">
+</MTIgnore>
+                      <MTSearchResults>
+                          <MTBlogResultHeader>
+                              <h3 class="search-results-header">
+                              <MTIfStraightSearch>
+                                  <MT_TRANS phrase="Matching entries from [_1]" params="<$MTBlogName encode_html="1" encode_html="1"$>">
+                              </MTIfStraightSearch>
+                              <MTIfTagSearch>
+                                  <MT_TRANS phrase="Entries from [_1] tagged with '[_2]'" params="<$MTBlogName encode_html="1" encode_html="1"$>%%<$MTSearchString encode_html="1"$>">
+                                  </MTIfTagSearch>
+                              </h3>
+                              <div class="search-results-container">
+                          </MTBlogResultHeader>
+                      
+                              <h3><a href="<$MTEntryPermalink$>"><$MTEntryTitle encode_html="1"$></a></h3>
+                              <p><$MTEntryExcerpt encode_html="1"$> <$MTEntryEditLink$></p>
+                              <MTIfTagSearch>
+                                  <div class="entry-tags">
+                                      <h4 class="entry-tags-header"><MT_TRANS phrase="Tags">:</h4> 
+                                      <ul class="entry-tags-list">
+                                          <MTEntryTags>
+                                              <li class="entry-tag"><a href="<$MTTagSearchLink$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" rel="tag"><$MTTagName encode_html="1"$></a></li>
+                                          </MTEntryTags>
+                                      </ul>
+                                  </div>
+                              </MTIfTagSearch>
+                      
+                              <p class="entry-footer">
+                                  <span class="post-footers"><MT_TRANS phrase="Posted <MTIfNonEmpty tag="EntryAuthorDisplayName">by [_1] </MTIfNonEmpty>on [_2]" params="<$MTEntryAuthorDisplayName encode_html="1"$>%%<$MTEntryDate$>"></span>
+                              </p>
+                      
+                          <MTBlogResultFooter>
+                              </div>
+                          </MTBlogResultFooter>
+                          <MTIfMaxResultsCutoff>
+                          <MT_TRANS phrase="Showing the first [_1] results." params="<$MTMaxResults$>">
+                          </MTIfMaxResultsCutoff>
+                      </MTSearchResults>
+
+<MTIgnore>
+  ##########  <MT_TRANS phrase="NO RESULTS FOUND MESSAGE">
+</MTIgnore>
+                      <MTNoSearchResults>
+                          <h3 class="search-results-header">
+                              <MTIfStraightSearch>
+                                  <MT_TRANS phrase="Entries matching '[_1]'" params="<$MTSearchString encode_html="1"$>">
+                              </MTIfStraightSearch>
+                              <MTIfTagSearch>
+                                  <MT_TRANS phrase="Entries tagged with '[_1]'" params="<$MTSearchString encode_html="1"$>">
+                              </MTIfTagSearch>
+                          </h3>
+                          <p><MT_TRANS phrase="No pages were found containing '[_1]'." params="<$MTSearchString encode_html="1"$>"></p>
+                      </MTNoSearchResults>
+                      
+                      <MTNoSearch>
+                          <h3 class="search-results-header"><MT_TRANS phrase="Instructions"></h3>
+                          <p><MT_TRANS phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes">:</p>
+                          <blockquote>
+                              <p><code>"<MT_TRANS phrase="movable type">"</code></p>
+                          </blockquote>
+                          <p><MT_TRANS phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions">:</p>
+                          <blockquote>
+                              <p><code><MT_TRANS phrase="personal OR publishing"></code></p>
+                              <p><code><MT_TRANS phrase="publishing NOT personal"></code></p>
+                          </blockquote>
+                      </MTNoSearch>
+                  </div>
+               </div> 
+<MTIgnore>
+    ##########  <MT_TRANS phrase="END OF ALPHA SEARCH RESULTS DIV">
+    ##########  <MT_TRANS phrase="BEGINNING OF BETA SIDEBAR FOR DISPLAY OF SEARCH INFORMATION">
+</MTIgnore>
+               <MTNoSearch>
+               <MTElse>
+                   <MTIgnore>
+                       ##########  <MT_TRANS phrase="SET VARIABLES FOR SEARCH vs TAG information">
+                   </MTIgnore>
+
+                   <MTSetVar name="search_feed_text" value="<MT_TRANS phrase="Subscribe to feed">">
+                   <MTIfTagSearch>
+                       <MTSetVar name="search_feed_param" value="tag">
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries tagged '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
+                    <MTElse>    
+                       <MTSetVar name="search_feed_param" value="search">
+                       <MTSetVarBlock name="search_feed_description"><MT_TRANS phrase="If you use an RSS reader, you can subscribe to a feed of all future entries matching '[_1]'." params="<$MTSearchString encode_html="1"$>"></MTSetVarBlock>
+                   </MTElse>    
+                   </MTIfTagSearch>
+
+                   <div id="beta">
+                      <div id="beta-inner" class="pkg">
+
+                          <MTIgnore>
+                              ##########  <MT_TRANS phrase="SEARCH/TAG FEED SUBSCRIPTION INFORMATION">
+                          </MTIgnore>
+                          <div class="module-search-feed module">
+                             <h2 class="module-header"><MT_TRANS phrase="Feed Subscription"></h2>
+                             <div class="module-content">
+                                 <p><$MTGetVar name="search_feed_description">  [<a href="<MT_TRANS phrase="http://www.sixapart.com/about/feeds">"><MT_TRANS phrase="What is this?"></a>]</p>
+                                 <p>
+                                     <img src="<$MTStaticWebPath$>images/status_icons/feed.gif" alt="<$MTGetVar name="search_feed_text"$>" width="9" height="9" /> <a href="<$MTCGIPath$><$MTSearchScript$>?<$MTGetVar name="search_feed_param"$>=<$MTSearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" title="<MT_TRANS phrase="Subscribe to feed">"><MT_TRANS phrase="Subscribe to feed"></a>
+                                 </p>
+                             </div>
+                          </div>
+
+                          <MTIgnore>
+                              ##########  <MT_TRANS phrase="TAG LISTING FOR TAG SEARCH ONLY">
+                          </MTIgnore>
+                          <MTIfTagSearch>
+                          <div class="module-tags module">
+                             <h2 class="module-header"><MT_TRANS phrase="Other Tags"></h2>
+                             <div class="module-content module-tagcloud">
+                                 <p></p>
+                                 <ul class="module-list">
+                                 <MTTags>
+                                     <li class="module-list-item taglevel<$MTTagRank$>"><a href="<$MTTagSearchLink$>" title="<$MTTagCount$>"><$MTTagName encode_html="1"$></a></li>
+                                 </MTTags>
+                                 </ul>
+                             </div>
+                          </div>
+                          </MTIfTagSearch>
+
+                      </div>
+                  </div>
+              </MTElse>
+              </MTNoSearch>
+
+            </div>
+         </div>  <MTIgnore>#### <MT_TRANS phrase="END OF PAGE BODY"> ####</MTIgnore>
+      </div>
+   </div> <MTIgnore>#### <MT_TRANS phrase="END OF CONTAINER"> ####</MTIgnore>
+</body>
+</html>

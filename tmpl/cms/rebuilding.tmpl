@@ -1,0 +1,106 @@
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function doRedirect () {
+<mt:if name="redirect_target">
+    window.location='<mt:var name="redirect_target">';
+<mt:else>
+    window.location='<mt:var name="script_url">?__mode=rebuild&blog_id=<mt:var name="blog_id" escape="url">&type=<mt:var name="build_type" escape="url">&next=<mt:var name="build_next" escape="url">&offset=<mt:var name="offset" escape="url">&limit=<mt:var name="limit" escape="url">&total=<mt:var name="total" escape="url">&start_time=<mt:var name="start_time" escape="url">&entry_id=<mt:var name="entry_id" escape="url">&is_new=<mt:var name="is_new" escape="url">&old_status=<mt:var name="old_status" escape="url">&old_previous=<mt:var name="old_previous" escape="url">&old_next=<mt:var name="old_next" escape="url"><mt:if name="is_full_screen">&fs=1</mt:if><mt:if name="with_indexes">&with_indexes=1</mt:if><mt:if name="no_static">&no_static=1</mt:if><mt:if name="template_id">&template_id=<mt:var name="template_id" escape="url"></mt:if><mt:if name="templatemap_id">&templatemap_id=<mt:var name="templatemap_id" escape="url"></mt:if><mt:if name="return_args">&return_args=<mt:var name="return_args" escape="url"></mt:if>';
+</mt:if>
+}
+setTimeout('doRedirect()', 200);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:if name="is_full_screen">
+    <$mt:setvar name="screen_class" value="rebuilding-screen"$>
+    <mt:setvarblock name="page_title"><__trans phrase="Publishing..."></mt:setvarblock>
+    <mt:include name="include/header.tmpl">
+<mt:else>
+    <$mt:setvar name="screen_type" value="popup-screen"$>
+    <mt:setvarblock name="page_title"><__trans phrase="Publishing [_1]..." params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+    <mt:include name="include/chromeless_header.tmpl">
+</mt:if>
+
+<mt:if name="is_one_index">
+    <mtapp:statusmsg
+        id="is_one_index"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+<mt:else>
+<mt:if name="is_individual">
+    <mtapp:statusmsg
+        id="is_individual"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] [_2]..." params="<mt:var name="build_type_name" escape="html">%%<mt:var name="indiv_range" escape="html"> ">
+    </mtapp:statusmsg>
+<mt:else>
+<mt:if name="is_entry">
+<mt:if name="dynamic">
+    <mtapp:statusmsg
+        id="is_entry"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+<mt:else>
+    <mtapp:statusmsg
+        id="publishing"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1]..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:else>
+<mt:if name="dynamic">
+    <mtapp:statusmsg
+        id="dynamic"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] dynamic links..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+<mt:else>
+<mt:if name="build_type_name">
+<mt:if name="archives">
+    <mtapp:statusmsg
+        id="build_type_name"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] archives..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+<mt:else>
+    <mtapp:statusmsg
+        id="build_type_name"
+        can_close="0"
+        class="publishing">
+        <__trans phrase="Publishing [_1] templates..." params="<mt:var name="build_type_name" escape="html"> ">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:else>
+<mtapp:statusmsg
+    id="generic"
+    can_close="0"
+    class="publishing">
+    <__trans phrase="Publishing...">
+</mtapp:statusmsg>
+</mt:if>
+</mt:if>
+</mt:if>
+</mt:if>
+</mt:if>
+
+<mt:if name="total">
+<div class="progress-bar<mt:unless name="complete"> progress-bar-indeterminate<mt:else>" style="background-position: <mt:var name="incomplete">% 0</mt:unless>">
+    <span><$mt:var name="complete"$>% Complete</span>&nbsp;
+</div>
+</mt:if>
+
+<mt:if name="is_full_screen">
+<mt:include name="include/footer.tmpl">
+<mt:else>
+<mt:include name="include/chromeless_footer.tmpl">
+</mt:if>

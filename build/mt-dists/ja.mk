@@ -1,0 +1,3 @@
+BUILD_LANGUAGE = ja
+
+VERSION_SUFFIX = -ja

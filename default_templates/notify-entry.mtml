@@ -1,0 +1,25 @@
+<__trans phrase="A new [lc,_3] entitled '[_1]' has been published to [_2]." params="<$mt:EntryTitle$>%%<$mt:BlogName$>%%<$mt:EntryClassLabel$>">
+
+<mt:If name="object_type" eq="entry"><__trans phrase="View entry:"><mt:Else><__trans phrase="View page:"></mt:If> <<mt:SetVarBlock name="entry_status"><$mt:EntryStatus$></mt:SetVarBlock><mt:If name="entry_status" eq="Publish"><$mt:EntryPermalink$><mt:Else><$mt:Var name="entry_editurl"$></mt:If>>
+
+------------------------------------------------------------------------
+<__trans phrase="[_1] Title: [_2]" params="<$mt:EntryClassLabel lower_case="1"$>%%<$mt:EntryTitle$>">
+<__trans phrase="Publish Date: [_1]" params="<$mt:EntryDate mail="1"$>">
+<mt:If name="send_excerpt">
+
+<$mt:EntryExcerpt wrap_text="72"$>
+</mt:If>
+------------------------------------------------------------------------
+
+<mt:If name="message"><__trans phrase="Message from Sender:">
+<$mt:Var name="message"$></mt:If>
+<mt:If name="send_body">
+------------------------------------------------------------------------
+
+<$mt:EntryBody remove_html="1" wrap_text="72"$>
+
+------------------------------------------------------------------------</mt:If>
+
+<__trans phrase="You are receiving this email either because you have elected to receive notifications about new content on [_1], or the author of the post thought you would be interested. If you no longer wish to receive these emails, please contact the following person:" params="<$mt:BlogName$>">
+
+<$mt:AuthorDisplayName$> <<$mt:AuthorEmail$>>

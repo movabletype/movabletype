@@ -1,0 +1,53 @@
+<mtapp:listing>
+    <mt:if name="__first__">
+        <mt:setvarblock name="table_header">
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th class="flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+            <th class="commenter primary-col"><__trans phrase="Commenter"></th>
+            <th class="identity"><__trans phrase="Identity"></th>
+            <th class="email"><__trans phrase="Email"></th>
+            <th class="url"><__trans phrase="URL"></th>
+            <th class="comments"><__trans phrase="Comments"></th>
+            <th class="recent"><__trans phrase="Last Commented"></th>
+        </tr>
+        </mt:setvarblock>
+
+    <thead>
+        <mt:var name="table_header">
+    </thead>
+    <tfoot>
+        <mt:var name="table_header">
+    </tfoot>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb">
+        <mt:if name="has_edit_access">
+                <input type="checkbox" name="id" value="<mt:var name="author_id">" class="select" />
+        <mt:else>
+                &nbsp;
+        </mt:if>
+            </td>
+            <td class="flag <mt:if name="commenter_approved">status-trusted<mt:else><mt:if name="commenter_banned">status-banned<mt:else>status-authenticated</mt:if></mt:if>">
+        <mt:if name="commenter_approved">
+            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show trusted commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Trusted">" width="13" height="9" /></a>
+        <mt:else>
+            <mt:if name="commenter_banned">
+            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=banned" title="<__trans phrase="Only show banned commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Banned">" width="13" height="9" /></a>
+            <mt:else>
+            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=neutral" title="<__trans phrase="Only show neutral commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Authenticated">" width="7" height="9" /></a>
+            </mt:if>
+        </mt:if>
+            </td>
+            <td class="commenter"><a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="author_id">" title="<__trans phrase="Edit this commenter">"><mt:var name="author_display" escape="html"></a></td>
+            <td class="identity"><mt:if name="commenter_url"><a href="<mt:var name="commenter_url">" title="<__trans phrase="View this commenter&rsquo;s profile">"><mt:var name="author" escape="html"></a><mt:else><mt:var name="author" escape="html"></mt:if></td>
+            <td class="email status-email"><mt:unless name="email_hidden"><a href="mailto:<mt:var name="email" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Email">" width="16" height="9" /></a><mt:else>&nbsp;</mt:unless></td>
+            <td class="url status-link"><mt:if name="url"><a href="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+            <td class="comments"><mt:var name="comment_count"></td>
+            <td class="recent"><span title="<mt:var name="most_recent_time_formatted">"><mt:if name="most_recent_relative"><mt:if name="dates_relative"><mt:var name="most_recent_relative"><mt:else><mt:var name="most_recent_formatted"></mt:if><mt:else><mt:var name="most_recent_formatted"></mt:if></span></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

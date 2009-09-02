@@ -1,0 +1,54 @@
+<mt:setvarblock name="page_title"><__trans phrase="An error occurred"></mt:setvarblock>
+<$mt:setvar name="complete" value="1"$>
+<$mt:setvar name="error_page" value="1"$>
+<mt:include name="include/chromeless_header.tmpl">
+
+<mtapp:statusmsg
+    id="generic-error"
+    class="error">
+    <mt:var name="error" escape="html">
+</mtapp:statusmsg>
+
+<mt:setvarblock name="action_buttons">
+    <button
+       onclick="<mt:var name="goback">"
+       type="submit"
+       accesskey="s"
+       class="goback action primary-button"
+       ><mt:var name="value"></button>
+    <mt:if name="button_loop">
+          <mt:loop name="button_loop">
+    <button
+       type="submit"
+       class="action"
+               <mt:if name="dialog">
+       onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtDialog.close('<mt:var name="link" escape="js">'); }; return false;"
+               <mt:elseif name="fs">
+       onclick="window.location='<mt:var name="link" escape="js">'; return false;"
+               <mt:else>
+       onclick="if ( window.opener ) { window.opener.location.href='<mt:var name="link" escape="js">'; window.close(); } else { window.open('<mt:var name="link" escape="js">') }; return false;"
+               </mt:if>
+       ><mt:var name="label" escape="html"></button>
+          </mt:loop>
+    </mt:if>
+    <mt:unless name="dialog">
+    <button
+       id="close-button"
+       onclick="if ( window.opener ) { window.close(); } else { parent.jQuery.fn.mtDialog.close(); }"
+       type="submit"
+       accesskey="x"
+       class="close action hidden"
+       title="<__trans phrase="Close (x)">"
+       ><__trans phrase="Close"></button>
+    </mt:unless>
+    <script type="text/javascript">
+        /* <![CDATA[ */
+        // show the close button if error is in modal or popup
+        if ( window != window.parent || window.opener )
+            document.getElementById("close-button").className = "close action";
+        /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+<mt:include name="include/chromeless_footer.tmpl">

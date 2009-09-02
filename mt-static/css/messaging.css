@@ -1,0 +1,112 @@
+/* Status Message -------------------------------------------------------------------------------- */
+.msg {
+    position: relative;
+    margin: 10px 0;
+    padding: 0.8em;
+    background-repeat: no-repeat;
+    background-position: 8px center;
+}
+.msg-success {
+    background-color: #cee4ae;
+}
+.msg-error, 
+.msg-alert {
+    background-color: #fef263;
+}
+.msg-info {
+    background-color: #e6eae3;
+}
+
+.msg-publishing {
+    padding-left: 40px;
+    background-color: #fff;
+    background-image: url('../images/ani-rebuild.gif');
+}
+
+.msg p { 
+    margin: 0 45px 0 0;
+}
+
+.msg img.mt-close-msg { 
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    margin-top: -5px;
+    cursor: pointer;
+}
+
+#system-allow-pings p,
+#system-allow-comments p,
+.msg-error p,
+.rebuilding-screen .msg p,
+.restore-publishing-config .msg p,
+.insert-asset-dialog .msg p,
+.edit-template .msg-info p,
+.rebuilding-screen .msg-info p,
+.pinging-screen .msg-info p,
+.list-notification .msg-info p,
+.zero-state p {
+    margin: 0;
+}
+
+#system-allow-pings img.mt-close-msg,
+#system-allow-comments img.mt-close-msg,
+.msg-error img.mt-close-msg,
+.rebuilding-screen .msg img.mt-close-msg,
+.restore-publishing-config .msg img.mt-close-msg,
+.insert-asset-dialog .msg img.mt-close-msg,
+.rebuilding-screen .msg-info img.mt-close-msg,
+.pinging-screen .msg-info img.mt-close-msg,
+.list-notification .msg-info img.mt-close-msg,
+.zero-state img.mt-close-msg {
+    display: none;
+}
+
+
+.field-content label.msg-error { 
+    display: block;
+    margin-top: 5px;
+    border: 0;
+    background-color: transparent;
+    color: #c60;
+}
+
+.error-field input[type="text"] { 
+    border-color: red;
+}
+
+
+
+/* Debug Panel Messages ---------------------------------------------------------------------------------- */
+
+.debug-panel {
+    position: absolute;
+    width: 100%;
+    border-top: 1px dotted #f55;
+    margin-top: 5px;
+    background-color: #daa;
+    text-align: left;
+}
+.debug-panel h3 {
+    padding: 5px;
+    font-size: 12px;
+    margin: 0;
+    background-color: #f55;
+    color: #fff;
+}
+
+.debug-panel-inner li {
+    white-space: pre;
+}
+
+.debug-panel-inner li:hover {
+    background-color: #eaa;
+}
+
+.debug-panel-inner {
+    padding: 5px;
+    font-family: 'Andale Mono', monospace;
+    font-size: 10px;
+    max-height: 200px;
+    overflow: auto;
+}

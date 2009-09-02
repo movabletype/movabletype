@@ -1,0 +1,115 @@
+<mt:setvarblock name="page_title"><__trans phrase="Your Profile"></mt:setvarblock>
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success">
+        <mt:var name="saved">
+    </mtapp:statusmsg>
+</mt:if>
+
+<form method="post" action="<mt:var name="script_url">">
+
+<input type="hidden" name="__mode" value="save_profile" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" /></mt:if>
+<input type="hidden" name="entry_url" value="<mt:var name="entry_url" escape="html">" />
+<input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
+
+    <mtapp:setting
+        id="name"
+        label="<__trans phrase="Username">"
+        hint="<__trans phrase="Your login name.">"
+        label_class="top-label">
+        <span name="name" id="name"><mt:var name="name" escape="html"></span>
+        <input type="hidden" name="name" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="nickname"
+        label="<__trans phrase="Display Name">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="The name appears on your comment.">">
+        <input type="text" name="nickname" id="nickname" class="ti" value="<mt:var name="nickname" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="email"
+        label="<__trans phrase="Email Address">"
+        label_class="top-label"
+        required="$email_required"
+        hint="<__trans phrase="Your email address.">">
+        <input type="text" name="email" id="email" class="ti" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+
+<mt:if name="auth_mode_mt">
+    <mtapp:setting
+        id="password"
+        label="<__trans phrase="New Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Select a password for yourself.">">
+        <input type="password" name="password" id="password" class="pw" value="" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="pass_verify"
+        label="<__trans phrase="Confirm Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Repeat the password for confirmation.">">
+        <input type="password" name="pass_verify" id="pass_verify" class="pw" value="" />
+    </mtapp:setting>
+
+<mt:else>
+    <input type="hidden" name="external_auth" value="1" />
+</mt:if>
+
+    <mtapp:setting
+        id="url"
+        label="<__trans phrase="Website URL">"
+        label_class="top-label"
+        hint="<__trans phrase="The URL of your website. (Optional)">">
+        <input type="text" name="url" id="url" class="ti" value="<mt:var name="url" escape="html">"  />
+    </mtapp:setting>
+
+    <mt:Loop name="field_loop">
+        <mt:If name="__first__">
+        <input type="hidden" name="_type" value="author" id="obj_type" />
+        <input type="hidden" name="customfield_beacon" value="1" id="customfield_beacon" />
+        </mt:If>
+        <!-- start-customfield_<$mt:Var name="basename"$> -->
+        <mtapp:setting
+        id="$field_id"
+        label="$name"
+        hint="$description"
+        shown="$show_field"
+        show_hint="$show_hint"
+        required="$required">
+
+        <$mt:Var name="field_html"$>
+
+        </mtapp:setting>
+        <!-- end-customfield_<$mt:Var name="basename"$> -->
+    </mt:Loop>
+
+<p><input type="submit" name="submit" id="save-button" class="ti" accesskey="s" value="<__trans phrase="Save">" /></p>
+
+</form>
+
+<mt:if name="entry_url">
+<p><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">#_login"></p>
+<mt:elseif name="return_url">
+<p><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">#_login"></p>
+</mt:else></mt:if>
+
+<mt:include name="include/chromeless_footer.tmpl">
+

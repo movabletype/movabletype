@@ -1,0 +1,60 @@
+<mtapp:widget
+    class="widget you-widget"
+    label="<__trans phrase="This is you">"
+    can_close="1">
+    <div id="welcome-message-edit" style="display: none;">
+        <form method="post" action="<mt:var name="script_url">">
+            <input type="hidden" name="__mode" value="update_welcome_message" />
+            <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+            <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+            <textarea id="welcome-message-text" name="welcome-message-text" rows="" cols="" class="full-width medium"><mt:if name="welcome"><mt:var name="welcome"><mt:else>&lt;h4&gt;<__trans phrase="Welcome to [_1]." params="<mt:var name="blog_name" escape="html">">&lt;/h4&gt;
+
+            &lt;p&gt;<__trans phrase="You can manage your blog by selecting an option from the menu located to the left of this message.">&lt;/p&gt;
+
+            &lt;p&gt;<__trans phrase="If you need assistance, try:">&lt;/p&gt;
+
+            &lt;p&gt;&lt;a href="<mt:var name="help_url">"><__trans phrase="Movable Type User Manual">&lt;/a&gt;&lt;br /&gt;
+            &lt;a href="<__trans phrase="http://www.sixapart.com/movabletype/support">"&gt;<__trans phrase="Movable Type Technical Support">&lt;/a&gt;&lt;br /&gt;
+            &lt;a href="http://forums.sixapart.com/"&gt;<__trans phrase="Movable Type Community Forums">&lt;/a&gt;&lt;/p&gt;</mt:if></textarea>
+
+            <mt:setvarblock name="action_buttons">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Save Changes (s)">"
+                    class="save action primary-button"
+                    ><__trans phrase="Save Changes"></button>
+                <button
+                    onclick="welcomeMessageToggle(); return false;"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    class="cancel action"
+                    ><__trans phrase="Cancel"></button>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+        </form>
+    </div>
+
+    <div id="welcome-message">
+    <mt:if name="can_edit_config">
+        <div class="welcome-message-toggle"><a href="javascript:void(0)" onclick="welcomeMessageToggle(); return false;" title="<__trans phrase="Change this message.">"><img src="<mt:var name="static_uri">images/status_icons/draft.gif" alt="<__trans phrase="Edit this message.">" width="9" height="9" /></a></div>
+    </mt:if>
+
+        <div class="welcome-message-inner">
+    <mt:if name="welcome">
+        <mt:var name="welcome">
+    <mt:else>
+            <h4><__trans phrase="Welcome to [_1]." params="<mt:var name="blog_name" escape="html">"></h4>
+            <p><__trans phrase="You can manage your blog by selecting an option from the menu located to the left of this message."></p>
+            <p><__trans phrase="If you need assistance, try:"></p>
+            <p>
+                <a href="<mt:var name="help_url">"><__trans phrase="Movable Type User Manual"></a><br />
+                <a href="<__trans phrase="http://www.sixapart.com/movabletype/support">"><__trans phrase="Movable Type Technical Support"></a><br />
+                <a href="http://forums.sixapart.com/"><__trans phrase="Movable Type Community Forums"></a>
+            </p>
+    </mt:if>
+        </div>
+    </div>
+</mtapp:widget>

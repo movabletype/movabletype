@@ -1,0 +1,45 @@
+<mt:entries>
+    <mt:if name="__first__">
+    <div class="tab-panel-header"><__trans phrase="[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;" params="<mt:var name="entry_count">%%<mt:var name="tag" escape="html">"></div>
+    </mt:if>
+    <div id="entry-<$MTEntryID$>" class="entry content entry-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> entry-status-<$mt:entrystatus lower_case="1"$><mt:if name="entry_type"> entry-<$mt:var name="entry_type"$></mt:if>">
+        <div class="entry-title"><mt:entryauthorid setvar="entry_author_id">
+            <mt:setvarblock name="entry_title"><mt:if tag="entrytitle"><mt:entrytitle escape="html"><mt:else><__trans phrase="..."></mt:if></mt:setvarblock>
+            <h4 class="entry-title">
+    <mt:if name="editable">
+                <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$MTEntryID$>&amp;blog_id=<$MTBlogID$>"><MTGetVar name="entry_title"></a>
+    <mt:else name="author_id" eq="$entry_author_id">
+                <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=entry&amp;id=<$mt:entryid$>&amp;blog_id=<$mt:blogid$>"><mt:var name="entry_title"></a>
+    <mt:else>
+                <mt:var name="entry_title">
+    </mt:if>
+            </h4>
+        </div>
+        <div class="entry-content">
+            <p><mt:entryexcerpt escape="html"></p>
+        </div>
+        <div class="entry-meta meta">
+    <mt:if tag="MTEntryAuthorDisplayName">
+            <mt:setvarblock name="entry_author"><$MTEntryAuthorLink show_email="0"$></mt:setvarblock>
+    <mt:else>
+            <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername escape="html"$></mt:setvarblock>
+    </mt:if>
+    <mt:if tag="entrycategory">
+            <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html"$></a><MTElse><$MTCategoryLabel escape="html"$></MTIf></MTEntryCategories>">
+    <mt:else>
+            <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author" escape="html"$>%%<$MTEntryDate relative="1"$>">
+    </mt:if>
+    <mt:entryiftagged>
+            <mt:setvarblock name="tags"><mt:entrytags glue=", "><mt:if name="editable"><a href="<$mt:var name="script_url"$>?__mode=list_entry<mt:if tag="blogid">&amp;blog_id=<$mt:blogid$></mt:if>&amp;filter=exacttag&amp;filter_val=<$mt:tagname escape="url"$>" rel="tag"><mt:tagname escape="html"$></a><mt:else><mt:tagname escape="html"></mt:if></mt:entrytags></mt:setvarblock>
+            <__trans phrase="Tagged: [_1]" params="<mt:var name="tags">">
+    </mt:entryiftagged>
+        </div>
+    </div>
+    <mt:if name="__last__">
+        <mt:if name="editable">
+    <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all entries"></a></div>
+        </mt:if>
+    </mt:if>
+    <mt:else>
+        <p><__trans phrase="No entries available."></p>
+    </mt:entries>

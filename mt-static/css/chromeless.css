@@ -1,0 +1,492 @@
+/* Chromeless ------------------------------------------------------------ */
+/* - Generic */
+body {
+    background-color: #F8FBF8;
+    font-size: 12px;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+}
+
+a { 
+    color: #5C909B;
+}
+a:hover, 
+a:active { 
+    color: #839B5C;
+}
+
+p { 
+    margin-bottom: 1.8em;
+}
+
+ul li {
+    list-style-type: disc;
+    margin-left: 15px;
+}
+
+fieldset {
+    margin: 0;
+}
+
+/* -- Hn */
+h2 {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+h3 {
+    font-size: 14px;
+    text-shadow: #fff 0 1px 0;
+    margin-bottom: 20px;
+}
+
+#page-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+/* -- Form */
+select,
+input,
+textarea {
+    font-size: 14px;
+}
+
+textarea { 
+    min-height: 5em;
+}
+
+select { 
+    width: 100%;
+    height: 2em;
+    padding: 2px;
+    border: 1px solid #c8c2be;
+    font-size: 11px;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+input[type="text"], 
+input[type="password"], 
+textarea { 
+    width: 28em;
+    padding: 3px;
+    border: 1px solid #c8c2be;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+input[type="text"] { 
+    width: 100%;
+}
+input[type="password"] { 
+    width: 15em;
+}
+input[readonly="readonly"] { 
+    background-color: #dcdddd ! important;
+    color: #7b7c7d;
+}
+input.extra-path { 
+    width: 12em;
+    margin-left: 5px;
+}
+
+input.smaller-text { 
+    width: 3.5em;
+}
+input.larger-text { 
+    width: 100%;
+}
+
+/* - Component */
+.ready {
+    font-weight: bold;
+    color: #93b06b;
+}
+
+.note {
+    clear: both;
+    padding: 10px 0 10px 0;
+}
+
+.hint {
+    line-height: 1.1;
+    font-size: 11px;
+    padding-top: 2px;
+}
+.input-hint {
+    color:#999;
+}
+
+.msg .mt-close-msg {
+    display: none;
+}
+
+/* - Field */
+.field {
+    margin-bottom: 20px;
+}
+
+.field-header label {
+    color: #777;
+    font-weight: bold;
+}
+
+/* - Actions Bar */
+.action-buttons {
+    margin: 20px 0 15px;
+    text-align: right;
+}
+
+.actions-bar {
+    overflow: hidden;
+    position: relative;
+    min-height: 30px;
+    margin: 25px 0;
+}
+
+.actions-bar input[type="image"], 
+.actions-bar input[type="submit"],
+.actions-bar button {
+    float: right;
+    margin-left: 12px;
+}
+
+#container.show-actions-bar-top .actions-bar-top {
+    display: block;
+}
+#container.show-actions-bar-bottom .actions-bar-bottom {
+    display: block;
+}
+
+/* -- Buttons */
+button, 
+a.button { 
+    min-width: 7em;
+    overflow: visible;
+    display: inline-block;
+    outline: 0;
+    padding: 2px 4px;
+    border: 1px solid #85afc4;
+    border-top-color: #cddee7;
+    border-left-color: #cddee7;
+    border-style: solid;
+    background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
+    color: #33789c;
+    font-size: 11px;
+    text-shadow: #F8FBF8 0 1px 0;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+a.button { 
+    padding: 3px 6px;
+    text-decoration: none;
+}
+button:hover, 
+a.button:hover {
+    color: #33789c;
+    background-position: 50% 30%;
+}
+button.action {
+    padding: 3px 8px;
+    border: 0;
+    background: #2b2b2b url('../images/buttons/button.gif') no-repeat 0 center;
+    color: #F3F3F3;
+    font-size: 13px;
+    text-align: center;
+    text-shadow: #2b2b2b 0 -1px 0;
+    cursor: pointer;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+button.primary-button {
+    background-image: url(../images/buttons/button-primary.gif);
+}
+.system button.primary-button {
+    background-image: url(../images/buttons/button-primary-system.gif);
+}
+button.disabled-button {
+    background-image: url(../images/buttons/button-primary-disabled.gif);
+}
+.system button.disabled-button {
+    background-image: url(../images/buttons/button-primary-disabled-system.gif);
+}
+
+.chromeless-wide .actions-bar button { 
+    min-width: 0px;
+}
+
+button.action:hover {
+    background-color: #666;
+    background-position: -500px center;
+    color: #fff;
+}
+
+.actions-bar button.goback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 0;
+}
+.chromeless-wide .actions-bar button.goback { 
+    position: static;
+    margin-left: 12px;
+}
+
+/* - Layout */
+#container {
+    position: relative;
+    width: 520px;
+    margin: 45px auto 30px;
+    padding: 30px 30px 0;
+    border: 1px solid #C8C2BE;
+    background-color: #fff;
+    -moz-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+
+/* -- Wide Layout */
+.error-screen #container {
+    width: 95%;
+}
+
+.chromeless-wide { 
+    background-color: #fff;
+}
+.chromeless-wide #container-inner {
+    background: none;
+}
+.chromeless-wide #container {
+    width: auto;
+    margin: 20px 25px;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+}
+
+/* - Header */
+#header {
+    background: transparent #fff;
+}
+#header .comment_signin_title {
+    margin-left: 20px;
+}
+
+#brand {
+    width: 250px;
+    height: 38px;
+    margin: 0 0 20px;
+    font-size: 26px;
+    background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
+}
+
+#brand span { 
+    display: none;
+}
+
+#nav {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+}
+
+#nav .step {
+    float: left;
+    background: url('../images/chromeless/nav_off.png');
+    height: 15px;
+    width: 14px;
+}
+
+#nav .step_active {
+    float: left;
+    background: url('../images/chromeless/nav_on.png');
+    height: 15px;
+    width: 14px;
+}
+
+/* - Sign in Screen */
+#sign-in #container { 
+    width: 340px;
+}
+
+#sign-in #username, 
+#sign-in #password { 
+    font-size: 22px;
+    width: 100%;
+    color: #333;
+}
+
+#sign-in #page-title { 
+    display: none;
+}
+
+#forget-password { 
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
+#sign-up { 
+    margin-top: 15px;
+    text-align: right;
+}
+
+#sign-in dl { 
+    margin: 0;
+}
+
+#sign-in dd { 
+    margin-left: 0;
+}
+
+#sign-in .has-auth-icon input[type="text"] { 
+    padding-left: 22px;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: 3px center;
+}
+
+/* -- Reset Password */
+#reset-password #container { 
+    width: 340px;
+}
+
+/* - Upgrade */
+.upgrade .upgrade-process {
+    position: relative;
+    overflow: auto;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fafafa;
+    height: 200px;
+}
+
+.upgrade #progress-bar { 
+    margin: 25px 0 30px;
+    text-align: right;
+}
+
+/* - Profile */
+ul#profile-data li {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none;
+}
+
+#profile_userpic-field .field-content label {
+    display: block;
+    margin-top: 5px;
+}
+
+.mt-profile-edit form {
+    margin-bottom: .75em;
+}
+
+.custom-field-radio-list {
+    margin-bottom: .25em;
+}
+.custom-field-radio-list li {
+    list-style: none;
+    margin-left: 0;
+}
+
+/* - Wizerd */
+#error_more {
+    margin: 10px 0 15px;
+    font-weight: normal;
+    overflow: auto;
+    padding: 5px 0 10px 0;
+}
+#continue {
+    margin-bottom: 20px;
+}
+
+/* -- Start */
+.mt-config-file-path {
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 2.75em;
+    font-weight:bold;
+}
+
+/* -- System Check */
+#packages-list dt { 
+    margin-bottom: 5px;
+}
+#packages-list dd { 
+    margin-bottom: 15px;
+    color: #7B7C7D;
+}
+.module-name {
+    font-weight: bold;
+}
+.module-name a {
+    color: black;
+    text-decoration: none;
+}
+.module-name a:hover {
+    text-decoration: underline;
+}
+.module-description { 
+    margin-bottom: 5px;
+}
+
+/* -- Database Setting */
+#db_hint {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+#db_hint p {
+    margin-bottom: 3px;
+}
+
+/* -- LDAP */
+table.show-admin {
+    margin-bottom: 10px;
+    width: 99%;
+    border: 1px solid #cfdde5;
+    background-color: #fff;
+}
+table.show-admin th {
+    color: #666;
+    padding: 1%;
+    overflow: hidden;
+}
+table.show-admin td {
+    width: 32%;
+    padding: 1px 1% 0 1%;
+    overflow: hidden;
+}
+
+/* - Publush */
+/* -- Progress Bar */
+.progress-bar {
+    height: 20px;
+    width: 322px;
+    background: url('../images/progress-bar.gif') repeat-x 100% 0;
+    border: 1px solid #9CBCCB;
+}
+.progress-bar span {
+    display: none;
+}
+
+.progress-bar-indeterminate {
+    background: url('../images/progress-bar-indeterminate.gif') repeat-x 0 0;
+}
+
+

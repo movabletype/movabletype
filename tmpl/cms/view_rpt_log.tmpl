@@ -1,0 +1,98 @@
+<mt:setvar name="activity-log" value="1">
+<mt:setvar name="page_title" value="<__trans phrase="Schwartz Error Log">">
+<mt:setvarblock name="system_msg">
+    <mt:if name="reset">
+        <mtapp:statusmsg
+            id="reset"
+            class="success">
+            <__trans phrase="The activity log has been reset.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <p class="page-desc">
+    <mt:if name="time_offset">
+    <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">
+    <mt:else>
+    <__trans phrase="All times are displayed in GMT.">
+    </mt:if>
+    </p>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+
+    <$mtapp:PageActions from="$mode"$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function doResetLog(f) {
+        if (confirm('<__trans phrase="Are you sure you want to reset the activity log?" escape="singlequotes">')) {
+            window.location='<mt:var name="script_url">?__mode=reset_rpt_log&amp;<mt:if name="blog_id">blog_id=<mt:var name="blog_id">&amp;</mt:if>magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">';
+        }
+    }
+
+    function enableFilterButton() {
+        getByID("filter-button").style.display = "inline";
+    }
+    function toggleFilter() {
+        var filterActive = getByID("filter-title");
+        if (filterActive.style.display == "none") {
+            filterActive.style.display = "block";
+            getByID("filter-select").style.display = "none";
+        } else {
+            filterActive.style.display = "none";
+            getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('level');</mt:unless>
+        }
+    }
+
+    function setFilterCol(choice) {
+        var sel = getByID('filter-select');
+        if (!sel) return;
+        sel.className = "filter-" + choice;
+        var fld = getByID('filter-col');
+        if (choice == 'level')
+            fld.selectedIndex = 0;
+        else if (choice == 'class')
+            fld.selectedIndex = 1;
+        col_span = getByID("filter-text-col");
+        if (fld.selectedIndex > -1 && col_span)
+            col_span.innerHTML = '<strong>' +
+                fld.options[fld.selectedIndex].text + '</strong>';
+    }
+
+    function init() {
+    	setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    	setFilterVal('<mt:var name="filter_val" escape="js">');
+    </mt:if>
+    }
+
+    TC.attachLoadEvent( init );
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:setvarblock name="list_filter_form">
+    <form id="filter-form" method="get" action="<mt:var name="mt_url">">
+        <input type="hidden" name="__mode" value="view_rpt_log" />
+        <input id="filter" type="hidden" name="filter" value="" />
+        <input id="filter_val" type="hidden" name="filter_val" value="" />
+    </form>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+            <div class="filter">
+                <div id="filter-title">
+                    <__trans phrase="Showing all Schwartz errors">
+                </div>
+            </div>
+        </div>
+    </div>
+</mt:setvarblock>
+<$mt:include name="include/header.tmpl"$>
+<$mt:var name="list_filter_form"$>
+<$mt:include name="include/rpt_log_table.tmpl"$>
+<$mt:include name="include/footer.tmpl"$>

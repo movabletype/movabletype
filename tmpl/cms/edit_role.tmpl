@@ -1,0 +1,298 @@
+<mt:setvar name="edit_role" value="1">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:if name="id">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit Role">">
+    <mt:else>
+        <mt:setvar name="page_title" value="<__trans phrase="Create Role">">
+    </mt:if>
+<mt:setvarblock name="system_msg">
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved-added"
+            class="success">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <ul class="action-link-list">
+        <li>
+            <a href="<mt:var name="script_url">?__mode=list_role" class="icon-left icon-related"><__trans phrase="List Roles"></a>
+    <mt:if name="id">
+            - <a href="<mt:var name="script_url">?__mode=list_association&amp;role_id=<mt:var name="id" escape="url">"><__trans phrase="[quant,_1,User,Users] with this role" params="<mt:var name="user_count">"></a>
+    </mt:if>
+        </li>
+    </ul>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <mt:include name="include/users_content_nav.tmpl">
+    </mtapp:widget>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function togglePerms(c, a) {
+    if (a == '') {
+        return;
+    }
+
+    if (c.checked) {
+        jQuery(a).each(function(){
+            this.checked = true;
+            this.disabled = true;
+            this.onclick();
+        });
+    } else {
+        jQuery(a).each(function(){
+            this.checked = false;
+            this.disabled = false;
+            this.onclick();
+        });
+    }
+}
+
+function doSubmitFormConfirm( f, mode, message ) {
+    if (confirm(message)) {
+        if (f.elements["__mode"] && mode)
+            f.elements["__mode"].value = mode;
+        f.submit();
+    }
+    return false;
+}
+
+function checkChanged() {
+    var orig_roleName = "<mt:var name="name" escape="html">";
+    var roleName = getByID('name').value;
+    if(permsChanged == "yes") {
+        if(roleName == orig_roleName) {
+            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
+        } else {
+            doSubmitForm(document.role, 'save_role');
+        }
+    } else {
+        doSubmitForm(document.role, 'save_role');
+    }
+    return false;
+}
+
+function getParentByClass(n, c) {
+    var result = n;
+    while (!result.className.match(c)
+           && result.nodeName && (result.nodeName != 'body')) {
+       result = result.parentNode;
+    }
+    return result;
+}
+
+function handleClick(e) {
+    e = e || event;
+    var targ = e.target || e.srcElement;
+    if (!targ || !targ.nodeName) {
+        return;
+    }
+    if (targ.nodeName.toLowerCase() == 'label') {
+        if (targ.getAttribute('for'))
+            targ = getByID(targ.getAttribute('for'));
+        else {
+           var inputs = targ.getElementsByTagName('input');
+           targ = inputs[0];
+           checkPerms(targ);
+        }
+    }
+    if (targ.className.match(/administer_blog/)) {
+        permContainer = getParentByClass(targ, 'permission-list');
+        rectify(permContainer, 1);
+    }
+}
+
+function init() {
+    jQuery('.cb').each(function(){
+        if (this.checked)
+            this.onclick();
+    });
+}
+
+jQuery(function () {
+    jQuery('button.save').click(function () {
+        $("input:checked").each(function(){
+            this.disabled = false;
+        });
+    });
+});
+
+/* ]]> */
+</script>
+
+<div id="edit-role" onclick="handleClick(event)">
+
+<mt:if name="id">
+<form name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+<mt:else>
+<form id="role" name="role" method="post" action="<mt:var name="script_url">">
+</mt:if>
+
+<mt:if name="id">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+</mt:if>
+    <input type="hidden" name="__mode" value="save_role" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <fieldset>
+        <h3><__trans phrase="Role Details"></h3>
+        <mtapp:setting
+            id="name"
+            label="<__trans phrase="Role Name">"
+            required="1"
+            hint="">
+            <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="description"
+            label="<__trans phrase="Description">"
+            hint="">
+            <textarea name="description" id="description" class="short" cols="" rows=""><mt:var name="description" escape="html"></textarea>
+        </mtapp:setting>
+        <mt:if name="id">
+            <mtapp:setting
+                id="created_by"
+                label="<__trans phrase="Created by">"
+                content_class="field-content-text"
+                hint="">
+                <p><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></p>
+            </mtapp:setting>
+        </mt:if>
+    </fieldset>
+    <fieldset>
+        <h3><__trans phrase="Privileges"></h3>
+
+<div id="permission-list" class="permission-list">
+
+<mt:if name="is_enabled">
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', true)"><__trans phrase="Check All"></a> | -->
+<!-- <a href="javascript:void(0)" onclick="return allPerms('permission', false)"><__trans phrase="Uncheck All"></a> -->
+</mt:if>
+
+    <mtapp:setting
+        id="administration"
+        label="<__trans phrase="Administration">"
+        content_class="field-content-text"
+        hint="">
+        <ul>
+<mt:loop name="loaded_permissions">
+<mt:if name="group" eq="blog_admin">
+            <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+</mt:if>
+</mt:loop>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="authoring_publishing"
+        label="<__trans phrase="Authoring and Publishing">"
+        content_class="field-content-text"
+        hint="">
+        <ul>
+<mt:loop name="loaded_permissions">
+<mt:if name="group" eq="auth_pub">
+            <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+</mt:if>
+</mt:loop>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="designing"
+        label="<__trans phrase="Designing">"
+        content_class="field-content-text"
+        hint="">
+        <ul>
+<mt:loop name="loaded_permissions">
+<mt:if name="group" eq="blog_design">
+            <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+</mt:if>
+</mt:loop>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="assets"
+        label="<__trans phrase="Assets">"
+        content_class="field-content-text"
+        hint="">
+        <ul>
+<mt:loop name="loaded_permissions">
+<mt:if name="group" eq="blog_upload">
+            <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+</mt:if>
+</mt:loop>
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="commenting"
+        label="<__trans phrase="Commenting">"
+        content_class="field-content-text"
+        hint="">
+        <ul>
+<mt:loop name="loaded_permissions">
+<mt:if name="group" eq="blog_comment">
+            <li><label for="<mt:var name="id">"><input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>> <mt:var name="label" escape="html"></label></li>
+</mt:if>
+</mt:loop>
+        </ul>
+    </mtapp:setting>
+
+</div>
+
+<mt:if name="id">
+<mt:if name="same_perm_loop">
+    <mtapp:setting
+        id="same_permissions"
+        label="<__trans phrase="Duplicate Roles">"
+        hint="<__trans phrase="These roles have the same privileges as this role">">
+        <div class="static">
+        <mt:loop name="same_perm_loop">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a> 
+        </mt:loop>
+        </div>
+    </mtapp:setting>
+</mt:if>
+</mt:if>
+
+</fieldset>
+
+
+
+<mt:setvarblock name="action_buttons">
+    <button
+    <mt:if name="id">
+        onclick="return checkChanged();"
+    </mt:if>
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this role (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+</div>
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function () {
+    init();
+});
+/* ]]> */
+</script>
+
+<mt:include name="include/footer.tmpl">

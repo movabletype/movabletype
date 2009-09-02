@@ -1,0 +1,27 @@
+    <mtapp:setting
+        id="title_start"
+        label="<__trans phrase="Start title HTML (optional)">">
+        <input type="text" name="title_start" id="title_start" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="title_end"
+        label="<__trans phrase="End title HTML (optional)">"
+        hint="<__trans phrase="If the software you are importing from does not have title field, you can use this setting to identify a title inside the body of the entry.">"
+        help_page="entry_import"
+        help_section="start_title_html">
+        <input type="text" name="title_end" id="title_end" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="default_status"
+        label="<__trans phrase="Default entry status (optional)">"
+        hint="<__trans phrase="If the software you are importing from does not specify an entry status in its export file, you can set this as the status to use when importing entries.">"
+        help_page="entry_import"
+        help_section="default_post_status_for_entries">
+<select name="default_status" id="default_status">
+<option value=""><__trans phrase="Select an entry status"></option>
+<option value="1"><__trans phrase="Unpublished"></option>
+<option value="2"><__trans phrase="Published"></option>
+</select>
+    </mtapp:setting>

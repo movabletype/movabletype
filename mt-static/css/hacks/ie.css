@@ -1,0 +1,92 @@
+/* - Generic */
+/* -- Form */
+.edit-entry #title-field #title, 
+.edit-entry input.text, 
+.edit-entry textarea { 
+    width: 97%;
+}
+
+/* -- Button */
+button { 
+    height: 18px;
+    padding: 0 auto;
+}
+
+button.action { 
+    font-weight: bold;
+    padding: 0 auto;
+    height: 23px;
+}
+
+/* - App Header */
+#header { 
+    z-index: 1200;
+}
+
+/* - Navigation Menu */
+#menu { 
+    z-index: 1100;
+}
+
+ul.menu-nav, 
+ul.submenu, 
+ul.submenu li, 
+ul.menu-nav li .toggle-button, 
+.favorite-blogs-widget .blog-content { 
+    zoom: 1;
+}
+
+ul.menu-nav li.top-menu { 
+    margin-top: -4px;
+}
+ul.menu-nav li.first-child a { 
+    margin-top: 0;
+}
+
+/* - Widgets */
+/* -- Favorite Website, Blog Widget */
+.favorite-blogs-widget .blog-container { 
+    height: auto;
+    margin-right: 0;
+    overflow: visible;
+}
+
+ul#asset-list li a.remove-asset {
+   top: -4px;
+}
+
+/* - Listing */
+.listing .view, 
+.listing .cb, 
+.listing .si, 
+.listing .number { 
+    padding: 0 10px;
+}
+
+.listing td.view, 
+.listing td.cb, 
+.listing td.si, 
+.listing td.number { 
+    padding-top: 8px;
+}
+
+/* - fake display: inline-block; */
+.ui-tabs-nav li, 
+.object-nav li, 
+#utility-nav li, 
+#selector-nav .current, 
+#caching-field li li, 
+#permission-list ul li, 
+#utility-nav li, 
+#menu-bar-list li, 
+#screen-nav li,
+#editor .editor-header .tab, 
+#field-convert_breaks, 
+.settings-screen ul#editor-fields li, 
+#basename-field .field-content #basename-lock, 
+#template-options #template-options-header h3, 
+.edit-author #system_permissions-field li { 
+    display: inline;
+    height: 1%;
+}
+

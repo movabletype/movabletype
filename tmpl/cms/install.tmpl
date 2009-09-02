@@ -1,0 +1,220 @@
+<mt:setvarblock name="html_title">
+    <mt:if name="version_warning">
+        <__trans phrase="Welcome to Movable Type">
+    <mt:else>
+        <__trans phrase="Create Your Account">
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="page_title">
+    <mt:if name="version_warning">
+    <span id="version-warning-header">
+        <__trans phrase="Welcome to Movable Type">
+    </span>
+    </mt:if>
+    <span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+        <__trans phrase="Create Your Account">
+    </span>
+</mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<style type="text/css">
+div.warning#version-warning {
+    position: relative;
+    padding: 1em;
+}
+</style>
+
+<div class="upgrade">
+
+<mt:if name="version_warning">
+<div class="warning" id="version-warning">
+    <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
+    <div class="actions-bar">
+        <input type="hidden" name="continue" value="1" />
+        <button
+           onclick="dismiss('version-warning'); show('welcome'); return false;"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Yes (s)">"
+           class="action primary-button"
+           ><__trans phrase="Yes"></button>
+        <button
+           onclick="javascript:location.href='mt-check.cgi'"
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="View MT-Check (x)">"
+           class="action"
+           ><__trans phrase="No"></button>
+    </div>
+</div>
+</mt:if>
+
+<div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+<p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>  
+
+<mt:if name="error">
+<mtapp:statusmsg
+    id="generic-error"
+    class="error">
+    <mt:var name="error">
+</mtapp:statusmsg>
+</mt:if>
+
+<form id="install_form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="init_user">
+
+<mt:if name="auth_mode_ldap">
+    <p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
+</mt:if>
+
+
+    <fieldset>
+
+<mt:if name="auth_mode_mt">
+
+    <mtapp:setting
+        id="admin_username"
+        label="<__trans phrase="Username">"
+        label_class="top-label"
+        hint="<__trans phrase="The name used by this user to login.">">
+        <input type="text" id="admin_username" class="ti" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_nickname"
+        label="<__trans phrase="Display Name">"
+        label_class="top-label"
+        hint="<__trans phrase="The name used when published.">">
+        <input type="text" name="admin_nickname" id="admin_nickname" class="ti" value="<mt:var name="admin_nickname" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_email"
+        label="<__trans phrase="Email Address">"
+        label_class="top-label"
+        hint="<__trans phrase="The user&rsquo;s email address.">">
+        <input type="text" id="admin_email" class="ti" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="use_system_email"
+        hint="<__trans phrase="The email address used in the From: header of each email sent from the system.">"
+        show_hint="1"
+        >
+        <input type="checkbox" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email"  class="cb" />
+        <__trans phrase="Use this as system email address">
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="preferred_language"
+        label="<__trans phrase="Language">"
+        label_class="top-label"
+        hint="<__trans phrase="The user&rsquo;s preferred language.">">
+        <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password"
+        label="<__trans phrase="Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Select a password for your account.">">
+        <input type="password" id="admin_password" class="pw" name="admin_password" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password_confirm"
+        label="<__trans phrase="Confirm Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Repeat the password for confirmation.">">
+        <input type="password" class="pw" name="admin_password_confirm" />
+    </mtapp:setting>
+
+</mt:if>
+
+<mt:if name="auth_mode_ldap">
+
+    <mtapp:setting
+        id="admin_username"
+        label="<__trans phrase="Username">"
+        label_class="top-label"
+        hint="<__trans phrase="Your LDAP username.">">
+        <input type="text" id="admin_username" class="ti" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="preferred_language"
+        label="<__trans phrase="Language">"
+        label_class="top-label"
+        hint="<__trans phrase="The user&rsquo;s preferred language.">">
+        <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="admin_password"
+        label="<__trans phrase="Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Enter your LDAP password.">">
+        <input type="password" id="admin_password" class="pw" name="admin_password" />
+    </mtapp:setting>
+
+</mt:if>
+
+    </fieldset>
+
+    <div class="actions-bar">
+        <input type="hidden" name="continue" value="1" />
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Continue (s)">"
+           class="save action primary-button"
+           ><__trans phrase="Continue"></button>
+    </div>
+</form>
+
+</div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+function dismiss(id) {
+    jQuery('#'+id).hide();
+    jQuery('#'+id+'-header').hide();
+}
+
+function show(id) {
+    jQuery('#'+id).show();
+    jQuery('#'+id+'-header').show();
+}
+
+jQuery(function() {
+    jQuery('#admin_username').focus();
+    jQuery('#install_form').validate({
+        rules: {
+            admin_username: 'required'<mt:if name="auth_mode_mt">,
+            admin_nickname: 'required',
+            admin_email: 'required',
+            hint: 'required'</mt:if>
+        },
+        messages: {
+            admin_username: '<__trans phrase="The initial account name is required." escape="singlequotes">'<mt:if name="auth_mode_mt">,
+            admin_nickname: '<__trans phrase="The display name is required." escape="singlequotes">',
+            admin_email: '<__trans phrase="The e-mail address is required." escape="singlequotes">',
+            hint: '<__trans phrase="Password recovery word/phrase is required." escape="singlequotes">'</mt:if>
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+});
+/* ]]> */
+</script>
+<mt:include name="include/chromeless_footer.tmpl">

@@ -1,0 +1,8 @@
+<mt:SetVarBlock name="message"><__trans phrase="If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses." params="<$mt:Var name="throttled_ip"$>"></mt:SetVarBlock>
+<__trans phrase="A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds." params="<$mt:BlogName$>%%<$mt:Var name="throttle_seconds"$>">
+
+<__trans phrase="This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is">
+
+<$mt:Var name="throttled_ip"$>
+
+<$mt:Var name="message"$>

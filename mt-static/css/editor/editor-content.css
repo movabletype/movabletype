@@ -1,0 +1,93 @@
+
+html, body {
+    height: 90%;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    background: #fff;
+}
+
+body {
+    padding: 10px;
+    color: #333;
+    background: #fff;
+    font: normal 13px arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif;
+}
+
+
+/* editor stuff */
+
+.left { 
+    float: left;
+}
+
+.right { 
+    float: right;
+}
+
+/*
+.editor-misspelled {
+    background: url(../images/misspelled.gif) left bottom repeat-x;
+}
+*/
+
+
+/* insert stuff */
+
+font[face|="-editor"] {
+    font-family: inherit;
+}
+
+
+*[contenteditable="false"] {
+    cursor: default;
+    -moz-user-select: all;
+    -moz-user-input: none;
+    -moz-user-focus: none;
+    -khtml-user-select: all;
+}
+
+body[class="editor-transient"] *[contenteditable="false"] {
+    -moz-user-select: inherit !important;
+}
+
+
+/* debug */
+
+body.debug font {
+    background: #ffe;
+    border-bottom: 1px solid #ff9;
+}
+
+body.debug font font {
+    background: #ffd;
+}
+
+body.debug font font font {
+    background: #ffc;
+}
+
+body.debug font font font font {
+    background: #ffb;
+}
+
+a { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6, p, pre, blockquote, fieldset, ul, ol, dl {
+    margin: 0 0 .75em 0;
+}
+
+h1 { font-size: 2em; margin-bottom: .1em; }
+h2 { font-size: 1.5em; }
+h3 { font-size: 1.375em; }
+h4 { font-size: 1.25em; }
+h5 { font-size: 1.125em; }
+h6 { font-size: 1em; }
+
+blockquote, ol, ul {
+    margin-left: 20px; 
+    background-repeat: repeat-y;
+}
+ol { list-style: decimal outside; }
+ul { list-style: disc outside; }
+.item { list-style: none; }

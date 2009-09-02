@@ -1,0 +1,34 @@
+<mt:if name="has_list_actions">
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:loop name="list_actions">itemset_options['<mt:var name="key">'] = {type:'core'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
+</mt:loop>
+<mt:loop name="more_list_actions">itemset_options['<mt:var name="key">'] = {type:'plugin'<mt:if name="input">,input:'<mt:var name="input_label" escape="js">'</mt:if><mt:if name="continue_prompt">,continue_prompt:"<mt:var name="continue_prompt" escape="js">"</mt:if><mt:if name="dialog">,dialog:1</mt:if><mt:if name="js">,js:'<mt:var name="js" escape="js">'</mt:if><mt:if name="min">,min:'<mt:var name="min" escape="js">'</mt:if><mt:if name="max">,max:'<mt:var name="max" escape="js">'</mt:if>};
+</mt:loop>
+/* ]]> */
+</script>
+<select name="plugin_action_selector" onchange="updatePluginAction(this)">
+    <option value="0"><__trans phrase="More actions..."></option>
+    <mt:loop name="list_actions">
+    <option value="<mt:var name="key">"><mt:var name="label"></option>
+    </mt:loop>
+    <mt:loop name="more_list_actions">
+        <mt:if name="__first__">
+    <optgroup label="<__trans phrase='Plugin Actions'>">
+        </mt:if>
+        <option value="<mt:var name="key">"><mt:var name="label"></option>
+        <mt:if name="__last__">
+    </optgroup>
+        </mt:if>
+    </mt:loop>
+</select>
+<mt:if name="form_id">
+<button
+     class="small-button mt-<mt:var name="form_id">-action"
+     ><__trans phrase="Go"></button>
+<mt:else>
+<button
+     class="small-button mt-<mt:var name="object_type">-listing-form-action"
+     ><__trans phrase="Go"></button>
+</mt:if>
+</mt:if>

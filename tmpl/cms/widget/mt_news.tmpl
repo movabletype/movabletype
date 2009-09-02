@@ -1,0 +1,32 @@
+<mtapp:widget class="widget news-widget" tabbed="1" label="<__trans phrase="News">" can_close="1">
+    <ul id="news-widget-tabs" class="tabs">
+        <li id="mt-news-tab" class="tab"><a href="#mt-news-panel"><span><__trans phrase="MT News"></span></a></li>
+        <li id="learning-mt-tab" class="tab"><a href="#learning-mt-panel"><span><__trans phrase="Learning MT"></span></a></li>
+        <!--
+        <li id="hacking-mt-tab" class="tab" mt:tab="hacking" mt:command="select-tab"><a href="javascript:void(0)"><span><__trans phrase="Hacking MT"></span></a></li>
+        <li id="pronet-tab" class="tab" mt:tab="pronet" mt:command="select-tab"><a href="javascript:void(0)"><span><__trans phrase="Pronet"></span></a></li>
+        -->
+    </ul>
+    <div id="mt-news-panel">
+        <mt:if name="news_html">
+            <$mt:var name="news_html"$>
+        <mt:else>
+            <p><__trans phrase="No Movable Type news available."></p>
+        </mt:if>
+    </div>
+    <div id="learning-mt-panel">
+        <mt:if name="learning_mt_news_html">
+            <$mt:var name="learning_mt_news_html"$>
+        <mt:else>
+            <p><__trans phrase="No Learning Movable Type news available."></p>
+        </mt:if>
+    </div>
+    <!--
+    <div id="hacking-mt-panel">
+        HACKING-MT
+    </div>
+    <div id="pronet-panel">
+        PRONET
+    </div>
+    -->
+</mtapp:widget>

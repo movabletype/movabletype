@@ -1,0 +1,106 @@
+<mt:unless name="json">
+<$mt:setvar name="screen_type" value="dialog-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="Create MultiBlog Trigger"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+
+<style type="text/css">
+/* some styles here to resize/position the blog listing */
+#blog-panel div.selector .list-data-wrapper {
+    height: 240px;
+}
+.dialog .actions-bar form.multiblog-trigger {
+    width: 450px;
+    margin: 0;
+    padding: 0;
+    float: left;
+    text-align: left;
+}
+.dialog .actions-bar form.multiblog-trigger fieldset {
+    margin: 0;
+    padding: 0;
+}
+.dialog #options {
+    clear: both;
+    padding-top: 10px;
+}
+</style>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+var win = window.parent;
+function returnTrigger(ok) {
+    if (!ok) // user cancelled
+        return parent.jQuery.fn.mtDialog.close();
+
+    // populate form and submit
+    frm = TC.getElementsByTagAndClassName("form", "multiblog-trigger", dialog.panels[0].element);
+    if (frm) {
+        frm = frm[0];
+
+        /* gather blog id and name from table */
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) {
+            alert("Please select a weblog.")
+            return;
+        }
+        var inp = inputs[0];
+        var blog_id = inp.value;
+        var row = TC.getParentByTagName( inp, "tr" );
+        if (!row) return;
+        var labels = row.getElementsByTagName('label');
+        if (labels.length == 0) return;
+        var blog_name = labels[0].innerHTML;
+
+        var trigger = frm.multiblog_blog_trigger.options[frm.multiblog_blog_trigger.selectedIndex];
+        var action = frm.multiblog_blog_action.options[frm.multiblog_blog_action.selectedIndex];
+        win.addMultiBlogTrigger(action.text, action.value, blog_name, blog_id, trigger.text, trigger.value);
+        parent.jQuery.fn.mtDialog.close();
+    }
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, returnTrigger);
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+<mt:setvarblock name="after_listing_panel">
+<div id="options">
+    <form class="multiblog-trigger" method="<mt:var name="script_url">" method="post" target="_top">
+        <mt:var name="trigger_caption">
+        <select name="multiblog_blog_trigger" size="1">
+            <mt:loop name="multiblog_trigger_loop">
+            <option value="<mt:var name="trigger_key">"><mt:var name="trigger_name"></option>
+            </mt:loop>
+        </select>
+        <select name="multiblog_blog_action" size="1">
+        <mt:loop name="multiblog_action_loop">
+        <option value="<mt:var name="action_id">"><mt:var name="action_name"></option>
+        </mt:loop>
+        </select>
+    </form>
+</div>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<div class="modal_width" id="select-weblog-dialog">
+
+</mt:unless>
+<mt:include name="include/listing_panel.tmpl">
+<mt:unless name="json">
+
+</div>
+
+<mt:include name="dialog/footer.tmpl">
+</mt:unless>

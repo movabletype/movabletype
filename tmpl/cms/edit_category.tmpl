@@ -1,0 +1,175 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Category">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your category changes have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=list_category&amp;_type=category&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Manage Categories"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage entries in this category"></a></li>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function validate(form) {    
+    if (form.label.value.match(/\S/,''))
+        return true;
+    alert('<__trans phrase="You must specify a label for the category." escape="singlequotes">');
+    form.label.focus();
+    return false;
+}
+
+function toggleFile() {
+    var fld = getByID("basename");
+    if (fld) {
+        fld.disabled = false;
+        fld.focus();
+        var baseman = getByID("basename_manual");
+        if (baseman) baseman.value = "1";
+        var basewarn = getByID("basename-warning");
+        if (basewarn) basewarn.style.display = "block";
+    }
+    var img = getByID("basename-lock");
+    if (img)
+        img.style.display = 'none';
+    return false;
+}
+
+var tableSelect;
+function init()
+{
+    // setup
+    tableSelect = new TC.TableSelect( "<$mt:var name="asset_type"$>-listing-table" );
+    tableSelect.rowSelect = true;
+}
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+
+
+<div id="category-details-content">
+<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="category_parent" value="<mt:var name="parent">" />
+
+    <fieldset>
+<mtapp:setting
+    id="label"
+    label="<__trans phrase="Label">">
+    <input type="text" name="label" id="label" class="full-width" maxlength="100" value="<mt:var name="label" escape="html">" class="wide" />
+</mtapp:setting>
+
+<mtapp:setting
+    id="basename"
+    label="<__trans phrase="_CATEGORY_BASENAME">"
+    hint="<__trans phrase="This is the basename assigned to your category.">"
+    help_page="categories"
+    help_section="category_basename">
+    <input type="text" name="basename" id="basename" class="mt-edit-field" maxlength="250" value="<mt:var name="basename" escape="html">" />
+    <p class="alert-warning-inline" id="basename-warning" style="display: none;">
+    <img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+    <__trans phrase="Warning: Changing this category's basename may break inbound links.">
+    </p>
+</mtapp:setting>
+
+<mtapp:setting
+    id="description"
+    label="<__trans phrase="Description">">
+    <textarea name="description" id="description" rows="" cols="" class="full-width short"><mt:var name="description" escape="html"></textarea>
+</mtapp:setting>
+    </fieldset>
+
+    <fieldset>
+        <h3><__trans phrase="Inbound TrackBacks"></h3>
+<mtapp:setting
+    id="allow_pings"
+    label="<__trans phrase="Accept Trackbacks">"
+    hint="<__trans phrase="If enabled, TrackBacks will be accepted for this category from any source.">"
+    help_page="categories"
+    help_section="accept_category_pings">
+    <input type="checkbox" name="allow_pings" id="allow_pings" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> 
+</mtapp:setting>
+
+<mt:if name="tb">
+    <mtapp:setting
+        id="view_trackbacks"
+        label="<__trans phrase="TrackBacks">">
+        <div id="view_trackbacks"><strong><a href="<$mt:var name="script_url">?__mode=list_pings&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="View TrackBacks"></a></strong></div>
+    </mtapp:setting>
+</mt:if>
+        <div id="allow_pings_prefs" style="display:<mt:if name="allow_pings">block<mt:else>none</mt:if>">
+<mt:if name="tb_url">
+    <mtapp:setting
+        id="trackback_url"
+        label="<__trans phrase="TrackBack URL for this category">"
+        hint="<__trans phrase="_USAGE_CATEGORY_PING_URL">">
+        <div class="textarea-wrapper">
+            <input type="text" name="trackback_url" id="trackback_url" readonly="readonly" value="<mt:var name="tb_url" escape="html">" class="full-width" />
+        </div>
+    </mtapp:setting>
+    <mtapp:setting
+        id="tb_passphrase"
+        label="<__trans phrase="Passphrase Protection">"
+        hint="<__trans phrase="Optional">"
+        help_page="categories"
+        help_section="trackback_passphrase_protection">
+        <div class="textarea-wrapper">
+            <input name="tb_passphrase" id="tb_passphrase" class="full-width" value="<mt:var name="tb_passphrase" escape="html">" size="30" />
+        </div>
+    </mtapp:setting>
+</mt:if>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <h3><__trans phrase="Outbound TrackBacks"></h3>
+<mtapp:setting
+    id="ping_urls"
+    label="<__trans phrase="Trackback URLs">"
+    hint="<__trans phrase="Enter the URL(s) of the websites that you would like to send a TrackBack to each time you create an entry in this category. (Separate URLs with a carriage return.)">"
+    help_page="categories"
+    help_section="categories_urls_to_ping">
+    <textarea name="ping_urls" id="ping_urls" cols="" rows="" class="full-width short"><mt:var name="ping_urls" escape="html"></textarea>
+</mtapp:setting>
+    </fieldset>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this category (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+</div>
+<mt:include name="include/footer.tmpl">

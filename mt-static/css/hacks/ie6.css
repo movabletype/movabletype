@@ -1,0 +1,87 @@
+/* - Generic */
+/* -- Form */
+input.text, 
+input.password, 
+textarea { 
+    border: 1px solid #c8c2be;
+    background-color: #F8FBF8;
+    width: 380px;
+}
+input.password { 
+    width: 15em;
+}
+input.extra-path { 
+    width: 12em;
+}
+
+/* - App Header */
+/* -- Menu bar, Content Nav */
+.website #selector-nav #current-website em, 
+.blog #selector-nav #current-website em { 
+    background-color: #839B5C;
+}
+.website #selector-nav #current-blog em { 
+    background-color: #7B7C7D;
+}
+.blog #selector-nav #current-blog em { 
+    background-color: #5C909B;
+}
+#selector-nav #current-website em { 
+    margin-right: -4px;
+}
+#selector-nav .selector { 
+    width: 250px;
+}
+#selector-nav #system-overview.show-selector #system-selector, 
+#selector-nav #current-website.show-selector #website-selector, 
+#selector-nav #current-blog.show-selector #blog-selector, 
+#selector-nav .show-selector .selector li { 
+    display: block;
+}
+#selector-nav #current-website.show-selector #blog-selector { 
+    display: none;
+}
+
+/* - Navigation Menu */
+ul.menu-nav li, 
+ul.menu-nav li a { 
+    height: 1%;
+}
+ul.menu-nav li.top-menu { 
+    margin-top: -3px;
+}
+ul.sub-menu li.last-child a { 
+    margin-bottom: 3px;
+}
+ul.menu-nav li.last-child a { 
+    border-bottom: 1px solid #c8c2be;
+}
+
+ul.menu-nav li.top-menu-open ul.sub-menu li.last-child a, 
+ul.menu-nav li.top-menu-open ul.sub-menu li a, 
+ul.menu-nav li.top-menu-open a.top-menu-link { 
+    border-bottom: 0;
+}
+
+ul.menu-nav li.last-child ul.sub-menu li.last-child a { 
+    border-bottom: 1px;
+}
+
+/* - Actions Bar */
+.dialog .actions-bar {
+    height: 22px;
+}
+
+
+ul#asset-list li a.remove-asset {
+   top: -1px;
+   right: 13px;
+}
+
+/* - haslayout */
+.msg, 
+.listing-screen .actions-bar, 
+#editor .editor-header, 
+.widget-header { 
+    zoom: 1;
+}

@@ -1,0 +1,33 @@
+<$MTHTTPContentType type="application/atom+xml"$><?xml version="1.0" encoding="<$MTPublishCharset$>"?>
+<feed
+    xmlns="http://www.w3.org/2005/Atom" 
+    xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/">
+    <title><MT_TRANS phrase="Search Results for [_1]" params="<$MTSearchString remove_html="1" encode_html="1" encode_xml="1"$>"></title>
+    <id>tag:<$MTCGIHost exclude_port="1" encode_xml="1"$>,<$MTDate format="%Y"$>:<$MTCGIRelativeURL encode_xml="1"$>/feed/<$MTSearchString remove_html="1" encode_xml="1"$></id>
+    <link rel="self" type="application/atom+xml" href="<$MTCGIPath$><$MTSearchScript$>?search=<$MTSearchString$>&amp;Template=<$MTSearchTemplateID$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$>" />
+    <link rel="alternate" type="text/html" href="<$MTCGIPath$><$MTSearchScript$>?IncludeBlogs=<$MTSearchIncludeBlogs$>&amp;search=<$MTSearchString remove_html="1" encode_xml="1"$>" />
+    <updated><$MTDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></updated>
+    <generator uri="http://www.sixapart.com/movabletype/">Movable Type <$MTVersion$></generator>
+    <opensearch:Query role="request" searchTerms="<$MTSearchString remove_html="1" encode_xml="1"$>" />
+    <opensearch:totalResults><$MTSearchResultCount$></opensearch:totalResults>
+    <opensearch:startIndex>1</opensearch:startIndex>
+    <opensearch:itemsPerPage><$MTSearchResultCount$></opensearch:itemsPerPage>
+    <MTSearchResults>
+    <entry>
+        <title><$MTEntryTitle remove_html="1" encode_xml="1"$></title>
+        <link rel="alternate" type="text/html" href="<$MTEntryPermalink encode_xml="1"$>" />
+        <id><$MTEntryAtomID$></id>
+        <published><$MTEntryDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></published>
+        <updated><$MTEntryModifiedDate utc="1" format="%Y-%m-%dT%H:%M:%SZ"$></updated>
+        <author>
+            <name><$MTEntryAuthorDisplayName encode_xml="1"$></name>
+            <MTIfNonEmpty tag="MTEntryAuthorURL"><uri><$MTEntryAuthorURL encode_xml="1"$></uri></MTIfNonEmpty>
+        </author>
+        <MTEntryCategories><category term="<$MTCategoryID encode_xml="1"$>" label="<$MTCategoryLabel encode_xml="1"$>" scheme="http://www.sixapart.com/ns/types#category" /></MTEntryCategories>
+        <MTEntryIfTagged><MTEntryTags><category term="<$MTTagID encode_xml="1"$>" label="<$MTTagName encode_xml="1"$>" scheme="http://www.sixapart.com/ns/types#tag" /></MTEntryTags></MTEntryIfTagged>
+        <content type="html" xml:lang="<$MTBlogLanguage ietf="1"$>" xml:base="<$MTBlogURL encode_xml="1"$>">
+        <$MTEntryExcerpt remove_html="1" encode_html="1"$>
+        </content>
+    </entry>
+    </MTSearchResults>
+</feed>

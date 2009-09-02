@@ -1,0 +1,97 @@
+                        </div><!-- /main-content inner -->
+                    </div><!-- /main-content -->
+<mt:if name="related_content">
+                    <div id="related-content">
+                        <mt:var name="related_content">
+                    </div><!-- /related-content -->
+</mt:if>
+                    <mt:var name="form_footer">
+                </div><!-- /content-body -->
+            </div><!-- /content -->
+        </div><!-- /container -->
+
+        <div id="footer">
+<mt:if name="mt_beta">
+            <div id="msg-beta">
+                <p><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
+            </div>
+</mt:if>
+
+<mt:if name="author_name">
+            <ul id="footer-nav" class="inline-nav">
+                <li><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
+                <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
+                <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.com/support/">"><__trans phrase="Support"></a></li>
+                <li><a href="<__trans phrase="http://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.org/feedback.html">"><__trans phrase="Send Us Feedback"></a></li>
+            </ul>
+</mt:if>
+            <mt:include name="include/copyright.tmpl">
+            <p id="version">
+                <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
+<mt:if name="packs_installed">
+                <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><a href="<__trans phrase="http://www.sixapart.com/movabletype/">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+</mt:if>
+            </p>
+        </div><!-- /footer -->
+
+        <mt:var name="html_body_footer">
+
+        <div id="bootstrapper" class="hidden"></div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+<mt:if name="open_dialog">
+jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">'); 
+</mt:if>
+
+App.bootstrapInline( false );
+
+jQuery(function() {
+<mt:var name="jq_js_include">
+    jQuery.mtAddEdgeClass();
+    jQuery.mtMenu();
+    jQuery.mtSelector();
+    jQuery('a.mt-open-dialog').mtDialog();
+    jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
+    jQuery('img.mt-close-msg').live('click', function() {
+        jQuery(this).parent('div.msg').remove();
+    });
+    jQuery('input.mt-edit-field').mtEditInput({
+        edit: '<__trans phrase="Edit">'
+    });
+    jQuery('div.has-option').mtCheckboxOption();
+    jQuery('input.post-date').datepicker({
+        dateFormat: 'yy-mm-dd',
+        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+    });
+    jQuery('#brand > a').hover(
+        function() {
+            jQuery(this).after('<span class="tips"><__trans phrase="Your Dashboard"></span>');
+        },
+        function(){
+            jQuery('#brand span.tips').remove();
+        }
+    );
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
+    jQuery('.widget-header').hover(
+        function() {
+            jQuery(this).children('.widget-close-link').toggle();
+        },
+        function() {
+            jQuery(this).children('.widget-close-link').toggle();
+        }
+    );
+<mt:if name="show_display_options_link">
+    jQuery.mtDisplayOptions();
+</mt:if>
+});
+/* ]]> */
+</script>
+
+    </body>
+</html>

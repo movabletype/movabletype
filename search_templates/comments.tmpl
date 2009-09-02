@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=<$MTPublishCharset$>" />
+<meta name="generator" content="http://www.movabletype.org/" />
+
+<title><MT_TRANS phrase="Search Results"></title>
+<mt:IfBlog>
+    <mt:IfNonEmpty tag="Link" template="styles">
+    <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
+    <mt:else>
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    </mt:IfNonEmpty>
+<mt:else>
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+</mt:IfBlog>
+</head>
+
+<body>
+
+<div id="container">
+
+<div id="banner">
+<h1><a href="<$MTBlogURL$>" accesskey="1"><$MTBlogName encode_html="1"$></a></h1>
+<h2><$MTBlogDescription encode_html="1"$></h2>
+</div>
+
+<div class="content">
+
+<form method="post" action="<$MTCGIPath$><$MTSearchScript$>">
+<input type="hidden" name="Type" value="newcomments" />
+<input type="hidden" name="Template" value="comments" />
+
+<h3><MT_TRANS phrase="Search for new comments from:"></h3>
+
+<p>
+<select name="CommentSearchCutoff">
+<option value="9999999"><MT_TRANS phrase="the beginning"></option>
+<option value="7"><MT_TRANS phrase="one week back"></option>
+<option value="14"><MT_TRANS phrase="two weeks back"></option>
+<option value="30"><MT_TRANS phrase="one month back"></option>
+<option value="60"><MT_TRANS phrase="two months back"></option>
+<option value="90"><MT_TRANS phrase="three months back"></option>
+<option value="120"><MT_TRANS phrase="four months back"></option>
+<option value="150"><MT_TRANS phrase="five months back"></option>
+<option value="180"><MT_TRANS phrase="six months back"></option>
+<option value="365"><MT_TRANS phrase="one year back"></option>
+</select>
+<input type="submit" value="<MT_TRANS phrase="Find new comments">" />
+</p>
+
+</form>
+
+<MTSearchResults>
+<h3><a href="<$MTEntryPermalink$>"><$MTEntryTitle encode_html="1"$></a></h3>
+<p><$MTEntryExcerpt encode_html="1"$> <$MTEntryEditLink$></p>
+<p class="posted"><MT_TRANS phrase="Posted in [_1] on [_2]" params="<$MTBlogName encode_html="1" encode_html="1"$>%%<$MTEntryDate$>"></p>
+</MTSearchResults>
+
+<MTNoSearchResults>
+<h2><MT_TRANS phrase="No results found"></h2>
+
+<p><MT_TRANS phrase="No new comments were found in the specified interval."></p>
+</MTNoSearchResults>
+
+<MTNoSearch>
+<h2><MT_TRANS phrase="Instructions"></h2>
+
+<p><MT_TRANS phrase="Select the time interval that you'd like to search in, then click 'Find new comments'"></p>
+</MTNoSearch>
+
+</div>
+</div>
+
+</body>
+</html>

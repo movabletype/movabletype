@@ -1,0 +1,69 @@
+<mt:unless name="json">
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+
+<mtapp:statusmsg
+    id="moved-warning"
+    class="alert">
+    <__trans phrase="Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.">
+</mtapp:statusmsg>
+
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+    
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+
+function returnMoveBlogs(ok) {
+    if (ok) {
+        var frm = document.forms['blogs'];
+        var added = dialog.panels[0].tableSelect.selected();
+        for (var i = 0; i < added.length; i++)
+            added[i] = added[i].value.replace(/\D/g, '');
+        frm.elements['ids'].value = added.join(",");
+        frm.submit();
+    }
+
+    parent.jQuery.fn.mtDialog.close();
+}
+
+function init() {
+    // setup
+    dialog = new Dialog.MultiPanel("select-weblog");
+    var blogPanel = new ListingPanel("blog", "website");
+    blogPanel.pager.setState(<mt:var name="pager_json">);
+    dialog.setPanels([blogPanel]);
+    dialog.open({}, returnMoveBlogs);
+}
+
+/* ]]> */
+</script>
+
+<form name="blogs" id="members" action="<mt:var name="script_url">" method="post" target="_top">
+<input type="hidden" name="__mode" value="start_move_blogs" />
+<input type="hidden" name="blog_ids" value="<mt:var name="blog_ids">" />
+<input type="hidden" name="ids" value="" />
+<input type="hidden" name="return_args" value="<mt:var name="return_url">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+</form>
+
+<div class="modal_width" id="select-weblog-dialog">
+
+</mt:unless>
+<mt:include name="include/listing_panel.tmpl">
+<mt:unless name="json">
+
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
+
+<mt:include name="dialog/footer.tmpl">
+</mt:unless>

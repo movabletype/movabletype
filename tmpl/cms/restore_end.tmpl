@@ -1,0 +1,24 @@
+</pre>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var progress = getByID("progress-bar");
+if (progress) {
+    progress.style.display = "none";
+}
+/* ]]> */
+</script>
+
+<mt:unless name="open_dialog">
+<mt:if name="restore_success">
+<p><strong><__trans phrase="All data restored successfully!"></strong></p>
+<mt:unless name="restore_upload">
+<p><__trans phrase="Make sure that you remove the files that you restored from the 'import' folder, so that if/when you run the restore process again, those files will not be re-restored."></p>
+</mt:unless>
+<mt:else>
+<p><strong><__trans phrase="An error occurred during the restore process: [_1] Please check activity log for more details." params="<mt:var name="error">"></strong></p>
+</mt:if>
+</mt:unless>
+
+<mt:include name="include/footer.tmpl">

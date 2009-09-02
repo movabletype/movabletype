@@ -1,0 +1,19 @@
+<mt:setvarblock name="page_title"><__trans phrase="Restore"></mt:setvarblock>
+<mt:setvar name="restore" value="1">
+<mt:include name="include/header.tmpl" force_header="1">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function progress(str, id) {
+    var el = getByID(id);
+    if (el) el.innerHTML = str;
+}
+/* ]]> */
+</script>
+
+<div class="import-process">
+
+<div id="progress-bar"><img src="<mt:var name="static_uri">images/indeterminate-progress-bar.gif" alt="" height="24" width="124" /></div>
+
+<pre><__trans phrase="Restoring Movable Type">
+

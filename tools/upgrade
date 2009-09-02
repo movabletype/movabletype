@@ -1,0 +1,127 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+package MT::Tool::Upgrade;
+use strict;
+use utf8;
+
+use lib  qw( extlib lib );
+use base qw( MT::Tool );
+
+use Carp qw(confess);
+use MT::Upgrade;
+
+sub usage { '[--dryrun] [--sql] [--name <name>]' }
+
+sub help {
+    return q{
+        Installs or upgrades a database to the current MT schema.
+
+        --dryrun         Determine the upgrade steps required without
+                         executing any changes.
+        --sql            Report the SQL that would be performed instead
+                         of executing it.
+        --name <name>    The author as whom to perform the upgrade steps.
+                         Required when performing an upgrade (not at
+                         initial install).
+    };
+}
+
+my ($dryrun, $name, $sqlonly);
+
+sub options {
+    return (
+        'dryrun!' => \$dryrun,
+        'sql!'    => \$sqlonly,
+        'name=s'  => \$name,
+    );
+}
+
+
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
+
+    if ($sqlonly) {
+        $dryrun = 1;
+        MT->add_callback('MT::Upgrade::SQL', 1, undef, \&sql_cb);
+    }
+    else {
+        print "upgrade -- A command line tool for upgrading the schema for Movable Type.\n";
+        print "(Non-destructive mode)\n" if $dryrun;
+    }
+
+    my $install;
+    my $driver = MT::Object->driver;
+    if (!$driver || !$driver->table_exists('MT::Author')) {
+        $install = 1;
+    }
+
+    unless ($install || $name) {
+        print "Please set username to set superuser at upgrading.  cf: upgrade --name Melody\n";
+        exit;
+    }
+
+    my $author_id;
+    if (!$install && $name) {
+        require MT::BasicAuthor;
+        my $a = MT::BasicAuthor->load({name => $name})
+            or die "Not found user $name:" . MT::BasicAuthor->errstr;
+        $author_id = $a->id;
+    }
+
+    if ( $install ) {
+        $MT::Upgrade::Installing = 1;
+    }
+
+    local $SIG{__WARN__} = sub { __PACKAGE__->trace( $_[0] ) };
+
+    my $updated = MT::Upgrade->do_upgrade(
+        App       => __PACKAGE__, 
+        DryRun    => $dryrun,
+        Install   => $install,
+        SuperUser => $author_id,
+        CLI       => 1,
+        User      => { user_nickname => 'Melody Nelson' },
+    );
+
+    if ($install) {
+        print "Installation complete.\n";
+    } else {
+        print "Upgrade complete!\n" if !$dryrun && $updated;
+        print "Your schema is up to date already.\n" if defined $updated && !$updated;
+    }
+}
+
+sub progress {
+    my $pkg = shift;
+    my $msg = shift;
+    print "\t* " . Encode::encode( MT->config->PublishCharset || 'UTF-8', $msg ) . "\n" unless $sqlonly;
+}
+
+sub error {
+    my $pkg = shift;
+    my $err = shift;
+    confess Encode::encode( MT->config->PublishCharset || 'UTF-8', $err );
+}
+
+sub sql_cb {
+    my $cb = shift;
+    my ($upgrade, $stmt) = @_;
+    print "$stmt\n";
+}
+
+sub trace {
+    my $pkg = shift;
+    print "[warn] >> \t" . Encode::encode( MT->config->PublishCharset || 'UTF-8', $_[0] ) . "\n"; 
+}
+
+__PACKAGE__->main() unless caller;
+
+1;
+

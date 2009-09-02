@@ -1,0 +1,18 @@
+<mt:setvarblock name="page_title"><__trans phrase="Thanks for signing up"></mt:setvarblock>
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:if name-"entry_url">
+<p><__trans phrase="Before you can leave a comment you must first complete the registration process by confirming your account. An email has been sent to [_1]." params="<mt:var name="email" escape="html">"></p>
+<mt:else>
+<p><__trans phrase="To complete the registration process you must first confirm your account. An email has been sent to [_1]." params="<mt:var name="email" escape="html">"></p>
+</mt:else></mt:if>
+
+<p><__trans phrase="To confirm and activate your account please check your inbox and click on the link found in the email we just sent you."></p>
+
+<mt:if name-"entry_url">
+<p><a href="<mt:var name="entry_url" escape="html">"><__trans phrase="Return to the original entry."></a></p>
+<mt:else>
+<p><a href="<mt:var name="return_url" escape="html">"><__trans phrase="Return to the original page."></a></p>
+</mt:else></mt:if>
+
+<mt:include name="include/chromeless_footer.tmpl">

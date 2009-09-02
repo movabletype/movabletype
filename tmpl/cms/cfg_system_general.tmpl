@@ -1,0 +1,222 @@
+<mt:setvar name="page_title" value="<__trans phrase="System: General Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="system-general-settings" value="1">
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="test_mail_sent">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="A test email was sent.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="Your settings have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="config_warning">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="config_warning">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="js_include" append="1">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/ui/ui.dialog.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function validate (f) {
+    return true;
+}
+/* ]]> */
+</script>
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+<input type="hidden" name="__mode" value="save_cfg_system_general" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<fieldset>
+    <mtapp:setting
+        id="system_email_address"
+        label="<__trans phrase="System Email">"
+        hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, and a few other minor events.">"
+        show_hint="1">
+        <input type="text" id="system_email_address" name="system_email_address"<mt:if name="system_email_address"> value="<mt:var name="system_email_address" escape="html">"</mt:if> class="full-width" /> <a href="#" id="send-test-email"><__trans phrase="Send Test Email"></a>
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_debug_mode"
+        label="<__trans phrase="Debug Mode">"
+        hint="<__trans phrase='Values other than zero provide additional diagnostic information for troubleshooting problems with your Movable Type installation.  More information is available in the <a href="http://www.movabletype.org/documentation/developer/plugins/debug-mode.html">Debug Mode documentation</a>.'>"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_debug_mode" name="system_debug_mode" value="<mt:var name="system_debug_mode" escape="html">" />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging"
+        label="<__trans phrase="Performance Logging">"
+        hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified below.">"
+        show_hint="1">
+        <input type="checkbox" id="system_performance_logging" name="system_performance_logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_path"
+        label="<__trans phrase="Log Path">"
+        hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
+        show_hint="1">
+        <input type="text" id="system_performance_logging_path" name="system_performance_logging_path"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> class="full-width" />
+    </mt:app:setting>
+    <mtapp:setting
+        id="system_performance_logging_threshold"
+        label="<__trans phrase="Logging Threshold">"
+        hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
+        show_hint="1">
+        <input type="text" size="3" maxlength="3" id="system_performance_logging_threshold" name="system_performance_logging_threshold" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+    </mt:app:setting>
+    
+    <mtapp:setting
+        id="track_revisions"
+        label="<__trans phrase="Revision History">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Enable this setting to have Movable Type track revisions made by users to entries, pages and templates.">">
+        <input type="checkbox" id="track_revisions" name="track_revisions"<mt:if name="track_revisions"> checked="checked"</mt:if> class="cb" /> <label for="track_revisions"><__trans phrase="Track revision history"></label>
+    </mtapp:setting>
+
+</fieldset>
+
+<fieldset>
+
+<h3><__trans phrase="System-wide Feedback Controls"></h3>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+
+<div class="inner">
+
+    <mtapp:setting
+        id="comment_disable"
+        label="<__trans phrase="Prohibit Comments">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual blog settings.">">
+            <input type="checkbox" id="comment_disable" name="comment_disable"<mt:if name="comment_disable"> checked="checked"</mt:if> class="cb" /> <label for="comment_disable"><__trans phrase="Disable comments for all blogs."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="ping_disable"
+        label="<__trans phrase="Prohibit TrackBacks">"
+        content_class="field-content-text"
+        hint="<__trans phrase="This will override all individual blog settings.">">
+            <input type="checkbox" id="ping_disable" name="ping_disable"<mt:if name="ping_disable"> checked="checked"</mt:if> class="cb" /> <label for="ping_disable"><__trans phrase="Disable receipt of TrackBacks for all blogs."></label>
+    </mtapp:setting>
+
+</div>
+
+</fieldset>
+
+<fieldset>
+
+<h3><__trans phrase="Outbound Notifications"></h3>
+
+<div class="inner">
+
+    <mtapp:setting
+        id="disable_notify_ping"
+        label="<__trans phrase="Prohibit Notification Pings">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Disable sending notification pings when a new entry is created in any blog on the system.">">
+            <input type="checkbox" id="disable_notify_ping" name="disable_notify_ping" value="1"<mt:if name="disabled_notify_ping"> checked="checked"</mt:if> class="cb" /> <label for="disable_notify_ping"><__trans phrase="Disable notification pings for all blogs."></label>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="trackback_send"
+        label="<__trans phrase="Send Outbound TrackBacks to">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Do not send outbound TrackBacks or use TrackBack auto-discovery if your installation is intended to be private.">"
+        show_hint="1">
+        <ul>
+            <li><input type="radio" name="trackback_send" id="trackback_send_any" value="any"<mt:if name="trackback_send_any"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_any"><__trans phrase="Any site"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_off" value="off"<mt:if name="trackback_send_off"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_off"><__trans phrase="Disabled"></label> <span class="hint"><__trans phrase="(No Outbound TrackBacks)"></span></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_local" value="local"<mt:if name="trackback_send_local"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_local"><__trans phrase="Only to blogs within this system"></label></li>
+            <li><input type="radio" name="trackback_send" id="trackback_send_selected" value="selected"<mt:if name="trackback_send_selected"> checked="checked"</mt:if> class="cb" /> <label for="trackback_send_selected"><__trans phrase="Only to websites on the following domains:"></label><br />
+                <div class="textarea-wrapper">
+                    <textarea rows="" cols="" name="trackback_send_domains" class="full-width short"><mt:var name="trackback_send_domains" escape="html"></textarea>
+                </div>
+            </li>
+        </ul>
+    </mtapp:setting>
+
+</div>
+
+</fieldset>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<div id="test-email-dialog">
+    <form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+        <input type="hidden" name="__mode" value="cfg_system_general" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <fieldset>
+        <mtapp:setting
+            id="to_email_address"
+            label="<__trans phrase="Send Email To">"
+            label_class="top-class"
+            hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
+            show_hint="1">
+            <input type="text" id="to_email_address" name="to_email_address" class="full-width" />
+        </mt:app:setting>
+        </fieldset>
+        <div class="actions-bar">
+            <button
+                type="submit"
+                class="action primary-button"
+                ><__trans phrase="Send Test Email"></button>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery('#test-email-dialog').dialog({
+        bgiframe: true,
+        autoOpen: false,
+        width: 500
+    });
+    jQuery('#send-test-email').click(function() {
+        jQuery('#test-email-dialog').dialog('open');
+        return false;
+    }
+);
+});
+/* ]]> */
+</script>
+<mt:include name="include/footer.tmpl">

@@ -1,0 +1,14 @@
+<mt:if name="missing_paths">
+    <mt:if name="have_permissions">
+        <mt:setvarblock name="page_title"><__trans phrase="You need to configure your blog."></mt:setvarblock>
+    <mt:else>
+        <mt:setvarblock name="page_title"><__trans phrase="Your blog has not been published."></mt:setvarblock>
+    </mt:if>
+<mt:else>
+    <mt:setvarblock name="page_title"><__trans phrase="Upload File"></mt:setvarblock>
+</mt:if>
+<mt:include name="dialog/header.tmpl">
+
+<mt:include name="include/asset_upload.tmpl">
+
+<mt:include name="dialog/footer.tmpl">

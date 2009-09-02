@@ -1,0 +1,46 @@
+<mt:setvarblock name="page_title"><__trans phrase="Export Theme: [_1]" params="<mt:var name="label">"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+</mt:setvarblock>
+<mt:include name="dialog/header.tmpl">
+<div id="content">
+    <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
+    <mt:var name="template" mteval="1" />
+</div>
+<div class="actions-bar actions-bar-bottom">
+        <button
+            onclick="submitChanges();"
+            type="submit"
+            id="submit-button"
+            title="<__trans phrase="Continue (s)">"
+            class="save action primary-button"
+            ><__trans phrase="Continue"></button>
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Cancel (x)">"
+            class="close action mt-close-dialog"
+            ><__trans phrase="Close"></button>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+    function submitChanges() {
+        var target = parent.jQuery('#<mt:var name="exporter_id">-setting').empty();
+        jQuery('#content input').appendTo( target );
+        jQuery('#content textarea').each( function() {
+            jQuery('<input />')
+                .attr({
+                    'name': $(this).attr('name'),
+                    'id': $(this).attr('id'),
+                    'type': 'hidden'
+                })
+                .val( $(this).val() )
+                .appendTo( target );
+        });
+        parent.jQuery.fn.mtDialog.close();
+    }
+
+/* ]]> */
+</script>
+<mt:include name="dialog/footer.tmpl">

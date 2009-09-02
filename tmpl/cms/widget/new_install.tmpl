@@ -1,0 +1,22 @@
+<mtapp:widget
+    label="<__trans phrase="Thank you for installing Movable Type">"
+    class="welcome-widget"
+    can_close="1">
+    <p><__trans phrase="Congratulations on installing Movable Type, the world's most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:"></p>
+    <ul>
+        <li>
+            <a href="<__trans phrase="http://www.movabletype.org/documentation/">mt5/blog/"><__trans phrase="Create a new blog!"></a>
+            <p><__trans phrase="Let's create a blog after installation with community, professional, classic or any other themes."></p>
+        </li>
+<mt:if name="can_create_blog">
+        <li>
+            <a href="<mt:var name="mt_url">?__mode=list_author"><__trans phrase="Add more users"></a>
+            <p><__trans phrase="Start building your community now. Invite users to join your website and promote them to authors."></p>
+        </li>
+</mt:if>
+        <li>
+            <a href="<__trans phrase="http://www.movabletype.org/documentation/">mt5/"><__Trans phrase="Movable Type Online Manual"></a>
+            <p><__trans phrase="Whether you're new to Movable Type or using it for the first time, learn more about what this tool can do for you."></p>
+        </li>
+    </ul>
+</mtapp:widget>

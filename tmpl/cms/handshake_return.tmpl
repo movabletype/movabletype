@@ -1,0 +1,14 @@
+<script type="text/javascript">
+/* <![CDATA[ */
+function getByID (d, n) {
+    if (d.getElementById)
+        return d.getElementById(n);
+    else if (d.all)
+        return d.all[n];
+}
+var d = window.opener.document;
+d.cfg_form.remote_auth_token.value = '<mt:var name="remote_auth_token" escape="html">';
+getByID(d, 'save_token_msg').style.display='block';
+window.close();
+/* ]]> */
+</script>

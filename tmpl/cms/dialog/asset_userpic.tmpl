@@ -1,0 +1,18 @@
+<mt:include name="dialog/header.tmpl">
+<script type="text/javascript">
+/* <![CDATA[ */
+var field = window.parent.getByID( '<mt:var name="edit_field" escape="js">' );
+if (field) field.value = '<mt:var name="asset_id" escape="JS">';
+var author_userpic = '<mt:var name="author_userpic" escape="JS">';
+if (author_userpic != '') {
+    var preview = window.parent.getByID( 'userpic-preview-userpic' );
+    preview.innerHTML = author_userpic;
+    if (window.parent.DOM.hasClassName( 'remove-userpic', 'hidden' ))
+        window.parent.toggleHidden( 'remove-userpic' );
+    if (window.parent.DOM.hasClassName( 'userpic-preview', 'hidden' ))
+        window.parent.toggleHidden( 'userpic-preview' );
+}
+parent.jQuery.fn.mtDialog.close();
+/* ]]> */
+</script>
+<mt:include name="dialog/footer.tmpl">

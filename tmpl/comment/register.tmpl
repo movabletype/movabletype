@@ -1,0 +1,110 @@
+<mt:setvarblock name="page_title"><__trans phrase="Create an account"></mt:setvarblock>
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="do_register" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+<input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+<input type="hidden" name="token" value="<mt:var name="token" escape="html">" />
+<mt:if name="nosignup"><input type="hidden" name="nosignup" value="<mt:var name="nosignup" escape="html">" /></mt:if>
+
+<mt:unless name="nosignup">
+    <mtapp:setting
+        id="email"
+        label="<__trans phrase="Email Address">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="Your email address.">">
+        <span name="email" id="email"><mt:var name="email" escape="html"></span>
+        <input type="hidden" name="email" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+</mt:unless>
+    <mtapp:setting
+        id="name"
+        label="<__trans phrase="Username">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="Your login name.">">
+        <input type="text" name="name" id="name" class="ti" />
+    </mtapp:setting>
+    <mtapp:setting
+        id="nickname"
+        label="<__trans phrase="Display Name">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="The name appears on your comment.">">
+        <input type="text" name="nickname" id="nickname" class="ti" />
+    </mtapp:setting>
+<mt:if name="nosignup">
+    <mtapp:setting
+        id="email"
+        label="<__trans phrase="Email Address">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="Your email address.">">
+    <input type="text" name="email" id="email" class="ti" />
+    </mtapp:setting>
+</mt:if>
+    <mtapp:setting
+        id="password"
+        label="<__trans phrase="Password">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="Select a password for yourself.">">
+        <input type="password" name="password" id="password" class="pw" value="" />
+    </mtapp:setting>
+    <mtapp:setting
+        id="pass_verify"
+        label="<__trans phrase="Confirm Password">"
+        label_class="top-label"
+        required="1"
+        hint="<__trans phrase="Repeat the password for confirmation.">">
+        <input type="password" name="pass_verify" id="pass_verify" class="pw" value="" />
+    </mtapp:setting>
+    <mtapp:setting
+        id="url"
+        label="<__trans phrase="Website URL">"
+        label_class="top-label"
+        hint="<__trans phrase="The URL of your website. (Optional)">">
+        <input type="text" name="url" id="url" class="ti" value="<mt:var name="url" escape="html">" />
+    </mtapp:setting>
+
+    <mt:Loop name="field_loop">
+        <mt:If name="__first__">
+        <input type="hidden" name="_type" value="author" id="obj_type" />
+        <input type="hidden" name="customfield_beacon" value="1" id="customfield_beacon" />
+        </mt:If>
+        <!-- start-customfield_<$mt:Var name="basename"$> -->
+        <mtapp:setting
+            id="$field_id"
+            label="$name"
+            hint="$description"
+            shown="$show_field"
+            show_hint="$show_hint"
+            required="$required">
+
+        <$mt:Var name="field_html"$>
+
+        </mtapp:setting>
+        <!-- end-customfield_<$mt:Var name="basename"$> -->
+    </mt:Loop>
+
+    <div class="actions-bar">
+        <button
+            type="submit"
+            accesskey="s"
+            class="action primary-button"
+            ><__trans phrase="Register"></button>
+    </div>
+</form>
+
+<mt:include name="include/chromeless_footer.tmpl">

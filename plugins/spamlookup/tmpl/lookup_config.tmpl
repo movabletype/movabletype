@@ -1,0 +1,96 @@
+<!-- ip-based lookups -->
+
+<p>
+<MT_TRANS phrase="Lookups monitor the source IP addresses and hyperlinks of all incoming feedback. If a comment or TrackBack comes from a blacklisted IP address or contains a blacklisted domain, it can be held for moderation or scored as junk and placed into the blog's Junk folder. Additionally, advanced lookups on TrackBack source data can be performed.">
+</p>
+
+<mtapp:setting
+    id="ip_address_lookups"
+    label="<__trans phrase="IP Address Lookups">"
+    hint=""
+    show_hint="0">
+    <ul>
+    <li><input onclick="toggleSubPrefs(this)" value="0" type="radio" name="ipbl_mode" id="ipbl_mode_moderate" <TMPL_UNLESS NAME=IPBL_MODE>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></li>
+    <li><input onclick="toggleSubPrefs(this)" type="radio" name="ipbl_mode" value="2" <TMPL_IF NAME=IPBL_MODE_2>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Moderate feedback from blacklisted IP addresses"></li>
+    <li><input id="ipbl_mode_junk" onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this);" type="radio" name="ipbl_mode" value="1" <TMPL_IF NAME=IPBL_MODE_1>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="ipbl_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
+
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
+    <input type="text" size="3" id="sl_ipbl_weight" name="ipbl_weight" value="<TMPL_VAR NAME=IPBL_WEIGHT ESCAPE=HTML>" class="smaller-text" />
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_ipbl_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
+
+    <!-- <span class="hint">Applies a negative rating to feedback matching this test.</span> -->
+    </span></li>
+    </ul>
+</mtapp:setting>
+
+<div id="ipbl_mode-prefs" style="display: <TMPL_IF NAME=IPBL_MODE><MT_TRANS phrase="block"><TMPL_ELSE><MT_TRANS phrase="none"></TMPL_IF>">
+
+    <mtapp:setting
+        id="sll_ipbl_service"
+        label="<__trans phrase="IP Blacklist Services">">
+        <textarea name="ipbl_service" id="sll_ipbl_service" cols="60" rows="2"><TMPL_VAR NAME=IPBL_SERVICE ESCAPE=HTML></textarea>
+    </mtapp:setting>
+
+</div>
+
+<!-- domain-based lookups -->
+
+
+<mtapp:setting
+    id="domain_name_lookups"
+    label="<__trans phrase="Domain Name Lookups">"
+    hint=""
+    show_hint="0">
+    <ul>
+    <li><input onclick="toggleSubPrefs(this)" type="radio" name="domainbl_mode" value="0" <TMPL_UNLESS NAME=DOMAINBL_MODE>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></li>
+    <li><input onclick="toggleSubPrefs(this)" type="radio" name="domainbl_mode" value="2" <TMPL_IF NAME=DOMAINBL_MODE>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Moderate feedback containing blacklisted domains"></li>
+    <li><input onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this)" type="radio" id="domainbl_mode_junk" name="domainbl_mode" value="1" <TMPL_IF NAME=DOMAINBL_MODE_1>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="domainbl_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
+
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
+    <input type="text" size="3" name="domainbl_weight" id="sl_domainbl_weight" value="<TMPL_VAR NAME=DOMAINBL_WEIGHT ESCAPE=HTML>" class="smaller-text" />
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_domainbl_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
+
+    </span></li>
+    </ul>
+</mtapp:setting>
+
+
+
+    <div id="domainbl_mode-prefs" style="display: <TMPL_IF NAME=DOMAINBL_MODE>block<TMPL_ELSE>none</TMPL_IF>">
+
+    <mtapp:setting
+        id="sll_domainbl_service"
+        label="<__trans phrase="Domain Blacklist Services">">
+        <textarea name="domainbl_service" id="sll_domainbl_service" cols="60" rows="2"><TMPL_VAR NAME=DOMAINBL_SERVICE ESCAPE=HTML></textarea>
+    </mtapp:setting>
+
+    </div>
+
+<!-- trackback origin test -->
+
+
+    <mtapp:setting
+        id="tborigin_mode"
+        label="<__trans phrase="Advanced TrackBack Lookups">">
+    <ul>
+    <li><input type="radio" name="tborigin_mode" value="0" <TMPL_UNLESS NAME=TBORIGIN_MODE>checked="checked"</TMPL_UNLESS> class="rb" /> <MT_TRANS phrase="Off"></li>
+    <li><input type="radio" name="tborigin_mode" value="2" <TMPL_IF NAME=TBORIGIN_MODE_2>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Moderate TrackBacks from suspicious sources"></li>
+    <li><input type="radio" id="tborigin_mode_junk" name="tborigin_mode" value="1" <TMPL_IF NAME=TBORIGIN_MODE_1>checked="checked"</TMPL_IF> class="rb" onclick="toggleAdvancedPrefs(event,this)" /> <MT_TRANS phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="tborigin_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
+
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
+    <input type="text" size="3" name="tborigin_weight" id="sl_tborigin_weight" value="<TMPL_VAR NAME=TBORIGIN_WEIGHT ESCAPE=HTML>" class="smaller-text" />
+    <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_tborigin_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
+
+    </span></li>
+    </ul>
+    </mtapp:setting>
+
+<!-- whitelist (applied for all lookups) -->
+
+<mtapp:setting
+    id="lookup_whitelist"
+    label="<__trans phrase="Lookup Whitelist">"
+    hint="<MT_TRANS phrase="To prevent lookups for specific IP addresses or domains, list each on a line by itself.">"
+    show_hint="1">
+    <textarea name="whitelist" id="sll_whitelist" cols="60" rows="8"><TMPL_VAR NAME=WHITELIST ESCAPE=HTML></textarea>
+</mtapp:setting>

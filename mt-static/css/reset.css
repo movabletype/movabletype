@@ -1,0 +1,156 @@
+body { 
+    margin: 0;
+    padding: 0;
+    line-height: 1.2;
+}
+
+h1, h2, h3, h4, h5, h6 { 
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+p { 
+    line-height: 1.4;
+    margin: 0 0 1.2em;
+}
+
+pre { 
+    overflow: auto;
+    max-height: 500px;
+    margin: 1.5em auto;
+    padding: 0.8em;
+    font-size: 95%;
+}
+
+blockquote { 
+    clear: both;
+    margin: 2em auto;
+    padding: 1px 0.8em;
+}
+
+address { 
+    font-style: normal;
+}
+
+del { 
+    text-decoration: line-through;
+    font-weight: normal !important;
+}
+
+ins { 
+    margin: 1em 0 0.5em;
+    padding: 1px 0;
+}
+
+em { 
+    font-style: italic;
+}
+
+strong { 
+    font-weight: bold;
+}
+
+cite {
+    font-size: 90%;
+}
+
+pre em, 
+pre strong { 
+    margin: 0;
+}
+
+abbr, 
+acronym { 
+    cursor: help;
+    border-bottom: 1px dotted;
+}
+
+code, 
+samp, 
+kbd, 
+var { 
+    font-family: monospace;
+    font-size: 100%;
+}
+
+sub, 
+sup { 
+    font-size: 50%;
+}
+
+ul, 
+ol { 
+    margin: 0;
+    padding: 0;
+}
+
+li { 
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+    list-style-type: none;
+}
+
+dl { 
+    margin: 2em 0;
+}
+
+dd { 
+    margin: 0 0 0 1em;
+}
+
+form { 
+    margin: 0;
+    padding: 0;
+}
+
+fieldset { 
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+legend { 
+    display: none;
+}
+
+input, 
+label, 
+select, 
+button { 
+    vertical-align: baseline;
+    margin: 0;
+}
+
+button { 
+    line-height: 1.3;
+    padding: 0 3px;
+    text-decoration: none;
+    overflow: visible;
+}
+
+
+table { 
+    margin: 0 auto 2.5em;
+    font-size: 100%;
+    border-spacing: 0;
+}
+
+caption { 
+    margin-bottom: 0.2em;
+}
+
+th, 
+td {
+    border-collapse: collapse;
+}
+
+img { 
+    vertical-align: middle;
+}
+
+a img { 
+    border: 0;
+}
+
+

@@ -1,0 +1,190 @@
+# Themes that aren't to be in the general release
+mt-static/themes/cityscape-austin
+mt-static/themes/cityscape-boston
+mt-static/themes/cityscape-chicago
+mt-static/themes/cityscape-dc
+mt-static/themes/cityscape-houston
+mt-static/themes/cityscape-kiev
+mt-static/themes/cityscape-la
+mt-static/themes/cityscape-london
+mt-static/themes/cityscape-miami
+mt-static/themes/cityscape-nashville
+mt-static/themes/cityscape-nyc
+mt-static/themes/cityscape-paris
+mt-static/themes/cityscape-philadelphia
+mt-static/themes/cityscape-seattle
+#mt-static/themes/cityscape-sf
+mt-static/themes/cityscape-sydney
+mt-static/themes/cityscape-tokyo
+mt-static/themes/cityscape-toronto
+mt-static/themes/cityscape-vegas
+mt-static/themes/hills-dusk
+mt-static/themes/hills-green
+mt-static/themes/hills-midnight
+mt-static/themes/hills-pink
+mt-static/themes/minimalist-blue
+mt-static/themes/minimalist-brown
+mt-static/themes/minimalist-green
+mt-static/themes/minimalist-grey
+mt-static/themes/minimalist-light-blue
+mt-static/themes/minimalist-light-green
+mt-static/themes/minimalist-pink
+mt-static/themes/minimalist-purple
+#mt-static/themes/minimalist-red
+mt-static/themes/minimalist-white
+mt-static/themes/mt-static/themes/cityscape-portland
+#mt-static/themes/unity-blue
+mt-static/themes/unity-green
+mt-static/themes/unity-purple
+mt-static/themes/unity-tricolor
+
+# Theme package for test
+themes/broken_blog_theme
+
+# Conditional SKIP rule; format: #?(var=value) RULE
+#?package=MT ^COPYING
+#?package=MT ^COPYRIGHT
+#?package=MT ^addons/Enterprise.pack
+#?package=MT ^mt-static/addons/Enterprise.pack
+
+#?package=MTOS ^addons
+#?package=MTOS ^mt-cp.cgi
+#?package=MTOS ^mt-static/addons
+#?package=MTOS ^mt-static/themes/tristan-blue
+#?package=MTOS ^mt-static/themes/tristan-blue-4.2
+#?package=MTOS ^mt-static/plugins/feeds-app-lite
+#?package=MTOS ^mt-static/plugins/Motion
+#?package=MTOS ^mt-static/jquery/themes/Motion
+#?package=MTOS ^mt-static/plugins/ActionStreams
+#?package=MTOS ^mt-static/plugins/FacebookCommenters
+#?package=MTOS ^mt-static/plugins/mixiComment
+#?package=MTOS ^plugins/feeds-app-lite
+#?package=MTOS ^plugins/Motion
+#?package=MTOS ^plugins/ActionStreams
+#?package=MTOS ^plugins/FacebookCommenters
+#?package=MTOS ^plugins/CommunityActionStreams
+#?package=MTOS ^plugins/mixiComment
+#?package=MTOS ^plugins/CustomFields
+
+#?package=MTCOM ^COPYING
+#?package=MTCOM ^COPYRIGHT
+#?package=MTCOM ^addons/Enterprise.pack
+#?package=MTCOM ^mt-static/addons/Enterprise.pack
+#?package=MTCOM ^addons/Community.pack
+#?package=MTCOM ^mt-static/addons/Community.pack
+#?package=MTCOM ^mt-cp.cgi
+#?package=MTCOM ^mt-static/themes/tristan-blue
+#?package=MTCOM ^mt-static/themes/tristan-blue-4.2
+#?package=MTCOM ^mt-static/plugins/Motion
+#?package=MTCOM ^mt-static/jquery/themes/Motion
+#?package=MTCOM ^mt-static/plugins/ActionStreams
+#?package=MTCOM ^mt-static/plugins/FacebookCommenters
+#?package=MTCOM ^mt-static/plugins/mixiComment
+#?package=MTCOM ^plugins/Motion
+#?package=MTCOM ^plugins/ActionStreams
+#?package=MTCOM ^plugins/FacebookCommenters
+#?package=MTCOM ^plugins/CommunityActionStreams
+#?package=MTCOM ^plugins/mixiComment
+
+#?package=MTE ^COPYING
+#?package=MTE ^COPYRIGHT
+
+# MT::App::Viewer
+lib/MT/App/Viewer.pm
+mt-view.cgi
+
+^schemas
+\bknown-issues
+^t/
+.*/t/
+^db
+^ToDo$
+^README
+
+# License files.
+^LICENSE$
+^LICENSE-PERSONAL$
+^LICENSE-BETA$
+^LICENSE-COMMERCIAL$
+
+# Revision files.
+\bCVS\b
+\bRCS\b
+\.svn\b
+\.gitignore
+,v$
+
+# Hidden, temp and backup files.
+~$
+^\.#
+\.bak$
+\.old$
+\.swp$
+\.tmp$
+^\.DS_Store$
+
+# Packages
+^lib/MT/FileMgr/SFTP.pm$
+^lib/MT/FileMgr/FTP.pm$
+^lib/MT/FileMgr/DAV.pm$
+^extlib/share
+^extlib/pkg
+^extlib/perllocal.po
+Tangent\.pm$
+/no\.pm$
+/it\.pm$
+
+# Language
+lang-es
+lang-no
+lang-ja
+lang-it
+\.(en_us|fr|de|gb|ja|en|no|it)$
+
+# Tools
+^mt-inbox.pl$
+^mt-thread.cgi$
+^mt-set-reg.cgi$
+^mt-load.cgi
+#^tools/find-junk
+#^tools/list-index
+#^tools/list-objects
+^tools/populate
+^tools/mt-tools
+^tools/mt-tools.tar.gz
+^tools/mt-tools.zip
+#^tools/rebuild-indexes
+#^tools/rebuild-pages
+#^tools/remove-object
+#^tools/run-periodic-tasks
+#^tools/sig-validate
+#^tools/upgrade
+^tools/write-default-templates
+
+# Plugins
+#plugins/StyleCatcher
+#plugins/WidgetManager
+#plugins/feeds-app-lite
+plugins/feeds-app-lite/tools/
+plugins/feeds-app-lite/t/
+
+# 'Extras'
+^extras/
+
+# Build process and distribution files
+\.pre$
+^MANIFEST
+Makefile
+^_build
+^build
+^Build.*$
+^blib/
+^pm_to_blib$
+^MT-
+^MT.*\.zip
+^MT.*\.gz
+index\.html\..*
+readme\.html\..*
+build-language-stamp
+^mt-config.cgi$
+

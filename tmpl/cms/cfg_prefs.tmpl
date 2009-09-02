@@ -1,0 +1,509 @@
+<mt:setvar name="page_title" value="<__trans phrase="General Settings">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:setvar name="general-settings" value="1">
+<MTSetVarBlock name="system_msg">
+
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="no_writedir">
+        <mtapp:statusmsg
+            id="no-writedir"
+            class="error">
+            <__trans phrase="Error: Movable Type was not able to create a directory for publishing your blog. If you create this directory yourself, grant write permission to the web server.">
+        </mtapp:statusmsg>
+    <mt:else>
+
+    <mt:if name="no_cachedir">
+        <mtapp:statusmsg
+            id="no-cachedir"
+            class="error">
+            <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory." params="templates_c">
+        </mtapp:statusmsg>
+    <mt:else>
+
+    <mt:if name="no_writecache">
+        <mtapp:statusmsg
+            id="no-writecache"
+            class="error">
+            <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory." params="templates_c">
+        </mtapp:statusmsg>
+    <mt:else>
+
+    <mt:if name="no_cache_path">
+        <mtapp:statusmsg
+            id="no-cache-path"
+            class="error">
+            <__trans phrase="Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory." params="cache">
+        </mtapp:statusmsg>
+    <mt:else>
+
+    <mt:if name="no_write_cache_path">
+        <mtapp:statusmsg
+            id="no-write-cache-path"
+            class="error">
+            <__trans phrase="Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory." params="cache">
+        </mtapp:statusmsg>
+
+    <mt:else>
+
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all">
+            <__trans phrase="Your preferences have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    </mt:if>
+    </mt:if>
+    </mt:if>
+    </mt:if>
+    </mt:if>
+
+</MTSetVarBlock>
+<mt:include name="include/header.tmpl">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function doRemoveLicense () {
+    document.cfg_form.cc_license.value = '';
+    var e = getByID('has-license');
+    if (e) e.style.display = 'none';
+    e = getByID('no-license');
+    if (e) e.style.display = 'block';
+}
+
+function setLicense() {
+    var w = window.open('http://creativecommons.org/license/?partner=SixApart&amp;jurisdiction_choose=1&amp;exit_url=<mt:var name="script_full_url">?__mode=cc_return%26license_code=[license_code]%26license_url=[license_url]%26license_button=[license_button]', 'cc', 'width=600,height=650,scrollbars=yes,resizable=no');
+    if ( w ) w.focus();
+   return false;
+}
+/* ]]> */
+</script>
+
+<form name="cfg_form" id="cfg_form" method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+<input type="hidden" name="__mode" value="save" />
+<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="cfg_screen" value="cfg_prefs" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+<input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<fieldset>
+    <h3><__trans phrase="[_1] Settings" params="<mt:var name="object_label" capitalize="1">"></h3>
+
+    <mtapp:setting
+        id="name"
+        required="1"
+        label="<__trans phrase="Name">"
+        content_class="field-content-input"
+        hint="<__trans phrase="Name your blog. The name can be changed at any time.">"
+        help_page="blog_settings_general"
+        help_section="blog_name">
+        <input type="text" name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" size="30" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="description"
+        label="<__trans phrase="Description">"
+        hint="<__trans phrase="Enter a description for your blog.">"
+        help_page="blog_settings_general"
+        help_section="blog_description">
+        <textarea name="description" id="description" class="full-width short" cols="" rows=""><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mt:ignore id="placeholder1"></mt:ignore>
+
+    <mtapp:setting
+        id="server_offset"
+        required="1"
+        label="<__trans phrase="Time Zone">"
+        hint="<__trans phrase="Select your time zone from the pulldown menu.">"
+        help_page="blog_settings_general"
+        help_section="blog_timezone">
+        <select name="server_offset" id="server_offset" class="half-width">
+        <option value=""><__trans phrase="Time zone not selected"></option>
+        <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+        <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+        <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+        <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+        <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+        <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+        <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+        <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+        <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+        <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+        <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+        <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+        <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+        <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+        <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+        <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+        <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+        <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+        <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+        <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+        <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+        <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+        <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+        <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+        <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+        <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+        <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+        <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+        <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+        <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="has-license"
+        label="<__trans phrase="License">"
+        content_class="field-content-text"
+        help_page="blog_settings_general"
+        help_section="creative_commons_license">
+
+<div id="has-license" style="display: none;">
+<mt:if name="cc_license"><a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a><br /></mt:if>
+<__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong><br />
+<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a>
+</div>
+<div id="no-license" style="display: none;">
+<__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
+<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
+</div>
+<script type="text/javascript">
+    /* <![CDATA[ */
+    var e = getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
+    if (e) e.style.display = 'block';
+    /* ]]> */
+</script>
+<input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
+    </mtapp:setting>
+
+</fieldset>
+
+<mt:if name="can_set_publish_paths">
+<fieldset>
+
+    <h3><__trans phrase="Publishing Paths"></h3>
+
+    <mtapp:setting
+        id="site_url"
+        label="<__trans phrase="Site URL">"
+        show_hint="1"
+        help_page="blog_settings_publishing"
+        help_section="site_url">
+        <mt:var name="website_url"><input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+        <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the site URL can result in breaking all the links in your blog."></p>
+<mt:if name="is_blog">
+        <div class="hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
+<mt:else>
+        <div class="hint"><__trans phrase="The URL of your website. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/"></div>
+</mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="site_path"
+        label="<__trans phrase="Site Root">"
+        show_hint="1"
+        help_page="blog_settings_publishing"
+        help_section="site_root">
+        <mt:var name="website_path"><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+        <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete publish of your site."></p>
+    <mt:if name="is_blog">
+        <div class="hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+    <mt:else>
+        <div class="hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div>
+    </mt:if>
+    </mtapp:setting>
+
+    <mt:if name="is_blog">
+        <mtapp:setting
+            id="enable_archive_paths"
+            label="<__trans phrase="Advanced Archive Publishing">"
+            content_class="field-content-text"
+            show_label="0"
+            hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
+            help_page="blog_settings_publishing"
+            help_section="advanced_archive_publishing">
+            <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
+        </mtapp:setting>
+
+    <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>
+
+        <mtapp:setting
+            id="archive_url"
+            required="1"
+            label="<__trans phrase="Archive URL">"
+            hint="<__trans phrase="Enter the URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+            show_hint="1"
+            help_page="blog_settings_publishing"
+            help_section="archive_url">
+            <mt:var name="website_url"><input type="text" name="archive_url" id="archive_url" value="<$mt:var name="archive_url" escape="html"$>" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+            <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
+        </mtapp:setting>
+
+        <mtapp:setting
+            id="archive_path"
+            required="1"
+            label="<__trans phrase="Archive Root">"
+            hint="<__trans phrase="Enter the path where your archive files will be published. Example: /home/mt/public_html/blog/archives or C:\www\public_html\blog\archives">"
+            show_hint="1"
+            help_page="blog_settings_publishing"
+            help_section="archive_path">
+            <mt:var name="website_path"><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+            <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
+        </mtapp:setting>
+    </mt:if>
+    </div>
+</fieldset>
+</mt:if>
+
+
+<mt:ignore>
+    <!-- to be enabled at a later date -->
+
+<mt:if name="can_use_publish_queue">
+
+<fieldset>
+    <h3><__trans phrase="Asynchronous Job Queue"></h3>
+
+<mtapp:setting
+    id="publish_queue"
+    label="<__trans phrase="Use Publishing Queue">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="publish_queue"
+    show_label="0"
+    show_hint="1"
+    hint="<__trans phrase="Requires the use of a cron job or a scheduled task on your server to publish pages in the background.">">
+    <input id="publish_queue" type="checkbox" name="publish_queue" value="1" <mt:if name="publish_queue"> checked="checked"</mt:if>/>
+    <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
+</mtapp:setting>
+</fieldset>
+</mt:if>
+
+</mt:ignore>
+
+
+<mt:unless name="hide_build_option">
+<mt:if name="dynamic_enabled">
+<fieldset>
+    <h3><__trans phrase="Dynamic Publishing Options"></h3>
+
+    <mtapp:setting
+        id="dynamic_publishing_options"
+        label="<__trans phrase="Dynamic Publishing Options">"
+        show_label="0">
+    <ul>
+        <li>
+            <input type="checkbox" id="dynamic_cache" name="dynamic_cache" <mt:if name="dynamic_caching">checked="checked"</mt:if>/>
+            <label for="dynamic_cache"><__trans phrase="Enable dynamic cache"></label>
+        </li>
+        <li>
+            <input type="checkbox" id="dynamic_conditional" name="dynamic_conditional" <mt:if name="dynamic_conditional">checked="checked"</mt:if>/>
+            <label for="dynamic_conditional"><__trans phrase="Enable conditional retrieval"></label>
+        </li>
+    </ul>
+    </mtapp:setting>
+
+</fieldset>
+</mt:if>
+</mt:unless>
+
+
+<fieldset>
+    <h3><__trans phrase="Archive Options"></h3>
+
+<mtapp:setting
+    id="file_extension"
+    label="<__trans phrase="File Extension">"
+    hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
+    help_page="blog_setting_publishing"
+    help_section="archive_file_extension">
+    <input type="text" name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
+</mtapp:setting>
+
+<mt:if name="is_blog">
+    <mtapp:setting
+        id="preferred_archive_type"
+        label="<__trans phrase="Preferred Archive">"
+        hint="<__trans phrase="Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archives type used in this blog's archive templates.">"
+        show_hint="1"
+        help_page="blog_settings_publishing"
+        help_section="preferred_archive_type">
+    
+        <mt:loop name="entry_archive_types">
+            <mt:if name="__first__">
+        <select name="preferred_archive_type" id="preferred_archive_type">
+            </mt:if>
+            <option value="<mt:var name="archive_type" escape="html">"<mt:if name="archive_type_is_preferred"> selected="selected"</mt:if>><mt:var name="archive_type_translated" escape="html"></option>
+            <mt:if name="__last__">
+        </select>
+            </mt:if>
+        </mt:loop>
+        <mt:unless name="entry_archive_types">
+        <p><span class="alert-warning-inline"><__trans phrase="No archives are active"></span></p>
+        </mt:unless>
+    </mtapp:setting>
+</mt:if>
+</fieldset>
+
+
+<fieldset>
+    <h3><__trans phrase="Module Options"></h3>
+<mtapp:setting
+    id="include_cache"
+    label="<__trans phrase="Module Caching">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="include_cache">
+    <label for="include_cache"><input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>/> <__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance."></label>
+</mtapp:setting>
+<mtapp:setting
+    id="include_system"
+    label="<__trans phrase="Server Side Includes">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="ssi">
+    <select id="include_system" name="include_system">
+      <option value=""<mt:unless name="include_system"> selected="selected"</mt:unless>><__trans phrase="None (disabled)"></option>
+      <option value="php"<mt:if name="include_system" eq="php"> selected="selected"</mt:if>><__trans phrase="PHP Includes"></option>
+      <option value="shtml"<mt:if name="include_system" eq="shtml"> selected="selected"</mt:if>><__trans phrase="Apache Server-Side Includes"></option>
+      <option value="asp"<mt:if name="include_system" eq="asp"> selected="selected"</mt:if>><__trans phrase="Active Server Page Includes"></option>
+      <option value="jsp"<mt:if name="include_system" eq="jsp"> selected="selected"</mt:if>><__trans phrase="Java Server Page Includes"></option>
+    </select>
+</mtapp:setting>
+</fieldset>
+
+<mtapp:settinggroup id="revision-history-settings">
+<h3><__trans phrase="Revision History"></h3>
+    <mt:unless name="master_revision_switch">
+        <mtapp:statusmsg
+            id="master_revision_off"
+            class="error">
+            <__trans phrase="Note: Revision History is currently disabled at the system level.">
+        </mtapp:statusmsg>
+    </mt:unless>
+    <mtapp:setting
+        id="use-revision"
+        class="has-option"
+        label="<__trans phrase="Revision history">"
+        content_class="field-content-text">
+        <label for="use-revision"><input type="checkbox" value="1" name="use_revision" id="use-revision"<mt:if name="use_revision"> checked="checked"</mt:if><mt:unless name="master_revision_switch"> disabled="disabled"</mt:unless> /> <__trans phrase="Enable revision history"></label>
+    </mtapp:setting>
+
+    <div id="use-revision-option" class="setting-option">
+        <mt:setvarblock name="revisions_entry_label">
+        <mt:if name="is_blog"><__trans phrase="Number of revisions per entry/page"><mt:else><__trans phrase="Number of revisions per page"></mt:if>
+        </mt:setvarblock>
+        <mtapp:setting
+            id="max_revisions_entry"
+            label="<mt:var name="revisions_entry_label">">
+           <input type="text" name="max_revisions_entry" id="max_revisions_entry" size="2" value="<mt:var name="max_revisions_entry" escape="html">" />
+        </mtapp:setting>
+        <mtapp:setting
+            id="max_revisions_template"
+            label="<__trans phrase="Number of revisions per template">">
+            <input type="text" name="max_revisions_template" id="max_revisions_template" size="2" value="<mt:var name="max_revisions_template" escape="html">" />
+        </mtapp:setting>
+    </div>
+</fieldset>
+</mtapp:settinggroup>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to these settings (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery('input#enable_archive_paths').click(function() {
+        jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
+    });
+
+    function is_valid_url(url_){
+        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+    }
+    function is_valid_path(path_){
+        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+        return true;
+    }
+    jQuery.validator.addMethod('url', function(value, element) {
+        return is_valid_url('<mt:var name="website_url">'+value);
+    });
+    jQuery.validator.addMethod('path', function(value, element) {
+        return is_valid_path(value);
+    });
+    jQuery('#cfg_form').validate({
+        rules: {
+            name: 'required',
+            server_offset: 'required',
+            site_url: {
+                <mt:unless name="is_blog">required: true,</mt:unless>
+                'url': true
+            },
+            site_path: {
+                <mt:unless name="is_blog">required: true,</mt:unless>
+                path: true
+            },
+            archive_url: {
+                required: function(element) {
+                    if (jQuery('#enable_archive_paths:checked').length) {
+                        return is_valid_url(element.value);
+                    }
+                    return false;
+                }
+            },
+            archive_path: {
+                required: '#enable_archive_paths:checked',
+                path: true
+            }
+        },
+        messages: {
+            name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+            server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+            site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+            site_path: {
+                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
+            archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+            archive_path: {
+                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+            }
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+});
+/* ]]> */
+</script>
+<mt:include name="include/footer.tmpl">

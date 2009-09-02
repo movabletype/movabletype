@@ -1,0 +1,38 @@
+<mtapp:listing empty_message="<__trans phrase="No log records could be found." escape="html">">
+    <mt:if name="__first__">
+    <thead>
+        <tr>
+            <th id="log-message primary-col" colspan="2"><__trans phrase="Schwartz Message"></th>
+            <th id="date"><__trans phrase="Date"></th>
+        </tr>
+    </thead>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"
+            <mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>
+        >
+            <td class="details-toggle si">&nbsp;</td>
+            <td class="log-message">
+                <div>
+                    <$mt:var name="log_message" escape="html"$>
+                </div>
+            </td>
+            <td class="date">
+                <mt:if name="is_last"><a name="last"></a></mt:if>
+                <span title="<$mt:var name="created_on_formatted"$>">
+                    <mt:if name="created_on_relative">
+                        <mt:if name="dates_relative">
+                            <$mt:var name="created_on_relative"$>
+                        <mt:else>
+                            <$mt:var name="created_on_formatted"$>
+                        </mt:if>
+                    <mt:else>
+                        <$mt:var name="created_on_formatted"$>
+                    </mt:if>
+                </span>
+            </td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

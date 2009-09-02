@@ -1,0 +1,49 @@
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <button
+        accesskey="x"
+        title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_type_plural" lower_case="1">">"
+        class="mt-delete-items"
+        ><__trans phrase="Delete"></button>
+    </mt:if>
+</mt:setvarblock>
+<mtapp:listing>
+    <mt:if name="__first__">
+        <mt:setvarblock name="table_header">
+        <tr>
+            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th class="name primary-col"><__trans phrase="[_1] Name" params="<mt:var name="object_type" capitalize="1">"></th>
+        <mt:if name="scope_type" eq="website">
+            <th class="entries"><__trans phrase="Entries"></th>
+        <mt:else>
+            <th class="blogs"><__trans phrase="Blogs"></th>
+        </mt:if>
+            <th class="comments"><__trans phrase="Comments"></th>
+            <th class="trackbacks"><__trans phrase="TrackBacks"></th>
+            <th class="settings"><__trans phrase="Settings"></th>
+        </tr>
+        </mt:setvarblock>
+    <thead>
+        <mt:var name="table_header">
+    </thead>
+    <tfoot>
+        <mt:var name="table_header">
+    </tfoot>
+    <tbody>
+    </mt:if>
+        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
+        <mt:if name="object_type" eq="website">
+            <td class="blogs"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>
+        <mt:else>
+            <td class="entries"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
+        </mt:if>
+            <td class="comments"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+            <td class="trackbacks"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_ping&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
+            <td class="settings"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
+        </tr>
+    <mt:if name="__last__">
+    </tbody>
+    </mt:if>
+</mtapp:listing>

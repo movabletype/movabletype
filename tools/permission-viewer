@@ -1,0 +1,144 @@
+#!/usr/bin/perl
+package MT::Permission::Viewer;
+use strict;
+use warnings;
+use lib qw( lib ../lib extlib ../extlib );
+use base qw( MT::Tool );
+
+my $VERSION = 0.1;
+
+## Currently MT::Tool doesn't support this yet.
+## this is a fake.
+sub version { $VERSION }
+
+sub help {
+    return <<'HELP';
+OPTIONS:
+    -l, --list=OPTION      prints list of installed elements. OPTION receives <actions> or <permissions>.
+    -a, --action=NAME      prints detail of action.
+    -p, --permission=NAME  prints detail of permission.
+    -v, --verbose          more details for list, action, permission...
+    -h, --help             this.
+HELP
+}
+
+sub usage {
+    return '[-list|-action|-permission]';
+}
+
+
+## options
+my ( $action, $permission, $list );
+
+sub options {
+    return (
+        'action=s'     => \$action,
+        'permission=s' => \$permission,
+        'list=s'       => \$list,
+)}
+
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
+    my $out = $list       ? $class->list($list, $verbose)
+            : $action     ? $class->action($action, $verbose)
+            : $permission ? $class->permission($permission, $verbose)
+            :               $class->show_help()
+            ; 
+    print "$out\n";
+}
+
+sub list {
+    my $class = shift;
+    my ($list, $verbose)  = @_;
+    my $out;
+    my $show_acts = $list =~ /actions?|acts?/;
+    my $show_perms = $list =~ /permissions?|perms?/;
+    my $both = !$show_acts && !$show_perms;
+    my $ps = MT->registry('permissions');
+    my @ps = sort { $a cmp $b } keys %$ps ;
+    my (%exist_action, @exist_actions);
+    if ( $both || $show_acts ) {
+        for my $perm_key ( keys %$ps ) {
+            my $p = $ps->{$perm_key};
+            my $act_for_this = $p->{permitted_action};
+            for my $k ( keys %$act_for_this ) {
+                $exist_action{$k} = $perm_key;
+            }
+        }
+        @exist_actions = sort { $a cmp $b } keys %exist_action;
+    }
+    if ( $show_perms || $both ) {
+        $out .= "**** List of all permissions ****\n" if $both;
+        $out .= "$_\n" for @ps;
+    }
+    if ( $show_acts || $both ) {
+        $out .= "**** List of all actions ****\n" if $both;
+        $out .= ( $verbose ? "$_\t defined at $exist_action{$_}\n" : "$_\n" ) for @exist_actions;
+    }
+    $out;
+}
+
+sub action {
+    my $class = shift;
+    my ($action, $verbose)  = @_;
+    my $out;
+    $out .= "*** information for $action ***\n" if $verbose;
+    my $ps = MT->registry('permissions');
+    if ( $verbose ) {
+        my @ps = sort keys %$ps;
+        my ( %permit, %reject );
+        for my $p ( @ps ) {
+            MT::Permission->_confirm_action( $p, $action ) ? $permit{$p} = 1
+                                                           : $reject{$p} = 1;
+        }
+        for my $p ( @ps ) {
+            $out .= ( $permit{$p} ? "+++ " : "    ");
+            $out .= "$p\n";
+        }
+    }
+    else {
+        my @perms = sort grep { MT::Permission->_confirm_action( $_, $action ) } keys %$ps;
+        $out .= "$_\n" for @perms;
+    }
+    $out || 'No such action';
+}
+
+sub permission {
+    my $class = shift;
+    my ($permission, $verbose)  = @_;
+    my $out;
+    my $ps = MT->registry('permissions');
+    my $target_perm = $ps->{$permission} or die "Unknown permission: $permission\n";
+    my $printer;
+    my %done;
+    $printer = sub {
+        my ($perm, $indent) = @_;
+        $indent ||= '';
+        my $actions = $perm->{permitted_action};
+        my @actions = sort keys %$actions;
+        my $inherits = $perm->{inherit_from};
+        my @inherits = defined $inherits ? sort @$inherits : ();
+        for my $action ( @actions ) {
+            my $val = $actions->{$action};
+            if ( $verbose ) {
+                $out .= "$indent$action\t: $val\n";
+            }
+            else {
+                $out .= "$action\t: $val\n" if !$done{$action};
+                $done{$action} = 1;
+            }
+        }
+        for my $parent ( @inherits ) {
+            $out .= "$indent---- ( inherit from: $parent )\n" if $verbose;
+            $parent = $ps->{$parent};
+            $printer->( $parent, $indent . '    ' );
+        }
+    };
+    $printer->( $target_perm );
+    $out;
+}
+
+__PACKAGE__->main() unless caller;
+
+

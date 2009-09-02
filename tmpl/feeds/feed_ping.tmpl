@@ -1,0 +1,86 @@
+<entry>
+  <title type="html"><mt:var name="log.message"></title>
+  <published><mt:var name="log.tbping.created_on_iso"></published>
+  <updated><mt:var name="log.tbping.modified_on_iso"></updated>
+  <id><mt:var name="log.atom_id"></id>
+  <mt:if name="log.tbping.entry.status_is_2"><link type="text/html" rel="alternate" href="<mt:var name="log.tbping.entry.permalink">#p<mt:var name="log.tbping.id">"/><mt:else><link type="text/html" rel="alternate" href="<mt:var name="log.permalink">"/></mt:if>
+  <author>
+  <mt:if name="log.tbping.blog_name">
+    <name><mt:var name="log.tbping.blog_name"></name>
+    <mt:if name="log.tbping.source_url"><uri><mt:var name="log.tbping.source_url"></uri></mt:if>
+  <mt:else>
+    <name>(<__trans phrase="system">)</name>
+  </mt:if>
+  </author>
+  <content type="html">
+    &lt;div class="content"&gt;
+        <mt:if name="log.tbping.visible">
+        &lt;p style="float:right;"&gt;&lt;img src="<mt:var name="static_uri">images/status_icons/success.gif" alt="<__trans phrase="Published">" width="9" height="9" /&gt;&lt;a href="<mt:var name="log.tbping.entry.permalink">"&gt;<__trans phrase="Published">&lt;/a&gt;&lt;/p&gt;
+        <mt:else>
+        &lt;p style="float:right;"&gt;&lt;img src="<mt:var name="static_uri">images/status_icons/draft.gif" alt="<__trans phrase="Unpublished">" width="9" height="9" /&gt;&lt;href="<mt:var name="log.tbping.entry.permalink">"&gt;<__trans phrase="Unpublished">&lt;/a&gt;&lt;/p&gt;
+        </mt:if>
+
+        &lt;p&gt;
+        &lt;b&gt;<__trans phrase="Blog">:&lt;/b&gt; &lt;a href="<mt:var name="log.tbping.blog.site_url">"&gt;<mt:var name="log.tbping.blog.name" escape="html">&lt;/a&gt;&lt;br /&gt;
+        <mt:if name="log.tbping.entry.status_is_2">
+        &lt;b&gt;<__trans phrase="Entry">:&lt;/b&gt; &lt;a href="<mt:var name="log.tbping.entry.permalink">"&gt;<mt:if name="log.tbping.entry.title"><mt:var name="log.tbping.entry.title" escape="html"><mt:else>(<__trans phrase="Untitled">)</mt:if>&lt;/a&gt;&lt;br /&gt;
+        <mt:else>
+        &lt;b&gt;<__trans phrase="Entry">:&lt;/b&gt; <mt:if name="log.tbping.entry.title"><mt:var name="log.tbping.entry.title" escape="html"><mt:else>(<__trans phrase="Untitled">)</mt:if>&lt;br /&gt;
+        </mt:if>
+        &lt;b&gt;<__trans phrase="Source blog">:&lt;/b&gt; <mt:var name="log.tbping.blog_name" escape="html">&lt;br /&gt;
+        &lt;b&gt;<__trans phrase="Title">:&lt;/b&gt; <mt:var name="log.tbping.title" escape="html">&lt;br /&gt;
+        &lt;b&gt;<__trans phrase="URL">:&lt;/b&gt; <mt:var name="log.tbping.source_url" escape="html">&lt;br /&gt;
+        &lt;/p&gt;
+
+      <mt:var name="log.tbping.excerpt" escape="html">
+      &lt;hr /&gt;
+    &lt;/div&gt;
+
+    &lt;div class="actions" style="float:left;width:49%;"&gt;
+
+        &lt;ul&gt;
+            &lt;strong&gt;<__trans phrase="Actions">:&lt;/strong&gt;&lt;br /&gt;
+
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="log.tbping.id">&amp;blog_id=<mt:var name="log.tbping.blog_id">"><__trans phrase="Edit">&lt;/a&gt;&lt;/li&gt;
+
+            <mt:if name="log.tbping.visible">
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=unapprove_item&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            <mt:else>
+            <mt:if name="log.tbping.junk_status" eq="-1">
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=not_junk&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            <mt:else>
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=approve_item&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            </mt:if>
+            </mt:if>
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=handle_junk&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Junk">&lt;/a&gt;&lt;/li&gt;
+
+      <mt:if name="loop_actions">
+      <mt:loop name="loop_actions">
+      &lt;li&gt;&lt;a href="<mt:var name="link">"&gt;<mt:var name="label" escape="html">&lt;/a&gt;&lt;/li&gt;
+      </mt:loop>
+      </mt:if>
+      &lt;/ul&gt;
+    &lt;/div&gt;
+
+    &lt;div class="discovery" style="float:right;width:49%;"&gt;
+
+        &lt;ul&gt;
+        &lt;strong&gt;<__trans phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="log.tbping.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+
+        <mt:if name="log.tbping.entry.id">&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;filter=entry_id&amp;filter_val=<mt:var name="log.tbping.entry.id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+
+        </mt:if>&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;_type=ping&amp;search=<mt:var name="log.tbping.blog_name" escape="url">&amp;do_search=1"&gt;<__trans phrase="By source blog">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;search=<mt:var name="log.tbping.title" escape="url">&amp;do_search=1"&gt;<__trans phrase="By source title">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;search=<mt:var name="log.tbping.source_url" escape="url">&amp;do_search=1"&gt;<__trans phrase="By source URL">&lt;/a&gt;&lt;/li&gt;
+
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;from=<mt:var name="log.tbping.created_on">&amp;to=<mt:var name="log.tbping.created_on">&amp;show_all=1&amp;do_search=1"&gt;<__trans phrase="On this day">&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      
+    &lt;/div&gt;
+    &lt;br style="clear: both;" /&gt;
+
+  </content>
+</entry>

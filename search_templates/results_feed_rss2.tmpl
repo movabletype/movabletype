@@ -1,0 +1,26 @@
+<$MTHTTPContentType type="application/rss+xml"$><?xml version="1.0" encoding="<$MTPublishCharset$>"?>
+<rss version="2.0" xmlns:openSearch="http://a9.com/-/spec/opensearchrss/1.0/">
+<channel>
+<title><MT_TRANS phrase="Search Results for [_1]" params="<$MTSearchString remove_html="1" encode_html="1" encode_xml="1"$>"></title>
+<link><$MTCGIPath$><$MTSearchScript$>?search=<$MTSearchString$>&amp;Template=<$MTSearchTemplateID$>&amp;IncludeBlogs=<$MTSearchIncludeBlogs$></link>
+<language>en-us</language>
+<pubDate><$MTDate format="%a, %d %b %Y %H:%M:%S "$><$MTBlogTimezone no_colon="1"$></pubDate>
+<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+<generator>Movable Type <$MTVersion$></generator>
+<ttl>1440</ttl>
+<openSearch:totalResults><$MTSearchResultCount$></openSearch:totalResults>
+<openSearch:startIndex>1</openSearch:startIndex>
+<openSearch:itemsPerPage><$MTSearchResultCount$></openSearch:itemsPerPage>
+<MTSearchResults>
+<item>
+<title><$MTEntryTitle remove_html="1" encode_xml="1"$></title>
+<link><$MTEntryLink encode_xml="1"$></link>
+<description><$MTEntryExcerpt encode_xml="1"$></description>
+<pubDate><$MTEntryDate format="%a, %d %b %Y %H:%M:%S "$><$MTBlogTimezone no_colon="1"$></pubDate>
+<guid isPermaLink="true"><$MTEntryLink encode_xml="1"$></guid>
+<author><$MTEntryAuthorDisplayName encode_xml="1"$></author>
+<MTEntryIfAllowComments><comments><$MTCGIPath$><$MTCommentScript$>?entry_id=<$MTEntryID$></comments></MTEntryIfAllowComments>
+<MTIfNonEmpty tag="MTEntryCategory"><category domain="<$MTBlogArchiveURL$>"><MTParentCategories glue="/"><$MTCategoryLabel dirify="1" encode_xml="1"$></MTParentCategories></category></MTIfNonEmpty>
+</item>
+</MTSearchResults></channel>
+</rss>

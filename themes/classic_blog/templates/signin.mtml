@@ -1,0 +1,54 @@
+<mt:IfRegistrationAllowed>
+<div class="widget-sign-in widget">
+    <h3 class="widget-header"><__trans phrase="Sign In"></h3>
+    <div id="signin-widget-content" class="widget-content"></div>
+</div>
+<script type="text/javascript">
+/* <![CDATA[ */
+function mtUpdateSignInWidget(u) {
+    var el = document.getElementById('signin-widget-content');
+    var content = '';
+    if (!el) return;
+    if (u) {
+        if (u && u.is_authenticated) {
+            user = u;
+            mtSaveUser();
+        } else {
+            // user really isn't logged in; so let's do this!
+            return mtSignIn();
+        }
+    } else {
+        u = mtGetUser();
+    }
+    if (u && u.name) {
+        var url;
+        if (u.is_authenticated) {
+            if (u.is_author) {
+                url = '<$mt:CGIPath$><$mt:CommentScript$>?__mode=edit_profile';
+                url += '&return_url=' + encodeURIComponent( location.href );
+            } else {
+                url = u.url;
+            }
+        } else if (u.url) {
+            url = u.url;
+        } else {
+            url = null;
+        }
+        var content = '<__trans phrase="You are signed in as " escape="js">';
+        if (url)
+            content += '<a href="' + url + '">' + u.name + '</a>';
+        else
+            content += u.name;
+        content += '.  (<a href="javascript:void(0)" onclick="return mtSignOutOnClick()"><__trans phrase="sign out" escape="js"></a>)';
+    } else if (u && u.is_banned) {
+        content = '<__trans phrase="You do not have permission to sign in to this blog." escape="js">';
+    } else {
+        content = '<a href="javascript:void(0)" onclick="return mtSignInOnClick(\'signin-widget-content\')"><__trans phrase="Sign In" escape="js"></a>';
+    }
+    el.innerHTML = content;
+}
+mtAttachEvent('usersignin', mtUpdateSignInWidget);
+mtUpdateSignInWidget();
+/* ]]> */
+</script>
+</mt:IfRegistrationAllowed>

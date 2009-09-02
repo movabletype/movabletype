@@ -1,0 +1,52 @@
+<$mt:setvar name="show_display_options_link" value="1"$>
+<mtapp:widget
+    id="display-options-widget"
+    class="display-options-widget"
+    label="<__trans phrase="Display Options">">
+    <form method="get" action="<mt:var name="SCRIPT_URL">" id="display-options-form">
+        <input type="hidden" name="__mode" value="update_list_prefs" />
+        <input type="hidden" name="_type" value="<mt:var name="OBJECT_TYPE">" />
+        <input type="hidden" name="return_args" value="<mt:var name="RETURN_ARGS" escape="HTML">" />
+        <mtapp:setting
+            id="per_page"
+            label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
+            label_class="display-options">
+            <select name="limit">
+                <option value="25"<mt:if name="LIMIT_25"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="25"></option>
+                <option value="50"<mt:if name="LIMIT_50"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="50"></option>
+                <option value="100"<mt:if name="LIMIT_100"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="100"></option>
+                <option value="200"<mt:if name="LIMIT_200"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="200"></option>
+            </select>
+        </mtapp:setting>
+<mt:if name="HAS_EXPANDED_MODE">
+        <mtapp:setting
+            id="view_mode"
+            label="<__trans phrase="View">"
+            label_class="display-options">
+            <ul>
+                <li><input type="radio" name="verbosity" value="compact" <mt:unless name="VIEW_EXPANDED">checked="checked"</mt:unless> id="view-compact" class="rb" /> <label for="view-compact"><__trans phrase="Compact"></label></li>
+                <li><input type="radio" name="verbosity" value="expanded" <mt:if name="VIEW_EXPANDED">checked="checked"</mt:if> id="view-expanded" class="rb" /> <label for="view-expanded"><__trans phrase="Expanded"></label></li>
+            </ul>
+        </mtapp:setting>
+</mt:if>
+<mt:unless name="LIST_NONCRON">
+    <mt:unless name="IS_POWER_EDIT">
+        <mtapp:setting
+            id="actions_position"
+            label="<__trans phrase="Date Format">"
+            label_class="display-options">
+            <ul>
+                <li><input type="radio" name="dates" value="relative" <mt:if name="DATES_RELATIVE">checked="checked"</mt:if> id="view-relative-date" class="rb" /> <label for="view-relative-date"><__trans phrase="Relative"></label></li>
+                <li><input type="radio" name="dates" value="full" <mt:if name="DATES_FULL">checked="checked"</mt:if> id="view-full-date" class="rb" /> <label for="view-full-date"><__trans phrase="Full"></label></li>
+            </ul>
+        </mtapp:setting>
+    </mt:unless>
+</mt:unless>
+        <div class="actions-bar display-options-actions-bar buttons">
+            <button
+                mt:command="submit"
+                title="<__trans phrase="Save display options">"
+                ><__trans phrase="Save"></button>
+        </div>
+    </form>
+</mtapp:widget>

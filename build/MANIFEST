@@ -1,0 +1,9 @@
+find-junk
+list-index
+list-objects
+rebuild-indexes
+rebuild-pages
+remove-object
+run-periodic-tasks
+sig-validate
+upgrade

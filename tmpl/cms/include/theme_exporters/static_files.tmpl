@@ -1,0 +1,13 @@
+<mt:setvarblock name="static_hint"><__trans phrase="Files types that will be included in the theme are: [_1]." params="<mt:var name="allowed_extensions">" escape="html"></mt:setvarblock>
+<mtapp:setting
+    id="static_directories"
+    required="1"
+    label="<__trans phrase="Included Directories">"
+    label_class="top_label"
+    hint="$static_hint"
+    show_hint="1"
+    help_page="exporting_theme"
+    help_section="static_files">
+    <p class="hint"><__trans phrase="List the directories that contain the static files that you want to be included in your theme."></p>
+    <textarea name="static_directories" id="static_directories" class="larger-text" cols="25" rows="14"><mt:var name="static_directories" escape="html"></textarea>
+</mtapp:setting>

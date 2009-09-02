@@ -1,0 +1,55 @@
+<mt:setvarblock name="html_head" append="1">
+    <mt:if name="stat_url">
+<script type="text/javascript">
+    /* <![CDATA[ */
+    var slider_variable = '<__trans phrase="Comments" escape="js">';
+    var slider_variable_singular = '<__trans phrase="Comment" escape="js">';
+    var file_name = '<mt:var name="stat_url">';
+
+    var commentsSlider = new FlashTag("<mt:var name="static_uri">flash/date_slider_open.swf?date_range="+date_range+"&file_name="+file_name+"&box_color="+box_color+"&bar_color="+bar_color+"&line_color="+line_color+"&slider_variable="+slider_variable+"&slider_variable_singular="+slider_variable_singular+"&lang=<mt:var name="language_tag">&static_path="+escape(StaticURI+"flash"), 540, 122);
+    commentsSlider.setFlashvars("lcId=" + lcId);
+    commentsSlider.setFlashvars("flashSource=http://www.measuremap.com/developer/slider/&contentLicense=http://creativecommons.org/licenses/by/2.0/");
+    /* ]]> */
+</script>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="tabs" append="1">
+        <li id="comment-tab" class="tab <mt:if name="tab" eq="comment">selected-tab</mt:if>" mt:tab="comment" mt:command="select-tab" onclick="blogStatsTabSelect('comment')"><a  href="javascript:void(0)"><span><__trans phrase="Comments"></span></a></li>
+</mt:setvarblock>
+
+    <div id="comment-panel" class="blog-stats-widget-panel <mt:unless name="tab" eq="comment">hidden</mt:unless>" mt:tab-content="comment">
+<mt:if name="stat_url">
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        commentsSlider.write(document);
+        /* ]]> */
+        </script>
+        <div class="stats-summary" id="stats-summary-comment">&nbsp;</div>
+</mt:if>
+
+        <h4 class="tab-panel-header"><__trans phrase="Most Recent Comments"></h4>
+
+    <mt:comments sort_order="descend">
+        <div id="comment-<$MTCommentID$>" class="comment content comment-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> comment-<MTCommentIfModerated>status-publish<MTElse>status-pending</MTCommentIfModerated>">
+            <div class="comment-content">
+                <mt:commentbody>
+            </div>
+            <div class="comment-meta meta">
+                <__trans phrase="[_1] [_2], [_3] on [_4]" params="<MTIfNonEmpty tag="CommentAuthorIdentity"><$MTCommentAuthorIdentity$></MTIfNonEmpty>%%<$MTCommentAuthorLink default_name="Anonymous"$>%%<$MTCommentDate relative="1"$>%%<MTCommentEntry><MTEntryAuthorID setvar="entry_author_id"><MTIf name="editable"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle remove_html="1" encode_html="1" _default="..."$></a><MTElse name="author_id" eq="$entry_author_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$MTEntryClass lower_case="1"$>&amp;id=<$MTEntryID$>&amp;blog_id=<$MTEntryBlogID$>"><$MTEntryTitle$></a><MTElse><$MTEntryTitle remove_html="1" encode_html="1" _default="..."$></MTIf></MTCommentEntry>">
+        <mt:if name="editable">
+                (<a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=comment&amp;id=<$mt:commentid$>&amp;blog_id=<$mt:commentblogid$>"><__trans phrase="Edit Comment"></a>)
+        <mt:else name="author_id" eq="$entry_author_id">
+                (<a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=comment&amp;id=<$mt:commentid$>&amp;blog_id=<$mt:commentblogid$>"><__trans phrase="Edit Comment"></a>)
+        </mt:if>
+            </div>
+        </div>
+        <mt:if name="__last__">
+            <mt:if name="comment_editable">
+        <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all comments"></a></div>
+            </mt:if>
+        </mt:if>
+    <mt:else>
+        <p><__trans phrase="No comments available."></p>
+    </mt:comments>
+    </div>

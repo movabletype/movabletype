@@ -1,0 +1,19 @@
+                <div id="bootstrapper" class="hidden"></div>
+            </div><!-- /content -->
+        </div><!-- /container -->
+        <script type="text/javascript">
+        /* <![CDATA[ */
+            App.bootstrapInline( false );
+            jQuery(function() {
+                jQuery.mtAddEdgeClass();
+                jQuery('button.mt-close-dialog').click(function() {
+                    parent.jQuery.fn.mtDialog.close();
+                });
+<mt:if name="insert_script">
+                parent.jQuery.fn.mtDialog.close();
+</mt:if>
+            });
+        /* ]]> */
+        </script>
+    </body>
+</html>

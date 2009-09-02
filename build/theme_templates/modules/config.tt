@@ -1,0 +1,20 @@
+[%
+FONT_FAMILIES => {
+    arial => 'arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    'century gothic' => '"century gothic", futura, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    georgia => 'georgia, "times new roman", times, "hiraminpro-w3", "ms mincho", serif',
+    'gill sans' => '"gil sans", helvetica, arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    hoefler => '"hoefler text", georgia, "times new  roman", times, "hiraminpro-w3", "ms mincho", serif',
+    impact => 'impact, arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    'lucida sans' => '"lucida sans", arial, helvetica, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    trebuchet => '"trebuchet ms", arial, "hirakakupro-w3", osaka, "ms pgothic", sans-serif',
+    verdana => 'verdana, arial, helvetica, hirakakupro-w3, osaka, "ms pgothic", sans-serif',
+};
+%]
+
+[%- BLOCK bg_image -%]
+    [%- bg_file = theme.find_file(file) -%]
+    [%- IF bg_file -%]
+        [%- 'url(' _ bg_file _ ')' -%]
+    [%- END -%]
+[%- END -%]

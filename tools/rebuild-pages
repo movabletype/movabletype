@@ -1,0 +1,237 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use lib qw(lib ../lib ../extlib extlib );
+
+use LWP::UserAgent::Local;
+use HTTP::Request;
+use Data::Dumper;
+use Getopt::Long;
+use Web::Scraper;
+use MT;
+
+### Parses options.
+my @blog_ids;
+my @types;
+my $username    = '';
+my $password    = '';
+my $script_path = '/mt/';
+my $hostname    = 'localhost';
+my $silent      = 0;
+my $usage       = 0;
+my $elapse      = 0;
+GetOptions(
+    'blog_id=s'  => \@blog_ids,
+    'type=s'     => \@types,
+    'user=s'     => \$username,
+    'pass=s'     => \$password,
+    'path=s'     => \$script_path,
+    'host=s'     => \$hostname,
+    'elapse'     => \$elapse,
+    'silent'     => \$silent,
+    'uaage'      => \$usage,
+);
+
+if ($usage || !$username || !$password) {
+    use Pod::Usage;
+    pod2usage(1);
+    exit;
+}
+
+if ($elapse) {
+    use Time::HiRes;
+}
+
+### Creates MT object.
+my $mt = MT->new() or die MT->errstr;
+
+### Loads blogs
+if (!@blog_ids) {
+    push @blog_ids, '1';
+}
+
+my @blogs = MT::Blog->load( { id => \@blog_ids } )
+    or die "Couldn't load blogs. [" . Dumper(@blog_ids) . "]\n";
+
+# Creates scraper object
+my $scraper = scraper {
+    process "div.msg-publishing", status_publishing => 'TEXT';
+    process "div.msg-error",      status_error      => 'TEXT';
+    process "div.msg-success",    status_success    => 'TEXT';
+
+    result 'status_publishing', 'status_error', 'status_success';
+};
+
+### Creates UserAgent
+my $ua = new LWP::UserAgent::Local( { ScriptAlias => $script_path } );
+
+### Runs build script.
+foreach my $blog (@blogs) {
+    logging( "rebuilding (" . $blog->name . " ...\n" );
+    run_rebuild($blog);
+}
+
+sub run_rebuild {
+    my $blog = shift;
+
+    my @at;
+    if ( !@types ) {
+        @at = split( ',', $blog->archive_type );
+        push @at, 'index';
+    }
+    else {
+        @at = @types;
+    }
+
+    foreach (@at) {
+        my $at       = $_;
+        my $archiver = $mt->publisher->archiver($at);
+        next if ( !$archiver ) && ( $at ne 'index' );
+
+        my $start = Time::HiRes::time() if $elapse;
+        my $total = 0;
+        if ($archiver) {
+            if ( ( $archiver->entry_based || $archiver->date_based ) )
+            {
+                my $entry_class = $archiver->entry_class || 'entry';
+                require MT::Entry;
+                my $terms = {
+                    class   => $entry_class,
+                    status  => MT::Entry::RELEASE(),
+                    blog_id => $blog->id,
+                };
+                $total = MT::Entry->count($terms);
+            }
+            elsif ( $archiver->category_based ) {
+                require MT::Category;
+                my $terms = {
+                    blog_id => $blog->id,
+                    class   => $archiver->category_class,
+                };
+                $total = MT::Category->count($terms);
+            }
+            elsif ( $archiver->author_based ) {
+                require MT::Author;
+                require MT::Entry;
+                my $terms = {
+                    blog_id => $blog->id,
+                    status  => MT::Entry::RELEASE(),
+                    class   => 'entry',
+                };
+                $total = MT::Author->count(
+                    undef,
+                    {
+                        join => MT::Entry->join_on(
+                            'author_id', $terms, { unique => 1 }
+                        ),
+                        unique => 1,
+                    }
+                );
+            }
+        }
+
+        my $url =
+            "http://$hostname$script_path"
+          . $mt->config->AdminScript
+          . "?__mode=rebuild"
+          . "&blog_id="
+          . $blog->id
+          . "&next=0"
+          . "&offset=0"
+          . "&limit=20"
+          . "&entry_id="
+          . "&is_new="
+          . "&old_status="
+          . "&old_previous="
+          . "&old_next="
+          . "&total="
+          . $total
+          . "&type="
+          . $at;
+        do {
+            $url .= "&username=" . $username;
+            $url .= "&password=" . $password;
+            my $req = new HTTP::Request( GET => $url );
+            my $resp = $ua->request($req);
+            if ( $resp->is_success ) {
+                my $res = $scraper->scrape( $resp->content() );
+                if ( $res->{status_publishing} ) {
+                    ( undef, $url ) =
+                      $resp->content() =~ /window.location='(.*)\?(.*)'/;
+                    $url = "http://$hostname/$script_path/" . $mt->AdminScript . "?" . $url;
+                }
+                elsif ( $res->{status_success} ) {
+                    logging( "\t" . $at . " built success." . "\n" );
+                    $url = undef;
+                }
+                elsif ( $res->{status_error} ) {
+                    logging("\t"
+                          . $at
+                          . " built failed. "
+                          . $res->{status_error}
+                          . "\n" );
+                    $url = undef;
+                }
+                else {
+                    logging("\t"
+                          . $at
+                          . " built failed.\n"
+                          . $resp->content()
+                          . "\n" );
+                    $url = undef;
+                }
+            }
+            else {
+                logging(
+                    "\t" . $at . " request failed (" . $resp->code . ")\n" );
+                $url = undef;
+            }
+        } while ($url);
+
+        logging( "\t  total build time:" . ( Time::HiRes::time() - $start ) . "\n" )
+            if $elapse;
+    }
+}
+
+sub logging {
+    my ($msg) = @_;
+    print $msg if !$silent;
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+rebuild_pages
+
+=head1 SYNOPSIS
+
+    rebuild-pages
+      require:
+        --user             login account of mt
+        --pass             login password of mt
+
+      optional:
+        --blog_id <id>     target blog id
+        --type <type>      target archive type
+                             - Category-Monthly
+                             - Category
+                             - Individual
+                             - Page
+                             - Monthly
+                             - index
+                             - or others...
+        --path             path to mt.cgi (default:/mt/)
+        --host             hostname (default:localhost)
+        --elapse           logging build elapsed time if you want (1|0)
+        --silent           no output any logs (1|0)
+        --usage            show this message
+
+    This script requires following perl modules.
+        Web::Scraper           You must install from CPAN if you not installed yet.
+        LWP::UserAgent::Local  You must install from sixapart repository if you not installed yet.
+                               http://code.sixapart.com/svn/movabletype/trunk/t/lib/LWP/UserAgent/Local.pm

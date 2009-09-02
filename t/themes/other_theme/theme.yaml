@@ -1,0 +1,24 @@
+id: other_theme
+name: Other theme
+label: Other Theme
+#thumbnail: my_thumbnail.png
+elements:
+    template_set:
+        component: core
+        importer: template_set
+        label: Template set
+        require: 1
+        data:
+            label: Other Template Set
+            base_path: templates
+            order: 99
+            templates:
+                index:
+                    archive_index:
+                        label: Archive Index
+                        outfile: archives/index.html
+                        rebuild_me: 1
+                    atom:
+                        label: Atom
+                        outfile: atom.xml
+                        rebuild_me: 1

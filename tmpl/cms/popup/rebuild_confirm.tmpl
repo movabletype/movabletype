@@ -1,0 +1,54 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:setvarblock name="html_title"><__trans phrase="Publish [_1]" params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Publish <em>[_1]</em>" params="<mt:var name="blog_name" escape="html" escape="html">"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+<mt:include name="include/chromeless_header.tmpl">
+
+<form method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="start_rebuild" />
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+<input type="hidden" name="next" value="<mt:var name="build_next" escape="html">" />
+<input type="hidden" name="total_entries" value="<mt:var name="total_entries" escape="html">" />
+<input type="hidden" name="total_pages" value="<mt:var name="total_pages" escape="html">" />
+<input type="hidden" name="total_cats" value="<mt:var name="total_cats" escape="html">" />
+
+    <mtapp:setting
+        id="dbtype"
+        label="<__trans phrase="_REBUILD_PUBLISH">"
+        label_class="top-label">
+    <select name="type" class="full-width se">
+        <option value="<mt:var name="build_order">" selected="selected"><__trans phrase="All Files"></option>
+        <mt:if name="index_tmpl_id">
+        <option value="index-<mt:var name="index_tmpl_id">" selected="selected"><__trans phrase="Index Template: [_1]" params="<mt:var name="index_tmpl_name" escape="html">"></option>
+        </mt:if>
+        <option value="index"<mt:if name="index_selected"> selected="selected"</mt:if>>
+        <__trans phrase="Only Indexes"></option>
+        <mt:loop name="archive_type_loop">
+        <option value="<mt:var name="archive_type">"><__trans phrase="Only [_1] Archives" params="<mt:var name="archive_type_label" escape="html">"></option>
+        </mt:loop>
+        <mt:loop name="rebuild_option_loop">
+        <option value="<mt:var name="key">"><mt:var name="label" escape="html"></option>
+        </mt:loop>
+    </select>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Publish (s)">"
+            class="publish action primary-button"
+            ><__trans phrase="_REBUILD_PUBLISH"></button>
+        <button
+            onclick="window.close()"
+            type="submit"
+            accesskey="x"
+            title="<__trans phrase="Cancel (x)">"
+            class="close action"
+            ><__trans phrase="Cancel"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<mt:include name="include/chromeless_footer.tmpl">

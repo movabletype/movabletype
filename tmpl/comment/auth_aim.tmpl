@@ -1,0 +1,24 @@
+<form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="login_external" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
+    <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+    <input type="hidden" name="key" value="AIM" />
+    <fieldset>
+        <mtapp:setting
+            id="aim_display"
+            class="has-auth-icon"
+            label="<__trans phrase="Your AIM or AOL Screen Name">"
+            hint="<__trans phrase="Sign in using your AIM or AOL screen name. Your screen name will be displayed publicly.">"
+            show_hint="1">
+            <input type="text" name="openid_userid" style="background-image: url(<mt:var name="static_uri">images/comment/aim_logo.png);" />
+        </mtapp:setting>
+        <div class="actions-bar actions-bar-login">
+            <button
+                type="submit"
+                name="submit"
+                class="sign-in action primary-button"
+                ><__trans phrase="Sign In"></button>
+        </div>
+    </fieldset>
+</form>

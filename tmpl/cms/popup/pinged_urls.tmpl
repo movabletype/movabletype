@@ -1,0 +1,38 @@
+<$mt:setvar name="screen_type" value="popup-screen"$>
+<mt:setvarblock name="page_title"><__trans phrase="TrackBacks"></mt:setvarblock>
+<mt:include name="include/chromeless_header.tmpl">
+
+<mt:loop name="url_loop">
+    <mt:if name="__first__">
+<h2><__trans phrase="Successful Trackbacks"></h2>
+<ul>
+    </mt:if>
+    <li><mt:var name="url" escape="html"></li>
+    <mt:if name="__last__">
+</ul>
+    </mt:if>
+</mt:loop>
+
+<mt:loop name="failed_url_loop">
+    <mt:if name="__first__">
+<h2><__trans phrase="Failed Trackbacks"></h2>
+<ul>
+    </mt:if>
+    <li><mt:var name="url" escape="html"></li>
+    <mt:if name="__last__">
+</ul>
+<p><em><__trans phrase="To retry, include these TrackBacks in the Outbound TrackBack URLs list for your entry."></em></p>
+    </mt:if>
+</mt:loop>
+
+<div class="actions-bar">
+    <button
+       onclick="window.close(); return false"
+       type="submit"
+       accesskey="x"
+       title="<__trans phrase="Close (x)">"
+       class="close action"
+       ><__trans phrase="Close"></button>
+</div>
+
+<mt:include name="include/chromeless_footer.tmpl">

@@ -1,0 +1,105 @@
+#!/usr/bin/perl -w
+
+# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
+
+package MT::Tool::Upgrade;
+use strict;
+
+use lib  qw( extlib lib );
+use base qw( MT::Tool );
+
+use Carp qw(confess);
+use MT::Upgrade;
+
+sub usage { '[--ttl <days>] [--kind <comma,separated,list,of,kinds>]' }
+
+sub help {
+    return q{
+        Removes old and stale records from mt_session table.
+
+        --ttl <days>  Required: the script uses the value to 
+                      determine if the records are old enough
+                      to be removed.
+        --kind <comma,separated,list,of,kinds> Optional:
+                      if specified, only the matching kind of
+                      session records are removed.
+    };
+}
+
+my ($ttl, $kind);
+
+sub options {
+    return (
+        'ttl=s'  => \$ttl,
+        'kind=s' => \$kind,
+    );
+}
+
+
+sub main {
+    my $class = shift;
+    my ($verbose) = $class->SUPER::main(@_);
+
+    unless ( $ttl ) {
+        print "Please specify the duration (in days) of session records to be removed.  cf: remove_old_sessions --ttl 30";
+        exit;
+    }
+
+    my $days = $ttl * 60 * 60 * 24; # ttl comes in days
+    my @kinds;
+    if ( $kind ) {
+        @kinds = split ',', $kind;
+    }
+
+    my $terms = {
+        @kinds ? ( kind => \@kinds ) : (),
+        start => [ undef, time - $days ],
+    };
+    my $args = {
+        range => { start => 1 }
+    };
+
+    require MT::Session;
+    my %kinds;
+    my $group_iter = MT::Session->count_group_by(
+        $terms,
+        { %$args, group => [ 'kind' ] }
+    );
+    while ( my ($count, $kind ) = $group_iter->() ) {
+        # Don't remove user session records in this script
+        # unless explicitly specified
+        next if !@kinds && 
+             ( ( $kind eq 'US' ) || ( $kind eq 'UA' ) || ( $kind eq 'SI' ) );
+        $kinds{$kind} = $count;
+    }
+
+    unless ( %kinds ) {
+        print "No records that are older than $ttl days found.  Quitting...\n";
+        exit;
+    }
+
+    print "We are going to remove the following records:\n";
+    while ( my ( $key, $val ) = each %kinds ) {
+        print "\t$key: $val\n";
+    }
+    print "Proceed? [n]: ";
+    my $proceed = <STDIN>; 
+    chomp($proceed); 
+    exit unless $proceed =~ /^[Yy][Ee]?[Ss]?$/;
+
+    $terms->{kind} = [ keys %kinds ] unless @kinds;
+    unless ( MT::Session->remove( $terms, $args ) ) {
+        print "Error: " . MT::Session->errstr . "\n";
+        exit;
+    }
+    print "Success!\n";
+    1;
+}
+
+__PACKAGE__->main() unless caller;
+
+1;

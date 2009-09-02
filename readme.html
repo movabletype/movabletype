@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Movable Type Read Me</title>
+	<style type="text/css">
+        body { font-family: Arial, Helvetica, sans-serif; }
+        #container { margin: 0 auto 0 auto; width: 750px; }
+	</style>
+	<script type="text/javascript">
+	<!--
+	    var languages = new Array('de', 'en-us', 'es', 'fr', 'ja', 'nl');
+	    function swapLanguage(lang) {
+	        for(var i = 0; i < languages.length; i++) {
+	            var d = document.getElementById(languages[i]);
+	            if(d)
+	                d.style.display = 'none';
+	        }
+	        
+            var ld = document.getElementById(lang);
+            if(ld)
+                ld.style.display = 'block';
+	    }
+	    
+	    // Attempt to detect the language
+	    window.onload = function() {
+	        var userLang = (navigator.language) ? navigator.language : navigator.userLanguage; 
+	        swapLanguage(userLang.toLowerCase());
+	    }
+	//-->
+	</script>
+</head>
+<body>
+  <div id="container">
+    <img src="mt-static/readme/mt4-logo.png" width="750" height="250" />
+    <a href="#" onclick="swapLanguage('de');">Deutsch</a> | 
+    <a href="#" onclick="swapLanguage('en-us');">English</a> |
+    <a href="#" onclick="swapLanguage('es');">Español</a> |
+    <a href="#" onclick="swapLanguage('fr');">Français</a> |
+    <a href="#" onclick="swapLanguage('ja');">日本語</a> |
+    <a href="#" onclick="swapLanguage('nl');">Nederlands</a>
+    
+    <div id="en-us"><!-- Start English -->
+        <h1>Welcome to Movable Type</h1>
+        <p>Thank you for choosing Movable Type, the premiere solution for your blogging and website management needs. This file will explain how to get up and running; click on the highlighted sections for more information on that subject.</p>
+
+        <h2>Before You Begin</h2>
+        <p>Movable Type requires the following applications:</p>
+        <ul>
+          <li><p>Perl 5.8.1 or greater;</p></li>
+          <li><p>A web server like Apache or Windows IIS;</p></li>
+          <li><p>Access to a database like MySQL;</p></li>
+          <li><p>The following Perl modules:</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>Consult the CPAN documentation to learn how to <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">determine if a Perl module is already installed</a> and, if they are not, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">how to install them</a>.</em></p>
+        </ul>
+
+        <h2>Upgrading Movable Type</h2>
+        <p>If you are upgrading to Movable Type 5 from a previous version, we recommend that you first back up your old installation. Database backup is especially important to restore your system in case of any trouble during the upgrade process.</p>
+	<p>Upload Movable Type 5's files over the same files from the previous version of Movable Type. Access Movable Type as you normally do, and you will be taken through the upgrade process.</p>
+
+        <h2>Installing Movable Type</h2>
+        <p>Before you install Movable Type:</p>
+        <ol>
+          <li>Upload all of Movable Type's files into a directory or folder accessible via your web browser. We recommend that you separate your published content from the Movable Type executable programs by placing each in a separate directory. Typically, the installation directory is called 'mt' and is located in the root directory of your website or within an existing directory that is already configured to allow CGI script execution.</li>
+          <li>Make sure that the 'mt' directory containing the uploaded Movable Type files has been <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">enabled to execute CGI scripts</a>.</li>
+          <li>Make sure that each .cgi file (e.g. mt.cgi, mt-search.cgi, etc.) found in the Movable Type directory has the <a href="http://www.elated.com/articles/understanding-permissions/">execute permission</a> enabled.</li>
+          <li>Open that folder in your web browser (i.e. <tt>http://www.mywebsite.com/mt/</tt>).
+          <li>You should see a Movable Type welcome screen that will take you through the installation process. If the welcome screen does not appear, please consult Troubleshooting Movable Type below.</li>
+        </ol>
+
+        <h2>Troubleshooting Movable Type</h2>
+        <h3>Setting up your static web path</h3>
+        <p>Some web servers and configurations do not allow static files such as JavaScript, CSS and image files to be located inside of a directory where CGI scripts are located. If you installed Movable Type into a cgi-bin directory, you may need to relocate the 'mt-static' directory to another web accessible location. Read our documentation on setting up your <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static directory</a>.</p>
+
+        <h3>Internal Server Errors</h3>
+        <p>If you receive an "Internal Server Error" message, a configuration change may be required on your web server. Please consult our <a href="http://www.movabletype.org/documentation/mt5/install/">installation guide</a> or search our <a href="http://www.sixapart.com/movabletype/kb/">knowledge base</a> to help resolve this issue.</p>
+
+        <h3>Finding more help</h3>
+        <p>Need additional information or support? Check out the <a href="http://www.movabletype.org/documentation/installation/">Detailed Installation Guide</a>.</p>
+    </div><!-- End English -->
+    
+    <div id="de" style="display: none;"><!-- Start German -->
+        <h1>Willkommen zu Movable Type</h1>
+        <p>Vielen Dank, daß Sie sich für Movable Type entschieden haben. Hier finden Sie alles, was Sie zur Installation wissen müssen. Die Links führen zu weitergehenden Informationen.</p>
+
+        <h2></h2>
+        <p>Movable Type erfordert folgende Software:</p>
+        <ul>
+          <li><p>Perl 5.8.1 oder höher</p></li>
+          <li><p>Einen Webserver (z.B. Apache oder Windows IIS)</p></li>
+          <li><p>Zugriff auf eine SQL_Datenbank (z.B. MySQL)</p></li>
+          <li><p>Folgende Perl-Module:</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>So finden Sie heraus, <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">welche Module bereits installiert sind</a> und <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">wie sie installiert werden</a>.</em></p>
+        </ul>
+
+        <h2>Eine vorhandene Movable Type-Installation aktualisieren</h2>
+        <p>Wenn Sie eine ältere Version auf Movable Type 5 aktualisieren wollen, sollten Sie vorher eine Sicherungskopie der vorhandenen Installation erstellen. Laden Sie danach die neue Movable Type-Dateien in Ihr vorhandenes Movable Type-Verzeichnis hoch und überschreiben Sie damit die alten Dateien. Laden Sie abschließend die Movable Type-Oberfläche wie gewohnt. Sie werden Schritt für Schritt durch den Aktualisierungsvorgang geführt.</p>
+
+        <h2>Movable Type neu installieren</h2>
+        <p>Vor dem Installieren:</p>
+        <ol>
+          <li>Laden Sie alle zu Movable Type gehörenden Dateien auf Ihren Webserver hoch. Wählen Sie dabei einen mit dem Webbrowser erreichbaren Ordner. Normalerweise ist das der Ordner "mt" im Wurzelverzeichnis Ihrer Website.</li>
+          <li>Setzen Sie mittels chmod alle .cgi-Dateien im Movable Type-Verzeichnis (mt.cgi, mt-search.cgi usw.) auf <a href="http://www.elated.com/articles/understanding-permissions/">vom Webserver ausführbar</a>.</li>
+          <li>Stellen Sie sicher, daß im Ordner "mt" befindliche CGI-Skripte <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ausgeführt werden können</a>.</li>
+          <li>Öffnen Sie den Ordner "mt" in Ihrem Webbrowser (z.B. <tt>http://www.meineseite.de/mt/</tt>).
+          <li>Es erscheint eine Willkommensnachricht und Sie werden Schritt für Schritt durch den Installationsvorgang geführt. Erscheint die Willkommensnachricht nicht, beachten Sie die Hinweise im nächsten Abschnitt.</li>
+        </ol>
+
+        <h2>Probleme bei der Installation</h2>
+        <h3>Statischer Webpfad</h3>
+        <p>Bei manchen Webservern oder Konfigurationen dürfen statische Dateien wie Javascript-, CSS- und Bilddateien nicht in einem cgi-bin-Ordner gespeichert werden. Wurde Movable Type in einem solchen installiert, sind die statischen Dateien in einem anderen vom Webbrowser erreichbaren Ordner abzulegen und dieser in der Movable Type-Konfiguration anzugeben: <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static-Ordner konfigurieren</a>.</p>
+
+        <h3>Interne Serverfehler</h3>
+        <p>Kommt es zu internen Serverfehlern ("Error 500 - Internal Server Error") ist ggf. der Webserver anders zu konfigurieren. Nähere Informationen finden Sie in der <a href="http://www.movabletype.org/documentation/mt5/install/">Installationsanleitung</a> und der <a href="http://www.sixapart.com/movabletype/kb/">Wissensdatenbank</a>.</p>
+
+        <h3>Weitere Hilfe</h3>
+        <p>Brauchen Sie weitere Informationen oder Unterstützung? Rufen Sie bitte den <a href="http://www.movabletype.org/documentation/mt5/install/">Detailed Installation Guide</a> (in englischer Sprache) auf.</p>
+    </div><!-- End German -->
+    
+    <div id="es" style="display: none;"><!-- Start Spanish -->
+        <h1>Bienvenido a Movable Type</h1>
+        <p>Gracias por elegir Movable Type, la solución ideal para todos sus blogs. Este fichero le informa cómo ponerse en marcha; haga clic en las secciones destacadas para más información sobre esos temas.</p>
+
+        <h2>Antes de empezar</h2>
+        <p>Movable Type necesita las siguientes aplicaciones:</p>
+        <ul>
+          <li><p>Perl 5.8.1 o posterior;</p></li>
+          <li><p>Un servidor web como Apache o Windows IIS;</p></li>
+          <li><p>Acceso a una base de datos como MySQL;</p></li>
+          <li><p>Los siguientes módulos de Perl:</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>Consulte la siguiente documentación para más información sobre cómo <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">determinar si un módulo de Perl ya está instalado</a> y, si no lo está, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">cómo instalarlo</a>.</em></p>
+        </ul>
+
+        <h2>Actualización de Movable Type</h2>
+        <p>Si está actualizando Movable Type 5 desde una versión anterior, le recomendamos que primero haga una copia de seguridad de su antigua instalación. Luego, transfiera los ficheros de Movable Type 5 donde estén los ficheros antiguos. Acceda a Movable Type como normalmente lo hace y podrá iniciar el proceso de actualización.</p>
+
+        <h2>Instalación de Movable Type</h2>
+        <p>Antes de instalar Movable Type:</p>
+        <ol>
+          <li>Transfiere todos los ficheros de Movable Type a una carpeta accesible a través de su navegador. (Generalmente, esta carpeta se llama 'mt' y está situada en el directorio raíz de su web).</li>
+          <li>Asegúrese de que cada fichero .cgi (p.e. mt.cgi, mt-search.cgi, etc) que se encuentra en el directorio de Movable Type tiene los <a href="http://www.elated.com/articles/understanding-permissions/">permisos de ejecución</a> habilitados.</li>
+          <li>Asegúrese de que la carpeta 'mt' que contiene los ficheros transferidos de Movable Type tiene permisos de <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ejecución de scripts CGI</a>.</li>
+          <li>Abra dicha carpeta en su navegador (p.e. <tt>http://www.misitioweb.com/mt/</tt>).
+          <li>Verá una pantalla de bienvenida a Movable Type, que le guiará por el proceso de instalación. Si la pantalla de bienvenida no aparece, consulte nuestra Guía de Resolución de Problemas.</li>
+        </ol>
+
+        <h2>Resolución de Problemas de Movable Type</h2>
+        <h3>Configuración de la ruta al web estático</h3>
+        <p>En algunos servidores web (y en algunas configuraciones), los ficheros estáticos como los de javascript, hojas de estilo e imágenes, no están permitidos dentro de un directorio cgi-bin. Si instaló Movable Type en un directorio cgi-bin, deberá situar los ficheros estáticos en otro lugar accesible por el web. Consulte nuestra documentación sobre cómo configurar el <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">directorio mt-static</a>.</p>
+
+        <h3>Errores internos del servidor</h3>
+        <p>Si obtiene un mensaje de error interno del servidor ("Internal Server Error"), quizás el servidor web necesite cambios en la configuración. Por favor, consulte nuestra <a href="http://www.movabletype.org/documentation/mt5/install/">guía de instalación</a> para ayudarle a resolver este asunto, o consulte nuestra <a href="http://www.sixapart.com/movabletype/kb/">base de conocimiento</a>.</p>
+
+        <h3>Buscando más ayuda</h3>
+        <p>¿Necesita información o soporte adicional? Consulte nuestra <a href="http://www.movabletype.org/documentation/mt5/install/">Guía Detallada de Instalación</a>.</p>
+    </div><!-- End Spanish -->
+    
+    <div id="fr" style="display: none;"><!-- Start French -->
+        <h1>Bienvenue dans Movable Type</h1>
+        <p>Merci d'avoir choisi Movable Type, la solution privilégiée pour tous vos besoins en blogs. Ce fichier va vous montrer comment démarrer. Cliquez sur les sections surlignées pour avoir plus d'information sur ce sujet.</p>
+
+        <h2>Avant de démarrer</h2>
+        <p>Movable Type nécessite les applications suivantes:</p>
+        <ul>
+          <li><p>Perl 5.8.1 ou supérieur;</p></li>
+          <li><p>Un serveur Web comme Apache, ou Windows IIS;</p></li>
+          <li><p>Accès à une base de données comme MySQL;</p></li>
+          <li><p>Les modules Perl suivants:</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>Consultez la documentation suivante pour apprendre comment <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">déterminer si un module perl est déjà installé </a> et, s'il ne l'est pas, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">comment l'installer</a>.</em></p>
+        </ul>
+
+        <h2>Mettre à jour Movable Type</h2>
+        <p>Si vous mettez à jour Movable Type à partir d'une version précédente, nous recommandons que vous fassiez d'abord une sauvegarde de votre ancienne installation. Ensuite mettez les nouveaux fichiers de Movable Type 5 à la place des anciens fichiers. Accédez à Movable Type comme vous le faites d'habitude, et vous serez redirigé vers la procédure de mise à jour.</p>
+
+        <h2>Installer Movable Type</h2>
+        <p>Avant d'installer Movable Type:</p>
+        <ol>
+          <li>Mettez tous les fichiers de Movable Type dans un répertoire accessible via votre navigateur web. (Généralement, ce répertoire est nommé 'mt' à la racine de votre site web).</li>
+          <li>Assurez-vous que chaque fichier .cgi (ex: mt.cgi, mt-search.cgi, etc) qui se trouve dans le répertoire Movable Type a les <a href="http://www.elated.com/articles/understanding-permissions/">droits d'exécution</a> activés.</li>
+          <li>Assurez-vous que le répertoire 'mt' qui contient les fichiers de Movable Type est <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">autorisé à exécuter les scripts CGI</a>.</li>
+          <li>Ouvrez ce répertoire dans votre navigateur web (ex: <tt>http://www.monSiteWeb.com/mt/</tt>).
+          <li>Vous devriez voir un écran d'accueil Movable Type qui vous guidera à travers la procédure d'installation. Si le message d'accueil n'apparait pas, merci de consulter notre guide de dépannage ci-dessous.</li>
+        </ol>
+
+        <h2>Dépanner Movable Type</h2>
+        <h3>Régler votre répertoire web statique</h3>
+        <p>Avec certains serveurs web (et avec certaines configurations), les fichiers statiques comme les javascripts, les fichiers css et les images ne sont pas autorisés à l'intérieur des répertoires cgi-bin. Si vous avez installé Movable Type dans un répertoire cgi-bin vous devez placer vos fichiers statiques dans un autre répertoire accessible par le web. Lisez notre documentation pour régler votre <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">répertoire mt-static</a>.</p>
+
+        <h3>Erreurs internes de serveur</h3>
+        <p>Si vous recevez un message "Internal Server Error", un changement de configuration peut être nécessaire sur votre serveur. Merci de consulter notre <a href="http://www.movabletype.org/documentation/mt5/install/">guide d'installation</a> pour vous aider à résoudre ce problème, ou recherchez dans notre <a href="http://www.sixapart.com/movabletype/kb/">base de connaissance</a>.</p>
+
+        <h3>Trouver plus d'aide</h3>
+        <p>Vous avez besoin d'informations supplémentaires ou de support ? Lisez le <a href="http://www.movabletype.org/documentation/mt5/install/">Guide d'installation détaillé</a>.</p>
+    </div><!-- End French -->
+    
+    <div id="ja" style="display: none;"><!-- Start Japanese -->
+        <h1>Movable Type へようこそ</h1>
+        <p>Movable Type をご利用いただきありがとうございます。このファイルには、Movable Type を動作させるために必要な情報を記載しています。</p>
+
+        <h2>はじめる前に</h2>
+        <p>Movable Type を実行するには次のアプリケーションが必要です。</p>
+        <ul>
+          <li><p>Perl 5.8.1 以上</p></li>
+          <li><p>ApacheやWindows IISなどのWebサーバー</p></li>
+          <li><p>MySQLなどのデータベースへのアクセス</p></li>
+          <li><p>以下のPerlモジュール</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>Perlモジュールを<a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">インストールする方法</a>やPerlモジュールが<a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">すでにインストールされているかどうか確認する方法</a>については、それぞれのドキュメントを参照してください。</em></p>
+        </ul>
+
+        <h2>Movable Type のアップグレード</h2>
+        <p>以前のバージョンからMovable Type 5へアップグレードする場合は、まず現在の環境のバックアップを作成してください。特に、データベースのバックアップは重要です。アップグレード中に何らかの問題が発生した場合に、以前の状態に復元するために必要です。Movable Typeのアップグレードは、以前のバージョンを上書きする方法と、別フォルダにアップロードする方法があります。いずれの場合も、アップロードしたフォルダにアクセスすると、Movable Typeは自動的にアップグレードを開始します。詳しくは、<a href="http://www.movabletype.jp/documentation/mt5/upgrade/">アップグレード・ガイド</a>をご覧ください。</p>
+
+        <h2>Movable Type のインストール</h2>
+        <p>Movable Type をインストールする前に</p>
+        <ol>
+          <li>Movable Typeのファイルを、Webブラウザからアクセスできるフォルダにアップロードします。アップロードするフォルダは、コンテンツを出力するフォルダとは別にします。例えば、専用のサブドメインを利用したり（mt.mywebsite.com）、Webサイトのルートの下に専用のフォルダを作成します（www.mywebsite.com/mt/）。</li>
+          <li>アップロードしたフォルダ内のcgiファイル（mt.cgi、mt-search.cgiなど）に実行権限を与えます。</li>
+          <li>アップロードしたフォルダで<a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">CGIスクリプトを実行できるように</a>します。</li>
+          <li>フォルダにWebブラウザでアクセスします（たとえば<tt>http://www.mywebsite.com/mt/</tt>）。</li>
+          <li>Movable Typeの既定のページが表示され、インストールプロセスを始めることができるようになります。ページが表示されない場合は以下のトラブルシューティングガイドに進んでください。</li>
+        </ol>
+
+        <h2>トラブルシューティングガイド</h2>
+        <h3>StaticWebPathの設定</h3>
+        <p>Webサーバー（やその設定）によっては、JavaScript、CSS、画像ファイルなどの静的ファイルはcgi-binフォルダからは取得できないようになっている場合があります。その場合は、Movable Typeが利用する静的ファイルを別の、Webブラウザから取得できる場所に移動する必要があります。<a href="http://www.movabletype.jp/faq/post-9.html">ドキュメントを参照</a>して設定してください。</p>
+
+        <h3>Internal Server Error</h3>
+        <p>"Internal Server Error"というメッセージが出た場合は、Webサーバー上で設定を変更する必要があるかもしれません。<a href="http://www.movabletype.jp/documentation/mt5/install/">インストールガイド</a>に沿ってインストールを行ってください。また<a href="http://www.movabletype.jp/faq/">FAQ</a>もご確認ください。</p>
+
+        <h3>その他</h3>
+        <p>より詳しい情報は<a href="http://www.movabletype.jp/documentation/mt5/install/">インストールガイド</a>に掲載しています。ご確認ください。</p>
+    </div><!-- End Japanese -->
+    
+    <div id="nl" style="display: none;"><!-- Start Dutch -->
+        <h1>Welkom bij Movable Type</h1>
+        <p>Bedankt om voor Movable Type te kiezen, de beste oplossing voor al uw noden in verband met bloggen. Dit bestand zal u tonen hoe u van start kunt gaan; klik op de gemarkeerde secties voor meer informatie over die onderwerpen.</p>
+
+        <h2>Voor u begint</h2>
+        <p>Movable Type vereist volgende applicaties:</p>
+        <ul>
+          <li><p>Perl 5.8.1 of hoger;</p></li>
+          <li><p>Een webserver als Apache of Windows IIS;</p></li>
+          <li><p>Toegang tot een database zoals MySQL;</p></li>
+          <li><p>Onderstaande Perl modules:</p>
+            <ul>
+              <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
+              <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
+              <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
+            </ul>
+            <p><em>Consulteer deze documentatie om te leren hoe u kunt <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">bepalen of een perl module al is geïnstalleerd</a> en, indien niet, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">hoe u ze kunt installeren</a>.</em></p>
+        </ul>
+
+        <h2>Movable Type Upgraden</h2>
+        <p>Als u Movable Type 5 aan het upgraden bent van een vorige versie, raden we aan om eerst een veiligheidskopie te maken van uw oude installatie. Upload vervolgens de bestanden van Movable Type 5 over uw oude bestanden. Meld u vervolgens op de gewone manier aan bij Movable Type en u zal door het upgradeproces worden geleid.</p>
+
+        <h2>Movable Type installeren</h2>
+        <p>Voor u Movable Type installeert:</p>
+        <ol>
+          <li>Upload alle bestanden van Movable Type naar een map die u kunt bereiken via uw webbrowser. (Meestal is de naam die men aan deze map geeft 'mt', in de hoofdmap van de website).</li>
+          <li>Verzeker u ervan dat alle .cgi bestanden (bv. mt.cgi, mt-search.cgi, etc) die te vinden zijn in de Movable Type map de <a href="http://www.elated.com/articles/understanding-permissions/">execute permissie</a> hebben.</li>
+          <li>Controleer of de 'mt' map die de geuploade Movable Type bestanden bevat <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">is ingesteld om CGI scripts te laten uitvoerenen</a>.</li>
+          <li>Open de map in uw webbrowser (m.a.w. surf naar <tt>http://www.mijwebsite.com/mt/</tt>).
+          <li>Er verschijnt een Movable Type verwelkomingsscherm dat u door het intstallatieproces zal leiden. Als het welkomstscherm niet verschijnt, kijk dan in onze troubleshooting gids hieronder.</li>
+        </ol>
+
+        <h2>Movable Type troubleshooten</h2>
+        <h3>Uw statisch webpad instellen</h3>
+        <p>Op sommige webserver (en bij sommige configuraties), mogen statische bestanden zoals javascript, css en afbeeldingen niet in een cgi-bin map staan. Als u Movable Type heeft geïnstalleerd in een cgi-bin map, dan moet u uw statische bestanden op een andere, webtoegankelijke plaats zetten. Lees onze documentatie over het instellen van uw <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static map</a>.</p>
+
+        <h3>Internal Server Errors</h3>
+        <p>Als u een "Internal Server Error" foutboodschap krijgt, kan het zijn dat er instellingen op uw webserver aangepast moeten worden. Gelieve onze <a href="http://www.movabletype.org/documentation/mt5/install/">installatiegids</a> te consulteren om dit probleem op te lossen, of doorzoek onze <a href="http://www.sixapart.com/movabletype/kb/">kennisdatabank</a>.</p>
+
+        <h3>Meer hulp nodig?</h3>
+        <p>Bijkomende antwoorden of ondersteuning nodig? Kijk in de <a href="http://www.movabletype.org/documentation/mt5/install/">gedetailleerde installatiegids</a>.</p>
+    </div><!-- End Dutch -->
+  </div>
+</body>
+</html>

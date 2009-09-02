@@ -1,0 +1,81 @@
+<mt:setvar name="page_title" value="<__trans phrase="Sign in">">
+<mt:setvar name="complete" value="1">
+<mt:setvar name="screen_id" value="sign-in">
+<mt:include name="include/chromeless_header.tmpl">
+
+<form method="post" action="<mt:var name="script_url">">
+<mt:loop name="query_params">
+<input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
+</mt:loop>
+
+<mt:if name="logged_out">
+    <mt:if name="delegate_auth">
+        <mtapp:statusmsg
+            id="delegate_auth_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended.">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mtapp:statusmsg
+            id="session_end_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended. If you wish to sign in again, you can do so below.">
+        </mtapp:statusmsg>
+    </mt:if>
+<mt:else>
+    <mt:if name="login_again">
+        <mtapp:statusmsg
+            id="action_logout"
+            class="info" can_close="0">
+            <__trans phrase="Your Movable Type session has ended. Please sign in again to continue this action.">
+        </mtapp:statusmsg>
+    <mt:else>
+        <mt:if name="error">
+            <mtapp:statusmsg
+                id="generic-error"
+                class="error" can_close="0">
+                <mt:var name="error">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+</mt:if>
+<mt:unless name="delegate_auth">
+    <mt:var name="login_fields">
+
+    <mt:setvarblock name="action_buttons">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Sign In (s)">"
+           class="action primary-button"
+           ><__trans phrase="Sign In"></button>
+        <mt:if name="can_recover_password">
+          <p id="forget-password"><a href="<mt:var name="mt_url">?__mode=start_recover"><__trans phrase="Forgot your password?"></a></p>
+        </mt:if>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mt:unless>
+</form>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+// if this loads within our modal dialog iframe, force the user to
+// login from the 'top' of the browser.
+if (window.top && (window.top.location != window.location)) {
+    // strip any parameters to return them to the main menu,
+    // since leaving them will display the modal dialog in the
+    // full window.
+    var loc = window.location.href;
+    loc = loc.replace(/\?.+/, '');
+    window.top.location.href = loc;
+}
+
+jQuery(function() {
+    jQuery('#username').focus();
+    if (jQuery('#username').focus().val() != '') {
+        jQuery('#password').focus();
+    }
+});
+/* ]]> */
+</script>
+<mt:include name="include/chromeless_footer.tmpl">

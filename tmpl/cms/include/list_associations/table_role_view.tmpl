@@ -1,0 +1,19 @@
+<mt:unless name="role_view">
+    <td>
+    <mt:if name="is_administrator">
+        <a href="<$mt:var name="script_url"$>?__mode=list_association&amp;role_id=<$mt:var name="role_id" escape="html"$>"><$mt:var name="role_name" escape="html"$>
+    <mt:else>
+        <$mt:var name="role_name" escape="html"$>
+    </mt:if>
+    </td>
+<mt:else>
+    <mt:if name="user_id">
+    <td>
+        <mt:if name="is_administrator">
+            <a href="<mt:var name="script_url">?__mode=list_association&amp;author_id=<mt:var name="user_id" escape="html">" class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></a>
+        <mt:else>
+            <span class="icon-right icon-user"><$mt:var name="user_name" escape="html"$></span>
+        </mt:if>
+    </td>
+    </mt:if>
+</mt:unless>

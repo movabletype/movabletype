@@ -1,0 +1,58 @@
+2.05 - Changed help URLs to point to new home for docs at movabletype.org.
+
+2.0.3 - Updated for bundling with MT.
+
+2.0.2 - Removed Encode package usage altogether until compatability
+issues can be ironed out. Modified newline translation to be more
+cross-platform friendly.
+
+2.0.1 - Patches to fix issues with older versions of Perl.
+
+2.0 - Many, many fixes and improvments.
+
+- Added 'dl' paragraph block which allows for definition lists.
+
+- Improved support for embedded HTML.
+
+- Better processing for multiple inline formatting options within the
+same line and/or same section of text.
+
+- Added 'bc.' marker for future 'blockcode' tag (emits a pre, code pair
+for HTML, XHTML1 output).
+
+- Added CSS class/id, style, language assignment to markers.
+
+- Support for alignment for paragraphs, tables, images.
+
+- ':url' can now be appended to 'hn.', 'bq.', 'p.' to add a 'cite'
+attribute using the specified URL.
+
+- Stripped attributes from 'table' tag for Wiki-like markup.
+
+1.1 - A number of regex updates.
+
+- If emphasis, strong, etc. shorthand appears at the start of the line,
+they are now handled properly.
+
+- Hand-entered HTML entities are preserved for non-'pre' blocks (meaning
+text that isn't in a 'pre' tag). This is different from 1.0, so please
+take note. Standalone '&' characters will still be escaped.
+
+- Addition of MTTextileAutoEncode tag. This allows you to define
+whether you want Textile to escape high-bit characters or not.
+
+- Additional TLDs were added to the URL regex.
+
+- A paragraph tag is now used for the content of the 'bq.' marker.
+
+- Nesting emphasis and strong formats should work better now.
+
+- Added CSS class support for images.
+
+- Added link support for images.
+
+- Added image dimension support for images.
+
+- Fixed a bug that was causing one of those 'internal server errors'.
+
+1.0 - Initial release
