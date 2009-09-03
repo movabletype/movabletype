@@ -1939,7 +1939,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	'The value you entered was not a valid email address' => 'メールアドレスが不正です。',
 	'The value you entered was not a valid URL' => 'URLが不正です。',
-	'The e-mail address you entered is already on the Notification List for this blog.' => '入力されたメールアドレスはすでに通知リストに含まれています。',
+	'The e-mail address you entered is already on the Notification List for this blog.' => '入力したメールアドレスはすでに通知リストに含まれています。',
 	'Subscriber \'[_1]\' (ID:[_2]) deleted from address book by \'[_3]\'' => '\'[_3]\'がアドレス帳から\'[_1]\'(ID:[_2])を削除しました。',
 
 ## lib/MT/CMS/Comment.pm
