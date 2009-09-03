@@ -1389,7 +1389,7 @@ sub core_menus {
             order      => 10000,
             mode       => 'itemset_action',
             args       => { _type => "author" },
-            allowed    => 0,
+            display    => 0,
         },
 
         'entry:manage' => {
