@@ -379,7 +379,7 @@ TC.attachLoadEvent(init);
         hint="<__trans phrase="Create personal blog for user">"
         show_hint="0">
         <label for="create_personal_weblog">
-            <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"</mt:if> />
+            <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
             <__trans phrase="Create personal blog for user">
         </label>
     </mtapp:setting>
