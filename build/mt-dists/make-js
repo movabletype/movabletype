@@ -93,8 +93,9 @@ foreach my $lang (qw(ja de nl fr es)) {
 
     print $FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
 
+    binmode $FOUT, ":utf8";
     for my $text ( keys %lexicon ) {
-        print $FOUT Encode::encode_utf8("Lexicon['$text'] = '$lexicon{$text}';\n");
+        print $FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
     }
     close $FOUT;
 }
