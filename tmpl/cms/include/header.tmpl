@@ -147,7 +147,7 @@
                                     <li><mt:if name="fav_website_can_link"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"></mt:if><mt:var name="fav_website_name"><mt:if name="fav_website_can_link"></a></mt:if>
         <mt:if name="__last__">
             <mt:unless name="selector_hide_website_chooser">
-                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="js">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
+                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
             </mt:unless>
                                 </ul>
                             </li>
@@ -159,7 +159,7 @@
                         <ul id="fav-website-list">
                             <li><span class="scope-lebel"><__trans phrase="Website"></span>
                                 <ul>
-                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="js">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
+                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -176,7 +176,7 @@
                                     <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_blog_name"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name">"></span></a>
         <mt:if name="__last__">
             <mt:unless name="selector_hide_blog_chooser">
-                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="js">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
+                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
             </mt:unless>
                                 </ul>
                             </li>
@@ -188,7 +188,7 @@
                         <ul id="fav-blog-list">
                             <li><span class="scope-lebel"><__trans phrase="Blog"></span>
                                 <ul>
-                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="js">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
+                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
                                 </ul>
                             </li>
                         </ul>
