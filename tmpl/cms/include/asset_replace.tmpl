@@ -1,0 +1,56 @@
+<form method="get" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="upload_file" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="temp" value="<mt:var name="temp" escape="html">" />
+    <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+    <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
+    <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+    <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="asset_select" value="<mt:var name="asset_select" escape="html">" />
+    <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert" escape="html">" />
+    <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+    <input type="hidden" name="overwrite_yes" value="0" />
+    <input type="hidden" name="overwrite_no" value="0" />
+    <mt:if name="dialog">
+    <input type="hidden" name="dialog" value="1" />
+    </mt:if>
+    <mt:if name="no_insert">
+    <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
+    </mt:if>
+    <div class="error-message">
+    <mt:if name="extension_message">
+        <mtapp:statusmsg
+            id="extension-changed"
+            class="success">
+            <mt:var name="extension_message">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mtapp:statusmsg
+        id="error-message"
+        class="alert"
+        can_close="0">
+        <__trans phrase="A file named '[_1]' already exists. Do you want to overwrite this file?" params="<mt:var name="fname" escape="html">">
+    </mtapp:statusmsg>
+    </div>
+    <mt:setvarblock name="action_buttons">
+        <button
+           onclick="submit_form(this.form, 'yes');"
+           name="overwrite_yes_button"
+           value="1"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Yes (s)">"
+           class="action primary-button"
+           ><__trans phrase="Yes"></button>
+        <button
+           onclick="submit_form(this.form, 'no');"
+           name="overwrite_no_button"
+           value="1"
+           type="submit"
+           title="<__trans phrase="No">"
+           class="action"
+           ><__trans phrase="No"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>

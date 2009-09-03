@@ -9,6 +9,9 @@
                 jQuery('button.mt-close-dialog').click(function() {
                     parent.jQuery.fn.mtDialog.close();
                 });
+                jQuery('input').each(function() {
+                    jQuery(this).addClass(jQuery(this).attr('type'));
+                });
 <mt:if name="insert_script">
                 parent.jQuery.fn.mtDialog.close();
 </mt:if>
