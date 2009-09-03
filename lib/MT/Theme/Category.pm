@@ -124,7 +124,7 @@ sub folder_export_template {
     for my $cat ( @$list ) {
         $cat->{checked} = $saved ? $checked_ids{$cat->{category_id}} : 1;
     }
-    my %param = ( categories => $list );
+    my %param = ( folders => $list );
     return $app->load_tmpl( 'include/theme_exporters/folder.tmpl', \%param);
 }
 
@@ -148,14 +148,18 @@ sub export_category {
 
 sub export_folder {
     my ( $app, $blog, $settings ) = @_;
-    my $q = $app->param;
-    my @ids = $q->param('default_folder_export_ids');
-    return unless scalar @ids;
-    my @cats = MT->model('folder')->load({ blog_id => $blog->id, id => \@ids });
-    my @tops = grep { ! $_->parent } @cats;
+    my @folders;
+    if ( defined $settings ) {
+        my @ids = $settings->{default_folder_export_ids};
+        @folders = MT->model('folder')->load({ id => \@ids });
+    }
+    else {
+        @folders = MT->model('folder')->load({ blog_id => $blog->id });
+    }
+    my @tops = grep { ! $_->parent } @folders;
     my $data = {};
     for my $top ( @tops ) {
-        $data->{ $top->basename } = _build_tree( \@cats, $top );
+        $data->{ $top->basename } = _build_tree( \@folders, $top );
     }
     return %$data ? $data : undef;
 }

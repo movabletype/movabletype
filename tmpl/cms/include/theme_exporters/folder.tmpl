@@ -1,4 +1,4 @@
-<mtapp:listing id="default_categories" loop="categories" hide_pager="1" show_actions="0" type="category">
+<mtapp:listing id="default_folders" loop="folders" hide_pager="1" show_actions="0" type="category">
     <mt:if __first__>
         <thead>
             <tr>
@@ -13,12 +13,12 @@
                 <td class="cb">
                     <input
                         type="checkbox"
-                        name="default_category_export_ids"
-                        id="default_category_<mt:var name="category_id">"
-                        class="select category-tree"
+                        name="default_folder_export_ids"
+                        id="default_folder_<mt:var name="category_id">"
+                        class="select folder-tree"
                         value="<mt:var name="category_id">"
-                        <mt:if name="category_parent">category_parent="<mt:var name="category_parent">"</mt:if>
-                        <mt:if name="category_path_ids">category_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+                        <mt:if name="category_parent">folder_parent="<mt:var name="category_parent">"</mt:if>
+                        <mt:if name="category_path_ids">folder_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
                         <mt:if checked>checked="checked"</mt:if>
                     />
                 </td>
@@ -38,20 +38,20 @@
 </mtapp:listing>
 
 <script type="text/javascript">
-jQuery('.category-tree').click( function(){
+jQuery('.folder-tree').click( function(){
     var cat = this;
     if ( $(cat).attr('checked') ) {
-        var parent = jQuery( '#default_category_' + jQuery(cat).attr('category_parent') );
+        var parent = jQuery( '#default_folder_' + jQuery(cat).attr('folder_parent') );
         if ( parent ) {
-            var path_ids = jQuery(cat).attr('category_path').toString().slice(1,-1).split(')(');
+            var path_ids = jQuery(cat).attr('folder_path').toString().slice(1,-1).split(')(');
             jQuery.each(path_ids, function() {
-                jQuery("#default_categories #default_category_" + this ).attr('checked','checked');
+                jQuery("#default_folders #default_folder_" + this ).attr('checked','checked');
             });
         }
     }
     else {
         var id = jQuery(cat).attr('value');
-        jQuery("#default_categories input[category_path*='(" + id + ")']:checked").each(function() {
+        jQuery("#default_folders input[folder_path*='(" + id + ")']:checked").each(function() {
             jQuery(this).attr('checked', 0);
         });
     }
