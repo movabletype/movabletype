@@ -751,17 +751,17 @@ sub backup {
       if $size !~ /^\d+$/;
 
     my @blog_ids = split ',', $blog_ids;
-    my @child_ids = [];
     if ( @blog_ids ) {
+        my @child_ids;
         my $blog_class = $app->model('blog');
         foreach my $bid ( @blog_ids ) {
             my $target = $blog_class->load( $bid );
-            if ( !$target->is_blog && $target->blogs ) {
+            if ( !$target->is_blog && scalar @{$target->blogs} ) {
                 my @blogs = map { $_->id } @{$target->blogs};
                 push @child_ids, @blogs;
             }
         }
-        push @blog_ids, @child_ids;
+        push @blog_ids, @child_ids if @child_ids;
     }
 
     my $archive = $q->param('backup_archive_format');
