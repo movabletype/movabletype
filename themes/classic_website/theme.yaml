@@ -67,6 +67,8 @@ elements:
                         label: Banner Footer
                     banner_header:
                         label: Banner Header
+                    comment_detail:
+                        label: Comment Detail
                     comments:
                         label: Comments
                     entry_summary:
@@ -84,6 +86,9 @@ elements:
                             page_archive:
                                 archive_type: Page
                 system:
+                    comment_listing:
+                        description_label: Improved listing of comments.
+                        label: Comment Listing
                     comment_preview:
                         description_label: Displays preview of comment.
                         label: Comment Preview
