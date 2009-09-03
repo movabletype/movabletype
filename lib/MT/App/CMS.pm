@@ -419,6 +419,9 @@ sub init_request {
         if ( $blog_id ne int($blog_id) ) {
             die $app->translate("Invalid request");
         }
+        if ( $blog_id > 0 && !$app->model('blog')->load({ id => $blog_id }) ) {
+            die $app->translate("Invalid request");
+        }
     }
 
     unless ( defined $app->{upgrade_required} ) {
