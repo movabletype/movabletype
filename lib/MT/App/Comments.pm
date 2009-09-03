@@ -871,11 +871,6 @@ sub post {
             $app->translate("Comment text is required.") );
     }
 
-    # Save filter for CustomFields
-    if (! $app->run_callbacks( 'api_save_filter.author', $app ) ) {
-        return $app->handle_error( $app->errstr );
-    }
-
     # validate session parameter
     if ( my $sid = $q->param('sid') ) {
         my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
@@ -965,7 +960,9 @@ sub post {
     }
 
     $app->param('_type', 'comment');
-    my $filter_result = $app->run_callbacks( 'api_save_filter.comment', $app );
+    if (! $app->run_callbacks( 'api_save_filter.comment', $app ) ) {
+        return $app->handle_error( $app->errstr );
+    }
 
     $comment = $app->eval_comment( $blog, $commenter, $comment, $entry );
     return $app->preview('pending') unless $comment;

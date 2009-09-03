@@ -15,6 +15,13 @@
             <__trans phrase="The comment has been approved.">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
     <button
