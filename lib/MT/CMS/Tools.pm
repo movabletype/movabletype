@@ -1498,7 +1498,7 @@ sub adjust_sitepath {
     }
     if ($error) {
         $param->{error}     = $error;
-        $param->{error_url} = $app->uri( mode => 'view_log', args => {} );
+        $param->{error_url} = $app->base . $app->uri( mode => 'view_log', args => {} );
     }
     for my $key (
         qw(files last redirect is_dirty is_asset objects_json deferred_json))
@@ -1678,7 +1678,7 @@ sub dialog_restore_upload {
         $param->{restore_end} = 1;
         if ( $param->{is_dirty} ) {
             _log_dirty_restore( $app, $deferred );
-            my $log_url = $app->uri( mode => 'view_log', args => {} );
+            my $log_url = $app->base . $app->uri( mode => 'view_log', args => {} );
             $param->{error} =
               $app->translate(
 'Some objects were not restored because their parent objects were not restored.'
