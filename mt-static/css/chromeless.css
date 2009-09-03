@@ -103,6 +103,13 @@ input.smaller-text {
     width: 100%;
 }
 
+.actions-bar input[type="image"], 
+.actions-bar input[type="submit"],
+.actions-bar button {
+    float: right;
+    margin-left: 12px;
+}
+
 /* - Component */
 .ready {
     font-weight: bold;
@@ -150,18 +157,15 @@ input.smaller-text {
     margin: 25px 0;
 }
 
-.actions-bar input[type="image"], 
-.actions-bar input[type="submit"],
-.actions-bar button {
-    float: right;
-    margin-left: 12px;
-}
-
 #container.show-actions-bar-top .actions-bar-top {
     display: block;
 }
 #container.show-actions-bar-bottom .actions-bar-bottom {
     display: block;
+}
+
+.actions-bar-login { 
+    text-align: right;
 }
 
 /* -- Buttons */
@@ -325,7 +329,7 @@ button.action:hover {
 #sign-in #password { 
     font-size: 22px;
     width: 100%;
-    color: #333;
+    color: #2b2b2b;
 }
 
 #sign-in #page-title { 
@@ -339,6 +343,7 @@ button.action:hover {
 }
 
 #sign-up { 
+    clear: both;
     margin-top: 15px;
     text-align: right;
 }
@@ -351,7 +356,7 @@ button.action:hover {
     margin-left: 0;
 }
 
-#sign-in .has-auth-icon input[type="text"] { 
+#sign-in .has-auth-icon input { 
     padding-left: 22px;
     background-color: #fff;
     background-repeat: no-repeat;

@@ -15,6 +15,15 @@
     width: 96%;
 }
 
+#sign-in input[type="text"]
+    width: 313px;
+}
+
+#sign-in #username, 
+#sign-in #password { 
+    width: 332px;
+}
+
 /* -- Button */
 button { 
     height: 18px;

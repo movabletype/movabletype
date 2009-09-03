@@ -29,6 +29,10 @@ textarea {
     margin: 0;
 }
 
+#sign-in input.text { 
+    width: 313px;
+}
+
 #template-options input.text { 
     width: 80%;
 }
@@ -115,10 +119,6 @@ button {
     line-height: 1.1;
 }
 
-.actions-bar { 
-    height: 25px;
-}
-
 .chromeless .actions-bar button { 
     float: right;
     margin-left: 12px;
@@ -131,6 +131,7 @@ ul#asset-list li a.remove-asset {
    top: -1px;
    right: 13px;
 }
+
 /* - Footer */
 #footer { 
     position: static;
@@ -140,10 +141,6 @@ ul#asset-list li a.remove-asset {
 /* - Modal Dialog */
 html#dialog { 
     border: 0 ! important;
-}
-
-.dialog .actions-bar { 
-    position: absolute;
 }
 
 /* - for IE6 Duplicate Characters Bug */
