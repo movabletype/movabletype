@@ -310,10 +310,10 @@ sub _new_entry {
         }
     }
     require MT::Blog;
-    my $blog = MT::Blog->load($blog_id)
+    my $blog = MT::Blog->load( { id => $blog_id, class => [ 'blog', 'website' ] } )
         or die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id));
     die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id))
-        if !$blog->is_blog;
+        if !$blog->is_blog && !$param{page};
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
