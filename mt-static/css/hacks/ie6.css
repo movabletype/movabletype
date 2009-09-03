@@ -8,7 +8,29 @@ input.text,
 input.password, 
 textarea { 
     width: 380px;
+    padding: 3px;
     border: 1px solid #c8c2be;
+}
+
+/* - Generic */
+.edit-entry input.text, 
+.edit-entry input.password, 
+.edit-entry textarea, 
+.edit-template input.text, 
+.edit-template input.password, 
+.edit-template textarea { 
+    width: 98%;
+}
+
+.widget input.text, 
+.widget input.password, 
+.widget textarea { 
+    width: 96%;
+    margin: 0;
+}
+
+#template-options input.text { 
+    width: 80%;
 }
 
 .list-notification .create-inline input.text { 
@@ -22,14 +44,6 @@ textarea {
 
 #notification-listing-table .url input.text { 
     width: 60%;
-}
-
-input.smaller-text { 
-    width: 3.5em ! important;
-}
-input.larger-text, 
-textarea.larger-text { 
-    width: 100% ! important;
 }
 
 /* - App Header */
@@ -128,13 +142,19 @@ html#dialog {
     border: 0 ! important;
 }
 
+.dialog .actions-bar { 
+    position: absolute;
+}
+
 /* - for IE6 Duplicate Characters Bug */
 #related-content { 
     margin-left: -3px;
 }
 
 /* - haslayout */
+#main-content-inner, 
 #content-header, 
+#related-content, 
 .msg, 
 .plugin, 
 .field-content ul, 
@@ -145,6 +165,9 @@ html#dialog {
 .dialog #selector, 
 #template-options-header, 
 #template-options .field, 
-#related-content {  
+.widget-content .field-content { 
+    display: block;
     zoom: 1;
 }
+
+

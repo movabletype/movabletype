@@ -1,29 +1,18 @@
 /* - Generic */
-input, 
-select, 
-textarea { 
-    padding: 0 ! important;
-}
-
-.edit-entry #title-field #title, 
-.edit-template #title-field #title, 
-.edit-entry input.text, 
-.edit-entry input.password, 
+/* -- form */
+.edit-entry input[type="text"], 
+.edit-entry input[type="password"], 
 .edit-entry textarea, 
-.edit-template input.text, 
-.edit-template input.password, 
+.edit-template input[type="text"], 
+.edit-template input[type="password"], 
 .edit-template textarea { 
-    width: 99%;
-}
-
-.widget input.text, 
-.widget input.password, 
-.widget textarea { 
     width: 98%;
 }
 
-#template-options input.text { 
-    width: 80%;
+.widget input[type="text"], 
+.widget input[type="password"], 
+.widget textarea { 
+    width: 96%;
 }
 
 /* -- Button */

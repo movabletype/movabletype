@@ -58,6 +58,7 @@ h3 {
 select,
 input,
 textarea {
+    background-color: #fff;
     font-size: 14px;
 }
 textarea { 
@@ -77,7 +78,6 @@ select {
 .listing-filter select, 
 .actions-bar select { 
     height: 2em;
-    margin-right: 3px;
     padding: 2px;
     font-size: 11px;
 }
@@ -933,7 +933,8 @@ ul.menu-nav a.dashboard-link.first-child {
 }
 
 .widget-content { 
-    margin: 0 10px 10px;
+/*     margin: 0 10px 10px; */
+    padding: 0 10px 10px;
 }
 
 /* -- Content Nav */
@@ -2942,7 +2943,6 @@ table.templatemap-listing-table {
 /* - Edit Comment, Ping */
 #edit-comment textarea, 
 #edit-ping textarea { 
-    width: 100%;
     height: 12em;
 }
 
