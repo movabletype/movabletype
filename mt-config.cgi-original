@@ -31,14 +31,14 @@ DBUser DATABASE_USERNAME
 DBPassword DATABASE_PASSWORD
 DBHost localhost
 
-##### POSTGRESQL #####
+##### POSTGRESQL ( unsupported ) #####
 ObjectDriver DBI::postgres
 Database DATABASE_NAME
 DBUser DATABASE_USERNAME
 DBPassword DATABASE_PASSWORD
 DBHost localhost
 
-##### SQLITE #####
+##### SQLITE ( unsupported ) #####
 ObjectDriver DBI::sqlite
 Database /path/to/sqlite/database/file
 

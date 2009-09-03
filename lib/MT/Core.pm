@@ -32,18 +32,18 @@ BEGIN {
                 config_package => 'DBI::mysql',
             },
             'postgres' => {
-                label => 'PostgreSQL Database',
+                label => 'PostgreSQL Database ( unsupported )',
                 dbd_package => 'DBD::Pg',
                 dbd_version => '1.32',
                 config_package => 'DBI::postgres',
             },
             'sqlite' => {
-                label => 'SQLite Database',
+                label => 'SQLite Database ( unsupported )',
                 dbd_package => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
             },
             'sqlite2' => {
-                label => 'SQLite Database (v2)',
+                label => 'SQLite Database (v2) ( unsupported )',
                 dbd_package => 'DBD::SQLite2',
                 config_package => 'DBI::sqlite',
             },
