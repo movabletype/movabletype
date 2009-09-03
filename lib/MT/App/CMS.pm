@@ -1428,7 +1428,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'category' },
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
 
         'page:manage' => {
@@ -1468,7 +1468,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'folder' },
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
 
         'asset:manage' => {
@@ -1508,13 +1508,13 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'asset' },
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
         'asset:upload_file' => {
             order      => 10000,
             mode       => 'upload_file',
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
 
         'feedback:comment' => {
@@ -1552,7 +1552,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'comment' },
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
 
         'design:template' => {
@@ -1583,13 +1583,13 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'template' },
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
         'design:edit_widget' => {
             order      => 10000,
             mode       => 'edit_widget',
             view       => [ "blog", 'website', 'system' ],
-            allowed    => 0,
+            display    => 0,
         },
 
         'settings:general' => {
@@ -1676,7 +1676,7 @@ sub core_menus {
             mode       => 'view',
             args       => { _type => 'role' },
             view       => 'system',
-            allowed    => 0,
+            display    => 0,
         },
 
         'tools:search' => {
@@ -2315,6 +2315,7 @@ sub build_menus {
         }
 
         $menu->{allowed} = 1;
+        $menu->{current} = 0;
         $menu->{'id'} = $id;
 
         my @sub_ids = grep { m/^$id:/ } keys %$menus;
@@ -2324,6 +2325,7 @@ sub build_menus {
             next
               if exists $theme_modify->{$sub_id} && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
+            $sub->{current} = 0;
             if ( $sub->{view} ) {
                 if ( ref $sub->{view} eq 'ARRAY' ) {
                     next
@@ -2410,8 +2412,9 @@ sub build_menus {
 
             my $has_sub = 0;
             foreach my $sub (@sub) {
+                next if defined $sub->{display} && !$sub->{display};
                 my $sys_only = $sub->{id} =~ m/^system:/;
-                $sub->{allowed} = defined $sub->{allowed} ? $sub->{allowed} : 1;
+                $sub->{allowed} = 1;
                 if ( $sub->{mode} ) {
                     $sub->{link} = $app->uri(
                         mode => $sub->{mode},
