@@ -704,6 +704,11 @@ sub _hdlr_tag_search_link {
 
     if ($blogs) {
         if (ref $blogs eq 'ARRAY') {
+            if ( my $blog = $ctx->stash('blog') ) {
+                if ( !$blog->is_blog ) {
+                    unshift @$blogs, $blog->id;
+                }
+            }
             if ($blog_args{not}{blog_id}) {
                 $param .= 'ExcludeBlogs=' . join(',', @$blogs);
             } else {
