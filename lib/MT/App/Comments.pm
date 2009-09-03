@@ -871,6 +871,11 @@ sub post {
             $app->translate("Comment text is required.") );
     }
 
+    # Save filter for CustomFields
+    if (! $app->run_callbacks( 'api_save_filter.author', $app ) ) {
+        return $app->handle_error( $app->errstr );
+    }
+
     # validate session parameter
     if ( my $sid = $q->param('sid') ) {
         my ( $sess_obj, $commenter ) = $app->_get_commenter_session();
@@ -1863,6 +1868,11 @@ sub save_commenter_profile {
     }
     if ( $param{url} && (!is_url( $param{url} ) || ($param{url} =~ m/[<>]/) ) ) {
         $param{error} = $app->translate('URL is invalid.');
+        return $app->build_page( 'profile.tmpl', \%param );
+    }
+
+    if (! $app->run_callbacks( 'api_save_filter.author', $app ) ) {
+        $param{error} = $app->errstr;
         return $app->build_page( 'profile.tmpl', \%param );
     }
 
