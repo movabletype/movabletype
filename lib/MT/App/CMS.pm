@@ -1756,6 +1756,12 @@ sub core_menus {
             mode  => "tools",
             view  => "system",
         },
+        'tools:do_export_theme' => {
+            order      => 10000,
+            mode       => 'do_export_theme',
+            view       => [ 'blog', 'website' ],
+            display    => 0,
+        },
     };
 }
 
