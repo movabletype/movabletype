@@ -56,7 +56,7 @@
         <p><span class="icon-left icon-neutral"><__trans phrase="TypePad is not enabled."></span></p>
         <p>
             <label for="remote_auth_token"><__trans phrase="TypePad token:"></label> <input type="text" name="remote_auth_token" id="remote_auth_token" value="<mt:var name="REMOTE_AUTH_TOKEN" escape="HTML">" />
-            &nbsp;<__trans phrase="or&nbsp;<a href="[_1]">obtain a TypePad token</a> from TypePad.com." paramas="javascript:void(0)" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&amp;</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&amp;blog_id=<mt:var name="BLOG_ID">');return false">
+            <__trans phrase="&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com."  params="<a href="javascript:void(0)" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&amp;</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&amp;blog_id=<mt:var name="BLOG_ID">');return false">%%</a>">
         </p>
         <p id="save_token_msg" style="display:none">
             <span class="alert-warning-inline icon-left icon-warning"><__trans phrase="Please click the 'Save Changes' button below to enable TypePad."></span>

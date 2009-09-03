@@ -4067,7 +4067,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Clear TypePad Token' => 'TypePadのトークンを削除',
 	'Please click the Save Changes button below to disable authentication.' => '保存ボタンをクリックして認証を無効にしてください。',
 	'TypePad is not enabled.' => 'TypePadは有効ではありません。',
-	'or&nbsp;<a href="[_1]">obtain a TypePad token</a> from TypePad.com.' => 'または、TypePad.comで<a href="[_1]">TypePadトークンを取得</a>',
+	'&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com.' => '&nbsp;または、TypePad.comで[_1]TypePadトークンを取得[_2]。',
 	'Please click the \'Save Changes\' button below to enable TypePad.' => 'TypePadを利用するために\'保存\'ボタンをクリックしてください。',
 	'External Notifications' => '更新通知',
 	'Notify ping services of website updates' => 'ウェブサイト更新pingサービス通知',
