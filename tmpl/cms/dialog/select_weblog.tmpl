@@ -90,7 +90,7 @@ function saveFavorite(ok) {
 function init() {
     // setup
     dialog = new Dialog.MultiPanel("select-weblog");
-    var blogPanel = new ListingPanel("blog");
+    var blogPanel = new ListingPanel("blog", "<mt:var name="search_type" default="blog">");
     blogPanel.pager.setState(<mt:var name="pager_json">);
     dialog.setPanels([blogPanel]);
     dialog.open({}, <mt:var name="confirm_js" default="returnBlogSelection">);
