@@ -1222,6 +1222,7 @@ sub dialog_select_weblog {
                 confirm_js => $confirm_js,
                 idfield    => ( $app->param('idfield') || '' ),
                 namefield  => ( $app->param('namefield') || '' ),
+                search_type => 'blog',
             },
         }
     );

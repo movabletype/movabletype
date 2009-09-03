@@ -416,6 +416,7 @@ sub dialog_select_website {
                 confirm_js => $confirm_js,
                 idfield    => ( $app->param('idfield') || '' ),
                 namefield  => ( $app->param('namefield') || '' ),
+                search_type => "website",
             },
         }
     );
