@@ -1,6 +1,6 @@
 /*
 JavasScript Object Notation (JSON) Library - Copyright 2005-2009 Six Apart
-$Id: json.js 3531 2009-03-12 09:11:52Z fumiakiy $
+$Id$
 */
 
 

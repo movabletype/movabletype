@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: gestalt.js 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 */
 
 
