@@ -264,9 +264,10 @@ sub export {
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
     );
+    my $default_basename = [ File::Spec->splitdir( $blog->site_path ) ]->[-1] || dirify( $blog->name );
     my %param_default = (
         theme_name        => MT->translate( 'Theme from [_1]', $blog->name ),
-        theme_id          => 'theme_from_'. [ File::Spec->splitdir( $blog->site_path ) ]->[-1],
+        theme_id          => $default_basename ? 'theme_from_' . $default_basename : 'new_theme',
         theme_author_name => $app->user->nickname,
         theme_author_link => $app->user->url,
         theme_version     => '1.0',
