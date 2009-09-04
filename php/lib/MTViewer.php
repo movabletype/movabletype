@@ -145,7 +145,7 @@ class MTViewer extends Smarty {
     function add_conditional_tag($name, $code = null, $cacheable = null, $cache_attrs = null) {
         $this->conditionals[$name] = 1;
         if (isset($code)) {
-            $this->register_block($name, $code, $cacheable, $cache_attrs);
+            return $this->register_tag_handler($name, $code, 'block');
         }
     }
 

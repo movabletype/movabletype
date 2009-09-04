@@ -407,7 +407,7 @@ sub _hdlr_website_has_blog {
     my %terms;
     $terms{parent_id} = $blog->id;
     $terms{class} = 'blog';
-    return $blog_class->exist( \%terms );
+    return $blog_class->exist( \%terms ) ? 1 : 0;
 }
 
 ###########################################################################
