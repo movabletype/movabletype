@@ -13,7 +13,7 @@
                 </div>
         </mt:section>';
         Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "Add sub category" ) #]" mt:default="[#|h trans( "Add sub category" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
+        [# div.className="add-category-form hidden" #]<input id="add-category-input-movable" class="add-category-input input-hint" type="text" value="[#|h trans( "<mt:if name="object_type" eq="entry">Add sub category<mt:else>Add sub Folder</mt:if>" ) #]" mt:default="[#|h trans( "<mt:if name="object_type" eq="entry">Add sub category<mt:else>Add sub Folder</mt:if>" ) #]" mt:delegate="default-value" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span>Add</span>&nbsp;&nbsp;&nbsp;</a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span>[#|h trans( "Cancel" ) #]</span>&nbsp;&nbsp;&nbsp;</a>
         </mt:section>';
     <mt:ignore>
         <__trans phrase="Add sub category">
