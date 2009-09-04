@@ -279,42 +279,32 @@ sub edit {
         $param->{languages} = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
     }
 
-    if ( !$param->{site_path} )
-    {
-        my $cwd = $app->document_root;
-        $cwd = File::Spec->catdir($cwd, 'WEBSITE-NAME'); # for including the end of directory separator
-        $cwd =~ s!WEBSITE-NAME\z!!;                      # canonpath() remove it
-        $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
-        $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
-        $param->{suggested_site_path} = $cwd;
-    }
     if ( !$param->{id} ) {
-        if ( $param->{site_path} ) {
+        if ( !$param->{site_path} )
+        {
+            my $cwd = $app->document_root;
+            $cwd = File::Spec->catdir($cwd, 'WEBSITE-NAME'); # for including the end of directory separator
+            $cwd =~ s!WEBSITE-NAME\z!!;                      # canonpath() remove it
+            $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
+            $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
+            $param->{site_path} = $param->{suggested_site_path} = $cwd;
+        } else {
             $param->{site_path} =
               File::Spec->catdir( $param->{site_path}, 'WEBSITE-NAME' );
         }
-        else {
-            $param->{suggested_site_path} =
-              File::Spec->catdir( $param->{suggested_site_path},
-                'WEBSITE-NAME' );
-        }
     }
 
-    if ( !$param->{site_url} ) {
-        $param->{suggested_site_url} = $app->base . '/';
-        $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
-        $param->{suggested_site_url} =~ s!/mt/?$!/!i;
-    }
     if ( !$param->{id} ) {
-        if ( $param->{site_url} ) {
+        if ( !$param->{site_url} ) {
+            $param->{suggested_site_url} = $app->base . '/';
+            $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
+            $param->{suggested_site_url} =~ s!/mt/?$!/!i;
+            $param->{suggested_site_url} .= 'WEBSITE-NAME/';
+            $param->{site_url}           = $param->{suggested_site_url};
+        } else {
             $param->{site_url} .= '/'
               unless $param->{site_url} =~ /\/$/;
             $param->{site_url} .= 'WEBSITE-NAME/';
-        }
-        else {
-            $param->{suggested_site_url} .= '/'
-              unless $param->{suggested_site_url} =~ /\/$/;
-            $param->{suggested_site_url} .= 'WEBSITE-NAME/';
         }
         $param->{screen_class} = "settings-screen";
     }
