@@ -2572,7 +2572,6 @@ ul#asset-list li {
 }
 ul#asset-list li#empty-asset-list { 
     padding-left: 0;
-    text-align: center;
 }
 
 ul#asset-list li a.asset-title { 
