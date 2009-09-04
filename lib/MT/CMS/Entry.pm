@@ -123,10 +123,19 @@ sub edit {
         }
 
         ## Load next and previous entries for next/previous links
-        if ( my $next = $obj->next ) {
+        my $nextprev_option = {};
+        if ( $type eq 'entry' ) {
+            $nextprev_option->{author_id} = $author->id
+                if !$app->can_do('edit_all_posts');
+        }
+        elsif ( $type eq 'page' ) {
+            $nextprev_option->{author_id} = $author->id
+                if !$app->can_do('edit_all_pages');
+        }
+        if ( my $next = $obj->next( $nextprev_option ) ) {
             $param->{next_entry_id} = $next->id;
         }
-        if ( my $prev = $obj->previous ) {
+        if ( my $prev = $obj->previous( $nextprev_option ) ) {
             $param->{previous_entry_id} = $prev->id;
         }
 
