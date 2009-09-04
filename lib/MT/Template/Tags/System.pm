@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: System.pm 108864 2009-08-12 05:41:00Z asawada $
+# $Id$
 package MT::Template::Tags::System;
 
 use strict;

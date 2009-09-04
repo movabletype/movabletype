@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Builder.pm 3571 2009-03-17 00:35:48Z auno $
+# $Id$
 
 package MT::Builder;
 

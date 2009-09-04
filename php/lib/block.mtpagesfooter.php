@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtpagesfooter.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 require_once('block.mtentriesfooter.php');
 function smarty_block_mtpagesfooter($args, $content, &$ctx, &$repeat) {

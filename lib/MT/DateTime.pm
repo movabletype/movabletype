@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: DateTime.pm 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 # Adapted from DateTime package to avoid requirement of DateTime package.
 

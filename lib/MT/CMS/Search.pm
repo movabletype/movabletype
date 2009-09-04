@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Search.pm 110280 2009-08-31 07:49:30Z ytakayama $
+# $Id$
 package MT::CMS::Search;
 
 use strict;

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Author.pm 107638 2009-07-24 23:20:18Z fyoshimatsu $
+# $Id$
 package MT::Template::Tags::Author;
 
 use strict;

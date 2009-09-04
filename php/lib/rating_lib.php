@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: rating_lib.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function get_score(&$ctx, $obj_id, $datasource, $namespace, $user_id) {
     $score = $ctx->mt->db()->fetch_score($namespace, $obj_id, $user_id, $datasource);

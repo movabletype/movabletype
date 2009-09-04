@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: TemplateSet.pm 110003 2009-08-27 02:24:58Z asawada $
+# $Id$
 package MT::Theme::TemplateSet;
 use strict;
 use MT;

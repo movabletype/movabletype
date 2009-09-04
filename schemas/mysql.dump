@@ -1,4 +1,4 @@
---  $Id: mysql.dump 1098 2007-12-12 01:47:58Z hachi $
+--  $Id$
 
 create table mt_author (
     author_id integer not null auto_increment primary key,

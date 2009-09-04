@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Blog.pm 108025 2009-07-30 10:09:16Z asawada $
+# $Id$
 package MT::Template::Tags::Blog;
 
 use strict;

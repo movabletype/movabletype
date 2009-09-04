@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtassettags.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
     $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type');

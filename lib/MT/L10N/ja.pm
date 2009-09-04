@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::ja;
 use strict;

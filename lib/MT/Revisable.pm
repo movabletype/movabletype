@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Revisable.pm 109654 2009-08-21 04:12:49Z fyoshimatsu $
+# $Id$
 
 # An interface for any MT::Object that wishes to utilize versioning
 

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtmultiblog.php 108527 2009-08-06 05:08:54Z ytakayama $
+# $Id$
 
 if (MULTIBLOG_ENABLED) {
 function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {

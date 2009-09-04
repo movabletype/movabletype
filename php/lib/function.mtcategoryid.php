@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: function.mtcategoryid.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_function_mtcategoryid($args, &$ctx) {
     $cat = $ctx->stash('category');

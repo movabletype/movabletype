@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Misc.pm 107065 2009-07-17 03:36:35Z fyoshimatsu $
+# $Id$
 package MT::Template::Tags::Misc;
 
 use strict;

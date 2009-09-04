@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Core.pm 108693 2009-08-10 07:31:20Z ytakayama $
+# $Id$
 
 package MT::Upgrade::Core;
 

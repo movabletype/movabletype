@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: mt.php 110409 2009-09-01 03:34:27Z ytakayama $
+# $Id$
 
 /***
  * Loading exception classes

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtwebsites.php 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 require_once('block.mtblogs.php');
 function smarty_block_mtwebsites($args, $content, &$ctx, &$repeat) {
     $args['class'] = 'website';

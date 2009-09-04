@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Website.pm 110026 2009-08-27 07:14:43Z ytakayama $
+# $Id$
 package MT::CMS::Website;
 
 use strict;

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Export.pm 108527 2009-08-06 05:08:54Z ytakayama $
+# $Id$
 package MT::CMS::Export;
 
 use strict;

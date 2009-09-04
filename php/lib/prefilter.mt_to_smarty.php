@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: prefilter.mt_to_smarty.php 109211 2009-08-17 07:54:31Z ytakayama $
+# $Id$
 
 /* Movable Type template -> Smarty template
   

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Entry.pm 110443 2009-09-01 10:23:11Z ytakayama $
+# $Id$
 package MT::CMS::Entry;
 
 use strict;

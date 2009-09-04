@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: mtdb.mysql.php 3957 2009-06-29 15:11:13Z takayama $
+# $Id$
 
 require_once('mtdb.base.php');
 

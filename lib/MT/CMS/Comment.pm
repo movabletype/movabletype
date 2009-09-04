@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Comment.pm 109776 2009-08-24 05:47:39Z ytakayama $
+# $Id$
 package MT::CMS::Comment;
 
 use strict;

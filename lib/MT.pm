@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: MT.pm.pre 2276 2008-05-08 16:52:18Z fumiakiy $
+# $Id$
 
 package MT;
 

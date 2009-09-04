@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: function.mtwebsitepath.php 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 
 function smarty_function_mtwebsitepath($args, &$ctx) {
     if (isset($args['id']) && is_numeric($args['id'])) {

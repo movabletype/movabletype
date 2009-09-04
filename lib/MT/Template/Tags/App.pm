@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: App.pm 109193 2009-08-17 06:43:09Z auno $
+# $Id$
 package MT::Template::Tags::App;
 
 use strict;

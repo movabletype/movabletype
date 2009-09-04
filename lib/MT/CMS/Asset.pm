@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Asset.pm 109210 2009-08-17 07:52:44Z asawada $
+# $Id$
 package MT::CMS::Asset;
 
 use strict;

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: MTUtil.php 107503 2009-07-23 13:24:15Z asawada $
+# $Id$
 
 function datetime_to_timestamp($dt) {
     $dt = preg_replace('/[^0-9]/', '', $dt);

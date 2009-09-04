@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # Build.PL Preprocessing helper script.
-# $Id: mt-build.PL 1098 2007-12-12 01:47:58Z hachi $
+# $Id$
 #
 use strict;
 use warnings;

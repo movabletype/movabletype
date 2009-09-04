@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Legacy.pm 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 # Original Copyright 2001-2002 Jay Allen.
 # Modifications and integration Copyright 2001-2009 Six Apart.

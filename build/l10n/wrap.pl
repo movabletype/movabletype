@@ -4,7 +4,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: wrap.pl 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 my $wc =0; # New: count the number of words left to translate!
 

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: l10n_es.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 global $Lexicon_es;
 $Lexicon_es = array(

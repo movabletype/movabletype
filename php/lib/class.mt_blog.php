@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: class.mt_blog.php 107470 2009-07-23 03:29:47Z ytakayama $
+# $Id$
 
 require_once("class.baseobject.php");
 

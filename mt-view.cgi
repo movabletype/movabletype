@@ -4,7 +4,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: mt-view.cgi 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 use strict;
 use lib $ENV{MT_HOME} ? "$ENV{MT_HOME}/lib" : 'lib';

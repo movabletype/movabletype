@@ -4,7 +4,7 @@
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
-# $Id: make-dists 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 use strict;
 use lib 'extlib', 'lib';

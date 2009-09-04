@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Tools.pm 110531 2009-09-02 08:01:37Z ytakayama $
+# $Id$
 package MT::CMS::Tools;
 
 use strict;

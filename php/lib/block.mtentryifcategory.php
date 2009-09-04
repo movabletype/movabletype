@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtentryifcategory.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 require_once("block.mtifcategory.php");
 function smarty_block_mtentryifcategory($args, $content, &$ctx, &$repeat) {

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Element.pm 109732 2009-08-21 22:56:59Z daiello $
+# $Id$
 package MT::Theme::Element;
 use base qw( MT::ErrorHandler );
 use MT::Util qw( weaken );

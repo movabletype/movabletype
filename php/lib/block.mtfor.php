@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtfor.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
     $localvars = array('__for_end', '__for_var', '__out', '__for_increment');

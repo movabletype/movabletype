@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtentries.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     $localvars = array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out');

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtentrycategories.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
   $localvars = array('_categories', 'category', '_categories_counter', '__out');

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Score.pm 104967 2009-06-10 05:27:13Z ytakayama $
+# $Id$
 package MT::Template::Tags::Score;
 
 use strict;

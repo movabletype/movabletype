@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtassets.php 109211 2009-08-17 07:54:31Z ytakayama $
+# $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
     $localvars = array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content');

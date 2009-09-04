@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Website.pm 110446 2009-09-01 11:00:00Z ytakayama $
+# $Id$
 package MT::Template::Tags::Website;
 
 use strict;

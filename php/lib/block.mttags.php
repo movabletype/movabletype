@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mttags.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
   $localvars = array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out');

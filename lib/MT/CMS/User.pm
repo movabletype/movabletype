@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: User.pm 109912 2009-08-26 01:06:52Z auno $
+# $Id$
 package MT::CMS::User;
 
 use strict;

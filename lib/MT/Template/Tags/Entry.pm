@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Entry.pm 110424 2009-09-01 07:29:52Z ytakayama $
+# $Id$
 package MT::Template::Tags::Entry;
 
 use strict;

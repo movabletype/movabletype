@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Core.pm 107384 2009-07-22 03:11:39Z fyoshimatsu $
+# $Id$
 package MT::Template::Tags::Core;
 use strict;
 

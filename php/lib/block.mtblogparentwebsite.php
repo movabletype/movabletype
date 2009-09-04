@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtblogparentwebsite.php 110446 2009-09-01 11:00:00Z ytakayama $
+# $Id$
 require_once('block.mtblogs.php');
 function smarty_block_mtblogparentwebsite($args, $content, &$ctx, &$repeat) {
     $blog = $ctx->stash('blog');

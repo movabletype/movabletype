@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: resource.mt.php 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 
 function smarty_resource_mt_source($tpl_name, &$tpl_source, &$ctx) {
     $blog_id = $ctx->stash('blog_id');

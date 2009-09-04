@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtifarchivetypeenabled.php 109951 2009-08-26 10:06:39Z ytakayama $
+# $Id$
 
 function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
     # status: complete

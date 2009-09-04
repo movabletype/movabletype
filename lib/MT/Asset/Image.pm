@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Image.pm 109168 2009-08-16 16:34:33Z fyoshimatsu $
+# $Id$
 
 package MT::Asset::Image;
 

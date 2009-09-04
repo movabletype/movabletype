@@ -2,7 +2,7 @@
 # Author: Six Apart (http://www.sixapart.com)
 # Released under the Artistic License
 #
-# $Id: Import.pm 1104 2007-12-12 01:49:35Z hachi $
+# $Id$
 
 package WXRImporter::Import;
 use strict;

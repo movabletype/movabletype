@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id: de.pm 3886 2009-06-19 04:11:07Z fumiakiy $
+# $Id$
 
 package MT::L10N::de;
 use strict;

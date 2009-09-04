@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtpagerblock.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
     $localvars = array('__out', '__pager_limit', '__pager_count', '__pager_pages', '__first__', '__last__', '__odd__', '__even__', '__value__', '__counter__');

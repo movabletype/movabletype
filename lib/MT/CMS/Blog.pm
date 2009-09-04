@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Blog.pm 109934 2009-08-26 07:15:46Z ytakayama $
+# $Id$
 package MT::CMS::Blog;
 
 use strict;

@@ -1,4 +1,4 @@
-# $Id: Textile.pm 1098 2007-12-12 01:47:58Z hachi $
+# $Id$
 
 package Text::Textile;
 

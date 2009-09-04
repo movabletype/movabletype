@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Folder.pm 109106 2009-08-14 09:44:24Z auno $
+# $Id$
 package MT::CMS::Folder;
 
 use strict;

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: mtdb.postgres.php 3840 2009-06-12 09:02:04Z takayama $
+# $Id$
 
 require_once('mtdb.base.php');
 

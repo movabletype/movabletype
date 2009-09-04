@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: ReqTimer.pm 108527 2009-08-06 05:08:54Z ytakayama $
+# $Id$
 =head1 NAME
 
 MT::Util::ReqTimer

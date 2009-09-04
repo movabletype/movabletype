@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Filters.pm 105445 2009-06-19 12:05:03Z fyoshimatsu $
+# $Id$
 package MT::Template::Tags::Filters;
 
 use strict;

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Theme.pm 110024 2009-08-27 06:05:20Z asawada $
+# $Id$
 package MT::Theme;
 use strict;
 use MT;

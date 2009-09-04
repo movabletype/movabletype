@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtarchives.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
     $localvars = array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type');

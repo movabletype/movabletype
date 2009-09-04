@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Log.pm 109564 2009-08-20 06:55:31Z asawada $
+# $Id$
 package MT::CMS::Log;
 
 use strict;

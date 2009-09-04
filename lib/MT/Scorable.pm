@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Scorable.pm 3531 2009-03-12 09:11:52Z fumiakiy $
+# $Id$
 
 # An interface for any MT::Object that wishes to utilize rating/scoring themselves
 

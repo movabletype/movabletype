@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtpings.php 106007 2009-07-01 11:33:43Z ytakayama $
+# $Id$
 
 function smarty_block_mtpings($args, $content, &$ctx, &$repeat) {
     $localvars = array('ping', '_pings', '_pings_counter', 'current_timestamp', 'blog_id', 'blog');

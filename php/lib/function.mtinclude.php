@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: function.mtinclude.php 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 
 global $restricted_include_filenames;
 $restricted_include_filenames = array('mt-config.cgi' => 1, 'passwd' => 1);

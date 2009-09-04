@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Wizard.pm 108706 2009-08-10 09:55:07Z ytakayama $
+# $Id$
 
 package MT::App::Wizard;
 

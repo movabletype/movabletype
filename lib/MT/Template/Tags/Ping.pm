@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Ping.pm 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 package MT::Template::Tags::Ping;
 
 use strict;

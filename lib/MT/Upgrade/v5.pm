@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: v5.pm 110115 2009-08-28 04:05:43Z asawada $
+# $Id$
 
 package MT::Upgrade::v5;
 

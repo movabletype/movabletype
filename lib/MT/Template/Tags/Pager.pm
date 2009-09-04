@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Pager.pm 108877 2009-08-12 08:55:32Z ytakayama $
+# $Id$
 package MT::Template::Tags::Pager;
 
 use strict;

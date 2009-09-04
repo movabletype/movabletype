@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Folder.pm 105672 2009-06-24 09:11:53Z asawada $
+# $Id$
 package MT::Template::Tags::Folder;
 
 use strict;

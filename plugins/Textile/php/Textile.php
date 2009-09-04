@@ -1,5 +1,5 @@
 <?php
-# $Id: Textile.php,v 1.9 2004/08/25 17:44:29 ezra Exp $
+# $Id$
 
 class Textile {
 

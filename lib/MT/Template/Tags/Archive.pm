@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Archive.pm 106229 2009-07-06 07:57:15Z asawada $
+# $Id$
 package MT::Template::Tags::Archive;
 
 use strict;

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Dashboard.pm 109454 2009-08-19 09:10:29Z ytakayama $
+# $Id$
 package MT::CMS::Dashboard;
 
 use strict;

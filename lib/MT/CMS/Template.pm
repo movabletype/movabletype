@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Template.pm 109854 2009-08-25 07:23:21Z asawada $
+# $Id$
 
 package MT::CMS::Template;
 

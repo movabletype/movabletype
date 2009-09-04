@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: MTViewer.php 107171 2009-07-19 16:09:46Z ytakayama $
+# $Id$
 
 include_once("Smarty.class.php");
 class MTViewer extends Smarty {
