@@ -588,6 +588,17 @@ ul { list-style: disc outside; }
     font-weight: normal;
 }
 
+.widget-calendar .widget-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.widget-calendar .widget-content th, 
+.widget-calendar .widget-content td {
+    text-align: center;
+    width: 14%;
+    padding: 2px 0;
+}
+
 .input-default {
     background-color: #9AAEC2;
 }
