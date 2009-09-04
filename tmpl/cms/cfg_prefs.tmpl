@@ -169,11 +169,14 @@ function setLicense() {
         content_class="field-content-text"
         help_page="blog_settings_general"
         help_section="creative_commons_license">
-
-<div id="has-license" style="display: none;">
-<mt:if name="cc_license"><a href="<mt:var name="cc_license_url">"><img src="<mt:var name="cc_license_image_url">" /></a><br /></mt:if>
-<__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong><br />
-<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a>
+        <div id="has-license" style="display: none;">
+    <mt:if name="cc_license">
+            <a href="<mt:var name="cc_license_url">">
+                <img src="<mt:var name="cc_license_image_url">" />
+            </a>
+    </mt:if>
+            <p><__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong></p>
+            <span class="actions-link"><a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a></span>
 </div>
 <div id="no-license" style="display: none;">
 <__trans phrase="Your blog does not have an explicit Creative Commons license."><br />

@@ -3085,6 +3085,14 @@ table.templatemap-listing-table {
     width: 5em;
 }
 
+#has-license-field p { 
+    margin: 5px 0 0;
+}
+
+#has-license-field .actions-link { 
+    display: block;
+    margin-top: 5px;
+}
 
 /* -- System General Settings */
 input#system_debug_mode, 
