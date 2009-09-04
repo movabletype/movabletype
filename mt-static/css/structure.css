@@ -2002,6 +2002,10 @@ td .actions-link {
     padding: 0;
 }
 
+.list-revision-dialog table { 
+    table-layout: fixed;
+}
+
 .list-revision-dialog tr.current-revision { 
     background-color: #f2f2b0 ! important;
 }
