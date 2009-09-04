@@ -150,7 +150,8 @@
         <mt:unless name="system_allow_comments">
         <mtapp:statusmsg
             id="system-allow-comments"
-            class="alert">
+            class="info"
+            can_close="0">
             <__trans phrase="Note: Commenting is currently disabled at the system level.">
         </mtapp:statusmsg>
         </mt:unless>
@@ -300,7 +301,8 @@
     <mt:unless name="system_allow_pings">
         <mtapp:statusmsg
             id="system-allow-pings"
-            class="alert">
+            class="info"
+            can_close="0">
             <__trans phrase="Note: TrackBacks are currently disabled at the system level.">
         </mtapp:statusmsg>
     </mt:unless>

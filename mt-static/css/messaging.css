@@ -49,15 +49,8 @@
     margin: 0;
 }
 
-#system-allow-pings img.mt-close-msg,
-#system-allow-comments img.mt-close-msg,
 .msg-error img.mt-close-msg,
-.rebuilding-screen .msg img.mt-close-msg,
-.restore-publishing-config .msg img.mt-close-msg,
 .insert-asset-dialog .msg img.mt-close-msg,
-.rebuilding-screen .msg-info img.mt-close-msg,
-.pinging-screen .msg-info img.mt-close-msg,
-.list-notification .msg-info img.mt-close-msg,
 .zero-state img.mt-close-msg {
     display: none;
 }

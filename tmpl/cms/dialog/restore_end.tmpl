@@ -14,6 +14,7 @@ if (progress) {
     <mt:if name="error">
         <mtapp:statusmsg
             id="restore-error"
+            can_close="0"
             class="error">
             <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
         </mtapp:statusmsg>
@@ -30,6 +31,7 @@ if (progress) {
     <mt:else>
         <mtapp:statusmsg
             id="restore-success"
+            can_close="0"
             class="success">
             <__trans phrase="All data restored successfully!">
         </mtapp:statusmsg>
