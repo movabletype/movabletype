@@ -67,6 +67,7 @@ sub view {
     my ($blog_theme, $blog_layout);
     foreach my $blog (@$styled_blogs) {
         my $curr_theme = $config->{"current_theme_" . $blog->id} || '';
+        next unless $curr_theme;
         my $curr_layout = $config->{"current_layout_" . $blog->id} || 'layout-wtt';
         push @blog_loop,
           {
