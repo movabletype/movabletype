@@ -179,7 +179,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/comment_preview.mtml
 	'HTML Head' => 'HTMLヘッダー',
-	'Previewing your Comment' => 'コメントの確認',
+	'Previewing your Comment' => 'コメントのプレビュー',
 	'Banner Header' => 'バナーヘッダー',
 	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1]から<a href="[_2]">[_3]</a>への返信',
 	'Leave a comment' => 'コメントする',
@@ -189,7 +189,7 @@ use vars qw( @ISA %Lexicon );
 	'Replying to comment from [_1]' => '[_1]からのコメントに返信',
 	'Comments' => 'コメント',
 	'(You may use HTML tags for style)' => '(スタイル用のHTMLタグを使えます)',
-	'Preview' => '確認',
+	'Preview' => 'プレビュー',
 	'Submit' => '投稿',
 	'Cancel' => 'キャンセル',
 	'Sidebar' => 'サイドバー',
@@ -2712,10 +2712,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/dialog/comment_reply.tmpl
 	'Reply to comment' => 'コメントに返信',
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
-	'Preview of your comment' => 'コメントを確認する',
+	'Preview of your comment' => 'コメントのプレビュー',
 	'Your reply:' => '返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
-	'Preview reply (v)' => '返信を確認 (v)',
+	'Preview reply (v)' => '返信をプレビュー (v)',
 	'Re-edit reply (r)' => '返信を再編集 (r)',
 	'Re-edit' => '再編集',
 
@@ -2847,8 +2847,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/preview_strip.tmpl
 	'Return to the compose screen' => '作成画面に戻る',
 	'Return to the compose screen (e)' => '作成画面に戻る',
-	'You are previewing the entry entitled &ldquo;[_1]&rdquo;' => 'ピュレビュー中: 記事「[_1]」',
-	'You are previewing the page entitled &ldquo;[_1]&rdquo;' => 'ピュレビュー中: ページ「[_1]」',
+	'You are previewing the entry entitled &ldquo;[_1]&rdquo;' => 'プレビュー中: 記事「[_1]」',
+	'You are previewing the page entitled &ldquo;[_1]&rdquo;' => 'プレビュー中: ページ「[_1]」',
 
 ## tmpl/cms/edit_ping.tmpl
 	'Edit Trackback' => 'トラックバックの編集',
