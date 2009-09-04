@@ -2153,13 +2153,20 @@ td.sub-label label {
 #editor .editor-header .tab { 
     display: inline-block;
     margin: 4px 4px -1px 0;
-    padding: 4px 10px;
+    padding: 5px 10px 4px;
     background-color: #fff;
     border: 1px solid #c8c2be;
     font-weight: bold;
     text-align: center;
     text-transform: uppercase;
     font-size: 11px;
+    -moz-border-radius: 3px 3px 0 0;
+    -webkit-border-top-right-radius: 3px;
+    -webkit-border-top-left-radius: 3px;
+    -khtml-border-top-right-radius: 3px;
+    -khtml-border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
 }
 
 #editor .editor-header .selected-tab { 
@@ -2185,21 +2192,21 @@ td.sub-label label {
 #field-convert_breaks { 
     display: inline-block;
     position: absolute;
-    top: 0;
+    top: -5px;
     right: 0;
 }
 #field-convert_breaks #convert_breaks { 
     font-size: 10px;
 }
 
-#editor-content { 
-    border-bottom: 1px solid #fff;
-}
-
 #editor-content-toolbar { 
     padding: 8px;
     border: 1px solid #c8c2be;
     background-color: #f3f3f3;
+    -moz-border-radius: 0 3px 0 0;
+    -webkit-border-top-right-radius: 3px;
+    -khtml-border-top-right-radius: 3px;
+    border-top-right-radius: 3px;
 }
 
 #editor-content #entry-body-field { 
