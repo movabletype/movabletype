@@ -116,6 +116,9 @@
         id="useful-links"
         label="<__trans phrase="Useful Links">">
         <ul>
+        <mt:if name="type" eq="backup">
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
+        </mt:if>
         <mt:if name="template_group" eq="widget">
             <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
         <mt:else>
