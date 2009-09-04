@@ -905,6 +905,13 @@ ul.menu-nav a.dashboard-link.first-child {
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
 }
+.widget-header a { 
+    color: #7B7C7D;
+    text-decoration: none;
+}
+.widget-header a:hover { 
+    text-decoration: underline;
+}
 
 .widget-close-link { 
     display: none;
@@ -2572,6 +2579,7 @@ ul#asset-list li {
 }
 ul#asset-list li#empty-asset-list { 
     padding-left: 0;
+    text-align: center;
 }
 
 ul#asset-list li a.asset-title { 
