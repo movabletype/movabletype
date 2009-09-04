@@ -329,7 +329,7 @@ use vars qw( @ISA %Lexicon );
 
 ## default_templates/powered_by.mtml
 	'_MTCOM_URL' => 'http://www.sixapart.jp/movabletype/',
-	'Powered by<br />Movable Type [_1]' => 'Powered by<br />Movable Type [_1]',
+	'Powered by Movable Type [_1]' => 'Powered by Movable Type [_1]',
 
 ## default_templates/banner_footer.mtml
 	'_POWERED_BY' => 'Powered by <a href="http://www.sixapart.jp/movabletype/"><$MTProductName$></a>',
@@ -378,7 +378,6 @@ use vars qw( @ISA %Lexicon );
 	'Tag Cloud' => 'タグクラウド',
 
 ## default_templates/footer-email.mtml
-	'Powered by Movable Type [_1]' => 'Powered by Movable Type [_1]',
 
 ## default_templates/technorati_search.mtml
 	'Technorati' => 'Techonrati',
@@ -519,6 +518,8 @@ use vars qw( @ISA %Lexicon );
 	'TypePad' => 'TypePad',
 	'Yahoo! JAPAN' => 'Yahoo! JAPAN',
 	'livedoor' => 'ライブドア',
+	'Hatena' => 'はてな',
+	'Movable Type default' => 'Movable Type 既定',
 
 ## lib/MT/PluginData.pm
 	'Plugin Data' => 'プラグインデータ',
@@ -1247,11 +1248,11 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t load GD: [_1]' => 'GDをロードできませんでした。',
 
 ## lib/MT/App/Upgrader.pm
-	'Failed to authenticate using given credentials: [_1].' => '認証されませんでした: [_1]',
-	'You failed to validate your password.' => 'パスワードが不正です。',
-	'You failed to supply a password.' => 'パスワードを指定してください。',
-	'The e-mail address is required.' => 'メールアドレスは必須です。',
-	'The path provided below is not writable.' => '指定されたパスに書き込みできません。',
+	'Could not authenticate using the credentials provided: [_1].' => '提供されている手段による認証ができません: [_1]',
+	'Both passwords must match.' => 'パスワードが一致しません。',
+	'You must supply a password.' => 'パスワードを設定してください。',
+	'An e-mail address is required.' => 'メールアドレスは必須です。',
+	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '入力された\'公開パス\'がウェブサーバによって書き込めません。ディレクトリの書きこみ権限を変更して、もう一度\'インストール\'をクリックしてください。',
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your administrator for upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
@@ -1712,7 +1713,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Saving permissions failed: [_1]' => '権限を保存できませんでした: [_1]',
 	'(user deleted)' => '(削除されました)',
 	'(user deleted - ID:[_1])' => '(削除されたユーザー - ID:[_1])',
-	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">このリンク</a>をブラウザのツールバーにドラッグすれば、興味のあるウェブページを見つけたときにいつでもブログを書くことができます。',
+	'<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.' => '<a href="[_1]">クイック投稿</a>: このリンクをブラウザのツールバーにドラッグし、興味のあるウェブページでクリックすると、ブログへ簡単に投稿できます。',
 	'Entry \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がブログ記事\'[_1]\'(ID:[_2])を削除しました。',
 	'Need a status to update entries' => 'ブログ記事を更新するにはまず公開状態を設定してください。',
 	'Need entries to update status' => '公開状態を設定するにはブログ記事が必要です。',
@@ -2111,9 +2112,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
 	'MySQL Database' => 'MySQLデータベース',
-	'PostgreSQL Database' => 'PostgreSQLデータベース',
-	'SQLite Database' => 'SQLiteデータベース',
-	'SQLite Database (v2)' => 'SQLite (v2) データベース',
+	'PostgreSQL Database ( unsupported )' => 'PostgreSQLデータベース',
+	'SQLite Database ( unsupported )' => 'SQLiteデータベース',
+	'SQLite Database (v2) ( unsupported )' => 'SQLiteデータベース(v2)',
 	'Convert Line Breaks' => '改行を変換',
 	'Rich Text' => 'リッチテキスト',
 	'Movable Type Default' => 'Movable Type 既定',
@@ -2349,9 +2350,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'TempDir is required.' => 'TempDirが必要です。',
 	'TempDir' => 'TempDir',
 	'The physical path for temporary directory.' => 'TempDirへの物理パスを指定します。',
-	'Back' => '戻る',
 	'Continue' => '次へ',
 	'Test' => 'テスト',
+	'Back' => '戻る',
+	'Send Test Email' => 'テストメールを送信',
 
 ## tmpl/wizard/optional.tmpl
 	'Mail Configuration' => 'メール設定',
@@ -2368,7 +2370,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
 	'Mail address to which test email should be sent' => 'テストメールが送られるメールアドレス',
 	'From mail address' => '送信元メールアドレス',
-	'Send Test Email' => 'テストメールを送信',
 
 ## tmpl/wizard/configure.tmpl
 	'Database Configuration' => 'データベース設定',
@@ -2634,6 +2635,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'All templates published statically via Publish Que.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
 	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ブログ記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
+	'Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
 	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
 	'Dynamic Archives Only' => 'アーカイブのみダイナミックパブリッシング',
@@ -2667,10 +2669,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Finish' => '完了',
 
 ## tmpl/cms/dialog/asset_replace.tmpl
-	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => '同名のアイテム\'[_1]\'がすでに存在します。上書きしますか?',
-	'Yes (s)' => 'はい (s)',
-	'Yes' => 'はい',
-	'No' => 'いいえ',
 
 ## tmpl/cms/dialog/new_password.tmpl
 	'Choose New Password' => '新しいパスワードを選択',
@@ -2689,13 +2687,14 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Exclude Entries/Pages' => '記事/ページの除外',
 	'Exclude Comments' => 'コメントの除外',
 	'Exclude Trackbacks' => 'トラックバックの除外',
-	'Exclude Categories' => 'カテゴリの除外',
+	'Exclude Categories/Folders' => 'カテゴリ/フォルダの除外',
 	'Clone' => '複製',
-	'Clone Blog Setting' => 'ブログ設定の複製',
+	'Clone Blog Settings' => 'ブログせっていの複製',
 	'Enter the new URL of your public website. Example: http://www.example.com/weblog/' => '公開ウェブサイトの新しいURLを入力してください。例: http://www.example.com/weblog/',
 	'Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog' => 'インデックスファイルを配置する新しいパスを入力してください。例: /home/melody/public_html/weblog',
 	'Mark the settings that you want cloning to skip' => '複製を行わない設定にマークをつけてください',
 	'Entries/Pages' => '記事/ページ',
+	'Categories/Folders' => 'カテゴリ/フォルダ',
 
 ## tmpl/cms/dialog/restore_end.tmpl
 	'An error occurred during the restore process: [_1] Please check your restore file.' => '復元の途中でエラーが発生しました: [_1] バックアップファイルを確認してください。',
@@ -2736,7 +2735,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Send' => '送信',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
-	'Display image in entry' => 'ブログ記事に画像を表示',
+	'Display image in entry/page' => '画像を記事/ページに表示',
 	'Alignment' => '位置',
 	'Left' => '左',
 	'Center' => '中央',
@@ -3024,7 +3023,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]).' => 'サーバーにインストールされているPerlのバージョン([_1])が、Movable Type がサポートしているバージョン([_2])より低いため正常に動作しない可能性があります。',
 	'While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1].' => 'Movable Type が動作する場合でも、<strong>動作確認を行っていない、サポート対象外の環境となります</strong>。少なくともPerl[_1]以上へアップグレードすることを強くお勧めします。',
 	'Do you want to proceed with the upgrade anyway?' => 'アップグレードを実行しますか?',
+	'Yes (s)' => 'はい (s)',
+	'Yes' => 'はい',
 	'View MT-Check (x)' => 'システムチェック (x)',
+	'No' => 'いいえ',
 	'A new version of Movable Type has been installed.  We\'ll need to complete a few tasks to update your database.' => '新しいバージョンの Movable Type をインストールしました。データベースのアップグレードを実行してください。',
 	'The Movable Type Upgrade Guide can be found <a href=\'[_1]\' target=\'_blank\'>here</a>.' => 'Movable Typeアップグレードガイドは<a href=\'http://www.movabletype.jp/documentation/mt5/upgrade/\' target=\'_blank\'>こちらを</a>参照ください。',
 	'In addition, the following Movable Type components require upgrading or installation:' => '加えて、以下のコンポーネントのアップグレード、またはインストールが必要です。',
@@ -3198,7 +3200,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Publishing [_1] templates...' => '[_1]テンプレートを再構築中...',
 
 ## tmpl/cms/list_member.tmpl
-	'Are you sure you want to remove this role?' => 'ロールを削除してよろしいですか?',
+	'Are you sure you want to remove the user from this role?' => 'ユーザーから、このロールを削除しますか？',
 	'Add a user to this blog' => 'このブログにユーザーを追加',
 	'Add a user to this website' => 'このウェブサイトにユーザーを追加',
 	'Show only users where' => 'ユーザーを表示: ',
@@ -3240,6 +3242,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Save display options' => '表示オプションを保存',
 
 ## tmpl/cms/include/log_table.tmpl
+	'Website/Blog' => 'ウェブサイト/ブログ',
 	'_LOG_TABLE_BY' => 'ユーザー',
 	'Show Datail' => '詳細表示',
 	'IP: [_1]' => 'IP: [_1]',
@@ -3257,7 +3260,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/include/entry_table.tmpl
 	'Save these [_1] (s)' => '[_1]の保存',
 	'Republish selected [_1] (r)' => '選択した[_1]の再構築',
-	'Website/Blog' => 'ウェブサイト/ブログ',
 	'Last Modified' => '最終更新',
 	'Created' => '作成',
 	'Unpublished (Draft)' => '未公開(原稿)',
@@ -3310,6 +3312,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Add new' => '新規追加',
 
 ## tmpl/cms/include/login_mt.tmpl
+
+## tmpl/cms/include/asset_replace.tmpl
+	'A file named \'[_1]\' already exists. Do you want to overwrite this file?' => '同名のアイテム\'[_1]\'がすでに存在します。上書きしますか?',
 
 ## tmpl/cms/include/footer.tmpl
 	'This is a beta version of Movable Type and is not recommended for production use.' => 'このMovable Typeはベータ版です。',
@@ -3507,6 +3512,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/include/feed_link.tmpl
 	'Activity Feed' => 'ログフィード',
 
+## tmpl/cms/include/theme_exporters/folder.tmpl
+	'Folder Name' => 'フォルダ名',
+
 ## tmpl/cms/include/theme_exporters/static_files.tmpl
 	'Files types that will be included in the theme are: [_1].' => 'テーマに入れるファイルタイプ: [_1]',
 	'Included Directories' => '含むディレクトリ',
@@ -3607,6 +3615,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Delete selected IP Address (x)' => '選択されたIPアドレスを削除 (x)',
 	'You have added [_1] to your list of banned IP addresses.' => '禁止IPアドレスリストに[_1]を追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
+	'Ban IP Address' => '禁止IPアドレス',
 	'Date Banned' => '禁止した日付',
 
 ## tmpl/cms/install.tmpl
@@ -3626,6 +3635,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Enter your LDAP password.' => 'LDAPのパスワードを入力してください。',
 	'The initial account name is required.' => '名前は必須です。',
 	'The display name is required.' => '表示名は必須です。',
+	'The e-mail address is required.' => 'メールアドレスは必須です。',
 	'Password recovery word/phrase is required.' => 'パスワード再設定用のフレーズは必須です。',
 
 ## tmpl/cms/edit_category.tmpl
@@ -3653,12 +3663,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Return to templates' => 'テンプレートに戻る',
 
 ## tmpl/cms/list_blog.tmpl
-	'You have successfully deleted the websites from the Movable Type system.' => 'ウェブサイトの削除が完了しました。',
-	'You have successfully deleted the blogs from the website.' => 'ウェブサイトからブログの削除が完了しました。',
+	'You have successfully deleted the website from the Movable Type system.' => 'システムからウェブサイトの削除が完了しました。',
+	'You have successfully deleted the blog from the website.' => 'ウェブサイトからブログの削除が完了しました。',
 	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
-	'You have successfully moved selected blogs to other website.' => '選択したブログの他ウェブサイトへの移動が完了しました。',
+	'You have successfully moved selected blogs to another website.' => '他のウェブサイトへのブログの移動が完了しました。',
+	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、リンク切れを防止するために、旧パスのファイルも残すことを検討してください。',
 	'You can not refresh templates: [_1]' => 'テンプレートを初期化できません: [_1]',
-	'The website with one or more blogs was not deleted.' => 'ブログを含むウェブサイトは削除できません。',
+	'The website was not deleted. You need to delete blogs under the website.' => 'ウェブサイトは削除されませんでした。ウェブサイト内のブログを、先に削除する必要があります。',
 	'Create Blog' => 'ブログを作成する',
 
 ## tmpl/cms/edit_blog.tmpl
@@ -4108,7 +4119,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Display language for the Movable Type interface.' => '管理画面で使用する言語です。',
 	'Text Format' => 'テキスト形式',
 	'Default text formatting filter when creating new entries and new pages.' => 'ブログ記事とウェブページを作成する際のテキスト形式。',
-	'(Use Blog Default)' => '(ブログのデフォルト設定を使用)',
+	'(Use Website/Blog Default)' => '(ウェブサイト/ブログの既定値を利用)',
 	'Tag Delimiter' => 'タグの区切り',
 	'Preferred method of separating tags.' => 'タグを区切るときに使う文字を選択します。',
 	'Web Services Password' => 'Webサービスパスワード',
@@ -4743,6 +4754,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 );
 
-## New words: 309
+## New words: 267
 
 1;
