@@ -266,11 +266,12 @@ sub build {
             unless $ctx->stash('local_blog_id');
         my $blog = $ctx->stash('blog');
         unless ($blog) {
-            $blog = MT::Blog->load($blog_id) or
+            $blog = MT->model('blog')->load($blog_id) or
                 return $tmpl->error(MT->translate(
                     "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr ));
             $ctx->stash('blog', $blog);
         } else {
+            $blog = MT->model('blog')->load($blog_id) if $blog->id != $blog_id;
             $ctx->stash('blog_id', $blog->id);
             $ctx->stash('local_blog_id', $blog->id)
                 unless $ctx->stash('local_blog_id');
