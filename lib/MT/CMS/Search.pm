@@ -120,8 +120,9 @@ sub core_search_apis {
             'results_table_template' => '<mt:include name="include/entry_table.tmpl">',
         },
         'template' => {
-            'order'         => 500,
-            'permission'    => 'edit_templates',
+            'order'             => 500,
+            'permission'        => 'edit_templates',
+            'system_permission' => 'edit_templates',
             'handler' => '$Core::MT::CMS::Template::build_template_table',
             'label'         => 'Templates',
             'perm_check' => sub {
@@ -297,6 +298,9 @@ sub core_search_apis {
 
 sub search_replace {
     my $app = shift;
+    $app->return_to_dashboard( redirect => 1 )
+        unless $app->can_do('use_tools:search');
+
     my $param = do_search_replace($app, @_) or return;
     my $blog_id = $app->param('blog_id');
     $app->add_breadcrumb( $app->translate('Search & Replace') );

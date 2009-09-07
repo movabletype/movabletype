@@ -823,6 +823,7 @@ sub load_backup_instructions {
     return MT::BackupRestore::core_backup_instructions();
 }
 
+
 sub load_core_permissions {
     return {
         'blog.administer_website' => {
@@ -876,6 +877,7 @@ sub load_core_permissions {
                 'search_members'                   => 1,
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
+                'use_tools:search'                 => 1,
             },
         },
         'blog.manage_member_blogs' => {
@@ -888,12 +890,13 @@ sub load_core_permissions {
             },
         },
         'blog.comment' => {
-            'group'              => 'blog_comment',
-            'label'              => 'Post Comments',
-            'order'              => 100,
-            'permitted_action'   => {
-                'comment'        => 1,
-                'post_comment'   => 1
+            'group'                   => 'blog_comment',
+            'label'                   => 'Post Comments',
+            'order'                   => 100,
+            'permitted_action'        => {
+                'comment'             => 1,
+                'post_comment'        => 1,
+                'use_tools:search'    => 1,
             }
         },
         'blog.create_post' => {
@@ -930,6 +933,7 @@ sub load_core_permissions {
                 'search_assets'                           => 1,
                 'view_feedback'                           => 1,
                 'use_entry:manage_menu'                   => 1,
+                'use_tools:search'                        => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -956,6 +960,7 @@ sub load_core_permissions {
                 'remove_tags_from_entry_via_list'  => 1,
                 'set_entry_draft_via_list'         => 1,
                 'use_entry:manage_menu'            => 1,
+                'use_tools:search'                 => 1,
             }
         },
         'blog.edit_assets' => {
@@ -973,7 +978,8 @@ sub load_core_permissions {
                 'open_asset_edit_screen'           => 1,
                 'remove_tags_from_assets'          => 1,
                 'remove_tags_from_assets_via_list' => 1,
-                'save_asset'                       => 1
+                'save_asset'                       => 1,
+                'use_tools:search'                 => 1,
             }
         },
         'blog.edit_categories' => {
@@ -991,7 +997,7 @@ sub load_core_permissions {
                 'open_category_trackback_edit_screen' => 1,
                 'save_category'                       => 1,
                 'save_category_trackback'             => 1,
-                'search_category_trackbacks'          => 1
+                'search_category_trackbacks'          => 1,
             }
         },
         'blog.edit_config' => {
@@ -1011,7 +1017,7 @@ sub load_core_permissions {
                 'open_start_import_screen'     => 1,
                 'save_banlist'                 => 1,
                 'save_blog_config'             => 1,
-                'update_welcome_message'       => 1
+                'update_welcome_message'       => 1,
             }
         },
         'blog.edit_notifications' => {
@@ -1022,7 +1028,7 @@ sub load_core_permissions {
                 'access_to_notification_list' => 1,
                 'edit_notifications'          => 1,
                 'export_addressbook'          => 1,
-                'save_addressbook'            => 1
+                'save_addressbook'            => 1,
             }
         },
         'blog.edit_tags' => {
@@ -1032,7 +1038,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'edit_tags'  => 1,
                 'remove_tag' => 1,
-                'rename_tag' => 1
+                'rename_tag' => 1,
             }
         },
         'blog.edit_templates' => {
@@ -1045,7 +1051,8 @@ sub load_core_permissions {
                 'edit_templates'            => 1,
                 'refresh_template_via_list' => 1,
                 'reset_blog_templates'      => 1,
-                'search_templates'          => 1
+                'search_templates'          => 1,
+                'use_tools:search'          => 1,
             }
         },
         'blog.manage_feedback' => {
@@ -1092,6 +1099,7 @@ sub load_core_permissions {
                 'untrust_commenters_via_list'           => 1,
                 'view_feedback'                         => 1,
                 'access_to_banlist'                     => 1,
+                'use_tools:search'                      => 1,
             }
         },
         'blog.manage_pages' => {
@@ -1117,7 +1125,8 @@ sub load_core_permissions {
                 'save_folder'                     => 1,
                 'save_multiple_pages'             => 1,
                 'save_page'                       => 1,
-                'set_page_draft_via_list'         => 1
+                'set_page_draft_via_list'         => 1,
+                'use_tools:search'                => 1,
             }
         },
         'blog.manage_users' => {
@@ -1129,7 +1138,8 @@ sub load_core_permissions {
                 'grant_role_for_blog'        => 1,
                 'manage_users'               => 1,
                 'remove_user_association'    => 1,
-                'revoke_role'                => 1
+                'revoke_role'                => 1,
+                'use_tools:search'           => 1,
             }
         },
         'blog.manage_themes' => {
@@ -1175,7 +1185,8 @@ sub load_core_permissions {
                 'publish_post'                          => 1,
                 'set_entry_draft_via_list'              => 1,
                 'unapprove_comments_via_list'           => 1,
-                'unapprove_trackbacks_via_list'         => 1
+                'unapprove_trackbacks_via_list'         => 1,
+                'use_tools:search'                      => 1,
             }
         },
         'blog.rebuild' => {
@@ -1199,7 +1210,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'open_entry_notification_screen' => 1,
                 'send_entry_notification'        => 1,
-                'send_notifications'             => 1
+                'send_notifications'             => 1,
             }
         },
         'blog.set_publish_paths' => {
@@ -1210,7 +1221,7 @@ sub load_core_permissions {
             'permitted_action' => {
                 'edit_blog_pathinfo' => 1,
                 'save_blog_pathinfo' => 1,
-                'set_publish_paths'  => 1
+                'set_publish_paths'  => 1,
             }
         },
         'blog.upload' => {
@@ -1221,7 +1232,7 @@ sub load_core_permissions {
                 'search_assets'                  => 1,
                 'upload'                         => 1,
                 'upload_asset_via_atom_server'   => 1,
-                'upload_asset_via_xmlrpc_server' => 1
+                'upload_asset_via_xmlrpc_server' => 1,
             }
         },
         'blog.view_blog_log' => {
@@ -1234,7 +1245,8 @@ sub load_core_permissions {
                 'open_blog_log_screen' => 1,
                 'reset_blog_log'       => 1,
                 'search_blog_log'      => 1,
-                'view_blog_log'        => 1
+                'view_blog_log'        => 1,
+                'use_tools:search'     => 1,
             }
         },
         'system.administer' => {
@@ -1264,6 +1276,7 @@ sub load_core_permissions {
                 'save_role'                      => 1,
                 'uninstall_theme_package'        => 1,
                 'move_blogs'                     => 1,
+                'use_tools:search'               => 1,
             }
         },
         'system.create_blog' => {
@@ -1278,6 +1291,7 @@ sub load_core_permissions {
                 'open_new_blog_screen'       => 1,
                 'set_new_blog_publish_paths' => 1,
                 'access_to_system_dashboard' => 1,
+                'use_tools:search'           => 1,
             }
         },
         'system.create_website' => {
@@ -1292,6 +1306,7 @@ sub load_core_permissions {
                 'open_new_website_screen'       => 1,
                 'set_new_website_publish_paths' => 1,
                 'access_to_system_dashboard'    => 1,
+                'use_tools:search'              => 1,
             }
         },
         'system.edit_templates' => {
@@ -1301,6 +1316,7 @@ sub load_core_permissions {
             'order'            => 250,
             'permitted_action' => {
                 'access_to_system_dashboard' => 1,
+                'use_tools:search'           => 1,
             },
         },
         'system.manage_plugins' => {
@@ -1327,6 +1343,7 @@ sub load_core_permissions {
                 'search_log'                 => 1,
                 'view_log'                   => 1,
                 'access_to_system_dashboard' => 1,
+                'use_tools:search'           => 1,
             }
         }
     };

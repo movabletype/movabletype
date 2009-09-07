@@ -1687,6 +1687,7 @@ sub core_menus {
             order             => 100,
             mode              => "search_replace",
             view              => [ "blog", 'website', 'system' ],
+            permit_action     => "use_tools:search",
         },
         'tools:plugins' => {
             label             => "Plugins",

@@ -139,10 +139,10 @@ sub filter_conditional_list {
             $app->can_do($action) or return 0;
         }
         else {
+            my $allowed = 0;
             if ( $system_perms
                 && ( my $sp = $item->{system_permission} ) )
             {
-                my $allowed = 0;
                 my @sp = split /,/, $sp;
                 foreach my $sp (@sp) {
                     my $perm = 'can_' . $sp;
@@ -154,8 +154,7 @@ sub filter_conditional_list {
                 }
                 return 0 unless $allowed;
             }
-            if ( my $p = $item->{permission} ) {
-                my $allowed = 0;
+            if ( !$allowed && (my $p = $item->{permission}) ) {
                 my @p = split /,/, $p;
                 foreach my $p (@p) {
                     my $perm = 'can_' . $p;
