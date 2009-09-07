@@ -41,7 +41,7 @@ function reSearch(type) {
 }
 
 function unLimit(newLimit) {
-    jQuery('#search_form input[name=limit').val(newLimit);
+    jQuery('#search_form input[name=limit]').val(newLimit);
     jQuery('#search_form input[name=do_search]').val(1);
     jQuery('#search_form').submit();
     return false;

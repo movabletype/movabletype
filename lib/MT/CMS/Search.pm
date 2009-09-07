@@ -550,7 +550,7 @@ sub do_search_replace {
         }
         delete $col_terms[$#col_terms];
         push(@terms, \@col_terms);
-        $args{limit} = $limit + 1;
+        $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = sub {
