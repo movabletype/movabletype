@@ -29,58 +29,9 @@ body {
 }
 
 
-/* -- Form */
-/* input.text, 
-input.password, 
-textarea { 
-    width: 380px;
-    padding: 3px;
-    border: 1px solid #c8c2be;
-}
-input.password { 
-    width: 15em; 
-}
-
-input.extra-path { 
-    width: 12em ! important;
-    margin-left: 5px;
-}
-
-input.smaller-text { 
-    width: 3.5em ! important;
-}
-input.larger-text, 
-textarea.larger-text { 
-    width: 96% ! important;
-} */
-
-
-/* - Generic */
-/* .edit-entry input.text, 
-.edit-entry input.password, 
-.edit-entry textarea, 
-.edit-template input.text, 
-.edit-template input.password, 
-.edit-template textarea { 
-    width: 98%;
-}
-
-.widget input.text, 
-.widget input.password, 
-.widget textarea { 
-    width: 96%;
-    margin: 0;
-}
-
-.dialog input.text, 
-.dialog textarea { 
-    width: 98%;
-}
-
 #sign-in input.text { 
     width: 313px;
 }
-
 
 .list-notification .create-inline input.text { 
     width: 25%;
@@ -93,7 +44,7 @@ textarea.larger-text {
 
 #notification-listing-table .url input.text { 
     width: 60%;
-} */
+}
 
 /* - App Header */
 /* -- Brand */
@@ -181,6 +132,11 @@ ul#asset-list li a.remove-asset {
    right: 13px;
 }
 
+/* - Dashbord Widget */
+.blog-stats-widget-panel { 
+    width: 100%;
+}
+
 /* - Footer */
 #footer { 
     position: static;
@@ -201,6 +157,10 @@ html#dialog {
     width: 92%;
 }
 
+.backup-status pre,
+.import-process pre { 
+    width: 97%;
+}
 
 /* - haslayout */
 #main-content-inner, 

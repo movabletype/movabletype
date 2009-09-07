@@ -151,16 +151,16 @@ function init() {
 </mt:loop>
         </div>
     </div>
-    <div class="actions-bar">
-<mt:if name="website_loop">
+    <div class="actions-bar hoge">
         <button
             value="<__trans phrase="Continue">"
-            type="button"
+            type="submit"
             accesskey="s"
             title="<__trans phrase="Continue (s)">"
-            class="continue action primary-button for-website"
-            onclick="toggleWebsite();"
+            class="continue action primary-button for-blog"<mt:if name="website_loop">
+            style="display: none"</mt:if>
             ><__trans phrase="Continue"></button>
+<mt:if name="website_loop">
         <button
             value="<__trans phrase="Back">"
             type="button"
@@ -170,15 +170,15 @@ function init() {
             onclick="toggleBlog();"
             style="display: none"
             ><__trans phrase="Back"></button>
-</mt:if>
         <button
             value="<__trans phrase="Continue">"
-            type="submit"
+            type="button"
             accesskey="s"
             title="<__trans phrase="Continue (s)">"
-            class="continue action primary-button for-blog"<mt:if name="website_loop">
-            style="display: none"</mt:if>
+            class="continue action primary-button for-website"
+            onclick="toggleWebsite();"
             ><__trans phrase="Continue"></button>
+</mt:if>
     </div>
 </form>
 

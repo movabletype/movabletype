@@ -165,6 +165,11 @@ textarea.larger-text {
     margin: 0 10px 0.5em 0;
 }
 
+#progress-bar {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
 /* -- Tabs */
 .ui-tabs .ui-tabs-hide {
     display: none;
@@ -3348,6 +3353,25 @@ input#system_performance_logging_threshold {
 
 #formatting-help-link.disabled {
     display: none;
+}
+
+/* - Backup & Restore */
+.backup-status pre,
+.import-process pre {
+    overflow: auto;
+    margin: 0 0 10px;
+    border: 1px solid #c8c2be;
+    padding: 10px;
+    background-color: #fff;
+    height: 300px;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#files-listing {
+    margin-bottom: .75em;
 }
 
 /* - Export Theme */
