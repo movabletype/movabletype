@@ -968,7 +968,7 @@ sub backup_terms_args {
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return
           {
-            terms => { 'id' => $blog_ids },
+            terms => { 'id' => $blog_ids, class => 'website' },
             args => undef,
           };
     }
@@ -998,12 +998,12 @@ sub backup_terms_args {
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return
           {
-            terms => { $column => $blog_ids },
+            terms => { $column => $blog_ids, class => 'blog' },
             args => undef,
           };
     }
     else {
-        return { terms => undef, args => undef };
+        return { terms => { class => 'blog' }, args => undef };
     }
 }
 
