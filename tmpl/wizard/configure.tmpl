@@ -28,7 +28,7 @@
 
 <mt:if name="success">
     <p class="intro"><span class="ready"><__trans phrase="Your database configuration is complete."></span> <__trans phrase="You may proceed to the next step."></p>
-    <div id="continue" class="actions-bar">
+    <div id="success" class="actions-bar">
         <button
            name="continue"
            type="submit"
@@ -48,7 +48,7 @@
 </mt:if>
 
 <mt:if name="success">
-    <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); return false;"><__trans phrase="Show Current Settings"></a></p>
+    <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
 </mt:if>
 
 <fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
@@ -327,14 +327,14 @@ function reTest() {
 }
 
 <mt:unless name="success">
-<mt:if one_db>
+<mt:if name="one_db">
 window.onload = function() {
     document.forms[0].dbtype.selectedIndex = 0;
     db_select(document.forms[0].dbtype);
 }
 </mt:if>
 </mt:unless>
-<mt:if one_db>
+<mt:if name="one_db">
 jQuery(function() {
     document.forms[0].dbtype.selectedIndex = 0;
     db_select(document.forms[0].dbtype);

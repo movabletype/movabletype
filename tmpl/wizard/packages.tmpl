@@ -22,15 +22,6 @@
   <span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type.">
 </p>
 
-<div class="actions-bar">
-      <button 
-         name="continue"
-         type="submit"
-         onclick="go('next_step');"
-         class="continue action primary-button"
-         ><__trans phrase="Continue"></button>
-</div>
-
 <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
 
 </mt:if>
@@ -99,66 +90,68 @@
 </div>
 </mt:if>
 
-<div id="buttons" class="actions-bar" <mt:if name="optional">style="display:none;"</mt:if>>
+<div class="actions-bar">
 <mt:if name="missing_db_or_optional">
-<mt:if name="missing_db">
-   <button
-      name="retry"
-      type="submit"
-      onclick="go('retry');"
-      class="retry action"
-      ><__trans phrase="Retry"></button>
-<mt:else>
-   <mt:if name="optional">
-      <button 
-         name="continue"
-         type="submit"
-         onclick="go('next_step');"
-         class="continue action primary-button"
-         ><__trans phrase="Continue"></button>
+    <mt:if name="missing_db">
+    <button
+        name="retry"
+        type="submit"
+        onclick="go('retry');"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+    <mt:else>
+        <mt:if name="optional">
+    <button 
+        name="continue"
+        type="submit"
+        onclick="go('next_step');"
+        class="continue action primary-button"
+        ><__trans phrase="Continue"></button>
 
-      <button
-         name="retry"
-         type="submit"
-         onclick="go('retry');"
-         class="retry action"
-         ><__trans phrase="Retry"></button>
-   <mt:else>
-      <button
-         name="retry"
-         type="submit"
-         value="<__trans phrase="Retry">"
-         class="retry action"
-         ><__trans phrase="Retry"></button>
-   </mt:if>
-</mt:if>
+    <button
+        name="retry"
+        type="submit"
+        onclick="go('retry');"
+        id="retry-btn"
+        style="display: none;"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+        <mt:else>
+    <button
+        name="retry"
+        type="submit"
+        value="<__trans phrase="Retry">"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+        </mt:if>
+    </mt:if>
 <mt:else>
-<mt:if name="required">
-      <button
-         name="retry"
-         type="submit"
-         value="<__trans phrase="Retry">"
-         class="retry action"
-         ><__trans phrase="Retry"></button>
-</mt:if>
+    <mt:if name="required">
+    <button
+        name="retry"
+        type="submit"
+        value="<__trans phrase="Retry">"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+    </mt:if>
 </mt:if>
 
 <mt:if name="success">
-      <button 
-         name="continue"
-         type="submit"
-         onclick="go('next_step');"
-         class="continue action primary-button"
-         ><__trans phrase="Continue"></button>
-</mt:if>
     <button 
-       name="back"
-       type="submit"
-       onclick="this.form.reset(); go('previous_step');"
-       class="goback action"
-       ><__trans phrase="Back"></button>
-</div>
+        name="continue"
+        type="submit"
+        onclick="go('next_step');"
+        class="continue action primary-button"
+        ><__trans phrase="Continue"></button>
+</mt:if>
 
+    <button 
+        name="back"
+        type="submit"
+        onclick="this.form.reset(); go('previous_step');"
+        class="goback action"
+        ><__trans phrase="Back"></button>
+</div>
 </form>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -179,19 +172,12 @@ function toggleList() {
             list_msg.style.display = 'block';
         }
     }
-    var bttns = getByID('buttons');
-    if (bttns) {
-        if (bttns.style.display == 'none')
-            bttns.style.display = 'block';
+    var retry_btn = getByID('retry-btn');
+    if (retry_btn) {
+        if (retry_btn.style.display == 'none')
+            retry_btn.style.display = 'block';
         else
-            bttns.style.display = 'none';
-    }
-    var more = getByID('show-more');
-    if (more) {
-        if (more.style.display == 'none')
-            more.style.display = 'block';
-        else
-            more.style.display = 'none';
+            retry_btn.style.display = 'none';
     }
 }
 /* ]]> */
