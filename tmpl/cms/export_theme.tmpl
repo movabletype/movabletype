@@ -129,20 +129,36 @@ jQuery(function() {
     function is_valid_basename(name) {
         return name.match(/^[a-zA-Z][a-zA-Z0-9_-]*$/);
     }
-
+    function is_valid_version(name) {
+        return name.match(/^[\w\._-]+$/);
+    }
     jQuery.validator.addMethod('basename', function(value, element) {
         return is_valid_basename(value);
+    });
+    jQuery.validator.addMethod('version', function(value, element) {
+        return is_valid_version(value);
     });
 
     jQuery('#theme_settings').validate({
         rules: {
+            theme_name: 'required',
             theme_id: {
-                'required': true,
-                'basename': true
+                basename: true
+            },
+            theme_author_name: 'required',
+            theme_version: {
+                version: true
             }
         },    
         messages: {
-            theme_id: '<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">'
+            theme_name: '<__trans phrase="You must set Theme Name." escape="singlequotes">',
+            theme_id: {
+                basename: '<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">'
+            },
+            theme_author_name: '<__trans phrase="You must set Author Name." escape="singlequotes">',
+            theme_version: {
+                version: '<__trans phrase="Theme version may only contain letters, numbers, and the dash or underscore character." escape="singlequotes">'
+            }
         },
         errorClass: "msg-error",
         errorPlacement: function(error, element) {
