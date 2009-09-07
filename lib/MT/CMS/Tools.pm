@@ -1903,7 +1903,7 @@ sub reset_password {
       return ( 0, $app->translate("User name or password hint is incorrect.") )
       unless $author->hint eq $hint;
 
-    return ( 0, $app->translate("User does not have email address") )
+    return ( 0, $app->translate("User '[_1]' (user #[_2]) does not have email address", $author->name, $author->id) )
       unless $author->email;
 
     # Generate Token
