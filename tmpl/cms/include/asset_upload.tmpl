@@ -56,6 +56,13 @@ function is_valid_path(path_){
             <mt:var name="error">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="uploaded">
+        <mtapp:statusmsg
+            id="asset-uploaded"
+            class="success">
+            <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">">
+        </mtapp:statusmsg>
+    </mt:if>
 
 <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form" onsubmit="return validate(this)">
     <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />

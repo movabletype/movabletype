@@ -320,6 +320,11 @@ sub start_upload {
         $param{$field} ||= $app->param($field);
     }
 
+    if ( $app->param('uploaded') ) {
+        $param{uploaded} = 1;
+        $param{uploaded_filename} = $app->param('uploaded_filename');
+    }
+
     $param{dialog} = $app->param('dialog');
     my $tmpl_file = $app->param('dialog') ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
     $app->load_tmpl( $tmpl_file, \%param );
@@ -435,19 +440,32 @@ sub complete_insert {
         $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
     }
     else {
-        my $redirect_args = {
-            blog_id => $app->param('blog_id'),
-            ( ( $ext_from && $ext_to )
-                ? ( ext_from => $ext_from, ext_to => $ext_to )
-                : ()
-            ),
-        };
-        $app->redirect(
-            $app->uri(
-                'mode' => 'list_asset',
-                args   => $redirect_args,
-            )
-        );
+        if ( $app->user->can_do('access_to_asset_list') ) {
+            my $redirect_args = {
+                blog_id => $app->param('blog_id'),
+                ( ( $ext_from && $ext_to )
+                    ? ( ext_from => $ext_from, ext_to => $ext_to )
+                    : ()
+                ),
+            };
+            $app->redirect(
+                $app->uri(
+                    'mode' => 'list_asset',
+                    args   => $redirect_args,
+                )
+            );
+        } else {
+            $app->redirect(
+                $app->uri(
+                    'mode' => 'start_upload',
+                    args   => {
+                        blog_id => $app->param('blog_id'),
+                        uploaded => 1,
+                        uploaded_filename => $asset->file_name,
+                    },
+                )
+            );
+        }
     }
 }
 
