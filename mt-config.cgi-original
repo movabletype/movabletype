@@ -24,21 +24,21 @@ StaticWebPath    http://www.example.com/mt-static
 #   REMOVE all sections below that refer to databases 
 #   other than the one you will be using.
 
-##### MYSQL #####
+##### MYSQL ( Recommended ) #####
 ObjectDriver DBI::mysql
 Database DATABASE_NAME
 DBUser DATABASE_USERNAME
 DBPassword DATABASE_PASSWORD
 DBHost localhost
 
-##### POSTGRESQL ( unsupported ) #####
+##### POSTGRESQL #####
 ObjectDriver DBI::postgres
 Database DATABASE_NAME
 DBUser DATABASE_USERNAME
 DBPassword DATABASE_PASSWORD
 DBHost localhost
 
-##### SQLITE ( unsupported ) #####
+##### SQLITE #####
 ObjectDriver DBI::sqlite
 Database /path/to/sqlite/database/file
 

@@ -27,23 +27,23 @@ BEGIN {
         schema_version => MT->schema_version,
         object_drivers => {
             'mysql' => {
-                label => 'MySQL Database',
+                label => 'MySQL Database ( Recommended )',
                 dbd_package => 'DBD::mysql',
                 config_package => 'DBI::mysql',
             },
             'postgres' => {
-                label => 'PostgreSQL Database ( unsupported )',
+                label => 'PostgreSQL Database',
                 dbd_package => 'DBD::Pg',
                 dbd_version => '1.32',
                 config_package => 'DBI::postgres',
             },
             'sqlite' => {
-                label => 'SQLite Database ( unsupported )',
+                label => 'SQLite Database',
                 dbd_package => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
             },
             'sqlite2' => {
-                label => 'SQLite Database (v2) ( unsupported )',
+                label => 'SQLite Database (v2)',
                 dbd_package => 'DBD::SQLite2',
                 config_package => 'DBI::sqlite',
             },
