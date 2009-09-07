@@ -670,12 +670,14 @@ sub prepare_context {
     }
 
     # now we need to figure out the archive types
-    $ctx->stash('archive_count', $count) if ($app->param('archive_type'));
-    $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
+    if ( my $at = $q->param('archive_type') ) {
+        $ctx->stash('archive_count', $count);
+        $ctx->{current_archive_type} = $at;
+        my $archiver = MT->publisher->archiver($at);
+        my $params = $archiver->template_params;
+        map { $ctx->var( $_, $params->{ $_ } ) } keys %$params;
+    }
     $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
-    $ctx->var('datebased_archive', 1) if ($app->param('archive_type') && 
-                                          ( $app->param('archive_type') =~ /Daily/i || $app->param('archive_type') =~ /Weekly/i
-                                            || $app->param('archive_type') =~ /Monthly/i || $app->param('archive_type') =~ /Yearly/i ));
     if ($app->param('author')) {
         require MT::Author;
         my $author = MT::Author->load($app->param('author'));
