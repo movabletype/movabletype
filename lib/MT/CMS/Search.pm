@@ -202,6 +202,7 @@ sub core_search_apis {
         'author' => {
             'order' => 800,
             'system_permission' => 'administer',
+            'permission' => 'administor_blog',
             'label' => 'Users',
             'handler' => '$Core::MT::CMS::User::build_author_table',
             'perm_check' => sub {
