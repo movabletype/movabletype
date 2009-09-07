@@ -91,6 +91,10 @@ sub main {
     );
 
     if ($install) {
+        my $blog = MT->model('blog')->load(1);
+        $blog->theme_id('classic_website');
+        $blog->save;
+        $blog->apply_theme;
         print "Installation complete.\n";
     } else {
         print "Upgrade complete!\n" if !$dryrun && $updated;
