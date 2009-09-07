@@ -77,23 +77,37 @@ $.mtSelector = function() {
  *
  */
 $.mtCheckbox = function() {
+    function verify_all_checked($table) {
+        var n = $table.find('tbody input:checked').length;
+        if ($table.find('tbody :checkbox').length === n) {
+            $table.find('thead :checkbox, tfoot :checkbox').attr('checked', true);
+        } else {
+            $table.find('thead :checkbox, tfoot :checkbox').removeAttr('checked');
+        }
+    }
+
     $('thead :checkbox, tfoot :checkbox').click(function() {
         var $checkboxes = $(this).parents('table').find(':checkbox');
         if (this.checked) {
-            $checkboxes.parents('tr').addClass('selected');
-            $checkboxes.attr('checked', true);
+            $checkboxes.attr('checked', true).parents('tr').addClass('selected');
         } else {
-            $checkboxes.parents('tr').removeClass('selected');
-            $checkboxes.removeAttr('checked');
+            $checkboxes.removeAttr('checked').parents('tr').removeClass('selected');
         }
     });
+
     $('tbody :checkbox').click(function() {
-       var n = $('tbody input:checked').length;
-       if ($('tbody :checkbox').length === n) {
-           $('thead :checkbox, tfoot :checkbox').attr('checked', true);
-       } else {
-           $('thead :checkbox, tfoot :checkbox').removeAttr('checked');
-       }
+        if (this.checked) {
+            $(this).parents('tr').addClass('selected');
+        } else {
+            $(this).parents('tr').removeClass('selected');
+        }
+        verify_all_checked($(this).parents('table'));
+    });
+
+    $('tbody').each(function() {
+        $(this).find(':checkbox').parents('tr').removeClass('selected')
+            .find('input:checked').parents('tr').addClass('selected');
+        verify_all_checked($(this).parents('table'));
     });
 };
 
