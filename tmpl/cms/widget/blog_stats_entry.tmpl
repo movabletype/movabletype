@@ -31,7 +31,7 @@
 <mt:entries>
     <mt:setvarblock name="entry_type" id="entry_type"></mt:setvarblock>
     <div id="entry-<$MTEntryID$>" class="entry content entry-<mt:if name="__odd__">odd odd<mt:else>even even</mt:if> entry-status-<$mt:entrystatus lower_case="1"$><mt:if name="entry_type"> entry-<$mt:var name="entry_type"$></mt:if>">
-        <div class="entry-title"><mt:entryauthorid setvar="entry_author_id">
+        <div class="entry-header"><mt:entryauthorid setvar="entry_author_id">
             <mt:setvarblock name="entry_title"><mt:if tag="entrytitle"><mt:entrytitle escape="html"><mt:else><__trans phrase="..."></mt:if></mt:setvarblock>
             <h4 class="entry-title">
     <mt:if name="editable">
