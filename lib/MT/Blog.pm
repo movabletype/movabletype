@@ -1140,6 +1140,24 @@ sub use_revision {
     return $blog->SUPER::use_revision;
 }
 
+sub template_set {
+    my $blog = shift;
+    if (@_ ) {
+        return $blog->SUPER::template_set( @_ );
+    }
+    if ( my $theme = $blog->theme ) {
+        my @elements = $theme->elements;
+        my ( $elem ) = grep { $_->{importer} eq 'template_set' } @elements;
+        if ( $elem ) {
+            my $set = $elem->{data};
+            $set->{envelope} = $theme->path
+                if ref $set;
+            return $set;
+        }
+    }
+    $blog->SUPER::template_set;
+}
+
 1;
 __END__
 
