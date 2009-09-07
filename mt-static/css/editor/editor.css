@@ -34,6 +34,15 @@
     height: 100%;
 }
 
+.edit-entry #editor-content-enclosure { 
+    height: 350px;
+}
+.edit-entry #editor-content-textarea { 
+    height: 355px;
+    border: 0 ! important;
+}
+
+
 /* toolbar */
 .editor-toolbar {
     -moz-user-select: none !important;

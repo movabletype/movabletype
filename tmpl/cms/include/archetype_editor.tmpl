@@ -42,13 +42,11 @@
                                 <a href="javascript: void 0;" title="<__trans phrase="HTML Mode" escape="html">" mt:command="set-mode-textarea" class="command-toggle-html toolbar button"><b>HTML Mode</b><s></s></a>
                             </div>
                         </div>
-                        <mt:setvarblock name="editor_content_height"><mt:if name="disp_prefs_height_body"><$mt:var name="disp_prefs_height_body"$><mt:else>194</mt:if></mt:setvarblock>
                         <div class="editor" id="editor-content-enclosure">
-                            <textarea id="editor-content-textarea" Name="_text_" class="full-width"></textarea>
+                            <textarea id="editor-content-textarea" name="_text_"></textarea>
                             <!-- the iframe bootstraps the js -->
                             <$mt:setvar name="delayed_bootstrap" value="1"$>
                             <iframe tabindex="3" id="editor-content-iframe" frameborder="0" scrolling="yes" src="<$mt:var name="static_uri"$>html/editor-content.html?cs=<$mt:var name="language_encoding"$>"></iframe>
-                            <input type="hidden" name="text_height" id="editor-content-height" value="<$mt:var name="editor_content_height"$>" />
                             <input type="hidden" id="editor-input-content" name="text" value="<$mt:var name="text" escape="html"$>" />
                             <input type="hidden" id="editor-input-extended" name="text_more" value="<$mt:var name="text_more" escape="html"$>" />
                             <div class="resizer" mt:delegate="resizer" mt:target="editor-content-enclosure" mt:lock="x">

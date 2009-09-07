@@ -3,17 +3,60 @@ body {
     height: 100% ! important;
 }
 
+.dialog input.text,  
+.edit-entry input.text, 
+.edit-entry textarea, 
+.edit-template input.text, 
+.edit-template textarea { 
+    width: 99%;
+}
+
+.widget input.text, 
+.widget select, 
+.widget textarea { 
+    padding-left: 0;
+    width: 97%;
+}
+
+.basename-text { 
+    display: inline-block;
+    width: 90% ! important;
+    overflow: hidden ! important;
+}
+
+#template-options input.text { 
+    width: 80%;
+}
+
+
 /* -- Form */
-input.text, 
+/* input.text, 
 input.password, 
 textarea { 
     width: 380px;
     padding: 3px;
     border: 1px solid #c8c2be;
 }
+input.password { 
+    width: 15em; 
+}
+
+input.extra-path { 
+    width: 12em ! important;
+    margin-left: 5px;
+}
+
+input.smaller-text { 
+    width: 3.5em ! important;
+}
+input.larger-text, 
+textarea.larger-text { 
+    width: 96% ! important;
+} */
+
 
 /* - Generic */
-.edit-entry input.text, 
+/* .edit-entry input.text, 
 .edit-entry input.password, 
 .edit-entry textarea, 
 .edit-template input.text, 
@@ -29,13 +72,15 @@ textarea {
     margin: 0;
 }
 
+.dialog input.text, 
+.dialog textarea { 
+    width: 98%;
+}
+
 #sign-in input.text { 
     width: 313px;
 }
 
-#template-options input.text { 
-    width: 80%;
-}
 
 .list-notification .create-inline input.text { 
     width: 25%;
@@ -48,7 +93,7 @@ textarea {
 
 #notification-listing-table .url input.text { 
     width: 60%;
-}
+} */
 
 /* - App Header */
 /* -- Brand */
@@ -119,6 +164,10 @@ button {
     line-height: 1.1;
 }
 
+.chromeless .actions-bar { 
+    height: 25px;
+}
+
 .chromeless .actions-bar button { 
     float: right;
     margin-left: 12px;
@@ -138,15 +187,20 @@ ul#asset-list li a.remove-asset {
     margin-top: 0;
 }
 
-/* - Modal Dialog */
-html#dialog { 
-    border: 0 ! important;
-}
-
 /* - for IE6 Duplicate Characters Bug */
 #related-content { 
     margin-left: -3px;
 }
+
+html#dialog {
+    overflow-x: hidden;
+    border: 0;
+}
+
+.dialog #container {
+    width: 92%;
+}
+
 
 /* - haslayout */
 #main-content-inner, 

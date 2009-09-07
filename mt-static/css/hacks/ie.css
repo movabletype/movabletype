@@ -1,12 +1,42 @@
 /* - Generic */
 /* -- form */
+
+input.text, 
+select, 
+textarea { 
+    padding: 2px 0 2px 2px ! important;
+    border: 1px solid #c8c2be;
+}
+
+input.text, 
+textarea { 
+    width: 28em;
+}
+
+input.password { 
+    width: 15em ! important;
+}
+
+input.smaller-text { 
+    width: 3.5em ! important;
+}
+
+input.extra-path { 
+    width: 12em ! important;
+}
+
+.widget input[type="text"], 
+.widget textarea, 
 .edit-entry input[type="text"], 
-.edit-entry input[type="password"], 
 .edit-entry textarea, 
 .edit-template input[type="text"], 
-.edit-template input[type="password"], 
 .edit-template textarea { 
-    width: 98%;
+    width: 99%;
+}
+
+.edit-entry #editor-content-textarea { 
+    width: 100%;
+    padding-left: 0;
 }
 
 .widget input[type="text"], 
@@ -77,14 +107,6 @@ ul.menu-nav li.first-child a {
 
 ul#asset-list li a.remove-asset {
    top: -4px;
-}
-
-/* - Listing */
-.listing .view, 
-.listing .cb, 
-.listing .si, 
-.listing .number { 
-    padding: 0 10px;
 }
 
 .listing td.view, 

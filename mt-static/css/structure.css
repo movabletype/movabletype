@@ -57,7 +57,7 @@ h3 {
 /* -- Form */
 select,
 input,
-textarea {
+textarea { 
     font-size: 14px;
 }
 textarea { 
@@ -102,6 +102,7 @@ input[readonly="readonly"] {
     background-color: #dcdddd ! important;
     color: #7b7c7d;
 }
+
 input.extra-path { 
     width: 12em;
     margin-left: 5px;
@@ -1566,9 +1567,10 @@ optgroup option {
     margin: 0;
     border-bottom: 0;
     border: solid 1px #C8C2BE;
-}
-#list-log .listing table { 
     table-layout: fixed;
+}
+.listing table * { 
+    word-wrap: break-word;
 }
 
 .listing table thead th { 
@@ -1587,20 +1589,23 @@ optgroup option {
 
 .listing th, 
 .listing td { 
-    padding: 6px 10px;
+    padding: 8px 10px;
     font-family: "Lucida Grande", Verdana, sans-serif;
     text-align: left;
 }
 
 .listing th { 
-    width: 15%;
+    width: 12%;
     border-left: 1px solid #C8C2BE;
     color: #2b2b2b;
     font-size: 11px;
     font-weight: bold;
     text-shadow: #F8FBF8 0 1px 0;
-    white-space: nowrap;
+    /* white-space: nowrap; */ 
     background: #dcdddd url(../images/widget/widget-header.png) repeat-x left top;
+}
+.dialog th { 
+    width: 15%;
 }
 
 .listing th.first-child { 
@@ -1612,11 +1617,9 @@ optgroup option {
 }
 
 .listing td { 
-    padding: 8px 10px;
     border-bottom: 1px solid;
     border-color: #F3F3F3;
     vertical-align: top;
-    word-wrap: break-word;
 }
 .listing tbody tr.last-child td { 
     border: 0;
@@ -1624,11 +1627,6 @@ optgroup option {
 
 .listing tbody tr.selected {
     background-color: #dcdddd;
-}
-.listing .has-focus .cb {
-    background-image: url('../images/listing/has-focus.gif');
-    background-repeat: no-repeat;
-    background-position: left 50%;
 }
 
 .listing tr a { 
@@ -1654,25 +1652,22 @@ optgroup option {
     border-top-right-radius: 5px;
 }
 
-/* -- View icons */
-.listing .view { 
-    width: 1%;
-    padding: 8px 10px;
+/* -- Checkboxes, Status Icons */
+.listing .cb, 
+.listing .si { 
+    width: 2.3em;
+    padding-left: 0;
+    padding-right: 0;
     text-align: center;
 }
 
+.listing .view { 
+    width: 2.5em;
+}
 .listing .view img { 
     margin-top: 3px;
 }
 
-
-/* -- Checkboxes, Status Icons */
-.listing .cb, 
-.listing .si { 
-    width: 1%;
-    padding: 8px 10px;
-    text-align: center;
-}
 
 .listing td.settings { 
     text-align: center;
@@ -1810,7 +1805,10 @@ td .actions-link {
 
 
 /* -- List Asset */
-.asset-listing-table .file-status .asset-thumb { 
+#asset-listing-table .si { 
+    width: 90px;
+}
+#asset-listing-table .file-status .asset-thumb { 
     margin: 0 auto;
 }
 
@@ -2002,10 +2000,6 @@ td .actions-link {
     padding: 0;
 }
 
-.list-revision-dialog table { 
-    table-layout: fixed;
-}
-
 .list-revision-dialog tr.current-revision { 
     background-color: #f2f2b0 ! important;
 }
@@ -2129,10 +2123,6 @@ td.sub-label label {
 .edit-entry input[type="password"], 
 .edit-entry textarea { 
     width: 100%;
-}
-
-.edit-entry #editor-content-enclosure { 
-    height: 350px;
 }
 
 /* -- Title Field */
@@ -2843,10 +2833,10 @@ table.templatemap-listing-table {
 #textarea-enclosure { 
     border: 1px solid #c8c2be;
     background-color: #fff;
-    -moz-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .CodeMirror-line-numbers {
@@ -3587,8 +3577,8 @@ div.template-group-content.active {
     position: fixed;
     top: 30px;
     left: 50%;
-    width: 650px;
-    margin-left: -325px;
+    width: 680px;
+    margin-left: -340px;
     background: #fff;
     z-index: 3001;
     border: 1px solid #9EA1A3;
@@ -3628,6 +3618,7 @@ body.dialog {
 
 .dialog #content-header h1 {
     line-height: 1.2;
+    font-size: 24px;
     font-weight: normal;
 }
 
@@ -3709,7 +3700,6 @@ body.dialog {
 }
 
 .dialog .actions-bar {
-    position: absolute;
     bottom: 0;
     width: 100%;
     text-align: right;
