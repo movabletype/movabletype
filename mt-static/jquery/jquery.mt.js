@@ -487,6 +487,9 @@ $.fn.mtRebasename = function(options) {
         $(this).keyup(function() {
             if (!opts.basename) {
                 dirify_text = dirify($(this).val());
+                if (opts.limit) {
+                    dirify_text = dirify_text.substring(0, opts.limit);
+                }
                 $('span.basename-text').text(dirify_text || opts.text);
                 $input.val(dirify_text);
             }

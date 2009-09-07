@@ -1434,6 +1434,11 @@ sub save {
         }
     }
 
+    # Cut a basename by blog settings
+    if ( $app->param('basename_manual') ) {
+        first_n_words( $obj->basename, $blog->basename_limit )
+    }
+
     if ( $type eq 'page' ) {
 
         # -1 is a special id for identifying the 'root' folder
