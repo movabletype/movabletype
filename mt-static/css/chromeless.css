@@ -155,6 +155,7 @@ input.smaller-text {
     position: relative;
     min-height: 30px;
     margin: 25px 0;
+    text-align: right;
 }
 
 #container.show-actions-bar-top .actions-bar-top {
