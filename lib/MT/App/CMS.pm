@@ -584,8 +584,8 @@ sub core_list_actions {
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
                 permit_action => 'unapprove_comments_via_list',
-                condition  => sub {
-                    return 1;
+                condition   => sub {
+                    return $app->mode ne 'view';
                 },
             },
             'trust_commenter' => {
@@ -593,24 +593,36 @@ sub core_list_actions {
                 order      => 200,
                 code       => "${pkg}Comment::trust_commenter_by_comment",
                 permit_action => 'trust_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'untrust_commenter' => {
                 label      => "Untrust Commenter(s)",
                 order      => 300,
                 code       => "${pkg}Comment::untrust_commenter_by_comment",
                 permit_action => 'untrust_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'ban_commenter' => {
                 label      => "Ban Commenter(s)",
                 order      => 400,
                 code       => "${pkg}Comment::ban_commenter_by_comment",
                 permit_action => 'ban_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'unban_commenter' => {
                 label      => "Unban Commenter(s)",
                 order      => 500,
                 code       => "${pkg}Comment::unban_commenter_by_comment",
                 permit_action => 'unban_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
         },
         'commenter' => {
