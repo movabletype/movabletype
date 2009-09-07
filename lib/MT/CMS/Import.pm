@@ -96,7 +96,8 @@ sub do_import {
     my $q = $app->param;
     require MT::Blog;
     my $blog_id = $q->param('blog_id')
-      or return $app->error( $app->translate("Please select a blog.") );
+      or return $app->return_to_dashboard( redirect => 1 );
+
     my $blog = MT::Blog->load($blog_id)
       or return $app->error(
         $app->translate(
@@ -104,6 +105,9 @@ sub do_import {
             $blog_id, MT::Blog->errstr
         )
       );
+
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog->is_blog;
 
     if ( 'POST' ne $app->request_method ) {
         return $app->redirect(
