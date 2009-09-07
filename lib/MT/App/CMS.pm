@@ -1001,7 +1001,7 @@ sub core_list_filters {
                 },
             },
             last_7_days => {
-                label   => 'All TrackBacks in the last 7 days',
+                label   => 'TrackBacks in the last 7 days',
                 order   => 600,
                 handler => sub {
                     my ( $terms, $args ) = @_;
