@@ -212,6 +212,7 @@ sub export {
     my $hdlrs = MT->registry('theme_element_handlers');
     my $exporters = [];
     my $saved_settings = $blog->theme_export_settings;
+    my $has_saved = $saved_settings;
     my $last_includes = $saved_settings->{core}{include};
     $last_includes = { map { $_ => 1 } @$last_includes };
     for my $hdlr ( keys %$hdlrs ) {
@@ -252,7 +253,7 @@ sub export {
         }
         push @$exporters, {
             id           => $hdlr,
-            included     => $saved_settings ? $last_includes->{ $hdlr } : 1,
+            included     => $has_saved ? $last_includes->{ $hdlr } : 1,
             label        => MT->registry( theme_element_handlers => $hdlr => 'label'),
             template     => $tmpl,
             %saved_values,
