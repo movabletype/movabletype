@@ -2111,6 +2111,8 @@ sub build_page {
                 $param->{blog_template_set} = $blog->template_set;
                 $param->{is_blog}           = $blog->is_blog ? 1 : 0;
                 $param->{scope_type}        = $blog->is_blog ? 'blog' : 'website';
+                $param->{is_generic_website}   = 1
+                    if !$blog->is_blog && ( !$blog->column('site_path') || !$blog->column('site_url'));
             }
             else {
                 $app->error( $app->translate( "No such blog [_1]", $blog_id ) );
