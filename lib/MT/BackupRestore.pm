@@ -428,7 +428,7 @@ sub restore_directory {
     opendir my $dh, $dir or push(@$errors, MT->translate("Can't open directory '[_1]': [_2]", $dir, "$!")), return undef;
     for my $f (readdir $dh) {
         next if $f !~ /^.+\.manifest$/i;
-        $manifest = File::Spec->catfile($dir, $f);
+        $manifest = File::Spec->catfile($dir, Encode::decode( MT->config->PublishCharset, $f));
         last;
     }
     closedir $dh;

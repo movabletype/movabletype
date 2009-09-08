@@ -1208,6 +1208,7 @@ sub restore {
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
+            $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
             $arc->extract($tmp);
             $arc->close;
             my ( $blog_ids, $asset_ids ) =
