@@ -1320,10 +1320,11 @@ optgroup option {
 
 .favorite-blogs-widget .blog-theme-thumbnail img { 
     width: 100px;
+    height: 75px;
 }
 
 .favorite-blogs-widget .blog-meta { 
-    margin-right: 95px;
+    margin-right: 110px;
     margin-left: 110px;
 }
 
@@ -1356,6 +1357,7 @@ optgroup option {
 
 .favorite-blogs-widget .blog-link { 
     margin-bottom: 10px;
+    overflow: hidden;
 }
 .favorite-blogs-widget .blog-link a { 
     text-decoration: none;

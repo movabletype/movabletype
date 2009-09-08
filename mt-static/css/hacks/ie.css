@@ -5,6 +5,7 @@ body {
 }
 
 input.text, 
+input.password, 
 select, 
 textarea { 
     padding: 2px 0 2px 2px ! important;
@@ -78,7 +79,6 @@ button.action {
     background-position: left 2px;
 }
 
-
 /* - App Header */
 #header { 
     z-index: 1200;
@@ -112,8 +112,18 @@ ul.menu-nav li.first-child a {
     overflow: visible;
 }
 
+.favorite-blogs-widget .blog-action {
+    right: 0;
+}
+
 ul#asset-list li a.remove-asset {
    top: -4px;
+}
+
+/* - Listing Table */
+.listing th, 
+.listing td { 
+    padding: 6px 8px;
 }
 
 .listing td.view, 
@@ -122,6 +132,8 @@ ul#asset-list li a.remove-asset {
 .listing td.number { 
     padding-top: 8px;
 }
+
+
 
 /* - fake display: inline-block; */
 .ui-tabs-nav li, 
