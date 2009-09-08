@@ -325,6 +325,9 @@ sub start_upload {
         $param{uploaded_filename} = $app->param('uploaded_filename');
     }
 
+    $param{search_label} = $app->translate('Assets');
+    $param{search_type}  = 'asset';
+
     $param{dialog} = $app->param('dialog');
     my $tmpl_file = $app->param('dialog') ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
     $app->load_tmpl( $tmpl_file, \%param );
