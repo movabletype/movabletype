@@ -67,6 +67,9 @@ $.mtSelector = function() {
             $('#selector-nav li span').parent('em').parents('#selector-nav').removeClass('show-selector');
         }
     });
+    if (!$.support.style && !$.support.objectAll) {
+        if ($.fn.bgiframe) $('div.selector').bgiframe();
+    }
 };
 
 /*
