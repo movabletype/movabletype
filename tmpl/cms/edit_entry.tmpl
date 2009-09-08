@@ -422,9 +422,9 @@
 </mt:if>
 
     <mt:setvarblock name="button_text"><mt:if name="new_object"><__trans phrase="Publish"><mt:else><mt:if name="status_publish"><__trans phrase="Update"><mt:else><__trans phrase="Publish"></mt:if></mt:if></mt:setvarblock>
-    <mt:setvarblock name="button_title"><mt:if name="new_object"><__trans phrase="Publish this [_1]" params="<mt:var name="object_type">" escape="html"><mt:else><mt:if name="status_publish"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"><mt:else><__trans phrase="Publish this [_1]" params="<mt:var name="object_type">" escape="html"></mt:if></mt:if></mt:setvarblock>
+    <mt:setvarblock name="button_title"><mt:if name="new_object"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"><mt:else><mt:if name="status_publish"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"><mt:else><__trans phrase="Publish this [_1]" params="<mt:var name="object_type">" escape="html"></mt:if></mt:if></mt:setvarblock>
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
-    <mt:setvar name="scheduled_button_title" value="<__trans phrase="Save this [_1]" params="$object_type" escape="html">">
+    <mt:setvar name="scheduled_button_title" value="<__trans phrase="Save this [_1]" params="$object_label" escape="html">">
 
     <div class="actions-bar">
 <mt:if name="can_publish_post">
@@ -440,7 +440,7 @@
             mt:mode="save_entry"
             name="status"
             type="submit"
-            title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_type">" escape="html">"
+            title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
             class="save draft action primary-button"
             value="1"
             ><__trans phrase="Draft"></button>
@@ -450,7 +450,7 @@
             mt:mode="save_entry"
             name="status"
             type="submit"
-            title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_type">" escape="html">"
+            title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
             class="save draft action primary-button"
             value="1"
             ><__trans phrase="Draft"></button>
@@ -459,7 +459,7 @@
             mt:mode="save_entry"
             name="status"
             type="submit"
-            title="<__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html">"
+            title="<__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html">"
             class="update action primary-button"
             ><__trans phrase="Update"></button>
     </mt:if>
@@ -1132,7 +1132,7 @@ function listPreviousPings () {
             class="field-no-header"
             help_page="entries"
             help_section="permalink">
-            <strong>Permalink:</strong> <mt:var name="entry_permalink">
+            <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
         <mt:if name="status_publish">
             <mt:if name="entry_permalink">
                 <a class="button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
