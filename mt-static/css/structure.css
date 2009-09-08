@@ -1051,6 +1051,10 @@ fieldset {
     border-color: #C8C2BE;
 }
 
+#dialog .dialog .actions-bar { 
+    margin-top: 45px;
+}
+
 /* -- Buttons */
 button, 
 a.button { 
@@ -1569,6 +1573,11 @@ optgroup option {
     border: solid 1px #C8C2BE;
     table-layout: fixed;
 }
+.listing #folder-listing-table, 
+.listing #category-listing-table { 
+    table-layout: auto;
+}
+
 .listing table * { 
     word-wrap: break-word;
 }
@@ -1608,7 +1617,8 @@ optgroup option {
     width: 15%;
 }
 
-.listing th.first-child { 
+.listing th.first-child, 
+th.move-col { 
     border-left: 0;
 }
 
@@ -1639,17 +1649,31 @@ optgroup option {
     -webkit-border-radius: 5px;
     border-radius: 5px;
 }
-.listing table thead th.first-child { 
+thead th.first-child, 
+thead th.move-col { 
     -moz-border-radius: 5px 0 0 0;
     -webkit-border-top-left-radius: 5px;
     -khtml-border-top-left-radius: 5px;
     border-top-left-radius: 5px;
 }
-.listing table thead th.last-child { 
+thead th.last-child { 
     -moz-border-radius: 0 5px 0 0;
     -webkit-border-top-right-radius: 5px;
     -khtml-border-top-right-radius: 5px;
     border-top-right-radius: 5px;
+}
+tfoot th.first-child, 
+tfoot th.move-col { 
+    -moz-border-radius: 0 0 0 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -khtml-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+tfoot th.last-child { 
+    -moz-border-radius: 0 0 5px 0;
+    -webkit-border-bottom-right-radius: 5px;
+    -khtml-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
 }
 
 /* -- Checkboxes, Status Icons */
@@ -1782,6 +1806,11 @@ optgroup option {
 }
 .list-category td .field-content input { 
     width: 50%;
+}
+
+/* -- List Folder */
+#folder-listing-table .display-name { 
+    width: 15%;
 }
 
 /* -- List Tag */
@@ -2684,15 +2713,6 @@ body.preview-screen {
     margin-bottom: .75em;
 }
 
-.edit-template .archive-type {
-    width: 1%;
-    white-space: nowrap;
-}
-
-.edit-template .archive-preferred {
-    width: 1%;
-}
-
 .edit-template th.archive-delete div {
     height: 11px;
     background: url('../images/nav_icons/mini/delete.gif') no-repeat center center;
@@ -2702,7 +2722,7 @@ body.preview-screen {
 }
 
 .edit-template .delete-archive-link {
-    display: block;
+    display: inline-block;
     width: 11px;
     height: 11px;
     background: url('../images/nav_icons/mini/delete.gif') no-repeat center center;
@@ -2712,22 +2732,18 @@ body.preview-screen {
     display: none;
 }
 
-table.templatemap-listing-table { 
-    table-layout: auto;
-}
-
-.templatemap-listing-table .archive-path {
-    width: 70%;
-}
-.templatemap-listing-table .publish-options {
-    width: 30%;
-}
-
 .templatemap-listing-table .tmpl-path,
 .templatemap-listing-table .tmpl-path-custom,
 .templatemap-listing-table #build-type {
     font-size: 12px;
     width: 100%;
+}
+
+.templatemap-listing-table .archive-path { 
+    width: 40%;
+}
+.templatemap-listing-table .publish-options { 
+    width: 20%;
 }
 
 #template-options {
