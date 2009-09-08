@@ -2135,8 +2135,10 @@ sub build_page {
         }
     }
 
-    $app->build_blog_selector($param);
-    $app->build_menus($param);
+    my $build_blog_selector = exists $param->{build_blog_selector} ? $param->{build_blog_selector} : 1;
+    $app->build_blog_selector($param) if $build_blog_selector;
+    my $build_menus = exists $param->{build_menus} ? $param->{build_menus} : 1;
+    $app->build_menus($param) if $build_menus;
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
