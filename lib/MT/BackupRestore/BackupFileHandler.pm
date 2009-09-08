@@ -142,7 +142,12 @@ sub start_element {
                     }
                 } elsif ('template' eq $name) {
                     if (!$column_data{blog_id}) {
-                        $obj = $class->load({ blog_id => 0, identifier => $column_data{identifier} });
+                        $obj = $class->load({
+                            blog_id => 0,
+                            ( $column_data{identifier}
+                                  ? ( identifier => $column_data{identifier} )
+                                  : ( name => $column_data{name} ) ),
+                        });
                         if ($obj) {
                             my $old_id = delete $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
