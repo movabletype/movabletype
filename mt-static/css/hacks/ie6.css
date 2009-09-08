@@ -46,11 +46,6 @@ body {
     width: 60%;
 }
 
-/* -- Button */
-button { 
-    font-size: 90%;
-}
-
 /* -- Component */
 .picture.small { 
     padding-bottom: 1px;

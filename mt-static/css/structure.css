@@ -3196,6 +3196,14 @@ input#system_performance_logging_threshold {
     text-align: right;
 }
 
+#list-plugins #plugin_control .actions-bar { 
+    text-align: center;
+}
+
+#list-plugins #plugin_control .actions-bar button { 
+    margin: 0;
+}
+
 /* -- Theme Setting */
 #list-themes .theme-group { 
     margin-bottom: 45px;

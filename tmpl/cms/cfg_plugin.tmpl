@@ -34,14 +34,14 @@
                             onclick="return activatePlugin(0, '*')"
                             type="submit"
                             title="<__trans phrase="Disable plugin functionality">"
-                            class="desable action primary-button"
+                            class="desable"
                             ><__trans phrase="Disable Plugins"></button>
                     <mt:else>
                         <button
                             onclick="return activatePlugin(1, '*')"
                             type="submit"
                             title="<__trans phrase="Enable plugin functionality">"
-                            class="enable action primary-button"
+                            class="enable"
                             ><__trans phrase="Enable Plugins"></button>
                     </mt:if>
                 </mt:setvarblock>
@@ -378,18 +378,17 @@ function activatePlugin(flag, plugin_sig) {
         </mtapp:statusmsg>
     </mt:if>
 </mt:loop>
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
+
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery('.plugin-name').click(function() {
-        $('.plugin').not($(this).parents('.plugin')).removeClass('plugin-expanded');
-        $(this).parents('.plugin').toggleClass('plugin-expanded');
+        jQuery('.plugin').not($(this).parents('.plugin')).removeClass('plugin-expanded');
+        jQuery(this).parents('.plugin').toggleClass('plugin-expanded');
         return false;
     });
+
     jQuery.each(plugin_ids, function() {
         jQuery('#plugin'+this+'-content').tabs();
     });
-});
-/* ]]> */
-</script>
+</mt:setvarblock>
+
 <mt:include name="include/footer.tmpl">
