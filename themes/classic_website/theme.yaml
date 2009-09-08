@@ -5,11 +5,11 @@ author_link: http://www.sixapart.com/
 version: 1.0
 class: website
 protected: 1
-description: |
-    Movable Type 4 Classic Blog style Website theme.
+description: <__trans phrase="Create a blog portal that aggregates contents from blogs under the website.">
 l10n_lexicon:
     ja:
         Classic Website: クラシックウェブサイト
+        Create a blog portal that aggregates contents from blogs under the website.: 'ウェブサイト内のブログの新着情報を表示するポータル・ウェブサイト。'
 thumbnail_file: thumb.png
 elements:
     template_set:
