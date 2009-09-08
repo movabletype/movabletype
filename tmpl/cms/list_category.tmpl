@@ -42,12 +42,13 @@ function setMoveMode (id) {
     jQuery('.move-col').show().children('input').show();
     jQuery('.move-row').show().children('#delete-0').hide();
     jQuery('.actions').hide();
-    jQuery('.delete').hide();
     jQuery('#footer-list-actions').hide();
+    jQuery('span.actions').show();
+    jQuery('a.mt-delete-action').hide();
+    jQuery('a.mt-cancel-action').show();
 
     jQuery('#category-'+id).addClass('selected');
     jQuery('#move-radio-'+id).hide();
-    jQuery('#move-col-head').toggleClass('table-cell');
     jQuery('#category-listing-form input[name=move_cat_id]').val(id);
 
     return false;
@@ -80,9 +81,12 @@ function setMoveMode (id) {
     <a href="javascript:void(0)"
        onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="category" escape="js">', '<__trans phrase="categories" escape="js">'); return false;"
        accesskey="x"
-       class="button"
+       class="button mt-delete-action"
        title="<__trans phrase="Delete selected category (x)">"
        ><__trans phrase="Delete"></a>
+    <a href="#"
+       class="button mt-cancel-action"
+       ><__trans phrase="Cancel"></a>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$MTApp:PageActions from="list_cat"$>
@@ -268,14 +272,19 @@ function setMoveMode (id) {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery.mtCheckbox();
 
-    jQuery('button.mt-cancel-action').click(function() {
+    jQuery('a.mt-cancel-action').hide();
+    jQuery('.mt-cancel-action').click(function() {
         jQuery('#create-new-link').removeClass('hidden');
         jQuery(this).parents('tr.create-row').hide();
-        jQuery('.cb').css('display', 'table-cell');
-        jQuery('.actions').css('display', 'table-cell');
+        jQuery('.cb').show();
+        jQuery('.actions').show();
         jQuery('.move-col').hide();
         jQuery('.move-row').hide();
         jQuery('#footer-list-actions').toggle();
+        jQuery('a.mt-delete-action').show();
+        jQuery('a.mt-cancel-action').hide();
+        jQuery('tr.selected').removeClass('selected');
+        jQuery('input:checked').parents('tr').addClass('selected');
         return false;
     });
 </mt:setvarblock>
