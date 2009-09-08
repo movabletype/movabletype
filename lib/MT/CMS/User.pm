@@ -19,6 +19,7 @@ sub edit {
     # Load permissions from registry
     my $registered_perms;
     my $perms = $app->registry('permissions');
+    my %user_perms;
 
     if ($id) {
         # TODO: Populate permissions / blogs for this user
@@ -35,7 +36,7 @@ sub edit {
             my @sys_perms = split(',', $sys_perms->permissions);
             foreach my $perm (@sys_perms) {
                 $perm =~ s/'(.+)'/$1/;
-                $perms->{'system.'.$perm}->{can_do} = 1;
+                $user_perms{'system.'.$perm} = 1;
             }
         }
         $param->{perm_is_superuser} = $obj->is_superuser;
@@ -75,7 +76,7 @@ sub edit {
         $perm->{id} = 'can_' . $perm->{id};
         $perm->{label} = $app->translate($perms->{$key}->{label}->());
         $perm->{order} = $perms->{$key}->{order};
-        $perm->{can_do} = exists $perms->{$key}->{can_do} ? $perms->{$key}->{can_do} : 0;
+        $perm->{can_do} = $user_perms{$key};
 
         if (exists $perms->{$key}->{inherit_from}) {
             my @inherit;
