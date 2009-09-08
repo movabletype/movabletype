@@ -168,6 +168,7 @@ TC.TableSelect.prototype.click = function( evt ) {
         for ( var i = 0; i < elements.length; i++ ) {
             element = elements[ i ];
             if ( (element.type == "checkbox") || (element.type == "radio") ) {
+                if ( element.disabled ) return;
                 element.checked = !element.checked;
                 return this.select( element );
             }
