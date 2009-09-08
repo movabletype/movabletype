@@ -27,6 +27,7 @@
 
     <mtapp:setting
        id="theme-name-field"
+       required="1"
        label="<__trans phrase="Theme name">"
        hint="<__trans phrase="The name of your theme.">">
        <input type="text" name="theme_name" id="theme_name" value="<mt:var name="theme_name" escape="html">" />
@@ -34,6 +35,7 @@
 
     <mtapp:setting
        id="theme-id-field"
+       required="1"
        label="<__trans phrase="Basename">"
        show_hint="1"
        hint="<__trans phrase="Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').">">
@@ -42,6 +44,7 @@
 
     <mtapp:setting
        id="theme-author-name-field"
+       required="1"
        label="<__trans phrase="Author name">"
        hint="<__trans phrase="The author of this theme.">">
        <input type="text" name="theme_author_name" id="theme_author_name" value="<mt:var name="theme_author_name" escape="html">" />
@@ -56,6 +59,7 @@
 
     <mtapp:setting
        id="theme-version-field"
+       required="1"
        label="<__trans phrase="Theme version">"
        hint="<__trans phrase="A version number for this theme.">">
        <input type="text" name="theme_version" id="theme_version" class="smaller-text" value="<mt:var name="theme_version" escape="html">" />
