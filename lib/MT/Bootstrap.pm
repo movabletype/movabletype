@@ -193,10 +193,8 @@ sub import {
                 $err = $@;
             }
             elsif ($app && UNIVERSAL::isa($app, 'MT::App::Wizard')) {
-                if ($err =~ m/Unsupported driver/) {
-                    ## Because mt-config.cgi was not found in this time.
-                    $err = '';
-                }
+                ## Because mt-config.cgi was not found in this time.
+                $err = '';
             }
 
             if ($err) {
