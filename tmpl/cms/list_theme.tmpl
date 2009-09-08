@@ -82,7 +82,7 @@
 
     <div class="theme-meta">
         <h3 class="theme-title">
-            <a href="#theme-<mt:var name="id" escape="html">" class="theme-detail-link">
+            <a href="#" class="theme-detail-link">
                 <mt:var name="name" escape="html">
     <mt:if name="theme_version">
                 <span class="theme-version"><mt:var name="theme_version" escape="html"></span>
@@ -180,32 +180,39 @@
 </mt:setVarTemplate>
 
 <mt:if name="blog_id">
-    <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
+    <div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
+        <mt:setvar name="loop_for" value="theme_loop" /><mt:var name="theme_loop_tmpl">
+    </div>
 <mt:else>
     <mt:if name="both_theme_loop">
+    <div id="both-theme-group" class="theme-group">
         <h3><__trans phrase="Themes for Both Blogs and Websites"></h3>
         <mt:setvar name="loop_for" value="both_theme_loop" /><mt:var name="theme_loop_tmpl">
+    </div>
     </mt:if>
     <mt:if name="blog_theme_loop">
+    <div id="blog-theme-group" class="theme-group">
         <h3><__trans phrase="Themes for Blogs"></h3>
         <mt:setvar name="loop_for" value="blog_theme_loop" /><mt:var name="theme_loop_tmpl">
+    </div>
     </mt:if>
     <mt:if name="website_theme_loop">
+    <div id="website-theme-group" class="theme-group">
         <h3><__trans phrase="Themes for Websites"></h3>
         <mt:setVar name="loop_for" value="website_theme_loop" /><mt:var name="theme_loop_tmpl">
+    </div>
     </mt:if>
 </mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('div.theme-details').hide();
     jQuery('a.theme-detail-link').click(function() {
-        jQuery(this).parents('div.theme').children('div.theme-details').toggle();
+        jQuery('.theme').not($(this).parents('.theme')).removeClass('theme-expanded')
+        jQuery(this).parents('.theme').toggleClass('theme-expanded');
+        return false;
     });
 
-    jQuery(function() {
-        jQuery.each(theme_ids, function() {
-            jQuery('#theme-'+this+'-details').tabs();
-        });
+    jQuery.each(theme_ids, function() {
+        jQuery('#theme-'+this+'-details').tabs();
     });
 </mt:setvarblock>
 

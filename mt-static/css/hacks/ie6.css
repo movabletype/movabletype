@@ -46,6 +46,16 @@ body {
     width: 60%;
 }
 
+/* -- Button */
+button { 
+    font-size: 90%;
+}
+
+/* -- Component */
+.picture.small { 
+    padding-bottom: 1px;
+}
+
 /* - App Header */
 /* -- Brand */
 #brand a,
@@ -68,8 +78,6 @@ body {
 .system #brand a span {
     background-image: url(../../images/logo/movable-type-brand-logo-system.png);
 }
-
-
 
 /* -- Menu bar, Content Nav */
 #selector-nav #current-website em { 
@@ -111,10 +119,6 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
 }
 
 /* - Actions Bar */
-button { 
-    line-height: 1.1;
-}
-
 .chromeless .actions-bar { 
     height: 25px;
 }
@@ -137,6 +141,8 @@ ul#asset-list li a.remove-asset {
     width: 100%;
 }
 
+/* - List Theme */
+
 /* - Footer */
 #footer { 
     position: static;
@@ -153,7 +159,7 @@ html#dialog {
     border: 0;
 }
 
-.dialog #container {
+#dialog .dialog #container {
     width: 92%;
 }
 
@@ -168,6 +174,7 @@ html#dialog {
 #related-content, 
 .msg, 
 .plugin, 
+.theme, 
 .field-content ul, 
 .listing-screen .actions-bar, 
 #editor .editor-header, 

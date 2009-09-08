@@ -1,5 +1,8 @@
 /* - Generic */
 /* -- form */
+body { 
+    word-break: break-all;
+}
 
 input.text, 
 select, 
@@ -23,6 +26,10 @@ input.smaller-text {
 
 input.extra-path { 
     width: 12em ! important;
+}
+
+#basic-search input.search-query {
+    padding-left: 0 ! important;
 }
 
 .widget input[type="text"], 
@@ -56,7 +63,7 @@ input.extra-path {
 
 /* -- Button */
 button { 
-    height: 18px;
+    min-height: 20px;
     padding: 0 auto;
 }
 
