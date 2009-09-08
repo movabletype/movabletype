@@ -47,7 +47,7 @@
 
 <mtapp:listing id="comment-listing">
     <mt:if __first__>
-<thead>
+    <mt:setvarblock name="table_header">
     <tr>
         <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
         <mt:unless name="tab_junk">
@@ -71,7 +71,13 @@
         <th class="ip"><__trans phrase="IP"></th>
         </mt:if>
     </tr>
+    </mt:setvarblock>
+<thead>
+    <mt:var name="table_header">
 </thead>
+<tfoot>
+    <mt:var name="table_header">
+</tfoot>
 <tbody>
     </mt:if>
     <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="showReply('replyto_<mt:var name="id" escape="js">',document,'visible');" onmouseout="hideReply('replyto_<mt:var name="id escape="js"">');"</mt:if>>

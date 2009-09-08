@@ -84,7 +84,7 @@
     </mt:if>
             </td>
 </mt:unless>
-            <td<mt:if name="view_expanded"> colspan="<mt:if name="system_overview_nav"><mt:if name="show_ip_info">6<mt:else>5</mt:if><mt:else><mt:if name="show_ip_info">5<mt:else>4</mt:if></mt:if>"</mt:if>>
+            <td<mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"</mt:if>>
 <mt:if name="excerpt">
                 <mt:var name="excerpt" escape="html">
     <mt:if name="has_edit_access">
@@ -105,9 +105,9 @@
     </mt:unless>
 </mt:if>
             <td><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
-<mt:if name="system_overview_nav">
+<mt:unless name="is_blog">
             <td><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
-</mt:if>
+</mt:unless>
             <td><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
             <td><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
 <mt:if name="show_ip_info">
