@@ -17,6 +17,9 @@ sub system_check {
     if ( my $blog_id = $app->param('blog_id') ) {
         return $app->return_to_dashboard( redirect => 1 );
     }
+    if ( !$app->can_do('open_system_check_screen') ) {
+        return $app->return_to_dashboard( permission => 1 );
+    }
 
     my %param;
     # licensed user count: someone who has logged in within 90 days  

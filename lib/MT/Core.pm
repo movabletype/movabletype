@@ -1277,6 +1277,8 @@ sub load_core_permissions {
                 'uninstall_theme_package'        => 1,
                 'move_blogs'                     => 1,
                 'use_tools:search'               => 1,
+                'open_system_check_screen'       => 1,
+                'use_tools:system_info_menu'     => 1,
             }
         },
         'system.create_blog' => {

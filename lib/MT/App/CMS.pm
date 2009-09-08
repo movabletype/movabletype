@@ -1768,6 +1768,7 @@ sub core_menus {
             order => 900,
             mode  => "tools",
             view  => "system",
+            permit_action => 'use_tools:system_info_menu',
         },
         'tools:do_export_theme' => {
             order      => 10000,
