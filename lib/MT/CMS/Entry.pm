@@ -41,25 +41,27 @@ sub edit {
         if ( $blog->use_revision ) {
             $original_revision = $obj->revision;
             my $rn = $q->param('r');
-            my $status_text = MT::Entry::status_text( $obj->status );
-            $param->{current_status_text} = $status_text;
-            $param->{current_status_label} = $app->translate( $status_text );
-            my $rev = $obj->load_revision( { rev_number => $rn } );
-            if ( $rev && @$rev ) {
-                $obj = $rev->[0];
-                my $values = $obj->get_values;
-                $param->{$_} = $values->{$_} foreach keys %$values;
-                $param->{loaded_revision} = 1;
+            if ( $rn != $obj->current_revision ) {
+                my $status_text = MT::Entry::status_text( $obj->status );
+                $param->{current_status_text} = $status_text;
+                $param->{current_status_label} = $app->translate( $status_text );
+                my $rev = $obj->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $obj = $rev->[0];
+                    my $values = $obj->get_values;
+                    $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{loaded_revision} = 1;
+                }
+                $param->{rev_number} = $rn;
+                $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog,
+                    $app->user ? $app->user->preferred_language : undef );
+                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{missing_cats_rev} = 1
+                    if exists($obj->{__missing_cats_rev}) && $obj->{__missing_cats_rev};
+                $param->{missing_tags_rev} = 1
+                    if exists($obj->{__missing_tags_rev}) && $obj->{__missing_tags_rev};
             }
-            $param->{rev_number} = $rn;
-            $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
-                $obj->modified_on, $blog,
-                $app->user ? $app->user->preferred_language : undef );
-            $param->{no_snapshot} = 1 if $q->param('no_snapshot');
-            $param->{missing_cats_rev} = 1
-                if exists($obj->{__missing_cats_rev}) && $obj->{__missing_cats_rev};
-            $param->{missing_tags_rev} = 1
-                if exists($obj->{__missing_tags_rev}) && $obj->{__missing_tags_rev};
         }
 
         $param->{nav_entries} = 1;

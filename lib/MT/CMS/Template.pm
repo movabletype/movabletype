@@ -69,24 +69,26 @@ sub edit {
     }
 
     if ($id) {
-        # FIXME: Template types should not be enumerated here
-        $param->{nav_templates} = 1;
         if ( $blog && $blog->use_revision ) {
             my $rn = $q->param('r');
-            my $rev = $obj->load_revision( { rev_number => $rn } );
-            if ( $rev && @$rev ) {
-                $obj = $rev->[0];
-                my $values = $obj->get_values;
-                $param->{$_} = $values->{$_} foreach keys %$values;
-                $param->{loaded_revision} = 1;
+            if ( $rn != $obj->current_revision ) {
+                my $rev = $obj->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $obj = $rev->[0];
+                    my $values = $obj->get_values;
+                    $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{loaded_revision} = 1;
+                }
+                $param->{rev_number} = $rn;
+                $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog,
+                    $app->user ? $app->user->preferred_language : undef );
+                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
             }
-            $param->{rev_number} = $rn;
-            $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
-                $obj->modified_on, $blog,
-                $app->user ? $app->user->preferred_language : undef );
-            $param->{no_snapshot} = 1 if $q->param('no_snapshot');
         }
+        $param->{nav_templates} = 1;
         my $tab;
+        # FIXME: Template types should not be enumerated here
         if ( $obj->type eq 'index' ) {
             $tab = 'index';
             $param->{template_group_trans} = $app->translate('index');
