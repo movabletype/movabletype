@@ -202,7 +202,7 @@ sub core_search_apis {
         'author' => {
             'order' => 800,
             'system_permission' => 'administer',
-            'permission' => 'administor_blog',
+            'permission' => 'administer_blog',
             'label' => 'Users',
             'handler' => '$Core::MT::CMS::User::build_author_table',
             'perm_check' => sub {
@@ -266,11 +266,12 @@ sub core_search_apis {
         },
         'website' => {
             'order' => 1000,
-            'system_permission' => 'administer',
+            'system_permission' => 'administer, edit_templates',
             'label' => 'Websites',
             'handler' => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {
                 return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('edit_templates');
                 my ($obj) = @_;
                 my $perm = $author->permissions( $obj->id );
                 return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
