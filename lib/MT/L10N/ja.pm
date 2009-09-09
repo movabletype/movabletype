@@ -1985,11 +1985,11 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Failed to uninstall theme' => 'テーマのアンインストールに失敗しました',
 	'Failed to uninstall theme: [_1]' => 'テーマのアンインストールに失敗しました: [_1]',
 	'Theme from [_1]' => '[_1]のテーマ',
+	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Error occurred during exporting [_1]: [_2]' => '[_1]のエクスポート中にエラーが発生しました: [_2]',
 	'Error occurred during finalizing [_1]: [_2]' => '[_1]のファイナライズ中にエラーが発生しました: [_2]',
 	'Error occurred while publishing theme: [_1]' => 'テーマの公開中にエラーが発生しました: [_1]',
-	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 
 ## lib/MT/CMS/Template.pm
 	'index' => 'インデックス',
@@ -2379,6 +2379,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/wizard/configure.tmpl
 	'Database Configuration' => 'データベース設定',
+	'Details' => '詳細',
 	'Your database configuration is complete.' => 'データベースの設定を完了しました。',
 	'You may proceed to the next step.' => '次のステップへ進みます。',
 	'Please enter the parameters necessary for connecting to your database.' => 'データベース接続に必要な情報を入力してください。',
@@ -2811,7 +2812,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Unapproved' => '未公開',
 	'Reported as Spam' => 'スパムとして報告',
 	'View all comments with this status' => 'このステータスのすべてのコメントを見る',
-	'Details' => '詳細',
 	'Total Feedback Rating: [_1]' => '最終レーティング: [_1]',
 	'Score' => 'スコア',
 	'Results' => '結果',
@@ -3969,7 +3969,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The URL of your website. Exclude the filename (i.e. index.html).  End with \'/\'. Example: http://www.example.com/' => 'ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。 例: http://www.example.com/',
 	'Note: Changing your site root requires a complete publish of your site.' => '注: サイトパスを変更した場合にはブログの再構築が必要です。',
 	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルを配置するパスです。末尾には\'/\'を含めません。例: /home/mt/public_html/blog あるいは C:¥www¥public_html¥blog',
-	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:¥\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:¥www¥public_html' => 'インデックスファイルを配置するパスです。絶対パス(/またはC:\で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:¥www¥public_html',
+	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(\'/\'または\'C:¥\'で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:¥www¥public_html',
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of Site Root' => 'アーカイブをサイトパスとは別のパスで公開する',
@@ -4462,7 +4462,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/comment/auth_openid.tmpl
 	'OpenID URL' => 'あなたのOpenID URL',
 	'Sign in using your OpenID identity.' => 'あなたのOpenID',
-	'OpenID is an open and decentralized single sign-on identity system.' => 'OpenIDはオープンで分散されたシングルサインオンのための認証システムです。',
+	'Sign in with one of your existing third party OpenID accounts.' => 'すでに登録済みの、OpenIDに対応した別サービスのアカウントでサインインします。',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/signup_thanks.tmpl
