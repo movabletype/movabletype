@@ -909,6 +909,7 @@ sub load_core_permissions {
                 'access_to_entry_list'                    => 1,
                 'access_to_new_entry_editor'              => 1,
                 'access_to_trackback_list'                => 1,
+                'access_to_comment_list'                  => 1,
                 'create_new_entry'                        => 1,
                 'create_new_entry_via_xmlrpc_server'      => 1,
                 'create_post'                             => 1,
