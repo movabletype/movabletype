@@ -52,6 +52,21 @@ sub edit {
                 'pings' );
         }
     }
+
+    my $type = $app->param('type') || $app->param('_type') || MT::Category->class_type;
+    my $entry_class;
+    my $entry_type;
+    if ( $type eq 'category' ) {
+        $entry_type = 'entry';
+    }
+    elsif ( $type eq 'folder' ) {
+        $entry_type = 'page';
+    }
+    $entry_class = $app->model($entry_type);
+
+    $param->{search_label}     = $entry_class->class_label_plural;
+    $param->{search_type}      = $entry_type;
+
     1;
 }
 
