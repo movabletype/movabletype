@@ -1501,14 +1501,6 @@ sub core_menus {
             view       => [ "blog", 'website' ],
             dialog     => 1,
         },
-        'asset:folder' => {
-            label      => "Folders",
-            order      => 300,
-            mode       => 'list_folder',
-            args       => { filter_key => 'asset' },
-            permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
-        },
         'asset:tag' => {
             label             => "Tags",
             order             => 400,
