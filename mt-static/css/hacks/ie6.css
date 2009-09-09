@@ -120,6 +120,9 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
 .chromeless .actions-bar { 
     height: 25px;
 }
+#sign-in .actions-bar { 
+    height: 35px;
+}
 
 .chromeless .actions-bar button { 
     float: right;
