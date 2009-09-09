@@ -241,7 +241,6 @@ sub core_search_apis {
         },
         'blog' => {
             'order' => 900,
-            'system_permission' => 'administer',
             'label' => 'Blogs',
             'handler' => '$Core::MT::CMS::Blog::build_blog_table',
             'perm_check' => sub {
@@ -259,7 +258,6 @@ sub core_search_apis {
             'replace_cols'       => [qw(name site_url site_path description)],
             'can_replace'        => $author->is_superuser(),
             'can_search_by_date' => 0,
-            'view'               => 'system',
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
                 $args->{sort}      = 'name';
