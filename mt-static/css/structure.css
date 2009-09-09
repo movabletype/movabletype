@@ -118,15 +118,14 @@ textarea.larger-text {
 }
 
 #notification-listing-table input[type="text"], 
-.batch-edit .title input[type="text"], 
-.batch-edit .datetime input[type="text"] { 
+.batch-edit input[type="text"], 
+.batch-edit select { 
     width: 100%;
 }
 
 #notification-listing-table .url input[type="text"] { 
     width: 60%;
 }
-
 
 /* - Component */
 .hint { 
@@ -1606,7 +1605,7 @@ optgroup option {
 }
 
 .listing th { 
-    width: 12%;
+    width: 13%;
     border-left: 1px solid #C8C2BE;
     color: #2b2b2b;
     font-size: 11px;
@@ -1680,15 +1679,15 @@ tfoot th.last-child {
 
 /* -- Checkboxes, Status Icons */
 .listing .cb, 
-.listing .si { 
+.listing .si, 
+.listing .view { 
     width: 2.3em;
-    padding-left: 0;
     padding-right: 0;
+    padding-left: 0;
     text-align: center;
 }
-
 .listing .view { 
-    width: 2.5em;
+    width: 4em;
 }
 .listing .view img { 
     margin-top: 3px;

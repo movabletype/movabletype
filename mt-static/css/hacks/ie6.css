@@ -37,13 +37,16 @@ body {
     width: 25%;
 }
 
-#notification-listing-table input.text, 
-.batch-edit table input.text { 
+#notification-listing-table input.text { 
     width: 100%;
 }
 
 #notification-listing-table .url input.text { 
     width: 60%;
+}
+
+.batch-edit table input.text { 
+    width: auto;
 }
 
 /* -- Component */
@@ -134,6 +137,11 @@ ul#asset-list li a.remove-asset {
 /* - Dashbord Widget */
 .blog-stats-widget-panel { 
     width: 100%;
+}
+
+/* - Listing */
+.batch-edit .entry-listing-table { 
+    table-layout: auto;
 }
 
 /* - List Theme */
