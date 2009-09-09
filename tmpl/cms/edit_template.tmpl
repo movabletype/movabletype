@@ -745,8 +745,13 @@ var editor = CodeMirror.fromTextArea('text', {
     indentUnit: 0,
     height: "500px"
 });
-
-jQuery(function() {
+/* ]]> */
+</script>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.save, button.publish').click(function() {
+        jQuery('form#template-listing-form > input[name=__mode]').val('save');
+        jQuery('form#template-listing-form').submit();
+    });
     jQuery('button.preview').click(function() {
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
         jQuery('form#template-listing-form').submit();
@@ -758,8 +763,5 @@ jQuery(function() {
         plural: 'Templates',
         phrase: 'to act upon'
     });
-});
-/* ]]> */
-</script>
-
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">
