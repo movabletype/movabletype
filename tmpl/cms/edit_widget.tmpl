@@ -18,15 +18,6 @@ var curMod, curCol;
 var dragStartX, dragStartY;
 var topZIndex = 10;
 
-function checkName() {
-    widgetname = getByID('name').value;
-    if (!widgetname) {
-        alert('<__trans phrase="Please use a unique name for this widget set." escape="js">');
-        return false;
-    }
-}
-
-
 var gDropIndex, gDrop;
 var gCanDrop = 0;
 
@@ -312,7 +303,7 @@ TC.attachLoadEvent( init );
 
 <div id="edit-form">
 
-    <form onsubmit="this.modules.value = moduleListStr(); return checkName();" id="manager" name="manager" method="post" action="<mt:var name="script_url">">
+    <form onsubmit="this.modules.value = moduleListStr();" id="manager" name="manager" method="post" action="<mt:var name="script_url">">
       <input type="hidden" name="__mode" value="save_widget" />
       <mt:if name="id"><input type="hidden" name="id" value="<mt:var name="id" escape="html">" /></mt:if>
       <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
@@ -369,5 +360,19 @@ TC.attachLoadEvent( init );
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
     </form>
 </div>
-
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#manager').validate({
+        rules: {
+            name: 'required'
+        },
+        messages: {
+            name: '<__trans phrase="You must set Widget Set Name." escape="js">'
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">
