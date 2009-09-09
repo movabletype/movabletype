@@ -218,46 +218,18 @@ sub export {
     for my $hdlr ( keys %$hdlrs ) {
         my $exporter = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
         next unless $exporter;
-        my $code = $exporter->{template};
+        my $tmpl = $exporter->{template};
         my $component = $exporter->{component};
-        my $setting_list = ref $exporter->{params} ?   $exporter->{params}
-                       :                             [ $exporter->{params} ]
-                       ;
-        my $saved_values = $saved_settings->{ $exporter->{id} };
-        my %saved_values;
-        %saved_values = map { $_ => $saved_values->{$_} } @$setting_list
-            if $saved_values;
-        if ( !ref $code ) {
-            $code = MT->handler_to_coderef( $code );
+        my $cond = $exporter->{condition};
+        if ( !ref $cond ) {
+            $cond = MT->handler_to_coderef( $cond );
         }
-        my ($tmpl, %element_param, $element_param);
-        eval {
-            ($tmpl, %element_param) = $code->(
-                $app,
-                $blog,
-                $saved_values ? \%saved_values : undef );
-        };
-        if ( $@ ) {
-            MT->log(
-                sprintf 'Failed to load theme export template for %s: %s', $hdlr, $@
-            );
-            next;
-        }
-        next if !$tmpl;
-        if ( ref $tmpl eq MT->model('template') ) {
-            $element_param = $tmpl->param;
-            $tmpl = $tmpl->text;
-        }
-        else {
-            $element_param = \%element_param;
-        }
+        next if defined $cond && !$cond->( $blog );
         push @$exporters, {
             id           => $hdlr,
             included     => $has_saved ? $last_includes->{ $hdlr } : 1,
             label        => MT->registry( theme_element_handlers => $hdlr => 'label'),
             template     => $tmpl,
-            %saved_values,
-            %$element_param,
         };
     }
     my $saved_core_values = $saved_settings->{core};
@@ -295,7 +267,7 @@ sub element_dialog {
         or return $app->error(
             MT->translate('Invalid request.')
         );
-    my $exporter_id = $app->param('exporter')
+    my $exporter_id = $app->param('exporter_id')
         or return $app->error(
             $app->translate('Invalid request.')
         );
@@ -303,21 +275,9 @@ sub element_dialog {
         or return $app->error(
             $app->translate('Invalid request.')
         );
-    my %changed  = map { $_ => 1 } ( $q->param('changed') );
-    my $setting;
-    if ( $changed{$exporter_id} ) {
-        my $params = ref $exporter->{params} ?   $exporter->{params}
-                   :                           [ $exporter->{params} ]
-                   ;
-        for my $param ( @$params ) {
-            $setting->{$param} = [ $app->param($param) ];
-        }
-    }
-    else {
-        my $settings = $blog->theme_export_settings || {};
-        $setting = $settings ? $settings->{ $exporter_id } : undef;
-    }
 
+    my $settings = $blog->theme_export_settings || {};
+    my $setting = $settings ? $settings->{ $exporter_id } : undef;
     my $code = $exporter->{template};
     my $component = $exporter->{component};
 
@@ -352,6 +312,39 @@ sub element_dialog {
     );
 
     $app->load_tmpl( 'dialog/theme_element_detail.tmpl', \%param );
+}
+
+sub save_detail {
+    my $app = shift;
+    $app->can_do('do_export_theme')
+        or return $app->error(
+            MT->translate('Permission denied.')
+        );
+    my $q    = $app->param;
+    my %param;
+    my $blog = $app->blog;
+    my $fmgr = MT::FileMgr->new('Local');
+    my $exporter_id = $app->param('exporter_id');
+    ## Abort if theme directory is not okey for output.
+    my $hdlrs = MT->registry('theme_element_handlers');
+    my $settings = $blog->theme_export_settings || {};
+
+
+    my $exporter = MT->registry( theme_element_handlers => $exporter_id => 'exporter');
+    my $setting = {};
+    my $params = ref $exporter->{params} ?   $exporter->{params}
+               :                           [ $exporter->{params} ]
+               ;
+    for my $param ( @$params ) {
+        $setting->{$param} = [ $app->param($param) ];
+    }
+    $settings->{$exporter_id} = $setting;
+    $blog->theme_export_settings( $settings );
+    $blog->save
+        or return $app->error(
+            MT->translate('Failed to save theme export info: [_1]', $blog->errstr
+        ));
+    $app->load_tmpl( 'dialog/theme_detail_saved.tmpl', \%param );
 }
 
 sub do_export {
@@ -408,32 +401,13 @@ sub do_export {
 
             my @include = $q->param('include');
             $params{include} = \@include;
-            my @export_options;
-            foreach my $inc_ ( @include ) {
-                my $param_name = $hdlrs->{$inc_}->{exporter}->{params}
-                    if $hdlrs->{$inc_}->{exporter}->{params};
-                next unless $param_name;
-
-                my @options = $q->param($param_name);
-                foreach ( @options ) {
-                    my $opt = {
-                        name => $param_name,
-                        value => $_,
-                    };
-                    push @export_options, $opt;
-                }
-                delete $params{$param_name};
-            }
-            $params{export_options} = \@export_options;
             $params{theme_folder} = $output_path;
-
             return $app->load_tmpl('theme_export_replace.tmpl', \%params);
         }
     }
 
     ## Pick up settings.
     my %includes = map { $_ => 1 } ( $q->param('include') );
-    my %changed  = map { $_ => 1 } ( $q->param('changed') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
     my $elements = {};
@@ -442,16 +416,7 @@ sub do_export {
         my $exporter = MT->registry( theme_element_handlers => $exporter_id => 'exporter')
             or next;
         $exporter{$exporter_id} = $exporter;
-        next unless $changed{$exporter_id};
         next unless $includes{$exporter_id};
-        my $setting = {};
-        my $params = ref $exporter->{params} ?   $exporter->{params}
-                   :                           [ $exporter->{params} ]
-                   ;
-        for my $param ( @$params ) {
-            $setting->{$param} = [ $app->param($param) ];
-        }
-        $settings->{$exporter_id} = $setting;
     }
 
 

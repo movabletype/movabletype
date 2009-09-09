@@ -90,6 +90,18 @@ sub _count_descendant_categories {
     $count;
 }
 
+sub category_condition {
+    my ( $blog ) = @_;
+    my $cat = MT->model('category')->load({ blog_id => $blog->id }, { limit => 1 });
+    return defined $cat ? 1 : 0;
+}
+
+sub folder_condition {
+    my ( $blog ) = @_;
+    my $cat = MT->model('folder')->load({ blog_id => $blog->id }, { limit => 1 });
+    return defined $cat ? 1 : 0;
+}
+
 sub category_export_template {
     my $app = shift;
     my ( $blog, $saved ) = @_;

@@ -4,6 +4,10 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
+<form name="detail" id="detail" method="post" action="<mt:var name="script_url">">
+<input type="hidden" name="__mode" value="save_theme_detail">
+<input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
+<input type="hidden" name="exporter_id" value="<mt:var name="exporter_id">">
 <div id="content">
     <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
     <mt:var name="template" mteval="1" />
@@ -23,24 +27,18 @@
             class="close action mt-close-dialog"
             ><__trans phrase="Close"></button>
 </div>
+</form>
 <script type="text/javascript">
 /* <![CDATA[ */
-    function submitChanges() {
-        var target = parent.jQuery('#<mt:var name="exporter_id">-setting').empty();
-        jQuery('#content input').appendTo( target );
-        jQuery('#content textarea').each( function() {
-            jQuery('<input />')
-                .attr({
-                    'name': $(this).attr('name'),
-                    'id': $(this).attr('id'),
-                    'type': 'hidden'
-                })
-                .val( $(this).val() )
-                .appendTo( target );
-        });
+function dialog_closed(ok) {
+    if (ok) {
+        var frm = document['detail'];
+        // commit!
+        frm.submit();
+    } else {
         parent.jQuery.fn.mtDialog.close();
     }
-
+}
 /* ]]> */
 </script>
 <mt:include name="dialog/footer.tmpl">

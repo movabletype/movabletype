@@ -98,6 +98,13 @@ sub info {
     };
 }
 
+sub condition {
+    my ( $blog ) = @_;
+    # Export if at least one template;
+    my $tmpl = MT->model('template')->load({ blog_id => $blog->id }, { limit => 1 });
+    return defined $tmpl ? 1 : 0;
+}
+
 sub export_template {
     my $app = shift;
     my ( $blog, $saved ) = @_;

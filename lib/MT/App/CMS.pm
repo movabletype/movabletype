@@ -164,6 +164,7 @@ sub core_methods {
         'import'               => "${pkg}Import::do_import",
         'export_theme'         => "${pkg}Theme::export",
         'theme_element_detail' => "${pkg}Theme::element_dialog",
+        'save_theme_detail'    => "${pkg}Theme::save_detail",
         'do_export_theme'      => "${pkg}Theme::do_export",
         'pinged_urls'          => "${pkg}Entry::pinged_urls",
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",

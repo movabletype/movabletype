@@ -525,9 +525,10 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Category::info_categories',
             },
             exporter => {
-                params   => 'default_category_export_ids',
-                template => '$Core::MT::Theme::Category::category_export_template',
-                export   => '$Core::MT::Theme::Category::export_category',
+                params    => 'default_category_export_ids',
+                template  => '$Core::MT::Theme::Category::category_export_template',
+                export    => '$Core::MT::Theme::Category::export_category',
+                condition => '$Core::MT::Theme::Category::category_condition',
             },
         },
         default_folders => {
@@ -537,9 +538,10 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::Category::info_folders',
             },
             exporter => {
-                params   => 'default_folder_export_ids',
-                template => '$Core::MT::Theme::Category::folder_export_template',
-                export   => '$Core::MT::Theme::Category::export_folder',
+                params    => 'default_folder_export_ids',
+                template  => '$Core::MT::Theme::Category::folder_export_template',
+                export    => '$Core::MT::Theme::Category::export_folder',
+                condition => '$Core::MT::Theme::Category::folder_condition',
             },
         },
         template_set => {
@@ -549,10 +551,11 @@ sub core_theme_element_handlers {
                 info   => '$Core::MT::Theme::TemplateSet::info',
             },
             exporter => {
-                params   => 'template_set_export_ids',
-                template => '$Core::MT::Theme::TemplateSet::export_template',
-                export   => '$Core::MT::Theme::TemplateSet::export',
-                finalize => '$Core::MT::Theme::TemplateSet::finalize',
+                params    => 'template_set_export_ids',
+                template  => '$Core::MT::Theme::TemplateSet::export_template',
+                export    => '$Core::MT::Theme::TemplateSet::export',
+                finalize  => '$Core::MT::Theme::TemplateSet::finalize',
+                condition => '$Core::MT::Theme::TemplateSet::condition',
             },
         },
         blog_static_files => {
@@ -568,7 +571,6 @@ sub core_theme_element_handlers {
                 finalize => '$Core::MT::Theme::StaticFiles::finalize',
             },
         },
-        default_entries => {},
         default_pages => {
             label => 'Default Pages',
             importer => {

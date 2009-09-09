@@ -81,9 +81,11 @@
         <mt:loop name="exporters">
             <li>
                 <label for="<mt:var name="id">-include"><input type="checkbox" id="<mt:var name="id">-include" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>> <mt:var name="label"></label>
+            <mt:if name="template">
                 <span id="<mt:var name="id">-detail" class="theme-option-detail <mt:unless name="include"> active</mt:unless>">
-                    <a href="javascript:openDetailDialog('<mt:var name="id">');"><__trans phrase="Details"></a>
+                    <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog"><__trans phrase="Details"></a>
                 </span>
+            </mt:if>
             </li>
         </mt:loop>
         </ul>
@@ -111,23 +113,6 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery.mtCheckbox();
-var settingText;
-function openSetting(id) {
-    jQuery.fn.mtDialog.open(id); 
-}
-
-function openDetailDialog (exporter) {
-    jQuery.fn.mtDialog.open(
-        '<mt:var name="script_url">', {
-            'form': 'theme_settings',
-            'param' : {
-                '__mode': 'theme_element_detail',
-                'exporter': exporter,
-                'blog_id': <mt:var name="blog_id">
-            }
-        }
-    );
-}
 
 jQuery(function() {
     function is_valid_basename(name) {
