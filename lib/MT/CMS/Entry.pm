@@ -1874,7 +1874,7 @@ sub save_entries {
                 $place->blog_id($blog_id);
                 $place->is_primary(1);
             }
-            $place->category_id( scalar $q->param($p) );
+            $place->category_id( $cat_id );
             $place->save
               or return $app->error(
                 $app->translate(
