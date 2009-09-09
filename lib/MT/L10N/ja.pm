@@ -2415,7 +2415,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Missing Database Modules' => 'データベースモジュールが見つかりません',
 	'Missing Optional Modules' => 'オプションのモジュールが見つかりません',
 	'Missing Required Modules' => '必要なモジュールが見つかりません',
-	'Minimal version requirement: [_1]' => '必須バージョン:',
+	'Minimal version requirement: [_1]' => '必須バージョン: [_1]',
 	'Learn more about installing Perl modules.' => 'Perlモジュールのインストールについて',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'すべての必要なモジュールはインストールされています。モジュールの追加インストールは必要ありません。',
 	'Retry' => '再試行',
@@ -3737,7 +3737,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Failed' => '失敗',
 	'Cunnrent Theme' => '現在のテーマ',
-	'Applied to [_1] blog(s).' => '[_1]ブログに適用しました。',
+	'Applied to [_1] blog(s).' => '[_1]ブログで適用されています。',
 	'Uninstall' => 'アンインストール',
 	'Author: ' => '作者: ',
 	'This theme cannot be applied to the website due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
@@ -4367,7 +4367,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/edit_widget.tmpl
 	'Edit Widget Set' => 'ウィジェットセットの編集',
-	'Please use a unique name for this widget set.' => 'ウィジェットセットの名前は一意でなければなりません。',
+	'You must set Widget Set Name.' => 'ウィジェットセット名を設定してください。',
 	'Your widget set changes have been saved.' => 'ウィジェットセットの変更を保存しました。',
 	'Widget Set Name' => 'ウィジェットセット名',
 	'Drag and drop the widgets that belong in this Widget Set into the \'Installed Widgets\' column.' => 'ウィジェットを「利用可能」から「インストール済み」ボックスにドラッグアンドドロップします。',
