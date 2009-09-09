@@ -134,7 +134,7 @@ sub create_default_roles {
           role_mask => 2**12,
           perms => ['administer_blog'] },
         { name => MT->translate('Editor'),
-          description => MT->translate('Can upload files, edit all entries/categories/tags, and publish the blog.'),
+          description => MT->translate('Can upload files, edit all entries(categories), pages(folders), tags and publish the site.'),
           perms => ['comment', 'create_post', 'publish_post', 'edit_all_posts', 'edit_categories', 'edit_tags', 'manage_pages',
                     'rebuild', 'upload', 'send_notifications', 'manage_feedback', 'edit_assets'], },
         { name => MT->translate('Author'),

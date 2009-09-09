@@ -18,7 +18,7 @@ function doValidateNotifyRecips(f) {
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
 
-<p><__trans phrase="Your [_1]'s name, this entry's title, and the permalink will be sent in this notification.  You can also add a message, include an excerpt of the entry, or send the entire entry." params="<mt:var name="scope_type">"></p>
+<p><__trans phrase="This title, a link to view it and your [_1]'s name will be sent in the notification. You can also add a message, include an excerpt and/or send the entire body." params="<mt:var name="scope_label">"></p>
 
 <form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
     <input type="hidden" name="__mode" value="send_notify" />
@@ -51,8 +51,8 @@ function doValidateNotifyRecips(f) {
         hint=""
         show_hint="0">
         <ul>
-            <li><input type="checkbox" name="send_excerpt" id="send_excerpt" value="1" /> <label for="send_excerpt"><__trans phrase="include Entry Excerpt"></label></li>
-            <li><input type="checkbox" name="send_body" id="send_body" value="1" /> <label for="send_body"><__trans phrase="include Entry Body"> <span class="disabled"><__trans phrase="(The entry body will be sent without any text formatting applied.)"></span></label></li>
+            <li><input type="checkbox" name="send_excerpt" id="send_excerpt" value="1" /> <label for="send_excerpt"><__trans phrase="Entry Excerpt"></label></li>
+            <li><input type="checkbox" name="send_body" id="send_body" value="1" /> <label for="send_body"><__trans phrase="Body"> <span class="disabled"><__trans phrase="(Body will be sent without any text formatting applied.)"></span></label></li>
         </ul>
     </mtapp:setting>
 

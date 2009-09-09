@@ -900,6 +900,8 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of an asset; perhaps you mistakenly placed it outside of an \'MTAssets\' container?' => '[_1]をAssetのコンテキスト外で利用しようとしました。MTAssetsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of a page; perhaps you mistakenly placed it outside of a \'MTPages\' container?' => '[_1]をPageのコンテキスト外で利用しようとしました。MTPagesコンテナの外部に配置していませんか?',
 
+## lib/MT/Revisable/Local.pm
+
 ## lib/MT/Component.pm
 	'Loading template \'[_1]\' failed: [_2]' => 'テンプレート\'[_1]\'をロードできませんでした: [_2]',
 
@@ -1252,7 +1254,7 @@ use vars qw( @ISA %Lexicon );
 	'Both passwords must match.' => 'パスワードが一致しません。',
 	'You must supply a password.' => 'パスワードを設定してください。',
 	'An e-mail address is required.' => 'メールアドレスは必須です。',
-	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '入力された\'公開パス\'がウェブサーバによって書き込めません。ディレクトリの書きこみ権限を変更して、もう一度\'インストール\'をクリックしてください。',
+	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '\'公開パス\'にウェブサーバーから書き込めません。公開パスの書き込み権限を、正しく設定してから再度、インストールボタンをクリックしてください。',
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your administrator for upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
@@ -1475,7 +1477,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Pending TrackBacks' => '保留中のトラックバック',
 	'Published TrackBacks' => '公開されているトラックバック',
 	'TrackBacks on my entries' => '自分のブログ記事へのトラックバック',
-	'All TrackBacks in the last 7 days' => '最近7日間以内のトラックバック',
+	'TrackBacks in the last 7 days' => '最近7日間以内のトラックバック',
 	'Spam TrackBacks' => 'スパムトラックバック',
 	'Non-spam Comments' => 'スパムでないコメント',
 	'Pending comments' => '保留中のコメント',
@@ -1687,8 +1689,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## lib/MT/CMS/Entry.pm
 	'Invalid parameter' => '不正なパラメータです。',
 	'(untitled)' => '(タイトルなし)',
-	'New Entry' => '新しいブログ記事',
-	'New Page' => '新しいウェブページ',
+	'New Entry' => '新しい記事',
+	'New Page' => '新しいページ',
 	'pages' => 'ウェブページ',
 	'Load failed: [_1]' => 'ロードできませんでした: [_1]',
 	'Entry Status' => '公開状態',
@@ -1900,7 +1902,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'User name or password hint is incorrect.' => 'ユーザー名またはパスワード再設定用のフレーズが不正です。',
 	'User has not set pasword hint; cannot recover password' => 'パスワード再設定用のフレーズが設定されていないため、再設定できません。',
 	'Invalid attempt to recover password (used hint \'[_1]\')' => 'パスワードの再設定に失敗しました(フレーズ: [_1])。',
-	'User does not have email address' => 'ユーザーのメールアドレスがありません。',
+	'User \'[_1]\' (user #[_2]) does not have email address' => 'ユーザー\'[_1]\'(ID:[_2])はメールアドレスがありません',
 	'A password reset link has been sent to [_3] for user  \'[_1]\' (user #[_2]).' => 'パスワード再設定用のリンクがユーザー\'[_1]\'(ID:[_2])のメールアドレス([_3])あてに通知されました。',
 	'Some objects were not restored because their parent objects were not restored.  Detailed information is in the <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">activity log</a>.' => '親となるオブジェクトがないため復元できなかったオブジェクトがあります。詳細は<a href="javascript:void(0)" onclick="closeDialog(\'[_1]\')">ログ</a>を参照してください。',
 	'[_1] is not a directory.' => '[_1]はディレクトリではありません。',
@@ -1926,7 +1928,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## lib/MT/CMS/Import.pm
 	'Import/Export' => 'インポート/エクスポート',
-	'Please select a blog.' => 'ブログを選択してください。',
 	'You do not have import permission' => 'インポートの権限がありません。',
 	'You do not have permission to create users' => 'ユーザーを作成する権限がありません。',
 	'Importer type [_1] was not found.' => '[_1]というインポート形式は存在しません。',
@@ -1938,6 +1939,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'No valid recipients found for the entry notification.' => '通知するメールアドレスがありません。',
 	'[_1] Update: [_2]' => '更新通知: [_1] - [_2]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
+	'Please select a blog.' => 'ブログを選択してください。',
 	'The value you entered was not a valid email address' => 'メールアドレスが不正です。',
 	'The value you entered was not a valid URL' => 'URLが不正です。',
 	'The e-mail address you entered is already on the Notification List for this blog.' => '入力したメールアドレスはすでに通知リストに含まれています。',
@@ -2111,10 +2113,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
-	'MySQL Database' => 'MySQLデータベース',
-	'PostgreSQL Database ( unsupported )' => 'PostgreSQLデータベース',
-	'SQLite Database ( unsupported )' => 'SQLiteデータベース',
-	'SQLite Database (v2) ( unsupported )' => 'SQLiteデータベース(v2)',
+	'MySQL Database ( Recommended )' => 'MySQLデータベース(推奨)',
+	'PostgreSQL Database' => 'PostgreSQLデータベース',
+	'SQLite Database' => 'SQLiteデータベース',
+	'SQLite Database (v2)' => 'SQLite(v2)データベース',
 	'Convert Line Breaks' => '改行を変換',
 	'Rich Text' => 'リッチテキスト',
 	'Movable Type Default' => 'Movable Type 既定',
@@ -2195,7 +2197,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Blog Administrator' => 'ブログ管理者',
 	'Can administer the blog.' => 'ブログの管理者です。',
 	'Editor' => '編集者',
-	'Can upload files, edit all entries/categories/tags, and publish the blog.' => 'ファイルのアップロード、ブログの記事/カテゴリ/タグの編集と公開ができます。',
+	'Can upload files, edit all entries(categories), pages(folders), tags and publish the site.' => 'ファイルのアップロード、ブログ記事(カテゴリ)、ウェブページ(フォルダ)、タグの編集と公開ができます。',
 	'Can create entries, edit their own entries, upload files and publish.' => '記事の作成、各自の記事の編集とファイルのアップロード、および公開ができます。',
 	'Can edit, manage, and publish blog templates and themes.' => 'テンプレートとテーマの編集、管理、および公開ができます。',
 	'Can manage pages, upload files and publish blog templates.' => 'ページの管理、ファイルのアップロード、およびブログテンプレートの公開ができます。',
@@ -2284,7 +2286,11 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
 
+## themes/classic_blog/theme.yaml
+	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
+
 ## themes/classic_website/theme.yaml
+	'Create a blog portal that aggregates contents from blogs under the website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラッシックウェブサイト',
 
 ## search_templates/results_feed.tmpl
@@ -2492,8 +2498,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'User Search...' => 'ユーザーを検索',
 	'Recent Users...' => '最近のユーザー',
 	'Filter' => 'フィルタ',
-	'to republish' => '再構築',
-	'to act upon' => '対象に',
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'サインイン',
@@ -2689,7 +2693,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Exclude Trackbacks' => 'トラックバックの除外',
 	'Exclude Categories/Folders' => 'カテゴリ/フォルダの除外',
 	'Clone' => '複製',
-	'Clone Blog Settings' => 'ブログせっていの複製',
+	'Clone Blog Settings' => 'ブログの複製設定',
 	'Enter the new URL of your public website. Example: http://www.example.com/weblog/' => '公開ウェブサイトの新しいURLを入力してください。例: http://www.example.com/weblog/',
 	'Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog' => 'インデックスファイルを配置する新しいパスを入力してください。例: /home/melody/public_html/weblog',
 	'Mark the settings that you want cloning to skip' => '複製を行わない設定にマークをつけてください',
@@ -2722,15 +2726,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => '通知の送信',
 	'You must specify at least one recipient.' => '少なくとも一人の受信者を指定する必要があります。',
-	'Your [_1]\'s name, this entry\'s title, and the permalink will be sent in this notification.  You can also add a message, include an excerpt of the entry, or send the entire entry.' => '[_1]名、記事タイトル、およびパーマリンクが送られます。メッセージの追加したり、記事概要を含めたり、全記事を送ることもできます。',
+	'This title, a link to view it and your [_1]\'s name will be sent in the notification. You can also add a message, include an excerpt and/or send the entire body.' => '[_1]名、記事タイトル、およびパーマリンクが送られます。メッセージを追加したり、記事概要や、記事本文を送ることもできます。',
 	'Recipients' => 'あて先',
 	'Enter email addresses on separate lines or separated by commas.' => '1行に1メールアドレス、またはコンマでメールアドレスを区切り、入力します。',
 	'All addresses from Address Book' => 'アドレス帳のすべての連絡先',
 	'Optional Message' => 'メッセージ(任意)',
 	'Optional Content' => 'コンテンツ(任意)',
-	'include Entry Excerpt' => '記事概要を含む',
-	'include Entry Body' => '記事本文を含む',
-	'(The entry body will be sent without any text formatting applied.)' => '(フォーマットされずに記事本文が送られます)',
+	'(Body will be sent without any text formatting applied.)' => '(フォーマットされずに記事本文が送られます)',
 	'Send notification (s)' => '通知を送信 (s)',
 	'Send' => '送信',
 
@@ -2894,7 +2896,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Theme options' => 'テーマオプション',
 	'Additional assets to be included in the theme.' => 'テーマに含む追加アイテムです。',
 	'Setting for [_1]' => '[_1]の設定',
+	'You must set Theme Name.' => 'テーマ名を設定してください。',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'アルファベット、数字、ダッシュ(-)、アンダースコア(_)を利用。かならずアルファベットで始めてください。',
+	'You must set Author Name.' => '作者名を設定してください。',
+	'Theme version may only contain letters, numbers, and the dash or underscore character.' => 'バージョンにはアルファベット、数字、ダッシュ(-)、アンダースコア(_)が利用できます。',
 
 ## tmpl/cms/view_log.tmpl
 	'The activity log has been reset.' => 'ログをリセットしました。',
@@ -3171,6 +3176,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Showing All Users' => 'すべてのユーザーを表示',
 	'users' => 'ユーザー',
 	'_NO_SUPERUSER_DISABLE' => 'Movable Typeのシステム管理者は自分自身を無効にはできません。',
+	'to act upon' => '対象に',
 
 ## tmpl/cms/list_category.tmpl
 	'Your category changes and additions have been made.' => 'カテゴリの変更と追加を行いました。',
@@ -3250,6 +3256,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/include/asset_upload.tmpl
 	'Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]\'s publishing paths[_3] and republish your [_1].' => 'ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]の[_1]の公開パス([_3]の設定をして[_1]を再構をしてください。',
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
+	'Asset file(\'[_1]\') has been uploaded.' => 'アイテム(\'[_1]\')がアップロードされました。',
 	'Select File to Upload' => 'アップロードするファイルを選択',
 	'_USAGE_UPLOAD' => '下のオプションからアップロード先のパスを選択してください。サブディレクトリを指定することもできます。ディレクトリが存在しない場合は作成されます。',
 	'Upload Destination' => 'アップロード先',
@@ -3282,6 +3289,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'No entries could be found.' => '記事がありません。',
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">記事を作成</a>する。',
 	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>',
+	'to republish' => '再構築',
 
 ## tmpl/cms/include/comment_table.tmpl
 	'to publish' => '公開',
@@ -3456,7 +3464,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Go to [_1]' => '[_1]へ進む',
 	'Sorry, there were no results for your search. Please try searching again.' => '検索結果がありません。検索をやり直してください。',
 	'Sorry, there is no data for this object set.' => 'このオブジェクトセットに対応したデータはありません。',
-	'Confirm (s)' => '確認 (s)',
+	'OK (s)' => 'OK (s)',
+	'OK' => 'OK',
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
@@ -3492,7 +3501,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Oct' => '10月',
 	'Nov' => '11月',
 	'Dec' => '12月',
-	'OK' => 'OK',
 	'[_1:calMonth] [_2:calYear]' => '[_2:calYear]年[_1:calMonth]',
 
 ## tmpl/cms/include/member_table.tmpl
@@ -3736,7 +3744,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Failed' => '失敗',
-	'Cunnrent Theme' => '現在のテーマ',
+	'Current Theme' => '現在のテーマ',
 	'Applied to [_1] blog(s).' => '[_1]ブログで適用されています。',
 	'Uninstall' => 'アンインストール',
 	'Author: ' => '作者: ',
@@ -3864,7 +3872,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'[_1] Assets' => '[_1]アイテム',
 	'Add New' => '新規追加',
 	'Remove this asset.' => 'アイテム削除',
-	'No asset(s) associated with this [_1]' => '[_1]に関連するアイテムはありません。',
+	'No asset(s) associated with this [_1]' => '[_1]関連アイテムはありません。',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていないブログ記事への変更は失われます。',
 	'You have unsaved changes to this page that will be lost.' => '保存されていないウェブページへの変更は失われます。',
 	'Enter the link address:' => 'リンクするURLを入力:',
@@ -3879,6 +3887,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Reset defaults' => '既定値にリセット',
 	'This post was held for review, due to spam filtering.' => 'この投稿はスパムフィルタリングにより承認待ちになっています。',
 	'This post was classified as spam.' => 'この投稿はスパムと判定されました。',
+	'Permalink:' => 'パーマリンク:',
 	'Share' => '共有',
 	'Format:' => 'フォーマット:',
 	'(comma-delimited list)' => '(カンマ区切りリスト)',
@@ -3959,8 +3968,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The URL of your blog. Exclude the filename (i.e. index.html). End with \'/\'. Example: http://www.example.com/blog/' => 'ブログを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
 	'The URL of your website. Exclude the filename (i.e. index.html).  End with \'/\'. Example: http://www.example.com/' => 'ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。 例: http://www.example.com/',
 	'Note: Changing your site root requires a complete publish of your site.' => '注: サイトパスを変更した場合にはブログの再構築が必要です。',
-	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルを配置するパスです。末尾には\'/\'を含めません。 例: /home/mt/public_html/blog あるいは C:¥www¥public_html¥blog',
-	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(/またはC:\で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/melody/public_html/',
+	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルを配置するパスです。末尾には\'/\'を含めません。例: /home/mt/public_html/blog あるいは C:¥www¥public_html¥blog',
+	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:¥\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:¥www¥public_html' => 'インデックスファイルを配置するパスです。絶対パス(/またはC:\で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:¥www¥public_html',
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of Site Root' => 'アーカイブをサイトパスとは別のパスで公開する',
@@ -4209,7 +4218,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/widget/recent_blogs.tmpl
 	'[quant,_1,page,pages]' => 'ページ[quant,_1,件,件]',
 	'[quant,_1,comment,comments]' => 'コメント[quant,_1,件,件]',
-	'Add New Entry' => '新規記事追加',
 	'No blogs could be found. [_1]' => 'ブログがありません。[_1]',
 
 ## tmpl/cms/widget/blog_stats_entry.tmpl
@@ -4226,8 +4234,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/recent_websites.tmpl
 	'[quant,_1,blog,blogs]' => 'ブログ[quant,_1,件,件]',
-	'Add New Page' => '新規ページ追加',
-	'Add New Blog' => '新規ブログ追加',
 	'No website could be found. [_1]' => 'ウェブサイトがありません。[_1]',
 	'Create a new' => '新規作成',
 
@@ -4367,12 +4373,12 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/edit_widget.tmpl
 	'Edit Widget Set' => 'ウィジェットセットの編集',
-	'You must set Widget Set Name.' => 'ウィジェットセット名を設定してください。',
 	'Your widget set changes have been saved.' => 'ウィジェットセットの変更を保存しました。',
 	'Widget Set Name' => 'ウィジェットセット名',
 	'Drag and drop the widgets that belong in this Widget Set into the \'Installed Widgets\' column.' => 'ウィジェットを「利用可能」から「インストール済み」ボックスにドラッグアンドドロップします。',
 	'Available Widgets' => '利用可能',
 	'Save changes to this widget set (s)' => 'ウィジェットセットへの変更を保存 (s)',
+	'You must set Widget Set Name.' => 'ウィジェットセット名を設定してください。',
 
 ## tmpl/cms/list_template.tmpl
 	'[_1] Templates' => '[_1]テンプレート',
@@ -4406,7 +4412,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Sign in to comment' => 'サインインしてください',
 	'Sign in using' => 'サインイン',
 	'Remember me?' => 'ログイン情報を記憶する',
-	'Not a member? <a href="[_1]">Sign Up</a>!' => '<a href="[_1]">登録</a>してください。',
+	'Not a member? <a href="[_1]">Sign Up</a>!' => 'アカウントがないときは<a href="[_1]">サインアップ</a>してください。',
 
 ## tmpl/comment/auth_livejournal.tmpl
 	'Your LiveJournal Username' => 'あなたのLiveJournalのユーザー名',
@@ -4436,6 +4442,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/comment/auth_typepad.tmpl
 	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のWebサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
+	'Sign in or register with TypePad.' => 'TypePadでサインイン、またはアカウントを登録する',
 
 ## tmpl/comment/auth_vox.tmpl
 	'Your Vox Blog URL' => 'Vox',
@@ -4753,7 +4760,5 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 
 );
-
-## New words: 267
 
 1;

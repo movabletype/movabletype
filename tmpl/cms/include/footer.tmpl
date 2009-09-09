@@ -65,7 +65,11 @@ jQuery(function() {
     jQuery('div.has-option').mtCheckboxOption();
     jQuery('input.text-date').datepicker({
         dateFormat: 'yy-mm-dd',
-        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+        showMonthAfterYear: true,
+        prevText: '&lt;',
+        nextText: '&gt;'
     });
     jQuery('#brand > a').hover(
         function() {

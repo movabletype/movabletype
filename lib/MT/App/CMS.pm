@@ -2099,12 +2099,15 @@ sub build_page {
     if ($page ne 'login.tmpl') {
         if ($blog_id) {
             if ($blog) {
+                my $scope_type = $blog->is_blog ? 'blog' : 'website';
+                my $class = $app->model($scope_type);
                 $param->{blog_name}         = $blog->name;
                 $param->{blog_id}           = $blog->id;
                 $param->{blog_url}          = $blog->site_url;
                 $param->{blog_template_set} = $blog->template_set;
                 $param->{is_blog}           = $blog->is_blog ? 1 : 0;
-                $param->{scope_type}        = $blog->is_blog ? 'blog' : 'website';
+                $param->{scope_type}        = $scope_type;
+                $param->{scope_label}       = $class->class_label;
                 $param->{is_generic_website}   = 1
                     if !$blog->is_blog && ( !$blog->column('site_path') || !$blog->column('site_url'));
             }
