@@ -44,6 +44,11 @@ sub pre_save {
     MT::CMS::Entry::pre_save(@_);
 }
 
+sub post_save {
+    require MT::CMS::Entry;
+    MT::CMS::Entry::post_save(@_);
+}
+
 sub CMSPostSave_page {
     require MT::CMS::Entry;
     MT::CMS::Entry::post_save(@_);
