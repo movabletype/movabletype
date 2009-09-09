@@ -68,7 +68,9 @@
     border-color: red;
 }
 
-
+p.zero-state { 
+    margin-bottom: 0;
+}
 
 /* Debug Panel Messages ---------------------------------------------------------------------------------- */
 
