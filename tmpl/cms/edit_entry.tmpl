@@ -379,7 +379,7 @@
         help_page="entries"
         help_section="date">
         <div class="date-time-fields<mt:if name="status_future"><mt:if name="can_publish_post"> highlight</mt:if></mt:if>">
-            <input type="text" id="created-on" class="post-date" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="post-time" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
+            <input type="text" id="created-on" class="post-date text-date" name="authored_on_date" value="<$mt:var name="authored_on_date" escape="html"$>" /> @ <input type="text" class="post-time" name="authored_on_time" value="<$mt:var name="authored_on_time" escape="html"$>" />
 <mt:if name="can_publish_post">
             <p class="scheduled"><input type="checkbox" name="scheduled" id="scheduled" value="1"<mt:if name="status_future"> checked="checked"</mt:if> class="cb" /> <label for="scheduled"><__trans phrase="Scheduled"></label></p>
 </mt:if>
