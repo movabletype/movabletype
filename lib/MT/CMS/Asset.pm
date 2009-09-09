@@ -274,11 +274,10 @@ sub asset_userpic {
         $asset = $app->model('asset')->lookup($id);
     }
 
-    my $thumb_html = $app->model('author')->userpic_html( Asset => $asset );
-
     my $user_id = $param->{user_id} || $app->param('user_id');
+    my $user;
     if ($user_id) {
-        my $user = $app->model('author')->load( {id => $user_id} );
+        $user = $app->model('author')->load( {id => $user_id} );
         if ($user) {
             # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ($user->userpic_asset_id != $asset->id) {
@@ -292,6 +291,10 @@ sub asset_userpic {
             }
         }
     }
+
+    my $thumb_html = $user
+        ? $user->userpic_html( Asset => $asset )
+        : $app->model('author')->userpic_html( Asset => $asset );
 
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
