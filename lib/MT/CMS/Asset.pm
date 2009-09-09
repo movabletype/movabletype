@@ -307,7 +307,7 @@ sub start_upload {
     my $app = shift;
 
     return $app->return_to_dashboard( redirect => 1 )
-        if !$app->blog;
+        if !$app->blog && !$app->param('dialog');
 
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
