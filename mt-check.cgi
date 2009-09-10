@@ -80,7 +80,7 @@ eval {
 
 sub trans_templ {
     my($text) = @_;
-    return Encode::encode( $mt->config->PublishCharset, $mt->translate_templatized($text) ) if $mt;
+    return $mt->translate_templatized($text) if $mt;
     $text =~ s!(<MT_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)+?\3))+?\s*/?>)!
         my($msg, %args) = ($1);
         #print $msg;
@@ -95,7 +95,7 @@ sub trans_templ {
         $translation =~ s/([\\'])/\\$1/sg if $args{escape};
         $translation;
     !ge;
-    Encode::encode_utf8( $text );
+    return $text;
 }
 
 sub translate {
@@ -129,9 +129,23 @@ sub merge_params {
     $msg;
 }
 
-print "Content-Type: text/html; charset=utf-8\n\n";
+sub print_encode {
+    my ( $text ) = @_;
+    if ( $mt ) {
+        print Encode::encode( $mt->config->PublishCharset, $text );
+    }
+    else {
+        print Encode::encode_utf8( $text );
+    }
+}
+
+if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
+    print_encode( "HTTP/1.0 200 OK\n" );
+    print_encode( "Connection: close\n" );
+}
+print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
 if (!$view) {
-    print trans_templ(<<HTML);
+    print_encode( trans_templ(<<HTML) );
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -251,11 +265,11 @@ if (!$view) {
 
 HTML
     if ($mt_static_path) {
-        print "<body class=\"has-static\">\n";
+        print_encode( "<body class=\"has-static\">\n" );
     } else {
-        print "<body>\n";
+        print_encode( "<body>\n" );
     }
-    print trans_templ(<<HTML);
+    print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
@@ -369,7 +383,7 @@ CONFIG
 }
 my $server = $ENV{SERVER_SOFTWARE};
 my $inc_path = join "<br />\n", @INC;
-print trans_templ(<<INFO);
+print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 $config_check
@@ -377,13 +391,13 @@ INFO
 if ($version) {
     # sanitize down to letters numbers dashes and period
     $version =~ s/[^a-zA-Z0-9\-\.]//g;
-print trans_templ(<<INFO);
+print_encode( trans_templ(<<INFO) );
 <ul class="version">
     <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
 </ul>
 INFO
 }
-print trans_templ(<<INFO);
+print_encode( trans_templ(<<INFO) );
 <ul>
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
@@ -392,7 +406,7 @@ print trans_templ(<<INFO);
 	<li><strong><__trans phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO
 if ($server) {
-print trans_templ(<<INFO);
+print_encode( trans_templ(<<INFO) );
     <li><strong><__trans phrase="Web server:"></strong> <code>$server</code></li>
 INFO
 }
@@ -405,10 +419,10 @@ local *FH;
 if (open(FH, ">$TMP")) {
     close FH;
     unlink($TMP);
-    print trans_templ('    <li><__trans phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n");
+    print_encode( trans_templ('    <li><__trans phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n") );
 }
 
-print "\n\n</ul>\n";
+print_encode( "\n\n</ul>\n" );
 
 exit if $ENV{QUERY_STRING} && $ENV{QUERY_STRING} eq 'sys-check';
 
@@ -460,10 +474,10 @@ for my $list (\@REQ, \@DATA, \@OPT) {
     } else {
         $type = translate("Optional");
     }
-    print trans_templ(qq{<h2><__trans phrase="[_1] [_2] Modules" params="$phrase%%$type"></h2>\n\t<div>\n});
+    print_encode( trans_templ(qq{<h2><__trans phrase="[_1] [_2] Modules" params="$phrase%%$type"></h2>\n\t<div>\n}) );
     if (!$req && !$data) {
         if (!$view) {
-        print trans_templ(<<MSG);
+        print_encode( trans_templ(<<MSG) );
     <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides."></p>
 
 MSG
@@ -471,7 +485,7 @@ MSG
     }
     if ($data) {
         if (!$view) {
-        print trans_templ(<<MSG);
+        print_encode( trans_templ(<<MSG) );
         <p class="msg msg-info"><__trans phrase="Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have DBI and at least one of the other modules installed."></p>
 
 MSG
@@ -484,49 +498,44 @@ MSG
         if ('CODE' eq ref($desc)) {
             $desc = $desc->();
         }
-        print "<div class=\"dependence-module\">\n" if $mod =~ m/^DBD::/;
-        print "    <h3>$mod" .
-            ($ver ? " (version &gt;= $ver)" : "") . "</h3>";
+        print_encode( "<div class=\"dependence-module\">\n" ) if $mod =~ m/^DBD::/;
+        print_encode(  "    <h3>$mod" .
+            ($ver ? " (version &gt;= $ver)" : "") . "</h3>" );
         eval("use $mod" . ($ver ? " $ver;" : ";"));
         if ($@) {
             $is_good = 0 if $req;
             my $msg = $ver ?
                       trans_templ(qq{<p class="msg warning"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
                       trans_templ(qq{<p class="msg warning"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
-            if ( $mt ) {
-                print Encode::encode( $mt->config->PublishCharset, $desc );
-            }
-            else {
-                print Encode::encode_utf8( $desc );
-            }
-            print trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod"></p>\n\n});
-            print $msg;
-            print "\n\n";
+            print_encode( $desc );
+            print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod"></p>\n\n}) );
+            print_encode(  $msg );
+            print_encode(  "\n\n" );
         } else {
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
                 if ($mod eq 'DBD::mysql') {
                     if ($DBD::mysql::VERSION == 3.0000) {
-                        print trans_templ(qq{<p class="msg warning"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>});
+                        print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>}) );
                     }
                 }
                 if (!$dbi_is_okay) {
-                    print trans_templ(qq{<p class="msg warning"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>});
+                    print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>}) );
                 } else {
                     $got_one_data = 1 if $mod ne 'DBI';
                 }
             }
-            print trans_templ(qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n});
+            print_encode(  trans_templ(qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n}) );
         }
-        print "</div>\n" if $mod =~ m/^DBD::/;
+        print_encode(  "</div>\n" ) if $mod =~ m/^DBD::/;
     }
     $is_good &= $got_one_data if $data;
-    print "\n\t</div>\n\n";
+    print_encode( "\n\t</div>\n\n" );
 }
 
 if ($is_good && $cfg_exist) {
     if (!$view) {
-    print trans_templ(<<HTML);
+    print_encode( trans_templ(<<HTML) );
     <div class="msg msg-success">
         <h2><__trans phrase="Movable Type System Check Successful"></h2>
         <p><strong><__trans phrase="You're ready to go!"></strong> <__trans phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions."></p>
@@ -538,4 +547,4 @@ HTML
     }
 }
 
-print "</body>\n\n</html>\n";
+print_encode( "</body>\n\n</html>\n" );
