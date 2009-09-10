@@ -552,7 +552,7 @@ $.fn.mtEditInput = function(options) {
  * mtCheckboxOption
  *
  * Usage:
- *   jQuery.mtCheckbox();
+ *   jQuery('div.has-option').mtCheckboxOption();
  *
  */
 $.fn.mtCheckboxOption = function() {
@@ -564,6 +564,28 @@ $.fn.mtCheckboxOption = function() {
         }
         $checkbox.click(function() {
             $('div#'+id+'-option').toggle();
+        });
+    });
+};
+
+/*
+ * mtCheckboxOption
+ *
+ * Usage:
+ *   jQuery('div.has-option').mtCheckboxOption();
+ *
+ */
+$.fn.mtToggleNext = function(options) {
+    var defaults = {
+        click_class: 'detail-link',
+        detail_class: 'detail'
+    };
+    var opts = $.extend(defaults, options);
+    return this.each(function() {
+        var $parent = $(this);
+        $('.'+opts.detail_class).hide();
+        $parent.find('.'+opts.click_class).click(function() {
+            $parent.toggleClass('active').find('.'+opts.detail_class).toggle();
         });
     });
 };

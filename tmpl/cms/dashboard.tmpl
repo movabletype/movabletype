@@ -60,26 +60,12 @@
     <mt:if name="permission">
         <mtapp:statusmsg
             id="permissions"
-            class="error">
+            class="error"
+            can_close="0">
             <__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
         </mtapp:statusmsg>
     </mt:if>
-    <mt:unless name="has_uploads_path">
-        <mt:if name="is_administrator">
-            <mtapp:statusmsg
-                id="permissions"
-                class="error">
-                <__trans phrase="The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]" params="<mt:var name="support_path">">
-            </mtapp:statusmsg>
-        </mt:if>
-    </mt:unless>
-    <mt:unless name="can_use_userpic">
-        <mtapp:statusmsg
-            id="userpic"
-            class="error">
-            <__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver.">
-        </mtapp:statusmsg>
-    </mt:unless>
+
     <mt:unless name="main">
     <mtapp:statusmsg
         id="empty_dashboard"
@@ -87,6 +73,29 @@
         <__trans phrase="Your dashboard is empty!">
     </mtapp:statusmsg>
     </mt:unless>
+
+    <mt:unless name="has_uploads_path">
+        <div class="permission-error msg msg-info">
+            <div class="title"><__trans phrase="Support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
+            <div class="detail">
+                <p><__trans phrase="Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it." params="<mt:var name="support_path">"></p>
+            </div>
+        </div>
+    </mt:unless>
+
+<mt:ignore>
+    <mt:unless name="can_use_userpic">
+</mt:ignore>
+        <div id="userpic" class="permission-error msg msg-info">
+            <div class="title"><__trans phrase="Image::Magick is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
+            <div class="detail">
+                <p><__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver."></p>
+            </div>
+        </div>
+<mt:ignore>
+    </mt:unless>
+</mt:ignore>
+
     </div>
 </mt:setvarblock>
 <mt:include name="include/header.tmpl">

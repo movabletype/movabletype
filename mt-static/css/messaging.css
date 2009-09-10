@@ -68,6 +68,15 @@
     border-color: red;
 }
 
+.msg .detail { 
+    margin-top: 10px;
+    color: #7b7c7d;
+}
+
+.msg.active .title .detail-link { 
+    display: none;
+}
+
 p.zero-state { 
     margin-bottom: 0;
 }
