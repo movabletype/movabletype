@@ -808,19 +808,24 @@ sub _hdlr_entries {
                             sort { $b->$col() cmp $a->$col() } @$entries;
                     }
                     $no_resort = 1;
-                } elsif ($class->is_meta_column($col)) {
-                    my $type = MT::Meta->metadata_by_name($class, $col);
-                    no warnings;
-                    if ($type->{type} =~ m/integer|float/) {
-                        @$entries = $so eq 'ascend' ?
-                            sort { $a->$col() <=> $b->$col() } @$entries :
-                            sort { $b->$col() <=> $a->$col() } @$entries;
-                    } else {
-                        @$entries = $so eq 'ascend' ?
-                            sort { $a->$col() cmp $b->$col() } @$entries :
-                            sort { $b->$col() cmp $a->$col() } @$entries;
+                } else{
+                    if ( $col =~ m/^field:(.*)/ig ) {
+                        $col = "field.$1";
                     }
-                    $no_resort = 1;
+                    if ($class->is_meta_column($col)) {
+                        my $type = MT::Meta->metadata_by_name($class, $col);
+                        no warnings;
+                        if ($type->{type} =~ m/integer|float/) {
+                            @$entries = $so eq 'ascend' ?
+                                sort { $a->$col() <=> $b->$col() } @$entries :
+                                    sort { $b->$col() <=> $a->$col() } @$entries;
+                        } else {
+                            @$entries = $so eq 'ascend' ?
+                                sort { $a->$col() cmp $b->$col() } @$entries :
+                                    sort { $b->$col() cmp $a->$col() } @$entries;
+                        }
+                        $no_resort = 1;
+                    }
                 }
             }
         } else {

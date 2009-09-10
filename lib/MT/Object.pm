@@ -678,8 +678,8 @@ sub _post_load_initialize_metadata {
 sub is_meta_column {
     my $obj = shift;
     my ($field, $which) = @_;
-	$which ||= 'meta';
-	my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
+    $which ||= 'meta';
+    my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
     my $props = $obj->properties;
     return unless $props->{$which . '_installed'};
 
