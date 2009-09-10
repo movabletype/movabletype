@@ -2289,9 +2289,190 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## themes/classic_blog/theme.yaml
 	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
 
+## themes/classic_blog/templates/comment_preview.mtml
+
+## themes/classic_blog/templates/date_based_category_archives.mtml
+
+## themes/classic_blog/templates/comment_response.mtml
+
+## themes/classic_blog/templates/notify-entry.mtml
+
+## themes/classic_blog/templates/javascript.mtml
+
+## themes/classic_blog/templates/monthly_entry_listing.mtml
+
+## themes/classic_blog/templates/recover-password.mtml
+
+## themes/classic_blog/templates/about_this_page.mtml
+
+## themes/classic_blog/templates/search.mtml
+
+## themes/classic_blog/templates/author_archive_list.mtml
+
+## themes/classic_blog/templates/comments.mtml
+
+## themes/classic_blog/templates/trackbacks.mtml
+
+## themes/classic_blog/templates/entry.mtml
+
+## themes/classic_blog/templates/calendar.mtml
+
+## themes/classic_blog/templates/archive_widgets_group.mtml
+
+## themes/classic_blog/templates/entry_summary.mtml
+
+## themes/classic_blog/templates/openid.mtml
+
+## themes/classic_blog/templates/powered_by.mtml
+
+## themes/classic_blog/templates/banner_footer.mtml
+
+## themes/classic_blog/templates/commenter_notify.mtml
+
+## themes/classic_blog/templates/search_results.mtml
+
+## themes/classic_blog/templates/commenter_confirm.mtml
+
+## themes/classic_blog/templates/recent_comments.mtml
+
+## themes/classic_blog/templates/comment_listing.mtml
+
+## themes/classic_blog/templates/main_index_widgets_group.mtml
+
+## themes/classic_blog/templates/footer-email.mtml
+
+## themes/classic_blog/templates/technorati_search.mtml
+
+## themes/classic_blog/templates/new-comment.mtml
+
+## themes/classic_blog/templates/archive_index.mtml
+
+## themes/classic_blog/templates/category_archive_list.mtml
+
+## themes/classic_blog/templates/current_author_monthly_archive_list.mtml
+
+## themes/classic_blog/templates/main_index.mtml
+
+## themes/classic_blog/templates/comment_throttle.mtml
+
+## themes/classic_blog/templates/date_based_author_archives.mtml
+
+## themes/classic_blog/templates/category_entry_listing.mtml
+
+## themes/classic_blog/templates/comment_detail.mtml
+
+## themes/classic_blog/templates/new-ping.mtml
+
+## themes/classic_blog/templates/creative_commons.mtml
+
+## themes/classic_blog/templates/pages_list.mtml
+
+## themes/classic_blog/templates/tag_cloud.mtml
+
+## themes/classic_blog/templates/recent_entries.mtml
+
+## themes/classic_blog/templates/monthly_archive_list.mtml
+
+## themes/classic_blog/templates/verify-subscribe.mtml
+
+## themes/classic_blog/templates/sidebar.mtml
+
+## themes/classic_blog/templates/monthly_archive_dropdown.mtml
+
+## themes/classic_blog/templates/recent_assets.mtml
+
+## themes/classic_blog/templates/page.mtml
+
+## themes/classic_blog/templates/current_category_monthly_archive_list.mtml
+
+## themes/classic_blog/templates/dynamic_error.mtml
+
+## themes/classic_blog/templates/signin.mtml
+
+## themes/classic_blog/templates/syndication.mtml
+
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 	'Classic Website' => 'クラッシックウェブサイト',
+
+## themes/classic_website/templates/comment_preview.mtml
+
+## themes/classic_website/templates/blogs.mtml
+
+## themes/classic_website/templates/comment_response.mtml
+
+## themes/classic_website/templates/notify-entry.mtml
+
+## themes/classic_website/templates/javascript.mtml
+
+## themes/classic_website/templates/recover-password.mtml
+
+## themes/classic_website/templates/about_this_page.mtml
+
+## themes/classic_website/templates/search.mtml
+
+## themes/classic_website/templates/comments.mtml
+
+## themes/classic_website/templates/trackbacks.mtml
+
+## themes/classic_website/templates/entry.mtml
+
+## themes/classic_website/templates/entry_summary.mtml
+
+## themes/classic_website/templates/openid.mtml
+
+## themes/classic_website/templates/powered_by.mtml
+
+## themes/classic_website/templates/banner_footer.mtml
+
+## themes/classic_website/templates/commenter_notify.mtml
+
+## themes/classic_website/templates/search_results.mtml
+
+## themes/classic_website/templates/commenter_confirm.mtml
+
+## themes/classic_website/templates/recent_comments.mtml
+
+## themes/classic_website/templates/comment_listing.mtml
+
+## themes/classic_website/templates/main_index_widgets_group.mtml
+
+## themes/classic_website/templates/footer-email.mtml
+
+## themes/classic_website/templates/technorati_search.mtml
+
+## themes/classic_website/templates/new-comment.mtml
+
+## themes/classic_website/templates/main_index.mtml
+
+## themes/classic_website/templates/comment_throttle.mtml
+
+## themes/classic_website/templates/comment_detail.mtml
+
+## themes/classic_website/templates/new-ping.mtml
+
+## themes/classic_website/templates/creative_commons.mtml
+
+## themes/classic_website/templates/pages_list.mtml
+
+## themes/classic_website/templates/tag_cloud.mtml
+
+## themes/classic_website/templates/recent_entries.mtml
+
+## themes/classic_website/templates/verify-subscribe.mtml
+
+## themes/classic_website/templates/sidebar.mtml
+
+## themes/classic_website/templates/recent_assets.mtml
+
+## themes/classic_website/templates/page.mtml
+
+## themes/classic_website/templates/dynamic_error.mtml
+
+## themes/classic_website/templates/signin.mtml
+
+## themes/classic_website/templates/syndication.mtml
+	'Subscribe to this website\'s feed' => 'ウェブサイトを購読',
 
 ## search_templates/results_feed.tmpl
 	'Search Results for [_1]' => '[_1]の検索結果',
@@ -2727,13 +2908,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => '通知の送信',
 	'You must specify at least one recipient.' => '少なくとも一人の受信者を指定する必要があります。',
-	'This title, a link to view it and your [_1]\'s name will be sent in the notification. You can also add a message, include an excerpt and/or send the entire body.' => '[_1]名、記事タイトル、およびパーマリンクが送られます。メッセージを追加したり、記事概要や、記事本文を送ることもできます。',
+	'Your [_1]\'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body.' => '[_1]名、タイトル、およびパーマリンクが送られます。メッセージを追加したり、概要や本文を送ることもできます。',
 	'Recipients' => 'あて先',
 	'Enter email addresses on separate lines or separated by commas.' => '1行に1メールアドレス、またはコンマでメールアドレスを区切り、入力します。',
 	'All addresses from Address Book' => 'アドレス帳のすべての連絡先',
 	'Optional Message' => 'メッセージ(任意)',
 	'Optional Content' => 'コンテンツ(任意)',
-	'(Body will be sent without any text formatting applied.)' => '(フォーマットされずに記事本文が送られます)',
+	'(Body will be sent without any text formatting applied.)' => '(フォーマットされずに本文が送られます)',
 	'Send notification (s)' => '通知を送信 (s)',
 	'Send' => '送信',
 
@@ -2949,6 +3130,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/cfg_feedback.tmpl
 	'Feedback Settings' => 'コミュニケーション設定',
 	'Your preferences have been saved.' => '設定を保存しました。',
+	'Spam Settings' => 'スパム設定',
 	'Automatic Deletion' => '自動削除設定',
 	'Automatically delete spam feedback after the time period shown below.' => 'スパムと判断したものを指定の日数経過後に削除する。',
 	'Delete Spam After' => 'スパムを削除する',
@@ -2964,6 +3146,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Include the \'nofollow\' attribute in URLs submitted in feedback.' => 'コメントとトラックバックに含まれるすべてのURLにnofollowを設定する。',
 	'\'nofollow\' exception for trusted commenters' => 'nofollow除外',
 	'Do not add the \'nofollow\' attribute when a comment is submitted by a trusted commenter.' => '承認されたコメント投稿者のコメントにはnofollowを適用しない。',
+	'Comment Settings' => 'コメント設定',
 	'Note: Commenting is currently disabled at the system level.' => '注: コメントは現在システムレベルで無効になっています。',
 	'Comment authentication is not available because at least one of the required Perl modules, MIME::Base64 and LWP::UserAgent, are not installed. Install the missing modules and reload this page to configure comment authentication.' => '必要なPerlモジュール(MIME::Base64とLWP::UserAgent)がインストールされていないため、コメント認証は無効となっています。必要なモジュールをインストールしてから、このページで再設定してください。',
 	'Accept comments according to the policies shown below.' => 'コメントポリシーを設定し、コメントを受付ける。',
@@ -3254,6 +3437,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'IP: [_1]' => 'IP: [_1]',
 
 ## tmpl/cms/include/asset_upload.tmpl
+	'You must set a valid destination.' => '正しいアップロード先を指定してください。',
 	'Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]\'s publishing paths[_3] and republish your [_1].' => 'ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]の[_1]の公開パス([_3]の設定をして[_1]を再構をしてください。',
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	'Asset file(\'[_1]\') has been uploaded.' => 'アイテム(\'[_1]\')がアップロードされました。',
@@ -3451,6 +3635,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'View Site' => 'サイトの表示',
 	'View [_1]' => '[_1]参照',
 	'Search (q)' => '検索 (q)',
+	'This website was created during the version-up from the previous version of Movable Type. \'Site Root\' and \'Site URL\' are left blank to retain \'Publishing Paths\' compatibility for blogs those were created at the previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank \'Site Root\' and \'Site URL\'.' => 'このウェブサイトは、以前のバージョンのM尾ヴぁbれTyぺÃÂのバージョンアップ時に作成されました。バージョンアップ前に作成されたブログの公開設定の互換性を保持するために、ウェブサイトのサイト URLとサイトパスは空白になっています。そのため、既存のブログに投稿、公開はできますが、ウェブサイト自体にコンテンツを投稿することはできません。',
 	'Dashboard' => 'ダッシュボード',
 	'from Revision History' => '履歴データ',
 
@@ -4014,9 +4199,12 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
-	'The directory you have configured for uploading userpics is not writable. In order to enable users to upload userpics, please make the following directory writable by your web server: [_1]' => 'ユーザー画像をアップロードするディレクトリに書き込めないようです。ユーザー画像をアップロードするために、[_1]にWebサーバーから書き込めるようにしてください。',
-	'Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type\'s userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver.' => 'Image::Magickがインストールされていないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magickをインストールするか、他のイメージドライバを使用する設定を行う必要があります。',
 	'Your dashboard is empty!' => 'ダッシュボードが空です。',
+	'Support directory is not writable.' => 'supportディレクトリに書き込めません。',
+	'Detail' => '詳細',
+	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
+	'Image::Magick is not configured.' => 'Image::Magickが設定されていません。',
+	'Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type\'s userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver.' => 'Image::Magickがインストールされていないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magickをインストールするか、他のイメージドライバを使用する設定を行う必要があります。',
 
 ## tmpl/cms/upgrade_runner.tmpl
 	'Initializing database...' => 'データベースの初期化中･･･',
@@ -4253,8 +4441,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Oct.' => '10/',
 	'Nov.' => '11/',
 	'Dec.' => '12/',
-	'Movable Type was unable to locate your \'mt-static\' directory. Please configure the \'StaticFilePath\' configuration setting in your mt-config.cgi file, and create a writable \'support\' directory underneath your \'mt-static\' directory.' => 'mt-staticディレクトリが見つかりません。構成ファイルでStaticFilePathの設定を記述し、mt-staticディレクトリ以下にsupportディレクトリを作成して書き込みできるようにしてください。',
-	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'[_1] [_2] - [_3] [_4]' => '[_1][_2] - [_3][_4]',
 	'You have <a href=\'[_3]\'>[quant,_1,comment,comments] from [_2]</a>' => '[_2]に<a href=\'[_3]\'>[quant,_1,件,件]のコメント</a>があります。',
 	'You have <a href=\'[_3]\'>[quant,_1,entry,entries] from [_2]</a>' => '[_2]に<a href=\'[_3]\'>[quant,_1,件,件]のブログ記事</a>を作成しています。',
@@ -4540,8 +4726,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The default service host for TypePad AntiSpam is api.antispam.typepad.com. You should only change this if you are using a different service that is compatible with the TypePad AntiSpam API.' => 'TypePad AntiSpamの既定のホストはapi.antispam.typepad.comです。TypePad AntiSpam APIと互換性を持つ他のサービスを利用する場合に限って、この設定を変更してください。',
 
 ## plugins/TypePadAntiSpam/tmpl/stats_widget.tmpl
-	'widget_label_width' => '77',
-	'widget_totals_width' => '180',
 	'Spam Blocked' => 'ブロックしたスパム',
 	'on this blog' => 'ブログレベル',
 	'on this system' => 'システム全体',

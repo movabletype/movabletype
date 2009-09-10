@@ -18,7 +18,7 @@ function doValidateNotifyRecips(f) {
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
 
-<p><__trans phrase="This title, a link to view it and your [_1]'s name will be sent in the notification. You can also add a message, include an excerpt and/or send the entire body." params="<mt:var name="scope_label">"></p>
+<p><__trans phrase="Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body." params="<mt:var name="scope_label">"></p>
 
 <form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
     <input type="hidden" name="__mode" value="send_notify" />

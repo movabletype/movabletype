@@ -11,7 +11,7 @@ function setExtraPath(sel) {
 function validate(f) {
 <mt:if name="extra_paths">
     if (!is_valid_path(f.extra_path.value)){
-        alert('You must set a valid destination.');
+        alert('<__trans phrase="You must set a valid destination." escape="js">');
         return false;
     }
 </mt:if>
