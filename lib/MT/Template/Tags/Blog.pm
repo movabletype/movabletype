@@ -595,7 +595,7 @@ sub _hdlr_blog_theme_id {
     return $ctx->_no_blog_error() unless $blog;
     my $id = $blog->theme_id
         or return '';
-    $id =~ s/_/-/;
+    $id =~ s/_/-/g;
     return $id;
 }
 
