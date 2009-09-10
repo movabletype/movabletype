@@ -314,7 +314,7 @@ sub core_tags {
             WebsiteFileExtension  => '$Core::MT::Template::Tags::Website::_hdlr_website_file_extension',
             WebsiteHost           => '$Core::MT::Template::Tags::Website::_hdlr_website_host',
             WebsiteRelativeURL    => '$Core::MT::Template::Tags::Website::_hdlr_website_relative_url',
-            WebsiteThemeID        => '$Core::MT::Template::Tags::Website::_htlr_website_theme_id',
+            WebsiteThemeID        => '$Core::MT::Template::Tags::Website::_hdlr_website_theme_id',
 
             ## Author
             AuthorID          => '$Core::MT::Template::Tags::Author::_hdlr_author_id',

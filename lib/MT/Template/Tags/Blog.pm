@@ -570,6 +570,11 @@ sub _hdlr_blog_template_set_id {
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
     my $set = $blog->template_set || 'classic_blog';
+    if ( ref $set ) {
+        ## nameless template set by theme.
+        ## should return theme id.
+        $set = $blog->theme_id || '';
+    }
     $set =~ s/_/-/g;
     return $set;
 }
@@ -588,7 +593,10 @@ sub _hdlr_blog_theme_id {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
     return $ctx->_no_blog_error() unless $blog;
-    return $blog->theme_id;
+    my $id = $blog->theme_id
+        or return '';
+    $id =~ s/_/-/;
+    return $id;
 }
 
 1;

@@ -496,10 +496,7 @@ Outputs applied theme's ID for the website currently in context.
 =cut
 
 sub _hdlr_website_theme_id {
-    my ($ctx, $args, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    return $ctx->_no_website_error() unless $blog;
-    return $blog->theme_id;
+    shift->invoke_handler('blogThemeID', @_);
 }
 
 ###########################################################################
