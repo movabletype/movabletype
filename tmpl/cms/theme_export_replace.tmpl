@@ -17,19 +17,16 @@ function submit_form(f, command) {
     <input type="hidden" name="__mode" value="do_export_theme" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <input type="hidden" name="theme_class" value="<mt:var name="theme_class" />" />
-    <input type="hidden" name="output" value="<mt:var name="output" />" />
-    <input type="hidden" name="theme_name" value="<mt:var name="theme_name">" />
-    <input type="hidden" name="theme_id" value="<mt:var name="theme_id">" />
-    <input type="hidden" name="theme_author_name" value="<mt:var name="theme_author_name">" />
-    <input type="hidden" name="theme_author_link" value="<mt:var name="theme_author_link">" />
-    <input type="hidden" name="theme_version" value="<mt:var name="theme_version">" />
-    <input type="hidden" name="description" value="<mt:var name="description">">
+    <input type="hidden" name="theme_class" value="<mt:var name="theme_class" escape="html"/>" />
+    <input type="hidden" name="output" value="<mt:var name="output" escape="html"/>" />
+    <input type="hidden" name="theme_name" value="<mt:var name="theme_name" escape="html">" />
+    <input type="hidden" name="theme_id" value="<mt:var name="theme_id" escape="html">" />
+    <input type="hidden" name="theme_author_name" value="<mt:var name="theme_author_name" escape="html">" />
+    <input type="hidden" name="theme_author_link" value="<mt:var name="theme_author_link" escape="html">" />
+    <input type="hidden" name="theme_version" value="<mt:var name="theme_version" escape="html">" />
+    <input type="hidden" name="description" value="<mt:var name="description" escape="html">">
 <mt:loop name="include">
-    <input type="hidden" name="include" value="<mt:var name="__value__">">
-</mt:loop>
-<mt:loop name="export_options">
-    <input type="hidden" name="<mt:var name="name">" value="<mt:var name="value">">
+    <input type="hidden" name="include" value="<mt:var name="__value__" escape="html">">
 </mt:loop>
     <input type="hidden" name="overwrite_yes" value="0" />
     <input type="hidden" name="overwrite_no" value="0" />
