@@ -525,9 +525,6 @@ sub _hdlr_entries {
                         tag_id => \@tag_ids, object_datasource => 'entry',
                         %blog_terms
                     }, { %blog_args, unique => 1 } );
-                    if (my $last = $args->{lastn} || $args->{limit}) {
-                        $args{limit} = $last;
-                    }
                 }
             }
             push @filters, sub { $cexpr->($preloader->($_[0]->id)) };
