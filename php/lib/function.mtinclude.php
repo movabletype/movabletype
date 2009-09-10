@@ -63,7 +63,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     $include_file = '';
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_system == 'php' &&
-        ((isset($args['ssi']) && $args['ssi']) || (isset($tmpl_meta->include_with_ssi) && $tmpl_meta->include_with_ssi))) {
+        ((isset($args['ssi']) && $args['ssi']) || $tmpl_meta->include_with_ssi)) {
 
         $ssi_enable = true;
 
@@ -97,16 +97,19 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cache_ttl = 0;
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_cache == 1 &&
-        ((isset($tmpl_meta->cache_expire_type) && ($tmpl_meta->cache_expire_type == '1' || $tmpl_meta->cache_expire_type == '2')) ||
-         ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['cache_key']) || isset($args['ttl']))))
+        ($tmpl_meta->cache_expire_type == '1' || $tmpl_meta->cache_expire_type == '2') ||
+         ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['cache_key']) || isset($args['ttl'])))
     {
+        $cache_blog_id = isset($args['global']) && $args['global'] == 1
+            ? 0
+            : $blog_id;
         $mt = MT::get_instance();
         $cache_enable = true;
         $cache_key = isset($args['key'])
             ? $args['key']
             : isset($args['cache_key'])
                 ? $args['cache_key']
-                : 'blog::' . $blog_id . '::template_' . $load_type  . '::' . $load_name;
+                : 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name;
 
         if (isset($args['ttl']))
             $cache_ttl = $args['ttl'];
@@ -167,7 +170,10 @@ function smarty_function_mtinclude($args, &$ctx) {
     $_var_compiled = '';
 
     if (!empty($load_type)) {
-        $cache_id = $load_type . '::' . $blog_id . '::' . $load_name;
+        $cache_blog_id = isset($args['global']) && $args['global'] == 1
+            ? 0
+            : $blog_id;
+        $cache_id = $load_type . '::' . $cache_blog_id . '::' . $load_name;
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {

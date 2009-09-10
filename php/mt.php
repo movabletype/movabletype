@@ -192,10 +192,10 @@ class MT {
         # Check for memcached enabled
         require_once("class.basecache.php");
         try {
-            $this->cache_driver = CacheProvidorFactory::get_providor('memcached');
+            $this->cache_driver = CacheProviderFactory::get_provider('memcached');
         } catch (Exception $e) {
             # Memcached not supported.
-            $this->cache_driver = CacheProvidorFactory::get_providor('session');
+            $this->cache_driver = CacheProviderFactory::get_provider('session');
         }
         return $this->cache_driver;
     }

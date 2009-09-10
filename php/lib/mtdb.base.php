@@ -63,7 +63,7 @@ abstract class MTDatabase {
         return $this->conn->SelectLimit($sql, $limit, $offset);
     }
 
-    protected function unserialize($data) {
+    public function unserialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
             $this->serializer = new MTSerialize();
