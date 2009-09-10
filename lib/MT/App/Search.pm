@@ -184,9 +184,14 @@ sub generate_cache_keys {
     my $q = $app->param;
     my @p = sort { $a cmp $b } $q->param;
     my ( $key, $count_key );
-    $key .= lc($_) . encode_url( $q->param($_) ) foreach @p;
-    $count_key .= lc($_) . encode_url( $q->param($_) )
-        foreach grep { ( 'limit' ne lc($_) ) && ( 'offset' ne lc($_) ) } @p;
+    foreach my $p ( @p ) {
+        foreach my $pp ( $q->param($p) ) {
+            $key .= lc($p) . encode_url( $pp  );
+            $count_key .= lc($p) . encode_url( $pp )
+                if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
+        }
+    }
+
     $app->{cache_keys} = { result => $key, count => $count_key, content_type => "HTTP_CONTENT_TYPE::$key" };
 }
 
