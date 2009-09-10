@@ -1,10 +1,14 @@
-/* Status Message -------------------------------------------------------------------------------- */
+/* - Status Message */
 .msg {
     position: relative;
     margin: 10px 0;
     padding: 0.8em;
     background-repeat: no-repeat;
     background-position: 8px center;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 .msg-success {
     background-color: #cee4ae;
@@ -68,8 +72,9 @@
     border-color: red;
 }
 
+/* -- for Permission Message */
 .msg .detail { 
-    margin-top: 10px;
+    margin: 10px 0 0 10px;
     color: #7b7c7d;
 }
 
@@ -77,12 +82,30 @@
     display: none;
 }
 
+/* - for Widget Content */
 p.zero-state { 
     margin-bottom: 0;
 }
 
-/* Debug Panel Messages ---------------------------------------------------------------------------------- */
+/* - Generic Website Message */
+#is-generic-website { 
+    margin: 0;
+    padding: 0.75em 0;
+    border-bottom: 1px solid #c8c2be;
+    background-color: #F2F2B0;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
 
+#is-generic-website p { 
+    margin: 0 auto;
+    padding: 0 20px;
+    font-size: 95%;
+}
+
+/* - Debug Panel Messages */
 .debug-panel {
     position: absolute;
     width: 100%;
