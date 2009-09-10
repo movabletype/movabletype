@@ -132,11 +132,6 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
     margin-left: 0;
 }
 
-ul#asset-list li a.remove-asset { 
-   top: -1px;
-   right: 13px;
-}
-
 /* - Dashbord Widget */
 .blog-stats-widget-panel { 
     width: 100%;
@@ -186,6 +181,7 @@ html#dialog {
 #editor .editor-header, 
 .widget-header, 
 .allow-feedback li, 
+ul#asset-list li, 
 .dialog #selector, 
 #template-options-header, 
 #template-options .field, 

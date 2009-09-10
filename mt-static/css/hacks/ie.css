@@ -121,7 +121,8 @@ ul.menu-nav li.first-child a {
 }
 
 ul#asset-list li a.remove-asset {
-   top: -4px;
+    top: 6px;
+    margin-top: 0;
 }
 
 /* - Listing Table */
