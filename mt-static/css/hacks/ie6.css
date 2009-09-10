@@ -46,7 +46,7 @@ body {
 }
 
 .batch-edit table input.text { 
-    width: auto;
+    width: 99%;
 }
 
 /* -- Component */
@@ -135,11 +135,6 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
 /* - Dashbord Widget */
 .blog-stats-widget-panel { 
     width: 100%;
-}
-
-/* - Listing */
-.batch-edit .entry-listing-table { 
-    table-layout: auto;
 }
 
 /* - List Theme */

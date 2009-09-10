@@ -118,8 +118,7 @@ textarea.larger-text {
 }
 
 #notification-listing-table input[type="text"], 
-.batch-edit input[type="text"], 
-.batch-edit select { 
+.batch-edit input[type="text"] { 
     width: 100%;
 }
 
@@ -1575,7 +1574,8 @@ optgroup option {
     table-layout: fixed;
 }
 .listing #folder-listing-table, 
-.listing #category-listing-table { 
+.listing #category-listing-table, 
+.batch-edit .listing .entry-listing-table { 
     table-layout: auto;
 }
 
@@ -1763,7 +1763,7 @@ tfoot th.last-child {
     vertical-align: middle;
 }
 .batch-edit .datetime { 
-    width: 18%;
+    width: 14em;
 }
 
 /* -- List Template */

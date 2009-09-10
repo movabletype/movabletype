@@ -122,7 +122,7 @@
                     <input type="text" name="title_<$mt:var name="id"$>" value="<$mt:var name="title" escape="html" default="..."$>" />
                     <mt:else>
                     <input type="hidden" name="title_<$mt:var name="id"$>" value="" />
-                    <input name="no_title_<$mt:var name="id"$>" style="color:#999;" value="<$mt:var name="title_short" escape="html"$>" onfocus="if(this.value=='<$mt:var name="title_short" escape="js"$>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<$mt:var name="title_short" escape="js"$>') || (this.value=='')){ this.value = '<$mt:var name="title_short" escape="js"$>'; this.style.color='#999'; }else{ title_<$mt:var name="id"$>.value=this.value; };" />
+                    <input type="text" name="no_title_<$mt:var name="id"$>" style="color:#999;" value="<$mt:var name="title_short" escape="html"$>" onfocus="if(this.value=='<$mt:var name="title_short" escape="js"$>'){this.value=''; this.style.color='#000';};" onblur="if((this.value=='<$mt:var name="title_short" escape="js"$>') || (this.value=='')){ this.value = '<$mt:var name="title_short" escape="js"$>'; this.style.color='#999'; }else{ title_<$mt:var name="id"$>.value=this.value; };" />
                     </mt:if>
                 <mt:else>
                     <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="title" escape="html" default="..."$></a>
