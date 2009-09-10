@@ -2494,10 +2494,10 @@ abstract class MTDatabase {
             }
         }
 
-        $order = $query_order = 'desc';
+        $order = $query_order = 'asc';
         if (isset($args['sort_order'])) {
-            if ($args['sort_order'] == 'ascend') {
-                $order = $query_order = 'asc';
+            if ($args['sort_order'] == 'descend') {
+                $order = $query_order = 'desc';
             }
         } elseif ((isset($blog) && isset($blog->blog_sort_order_comments)) && !isset($args['lastn'])) {
             if ($blog->blog_sort_order_comments == 'ascend') {
@@ -2621,8 +2621,12 @@ abstract class MTDatabase {
             return array();
 
         if ($reorder && !isset($args['sort_by'])) {  // lastn and ascending sort
-            $asc_created_on = create_function('$a,$b', 'return strcmp($a->comment_created_on, $b->comment_created_on);');
-            usort($comments, $asc_created_on);
+            if ( $order == 'asc' ) {
+                $resorting = create_function('$a,$b', 'return strcmp($a->comment_created_on, $b->comment_created_on);');
+            } else {
+                $resorting = create_function('$a,$b', 'return strcmp($b->comment_created_on, $a->comment_created_on);');
+            }
+            usort($comments, $resorting);
         }
 
         return $comments;

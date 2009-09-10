@@ -328,24 +328,18 @@ sub _hdlr_comments {
             } else {
                 @comments = @$cmts;
             }
-        } 
+        }
         # else look for most recent comments in the entire blog
         else {
             $args{'sort'} = lc $args->{sort_by} || 'created_on';
-            #if ($args->{lastn} || $args->{offset}) {
-            #    $args{'direction'} =  'descend';
-            #    $so = 'descend';
-            #} else {
-            #    $args{'direction'} =  'ascend';
-            #    $no_resort = 1
-            #        unless $args->{sort_order} || $args->{sort_by};
-            #}
+            if ($args->{lastn} || $args->{offset}) {
+                $args{'direction'} =  'descend';
+            } else {
+                $args{'direction'} =  $so ? $so : 'ascend';
+                $no_resort = 1
+                    unless $args->{sort_order} || $args->{sort_by};
+            }
             $args{'sort'} = 'created_on';
-            if ($so) {
-                $args{'direction'} = $so;
-             } else {
-                $args{'direction'} = 'descend';
-             }
 
             require MT::Comment;
             if (!@filters) {
