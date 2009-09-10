@@ -1253,7 +1253,34 @@ sub remove_children {
     my $obj_id = $obj->id;
     for my $class (@classes) {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $class;";
-        $class->remove({ $key => $obj_id });
+        $class->remove_children_multi( { $key => $obj_id } );
+    }
+    1;
+}
+
+sub child_key {
+    my $class = shift;
+    $class->datasource . '_id';
+} 
+
+sub remove_children_multi {
+    my $class = shift;
+    Carp::croak('Class method should not be called by an instance')
+        if ref($class);
+
+    my ( $terms ) = @_;
+    my $child_classes = $class->properties->{child_classes} || {};
+    my @classes = keys %$child_classes;
+
+    my @ids = map { $_->id } $class->load( $terms, { fetchonly => [ 'id' ], no_triggers => 1 } );
+    if ( @ids ) {
+        for my $child (@classes) {
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $child;";
+            $child->remove_children_multi( { $class->child_key() => \@ids } )
+                if @ids;
+        }
+
+        return $class->remove( $terms );
     }
     1;
 }
