@@ -83,18 +83,14 @@
         </div>
     </mt:unless>
 
-<mt:ignore>
     <mt:unless name="can_use_userpic">
-</mt:ignore>
         <div id="userpic" class="permission-error msg msg-info">
             <div class="title"><__trans phrase="Image::Magick is not configured."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
             <div class="detail">
                 <p><__trans phrase="Image::Magick is either not present on your server or incorrectly configured. Due to that, you will not be able to use Movable Type's userpics feature. If you wish to use that feature, please install Image::Magick or use an alternative image driver."></p>
             </div>
         </div>
-<mt:ignore>
     </mt:unless>
-</mt:ignore>
 
     </div>
 </mt:setvarblock>
