@@ -567,12 +567,16 @@ sub file_mgr {
 
 sub remove {
     my $blog = shift;
+    my $blog_id = $blog->id
+        if ref( $blog );
 
     $blog->remove_children({ key => 'blog_id'});
     my $res = $blog->SUPER::remove(@_);
-    if ((ref $blog) && $res) {
+    if ($blog_id && $res) {
         require MT::Permission;
-        MT::Permission->remove({ blog_id => $blog->id });
+        MT::Permission->remove({ blog_id => $blog_id });
+        require MT::PluginData;
+        MT::PluginData->remove( { blog_id => $blog_id } );
     }
     $res;
 }
