@@ -462,17 +462,9 @@ sub decode_entities {
         $str;
     }
 }
-{
-    my $has_encode = eval { require Encode; 1; };
 
 sub wordlist_match {
     my ($text, $patterns) = @_;
-
-    my $enc = MT::ConfigMgr->instance->PublishCharset;
-    if ($has_encode) {
-        $text = Encode::decode($enc, $text);
-        $patterns = Encode::decode($enc, $patterns);
-    }
 
     $text ||= '';
     my @patt = split /[\r\n]+/, $patterns;
@@ -503,24 +495,13 @@ sub wordlist_match {
             }
             $re = eval { qr/($re)/ };
             $re = $re_opt . quotemeta($patt) . $re_opt if $@;
-            if ($has_encode) {
-                push @matches, [ Encode::encode($enc, $patt),
-                    Encode::encode($enc, $1), int($score) ] if $text =~ m/($re)/;
-            } else {
-                push @matches, [ $patt, $1, int($score) ] if $text =~ m/($re)/;
-            }
+            push @matches, [ $patt, $1, int($score) ] if $text =~ m/($re)/;
         } else {
             my $re = $re_opt . quotemeta($patt) . $re_opt;
-            if ($has_encode) {
-                push @matches, [ Encode::encode($enc, $patt),
-                    Encode::encode($enc, $1), int($score) ] if $text =~ m/($re)/i;
-            } else {
-                push @matches, [ $patt, $1, int($score) ] if $text =~ m/($re)/i;
-            }
+            push @matches, [ $patt, $1, int($score) ] if $text =~ m/($re)/i;
         }
     }
     @matches;
-}
 }
 
 sub domain_or_ip_in_whitelist {
