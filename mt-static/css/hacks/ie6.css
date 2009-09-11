@@ -56,7 +56,8 @@ body {
     text-align: center;
 }
 
-#brand a span { 
+#brand a span, 
+.preview-screen #brand span { 
     display: inline-block;
     width: 170px;
     height: 25px;
@@ -64,10 +65,10 @@ body {
     background: transparent url(../../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
 }
 
-.website #brand a span {
+.website a #brand span {
     background-image: url(../../images/logo/movable-type-brand-logo-website.png);
 }
-.system #brand a span {
+.system a #brand span {
     background-image: url(../../images/logo/movable-type-brand-logo-system.png);
 }
 

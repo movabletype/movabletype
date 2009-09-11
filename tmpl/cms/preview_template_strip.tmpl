@@ -36,6 +36,8 @@
 <mt:else>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:if>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
     <script type="text/javascript">
         /* <![CDATA[ */
         CMSScriptURI = '<$mt:var name="mt_url"$>';
@@ -55,7 +57,7 @@
 </head>
 <body class="main-screen preview-screen">
 <div id="brand">
-    <img alt="<$mt:var name="mt_product_name"$>" src="<$mt:var name="static_uri"$>images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" />
+    <span><img alt="<$mt:var name="mt_product_name"$>" src="<$mt:var name="static_uri"$>images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span>
 </div>
 <table id="preview-layout">
     <tr>
@@ -106,6 +108,7 @@
 <script type="text/javascript">
     /* <![CDATA[ */
         App.bootstrapInline( false );
+        jQuery('#brand span').pngfix();
     /* ]]> */
 </script>
 </mt:unless>

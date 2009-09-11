@@ -69,12 +69,10 @@ input.extra-path {
 /* -- Button */
 button { 
     min-height: 20px;
-    padding: 0 auto;
 }
 
 button.action { 
     font-weight: bold;
-    padding: 0 auto;
     height: 23px;
 }
 
