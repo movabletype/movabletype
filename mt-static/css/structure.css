@@ -126,6 +126,10 @@ textarea.larger-text {
     width: 60%;
 }
 
+.plugin-actions select { 
+    margin-right: 2px;
+}
+
 /* - Component */
 .hint { 
     max-width: 650px;
@@ -1037,6 +1041,7 @@ fieldset {
 }
 .listing .plugin-actions { 
     position: static;
+    margin-left: 12px;
 }
 
 .listing-screen .actions-bar { 
@@ -1545,6 +1550,10 @@ optgroup option {
     margin: 0 -10px 15px;
 }
 
+.news-widget .news-widget-list {
+    display: none;
+}
+
 /* - Listing */
 .listing-filter { 
     margin-bottom: 10px;
@@ -1599,7 +1608,7 @@ optgroup option {
 
 .listing th, 
 .listing td { 
-    padding: 8px 10px;
+    padding: 7px 8px;
     font-family: "Lucida Grande", Verdana, sans-serif;
     text-align: left;
 }
@@ -1681,7 +1690,7 @@ tfoot th.last-child {
 .listing .cb, 
 .listing .si, 
 .listing .view { 
-    width: 2.3em;
+    width: 2.5em;
     padding-right: 0;
     padding-left: 0;
     text-align: center;
