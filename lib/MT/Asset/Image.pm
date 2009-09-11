@@ -260,6 +260,7 @@ sub as_html {
     my $app = MT->instance;
     $param->{enclose} = 0 unless ($app->param('edit_field') =~ /^customfield/);
     $param->{enclose} = 1 unless exists $param->{enclose};
+    $param->{enclose} = 1 if $param->{community_pack};
 
     if ( $param->{include} ) {
 
