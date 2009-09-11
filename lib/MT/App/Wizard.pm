@@ -63,6 +63,7 @@ sub init_request {
 
     if ( $mode eq 'retry' ) {
         $new_step = $step;
+        $app->delete_param('test') if $app->param('test');
     }
     elsif ( $mode eq 'test' ) {
         $new_step = $step;
@@ -86,6 +87,7 @@ sub init_request {
             }
             $prev_step = $s->{key};
         }
+        $app->delete_param('test') if $app->param('test');
     }
 
     # If mt-check.cgi exists, redirect to errro screen
