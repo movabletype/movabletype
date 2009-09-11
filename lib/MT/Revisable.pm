@@ -176,6 +176,10 @@ sub gather_changed_cols {
     
     $obj->{changed_revisioned_cols} = \@changed_cols
         if @changed_cols;
+
+    my $class = ref $obj || $obj;
+    MT->run_callbacks($class . '::gather_changed_cols', $obj, @_);
+
     1;
 }
 
@@ -507,6 +511,18 @@ This callback is called just before the revision is saved.
     }
     
 This callback is called immediately after a revision is saved. 
+
+=head2 <package>::gather_changed_cols
+
+    sub post_save_revision {
+        my ($cb, $obj, $rev_number) = @_;
+        
+    }
+    
+This callback is called when MT gathered changed columns from
+object columns.  Plugins can use the callback to add more column
+such as the ones added by plugins themselves that may not be
+detected by the default handler.
 
 =head1 DRIVERS
 
