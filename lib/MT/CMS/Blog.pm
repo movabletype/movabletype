@@ -1675,6 +1675,7 @@ sub post_save {
                            -path => '/',
                            ($timeout ? (-expires => $timeout) : ()));
         $app->bake_cookie(%id_kookee);
+        $app->make_commenter_session($auth);
 
         require MT::Log;
         $app->log(
