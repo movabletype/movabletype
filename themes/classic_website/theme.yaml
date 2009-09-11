@@ -11,6 +11,8 @@ l10n_lexicon:
         Classic Website: クラシックウェブサイト
         Create a blog portal that aggregates contents from blogs under the website.: 'ウェブサイト内のブログの新着情報を表示するポータル・ウェブサイト。'
 thumbnail_file: thumb.png
+thumbnail_file_medium: thumb-medium.png
+thumbnail_file_small: thumb-small.png
 elements:
     template_set:
         component: core
