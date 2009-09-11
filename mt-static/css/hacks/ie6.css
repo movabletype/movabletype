@@ -175,7 +175,8 @@ ul#asset-list li,
 .dialog #selector, 
 #template-options-header, 
 #template-options .field, 
-.widget-content .field-content { 
+.widget-content .field-content, 
+#asset_container .widget-content { 
     display: block;
     zoom: 1;
 }
