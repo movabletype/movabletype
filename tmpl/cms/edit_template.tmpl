@@ -765,10 +765,12 @@ var editor = CodeMirror.fromTextArea('text', {
     jQuery('button.save, button.publish').click(function() {
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
         jQuery('form#template-listing-form').submit();
+        return false;
     });
     jQuery('button.preview').click(function() {
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
         jQuery('form#template-listing-form').submit();
+        return false;
     });
     jQuery('input#save_revision').click(function() {
         jQuery('input#revision-note').toggle();
