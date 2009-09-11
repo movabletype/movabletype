@@ -2321,8 +2321,7 @@ td.sub-label label {
 
 .ui-datepicker .ui-datepicker-header { 
     position: relative;
-    margin-bottom: 10px;
-    background-color: #33789C;
+    background-color: #5c909b;
 }
 
 .ui-datepicker .ui-datepicker-title { 
@@ -2337,13 +2336,15 @@ td.sub-label label {
 .ui-datepicker .ui-datepicker-next { 
     position: absolute;
     top: 2px;
+    width: 15px;
+    height: 15px;
+    margin-bottom: 2px;
     color: white;
+    text-align: center;
 }
-
 .ui-datepicker .ui-datepicker-prev { 
     left: 2px;
 }
-
 .ui-datepicker .ui-datepicker-next { 
     right: 2px;
 }
@@ -2355,19 +2356,18 @@ td.sub-label label {
 }
 
 .ui-datepicker th { 
-    padding: 0.7em 0.5em;
+    padding: 0.7em 0.5em 0;
     text-align: center;
     font-weight: bold;
+    font-family: monospace;
 }
 
 .ui-datepicker thead .ui-datepicker-week-end { 
     color: #7b7c7d;
 }
-
 .ui-datepicker thead span[title=Sunday] { 
     color: #F55;
 }
-
 .ui-datepicker span[title=Saturday] { 
     color: #3B83F3;
 }
@@ -2397,6 +2397,16 @@ td.sub-label label {
     text-align: right;
     text-decoration: none;
     color: #333;
+}
+
+.ui-datepicker, 
+.ui-datepicker .ui-datepicker-header,
+.ui-datepicker .ui-datepicker-prev, 
+.ui-datepicker .ui-datepicker-next { 
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
 
 /* --- Publish Buttons */
@@ -4245,3 +4255,4 @@ body.dialog {
     background: transparent url(../images/beta_icons/beta_icon.png) left center no-repeat;
     text-align: left;
 }
+
