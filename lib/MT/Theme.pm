@@ -115,7 +115,9 @@ sub _load_from_registry {
         id             => "$id",
         type           => 'registry',
         label          => $reg->{label},
-        thumbnail_file => $reg->{thumbnail_file},
+        thumbnail_file        => $reg->{thumbnail_file},
+        thumbnail_file_medium => $reg->{thumbnail_file_medium},
+        thumbnail_file_small  => $reg->{thumbnail_file_small},
         author_name    => $reg->{author_name},
         author_link    => $reg->{author_link},
         version        => $reg->{version},
@@ -161,7 +163,9 @@ sub _load_from_themes_directory {
     my $props = {
         id             => $theme_id,
         type           => 'package',
-        thumbnail_file => $y->{thumbnail_file},
+        thumbnail_file        => $y->{thumbnail_file},
+        thumbnail_file_medium => $y->{thumbnail_file_medium},
+        thumbnail_file_small  => $y->{thumbnail_file_small},
         author_name    => $y->{author_name},
         author_link    => $y->{author_link},
         version        => $y->{version},
@@ -398,7 +402,6 @@ sub thumbnail {
         return ( $theme->default_theme_thumbnail(%param) );
     }
     my $file = $theme->_thumbnail_filename(%param);
-
     my $url = join '/', MT->support_directory_url, _thumbnail_dir(), $theme->{id}, $file;
     return ( $url, $theme->_thumbnail_size(%param) );
 }
@@ -446,14 +449,27 @@ sub _thumbnail_filename {
 sub _mk_thumbnail {
     my $theme     = shift;
     my (%param)   = @_;
-    my $original_file = $theme->{thumbnail_file} or return;
-    my $original_file_path = File::Spec->catfile( $theme->path, $original_file );
+    my $size_key = {
+        large  => 'thumbnail_file',
+        medium => 'thumbnail_file_medium',
+        small  => 'thumbnail_file_small',
+    };
+    my $size = $param{size} || 'large';
+    my $resize;
+    my $original_file;
+    if ( exists $theme->{ $size_key->{$size} } ) {
+        $original_file = $theme->{ $size_key->{$size} };
+    }
+    else {
+        $original_file = $theme->{thumbnail_file};
+        $resize = 1 if $size ne 'large';
+    }
 
+    my $original_file_path = File::Spec->catfile( $theme->path, $original_file );
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local')
         or return;
     return unless $fmgr->exists($original_file_path);
-
     my ($n_w, $n_h) = $theme->_thumbnail_size(%param)
         or return;
     my $target_file = $theme->_thumbnail_filename(%param)
@@ -467,7 +483,6 @@ sub _mk_thumbnail {
         $thumbnail_dir,
         $target_file );
 
-
     $fmgr->exists($thumbnail_file_path)
         and return $thumbnail_file_path;
     # non-existent thumbnail. let's create one!
@@ -477,21 +492,23 @@ sub _mk_thumbnail {
         unless $fmgr->can_write($thumbnail_dir);
 
     my $data;
-    # create a thumbnail for this file
-    require MT::Image;
-    my $img = new MT::Image( Filename => $original_file_path )
-      or return $theme->error( MT::Image->errstr );
-
-    ($data) = $img->scale( Height => $n_h, Width => $n_w )
-      or return $theme->error(
-        MT->translate( "There was an error scaling image [_1].", $img->errstr ) );
-
-    if (my $type = $param{Type}) {
-        ($data) = $img->convert( Type => $type )
+    if ( $resize ) {
+        # create a thumbnail for this file
+        require MT::Image;
+        my $img = new MT::Image( Filename => $original_file_path )
+          or return $theme->error( MT::Image->errstr );
+        ($data) = $img->scale( Height => $n_h, Width => $n_w )
           or return $theme->error(
-            MT->translate( "There was an error converting image [_1].", $img->errstr ) );
+            MT->translate( "There was an error scaling image [_1].", $img->errstr ) );
+        if (my $type = $param{Type}) {
+            ($data) = $img->convert( Type => $type )
+              or return $theme->error(
+                MT->translate( "There was an error converting image [_1].", $img->errstr ) );
+        }
     }
-
+    else {
+        $data = $fmgr->get_data($original_file_path, 'upload');
+    }
     $fmgr->put_data( $data, $thumbnail_file_path, 'upload' )
       or return $theme->error(
         MT->translate( "There was an error creating thumbnail file [_1].", $fmgr->errstr ) );
