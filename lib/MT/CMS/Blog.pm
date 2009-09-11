@@ -1125,6 +1125,9 @@ sub cc_return {
     my $code  = $app->param('license_code');
     my $url   = $app->param('license_url');
     my $image = $app->param('license_button');
+    if ( $code eq '[license_code]' && $url ) {
+        ( $code ) = $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)/!ig;
+    }
     my %param = ( license_name => MT::Util::cc_name($code) );
     if ($url) {
         $param{license_code} = "$code $url $image";
