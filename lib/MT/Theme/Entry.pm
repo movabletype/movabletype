@@ -34,11 +34,15 @@ sub _add_entries {
             blog_id  => $blog->id,
         });
         my $obj = MT->model($class)->new();
+        my $current_lang = MT->current_language;
+        MT->set_language($blog->language);
         $obj->set_values({
-            map { $_ => $theme->translate( $entry->{$_} ) }
+            map { $_ => $theme->translate_templatized( $entry->{$_} ) }
             grep { exists $entry->{$_} }
             @text_fields
         });
+        MT->set_language( $current_lang );
+
         $obj->basename( $basename );
         $obj->blog_id( $blog->id );
         $obj->author_id( $app->user->id );
