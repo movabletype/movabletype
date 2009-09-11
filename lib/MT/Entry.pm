@@ -861,6 +861,8 @@ sub gather_changed_cols {
     my $changed_cols = $obj->{changed_revisioned_cols} || [];
 
     return 1 unless $obj->id;
+    # there is a changed col; no need to check something else
+    return 1 if @$changed_cols;
 
     # check if tag was changed
     my $tag_changed = 0;
