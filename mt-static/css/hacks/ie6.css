@@ -18,12 +18,6 @@ body {
     width: 97%;
 }
 
-.basename-text { 
-    display: inline-block;
-    width: 90% ! important;
-    overflow: hidden ! important;
-}
-
 #template-options input.text { 
     width: 80%;
 }
