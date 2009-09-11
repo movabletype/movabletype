@@ -620,7 +620,7 @@ sub asset_list_filters {
     # If current context is website, adding the website filter.
     if ( $app->blog && !$app->blog->is_blog ) {
         $filters{'this_website'} = {
-            label => $app->translate('[_1] of this website', 'Assets'),
+            label => $app->translate('[_1] of this website', MT::Asset->class_label_plural),
             order => 100,
             handler => sub {
                 my ( $terms, $args ) = @_;
@@ -1046,7 +1046,7 @@ sub _upload_file {
         }
         return $app->error(
             $app->translate(
-                "Before you can upload a file, you need to publish your blog."
+                'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.'
             )
         ) unless -d $root_path;
         $relative_path = $q->param('extra_path');

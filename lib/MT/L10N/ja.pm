@@ -1061,7 +1061,7 @@ use vars qw( @ISA %Lexicon );
 	'Couldn\'t save the session' => 'セッションを保存できませんでした。',
 	'Could not load Net::OpenID::Consumer.' => 'Net::OpenID::Consumerをロードできませんでした。',
 	'The address entered does not appear to be an OpenID' => '入力されたアドレスはOpenIDではありません。',
-	'The text entered does not appear to be a web address' => 'Webのアドレスを入力してください。',
+	'The text entered does not appear to be a web address' => '正しいURLを入力してください。',
 	'Unable to connect to [_1]: [_2]' => '[_1]に接続できません: [_2]',
 	'Could not verify the OpenID provided: [_1]' => 'OpenIDを検証できませんでした: [_1]',
 
@@ -1670,6 +1670,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Migrating permissions to roles...' => '権限をロールに移行しています...',
 
 ## lib/MT/Upgrade/Core.pm
+	'Upgrading Asset path informations...' => 'アイテムパス情報を更新しています...',
 	'Creating initial blog and user records...' => '初期ユーザーとブログを作成しています...',
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
 	'I just finished installing Movable Type [_1]!' => 'Movable Type [_1] へようこそ！',
@@ -1809,7 +1810,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
 	'Please select an image to upload.' => 'アップロードする画像を選択してください。',
 	'Please select a video to upload.' => 'アップロードするビデオファイルを選択してください。',
-	'Before you can upload a file, you need to publish your blog.' => 'ファイルをアップロードする前にブログの公開設定を行ってください。',
+	'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.' => 'アップロード先のディレクトリに書き込みできません。ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'Invalid extra path \'[_1]\'' => '追加パスが不正です。',
 	'Can\'t make path \'[_1]\': [_2]' => 'パス\'[_1]\'を作成できませんでした: [_2]',
 	'Invalid temp file name \'[_1]\'' => 'テンポラリファイルの名前\'[_1]\'が不正です。',
@@ -2628,15 +2629,15 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Language' => '使用言語',
 	'Default language.' => '既定の使用言語',
 	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => 'エラー: \'[_1]\'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。',
-	'Configure Static Web Path' => 'Static Web Pathの設定',
+	'Configure Static Web Path' => 'スタティックウェブパの設定',
 	'Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Typeには、[_1]ディレクトリが標準で含まれています。この中には画像ファイルやJavaScript、スタイルシートなどの重要なファイルが含まれています。',
-	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => '[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、その場所にはWebブラウザからアクセスできません。Webサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。',
+	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => '[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、その場所にはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。',
 	'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'mt-static ディレクトリはMovable Typeのインストールディレクトリの外部に移動されたかまたは名前が変更されているようです。',
 	'Once the [_1] directory is in a web-accessible location, specify the location below.' => '[_1]ディレクトリをウェブアクセス可能な場所に置く場合には、以下にその場所を指定してください。',
 	'This URL path can be in the form of [_1] or simply [_2]' => 'このURLは[_1]のように記述するか、または簡略化して[_2]のように記述できます。',
 	'This path must be in the form of [_1]' => 'このパスは[_1]のように記述してください。',
-	'Static web path' => 'Static web path',
-	'Static file path' => 'Static file path',
+	'Static web path' => 'スタティックウェブパス',
+	'Static file path' => 'スタティックファイルパス',
 	'Begin' => '開始',
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => '構成ファイル(mt-config.cgi)はすでに存在します。Movable Typeに<a href="[_1]">サインイン</a>してください。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
@@ -3239,7 +3240,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => '[_1]は自動保存されました。<a href="[_2]">自動保存された内容を元に戻す</a>',
 	'You have successfully recovered your saved [_1].' => '[_1]を元に戻しました。',
 	'An error occurred while trying to recover your saved [_1].' => '[_1]を元に戻す際にエラーが発生しました。',
-	'Restored revision (Date:[_1]).' => 'リビジョン(Date: [_1])に戻しました。',
+	'Restored revision (Date:[_1]).' => 'リビジョン(日付: [_1])に戻しました。',
 	'Your template changes have been saved.' => 'テンプレートの変更を保存しました。',
 	'<a href="[_1]" class="rebuild-link">Publish</a> this template.' => 'このテンプレートを<a href="[_1]" class="rebuild-link">再構築する</a>',
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
@@ -3387,6 +3388,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Publishing [_1] dynamic links...' => '[_1] のダイナミックリンクを再構築中...',
 	'Publishing [_1] archives...' => '[_1]アーカイブを再構築中...',
 	'Publishing [_1] templates...' => '[_1]テンプレートを再構築中...',
+	'[_1]% Complete' => '処理済:[_1]%',
 
 ## tmpl/cms/list_member.tmpl
 	'Are you sure you want to remove the user from this role?' => 'ユーザーから、このロールを削除しますか？',
@@ -3438,7 +3440,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/include/asset_upload.tmpl
 	'You must set a valid destination.' => '正しいアップロード先を指定してください。',
-	'Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]\'s publishing paths[_3] and republish your [_1].' => 'ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]の[_1]の公開パス([_3]の設定をして[_1]を再構をしてください。',
+	'Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]\'s publishing paths[_3] and republish your [_1].' => 'ファイルのアップロードができるように、[_1]を再構築する必要があります。[_2]公開パスの設定[_3]して、[_1]を再構築してください。',
 	'Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator.' => 'ファイルアップロードができるように、システム、または[_1]管理者が[_1]を再構築する必要があります。システム、または[_1]管理者に連絡してください。',
 	'Asset file(\'[_1]\') has been uploaded.' => 'アイテム(\'[_1]\')がアップロードされました。',
 	'Select File to Upload' => 'アップロードするファイルを選択',
@@ -3502,6 +3504,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'サブカテゴリを追加',
 	'Add new' => '新規追加',
+	'Add sub folder' => 'サブフォルダを追加',
 
 ## tmpl/cms/include/login_mt.tmpl
 
@@ -3700,7 +3703,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => '変更履歴がありません。',
 	'Note' => 'メモ',
-	'By' => ' ',
+	'Saved By' => '保存したユーザー',
 
 ## tmpl/cms/include/feed_link.tmpl
 	'Activity Feed' => 'ログフィード',
@@ -3930,7 +3933,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Failed' => '失敗',
 	'Current Theme' => '現在のテーマ',
-	'Applied to [_1] blog(s).' => '[_1]ブログで適用されています。',
+	'In Use' => '利用中',
 	'Uninstall' => 'アンインストール',
 	'Author: ' => '作者: ',
 	'This theme cannot be applied to the website due to [_1] errors' => '次の理由により、テーマを適用できませんでした。',
@@ -3946,7 +3949,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Themes for Websites' => 'ウェブサイト用テーマ',
 
 ## tmpl/cms/backup.tmpl
-	'What to Backup' => 'バックアップするブログを選択',
+	'What to Backup' => 'バックアップ対象',
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、ブログ記事、カテゴリ、テンプレート、タグをバックアップできます。',
 	'Everything' => 'すべて',
 	'Choose websites...' => 'ウェブサイト選択...',
@@ -4030,7 +4033,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'An error occurred while trying to recover your saved page.' => 'ウェブページを元に戻す際にエラーが発生しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
-	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'リビジョン(Date: [_1])に戻しました。ステータス: [_2]',
+	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'リビジョン(日付: [_1])に戻しました。ステータス: [_2]',
 	'Some of tags in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかったタグがあります。',
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
 	'Change Folder' => 'フォルダの変更',
@@ -4154,7 +4157,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The URL of your website. Exclude the filename (i.e. index.html).  End with \'/\'. Example: http://www.example.com/' => 'ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。 例: http://www.example.com/',
 	'Note: Changing your site root requires a complete publish of your site.' => '注: サイトパスを変更した場合にはブログの再構築が必要です。',
 	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'インデックスファイルを配置するパスです。末尾には\'/\'を含めません。例: /home/mt/public_html/blog あるいは C:¥www¥public_html¥blog',
-	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(\'/\'または\'C:¥\'で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:¥www¥public_html',
+	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\\\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'インデックスファイルを配置するパスです。絶対パス(\'/\'または\'C:¥\'で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/mt/public_html あるいは C:¥www¥public_html',
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Site Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of Site Root' => 'アーカイブをサイトパスとは別のパスで公開する',
@@ -4627,7 +4630,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Register' => '登録する',
 
 ## tmpl/comment/auth_typepad.tmpl
-	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のWebサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
+	'TypePad is a free, open system providing you a central identity for posting comments on weblogs and logging into other websites. You can register for free.' => 'TypePadはブログにコメントを投稿したり他のウェブサイトにログインするときに使える、フリーでオープンな認証システムを提供します。',
 	'Sign in or register with TypePad.' => 'TypePadでサインイン、またはアカウントを登録する',
 
 ## tmpl/comment/auth_vox.tmpl

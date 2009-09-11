@@ -1,5 +1,5 @@
 <mt:if name="blog_id">
-    <mt:setvarblock name="page_title"><__trans phrase="[_1] Templates" params="<mt:if name="is_blog">Blog<mt:else>Website</mt:if>"></mt:setvarblock><mt:else><mt:setvarblock name="page_title"><__trans phrase="Global Templates"></mt:setvarblock></mt:if>
+    <mt:setvarblock name="page_title"><__trans phrase="[_1] Templates" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"></mt:setvarblock><mt:else><mt:setvarblock name="page_title"><__trans phrase="Global Templates"></mt:setvarblock></mt:if>
 <mt:setvarblock name="related_content">
     <mtapp:widget
         id="quickfilters"
