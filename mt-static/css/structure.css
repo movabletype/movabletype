@@ -230,7 +230,7 @@ ul.tabs li a {
     min-width: 930px;
     min-height: 480px;
     margin: 0 auto;
-    padding: 20px 20px 120px;
+    padding: 20px 20px 150px;
 }
 
 .has-menu-nav #menu { 
@@ -954,6 +954,18 @@ ul.menu-nav a.dashboard-link.first-child {
 .widget-content li.active em { 
     font-style: normal;
     font-weight: bold;
+}
+
+/* - Status widget */
+.loaded-revision .status-widget { 
+    background-color: #f2f2b0;
+}
+
+.status-widget .revision-info { 
+    margin-bottom: 10px;
+}
+.status-widget .revision-info p { 
+    margin-bottom: 5px;
 }
 
 /* - Fields */
@@ -2275,21 +2287,11 @@ td.sub-label label {
 #entry-status-widget { 
     position: relative;
 }
-.loaded-revision #entry-status-widget { 
-    background-color: #F2F2B0;
-}
 
 #entry-status-widget .status { 
     position: absolute;
     top: 7px;
     right: 10px;
-}
-
-#entry-status-widget .revision-info { 
-    margin-bottom: 10px;
-}
-#entry-status-widget .revision-info p { 
-    margin-bottom: 5px;
 }
 
 /* -- Publishing Widget */
@@ -2879,10 +2881,6 @@ body.preview-screen {
     -webkit-border-top-left-radius: 5px;
     -khtml-border-top-left-radius: 5px;
     border-top-left-radius: 5px;
-}
-
-.loaded-revision #template-status-widget { 
-    background-color: #f2f2b0;
 }
 
 /* - Edit Asset */
@@ -4223,6 +4221,11 @@ body.dialog {
     top: 15px;
     left: 245px;
 }
+
+.mt-beta #container { 
+    padding-bottom: 180px;
+}
+
 
 .mt-beta #footer { 
     padding-top: 0;

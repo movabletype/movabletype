@@ -284,6 +284,7 @@
 <mt:setvarblock name="related_content">
 <mtapp:widget
     id="entry-status-widget"
+    class="status-widget"
     label="<__trans phrase="Status">">
     <div class="status">
 <mt:unless name="new_object">
@@ -423,7 +424,11 @@
 
     <mt:setvarblock name="button_text"><mt:if name="new_object"><__trans phrase="Publish"><mt:else><mt:if name="status_publish"><__trans phrase="Update"><mt:else><__trans phrase="Publish"></mt:if></mt:if></mt:setvarblock>
     <mt:setvarblock name="button_title"><mt:if name="new_object"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"><mt:else><mt:if name="status_publish"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"><mt:else><__trans phrase="Publish this [_1]" params="<mt:var name="object_type">" escape="html"></mt:if></mt:if></mt:setvarblock>
+<mt:if name="new_object">
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
+<mt:else>
+    <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
+</mt:if>
     <mt:setvar name="scheduled_button_title" value="<__trans phrase="Save this [_1]" params="$object_label" escape="html">">
 
     <div class="actions-bar">
