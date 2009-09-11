@@ -457,14 +457,13 @@ sub _mk_thumbnail {
     my $size = $param{size} || 'large';
     my $resize;
     my $original_file;
-    if ( exists $theme->{ $size_key->{$size} } ) {
+    if ( $theme->{ $size_key->{$size} } ) {
         $original_file = $theme->{ $size_key->{$size} };
     }
     else {
         $original_file = $theme->{thumbnail_file};
         $resize = 1 if $size ne 'large';
     }
-
     my $original_file_path = File::Spec->catfile( $theme->path, $original_file );
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local')
