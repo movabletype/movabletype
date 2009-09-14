@@ -53,12 +53,9 @@ input.extra-path {
     width: 96%;
 }
 
-#sign-in input[type="text"]
-    width: 313px;
-}
-
 #sign-in #username, 
-#sign-in #password { 
+#sign-in #password, 
+#change-password input { 
     width: 335px ! important;
 }
 

@@ -110,6 +110,10 @@ input.smaller-text {
     margin-left: 12px;
 }
 
+#change-password #container input { 
+    width: 100%;
+}
+
 /* - Component */
 .ready {
     font-weight: bold;
@@ -365,8 +369,9 @@ button.action:hover {
     background-position: 3px center;
 }
 
-/* -- Reset Password */
-#reset-password #container { 
+/* -- Reset Password, Change Password */
+#reset-password #container, 
+#change-password #container { 
     width: 340px;
 }
 
