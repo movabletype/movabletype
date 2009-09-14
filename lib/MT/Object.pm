@@ -299,14 +299,14 @@ sub install_properties {
     $class->add_trigger( '__core_final_post_load',
         sub {
             my ($obj) = @_;
-            my $data = $obj->get_values;
+            my $data = $obj->{column_values};
+            my %is_blob = map { $_ => 1 } $obj->columns_of_type('blob');
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
-                if ( !( Encode::is_utf8($v)) && $obj->column_def($_)->{type} ne 'blob' ) {
+                if ( !( Encode::is_utf8($data->{$_})) && !$is_blob{$_} ) {
                     $data->{$_} = Encode::decode($enc, $v);
                 }
             }
-            $obj->set_values($data, { no_changed_flag => 1 });
             $obj->{__core_final_post_load_mark} = 1;
         },
     );
