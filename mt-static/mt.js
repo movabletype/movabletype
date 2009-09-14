@@ -362,25 +362,6 @@ function dialogKeyPress(e) {
     }
 }
 
-function openDialog(f, mode, params) {
-    var url = ScriptURI;
-    url += '?__mode=' + mode;
-    if (params) url += '&' + params;
-    url += '&__type=dialog';
-    if (window.app) window.app.closeFlyouts();
-    show("dialog-container");
-    // handle escape key for closing modal dialog
-    DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
-    openDialogUrl(url);
-    if ( document.all && DOM.getElement( "dialog-container" ) ) {
-        DOM.addClassName( "dialog-container", "hidden" );
-        new Timer(function() {
-            DOM.removeClassName( "dialog-container", "hidden" );
-        }, 500, 1 );
-    }
-    return false;
-}
-
 function openDialogUrl(url) {
     var iframe = getByID("dialog-iframe");
     var frame_d = iframe.contentDocument;
