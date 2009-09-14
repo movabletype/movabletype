@@ -2629,7 +2629,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Language' => '使用言語',
 	'Default language.' => '既定の使用言語',
 	'<strong>Error: \'[_1]\' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect.' => 'エラー: \'[_1]\'が見つかりませんでした。ファイルをmt-staticディレクトリに移動するか、設定を修正してください。',
-	'Configure Static Web Path' => 'スタティックウェブパの設定',
+	'Configure Static Web Path' => 'スタティックウェブパスの設定',
 	'Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets.' => 'Movable Typeには、[_1]ディレクトリが標準で含まれています。この中には画像ファイルやJavaScript、スタイルシートなどの重要なファイルが含まれています。',
 	'The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server\'s configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory).' => '[_1]ディレクトリは、Movable Typeのメインディレクトリ(このウィザード自身も含まれている)以下で見つかりました。しかし現在のサーバーの構成上、その場所にはWebブラウザからアクセスできません。ウェブサイトのルートディレクトリの下など、Webブラウザからアクセスできる場所に移動してください。',
 	'This directory has either been renamed or moved to a location outside of the Movable Type directory.' => 'mt-static ディレクトリはMovable Typeのインストールディレクトリの外部に移動されたかまたは名前が変更されているようです。',
@@ -2858,9 +2858,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/dialog/asset_replace.tmpl
 
 ## tmpl/cms/dialog/new_password.tmpl
-	'Choose New Password' => '新しいパスワードを選択',
-	'Confirm Password' => 'パスワード確認',
 	'Change Password' => 'パスワードの変更',
+	'New Password' => '新しいパスワード',
+	'Confirm New Password' => '新しいパスワード確認',
+	'Change' => '変更',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
 	'Export Theme: [_1]' => 'エクスポートテーマ: [_1]',
@@ -4311,7 +4312,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Existing password required to create a new password.' => 'パスワード変更には現在のパスワードが必要です。',
 	'Initial Password' => '初期パスワード',
 	'Enter preferred password.' => '新しいパスワードを入力してください。',
-	'New Password' => '新しいパスワード',
 	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'Password recovery word/phrase' => 'パスワード再設定用のフレーズ',
 	'This word or phrase is not used in the password recovery.' => 'パスワード再設定用のフレーズは使用されていません。',
