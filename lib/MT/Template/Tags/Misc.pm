@@ -144,7 +144,7 @@ B<Example:>
 
 sub _hdlr_widget_manager {
     my ( $ctx, $args, $cond ) = @_;
-    my $tmpl_name = $args->{name}
+    my $tmpl_name = delete $args->{name}
         or return $ctx->error(MT->translate("name is required."));
     my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
     my $tmpl = MT->model('template')->load({ name => $tmpl_name,
@@ -174,12 +174,17 @@ sub _hdlr_widget_manager {
     ## build modules via mt:include since mt:include handles SSI cache.
     {
         local $ctx->{__stash}{tag} = 'include';
-        for my $name ( @widget_names ) {
+        for my $widget ( @widgets ) {
+            my $name = $widget->name;
+            my $stash_id = Encode::encode_utf8('template_widget' . '::' . $blog_id . '::' . $name);
+            my $req = MT::Request->instance;
+            my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );
+            $req->stash($stash_id, [ $widget, $tokens ] );
             my $out = $ctx->invoke_handler(
                 'include',
                 {
                     %$args,
-                    widget => $name
+                    widget => $name,
                 },
                 $cond,
             );
