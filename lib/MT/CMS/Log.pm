@@ -7,7 +7,7 @@ package MT::CMS::Log;
 
 use strict;
 
-use MT::Util qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url break_up_text );
+use MT::Util qw( format_ts epoch2ts ts2epoch relative_date offset_time encode_url dirify encode_url );
 use MT::I18N qw( const );
 
 sub view {
@@ -189,12 +189,8 @@ sub build_log_table {
     # reusing comment length constant for log view
     my $break_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TEXT_SHORT');
     while ( my $log = $iter->() ) {
-        my $msg = $log->message;
-        $msg =
-          break_up_text( $msg, $break_len )
-          ;    # break up really long strings
         my $row = {
-            log_message => $msg,
+            log_message => $log->message,
             log_ip      => $log->ip,
             id          => $log->id,
             blog_id     => $log->blog_id
