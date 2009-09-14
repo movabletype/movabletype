@@ -158,7 +158,8 @@ sub _hdlr_widget_manager {
     my @widgets;
     if ( my $modulesets = $tmpl->modulesets ) {
         my @widget_ids = split ',', $modulesets;
-        my @objs = MT->model('template')->load({ id => \@widget_ids });
+        my $terms = ( scalar @widget_ids ) > 1 ? { id => \@widget_ids } : $widget_ids[0];
+        my @objs = MT->model('template')->load($terms);
         my %widgets = map { $_->id => $_ } @objs;
         push @widgets, $widgets{$_} for @widget_ids;
     }
@@ -180,7 +181,7 @@ sub _hdlr_widget_manager {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget ( @widgets ) {
             my $name = $widget->name;
-            my $stash_id = "template_widget::$blog_id::" . Encode::encode_utf8($name);
+            my $stash_id = Encode::encode_utf8( join( '::', 'template_widget', $blog_id, $name ));
             my $req = MT::Request->instance;
             my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );
             $req->stash($stash_id, [ $widget, $tokens ] );
