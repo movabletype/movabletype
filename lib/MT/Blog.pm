@@ -394,7 +394,11 @@ sub site_path {
         my $website = $blog->website();
         if ($blog->is_blog() && $website) {
             $base_path = $website->column('site_path');
-            $path = File::Spec->catdir( $base_path, $blog->column('site_path') );
+            if ( $base_path ) {
+                $path = File::Spec->catdir( $base_path, $blog->column('site_path') );
+            } else {
+                $path = $blog->column('site_path');
+            }
         } else {
             $path = $blog->column('site_path');
         }
@@ -430,12 +434,18 @@ sub archive_path {
 
     if (!@_) {
         my $base_path = '';
+        my $path = '';
         if (my $website = $blog->website()) {
             $base_path = $website->SUPER::site_path;
         }
-        return $blog->SUPER::archive_path
-            ? File::Spec->catdir( $base_path, $blog->SUPER::archive_path )
-            : $blog->site_path;
+        $path = $blog->column('archive_path');
+        if ( $blog->column('archive_path') ) {
+            $path = File::Spec->catdir( $base_path, $blog->SUPER::archive_path )
+                if $base_path;
+        } else {
+            $path = $blog->site_path;
+        }
+        return $path;
     } else {
         $blog->SUPER::archive_path(@_) || $blog->site_path;
     }
