@@ -154,29 +154,33 @@ sub _hdlr_widget_manager {
                                     direction => 'descend' })
         or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
 
-    my $text = $tmpl->text;
-    my @widget_names;
-    if ( $text ) {
-        @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
-    }
-    else {
-        my $modulesets = $tmpl->modulesets
-            or return '';
-        @widget_names = split ','. $modulesets;
-    }
     ## Load all widgets for make cache.
-    my @widgets = MT->model('template')->load({ 
-        name    => \@widget_names,
-        blog_id => [ $blog_id, 0 ],
-    });
+    my @widgets;
+    if ( my $modulesets = $tmpl->modulesets ) {
+        my @widget_ids = split ',', $modulesets;
+        my @objs = MT->model('template')->load({ id => \@widget_ids });
+        my %widgets = map { $_->id => $_ } @objs;
+        push @widgets, $widgets{$_} for @widget_ids;
+    }
+    elsif ( my $text = $tmpl->text ) {
+        my @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
+        my @objs = MT->model('template')->load({
+            name    => \@widget_names,
+            blog_id => [ $blog_id, 0 ],
+        });
+        @objs = sort { $a->blog_id <=> $b->blog_id } @objs;
+        my %widgets;
+        $widgets{$_->name} = $_ for @objs;
+        push @widgets, $widgets{$_} for @widget_names;
+    }
+    return '' unless scalar @widgets;
 
     my @res;
-    ## build modules via mt:include since mt:include handles SSI cache.
     {
         local $ctx->{__stash}{tag} = 'include';
         for my $widget ( @widgets ) {
             my $name = $widget->name;
-            my $stash_id = Encode::encode_utf8('template_widget' . '::' . $blog_id . '::' . $name);
+            my $stash_id = "template_widget::$blog_id::" . Encode::encode_utf8($name);
             my $req = MT::Request->instance;
             my $tokens = $ctx->stash('builder')->compile( $ctx, $widget );
             $req->stash($stash_id, [ $widget, $tokens ] );
