@@ -203,7 +203,8 @@ a.button:hover {
     color: #33789c;
     background-position: 50% 30%;
 }
-button.action {
+button.action, 
+a.action {
     padding: 3px 8px;
     border: 0;
     background: #2b2b2b url('../images/buttons/button.gif') no-repeat 0 center;
@@ -218,24 +219,24 @@ button.action {
     border-radius: 5px;
 }
 
-button.primary-button {
-    background-image: url(../images/buttons/button-primary.gif);
+a.action { 
+    padding: 5px 8px;
 }
-.system button.primary-button {
-    background-image: url(../images/buttons/button-primary-system.gif);
+
+button.primary-button, 
+a.primary-button {
+    background-image: url(../images/buttons/button-primary.gif);
 }
 button.disabled-button {
     background-image: url(../images/buttons/button-primary-disabled.gif);
-}
-.system button.disabled-button {
-    background-image: url(../images/buttons/button-primary-disabled-system.gif);
 }
 
 .chromeless-wide .actions-bar button { 
     min-width: 0px;
 }
 
-button.action:hover {
+button.action:hover,
+a.action:hover {
     background-color: #666;
     background-position: -500px center;
     color: #fff;

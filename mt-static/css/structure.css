@@ -1257,14 +1257,15 @@ optgroup option {
 }
 
 .welcome-widget .widget-header { 
-    background: transparent;
+    margin-bottom: 5px;
     border: 0;
+    background: transparent;
 }
 
 .welcome-widget .widget-label {
     margin: 0;
-    padding-top: 10px;
-    font-size: 24px;
+    padding-top: 5px;
+    font-size: 22px;
     font-weight: normal;
     line-height: 1;
 }
@@ -1275,7 +1276,7 @@ optgroup option {
 
 .welcome-widget .widget-content li {
     padding-left: 15px;
-    background: url('../images/status_icons/success.gif') no-repeat 0 .5em;
+    background: url(../images/status_icons/success.gif) no-repeat 0 .5em;
 }
 
 .welcome-widget .widget-content li a {
@@ -1564,6 +1565,10 @@ optgroup option {
 
 .news-widget .news-widget-list {
     display: none;
+}
+
+.most-recent-entry .excerpt { 
+    margin-top: 10px;
 }
 
 /* - Listing */
