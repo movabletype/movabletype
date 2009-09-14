@@ -1617,7 +1617,7 @@ sub set_item_visible {
                 $obj->approve;
             }
             else {
-                $obj->unapprove;
+                $obj->visible( $new_visible );
             }
             $obj->save();
         }
