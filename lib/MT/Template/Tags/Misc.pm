@@ -143,34 +143,53 @@ B<Example:>
 =cut
 
 sub _hdlr_widget_manager {
-    my ( $ctx, $args ) = @_;
+    my ( $ctx, $args, $cond ) = @_;
     my $tmpl_name = $args->{name}
         or return $ctx->error(MT->translate("name is required."));
     my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
-
-    require MT::Template;
-    my $tmpl = MT::Template->load({ name => $tmpl_name,
+    my $tmpl = MT->model('template')->load({ name => $tmpl_name,
                                     blog_id => $blog_id ? [ 0, $blog_id ] : 0,
                                     type => 'widgetset' },
                                   { sort => 'blog_id',
                                     direction => 'descend' })
         or return $ctx->error(MT->translate( "Specified WidgetSet '[_1]' not found.", $tmpl_name ));
+
     my $text = $tmpl->text;
-    return $ctx->build($text) if $text;
-
-    my $modulesets = $tmpl->modulesets;
-    return ''; # empty widgetset is not an error
-
-    my $string_tmpl = '<mt:include widget="%s">';
-    my @selected = split ','. $modulesets;
-    foreach my $mid (@selected) {
-        my $wtmpl = MT::Template->load($mid)
-            or return $ctx->error(MT->translate(
-                "Can't find included template widget '[_1]'", $mid ));
-        $text .= sprintf( $string_tmpl, $wtmpl->name );
+    my @widget_names;
+    if ( $text ) {
+        @widget_names = $text =~ /widget\=\"([^"]+)\"/g;
     }
-    return '' unless $text;
-    return $ctx->build($text);
+    else {
+        my $modulesets = $tmpl->modulesets
+            or return '';
+        @widget_names = split ','. $modulesets;
+    }
+    ## Load all widgets for make cache.
+    my @widgets = MT->model('template')->load({ 
+        name    => \@widget_names,
+        blog_id => [ $blog_id, 0 ],
+    });
+
+    my @res;
+    ## build modules via mt:include since mt:include handles SSI cache.
+    {
+        local $ctx->{__stash}{tag} = 'include';
+        for my $name ( @widget_names ) {
+            my $out = $ctx->invoke_handler(
+                'include',
+                {
+                    %$args,
+                    widget => $name
+                },
+                $cond,
+            );
+            return $ctx->error(
+                MT->translate('', $ctx->errstr )
+            ) unless defined $out;
+            push @res, $out;
+        }
+    }
+    return join('', @res);
 }
 
 ###########################################################################
