@@ -244,7 +244,8 @@ sub core_search_apis {
             'label' => 'Blogs',
             'handler' => '$Core::MT::CMS::Blog::build_blog_table',
             'perm_check' => sub {
-                return 1 if $author->is_superuser;
+                return 1 if $author->is_superuser ||
+                    $author->permissions(0)->can_do('edit_templates');
                 my ($obj) = @_;
                 my $perm = $author->permissions( $obj->id );
                 return $perm && ( $perm->blog_id == $obj->id ) ? 1 : 0;
