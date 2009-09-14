@@ -1613,7 +1613,12 @@ sub set_item_visible {
                 }
                 $rebuild_set{ $obj->entry_id } = $entry;
             }
-            $obj->visible($new_visible);
+            if ( $new_visible ) {
+                $obj->approve;
+            }
+            else {
+                $obj->unapprove;
+            }
             $obj->save();
         }
     }
