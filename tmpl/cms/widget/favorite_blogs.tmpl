@@ -1,9 +1,12 @@
-<mtapp:widget class="favorite-blogs-widget" label="<__trans phrase="Favorite websites and blogs">" can_close="1">
+<mtapp:widget tabbed="1" class="favorite-blogs-widget" label="<__trans phrase="Favorite websites and blogs">" can_close="1">
+    <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
 
-<ul id="favorite-blogs-tabs" class="tabs">
-    <li class="tab"><a href="#favorite-website"><__trans phrase="Website"></a></li>
-    <li class="tab"><a href="#favorite-blog"><__trans phrase="Blog"></a></li>
-</ul>
+<div id="favorite-blogs-tabs">
+    <ul id="favorite-blogs-tabs-list" class="tabs">
+        <li class="tab"><a href="#favorite-website"><__trans phrase="Website"></a></li>
+        <li class="tab"><a href="#favorite-blog"><__trans phrase="Blog"></a></li>
+    </ul>
+</div>
 
 <div id="favorite-website">
 <mt:if name="website_object_loop">
@@ -168,3 +171,30 @@
 </mt:if>
 </div>
 </mtapp:widget>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var index = <mt:if name="tab" eq="website">0<mt:else>1</mt:if>
+var updateTabPrefTimeout;
+jQuery('#favorite-blogs-tabs').tabs({
+    select: function (event, ui) {
+        index = ui.index == 0 ? 'website' : 'blog';
+        if (updateTabPrefTimeout) {
+            window.clearTimeout(updateTabPrefTimeout);
+        }
+        // update after 1 seconds, but will restart timer if
+        // user selects again
+        updateTabPrefTimeout = window.setTimeout('favoriteUpdateTabPref()', 1000);
+    },
+   selected: index,
+});
+
+function favoriteUpdateTabPref() {
+    updateTabPrefTimeout = null;
+    var f = getByID("<mt:var name="widget_id">-form");
+    f['tab'].value =  index;
+    updateWidget('favorite_blogs');
+}
+
+/* ]]> */
+</script>

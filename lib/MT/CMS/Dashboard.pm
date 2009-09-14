@@ -33,9 +33,21 @@ sub dashboard {
             },
         },
         'user' => {
-            'this_is_you-1' => { order => 1, set => 'main' },
-            'mt_news'       => { order => 3, set => 'sidebar' },
-            'favorite_blogs' => { order => 2, set => 'main' },
+            'this_is_you-1'  => {
+                order => 1,
+                set => 'main'
+            },
+            'mt_news'        => {
+                order => 3,
+                set => 'sidebar'
+            },
+            'favorite_blogs' => {
+                param => {
+                    tab => 'website'
+                },
+                order => 2,
+                set => 'main'
+            },
         },
         'website' => {
             'recent_blogs' => {
@@ -44,8 +56,13 @@ sub dashboard {
             },
         },
         'blog' => {
-            'blog_stats' =>
-                { param => { tab => 'entry' }, order => 1, set => 'main' },
+            'blog_stats' => {
+                param => {
+                    tab => 'entry'
+                },
+                order => 1,
+                set => 'main'
+            },
         },
     };
 
