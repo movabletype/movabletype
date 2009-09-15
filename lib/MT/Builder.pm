@@ -245,8 +245,9 @@ sub _consume_up_to {
     my($text, $start, $stoptag) = @_;
     my $pos;
     (pos $$text) = $start;
-    while ($$text =~ m!(<([\$/]?)MT:?($stoptag)\b(?:[^>]*?)[\$/]?>)!gi) {
+    while ($$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:[^>]*?)[\$/]?>)!gi) {
         my($whole_tag, $prefix, $tag) = ($1, $2, $3);
+        next if lc $tag ne lc $stoptag;
         my $end = pos $$text;
         if ($prefix && ($prefix eq '/')) {
             return ($end - length($whole_tag), $end);
