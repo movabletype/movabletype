@@ -470,7 +470,7 @@ sub init_data {
     });
     $blog->id(1);
     $blog->class('blog');
-    $blog->website_id(2);
+    $blog->parent_id(2);
     $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
     $blog->create_default_templates('mt_blog');
