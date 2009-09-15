@@ -1,4 +1,10 @@
-<mt:setvarblock name="page_title"><__trans phrase="[_1]" params="<mt:var name="object_label" capitalize="1">"></mt:setvarblock>
+<mt:setvarblock name="page_title">
+<mt:if name="scope_type" eq="system">
+    <__trans phrase="Websites">
+<mt:else>
+    <__trans phrase="Blogs">
+</mt:if>
+</mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
