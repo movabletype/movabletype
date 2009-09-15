@@ -429,7 +429,7 @@
 <mt:else>
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
 </mt:if>
-    <mt:setvar name="scheduled_button_title" value="<__trans phrase="Save this [_1]" params="$object_label" escape="html">">
+    <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 
     <div class="actions-bar">
 <mt:if name="can_publish_post">
