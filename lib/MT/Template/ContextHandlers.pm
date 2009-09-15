@@ -3620,7 +3620,7 @@ sub _include_module {
     }
 
     # Try to read from cache
-    my $cache_expire_type = $tmpl->cache_expire_type || 0;
+    my $cache_expire_type;
     my $cache_enabled =
          $blog
       && $blog->include_cache
@@ -3628,7 +3628,7 @@ sub _include_module {
         || $arg->{cache_key}
         || $arg->{key}
         || ( exists $arg->{ttl} )
-        || ( $cache_expire_type != 0 ) ) ? 1 : 0;
+        || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) ) != 0 ) ) ? 1 : 0;
     my $cache_key =
         ($arg->{cache_key} || $arg->{key})
       ? $arg->{cache_key} || $arg->{key}
