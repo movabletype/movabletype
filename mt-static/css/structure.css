@@ -1270,13 +1270,10 @@ optgroup option {
     line-height: 1;
 }
 
-.welcome-widget .widget-content p {
-    font-size: 14px;
-}
-
 .welcome-widget .widget-content li {
+    font-size: 14px;
     padding-left: 15px;
-    background: url(../images/status_icons/success.gif) no-repeat 0 .5em;
+    background: url(../images/status_icons/success.gif) left 5px no-repeat;
 }
 
 .welcome-widget .widget-content li a {
