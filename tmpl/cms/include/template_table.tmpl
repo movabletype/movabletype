@@ -67,9 +67,7 @@
                 <th class="output-file"><__trans phrase="Archive Path"></th>
         </mt:if>
         <mt:unless name="blog_view">
-            <mt:if name="blog_id">
-                <th class="blog"><__trans phrase="Blog"></th>
-            </mt:if>
+                <th class="blog primary-col"><__trans phrase="Blog"></th>
         </mt:unless>
         <mt:if name="template_type" like="/(index|archive)/">
                 <th class="publishing-method"><__trans phrase="Publish"></th>
@@ -107,9 +105,7 @@
                 </td>
     </mt:if>
     <mt:unless name="blog_view">
-        <mt:if name="blog_id">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=template&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
-        </mt:if>
     </mt:unless>
     <mt:if name="template_type" eq="index">
                 <td class="publishing-method">
