@@ -392,7 +392,8 @@ sub parent_category {
     my $class = ref($cat);
     unless ($cat->{__parent_category}) {
         $cat->{__parent_category} = ($cat->parent) ? $class->load($cat->parent) : undef;
-        weaken( $cat->{__parent_category} );
+        weaken( $cat->{__parent_category} )
+            if !MT->config->DisableObjectCache;
     }
     $cat->{__parent_category};
 }
