@@ -535,7 +535,7 @@ sub core_theme_element_handlers {
             },
         },
         default_categories => {
-            label => 'Default Categories',
+            label => 'Categories',
             importer => {
                 import => '$Core::MT::Theme::Category::import_categories',
                 info   => '$Core::MT::Theme::Category::info_categories',
@@ -548,7 +548,7 @@ sub core_theme_element_handlers {
             },
         },
         default_folders => {
-            label => 'Default Folders',
+            label => 'Folders',
             importer => {
                 import => '$Core::MT::Theme::Category::import_folders',
                 info   => '$Core::MT::Theme::Category::info_folders',
