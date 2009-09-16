@@ -10,7 +10,7 @@ function smarty_function_mtblogtemplatesetid($args, &$ctx) {
     // parameters: none
     $blog = $ctx->stash('blog');
     if (!$blog) return '';
-    $id = $blog->blog_template_set;
+    $id = $blog->blog_template_set ? $blog->blog_template_set : $blog->blog_theme_id;
     $id = preg_replace('/_/', '-', $id);
     return $id;
 }

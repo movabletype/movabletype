@@ -1164,7 +1164,7 @@ button.action:hover {
 }
 
 .actions-bar button {
-    margin-right: 10px;
+    margin-right: 5px;
 }
 .listing .actions-bar button { 
     margin-right: 8px;
@@ -1182,6 +1182,11 @@ button.action:hover {
 .listing-filter .buttons button { 
     margin-left: 5px;
 }
+
+.plugin-actions button { 
+    margin-right: 0;
+}
+
 
 optgroup {
     font-style: normal;

@@ -110,19 +110,6 @@
         <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="View revisions of this entry"><__trans phrase="View revisions"></a>
     </div>
     </mt:if>
-    <mt:if name="can_preview">
-    <div class="actions-bar">
-        <button
-            name="preview_template"
-            type="submit"
-            accesskey="v"
-            tabindex="13"
-            title="Preview"
-            class="preview action"
-            onclick="return validate(this.form);"
-            ><__trans phrase="Preview"></button>
-    </div>
-    </mt:if>
 </mtapp:widget>
 </mt:if>
 
@@ -198,6 +185,17 @@
         title="<__trans phrase="Save Changes (s)">"
         class="save action primary-button"
         ><__trans phrase="Save Changes"></button>
+    </mt:if>
+    <mt:if name="can_preview">
+    <button
+        name="preview_template"
+        type="submit"
+        accesskey="v"
+        tabindex="13"
+        title="Preview"
+        class="preview action"
+        onclick="return validate(this.form);"
+        ><__trans phrase="Preview"></button>
     </mt:if>
     <mt:unless name="build_type_0">
     <mt:if name="static_maps">
@@ -764,13 +762,9 @@ var editor = CodeMirror.fromTextArea('text', {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.save, button.publish').click(function() {
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
-        jQuery('form#template-listing-form').submit();
-        return false;
     });
     jQuery('button.preview').click(function() {
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
-        jQuery('form#template-listing-form').submit();
-        return false;
     });
     jQuery('input#save_revision').click(function() {
         jQuery('input#revision-note').toggle();
