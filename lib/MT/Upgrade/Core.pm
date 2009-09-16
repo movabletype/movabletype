@@ -184,28 +184,6 @@ sub seed_database {
     MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
     $author->save;
 
-    # Create an initial entry and comment for this website
-    require MT::Page;
-    my $page = MT::Page->new;
-    $page->blog_id($website->id);
-    $page->title(MT->translate("I just finished installing Movable Type [_1]!", int(MT->product_version)));
-    $page->text(MT->translate("Welcome to my new website powered by Movable Type. This is the first post on my website and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!"));
-    $page->author_id($author->id);
-    $page->status(MT::Entry::RELEASE());
-    $page->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Page->errstr));
-
-    require MT::Comment;
-    my $comment = MT::Comment->new;
-    $comment->entry_id($page->id);
-    $comment->blog_id($website->id);
-    $comment->text(MT->translate("Movable Type also created a comment for me as well so that I could see what a comment will look like on my website once people start submitting comments on all the posts I will write."));
-    $comment->visible(1);
-    $comment->junk_status(1);
-    $comment->author(exists $param{user_nickname} ? _uri_unescape_utf8($param{user_nickname}) : undef);
-    $comment->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Comment->errstr));
-
     require MT::Association;
     require MT::Role;
     my ($website_admin_role) = MT::Role->load_by_permission("administer_website");
