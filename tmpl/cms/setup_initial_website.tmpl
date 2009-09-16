@@ -63,7 +63,7 @@ div.warning#version-warning {
         hint="<__trans phrase="Select the theme you wish to use for this new website.">">
         <select name="website_theme">
         <mt:loop name="theme_loop">
-            <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+            <option value="<mt:var name="key" escape="html">"<mt:if name="website_theme"><mt:if name="key" eq="$website_theme"> selected="selected"</mt:if><mt:else><mt:if name="key" eq="$config.DefaultWebsiteTheme"> selected="selected"</mt:if></mt:if>><mt:var name="label" escape="html"></option>
         </mt:loop>
         </select>
     </mtapp:setting>
@@ -164,12 +164,14 @@ function init() {
         dirify_website_name(website);
         jQuery('#website_name').focus();
     }
+<mt:unless name="website_timezone">
     var tz = jQuery('#website_timezone')[0];
     if (tz) {
         // The options ignore DST, so check at a specific time when no one was on DST.
         var offset = (new Date(2008, 0, 1, 0, 0, 0, 0)).getTimezoneOffset();
         tz.value = 0 - offset / 60;
     }
+</mt:unless>
 }
 
 function dismiss(id) {
