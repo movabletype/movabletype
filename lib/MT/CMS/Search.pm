@@ -267,7 +267,7 @@ sub core_search_apis {
         },
         'website' => {
             'order' => 1000,
-            'system_permission' => 'administer, edit_templates',
+            'system_permission' => 'administer,edit_templates',
             'label' => 'Websites',
             'handler' => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {

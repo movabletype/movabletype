@@ -139,13 +139,18 @@ sub filter_conditional_list {
             $app->can_do($action) or return 0;
         }
         else {
-            if ( $system_perms->{permissions}
-                && ( my $sp = $item->{system_permission} ) )
+            return 0
+                if !$system_perms
+                   && $item->{system_permission}
+                   && !$item->{permission};
+
+            if ( $system_perms && (my $sp = $item->{system_permission} ) )
             {
                 my $allowed = 0;
                 my @sp = split /,/, $sp;
-                foreach my $sp (@sp) {
-                    my $perm = 'can_' . $sp;
+                foreach my $sp_ (@sp) {
+                    $sp_ =~ s/'(.+)'/$1/;
+                    my $perm = 'can_' . $sp_;
                     $allowed = 1, last
                         if $admin
                             || (   $system_perms
@@ -153,19 +158,20 @@ sub filter_conditional_list {
                                 && $system_perms->$perm() );
                 }
                 return 0 unless $allowed;
-            }
-            if ( my $p = $item->{permission} ) {
-                my $allowed = 0;
-                my @p = split /,/, $p;
-                foreach my $p (@p) {
-                    my $perm = 'can_' . $p;
-                    $allowed = 1, last
-                        if $admin
-                            || (   $perms
-                                && $perms->can($perm)
-                                && $perms->$perm() );
+            } else {
+                if ( my $p = $item->{permission} ) {
+                    my $allowed = 0;
+                    my @p = split /,/, $p;
+                    foreach my $p_ (@p) {
+                        my $perm = 'can_' . $p_;
+                        $allowed = 1, last
+                            if $admin
+                                || (   $perms
+                                    && $perms->can($perm)
+                                    && $perms->$perm() );
+                    }
+                    return 0 unless $allowed;
                 }
-                return 0 unless $allowed;
             }
         }
         if ( my $cond = $item->{condition} ) {
