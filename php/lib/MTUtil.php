@@ -1287,10 +1287,8 @@ function support_directory_path() {
     $path = $mt->config('SupportDirectoryPath');
     if (!$path) {
         $path = static_file_path();
-        $path .= 'support' . DIRECTORY_SEPARATOR;
+        $path .= 'support';
     }
-    if (substr($path, strlen($path) - 1, 1) != DIRECTORY_SEPARATOR)
-        $path .= DIRECTORY_SEPARATOR;
 
     return $path;
 }
@@ -1300,7 +1298,7 @@ function asset_path($path, $blog) {
     $site_path = preg_replace('/\/$/', '', $site_path);
     $path = preg_replace('/^%r/', $site_path, $path);
 
-    $static_file_path = static_file_path();
+    $static_file_path = support_directory_path();
     $static_file_path = preg_replace('/\/$/', '', $static_file_path);
     $path = preg_replace('/^%s/', $static_file_path, $path);
 
@@ -1329,7 +1327,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb = new Thumbnail($src_file);
     $thumb->width($max_dim);
     $thumb->height($max_dim);
-    $thumb->format($support_directory_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$format);
+    $thumb->format($support_directory_path.DIRECTORY_SEPARATOR .$image_path.DIRECTORY_SEPARATOR.$format);
     $thumb->type('png');
     $thumb->id($asset->asset_id);
     if (!$thumb->get_thumbnail()) {
@@ -1338,7 +1336,7 @@ function userpic_url($asset, $blog, $author) {
     $basename = basename($thumb->dest());
 
     $support_directory_url = support_directory_url();
-    $url = sprintf("%s/%s/%s", $support_directory_url, $image_path, $basename);
+    $url = sprintf("%s%s/%s", $support_directory_url, $image_path, $basename);
     return $url;
 }
 
