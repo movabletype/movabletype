@@ -776,16 +776,6 @@ ul.menu-nav > li.last-child.top-menu-open .toggle-button {
     border-bottom-radius: 0;
 }
 
-ul.menu-nav a.dashboard-link { 
-    border: 1px solid #c8c2be;
-}
-ul.menu-nav a.dashboard-link.first-child { 
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    border-bottom-radius: 5px;
-}
-
 /* - Content Header */
 #content-header {
     position: relative;
@@ -1254,7 +1244,7 @@ optgroup option {
 .pagination a.end:hover         { background-position: -220px center; }
 
 
-/* - Dashbord */
+/* - Dashboard */
 /* -- Welcome Widget */
 .welcome-widget {
     border-color: #928c36;
