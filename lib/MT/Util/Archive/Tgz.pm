@@ -145,6 +145,28 @@ sub add_string {
     $obj->{_arc}->add_data($file_name, $string);
 }
 
+sub add_tree {
+    my $obj = shift;
+    my ( $dir_path ) = @_;
+    return $obj->error(MT->translate('Can\'t write to the object'))
+        if 'r' eq $obj->{_mode};
+    my $arc = $obj->{_arc};
+    require File::Find;
+    require File::Spec;
+    require Cwd;
+    my $oldcwd = File::Spec->rel2abs(Cwd::getcwd());
+    chdir $dir_path;
+    $arc->setcwd($dir_path);
+    my $sub = sub {
+        my $file = $File::Find::name;
+        return if -d $file;
+        my $rel = File::Spec->abs2rel( $file, $dir_path );
+        $arc->add_files($rel);
+    };
+    File::Find::find( { wanted => $sub, no_chdir => 1, }, $dir_path );
+    chdir $oldcwd;
+}
+
 1;
 __END__
 

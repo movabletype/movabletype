@@ -127,6 +127,14 @@ sub add_string {
     $obj->{_arc}->addString($string, $file_name);
 }
 
+sub add_tree {
+    my $obj = shift;
+    my ($dir_path) = @_;
+    return $obj->error(MT->translate('Can\'t write to the object'))
+        if 'r' eq $obj->{_mode};
+    $obj->{_arc}->addTree($dir_path, '');
+}
+
 1;
 __END__
 
