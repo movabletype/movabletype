@@ -600,12 +600,16 @@ BEGIN {
         },
         archivers => {
             'zip' => {
-                class => 'MT::Util::Archive::Zip',
-                label => 'zip',
+                class     => 'MT::Util::Archive::Zip',
+                label     => 'zip',
+                extension => 'zip',
+                mimetype  => 'application/zip',
             },
             'tgz' => {
-                class => 'MT::Util::Archive::Tgz',
-                label => 'tar.gz',
+                class     => 'MT::Util::Archive::Tgz',
+                label     => 'tar.gz',
+                extension => 'tar.gz',
+                mimetype  => 'application/x-tar-gz',
             },
         },
         template_snippets        => {

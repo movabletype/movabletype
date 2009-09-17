@@ -236,6 +236,7 @@ sub export {
     my @save_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
+        output
     );
     my $default_basename = [ File::Spec->splitdir( $blog->site_path ) ]->[-1] || dirify( $blog->name );
     my %param_default = (
@@ -246,8 +247,23 @@ sub export {
         theme_version     => '1.0',
     );
     for my $param ( @save_params ) {
-        $param{$param} = $saved_core_values->{$param} || $param_default{$param} || '';
+        my $val = $saved_core_values->{$param} || $param_default{$param} || '';
+        $param{$param} = ref $val ? $val->[0] : $val;
     }
+    my @output_methods = ({
+        label => MT->translate('Install to theme directory'),
+        id    => 'themedir',
+    });
+    require MT::Util::Archive;
+    my @arcs = MT::Util::Archive->available_formats;
+    for my $arc ( @arcs ) {
+        push @output_methods, {
+            label => MT->translate('Download as [_1] archive', $arc->{label}),
+            id    => 'download.' . $arc->{key},
+        };
+    }
+    $param{output_methods} = \@output_methods;
+    $param{select_output_method} = scalar @output_methods > 1 ? 1 : 0;
     $param{exporters} = $exporters;
     $param{save_success} = $q->param('success');
     $param{search_label} = $app->translate('Templates');
@@ -361,7 +377,7 @@ sub do_export {
         || 'theme_from_blog_' . $blog->id
         ;
     my $theme_name = $q->param('theme_name') || $theme_id;
-
+    my $theme_version = $q->param('theme_version') || '1.0';
 
     my $fmgr = MT::FileMgr->new('Local');
 
@@ -427,7 +443,7 @@ sub do_export {
         label       => $theme_name,
         author_name => $q->param('theme_author_name') || '',
         author_link => $q->param('theme_author_link') || '',
-        version     => $q->param('theme_version') || 1.0,
+        version     => $theme_version,
         class       => ($blog->is_blog ? 'blog' : 'website'),
         description => $q->param('description')   || '',
     };
@@ -515,13 +531,37 @@ sub do_export {
             $theme_dir,
         )) unless $num;
     }
-    elsif ( $output eq 'zipdownload' ) {
-        ##TBD
+    elsif ( $output =~ /^download/ ) {
+        my ($arctype) = $output =~ /\.(.*)$/;
+        my $arc_info = MT->registry(archivers => $arctype)
+            or die "Unknown archiver type : $arctype";
+        require MT::Util::Archive;
+        my $arcfile = File::Temp::tempnam( $tmpdir, $theme_id );
+        my $arc = MT::Util::Archive->new($arctype, $arcfile)
+            or die "Can't load archiver : " . MT::Util::Archive->errstr;
+        $arc->add_tree($tmpdir);
+        $arc->close;
+        my $newfilename = $theme_id;
+        $newfilename .= $theme_version if $theme_version;
+        $newfilename .= '.' . $arc_info->{extension};
+        open my $fh, $arcfile;
+        binmode $fh;
+        $app->{no_print_body} = 1;
+        $app->set_header(
+            "Content-Disposition" => "attachment; filename=$newfilename" );
+        $app->send_http_header($arc_info->{mimetype});
+        my $data;
+        while ( read $fh, my ($chunk), 8192 ) {
+            $data .= $chunk;
+        }
+        close $fh;
+        $app->print( $data );
     }
 
     my @core_params = qw(
         theme_name    theme_id    theme_author_name theme_author_link
         theme_version theme_class description       include
+        output
     );
     for my $param ( @core_params ) {
         $settings->{core}{$param} = [ $q->param($param) ];

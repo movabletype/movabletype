@@ -21,8 +21,9 @@
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 <input type="hidden" name="theme_class" value="<mt:var name="theme_class" />" />
-<input type="hidden" name="output" value="<mt:var name="output" />" />
-
+<mt:unless name="select_output_method">
+<mt:loop name="output_methods"><input type="hidden" name="output" value="<mt:var name="id" />" /></mt:loop>
+</mt:unless>
 <fieldset>
 
     <mtapp:setting
@@ -90,6 +91,21 @@
         </mt:loop>
         </ul>
     </mtapp:setting>
+
+    <mt:if name="select_output_method">
+    <mtapp:setting
+        id="theme-output-field"
+        label="<__trans phrase="Output method">"
+        hint="<__trans phrase="Select How to get theme.">">
+        <select name="output" id="output">
+            <mt:loop name="output_methods">
+            <option value="<mt:var name="id">"<mt:if name="output" eq="$id"> selected="selected"</mt:if>>
+                <mt:var name="label">
+            </option>
+            </mt:loop>
+        </select>
+    </mtapp:setting>
+    </mt:if>
 </fieldset>
 
 <mt:loop name="exporters">
