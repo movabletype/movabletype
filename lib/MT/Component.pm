@@ -334,6 +334,13 @@ sub template_paths {
             push @paths, $alt_path;
         }
     }
+    if ( UNIVERSAL::isa( $c, 'MT::Plugin' ) ) {
+        for my $addon ( @{ $mt->find_addons('pack') } ) {
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $mt->{template_dir})
+                if $mt->{template_dir};
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
+        }
+    }
     push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
       if $mt->{template_dir};
     push @paths, $path;
