@@ -257,6 +257,9 @@ function blurDateFields(s) {
 /* <![CDATA[ */
 jQuery(function() {
     var index = jQuery('#search-tabs-list li').index(jQuery('#results-<mt:var name="object_type">-tab'));
+    if ( index < 0 ) {
+        index = 0;
+    }
     jQuery('#search-tabs').tabs({
         selected: index,
         select: function(event, ui) {
@@ -265,6 +268,7 @@ jQuery(function() {
             return false;
         }
     });
+
     jQuery.mtCheckbox();
 <mt:unless name="have_results">
     jQuery('#search').focus();

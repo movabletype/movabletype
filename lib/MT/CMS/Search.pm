@@ -357,6 +357,11 @@ sub do_search_replace {
     $app->param('search', $search);
 
     $type = $search_type if $search_type;
+    if ( !$type ) {
+        if ( my $api = $app->search_apis($blog_id ? 'blog' : 'system') ) {
+            $type = $api->[0]->{key};
+        }
+    }
     if ( !$type || ( 'category' eq $type ) || ( 'folder' eq $type ) ) {
         $type = 'entry';
     }
