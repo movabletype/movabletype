@@ -17,6 +17,9 @@ body {
 body.system { 
      background-color: #f3f3f3;
 }
+body.user { 
+     background-color: #fff;
+}
 
 a { 
     color: #5C909B;
@@ -360,6 +363,7 @@ ul.tabs li a {
     padding: 0 5px;
     color: #C8C2BE;
     text-decoration: none;
+    outline: 0;
 }
 #utility-nav a:hover { 
     color: #dcdddd;
@@ -371,6 +375,18 @@ ul.tabs li a {
 #utility-nav #user a { 
     padding-right: 20px;
     border-right: 2px solid #7B7C7D;
+}
+#utility-nav #user a:hover { 
+    text-decoration: none;
+}
+
+#utility-nav #user a:hover span { 
+    text-decoration: underline;
+}
+
+#utility-nav #user .userpic { 
+    margin-top: -1px;
+    border: 1px solid #c8c2be;
 }
 
 #utility-nav #help { 
@@ -1287,7 +1303,7 @@ optgroup option {
 }
 
 .user .you-widget .widget-content { 
-    margin: 0 0 10px;
+    padding: 0;
 }
 
 .you-widget .user-pic { 
@@ -1298,15 +1314,6 @@ optgroup option {
 
 .you-widget .user-stats { 
     margin-left: 110px;
-}
-
-.you-widget #user-display-name { 
-    font-size: 18px;
-    margin-bottom: 15px;
-    padding-top: 3px;
-}
-
-.you-widget #user-display-name { 
 }
 
 /* -- Favorite Website, Blog Widget */

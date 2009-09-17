@@ -87,7 +87,12 @@
             <!-- Utility Nav -->
             <div id="utility-nav">
                 <ul id="utility-nav-list">
-                    <li id="user"><__trans phrase="Signed in as [_1]" params="<a href="<$mt:var name="mt_url"$>?__mode=dashboard"><mt:var name="author_name" escape="html" escape="html"></a>"></li>
+                    <li id="user"><__trans phrase="Signed in as"> 
+                        <a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id"$>">
+                            <img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="16" height="16" class="userpic" />
+                            <span class="username"><mt:var name="author_name" escape="html" escape="html"></span>
+                        </a>
+                    </li>
                     <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
     <mt:if name="can_logout">
                     <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Sign out"></a></li>
@@ -102,7 +107,7 @@
                 <div id="selector-nav">
                     <ul id="selector-nav-list">
     <mt:if name="scope_type" eq="user">
-                        <li id="user-dashboard" class="current user"><em><__trans phrase="[_1]'s Dashboard" params="<mt:var name="author_name" escape="html" escape="html">"></em></li>
+                        <li id="user-dashboard" class="current user"><em><__trans phrase="User Dashboard"></em></li>
     <mt:elseif name="scope_type" eq="system">
                         <li id="system-overview" class="current system"><em><__trans phrase="System Overview"></em></li>
     <mt:elseif name="scope_type" eq="website">

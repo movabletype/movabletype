@@ -5,7 +5,7 @@
     <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
 <mt:else>
     <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
-    <mt:setvarblock name="page_title"><__trans phrase="Hi, [_1]" params="<mt:var name="author_name" escape="html" escape="html">"></mt:setvarblock>
+    <mt:setvarblock name="page_title"><__trans phrase="Hi, [_1]" params="<mt:var name="author_display_name" escape="html" escape="html">"></mt:setvarblock>
 </mt:if>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
