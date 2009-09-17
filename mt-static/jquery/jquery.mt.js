@@ -35,9 +35,9 @@ $.mtMenu = function(options) {
     var opts = $.extend(defaults, options);
     $('#menu').css('float', opts.position);
     $('#content').css('float', opts.position);
-    $('#content').css('margine-left', '0px');
-    $('#content').css('margine-right', '0px');
-    $('#content').css('margine-'+opts.position, '-150px');
+    $('#content').css('margin-left', '0px');
+    $('#content').css('margin-right', '0px');
+    $('#content').css('margin-'+opts.position, '-150px');
 
     $('.top-menu > a').after('<span class="toggle-button"></span>');
     $('.top-menu .toggle-button').click(function() {
