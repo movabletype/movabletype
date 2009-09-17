@@ -279,7 +279,8 @@ sub build {
         MT->config->TimeOffset($blog->server_offset);
         $page_layout = $blog->page_layout;
     }
-    if ( $tmpl->type ne 'module' && $tmpl->type ne 'widget' && $tmpl->type ne 'custom' ) {
+    my $type = $tmpl->type;
+    if ( $type && $type ne 'module' && $type ne 'widget' && $type ne 'custom' ) {
         $page_layout = $tmpl->page_layout if $tmpl->page_layout;
     }
     $ctx->var( 'page_layout', $page_layout )
