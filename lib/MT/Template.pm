@@ -785,7 +785,7 @@ sub createTextNode {
 sub insertAfter {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_node = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ( $node2 ) {
         for (my $i = 0; $i < scalar @$parent_array; $i++) {
@@ -808,7 +808,7 @@ sub insertAfter {
 sub insertBefore {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_node = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ( $node2 ) {
         for (my $i = 0; $i < scalar @$parent_array; $i++) {
