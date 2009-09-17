@@ -478,12 +478,13 @@ sub do_export {
     }
     $theme_hash->{elements} = $elements;
     require File::Temp;
-    my $tmpdir = File::Temp::tempdir(
+    my $tmproot = File::Temp::tempdir(
         DIR => MT->config('TempDir'),
         CLEANUP => 1
     );
-    my $yaml_path = File::Spec->catfile( $tmpdir, 'theme.yaml' );
+    my $tmpdir = File::Spec->catdir($tmproot, $theme_id);
     $fmgr->mkpath( $tmpdir );
+    my $yaml_path = File::Spec->catfile( $tmpdir, 'theme.yaml' );
 
     for my $hdlr ( keys %$hdlrs ) {
         my $exporter = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
@@ -523,6 +524,7 @@ sub do_export {
                 $fmgr->errstr,
         ));
 
+    my $printed;
     if ( $output eq 'themedir' ) {
         require File::Copy::Recursive;
         my $num = File::Copy::Recursive::dircopy( $tmpdir, $output_path );
@@ -536,15 +538,15 @@ sub do_export {
         my $arc_info = MT->registry(archivers => $arctype)
             or die "Unknown archiver type : $arctype";
         require MT::Util::Archive;
-        my $arcfile = File::Temp::tempnam( $tmpdir, $theme_id );
+        my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
         my $arc = MT::Util::Archive->new($arctype, $arcfile)
             or die "Can't load archiver : " . MT::Util::Archive->errstr;
-        $arc->add_tree($tmpdir);
+        $arc->add_tree($tmproot);
         $arc->close;
         my $newfilename = $theme_id;
         $newfilename .= $theme_version if $theme_version;
         $newfilename .= '.' . $arc_info->{extension};
-        open my $fh, $arcfile;
+        open my $fh, "<", $arcfile;
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(
@@ -556,6 +558,7 @@ sub do_export {
         }
         close $fh;
         $app->print( $data );
+        $printed = 1;
     }
 
     my @core_params = qw(
@@ -572,6 +575,7 @@ sub do_export {
             MT->translate('Failed to save theme export info: [_1]', $blog->errstr
         ));
     ## if finished with no errors, should return to theme export screen again.
+    return if $printed;
     $app->redirect(
         $app->uri(
             mode => 'export_theme',
