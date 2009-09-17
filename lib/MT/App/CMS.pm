@@ -2030,6 +2030,9 @@ sub set_default_tmpl_params {
         $param->{author_id}             = $auth->id;
         $param->{author_name}           = $auth->name;
         $param->{author_display_name}   = $auth->nickname || $auth->name;
+        if (my ($url) = $auth->userpic_url(Width => 36, Height => 36)) {
+            $param->{author_userpic_url}    = $url;
+        }
     }
 
     if ( my $perms = $app->permissions ) {
