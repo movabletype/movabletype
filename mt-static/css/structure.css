@@ -2422,11 +2422,32 @@ td.sub-label label {
     height: 25px;
 }
 
-#entry-publishing-widget button.preview { 
+#entry-publishing-widget button.preview, 
+#entry-publishing-widget a.delete { 
     position: absolute;
     top: 0;
     right: 0;
     margin: 0;
+}
+
+#entry-publishing-widget a.delete { 
+    display: inline-block;
+    top: 50%;
+    height: 20px;
+    line-height: 20px;
+    margin-top: -10px;
+    padding-left: 17px;
+    background: transparent url(../images/delete.gif) left bottom no-repeat;
+    color: #7b7c7d;
+    font-size: 95%;
+}
+#entry-publishing-widget a.delete:hover { 
+    background-position: left top;
+    color: #9e3d3f;
+}
+
+#entry-publishing-widget .delete span { 
+    display: none;
 }
 
 /* -- Categories Widget */

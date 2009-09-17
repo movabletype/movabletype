@@ -22,7 +22,6 @@
     <$mt:setvar name="container_label_plural" value="<__trans phrase="Folders">"$>
     <$mt:setvar name="container_type" value="Folder">
     <$mt:setvar name="container_label_class" value="top_label"$>
-    <$mt:setvar name="submit_button_title" value="<__trans phrase="Save this page (s)" escape="html">"$>
     <$mt:setvar name="preview_button_title" value="<__trans phrase="Preview this page (v)" escape="html">"$>
     <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete this page (x)" escape="html">"$>
     <mt:if name="status_publish">
@@ -50,7 +49,6 @@
     <$mt:setvar name="container_label_plural" value="<__trans phrase="Categories">"$>
     <$mt:setvar name="container_type" value="Category">
     <$mt:setvar name="container_label_class" value="no-header"$>
-    <$mt:setvar name="submit_button_title" value="<__trans phrase="Save this entry (s)" escape="html">"$>
     <$mt:setvar name="preview_button_title" value="<__trans phrase="Preview this entry (v)" escape="html">"$>
     <$mt:setvar name="delete_button_title" value="<__trans phrase="Delete this entry (x)" escape="html">"$>
     <mt:if name="status_publish">
@@ -337,7 +335,45 @@
     </ul>
     </mt:if>
 </mt:if>
+</mtapp:widget>
+
+<mtapp:widget
+    id="entry-publishing-widget"
+    label="<__trans phrase="Publishing">">
+
+<mt:if name="new_object">
+    <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
+    <mt:setvar name="draft_button_text" value="<__trans phrase="Save Draft">">
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="button_text" value="<__trans phrase="Publish">">
+    <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+<mt:else>
+    <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
+    <mt:if name="status_publish">
+    <mt:setvar name="button_text" value="<__trans phrase="Update">">
+    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"></mt:setvarblock>
+    <mt:setvar name="draft_button_text" value="<__trans phrase="Unpublish">">
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:else>
+    <mt:setvar name="button_text" value="<__trans phrase="Publish">">
+    <mt:setvarblock name="button_title"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    <mt:setvar name="draft_button_text" value="<__trans phrase="Save Draft">">
+    <mt:setvarblock name="draft_button_title"><__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
+    </mt:if>
+</mt:if>
+    <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+
     <div class="actions-bar">
+<mt:if name="can_publish_post">
+        <button
+            mt:mode="save_entry"
+            name="status"
+            type="submit"
+            title="<mt:var name="draft_button_title">"
+            class="save draft action"
+            value="1"
+            ><mt:var name="draft_button_text"></button>
+</mt:if>
         <button
             mt:mode="preview_entry"
             name="preview_entry"
@@ -347,25 +383,6 @@
             class="preview action"
             ><__trans phrase="Preview"></button>
     </div>
-</mtapp:widget>
-
-<mtapp:widget
-    id="entry-publishing-widget"
-    label="<__trans phrase="Publishing">">
-<mt:if name="id">
-    <div class="actions-bar">
-        <button
-           mt:command="do-remove-items"
-           mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
-           mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
-           mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
-           type="submit"
-           title="<mt:var name="delete_button_title">"
-           class="delete action"
-           accesskey="x"
-           ><__trans phrase="Delete"></button>
-    </div>
-</mt:if>
 
 <mt:if name="status_future">
     <mt:setvar name="authored_on_label" value="<__trans phrase="Publish On">">
@@ -422,15 +439,6 @@
     </mtapp:setting>
 </mt:if>
 
-    <mt:setvarblock name="button_text"><mt:if name="new_object"><__trans phrase="Publish"><mt:else><mt:if name="status_publish"><__trans phrase="Update"><mt:else><__trans phrase="Publish"></mt:if></mt:if></mt:setvarblock>
-    <mt:setvarblock name="button_title"><mt:if name="new_object"><__trans phrase="Publish this [_1]" params="<mt:var name="object_label">" escape="html"><mt:else><mt:if name="status_publish"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"><mt:else><__trans phrase="Publish this [_1]" params="<mt:var name="object_type">" escape="html"></mt:if></mt:if></mt:setvarblock>
-<mt:if name="new_object">
-    <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save">">
-<mt:else>
-    <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
-</mt:if>
-    <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
-
     <div class="actions-bar">
 <mt:if name="can_publish_post">
         <button
@@ -441,14 +449,19 @@
             class="publish action primary-button"
             value="2"
             ><mt:var name="button_text"></button>
-        <button
-            mt:mode="save_entry"
-            name="status"
-            type="submit"
-            title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
-            class="save draft action primary-button"
-            value="1"
-            ><__trans phrase="Draft"></button>
+    <mt:if name="id">
+        <a
+           href="javascript:void(0)"
+           mt:command="do-remove-items"
+           mt:object-singular="<mt:var name="object_label" lower_case="1" escape="html">"
+           mt:object-plural="<mt:var name="object_label_plural" lower_case="1" escape="html">"
+           mt:object-type="<mt:var name="object_type" escape="html">" mt:blog-id="<mt:var name="blog_id">"
+           type="submit"
+           title="<mt:var name="delete_button_title">"
+           class="delete"
+           accesskey="x"
+           ><__trans phrase="Delete"></a>
+    </mt:if>
 <mt:else>
     <mt:if name="new_object">
         <button
@@ -458,7 +471,7 @@
             title="<__trans phrase="Draft this [_1]" params="<mt:var name="object_label">" escape="html">"
             class="save draft action primary-button"
             value="1"
-            ><__trans phrase="Draft"></button>
+            ><__trans phrase="Save Draft"></button>
     <mt:else>
         <button
             mt:mode="save_entry"
