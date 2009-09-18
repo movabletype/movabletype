@@ -527,6 +527,10 @@ BEGIN {
                     return MT::Import->core_import_formats();
                 },
             },
+            upgrade => {
+                handler         => 'MT::App::Upgrader',
+                methods         => '$Core::MT::App::Upgrader::core_methods',
+            },
         },
         archive_types => \&load_archive_types,
         tags          => \&load_core_tags,

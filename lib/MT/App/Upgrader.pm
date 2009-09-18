@@ -24,18 +24,21 @@ sub BEGIN {
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->add_methods(
+    $app->{user_class}           = 'MT::BasicAuthor';
+    $app->{template_dir}         = 'cms';
+    $app->{plugin_template_path} = '';
+    $app;
+}
+
+sub core_methods {
+    return {
         'main'        => \&main,
         'install'     => \&upgrade,
         'upgrade'     => \&upgrade,
         'run_actions' => \&run_actions,
         'init_user'   => \&init_user,
         'init_website'   => \&init_website,
-    );
-    $app->{user_class}           = 'MT::BasicAuthor';
-    $app->{template_dir}         = 'cms';
-    $app->{plugin_template_path} = '';
-    $app;
+    };
 }
 
 sub init_request {
