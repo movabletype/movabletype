@@ -2886,7 +2886,7 @@ sub _parse_entry_prefs {
             if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
                 $param->{ $prefix . 'disp_prefs_' . $p } = 1;
                 foreach my $def (
-                    qw( title body category tags keywords feedback publishing assets )
+                    qw( title body category tags feedback publishing assets )
                   )
                 {
                     $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
