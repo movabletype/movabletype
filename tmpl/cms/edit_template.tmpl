@@ -103,11 +103,15 @@
     class="status-widget"
     label="<__trans phrase="Status">">
     <mt:if name="new_object">
-    <p><__trans phrase="New Template"></p>
+    <p class="zero-state"><__trans phrase="New Template"></p>
     <mt:else>
     <div class="revision-info">
+        <mt:if name="rev_date">
         <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
         <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="View revisions of this entry"><__trans phrase="View revisions"></a>
+        <mt:else>
+        <p class="zero-state"><__trans phrase="No revision(s) associated with this template"></p>
+        </mt:if>
     </div>
     </mt:if>
 </mtapp:widget>

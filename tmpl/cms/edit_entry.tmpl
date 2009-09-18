@@ -302,12 +302,16 @@
 
 <mt:if name="new_object">
     <input type="hidden" name="status" id="status" value="1" />
-    <p><__trans phrase="New [_1]" params="<mt:var name="object_label">"></p>
+    <p class="zero-state"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></p>
 <mt:else>
     <mt:if name="use_revision">
     <div class="revision-info">
+        <mt:if name="rev_date">
         <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
         <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="View revisions of this entry"><__trans phrase="View revisions"></a>
+        <mt:else>
+        <p class="zero-state"><__trans phrase="No revision(s) associated with this entry"></p>
+        </mt:if>
     </div>
     <mt:else>
         <mt:if name="can_publish_post">

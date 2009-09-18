@@ -967,13 +967,6 @@ ul.menu-nav > li.last-child.top-menu-open .toggle-button {
     background-color: #f2f2b0;
 }
 
-.status-widget .revision-info { 
-    margin-bottom: 10px;
-}
-.status-widget .revision-info p { 
-    margin-bottom: 5px;
-}
-
 /* - Fields */
 fieldset { 
     margin-bottom: 15px;
