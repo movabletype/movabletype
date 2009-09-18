@@ -1534,7 +1534,7 @@ sub post_save {
     if (scalar(@meta_messages) > 0) {
         my $meta_message = join(", ", @meta_messages);
         $app->log({
-            message  => $app->translate("Saved [_1] Changes", $blog_type),
+            message  => $app->translate("Saved [_1] Changes", $obj->class_label),
             metadata => $meta_message,
             level    => MT::Log::INFO(),
             class    => $obj->class,
@@ -1685,7 +1685,7 @@ sub post_save {
             {
                 message => $app->translate(
                     "[_1] '[_2]' (ID:[_3]) created by '[_4]'",
-                    $blog_type, $obj->name, $obj->id, $auth->name
+                    $obj->class_label, $obj->name, $obj->id, $auth->name
                 ),
                 level    => MT::Log::INFO(),
                 class    => $obj->class,

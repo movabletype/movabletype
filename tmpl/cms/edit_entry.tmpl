@@ -355,7 +355,7 @@
     <mt:setvar name="scheduled_button_text" value="<__trans phrase="Save Changes">">
     <mt:if name="status_publish">
     <mt:setvar name="button_text" value="<__trans phrase="Update">">
-    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_type">" escape="html"></mt:setvarblock>
+    <mt:setvarblock name="button_title"><__trans phrase="Update this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
     <mt:setvar name="draft_button_text" value="<__trans phrase="Unpublish">">
     <mt:setvarblock name="draft_button_title"><__trans phrase="Unpublish this [_1]" params="<mt:var name="object_label">" escape="html"></mt:setvarblock>
     <mt:else>

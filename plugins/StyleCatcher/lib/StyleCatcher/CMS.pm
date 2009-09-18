@@ -787,7 +787,7 @@ sub metadata_for_theme {
     my $data = {
         name         => $theme{id},
         description  => $metadata{description} || q{},
-        title        => $metadata{title} || '(Untitled)',
+        title        => $metadata{title} || $app->translate('(Untitled)'),
         url          => $url,
         imageSmall   => $thumbnails{thumbnail},
         imageBig     => $thumbnails{thumbnail_large},

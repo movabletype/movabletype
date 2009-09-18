@@ -847,7 +847,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Tags/Misc.pm
 	'name is required.' => 'nameを指定してください。',
 	'Specified WidgetSet \'[_1]\' not found.' => 'ウィジェットセット「[_1]」が見つかりません。',
-	'Can\'t find included template widget \'[_1]\'' => 'ウィジェット「[_1]」が見つかりません。',
 
 ## lib/MT/Template/Tags/Author.pm
 	'The \'[_2]\' attribute will only accept an integer: [_1]' => '[_2]属性は整数以外は無効です。',
@@ -1161,8 +1160,6 @@ use vars qw( @ISA %Lexicon );
 	'There was an error converting image [_1].' => '画像の変換でエラーが発生しました: [_1]',
 	'There was an error creating thumbnail file [_1].' => '画像のサムネイル作成でエラーが発生しました: [_1]',
 	'Default Prefs' => '既定の設定',
-	'Default Categories' => '既定のカテゴリ',
-	'Default Folders' => '既定のフォルダー',
 	'Template Set' => 'テンプレートセット',
 	'Static Files' => 'スタティックファイル',
 	'Default Pages' => '既定のページ',
@@ -1673,9 +1670,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Upgrading Asset path informations...' => 'アイテムパス情報を更新しています...',
 	'Creating initial blog and user records...' => '初期ユーザーとブログを作成しています...',
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
-	'I just finished installing Movable Type [_1]!' => 'Movable Type [_1] へようこそ！',
-	'Welcome to my new website powered by Movable Type. This is the first post on my website and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!' => 'この記事は、Movable Typeのインストール完了時に、システムによって自動的に作成された記事です。 新しくなったMTの管理画面で、早速記事を更新してみましょう。',
-	'Movable Type also created a comment for me as well so that I could see what a comment will look like on my website once people start submitting comments on all the posts I will write.' => 'このコメントは、Movable Type のインストール完了時に、システムによって自動的に投稿されたコメントです。MT のブログに投稿されたコメントが、どのように表示されるのかを、ご確認いただけます。',
 	'Creating new template: \'[_1]\'.' => '新しいテンプレート[_1]を作成しています...',
 	'Mapping templates to blog archive types...' => 'テンプレートをブログのアーカイブタイプに適用しています...',
 
@@ -1986,6 +1980,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Failed to uninstall theme' => 'テーマのアンインストールに失敗しました',
 	'Failed to uninstall theme: [_1]' => 'テーマのアンインストールに失敗しました: [_1]',
 	'Theme from [_1]' => '[_1]のテーマ',
+	'Install to theme directory' => 'テーマディレクトリへのインストール',
+	'Download as [_1] archive' => '[_1]形式アーカイブでダウンロード',
 	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Error occurred during exporting [_1]: [_2]' => '[_1]のエクスポート中にエラーが発生しました: [_2]',
@@ -2541,7 +2537,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Continue' => '次へ',
 	'Test' => 'テスト',
 	'Back' => '戻る',
-	'Send Test Email' => 'テストメールを送信',
 
 ## tmpl/wizard/optional.tmpl
 	'Mail Configuration' => 'メール設定',
@@ -2558,6 +2553,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Address of your SMTP Server.' => 'SMTPサーバーのアドレスを指定します。',
 	'Mail address to which test email should be sent' => 'テストメールが送られるメールアドレス',
 	'From mail address' => '送信元メールアドレス',
+	'Send Test Email' => 'テストメールを送信',
 
 ## tmpl/wizard/configure.tmpl
 	'Database Configuration' => 'データベース設定',
@@ -2706,7 +2702,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/edit_website.tmpl
 	'Create Website' => 'ウェブサイト作成',
 	'Your blog configuration has been saved.' => 'ブログの設定を保存しました。',
-	'Website Details' => 'ウェブサイトの詳細',
 	'Website Theme' => 'ウェブサイトテーマ',
 	'Select the theme you wish to use for this website.' => 'ウェブサイトで利用したいテーマを選択してください。',
 	'Name your website. The website name can be changed at any time.' => 'ウェブサイト名。ウェブサイト名はいつでも変更できます。',
@@ -2864,7 +2859,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Change' => '変更',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
-	'Export Theme: [_1]' => 'エクスポートテーマ: [_1]',
+	'Include in Theme: [_1]' => 'テーマに含む: [_1]',
 
 ## tmpl/cms/dialog/clone_blog.tmpl
 	'Verify Clone Blog Settings' => '複製したブログ設定の確認',
@@ -2893,6 +2888,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]' => '3秒後に新しいページに進みます。[_1]タイマーを止める[_2]',
 
 ## tmpl/cms/dialog/list_revision.tmpl
+	'Select the revision to populate the values of the Edit screen.' => '編集画面に読み込むリビジョンを選んでください。',
 
 ## tmpl/cms/dialog/move_blogs.tmpl
 	'Warning: You need to copy uploaded assets to the new path manually. It is also recommended not to delete files in the old path to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、旧パスのファイルも残すことで、リンク切れを防止できます。',
@@ -3078,6 +3074,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'A description for this theme.' => 'テーマの説明です。',
 	'Theme options' => 'テーマオプション',
 	'Additional assets to be included in the theme.' => 'テーマに含む追加アイテムです。',
+	'Output method' => '出力形式',
+	'Select How to get theme.' => 'テーマの出力方法を選択してください。',
 	'Setting for [_1]' => '[_1]の設定',
 	'You must set Theme Name.' => 'テーマ名を設定してください。',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'アルファベット、数字、ダッシュ(-)、アンダースコア(_)を利用。かならずアルファベットで始めてください。',
@@ -3247,6 +3245,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
 	'Revision: <strong>[_1]</strong>' => 'リビジョン: <strong>[_1]</strong>',
 	'View revisions' => 'リビジョン表示',
+	'No revision(s) associated with this template' => 'テンプレートのリビジョンが見つかりません',
 	'Useful Links' => 'ショートカット',
 	'List [_1] templates' => '[_1]テンプレート一覧',
 	'List all templates' => 'すべてのテンプレートを表示',
@@ -3257,6 +3256,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Unrecognized Tags' => '不明なタグ',
 	'Save (s)' => '保存',
 	'Save' => '保存',
+	'Save Changes (s)' => '変更を保存 (s)',
 	'Save and Publish this template (r)' => 'このテンプレートを保存して再構築 (r)',
 	'Save &amp; Publish' => '保存と再構築',
 	'You have unsaved changes to this template that will be lost.' => '保存されていないテンプレートへの変更は失われます。',
@@ -3629,18 +3629,18 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Signed in as [_1]' => 'ユーザー: [_1]',
 	'Help' => 'ヘルプ',
 	'Sign out' => 'サインアウト',
-	'[_1]\'s Dashboard' => '[_1]ダッシュボード',
+	'User Dashboard' => 'ユーザーダッシュボード',
 	'System Overview' => 'システム',
 	'Select another website...' => 'ウェブサイトを選択',
 	'(on [_1])' => '([_1])',
 	'Select another blog...' => 'ブログを選択',
-	'Create a new website on system' => 'ウェブサイト作成',
+	'Create a new website' => 'ウェブサイト作成',
 	'Create a new blog on current website' => 'ブログ作成',
+	'Create a new blog on [_1]' => 'ブログ作成([_1])',
 	'View Site' => 'サイトの表示',
 	'View [_1]' => '[_1]参照',
 	'Search (q)' => '検索 (q)',
 	'This website was created during the version-up from the previous version of Movable Type. \'Site Root\' and \'Site URL\' are left blank to retain \'Publishing Paths\' compatibility for blogs those were created at the previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank \'Site Root\' and \'Site URL\'.' => 'このウェブサイトは、以前のバージョンのMovable Typeからのバージョンアップ時に作成されました。バージョンアップ前に作成されたブログの公開設定の互換性を保持するために、ウェブサイトのサイト URLとサイトパスは空白になっています。そのため、既存のブログに投稿、公開はできますが、ウェブサイト自体にコンテンツを投稿することはできません。',
-	'Dashboard' => 'ダッシュボード',
 	'from Revision History' => '履歴データ',
 
 ## tmpl/cms/include/list_associations/page_title.tmpl
@@ -3827,7 +3827,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Use this as system email address' => 'システムのメールアドレスとして利用する',
 	'The user&rsquo;s preferred language.' => 'ユーザーの表示用の言語',
 	'Select a password for your account.' => 'パスワードを入力してください。',
-        'Confirm Password' => 'パスワード確認',
+	'Confirm Password' => 'パスワード確認',
 	'Repeat the password for confirmation.' => '確認のため、パスワードを再入力してください。',
 	'Your LDAP username.' => 'LDAPのユーザー名を入力してください。',
 	'Enter your LDAP password.' => 'LDAPのパスワードを入力してください。',
@@ -4009,7 +4009,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Add folder' => 'フォルダを追加',
 	'Add folder name' => 'フォルダ名を追加',
 	'Add new folder parent' => '親フォルダを追加',
-	'Save this page (s)' => 'ウェブページを保存する (s)',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
 	'View Page' => 'ウェブページを表示',
@@ -4017,7 +4016,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Add category' => 'カテゴリを追加',
 	'Add category name' => 'カテゴリ名を追加',
 	'Add new category parent' => '親カテゴリを追加',
-	'Save this entry (s)' => 'ブログ記事を保存 (s)',
 	'Preview this entry (v)' => 'ブログ記事をプレビュー (v)',
 	'Delete this entry (x)' => 'ブログ記事を削除 (x)',
 	'A saved version of this entry was auto-saved [_2]. <a href="[_1]">Recover auto-saved content</a>' => 'ブログ記事は自動保存されています([_2])。<a href="[_1]">自動保存された内容を元に戻す</a>',
@@ -4040,15 +4038,19 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
 	'Change Folder' => 'フォルダの変更',
 	'Unpublished (Spam)' => '未公開(スパム)',
+	'No revision(s) associated with this [_1]' => '[_1]のリビジョンが見つかりません',
 	'[_1] - Published by [_2]' => '公開([_2] - [_1])',
 	'[_1] - Edited by [_2]' => '編集([_2] - [_1])',
+	'Save Draft' => 'ドラフト保存',
+	'Draft this [_1]' => '[_1]の下書き',
+	'Publish this [_1]' => '[_1]の公開',
+	'Update' => '更新',
+	'Update this [_1]' => '[_1]の更新',
+	'Unpublish' => '公開取り消し',
+	'Unpublish this [_1]' => '[_1]の公開取り消し',
 	'Publish On' => '公開する',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他のブログ記事と衝突を起こす可能性があります。',
 	'Warning: Changing this entry\'s basename may break inbound links.' => '警告: このブログ記事の出力ファイル名の変更は、内部のリンク切れの原因となります。',
-	'Update' => '更新',
-	'Publish this [_1]' => '[_1]の公開',
-	'Update this [_1]' => '[_1]の更新',
-	'Draft this [_1]' => '[_1]の下書き',
 	'Unpublished' => '下書き',
 	'You must configure this blog before you can publish this entry.' => 'ブログ記事を公開する前にブログの設定を行ってください。',
 	'You must configure this blog you before can publish this page.' => 'ページを公開する前にウェブサイトの設定を行ってください。',
@@ -4200,6 +4202,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You must set a valid Local Archive Path.' => '有効なアーカイブパスを指定してください。',
 
 ## tmpl/cms/dashboard.tmpl
+	'Dashboard' => 'ダッシュボード',
 	'Hi, [_1]' => 'こんにちは、[_1]さん',
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
@@ -4348,13 +4351,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/new_install.tmpl
 	'Thank you for installing Movable Type' => 'Movable Type をご利用いただき、ありがとうございます。',
-	'Congratulations on installing Movable Type, the world\'s most powerful blogging, publishing and social media platform. To help you get started we have provided you with links to some of the more common tasks new users like to perform:' => '表現力豊かなブログを公開するために、Movable Type には沢山の機能が用意されています。',
-	'Create a new blog!' => '新しいブログを作成する',
-	'Let\'s create a blog after installation with community, professional, classic or any other themes.' => 'コミュニティー、プロフェッショナル、クラッシック、そのたのテーマをインストールした後でブログを作成しましょう。',
-	'Add more users' => 'さらにユーザーを追加',
-	'Start building your community now. Invite users to join your website and promote them to authors.' => 'コミュニティー設定をはじめます。ユーザーをウェブサイトに招待して記事を作成してもらいましょう。',
-	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
-	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Type で何ができるか、詳しくはこちら。',
+	'You are now ready to:' => '次の方法で、ウェブサイトにコンテンツを公開できます。',
+	'Create a new page on your website.' => 'ウェブサイトに、ウェブページを作成する',
+	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿する',
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'This is you' => 'This is you',
@@ -4403,7 +4402,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'http://www.sixapart.com/movabletype/support' => 'http://www.sixapart.jp/movabletype/support',
 	'Movable Type Technical Support' => 'Movable Type テクニカルサポート',
 	'Movable Type Community Forums' => 'Movable Type コミュニティフォーラム',
-	'Save Changes (s)' => '変更を保存 (s)',
 	'Change this message.' => 'このメッセージを変更',
 	'Edit this message.' => 'このメッセージを編集',
 
@@ -4419,7 +4417,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Posted by [_1] [_2]' => '[_2] [_1]',
 	'Tagged: [_1]' => 'タグ: [_1]',
 	'View all entries' => 'すべてのブログ記事を表示',
-	'No entries available.' => 'ブログ記事がありません。',
+	'No entries have been created in this blog. <a href="[_1]">Create a entry</a>' => 'このブログには記事が見つかりません。<a href="[_1]">記事を作成</a>する。',
 
 ## tmpl/cms/widget/new_version.tmpl
 	'What\'s new in Movable Type [_1]' => 'Movable Type [_1] の新機能',
@@ -4433,6 +4431,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/new_user.tmpl
 	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform:' => '世界で最もパワフルなブログ、ウェブサイト、ソーシャルメエyイアプラットフォームであるMovable Typeへようこそ:',
+	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
+	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Type で何ができるか、詳しくはこちら。',
 
 ## tmpl/cms/widget/blog_stats.tmpl
 	'Error retrieving recent entries.' => '最近のブログ記事を取得できませんでした。',
@@ -4451,6 +4451,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/blog_stats_recent_entries.tmpl
 	'[quant,_1,entry,entries] tagged &ldquo;[_2]&rdquo;' => 'タグ&ldquo;[_2]&rdquo;の付いたブログ記事([quant,_1,件,件])',
+	'No entries available.' => 'ブログ記事がありません。',
 
 ## tmpl/cms/widget/favorite_blogs.tmpl
 	'Favorite websites and blogs' => 'お気に入りのウェブサイト/ブログ',
@@ -4683,7 +4684,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'This link is invalid. Please resubscribe to your activity feed.' => 'このリンクは無効です。フィードの購読をやり直してください。',
 
 ## tmpl/feeds/feed_entry.tmpl
-	'Unpublish' => '公開を取りやめる',
 	'More like this' => '他にも...',
 	'From this blog' => 'このブログから',
 	'From this author' => 'このユーザーから',
@@ -4739,6 +4739,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => '[_1] フォルダが作成できません。\'themes\' フォルダが書き込み可能か確認してください。',
 	'Successfully applied new theme selection.' => '新しいテーマを適用しました。',
 	'Invalid URL: [_1]' => 'URLが不正です: [_1]',
+	'(Untitled)' => '(タイトルなし)',
 
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcherを使うと、ほんの数回クリックするだけでスタイルを探してブログに適用することができます。Movable Typeのスタイルについての詳細やスタイルの配布元については、<a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a>のページ（英語）へアクセスしてください。',
