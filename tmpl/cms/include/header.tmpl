@@ -135,13 +135,16 @@
                     </ul>
 
                     <div class="selector">
-    <mt:if name="can_access_overview">
                         <ul>
+                            <li class="user-dashboard">
+                                <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><__trans phrase="User Dashboard"></a>
+                            </li>
+    <mt:if name="can_access_overview">
                             <li class="system-overview">
                                 <a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><__trans phrase="System Overview"></a>
                             </li>
-                        </ul>
     </mt:if>
+                        </ul>
     <mt:if name="fav_website_loop">
     <mt:loop name="fav_website_loop">
         <mt:if name="__first__">

@@ -512,6 +512,7 @@ ul.tabs li a {
     display: block;
 }
 .selector > ul.last-child, 
+#selector-nav .user-dashboard, 
 #selector-nav .system-overview, 
 #selector-nav #fav-website-list, 
 #selector-nav #fav-blog-list { 
