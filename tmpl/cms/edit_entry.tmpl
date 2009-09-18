@@ -54,7 +54,7 @@
     <mt:if name="status_publish">
         <mt:if name="entry_permalink">
             <mt:setvarblock name="view_link">
-                <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></li>
+               <a href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View Entry"></a></li>
             </mt:setvarblock>
         </mt:if>
     </mt:if>
@@ -518,35 +518,23 @@
 <div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> class="hidden"</mt:unless>>
     <mtapp:widget
         id="entry-feedback-widget"
-        label="<__trans phrase="Feedback">">
+        label="<__trans phrase="Comments">">
 
         <mtapp:setting
-            id="allow_comment"
-            label="<__trans phrase="Comments">"
-            label_class="top-label"
-            content_class="allow-feedback"
+            id="allow-feedback"
+            label="<__trans phrase="Accept">"
+            label_class="no-header"
             help_page="entries"
             help_section="accept_comments">
             <ul>
                 <li>
-                    <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Accept"/></label>
+                    <input type="checkbox" name="allow_comments" id="allow_comments" value="1"<mt:if name="allow_comments"> checked="checked"</mt:if> class="cb" /> <label for="allow_comments"><__trans phrase="Accept Comments"></label>
         <mt:unless name="new_object">
                     <span class="comments-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_comments"$>%%<$mt:var name="script_url">?__mode=list_comments&amp;filter_key=_comments_by_entry&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
         </mt:unless>
                 </li>
-            </ul>
-        </mtapp:setting>
-
-        <mtapp:setting
-            id="allow_trackback"
-            label="<__trans phrase="TrackBacks">"
-            label_class="top-label"
-            content_class="allow-feedback"
-            help_page="entries"
-            help_section="accept_trackbacks">
-            <ul>
                 <li>
-                    <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="Accept"/></label>
+                    <input type="checkbox" name="allow_pings" id="allow_pings" value="1"<mt:if name="allow_pings"> checked="checked"</mt:if> class="cb" /> <label for="allow_pings"><__trans phrase="Accept Trackbacks"></label>
         <mt:unless name="new_object">
                     <span class="pings-link feedback-count"><__trans phrase="<a href="[_2]">[_1]</a>" params="<$mt:var name="num_pings"$>%%<$mt:var name="script_url">?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"></span>
         </mt:unless>
@@ -564,7 +552,7 @@
         </mt:unless>
 
         <mtapp:setting
-            id="ping_urls"
+            id="ping-urls"
             label="<__trans phrase="Outbound TrackBack URLs">"
             label_class="top-label"
             hint="$ping_urls_hint"

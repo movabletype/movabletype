@@ -2601,8 +2601,8 @@ td.sub-label label {
     background: url(../images/status_icons/create.gif) no-repeat left center;
 }
 
-/* -- Feedbacks Widget */
-.allow-feedback li { 
+/* -- Comment Widget */
+#allow-feedback-field li { 
     position: relative;
 }
 
@@ -2613,6 +2613,8 @@ td.sub-label label {
 
 .comments-link a,
 .pings-link a {
+    display: inline-block;
+    min-height: 18px;
     padding-left: 20px;
     background-position: left center;
     background-repeat: no-repeat;
@@ -2622,6 +2624,10 @@ td.sub-label label {
 }
 .pings-link a {
     background-image: url('../images/nav_icons/color/trackbacks.gif');
+}
+
+#ping-urls-field { 
+    margin-bottom: 0;
 }
 
 /* -- Asset List Widget */
