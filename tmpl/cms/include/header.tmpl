@@ -204,13 +204,13 @@
     </mt:if>
                         <ul>
     <mt:if name="can_create_website">
-                            <li id="create-website" class="website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new website on system"></a></li>
+                            <li id="create-website" class="website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new website"></a></li>
     </mt:if>
     <mt:if name="can_create_blog">
         <mt:if name="scope_type" eq="website">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create a new blog on current website"></a></li>
+                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create a new blog on [_1]" params="<mt:var name="curr_website_name">"></a></li>
         <mt:elseif name="scope_type" eq="blog">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create a new blog on current website"></a></li>
+                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create a new blog on [_1]" params="<mt:var name="curr_website_name">"></a></li>
         </mt:if>
     </mt:if>
                         </ul>
