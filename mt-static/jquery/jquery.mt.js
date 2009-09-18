@@ -82,17 +82,17 @@ $.mtCheckbox = function() {
     $('thead :checkbox, tfoot :checkbox').click(function() {
         var $checkboxes = $(this).parents('table').find(':checkbox');
         if (this.checked) {
-            $checkboxes.attr('checked', true).parents('tr').addClass('selected');
+            $checkboxes.attr('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
         } else {
-            $checkboxes.removeAttr('checked').parents('tr').removeClass('selected');
+            $checkboxes.removeAttr('checked').parents('tr').removeClass('selected').next('.slave').removeClass('selected');
         }
     });
 
     $('tbody :checkbox').click(function() {
         if (this.checked) {
-            $(this).parents('tr').addClass('selected');
+            $(this).parents('tr').addClass('selected').next('.slave').addClass('selected');
         } else {
-            $(this).parents('tr').removeClass('selected');
+            $(this).parents('tr').removeClass('selected').next('.slave').removeClass('selected');
         }
         verify_all_checked($(this).parents('table'));
     });

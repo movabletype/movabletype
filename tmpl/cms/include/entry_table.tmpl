@@ -47,8 +47,6 @@
         </mt:unless>
                 </th>
                 <th class="title primary-col"><__trans phrase="Title"></th>
-                <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
-                <th class="author"><__trans phrase="Author"></th>
         <mt:unless name="blog_view">
             <mt:if name="object_type" eq="entry">
                 <th class="blog"><__trans phrase="Blog"></th>
@@ -56,6 +54,8 @@
                 <th class="blog"><__trans phrase="Website/Blog"></th>
             </mt:if>
         </mt:unless>
+                <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
+                <th class="author"><__trans phrase="Author"></th>
                 <th class="datetime"><mt:if name="object_type" eq="page"><__trans phrase="Last Modified"><mt:else><__trans phrase="Created"></mt:if></th>
         <mt:unless name="is_power_edit">
                 <th class="view"><span><__trans phrase="View"></span></th>
@@ -139,6 +139,9 @@
                 <td>&#160;</td>
                 <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" ne="page"><__trans phrase="Edit Entry"><mt:else><__trans phrase="Edit Page"></mt:if></a><mt:else>&#160;</mt:if></td>
         </mt:if>
+        <mt:unless name="blog_view">
+                <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+        </mt:unless>
                 <td class="category">
         <mt:if name="is_editable">
             <mt:if name="entry_blog_id" eq="$original_blog_id">
@@ -171,9 +174,6 @@
                     <$mt:var name="author_name" escape="html"$>
             </mt:if>
                 </td>
-        <mt:unless name="blog_view">
-                <td class="weblog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
-        </mt:unless>
                 <td class="datetime">
         <mt:if name="has_publish_access">
                     <input type="text" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />

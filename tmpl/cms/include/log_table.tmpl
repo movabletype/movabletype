@@ -51,3 +51,11 @@
     </tbody>
     </mt:if>
 </mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('tr.log-detail').hide();
+    jQuery('tr.log-detail-parent').click(function() {
+        jQuery(this).toggleClass('active').next('tr.log-detail').toggle();
+    });
+</mt:setvarblock>
+

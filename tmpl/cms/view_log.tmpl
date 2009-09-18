@@ -171,17 +171,8 @@
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/log_table.tmpl"$>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
+<mt:setvarblock name="jq_js_include" append="1">
     init();
-    jQuery('tr.log-detail').hide();
-    jQuery('tr.log-detail-parent').click(function() {
-        jQuery(this).toggleClass('active').next('tr.log-detail').toggle();
-    });
-});
-/* ]]> */
-</script>
-
+</mt:setvarblock>
 
 <$mt:include name="include/footer.tmpl"$>

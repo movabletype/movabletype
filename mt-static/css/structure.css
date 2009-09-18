@@ -1646,13 +1646,16 @@ th.move-col {
     width: auto;
 }
 
-.listing td { 
+.listing tbody tr.last-child td, 
+.listing .expanded td { 
+    border: 0;
+}
+
+.listing td, 
+.listing .expanded tr.slave td { 
     border-bottom: 1px solid;
     border-color: #F3F3F3;
     vertical-align: top;
-}
-.listing tbody tr.last-child td { 
-    border: 0;
 }
 
 .listing tbody tr.selected {
@@ -1705,13 +1708,13 @@ tfoot th.last-child {
     padding-left: 0;
     text-align: center;
 }
-.listing .view { 
+.listing .view, 
+.listing .linked-template { 
     width: 4em;
 }
 .listing .view img { 
     margin-top: 3px;
 }
-
 
 .listing td.settings { 
     text-align: center;
@@ -1798,12 +1801,6 @@ tfoot th.last-child {
     margin-bottom: 0;
 }
 
-#list-template .listing .cache-method, 
-#list-template .listing .si { 
-    width: 8%;
-    padding: 8px 10px;
-    text-align: center;
-}
 #list-template .actions-bar-bottom, 
 #list-widget-set .actions-bar-bottom { 
     display: none;
