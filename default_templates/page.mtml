@@ -4,6 +4,15 @@
 <head>
     <$mt:Include module="<__trans phrase="HTML Head">"$>
     <$mt:EntryTrackbackData$>
+    <$mt:Var name="comments_per_page" value="50"$>
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+	    <script type="text/javascript">
+         MT.entryID = <$mt:PageID$>;
+         MT.commentsPerPage = <$mt:Var name="comments_per_page"$>;
+         MT.entryCommentCount = <$mt:EntryCommentCount$>;
+         MT.commentIds = [<mt:Comments sort_order="ascend" glue=","><mt:CommentID></mt:Comments>];
+	    </script>
+    </mt:If>
     <title><$mt:PageTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
 </head>
 <body id="<$mt:BlogTemplateSetID$>" class="mt-page-archive <$mt:Var name="page_layout"$>">
