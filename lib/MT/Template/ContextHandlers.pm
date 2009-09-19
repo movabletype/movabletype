@@ -14948,7 +14948,7 @@ sub _hdlr_entry_if_allow_comments {
 
 =head2 EntryIfCommentsOpen
 
-Deprecated in favor of L<EntryIfCommentsActive>.
+Deprecated in favor of L<IfCommentsActive>.
 
 =for tags deprecated
 
