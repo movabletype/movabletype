@@ -105,7 +105,7 @@ function init() {
         hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
         help_page="blog_settings_publishing"
         help_section="site_url">
-            <mt:var name="website_url"><input type="text" name="site_url" id="site_url" class="extra-path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="50" />
+            <mt:var name="website_scheme">://<input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" size="20" class="<mt:if name="is_blog">extra-path</mt:if>" /><mt:unless name="site_url_subdomain">.</mt:unless><mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="20" class="<mt:if name="is_blog">extra-path</mt:if>" />
     </mtapp:setting>
 
     <mtapp:setting

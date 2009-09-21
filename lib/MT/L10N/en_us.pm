@@ -161,6 +161,7 @@ the address you provided is correct and belongs to you.',
      '_WARNING_DELETE_USER' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
     '_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'This action will restore the templates in the selected blog(s) to theme default settings. Are you sure you want to refresh templates in the selected blog(s)?',
 
+    '_WEBMASTER_MT4' => 'Webmaster',
 );
 
 1;

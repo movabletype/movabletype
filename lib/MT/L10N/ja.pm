@@ -1596,6 +1596,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'DefaultSiteURL/DefaultSiteRootをウェブサイト用に移行しています。。。',
 	'Website for new User' => '新規ウェブサイトユーザー',
 	'Merging dashboard settings...' => 'ダッシュボート設定を移行しています...',
+    '_WEBMASTER_MT4' => 'ウェブサイト管理者',
 
 ## lib/MT/Upgrade/v2.pm
 	'Updating category placements...' => 'カテゴリの関連付けを更新しています...',

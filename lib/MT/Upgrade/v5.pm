@@ -10,11 +10,11 @@ use strict;
 
 sub upgrade_functions {
     return {
-        'v5_migrate_blog' => {
-            version_limit => 5.0004,
-            priority      => 3.2,
-            code          => \&_v5_migrate_blog,
-        },
+        #'v5_migrate_blog' => {
+        #    version_limit => 5.0004,
+        #    priority      => 3.2,
+        #    code          => \&_v5_migrate_blog,
+        #},
         'v5_create_new_role' => {
             version_limit => 5.0010,
             priority      => 3.1,
@@ -49,7 +49,25 @@ sub upgrade_functions {
                 condition => sub { $_[0]->status(1) && $_[0]->type(1) },
                 code          => \&_v5_migrate_dashboard,
             },
-        }
+        },
+        'v5_migrate_blog_only' => {
+            version_limit => 5.0014,
+            priority      => 3.2,
+            updater => {
+                type      => 'blog',
+                label     => "Classifying blogs...",
+                condition => sub { !$_[0]->class },
+                code      => sub { $_[0]->class('blog') },
+                sql       => "update mt_blog set blog_class='blog'
+                              where ( blog_class IS NULL ) or ( blog_class = '' )
+                              or ( blog_class = '0' )",
+            },
+        },
+        'v5_generate_websites_place_blogs' => {
+            version_limit => 5.0014,
+            priority      => 3.4,
+            code          => \&_v5_generate_websites_place_blogs,
+        },
     };
 }
 
@@ -115,7 +133,7 @@ sub _v5_create_new_role {
 
     $self->progress($self->translate_escape('Updating existing role name...'));
     my $role = $role_class->load({
-        name => MT->translate('Webmaster'),
+        name => MT->translate('_WEBMASTER_MT4'),
     });
     if ( $role ) {
         $role->name( MT->translate('Webmaster (MT4)') );
@@ -306,4 +324,109 @@ sub _v5_migrate_dashboard {
     $user->save;
 }
 
+sub _v5_generate_websites_place_blogs {
+    my $self = shift;
+
+    require MT::Blog;
+    my $iter = MT::Blog->load_iter( [
+        { class => 'blog' },
+        '-and',
+        [
+            { parent_id => \'IS NULL' }, '-or', { parent_id => '' }
+        ]
+    ] );
+
+    my %site_urls;
+    while ( my $blog = $iter->() ) {
+        $site_urls{ $blog->site_url } = $blog;
+    }
+
+    return unless %site_urls;
+
+    $self->progress($self->translate_escape('Migrating existing [quant,_1,blog,blogs] into websites and its children...', scalar(keys(%site_urls))));
+
+    my $assoc_class = MT->model('association');
+    return $self->error($self->translate_escape("Error loading class: [_1].", 'Association'))
+        unless $assoc_class;
+    my $role_class = MT->model('role');
+    return $self->error($self->translate_escape("Error loading class: [_1].", 'Role'))
+        unless $role_class;
+    my $role = $role_class->load_by_permission('administer_website');
+    return $self->error($self->translate_escape("Error loading role: [_1].", 'administer_website'))
+        unless $role;
+
+    my @sysadmins = MT::Author->load(
+        {
+            type => MT::Author::AUTHOR()
+        },
+        {
+            join => MT::Permission->join_on(
+                'author_id',
+                {
+                    permissions => "\%'administer'\%",
+                    blog_id     => '0',
+                },
+                { 'like' => { 'permissions' => 1 } }
+            )
+        }
+    );
+
+    # 1. find the shortest site_url, pick its domain and make it as a website url
+    # 2. find urls under the domain and make it children
+    # 3. find urls of that are subdomains of the domain and make it children
+    # 4. go to step 1 until everything is either a child or a website
+
+    my $website_class= MT->model('website');
+    my %websites;
+    while ( my @site_urls = keys %site_urls ) {
+        @site_urls = sort { length( $a ) <=> length ( $b ) } @site_urls;
+        my $shortest = shift @site_urls;
+        my ($ssl, $domain) = $shortest =~ m!^http(s?)://(.+?)/!g;
+        my $dot = index( $domain, '.' );
+        # XXX: ignoring domain that starts with ".".
+        if ( $dot > 0 ) {
+            $domain =~ s!^(?:[\.\w]*?)([^\.]+?)(\.\w+)$!$1$2!;
+        }
+        my ( $subdomain, $path ) = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
+        my $blog = delete $site_urls{ $shortest };
+
+        return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
+            unless $website_class;
+
+        my $website = $website_class->create_default_website(MT->translate('New WebSite [_1]', $domain));
+        $website->site_path($blog->site_path);
+        $website->site_url("http$ssl://$domain/");
+        $website->save
+            or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
+
+        foreach ( @sysadmins ) {
+        $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+        }
+        $self->progress($self->translate_escape('Generated a website [_1]', $domain));
+
+        $path = $path . '/' if $path && $path !~ m!/$!;
+        my $old_site_url = $blog->site_url;
+        $blog->site_url("$subdomain/::/$path");
+        $blog->parent_id($website->id);
+        $blog->save
+            or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
+        $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
+
+        my @children = grep { $_ =~ m!https?://.+$domain/! } @site_urls;
+        foreach my $child_url ( @children )  {
+            my ( $subdomain, $path ) = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
+            my $blog = delete $site_urls{ $child_url };
+            $path = $path . '/' if $path && $path !~ m!/$!;
+            my $old_site_url = $blog->site_url;
+            $blog->site_url("$subdomain/::/$path");
+            $blog->parent_id($website->id);
+            $blog->save
+                or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
+            $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
+        }
+    }
+    1;
+}
+
 1;
+__END__

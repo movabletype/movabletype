@@ -361,93 +361,168 @@ sub theme {
     return MT::Theme->load($id);
 }
 
+sub raw_site_url {
+    my $blog = shift;
+    my $site_url = $blog->SUPER::site_url;
+    if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
+        return ( $subdomain, $path );
+    }
+    return $site_url;
+}
+
 sub site_url {
     my $blog = shift;
 
-
-    if (!@_) {
-        my $base_url = '';
+    if (@_) {
+        return $blog->SUPER::site_url(@_);
+    } elsif ( $blog->is_dynamic ) {
+        my $cfg = MT->config;
+        my $path = $cfg->CGIPath;
+        if ($path =~ m!^/!) {
+            # relative path, prepend blog domain
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $path = $blog_domain . $path;
+        }
+        $path .= '/' unless $path =~ m{/$};
+        return $path;
+    } else {
+        my $url = '';
         if ($blog->is_blog()) {
             if (my $website = $blog->website()) {
-                $base_url = $website->SUPER::site_url;
+                $url = $website->SUPER::site_url;
+            }
+            my $site_url = $blog->SUPER::site_url;
+            my ( $subdomain, $path ) = split( '/::/', $site_url );
+            if ( $subdomain ne $site_url ) {
+                if ( $subdomain ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$subdomain$2/!;
+                }
+                if ( $path ) {
+                    $url = MT::Util::caturl( $url, $path );
+                }
+            }
+            else {
+                $url = MT::Util::caturl( $url, $site_url );
             }
         }
-
-        if ($blog->is_dynamic) {
-            my $cfg = MT->config;
-            my $path = $cfg->CGIPath;
-            return MT::Util::caturl( $base_url, $path, $cfg->ViewScript, $blog->id);
-        } else {
-            return MT::Util::caturl( $base_url, $blog->SUPER::site_url );
+        else {
+            $url = $blog->SUPER::site_url;
         }
-    } else {
-        return $blog->SUPER::site_url(@_);
+
+        return $url;
     }
+}
+
+sub is_site_path_absolute {
+    my $blog = shift;
+
+    my $raw_path = $blog->SUPER::site_path;
+    return 1 if $raw_path =~ m!^/!;
+    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
+    return 1 if $raw_path =~ m!^\\!;
+    return 0;
 }
 
 sub site_path {
     my $blog = shift;
 
-    if (!@_) {
+    if (@_) {
+        $blog->SUPER::site_path(@_);
+    } else {
+        my $raw_path = $blog->SUPER::site_path;
+        return $raw_path if $blog->is_site_path_absolute;
+
         my $base_path = '';
         my $path = '';
         my $website = $blog->website();
         if ($blog->is_blog() && $website) {
             $base_path = $website->column('site_path');
             if ( $base_path ) {
-                $path = File::Spec->catdir( $base_path, $blog->column('site_path') );
+                $path = File::Spec->catdir( $base_path, $raw_path );
             } else {
-                $path = $blog->column('site_path');
+                $path = $raw_path;
             }
         } else {
-            $path = $blog->column('site_path');
+            $path = $raw_path;
         }
         return $path;
-    } else {
-        $blog->SUPER::site_path(@_);
     }
+}
+
+sub raw_archive_url {
+    my $blog = shift;
+    my $archive_url = $blog->SUPER::archive_url;
+    if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
+        return ( $subdomain, $path );
+    }
+    return $archive_url;
 }
 
 sub archive_url {
     my $blog = shift;
 
-    if (!@_) {
-        my $base_url = '';
-        if (my $website = $blog->website()) {
-            $base_url = $website->SUPER::site_url;
-        }
-
-        if ($blog->is_dynamic) {
-            return $blog->site_url;
-        } else {
-            return $blog->SUPER::archive_url
-                ? MT::Util::caturl( $base_url, $blog->SUPER::archive_url )
-                : $blog->site_url;
-        }
-    } else {
+    if (@_) {
         $blog->SUPER::archive_url(@_) || $blog->site_url;
     }
+    elsif ($blog->is_dynamic) {
+        return $blog->site_url;
+    }
+    else {
+        my $url = '';
+        if ($blog->is_blog()) {
+            if (my $website = $blog->website()) {
+                $url = $website->SUPER::site_url;
+            }
+            my $archive_url = $blog->SUPER::archive_url;
+            return $blog->site_url unless $archive_url;
+
+            if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
+                if ( $subdomain ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$subdomain$2/!;
+                }
+                if ( $path ) {
+                    $url = MT::Util::caturl( $url, $path );
+                }
+            }
+            else {
+                $url = MT::Util::caturl( $url, $archive_url );
+            }
+        }
+        return $url;
+    }
+}
+
+sub is_archive_path_absolute {
+    my $blog = shift;
+
+    my $raw_path = $blog->SUPER::archive_path;
+    return 1 if $raw_path =~ m!^/!;
+    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
+    return 1 if $raw_path =~ m!^\\!;
+    return 0;
 }
 
 sub archive_path {
     my $blog = shift;
 
-    if (!@_) {
+    if (@_) {
+        $blog->SUPER::archive_path(@_) || $blog->site_path;
+    } else {
+        my $raw_path = $blog->SUPER::archive_path;
+        return $raw_path if $blog->is_archive_path_absolute;
+
         my $base_path = '';
         my $path = '';
         if (my $website = $blog->website()) {
             $base_path = $website->SUPER::site_path;
         }
-        $path = $blog->column('archive_path');
-        if ( $blog->column('archive_path') ) {
-            $path = File::Spec->catdir( $base_path, $blog->SUPER::archive_path )
-                if $base_path;
+        $path = $raw_path;
+        if ( $base_path ) {
+            $path = File::Spec->catdir( $base_path, $raw_path );
         } else {
             $path = $blog->site_path;
         }
         return $path;
-    } else {
-        $blog->SUPER::archive_path(@_) || $blog->site_path;
     }
 }
 

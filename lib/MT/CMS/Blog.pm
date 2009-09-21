@@ -114,8 +114,14 @@ sub edit {
                 || $obj->column('archive_url') )
             {
                 $param->{enable_archive_paths} = 1;
-                $param->{archive_path}         = $obj->column('archive_path');
-                $param->{archive_url}          = $obj->column('archive_url');
+                $param->{archive_url} = $obj->archive_url;
+                my @raw_archive_url = $obj->raw_archive_url; 
+                if ( 2 == @raw_archive_url ) {
+                    $param->{archive_url_subdomain} = $raw_archive_url[0];
+                    $param->{archive_url_path} = $raw_archive_url[1];
+                }
+                $param->{archive_path} = $obj->column('archive_path');
+                $param->{archive_path_absolute} = $obj->is_archive_path_absolute;
             }
             else {
                 $param->{archive_path} = '';
@@ -324,8 +330,14 @@ sub edit {
         }
         $param->{screen_class} = "settings-screen";
     } else {
-        $param->{site_url} = $obj->column('site_url');
+        $param->{site_url} = $obj->site_url;
+        my @raw_site_url = $obj->raw_site_url; 
+        if ( 2 == @raw_site_url ) {
+            $param->{site_url_subdomain} = $raw_site_url[0];
+            $param->{site_url_path} = $raw_site_url[1];
+        }
         $param->{site_path} = $obj->column('site_path');
+        $param->{site_path_absolute} = $obj->is_site_path_absolute;
     }
 
     if (!$blog->is_blog()) {
@@ -333,7 +345,13 @@ sub edit {
         $param->{website_url} = $blog->column('site_url');
     } elsif (my $website = $blog->website()){
         $param->{website_path} = File::Spec->catfile($website->column('site_path'), '') if $website->column('site_path');
-        $param->{website_url} = $website->column('site_url');
+        $param->{website_url} = $website->site_url;
+    }
+    if ( exists $param->{website_url} ) {
+        my $website_url = $param->{website_url};
+        my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)/$!;
+        $param->{website_scheme} = $scheme;
+        $param->{website_domain} = $domain . '/';
     }
 
     1;
@@ -1996,6 +2014,19 @@ sub cfg_prefs_save {
         $blog->max_revisions_template( $app->param('max_revisions_template') )
           if $app->param('max_revisions_template');
     }
+    my $subdomain = $app->param('site_url_subdomain');
+    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    my $path = $app->param('site_url_path');
+    if ( $subdomain || $path ) {
+        $blog->site_url("$subdomain/::/$path");
+    }
+    $subdomain = $app->param('archive_url_subdomain');
+    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    $path = $app->param('archive_url_path');
+    if ( $subdomain || $path ) {
+        $blog->archive_url("$subdomain/::/$path");
+    }
+
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );

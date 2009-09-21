@@ -1165,6 +1165,7 @@ use vars qw( @ISA %Lexicon );
 	'Assigning embedded flag to asset placements...' => 'Markering voor inbedding van mediabestanden aan het toekennen...',
 	'Updating template build types...' => 'Publicatietype sjablonen bij aan het werken...',
 	'Replacing file formats to use CategoryLabel tag...' => 'Bestandsformaten aan het vervangen om CategoryLabel tag te gebruiken...',
+    '_WEBMASTER_MT4' => 'Webmaster',
 
 ## lib/MT/Core.pm
 	'Create Blogs' => 'Blogs aanmaken',
