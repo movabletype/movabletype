@@ -51,7 +51,7 @@ sub upgrade_functions {
             },
         },
         'v5_migrate_blog_only' => {
-            version_limit => 5.0014,
+            version_limit => 5.0015,
             priority      => 3.2,
             updater => {
                 type      => 'blog',
@@ -64,7 +64,7 @@ sub upgrade_functions {
             },
         },
         'v5_generate_websites_place_blogs' => {
-            version_limit => 5.0014,
+            version_limit => 5.0015,
             priority      => 3.4,
             code          => \&_v5_generate_websites_place_blogs,
         },
