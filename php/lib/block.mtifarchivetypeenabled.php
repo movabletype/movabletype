@@ -21,7 +21,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
             if (!empty($maps)) {
                 foreach ($maps as $map) {
                     if ($map['templatemap_build_type'])
-                        $enabled++;
+                        $enabled = 1; /* was $enabled++; fix for http://bugs.movabletype.org/default.asp?102469.  Thanks dphillips. */
                 }
             }
         }
