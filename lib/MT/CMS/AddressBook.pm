@@ -47,7 +47,7 @@ sub send_notify {
     $app->blog($blog);
     my $perms = $user->permissions($blog);
     return $app->error( $app->translate("No permissions.") )
-      unless $app->can_do('send_entry_notification');
+      unless $perms->can_do('send_entry_notification');
 
     my $author = $entry->author;
     return $app->error(
