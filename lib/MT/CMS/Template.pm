@@ -192,22 +192,25 @@ sub edit {
                 my $mod = $include->{include_module} = $attr->{module} || $attr->{widget};
                 next unless $mod;
                 my $type = $attr->{widget} ? 'widget' : 'custom';
-                next if exists $seen{$type}{$mod};
-                $seen{$type}{$mod} = 1;
-                my $blog_id = $tag->[1]->{global}  ? 0
-                            : $tag->[1]->{blog_id} ? $tag->[1]->{blog_id}
-                            :                        [ $obj->blog_id, 0 ]
-                            ;
+                my $inc_blog_id = $tag->[1]->{global}  ? 0
+                                : $tag->[1]->{blog_id} ? $tag->[1]->{blog_id}
+                                :                        [ $obj->blog_id, 0 ]
+                                ;
+                $inc_blog_id = [ $obj->blog_id, 0 ]
+                    if $inc_blog_id && $inc_blog_id =~ /\D/;
+                my $mod_id = "$mod::" . ref $inc_blog_id ? $obj->blog_id : $inc_blog_id;
+                next if exists $seen{$type}{$mod_id};
+                $seen{$type}{$mod_id} = 1;
                 my $other = MT::Template->load(
                     {
-                        blog_id => $blog_id,
+                        blog_id => $inc_blog_id,
                         name    => $mod,
                         type    => $type,
                     }, {
                         limit => 1,
-                        ref $blog_id ? ( sort      => 'blog_id',
-                                         direction => 'descend', )
-                                     : ()
+                        ref $inc_blog_id ? ( sort      => 'blog_id',
+                                             direction => 'descend', )
+                                         : ()
                     }
                 );
                 if ($other) {
@@ -237,7 +240,7 @@ sub edit {
                     $include->{create_link} = $app->mt_uri(
                         mode => 'view',
                         args => {
-                            blog_id => $obj->blog_id,
+                            blog_id => ref $inc_blog_id ? $obj->blog_id : $inc_blog_id,
                             '_type' => 'template',
                             type    => $type,
                             name    => $mod,
