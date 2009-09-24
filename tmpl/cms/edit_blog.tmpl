@@ -28,7 +28,7 @@ var orig_site_path = "<mt:var name="site_path" _default="$suggested_site_path" e
 function dirify_blog_name(fld) {
     var dir_blog_name = dirify(fld.value);
     if (!dir_blog_name.length) return;
-    var url = fld.form['site_url'];
+    var url = fld.form['site_url_path'];
     var path = fld.form['site_path'];
 
     url.value = dir_blog_name + '/';
@@ -95,7 +95,7 @@ function init() {
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
-        <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
+        <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onchange="dirify_blog_name(this)"/>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_set_publish_paths">
@@ -185,12 +185,8 @@ function init() {
     </fieldset>
 </form>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function () {
+<mt:setvarblock name="jq_js_include" append="1">
     init();
-});
-/* ]]> */
-</script>
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
