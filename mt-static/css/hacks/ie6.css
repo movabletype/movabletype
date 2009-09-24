@@ -1,4 +1,4 @@
-/* - Generic */
+4/* - Generic */
 body { 
     height: 100% ! important;
 }
@@ -181,6 +181,7 @@ html#dialog {
 .field-content ul, 
 .listing-screen .actions-bar, 
 #editor .editor-header, 
+.widget, 
 .widget-header, 
 .allow-feedback li, 
 ul#asset-list li, 

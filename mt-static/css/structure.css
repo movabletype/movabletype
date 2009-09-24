@@ -1323,6 +1323,7 @@ optgroup option {
 
 /* -- You Widget */
 .user .you-widget {
+    clear: both;
     border: 0;
     background-color: transparent;
     overflow: hidden;
