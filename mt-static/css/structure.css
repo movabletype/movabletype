@@ -1070,6 +1070,11 @@ fieldset {
     margin-top: 45px;
 }
 
+.welcome-widget .actions-bar { 
+    clear: both;
+    text-align: right;
+}
+
 /* -- Buttons */
 button, 
 a.button { 
@@ -1257,32 +1262,63 @@ optgroup option {
 /* - Dashboard */
 /* -- Welcome Widget */
 .welcome-widget {
-    border-color: #928c36;
-    background-color: #f2f2b0;
+    border: 0;
+    background-color: #5C909B;
+    color: #f8fbf8;
+    font-family: "Lucida Grande", Verdana, sans-serif;
 }
 
 .welcome-widget .widget-header { 
     margin-bottom: 5px;
     border: 0;
     background: transparent;
+    text-align: center;
 }
 
 .welcome-widget .widget-label {
     margin: 0;
     padding-top: 5px;
     font-size: 22px;
-    font-weight: normal;
-    line-height: 1;
+    font-weight: bold;
+    line-height: 1.2;
+    color: #f8fbf8;
+    text-shadow: #2b2b2b 0 2px 3px;
+}
+
+.welcome-widget .widget-content { 
+    margin-top: 10px;
+}
+
+.welcome-widget .picture img { 
+    border: 0;
+}
+
+.welcome-widget .useful-links { 
+    margin-left: 160px;
 }
 
 .welcome-widget .widget-content li {
-    font-size: 14px;
-    padding-left: 15px;
-    background: url(../images/status_icons/success.gif) left 5px no-repeat;
+    display: block;
+    padding-left: 20px;
+    background: url(../images/checked.png) left 2px no-repeat;
+    color: #f8fbf8;
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.welcome-widget .widget-content li a {
-    font-size: 18px;
+.welcome-widget .widget-content li .description { 
+    display: block;
+    color: #dcdddd;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.welcome-widget .widget-content li a { 
+    color: #f8fbf8;
+}
+
+.welcome-widget .widget-content li a:hover { 
+    text-decoration: none;
 }
 
 /* -- You Widget */
