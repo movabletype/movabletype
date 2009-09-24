@@ -1085,9 +1085,9 @@ Datasource = new Class(Object, {
             jQuery('table.list-heading').hide();
             jQuery(this.element).append(html);
         } else {
-            jQuery('table.list-heading').show();
-            jQuery('table.list-heading tbody').remove();
-            jQuery('table.list-heading thead').after(html);
+            jQuery(this.element).find('table.list-heading').show();
+            jQuery(this.element).find('tbody').remove();
+            jQuery(this.element).find('thead').after(html);
         }
         this.updated();
     },
