@@ -105,7 +105,7 @@
     <mt:if name="scope_type" eq="user">
                         <li id="user-dashboard" class="current user"><em><__trans phrase="User Dashboard"></em></li>
     <mt:elseif name="scope_type" eq="system">
-                        <li id="system-overview" class="current system"><em><__trans phrase="System Overview"></em></li>
+                        <li id="system-overview" class="current system"><em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=0"><__trans phrase="System Overview"></a></em></li>
     <mt:elseif name="scope_type" eq="website">
                         <li id="current-website" class="current">
         <mt:if name="curr_website_can_link">
