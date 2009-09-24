@@ -13,10 +13,10 @@
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
             <th class="name primary-col"><__trans phrase="[_1] Name" params="<mt:var name="object_label" capitalize="1">"></th>
-        <mt:if name="scope_type" eq="website">
-            <th class="entry"><__trans phrase="Entries"></th>
-        <mt:else>
+        <mt:if name="object_type" eq="website">
             <th class="blog"><__trans phrase="Blogs"></th>
+        <mt:else>
+            <th class="entry"><__trans phrase="Entries"></th>
         </mt:if>
             <th class="comment"><__trans phrase="Comments"></th>
             <th class="trackback"><__trans phrase="TrackBacks"></th>
@@ -35,13 +35,13 @@
             <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
             <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
         <mt:if name="object_type" eq="website">
-            <td class="blogs"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>
+            <td class="blog"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>
         <mt:else>
-            <td class="entries"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
+            <td class="entry"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
         </mt:if>
-            <td class="comments"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
-            <td class="trackbacks"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_ping&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
-            <td class="settings"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
+            <td class="comment"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+            <td class="trackback"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_ping&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
+            <td class="setting"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
         </tr>
     <mt:if name="__last__">
     </tbody>

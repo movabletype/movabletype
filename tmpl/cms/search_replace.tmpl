@@ -235,10 +235,20 @@ function blurDateFields(s) {
 </mt:if>
 
 <mt:if name="have_more">
-<p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+    <mtapp:statusmsg
+        id="have-more-count"
+        class="success"
+        can_close="0">
+        <p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
+    </mtapp:statusmsg>
 <mt:else>
     <mt:if name="have_results">
-<p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>
+    <mtapp:statusmsg
+        id="result-count"
+        class="success"
+        can_close="0">
+        <p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>
+    </mtapp:statusmsg>
     </mt:if>
 </mt:if>
 
