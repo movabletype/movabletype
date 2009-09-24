@@ -393,17 +393,20 @@ sub _v5_generate_websites_place_blogs {
         return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
             unless $website_class;
 
-        my $website = $website_class->create_default_website(MT->translate('New WebSite [_1]', $domain));
-        $website->site_path($blog->site_path);
-        $website->site_url("http$ssl://$domain/");
-        $website->save
-            or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
+        my $site_url = "http$ssl://$domain/";
+        my $website = $website_class->load( { site_url => $site_url } );
+        unless ( $website ) {
+            $website = $website_class->create_default_website(MT->translate('New WebSite [_1]', $domain));
+            $website->site_path($blog->site_path);
+            $website->site_url($domain);
+            $website->save
+                or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
 
-        foreach ( @sysadmins ) {
-        $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+            foreach ( @sysadmins ) {
+                $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+            }
+            $self->progress($self->translate_escape('Generated a website [_1]', $domain));
         }
-        $self->progress($self->translate_escape('Generated a website [_1]', $domain));
-
         $path = $path . '/' if $path && $path !~ m!/$!;
         my $old_site_url = $blog->site_url;
         $blog->site_url("$subdomain/::/$path");
