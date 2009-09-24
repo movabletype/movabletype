@@ -452,6 +452,30 @@ sub entry_count {
     }, @_);
 }
 
+sub populate_category_hierarchy {
+    my $class = shift;
+    my ( $blog_id, $parent_id, $depth ) = @_;
+
+    my @cats;
+    # sort in reverse order since we unshift objects here
+    my $iter = $class->load_iter(
+        { blog_id => $blog_id, parent => $parent_id },
+        { sort => 'label', direction => 'descend' }
+    );
+    while ( my $cat = $iter->() ) {
+        my $subcats = $class->populate_category_hierarchy( $blog_id, $cat->id, $depth + 1 );
+        unshift @cats, @$subcats if @$subcats;
+
+        my $values = $cat->get_values;
+        my $fields = $cat->show_fields;
+        $values->{selected_fields} = $fields;
+        $values->{category_pixel_depth} = 10 * $depth;
+        unshift @cats, $values;
+    }
+    return \@cats;
+}
+
+
 1;
 __END__
 
@@ -568,9 +592,18 @@ removing the category record, all of the entry-category mappings
 
 =item * MT::Category->top_level_categories($blog_id)
 
-
 Returns an array of I<MT::Category> objects representing the top level of
 the category hierarchy in the blog identified by $blog_id.
+
+=back
+
+=over 4
+
+=item * MT::Category->populate_category_hierarchy($blog_id, $parent_id, $depth)
+
+Returns a reference to an array of hashrefs that contains category objects of
+the specified blog, ordered in a "thread"; parent category comes first, children
+next, grand children third, and the next parent, etc.
 
 =back
 
