@@ -419,7 +419,7 @@ sub is_site_path_absolute {
     my $raw_path = $blog->SUPER::site_path;
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\!;
+    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC
     return 0;
 }
 
@@ -498,7 +498,7 @@ sub is_archive_path_absolute {
     my $raw_path = $blog->SUPER::archive_path;
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
-    return 1 if $raw_path =~ m!^\\!;
+    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC
     return 0;
 }
 
