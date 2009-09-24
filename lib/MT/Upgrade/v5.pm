@@ -68,6 +68,16 @@ sub upgrade_functions {
             priority      => 3.4,
             code          => \&_v5_generate_websites_place_blogs,
         },
+        'v5_rebuild_permissions' => {
+            version_limit => 5.0016,
+            priority      => 3.0,
+            updater       => {
+                type      => 'permission',
+                label     => 'Rebuilding permissions...',
+                condition => sub { $_[0]->blog_id },
+                code      => sub { $_[0]->rebuild; },
+            },
+        },
     };
 }
 

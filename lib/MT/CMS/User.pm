@@ -1329,6 +1329,20 @@ sub dialog_select_author {
         $row->{description} = $row->{nickname};
     };
 
+    my $entry_type = $app->param('entry_type') if defined $app->param('entry_type');
+    $entry_type ||= 'entry';
+
+    my $blog = $app->blog;
+    my @blog_ids;
+    if ( !$blog->is_blog && $app->param('include_child') ) {
+        my $blogs = $blog->blogs;
+        foreach ( @$blogs ) {
+            push @blog_ids, $_->id;
+        }
+    }
+    push @blog_ids, $blog->id
+        if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+
     $app->listing(
         {
             type  => 'author',
@@ -1341,22 +1355,27 @@ sub dialog_select_author {
                 join => MT::Permission->join_on(
                     'author_id',
                     {
-                        permissions => "\%'create_post'\%",
-                        blog_id     => $app->blog->id,
+                        ( $entry_type eq 'page'
+                            ? (permissions => "'%\'manage_pages\'%'")
+                            : (permissions => "'%\'create_post\'%'") ),
+                        blog_id     => \@blog_ids,
                     },
-                    { 'like' => { 'permissions' => 1 } }
+                    { 'like' => { 'permissions' => 1 }, unique => 1 }
                 ),
             },
             code     => $hasher,
             template => 'dialog/select_users.tmpl',
             params   => {
-                dialog_title =>
-                  $app->translate("Select a entry author"),
+                ( $entry_type eq 'entry'
+                    ? ( dialog_title => $app->translate("Select a entry author") )
+                    : ( dialog_title => $app->translate("Select a page author") ) ),
                 items_prompt =>
                   $app->translate("Selected author"),
                 search_prompt => $app->translate(
                     "Type a username to filter the choices below."),
-                panel_label       => $app->translate("Entry author"),
+                ( $entry_type eq 'entry'
+                    ? ( panel_label       => $app->translate("Entry author") )
+                    : ( panel_label       => $app->translate("Page author") ) ),
                 panel_description => $app->translate("Name"),
                 panel_type        => 'author',
                 panel_multi       => defined $app->param('multi')

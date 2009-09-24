@@ -135,8 +135,26 @@ sub global_perms {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
-            if ( $more =~ /\'administer_blog\' | \'administer_website\'/ ) {
+            if ( $more =~ /\'manage_member_blogs\'/ ) {
                 $more = _all_perms('blog');
+            } else {
+                my @more = split ',', $more;
+                my @more_perms;
+                for my $p ( @more )  {
+                    $p =~ s/'(.+)'/$1/;
+                    if ( $perms->blog_id ) {
+                        $p = "blog.$p";
+                    } else {
+                        $p = "system.$p";
+                    }
+                    my $perms = __PACKAGE__->_load_inheritance_permissions($p);
+                    push @more_perms, @$perms if $perms;
+                }
+                if ( @more_perms ) {
+                    my %tmp;
+                    my @sort = grep(  !$tmp{$_}++, @more_perms );
+                    $more = join ',', @sort;
+                }
             }
             my $cur_perm = $perms->permissions;
             my @newperms;
@@ -640,6 +658,46 @@ sub to_hash {
         $hash->{"permission.$perm"} = $perms->$perm();
     }
     $hash;
+}
+
+sub _load_inheritance_permissions {
+    my $pkg = shift;
+    my ( $perm_name ) = @_;
+    my $permissions = MT->registry('permissions');
+    my $perms = $pkg->_load_recursive( $perm_name, $permissions );
+
+    my $hash;
+    if ( @$perms ) {
+        foreach ( @$perms ) {
+            my ( $s, $p ) = split /\./, $_;
+            $hash->{$p} = 1;
+        }
+        @$perms = keys %$hash;
+    }
+
+    return $perms;
+}
+
+sub _load_recursive {
+    my $pkg = shift;
+    my ( $perm_name, $permissions ) = @_;
+    $permissions ||= MT->registry('permissions');
+
+    my $perms;
+    push @$perms, $perm_name;
+
+    my $permission = $permissions->{$perm_name};
+    return $perms unless $permission;
+
+    my $inherits = $permission->{inherit_from};
+    return $perms unless $inherits;
+
+    foreach my $inherit ( @$inherits ) {
+        my $res = __PACKAGE__->_load_recursive( $inherit, $permissions );
+        push @$perms, @$res if defined $res;
+    }
+
+    return $perms;
 }
 
 1;

@@ -20,8 +20,8 @@ function returnMemberSelection(ok) {
         frm.submit();
 <mt:else>
         var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
-        var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];
-        if (el_id && el_name) {
+        <mt:if name="namefield">var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];</mt:if>
+        if (el_id) {
             var ids = new Array();
             var names = new Array();
             var inputs = dialog.panels[0].tableSelect.selected();
@@ -35,7 +35,7 @@ function returnMemberSelection(ok) {
                 ids.push(inp.value);
             }
             el_id.value = ids.join(',');
-            el_name.innerHTML = names.join(',');
+            <mt:if name="namefield">el_name.innerHTML = names.join(',');</mt:if>
         }
         parent.jQuery.fn.mtDialog.close();
 </mt:unless>

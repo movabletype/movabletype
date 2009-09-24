@@ -761,6 +761,9 @@ sub list {
                 return $app->errtrans( "Load failed: [_1]", MT::Author->errstr )
                   unless $author;
                 $filter_value = $author->name;
+
+                # Special case, set author name as well as filter_val
+                $param{filter_value} = $filter_value;
             }
             elsif ( $filter_col eq 'status' ) {
                 $filter_name = $app->translate('Entry Status');
