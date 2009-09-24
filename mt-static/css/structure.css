@@ -1070,7 +1070,7 @@ fieldset {
     margin-top: 45px;
 }
 
-.welcome-widget .actions-bar { 
+.welocome-widget .actions-bar { 
     clear: both;
     text-align: right;
 }
@@ -1348,8 +1348,28 @@ optgroup option {
 }
 
 /* -- Favorite Website, Blog Widget */
-.favorite-blogs-widget #favorite-blogs-tabs { 
-    margin: 0 -10px 15px;
+/* --- on User Dashboard --- */
+#favorite_blogs .widget-header { 
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+#favorite_blogs .widget-label { 
+    display: none;
+}
+
+#favorite_blogs #favorite-blogs-tabs { 
+    margin: 0 -10px;
+}
+
+#favorite_blogs #favorite-blogs-tabs ul.tabs { 
+    margin-bottom: 0;
+    width: 100%;
+}
+
+/* --- on System, Website Dashboard --- */
+.favorite-blogs-widget .widget-content { 
+    margin-top: 20px;
 }
 
 .favorite-blogs-widget .blog-container { 

@@ -1,13 +1,13 @@
-<mtapp:widget tabbed="1" class="favorite-blogs-widget" label="<__trans phrase="Favorite websites and blogs">" can_close="1">
+<mtapp:widget tabbed="1" class="favorite-blogs-widget" label="<__trans phrase="Your recent websites and blogs">" can_close="1">
     <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
-
+<mt:setvarblock name="widget_header">
 <div id="favorite-blogs-tabs">
     <ul id="favorite-blogs-tabs-list" class="tabs">
-        <li class="tab"><a href="#favorite-website"><__trans phrase="Website"></a></li>
-        <li class="tab"><a href="#favorite-blog"><__trans phrase="Blog"></a></li>
+        <li class="tab"><a href="#favorite-website"><__trans phrase="Recent Websites"></a></li>
+        <li class="tab"><a href="#favorite-blog"><__trans phrase="Recent Blogs"></a></li>
     </ul>
 </div>
-
+</mt:setvarblock>
 <div id="favorite-website">
 <mt:if name="website_object_loop">
     <div id="favorite-website-container" class="blog-container">

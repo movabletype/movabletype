@@ -132,6 +132,10 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
     width: 100%;
 }
 
+#favorite_blogs #favorite-blogs-tabs li { 
+    position: relative;
+}
+
 /* - List Theme */
 
 /* - Footer */
