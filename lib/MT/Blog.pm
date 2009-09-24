@@ -508,6 +508,8 @@ sub archive_path {
     if (@_) {
         $blog->SUPER::archive_path(@_) || $blog->site_path;
     } else {
+        return $blog->site_path if !$blog->column('archive_path');
+
         my $raw_path = $blog->SUPER::archive_path;
         return $raw_path if $blog->is_archive_path_absolute;
 
