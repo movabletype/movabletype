@@ -221,7 +221,7 @@
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
         plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
         mode: 'rebuild_new_phase',
-        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>},
+        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'<mt:if name="search">, 'search': '<mt:var name="search" escape="js">'</mt:if></mt:if>},
         phrase: '<__trans phrase="to republish" escape="js">'
     });
     jQuery('button.mt-delete-items').mtDeleteItems({

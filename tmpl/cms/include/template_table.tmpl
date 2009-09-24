@@ -170,6 +170,7 @@
         singular: '<__trans phrase="template" escape="js">',
         plural: '<__trans phrase="templates" escape="js">',
         mode: <mt:if name="template_type">'publish_archive_templates'<mt:else>'publish_templates_from_search'</mt:if>,
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to publish" escape="js">'
     });
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
