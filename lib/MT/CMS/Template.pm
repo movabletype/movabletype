@@ -194,17 +194,20 @@ sub edit {
                 my $type = $attr->{widget} ? 'widget' : 'custom';
                 next if exists $seen{$type}{$mod};
                 $seen{$type}{$mod} = 1;
+                my $blog_id = $tag->[1]->{global}  ? 0
+                            : $tag->[1]->{blog_id} ? $tag->[1]->{blog_id}
+                            :                        [ $obj->blog_id, 0 ]
+                            ;
                 my $other = MT::Template->load(
                     {
-                        blog_id => ( $tag->[1]->{global}
-                          ? 0
-                          : [ $obj->blog_id, 0 ]
-                        ),
+                        blog_id => $blog_id,
                         name    => $mod,
                         type    => $type,
                     }, {
-                        sort      => 'blog_id',
-                        direction => 'descend',
+                        limit => 1,
+                        ref $blog_id ? ( sort      => 'blog_id',
+                                         direction => 'descend', )
+                                     : ()
                     }
                 );
                 if ($other) {
