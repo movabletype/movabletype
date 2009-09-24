@@ -137,7 +137,7 @@ sub seed_database {
     require MT::Author;
     return undef if MT::Author->exist;
 
-    $self->progress($self->translate_escape("Creating initial blog and user records..."));
+    $self->progress($self->translate_escape("Creating initial website and user records..."));
 
     local $MT::CallbacksEnabled = 1;
 
