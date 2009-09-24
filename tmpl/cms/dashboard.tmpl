@@ -66,14 +66,6 @@
         </mtapp:statusmsg>
     </mt:if>
 
-    <mt:unless name="main">
-    <mtapp:statusmsg
-        id="empty_dashboard"
-        class="info">
-        <__trans phrase="Your dashboard is empty!">
-    </mtapp:statusmsg>
-    </mt:unless>
-
     <mt:unless name="has_uploads_path">
         <div class="permission-error msg msg-info">
             <div class="title"><__trans phrase="Support directory is not writable."> <a href="#" class="detail-link"><__trans phrase="Detail"></a></div>
