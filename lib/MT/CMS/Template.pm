@@ -198,7 +198,7 @@ sub edit {
                                 ;
                 $inc_blog_id = [ $obj->blog_id, 0 ]
                     if $inc_blog_id && $inc_blog_id =~ /\D/;
-                my $mod_id = "$mod::" . ref $inc_blog_id ? $obj->blog_id : $inc_blog_id;
+                my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $obj->blog_id : $inc_blog_id );
                 next if exists $seen{$type}{$mod_id};
                 $seen{$type}{$mod_id} = 1;
                 my $other = MT::Template->load(
