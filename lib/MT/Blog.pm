@@ -365,7 +365,9 @@ sub raw_site_url {
     my $blog = shift;
     my $site_url = $blog->SUPER::site_url;
     if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
-        return ( $subdomain, $path );
+        if ( $subdomain ne $site_url ) {
+            return ( $subdomain, $path );
+        }
     }
     return $site_url;
 }
@@ -391,18 +393,17 @@ sub site_url {
             if (my $website = $blog->website()) {
                 $url = $website->SUPER::site_url;
             }
-            my $site_url = $blog->SUPER::site_url;
-            my ( $subdomain, $path ) = split( '/::/', $site_url );
-            if ( $subdomain ne $site_url ) {
-                if ( $subdomain ) {
-                    $url =~ s!^(https?)://(.+)/$!$1://$subdomain$2/!;
+            my @paths = $blog->raw_site_url;
+            if ( 2 == @paths ) {
+                if ( $paths[0] ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
                 }
-                if ( $path ) {
-                    $url = MT::Util::caturl( $url, $path );
+                if ( $paths[1] ) {
+                    $url = MT::Util::caturl( $url, $paths[1] );
                 }
             }
             else {
-                $url = MT::Util::caturl( $url, $site_url );
+                $url = MT::Util::caturl( $url, $paths[0] );
             }
         }
         else {
@@ -454,6 +455,9 @@ sub raw_archive_url {
     my $archive_url = $blog->SUPER::archive_url;
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
+        if ( $subdomain ne $archive_url ) {
+            return ( $subdomain, $path );
+        }
     }
     return $archive_url;
 }
@@ -475,17 +479,17 @@ sub archive_url {
             }
             my $archive_url = $blog->SUPER::archive_url;
             return $blog->site_url unless $archive_url;
-
-            if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
-                if ( $subdomain ) {
-                    $url =~ s!^(https?)://(.+)/$!$1://$subdomain$2/!;
+            my @paths = $blog->raw_archive_url;
+            if ( 2 == @paths  ) {
+                if ( $paths[0] ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
                 }
-                if ( $path ) {
-                    $url = MT::Util::caturl( $url, $path );
+                if ( $paths[1] ) {
+                    $url = MT::Util::caturl( $url, $paths[1] );
                 }
             }
             else {
-                $url = MT::Util::caturl( $url, $archive_url );
+                $url = MT::Util::caturl( $url, $paths[0] );
             }
         }
         return $url;
@@ -496,6 +500,7 @@ sub is_archive_path_absolute {
     my $blog = shift;
 
     my $raw_path = $blog->SUPER::archive_path;
+    return 0 unless $raw_path;
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
     return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC

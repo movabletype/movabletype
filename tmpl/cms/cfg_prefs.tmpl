@@ -208,8 +208,10 @@ function setLicense() {
         <mt:var name="website_scheme">://<input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /><mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
         <mt:elseif name="site_url_path">
         <mt:var name="website_scheme">://<input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /><mt:unless name="site_url_subdomain">.</mt:unless><mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+        <mt:elseif name="is_blog">
+        <mt:var name="website_url"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" class="mt-edit-field extra-path" />
         <mt:else>
-        <mt:var name="website_url"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+        <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" size="50" class="mt-edit-field" />
         </mt:if>
         <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the site URL can result in breaking all the links in your blog."></p>
 <mt:if name="is_blog">
@@ -266,8 +268,10 @@ function setLicense() {
             <mt:var name="website_scheme">://<input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /><mt:var name="website_domain"><mt:unless name="archive_url_subdomain">.</mt:unless><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
             <mt:elseif name="archive_url" eq="">
             <mt:var name="website_scheme">://<input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /><mt:unless name="archive_url_subdomain">.</mt:unless><mt:var name="website_domain"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" size="20" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+            <mt:elseif name="is_blog">
+            <mt:var name="website_url"><input type="text" name="archive_url_path" id="archive_url_path" value="<$mt:var name="archive_url" escape="html"$>" class="mt-edit-field extra-path" />
             <mt:else>
-            <mt:var name="website_url"><input type="text" name="archive_url_path" id="archive_url_path" value="<$mt:var name="archive_url" escape="html"$>" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+            <input type="text" name="archive_url" id="archive_url" value="<$mt:var name="archive_url" escape="html"$>" class="mt-edit-field" />
             </mt:if>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
         </mtapp:setting>

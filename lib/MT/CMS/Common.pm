@@ -119,13 +119,6 @@ sub save {
     my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
 
     if ( $type eq 'blog' ) {
-        my $subdomain = $q->param('site_url_subdomain');
-        my $path = $q->param('site_url_path');
-        $values{site_url} = "$subdomain/::/$path";
-        $subdomain = $q->param('archive_url_subdomain');
-        $path = $q->param('archive_url_path');
-        $values{archive_url} = "$subdomain/::/$path"
-            if $subdomain || $path;
         unless ( $author->is_superuser
             || ( $perms && $perms->can_do('save_all_settings_for_blog') ) )
         {

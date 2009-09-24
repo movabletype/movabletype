@@ -330,11 +330,14 @@ sub edit {
         }
         $param->{screen_class} = "settings-screen";
     } else {
-        $param->{site_url} = $obj->site_url;
         my @raw_site_url = $obj->raw_site_url; 
         if ( 2 == @raw_site_url ) {
+            $param->{site_url} = $obj->site_url;
             $param->{site_url_subdomain} = $raw_site_url[0];
             $param->{site_url_path} = $raw_site_url[1];
+        }
+        else {
+            $param->{site_url} = $raw_site_url[0];
         }
         $param->{site_path} = $obj->column('site_path');
         $param->{site_path_absolute} = $obj->is_site_path_absolute;
@@ -523,6 +526,19 @@ sub cfg_prefs {
     $param{screen_class} = 'settings-screen general-screen';
     $param{object_type}  = 'author';
     $param{search_label} = $app->translate('Users');
+
+    my @raw_site_url = $blog->raw_site_url; 
+    if ( 2 == @raw_site_url ) {
+        $param{site_url} = $blog->site_url;
+        $param{site_url_subdomain} = $raw_site_url[0];
+        $param{site_url_path} = $raw_site_url[1];
+    }
+    else {
+        $param{site_url} = $raw_site_url[0];
+    }
+    $param{site_path} = $blog->column('site_path');
+    $param{site_path_absolute} = $blog->is_site_path_absolute;
+
     $app->forward( "view", \%param );
 }
 
