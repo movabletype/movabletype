@@ -280,7 +280,7 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
         for (var arg in args) {
             if (f.elements[arg]) f.elements[arg].value = args[arg];
             if (arg == 'search' && f.elements['return_args'].value) {
-                f.elements['return_args'].value += '&do_search=1&search='+args[arg];
+                f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
             }
         }
         if (opt && opt['dialog']) {
