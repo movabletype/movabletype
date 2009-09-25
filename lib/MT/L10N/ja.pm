@@ -1580,11 +1580,12 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Migrating [_1]([_2]).' => '[_1]([_2])を移行しています。',
 	'Granting new role to system administrator...' => 'システム管理者に新しいロールを付与しています...',
 	'Updating existing role name...' => '既存のロール名を更新しています...',
-	'Webmaster' => 'ウェブマスター',
+	'_WEBMASTER_MT4' => 'ウェブサイト管理者',
 	'Webmaster (MT4)' => 'ウェブサイト管理者(MT4)',
 	'Populating new role for website...' => 'ウェブサイト用の新しいロールへ変換しています...',
 	'Website Administrator' => 'ウェブサイト管理者',
 	'Can administer the website.' => 'ウェブサイト管理ができます。',
+	'Webmaster' => 'ウェブマスター',
 	'Can manage pages, Upload files and publish blog templates.' => 'ページの管理とファイルのアップロードおよびブログテンプレートの公開ができます。',
 	'Designer' => 'デザイナ',
 	'Designer (MT4)' => 'デザイナ(MT4)',
@@ -1594,9 +1595,17 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Assigning to  [_1]...' => '[_1]を設定しています...',
 	'Migrating mtview.php to MT5 style...' => 'mtview.phpをMT5で利用できるように移行しています...',
 	'Migrating DefaultSiteURL/DefaultSiteRoot to website...' => 'DefaultSiteURL/DefaultSiteRootをウェブサイト用に移行しています。。。',
-	'Website for new User' => '新規ウェブサイトユーザー',
+	'New user\'s website' => '新規ユーザー向けウェブサイト',
+	'Migrating existing [quant,_1,blog,blogs] into websites and its children...' => '既存のブログをウェブサイトで管理できるように移行しています。',
+	'Error loading role: [_1].' => 'ロールのロードエラー: [_1]',
+	'New WebSite [_1]' => '新しいウェブサイト: [_1]',
+	'An error occured during generating a website upon upgrade: [_1]' => 'ウェブサイトへの移行中にエラーが発生しました: [_1]',
+	'Generated a website [_1]' => '作成されたウェブサイト: [_1]',
+	'An error occured during migrating a blog\'s site_url: [_1]' => 'ブログのサイトURLの移行中にエラーが発生しました: [_1]',
+	'Moved blog [_1] ([_2]) under website [_3]' => '[_1]ブログ([_2])を[_3]ウェブサイト下に移動しました',
 	'Merging dashboard settings...' => 'ダッシュボート設定を移行しています...',
-    '_WEBMASTER_MT4' => 'ウェブサイト管理者',
+	'Classifying blogs...' => 'ブログを分類しています...',
+	'Rebuilding permissions...' => '権限を再構築しています...',
 
 ## lib/MT/Upgrade/v2.pm
 	'Updating category placements...' => 'カテゴリの関連付けを更新しています...',
@@ -2052,9 +2061,11 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Invalid ID given for personal blog clone location ID.' => '個人用ブログの複製先のIDが不正です。',
 	'If personal blog is set, the personal blog location are required.' => '個人用ブログの設定にはブログロケーションが必要です。',
 	'Select a entry author' => 'ブログ記事の投稿者を選択',
+	'Select a page author' => 'ページの投稿者を選択',
 	'Selected author' => '選択された投稿者',
 	'Type a username to filter the choices below.' => 'ユーザー名を入力して絞り込み',
 	'Entry author' => 'ブログ記事の投稿者',
+	'Page author' => 'ページの投稿者',
 	'Select a System Administrator' => 'システム管理者を選択',
 	'Selected System Administrator' => '選択されたシステム管理者',
 	'System Administrator' => 'システム管理者',
@@ -4353,8 +4364,12 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/widget/new_install.tmpl
 	'Thank you for installing Movable Type' => 'Movable Type をご利用いただき、ありがとうございます。',
 	'You are now ready to:' => '次の方法で、ウェブサイトにコンテンツを公開できます。',
+	'Create a new page on your website' => 'ウェブサイトに新しいページを作成',
+	'Create a blog on your website' => 'ウェブサイトにブログを作成',
 	'Create a new page on your website.' => 'ウェブサイトに、ウェブページを作成する',
 	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿する',
+	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
+	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Typeで何ができるか、詳しくはこちら。',
 
 ## tmpl/cms/widget/this_is_you.tmpl
 	'This is you' => 'This is you',
@@ -4432,8 +4447,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/widget/new_user.tmpl
 	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform:' => '世界で最もパワフルなブログ、ウェブサイト、ソーシャルメエyイアプラットフォームであるMovable Typeへようこそ:',
-	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
-	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Type で何ができるか、詳しくはこちら。',
 
 ## tmpl/cms/widget/blog_stats.tmpl
 	'Error retrieving recent entries.' => '最近のブログ記事を取得できませんでした。',
@@ -4455,7 +4468,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'No entries available.' => 'ブログ記事がありません。',
 
 ## tmpl/cms/widget/favorite_blogs.tmpl
-	'Favorite websites and blogs' => 'お気に入りのウェブサイト/ブログ',
+	'Your recent websites and blogs' => '最近利用したウェブサイト/ブログ',
 	'No blog could be found.' => 'ブログがありません。',
 
 ## tmpl/cms/widget/mt_shortcuts.tmpl

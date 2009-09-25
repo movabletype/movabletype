@@ -263,7 +263,7 @@ sub _v5_migrate_default_site {
         return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
             unless $class;
 
-        my $website = $class->create_default_website(MT->translate('Website for new User'));
+        my $website = $class->create_default_website(MT->translate("New user's website"));
         $website->site_path($site_path);
         $website->site_url($site_url);
         $website->save
