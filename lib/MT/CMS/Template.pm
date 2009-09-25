@@ -2306,31 +2306,43 @@ sub publish_archive_templates {
     my $return_args;
     my $reedit = $app->param('reedit');
     if (@ids) {
+
         # we have more to do after this, so save the list
         # of remaining archive templates...
         $return_args = $app->uri_params(
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id => scalar $app->param('blog_id'),
-                id => join(",", @ids),
-                reedit => $reedit,
-                from_search => $app->param('from_search'),
+                blog_id     => scalar $app->param('blog_id'),
+                id          => join( ",", @ids ),
+                reedit      => $reedit,
+                (   $app->param('from_search')
+                    ? ( from_search => $app->param('from_search') )
+                    : ()
+                ),
+                (   $app->return_args ? ( return_args => $app->return_args )
+                    : ()
+                ),
             }
         );
-    } else {
-        my $mode = $reedit ? 'view' : 'list_template';
-        $mode = 'search_replace' if $app->param('from_search');
-        $return_args = $app->uri_params(
-            mode => $mode,
-            args => {
-                ( $reedit ? ( _type => 'template' ) : () ),
-                blog_id   => scalar $app->param('blog_id'),
-                published => 1,
-                ( $reedit ? ( saved => 1 )       : () ),
-                ( $reedit ? ( id    => $reedit ) : () ),
-            }
-        );
+    }
+    else {
+        if ( $app->param('from_search') ) {
+            $return_args = $app->return_args;
+        }
+        else {
+            my $mode = $reedit ? 'view' : 'list_template';
+            $return_args = $app->uri_params(
+                mode => $mode,
+                args => {
+                    ( $reedit ? ( _type => 'template' ) : () ),
+                    blog_id   => scalar $app->param('blog_id'),
+                    published => 1,
+                    ( $reedit ? ( saved => 1 )       : () ),
+                    ( $reedit ? ( id    => $reedit ) : () ),
+                }
+            );
+        }
     }
     $return_args =~ s/^\?//;
 
