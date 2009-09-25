@@ -1156,7 +1156,7 @@ sub init_core {
 sub init_lang_defaults {
     my $mt = shift;
     my $cfg = $mt->config;
-
+    my $was_dirty = $cfg->is_dirty;
     $cfg->DefaultLanguage('en_US') unless $cfg->DefaultLanguage;
 
     my %lang_settings = (
@@ -1185,7 +1185,7 @@ sub init_lang_defaults {
             $cfg->$setting($i18n_val, 1);
         }
     }
-
+    $cfg->clear_dirty unless $was_dirty;
     return 1;
 }
 
