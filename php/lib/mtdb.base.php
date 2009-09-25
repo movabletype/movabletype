@@ -119,7 +119,7 @@ abstract class MTDatabase {
             $blog = $ctx->stash('blog');
             if (!empty($blog) && $blog->class == 'blog') {
                 require_once('class.mt_blog.php');
-                $blog_class - new Blog();
+                $blog_class = new Blog();
                 $blogs = $blog_class->Find("blog_parent_id = " . $blog->parent_id);
                 $blog_ids = array();
                 foreach($blogs as $b) {
