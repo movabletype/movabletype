@@ -45,6 +45,12 @@ sub core_search_apis {
             'can_replace'        => 1,
             'can_search_by_date' => 1,
             'date_column'        => 'authored_on',
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                if ($app->param('filter') && $app->param('filter_val')) {
+                    $terms->{$app->param('filter')} = $app->param('filter_val');
+                }
+            }
         },
         'comment' => {
             'order' => 200,
@@ -347,10 +353,10 @@ sub do_search_replace {
         $datefrom_day,  $dateto_year, $dateto_month,   $dateto_day,
         $from,          $to,          $show_all,       $do_search,
         $orig_search,   $quicksearch, $publish_status, $my_posts,
-        $search_type,
+        $search_type,   $filter,      $filter_val
       )
       = map scalar $q->param($_),
-      qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type);
+      qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
     $search =~ s/(^\s+|\s+$)//g;
@@ -469,7 +475,7 @@ sub do_search_replace {
     $limit =~ s/\D//g if $limit ne 'all';
     my $matches;
     $date_col = $api->{date_column} || 'created_on';
-    if ( ( $do_search && $search ne '' ) || $show_all || $do_replace || defined $publish_status || $my_posts ) {
+    if ( ( $do_search && $search ne '' ) || $show_all || $do_replace || defined $publish_status || $my_posts || ( $filter && $filter_val ) ) {
         my %terms;
         my %args;
         ## we need to search all user/group for 'grant permissions',
@@ -795,7 +801,7 @@ sub do_search_replace {
             $do_replace ? $q->param('orig_search')
             : ( $do_search && $q->param('search') ne '' )
           )
-          || $show_all || defined $publish_status || $my_posts,
+          || $show_all || defined $publish_status || $my_posts || ( $filter && $filter_val ),
         replace            => $replace,
         do_replace         => $do_replace,
         case               => $case,
@@ -817,7 +823,7 @@ sub do_search_replace {
         %param
     );
     $res{'tab_junk'} = 1 if $is_junk;
-    
+
     my $search_cols = $search_api->{$type}{search_cols};
     my %cols = map { $_ => 1 } @cols;
     my @search_cols;

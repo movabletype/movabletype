@@ -35,7 +35,7 @@
                     <mt:if name="url"><span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a></span></mt:if>
                 </td>
                 <td class="created"><mt:if name="created_by_name"><mt:var name="created_by_name" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
-                <mt:unless name="hide_entries_col"><td class="entries"><mt:if name="entry_count"><a href="<mt:var name="script_url">?__mode=<mt:var name="mode"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a><mt:else>&nbsp;</mt:if></td></mt:unless><mt:loop name="more_columns"><mt:var name="__value__"></mt:loop>
+                <mt:unless name="hide_entries_col"><td class="entries"><mt:if name="entry_count"><a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>search_replace</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">&amp;_type=entry"><mt:var name="entry_count"></a><mt:else>&nbsp;</mt:if></td></mt:unless><mt:loop name="more_columns"><mt:var name="__value__"></mt:loop>
             </tr>
     <mt:if name="__last__">
         </tbody>
