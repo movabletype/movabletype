@@ -3936,7 +3936,9 @@ sub _hdlr_section {
                 { id => $cache_id, kind => 'CO' }); # CO == Cache Object
             if (defined $sess) {
                 ## need to decode by hand for blob typed column.
-                my $out = Encode::decode( $enc, $sess->data() );
+                my $data = $sess->data();
+                $data = MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
+                my $out = Encode::decode( $enc, $data );
                 if ($out) {
                     if (my $wrap_tag = $args->{html_tag}) {
                         my $id = $args->{id};

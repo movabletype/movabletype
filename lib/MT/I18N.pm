@@ -111,6 +111,11 @@ sub convert_high_ascii {
 #    Encode::decode_utf8(@_);
 #}
 
+sub is_utf8 {
+    my ( $text ) = @_;
+    Encode::is_utf8($text);
+}
+
 sub utf8_off {
     my ( $text ) = @_;
     Encode::_utf8_off($text);
