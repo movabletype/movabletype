@@ -1744,7 +1744,12 @@ sub dialog_refresh_templates {
         }
         else {
             my $set = $blog->template_set;
-            $param->{current_label} = MT->registry('template_sets', $set )->{label};
+            my $tmpl_set = MT->registry('template_sets', $set );
+            if ( $tmpl_set ) {
+                $param->{current_label} = $tmpl_set->{label};
+            } else {
+                $param->{template_set_not_found} = 1;
+            }
         }
     }
     $param->{return_args} = $app->param('return_args');

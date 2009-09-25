@@ -50,6 +50,23 @@ function init() {
 
 <mt:include name="dialog/header.tmpl">
 
+<mt:if name="template_set_not_found">
+    <mtapp:statusmsg
+        id="template_set_not_found"
+        can_close="0"
+        class="error">
+            <__trans phrase="Cannot find template set. Please apply <a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');">theme</a> to refresh your templates.">
+    </mtapp:statusmsg>
+
+<div class="actions-bar">
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel close action mt-close-dialog"
+       title="<__trans phrase="Close">"
+       ><__trans phrase="Close"></button>
+</div>
+<mt:else>
 <form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
     <input type="hidden" name="__mode" value="refresh_all_templates" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -173,6 +190,8 @@ function init() {
     </div>
 
 </form>
+</mt:if>
+
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
@@ -180,4 +199,5 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
+
 <mt:include name="dialog/footer.tmpl">
