@@ -132,12 +132,15 @@ sub core_search_apis {
             'handler' => '$Core::MT::CMS::Template::build_template_table',
             'label'         => 'Templates',
             'perm_check' => sub {
+                return 1
+                    if $author->permissions(0)->can_do('search_templates');
+
                 my ($obj) = @_;
 
                 # are there any perms that match this object and
                 # allow template editing?
                 my @check = grep {
-                         $_->blog_id == $obj->blog_id
+                      $_->blog_id == $obj->blog_id
                       && $_->can_do('search_templates')
                 } @perms;
                 return @check;
