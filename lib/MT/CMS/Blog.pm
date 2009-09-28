@@ -1726,9 +1726,7 @@ sub post_save {
                 category => 'new',
             }
         );
-        ## TODO: make alias for this for backward compatibility.
-        #$app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
-
+        $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
         if ( $obj->is_blog ) {
             $app->run_callbacks( 'blog_theme_change', { blog => $obj } );
         } else {
@@ -1762,11 +1760,14 @@ sub post_save {
             $app->add_return_arg( need_full_rebuild => 1 );
         }
 
-        ## TODO: make alias for this for backward compatibility.
-        #if ( ($original->template_set || '') ne ($obj->template_set || '') ) {
-        #    $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
-        #    $app->add_return_arg( need_full_rebuild => 1 );
-        #}
+        my $original_set = $original->template_set;
+        $original_set = $original->theme_id if ref $original_set;
+        my $obj_set = $obj->template_set;
+        $obj_set = $obj->theme_id if ref $obj_set;
+        if ( ( $original_set || '' ) ne ( $obj_set || '' ) ) {
+            $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
+            $app->add_return_arg( need_full_rebuild => 1 );
+        }
 
         ## THINK: should the theme be changed by normal save method?
         if ( ($original->theme_id || '') ne ($obj->theme_id || '' ) ) {
