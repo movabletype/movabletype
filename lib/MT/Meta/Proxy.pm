@@ -56,23 +56,6 @@ sub is_changed {
 sub exists_meta {
     my $proxy = shift;
     my($col)  = @_;
-    
-        #
-        # Due to referential integrity problems in most versions of Movable Type 4,
-        # Custom Field metadata must be validated to ensure that it relates to a currently
-        # existing Custom Field.
-        #
-        # Without the following if block, updates to objects containing orphaned Custom
-        # Field metadata will result in an error which will not be displayed to the user,
-        # but will result in the object not being saved properly.
-        #
-        
-        if ( $col =~ /^field\.(.*)$/ ) {
-                my $basename = $1;
-                my $entry = MT::Entry->load( $proxy->{__pkeys}->{entry_id} );
-                my $related_field = CustomFields::Field->load({ blog_id => $entry->{column_values}->{blog_id}, basename => $basename  });
-                return 0 if (!$related_field);
-        }    
 
     $proxy->lazy_load_objects;
     return exists $proxy->{__objects}->{$col};
@@ -81,23 +64,6 @@ sub exists_meta {
 sub get {
     my $proxy = shift;
     my ($col) = @_;
-    
-        #
-        # Due to referential integrity problems in most versions of Movable Type 4,
-        # Custom Field metadata must be validated to ensure that it relates to a currently
-        # existing Custom Field.
-        #
-        # Without the following if block, updates to objects containing orphaned Custom
-        # Field metadata will result in an error which will not be displayed to the user,
-        # but will result in the object not being saved properly.
-        #
-        
-        if ( $col =~ /^field\.(.*)$/ ) {
-                my $basename = $1;
-                my $entry = MT::Entry->load( $proxy->{__pkeys}->{entry_id} );
-                my $related_field = CustomFields::Field->load({ blog_id => $entry->{column_values}->{blog_id}, basename => $basename  });
-                return undef if (!$related_field);
-        }    
 
     $proxy->lazier_load_objects;
     if (exists $proxy->{__objects}->{$col}) {
@@ -125,30 +91,12 @@ sub get {
 sub get_hash {
     my $proxy = shift;
     my ($col) = @_;
-    
+
     $proxy->lazy_load_objects;
 
     my $collection = {};
 
     foreach my $name (keys %{ $proxy->{__objects} }) {
-        
-        #
-        # Due to referential integrity problems in most versions of Movable Type 4,
-        # Custom Field metadata must be validated to ensure that it relates to a currently
-        # existing Custom Field.
-        #
-        # Without the following if block, updates to objects containing orphaned Custom
-        # Field metadata will result in an error which will not be displayed to the user,
-        # but will result in the object not being saved properly.
-        #
-        
-        if ( $name =~ /^field\.(.*)$/ ) {
-                my $basename = $1;
-                my $entry = MT::Entry->load( $proxy->{__pkeys}->{entry_id} );
-                my $related_field = CustomFields::Field->load({ blog_id => $entry->{column_values}->{blog_id}, basename => $basename  });
-                next if (!$related_field);
-        }
-        
         $collection->{$name} = $proxy->get($name);
     }
 
