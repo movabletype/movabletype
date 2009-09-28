@@ -708,7 +708,7 @@ sub metadata_for_stylesheet {
         ($metadata{$best_name}) = grep { defined }
             delete @metadata{ @$possible_names }, q{};
         # TODO: do html mashing later
-        $metadata{$best_name} = decode_html(remove_html($metadata{$best_name}));
+        $metadata{$best_name} = decode_html(remove_html(Encode::decode_utf8($metadata{$best_name})));
     }
 
     return %metadata;
