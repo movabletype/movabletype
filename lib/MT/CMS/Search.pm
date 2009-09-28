@@ -823,6 +823,8 @@ sub do_search_replace {
         can_search_by_date => $search_api->{$type}{can_search_by_date},
         quick_search       => 0,
         "tab_$tab"         => 1,
+        filter             => $filter,
+        filter_val         => $filter_val,
         %param
     );
     $res{'tab_junk'} = 1 if $is_junk;
