@@ -158,6 +158,12 @@ sub current_magic {
     return $app->{author}->magic_token if $app->{author};
 }
 
+sub mt_uri {
+    my $app = shift;
+    local $app->{is_admin} = 1;
+    return $app->SUPER::mt_uri;
+}
+
 sub upgrade {
     my $app = shift;
 
