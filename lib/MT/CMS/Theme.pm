@@ -257,6 +257,8 @@ sub export {
     require MT::Util::Archive;
     my @arcs = MT::Util::Archive->available_formats;
     for my $arc ( @arcs ) {
+        ## FIXME: Skip Tgz because his add_tree() doesn't work well.
+        next if $arc->{key} eq 'tgz';
         push @output_methods, {
             label => MT->translate('Download as [_1] archive', $arc->{label}),
             id    => 'download.' . $arc->{key},
