@@ -60,11 +60,11 @@
         <th class="entry">&nbsp;</th>
         </mt:if>
         <th class="commenter"><mt:unless name="mode_view_commenter"><__trans phrase="Commenter"><mt:else>&nbsp;</mt:unless></th>
-        <mt:unless name="mode_view_entry">
-        <th class="entry primary-col"><__trans phrase="Entry/Page"></th>
-        </mt:unless>
         <mt:unless name="is_blog">
         <th class="blog"><__trans phrase="Website/Blog"></th>
+        </mt:unless>
+        <mt:unless name="mode_view_entry">
+        <th class="entry primary-col"><__trans phrase="Entry/Page"></th>
         </mt:unless>
         <th class="date"><__trans phrase="Date"></th>
         <mt:if name="show_ip_info">
@@ -167,6 +167,13 @@
         </td>
     </mt:unless>
 
+    <mt:unless name="is_blog">
+<!-- Blog -->
+        <td class="blog">
+            <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html">
+        </td>
+    </mt:unless>
+
 <!-- Entry/Page -->
         <td class="entry">
     <mt:if name="entry_title">
@@ -179,13 +186,6 @@
             &nbsp;
     </mt:if>
         </td>
-
-    <mt:unless name="is_blog">
-<!-- Blog -->
-        <td class="blog">
-            <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html">
-        </td>
-    </mt:unless>
 
 <!-- Datetime -->
         <td class="date"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
