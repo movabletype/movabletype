@@ -29,7 +29,7 @@
     <mtapp:setting
        id="theme-name-field"
        required="1"
-       label="<__trans phrase="Theme name">"
+       label="<__trans phrase="Name">"
        hint="<__trans phrase="The name of your theme.">">
        <input type="text" name="theme_name" id="theme_name" value="<mt:var name="theme_name" escape="html">" />
     </mtapp:setting>
@@ -44,9 +44,24 @@
     </mtapp:setting>
 
     <mtapp:setting
+       id="theme-version-field"
+       required="1"
+       label="<__trans phrase="Version">"
+       hint="<__trans phrase="A version number for this theme.">">
+       <input type="text" name="theme_version" id="theme_version" class="smaller-text" value="<mt:var name="theme_version" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-description-field"
+       label="<__trans phrase="Description">"
+       hint="<__trans phrase="A description for this theme.">">
+       <textarea name="description" id="description"><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
        id="theme-author-name-field"
        required="1"
-       label="<__trans phrase="Author name">"
+       label="<__trans phrase="_THEME_AUTHOR">"
        hint="<__trans phrase="The author of this theme.">">
        <input type="text" name="theme_author_name" id="theme_author_name" value="<mt:var name="theme_author_name" escape="html">" />
     </mtapp:setting>
@@ -59,23 +74,8 @@
     </mtapp:setting>
 
     <mtapp:setting
-       id="theme-version-field"
-       required="1"
-       label="<__trans phrase="Theme version">"
-       hint="<__trans phrase="A version number for this theme.">">
-       <input type="text" name="theme_version" id="theme_version" class="smaller-text" value="<mt:var name="theme_version" escape="html">" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="theme-description-field"
-       label="<__trans phrase="Theme description">"
-       hint="<__trans phrase="A description for this theme.">">
-       <textarea name="description" id="description"><mt:var name="description" escape="html"></textarea>
-    </mtapp:setting>
-
-    <mtapp:setting
         id="theme-options-field"
-        label="<__trans phrase="Theme options">"
+        label="<__trans phrase="Options">"
         hint="<__trans phrase="Additional assets to be included in the theme.">"
         content_class="field-content-text">
         <ul>
@@ -95,7 +95,7 @@
     <mt:if name="select_output_method">
     <mtapp:setting
         id="theme-output-field"
-        label="<__trans phrase="Output method">"
+        label="<__trans phrase="Destination">"
         hint="<__trans phrase="Select How to get theme.">">
         <select name="output" id="output">
             <mt:loop name="output_methods">

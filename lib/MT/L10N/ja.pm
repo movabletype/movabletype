@@ -639,7 +639,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme element \'[_1]\' is too old for this environment.' => '次の項目が、この環境では古すぎます: [_1]',
 
 ## lib/MT/Theme/StaticFiles.pm
-	'List the name of one directory to be included in your theme on each line.' => 'フォルダ名を一行づつ記述してください。',
+	'List the name of one directory to be included in your theme on each line.' => 'ディレクトリ名を一行づつ記述してください。',
 
 ## lib/MT/Theme/TemplateSet.pm
 	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'テンプレートセット([_1]テンプレート, [_2]ウィジェット, [_3]ウィジェットセット)',
@@ -1161,7 +1161,7 @@ use vars qw( @ISA %Lexicon );
 	'There was an error creating thumbnail file [_1].' => '画像のサムネイル作成でエラーが発生しました: [_1]',
 	'Default Prefs' => '既定の設定',
 	'Template Set' => 'テンプレートセット',
-	'Static Files' => 'スタティックファイル',
+	'Static Files' => 'ファイル',
 	'Default Pages' => '既定のページ',
 
 ## lib/MT/XMLRPCServer.pm
@@ -1990,8 +1990,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Failed to uninstall theme' => 'テーマのアンインストールに失敗しました',
 	'Failed to uninstall theme: [_1]' => 'テーマのアンインストールに失敗しました: [_1]',
 	'Theme from [_1]' => '[_1]のテーマ',
-	'Install to theme directory' => 'テーマディレクトリへのインストール',
-	'Download as [_1] archive' => '[_1]形式アーカイブでダウンロード',
+	'Install into theme directory' => 'テーマディレクトリへのインストール',
+	'Download [_1] archive' => '[_1]形式アーカイブでダウンロード',
 	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
 	'Error occurred during exporting [_1]: [_2]' => '[_1]のエクスポート中にエラーが発生しました: [_2]',
@@ -3076,17 +3076,15 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Theme name' => 'テーマ名',
 	'The name of your theme.' => 'テーマの名前です。',
 	'Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, \'-\' or \'_\').' => '次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)',
-	'Author name' => '作者名',
+	'_THEME_AUTHOR' => '作者名',
 	'The author of this theme.' => 'テーマの作者名です。',
 	'Author link' => '作者のページ',
 	'The author\'s website.' => '作者のウェブサイトです',
-	'Theme version' => 'テーマバージョン',
+	'Version' => 'バージョン',
 	'A version number for this theme.' => 'テーマのバージョン番号です。',
-	'Theme description' => 'テーマ説明',
 	'A description for this theme.' => 'テーマの説明です。',
-	'Theme options' => 'テーマオプション',
 	'Additional assets to be included in the theme.' => 'テーマに含む追加アイテムです。',
-	'Output method' => '出力形式',
+	'Destination' => '出力形式',
 	'Select How to get theme.' => 'テーマの出力方法を選択してください。',
 	'Setting for [_1]' => '[_1]の設定',
 	'You must set Theme Name.' => 'テーマ名を設定してください。',
@@ -3725,9 +3723,9 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Folder Name' => 'フォルダ名',
 
 ## tmpl/cms/include/theme_exporters/static_files.tmpl
-	'Files types that will be included in the theme are: [_1].' => 'テーマに入れるファイルタイプ: [_1]',
+	'Files types that will be included in the theme are: [_1].' => 'テーマに含められるファイルの種類: [_1]',
 	'Included Directories' => '含むディレクトリ',
-	'List the directories that contain the static files that you want to be included in your theme.' => 'テーマに入れたいスタティックファイルを含むディレクトリを記入してください。',
+	'List the directories that contain the static files that you want to be included in your theme.' => 'テーマに入れたいファイルを含むディレクトリを記入してください。',
 
 ## tmpl/cms/include/theme_exporters/category.tmpl
 	'Category Name' => 'カテゴリ名',

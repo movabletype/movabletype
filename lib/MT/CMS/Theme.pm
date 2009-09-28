@@ -251,7 +251,7 @@ sub export {
         $param{$param} = ref $val ? $val->[0] : $val;
     }
     my @output_methods = ({
-        label => MT->translate('Install to theme directory'),
+        label => MT->translate('Install into theme directory'),
         id    => 'themedir',
     });
     require MT::Util::Archive;
@@ -260,7 +260,7 @@ sub export {
         ## FIXME: Skip Tgz because his add_tree() doesn't work well.
         next if $arc->{key} eq 'tgz';
         push @output_methods, {
-            label => MT->translate('Download as [_1] archive', $arc->{label}),
+            label => MT->translate('Download [_1] archive', $arc->{label}),
             id    => 'download.' . $arc->{key},
         };
     }
