@@ -321,14 +321,14 @@ sub element_dialog {
         $element_param = \%element_param;
     }
     $setting ||= {};
+    my $exporter = MT->registry( theme_element_handlers => $exporter_id );
     my %param = (
         exporter_id  => $exporter_id,
-        label        => MT->registry( theme_element_handlers => $exporter_id => 'label'),
+        label        => $exporter->{label},
         template     => $tmpl,
         %$setting,
         %$element_param,
     );
-
     $app->load_tmpl( 'dialog/theme_element_detail.tmpl', \%param );
 }
 
