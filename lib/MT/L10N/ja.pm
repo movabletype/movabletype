@@ -4444,7 +4444,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## tmpl/cms/widget/blog_stats_tag_cloud.tmpl
 
 ## tmpl/cms/widget/new_user.tmpl
-	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform:' => '世界で最もパワフルなブログ、ウェブサイト、ソーシャルメエyイアプラットフォームであるMovable Typeへようこそ:',
+	'Welcome to Movable Type, the world\'s most powerful blogging, publishing and social media platform:' => '世界で最もパワフルなブログ、ウェブサイト、ソーシャルメディアプラットフォームであるMovable Typeへようこそ:',
 
 ## tmpl/cms/widget/blog_stats.tmpl
 	'Error retrieving recent entries.' => '最近のブログ記事を取得できませんでした。',

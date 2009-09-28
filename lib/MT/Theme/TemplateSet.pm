@@ -120,31 +120,31 @@ sub export_template {
 
     my %types = (
         'index' => {
-            label => "Index Templates",
+            label => $app->translate("Index Templates"),
             order => 100,
         },
         'archive' => {
-            label => "Archive Templates",
+            label => $app->translate("Archive Templates"),
             order => 200,
         },
         'module' => {
-            label => "Template Modules",
+            label => $app->translate("Template Modules"),
             order => 300,
         },
         'system' => {
-            label => "System Templates",
+            label => $app->translate("System Templates"),
             order => 400,
         },
         'email' => {
-            label => "Email Templates",
+            label => $app->translate("Email Templates"),
             order => 500,
         },
         'widget' => {
-            label => "Widget Templates",
+            label => $app->translate("Widget Templates"),
             order => 600,
         },
         'widgetset' => {
-            label => "Widget Sets",
+            label => $app->translate("Widget Sets"),
             order => 700,
         },
     );
