@@ -262,7 +262,9 @@ sub create_default_templates {
         my $obj = MT::Template->new;
         my $p = $val->{plugin} || 'MT'; # component and/or MT package for translate
         local $val->{name} = $val->{name}; # name field is translated in "templates" call
-        local $val->{text} = $p->translate_templatized($val->{text});
+        my $text = $val->{text};
+        local $val->{text};
+        $val->{text} = $p->translate_templatized($text) if defined $text;
         $obj->build_dynamic(0);
         foreach my $v (keys %$val) {
             $obj->column($v, $val->{$v}) if $obj->has_column($v);
