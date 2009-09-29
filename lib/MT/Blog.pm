@@ -1212,12 +1212,16 @@ sub apply_theme {
     my $blog = shift;
     my ($theme_id) = @_;
     require MT::Theme;
-    my $theme = MT::Theme->load($theme_id) || $blog->theme
-        or return $blog->error(
+    $theme_id ||= $blog->theme_id;
+    $theme_id ||= $blog->is_blog ? MT->config->DefaultBlogTheme : MT->config->DefaultWebsiteTheme;
+    my $theme = MT::Theme->load($theme_id);
+    if ( !defined $theme ) {
+        return $blog->error(
             MT->translate(
                 "Failed to load theme [_1]: [_2]", $theme_id, MT::Theme->errstr
             )
         );
+    }
     $theme->apply($blog)
         or return $blog->error(
             MT->translate(
