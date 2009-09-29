@@ -526,6 +526,7 @@ BEGIN {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
+                compose_menus   =>sub { MT->app->core_compose_menus() },
             },
             upgrade => {
                 handler         => 'MT::App::Upgrader',

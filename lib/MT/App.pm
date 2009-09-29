@@ -3177,6 +3177,7 @@ sub build_widgets {
         local $widget_param->{magic_token}     = $app->current_magic;
         local $widget_param->{build_menus}     = 0;
         local $widget_param->{build_blog_selector} = 0;
+        local $widget_param->{build_compose_menus} = 0;
         if ( my $h = $widget->{code} || $widget->{handler} ) {
             $h = $app->handler_to_coderef($h);
             $h->( $app, $tmpl, $widget_param );

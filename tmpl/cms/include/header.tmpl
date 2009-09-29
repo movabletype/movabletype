@@ -213,7 +213,6 @@
                     </div>
                 </div>
 
-
     <mt:if name="blog_id">
                 <ul id="menu-bar-list">
         <mt:if name="can_rebuild">
@@ -282,6 +281,45 @@
         </mt:if>
     </mt:unless>
 </mt:if>
+
+<!-- EXAMPLES START -->
+<mt:ignore>
+    variable layout
+
+    compose_menus --- (Array)
+                   |
+                   +--- root_label
+                   +--- menus --- (Array)
+                               |
+                               +--- label
+                               +--- link
+</mt:ignore>
+
+<mt:if name="compose_menus">
+<div id="<mt:var name="scope_type">-nav-compose-menu" class="nav-compose">
+    <ul>
+    <mt:loop name="compose_menus">
+        <mt:loop name="menus">
+            <mt:if name="__first__">
+        <li>
+            <em>
+                <a href="<mt:var name="link">" class="hoge">
+                    <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
+                </a>
+            </em>
+            <ul class="compose-actions hidden">
+            </mt:if>
+                <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
+            <mt:if name="__last__">
+            </ul>
+        </li>
+            </mt:if>
+        </mt:loop>
+    </mt:loop>
+    </ul>
+</div>
+</mt:if>
+<!-- EXAMPLES END -->
 
         <!-- Content  -->
             <div id="content">

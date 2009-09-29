@@ -1307,22 +1307,27 @@ sub core_menus {
         'website' => {
             label => "Websites",
             order => 50,
+            compose => 'website:create',
         },
         'blog' => {
             label => "Blogs",
             order => 100,
+            compose => 'blog:create',
         },
         'entry' => {
             label => "Entries",
             order => 200,
+            compose => 'entry:create',
         },
         'page' => {
             label => "Pages",
             order => 300,
+            compose => 'page:create',
         },
         'asset' => {
             label => "Assets",
             order => 400,
+            compose => 'asset:upload',
         },
         'feedback' => {
             label => "Comments",
@@ -1331,6 +1336,7 @@ sub core_menus {
         'user' => {
             label => "Users",
             order => 600,
+            compose => 'user:create',
         },
         'design' => {
             label => "Design",
@@ -1772,6 +1778,31 @@ sub core_menus {
     };
 }
 
+sub core_compose_menus {
+    my $app = shift;
+
+    my $menus = $app->registry('menus');
+    my @keys = grep { !/:/ } keys %$menus;
+    my $compose_menus;
+    foreach my $key ( @keys ) {
+        my $menu = $menus->{$key};
+        if ( $menu->{compose} ) {
+            $menu = $menus->{$menu->{compose}};
+            $menu->{order} = $menus->{$key}->{order};
+            $menu->{label} = "New " . $key;
+            push @$compose_menus, $menu;
+        }
+    }
+
+    return {
+        compose_menus => {
+            label => 'Compose',
+            menus => $compose_menus,
+            order => 100,
+        },
+    };
+}
+
 sub init_core_callbacks {
     my $app = shift;
     my $pkg = 'cms_';
@@ -2145,6 +2176,9 @@ sub build_page {
         # templates actually utilize them.
         $param->{page_actions} ||= sub { $app->page_actions( $app->mode ) };
     }
+    my $build_compose_menus = exists $param->{build_compose_menus} ? $param->{build_compose_menus} : 1;
+    $app->build_compose_menus( $param )
+        if $build_compose_menus;
 
     $app->SUPER::build_page( $page, $param );
 }
@@ -2528,6 +2562,70 @@ sub build_menus {
     $param->{top_nav_loop} = \@top;
     $param->{sys_nav_loop} = \@sys;
     $param->{view}         = $view;
+}
+
+sub build_compose_menus {
+    my $app = shift;
+    my ( $param ) = @_;
+    return if exists $param->{compose_menus};
+
+    my $scope = $app->blog
+        ? $app->blog->is_blog
+            ? 'blog'
+            : 'website'
+        : 'system';
+    my $blog_id = $app->blog
+        ? $app->blog->id
+        : 0;
+
+    my $menus = $app->registry('compose_menus');
+    my @root_keys = keys %$menus;
+    my @root_menus;
+
+    foreach my $root_key ( @root_keys ) {
+        my @menus;
+        my $items;
+        my $sub_menus = $menus->{$root_key}{menus};
+
+        foreach my $item ( @$sub_menus ) {
+            if ( $item->{view} ) {
+                if ( ref $item->{view} eq 'ARRAY' ) {
+                    next
+                        unless ( scalar grep { $_ eq $scope } @{ $item->{view} } );
+                }
+                else {
+                    next if $item->{view} ne $scope;
+                }
+            }
+            if ( $item->{mode} ) {
+                $item->{link} = $app->uri(
+                    mode => $item->{mode},
+                    args => {
+                        %{ $item->{args} || {} },
+                        (
+                            $blog_id
+                                ? ( blog_id => $blog_id )
+                                : ()
+                            )
+                    }
+                );
+            }
+
+            push @menus, $item;
+        }
+        next unless @menus;
+
+        my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
+        @$compose_menus = sort { $a->{order} <=> $b->{order} } @$compose_menus;
+        $items->{menus} = $compose_menus;
+        $items->{root_label} = $menus->{$root_key}{label};
+        $items->{order} = $menus->{$root_key}{order};
+
+        push @root_menus, $items;
+    }
+
+    @root_menus = sort { $a->{order} <=> $b->{order} } @root_menus;
+    $param->{compose_menus} = \@root_menus;
 }
 
 sub return_to_dashboard {
