@@ -1307,27 +1307,22 @@ sub core_menus {
         'website' => {
             label => "Websites",
             order => 50,
-            compose => 'website:create',
         },
         'blog' => {
             label => "Blogs",
             order => 100,
-            compose => 'blog:create',
         },
         'entry' => {
             label => "Entries",
             order => 200,
-            compose => 'entry:create',
         },
         'page' => {
             label => "Pages",
             order => 300,
-            compose => 'page:create',
         },
         'asset' => {
             label => "Assets",
             order => 400,
-            compose => 'asset:upload',
         },
         'feedback' => {
             label => "Comments",
@@ -1336,7 +1331,6 @@ sub core_menus {
         'user' => {
             label => "Users",
             order => 600,
-            compose => 'user:create',
         },
         'design' => {
             label => "Design",
@@ -1781,24 +1775,62 @@ sub core_menus {
 sub core_compose_menus {
     my $app = shift;
 
-    my $menus = $app->registry('menus');
-    my @keys = grep { !/:/ } keys %$menus;
-    my $compose_menus;
-    foreach my $key ( @keys ) {
-        my $menu = $menus->{$key};
-        if ( $menu->{compose} ) {
-            $menu = $menus->{$menu->{compose}};
-            $menu->{order} = $menus->{$key}->{order};
-            $menu->{label} = "New " . $key;
-            push @$compose_menus, $menu;
-        }
-    }
-
     return {
         compose_menus => {
-            label => 'Compose',
-            menus => $compose_menus,
+            label => 'Create New',
             order => 100,
+            menus => {
+                'entry' => {
+                    label      => "New Entry",
+                    order      => 100,
+                    mode       => 'view',
+                    args       => { _type => 'entry' },
+                    permission => 'create_post',
+                    view       => "blog",
+                },
+                'page' => {
+                    label      => "New Page",
+                    order      => 200,
+                    mode       => 'view',
+                    args       => { _type => 'page' },
+                    permission => 'manage_pages',
+                    view       => [ "blog", 'website' ],
+                },
+                'asset' => {
+                    label      => "Upload New Asset",
+                    order      => 300,
+                    mode       => 'start_upload',
+                    permission => 'upload,edit_assets',
+                    view       => [ "blog", 'website' ],
+                },
+                'website' => {
+                    label         => "New Website",
+                    order         => 200,
+                    mode          => 'view',
+                    args          => { _type => 'website' },
+                    permit_action => 'use_website:create_menu',
+                    view          => "system",
+                },
+                'user' => {
+                    label      => "New User",
+                    order      => 100,
+                    mode       => "view",
+                    args       => { _type => "author" },
+                    permission => "administer",
+                    condition  => sub {
+                        return !MT->config->ExternalUserManagement;
+                    },
+                    view => "system",
+                },
+                'blog:create' => {
+                    label         => "New Blog",
+                    order         => 400,
+                    mode          => 'view',
+                    args          => { _type => 'blog' },
+                    permit_action => 'use_blog:create_menu',
+                    view          => "website",
+                },
+            },
         },
     };
 }
@@ -2576,7 +2608,9 @@ sub build_compose_menus {
         ? $app->blog->is_blog
             ? 'blog'
             : 'website'
-        : 'system';
+        : defined $app->param('blog_id')
+            ? 'system'
+            : 'user';
     my $blog_id = $app->blog
         ? $app->blog->id
         : 0;
@@ -2590,7 +2624,8 @@ sub build_compose_menus {
         my $items;
         my $sub_menus = $menus->{$root_key}{menus};
 
-        foreach my $item ( @$sub_menus ) {
+        foreach my $key ( keys %$sub_menus ) {
+            my $item = $sub_menus->{$key};
             if ( $item->{view} ) {
                 if ( ref $item->{view} eq 'ARRAY' ) {
                     next
