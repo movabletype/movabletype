@@ -41,7 +41,7 @@ sub compile {
         $ids = $build->{__state}{ids} || {};
         $classes = $build->{__state}{classes} || {};
         $tmpl = $build->{__state}{tmpl};
-        $errors = $build->{__state}{errors} = [];
+        $errors = $build->{__state}{errors} ||= [];
     }
 
     return [ ] unless defined $text;
@@ -146,7 +146,7 @@ sub compile {
             my $line = scalar @m;
             if ($depth) {
                 $opt->{error_line} = $line;
-                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, "#"), line => $line };
+                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, "#"), line => $line + 1 };
             } else {
                 push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, $line + 1), line => $line };
             }
@@ -171,7 +171,7 @@ sub compile {
                             foreach (@$errors) {
                                 $line += $_->{line};
                                 $_->{line} = $line;
-                                $_->{message} =~ s/#/$line/;
+                                $_->{message} =~ s/#/$line/ unless $depth;
                             }
                         }
                         # unless (defined $rec->[2]) {
