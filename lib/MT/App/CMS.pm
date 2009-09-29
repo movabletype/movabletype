@@ -2569,6 +2569,9 @@ sub build_compose_menus {
     my ( $param ) = @_;
     return if exists $param->{compose_menus};
 
+    my $user = $app->user
+      or return;
+
     my $scope = $app->blog
         ? $app->blog->is_blog
             ? 'blog'
