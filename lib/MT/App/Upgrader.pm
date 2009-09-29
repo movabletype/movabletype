@@ -161,7 +161,7 @@ sub current_magic {
 sub mt_uri {
     my $app = shift;
     local $app->{is_admin} = 1;
-    return $app->SUPER::mt_uri;
+    return $app->base . $app->SUPER::mt_uri;
 }
 
 sub upgrade {
