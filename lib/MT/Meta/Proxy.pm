@@ -74,7 +74,7 @@ sub get {
         my $meta = $proxy->{__objects}->{$col};
 
         my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $col)
-            or Carp::croak("Metadata $col on $pkg not found.");
+            or return undef; # XXX: Carp::croak("Metadata $col on $pkg not found.");
         my $type = $field->{type}
             or Carp::croak("$col not found on $pkg meta fields");
 
@@ -143,7 +143,7 @@ sub create_meta_object {
     my $meta = $proxy->meta_pkg->new;
 
     my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $col)
-        or Carp::croak("there's no field $col on $pkg");
+        or return; # XXX: Carp::croak("there's no field $col on $pkg");
 
     my $type_id = $field->{type_id}
         or Carp::croak("no type_id for $col");
@@ -197,7 +197,7 @@ sub save {
 
         my $pkg = $proxy->{pkg};
         my $meta = $proxy->META_CLASS()->metadata_by_name($pkg, $field)
-            or Carp::croak("Metadata $field on $pkg not found.");
+            or next; # XXX: Carp::croak("Metadata $field on $pkg not found.");
         my $type = $meta->{type};
 
         my $meta_col_def = $meta_obj->column_def($type);

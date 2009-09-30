@@ -123,6 +123,9 @@ MT.App = new Class( MT.App, {
                 this.calendar.open(
                     {
                         date: DOM.getElement( "created-on" ).value
+                        + 'T'
+                        + DOM.getElement( "entry_form" ).elements['authored_on_time'].value
+                        + 'Z'
                     },
                     this.getIndirectMethod( "handleCreatedOnDate" ),
                     event.commandElement
