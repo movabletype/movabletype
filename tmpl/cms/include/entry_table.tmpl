@@ -48,11 +48,13 @@
                 </th>
                 <th class="title primary-col"><__trans phrase="Title"></th>
         <mt:unless name="blog_view">
-            <mt:if name="object_type" eq="entry">
+            <mt:unless name="scope_type" eq="blog">
+                <mt:if name="object_type" eq="entry">
                 <th class="blog"><__trans phrase="Blog"></th>
-            <mt:else>
+                <mt:else>
                 <th class="blog"><__trans phrase="Website/Blog"></th>
-            </mt:if>
+                </mt:if>
+            </mt:unless>
         </mt:unless>
                 <th class="category"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></th>
                 <th class="author"><__trans phrase="Author"></th>
@@ -140,7 +142,9 @@
                 <td><mt:if name="has_edit_access"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" ne="page"><__trans phrase="Edit Entry"><mt:else><__trans phrase="Edit Page"></mt:if></a><mt:else>&#160;</mt:if></td>
         </mt:if>
         <mt:unless name="blog_view">
+            <mt:unless name="scope_type" eq="blog">
                 <td class="blog"><a href="<$mt:var name="script_url"$>?__mode=list_<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>"><$mt:var name="weblog_name" escape="html"$></a></td>
+            </mt:unless>
         </mt:unless>
                 <td class="category">
         <mt:if name="is_editable">
