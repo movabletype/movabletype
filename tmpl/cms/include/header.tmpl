@@ -213,18 +213,18 @@
                     </div>
                 </div>
 
-    <mt:unless name="scope_type" eq="user">
                 <div id="menu-bar-nav">
-        <mt:if name="blog_id">
                     <ul id="menu-bar-icons">
-            <mt:if name="can_rebuild">
-                <mt:unless name="dynamic_all">
+    <mt:if name="blog_id">
+        <mt:if name="can_rebuild">
+            <mt:unless name="dynamic_all">
                         <!-- Publish Link -->
                         <li id="rebuild-site" class="nav-link"><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild" title="<__trans phrase="Publish Site">"><span><__trans phrase="Publish"></span></a></li>
-                </mt:unless>
-            </mt:if>
+            </mt:unless>
+        </mt:if>
                         <!-- View Link -->
                         <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a></li>
+    </mt:if>
                         <!-- Serarch  -->
                         <li id="cms-search" class="nav-link">
                             <a href="#search-form"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
@@ -232,9 +232,9 @@
                                 <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
                                     <input type="hidden" name="__mode" value="search_replace" />
                                     <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
-            <mt:if name="blog_id">
+                        <mt:if name="blog_id">
                                     <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
-            </mt:if>
+                        </mt:if>
                                     <input type="hidden" name="do_search" value="1" />
                                     <input type="hidden" name="quicksearch" value="1" />
                                     <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
@@ -244,7 +244,7 @@
                             </div>
                         </li>
                     </ul>
-        </mt:if>
+    <mt:unless name="scope_type" eq="user">
         <mt:if name="compose_menus">
                     <div id="<mt:var name="scope_type">-nav-compose-menu" class="nav-compose">
                         <ul>
@@ -271,8 +271,8 @@
                         </ul>
                     </div>
         </mt:if>
-                </div>
     </mt:unless>
+                </div>
             </div><!-- /menu-bar -->
 </mt:if>
         </div><!-- /header -->
