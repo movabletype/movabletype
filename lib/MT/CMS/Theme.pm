@@ -146,6 +146,7 @@ sub apply {
             MT->translate('Theme not found')
         );
     $blog->theme_id($theme->id);
+    $blog->theme_export_settings(undef);
     $blog->save;
     $blog->apply_theme;
     $app->redirect(
