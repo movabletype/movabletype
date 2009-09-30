@@ -686,6 +686,7 @@ sub list {
             $template_type = 'system';
         }
         $row->{use_cache} = ( $tblog->include_cache && ($obj->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_ssi} = ( $tblog->include_system && $obj->include_with_ssi )  ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
