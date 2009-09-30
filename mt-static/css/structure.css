@@ -297,7 +297,7 @@ ul.tabs li a {
 }
 
 .blog #header { 
-    background-color: #5C909B;
+    background-color: #5c909b;
 }
 
 /* -- Brand */
@@ -1213,7 +1213,7 @@ fieldset {
     margin-top: 45px;
 }
 
-.welocome-widget .actions-bar { 
+.welcome-widget .actions-bar { 
     clear: both;
     text-align: right;
 }
@@ -1443,7 +1443,7 @@ optgroup option {
 .welcome-widget .widget-content li {
     display: block;
     padding-left: 20px;
-    background: url(../images/checked.png) left 2px no-repeat;
+    background: url(../images/widget/checked.gif) left 3px no-repeat;
     color: #f8fbf8;
     font-size: 16px;
     font-weight: bold;
