@@ -192,6 +192,7 @@ html#dialog {
 ul#asset-list li, 
 .dialog #selector, 
 .dialog .selector, 
+.user-status-disabled, 
 #template-options-header, 
 #template-options .field, 
 .widget-content .field-content, 
