@@ -58,19 +58,20 @@ sub _register {
     }
     return;
 }
+
+sub _unplug_all_themes {
+    for my $id ( keys %THEME_CACHE ) {
+        delete $MT::Components{$id};
+    }
+    @MT::Components = grep { !$_->isa(__PACKAGE__) } @MT::Components;
+    %THEME_CACHE = ();
+}
 }
 
-{
-my $THEMES_INSTALLED;
 sub load_all_themes {
     my $pkg = shift;
-    my (%opts) = @_;
-    if ($opts{force_reload}) {
-        $THEMES_INSTALLED = undef;
-    }
-    return $THEMES_INSTALLED if defined $THEMES_INSTALLED;
-    $THEMES_INSTALLED = {};
-
+    my $installed = {};
+    _unplug_all_themes();
     ## load themes from registry.
     my $themes_reg = MT->registry('themes');
 
@@ -84,10 +85,9 @@ sub load_all_themes {
 
     my %ids = map { $_ => 1 } ( keys %$themes_reg, @packages, @sets );
     for my $id ( keys %ids ) {
-        $THEMES_INSTALLED->{$id} = $pkg->load($id);
+        $installed->{$id} = $pkg->load($id);
     }
-    return $THEMES_INSTALLED;
-}
+    return $installed;
 }
 
 sub _theme_packages {
