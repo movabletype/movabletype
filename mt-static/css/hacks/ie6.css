@@ -86,11 +86,6 @@ body {
     width: 300px;
 }
 
-/* -- Menu Bar Nav */
-#menu-bar-nav { 
-    width: 250px;
-}
-
 /* - Navigation Menu */
 ul.menu-nav li, 
 ul.menu-nav li a { 
