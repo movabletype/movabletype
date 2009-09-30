@@ -244,7 +244,7 @@
                             </div>
                         </li>
                     </ul>
-    <mt:unless name="scope_type" eq="user">
+    <mt:if name="blog_id">
         <mt:if name="compose_menus">
                     <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav">
                         <ul>
@@ -271,7 +271,7 @@
                         </ul>
                     </div>
         </mt:if>
-    </mt:unless>
+    </mt:if>
                 </div>
             </div><!-- /menu-bar -->
 </mt:if>
