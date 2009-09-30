@@ -530,13 +530,13 @@ $.fn.mtRebasename = function(options) {
     return this.each(function() {
         var $input = $('input#basename');
         var dirify_text = $input.hide().val();
+        $input
+           .before('<span class="basename-text"></span>')
+           .after('<button id="mt-set-basename" class="mt-edit-field-button">'+opts.edit+'</button>')
+           .hide();
         if (opts.basename) {
             $('span.basename-text').text(opts.basename);
         } else {
-            $input
-                .before('<span class="basename-text"></span>')
-                .after('<button id="mt-set-basename" class="mt-edit-field-button">'+opts.edit+'</button>')
-                .hide();
             $('span.basename-text').text(dirify_text || opts.text);
         }
         $(this).keyup(function() {
@@ -548,6 +548,12 @@ $.fn.mtRebasename = function(options) {
                 $('span.basename-text').text(dirify_text || opts.text);
                 $input.val(dirify_text);
             }
+        });
+        $('button#mt-set-basename').click(function() {
+            $(this).hide();
+            $('span.basename-text').hide();
+            $('input#basename').show();
+            return false;
         });
     });
 };

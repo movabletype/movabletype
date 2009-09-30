@@ -414,7 +414,7 @@
         label_class="top-label"
         help_page="entries">
 <mt:if name="can_publish_post">
-        <input type="text" name="basename" id="basename" class="mt-edit-field" value="<$mt:var name="basename" escape="html"$>" />
+        <input type="text" name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" />
     <mt:if name="object_type" eq="entry">
         <p class="alert-warning-inline" id="basename-warning" style="display: none">
             <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
@@ -1265,9 +1265,7 @@ function listPreviousPings () {
 <mt:setvarblock name="form_footer">
 </form>
 </mt:setvarblock>
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.publish').click(function() {
         jQuery('form#entry_form > input[name=status]').val(2);
     });
@@ -1299,7 +1297,5 @@ jQuery(function() {
         jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
         jQuery('button.draft').hide();
     }
-});
-/* ]]> */
-</script>
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl" id="footer_include">
