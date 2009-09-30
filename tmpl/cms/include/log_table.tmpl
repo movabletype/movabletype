@@ -41,7 +41,7 @@
             </td>
         </tr>
     <mt:if name="log_detail">
-        <tr class="log-detail <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="log-detail-<$mt:var name="id"$>">
+        <tr class="log-detail hidden <mt:if name="__odd__">odd<mt:else>even</mt:if>" id="log-detail-<$mt:var name="id"$>">
             <td colspan="<mt:unless name="is_blog">4<mt:else>3</mt:unless>">
               <pre><samp><$mt:var name="log_detail" escape="html"$></samp></pre>
             </td>
@@ -53,9 +53,8 @@
 </mtapp:listing>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('tr.log-detail').hide();
     jQuery('tr.log-detail-parent').click(function() {
-        jQuery(this).toggleClass('active').next('tr.log-detail').toggle();
+        jQuery(this).toggleClass('active').next('tr.log-detail').toggleClass('hidden');
     });
 </mt:setvarblock>
 
