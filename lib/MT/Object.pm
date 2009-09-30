@@ -300,7 +300,14 @@ sub install_properties {
         sub {
             my ($obj) = @_;
             my $data = $obj->{column_values};
-            my %is_blob = map { $_ => 1 } $obj->columns_of_type('blob');
+            my $props = $obj->properties;
+            my $cols = $props->{columns};
+            my $col_defs = $obj->column_defs;
+            my %is_blob;
+            for my $col ( @$cols ) {
+                $is_blob{$col} = 1
+                    if $col_defs->{$col} && $col_defs->{$col}{type} =~ /\bblob\b/;
+            }
             foreach ( keys %$data ) {
                 my $v = $data->{$_};
                 if ( !( Encode::is_utf8($data->{$_})) && !$is_blob{$_} ) {
