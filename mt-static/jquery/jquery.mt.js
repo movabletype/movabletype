@@ -74,13 +74,13 @@ $.mtFavActions = function(options) {
         arrow_image: StaticURI+'images/arrow-down-gray.gif'
     };
     var opts = $.extend(defaults, options);
-    $('.nav-compose li > em').append('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
-    $('.nav-compose .toggle-button').click(function(event) {
+    $('.fav-actions-nav li > em').append('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('.fav-actions-nav .toggle-button').click(function(event) {
         $(this).parents('li').toggleClass('active').find('.fav-actions').toggleClass('hidden');
         event.preventDefault();
     });
     $(document).click(function(event) {
-        if ($(event.target).parents('.nav-compose').length == 0) {
+        if ($(event.target).parents('.fav-actions-nav').length == 0) {
             $('.fav-actions').addClass('hidden').parent('li').removeClass('active');
         }
     });

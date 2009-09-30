@@ -86,6 +86,11 @@ body {
     width: 300px;
 }
 
+/* -- Menu Bar Nav */
+#menu-bar-nav { 
+    width: 250px;
+}
+
 /* - Navigation Menu */
 ul.menu-nav li, 
 ul.menu-nav li a { 
@@ -182,7 +187,8 @@ html#dialog {
 .msg, 
 .plugin, 
 .theme, 
-.field-content ul,
+.field-content ul, 
+.fav-actions li a, 
 .listing-screen .actions-bar, 
 #editor .editor-header, 
 .widget, 

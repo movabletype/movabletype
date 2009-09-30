@@ -599,7 +599,7 @@ ul.tabs li a {
 
 
 /* ---- Favorite Action */
-.nav-compose { 
+.fav-actions-nav { 
     position: relative;
     float: right;
     height: 23px;
@@ -613,23 +613,23 @@ ul.tabs li a {
     box-shadow: #2b2b2b 1px 0 2px;
 }
 
-.nav-compose em { 
+.fav-actions-nav em { 
     display: block;
     font-style: normal;
 }
 
-.nav-compose li { 
+.fav-actions-nav li { 
     margin: 0;
 }
 
-.nav-compose .fav-actions-root-link { 
+.fav-actions-nav .fav-actions-root-link { 
     color: #383c3c;
 }
-.nav-compose .fav-actions-root-link:hover { 
+.fav-actions-nav .fav-actions-root-link:hover { 
     color: #2b2b2b;
 }
 
-.nav-compose .fav-actions-root-link span { 
+.fav-actions-nav .fav-actions-root-link span { 
     display: block;
     float: left;
     line-height: 23px;
@@ -646,7 +646,7 @@ ul.tabs li a {
     border-bottom-left-radius: 3px;
 }
 
-.nav-compose .toggle-button {
+.fav-actions-nav .toggle-button {
     display: block;
     float: left;
     height: 23px;
@@ -663,20 +663,20 @@ ul.tabs li a {
     border-bottom-right-radius: 3px;
 }
 
-.nav-compose .fav-actions-root-link:hover span, 
-.nav-compose .toggle-button:hover { 
+.fav-actions-nav .fav-actions-root-link:hover span, 
+.fav-actions-nav .toggle-button:hover { 
     background-position: left top;
 }
 
-.nav-compose .toggle-button img { 
+.fav-actions-nav .toggle-button img { 
     margin-top: 9px;
 }
 
-.nav-compose .active .toggle-button { 
+.fav-actions-nav .active .toggle-button { 
     background: #f8f4e6;
 }
 
-.nav-compose .fav-actions { 
+.fav-actions-nav .fav-actions { 
     position: absolute;
     top: 23px;
     left: 0;
@@ -685,7 +685,7 @@ ul.tabs li a {
     background-color: #f8fbf8;
 }
 
-.nav-compose .fav-actions ul { 
+.fav-actions-nav .fav-actions ul { 
     border: 1px solid #c8c2be;
     background-color: #f8fbf8;
     -moz-border-radius: 0 0 3px 3px;
@@ -697,17 +697,17 @@ ul.tabs li a {
     border-bottom-left-radius: 3px;
 }
 
-.nav-compose .fav-actions li a { 
+.fav-actions-nav .fav-actions li a { 
     display: block;
     padding: 3px 0;
     color: #7b7c7d;
 }
-.nav-compose .fav-actions li a:hover { 
+.fav-actions-nav .fav-actions li a:hover { 
     color: #2b2b2b;
     background-color: #dcdddd;
 }
 
-.nav-compose .fav-actions .action-label { 
+.fav-actions-nav .fav-actions .action-label { 
     margin: 0 12px;
     overflow: hidden;
 }
