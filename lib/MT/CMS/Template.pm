@@ -659,10 +659,10 @@ sub list {
         my ( $obj, $row ) = @_;
         my $template_type;
         my $type = $row->{type} || '';
+        my $tblog = $obj->blog_id == $blog->id ? $blog : MT::Blog->load( $obj->blog_id );
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
             # populate context with templatemap loop
-            my $tblog = $obj->blog_id == $blog->id ? $blog : MT::Blog->load( $obj->blog_id );
             if ($tblog) {
                 $row->{archive_types} = _populate_archive_loop( $app, $tblog, $obj );
             }
@@ -685,7 +685,7 @@ sub list {
         else {
             $template_type = 'system';
         }
-        $row->{use_cache} = ( ($obj->cache_expire_type || 0) != 0 ) ? 1 : 0;
+        $row->{use_cache} = ( $tblog->include_cache && ($obj->cache_expire_type || 0) != 0 )  ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
@@ -1674,7 +1674,6 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{use_cache} = ( ($tmpl->cache_expire_type || 0) != 0 )  ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
