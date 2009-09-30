@@ -21,7 +21,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
             if (!empty($maps)) {
                 foreach ($maps as $map) {
                     if ($map->templatemap_build_type != 0 )
-                        $enabled++;
+                        $enabled = 1; /* was $enabled++; */
                 }
             }
         }
