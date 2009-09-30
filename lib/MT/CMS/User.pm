@@ -1356,8 +1356,8 @@ sub dialog_select_author {
                     'author_id',
                     {
                         ( $entry_type eq 'page'
-                            ? (permissions => "'%\'manage_pages\'%'")
-                            : (permissions => "'%\'create_post\'%'") ),
+                            ? (permissions => "%\'manage_pages\'%")
+                            : (permissions => "%\'create_post\'%") ),
                         blog_id     => \@blog_ids,
                     },
                     { 'like' => { 'permissions' => 1 }, unique => 1 }
