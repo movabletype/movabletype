@@ -63,6 +63,54 @@ $.mtSelector = function() {
 };
 
 /*
+ * mtFavActions
+ *
+ * Usage:
+ *   jQuery.mtFavActions();
+ *
+ */
+$.mtFavActions = function(options) {
+    var defaults = {
+        arrow_image: StaticURI+'images/arrow-down-gray.gif'
+    };
+    var opts = $.extend(defaults, options);
+    $('.nav-compose li > em').append('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('.nav-compose .toggle-button').click(function(event) {
+        $(this).parents('li').toggleClass('active').find('.fav-actions').toggleClass('hidden');
+        event.preventDefault();
+    });
+    $(document).click(function(event) {
+        if ($(event.target).parents('.nav-compose').length == 0) {
+            $('.fav-actions').addClass('hidden').parent('li').removeClass('active');
+        }
+    });
+    if (!$.support.style && !$.support.objectAll) {
+        if ($.fn.bgiframe) $('.fav-action').bgiframe();
+    }
+};
+
+/*
+ * mtCMSSearch
+ *
+ * Usage:
+ *   jQuery.mtFavActions();
+ *
+ */
+$.mtCMSSearch = function(options) {
+    $('#cms-search > a').click(function(event) {
+        $('#cms-search').toggleClass('active').find('#search-form').toggleClass('hidden');
+        event.preventDefault();
+    });
+    $(document).click(function(event) {
+        if ($(event.target).parents('#cms-search').length == 0) {
+            $('#search-form').addClass('hidden').parent('#cms-search').removeClass('active');
+        }
+    });
+    if (!$.support.style && !$.support.objectAll) {
+        if ($.fn.bgiframe) $('.fav-action').bgiframe();
+    }
+};
+/*
  * mtCheckbox
  *
  * Usage:
@@ -559,10 +607,10 @@ $.fn.mtCheckboxOption = function() {
 };
 
 /*
- * mtCheckboxOption
+ * mtToggleNext
  *
  * Usage:
- *   jQuery('div.has-option').mtCheckboxOption();
+ *   jQuery('.msg').mtToggleNext();
  *
  */
 $.fn.mtToggleNext = function(options) {
@@ -573,9 +621,11 @@ $.fn.mtToggleNext = function(options) {
     var opts = $.extend(defaults, options);
     return this.each(function() {
         var $parent = $(this);
+        var hoge = this;
         $('.'+opts.detail_class).hide();
-        $parent.find('.'+opts.click_class).click(function() {
+        $parent.find('.'+opts.click_class).click(function(event) {
             $parent.toggleClass('active').find('.'+opts.detail_class).toggle();
+            event.preventDefault();
         });
     });
 };

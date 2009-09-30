@@ -1781,7 +1781,7 @@ sub core_compose_menus {
             order => 100,
             menus => {
                 'entry' => {
-                    label      => "New Entry",
+                    label      => "Entry",
                     order      => 100,
                     mode       => 'view',
                     args       => { _type => 'entry' },
@@ -1789,7 +1789,7 @@ sub core_compose_menus {
                     view       => "blog",
                 },
                 'page' => {
-                    label      => "New Page",
+                    label      => "Page",
                     order      => 200,
                     mode       => 'view',
                     args       => { _type => 'page' },
@@ -1797,14 +1797,14 @@ sub core_compose_menus {
                     view       => [ "blog", 'website' ],
                 },
                 'asset' => {
-                    label      => "Upload New Asset",
+                    label      => "Asset",
                     order      => 300,
                     mode       => 'start_upload',
                     permission => 'upload,edit_assets',
                     view       => [ "blog", 'website' ],
                 },
                 'website' => {
-                    label         => "New Website",
+                    label         => "Website",
                     order         => 200,
                     mode          => 'view',
                     args          => { _type => 'website' },
@@ -1812,7 +1812,7 @@ sub core_compose_menus {
                     view          => "system",
                 },
                 'user' => {
-                    label      => "New User",
+                    label      => "User",
                     order      => 100,
                     mode       => "view",
                     args       => { _type => "author" },
@@ -1823,7 +1823,7 @@ sub core_compose_menus {
                     view => "system",
                 },
                 'blog:create' => {
-                    label         => "New Blog",
+                    label         => "Blog",
                     order         => 400,
                     mode          => 'view',
                     args          => { _type => 'blog' },

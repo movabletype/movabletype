@@ -213,32 +213,66 @@
                     </div>
                 </div>
 
-    <mt:if name="blog_id">
-                <ul id="menu-bar-list">
-        <mt:if name="can_rebuild">
-            <mt:unless name="dynamic_all">
-                <!-- Publish Link -->
-                    <li id="rebuild-site" class="nav-link"><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild" title="<__trans phrase="Publish Site">"><span><__trans phrase="Publish"></span></a></li>
-            </mt:unless>
+    <mt:unless name="scope_type" eq="user">
+                <div id="menu-bar-nav">
+        <mt:if name="blog_id">
+                    <ul id="menu-bar-icons">
+            <mt:if name="can_rebuild">
+                <mt:unless name="dynamic_all">
+                        <!-- Publish Link -->
+                        <li id="rebuild-site" class="nav-link"><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild" title="<__trans phrase="Publish Site">"><span><__trans phrase="Publish"></span></a></li>
+                </mt:unless>
+            </mt:if>
+                        <!-- View Link -->
+                        <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a></li>
+                        <!-- Serarch  -->
+                        <li id="cms-search" class="nav-link">
+                            <a href="#search-form"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
+                            <div id="search-form" class="search-form hidden">
+                                <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
+                                    <input type="hidden" name="__mode" value="search_replace" />
+                                    <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+            <mt:if name="blog_id">
+                                    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+            </mt:if>
+                                    <input type="hidden" name="do_search" value="1" />
+                                    <input type="hidden" name="quicksearch" value="1" />
+                                    <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+                                    <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                                    <button onclick="document.quicksearch.submit(); return false;"><__trans phrase="Search"></button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
         </mt:if>
-                <!-- View Link -->
-                    <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a></li>
-                </ul>
-    </mt:if>
-            <!-- Serarch  -->
-                <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
-                    <input type="hidden" name="__mode" value="search_replace" />
-                    <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
-    <mt:if name="blog_id">
-                    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
-    </mt:if>
-                    <input type="hidden" name="do_search" value="1" />
-                    <input type="hidden" name="quicksearch" value="1" />
-                    <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
-                    <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                    <a href="javascript:void(0)" onclick="document.quicksearch.submit(); return false;" class="search-submit"><img src="<$mt:var name="static_uri"$>images/search-submit.png" alt="Search" /></a>
-                </form>
-
+        <mt:if name="compose_menus">
+                    <div id="<mt:var name="scope_type">-nav-compose-menu" class="nav-compose">
+                        <ul>
+                        <mt:loop name="compose_menus">
+                            <mt:loop name="menus">
+            <mt:if name="__first__">
+                            <li>
+                                <em>
+                                    <a href="<mt:var name="link">" class="fav-actions-root-link">
+                                        <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
+                                    </a>
+                                </em>
+                                <div id="fav-actions" class="fav-actions hidden">
+                                <ul>
+            </mt:if>
+                                    <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
+            <mt:if name="__last__">
+                                </ul>
+                                </div>
+                            </li>
+            </mt:if>
+                            </mt:loop>
+                        </mt:loop>
+                        </ul>
+                    </div>
+        </mt:if>
+                </div>
+    </mt:unless>
             </div><!-- /menu-bar -->
 </mt:if>
         </div><!-- /header -->
@@ -281,45 +315,6 @@
         </mt:if>
     </mt:unless>
 </mt:if>
-
-<!-- EXAMPLES START -->
-<mt:ignore>
-    variable layout
-
-    compose_menus --- (Array)
-                   |
-                   +--- root_label
-                   +--- menus --- (Array)
-                               |
-                               +--- label
-                               +--- link
-</mt:ignore>
-
-<mt:if name="compose_menus">
-<div id="<mt:var name="scope_type">-nav-compose-menu" class="nav-compose">
-    <ul>
-    <mt:loop name="compose_menus">
-        <mt:loop name="menus">
-            <mt:if name="__first__">
-        <li>
-            <em>
-                <a href="<mt:var name="link">" class="hoge">
-                    <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
-                </a>
-            </em>
-            <ul class="compose-actions hidden">
-            </mt:if>
-                <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
-            <mt:if name="__last__">
-            </ul>
-        </li>
-            </mt:if>
-        </mt:loop>
-    </mt:loop>
-    </ul>
-</div>
-</mt:if>
-<!-- EXAMPLES END -->
 
         <!-- Content  -->
             <div id="content">

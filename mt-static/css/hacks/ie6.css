@@ -65,10 +65,10 @@ body {
     background: transparent url(../../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
 }
 
-.website a #brand span {
+.website #brand a span {
     background-image: url(../../images/logo/movable-type-brand-logo-website.png);
 }
-.system a #brand span {
+.system #brand a span {
     background-image: url(../../images/logo/movable-type-brand-logo-system.png);
 }
 
@@ -182,7 +182,7 @@ html#dialog {
 .msg, 
 .plugin, 
 .theme, 
-.field-content ul, 
+.field-content ul,
 .listing-screen .actions-bar, 
 #editor .editor-header, 
 .widget, 
