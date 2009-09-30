@@ -14,11 +14,10 @@ function returnSelectedTheme(ok, id) {
         var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
         var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];
         parent.jQuery('#<mt:var name="imagefield" escape="js">').empty().append(
-            $('<img />').attr({
-                src: themes[id]['thumb'],
-                width: themes[id]['thumb_w'],
-                height: themes[id]['thumb_h']
-        }));
+            '<img src="' + themes[id]['thumb']
+                + '" width="' + themes[id]['thumb_w']
+                + '" height="' + themes[id]['thumb_h'] + '" />'
+        );
 
         if (el_id && el_name) {
             el_id.value = id;
