@@ -95,7 +95,7 @@ function init() {
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
-        <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onchange="dirify_blog_name(this)"/>
+        <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)"/>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_set_publish_paths">
