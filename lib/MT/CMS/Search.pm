@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Search.pm 4448 2009-09-28 06:36:15Z takayama $
+# $Id: Search.pm 4464 2009-09-29 12:06:58Z fumiakiy $
 package MT::CMS::Search;
 
 use strict;
@@ -555,20 +555,25 @@ sub do_search_replace {
         }
 
         my @terms;
-        # MT::Object doesn't like multi-term hashes within arrays
-        if (%terms) {
-        	for my $key (keys %terms) {
-        		push(@terms, { $key => $terms{$key} });
-        	}
-        	push(@terms, '-and');
+        if ( $is_regex ) {
+            @terms = %terms;
         }
-        my @col_terms;
-        my $query_string = "%$plain_search%";
-        for my $col (@cols) {
-            push(@col_terms, { $col => { like => $query_string } }, '-or' );
+        else {
+            # MT::Object doesn't like multi-term hashes within arrays
+            if (%terms) {
+            	for my $key (keys %terms) {
+            		push(@terms, { $key => $terms{$key} });
+            	}
+            	push(@terms, '-and');
+            }
+            my @col_terms;
+            my $query_string = "%$plain_search%";
+            for my $col (@cols) {
+                push(@col_terms, { $col => { like => $query_string } }, '-or' );
+            }
+            delete $col_terms[$#col_terms];
+            push(@terms, \@col_terms);
         }
-        delete $col_terms[$#col_terms];
-        push(@terms, \@col_terms);
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
@@ -582,7 +587,7 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
-                $iter = $class->load_iter( \@terms, \%args ) or die $class->errstr;
+                $iter = $class->load_iter( @terms ? \@terms : undef, \%args ) or die $class->errstr;
             }
             else {
 
@@ -899,3 +904,4 @@ sub _load_template {
 }
 
 1;
+__END__
