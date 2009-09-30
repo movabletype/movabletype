@@ -119,6 +119,13 @@ sub save {
     my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
 
     if ( $type eq 'blog' ) {
+        my $subdomain = $q->param('site_url_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        my $path = $q->param('site_url_path');
+        if ( $subdomain || $path ) {
+            $values{site_url} = "$subdomain/::/$path";
+        }
+
         unless ( $author->is_superuser
             || ( $perms && $perms->can_do('save_all_settings_for_blog') ) )
         {
