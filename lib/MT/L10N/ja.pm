@@ -4072,7 +4072,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
 	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
 	'[_1] Assets' => '[_1]アイテム',
-	'Add New' => '新規追加',
 	'Remove this asset.' => 'アイテム削除',
 	'No asset(s) associated with this [_1]' => '[_1]関連アイテムはありません。',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていないブログ記事への変更は失われます。',
