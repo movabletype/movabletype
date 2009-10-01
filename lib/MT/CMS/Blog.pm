@@ -117,7 +117,9 @@ sub edit {
                 $param->{archive_url} = $obj->archive_url;
                 my @raw_archive_url = $obj->raw_archive_url; 
                 if ( 2 == @raw_archive_url ) {
-                    $param->{archive_url_subdomain} = $raw_archive_url[0];
+                    my $subdomain = $raw_archive_url[0];
+                    $subdomain =~ s/\.$//;
+                    $param->{archive_url_subdomain} = $subdomain;
                     $param->{archive_url_path} = $raw_archive_url[1];
                 }
                 $param->{archive_path} = $obj->column('archive_path');
@@ -332,8 +334,10 @@ sub edit {
     } else {
         my @raw_site_url = $obj->raw_site_url; 
         if ( 2 == @raw_site_url ) {
+            my $subdomain = $raw_site_url[0];
+            $subdomain =~ s/\.$//;
             $param->{site_url} = $obj->site_url;
-            $param->{site_url_subdomain} = $raw_site_url[0];
+            $param->{site_url_subdomain} = $subdomain;
             $param->{site_url_path} = $raw_site_url[1];
         }
         else {
@@ -2033,12 +2037,14 @@ sub cfg_prefs_save {
     }
     my $subdomain = $app->param('site_url_subdomain');
     $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    $subdomain =~ s/\.{2,}/\./g;
     my $path = $app->param('site_url_path');
     if ( $subdomain || $path ) {
         $blog->site_url("$subdomain/::/$path");
     }
     $subdomain = $app->param('archive_url_subdomain');
     $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    $subdomain =~ s/\.{2,}/\./g;
     $path = $app->param('archive_url_path');
     if ( $subdomain || $path ) {
         $blog->archive_url("$subdomain/::/$path");
