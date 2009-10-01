@@ -105,7 +105,13 @@
     <mt:if name="scope_type" eq="user">
                         <li id="user-dashboard" class="current user"><em><__trans phrase="User Dashboard"></em></li>
     <mt:elseif name="scope_type" eq="system">
-                        <li id="system-overview" class="current system"><em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=0"><__trans phrase="System Overview"></a></em></li>
+                        <li id="system-overview" class="current system">
+        <mt:if name="can_access_overview">
+                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=0"><__trans phrase="System Overview"></a></em>
+        <mt:else>
+                            <em><__trans phrase="System Overview"></em>
+        </mt:if>
+                        </li>
     <mt:elseif name="scope_type" eq="website">
                         <li id="current-website" class="current">
         <mt:if name="curr_website_can_link">
@@ -132,14 +138,18 @@
 
                     <div class="selector">
                         <ul>
+    <mt:unless name="scope_type" eq="user">
                             <li class="user-dashboard">
                                 <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><__trans phrase="User Dashboard"></a>
                             </li>
-    <mt:if name="can_access_overview">
+    </mt:unless>
+    <mt:unless name="scope_type" eq="system">
+        <mt:if name="can_access_overview">
                             <li class="system-overview">
                                 <a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><__trans phrase="System Overview"></a>
                             </li>
-    </mt:if>
+        </mt:if>
+    </mt:unless>
                         </ul>
     <mt:if name="fav_website_loop">
     <mt:loop name="fav_website_loop">

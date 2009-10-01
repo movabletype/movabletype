@@ -2367,7 +2367,7 @@ sub build_blog_selector {
     $param->{load_selector_data} = 1;
     $param->{can_create_blog} = $auth->can_do('create_blog') && $blog;
     $param->{can_create_website} = $auth->can_do('create_website');
-    $param->{can_access_overview} = $auth->can_do('access_to_system_dashboard') && $app->view ne 'system';
+    $param->{can_access_overview} = $auth->can_do('access_to_system_dashboard');
 }
 
 sub build_menus {
