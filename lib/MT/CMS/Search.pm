@@ -622,10 +622,7 @@ sub do_search_replace {
         }
 
         my @terms;
-        if ( $is_regex ) {
-            @terms = %terms;
-        }
-        else {
+        if ( !$is_regex ) {
             # MT::Object doesn't like multi-term hashes within arrays
             if (%terms) {
             	for my $key (keys %terms) {
@@ -659,13 +656,13 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
-                $iter = $class->load_iter( @terms ? \@terms : undef, \%args ) or die $class->errstr;
+                $iter = $class->load_iter( @terms ? \@terms : \%terms, \%args ) or die $class->errstr;
             }
             else {
 
                 my @streams;
                 if ( $author->is_superuser ) {
-                    @streams = ( { iter => $class->load_iter( \@terms, \%args ) } );
+                    @streams = ( { iter => $class->load_iter( @terms ? \@terms : \%terms, \%args ) } );
                 }
                 else {
                     # Get an iter for each accessible blog
