@@ -6,6 +6,7 @@
 package MT::CMS::Blog;
 
 use strict;
+use MT::Util qw( dirify );
 
 sub edit {
     my $cb = shift;
@@ -2464,14 +2465,32 @@ sub clone {
     return $app->error( $app->translate("This action cannot clone website."))
         unless $blog->is_blog;
 
-    my $base_url = $blog->column('site_url') || $blog->name;
+    my ( $base_url, $base_url_subdomain, $base_url_path );
+    my @raw_site_url = $blog->raw_site_url; 
+    if ( 2 == @raw_site_url ) {
+        my $subdomain = $raw_site_url[0];
+        $subdomain =~ s/\.$//;
+        $base_url = $blog->site_url;
+        $base_url_subdomain = $subdomain;
+        $base_url_path = $raw_site_url[1];
+    }
+    else {
+        $base_url = $raw_site_url[0];
+    }
+    $base_url ||= dirify( $blog->name );
     $base_url =~ s/\/$//;
-    my $base_path = $blog->column('site_path') || $blog->name;
+    my $base_path = $blog->column('site_path') || dirify( $blog->name );
 
     $param->{'id'} = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
-      || 'Clone of ' . MT::Util::encode_html( $blog->name );
-    $param->{'site_url'} = defined $app->param('site_url') ? $app->param('site_url') : $base_url . '_clone';
+      || $app->translate('Clone of [_1]', $blog->name );
+    $param->{'site_url'} = defined $app->param('site_url')
+      ? $app->param('site_url')
+      : $base_url_path
+        ? $base_url_path . '_clone'
+        : $base_url_subdomain
+          ? $base_url_subdomain . '_clone'
+          : $base_url . '_clone';
     $param->{'site_path'} = defined $app->param('site_path') ? $app->param('site_path') : $base_path . '_clone';
 
     require File::Spec;
