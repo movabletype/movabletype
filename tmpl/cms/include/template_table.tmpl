@@ -80,6 +80,9 @@
         <mt:unless name="screen_id" eq="search-replace">
                 <th class="linked-template si"><img src="<mt:var name="static_uri">images/status_icons/linked.gif" alt="<__trans phrase="Linked Template">" title="<__trans phrase="Linked Template">" width="17" height="9" /></th>
         </mt:unless>
+        <mt:unless name="blog_view">
+                <th class="view"><__trans phrase="View"></th>
+        </mt:unless>
             </tr>
         </thead>
         <tbody>
@@ -142,6 +145,17 @@
     </mt:if>
     <mt:unless name="screen_id" eq="search-replace">
                 <td class="linked-template si status-<mt:if name="linked_file">linked<mt:else>unlinked</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="linked_file"><__trans phrase="Yes"><mt:else><__trans phrase="No"></mt:if>" width="9" height="9" <mt:if name="linked_file">title="<mt:var name="linked_file" escape="html">"</mt:if> /></td>
+    </mt:unless>
+    <mt:unless name="blog_view">
+                <td class="view">
+            <mt:if name="outfile">
+                <mt:if name="published_url">
+                    <a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a>
+                </mt:if>
+            <mt:else>
+                    <span><__trans phrase="-"></span>
+            </mt:if>
+                </td>
     </mt:unless>
             </tr>
     <mt:if __last__>
