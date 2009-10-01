@@ -49,8 +49,22 @@ class Blog extends BaseObject
         return $blogs;
     }
 
+    function is_site_path_absolute() {
+        $raw_path = $this->blog_site_path;
+        if ( 1 == preg_match( '/^\//', $raw_path ) )
+            return true;
+        if ( 1 == preg_match( '/^[a-zA-Z]:\\/', $raw_path ) )
+            return true;
+        if ( 1 == preg_match( '/^\\\\[a-zA-Z0-9\.]+/', $raw_path ) )
+            return true;
+        return false;
+    }
+
     function site_path() {
         $site = $this->website();
+        if ( $this->is_site_path_absolute )
+            return $site;
+
         $path = '';
         if (!empty($site))
             $path = $site->blog_site_path . DIRECTORY_SEPARATOR;
@@ -61,9 +75,22 @@ class Blog extends BaseObject
     function site_url() {
         $site = $this->website();
         $path = '';
-        if (!empty($site))
-            $path = $site->blog_site_url;
-        $path = $path . $this->blog_site_url;
+        if (empty($site)) {
+            $path = $this->blog_site_url;
+        }
+        else {
+            preg_match('/^(https?):\/\/(.+)\/$/', $site->blog_site_url, $matches);
+            if ( count($matches > 1 ) ) {
+                $site_url = preg_split( '/\/::\//', $this->blog_site_url );
+                if ( count($site_url > 0 ) )
+                    $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                else
+                    $path = $site->blog_site_url . $this->blog_site_url;
+            }
+            else {
+                $path = $site->blog_site_url . $this->blog_site_url;
+            }
+        }
         return $path;
     }
 
