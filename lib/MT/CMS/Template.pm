@@ -2600,7 +2600,7 @@ sub list_widget {
         object_label   => $app->translate('Widget Template'),
         object_label_plural  => $app->translate('Widget Templates'),
         template_type_label  => $app->translate('Widget Templates'),
-        $blog_id ? ( blog_view => 1, blog_id => $blog_id ) : (),
+        blog_view => 1,
         exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
         exists($opt{error}) ? ( error => $opt{error} ) : (),
         exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()
