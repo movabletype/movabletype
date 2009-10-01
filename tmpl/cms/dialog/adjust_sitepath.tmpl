@@ -117,8 +117,15 @@ function init() {
                 <mt:if name="old_site_url">
                 <input type="hidden" name="old_site_url_<mt:var name="id" escape="html">" id="old_site_url_<mt:var name="id" escape="html">" value="<mt:var name="old_site_url" escape="html">" />
                 </mt:if>
-                <span class="parent_site_url_<mt:var name="id">">&nbsp</span>
+                <span class="parent_site_url_<mt:var name="id">">&nbsp;</span>
+                <mt:if name="old_site_url_subdomain">
+                <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url_subdomain" escape="html">" />
+                </mt:if>
+                <mt:if name="old_site_url_path">
+                <input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url_path" escape="html">" />
+                <mt:else>
                 <input type="text" name="site_url_<mt:var name="id" escape="html">" id="site_url_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url" escape="html">" />
+                </mt:if>
             </mtapp:setting>
             <mtapp:setting
                 id="site_path"
@@ -126,7 +133,7 @@ function init() {
                 <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
                 </mt:if>
-                <span class="parent_site_path_<mt:var name="id">">&nbsp</span>
+                <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
                 <input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog_path_field extra-path" value="<$mt:var name="old_site_path" escape="html"$>" />
             </mtapp:setting>
             <mt:if name="old_archive_url">
@@ -134,7 +141,7 @@ function init() {
                     id="archive_url"
                     label="<__trans phrase="Archive URL">">
                     <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
-                    <span class="parent_site_url_<mt:var name="id">">&nbsp</span>
+                    <span class="parent_site_url_<mt:var name="id">">&nbsp;</span>
                     <input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="archive_url extra-path" value="<mt:var name="old_archive_url" escape="html">" />
                 </mtapp:setting>
             </mt:if>
@@ -143,7 +150,7 @@ function init() {
                     id="archive_path"
                     label="<__trans phrase="Archive Path">">
                     <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
-                    <span class="parent_site_path_<mt:var name="id">">&nbsp</span>
+                    <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
                     <input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog_path_field extra-path" value="<mt:var name="old_archive_path" escape="html">" />
                 </mtapp:setting>
             </mt:if>

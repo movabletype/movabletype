@@ -1362,13 +1362,20 @@ sub adjust_sitepath {
         my $old_site_url  = scalar $q->param("old_site_url_$id");
         my $site_path     = scalar $q->param("site_path_$id") || q();
         my $site_url      = scalar $q->param("site_url_$id") || q();
+        my $site_url_path = scalar $q->param("site_url_path_$id") || q();
+        my $site_url_subdomain = scalar $q->param("site_url_subdomain_$id") || q();
         my $parent_id     = scalar $q->param("parent_id_$id") || undef;
         $blog->site_path($site_path);
-        $blog->site_url($site_url);
         $blog->parent_id($parent_id)
             if $blog->is_blog() && $parent_id;
+        if ( $site_url_path ) {
+            $blog->site_url("$site_url_subdomain/::/$site_url_path");
+        }
+        else {
+            $blog->site_url($site_url);
+        }
 
-        if ( $site_url || $site_path ) {
+        if ( $site_url || $site_url_path || $site_path ) {
             $app->print_encode( $app->translate(
                     "Changing Site Path for the blog '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ), $blog->id
@@ -1386,9 +1393,16 @@ sub adjust_sitepath {
         my $old_archive_url  = scalar $q->param("old_archive_url_$id");
         my $archive_path     = scalar $q->param("archive_path_$id") || q();
         my $archive_url      = scalar $q->param("archive_url_$id") || q();
+        my $archive_url_path = scalar $q->param("archive_url_path_$id") || q();
+        my $archive_url_subdomain = scalar $q->param("archive_url_subdomain_$id") || q();
         $blog->archive_path($archive_path);
-        $blog->archive_url($archive_url);
-        if (   ( $old_archive_url && $archive_url )
+        if ( $archive_url_path ) {
+            $blog->archive_url("$archive_url_subdomain/::/$archive_url_path");
+        }
+        else {
+            $blog->archive_url($archive_url);
+        }
+        if (   ( $old_archive_url && ( $archive_url || $archive_url_path ) )
             || ( $old_archive_path && $archive_path ) )
         {
             $app->print_encode( "\n"
@@ -1755,22 +1769,31 @@ sub dialog_adjust_sitepath {
 
     foreach my $blog (@blogs) {
         if ( $blog->is_blog() ) {
-            push @blogs_loop,
+            my $params = 
               {
                 name          => $blog->name,
                 id            => $blog->id,
                 old_site_path => $blog->column('site_path'),
-                old_site_url  => $blog->column('site_url'),
                 $blog->column('archive_path')
-                ? ( old_archive_path => $blog->column('archive_path') )
-                : (),
-                $blog->column('archive_url')
-                ? ( old_archive_url => $blog->column('archive_url') )
-                : (),
+                  ? ( old_archive_path => $blog->column('archive_path') )
+                  : (),
                 $blog->column('parent_id')
-                ? ( parent_id    => $blog->parent_id )
-                : (),
+                  ? ( parent_id    => $blog->parent_id )
+                  : (),
               };
+            $params->{old_site_url} = $blog->site_url;
+            my @raw_site_url = $blog->raw_site_url; 
+            if ( 2 == @raw_site_url ) {
+                $params->{old_site_url_subdomain} = $raw_site_url[0];
+                $params->{old_site_url_path}      = $raw_site_url[1];
+            }
+            $params->{old_archive_url} = $blog->archive_url if $blog->column('archive_url');
+            my @raw_archive_url = $blog->raw_archive_url; 
+            if ( 2 == @raw_archive_url ) {
+                $params->{old_archive_url_subdomain} = $raw_archive_url[0];
+                $params->{old_archive_url_path}      = $raw_archive_url[1];
+            }
+            push @blogs_loop, $params;
         } else {
             push @website_loop,
               {
