@@ -343,6 +343,7 @@ sub search_replace {
 
 sub do_search_replace {
     my $app     = shift;
+    my ( $param ) = @_;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
@@ -583,7 +584,12 @@ sub do_search_replace {
                 }
             };
         } else {
-            if ( $blog_id
+            my $terms = $param->{terms};
+            my $args = $param->{args};
+            if ( defined $terms && defined $args ) {
+                $iter = $class->load_iter( $terms, $args ) or die $class->errstr;
+            }
+            elsif ( $blog_id
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {

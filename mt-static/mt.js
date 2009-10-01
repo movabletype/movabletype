@@ -1033,7 +1033,7 @@ Datasource = new Class(Object, {
         args = args.replace(/&?offset=\d+/, '');
         args = 'search=' + escape(str) + (args ? '&' + args : '') + '&json=1';
         if (this.type) {
-            args = args.replace(/&?_type=\w+/, '');
+            args = args.replace(/&_type=\w+/, '');
             args += '&_type=' + this.type;
         }
         if (this.searchtype) {
@@ -1106,7 +1106,7 @@ Datasource = new Class(Object, {
         args = args.replace(/&?offset=\d+/, '');
         args = 'offset=' + offset + (args ? '&' + args : '') + '&json=1';
         if (this.type) {
-            args = args.replace(/&?_type=\w+/, '');
+            args = args.replace(/&_type=\w+/, '');
             args = args + '&_type=' + this.type;
         }
 

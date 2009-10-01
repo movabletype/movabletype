@@ -322,7 +322,7 @@ sub listing {
     if ( my $search = $app->param('search') ) {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
-            my $search_param = $app->do_search_replace();
+            my $search_param = $app->do_search_replace( { terms => $terms, args => $args } );
             if ($hasher) {
                 my $data = $search_param->{object_loop};
                 if ( $data && @$data ) {

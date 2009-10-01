@@ -1329,7 +1329,9 @@ sub dialog_select_author {
         $row->{description} = $row->{nickname};
     };
 
-    my $entry_type = $app->param('entry_type') if defined $app->param('entry_type');
+    my %hash = $app->param_hash();
+
+    my $entry_type = $app->param('entry_type') if $app->param('entry_type');
     $entry_type ||= 'entry';
 
     my $blog = $app->blog;
