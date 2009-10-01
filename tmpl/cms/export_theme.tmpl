@@ -130,6 +130,7 @@
 /* <![CDATA[ */
 jQuery.mtCheckbox();
 
+var existing_ids = <mt:Var name="existing_ids" to_json="1" />;
 jQuery(function() {
     function is_valid_basename(name) {
         return name.match(/^[a-zA-Z][a-zA-Z0-9_-]*$/);
@@ -137,8 +138,20 @@ jQuery(function() {
     function is_valid_version(name) {
         return name.match(/^[\w\._-]+$/);
     }
+    function is_duplicated_basename() {
+        var current_id = jQuery('#theme_id').val();
+        var destination = jQuery('#output').val();
+        return (existing_ids[current_id] && ( destination == 'themedir' ));
+    }
     jQuery.validator.addMethod('basename', function(value, element) {
         return is_valid_basename(value);
+    });
+    jQuery.validator.addMethod('duplicate', function(value, element) {
+        return !is_duplicated_basename();
+    });
+    jQuery.validator.addMethod('duplicate_output', function(value, element) {
+        jQuery('#theme_settings').validate().element( "#theme_id" );
+        return 1;
     });
     jQuery.validator.addMethod('version', function(value, element) {
         return is_valid_version(value);
@@ -148,17 +161,22 @@ jQuery(function() {
         rules: {
             theme_name: 'required',
             theme_id: {
-                basename: true
+                basename: true,
+                duplicate: true
             },
             theme_author_name: 'required',
             theme_version: {
                 version: true
+            },
+            output: {
+                duplicate_output: true
             }
         },    
         messages: {
             theme_name: '<__trans phrase="You must set Theme Name." escape="singlequotes">',
             theme_id: {
-                basename: '<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">'
+                basename: '<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">',
+                duplicate: '<__trans phrase="Cannot install new theme with existing (and protected) theme's basename." escape="singlequotes">'
             },
             theme_author_name: '<__trans phrase="You must set Author Name." escape="singlequotes">',
             theme_version: {

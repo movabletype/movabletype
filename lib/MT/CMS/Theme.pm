@@ -265,6 +265,12 @@ sub export {
             id    => 'download.' . $arc->{key},
         };
     }
+    my $all_themes = MT::Theme->load_all_themes();
+    $param{existing_ids} = {
+        map { $_->id => 1 }
+        grep { $_->{type} ne 'package' || $_->{protected} }
+        values %$all_themes
+    };
     $param{output_methods} = \@output_methods;
     $param{select_output_method} = scalar @output_methods > 1 ? 1 : 0;
     $param{exporters} = $exporters;
@@ -397,6 +403,7 @@ sub do_export {
             $theme_dir,
         ));
     }
+
     if ( $output eq 'themedir' && $fmgr->exists($output_path) ) {
         if ( $q->param('overwrite_yes') ) {
             use File::Path 'rmtree';
