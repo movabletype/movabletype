@@ -639,7 +639,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme element \'[_1]\' is too old for this environment.' => '次の項目が、この環境では古すぎます: [_1]',
 
 ## lib/MT/Theme/StaticFiles.pm
-	'List the name of one directory to be included in your theme on each line.' => 'ディレクトリ名を一行づつ記述してください。',
+	'List the name of one directory to be included in your theme on each line.' => 'ディレクトリ名を一行ずつ記述してください。',
 
 ## lib/MT/Theme/TemplateSet.pm
 	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'テンプレートセット([_1]テンプレート, [_2]ウィジェット, [_3]ウィジェットセット)',
@@ -3723,7 +3723,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Folder Name' => 'フォルダ名',
 
 ## tmpl/cms/include/theme_exporters/static_files.tmpl
-	'Files types that will be included in the theme are: [_1].' => 'テーマに含められるファイルの種類: [_1]',
+	'Files types that will be included in the theme are: [_1].' => '対応するファイルの種類: [_1]',
 	'Included Directories' => '含むディレクトリ',
 	'List the directories that contain the static files that you want to be included in your theme.' => 'テーマに入れたいファイルを含むディレクトリを記入してください。',
 
