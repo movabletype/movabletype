@@ -224,7 +224,10 @@ sub core_search_apis {
                         && $app->param('filter_val')
                         && $app->param('filter') eq 'class'
                         && $app->param('filter_val') eq 'image' ) ? 'image' : '*';
-                $terms->{blog_id} = $blog_id if $blog_id;
+                if ( !$blog_id ) {
+                    $terms->{blog_id} = '0';
+                    $args->{not}{blog_id} = 1;
+                }
             }
         },
         'log' => {
@@ -561,6 +564,21 @@ sub do_search_replace {
         if (exists $api->{setup_terms_args}) {
             my $code = $app->handler_to_coderef($api->{setup_terms_args});
             $code->(\%terms, \%args, $blog_id);
+            if ( !exists $terms{blog_id} ) {
+                if ( $blog_id ) {
+                    require MT::Blog;
+                    my $blog = MT::Blog->load($blog_id) if $blog_id;
+                    if ($blog && !$blog->is_blog &&
+                        $author->permissions($blog_id)->has('manage_member_blogs')) {
+                        my @blogs = MT::Blog->load({ parent_id => $blog->id });;
+                        my @blog_ids = map { $_->id } @blogs;
+                        push @blog_ids, $blog_id;
+                        $terms{blog_id} = \@blog_ids;
+                    } else {
+                        $terms{blog_id} = $blog_id;
+                    }
+                }
+            }
         }
         else {
             if ( $blog_id ) {
