@@ -40,6 +40,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 function togglePerms(c, a) {
+    permsChanged = "yes";
     if (a == '') {
         return;
     }
@@ -75,14 +76,10 @@ function checkChanged() {
     var roleName = getByID('name').value;
     if(permsChanged == "yes") {
         if(roleName == orig_roleName) {
-            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">'); 
-        } else {
-            doSubmitForm(document.role, 'save_role');
+            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">');
         }
-    } else {
-        doSubmitForm(document.role, 'save_role');
     }
-    return false;
+    return true;
 }
 
 function getParentByClass(n, c) {
@@ -94,49 +91,20 @@ function getParentByClass(n, c) {
     return result;
 }
 
-function handleClick(e) {
-    e = e || event;
-    var targ = e.target || e.srcElement;
-    if (!targ || !targ.nodeName) {
-        return;
-    }
-    if (targ.nodeName.toLowerCase() == 'label') {
-        if (targ.getAttribute('for'))
-            targ = getByID(targ.getAttribute('for'));
-        else {
-           var inputs = targ.getElementsByTagName('input');
-           targ = inputs[0];
-           permsChanged = "yes";
-        }
-    }
-    if (targ.className.match(/administer_blog/)) {
-        permContainer = getParentByClass(targ, 'permission-list');
-        rectify(permContainer, 1);
-    }
-}
-
 function init() {
     jQuery('.cb').each(function(){
         if (this.checked)
             this.onclick();
     });
+    permsChanged = "no";
 }
-
-jQuery(function () {
-    jQuery('button.save').click(function () {
-        $("input:checked").each(function(){
-            this.disabled = false;
-        });
-    });
-});
-
 /* ]]> */
 </script>
 
-<div id="edit-role" onclick="handleClick(event)">
+<div id="edit-role">
 
 <mt:if name="id">
-<form name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+<form id="role" name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
 <mt:else>
 <form id="role" name="role" method="post" action="<mt:var name="script_url">">
 </mt:if>
@@ -285,13 +253,13 @@ jQuery(function () {
 
 </div>
 
-
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function () {
+<mt:setvarblock name="jq_js_include" append="1">
     init();
-});
-/* ]]> */
-</script>
+    jQuery('button.save').submit(function () {
+        $("input:checked").each(function(){
+            this.disabled = false;
+        });
+    });
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
