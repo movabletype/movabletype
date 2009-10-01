@@ -1692,7 +1692,16 @@ sub core_menus {
             order             => 100,
             mode              => "search_replace",
             view              => [ "blog", 'website', 'system' ],
-            permit_action     => "use_tools:search",
+            condition         => sub {
+                return 1 if $app->user->is_superuser;
+                if ( $app->param('blog_id') ) {
+                    my $perms = $app->user->permissions( $app->param('blog_id') );
+                    return 0 unless $perms;
+                    return 0 unless $perms->permissions;
+                    return 0 unless $perms->can_do('use_tools:search');
+                }
+                return 1;
+            }
         },
         'tools:plugins' => {
             label             => "Plugins",

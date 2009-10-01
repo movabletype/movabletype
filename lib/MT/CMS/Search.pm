@@ -27,7 +27,15 @@ sub core_search_apis {
     my $types = {
         'entry' => {
             'order' => 100,
-            'permission' => 'create_post,publish_post,edit_all_posts',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('create_post') ||
+                    $author->permissions($blog_id)->can_do('publish_post') ||
+                    $author->permissions($blog_id)->can_do('edit_all_posts');
+                return 0;
+            },
             'handler' => '$Core::MT::CMS::Entry::build_entry_table',
             'label' => 'Entries',
             'perm_check' => sub {
@@ -54,7 +62,16 @@ sub core_search_apis {
         },
         'comment' => {
             'order' => 200,
-            'permission' => 'publish_post,create_post,edit_all_posts,manage_feedback',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('create_post') ||
+                    $author->permissions($blog_id)->can_do('publish_post') ||
+                    $author->permissions($blog_id)->can_do('edit_all_posts');
+                    $author->permissions($blog_id)->can_do('manage_feedback');
+                return 0;
+            },
             'handler' => '$Core::MT::CMS::Comment::build_comment_table',
             'label' => 'Comments',
             'perm_check' => sub {
@@ -75,7 +92,16 @@ sub core_search_apis {
         },
         'ping' => {
             'order' => 300,
-            'permission' => 'create_post,publish_post,edit_all_posts,manage_feedback',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('create_post') ||
+                    $author->permissions($blog_id)->can_do('publish_post') ||
+                    $author->permissions($blog_id)->can_do('edit_all_posts');
+                    $author->permissions($blog_id)->can_do('manage_feedback');
+                return 0;
+            },
             'label' => 'TrackBacks',
             'handler' => '$Core::MT::CMS::TrackBack::build_ping_table',
             'perm_check' => sub {
@@ -105,7 +131,13 @@ sub core_search_apis {
         },
         'page' => {
             'order' => 400,
-            'permission' => 'manage_pages',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('manage_pages') ||
+                return 0;
+            },
             'label' => 'Pages',
             'handler' => '$Core::MT::CMS::Entry::build_entry_table',
             'perm_check' => sub {
@@ -127,8 +159,13 @@ sub core_search_apis {
         },
         'template' => {
             'order'             => 500,
-            'permission'        => 'edit_templates',
-            'system_permission' => 'edit_templates',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('edit_templates') ||
+                return 0;
+            },
             'handler' => '$Core::MT::CMS::Template::build_template_table',
             'label'         => 'Templates',
             'perm_check' => sub {
@@ -158,7 +195,13 @@ sub core_search_apis {
         },
         'asset' => {
             'order' => 600,
-            'permission' => 'edit_assets',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('edit_assets') ||
+                return 0;
+            },
             'label' => 'Assets',
             'handler' => '$Core::MT::CMS::Asset::build_asset_table',
             'perm_check' => sub {
@@ -186,8 +229,13 @@ sub core_search_apis {
         },
         'log' => {
             'order' => 700,
-            'permission'        => "view_blog_log",
-            'system_permission' => "view_log",
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id;
+                return 1 if
+                    $author->permissions($blog_id)->can_do('view_blog_log') ||
+                return 0;
+            },
             'handler' => '$Core::MT::CMS::Log::build_log_table',
             'label' => 'Activity Log',
             'perm_check' => sub {
@@ -210,8 +258,13 @@ sub core_search_apis {
         },
         'author' => {
             'order' => 800,
-            'system_permission' => 'administer',
-            'permission' => 'administer_blog',
+            'condition' => sub {
+                return 1 if $author->is_superuser;
+                return 1 if !$blog_id && $author->permissions(0)->can_do('administer');
+                return 1 if
+                    $author->permissions($blog_id)->can_do('administer_blog') ||
+                return 0;
+            },
             'label' => 'Users',
             'handler' => '$Core::MT::CMS::User::build_author_table',
             'perm_check' => sub {
@@ -251,6 +304,13 @@ sub core_search_apis {
         'blog' => {
             'order' => 900,
             'label' => 'Blogs',
+            'condition' => sub {
+                return 0 if $blog_id;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('administer');
+                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 0;
+            },
             'handler' => '$Core::MT::CMS::Blog::build_blog_table',
             'perm_check' => sub {
                 return 1 if $author->is_superuser ||
@@ -276,7 +336,13 @@ sub core_search_apis {
         },
         'website' => {
             'order' => 1000,
-            'system_permission' => 'administer,edit_templates',
+            'condition' => sub {
+                return 0 if $blog_id;
+                return 1 if $author->is_superuser;
+                return 1 if $author->permissions(0)->can_do('administer');
+                return 1 if $author->permissions(0)->can_do('edit_template');
+                return 0;
+            },
             'label' => 'Websites',
             'handler' => '$Core::MT::CMS::Website::build_website_table',
             'perm_check' => sub {
@@ -309,7 +375,7 @@ sub core_search_apis {
 sub search_replace {
     my $app = shift;
     $app->return_to_dashboard( redirect => 1 )
-        unless $app->can_do('use_tools:search');
+        if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
     my $param = do_search_replace($app, @_) or return;
     my $blog_id = $app->param('blog_id');
