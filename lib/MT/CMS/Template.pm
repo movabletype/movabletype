@@ -659,7 +659,7 @@ sub list {
         my ( $obj, $row ) = @_;
         my $template_type;
         my $type = $row->{type} || '';
-        my $tblog = $obj->blog_id == $blog->id ? $blog : MT::Blog->load( $obj->blog_id );
+        my $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
             # populate context with templatemap loop
@@ -685,8 +685,8 @@ sub list {
         else {
             $template_type = 'system';
         }
-        $row->{use_cache} = ( $tblog->include_cache && ($obj->cache_expire_type || 0) != 0 )  ? 1 : 0;
-        $row->{use_ssi} = ( $tblog->include_system && $obj->include_with_ssi )  ? 1 : 0;
+        $row->{use_cache} = ( $tblog && $tblog->include_cache && ($obj->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_ssi} = ( $tblog && $tblog->include_system && $obj->include_with_ssi )  ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
