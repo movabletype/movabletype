@@ -1,8 +1,0 @@
-lib/Zemanta/Product.pm
-lib/Zemanta/Basic.pm
-lib/Zemanta/Utils.pm
-tmpl/blog_config.tmpl
-json-proxy.cgi
-Zemanta.pl
-MANIFEST
-INSTALL
