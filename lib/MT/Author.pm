@@ -193,6 +193,8 @@ sub commenter_status {
     return PENDING if !$perm;
     return BANNED if $perm->is_restricted('comment');
     return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
+    return APPROVED if MT->config->SingleCommunity
+      && ( AUTHOR() == $this->type ) && $this->is_active();
     return PENDING;
 }
 
