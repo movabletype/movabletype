@@ -3620,7 +3620,7 @@ sub _include_module {
     }
 
     # Try to read from cache
-    my $cache_expire_type;
+    my $cache_expire_type = 0;
     my $cache_enabled =
          $blog
       && $blog->include_cache
