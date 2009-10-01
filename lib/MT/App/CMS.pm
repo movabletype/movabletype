@@ -326,7 +326,7 @@ sub core_widgets {
             view     => 'website',
         },
         favorite_blogs => {
-            label    => 'Favorite Websites and Blogs',
+            label    => 'Websites and Blogs',
             template => 'widget/favorite_blogs.tmpl',
             handler  => "${pkg}Dashboard::favorite_blogs_widget",
             singular => 1,
