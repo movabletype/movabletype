@@ -212,6 +212,11 @@ sub this_is_you_widget {
     }
     $param->{author_userpic_width}  = 50;
     $param->{author_userpic_height} = 50;
+    my @num_vars = qw(
+        comment_count draft_page_count publsh_page_count
+        publish_count draft_count
+    );
+    map { $param->{$_} = 0 if !defined $param->{$_} } @num_vars;
 }
 
 sub favorite_blogs_widget {
@@ -837,7 +842,10 @@ sub _build_favorite_websites_data {
             if ( $perms && $perms->can_do('apply_theme') );
         $row->{can_access_to_comment_list} = 1
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
-
+        my @num_vars = qw(
+            website_blog_count website_page_count website_comment_count
+        );
+        map { $row->{$_} = 0 if !defined $row->{$_} } @num_vars;
         push @param, $row;
     }
 
@@ -964,6 +972,10 @@ sub _build_favorite_blogs_data {
             if ( $user->is_superuser ) || $perms->can_do('view_feedback');
         $row->{can_access_to_blog_setting_screen} = 1
             if ( $perms && $perms->can_do('access_to_blog_config_screen') );
+        my @num_vars = qw(
+            blog_entry_count blog_page_count blog_comment_count
+        );
+        map { $row->{$_} = 0 if !defined $row->{$_} } @num_vars;
 
         push @param, $row;
     }

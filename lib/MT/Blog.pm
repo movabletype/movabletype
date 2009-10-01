@@ -365,7 +365,7 @@ sub theme {
 
 sub raw_site_url {
     my $blog = shift;
-    my $site_url = $blog->SUPER::site_url;
+    my $site_url = $blog->SUPER::site_url || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
         if ( $subdomain ne $site_url ) {
             return ( $subdomain, $path );
