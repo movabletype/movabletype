@@ -395,6 +395,28 @@ sub context_script {
     elsif ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=$blog_id";
     }
+ 
+    my $category = $ctx->stash('search_category');
+    $link .= "&category=$category" if $category;
+    
+    my $author = $ctx->stash('search_author');
+    $link .= "&author=$author" if $author;
+
+    my $year = $ctx->stash('search_year');
+    $link .= "&year=$year" if $year;
+
+    my $month = $ctx->stash('search_month');
+    $link .= "&month=$month" if $month;
+
+    my $day = $ctx->stash('search_day');
+    $link .= "&day=$day" if $day;
+
+    my $archive_type = $ctx->stash('search_archive_type');
+    $link .= "&archive_type=$archive_type" if $archive_type;
+
+    my $template_id = $ctx->stash('search_template_id');
+    $link .= "&template_id=$template_id" if $template_id;
+
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }

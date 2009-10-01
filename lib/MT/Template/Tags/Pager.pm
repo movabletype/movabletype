@@ -139,14 +139,6 @@ sub _hdlr_pager_link {
     my $limit = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
- 
-    my $category = $ctx->stash('search_category');
-    my $author = $ctx->stash('search_author');
-    my $year = $ctx->stash('search_year');
-    my $month = $ctx->stash('search_month');
-    my $day = $ctx->stash('search_day');
-    my $archive_type = $ctx->stash('search_archive_type');
-    my $template_id = $ctx->stash('search_template_id');
 
     my $link = $ctx->context_script($args);
 
@@ -159,16 +151,7 @@ sub _hdlr_pager_link {
         }
     }
     $link .= "limit=$limit";
-
-    #$link .= "&offset=$offset" if $offset;
-    $link .= "&category=$category" if $category;
-    $link .= "&author=$author" if $author;
     $link .= "&page=$page" if $page;
-    $link .= "&year=$year" if $year;
-    $link .= "&month=$month" if $month;
-    $link .= "&day=$day" if $day;
-    $link .= "&archive_type=$archive_type" if $archive_type;
-    $link .= "&template_id=$template_id" if $template_id;
 
     return $link;
 }
