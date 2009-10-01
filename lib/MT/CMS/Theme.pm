@@ -296,6 +296,10 @@ sub element_dialog {
         or return $app->error(
             $app->translate('Invalid request.')
         );
+    my $handler = MT->registry( theme_element_handlers => $exporter_id )
+        or return $app->error(
+            $app->translate('Invalid request.')
+        );
     my $exporter = MT->registry('theme_element_handlers', $exporter_id, 'exporter')
         or return $app->error(
             $app->translate('Invalid request.')
@@ -328,10 +332,9 @@ sub element_dialog {
         $element_param = \%element_param;
     }
     $setting ||= {};
-    my $exporter = MT->registry( theme_element_handlers => $exporter_id );
     my %param = (
         exporter_id  => $exporter_id,
-        label        => $exporter->{label},
+        label        => $handler->{label},
         template     => $tmpl,
         %$setting,
         %$element_param,
