@@ -3339,6 +3339,22 @@ body.preview-screen {
     margin-top: 5px;
 }
 
+#site_url-field .field-header, 
+#archive_url-field .field-header { 
+    margin-top: 8px;
+}
+
+div.site-url, 
+div.archive-url { 
+    line-height: 2.5;
+    margin: 0 0 5px;
+}
+
+span.subdomain, 
+span.extra-path { 
+    color: #7b7c7d;
+}
+
 /* -- System General Settings */
 input#system_debug_mode, 
 input#system_performance_logging_threshold { 

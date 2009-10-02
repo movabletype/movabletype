@@ -93,7 +93,7 @@ $.mtFavActions = function(options) {
  * mtCMSSearch
  *
  * Usage:
- *   jQuery.mtFavActions();
+ *   jQuery.mtCMSSearch();
  *
  */
 $.mtCMSSearch = function(options) {
@@ -110,6 +110,40 @@ $.mtCMSSearch = function(options) {
         if ($.fn.bgiframe) $('.fav-action').bgiframe();
     }
 };
+
+/*
+ * mtUseSubdmain
+ *
+ * Usage:
+ *   jQuery.mtUseSubdomain();
+ *
+ */
+$.mtUseSubdomain = function(options) {
+    $('.subdomain').hide();
+    $('#site_url-field :checkbox, #archive_url-field :checkbox').click(function() {
+        var $checkboxes = $(this);
+        if (this.checked) {
+            $checkboxes.attr('checked', true).parents('.field-content').find('.subdomain').show();
+        } else {
+            $checkboxes.removeAttr('checked').parents('.field-content').find('.subdomain').hide();
+        }
+    });
+};
+
+// $.fn.mtCheckboxOption = function() {
+//     return this.each(function() {
+//         var $checkbox = $(this).find(':checkbox');
+//         var id = $checkbox.attr('id');
+//         if (!$checkbox.attr('checked')) {
+//             $('div#'+id+'-option').hide();
+//         }
+//         $checkbox.click(function() {
+//             $('div#'+id+'-option').toggle();
+//         });
+//     });
+// };
+
+
 /*
  * mtCheckbox
  *

@@ -105,7 +105,10 @@ function init() {
         hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
         help_page="blog_settings_publishing"
         help_section="site_url">
-            <mt:var name="website_scheme">://<input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" size="20" class="<mt:if name="is_blog">extra-path</mt:if>" /><mt:unless name="site_url_subdomain">.</mt:unless><mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="20" class="<mt:if name="is_blog">extra-path</mt:if>" />
+        <div class="site-url">
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="extra-path" /></span>
+        </div>
+        <div><input type="checkbox" name="enable_subdomain" id="enable_subdomain" value="1"<mt:if name="enable_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="enable_subdomain"><__trans phrase="Setting subdomain"></label></div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -187,6 +190,7 @@ function init() {
 
 <mt:setvarblock name="jq_js_include" append="1">
     init();
+    jQuery.mtUseSubdomain();
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
