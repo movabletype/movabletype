@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="Backup">">
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Backup [_1]" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Backup"></mt:if></mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="backup" value="1">
 <mt:include name="include/header.tmpl">

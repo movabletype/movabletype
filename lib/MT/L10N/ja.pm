@@ -410,7 +410,7 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/main_index.mtml
 
 ## default_templates/comment_throttle.mtml
-	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'これが間違いである場合は、Movable Typeにログインして、ブログの設定画面に進み、IP禁止リストからIPアドレスを削除してください。',
+	'If this was a mistake, you can unblock the IP address and allow the visitor to add it again by logging in to your Movable Type installation, going to Blog Config - IP Banning, and deleting the IP address [_1] from the list of banned addresses.' => 'これが間違いである場合は、Movable Typeにログインして、ブログの設定画面に進み、禁止IPリストからIPアドレスを削除してください。',
 	'A visitor to your blog [_1] has automatically been banned by adding more than the allowed number of comments in the last [_2] seconds.' => '[_1]を禁止しました。[_2]秒の間に許可された以上のコメントを送信してきました。',
 	'This has been done to prevent a malicious script from overwhelming your weblog with comments. The banned IP address is' => 'これは悪意のスクリプトがブログをコメントで飽和させるのを阻止するための措置です。以下のIPアドレスを禁止しました。',
 
@@ -643,8 +643,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Theme/TemplateSet.pm
 	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'テンプレートセット([_1]テンプレート, [_2]ウィジェット, [_3]ウィジェットセット)',
-	'Failed to make templates directory: [_1]' => 'テンプレート用のディレクトリの作成に失敗しました: [_1]',
-	'Failed to publish template file: [_1]' => 'テンプレートファイルの公開に失敗しました: [_1]',
 	'Index Templates' => 'インデックステンプレート',
 	'Archive Templates' => 'アーカイブテンプレート',
 	'Template Modules' => 'テンプレートモジュール',
@@ -652,6 +650,8 @@ use vars qw( @ISA %Lexicon );
 	'Email Templates' => 'メールテンプレート',
 	'Widget Templates' => 'ウィジェットテンプレート',
 	'Widget Sets' => 'ウィジェットセット',
+	'Failed to make templates directory: [_1]' => 'テンプレート用のディレクトリの作成に失敗しました: [_1]',
+	'Failed to publish template file: [_1]' => 'テンプレートファイルの公開に失敗しました: [_1]',
 	'exported_template set' => 'エクスポート済テンプレートセット',
 
 ## lib/MT/Theme/Pref.pm
@@ -1503,18 +1503,19 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Feedback' => 'コミュニケーション',
 	'Registration' => '登録 / 認証',
 	'Web Services' => 'ウェブサービス',
-	'IP Banning' => 'IP禁止リスト',
+	'IP Banning' => '禁止IPアドレス',
 	'Roles' => 'ロール',
 	'Permissions' => '権限',
 	'Search &amp; Replace' => '検索/置換',
 	'Plugins' => 'プラグイン',
-	'Import Entries' => '記事のインポート',
-	'Export Entries' => '記事のエクスポート',
+	'Import Entries' => 'ブログ記事のインポート',
+	'Export Entries' => 'ブログ記事のエクスポート',
 	'Export Theme' => 'テーマのエクスポート',
 	'Backup' => 'バックアップ',
 	'Restore' => '復元',
 	'Address Book' => 'アドレス帳',
 	'Activity Log' => 'ログ',
+	'Create New' => '新規作成',
 
 ## lib/MT/BackupRestore.pm
 	'Backing up [_1] records:' => '[_1]レコードをバックアップしています:',
@@ -1677,15 +1678,14 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Migrating permissions to roles...' => '権限をロールに移行しています...',
 
 ## lib/MT/Upgrade/Core.pm
-	'Upgrading Asset path informations...' => 'アイテムパス情報を更新しています...',
 	'Creating initial website and user records...' => '初期ユーザーとウェブサイトを作成しています...',
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
 	'Creating new template: \'[_1]\'.' => '新しいテンプレート[_1]を作成しています...',
 	'Mapping templates to blog archive types...' => 'テンプレートをブログのアーカイブタイプに適用しています...',
 
 ## lib/MT/IPBanList.pm
-	'IP Ban' => 'IP禁止リスト',
-	'IP Bans' => 'IP禁止リスト',
+	'IP Ban' => '禁止IPリスト',
+	'IP Bans' => '禁止IPリスト',
 
 ## lib/MT/CMS/BanList.pm
 	'You did not enter an IP address to ban.' => '禁止するIPアドレスを指定してください。',
@@ -1764,7 +1764,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Individual Plugins' => 'プラグイン',
 
 ## lib/MT/CMS/Blog.pm
-	'General Settings' => '全般',
+	'General Settings' => '全般設定',
 	'New Blog' => '新しいブログ',
 	'[_1] Activity Feed' => '[_1]アクティビティーフィード',
 	'Can\'t load template #[_1].' => 'テンプレート: [_1」をロードできませんでした。',
@@ -2046,7 +2046,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The revision history for entries and templates protects users from unexpected modification.' => '記事やテンプレートの履歴管理は意図されない変更時にも安心です。',
 
 ## lib/MT/CMS/User.pm
-	'Create User' => '新しいユーザーを作成',
+	'Create User' => 'ユーザーの作成',
 	'Can\'t load role #[_1].' => 'ロール: [_1]をロードできませんでした。',
 	'Create Role' => '新しいロールを作成',
 	'(newly created user)' => '(新規ユーザー)',
@@ -2291,6 +2291,13 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 ## mt-static/js/assetdetail.js
 	'No Preview Available' => 'プレビューできません',
 	'View uploaded file' => 'アップロードされたファイルを表示',
+
+## mt-static/js/tc/mixer/display.js
+	'Title:' => 'タイトル:',
+	'Description:' => '説明:',
+	'Author:' => '作者:',
+	'Tags:' => 'タグ: ',
+	'URL:' => 'URL:',
 
 ## mt-static/js/dialog.js
 	'(None)' => '(なし)',
@@ -2699,7 +2706,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Forgot your password?' => 'パスワードをお忘れですか?',
 
 ## tmpl/cms/list_role.tmpl
-	'Roles: System-wide' => 'ロール: システム全体',
+	'Manage Roles' => 'ロールの管理',
 	'You have successfully deleted the role(s).' => 'ロールを削除しました。',
 	'role' => 'ロール',
 	'roles' => 'ロール',
@@ -2712,7 +2719,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'System' => 'システム',
 
 ## tmpl/cms/edit_website.tmpl
-	'Create Website' => 'ウェブサイト作成',
+	'Create Website' => 'ウェブサイトの作成',
 	'Your blog configuration has been saved.' => 'ブログの設定を保存しました。',
 	'Website Theme' => 'ウェブサイトテーマ',
 	'Select the theme you wish to use for this website.' => 'ウェブサイトで利用したいテーマを選択してください。',
@@ -2764,7 +2771,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You must set a valid Local Site Path.' => '有効なサイトパスを指定してください。',
 
 ## tmpl/cms/asset_upload.tmpl
-	'Upload New Asset' => '新しいアイテムのアップロード',
+	'Upload Asset' => 'アイテムのアップロード',
 
 ## tmpl/cms/dialog/recover.tmpl
 	'The email address provided is not unique.  Please enter your username.' => '同じメールアドレスを持っているユーザーがいます。ユーザー名を入力してください。',
@@ -2777,6 +2784,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/dialog/refresh_templates.tmpl
 	'Refresh Global Templates' => 'グローバルテンプレートを初期化',
+	'Cannot find template set. Please apply [_1]theme[_2] to refresh your templates.' => 'テンプレートセットが見つかりません。[_1]テーマを適用[_2]して、テンプレートを初期化してください。',
 	'Revert modifications of theme templates' => 'テーマテンプレートの変更の取り消し',
 	'Reset to theme defaults' => 'デフォルトテーマのリセット',
 	'Deletes all existing templates and install the selected theme\'s default.' => '全テンプレートを削除して、既定となっているテーマをインストールします。',
@@ -2954,7 +2962,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Apply' => '適用',
 
 ## tmpl/cms/export.tmpl
-	'Export' => 'エクスポート',
 	'You must select a blog to export.' => 'エクスポートするブログを選択してください。',
 	'_USAGE_EXPORT_1' => 'Movable Typeからブログ記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 	'Blog to Export' => 'エクスポートするブログ',
@@ -3072,17 +3079,18 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Excerpt of the TrackBack entry' => 'トラックバックの概要',
 
 ## tmpl/cms/export_theme.tmpl
+	'Export [_1] Themes' => '[_1]テーマのエクスポート',
 	'Theme package have been saved.' => 'テーマパッケージが保存されました。',
-	'Theme name' => 'テーマ名',
 	'The name of your theme.' => 'テーマの名前です。',
 	'Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, \'-\' or \'_\').' => '次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)',
+	'Version' => 'バージョン',
+	'A version number for this theme.' => 'テーマのバージョン番号です。',
+	'A description for this theme.' => 'テーマの説明です。',
 	'_THEME_AUTHOR' => '作者名',
 	'The author of this theme.' => 'テーマの作者名です。',
 	'Author link' => '作者のページ',
 	'The author\'s website.' => '作者のウェブサイトです',
-	'Version' => 'バージョン',
-	'A version number for this theme.' => 'テーマのバージョン番号です。',
-	'A description for this theme.' => 'テーマの説明です。',
+	'Options' => 'オプション',
 	'Additional assets to be included in the theme.' => 'テーマに含む追加アイテムです。',
 	'Destination' => '出力形式',
 	'Select How to get theme.' => 'テーマの出力方法を選択してください。',
@@ -3118,7 +3126,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Debug/error' => 'デバッグ/エラー',
 
 ## tmpl/cms/cfg_registration.tmpl
-	'Registration Settings' => '登録 / 認証設定',
+	'Registration Settings' => '登録/認証の設定',
 	'Your blog preferences have been saved.' => 'ブログの設定を保存しました。',
 	'User Registration' => 'ユーザー登録',
 	'Allow registration for this website.' => 'ウェブサイトへの登録を許可します。',
@@ -3309,8 +3317,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Last auto-save at [_1]:[_2]:[_3]' => '[_1]:[_2]:[_3]に自動保存済み',
 
 ## tmpl/cms/cfg_plugin.tmpl
-	'Blog Plugin Settings' => 'ブログプラグイン設定',
-	'System Plugin Settings' => 'システムプラグイン設定',
+	'[_1] Plugin Settings' => '[_1]のプラグイン設定',
 	'http://plugins.movabletype.org/' => 'http://www.movabletype.jp/plugins/',
 	'Find Plugins' => 'プラグインを探す',
 	'Plugin System' => 'プラグインシステム',
@@ -3354,7 +3361,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'No plugins with configuration settings are installed.' => '設定可能なプラグインがインストールされていません。',
 
 ## tmpl/cms/list_author.tmpl
-	'Users: System-wide' => 'ユーザー: システム全体',
 	'You have successfully disabled the selected user(s).' => '選択したユーザーを無効にしました。',
 	'You have successfully enabled the selected user(s).' => '選択したユーザーを有効にしました。',
 	'You have successfully deleted the user(s) from the Movable Type system.' => 'システムからユーザーを削除しました。',
@@ -3362,7 +3368,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You have successfully synchronized users\' information with the external directory.' => '外部のディレクトリとユーザーの情報を同期しました。',
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	'An error occured during synchronization.  See the <a href=\'[_1]\'>activity log</a> for detailed information.' => '同期中にエラーが発生しました。エラーの詳細を<a href=\'[_1]\'>ログ</a>で確認して>ください。',
-	'Create New' => '新規作成',
 	'User properties' => 'ユーザー属性',
 	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
 	'_USER_ENABLE' => '有効',
@@ -3644,8 +3649,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Select another website...' => 'ウェブサイトを選択',
 	'(on [_1])' => '([_1])',
 	'Select another blog...' => 'ブログを選択',
-	'Create Website' => 'ウェブサイト作成',
-	'Create a new blog on current website' => 'ブログ作成',
 	'Create Blog (on [_1])' => 'ブログ作成([_1])',
 	'View Site' => 'サイトの表示',
 	'View [_1]' => '[_1]参照',
@@ -3655,7 +3658,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/include/list_associations/page_title.tmpl
 	'Permissions for [_1]' => '[_1]の権限',
-	'Permissions: System-wide' => '権限: システム全体',
+	'Manage Permissions' => '権限の管理',
 	'Users for [_1]' => 'ユーザー - [_1]',
 
 ## tmpl/cms/include/listing_panel.tmpl
@@ -3742,7 +3745,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Asset Missing' => 'アイテムなし',
 
 ## tmpl/cms/cfg_system_general.tmpl
-	'System: General Settings' => 'システム: 全般設定',
 	'A test email was sent.' => 'テストメールが送信されました。',
 	'Your settings have been saved.' => '設定を保存しました。',
 	'System Email' => 'システムのメールアドレス',
@@ -3777,6 +3779,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'The email address that should receive a test email from Movable Type.' => 'テストメールを受け取るメールアドレス',
 
 ## tmpl/cms/list_widget.tmpl
+	'Manage [_1] Widgets' => '[_1]ウィジェットの管理',
 	'Delete selected Widget Sets (x)' => '選択されたウィジェットセットを削除 (x)',
 	'Helpful Tips' => 'ヘルプ',
 	'To add a widget set to your templates, use the following syntax:' => 'テンプレートにウィジェットセットを追加するときは以下の構文を利用します。',
@@ -3817,10 +3820,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Return to the template editor' => 'テンプレート編集に戻る',
 
 ## tmpl/cms/list_banlist.tmpl
-	'IP Banning Settings' => '禁止IPアドレス設定',
+	'IP Banning Settings' => '禁止IPアドレスの設定',
 	'IP addresses' => 'IPアドレス',
 	'Delete selected IP Address (x)' => '選択されたIPアドレスを削除 (x)',
-	'You have added [_1] to your list of banned IP addresses.' => '禁止IPアドレスリストに[_1]を追加しました。',
+	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
 	'Ban IP Address' => '禁止IPアドレス',
 	'Date Banned' => '禁止した日付',
@@ -3871,6 +3874,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Return to templates' => 'テンプレートに戻る',
 
 ## tmpl/cms/list_blog.tmpl
+	'Manage [_1]' => '[_1]の管理',
 	'You have successfully deleted the website from the Movable Type system.' => 'システムからウェブサイトの削除が完了しました。',
 	'You have successfully deleted the blog from the website.' => 'ウェブサイトからブログの削除が完了しました。',
 	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
@@ -3878,7 +3882,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、リンク切れを防止するために、旧パスのファイルも残すことを検討してください。',
 	'You can not refresh templates: [_1]' => 'テンプレートを初期化できません: [_1]',
 	'The website was not deleted. You need to delete blogs under the website.' => 'ウェブサイトは削除されませんでした。ウェブサイト内のブログを、先に削除する必要があります。',
-	'Create Blog' => 'ブログを作成する',
+	'Create Blog' => 'ブログの作成',
 
 ## tmpl/cms/edit_blog.tmpl
 	'Blog Theme' => 'ブログテーマ',
@@ -3900,6 +3904,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.' => 'mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。',
 
 ## tmpl/cms/list_notification.tmpl
+	'Manage [_1] Address Book' => '[_1]アドレス帳の管理',
 	'You have added [_1] to your address book.' => 'アドレス帳に[_1]を登録しました。',
 	'You have successfully deleted the selected contacts from your address book.' => 'アドレス帳から選択したあて先を削除しました。',
 	'Download Address Book (CSV)' => 'アドレス帳をダウンロード(CSV)',
@@ -3909,11 +3914,10 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Add Contact' => '連絡先の追加',
 
 ## tmpl/cms/restore.tmpl
-	'Restore from a Backup' => 'バックアップから復元',
+	'Restore from a Backup' => 'バックアップの復元',
 	'Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.' => 'バックアップと復元をするために必要なPerlモジュール(XML::SAXおよび依存モジュール)が見つかりません。',
 	'Backup File' => 'バックアップファイル',
 	'If your backup file is located on a remote computer, you can upload it here.  Otherwise, Movable Type will automatically look in the \'import\' folder within your Movable Type directory.' => 'バックアップファイルをアップロードします。アップロードがない場合は、Movable Typeは自動で \'import\'フォルダをチェックします。',
-	'Options' => 'オプション',
 	'Check this and files backed up from newer versions can be restored to this system.  NOTE: Ignoring Schema Version can damage Movable Type permanently.' => 'チェックすると現在のシステムより新しいシステムからバックアップされたデータをこのシステムに復元できます。注意: バージョンの衝突を無視すると、Movable Typeのシステムに回復不可能なダメージを与える可能性があります。',
 	'Ignore schema version conflicts' => 'バージョンの衝突を無視する',
 	'Allow existing global templates to be overwritten by global templates in the backup file.' => 'バックアップ内のファイルで、グローバルテンプレートを上書きする。',
@@ -3939,8 +3943,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'No permissions could be found.' => '権限が見つかりませんでした。',
 
 ## tmpl/cms/list_theme.tmpl
-	'Theme Settings' => 'テーマ設定',
-	'System Theme Settings' => 'システムテーマ設定',
+	'[_1] Themes' => '[_1]テーマの一覧',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Failed' => '失敗',
@@ -3961,6 +3964,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Themes for Websites' => 'ウェブサイト用テーマ',
 
 ## tmpl/cms/backup.tmpl
+	'Backup [_1]' => '[_1]のバックアップ',
 	'What to Backup' => 'バックアップ対象',
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、ブログ記事、カテゴリ、テンプレート、タグをバックアップできます。',
 	'Everything' => 'すべて',
@@ -4015,14 +4019,14 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'View all commenters' => 'コメント投稿者の一覧',
 
 ## tmpl/cms/edit_entry.tmpl
-	'Create Page' => '新しいウェブページを作成',
+	'Create Page' => 'ウェブページの作成',
 	'Add folder' => 'フォルダを追加',
 	'Add folder name' => 'フォルダ名を追加',
 	'Add new folder parent' => '親フォルダを追加',
 	'Preview this page (v)' => 'ウェブページをプレビュー (v)',
 	'Delete this page (x)' => 'ウェブページを削除 (x)',
 	'View Page' => 'ウェブページを表示',
-	'Create Entry' => '新しいブログ記事を作成',
+	'Create Entry' => 'ブログ記事の作成',
 	'Add category' => 'カテゴリを追加',
 	'Add category name' => 'カテゴリ名を追加',
 	'Add new category parent' => '親カテゴリを追加',
@@ -4098,7 +4102,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'None selected' => '選択されていません',
 
 ## tmpl/cms/cfg_system_users.tmpl
-	'System: User Settings' => 'システム: ユーザー設定',
+	'User Settings' => 'ユーザー設定',
 	'(No website selected)' => '(ウェブサイトが選択されていません)',
 	'Select website' => 'ウェブサイト選択',
 	'(None selected)' => '(選択されていません)',
@@ -4216,7 +4220,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
-	'Your dashboard is empty!' => 'ダッシュボードが空です。',
 	'Support directory is not writable.' => 'supportディレクトリに書き込めません。',
 	'Detail' => '詳細',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
@@ -4234,7 +4237,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Upgrade complete!' => 'アップグレードを完了しました！',
 
 ## tmpl/cms/cfg_entry.tmpl
-	'Compose Settings' => '記事作成設定',
+	'Compose Settings' => '投稿設定',
 	'Publishing Defaults' => '公開既定値',
 	'Listing Default' => '一覧既定値',
 	'Select the number of days of entries or the exact number of entries you would like displayed on your blog.' => '指定した日数分のブログ記事またはブログ記事数を表示します。',
@@ -4363,7 +4366,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You are now ready to:' => '次の方法で、ウェブサイトにコンテンツを公開できます。',
 	'Create a new page on your website' => 'ウェブサイトに新しいページを作成',
 	'Create a blog on your website' => 'ウェブサイトにブログを作成',
-	'Create a new page on your website.' => 'ウェブサイトに、ウェブページを作成する',
 	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿する',
 	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
 	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Typeで何ができるか、詳しくはこちら。',
@@ -4526,7 +4528,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Publish Again' => '再構築しなおす',
 
 ## tmpl/cms/import.tmpl
-	'Import' => 'インポート',
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールからブログ記事を移行したり、ブログ記事のコピーを作成します。',
 	'Import data into' => 'インポート先',
@@ -4563,8 +4564,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Role Details' => 'ロールの詳細',
 	'Created by' => '作成者',
 	'Privileges' => '権限',
-	'Check All' => 'すべてチェックする',
-	'Uncheck All' => 'すべてのチェックを外す',
 	'Administration' => '管理',
 	'Authoring and Publishing' => '作成と公開',
 	'Designing' => 'デザインする',
@@ -4583,7 +4582,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You must set Widget Set Name.' => 'ウィジェットセット名を設定してください。',
 
 ## tmpl/cms/list_template.tmpl
-	'[_1] Templates' => '[_1]テンプレート',
+	'Global' => 'グローバル',
+	'Manage [_1] Templates' => '[_1]テンプレートの管理',
 	'Show All Templates' => 'すべてのテンプレート',
 	'Publishing Settings' => '公開設定',
 	'You have successfully deleted the checked template(s).' => '選択したテンプレートを削除しました。',
@@ -4595,7 +4595,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Showing all Schwartz errors' => '全Schwartzエラー参照',
 
 ## tmpl/cms/list_ping.tmpl
-	'Manage Trackbacks' => 'トラックバックの管理',
 	'The selected TrackBack(s) has been approved.' => '選択したトラックバックを公開しました。',
 	'All TrackBacks reported as spam have been removed.' => 'スパムとして報告したすべてのトラックバックを削除しました。',
 	'The selected TrackBack(s) has been unapproved.' => '選択したトラックバックを未公開にしました。',
@@ -4759,7 +4758,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Styles' => 'スタイル',
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a Style' => 'スタイルを選択',
+	'Select a [_1] Style' => '[_1]スタイルの選択',
 	'3-Columns, Wide, Thin, Thin' => '3カラム、大・小・小',
 	'3-Columns, Thin, Wide, Thin' => '3カラム、小・大・小',
 	'3-Columns, Thin, Thin, Wide' => '3カラム、小・小・大',

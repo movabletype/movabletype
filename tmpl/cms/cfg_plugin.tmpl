@@ -1,8 +1,7 @@
+<mt:setvarblock name="page_title"><__trans phrase="[_1] Plugin Settings" params="<mt:if name="blog_id"><mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if><mt:else><__trans phrase="System"></mt:if>"></mt:setvarblock>
 <mt:if name="blog_id">
-    <mt:setvar name="page_title" value="<__trans phrase="Blog Plugin Settings">">
     <mt:setvar name="plugins" value="1">
 <mt:else>
-    <mt:setvar name="page_title" value="<__trans phrase="System Plugin Settings">">
     <$mt:setvar name="position_actions_top" value="1"$>
     <mt:setvar name="system-plugin-settings" value="1">
 </mt:if>

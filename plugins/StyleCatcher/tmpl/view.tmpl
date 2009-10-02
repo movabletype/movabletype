@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Select a Style"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Select a [_1] Style" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <!-- stylecatcher -->
 <link rel="stylesheet" type="text/css" title="Default Layout" href="<mt:var name="plugin_static_uri">templates.css" />

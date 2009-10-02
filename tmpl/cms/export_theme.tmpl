@@ -1,4 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Export Theme"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Export [_1] Themes" params="<mt:if name="blog_id"><mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if><mt:else><__trans phrase="Global"></mt:if>"></mt:setvarblock>
 <mt:setvar name="export_theme" value="1">
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
