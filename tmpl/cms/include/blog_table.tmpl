@@ -39,8 +39,8 @@
         <mt:else>
             <td class="entry"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
         </mt:if>
-            <td class="comment"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id">"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
-            <td class="trackback"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_ping&amp;blog_id=<mt:var name="id">"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
+            <td class="comment"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=this_website</mt:if>"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+            <td class="trackback"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_ping&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=this_website</mt:if>"><mt:var name="num_pings"></a><mt:else><mt:var name="num_pings"></mt:if></td>
             <td class="setting"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
         </tr>
     <mt:if name="__last__">
