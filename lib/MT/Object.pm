@@ -1057,6 +1057,7 @@ sub __properties { }
 our $DRIVER;
 sub driver {
     my $class = shift;
+    require MT::ObjectDriverFactory;
     return $DRIVER ||= MT::ObjectDriverFactory->instance
         if UNIVERSAL::isa($class, 'MT::Object');
     my $driver = $class->SUPER::driver(@_);
