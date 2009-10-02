@@ -481,7 +481,7 @@ sub archive_url {
         return $blog->site_url;
     }
     else {
-        my $url = '';
+        my $url = $blog->site_url;
         if ($blog->is_blog()) {
             if (my $website = $blog->website()) {
                 $url = $website->SUPER::site_url;
