@@ -310,7 +310,7 @@ sub core_widgets {
             view     => 'blog',
         },
         recent_websites => {
-            label    => 'Recent Websites',
+            label    => 'Websites',
             template => 'widget/recent_websites.tmpl',
             handler  => "${pkg}Dashboard::recent_websites_widget",
             singular => 1,
@@ -318,7 +318,7 @@ sub core_widgets {
             view     => 'system',
         },
         recent_blogs => {
-            label    => 'Recent Blogs',
+            label    => 'Blogs',
             template => 'widget/recent_blogs.tmpl',
             handler  => "${pkg}Dashboard::recent_blogs_widget",
             singular => 1,
