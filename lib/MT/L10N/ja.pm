@@ -543,7 +543,7 @@ use vars qw( @ISA %Lexicon );
 	'Review' => '承認待ち',
 	'Future' => '日時指定',
 	'Spam' => 'スパム',
-	'Status' => '公開状態',
+	'Status' => '更新状態',
 	'Accept Comments' => 'コメント許可',
 	'Body' => '本文',
 	'Extended' => '続き',
