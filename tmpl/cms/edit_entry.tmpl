@@ -589,7 +589,7 @@
             </li>
         </mt:loop>
     <mt:else>
-            <li id="empty-asset-list"><em><__trans phrase="No assets"></em></li>
+            <li id="empty-asset-list"><__trans phrase="No assets"></li>
     </mt:if>
         </ul>
         <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />
