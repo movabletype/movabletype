@@ -422,7 +422,7 @@ sub list {
     $param{list_start}  = $offset + 1;
     delete $args->{limit};
     delete $args->{offset};
-    $param{list_total} = $pkg->count( undef, $args );
+    $param{list_total} = scalar @blogs;
     $param{list_end} = $offset + ( $blog_loop ? scalar @$blog_loop : 0 );
     $param{next_max} = $param{list_total} - $limit;
     $param{next_max} = 0 if ( $param{next_max} || 0 ) < $offset + 1;
