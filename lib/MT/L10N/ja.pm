@@ -4751,7 +4751,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'(Untitled)' => '(タイトルなし)',
 
 ## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcherを使うと、ほんの数回クリックするだけでスタイルを探してブログに適用することができます。Movable Typeのスタイルについての詳細やスタイルの配布元については、<a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a>のページ（英語）へアクセスしてください。',
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
 	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
 	'Styles' => 'スタイル',
