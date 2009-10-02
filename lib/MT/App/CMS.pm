@@ -2269,6 +2269,7 @@ sub build_blog_selector {
         { author_id => $auth->id, permissions => { not => "'comment'" } }
     ) if !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates');
     $terms{class} = 'blog';
+    $terms{parent_id} = \">0";
     $args{limit} = 6; # Don't load over 6 blogs
     my @blogs = $blog_class->load( \%terms, \%args );
 

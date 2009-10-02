@@ -935,6 +935,8 @@ sub _build_favorite_blogs_data {
 
     my @param;
     foreach my $blog (@blogs) {
+        next unless $blog->website;
+
         my $row;
         $row->{blog_name}        = $blog->name;
         $row->{blog_id}          = $blog->id;
