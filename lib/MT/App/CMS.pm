@@ -717,6 +717,14 @@ sub core_list_actions {
                 code       => "${pkg}Template::refresh_individual_templates",
                 permit_action => 'refresh_template_via_list',
                 order      => 100,
+                condition  => sub {
+                    my $app = MT->app;
+                    my $tmpl_type = $app->param('filter_key') || '';
+                    return
+                        $tmpl_type eq 'backup_templates'
+                            ? 0
+                            : 1;
+                },
             },
 
             # Now a button!
@@ -762,6 +770,7 @@ sub core_list_actions {
                     return
                           $tmpl_type eq 'system_templates' ? 0
                         : $tmpl_type eq 'email_templates'  ? 0
+                        : $tmpl_type eq 'backup_templates'  ? 0
                         :                                    1;
                 },
                 order => 400,

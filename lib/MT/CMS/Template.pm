@@ -115,6 +115,10 @@ sub edit {
             $tab = 'email';
             $param->{template_group_trans} = $app->translate('email');
         }
+        elsif ( $obj->type eq 'backup' ) {
+            $tab = 'backup';
+            $param->{template_group_trans} = $app->translate('backup');
+        }
         else {
             $tab = 'system';
             $param->{template_group_trans} = $app->translate('system');
@@ -164,6 +168,8 @@ sub edit {
             $app->param( 'filter_key', 'email_templates' );
         }elsif  ($param->{template_group} eq 'system') {
             $app->param( 'filter_key', 'system_templates' );
+        } elsif ( $obj->type eq 'backup' ) {
+            $app->param('filter_key', 'backup_templates');
         }
         $app->load_list_actions( 'template', $param );
         $app->param( 'filter_key', $filter );
@@ -818,6 +824,9 @@ sub list {
         }
         elsif ( $tmpl_type eq 'module' ) {
             $app->param( 'filter_key', 'module_templates' );
+        }
+        elsif ( $tmpl_type eq 'backup' ) {
+            $app->param( 'filter_key', 'backup_templates' );
         }
         my $tmpl_param = {};
         unless ( exists($types{$tmpl_type}->{type})
