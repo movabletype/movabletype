@@ -1442,7 +1442,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Blog Stats' => 'Blog Stats',
 	'Recent Websites' => '最近利用したウェブサイト',
 	'Recent Blogs' => '最近利用したブログ',
-	'Favorite Websites and Blogs' => 'お気に入りのウェブサイト、ブログ',
+	'Websites and Blogs' => 'ウェブサイトとブログ',
 	'Refresh Templates' => 'テンプレート初期化',
 	'Use Publishing Profile' => '公開プロファイルを設定',
 	'Unpublish Entries' => 'ブログ記事の公開を取り消し',
