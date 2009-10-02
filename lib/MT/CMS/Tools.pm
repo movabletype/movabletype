@@ -1364,6 +1364,7 @@ sub adjust_sitepath {
         my $site_url      = scalar $q->param("site_url_$id") || q();
         my $site_url_path = scalar $q->param("site_url_path_$id") || q();
         my $site_url_subdomain = scalar $q->param("site_url_subdomain_$id") || q();
+        $site_url_subdomain .= '.' unless $site_url_subdomain =~ /\.$/;
         my $parent_id     = scalar $q->param("parent_id_$id") || undef;
         $blog->site_path($site_path);
         $blog->parent_id($parent_id)
@@ -1395,6 +1396,7 @@ sub adjust_sitepath {
         my $archive_url      = scalar $q->param("archive_url_$id") || q();
         my $archive_url_path = scalar $q->param("archive_url_path_$id") || q();
         my $archive_url_subdomain = scalar $q->param("archive_url_subdomain_$id") || q();
+        $archive_url_subdomain .= '.' unless $archive_url_subdomain =~ /\.$/;
         $blog->archive_path($archive_path);
         if ( $archive_url_path ) {
             $blog->archive_url("$archive_url_subdomain/::/$archive_url_path");
