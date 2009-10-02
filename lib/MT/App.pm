@@ -3240,6 +3240,7 @@ sub update_widget_prefs {
             $resave_widgets = 1;
         }
     }
+
     if ( $action eq 'add' ) {
         my $set = $app->param('widget_set') || 'main';
         my $all_widgets = $app->registry("widgets");
@@ -3253,9 +3254,12 @@ sub update_widget_prefs {
                 }
             }
             $these_widgets->{$widget_inst} = { set => $set };
+            $these_widgets->{$widget_inst} = { param => $widget->{param} }
+                if exists $widget->{param};
         }
         $resave_widgets = 1;
     }
+
     if ( ( $action eq 'save' ) && $these_widgets ) {
         my %all_params = $app->param_hash;
         my $refresh = $all_params{widget_refresh} ? 1 : 0;
@@ -3342,6 +3346,7 @@ sub load_widget_list {
             widget_id => $w->{id},
             ( $w->{set} ? ( widget_set => $w->{set} ) : () ),
             widget_label => $label,
+            ( $w->{param} ? ( param => $w->{param} ) : () ),
             };
     }
     @widget_loop

@@ -308,6 +308,9 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'blog',
+            param    => {
+                tab => 'entry'
+            },
         },
         recent_websites => {
             label    => 'Websites',
@@ -332,6 +335,9 @@ sub core_widgets {
             singular => 1,
             set      => 'main',
             view     => 'user',
+            param    => {
+                tab => 'website'
+            },
         },
     };
 }
