@@ -39,6 +39,7 @@
     cursor: pointer;
 }
 
+#sign-in .msg p, 
 #system-allow-pings p,
 #system-allow-comments p,
 .msg-error p,
