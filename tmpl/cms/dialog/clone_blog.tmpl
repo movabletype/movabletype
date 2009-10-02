@@ -134,23 +134,37 @@
         </mtapp:setting>
 
         <mtapp:setting
-            id="site-url"
+            id="site_url"
             required="1"
             label="<__trans phrase="Site URL">"
             content_class="field-content-input"
             hint="<__trans phrase="Enter the new URL of your public website. Example: http://www.example.com/weblog/">"
             show_hint="1">
-            <mt:if name="site_url_subdomain">
-            <mt:var name="website_scheme">://<input name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" type="text" size="20" />.<mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="extra-path" />
-            <mt:elseif name="site_url_path">
-            <mt:var name="website_scheme">://<input name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" type="text" size="20" />.<mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="extra-path" />
-            <mt:else>
-            <mt:var name="website_scheme">://<mt:var name="website_domain"><input name="site_url_path" id="site-url-path" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
-            </mt:if>
+        <mt:if name="site_url_subdomain">
+            <div class="site-url">
+                <mt:var name="website_scheme">://
+                <span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span>
+                <span class="website-url"><mt:var name="website_domain"></span>
+                <span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
+            </div>
+            <div><input type="checkbox" name="enable_subdomain" id="enable_subdomain" value="1"<mt:if name="enable_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="enable_subdomain"><__trans phrase="Setting subdomain"></label></div>
+        <mt:elseif name="site_url_path">
+            <div class="site-url">
+                <mt:var name="website_scheme">://
+                <span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span>
+                <span class="website-url"><mt:var name="website_domain"></span>
+                <span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
+            </div>
+            <div><input type="checkbox" name="enable_subdomain" id="enable_subdomain" value="1"<mt:if name="enable_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="enable_subdomain"><__trans phrase="Setting subdomain"></label></div>
+        <mt:else>
+            <div class="site-url">
+                <mt:var name="website_scheme">://<mt:var name="website_domain"><input name="site_url_path" id="site-url-path" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
+            </div>
+        </mt:if>
         </mtapp:setting>
 
         <mtapp:setting
-            id="site-path"
+            id="site_path"
             required="1"
             label="<__trans phrase="Site Root">"
             content_class="field-content-input"
@@ -561,5 +575,6 @@
     }
   }
 })();
+jQuery.mtUseSubdomain();
 </script>
 <mt:include name="dialog/footer.tmpl">
