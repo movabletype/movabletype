@@ -119,30 +119,20 @@ $.mtCMSSearch = function(options) {
  *
  */
 $.mtUseSubdomain = function(options) {
-    $('.subdomain').hide();
-    $('#site_url-field :checkbox, #archive_url-field :checkbox').click(function() {
-        var $checkboxes = $(this);
+    var $checkboxes = $('#site_url-field :checkbox, #archive_url-field :checkbox');
+    $checkboxes.each(function() {
+        if (!this.checked) {
+            $(this).parent('.field-content').find('.subdomain').hide();
+        }
+    });
+    $checkboxes.click(function() {
         if (this.checked) {
-            $checkboxes.attr('checked', true).parents('.field-content').find('.subdomain').show();
+            $(this).attr('checked', true).parents('.field-content').find('.subdomain').show();
         } else {
-            $checkboxes.removeAttr('checked').parents('.field-content').find('.subdomain').hide();
+            $(this).removeAttr('checked').parents('.field-content').find('.subdomain').hide();
         }
     });
 };
-
-// $.fn.mtCheckboxOption = function() {
-//     return this.each(function() {
-//         var $checkbox = $(this).find(':checkbox');
-//         var id = $checkbox.attr('id');
-//         if (!$checkbox.attr('checked')) {
-//             $('div#'+id+'-option').hide();
-//         }
-//         $checkbox.click(function() {
-//             $('div#'+id+'-option').toggle();
-//         });
-//     });
-// };
-
 
 /*
  * mtCheckbox
