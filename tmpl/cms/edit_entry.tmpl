@@ -571,7 +571,7 @@
         id="asset_container"
         label="$widget_label">
         <div class="asset-list-header">
-            <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add new"></a>
+            <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
         </div>
         <ul id="asset-list" name="asset-list">
     <mt:if name="asset_loop">
@@ -589,7 +589,7 @@
             </li>
         </mt:loop>
     <mt:else>
-            <li id="empty-asset-list"><__trans phrase="No asset(s) associated with this [_1]" params="<mt:var name="object_label" lower_case="1" escape="html">"></li>
+            <li id="empty-asset-list"><em><__trans phrase="No assets"></em></li>
     </mt:if>
         </ul>
         <input type="hidden" id="include_asset_ids" name="include_asset_ids" value="<mt:loop name="asset_loop"><mt:var name="asset_id"><mt:unless name="__last__">,</mt:unless></mt:loop>" />

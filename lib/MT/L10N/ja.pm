@@ -3521,7 +3521,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub category' => 'サブカテゴリを追加',
-	'Add new' => '新規追加',
 	'Add sub folder' => 'サブフォルダを追加',
 
 ## tmpl/cms/include/login_mt.tmpl
@@ -4080,7 +4079,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Outbound TrackBack URLs' => 'トラックバック送信先URL',
 	'[_1] Assets' => '[_1]アイテム',
 	'Remove this asset.' => 'アイテム削除',
-	'No asset(s) associated with this [_1]' => '[_1]関連アイテムはありません。',
+	'No assets' => 'アイテムはありません',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていないブログ記事への変更は失われます。',
 	'You have unsaved changes to this page that will be lost.' => '保存されていないウェブページへの変更は失われます。',
 	'Enter the link address:' => 'リンクするURLを入力:',
