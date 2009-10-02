@@ -1684,6 +1684,8 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
+        $row->{use_cache} = ( $blog && $blog->include_cache && ($tmpl->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_ssi} = ( $blog && $blog->include_system && $tmpl->include_with_ssi )  ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
