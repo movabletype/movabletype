@@ -187,12 +187,14 @@ sub commenter_status {
         $blog_id = 0;
     }
 
-    require MT::Permission;
-    my $perm = MT::Permission->load(
-        { author_id => $this->id, blog_id => $blog_id } );
-    return PENDING if !$perm;
-    return BANNED if $perm->is_restricted('comment');
-    return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
+    my $perm = $this->permissions( $blog_id );
+    if ( $perm ) {
+        return BANNED if $perm->is_restricted('comment');
+        return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
+    }
+    else {
+        return PENDING unless MT->config->SingleCommunity;
+    }
     return APPROVED if MT->config->SingleCommunity
       && ( AUTHOR() == $this->type ) && $this->is_active();
     return PENDING;
