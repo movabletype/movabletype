@@ -11,7 +11,12 @@
         <input type="hidden" name="id" value="<mt:var name="id">" />
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name">" />
+        <mt:if name="site_url_path">
+        <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain">" />
+        <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path">" />
+        <mt:else>
         <input type="hidden" name="site_url" value="<mt:var name="site_url">" />
+        </mt:if>
         <input type="hidden" name="site_path" value="<mt:var name="site_path">" />
         <input type="hidden" name="overwrite" value="<mt:var name="overwrite">" />
         <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages">" />
@@ -29,7 +34,13 @@
         <mtapp:setting
             id="site-url"
             label="<__trans phrase="Site URL">">
-            <span id="site-url"><mt:var name="parent_url"><mt:var name="site_url" escape="html"></span>
+            <mt:if name="site_url_subdomain">
+            <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
+            <mt:elseif name="site_url_path">
+            <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
+            <mt:else>
+            <span id="site-url"><mt:var name="site_url" escape="html"></span>
+            </mt:if>
     <mt:if name="site_url_warning">
             <p>
                 <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
@@ -43,7 +54,7 @@
         <mtapp:setting
             id="site-path"
             label="<__trans phrase="Site Root">">
-            <span id="site-path"><mt:var name="parent_path"><mt:var name="site_path" escape="html"></span>
+            <span id="site-path"><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></span>
     <mt:if name="site_path_warning">
             <p>
               <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
@@ -129,7 +140,13 @@
             content_class="field-content-input"
             hint="<__trans phrase="Enter the new URL of your public website. Example: http://www.example.com/weblog/">"
             show_hint="1">
-            <mt:var name="parent_url"><input name="site_url" id="site-url" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
+            <mt:if name="site_url_subdomain">
+            <mt:var name="website_scheme">://<input name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" type="text" size="20" />.<mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="extra-path" />
+            <mt:elseif name="site_url_path">
+            <mt:var name="website_scheme">://<input name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" type="text" size="20" />.<mt:var name="website_domain"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" size="20" class="extra-path" />
+            <mt:else>
+            <mt:var name="website_scheme">://<mt:var name="website_domain"><input name="site_url_path" id="site-url-path" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
+            </mt:if>
         </mtapp:setting>
 
         <mtapp:setting

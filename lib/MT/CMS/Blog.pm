@@ -2479,25 +2479,52 @@ sub clone {
     }
     $base_url ||= dirify( $blog->name );
     $base_url =~ s/\/$//;
-    my $base_path = $blog->column('site_path') || dirify( $blog->name );
+    my $base_path = defined $app->param('site_path')
+        ? $app->param('site_path')
+        : $blog->column('site_path') || dirify( $blog->name );
+    $base_path =~ s/\/$//;
+    $param->{site_path} = $base_path;
 
     $param->{'id'} = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
       || $app->translate('Clone of [_1]', $blog->name );
-    $param->{'site_url'} = defined $app->param('site_url')
-      ? $app->param('site_url')
-      : $base_url_path
-        ? $base_url_path . '_clone'
-        : $base_url_subdomain
-          ? $base_url_subdomain . '_clone'
-          : $base_url . '_clone';
-    $param->{'site_path'} = defined $app->param('site_path') ? $app->param('site_path') : $base_path . '_clone';
+
+    my $website = $blog->website;
+    my ( $website_scheme, $website_domain ) =
+        $website->site_url =~ m!(https?)://(.+/)$!;
+    $param->{website_scheme} = $website_scheme;
+    $param->{website_domain} = $website_domain;
+
+    if ( defined $app->param('site_url') ) {
+        $param->{'site_url'} = $app->param('site_url');
+    }
+    elsif ( defined( $app->param('site_url_subdomain') )
+        ||  defined( $app->param('site_url_path') ) )
+    {
+        $param->{'site_url_subdomain'} = $app->param('site_url_subdomain');
+        $param->{'site_url_path'} = $app->param('site_url_path');
+    }
+    else {
+        my @raw_site_url = $blog->raw_site_url; 
+        if ( 2 == @raw_site_url ) {
+            my $subdomain = $raw_site_url[0];
+            $subdomain =~ s/\.$//;
+            $base_url = $blog->site_url;
+            $param->{site_url_subdomain} = $subdomain;
+            $param->{site_url_path} = $raw_site_url[1];
+        }
+        else {
+            $base_url = $raw_site_url[0];
+        }
+    }
+    $param->{site_url} = $base_url;
 
     require File::Spec;
-    my $website = $blog->website;
     $param->{parent_id} = $website->id;
-    $param->{parent_path} = File::Spec->catfile($website->site_path, '') if $website->site_path;
-    $param->{parent_url} = $website->site_url;
+    unless ( MT::Blog->is_site_path_absolute( $param->{site_path} ) ) {
+        $param->{parent_path} = File::Spec->catfile($website->site_path, '')
+            if $website->site_path;
+    }
     $param->{blog_id} = $app->param('blog_id');
 
     if ( $app->param('clone_prefs_entries_pages') ) {
@@ -2651,7 +2678,16 @@ HTML
         );
 
         $new_blog->site_path( $param->{'site_path'} );
-        $new_blog->site_url( $param->{'site_url'} );
+        my $subdomain = $app->param('site_url_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        my $path = $app->param('site_url_path');
+        if ( $subdomain || $path ) {
+            $new_blog->site_url("$subdomain/::/$path");
+        }
+        else {
+            $new_blog->site_url( $param->{'site_url'} );
+        }
         $new_blog->save();
 
         my $website = $app->model( 'website' )->load( $param->{'parent_id'} );

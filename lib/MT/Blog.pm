@@ -419,7 +419,14 @@ sub site_url {
 sub is_site_path_absolute {
     my $blog = shift;
 
-    my $raw_path = $blog->SUPER::site_path;
+    my $raw_path;
+    if ( ref $blog ) {
+        $raw_path = $blog->SUPER::site_path;
+    }
+    else {
+        $raw_path = $_[0];
+    }
+
     return 1 if $raw_path =~ m!^/!;
     return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
     return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC
