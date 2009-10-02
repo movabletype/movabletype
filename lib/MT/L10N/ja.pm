@@ -280,7 +280,7 @@ use vars qw( @ISA %Lexicon );
 	'Older Comments' => '古いコメント',
 	'Newer Comments' => '新しいコメント',
 	'Comment Detail' => 'コメント詳細',
-	'The data is modified by the paginate script' => 'ページネーションスクリプトによって変更さてています。',
+	'The data is modified by the paginate script' => 'ページネーションスクリプトによって変更されています。',
 	'Remember personal info?' => 'ログイン情報を記憶',
 
 ## default_templates/trackbacks.mtml
