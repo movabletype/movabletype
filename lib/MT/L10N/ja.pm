@@ -1215,7 +1215,7 @@ use vars qw( @ISA %Lexicon );
 	'URL is invalid.' => 'URLが不正です。',
 	'User requires display name.' => '表示名は必須です。',
 	'[_1] contains an invalid character: [_2]' => '[_1]には不正な文字が含まれています: [_2]',
-	'Display Name' => '表示する名前',
+	'Display Name' => '表示名',
 	'Email Address is invalid.' => '不正なメールアドレスです。',
 	'Email Address is required for password recovery.' => 'メールアドレスが必要です。',
 	'User requires username.' => 'ユーザー名は必須です。',
