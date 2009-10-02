@@ -1784,13 +1784,17 @@ sub dialog_adjust_sitepath {
             $params->{old_site_url} = $blog->site_url;
             my @raw_site_url = $blog->raw_site_url; 
             if ( 2 == @raw_site_url ) {
-                $params->{old_site_url_subdomain} = $raw_site_url[0];
+                my $subdomain = $raw_site_url[0];
+                $subdomain =~ s/\.$//;
+                $params->{old_site_url_subdomain} = $subdomain;
                 $params->{old_site_url_path}      = $raw_site_url[1];
             }
             $params->{old_archive_url} = $blog->archive_url if $blog->column('archive_url');
             my @raw_archive_url = $blog->raw_archive_url; 
             if ( 2 == @raw_archive_url ) {
-                $params->{old_archive_url_subdomain} = $raw_archive_url[0];
+                my $subdomain = $raw_archive_url[0];
+                $subdomain =~ s/\.$//;
+                $params->{old_archive_url_subdomain} = $subdomain;
                 $params->{old_archive_url_path}      = $raw_archive_url[1];
             }
             push @blogs_loop, $params;
