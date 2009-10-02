@@ -1881,8 +1881,7 @@ sub pre_save {
     else {
         $delim = ord(',');
     }
-    $obj->entry_prefs( 'tag_delim' => $delim );
-
+    $obj->entry_prefs( "tag_delim=$delim" );
     unless ( $obj->id ) {
         $obj->created_by( $app->user->id );
     }
