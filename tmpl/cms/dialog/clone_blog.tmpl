@@ -97,8 +97,6 @@
             title="<__trans phrase="Clone">"
             class="continue action primary-button"><__trans phrase="Clone"></button>
         <button
-            name="back_to_form"
-            value="1"
             type="submit"
             accesskey="x"
             title="<__trans phrase="Back">"
@@ -576,5 +574,8 @@
   }
 })();
 jQuery.mtUseSubdomain();
+jQuery('button.goback').click(function() {
+    jQuery('form#clone-verification-form > fieldset > input[name=clone]').val(0);
+});
 </script>
 <mt:include name="dialog/footer.tmpl">

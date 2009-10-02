@@ -2546,10 +2546,9 @@ sub clone {
           $app->param('clone_prefs_categories');
     }
 
-    my $clone = $app->param('back_to_form') ? 0 : $app->param('clone');
     $param = _has_valid_form( $app, $blog, $param );
 
-    if ( $blog_id && $clone && $param->{'isValidForm'} ) {
+    if ( $blog_id && $app->param('clone') && $param->{'isValidForm'} ) {
         print_status_page( $app, $blog, $param );
         return;
     }
