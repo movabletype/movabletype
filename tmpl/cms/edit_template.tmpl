@@ -126,6 +126,15 @@
         </mt:if>
         <mt:if name="template_group" eq="widget">
             <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
+            <mt:if name="can_edit_config">
+            <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+            </mt:if>
+        <mt:elseif name="template_group" eq="module">
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+            <mt:if name="can_edit_config">
+            <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+            </mt:if>
         <mt:else>
             <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
             <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>

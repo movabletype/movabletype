@@ -1975,6 +1975,7 @@ tfoot th.last-child {
 .listing .status-static img { background-image: url(../images/status_icons/neutral.gif); }
 .listing .status-rebuild img { background-image: url(../images/status_icons/success.gif); }
 .listing .status-norebuild img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-enabled img { background-image: url(../images/status_icons/success.gif); }
 .listing .status-disabled img { background-image: url(../images/status_icons/neutral.gif); }
 .listing .status-missing img { background-image: url(../images/status_icons/warning.gif); }
 

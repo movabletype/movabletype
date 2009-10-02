@@ -194,8 +194,7 @@ function setLicense() {
 </fieldset>
 
 <mt:if name="can_set_publish_paths">
-<fieldset>
-
+<mtapp:settinggroup id="publushing-path-settings">
     <h3><__trans phrase="Publishing Paths"></h3>
 
     <mtapp:setting
@@ -321,16 +320,13 @@ function setLicense() {
         </mtapp:setting>
     </mt:if>
     </div>
-</fieldset>
+</mtapp:settinggroup>
 </mt:if>
-
 
 <mt:ignore>
     <!-- to be enabled at a later date -->
-
 <mt:if name="can_use_publish_queue">
-
-<fieldset>
+<mtapp:settinggroup id="publish-queue-settings">
     <h3><__trans phrase="Asynchronous Job Queue"></h3>
 
 <mtapp:setting
@@ -345,15 +341,13 @@ function setLicense() {
     <input id="publish_queue" type="checkbox" name="publish_queue" value="1" <mt:if name="publish_queue"> checked="checked"</mt:if>/>
     <label for="publish_queue"><__trans phrase="Use background publishing queue for publishing static pages for this blog"></label>
 </mtapp:setting>
-</fieldset>
+</mtapp:settinggroup>
 </mt:if>
-
 </mt:ignore>
-
 
 <mt:unless name="hide_build_option">
 <mt:if name="dynamic_enabled">
-<fieldset>
+<mtapp:settinggroup id="dynamic-option-settings">
     <h3><__trans phrase="Dynamic Publishing Options"></h3>
 
     <mtapp:setting
@@ -371,15 +365,13 @@ function setLicense() {
         </li>
     </ul>
     </mtapp:setting>
-
-</fieldset>
+</mtapp:settinggroup>
 </mt:if>
 </mt:unless>
 
 
-<fieldset>
+<mtapp:settinggroup id="archive-option-settings">
     <h3><__trans phrase="Archive Options"></h3>
-
 <mtapp:setting
     id="file_extension"
     label="<__trans phrase="File Extension">"
@@ -411,23 +403,14 @@ function setLicense() {
         </mt:unless>
     </mtapp:setting>
 </mt:if>
-</fieldset>
+</mtapp:settinggroup>
 
 
-<fieldset>
+<mtapp:settinggroup id="module-option-settings">
     <h3><__trans phrase="Module Options"></h3>
-<mtapp:setting
-    id="include_cache"
-    label="<__trans phrase="Module Caching">"
-    content_class="field-content-text"
-    help_page="blog_settings_publishing"
-    help_section="include_cache">
-    <label for="include_cache"><input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>/> <__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance."></label>
-</mtapp:setting>
 <mtapp:setting
     id="include_system"
     label="<__trans phrase="Server Side Includes">"
-    content_class="field-content-text"
     help_page="blog_settings_publishing"
     help_section="ssi">
     <select id="include_system" name="include_system">
@@ -438,7 +421,15 @@ function setLicense() {
       <option value="jsp"<mt:if name="include_system" eq="jsp"> selected="selected"</mt:if>><__trans phrase="Java Server Page Includes"></option>
     </select>
 </mtapp:setting>
-</fieldset>
+<mtapp:setting
+    id="include_cache"
+    label="<__trans phrase="Module Caching">"
+    content_class="field-content-text"
+    help_page="blog_settings_publishing"
+    help_section="include_cache">
+    <label for="include_cache"><input id="include_cache" type="checkbox" name="include_cache" value="1"<mt:if name="include_cache"> checked="checked"</mt:if>/> <__trans phrase="Allow properly configured template modules to be cached to enhance publishing performance."></label>
+</mtapp:setting>
+</mtapp:settinggroup>
 
 <mtapp:settinggroup id="revision-history-settings">
 <h3><__trans phrase="Revision History"></h3>

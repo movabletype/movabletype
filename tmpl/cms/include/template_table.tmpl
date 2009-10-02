@@ -74,6 +74,7 @@
         </mt:if>
         <mt:if name="template_type" like="(module|widget)">
             <mt:if name="blog_id">
+                <th class="ssi-method"><__trans phrase="SSI"></th>
                 <th class="cache-method"><__trans phrase="Cached"></th>
             </mt:if>
         </mt:if>
@@ -140,6 +141,7 @@
                 </td>
     <mt:else name="template_type" like="(module|widget)">
         <mt:if name="blog_id">
+                <td class="ssi-method si status-<mt:if name="use_ssi">enabled<mt:else>disabled</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
                 <td class="cache-method si status-<mt:if name="use_cache">cached<mt:else>uncached</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" alt="" width="9" height="9" title="" /></td>
         </mt:if>
     </mt:if>
