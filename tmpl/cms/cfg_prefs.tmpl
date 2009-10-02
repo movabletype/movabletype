@@ -205,12 +205,12 @@ function setLicense() {
         help_section="site_url">
     <mt:if name="site_url_subdomain">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="<mt:if name="is_blog"> extra-path</mt:if>" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="<mt:if name="is_blog"> extra-path</mt:if>" /></span>
         </div>
         <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use Subdomain"></label>
     <mt:elseif name="site_url_path">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="<mt:if name="is_blog"> extra-path</mt:if>" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="<mt:if name="is_blog"> extra-path</mt:if>" /></span>
         </div>
         <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="use_subdomain"><__trans phrase="Use Subdomain"></label>
     <mt:elseif name="is_blog">
@@ -471,9 +471,7 @@ function setLicense() {
 
 </form>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
@@ -543,8 +541,9 @@ jQuery(function() {
             error.removeAttr('generated').insertAfter(element);
         }
     });
-});
-jQuery.mtUseSubdomain();
-/* ]]> */
-</script>
+    jQuery.mtEditSiteUrl({
+        edit: '<__trans phrase="Edit">'
+    });
+    jQuery.mtUseSubdomain();
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

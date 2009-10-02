@@ -617,6 +617,35 @@ $.fn.mtEditInput = function(options) {
 };
 
 /*
+ * mtEditSiteUrl
+ *
+ * Usage:
+ *   jQuery.mtEditSiteUrl();
+ *
+ */
+$.mtEditSiteUrl = function(options) {
+    var defaults = {
+        edit: 'Edit'
+    };
+    var opts = $.extend(defaults, options);
+    var $input = $('input#site_url_path');
+    if ($input.val()) {
+        $input
+            .before('<span class="site_url_path-text"></span>')
+            .after('<button id="mt-set-site_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+            .hide();
+        $('span.site_url_path-text').text($input.val());
+    }
+    $('button#mt-set-site_url_path').click(function() {
+        $(this).hide();
+        $('span.site_url-text').hide();
+        $('input#site_url_path').show();
+        $('p#site_url_path-warning').show();
+        return false;
+    });
+};
+
+/*
  * mtCheckboxOption
  *
  * Usage:

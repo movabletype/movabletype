@@ -120,6 +120,7 @@ sub save {
 
     if ( $type eq 'blog' ) {
         my $subdomain = $q->param('site_url_subdomain');
+        $subdomain = '' if !$q->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $q->param('site_url_path');

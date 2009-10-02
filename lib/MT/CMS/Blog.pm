@@ -2037,6 +2037,7 @@ sub cfg_prefs_save {
           if $app->param('max_revisions_template');
     }
     my $subdomain = $app->param('site_url_subdomain');
+    $subdomain = '' if !$app->param('use_subdomain');
     $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
     $subdomain =~ s/\.{2,}/\./g;
     my $path = $app->param('site_url_path');
@@ -2044,6 +2045,7 @@ sub cfg_prefs_save {
         $blog->site_url("$subdomain/::/$path");
     }
     $subdomain = $app->param('archive_url_subdomain');
+    $subdomain = '' if !$app->param('use_archive_url_subdomain');
     $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
     $subdomain =~ s/\.{2,}/\./g;
     $path = $app->param('archive_url_path');
@@ -2518,6 +2520,7 @@ sub clone {
         }
     }
     $param->{site_url} = $base_url;
+    $param->{'use_subdomain'} = $app->param('use_subdomain');
 
     require File::Spec;
     $param->{parent_id} = $website->id;
@@ -2678,6 +2681,7 @@ HTML
 
         $new_blog->site_path( $param->{'site_path'} );
         my $subdomain = $app->param('site_url_subdomain');
+        $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
