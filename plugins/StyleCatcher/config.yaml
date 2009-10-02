@@ -3,7 +3,7 @@ id: StyleCatcher
 key: StyleCatcher
 author_link: http://www.sixapart.com/
 author_name: Six Apart, Ltd.
-description: <MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href='http://www.sixapart.com/movabletype/styles'>Movable Type styles</a> page.">
+description: <MT_TRANS phrase="StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.">
 version: 2.3
 l10n_class: StyleCatcher::L10N
 

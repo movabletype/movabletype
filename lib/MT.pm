@@ -31,9 +31,9 @@ BEGIN {
 
     ( $VERSION, $SCHEMA_VERSION ) = ( '5.0', '5.0016' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
-        '__PRODUCT_NAME__', 'MT',
+        'Movable Type', 'MT',
         '5.0', '5.0b2',
-        '__PORTAL_URL__'
+        'http://www.movabletype.org/'
     );
 
     # To allow MT to run straight from svn, if no build process (pre-processing)
@@ -106,7 +106,7 @@ SLUG
 }
 
 sub build_id {
-    my $build_id = '__BUILD_ID__';
+    my $build_id = '5.0-ja-greyhound-r4160-20090903';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
 }
