@@ -34,21 +34,21 @@
         <mtapp:setting
             id="site-url"
             label="<__trans phrase="Site URL">">
-            <mt:if name="site_url_subdomain">
+        <mt:if name="site_url_subdomain">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
-            <mt:elseif name="site_url_path">
+        <mt:elseif name="site_url_path">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
-            <mt:else>
+        <mt:else>
             <span id="site-url"><mt:var name="site_url" escape="html"></span>
-            </mt:if>
-    <mt:if name="site_url_warning">
+        </mt:if>
+        <mt:if name="site_url_warning">
             <p>
                 <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
                 <span class="alert-warning-inline">
                     <__trans phrase="This is set to the same URL as the original blog.">
                 </span>
             </p>
-    </mt:if>
+        </mt:if>
         </mtapp:setting>
 
         <mtapp:setting
@@ -140,20 +140,14 @@
             show_hint="1">
         <mt:if name="site_url_subdomain">
             <div class="site-url">
-                <mt:var name="website_scheme">://
-                <span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span>
-                <span class="website-url"><mt:var name="website_domain"></span>
-                <span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
+                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
             </div>
-            <div><input type="checkbox" name="enable_subdomain" id="enable_subdomain" value="1"<mt:if name="enable_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="enable_subdomain"><__trans phrase="Setting subdomain"></label></div>
+            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use Subdomain"></label>
         <mt:elseif name="site_url_path">
             <div class="site-url">
-                <mt:var name="website_scheme">://
-                <span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span>
-                <span class="website-url"><mt:var name="website_domain"></span>
-                <span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
+                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
             </div>
-            <div><input type="checkbox" name="enable_subdomain" id="enable_subdomain" value="1"<mt:if name="enable_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="enable_subdomain"><__trans phrase="Setting subdomain"></label></div>
+            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use Subdomain"></label>
         <mt:else>
             <div class="site-url">
                 <mt:var name="website_scheme">://<mt:var name="website_domain"><input name="site_url_path" id="site-url-path" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
@@ -573,6 +567,7 @@
     }
   }
 })();
+
 jQuery.mtUseSubdomain();
 jQuery('button.goback').click(function() {
     jQuery('form#clone-verification-form > fieldset > input[name=clone]').val(0);
