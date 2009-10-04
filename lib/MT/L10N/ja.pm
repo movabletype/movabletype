@@ -3080,6 +3080,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 
 ## tmpl/cms/export_theme.tmpl
 	'Export [_1] Themes' => '[_1]テーマのエクスポート',
+	'All Themes' => 'テーマの一覧',
 	'Theme package have been saved.' => 'テーマパッケージが保存されました。',
 	'The name of your theme.' => 'テーマの名前です。',
 	'Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, \'-\' or \'_\').' => '次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)',
@@ -4171,6 +4172,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Your blog does not have an explicit Creative Commons license.' => 'クリエイティブ・コモンズライセンスを指定していません。',
 	'Select a license' => 'ライセンスの選択',
 	'Publishing Paths' => '公開パス',
+	'Use subdomain' => 'サブドメインの利用',
 	'Warning: Changing the site URL can result in breaking all the links in your blog.' => '警告: サイトURLを変更するとブログ内の全てのリンクがリンク切れとなることがあります。',
 	'The URL of your blog. Exclude the filename (i.e. index.html). End with \'/\'. Example: http://www.example.com/blog/' => 'ブログを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。例: http://www.example.com/blog/',
 	'The URL of your website. Exclude the filename (i.e. index.html).  End with \'/\'. Example: http://www.example.com/' => 'ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は\'/\'で終わります。 例: http://www.example.com/',
