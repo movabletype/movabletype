@@ -146,20 +146,38 @@ $.mtEditSiteUrl = function(options) {
         edit: 'Edit'
     };
     var opts = $.extend(defaults, options);
-    var $input = $('input#site_url_path');
-    if ($input.val()) {
-        $input
-            .before('<span class="site_url_path-text"></span>')
-            .after('<button id="mt-set-site_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
-            .hide();
-        $('span.site_url_path-text').text($input.val());
-    }
-    $('button#mt-set-site_url_path').click(function() {
-        $(this).hide();
-        $('span.site_url-text').hide();
-        $('input#site_url_path').show();
-        $('p#site_url_path-warning').show();
-        return false;
+    var ids = ['site', 'archive'];
+    $.each(ids, function() {
+        var id = this;
+        var $subdomain = $('input#'+this+'_url_subdomain');
+        var $path = $('input#'+this+'_url_path');
+        if ($path.val()) {
+            if ($subdomain.val()) {
+                $subdomain
+                    .parent('.subdomain')
+                    .before('<span class="'+this+'_url_subdomain-text"></span>');
+                $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
+            }
+            $subdomain.parents('.field-content').find('.subdomain').hide();
+            $subdomain.parents('.field-content').find('.use_subdomain').hide();
+            $path
+                .before('<span class="'+this+'_url_path-text"></span>')
+                .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .hide();
+            $('span.'+this+'_url_path-text').text($path.val());
+        }
+        $('button#mt-set-'+this+'_url_path').click(function() {
+            $(this).hide();
+            $('span.'+id+'_url_subdomain-text').hide();
+            if ($subdomain.val()) {
+                $subdomain.parents('.field-content').find('.subdomain').show();
+            }
+            $('span.'+id+'_url_path-text').hide();
+            $path.show();
+            $(this).parents('.field-content').find('.use_subdomain').show();
+            $('p#'+id+'_url_path-warning').show();
+            return false;
+        });
     });
 };
 
