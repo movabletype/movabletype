@@ -1805,6 +1805,7 @@ MT.App = new Class( App, {
         }
             
         this.changed = true;
+        if ( form["dirty"] ) form["dirty"].value = 1;
         if ( autoSaveDelay < 1 )
             return;
 

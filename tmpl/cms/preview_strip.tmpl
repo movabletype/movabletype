@@ -69,7 +69,7 @@
                 <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
                 <input type="hidden" name="_preview_file" value="<$mt:var name="preview_file" escape="html"$>" />
-                <input type="hidden" name="dirty" value="1" />
+                <input type="hidden" name="dirty" value="<mt:var name="dirty">" />
     <mt:loop name="entry_loop">
                 <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
     </mt:loop>

@@ -1286,7 +1286,8 @@ sub _build_entry_preview {
         $param{rev_a} = $rev_numbers[0];
         $param{rev_b} = $rev_numbers[1];
     }
-    
+    $param{dirty} = $q->param('dirty') ? 1 : 0;
+
     if ($fullscreen) {
         return $app->load_tmpl( 'preview_entry.tmpl', \%param );
     }
