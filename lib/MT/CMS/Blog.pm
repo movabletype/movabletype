@@ -1858,6 +1858,13 @@ sub make_blog_list {
     while ( my ($e_count, $e_blog_id) = $e_iter->() ) {
         $counts{$e_blog_id}{'entry'} = $e_count;
     }
+    my $p_iter = $app->model('page')->count_group_by(
+        { blog_id => \@blog_ids },
+        { group => [ 'blog_id' ] }
+    );
+    while ( my ($p_count, $p_blog_id) = $p_iter->() ) {
+        $counts{$p_blog_id}{'page'} = $p_count;
+    }
     my $c_iter = $app->model('comment')->count_group_by(
         { blog_id => \@blog_ids },
         { group => [ 'blog_id' ] }
@@ -1895,10 +1902,12 @@ sub make_blog_list {
         };
         $row->{num_blogs}    = $counts{$blog_id}{'blog'} unless $blog->is_blog();
         $row->{num_entries}  = $counts{$blog_id}{'entry'};
+        $row->{num_pages}    = $counts{$blog_id}{'page'};
         $row->{num_comments} = $counts{$blog_id}{'comment'};
         $row->{num_pings}    = $counts{$blog_id}{'ping'};
         $row->{can_create_post}       = $perms->can_do('create_new_entry');
         $row->{can_edit_entries}      = $perms->can_do('create_new_entry');
+        $row->{can_edit_pages}        = $perms->can_do('manage_pages');
         $row->{can_edit_templates}    = $perms->can_do('edit_templates');
         $row->{can_edit_config}       = $perms->can_do('edit_config');
         $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
