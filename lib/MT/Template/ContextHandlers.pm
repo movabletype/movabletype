@@ -2906,9 +2906,9 @@ sub _hdlr_app_listing {
     $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
     my $blog_id = $ctx->var('blog_id') || '';
     $blog_id = qq{\n        <input type="hidden" name="blog_id" value="$blog_id" />} if $blog_id;
-    my $token = $ctx->var('magic_token') || MT->app->current_magic;
-    my $action = $args->{action} || '<mt:var name="script_url">';
-    my $target = ' target="' . $args->{target} . '"' if defined $args->{target};
+    my $token = $ctx->var('magic_token') || MT->app->current_magic || '';
+    my $action = $args->{action} || '<mt:var name="script_url">' || '';
+    my $target = defined $args->{target} ? ' target="' . $args->{target} . '"' : '';
 
     my $actions_top = "";
     my $actions_bottom = "";
