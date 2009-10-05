@@ -122,7 +122,7 @@ $.mtUseSubdomain = function(options) {
     var $checkboxes = $('#site_url-field :checkbox, #archive_url-field :checkbox');
     $checkboxes.each(function() {
         if (!this.checked) {
-            $(this).parent('.field-content').find('.subdomain').hide();
+            $(this).parents('.field-content').find('.subdomain').hide();
         }
     });
     $checkboxes.click(function() {
@@ -175,7 +175,7 @@ $.mtEditSiteUrl = function(options) {
             $('span.'+id+'_url_path-text').hide();
             $path.show();
             $(this).parents('.field-content').find('.use_subdomain').show();
-            $('p#'+id+'_url_path-warning').show();
+            $('p#'+id+'_url-warning').show();
             return false;
         });
     });
