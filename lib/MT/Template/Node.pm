@@ -89,9 +89,7 @@ sub attribute_list {
 }
 
 sub tag {
-    my $node = shift;
-    return $node->[EL_NODE_NAME] = shift if @_;
-    return $node->[EL_NODE_NAME];
+    return $_[1] ? $_[0]->[EL_NODE_NAME] = $_[1] : $_[0]->[EL_NODE_NAME];
 }
 
 sub setAttribute {
