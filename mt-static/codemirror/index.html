@@ -77,6 +77,18 @@ parsers...</p>
 
 <h2>Releases</h2>
 
+<p class="rel"><em>31-08-2009</em>: <a
+href="http://marijn.haverbeke.nl/codemirror/codemirror-0.63.zip">Version
+0.63</a>: Overhaul of paste-handling (less fragile), fixes for several
+serious IE8 issues (cursor jumping, end-of-document bugs) and a number
+of small problems.
+
+Introduces <a href="contrib/python/index.html">Python</a>
+and <a href="contrib/lua/index.html">Lua</a> parsers. Add
+<code>setParser</code> (on-the-fly mode changing) and
+<code>clearHistory</code> methods. Make parsing passes time-based
+instead of lines-based (see the <code>passTime</code> option).</p>
+
 <p class="rel"><em>30-05-2009</em>: <a
 href="http://marijn.haverbeke.nl/codemirror/codemirror-0.62.zip">Version
 0.62</a>: Introduces <a href="contrib/python/index.html">Python</a>
@@ -114,12 +126,6 @@ href="http://marijn.haverbeke.nl/codemirror/codemirror-0.58.zip">Version
 parsers). Also: bracket highlighting, a 'dumb tabs' mode, an
 <code>onChange</code> callback, and heaps of bugfixes. See the manual
 for details on the new features.</p>
-
-<p class="rel"><em>04-07-2008</em>: <a
-href="http://marijn.haverbeke.nl/codemirror/codemirror-0.57.zip">Version
-0.57</a>: A CSS parser and a nice tokenizer framework, bugfixes in the
-XML parser, a few browser-issue workarounds, one of which should fix
-the age-old Firefox cursor-showing-on-wrong line bug.</p>
 
 <h2 id="supported">Supported browsers</h2>
 

@@ -81,6 +81,15 @@ var CodeMirror = (function(){
 
     var nextNum = 1, barWidth = null;
     function sizeBar() {
+      if (!frame.offsetWidth || !win.Editor) {
+        for (var cur = frame; cur.parentNode; cur = cur.parentNode) {
+          if (cur != document) {
+            clearInterval(sizeInterval);
+            return;
+          }
+        }
+      }
+
       if (nums.offsetWidth != barWidth) {
         barWidth = nums.offsetWidth;
         nums.style.left = "-" + (frame.parentNode.style.marginLeft = barWidth + "px");
@@ -98,7 +107,8 @@ var CodeMirror = (function(){
     sizeBar();
     update();
     win.addEventHandler(win, "scroll", update);
-    setInterval(sizeBar, 500);
+    win.addEventHandler(win, "resize", update);
+    var sizeInterval = setInterval(sizeBar, 500);
   }
 
   function CodeMirror(place, options) {
@@ -139,6 +149,8 @@ var CodeMirror = (function(){
       options.stylesheet = [options.stylesheet];
 
     var html = ["<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><head>"];
+    // Hack to work around a bunch of IE8-specific problems.
+    html.push("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\"/>");
     forEach(options.stylesheet, function(file) {
       html.push("<link rel=\"stylesheet\" type=\"text/css\" href=\"" + file + "\"/>");
     });
