@@ -510,6 +510,7 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     $app->param('blog_id')
                         && $app->can_do('open_batch_entry_editor_via_list')
+                        && $app->param('filter_val')
                         && $app->param('filter_val') != MT::Entry::JUNK()
                         && $app->param('filter_key') ne 'spam_entries'
                 },
