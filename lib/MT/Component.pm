@@ -577,6 +577,12 @@ sub registry {
         my $r    = $c->{registry} ||= {};
         my $setter = grep { ref $_ } @_;
         return undef if ( !$r && !$setter );
+
+        # deepscan for any label elements since they will need translation
+        if ( !$c->{__localized} ) {
+            __deep_localize_labels( $c, $r );
+            $c->{__localized} = 1;
+        }
         my ( $last_r, $last_p );
         foreach my $p (@path) {
             if ( ref $p ) {
@@ -584,6 +590,7 @@ sub registry {
                 # Handle the case where an assignment
                 # is being made to a registry item. Ie
                 # $comp->registry("foo","bar","baz", { stuff => ... })
+                __deep_localize_labels($c, $p);
                 $last_r->{$last_p} = $p;
                 $r = $last_r;
                 last;
@@ -600,17 +607,26 @@ sub registry {
                             require MT::Util::YAML;
                             my $y = eval { MT::Util::YAML::LoadFile($f) }
                                 or die "Error reading $f: " . (MT::Util::YAML->errstr||$@||$!);
-                            $r->{$p} = $y if $y;
+                            if ($y) {
+                                __deep_localize_labels($c, $y) if ref $y eq 'HASH';
+                                $r->{$p} = $y;
+                            }
                         }
                     } elsif ($v =~ m/^\$\w+::/) {
                         my $code = MT->handler_to_coderef($v);
                         if (ref $code eq 'CODE') {
-                            $r->{$p} = $code->($c);
+                            my $res = $code->($c);
+                            __deep_localize_labels($c, $res)
+                                if $res && ref $res eq 'HASH';
+                            $r->{$p} = $res;
                         }
                     }
                 }
                 elsif ( ref($v) eq 'CODE' ) {
-                    $r->{$p} = $v->($c);
+                    my $res = $v->($c);
+                    __deep_localize_labels($c, $res)
+                        if $res && ref $res eq 'HASH';
+                    $r->{$p} = $res;
                 }
                 $last_r = $r;
                 $last_p = $p;
@@ -627,9 +643,7 @@ sub registry {
             }
         }
 
-        # deepscan for any label elements since they will need translation
         if ( ref $r eq 'HASH' ) {
-            __deep_localize_labels( $c, $r );
             weaken($_->{plugin} = $c)
                 for grep { ref $_ eq 'HASH' } values %$r;
         }
