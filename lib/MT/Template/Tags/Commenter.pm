@@ -313,7 +313,7 @@ sub _hdlr_commenter_url {
     my $c = $ctx->stash('comment')
         or return $ctx->_no_comment_error();
     my $cmntr = $_[0]->stash('commenter') or return '';
-    return $cmntr->url;
+    return $cmntr->url || '';
 }
 
 ###########################################################################
