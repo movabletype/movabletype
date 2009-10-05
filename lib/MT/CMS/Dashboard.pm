@@ -71,6 +71,10 @@ sub dashboard {
     my $is_blog = $blog->is_blog if $blog;
     my $scope = $app->view;
 
+    return $app->error(
+        $app->translate('Error: This blog doesn\'t have a parent website.') )
+        if $blog && $blog->is_blog && !$blog->website;
+
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $subdir (qw( uploads userpics )) {
