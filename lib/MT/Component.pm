@@ -516,12 +516,21 @@ CODE
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+    # Here, the text must be handled as binary ( non utf-8 ) data,
+    # because regexp for utf-8 string is too heavy.
+    # things we have to do is
+    #  * encode $text before parse
+    #  * decode the strings captured by regexp
+    #  * encode the translated string from translate()
+    #  * decode again for return
+    $text = Encode::encode('utf8', $text)
+        if Encode::is_utf8($text);
     my @cstack;
     while (1) {
         $text =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
         my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-            $args{$1} = $3;
+            $args{$1} = Encode::is_utf8($3) ? $3 : Encode::decode_utf8($3);
         }
         if ($section) {
             if ($close) {
@@ -540,7 +549,9 @@ sub translate_templatized {
             $args{params} = '' unless defined $args{params};
             my @p = split /\s*%%\s*/, $args{params}, -1;
             @p = ('') unless @p;
-            my $translation = $c->translate($args{phrase}, @p);
+            my $phrase = $args{phrase};
+            $phrase = Encode::decode_utf8($phrase) unless Encode::is_utf8($phrase);
+            my $translation = $c->translate($phrase, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
                     $translation = MT::Util::encode_html($translation);
@@ -551,10 +562,13 @@ sub translate_templatized {
                     $translation = encode_js($translation);
                 }
             }
+            $translation = Encode::encode('utf8', $translation)
+                if Encode::is_utf8($translation);
             $translation;
         }
         !igem or last;
     }
+    $text = Encode::decode_utf8($text) unless Encode::is_utf8($text);
     return $text;
 }
 
