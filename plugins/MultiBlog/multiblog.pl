@@ -28,6 +28,7 @@ my $plugin  = MT::Plugin::MultiBlog->new({
         [ 'rebuild_triggers',           { Default => '', Scope => 'blog' } ],
         [ 'blog_content_accessible',    { Default => '', Scope => 'blog' } ],
         [ 'other_triggers',             { Scope   => 'blog' } ],
+        [ 'blogs_in_website_triggers',  { Scope   => 'blog' } ],
         [ 'all_triggers',               { Scope   => 'system' } ],
         [ 'default_mtmultiblog_action', { Default =>  1, Scope => 'blog' } ],
         [ 'default_mtmulitblog_blogs',  { Default => '', Scope => 'blog' } ],
@@ -135,10 +136,17 @@ sub add_trigger {
     });
     if (!$app->param('search')) {
         if (my $loop = $tmpl->param('object_loop')) {
+            if ( $app->blog && !$app->blog->is_blog ) {
+                unshift @$loop, {
+                    id => '_blogs_in_website',
+                    label => $plugin->translate('* All blogs in this website'),
+                    description => $plugin->translate('Select to apply this trigger to all blogs in this website. '),
+                };
+            }
             unshift @$loop, {
                 id => '_all',
-                label => $plugin->translate('* All Weblogs'),
-                description => $plugin->translate('Select to apply this trigger to all weblogs'),
+                label => $plugin->translate('* All blogs in this system'),
+                description => $plugin->translate('Select to apply this trigger to all blogs in this system'),
             };
         }
     }
@@ -207,7 +215,16 @@ sub load_config {
                 {
                     action_name   => $actions{$action},
                     action_value  => $action,
-                    blog_name     => $plugin->translate('* All Weblogs'),
+                    blog_name     => $plugin->translate('* All blogs in this system'),
+                    blog_id       => $id,
+                    trigger_name  => $triggers{$trigger},
+                    trigger_value => $trigger,
+                };
+            } elsif ($id eq '_blogs_in_website') {
+                {
+                    action_name   => $actions{$action},
+                    action_value  => $action,
+                    blog_name     => $plugin->translate('* All blogs in this website'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,
@@ -257,7 +274,7 @@ sub save_config {
                 or delete $override->{$blog_id};
             $plugin->set_config_value( 'access_overrides'
                                      , $override
-                                     , 'system' );
+                                         , 'system' );
         }
 
         # Fiddle with rebuild triggers...
@@ -269,8 +286,24 @@ sub save_config {
             # If so, remove all references to the current blog from the triggers cached in other blogs
             foreach ( split ( /\|/, $old_triggers ) ) {
                 my ( $action, $id, $trigger ) = split ( /:/, $_ );
-                my $name = $id eq '_all' ? "all_triggers" : "other_triggers";
-                my $scope = $id eq '_all' ? "system" : "blog:$id";
+                my $name = $id eq '_all'
+                    ? "all_triggers"
+                    : $id eq '_blogs_in_website'
+                        ? 'blogs_in_website_triggers'
+                        : "other_triggers";
+                my $scope;
+                if ( $id eq '_all' ) {
+                    $scope = "system";
+                } elsif ( $id eq '_blogs_in_website' ) {
+                    my $app = MT::instance;
+                    my $website_id = $app->param('blog_id');
+                    next unless $website_id;
+                    if ( my $website = $app->model('website')->load($website_id) ) {
+                        $scope = "blog:".$website->id;
+                    }
+                } else {
+                    $scope = "blog:$id";
+                }
                 my $d = $plugin->get_config_value($name, $scope);
                 next unless exists $d->{$trigger}{$blog_id};
                 delete $d->{$trigger}{$blog_id};
@@ -279,10 +312,28 @@ sub save_config {
         }
         foreach ( split ( /\|/, $rebuild_triggers ) ) {
             my ($action, $id, $trigger) = split ( /:/, $_ );
-            my $name = $id eq '_all' ? "all_triggers" : "other_triggers";
-            my $scope = $id eq '_all' ? "system" : "blog:$id";
+            my $name = $id eq '_all'
+                ? "all_triggers"
+                : $id eq '_blogs_in_website'
+                    ? 'blogs_in_website_triggers'
+                    : "other_triggers";
+            my $scope;
+            if ( $id eq '_all' ) {
+                $scope = "system";
+            } elsif ( $id eq '_blogs_in_website' ) {
+                my $app = MT::instance;
+                my $website_id = $app->param('blog_id');
+                next unless $website_id;
+                if ( my $website = $app->model('website')->load($website_id) ) {
+                    $scope = "blog:".$website->id;
+                }
+            } else {
+                $scope = "blog:$id";
+            }
+
             my $d = $plugin->get_config_value($name, $scope) || {};
             $d->{$trigger}{$blog_id}{$action} = 1;
+            print STDERR Data::Dumper::Dumper($d);
             $plugin->set_config_value($name, $d, $scope);
         }
     }

@@ -16,9 +16,7 @@ function rebuildMultiBlogTriggerTable() {
         for (var i = 0; i < multiBlogRebuilds.length; i++) {
             str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
             str += "<td> <MT_TRANS phrase="When"> <strong>"
-                + (multiBlogRebuilds[i][3] == "_all"
-                    ? "<em><MT_TRANS phrase="Any Weblog"></em>"
-                    : multiBlogRebuilds[i][2])
+                + multiBlogRebuilds[i][2]
                 + "</strong></td><td>"
                 + multiBlogRebuilds[i][4]
                 + "</td>";

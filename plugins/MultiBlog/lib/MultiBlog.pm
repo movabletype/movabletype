@@ -83,12 +83,26 @@ sub post_feedback_save {
     if ( $feedback->visible ) {
         my $blog_id = $feedback->blog_id;
         my $app = MT->instance;
-        foreach my $scope ("blog:$blog_id", "system") {
-            my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+
+        my $code = sub {
+            my ( $d ) = @_;
+
             while ( my ( $id, $a ) = each( %{ $d->{$trigger} } ) ) {
                 next if $id == $blog_id;
                 perform_mb_action( $app, $id, $_ ) foreach keys %$a;
             }
+        };
+
+        foreach my $scope ("blog:$blog_id", "system") {
+            my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+            $code->($d);
+        }
+
+        my $blog = $feedback->blog;
+        if ( $blog->is_blog ) {
+            my $scope = "blog:".$blog->website->id;
+            my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+            $code->($d);
         }
     }
 }
@@ -97,9 +111,10 @@ sub post_entry_save {
     my $plugin = shift;
     my ( $eh, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
+    my @scope = ("blog:$blog_id", "system");
 
-    foreach my $scope ("blog:$blog_id", "system") {
-        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+    my $code = sub {
+        my ( $d ) = @_;
         while ( my ( $id, $a ) = each( %{ $d->{'entry_save'} } ) ) {
             next if $id == $blog_id;
             perform_mb_action( $app, $id, $_ ) foreach keys %$a;
@@ -112,7 +127,17 @@ sub post_entry_save {
                 perform_mb_action( $app, $id, $_ ) foreach keys %$a;
             }
         }
+    };
+
+    foreach my $scope ( @scope ) {
+        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+        $code->($d);
     }
+
+    my $blog = $entry->blog;
+    my $scope = "blog:".$blog->website->id;
+    my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+    $code->($d);
 }
 
 sub post_entry_pub {
@@ -120,8 +145,9 @@ sub post_entry_pub {
     my ( $eh, $app, $entry ) = @_;
     my $blog_id = $entry->blog_id;
 
-    foreach my $scope ("blog:$blog_id", "system") {
-        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+    my $code = sub {
+        my ( $d ) = @_;
+
         require MT::Entry;
         if ( ( $entry->status || 0 ) == MT::Entry::RELEASE() ) {
             while ( my ( $id, $a ) = each( %{ $d->{'entry_pub'} } ) ) {
@@ -129,7 +155,17 @@ sub post_entry_pub {
                 perform_mb_action( $app, $id, $_ ) foreach keys %$a;
             }
         }
+    };
+
+    foreach my $scope ("blog:$blog_id", "system") {
+        my $d = $plugin->get_config_value( $scope eq 'system' ? 'all_triggers' : 'other_triggers', $scope );
+        $code->($d);
     }
+
+    my $blog = $entry->blog;
+    my $scope = "blog:".$blog->website->id;
+    my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+    $code->($d);
 }
 
 sub perform_mb_action {
