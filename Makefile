@@ -160,4 +160,6 @@ clean:
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
-
+	-if [ "`which svn`" != "" ]; then \
+		svn revert lib/MT.pm php/mt.php; \
+	fi
