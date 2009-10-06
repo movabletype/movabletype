@@ -140,15 +140,6 @@ ul#asset-list li a.remove-asset {
     margin-top: 0;
 }
 
-/* -- Category Widget */
-#category-selector-list { 
-    width: 210px;
-}
-
-#category-selector-list .add-category-form { 
-    width: 190px;
-}
-
 /* - Listing Table */
 .listing th, 
 .listing td { 

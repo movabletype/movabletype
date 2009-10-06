@@ -149,7 +149,15 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
     position: relative;
 }
 
-/* - List Theme */
+/* - Widgets */
+/* -- Category Widget */
+.category-selector { 
+    width: 215px;
+}
+
+.category-selector .add-category-form { 
+    width: 190px;
+}
 
 /* - Footer */
 #footer { 
