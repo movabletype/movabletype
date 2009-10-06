@@ -488,6 +488,7 @@ sub archive_url {
             }
             my $archive_url = $blog->SUPER::archive_url;
             return $blog->site_url unless $archive_url;
+            return $archive_url if $archive_url =~ m!^https?://!;
             my @paths = $blog->raw_archive_url;
             if ( 2 == @paths  ) {
                 if ( $paths[0] ) {

@@ -395,7 +395,7 @@ sub _v5_generate_websites_place_blogs {
         my $dot = index( $domain, '.' );
         # XXX: ignoring domain that starts with ".".
         if ( $dot > 0 ) {
-            $domain =~ s!^(?:[\.\w]*?)([^\.]+?)(\.\w+)$!$1$2!;
+            $domain =~ s!^(?:.*?)([^\.]+?)(\.\w+)$!$1$2!;
         }
         my ( $subdomain, $path ) = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
         my $blog = delete $site_urls{ $shortest };
@@ -421,6 +421,15 @@ sub _v5_generate_websites_place_blogs {
         my $old_site_url = $blog->site_url;
         $blog->site_url("$subdomain/::/$path");
         $blog->parent_id($website->id);
+
+        # if archive_url is "under" the website url (i.e. either subdomain or path)
+        # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
+        # and everything should handle both relative and absolute url correctly.
+        if ( my $archive_url = $blog->column('archive_url') ) {
+            if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
+                $blog->archive_url("$1/::/$2");
+            }
+        }
         $blog->save
             or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
         $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
@@ -433,6 +442,13 @@ sub _v5_generate_websites_place_blogs {
             my $old_site_url = $blog->site_url;
             $blog->site_url("$subdomain/::/$path");
             $blog->parent_id($website->id);
+    
+            # same here for archive_urls as is described above.
+            if ( my $archive_url = $blog->column('archive_url') ) {
+                if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
+                    $blog->archive_url("$1/::/$2");
+                }
+            }
             $blog->save
                 or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
             $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));

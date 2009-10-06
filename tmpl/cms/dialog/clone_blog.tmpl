@@ -34,6 +34,7 @@
 
         <mtapp:setting
             id="site-url"
+            class="url-field"
             label="<__trans phrase="Site URL">">
         <mt:if name="site_url_subdomain">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
@@ -134,6 +135,7 @@
 
         <mtapp:setting
             id="site_url"
+            class="url-field"
             required="1"
             label="<__trans phrase="Site URL">"
             content_class="field-content-input"
@@ -143,15 +145,22 @@
             <div class="site-url">
                 <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
             </div>
-            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            <div class="use-subdomain">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            </div>
         <mt:elseif name="site_url_path">
             <div class="site-url">
                 <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
             </div>
-            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            <div class="use-subdomain">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            </div>
         <mt:else>
             <div class="site-url">
-                <mt:var name="website_scheme">://<mt:var name="website_domain"><input name="site_url_path" id="site-url-path" class="extra-path" value="<mt:var name="site_url" escape="html">" type="text" size="50" />
+                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="extra-path" /></span>
+            </div>
+            <div class="use-subdomain">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         </mt:if>
         </mtapp:setting>

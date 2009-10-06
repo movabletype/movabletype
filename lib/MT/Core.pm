@@ -27,7 +27,7 @@ BEGIN {
         schema_version => MT->schema_version,
         object_drivers => {
             'mysql' => {
-                label => 'MySQL Database ( Recommended )',
+                label => 'MySQL Database (Recommended)',
                 dbd_package => 'DBD::mysql',
                 config_package => 'DBI::mysql',
             },

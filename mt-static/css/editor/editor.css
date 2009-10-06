@@ -53,6 +53,10 @@
     margin-top: 3px;
 }
 
+.editor-toolbar span { 
+    display: inline-block;
+}
+
 .editor-toolbar a.button {
     display: inline-block;
     width: 22px;
@@ -278,7 +282,6 @@
 
 
 /* toggle */
-
 .editor-toolbar a.button.command-toggle-wysiwyg,
 .editor-toolbar a.button.command-toggle-html {
     background-image: url(../../images/buttons/toolbar/toggle.gif);

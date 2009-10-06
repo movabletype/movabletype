@@ -44,17 +44,22 @@ $.mtMenu = function() {
  *   jQuery.mtSelector();
  *
  */
-$.mtSelector = function() {
-    $('#system-overview > em').prepend('<span class="toggle-button"></span>');
-    $('#user-dashboard > em').prepend('<span class="toggle-button"></span>');
-    $('#current-website > em').prepend('<span class="toggle-button"></span>');
+$.mtSelector = function(options) {
+    var defaults = {
+        arrow_image: StaticURI+'images/arrow-down-gray.gif'
+    };
+    var opts = $.extend(defaults, options);
+    $('#system-overview > em').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('#user-dashboard > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('#current-website > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
-    $('#selector-nav li span').click(function() {
+    $('#selector-nav-list li .toggle-button ').click(function(event) {
         $(this).parent('em').parents('#selector-nav').toggleClass('show-selector');
+        event.preventDefault();
     });
     $(document).click(function(event) {
         if ($(event.target).parents('#selector-nav').length == 0) {
-            $('#selector-nav li span').parent('em').parents('#selector-nav').removeClass('show-selector');
+            $('#selector-nav').removeClass('show-selector');
         }
     });
     if (!$.support.style && !$.support.objectAll) {
@@ -119,7 +124,7 @@ $.mtCMSSearch = function(options) {
  *
  */
 $.mtUseSubdomain = function(options) {
-    var $checkboxes = $('#site_url-field :checkbox, #archive_url-field :checkbox');
+    var $checkboxes = $('.url-field :checkbox');
     $checkboxes.each(function() {
         if (!this.checked) {
             $(this).parents('.field-content').find('.subdomain').hide();
@@ -159,7 +164,7 @@ $.mtEditSiteUrl = function(options) {
                 $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
             }
             $subdomain.parents('.field-content').find('.subdomain').hide();
-            $subdomain.parents('.field-content').find('.use_subdomain').hide();
+            $subdomain.parents('.field-content').find('.use-subdomain').hide();
             $path
                 .before('<span class="'+this+'_url_path-text"></span>')
                 .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
@@ -174,7 +179,7 @@ $.mtEditSiteUrl = function(options) {
             }
             $('span.'+id+'_url_path-text').hide();
             $path.show();
-            $(this).parents('.field-content').find('.use_subdomain').show();
+            $(this).parents('.field-content').find('.use-subdomain').show();
             $('p#'+id+'_url-warning').show();
             return false;
         });
@@ -698,7 +703,6 @@ $.fn.mtToggleNext = function(options) {
     var opts = $.extend(defaults, options);
     return this.each(function() {
         var $parent = $(this);
-        var hoge = this;
         $('.'+opts.detail_class).hide();
         $parent.find('.'+opts.click_class).click(function(event) {
             $parent.toggleClass('active').find('.'+opts.detail_class).toggle();

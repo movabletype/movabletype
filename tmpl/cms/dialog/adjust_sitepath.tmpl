@@ -28,9 +28,9 @@ function changeParent (ws) {
 
     jQuery('.parent_site_path_'+blog_id).text(new_path);
     var matches = new_url.match(/(https?):\/\/(.+\/)$/);
-    if ( matches.length ) {
+    if ( matches && matches.length ) {
         jQuery('.parent_site_url_scheme_'+blog_id).text(matches[1] + '://');
-        jQuery('.parent_site_url_domain_'+blog_id).text('.' + matches[2]);
+        jQuery('.parent_site_url_domain_'+blog_id).text(matches[2]);
         jQuery('#site_url'+blog_id+'-field').removeClass('hidden');
         jQuery('#site_path'+blog_id+'-field').removeClass('hidden');
         jQuery('#archive_url'+blog_id+'-field').removeClass('hidden');
@@ -122,21 +122,28 @@ function init() {
             <mt:setvarblock name="site_url_id">site_url<mt:var name="id"></mt:setvarblock>
             <mtapp:setting
                 id="$site_url_id"
-                class="hidden"
+                class="url-field hidden"
                 label="<__trans phrase="Site URL">">
             <mt:if name="old_site_url_subdomain">
                 <div class="site-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="site-url extra-path" value="<mt:var name="old_site_url_path" escape="html">" /></span>
                 </div>
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+                <div class="use_subdomain">
+                    <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+                </div>
             <mt:elseif name="old_site_url_path">
                 <div class="site-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="site-url extra-path" value="<mt:var name="old_site_url_path" escape="html">" /></span>
                 </div>
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+                <div class="use_subdomain">
+                    <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+                </div>
             <mt:else>
                 <div class="site-url">
-                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>://<input type="text" name="site_url_<mt:var name="id" escape="html">" id="site_url_<mt:var name="id" escape="html">" class="site-url extra-path" value="<mt:var name="old_site_url" escape="html">" /><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span>
+                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="site_url extra-path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="site-url extra-path" value="<mt:var name="old_site_url_path" escape="html">" /></span>
+                </div>
+                <div class="use_subdomain">
+                    <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
                 </div>
             </mt:if>
             </mtapp:setting>
@@ -155,22 +162,22 @@ function init() {
             <mt:setvarblock name="archive_url_id">archive_url<mt:var name="id"></mt:setvarblock>
             <mtapp:setting
                 id="$archive_url_id"
-                class="hidden"
+                class="url-field hidden"
                 label="<__trans phrase="Archive URL">">
                 <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
             <mt:if name="old_archive_url_subdomain">
                 <div class="archive-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-url extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="archive-url extra-path" value="<mt:var name="old_archive_url" escape="html">" /></span>
                 </div>
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+                <div class="use-subdomain">
+                    <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+                </div>
             <mt:elseif name="old_archive_url">
                 <div class="archive-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-url extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="archive-url extra-path" value="<mt:var name="old_archive_url" escape="html">" /></span>
                 </div>
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
-            <mt:else>
-                <div class="archive-url">
-                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>://<input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="archive_url extra-path" value="<mt:var name="old_archive_url" escape="html">" /><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span>
+                <div class="use-subdomain">
+                    <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
                 </div>
             </mt:if>
             </mtapp:setting>
@@ -190,7 +197,7 @@ function init() {
 </mt:loop>
         </div>
     </div>
-    <div class="actions-bar hoge">
+    <div class="actions-bar">
         <button
             value="<__trans phrase="Continue">"
             type="submit"
@@ -266,44 +273,44 @@ function init() {
     jQuery('#adjust_sitepath').validate({
         rules: {
 <mt:loop name="website_loop">
-                site_path_<mt:var name="id" escape="html">: {
-                    required: true,
-                    path: true,
-                },
-                site_url_<mt:var name="id" escape="html">: {
-                    required: true,
-                    url: true,
-                },
+            site_url_<mt:var name="id" escape="html">: {
+                required: true,
+                url: true
+            },
+            site_path_<mt:var name="id" escape="html">: {
+                required: true,
+                path: true
+            }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
-                site_path_<mt:var name="id" escape="html">: 'path',
-                site_url_<mt:var name="id" escape="html">: 'url',
-                parent_id_<mt:var name="id">: {
-                    min: 1,
-                },
+            site_url_<mt:var name="id" escape="html">: 'url',
+            site_path_<mt:var name="id" escape="html">: 'path',
+            parent_id_<mt:var name="id">: {
+                min: 1
+            }<mt:unless name="__last__">,</mt:unless>
 </mt:loop>
         },
         messages: {
 <mt:loop name="website_loop">
             site_url_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
             },
             site_path_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
-            },
+            }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
             site_url_<mt:var name="id" escape="html">: {
-                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
-                },
+                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
+            },
             site_path_<mt:var name="id" escape="html">: {
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
-                },
+                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
             parent_id_<mt:var name="id">: {
-                min: '<__trans phrase="You must select a parent website." escape="singlequotes">',
-                },
+                min: '<__trans phrase="You must select a parent website." escape="singlequotes">'
+            }<mt:unless name="__last__">,</mt:unless>
 </mt:loop>
         },
         errorClass: "msg-error",

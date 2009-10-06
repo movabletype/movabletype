@@ -18,7 +18,6 @@ function smarty_function_mtcategoryarchivelink($args, &$ctx) {
     if (!$category) return '';
     $link = $ctx->mt->db()->category_link($category->category_id, $args);
     if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
-        echo "hoge";
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;

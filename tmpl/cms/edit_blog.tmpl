@@ -101,6 +101,7 @@ function init() {
 <mt:if name="can_set_publish_paths">
     <mtapp:setting
         id="site_url"
+        class="url-field"
         label="<__trans phrase="Site URL">"
         hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
         help_page="blog_settings_publishing"
@@ -108,7 +109,9 @@ function init() {
         <div class="site-url">
             <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="extra-path" /></span>
         </div>
-        <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        <div class="use-subdomain">
+            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
     </mtapp:setting>
 
     <mtapp:setting

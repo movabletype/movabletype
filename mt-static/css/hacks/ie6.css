@@ -86,6 +86,19 @@ body {
     width: 300px;
 }
 
+.selector ul.last-child, 
+#selector-nav .user-dashboard, 
+#selector-nav .system-overview, 
+#selector-nav #fav-website-list, 
+#selector-nav #fav-blog-list { 
+    border-top: 1px solid #9EA1A3;
+}
+
+.selector li  ul.last-child { 
+    border: 0;
+}
+
+
 /* - Navigation Menu */
 ul.menu-nav li, 
 ul.menu-nav li a { 
@@ -183,6 +196,8 @@ html#dialog {
 .plugin, 
 .theme, 
 .field-content ul, 
+#selector-nav .selector ul, 
+#selector-nav .selector ul li, 
 .fav-actions li a, 
 .listing-screen .actions-bar, 
 #editor .editor-header, 
@@ -200,5 +215,3 @@ ul#asset-list li,
     display: block;
     zoom: 1;
 }
-
-

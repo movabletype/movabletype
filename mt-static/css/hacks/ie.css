@@ -88,6 +88,16 @@ button.action {
     z-index: 1200;
 }
 
+/* - Selector Nav */
+#selector-nav-list a.toggle-button img { 
+    margin-top: 0;
+}
+
+#selector-nav .selector a,
+#selector-nav .selector span { 
+    overflow: visible;
+}
+
 /* - Navigation Menu */
 #menu { 
     z-index: 1100;
@@ -128,6 +138,15 @@ ul.menu-nav li.first-child a {
 ul#asset-list li a.remove-asset {
     top: 6px;
     margin-top: 0;
+}
+
+/* -- Category Widget */
+#category-selector-list { 
+    width: 210px;
+}
+
+#category-selector-list .add-category-form { 
+    width: 190px;
 }
 
 /* - Listing Table */

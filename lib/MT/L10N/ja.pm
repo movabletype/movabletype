@@ -1494,7 +1494,6 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Tools' => 'ツール',
 	'Manage' => '一覧',
 	'New' => '新規',
-	'Upload Assets' => 'アイテムのアップロード',
 	'Templates' => 'テンプレート',
 	'Widgets' => 'ウィジェット',
 	'Themes' => 'テーマ',
@@ -1508,8 +1507,8 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Permissions' => '権限',
 	'Search &amp; Replace' => '検索/置換',
 	'Plugins' => 'プラグイン',
-	'Import Entries' => 'ブログ記事のインポート',
-	'Export Entries' => 'ブログ記事のエクスポート',
+	'Import Entries' => '記事のインポート',
+	'Export Entries' => '記事のエクスポート',
 	'Export Theme' => 'テーマのエクスポート',
 	'Backup' => 'バックアップ',
 	'Restore' => '復元',
@@ -2122,7 +2121,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
-	'MySQL Database ( Recommended )' => 'MySQLデータベース(推奨)',
+	'MySQL Database (Recommended)' => 'MySQLデータベース(推奨)',
 	'PostgreSQL Database' => 'PostgreSQLデータベース',
 	'SQLite Database' => 'SQLiteデータベース',
 	'SQLite Database (v2)' => 'SQLite(v2)データベース',
@@ -2962,6 +2961,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Apply' => '適用',
 
 ## tmpl/cms/export.tmpl
+	'Export Blog Entries' => 'ブログ記事のエクスポート',
 	'You must select a blog to export.' => 'エクスポートするブログを選択してください。',
 	'_USAGE_EXPORT_1' => 'Movable Typeからブログ記事をエクスポートして、基本的なデータ(記事、コメント、トラックバック)を保存できます。',
 	'Blog to Export' => 'エクスポートするブログ',
@@ -4532,6 +4532,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Publish Again' => '再構築しなおす',
 
 ## tmpl/cms/import.tmpl
+	'Import Blog Entries' => 'ブログ記事のインポート',
 	'You must select a blog to import.' => 'インポート先のブログを選択してください。',
 	'Transfer weblog entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.' => '他のMovable Typeやブログツールからブログ記事を移行したり、ブログ記事のコピーを作成します。',
 	'Import data into' => 'インポート先',

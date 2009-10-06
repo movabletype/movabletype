@@ -1511,7 +1511,7 @@ sub core_menus {
             view       => [ "blog", 'website' ],
         },
         'asset:upload' => {
-            label      => "Upload Assets",
+            label      => "New",
             order      => 200,
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
