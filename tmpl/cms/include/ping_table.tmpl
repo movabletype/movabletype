@@ -49,8 +49,8 @@
             <th class="excerpt primary-col"><__trans phrase="Excerpt"></th>
     </mt:unless>
             <th class="from<mt:if name="view_expanded"> primary-col</mt:if>"><__trans phrase="From"></th>
-    <mt:unless name="blog_view">
-            <th class="weblog"><__trans phrase="Website/Blog"></th>
+    <mt:unless name="is_blog">
+            <th class="blog"><__trans phrase="Website/Blog"></th>
     </mt:unless>
             <th class="target"><__trans phrase="Target"></th>
             <th class="datetime"><__trans phrase="Date"></th>
@@ -84,7 +84,7 @@
     </mt:if>
             </td>
 </mt:unless>
-            <td<mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"</mt:if>>
+            <td class="excerpt" <mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"</mt:if>>
 <mt:if name="excerpt">
                 <mt:var name="excerpt" escape="html">
     <mt:if name="has_edit_access">
@@ -104,14 +104,14 @@
             <td>&nbsp;</td>
     </mt:unless>
 </mt:if>
-            <td><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
+            <td class="from"><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
 <mt:unless name="is_blog">
-            <td><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
+            <td class="blog"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
 </mt:unless>
-            <td><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
-            <td><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+            <td class="target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
+            <td class="datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
 <mt:if name="show_ip_info">
-            <td>
+            <td class="ip">
                 <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a>
             </td>
 </mt:if>
