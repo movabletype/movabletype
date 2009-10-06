@@ -502,6 +502,7 @@ sub html_text_transform {
 }
 
 sub encode_js {
+    use bytes;
     my($str) = @_;
     return '' unless defined $str;
     $str =~ s!\\!\\\\!g;
@@ -580,6 +581,7 @@ sub decode_url {
                 ## Encode any & not followed by something that looks like
                 ## an entity, numeric or otherwise.
                 $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
+
             }
             $html =~ s!"!&quot;!g;    #"
             $html =~ s!<!&lt;!g;
@@ -694,7 +696,7 @@ sub utf8_dirify {
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
     $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
-    $s;    
+    $s;
 }
 
 sub dirify {
@@ -1077,6 +1079,7 @@ sub is_valid_email {
 }
 
 sub is_valid_url {
+    use bytes;
     my($url, $stringent) = @_;
 
     $url ||= "";
@@ -1743,6 +1746,7 @@ sub dsa_verify {
 
 # TBD: fill in the contracts of these.
 sub sanitize_input {
+    use bytes;
     my $str = shift;
 
     # Convert decimal entities (&#112; => p)
@@ -1774,12 +1778,14 @@ sub extract_url_path {
 }
 
 sub extract_domain {
+    use bytes;
     my $str = shift;
     $str =~ s#^(.*?)/.*$#$1#;
     lc($str);
 }
 
 sub extract_urls {
+    use bytes;
     my @strings = @_;
     my (%domain,@urls);
     foreach (@strings) {
