@@ -1303,5 +1303,10 @@ function listPreviousPings () {
         jQuery('button.publish').attr('title', '<mt:var name="scheduled_button_title">');
         jQuery('button.draft').hide();
     }
+    jQuery('button.mt-<mt:var name="object_type">-listing-form-action').mtDoPluginAction({
+        id: 'entry_form',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl" id="footer_include">
