@@ -2037,6 +2037,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Failed.' => '失敗',
 
 ## lib/MT/CMS/Dashboard.pm
+	'Error: This blog doesn\'t have a parent website.' => 'エラー: このブログにはウェブサイトがありません。',
 	'Design with Themes' => 'テーマデザイン',
 	'Create and apply a theme to change blog templates, categories and other configurations.' => 'ブログのテンプレート、カテゴリとその他の設定を変更して、テーマを作成したり、適したりします。',
 	'Website Management' => 'ウェブサイト管理',
@@ -2154,7 +2155,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Set Variable Block' => '変数ブロックのSet',
 	'Widget Set' => 'ウィジェットセット',
 	'Publish Scheduled Entries' => '日時指定されたブログ記事を再構築',
-	'Add Summary Watcher to queue' => 'キューにサマリーワッチャーを追加',
+	'Add Summary Watcher to queue' => 'サマリー監視タスクをキューに追加',
 	'Junk Folder Expiration' => 'スパムコメント/トラックバックの廃棄',
 	'Remove Temporary Files' => 'テンポラリファイルの削除',
 	'Purge Stale Session Records' => '古いセッションレコードの消去',
@@ -3265,6 +3266,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Your [_1] has been published.' => '[_1]を再構築しました。',
 	'Revision: <strong>[_1]</strong>' => 'リビジョン: <strong>[_1]</strong>',
 	'View revisions' => 'リビジョン表示',
+	'View revisions of this template' => 'テンプレートのリビジョン表示',
 	'No revision(s) associated with this template' => 'テンプレートのリビジョンが見つかりません',
 	'Useful Links' => 'ショートカット',
 	'Module Option Settings' => 'モジュールオプション設定',
@@ -4055,6 +4057,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'Some [_1] in the revision could not be loaded because they have been removed.' => '履歴データ内に、削除されたために読み込めなかった[_1]があります。',
 	'Change Folder' => 'フォルダの変更',
 	'Unpublished (Spam)' => '未公開(スパム)',
+	'View revisions of this entry' => 'ブログ記事のリビジョン表示',
 	'No revision(s) associated with this [_1]' => '[_1]のリビジョンが見つかりません',
 	'[_1] - Published by [_2]' => '公開([_2] - [_1])',
 	'[_1] - Edited by [_2]' => '編集([_2] - [_1])',

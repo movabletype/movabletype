@@ -62,7 +62,7 @@ sub get_syscheck_content {
     my $app = shift;
 
     my $syscheck_url = $app->base . $app->mt_path . $app->config('CheckScript') .
-        '?view=tools&version=' . MT->version_id;
+        '?view=tools&version=' . MT->version_id . '&language=' . MT->current_language;
     if ( $syscheck_url && $syscheck_url ne 'disable' ) {
         my $SYSCHECKCACHE_TIMEOUT = 60 * 60 * 24;
         my $sess_class        = $app->model('session');
@@ -91,6 +91,7 @@ sub get_syscheck_content {
 
             # allowed html
             my $spec = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
+            $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
             $result = MT::Sanitize->sanitize( $result, $spec );
             $syscheck_object = MT::Session->new();
             $syscheck_object->set_values(
