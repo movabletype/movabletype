@@ -864,7 +864,7 @@ sub backup {
             filename => $file . "-1.xml"
           };
         $printer =
-          sub { my ($data) = @_; print $fh $data; return length($data); };
+          sub { require bytes; my ($data) = @_; print $fh $data; return bytes::length($data); };
         $splitter = sub {
             my ($findex, $header) = @_;
 
