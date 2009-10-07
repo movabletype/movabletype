@@ -1858,11 +1858,11 @@ sub make_blog_list {
     while ( my ($e_count, $e_blog_id) = $e_iter->() ) {
         $counts{$e_blog_id}{'entry'} = $e_count;
     }
-    my $p_iter = $app->model('page')->count_group_by(
+    my $pg_iter = $app->model('page')->count_group_by(
         { blog_id => \@blog_ids },
         { group => [ 'blog_id' ] }
     );
-    while ( my ($p_count, $p_blog_id) = $p_iter->() ) {
+    while ( my ($p_count, $p_blog_id) = $pg_iter->() ) {
         $counts{$p_blog_id}{'page'} = $p_count;
     }
     my $c_iter = $app->model('comment')->count_group_by(
