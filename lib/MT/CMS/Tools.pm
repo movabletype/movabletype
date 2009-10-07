@@ -1760,13 +1760,14 @@ sub dialog_adjust_sitepath {
     return $app->errtrans("Permission denied.") if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q         = $app->param;
-    my $tmp_dir   = $q->param('tmp_dir');
-    my $error     = $q->param('error') || q();
-    my $uploaded  = $q->param('restore_upload') || 0;
-    my @blog_ids  = split ',', $q->param('blog_ids');
-    my $asset_ids = $q->param('asset_ids');
-    my @blogs     = $app->model('blog')->load( { id => \@blog_ids } );
+    my $q          = $app->param;
+    my $tmp_dir    = $q->param('tmp_dir');
+    my $error      = $q->param('error') || q();
+    my $uploaded   = $q->param('restore_upload') || 0;
+    my @blog_ids   = split ',', $q->param('blog_ids');
+    my $asset_ids  = $q->param('asset_ids');
+    my $blog_class = $app->model('blog');
+    my @blogs      = $blog_class->load( { id => \@blog_ids } );
     my ( @blogs_loop, @website_loop );
 
     foreach my $blog (@blogs) {
@@ -1783,6 +1784,11 @@ sub dialog_adjust_sitepath {
                   ? ( parent_id    => $blog->parent_id )
                   : (),
               };
+            $params->{site_path_absolute} = 1
+                if $blog_class->is_site_path_absolute($blog->column('site_path'));
+            $params->{archive_path_absolute} = 1
+                if exists( $params->{old_archive_path} )
+                && $blog_class->is_site_path_absolute($blog->column('archive_path'));
             $params->{old_site_url} = $blog->site_url;
             my @raw_site_url = $blog->raw_site_url; 
             if ( 2 == @raw_site_url ) {
