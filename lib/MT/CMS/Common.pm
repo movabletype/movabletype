@@ -743,6 +743,7 @@ sub list {
           if $name eq 'blog_id';
     }
     if ( $type eq 'notification' ) {
+        $args{sort}      = 'created_on';
         $args{direction} = 'descend';
         $args{offset}    = $offset;
         $args{limit}     = $limit + 1;

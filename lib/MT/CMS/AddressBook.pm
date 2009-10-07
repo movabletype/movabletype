@@ -204,7 +204,7 @@ sub export {
 
     my $not_class = $app->model('notification');
     my $iter = $not_class->load_iter( { blog_id => $blog->id },
-        { 'sort' => 'created_on', 'direction' => 'ascend' } );
+        { 'sort' => 'created_on', 'direction' => 'descend' } );
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
