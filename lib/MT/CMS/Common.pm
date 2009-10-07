@@ -75,7 +75,8 @@ sub save {
         $param{return_args} = $app->param('return_args');
 
         if ( ( $type eq 'notification' ) || ( $type eq 'banlist' ) ) {
-            return list( $app, \%param );
+            $app->mode('list');
+            return $app->forward( 'list', \%param );
         }
         elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
             return MT::CMS::Blog::cfg_prefs( $app, \%param );
