@@ -2491,6 +2491,10 @@ td.sub-label label {
     position: relative;
 }
 
+#edit-page #basename { 
+    width: 180px;
+}
+
 /* --- Publish Date Field */
 .edit-entry .date-time-fields .post-date { 
     width: 7em;

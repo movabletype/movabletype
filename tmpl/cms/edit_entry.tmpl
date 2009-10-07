@@ -415,7 +415,12 @@
         label_class="top-label"
         help_page="entries">
 <mt:if name="can_publish_post">
-        <input type="text" name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" />
+        <span class="basename">
+            <input type="text" name="basename" id="basename" value="<$mt:var name="basename" escape="html"$>" />
+    <mt:if name="object_type" eq="page">
+            <span class="file-extension"><mt:var name="file_extension" escape="html"></span>
+    </mt:if>
+        </span>
     <mt:if name="object_type" eq="entry">
         <p class="alert-warning-inline" id="basename-warning" style="display: none">
             <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
