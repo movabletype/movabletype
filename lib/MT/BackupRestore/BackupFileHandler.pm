@@ -401,7 +401,6 @@ sub end_document {
 }
 
 sub _decode {
-    print STDERR "---@_";
     Encode::decode_utf8( $_[0] );
 }
 
