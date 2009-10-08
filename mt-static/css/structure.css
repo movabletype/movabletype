@@ -600,14 +600,11 @@ ul.tabs li a {
     position: relative;
     float: right;
     height: 23px;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    border-bottom-radius: 3px;
-    -moz-box-shadow: #2b2b2b 0 1px 2px;
-    -webkit-box-shadow: #2b2b2b 1px 0 2px;
-    -khtml-box-shadow: #2b2b2b 1px 0 2px;
-    box-shadow: #2b2b2b 1px 0 2px;
+    background: #f2f2b0 url(../images/buttons/button-favorite-action.png) left bottom repeat-x;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-bottom-radius: 5px;
 }
 
 .fav-actions-nav em { 
@@ -629,9 +626,11 @@ ul.tabs li a {
 .fav-actions-nav .fav-actions-root-link span { 
     display: block;
     float: left;
-    line-height: 23px;
+    line-height: 22px;
     padding: 0 8px;
-    background: #f2f2b0 url(../images/buttons/button-favorite-action.png) left bottom repeat-x;
+    border-width: 1px 0 1px 1px;
+    border-style: solid;
+    border-color: #7b7c7d;
     font-weight: bold;
     text-shadow: #fff 0 1px 0;
     -moz-border-radius: 3px 0 0 3px;
@@ -646,10 +645,9 @@ ul.tabs li a {
 .fav-actions-nav .toggle-button {
     display: block;
     float: left;
-    height: 23px;
+    height: 22px;
     padding: 0 5px;
-    background: #f2f2b0 url(../images/buttons/button-favorite-action.png) left bottom repeat-x;
-    border-left: 1px solid #7b7c7d;
+    border: 1px solid #7b7c7d;
     text-align: center;
     -moz-border-radius: 0 3px 3px 0;
     -webkit-border-top-right-radius: 3px;
@@ -663,10 +661,11 @@ ul.tabs li a {
 .fav-actions-nav .fav-actions-root-link:hover span, 
 .fav-actions-nav .toggle-button:hover { 
     background-position: left top;
+    border-color: #383c3c;
 }
 
 .fav-actions-nav .toggle-button img { 
-    margin-top: 9px;
+    margin-top: 8px;
 }
 
 .fav-actions-nav .active .toggle-button { 
@@ -675,15 +674,17 @@ ul.tabs li a {
 
 .fav-actions-nav .fav-actions { 
     position: absolute;
-    top: 23px;
+    top: 24px;
     left: 0;
     width: 100%;
     line-height: 1.4;
+    font-size: 95%;
     background-color: #f8fbf8;
 }
 
 .fav-actions-nav .fav-actions ul { 
-    border: 1px solid #c8c2be;
+    border: 1px solid #7b7c7d;
+    border-top: 0;
     background-color: #f8fbf8;
     -moz-border-radius: 0 0 3px 3px;
     -webkit-border-bottom-right-radius: 3px;
@@ -696,7 +697,7 @@ ul.tabs li a {
 
 .fav-actions-nav .fav-actions li a { 
     display: block;
-    padding: 3px 0;
+    padding: 5px 0 3px;
     color: #7b7c7d;
 }
 .fav-actions-nav .fav-actions li a:hover { 
@@ -705,7 +706,7 @@ ul.tabs li a {
 }
 
 .fav-actions-nav .fav-actions .action-label { 
-    margin: 0 12px;
+    margin: 0 5px;
     overflow: hidden;
 }
 
