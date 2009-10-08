@@ -21,16 +21,15 @@ function returnBlogSelection(ok) {
 <mt:if name="panel_multi"> 
         var ids = new Array(); 
         var names = new Array(); 
-        var inputs = dialog.panels[0].tableSelect.selected(); 
-        for (var i = 0; i < inputs.length; ++i) { 
-            var inp = inputs[i]; 
-            var row = TC.getParentByTagName( inp, "tr" ); 
-            if (!row) continue; 
-            var labels = row.getElementsByTagName('label'); 
-            if (labels.length == 0) continue; 
-            names.push(labels[0].innerHTML + ' (' + inp.value + ')'); 
-            ids.push(inp.value); 
-        } 
+
+        jQuery('#blog-panel .selected-items a').each( function (){
+            var id = jQuery(this).attr('id');
+            id = id.replace(/\D/g, '');
+            ids.push(id);
+
+            var name = jQuery(this).children('span').remove().end().text();
+            names.push(name + '(' + id + ')');
+        });
         el_id.value = ids.join(','); 
         el_name.innerHTML = names.join(','); 
 <mt:else> 

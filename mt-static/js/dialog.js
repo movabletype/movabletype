@@ -154,13 +154,14 @@ SelectionList = new Class(Object, {
         var self = this;
         var makeclosure = function(x) { return function() { self.remove(x) } };
         for (var i = 0; i < this.itemList.length; i++) {
-            var link = doc.createElement("a");
-            link.setAttribute("href","javascript:void(0);");
             var p = this.itemList[i];
             var d = this.itemHash[p];
             var l = d.label;
-            link.onclick = makeclosure(p);
             l.replace(/\s/g, '&nbsp;');
+            var link = doc.createElement("a");
+            link.setAttribute("href","javascript:void(0);");
+            link.setAttribute("id","selected-"+p);
+            link.onclick = makeclosure(p);
             link.innerHTML = l + "&nbsp;<span class='remove'>x</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
