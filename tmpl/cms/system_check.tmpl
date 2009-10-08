@@ -38,9 +38,10 @@
     label_class="top-label"
     content_class="field-content-text">
     <div class="info">
-        Memcache is <em><mt:if name="memcached_enabled">configured<mt:else>disabled</mt:if></em>.<mt:if name="memcached_enabled"><br />
-        Memcache Server is <em><mt:if name="memcached_active">available<mt:else>unavailable</mt:if></em>.
-        </mt:if>
+        <p><__trans phrase="Memcache is [_1]" params="<em><mt:if name="memcached_enabled">configured<mt:else>disabled</mt:if></em>."></p>
+    <mt:if name="memcached_enabled">
+        <p><__trans phrase="Memcache Server is [_1]" params="<em><mt:if name="memcached_active">available<mt:else>unavailable</mt:if></em>."></p>
+    </mt:if>
     </div>
 </mtapp:setting>
 
