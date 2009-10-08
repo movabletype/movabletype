@@ -248,8 +248,8 @@ sub core_search_apis {
                 return $perm->can_do('search_blog_log');
             },
             'search_cols' => {
-                'ip' => sub { $app->translate('Log Message') },
-                'message' => sub { $app->translate('IP Address') },
+                'ip' => sub { $app->translate('IP Address') },
+                'message' => sub { $app->translate('Log Message') },
             },
             'can_replace'        => 0,
             'can_search_by_date' => 1,
