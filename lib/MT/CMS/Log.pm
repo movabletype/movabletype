@@ -314,12 +314,18 @@ sub export {
                     filter_val => $q->param('filter_val')
                 }
             )
-          };
-    } else {
-        %terms = ( class => '*' );
+        };
     }
+
+    # all classes of log objects
+    unless ( exists $terms{class} ) {
+        $terms{class} = '*';
+    }
+
     if ($blog) {
-        $terms{blog_id} = $blog->id;
+        my $blog_ids = $app->_load_child_blog_ids($blog->id);
+        push @$blog_ids, $blog->id;
+        $terms{blog_id} = $blog_ids;
     }
     my $log_class  = $app->model('log');
     my $blog_class = $app->model('blog');
