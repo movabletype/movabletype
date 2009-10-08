@@ -100,9 +100,11 @@ sub post_feedback_save {
 
         my $blog = $feedback->blog;
         if ( $blog->is_blog ) {
-            my $scope = "blog:".$blog->website->id;
-            my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
-            $code->($d);
+            if ( my $website = $blog->website ) {
+                my $scope = "blog:".$website->id;
+                my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+                $code->($d);
+            }
         }
     }
 }
@@ -135,9 +137,11 @@ sub post_entry_save {
     }
 
     my $blog = $entry->blog;
-    my $scope = "blog:".$blog->website->id;
-    my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
-    $code->($d);
+    if ( my $website = $blog->website ) {
+        my $scope = "blog:".$website->id;
+        my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+        $code->($d);
+    }
 }
 
 sub post_entry_pub {
@@ -163,9 +167,11 @@ sub post_entry_pub {
     }
 
     my $blog = $entry->blog;
-    my $scope = "blog:".$blog->website->id;
-    my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
-    $code->($d);
+    if ( my $website = $blog->website ) {
+        my $scope = "blog:".$website->id;
+        my $d = $plugin->get_config_value( 'blogs_in_website_triggers', $scope);
+        $code->($d);
+    }
 }
 
 sub perform_mb_action {
