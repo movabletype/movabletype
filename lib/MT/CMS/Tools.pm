@@ -35,7 +35,7 @@ sub system_check {
     $param{user_count} = $author_class->count(
         { type => MT::Author::AUTHOR() } );
 
-    $param{commenter_count} = q[N/A];
+    $param{commenter_count} = 0;
     $param{screen_id} = "system-check";
 
     require MT::Memcached;

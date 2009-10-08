@@ -140,7 +140,7 @@ sub add_trigger {
                 unshift @$loop, {
                     id => '_blogs_in_website',
                     label => $plugin->translate('* All blogs in this website'),
-                    description => $plugin->translate('Select to apply this trigger to all blogs in this website. '),
+                    description => $plugin->translate('Select to apply this trigger to all blogs in this website.'),
                 };
             }
             unshift @$loop, {
