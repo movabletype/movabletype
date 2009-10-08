@@ -145,8 +145,8 @@ sub add_trigger {
             }
             unshift @$loop, {
                 id => '_all',
-                label => $plugin->translate('* All blogs in this system'),
-                description => $plugin->translate('Select to apply this trigger to all blogs in this system'),
+                label => $plugin->translate('* All websites and blogs in this system'),
+                description => $plugin->translate('Select to apply this trigger to all websites and blogs in this system.'),
             };
         }
     }
@@ -215,7 +215,7 @@ sub load_config {
                 {
                     action_name   => $actions{$action},
                     action_value  => $action,
-                    blog_name     => $plugin->translate('* All blogs in this system'),
+                    blog_name     => $plugin->translate('* All websites and blogs in this system'),
                     blog_id       => $id,
                     trigger_name  => $triggers{$trigger},
                     trigger_value => $trigger,
