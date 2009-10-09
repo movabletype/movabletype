@@ -79,6 +79,10 @@ MT->add_callback( 'cms_post_save.entry', 10, $plugin,
 MT->add_callback( 'scheduled_post_published', 10, $plugin,
     sub { $plugin->runner( 'post_entry_pub', @_ ) } );
 
+# Register page post-save callback for rebuild triggers
+MT->add_callback( 'cms_post_save.page', 10, $plugin,
+    sub { $plugin->runner( 'post_entry_save', @_ ) } );
+
 # Register Comment/TB post-save callbacks for rebuild triggers
 MT->add_callback( 'MT::Comment::post_save', 10, $plugin,
     sub { $plugin->runner( 'post_feedback_save', 'comment_pub', @_ ) } );
@@ -121,7 +125,7 @@ sub add_trigger {
             panel_type => 'blog',
             dialog_title => $plugin->translate('MultiBlog'),
             panel_title => $plugin->translate('Create Trigger'),
-            panel_label => $plugin->translate("Weblog Name"),
+            panel_label => $plugin->translate("Website/Blog"),
             search_prompt => $plugin->translate("Search Weblogs") . ':',
             panel_description => $plugin->translate("Description"),
             panel_multi => 0,
@@ -157,11 +161,11 @@ sub trigger_loop {
     [
         {
             trigger_key  => 'entry_save',
-            trigger_name => $plugin->translate('saves an entry'),
+            trigger_name => $plugin->translate('saves an entry/page'),
         },
         {
             trigger_key  => 'entry_pub',
-            trigger_name => $plugin->translate('publishes an entry'),
+            trigger_name => $plugin->translate('publishes an entry/page'),
         },
         {
             trigger_key  => 'comment_pub',
