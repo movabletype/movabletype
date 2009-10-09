@@ -4876,7 +4876,8 @@ B<Example:>
 =for tags archives
 
 =cut
-
+{
+my %tokens_cache;
 sub _hdlr_file_template {
     my ($ctx, $args, $cond) = @_;
 
@@ -4934,7 +4935,7 @@ sub _hdlr_file_template {
     $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
     # now build this template and return result
     my $builder = $ctx->stash('builder');
-    my $tok = $builder->compile($ctx, $format);
+    my $tok = $tokens_cache{$format} ||= $builder->compile($ctx, $format);
     return $ctx->error(MT->translate("Error in file template: [_1]", $args->{format}))
         unless defined $tok;
     defined(my $file = $builder->build($ctx, $tok, $cond))
@@ -4943,7 +4944,7 @@ sub _hdlr_file_template {
     $file =~ s!(^/|/$)!!g;
     $file;
 }
-
+}
 ###########################################################################
 
 =head2 TemplateCreatedOn

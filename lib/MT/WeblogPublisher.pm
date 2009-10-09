@@ -1927,6 +1927,8 @@ sub remove_entry_archive_file {
 ## but if the entry is not available it uses the time_start
 ## and time_end values
 ##
+{
+my %tokens_cache;
 sub archive_file_for {
     my $mt = shift;
     init_archive_types() unless %ArchiveTypes;
@@ -2002,7 +2004,7 @@ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '"
         local $ctx->{archive_type} = $at;
         require MT::Builder;
         my $build = MT::Builder->new;
-        my $tokens = $build->compile( $ctx, $file_tmpl )
+        my $tokens = $tokens_cache{ $file_tmpl } ||= $build->compile( $ctx, $file_tmpl )
           or return $blog->error( $build->errstr() );
         defined( $file = $build->build( $ctx, $tokens ) )
           or return $blog->error( $build->errstr() );
@@ -2012,6 +2014,7 @@ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '"
         $file .= '.' . $ext if $ext;
     }
     $file;
+}
 }
 
 # Adds an element to the rebuild queue when the plugin is enabled.
