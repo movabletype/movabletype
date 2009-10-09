@@ -75,8 +75,11 @@ sub get_syscheck_content {
             $syscheck_object->remove;
             $syscheck_object = undef;
         }
-        return $syscheck_object->data()
-          if ($syscheck_object);
+        if ( $syscheck_object ) {
+            my $data = $syscheck_object->data();
+            MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
+            return Encode::decode_utf8($data);
+        }
 
         my $ua = $app->new_ua({ timeout => 20 });
         return unless $ua;
