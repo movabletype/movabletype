@@ -513,9 +513,21 @@ sub init_meta {
     my $obj = shift;
     my ($which) = @_;
     $which ||= 'meta';
-    my $class = 'MT::' . ucfirst($which) . '::Proxy';
-    eval("require $class;");
-    $obj->{"__$which"} = $class->new($obj);
+    my $res;
+    if ( lc $which eq 'meta' ) {
+        require MT::Meta::Proxy;
+        $obj->{"__meta"} = $res = MT::Meta::Proxy->new($obj);
+    }
+    elsif ( lc $which eq 'summary' ) {
+        require MT::Summary::Proxy;
+        $obj->{"__summary"} = $res = MT::Summary::Proxy->new($obj);
+    }
+    else {
+        my $class = 'MT::' . ucfirst($which) . '::Proxy';
+        eval("require $class;");
+        $obj->{"__$which"} = $res = $class->new($obj);
+    }
+    $res;
 }
 
 sub install_meta {
