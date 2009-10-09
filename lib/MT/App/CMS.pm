@@ -508,11 +508,10 @@ sub core_list_actions {
                 order     => 500,
                 condition => sub {
                     return 0 if $app->mode eq 'view';
+                    return 0 if $app->param('filter_key')
+                        && $app->param('filter_key') eq 'spam_entries';
                     $app->param('blog_id')
-                        && $app->can_do('open_batch_entry_editor_via_list')
-                        && $app->param('filter_val')
-                        && $app->param('filter_val') != MT::Entry::JUNK()
-                        && $app->param('filter_key') ne 'spam_entries'
+                        && $app->can_do('open_batch_entry_editor_via_list');
                 },
             },
         },
