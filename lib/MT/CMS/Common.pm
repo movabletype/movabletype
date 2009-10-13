@@ -1224,12 +1224,15 @@ sub build_revision_table {
         }
         my $revision = $obj->object_from_revision( $rev );
         my $column_defs = $obj->column_defs;
-        my @changed = map {
-            my $label = $column_defs->{$_}->{label};
-            $label ||= $_;
-            $app->translate( $label );
-        } @{ $revision->[1] };
-        $row->{changed_columns} = \@changed;
+        #my @changed = map {
+        #    my $label = $column_defs->{$_}->{label};
+        #    $label ||= $_;
+        #    $app->translate( $label );
+        #} @{ $revision->[1] };
+        #$row->{changed_columns} = \@changed;
+        if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
+            $row->{rev_status} = $revision->[0]->status;
+        }
         $row->{rev_js} = $js . '&amp;r=' . $row->{rev_number} . "'";
         $row->{is_current} = $param->{revision} == $row->{rev_number};
     };
