@@ -1,12 +1,15 @@
 <mt:setvartemplate name="line_items" function="unshift">
-<mt:if name="USER_VIEW">
-    <mt:unless name="EDIT_AUTHOR_ID" eq="PSEUDO">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Profile"></a></li>
-    </mt:unless>
-    <mt:unless name="profile_inactive">
-    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Permissions"></a></em></li>
+<mt:if name="user_view">
+    <mt:unless name="edit_author_id">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id" escape="html">"><__trans phrase="Profile"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="author_id" escape="html">"><__trans phrase="Permissions"></a></li>
     <mt:else>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Permissions"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Profile"></a></li>
+        <mt:unless name="profile_inactive">
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></em></li>
+        <mt:else>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></li>
+        </mt:unless>
     </mt:unless>
 </mt:if>
 
