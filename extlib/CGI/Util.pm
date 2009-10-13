@@ -4,14 +4,14 @@ use strict;
 use vars qw($VERSION @EXPORT_OK @ISA $EBCDIC @A2E @E2A);
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(rearrange make_attributes unescape escape expires);
+@EXPORT_OK = qw(rearrange rearrange_header make_attributes unescape escape 
+		expires ebcdic2ascii ascii2ebcdic);
 
-$VERSION = '1.3';
+$VERSION = '3.48';
 
 $EBCDIC = "\t" ne "\011";
-if ($EBCDIC) {
-  # (ord('^') == 95) for codepage 1047 as on os390, vmesa
-  @A2E = (
+# (ord('^') == 95) for codepage 1047 as on os390, vmesa
+@A2E = (
    0,  1,  2,  3, 55, 45, 46, 47, 22,  5, 21, 11, 12, 13, 14, 15,
   16, 17, 18, 19, 60, 61, 50, 38, 24, 25, 63, 39, 28, 29, 30, 31,
   64, 90,127,123, 91,108, 80,125, 77, 93, 92, 78,107, 96, 75, 97,
@@ -29,7 +29,7 @@ if ($EBCDIC) {
   68, 69, 66, 70, 67, 71,156, 72, 84, 81, 82, 83, 88, 85, 86, 87,
  140, 73,205,206,203,207,204,225,112,221,222,219,220,141,142,223
 	 );
-  @E2A = (
+@E2A = (
    0,  1,  2,  3,156,  9,134,127,151,141,142, 11, 12, 13, 14, 15,
   16, 17, 18, 19,157, 10,  8,135, 24, 25,146,143, 28, 29, 30, 31,
  128,129,130,131,132,133, 23, 27,136,137,138,139,140,  5,  6,  7,
@@ -47,39 +47,57 @@ if ($EBCDIC) {
   92,247, 83, 84, 85, 86, 87, 88, 89, 90,178,212,214,210,211,213,
   48, 49, 50, 51, 52, 53, 54, 55, 56, 57,179,219,220,217,218,159
 	 );
-  if (ord('^') == 106) { # as in the BS2000 posix-bc coded character set
+
+if ($EBCDIC && ord('^') == 106) { # as in the BS2000 posix-bc coded character set
      $A2E[91] = 187;   $A2E[92] = 188;  $A2E[94] = 106;  $A2E[96] = 74;
      $A2E[123] = 251;  $A2E[125] = 253; $A2E[126] = 255; $A2E[159] = 95;
      $A2E[162] = 176;  $A2E[166] = 208; $A2E[168] = 121; $A2E[172] = 186;
      $A2E[175] = 161;  $A2E[217] = 224; $A2E[219] = 221; $A2E[221] = 173;
      $A2E[249] = 192;
- 
+
      $E2A[74] = 96;   $E2A[95] = 159;  $E2A[106] = 94;  $E2A[121] = 168;
      $E2A[161] = 175; $E2A[173] = 221; $E2A[176] = 162; $E2A[186] = 172;
      $E2A[187] = 91;  $E2A[188] = 92;  $E2A[192] = 249; $E2A[208] = 166;
      $E2A[221] = 219; $E2A[224] = 217; $E2A[251] = 123; $E2A[253] = 125;
      $E2A[255] = 126;
- }
-  elsif (ord('^') == 176) { # as in codepage 037 on os400
-     $A2E[10] = 37;  $A2E[91] = 186;  $A2E[93] = 187; $A2E[94] = 176;
-     $A2E[133] = 21; $A2E[168] = 189; $A2E[172] = 95; $A2E[221] = 173;
- 
-     $E2A[21] = 133; $E2A[37] = 10;  $E2A[95] = 172; $E2A[173] = 221;
-     $E2A[176] = 94; $E2A[186] = 91; $E2A[187] = 93; $E2A[189] = 168;
    }
+elsif ($EBCDIC && ord('^') == 176) { # as in codepage 037 on os400
+  $A2E[10] = 37;  $A2E[91] = 186;  $A2E[93] = 187; $A2E[94] = 176;
+  $A2E[133] = 21; $A2E[168] = 189; $A2E[172] = 95; $A2E[221] = 173;
+
+  $E2A[21] = 133; $E2A[37] = 10;  $E2A[95] = 172; $E2A[173] = 221;
+  $E2A[176] = 94; $E2A[186] = 91; $E2A[187] = 93; $E2A[189] = 168;
 }
 
 # Smart rearrangement of parameters to allow named parameter
-# calling.  We do the rearangement if:
+# calling.  We do the rearrangement if:
 # the first parameter begins with a -
+
 sub rearrange {
+    my ($order,@param) = @_;
+    my ($result, $leftover) = _rearrange_params( $order, @param );
+    push @$result, make_attributes( $leftover, defined $CGI::Q ? $CGI::Q->{escape} : 1 ) 
+	if keys %$leftover;
+    @$result;
+}
+
+sub rearrange_header {
+    my ($order,@param) = @_;
+
+    my ($result,$leftover) = _rearrange_params( $order, @param );
+    push @$result, make_attributes( $leftover, 0, 1 ) if keys %$leftover;
+
+    @$result;
+}
+
+sub _rearrange_params {
     my($order,@param) = @_;
-    return () unless @param;
+    return [] unless @param;
 
     if (ref($param[0]) eq 'HASH') {
 	@param = %{$param[0]};
     } else {
-	return @param 
+	return \@param 
 	    unless (defined($param[0]) && substr($param[0],0,1) eq '-');
     }
 
@@ -103,14 +121,17 @@ sub rearrange {
 	}
     }
 
-    push (@result,make_attributes(\%leftover,1)) if %leftover;
-    @result;
+    return \@result, \%leftover;
 }
 
 sub make_attributes {
     my $attr = shift;
     return () unless $attr && ref($attr) && ref($attr) eq 'HASH';
-    my $escape = shift || 0;
+    my $escape =  shift || 0;
+    my $do_not_quote = shift;
+
+    my $quote = $do_not_quote ? '' : '"';
+
     my(@att);
     foreach (keys %{$attr}) {
 	my($key) = $_;
@@ -122,7 +143,7 @@ sub make_attributes {
 	($key="\L$key") =~ tr/_/-/; # parameters are lower case, use dashes
 
 	my $value = $escape ? simple_escape($attr->{$_}) : $attr->{$_};
-	push(@att,defined($attr->{$_}) ? qq/$key="$value"/ : qq/$key/);
+	push(@att,defined($attr->{$_}) ? qq/$key=$quote$value$quote/ : qq/$key/);
     }
     return @att;
 }
@@ -139,9 +160,14 @@ sub simple_escape {
   $toencode;
 }
 
-sub utf8_chr ($) {
+sub utf8_chr {
         my $c = shift(@_);
-
+	if ($] >= 5.006){
+	    require utf8;
+	    my $u = chr($c);
+	    utf8::encode($u); # drop utf8 flag
+	    return $u;
+	}
         if ($c < 0x80) {
                 return sprintf("%c", $c);
         } elsif ($c < 0x800) {
@@ -167,27 +193,37 @@ sub utf8_chr ($) {
 
         } elsif ($c < 0x80000000) {
                 return sprintf("%c%c%c%c%c%c",
-                                           0xfe |  ($c >> 30),
+                                           0xfc |  ($c >> 30),
                                            0x80 | (($c >> 24) & 0x3f),
                                            0x80 | (($c >> 18) & 0x3f),
                                            0x80 | (($c >> 12) & 0x3f),
                                            0x80 | (($c >> 6)  & 0x3f),
                                            0x80 | ( $c          & 0x3f));
         } else {
-                return utf8(0xfffd);
+                return utf8_chr(0xfffd);
         }
 }
 
 # unescape URL-encoded data
 sub unescape {
-  shift() if @_ > 1 and (ref($_[0]) || (defined $_[1] && $_[0] eq $CGI::DefaultClass));
+  shift() if @_ > 0 and (ref($_[0]) || (defined $_[1] && $_[0] eq $CGI::DefaultClass));
   my $todecode = shift;
   return undef unless defined($todecode);
   $todecode =~ tr/+/ /;       # pluses become spaces
-    $EBCDIC = "\t" ne "\011";
     if ($EBCDIC) {
       $todecode =~ s/%([0-9a-fA-F]{2})/chr $A2E[hex($1)]/ge;
     } else {
+	# handle surrogate pairs first -- dankogai
+	$todecode =~ s{
+			%u([Dd][89a-bA-B][0-9a-fA-F]{2}) # hi
+		        %u([Dd][c-fC-F][0-9a-fA-F]{2})   # lo
+		      }{
+			  utf8_chr(
+				   0x10000 
+				   + (hex($1) - 0xD800) * 0x400 
+				   + (hex($2) - 0xDC00)
+				  )
+		      }gex;
       $todecode =~ s/%(?:([0-9a-fA-F]{2})|u([0-9a-fA-F]{4}))/
 	defined($1)? chr hex($1) : utf8_chr(hex($2))/ge;
     }
@@ -195,14 +231,28 @@ sub unescape {
 }
 
 # URL-encode data
+#
+# We cannot use the %u escapes, they were rejected by W3C, so the official
+# way is %XX-escaped utf-8 encoding.
+# Naturally, Unicode strings have to be converted to their utf-8 byte
+# representation.  (No action is required on 5.6.)
+# Byte strings were traditionally used directly as a sequence of octets.
+# This worked if they actually represented binary data (i.e. in CGI::Compress).
+# This also worked if these byte strings were actually utf-8 encoded; e.g.,
+# when the source file used utf-8 without the apropriate "use utf8;".
+# This fails if the byte string is actually a Latin 1 encoded string, but it
+# was always so and cannot be fixed without breaking the binary data case.
+# -- Stepan Kasal <skasal@redhat.com>
+#
 sub escape {
   shift() if @_ > 1 and ( ref($_[0]) || (defined $_[1] && $_[0] eq $CGI::DefaultClass));
   my $toencode = shift;
   return undef unless defined($toencode);
+  utf8::encode($toencode) if ($] > 5.008001 && utf8::is_utf8($toencode));
     if ($EBCDIC) {
-      $toencode=~s/([^a-zA-Z0-9_.-])/uc sprintf("%%%02x",$E2A[ord($1)])/eg;
+      $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",$E2A[ord($1)])/eg;
     } else {
-      $toencode=~s/([^a-zA-Z0-9_.-])/uc sprintf("%%%02x",ord($1))/eg;
+      $toencode=~s/([^a-zA-Z0-9_.~-])/uc sprintf("%%%02x",ord($1))/eg;
     }
   return $toencode;
 }
@@ -255,15 +305,27 @@ sub expire_calc {
     # specifying the date yourself
     my($offset);
     if (!$time || (lc($time) eq 'now')) {
-        $offset = 0;
+      $offset = 0;
     } elsif ($time=~/^\d+/) {
-        return $time;
-    } elsif ($time=~/^([+-]?(?:\d+|\d*\.\d*))([mhdMy]?)/) {
-        $offset = ($mult{$2} || 1)*$1;
+      return $time;
+    } elsif ($time=~/^([+-]?(?:\d+|\d*\.\d*))([smhdMy])/) {
+      $offset = ($mult{$2} || 1)*$1;
     } else {
-        return $time;
+      return $time;
     }
     return (time+$offset);
+}
+
+sub ebcdic2ascii {
+  my $data = shift;
+  $data =~ s/(.)/chr $E2A[ord($1)]/ge;
+  $data;
+}
+
+sub ascii2ebcdic {
+  my $data = shift;
+  $data =~ s/(.)/chr $A2E[ord($1)]/ge;
+  $data;
 }
 
 1;
