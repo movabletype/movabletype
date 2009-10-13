@@ -74,12 +74,6 @@ SOAP
         return Encode::decode_utf8($out);
     };
     if (my $e = $@) {
-        eval {
-            use Carp;
-            Carp::confess('');
-        };
-        use Data::Dumper;
-        print STDERR Dumper( $@ );
         $app->error(500, $e);
         $app->show_error("Internal Error");
     }

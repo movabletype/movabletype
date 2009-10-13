@@ -3080,7 +3080,7 @@ sub load_entry_prefs {
     my $prefs              = $p->{prefs};
     my $prefix             = exists $p->{prefs} ? '' : $type . '_';
     my $load_default_prefs = 'load_default_' . $type . '_prefs';
-    use Data::Dumper;
+
     if ( !$prefs ) {
         $prefs = $app->$load_default_prefs;
         ( $prefs, $pos ) = split /\|/, $prefs;

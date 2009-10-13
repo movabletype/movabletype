@@ -17,7 +17,7 @@ sub work {
     my TheSchwartz::Job $job = shift;
     #my $registry            = MT->registry;
     my $registry            = MT->registry("summaries");
-    use Data::Dumper;
+
     #for my $summarizable ( keys %{ $registry->{summaries} } ) {
     for my $summarizable ( keys %{ $registry } ) {
         my $meta_pkg = MT->model($summarizable)->meta_pkg('summary');

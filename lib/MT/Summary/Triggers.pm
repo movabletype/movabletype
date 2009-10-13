@@ -7,7 +7,6 @@
 package MT::Summary::Triggers;
 use strict;
 use warnings;
-use Data::Dumper;
 
 sub post_init_add_triggers {
 # post_save triggers for summary expiration
