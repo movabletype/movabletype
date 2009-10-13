@@ -247,7 +247,7 @@ function setLicense() {
         <mt:if name="site_path_absolute">
         <input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
         <mt:else>
-        <mt:var name="website_path"><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
         </mt:if>
         <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete publish of your site."></p>
     <mt:if name="is_blog">
@@ -556,5 +556,15 @@ function setLicense() {
         edit: '<__trans phrase="Edit">'
     });
     jQuery.mtUseSubdomain();
+    jQuery('#site_path').keyup(function() {
+        var text = jQuery(this).val();
+        if (text.match(/^\//)) {
+            jQuery(this).removeClass('extra-path')
+                .parents('#site_path-field').find('span.website-path').hide();
+        } else {
+            jQuery(this).addClass('extra-path')
+                .parents('#site_path-field').find('span.website-path').show();
+        }
+    });
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
