@@ -544,7 +544,7 @@ use vars qw( @ISA %Lexicon );
 	'Future' => '日時指定',
 	'Spam' => 'スパム',
 	'Status' => '更新状態',
-	'Accept Comments' => 'コメント許可',
+	'Accept Comments' => 'コメントを許可',
 	'Body' => '本文',
 	'Extended' => '続き',
 	'Format' => 'フォーマット',
@@ -4375,7 +4375,7 @@ LDAPディレクトリ上にユーザーがまだ残っている場合、いつ�
 	'You are now ready to:' => '次の方法で、ウェブサイトにコンテンツを公開できます。',
 	'Create a new page on your website' => 'ウェブサイトに新しいページを作成',
 	'Create a blog on your website' => 'ウェブサイトにブログを作成',
-	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿する',
+	'Create a blog (many blogs can exist in one website) to start posting.' => 'ブログを作成して(ひとつのウェブサイト内に複数のブログを作成できます)、ブログ記事を投稿します。',
 	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
 	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Typeで何ができるか、詳しくはこちら。',
 
