@@ -157,67 +157,68 @@
         </mt:unless>
     </mtapp:setting>
 
-<mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
-<mtapp:setting
-    id="entry_prefs"
-    label="<__trans phrase="Entry Fields">"
-    hint="<__trans phrase="_USAGE_ENTRYPREFS">"
-    content_class="field-content-text">
-    <ul id="editor-fields">
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category" <mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt" <mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords" <mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags" <mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback" <mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
-        <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets" <mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
-        <mt:var name="entry_fields">
-    </ul>
-</mtapp:setting>
-
-<mt:setvarblock name="page_fields" id="page_fields"></mt:setvarblock>
-<mtapp:setting
-    id="entry_prefs"
-    label="<__trans phrase="Page Fields">"
-    hint="<__trans phrase="_USAGE_ENTRYPREFS">"
-    content_class="field-content-text">
-    <ul id="editor-fields">
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-title"><__trans phrase="Title"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-body"><__trans phrase="Body"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-excerpt" value="excerpt" <mt:if name="page_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-keywords" value="keywords" <mt:if name="page_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-keywords"><__trans phrase="Keywords"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-tags" value="tags" <mt:if name="page_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-tags"><__trans phrase="Tags"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-feedback" value="feedback" <mt:if name="page_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-feedback"><__trans phrase="Comments"></label></li>
-        <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-assets" value="assets" <mt:if name="page_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-assets"><__trans phrase="Assets"></label></li>
-        <mt:var name="page_fields">
-    </ul>
-</mtapp:setting>
-
-<mtapp:setting
-    id="nwc_smart_replace"
-    label="<__trans phrase="Punctuation Replacement">"
-    content_class="field-content-text"
-    hint="<__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents.">"
-    show_hint="1">
-    <ul>
-        <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
-        <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
-        <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
-    </ul>
-    <div id="replace-fields" class="<mt:if name="nwc_replace_none">hidden</mt:if>">
-        <h4><__trans phrase="Replace Fields"></h4>
-        <ul>
-            <li><input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="cb"/> <label for="nwc_title"><__trans phrase="Title"></label></li>
-            <li><input type="checkbox" value="1" name="nwc_text" id="nwc_text"<mt:if name="nwc_text"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text"><__trans phrase="Body"></label></li>
-            <li><input type="checkbox" value="1" name="nwc_text_more" id="nwc_text_more"<mt:if name="nwc_text_more"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text_more"><__trans phrase="Extended"></label></li>
-            <li><input type="checkbox" value="1" name="nwc_keywords" id="nwc_keywords"<mt:if name="nwc_keywords"> checked="checked"</mt:if> class="cb"/> <label for="nwc_keywords"><__trans phrase="Keywords"></label></li>
-            <li><input type="checkbox" value="1" name="nwc_excerpt" id="nwc_excerpt"<mt:if name="nwc_excerpt"> checked="checked"</mt:if> class="cb"/> <label for="nwc_excerpt"><__trans phrase="Excerpt"></label></li>
-            <li><input type="checkbox" value="1" name="nwc_tags" id="nwc_tags"<mt:if name="nwc_tags"> checked="checked"</mt:if> class="cb"/> <label for="nwc_tags"><__trans phrase="Tags"></label></li>
+<mt:if name="scope_type" eq="blog">
+    <mt:setvarblock name="entry_fields" id="entry_fields"></mt:setvarblock>
+    <mtapp:setting
+        id="entry_prefs"
+        label="<__trans phrase="Entry Fields">"
+        hint="<__trans phrase="_USAGE_ENTRYPREFS">"
+        content_class="field-content-text">
+        <ul id="editor-fields">
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-title"><__trans phrase="Title"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="entry-prefs-body"><__trans phrase="Body"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-category" value="category" <mt:if name="entry_disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-category"><__trans phrase="Categories"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-excerpt" value="excerpt" <mt:if name="entry_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-keywords" value="keywords" <mt:if name="entry_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-keywords"><__trans phrase="Keywords"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-tags" value="tags" <mt:if name="entry_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-tags"><__trans phrase="Tags"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-feedback" value="feedback" <mt:if name="entry_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-feedback"><__trans phrase="Comments"></label></li>
+            <li><input type="checkbox" name="entry_custom_prefs" id="entry-prefs-assets" value="assets" <mt:if name="entry_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="entry-prefs-assets"><__trans phrase="Assets"></label></li>
+            <mt:var name="entry_fields">
         </ul>
-    </div>
+    </mtapp:setting>
+</mt:if>
 
-</mtapp:setting>
+    <mt:setvarblock name="page_fields" id="page_fields"></mt:setvarblock>
+    <mtapp:setting
+        id="entry_prefs"
+        label="<__trans phrase="Page Fields">"
+        hint="<__trans phrase="_USAGE_ENTRYPREFS">"
+        content_class="field-content-text">
+        <ul id="editor-fields">
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-title" value="title" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-title"><__trans phrase="Title"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-body" value="body" checked="checked" disabled="disabled" class="cb" /> <label for="page-prefs-body"><__trans phrase="Body"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-excerpt" value="excerpt" <mt:if name="page_disp_prefs_show_excerpt"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-excerpt"><__trans phrase="Excerpt"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-keywords" value="keywords" <mt:if name="page_disp_prefs_show_keywords"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-keywords"><__trans phrase="Keywords"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-tags" value="tags" <mt:if name="page_disp_prefs_show_tags"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-tags"><__trans phrase="Tags"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-feedback" value="feedback" <mt:if name="page_disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-feedback"><__trans phrase="Comments"></label></li>
+            <li><input type="checkbox" name="page_custom_prefs" id="page-prefs-assets" value="assets" <mt:if name="page_disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <label for="page-prefs-assets"><__trans phrase="Assets"></label></li>
+            <mt:var name="page_fields">
+        </ul>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="nwc_smart_replace"
+        label="<__trans phrase="Punctuation Replacement">"
+        content_class="field-content-text"
+        hint="<__trans phrase="Replace UTF-8 characters frequently used by word processors with their more common web equivalents.">"
+        show_hint="1">
+        <ul>
+            <li><input type="radio" value="2" name="nwc_smart_replace" id="nwc_replace_none" onclick="DOM.addClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_2"> checked="checked"</mt:if>> <label for="nwc_replace_none"><__trans phrase="No substitution"></label></li>
+            <li><input type="radio" value="1" name="nwc_smart_replace" id="nwc_replace_entities" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_1"> checked="checked"</mt:if>> <label for="nwc_replace_entities"><__trans phrase="Character entities (&amp#8221;, &amp#8220;, etc.)"></label></li>
+            <li><input type="radio" value="0" name="nwc_smart_replace" id="nwc_replace_ascii" onclick="DOM.removeClassName(DOM.getElement('replace-fields'), 'hidden');"<mt:if name="nwc_smart_replace_0"> checked="checked"</mt:if>> <label for="nwc_replace_ascii"><__trans phrase="ASCII equivalents (&quot;, ', ..., -, --)"></label></li>
+        </ul>
+        <div id="replace-fields" class="<mt:if name="nwc_replace_none">hidden</mt:if>">
+            <h4><__trans phrase="Replace Fields"></h4>
+            <ul>
+                <li><input type="checkbox" value="1" name="nwc_title" id="nwc_title"<mt:if name="nwc_title"> checked="checked"</mt:if> class="cb"/> <label for="nwc_title"><__trans phrase="Title"></label></li>
+                <li><input type="checkbox" value="1" name="nwc_text" id="nwc_text"<mt:if name="nwc_text"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text"><__trans phrase="Body"></label></li>
+                <li><input type="checkbox" value="1" name="nwc_text_more" id="nwc_text_more"<mt:if name="nwc_text_more"> checked="checked"</mt:if> class="cb"/> <label for="nwc_text_more"><__trans phrase="Extended"></label></li>
+                <li><input type="checkbox" value="1" name="nwc_keywords" id="nwc_keywords"<mt:if name="nwc_keywords"> checked="checked"</mt:if> class="cb"/> <label for="nwc_keywords"><__trans phrase="Keywords"></label></li>
+                <li><input type="checkbox" value="1" name="nwc_excerpt" id="nwc_excerpt"<mt:if name="nwc_excerpt"> checked="checked"</mt:if> class="cb"/> <label for="nwc_excerpt"><__trans phrase="Excerpt"></label></li>
+                <li><input type="checkbox" value="1" name="nwc_tags" id="nwc_tags"<mt:if name="nwc_tags"> checked="checked"</mt:if> class="cb"/> <label for="nwc_tags"><__trans phrase="Tags"></label></li>
+            </ul>
+        </div>
+    </mtapp:setting>
 
 </mtapp:settinggroup>
 
