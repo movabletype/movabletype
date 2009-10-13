@@ -46,8 +46,9 @@
 <mt:if name="open_dialog">
 jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">'); 
 </mt:if>
-
+<mt:unless name="delayed_bootstrap">
 App.bootstrapInline( false );
+</mt:unless>
 
 jQuery(function() {
 <mt:var name="jq_js_include">

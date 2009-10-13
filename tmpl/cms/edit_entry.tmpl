@@ -372,7 +372,6 @@
 <mt:if name="can_publish_post">
         <button
             mt:mode="save_entry"
-            name="status"
             type="submit"
             title="<mt:var name="draft_button_title">"
             class="save draft action"
@@ -1272,10 +1271,10 @@ function listPreviousPings () {
 </form>
 </mt:setvarblock>
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.publish').click(function() {
+    jQuery('button.publish').click(function(event) {
         jQuery('form#entry_form > input[name=status]').val(2);
     });
-    jQuery('button.draft').click(function() {
+    jQuery('button.draft').click(function(event) {
         jQuery('form#entry_form > input[name=status]').val(1);
     });
     jQuery('input#title').mtRebasename({
