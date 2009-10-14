@@ -2,7 +2,7 @@ package Class::Data::Inheritable;
 
 use strict qw(vars subs);
 use vars qw($VERSION);
-$VERSION = '0.06';
+$VERSION = '0.08';
 
 sub mk_classdata {
     my ($declaredclass, $attribute, $data) = @_;
@@ -142,10 +142,9 @@ Copyright (c) 2000-2005, Damian Conway and Michael G Schwern.
 All Rights Reserved.  
 
 This module is free software. It may be used, redistributed and/or
-modified under the terms of the Perl Artistic License (see
-http://www.perl.com/perl/misc/Artistic.html)
+modified under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<perltootc> has a very elaborate discussion of class data in Perl.
+L<perltooc> has a very elaborate discussion of class data in Perl.
 
