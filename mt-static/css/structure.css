@@ -3172,7 +3172,6 @@ body.preview-screen {
 #related-content .asset-thumb  {
     width: 80px;
     height: 80px;
-    min-height: 80px;
     border: 1px solid #c8c2be;
 }
 #related-content .asset-no-thumbnail .asset-thumb a {

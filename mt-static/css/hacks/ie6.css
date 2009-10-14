@@ -3,6 +3,12 @@ body {
     height: 100% ! important;
 }
 
+textarea { 
+    min-height: 5em;
+    height: auto !important; /* min-height hack */
+    height: 5em;
+}
+
 .dialog input.text,  
 .edit-entry input.text, 
 .edit-entry textarea, 
@@ -142,6 +148,13 @@ ul.menu-nav li.last-child ul.sub-menu li.last-child a {
 
 #favorite_blogs #favorite-blogs-tabs li { 
     position: relative;
+}
+
+/* - Edit Asset */
+.edit-asset .asset-thumb { 
+    min-height: 260px;
+    height: auto !important; /* min-height hack */
+    height: 260px;
 }
 
 /* - Widgets */
