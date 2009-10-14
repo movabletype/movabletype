@@ -28,6 +28,7 @@ sub core_search_apis {
         'entry' => {
             'order' => 100,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -63,6 +64,7 @@ sub core_search_apis {
         'comment' => {
             'order' => 200,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -93,6 +95,7 @@ sub core_search_apis {
         'ping' => {
             'order' => 300,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -132,6 +135,7 @@ sub core_search_apis {
         'page' => {
             'order' => 400,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -160,6 +164,7 @@ sub core_search_apis {
         'template' => {
             'order'             => 500,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -169,6 +174,7 @@ sub core_search_apis {
             'handler' => '$Core::MT::CMS::Template::build_template_table',
             'label'         => 'Templates',
             'perm_check' => sub {
+
                 return 1
                     if $author->permissions(0)->can_do('search_templates');
 
@@ -196,6 +202,7 @@ sub core_search_apis {
         'asset' => {
             'order' => 600,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -233,6 +240,7 @@ sub core_search_apis {
         'log' => {
             'order' => 700,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id;
                 return 1 if
@@ -262,6 +270,7 @@ sub core_search_apis {
         'author' => {
             'order' => 800,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 1 if $author->is_superuser;
                 return 1 if !$blog_id && $author->permissions(0)->can_do('administer');
                 return 1 if
@@ -308,6 +317,7 @@ sub core_search_apis {
             'order' => 900,
             'label' => 'Blogs',
             'condition' => sub {
+                my $author = MT->app->user;
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
@@ -340,6 +350,7 @@ sub core_search_apis {
         'website' => {
             'order' => 1000,
             'condition' => sub {
+                my $author = MT->app->user;
                 return 0 if $blog_id;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
