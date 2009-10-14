@@ -197,6 +197,11 @@ sub edit_role {
         require MT::Association;
         $param{user_count} = MT::Author->count( undef, { join  => MT::Association->join_on( 'author_id', { role_id => $id }, { unique => 1 } ) } );
     }
+    else {
+        for my $p ( values %$perms ) {
+            $p->{can_do} = 0;
+        }
+    }
 
     # Make permission list
     my @perms;
