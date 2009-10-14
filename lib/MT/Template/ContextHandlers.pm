@@ -1223,10 +1223,21 @@ sub _hdlr_if {
                 ${ $ns . '::' . $v } = $vars->{$v};
             }
         }
-        my $res = $safe->reval($expr);
+
+        my @warnings;
+        my $res;
+        {
+            local $SIG{__WARN__} = sub { push(@warnings, $_[0]); };
+            $res = $safe->reval($expr);
+        }
         if ($@) {
             return $ctx->error("Error in expression [$expr]: $@");
         }
+        # THINK: should return error if there are some warnings?
+        # if (@warnings) {
+        #     return $ctx->error("Warning in expression [$expr]: @warnings");
+        # }
+
         return $res;
     }
     if ((defined $value) && $value) {
