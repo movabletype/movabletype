@@ -2207,8 +2207,22 @@ sub update_dynamicity {
     my $app = shift;
     my ( $blog ) = @_;
 
-    my $cache       = $app->param('dynamic_cache')       ? 1 : 0;
-    my $conditional = $app->param('dynamic_conditional') ? 1 : 0;
+    my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
+    my $cache       = 0;
+    my $conditional = 0;
+    if ( -f $mtview_path ) {
+        open my ($fh), $mtview_path;
+        while ( my $line = <$fh> ) {
+            $cache = 1
+                if $line =~ m/^\s*\$mt->caching\(true\);/i;
+            $conditional = 1
+                if $line =~ /^\s*\$mt->conditional\(true\);/i;
+        }
+        close $fh;
+    }
+
+    $cache       = 1 if $app->param('dynamic_cache');
+    $conditional = 1 if $app->param('dynamic_conditional');
 
     require MT::PublishOption;
     if ( $app->model('template')->exist(
