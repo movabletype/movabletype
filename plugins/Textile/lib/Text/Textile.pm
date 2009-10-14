@@ -1,26 +1,25 @@
-# $Id$
-
 package Text::Textile;
 
 use strict;
-use Exporter;
-@Text::Textile::ISA = qw(Exporter);
-use vars qw(@EXPORT_OK $debug);
-@EXPORT_OK = qw(textile);
+use warnings;
 
-$debug = 0;
+use base 'Exporter';
+our @EXPORT_OK = qw(textile);
+our $VERSION = 2.12;
+our $debug = 0;
 
 sub new {
     my $class = shift;
     my %options = @_;
     $options{filters} ||= {};
     $options{charset} ||= 'iso-8859-1';
-    $options{char_encoding} = 1 unless exists $options{char_encoding};
-    $options{do_quotes} = 1 unless exists $options{do_quotes};
-    $options{trim_spaces} = 0 unless exists $options{trim_spaces};
-    $options{smarty_mode} = 1 unless exists $options{smarty_mode};
-    $options{preserve_spaces} = 0 unless exists $options{preserve_spaces};
-    $options{head_offset} = 0 unless exists $options{head_offset};
+
+    for ( qw( char_encoding do_quotes smarty_mode ) ) {
+        $options{$_} = 1 unless exists $options{$_};
+    }
+    for ( qw( trim_spaces preserve_spaces head_offset disable_encode_entities ) ) {
+        $options{$_} = 0 unless exists $options{$_};
+    }
 
     my $self = bless \%options, $class;
     if (exists $options{css}) {
@@ -32,7 +31,7 @@ sub new {
     } else {
         $self->flavor('xhtml1/css');
     }
-    $self;
+    return $self;
 }
 
 # getter/setter methods...
@@ -41,7 +40,7 @@ sub set {
     my $self = shift;
     my $opt = shift;
     if (ref $opt eq 'HASH') {
-        $self->set($_, $opt->{$_}) foreach %$opt;
+        $self->set($_, $opt->{$_}) foreach %{$opt};
     } else {
         my $value = shift;
         # the following options have special set methods
@@ -56,12 +55,13 @@ sub set {
             $self->{$opt} = $value;
         }
     }
+    return;
 }
 
 sub get {
     my $self = shift;
     return $self->{shift} if @_;
-    undef;
+    return undef;
 }
 
 sub disable_html {
@@ -69,7 +69,7 @@ sub disable_html {
     if (@_) {
         $self->{disable_html} = shift;
     }
-    $self->{disable_html} || 0;
+    return $self->{disable_html} || 0;
 }
 
 sub head_offset {
@@ -77,7 +77,7 @@ sub head_offset {
     if (@_) {
         $self->{head_offset} = shift;
     }
-    $self->{head_offset} || 0;
+    return $self->{head_offset} || 0;
 }
 
 sub flavor {
@@ -109,7 +109,7 @@ sub flavor {
         }
         $self->_css_defaults() if $self->{css_mode} && !exists $self->{css};
     }
-    $self->{flavor};
+    return $self->{flavor};
 }
 
 sub css {
@@ -124,7 +124,7 @@ sub css {
             $self->_css_defaults() if $self->{css_mode} && !exists $self->{css};
         }
     }
-    $self->{css_mode} ? $self->{css} : 0;
+    return $self->{css_mode} ? $self->{css} : 0;
 }
 
 sub charset {
@@ -137,49 +137,55 @@ sub charset {
             $self->char_encoding(1);
         }
     }
-    $self->{charset};
+    return $self->{charset};
 }
 
 sub docroot {
     my $self = shift;
     $self->{docroot} = shift if @_;
-    $self->{docroot};
+    return $self->{docroot};
 }
 
 sub trim_spaces {
     my $self = shift;
     $self->{trim_spaces} = shift if @_;
-    $self->{trim_spaces};
+    return $self->{trim_spaces};
 }
 
 sub filter_param {
     my $self = shift;
     $self->{filter_param} = shift if @_;
-    $self->{filter_param};
+    return $self->{filter_param};
 }
 
 sub preserve_spaces {
     my $self = shift;
     $self->{preserve_spaces} = shift if @_;
-    $self->{preserve_spaces};
+    return $self->{preserve_spaces};
 }
 
 sub filters {
     my $self = shift;
     $self->{filters} = shift if @_;
-    $self->{filters};
+    return $self->{filters};
 }
 
 sub char_encoding {
     my $self = shift;
     $self->{char_encoding} = shift if @_;
-    $self->{char_encoding};
+    return $self->{char_encoding};
+}
+
+sub disable_encode_entities {
+    my $self = shift;
+    $self->{disable_encode_entities} = shift if @_;
+    return $self->{disable_encode_entities};
 }
 
 sub handle_quotes {
     my $self = shift;
     $self->{do_quotes} = shift if @_;
-    $self->{do_quotes};
+    return $self->{do_quotes};
 }
 
 # end of getter/setter methods
@@ -254,7 +260,7 @@ $clstypadre = qr/
   (?: \[ [a-zA-Z\-]+? \] )
 /x;
 
-$clstyre = qr!
+$clstyre = qr/
   (?:\([A-Za-z0-9_\- \#]+\))
   |
   (?:{
@@ -262,7 +268,7 @@ $clstyre = qr!
      })
   |
   (?: \[ [a-zA-Z\-]+? \] )
-!x;
+/x;
 
 $clstyfiltre = qr/
   (?:\([A-Za-z0-9_\- \#]+\))
@@ -280,7 +286,7 @@ $clstyfiltre = qr/
   (?: \[ [a-zA-Z]+? \] )
 /x;
 
-$codere = qr!
+$codere = qr/
     (?:
       [\[{]
       @                           # opening
@@ -294,11 +300,11 @@ $codere = qr!
       (?:^|(?<=[\s\(]))
       @                           # opening
       (?:\[([A-Za-z0-9]+)\])?     # $3: language id
-      ([^\s].+?[^\s])             # $4: code itself
+      ([^\s].*?[^\s]?)            # $4: code itself
       @                           # closing
       (?:$|(?=$punct{1,2}|\s))
     )
-!x;
+/x;
 
 $blocktags = qr{
     <
@@ -325,7 +331,7 @@ $blocktags = qr{
 
 sub process {
     my $self = shift;
-    $self->textile(@_);
+    return $self->textile(@_);
 }
 
 sub textile {
@@ -347,7 +353,7 @@ sub textile {
     # quick translator for abbreviated block names
     # to their tag
     my %macros = ('bq' => 'blockquote');
-    
+
     # an array to hold any portions of the text to be preserved
     # without further processing by Textile
     my @repl;
@@ -365,10 +371,10 @@ sub textile {
 
     unless ($self->{disable_html}) {
         # preserve style, script tag contents
-        $str =~ s!(<(style|script)(?:>| .+?>).*?</\2>)!_repl(\@repl, $1)!ges;
+        $str =~ s{(<(style|script)(?:>| .+?>).*?</\2>)}{_repl(\@repl, $1)}ges;
 
         # preserve HTML comments
-        $str =~ s|(<!--.+?-->)|_repl(\@repl, $1)|ges;
+        $str =~ s{(<!--.+?-->)}{_repl(\@repl, $1)}ges;
 
         # preserve pre block contents, encode contents by default
         my $pre_start = scalar(@repl);
@@ -376,7 +382,7 @@ sub textile {
                  {"\n\n"._repl(\@repl, $1.$self->encode_html($2, 1).$3)."\n\n"}ges;
         # fix code tags within pre blocks we just saved.
         for (my $i = $pre_start; $i < scalar(@repl); $i++) {
-            $repl[$i] =~ s|&lt;(/?)code(.*?)&gt;|<$1code$2>|gs;
+            $repl[$i] =~ s{&lt;(/?)code(.*?)&gt;}{<$1code$2>}gs;
         }
 
         # preserve code blocks by default, encode contents
@@ -421,7 +427,7 @@ sub textile {
             }
             next;
         }
-        
+
         if ($sticky) {
             $sticky++;
         } else {
@@ -522,7 +528,7 @@ sub textile {
             }
             #warn "settings:\n\tblock: $block\n\tpadleft: $padleft\n\tpadright: $padright\n\tclass: $class\n\tstyle: $style\n\tid: $id\n\tfilter: $filter\n\talign: $align\n\tlang: $lang\n\tsticky: $sticky";
             $para = substr($para, pos($para));
-        } elsif ($para =~ m|^<textile#(\d+)>$|) {
+        } elsif ($para =~ m/^<textile#(\d+)>$/) {
             $buffer = $repl[$1-1];
         } elsif ($para =~ m/^clear([<>]+)?\.$/) {
             if ($1 eq '<') {
@@ -649,7 +655,7 @@ sub textile {
                 $style =~ s/^;// if $style;
                 $pre .= qq{ style="$style"} if $style;
                 $pre .= qq{ lang="$lang"} if $lang;
-                $pre .= qq{ cite="} . $self->format_url(url => $cite) . '"' if defined $cite; #'
+                $pre .= q{ cite="} . $self->format_url(url => $cite) . '"' if defined $cite;
                 $pre .= '>';
                 $clear = undef;
             }
@@ -753,7 +759,7 @@ sub textile {
 
     # cleanup-- restore preserved blocks
     my $i = scalar(@repl);
-    $out =~ s!(?:<|&lt;)textile#$i(?:>|&gt;)!$_!, $i-- while $_ = pop @repl;
+    $out =~ s!(?:<|&lt;)textile#$i(?:>|&gt;)!$_!, $i-- while local $_ = pop @repl;
 
     # scan for br, hr tags that are not closed and close them
     # only for xhtml! just the common ones -- don't fret over input
@@ -761,14 +767,14 @@ sub textile {
     if ($self->{flavor} =~ m/^xhtml/i) {
         $out =~ s/(<(?:img|br|hr)[^>]*?(?<!\/))>/$1 \/>/g;
     }
-   
-    $out;
+
+    return $out;
 }
 
 sub format_paragraph {
     my $self = shift;
     my (%args) = @_;
-    my $buffer = exists $args{text} ? $args{text} : '';
+    my $buffer = defined $args{text} ? $args{text} : '';
 
     my @repl;
     $buffer =~ s{(?:^|(?<=[\s>])|([{[]))
@@ -784,7 +790,7 @@ sub format_paragraph {
         $tokens = [['text', $buffer]];
     }
     my $result = '';
-    foreach my $token (@$tokens) {
+    foreach my $token (@{$tokens}) {
         my $text = $token->[1];
         if ($token->[0] eq 'tag') {
             $text =~ s/&(?!amp;)/&amp;/g;
@@ -832,14 +838,14 @@ sub format_paragraph {
     $result =~ s/\001/\n/g;
 
     my $i = scalar(@repl);
-    $result =~ s|<textile#$i>|$_|, $i-- while $_ = pop @repl;
+    $result =~ s|<textile#$i>|$_|, $i-- while local $_ = pop @repl;
 
     # quotalize
     if ($self->{do_quotes}) {
         $result = $self->process_quotes($result);
     }
 
-    $result;
+    return $result;
 }
 
 {
@@ -858,11 +864,12 @@ my @qtags = (['**', 'b',      '(?<!\*)\*\*(?!\*)', '\*'],
 sub format_inline {
     my $self = shift;
     my (%args) = @_;
-    my $text = exists $args{text} ? $args{text} : '';
+    my $text = defined $args{text} ? $args{text} : '';
 
     my @repl;
 
-    $text =~ s!$codere!_repl(\@repl, $self->format_code(text => $2.$4, lang => $1.$3))!gem;
+    no warnings 'uninitialized';
+    $text =~ s{$codere}{_repl(\@repl, $self->format_code(text => $2.$4, lang => $1.$3))}gem;
 
     # images must be processed before encoding the text since they might
     # have the <, > alignment specifiers...
@@ -923,7 +930,14 @@ sub format_inline {
                :(.+?)                      # $8: URL suffix
                [\]}]
               )
-              !_repl(\@repl, $self->format_link(text => $1,linktext => $3.$6, title => $self->encode_html_basic($4.$7), url => $8, clsty => $2.$5))!gemx;
+              !_repl(\@repl,
+                    $self->format_link(
+                        text     => $1,
+                        linktext => defined $3 ? $3 : $6,
+                        title    => $self->encode_html_basic( defined $4 ? $4 : $7 ),
+                        url      => $8,
+                        clsty    => defined $2 ? $2 : $5)
+                )!gemx;
 
     $text =~ s!((?:^|(?<=[\s>\(]))         # $1: open brace/bracket
                (?: (?:"                    # quote character "
@@ -942,7 +956,14 @@ sub format_inline {
                )
                :(\d+|$urlre)               # $8: URL suffix
                (?:$|(?=$punct{1,2}|\s)))   # $9: closing brace/bracket
-              !_repl(\@repl, $self->format_link(text => $1, linktext => $3.$6, title => $self->encode_html_basic($4.$7), url => $8, clsty => $2.$5))!gemx;
+              !_repl(\@repl,
+                    $self->format_link(
+                        text     => $1,
+                        linktext => defined $3 ? $3 : $6,
+                        title    => $self->encode_html_basic( defined $4 ? $4 : $7 ),
+                        url      => $8,
+                        clsty    => defined $2 ? $2 : $5)
+                )!gemx;
 
     if ($self->{flavor} =~ m/^xhtml2/) {
         # citation with cite link
@@ -960,7 +981,7 @@ sub format_inline {
         my $fntag = '<sup';
         $fntag .= ' class="'.$self->{css}{class_footnote}.'"' if $self->{css}{class_footnote};
         $fntag .= '><a href="#'.($self->{css}{id_footnote_prefix}||'fn');
-        $text =~ s|([^ ])\[(\d+)\]|$1$fntag$2">$2</a></sup>|g;
+        $text =~ s{([^ ])\[(\d+)\]}{$1$fntag$2">$2</a></sup>}g;
     }
 
     # translate macros:
@@ -970,11 +991,11 @@ sub format_inline {
     # these were present with textile 1 and are common enough
     # to not require macro braces...
     # (tm) -> &trade;
-    $text =~ s|[\(\[]TM[\)\]]|&#8482;|gi;
+    $text =~ s{[\(\[]TM[\)\]]}{&#8482;}gi;
     # (c) -> &copy;
-    $text =~ s|[\(\[]C[\)\]]|&#169;|gi;
+    $text =~ s{[\(\[]C[\)\]]}{&#169;}gi;
     # (r) -> &reg;
-    $text =~ s|[\(\[]R[\)\]]|&#174;|gi;
+    $text =~ s{[\(\[]R[\)\]]}{&#174;}gi;
 
     if ($self->{preserve_spaces}) {
         # replace two spaces with an em space
@@ -987,7 +1008,7 @@ sub format_inline {
         # simple replacements...
         $redo = 0;
         foreach my $tag (@qtags) {
-            my ($f, $r, $qf, $cls) = @$tag;
+            my ($f, $r, $qf, $cls) = @{$tag};
             if ($text =~ s/(?:^|(?<=[\s>'"])|([{[])) # "' $1 - pre
                            $qf                       #
                            (?:($clstyre*))?          # $2 - attributes
@@ -995,8 +1016,8 @@ sub format_inline {
                            (?<=\S)$qf                #
                            (?:$|([\]}])|(?=$punct{1,2}|\s)) # $4 - post
                           /$self->format_tag(tag => $r, marker => $f, pre => $1, text => $3, clsty => $2, post => $4)/gemx) {
-	           $redo ||= $last ne $text;
-	           $last = $text;
+                    $redo ||= $last ne $text;
+                    $last = $text;
             }
         }
     }
@@ -1017,7 +1038,7 @@ sub format_inline {
     }
 
     # nxn -> n&times;n
-    $text =~ s!((?:[0-9\.]0|[1-9]|\d['"])\ ?)x(\ ?\d)!$1&#215;$2!g;
+    $text =~ s{((?:[0-9\.]0|[1-9]|\d['"])\ ?)x(\ ?\d)}{$1&#215;$2}g;
 
     # translate these entities to the Unicode equivalents:
     $text =~ s/&#133;/&#8230;/g;
@@ -1030,7 +1051,7 @@ sub format_inline {
 
     # Restore replacements done earlier:
     my $i = scalar(@repl);
-    $text =~ s|<textile#$i>|$_|, $i-- while $_ = pop @repl;
+    $text =~ s|<textile#$i>|$_|, $i-- while local $_ = pop @repl;
 
     # translate entities to characters for highbit stuff since
     # we're using utf8
@@ -1076,39 +1097,40 @@ sub format_inline {
 sub format_cite {
     my $self = shift;
     my (%args) = @_;
-    my $pre = exists $args{pre} ? $args{pre} : '';
-    my $text = exists $args{text} ? $args{text} : '';
+    my $pre  = defined $args{pre}  ? $args{pre}  : '';
+    my $text = defined $args{text} ? $args{text} : '';
+    my $post = defined $args{post} ? $args{post} : '';
     my $cite = $args{cite};
-    my $post = exists $args{post} ? $args{post} : '';
     _strip_borders(\$pre, \$post);
     my $tag = $pre.'<cite';
     if (($self->{flavor} =~ m/^xhtml2/) && defined $cite && $cite) {
-      $cite = $self->format_url(url => $cite);
-      $tag .= qq{ cite="$cite"};
+        $cite = $self->format_url(url => $cite);
+        $tag .= qq{ cite="$cite"};
     } else {
-      $post .= ':';
+        $post .= ':';
     }
     $tag .= '>';
-    $tag . $self->format_inline(text => $text) . '</cite>'.$post;
+    return $tag . $self->format_inline(text => $text) . '</cite>'.$post;
 }
 
 sub format_code {
     my $self = shift;
     my (%args) = @_;
-    my $code = exists $args{text} ? $args{text} : '';
+    my $code = defined $args{text} ? $args{text} : '';
     my $lang = $args{lang};
     $code = $self->encode_html($code, 1);
     $code =~ s/&lt;textile#(\d+)&gt;/<textile#$1>/g;
     my $tag = '<code';
     $tag .= " language=\"$lang\"" if $lang;
-    $tag . '>' . $code . '</code>';
+    return $tag . '>' . $code . '</code>';
 }
 
 sub format_classstyle {
     my $self = shift;
     my ($clsty, $class, $style) = @_;
 
-    $class =~ s/^ //;
+    $style = ''      if not defined $style;
+    $class =~ s/^ // if     defined $class;
 
     my ($lang, $padleft, $padright, $id);
     if ($clsty && ($clsty =~ m/{([^}]+)}/)) {
@@ -1147,39 +1169,45 @@ sub format_classstyle {
         $clsty =~ s/\[.+?\]//g;
     }
     my $attrs = '';
+
     $style .= qq{;padding-left:${padleft}em} if $padleft;
     $style .= qq{;padding-right:${padright}em} if $padright;
     $style =~ s/^;//;
-    $class =~ s/^ //;
-    $class =~ s/ $//;
-    $attrs .= qq{ class="$class"} if $class;
+
+    if ( $class ) {
+        $class =~ s/^ //;
+        $class =~ s/ $//;
+        $attrs .= qq{ class="$class"};
+    }
     $attrs .= qq{ id="$id"} if $id;
     $attrs .= qq{ style="$style"} if $style;
     $attrs .= qq{ lang="$lang"} if $lang;
     $attrs =~ s/^ //;
-    $attrs;
+
+    return $attrs;
 }
 
 sub format_tag {
     my $self = shift;
     my (%args) = @_;
     my $tagname = $args{tag};
-    my $text = exists $args{text} ? $args{text} : '';
-    my $pre = exists $args{pre} ? $args{pre} : '';
-    my $post = exists $args{post} ? $args{post} : '';
-    my $clsty = exists $args{clsty} ? $args{clsty} : '';
+    my $text  = defined $args{text}  ? $args{text}  : '';
+    my $pre   = defined $args{pre}   ? $args{pre}   : '';
+    my $post  = defined $args{post}  ? $args{post}  : '';
+    my $clsty = defined $args{clsty} ? $args{clsty} : '';
     _strip_borders(\$pre, \$post);
     my $tag = "<$tagname";
     my $attr = $self->format_classstyle($clsty);
     $tag .= qq{ $attr} if $attr;
     $tag .= qq{>$text</$tagname>};
-    $pre.$tag.$post;
+
+    return $pre.$tag.$post;
 }
 
 sub format_deflist {
     my $self = shift;
     my (%args) = @_;
-    my $str = exists $args{text} ? $args{text} : '';
+    my $str = defined $args{text} ? $args{text} : '';
     my $clsty;
     my @lines = split /\n/, $str;
     if ($lines[0] =~ m/^(dl($clstyre*?)\.\.?(?:\ +|$))/) {
@@ -1187,42 +1215,7 @@ sub format_deflist {
         $lines[0] = substr($lines[0], length($1));
     }
 
-    sub add_term {
-        my ($self, $dt, $dd) = @_;
-        my ($dtattr, $ddattr);
-        my $dtlang;
-        if ($dt =~ m/^($clstyre*)/) {
-            my $param = $1;
-            $dtattr = $self->format_classstyle($param);
-            if ($param =~ m/\[([A-Za-z]+?)\]/) {
-                $dtlang = $1;
-            }
-            $dt = substr($dt, length($param));
-        }
-        if ($dd =~ m/^($clstyre*)/) {
-            my $param = $1;
-            # if the language was specified for the term,
-            # then apply it to the definition as well (unless
-            # already specified of course)
-            if ($dtlang && ($param =~ m/\[([A-Za-z]+?)\]/)) {
-                undef $dtlang;
-            }
-            $ddattr = $self->format_classstyle(($dtlang ? "[$dtlang]" : '') . $param);
-            $dd = substr($dd, length($param));
-        }
-        my $out = '<dt';
-        $out .= qq{ $dtattr} if $dtattr;
-        $out .= '>' . $self->format_inline(text => $dt) . '</dt>' . "\n";
-        if ($dd =~ m/\n\n/) {
-            $dd = $self->textile($dd) if $dd =~ m/\n\n/;
-        } else {
-            $dd = $self->format_paragraph(text => $dd);
-        }
-        $out .= '<dd';
-        $out .= qq{ $ddattr} if $ddattr;
-        $out .= '>' . $dd . '</dd>' . "\n";
-    }
-    
+
     my ($dt, $dd);
     my $out = '';
     foreach my $line (@lines) {
@@ -1237,17 +1230,57 @@ sub format_deflist {
     $out .= add_term($self, $dt, $dd) if $dt && $dd;
 
     my $tag = '<dl';
-    my $attr = $self->format_classstyle($clsty) if $clsty;
+    my $attr;
+    $attr = $self->format_classstyle($clsty) if $clsty;
     $tag .= qq{ $attr} if $attr;
     $tag .= '>'."\n";
-    
-    $tag.$out."</dl>\n";
+
+    return $tag.$out."</dl>\n";
 }
+
+sub add_term {
+    my ($self, $dt, $dd) = @_;
+    my ($dtattr, $ddattr);
+    my $dtlang;
+    if ($dt =~ m/^($clstyre*)/) {
+        my $param = $1;
+        $dtattr = $self->format_classstyle($param);
+        if ($param =~ m/\[([A-Za-z]+?)\]/) {
+            $dtlang = $1;
+        }
+        $dt = substr($dt, length($param));
+    }
+    if ($dd =~ m/^($clstyre*)/) {
+        my $param = $1;
+        # if the language was specified for the term,
+        # then apply it to the definition as well (unless
+        # already specified of course)
+        if ($dtlang && ($param =~ m/\[([A-Za-z]+?)\]/)) {
+            undef $dtlang;
+        }
+        $ddattr = $self->format_classstyle(($dtlang ? "[$dtlang]" : '') . $param);
+        $dd = substr($dd, length($param));
+    }
+    my $out = '<dt';
+    $out .= qq{ $dtattr} if $dtattr;
+    $out .= '>' . $self->format_inline(text => $dt) . '</dt>' . "\n";
+    if ($dd =~ m/\n\n/) {
+        $dd = $self->textile($dd) if $dd =~ m/\n\n/;
+    } else {
+        $dd = $self->format_paragraph(text => $dd);
+    }
+    $out .= '<dd';
+    $out .= qq{ $ddattr} if $ddattr;
+    $out .= '>' . $dd . '</dd>' . "\n";
+
+    return $out;
+}
+
 
 sub format_list {
     my $self = shift;
     my (%args) = @_;
-    my $str = exists $args{text} ? $args{text} : '';
+    my $str = defined $args{text} ? $args{text} : '';
 
     my %list_tags = ('*' => 'ul', '#' => 'ol');
 
@@ -1296,7 +1329,7 @@ sub format_list {
             $itemattr = $self->format_classstyle($itemclsty) if $itemclsty;
             if ($depth > $last_depth) {
                 for (my $j = $last_depth; $j < $depth; $j++) {
-                    $out .= qq{\n<$list_tags{$type}};
+                    $out .= qq{<$list_tags{$type}};
                     push @stack, $type;
                     if ($blockclsty) {
                         $blockattr = $self->format_classstyle($blockclsty);
@@ -1341,20 +1374,20 @@ sub format_list {
     for (my $j = 1; $j <= $last_depth; $j++) {
         $out .= '</li>' if $j == 1;
         my $type = pop @stack;
-        $out .= "\n".'</'.$list_tags{$type}.'>'."\n";
+        $out .= "\n".'</'.$list_tags{$type}.'>';
         $out .= '</li>' if $j != $last_depth;
     }
 
-    $out."\n";
+    return $out;
 }
 
 sub format_block {
     my $self = shift;
     my (%args) = @_;
-    my $str = exists $args{text} ? $args{text} : '';
+    my $str    = defined $args{text} ? $args{text} : '';
+    my $pre    = defined $args{pre}  ? $args{pre}  : '';
+    my $post   = defined $args{post} ? $args{post} : '';
     my $inline = $args{inline};
-    my $pre = exists $args{pre} ? $args{pre} : '';
-    my $post = exists $args{post} ? $args{post} : '';
     _strip_borders(\$pre, \$post);
     my ($filters) = $str =~ m/^(\|(?:(?:[a-z0-9_\-]+)\|)+)/;
     if ($filters) {
@@ -1376,24 +1409,25 @@ sub format_block {
         $str =~ s/^\s*<p[^>]*>//;
         $str =~ s/<\/p>\s*$//;
     }
-    $pre.$str.$post;
+
+    return $pre.$str.$post;
 }
 
 sub format_link {
     my $self = shift;
     my (%args) = @_;
-    my $text = exists $args{text} ? $args{text} : '';
-    my $linktext = exists $args{linktext} ? $args{linktext} : '';
-    my $title = $args{title};
-    my $url = $args{url};
-    my $clsty = $args{clsty};
+    my $text     = defined $args{text}     ? $args{text}     : '';
+    my $linktext = defined $args{linktext} ? $args{linktext} : '';
+    my $title    = $args{title};
+    my $url      = $args{url};
+    my $clsty    = $args{clsty};
 
     if (!defined $url || $url eq '') {
         return $text;
     }
-    if (exists $self->{links} && exists $self->{links}{$url}) {
+    if ($self->{links} && $self->{links}{$url}) {
         $title ||= $self->{links}{$url}{title};
-        $url = $self->{links}{$url}{url};
+        $url     = $self->{links}{$url}{url};
     }
     $linktext =~ s/ +$//;
     $linktext = $self->format_paragraph(text => $linktext);
@@ -1406,7 +1440,8 @@ sub format_link {
         $tag .= qq{ title="$title"} if length($title);
     }
     $tag .= qq{>$linktext</a>};
-    $tag;
+
+    return $tag;
 }
 
 sub format_url {
@@ -1416,23 +1451,24 @@ sub format_url {
     if ($url =~ m/^(mailto:)?([-\+\w]+\@[-\w]+(\.\w[-\w]*)+)$/) {
         $url = 'mailto:'.$self->mail_encode($2);
     }
-    if ($url !~ m!^(/|\./|\.\./|#)!) {
-        $url = "http://$url" if $url !~ m!^(https?|ftp|mailto|nntp|telnet)!;
+    if ($url !~ m{^(/|\./|\.\./|#)}) {
+        $url = "http://$url" if $url !~ m{^(?:https?|ftp|mailto|nntp|telnet)};
     }
     $url =~ s/&(?!amp;)/&amp;/g;
-    $url =~ s/\ /\+/g;
+    $url =~ s/ /\+/g;
     $url =~ s/^((?:.+?)\?)(.+)$/$1.$self->encode_url($2)/ge;
-    $url;
+
+    return $url;
 }
 
 sub format_span {
     my $self = shift;
     my (%args) = @_;
-    my $text = exists $args{text} ? $args{text} : '';
-    my $pre = exists $args{pre} ? $args{pre} : '';
-    my $post = exists $args{post} ? $args{post} : '';
+    my $text = defined $args{text} ? $args{text} : '';
+    my $pre  = defined $args{pre}  ? $args{pre}  : '';
+    my $post = defined $args{post} ? $args{post} : '';
+    my $cite = defined $args{cite} ? $args{cite} : '';
     my $align = $args{align};
-    my $cite = exists $args{cite} ? $args{cite} : '';
     my $clsty = $args{clsty};
     _strip_borders(\$pre, \$post);
     my ($class, $style);
@@ -1455,18 +1491,19 @@ sub format_span {
         $cite = $self->format_url(url => $cite);
         $tag .= qq{ cite="$cite"};
     }
-    $pre.$tag.'>'.$self->format_paragraph(text => $text).'</span>'.$post;
+
+    return $pre.$tag.'>'.$self->format_paragraph(text => $text).'</span>'.$post;
 }
 
 sub format_image {
     my $self = shift;
     my (%args) = @_;
-    my $src = exists $args{src} ? $args{src} : '';
+    my $src   = defined $args{src}  ? $args{src}  : '';
+    my $pre   = defined $args{pre}  ? $args{pre}  : '';
+    my $post  = defined $args{post} ? $args{post} : '';
     my $extra = $args{extra};
     my $align = $args{align};
-    my $pre = exists $args{pre} ? $args{pre} : '';
-    my $post = exists $args{post} ? $args{post} : '';
-    my $link = $args{url};
+    my $link  = $args{url};
     my $clsty = $args{clsty};
     _strip_borders(\$pre, \$post);
     return $pre.'!!'.$post if length($src) == 0;
@@ -1577,13 +1614,14 @@ sub format_image {
         $link = $self->format_url(url => $link);
         $tag = '<a href="'.$link.'">'.$tag.'</a>';
     }
-    $pre.$tag.$post;
+
+    return $pre.$tag.$post;
 }
 
 sub format_table {
     my $self = shift;
     my (%args) = @_;
-    my $str = exists $args{text} ? $args{text} : '';
+    my $str = defined $args{text} ? $args{text} : '';
 
     my @lines = split /\n/, $str;
     my @rows;
@@ -1806,13 +1844,13 @@ sub format_table {
         if ($colspan > 1) {
             # handle the spanned column if we came up short
             $colspan--;
-            $row_out = qq{<td} 
+            $row_out = q{<td}
                      . ($colspan>1 ? qq{ colspan="$colspan"} : '')
                      . qq{></td>$row_out};
         }
 
         # build one table row
-        $out .= qq{<tr};
+        $out .= q{<tr};
         if ($rowalign) {
             my $valign = _valign($rowalign);
             $out .= qq{ valign="$valign"} if $valign;
@@ -1825,7 +1863,7 @@ sub format_table {
 
     # now, form the table tag itself
     my $table = '';
-    $table .= qq{<table};
+    $table .= q{<table};
     if ($talign) {
         if ($self->{css_mode}) {
             # horizontal alignment
@@ -1849,15 +1887,15 @@ sub format_table {
     $tstyle =~ s/^;// if $tstyle;
     $table .= qq{ style="$tstyle"} if $tstyle;
     $table .= qq{ lang="$tlang"} if $tlang;
-    $table .= qq{ cellspacing="0"} if $tclass || $tid || $tstyle;
+    $table .= q{ cellspacing="0"} if $tclass || $tid || $tstyle;
     $table .= qq{>$out</table>};
 
-    if ($table =~ m|<tr></tr>|) {
+    if ($table =~ m{<tr></tr>}) {
         # exception -- something isn't right so return fail case
         return undef;
     }
 
-    $table;
+    return $table;
 }
 
 sub apply_filters {
@@ -1870,13 +1908,13 @@ sub apply_filters {
     return $text unless (ref $filters) eq 'HASH';
 
     my $param = $self->filter_param;
-    foreach my $filter (@$list) {
-        next unless exists $filters->{$filter};
+    foreach my $filter (@{$list}) {
+        next unless $filters->{$filter};
         if ((ref $filters->{$filter}) eq 'CODE') {
             $text = $filters->{$filter}->($text, $param);
         }
     }
-    $text;
+    return $text;
 }
 
 # minor utility / formatting routines
@@ -1888,22 +1926,25 @@ sub apply_filters {
         my $self = shift;
         my($html, $can_double_encode) = @_;
         return '' unless defined $html;
+        return $html if $self->{disable_encode_entities};
         if ($Have_Entities && $self->{char_encoding}) {
             $html = HTML::Entities::encode_entities($html);
         } else {
             $html = $self->encode_html_basic($html, $can_double_encode);
         }
-        $html;
+
+        return $html;
     }
 
     sub decode_html {
         my $self = shift;
         my ($html) = @_;
-        $html =~ s!&quot;!"!g;
-        $html =~ s!&amp;!&!g;
-        $html =~ s!&lt;!<!g;
-        $html =~ s!&gt;!>!g;
-        $html;
+        $html =~ s{&quot;}{"}g;
+        $html =~ s{&amp;}{&}g;
+        $html =~ s{&lt;}{<}g;
+        $html =~ s{&gt;}{>}g;
+
+        return $html;
     }
 
     sub encode_html_basic {
@@ -1912,16 +1953,17 @@ sub apply_filters {
         return '' unless defined $html;
         return $html unless $html =~ m/[^\w\s]/;
         if ($can_double_encode) {
-            $html =~ s!&!&amp;!g;
+            $html =~ s{&}{&amp;}g;
         } else {
             ## Encode any & not followed by something that looks like
             ## an entity, numeric or otherwise.
             $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
         }
-        $html =~ s!"!&quot;!g;
-        $html =~ s!<!&lt;!g;
-        $html =~ s!>!&gt;!g;
-        $html;
+        $html =~ s{"}{&quot;}g;
+        $html =~ s{<}{&lt;}g;
+        $html =~ s{>}{&gt;}g;
+
+        return $html;
     }
 
 }
@@ -1945,7 +1987,7 @@ sub apply_filters {
                 }
             }
         }
-        undef;
+        return undef;
     }
 }
 
@@ -1955,7 +1997,7 @@ sub encode_url {
     $str =~ s!([^A-Za-z0-9_\.\-\+\&=\%;])!
          ord($1) > 255 ? '%u' . (uc sprintf("%04x", ord($1)))
                        : '%'  . (uc sprintf("%02x", ord($1)))!egx;
-    $str;
+    return $str;
 }
 
 sub mail_encode {
@@ -1965,14 +2007,14 @@ sub mail_encode {
     $addr =~ s!([^\$])!
          ord($1) > 255 ? '%u' . (uc sprintf("%04x", ord($1)))
                        : '%'  . (uc sprintf("%02x", ord($1)))!egx;
-    $addr;
+    return $addr;
 }
 
 sub process_quotes {
     # stub routine for now. subclass and implement.
     my $self = shift;
     my ($str) = @_;
-    $str;
+    return $str;
 }
 
 # a default set of macros for the {...} macro syntax
@@ -1985,163 +2027,163 @@ sub default_macros {
     # those values are escaped by the time they are processed
     # for macros.
     return {
-      'c|' => '&#162;', # CENT SIGN
-      '|c' => '&#162;', # CENT SIGN
-      'L-' => '&#163;', # POUND SIGN
-      '-L' => '&#163;', # POUND SIGN
-      'Y=' => '&#165;', # YEN SIGN
-      '=Y' => '&#165;', # YEN SIGN
-      '(c)' => '&#169;', # COPYRIGHT SIGN
-      '&lt;&lt;' => '&#171;', # LEFT-POINTING DOUBLE ANGLE QUOTATION
-      '(r)' => '&#174;', # REGISTERED SIGN
-      '+_' => '&#177;', # PLUS-MINUS SIGN
-      '_+' => '&#177;', # PLUS-MINUS SIGN
-      '&gt;&gt;' => '&#187;', # RIGHT-POINTING DOUBLE ANGLE QUOTATION
-      '1/4' => '&#188;', # VULGAR FRACTION ONE QUARTER
-      '1/2' => '&#189;', # VULGAR FRACTION ONE HALF
-      '3/4' => '&#190;', # VULGAR FRACTION THREE QUARTERS
-      'A`' => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
-      '`A' => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
-      'A\'' => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
-      '\'A' => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
-      'A^' => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-      '^A' => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
-      'A~' => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
-      '~A' => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
-      'A"' => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
-      '"A' => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
-      'Ao' => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
-      'oA' => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
-      'AE' => '&#198;', # LATIN CAPITAL LETTER AE
-      'C,' => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
-      ',C' => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
-      'E`' => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
-      '`E' => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
-      'E\'' => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
-      '\'E' => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
-      'E^' => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-      '^E' => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
-      'E"' => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
-      '"E' => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
-      'I`' => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
-      '`I' => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
-      'I\'' => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
-      '\'I' => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
-      'I^' => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-      '^I' => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
-      'I"' => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
-      '"I' => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
-      'D-' => '&#208;', # LATIN CAPITAL LETTER ETH
-      '-D' => '&#208;', # LATIN CAPITAL LETTER ETH
-      'N~' => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
-      '~N' => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
-      'O`' => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
-      '`O' => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
-      'O\'' => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
-      '\'O' => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
-      'O^' => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-      '^O' => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
-      'O~' => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
-      '~O' => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
-      'O"' => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
-      '"O' => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
-      'O/' => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
-      '/O' => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
-      'U`' =>  '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
-      '`U' =>  '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
-      'U\'' => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
-      '\'U' => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
-      'U^' => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-      '^U' => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
-      'U"' => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
-      '"U' => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
-      'Y\'' => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
-      '\'Y' => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
-      'a`' => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
-      '`a' => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
-      'a\'' => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
-      '\'a' => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
-      'a^' => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
-      '^a' => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
-      'a~' => '&#227;', # LATIN SMALL LETTER A WITH TILDE
-      '~a' => '&#227;', # LATIN SMALL LETTER A WITH TILDE
-      'a"' => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
-      '"a' => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
-      'ao' => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
-      'oa' => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
-      'ae' => '&#230;', # LATIN SMALL LETTER AE
-      'c,' => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
-      ',c' => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
-      'e`' => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
-      '`e' => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
-      'e\'' => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
-      '\'e' => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
-      'e^' => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
-      '^e' => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
-      'e"' => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
-      '"e' => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
-      'i`' => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
-      '`i' => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
-      'i\'' => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
-      '\'i' => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
-      'i^' => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
-      '^i' => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
-      'i"' => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
-      '"i' => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
-      'n~' => '&#241;', # LATIN SMALL LETTER N WITH TILDE
-      '~n' => '&#241;', # LATIN SMALL LETTER N WITH TILDE
-      'o`' => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
-      '`o' => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
-      'o\'' => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
-      '\'o' => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
-      'o^' => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
-      '^o' => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
-      'o~' => '&#245;', # LATIN SMALL LETTER O WITH TILDE
-      '~o' => '&#245;', # LATIN SMALL LETTER O WITH TILDE
-      'o"' => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
-      '"o' => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
-      ':-' => '&#247;', # DIVISION SIGN
-      '-:' => '&#247;', # DIVISION SIGN
-      'o/' => '&#248;', # LATIN SMALL LETTER O WITH STROKE
-      '/o' => '&#248;', # LATIN SMALL LETTER O WITH STROKE
-      'u`' => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
-      '`u' => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
-      'u\'' => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
-      '\'u' => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
-      'u^' => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
-      '^u' => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
-      'u"' => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
-      '"u' => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
-      'y\'' => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
-      '\'y' => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
-      'y"' => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
-      '"y' => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
-      'OE' => '&#338;', # LATIN CAPITAL LIGATURE OE
-      'oe' => '&#339;', # LATIN SMALL LIGATURE OE
-      '*' => '&#2022;', # BULLET
-      'Fr' => '&#8355;', # FRENCH FRANC SIGN
-      'L=' => '&#8356;', # LIRA SIGN
-      '=L' => '&#8356;', # LIRA SIGN
-      'Rs' => '&#8360;', # RUPEE SIGN
-      'C=' => '&#8364;', # EURO SIGN
-      '=C' => '&#8364;', # EURO SIGN
-      'tm' => '&#8482;', # TRADE MARK SIGN
-      '&lt;-' => '&#8592;', # LEFTWARDS ARROW
-      '-&gt;' => '&#8594;', # RIGHTWARDS ARROW
-      '&lt;=' => '&#8656;', # LEFTWARDS DOUBLE ARROW
-      '=&gt;' => '&#8658;', # RIGHTWARDS DOUBLE ARROW
-      '=/' => '&#8800;', # NOT EQUAL TO
-      '/=' => '&#8800;', # NOT EQUAL TO
-      '&lt;_' => '&#8804;', # LESS-THAN OR EQUAL TO
-      '_&lt;' => '&#8804;', # LESS-THAN OR EQUAL TO
-      '&gt;_' => '&#8805;', # GREATER-THAN OR EQUAL TO
-      '_&gt;' => '&#8805;', # GREATER-THAN OR EQUAL TO
-      ':(' => '&#9785;', # WHITE FROWNING FACE
-      ':)' => '&#9786;', # WHITE SMILING FACE
-      'spade' => '&#9824;', # BLACK SPADE SUIT
-      'club' => '&#9827;', # BLACK CLUB SUIT
-      'heart' => '&#9829;', # BLACK HEART SUIT
-      'diamond' => '&#9830;', # BLACK DIAMOND SUIT
+        'c|'       => '&#162;', # CENT SIGN
+        '|c'       => '&#162;', # CENT SIGN
+        'L-'       => '&#163;', # POUND SIGN
+        '-L'       => '&#163;', # POUND SIGN
+        'Y='       => '&#165;', # YEN SIGN
+        '=Y'       => '&#165;', # YEN SIGN
+        '(c)'      => '&#169;', # COPYRIGHT SIGN
+        '&lt;&lt;' => '&#171;', # LEFT-POINTING DOUBLE ANGLE QUOTATION
+        '(r)'      => '&#174;', # REGISTERED SIGN
+        '+_'       => '&#177;', # PLUS-MINUS SIGN
+        '_+'       => '&#177;', # PLUS-MINUS SIGN
+        '&gt;&gt;' => '&#187;', # RIGHT-POINTING DOUBLE ANGLE QUOTATION
+        '1/4'      => '&#188;', # VULGAR FRACTION ONE QUARTER
+        '1/2'      => '&#189;', # VULGAR FRACTION ONE HALF
+        '3/4'      => '&#190;', # VULGAR FRACTION THREE QUARTERS
+        'A`'       => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
+        '`A'       => '&#192;', # LATIN CAPITAL LETTER A WITH GRAVE
+        'A\''      => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
+        '\'A'      => '&#193;', # LATIN CAPITAL LETTER A WITH ACUTE
+        'A^'       => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+        '^A'       => '&#194;', # LATIN CAPITAL LETTER A WITH CIRCUMFLEX
+        'A~'       => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
+        '~A'       => '&#195;', # LATIN CAPITAL LETTER A WITH TILDE
+        'A"'       => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
+        '"A'       => '&#196;', # LATIN CAPITAL LETTER A WITH DIAERESIS
+        'Ao'       => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
+        'oA'       => '&#197;', # LATIN CAPITAL LETTER A WITH RING ABOVE
+        'AE'       => '&#198;', # LATIN CAPITAL LETTER AE
+        'C,'       => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
+        ',C'       => '&#199;', # LATIN CAPITAL LETTER C WITH CEDILLA
+        'E`'       => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
+        '`E'       => '&#200;', # LATIN CAPITAL LETTER E WITH GRAVE
+        'E\''      => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
+        '\'E'      => '&#201;', # LATIN CAPITAL LETTER E WITH ACUTE
+        'E^'       => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
+        '^E'       => '&#202;', # LATIN CAPITAL LETTER E WITH CIRCUMFLEX
+        'E"'       => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
+        '"E'       => '&#203;', # LATIN CAPITAL LETTER E WITH DIAERESIS
+        'I`'       => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
+        '`I'       => '&#204;', # LATIN CAPITAL LETTER I WITH GRAVE
+        'I\''      => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
+        '\'I'      => '&#205;', # LATIN CAPITAL LETTER I WITH ACUTE
+        'I^'       => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
+        '^I'       => '&#206;', # LATIN CAPITAL LETTER I WITH CIRCUMFLEX
+        'I"'       => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
+        '"I'       => '&#207;', # LATIN CAPITAL LETTER I WITH DIAERESIS
+        'D-'       => '&#208;', # LATIN CAPITAL LETTER ETH
+        '-D'       => '&#208;', # LATIN CAPITAL LETTER ETH
+        'N~'       => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
+        '~N'       => '&#209;', # LATIN CAPITAL LETTER N WITH TILDE
+        'O`'       => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
+        '`O'       => '&#210;', # LATIN CAPITAL LETTER O WITH GRAVE
+        'O\''      => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
+        '\'O'      => '&#211;', # LATIN CAPITAL LETTER O WITH ACUTE
+        'O^'       => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
+        '^O'       => '&#212;', # LATIN CAPITAL LETTER O WITH CIRCUMFLEX
+        'O~'       => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
+        '~O'       => '&#213;', # LATIN CAPITAL LETTER O WITH TILDE
+        'O"'       => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
+        '"O'       => '&#214;', # LATIN CAPITAL LETTER O WITH DIAERESIS
+        'O/'       => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
+        '/O'       => '&#216;', # LATIN CAPITAL LETTER O WITH STROKE
+        'U`'       => '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
+        '`U'       => '&#217;', # LATIN CAPITAL LETTER U WITH GRAVE
+        'U\''      => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
+        '\'U'      => '&#218;', # LATIN CAPITAL LETTER U WITH ACUTE
+        'U^'       => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
+        '^U'       => '&#219;', # LATIN CAPITAL LETTER U WITH CIRCUMFLEX
+        'U"'       => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
+        '"U'       => '&#220;', # LATIN CAPITAL LETTER U WITH DIAERESIS
+        'Y\''      => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
+        '\'Y'      => '&#221;', # LATIN CAPITAL LETTER Y WITH ACUTE
+        'a`'       => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
+        '`a'       => '&#224;', # LATIN SMALL LETTER A WITH GRAVE
+        'a\''      => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
+        '\'a'      => '&#225;', # LATIN SMALL LETTER A WITH ACUTE
+        'a^'       => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
+        '^a'       => '&#226;', # LATIN SMALL LETTER A WITH CIRCUMFLEX
+        'a~'       => '&#227;', # LATIN SMALL LETTER A WITH TILDE
+        '~a'       => '&#227;', # LATIN SMALL LETTER A WITH TILDE
+        'a"'       => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
+        '"a'       => '&#228;', # LATIN SMALL LETTER A WITH DIAERESIS
+        'ao'       => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
+        'oa'       => '&#229;', # LATIN SMALL LETTER A WITH RING ABOVE
+        'ae'       => '&#230;', # LATIN SMALL LETTER AE
+        'c,'       => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
+        ',c'       => '&#231;', # LATIN SMALL LETTER C WITH CEDILLA
+        'e`'       => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
+        '`e'       => '&#232;', # LATIN SMALL LETTER E WITH GRAVE
+        'e\''      => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
+        '\'e'      => '&#233;', # LATIN SMALL LETTER E WITH ACUTE
+        'e^'       => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
+        '^e'       => '&#234;', # LATIN SMALL LETTER E WITH CIRCUMFLEX
+        'e"'       => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
+        '"e'       => '&#235;', # LATIN SMALL LETTER E WITH DIAERESIS
+        'i`'       => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
+        '`i'       => '&#236;', # LATIN SMALL LETTER I WITH GRAVE
+        'i\''      => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
+        '\'i'      => '&#237;', # LATIN SMALL LETTER I WITH ACUTE
+        'i^'       => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
+        '^i'       => '&#238;', # LATIN SMALL LETTER I WITH CIRCUMFLEX
+        'i"'       => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
+        '"i'       => '&#239;', # LATIN SMALL LETTER I WITH DIAERESIS
+        'n~'       => '&#241;', # LATIN SMALL LETTER N WITH TILDE
+        '~n'       => '&#241;', # LATIN SMALL LETTER N WITH TILDE
+        'o`'       => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
+        '`o'       => '&#242;', # LATIN SMALL LETTER O WITH GRAVE
+        'o\''      => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
+        '\'o'      => '&#243;', # LATIN SMALL LETTER O WITH ACUTE
+        'o^'       => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
+        '^o'       => '&#244;', # LATIN SMALL LETTER O WITH CIRCUMFLEX
+        'o~'       => '&#245;', # LATIN SMALL LETTER O WITH TILDE
+        '~o'       => '&#245;', # LATIN SMALL LETTER O WITH TILDE
+        'o"'       => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
+        '"o'       => '&#246;', # LATIN SMALL LETTER O WITH DIAERESIS
+        ':-'       => '&#247;', # DIVISION SIGN
+        '-:'       => '&#247;', # DIVISION SIGN
+        'o/'       => '&#248;', # LATIN SMALL LETTER O WITH STROKE
+        '/o'       => '&#248;', # LATIN SMALL LETTER O WITH STROKE
+        'u`'       => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
+        '`u'       => '&#249;', # LATIN SMALL LETTER U WITH GRAVE
+        'u\''      => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
+        '\'u'      => '&#250;', # LATIN SMALL LETTER U WITH ACUTE
+        'u^'       => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
+        '^u'       => '&#251;', # LATIN SMALL LETTER U WITH CIRCUMFLEX
+        'u"'       => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
+        '"u'       => '&#252;', # LATIN SMALL LETTER U WITH DIAERESIS
+        'y\''      => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
+        '\'y'      => '&#253;', # LATIN SMALL LETTER Y WITH ACUTE
+        'y"'       => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
+        '"y'       => '&#255', # LATIN SMALL LETTER Y WITH DIAERESIS
+        'OE'       => '&#338;', # LATIN CAPITAL LIGATURE OE
+        'oe'       => '&#339;', # LATIN SMALL LIGATURE OE
+        '*'        => '&#2022;', # BULLET
+        'Fr'       => '&#8355;', # FRENCH FRANC SIGN
+        'L='       => '&#8356;', # LIRA SIGN
+        '=L'       => '&#8356;', # LIRA SIGN
+        'Rs'       => '&#8360;', # RUPEE SIGN
+        'C='       => '&#8364;', # EURO SIGN
+        '=C'       => '&#8364;', # EURO SIGN
+        'tm'       => '&#8482;', # TRADE MARK SIGN
+        '&lt;-'    => '&#8592;', # LEFTWARDS ARROW
+        '-&gt;'    => '&#8594;', # RIGHTWARDS ARROW
+        '&lt;='    => '&#8656;', # LEFTWARDS DOUBLE ARROW
+        '=&gt;'    => '&#8658;', # RIGHTWARDS DOUBLE ARROW
+        '=/'       => '&#8800;', # NOT EQUAL TO
+        '/='       => '&#8800;', # NOT EQUAL TO
+        '&lt;_'    => '&#8804;', # LESS-THAN OR EQUAL TO
+        '_&lt;'    => '&#8804;', # LESS-THAN OR EQUAL TO
+        '&gt;_'    => '&#8805;', # GREATER-THAN OR EQUAL TO
+        '_&gt;'    => '&#8805;', # GREATER-THAN OR EQUAL TO
+        ':('       => '&#9785;', # WHITE FROWNING FACE
+        ':)'       => '&#9786;', # WHITE SMILING FACE
+        'spade'    => '&#9824;', # BLACK SPADE SUIT
+        'club'     => '&#9827;', # BLACK CLUB SUIT
+        'heart'    => '&#9829;', # BLACK HEART SUIT
+        'diamond'  => '&#9830;', # BLACK DIAMOND SUIT
     };
 }
 
@@ -2161,7 +2203,7 @@ sub _css_defaults {
        class_footnote => 'footnote',
        id_footnote_prefix => 'fn',
     );
-    $self->css(\%css_defaults);
+    return $self->css(\%css_defaults);
 }
 
 sub _halign {
@@ -2201,26 +2243,28 @@ sub _imgalign {
 
 sub _strip_borders {
     my ($pre, $post) = @_;
-    if ($$post && $$pre && ((my $open = substr($$pre, 0, 1)) =~ m/[{[]/)) {
-        my $close = substr($$post, 0, 1);
+    if (${$post} && ${$pre} && ((my $open = substr(${$pre}, 0, 1)) =~ m/[{[]/)) {
+        my $close = substr(${$post}, 0, 1);
         if ((($open eq '{') && ($close eq '}')) ||
             (($open eq '[') && ($close eq ']'))) {
-            $$pre = substr($$pre, 1);
-            $$post = substr($$post, 1);
+            ${$pre} = substr(${$pre}, 1);
+            ${$post} = substr(${$post}, 1);
         } else {
-            $close = substr($$post, -1, 1) if $close !~ m/[}\]]/;
+            $close = substr(${$post}, -1, 1) if $close !~ m/[}\]]/;
             if ((($open eq '{') && ($close eq '}')) ||
                 (($open eq '[') && ($close eq ']'))) {
-                $$pre = substr($$pre, 1);
-                $$post = substr($$post, 0, length($$post) - 1);
+                ${$pre} = substr(${$pre}, 1);
+                ${$post} = substr(${$post}, 0, length(${$post}) - 1);
             }
         }
     }
+    return;
 }
 
 sub _repl {
     push @{$_[0]}, $_[1];
-    '<textile#'.(scalar(@{$_[0]})).'>';
+
+    return '<textile#'.(scalar(@{$_[0]})).'>';
 }
 
 sub _tokenize {
@@ -2257,7 +2301,8 @@ sub _tokenize {
         $pos = pos $str;
     }
     push @tokens, ['text', substr($str, $pos, $len - $pos)] if $pos < $len;
-    \@tokens;
+
+    return \@tokens;
 }
 
 1;
@@ -2334,7 +2379,7 @@ proper recommendation).
 
 =head2 css( [$css] )
 
-Gets or sets the css support for Textile. If css is enabled,
+Gets or sets the CSS support for Textile. If CSS is enabled,
 Textile will emit CSS rules. You may pass a 1 or 0 to enable
 or disable CSS behavior altogether. If you pass a hashref,
 you may assign the CSS class names that are used by
@@ -2345,43 +2390,43 @@ recognized:
 
 =item class_align_right
 
-defaults to 'right'
+defaults to "right"
 
 =item class_align_left
 
-defaults to 'left'
+defaults to "left"
 
 =item class_align_center
 
-defaults to 'center'
+defaults to "center"
 
 =item class_align_top
 
-defaults to 'top'
+defaults to "top"
 
 =item class_align_bottom
 
-defaults to 'bottom'
+defaults to "bottom"
 
 =item class_align_middle
 
-defaults to 'middle'
+defaults to "middle"
 
 =item class_align_justify
 
-defaults to 'justify'
+defaults to "justify"
 
 =item class_caps
 
-defaults to 'caps'
+defaults to "caps"
 
 =item class_footnote
 
-defaults to 'footnote'
+defaults to "footnote"
 
 =item id_footnote_prefix
 
-defaults to 'fn'
+defaults to "fn"
 
 =back
 
@@ -2389,7 +2434,7 @@ defaults to 'fn'
 
 Gets or sets the character set targetted for publication.
 At this time, Text::Textile only changes its behavior
-if the 'utf-8' character set is assigned.
+if the "utf-8" character set is assigned.
 
 Specifically, if utf-8 is requested, any special characters
 created by Textile will be output as native utf-8 characters
@@ -2404,18 +2449,18 @@ the image dimensions).
 
 =head2 trim_spaces( [$trim] )
 
-Gets or sets the 'trim spaces' control flag. If enabled, this
+Gets or sets the "trim spaces" control flag. If enabled, this
 will clear any lines that have only spaces on them (the newline
 itself will remain).
 
 =head2 preserve_spaces( [$preserve] )
 
-Gets or sets the 'preserve spaces' control flag. If enabled, this
+Gets or sets the "preserve spaces" control flag. If enabled, this
 will replace any double spaces within the paragraph data with the
 &#8195; HTML entity (wide space). The default is 0. Spaces will
 pass through to the browser unchanged and render as a single space.
-Note that this setting has no effect on spaces within E<lt>preE<gt>,
-E<lt>codeE<gt> blocks or E<lt>scriptE<gt> sections.
+Note that this setting has no effect on spaces within C<< <pre> >>,
+C<< <code> >> or C<< <script> >>.
 
 =head2 filter_param( [$data] )
 
@@ -2432,7 +2477,13 @@ assigned filters.
 Gets or sets the character encoding logical flag. If character
 encoding is enabled, the HTML::Entities package is used to
 encode special characters. If character encoding is disabled,
-only <, >, " and & are encoded to HTML entities.
+only C<< < >>, C<< > >>, C<"> and C<&> are encoded to HTML entities.
+
+=head2 disable_encode_entities( $boolean )
+
+Gets or sets the disable encode entities logical flag. If this
+value is set to true no entities are encoded at all. This
+also supersedes the "char_encoding" flag.
 
 =head2 handle_quotes( [$handle] )
 
@@ -2446,7 +2497,7 @@ Alternative method for invoking the textile method.
 =head2 textile( $str )
 
 Can be called either procedurally or as a method. Transforms
-$str using Textile markup rules.
+I<$str> using Textile markup rules.
 
 =head2 format_paragraph( [$args] )
 
@@ -2547,7 +2598,7 @@ The language (programming language) for the code.
 Returns a string of tag attributes to accomodate the class,
 style and symbols present in $clsty.
 
-$clsty is checked for:
+I<$clsty> is checked for:
 
 =over
 
@@ -2623,8 +2674,8 @@ The text to be processed.
 
 =head2 format_block( %args )
 
-Processes '==xxxxx==' type blocks for filters. A filter
-would follow the open '==' sequence and is specified within
+Processes "==xxxxx==" type blocks for filters. A filter
+would follow the open "==" sequence and is specified within
 pipe characters, like so:
 
     ==|filter|text to be filtered==
@@ -2657,8 +2708,8 @@ Arguments you may pass:
 
 =item src
 
-The 'src' (URL) for the image. This may be a local path,
-ideally starting with a '/'. Images can be located within
+The "src" (URL) for the image. This may be a local path,
+ideally starting with a "/". Images can be located within
 the file system if the docroot method is used to specify
 where the docroot resides. If the image can be found, the
 image_size method is used to determine the dimensions of
@@ -2748,7 +2799,7 @@ as necessary.
 
 =head2 mail_encode( $email )
 
-Encodes the email address in $email for 'mailto:' links.
+Encodes the email address in I<$email> for "mailto:" links.
 
 =head2 process_quotes( $str )
 
@@ -2767,19 +2818,19 @@ Returns the alignment keyword depending on the symbol passed.
 
 =item C<E<lt>E<gt>>
 
-becomes 'justify'
+becomes "justify"
 
 =item C<E<lt>>
 
-becomes 'left'
+becomes "left"
 
 =item C<E<gt>>
 
-becomes 'right'
+becomes "right"
 
 =item C<=>
 
-becomes 'center'
+becomes "center"
 
 =back
 
@@ -2791,15 +2842,15 @@ Returns the alignment keyword depending on the symbol passed.
 
 =item C<^>
 
-becomes 'top'
+becomes "top"
 
 =item C<~>
 
-becomes 'bottom'
+becomes "bottom"
 
 =item C<->
 
-becomes 'middle'
+becomes "middle"
 
 =back
 
@@ -2813,23 +2864,23 @@ preference in the order listed:
 
 =item C<^>
 
-becomes 'top'
+becomes "top"
 
 =item C<~>
 
-becomes 'bottom'
+becomes "bottom"
 
 =item C<->
 
-becomes 'middle'
+becomes "middle"
 
 =item C<E<lt>>
 
-becomes 'left'
+becomes "left"
 
 =item C<E<gt>>
 
-becomes 'right'
+becomes "right"
 
 =back
 
@@ -2851,12 +2902,12 @@ is an internal function that should not be called directly.
 
 =head2 _strip_borders( $pre, $post )
 
-This utility routine will take 'border' characters off of
+This utility routine will take "border" characters off of
 the given $pre and $post strings if they match one of these
 conditions:
 
-    $pre starts with '[', $post ends with ']'
-    $pre starts with '{', $post ends with '}'
+    $pre starts with "[", $post ends with "]"
+    $pre starts with "{", $post ends with "}"
 
 If neither condition is met, then the $pre and $post
 values are left untouched.
@@ -2878,9 +2929,9 @@ signature is explicitly given. Paragraphs are formatted
 with all the inline rules (see inline formatting) and
 each line receives the appropriate markup rules for
 the flavor of HTML in use. For example, newlines for XHTML
-content receive a E<lt>br /E<gt> tag at the end of the line
+content receive a C<< <br /> >> tag at the end of the line
 (with the exception of the last line in the paragraph).
-Paragraph blocks are enclosed in a E<lt>pE<gt> tag.
+Paragraph blocks are enclosed in a C<< <p> >> tag.
 
 =item pre
 
@@ -2893,8 +2944,8 @@ translated into HTML entities automatically.
 =item bc
 
 A "bc" signature is short for "block code", which implies
-a preformatted section like the 'pre' block, but it also
-gets a E<lt>codeE<gt> tag (or for XHTML 2, a E<lt>blockcodeE<gt>
+a preformatted section like the "pre" block, but it also
+gets a C<< <code> >> tag (or for XHTML 2, a C<< <blockcode> >>
 tag is used instead).
 
 Note that within a "bc" block, E<lt> and E<gt> are
@@ -2914,13 +2965,13 @@ within.
 
 =item h1, h2, h3, h4, h5, h6
 
-Headline signatures that produce E<lt>h1E<gt>, etc. tags.
+Headline signatures that produce C<< <h1> >>, etc. tags.
 You can adjust the relative output of these using the
 head_offset attribute.
 
 =item clear
 
-A 'clear' signature is simply used to indicate that the next
+A "clear" signature is simply used to indicate that the next
 block should emit a CSS style attribute that clears any
 floating elements. The default behavior is to clear "both",
 but you can use the left (E<lt>) or right (E<gt>) alignment
@@ -3011,7 +3062,7 @@ have many blank lines scattered through it.
 
 Sometimes you want Textile to just get out of the way and
 let you put some regular HTML markup in your document. You
-can disable Textile formatting for a given block using the '=='
+can disable Textile formatting for a given block using the "=="
 escape mechanism:
 
     p. Regular paragraph
@@ -3083,7 +3134,7 @@ Translates into E<lt>spanE<gt>spanE<lt>/spanE<gt>.
 =item C<@code@>
 
 Translates into E<lt>codeE<gt>codeE<lt>/codeE<gt>. Note
-that within a '@...@' section, E<lt> and E<gt> are
+that within a "@...@" section, E<lt> and E<gt> are
 translated into HTML entities automatically.
 
 =back
@@ -3154,7 +3205,7 @@ The format looks like this:
 
     "Text to display":http://example.com
 
-In addition to this, you can add 'title' text to your link:
+In addition to this, you can add "title" text to your link:
 
     "Text to display (Title text)":http://example.com
 
@@ -3222,7 +3273,7 @@ Alt text can be given as well:
 The path of the image may refer to a locally hosted image or
 can be a full URL.
 
-You can also use the following modifiers after the opening '!'
+You can also use the following modifiers after the opening "!"
 character:
 
 =over
@@ -3259,11 +3310,11 @@ Applies a CSS class and/or id to the image.
 
 =item C<(> (one or more)
 
-Pads 1em on the left for each '(' character.
+Pads 1em on the left for each "(" character.
 
 =item C<)> (one or more)
 
-Pads 1em on the right for each ')' character.
+Pads 1em on the right for each ")" character.
 
 =back
 
@@ -3366,8 +3417,8 @@ To the complex:
     |_{color:green}. Last|
 
 Modifiers can be specified for the table signature itself,
-for a table row (prior to the first 'E<verbar>' character) and
-for any cell (following the 'E<verbar>' for that cell). Note that for
+for a table row (prior to the first "E<verbar>" character) and
+for any cell (following the "E<verbar>" for that cell). Note that for
 cells, a period followed with a space must be placed after
 any modifiers to distinguish the modifier from the cell content.
 
@@ -3385,25 +3436,25 @@ A CSS class and/or id attribute.
 
 =item C<(> (one or more)
 
-Adds 1em of padding to the left for each '(' character.
+Adds 1em of padding to the left for each "(" character.
 
 =item C<)> (one or more)
 
-Adds 1em of padding to the right for each ')' character.
+Adds 1em of padding to the right for each ")" character.
 
 =item C<E<lt>>
 
 Aligns to the left (floats to left for tables if combined with the
-')' modifier).
+")" modifier).
 
 =item C<E<gt>>
 
 Aligns to the right (floats to right for tables if combined with
-the '(' modifier).
+the "(" modifier).
 
 =item C<=>
 
-Aligns to center (sets left, right margins to 'auto' for tables).
+Aligns to center (sets left, right margins to "auto" for tables).
 
 =item C<E<lt>E<gt>>
 
@@ -3477,20 +3528,41 @@ span is placed around them with a class of "caps".
 
 Textile tries to do it's very best to ensure proper XHTML
 syntax. It will even attempt to fix errors you may introduce
-writing in HTML yourself. Unescaped '&' characters within
+writing in HTML yourself. Unescaped "&" characters within
 URLs will be properly escaped. Singlet tags such as br, img
-and hr are checked for the '/' terminator (and it's added
+and hr are checked for the "/" terminator (and it's added
 if necessary). The best way to make sure you produce valid
 XHTML with Textile is to not use any HTML markup at all--
 use the Textile syntax and let it produce the markup for you.
 
-=head1 LICENSE
+=head1 BUGS & SOURCE
 
-This software is licensed under the same terms as Perl itself.
+Text::Textile is hosted at github.
 
-=head1 AUTHOR & COPYRIGHT
+Source: L<http://github.com/bradchoate/text-textile/tree/master>
 
-Text::Textile was written by Brad Choate, brad@bradchoate.com.
-It is an adaptation of Textile, developed by Dean Allen of Textism.com.
+Bugs: L<http://github.com/bradchoate/text-textile/issues>
+
+=head1 COPYRIGHT & LICENSE
+
+Copyright 2005-2009 Brad Choate, brad@bradchoate.com.
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of either:
+
+=over 4
+
+=item * the GNU General Public License as published by the Free
+Software Foundation; either version 1, or (at your option) any later
+version, or
+
+=item * the Artistic License version 2.0.
+
+=back
+
+Text::Textile is an adaptation of Textile, developed by Dean Allen
+of Textism.com.
 
 =cut
+
+1;
