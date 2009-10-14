@@ -11,7 +11,7 @@ Net::OAuth::RequestTokenRequest - An OAuth protocol request for a Request Token
 
 =head1 SEE ALSO
 
-L<Net::OAuth::Request>, L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 

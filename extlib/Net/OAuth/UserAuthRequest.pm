@@ -7,7 +7,7 @@ __PACKAGE__->mk_classdata(required_message_params => [qw/
     /]);
 
 __PACKAGE__->mk_classdata(optional_message_params => [qw/
-	token
+    token
     callback
     /]);
 
@@ -46,7 +46,7 @@ Net::OAuth::UserAuthRequest - request for OAuth User Authentication
 
 =head1 SEE ALSO
 
-L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 
