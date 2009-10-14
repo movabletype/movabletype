@@ -3903,8 +3903,8 @@ use vars qw( @ISA %Lexicon );
 	'Active Users' => 'アクティブユーザー数',
 	'Users who have logged in within the past 90 days are considered <strong>active</strong>.' => '90日以内にログインしたユーザーがアクティブとみなされます。',
 	'Memcache Status' => 'Memcacheの状態',
-	'Memcache is [_1]' => 'Memcacheは[_1]です',
-	'Memcache Server is [_1]' => 'Memcacheサーバーは[_1]です',
+	'Memcache is [_1].' => 'Memcacheは[_1]です。',
+	'Memcache Server is [_1].' => 'Memcacheサーバーは[_1]です。',
 	'Server Model' => 'サーバーモデル',
 	'Movable Type could not find the script named \'mt-check.cgi\'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly.' => 'mt-check.cgiが見つかりませんでした。mt-check.cgiが存在すること、名前を変えた場合は構成ファイルのCheckScriptディレクティブに名前を指定してください。',
 
