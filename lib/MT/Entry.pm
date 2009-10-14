@@ -367,7 +367,9 @@ sub flush_category_cache {
 }
 
 MT::Placement->add_trigger(
-    post_save   => \&flush_category_cache,
+    post_save   => \&flush_category_cache
+);
+MT::Placement->add_trigger(
     post_remove => \&flush_category_cache
 );
 
