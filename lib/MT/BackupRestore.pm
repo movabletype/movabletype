@@ -96,11 +96,7 @@ sub core_backup_instructions {
         'ts_funcmap'    => {
             'skip' => 1
         },
-        # group and touch object should be skipped too; touch object creates issues with restore process (https://roundup.apperceptive.com/issues/issue11526)
         'touch' => {
-            'skip' => 1
-        },
-        'group' => {
             'skip' => 1
         },
     };
