@@ -245,6 +245,7 @@ function blurDateFields(s) {
         <p><__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false"><__trans phrase="Show all matches"></a></p>
     </mtapp:statusmsg>
 <mt:else>
+  <mt:unless name="replace_count">
     <mt:if name="have_results">
     <mtapp:statusmsg
         id="result-count"
@@ -253,6 +254,7 @@ function blurDateFields(s) {
         <p><__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">"></p>
     </mtapp:statusmsg>
     </mt:if>
+  </mt:unless>
 </mt:if>
 
 <mt:if name="searched" id="search_results">
