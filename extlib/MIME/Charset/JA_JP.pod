@@ -1,0 +1,515 @@
+=encoding utf-8
+
+=head1 NAME
+
+MIME::Charset::JA_JP - MIME のためのキャラクタセット情報
+
+=head1 SYNOPSIS
+
+    use MIME::Charset:
+
+    $charset = MIME::Charset->new("euc-jp");
+
+キャラクタセット情報の取得:
+
+    $benc = $charset->body_encoding; # 例 "Q"
+    $cset = $charset->as_string; # 例 "US-ASCII"
+    $henc = $charset->header_encoding; # 例 "S"
+    $cset = $charset->output_charset; # 例 "ISO-2022-JP"
+
+テキストデータの変換:
+
+    ($text, $charset, $encoding) =
+        $charset->header_encode(
+           "\xc9\xc2\xc5\xaa\xc0\xde\xc3\xef\xc5\xaa".
+           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef",
+           Charset => 'euc-jp');
+    # ...例えば (<変換ずみ文字列>, "ISO-2022-JP", "B") を返す。
+
+    ($text, $charset, $encoding) =
+        $charset->body_encode(
+            "Collectioneur path\xe9tiquement ",
+            Charset => 'latin1');
+    # ...例えば (<元の文字列>, "ISO-8859-1", "QUOTED-PRINTABLE") を返す。
+
+    $len = $charset->encoded_header_len(
+        "Perl\xe8\xa8\x80\xe8\xaa\x9e",
+        Charset => "utf-8",
+        Encoding => "b");
+    # ...例えば 28 を返す。
+
+モジュール既定値の操作:
+
+    MIME::Charset::alias("csEUCKR", "euc-kr");
+    MIME::Charset::default("iso-8859-1");
+    MIME::Charset::fallback("us-ascii");
+
+非OO関数 (近い将来に廃止):
+
+    use MIME::Charset qw(:info);
+
+    $benc = body_encoding("iso-8859-2"); # "Q"
+    $cset = canonical_charset("ANSI X3.4-1968"); # "US-ASCII"
+    $henc = header_encoding("utf-8"); # "S"
+    $cset = output_charset("shift_jis"); # "ISO-2022-JP"
+
+    use MIME::Charset qw(:trans);
+
+    ($text, $charset, $encoding) =
+        header_encode(
+           "\xc9\xc2\xc5\xaa\xc0\xde\xc3\xef\xc5\xaa".
+           "\xc7\xd1\xca\xaa\xbd\xd0\xce\xcf\xb4\xef",
+           "euc-jp");
+    # ...(<変換されたテキスト>, "ISO-2022-JP", "B") を返す。
+
+    ($text, $charset, $encoding) =
+        body_encode(
+            "Collectioneur path\xe9tiquement ".
+            "\xe9clectique de d\xe9chets",
+            "latin1");
+    # ...(<元のテキスト>, "ISO-8859-1", "QUOTED-PRINTABLE") を返す。
+
+    $len = encoded_header_len(
+        "Perl\xe8\xa8\x80\xe8\xaa\x9e", "b", "utf-8"); # 28
+
+=head1 DESCRIPTION
+
+MIME::Charset は、インターネット上での MIME
+メッセージに用いるキャラクタセットの情報を提供する。
+
+=head2 定義
+
+B<キャラクタセット> とは、MIME での ``character set'' のことで、
+オクテットの列を文字の列に変換する方法を指す。
+これは、ISO/IEC における ``符号化文字集合'' (CCS) と
+``文字符号化法'' (CES) の両方の概念を包含する。
+
+B<エンコーディング> とは、MIME でのそれのことで、
+メッセージ本体やメッセージヘッダ本体を印字可能な
+US-ASCII 文字の列として表現する方法を指す。
+
+
+=cut
+
+=head2 コンストラクタ
+
+=over
+
+=item $charset = MIME::Charset->new([CHARSET [, OPTS]])
+
+キャラクタセットオブジェクトを作成して返す。
+
+OPTS には次の対を指定できる。
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+変換を行わないので、次のオプションは効果を持たない。
+
+=over 4
+
+=item Mapping => MAPTYPE
+
+キャラクタセット名に対して実際に使うマッピングの拡張をするかどうか。
+C<"EXTENDED"> は拡張マッピングを使う。
+C<"STANDARD"> は標準化されている厳密なマッピングを使う。
+既定は C<"EXTENDED">。
+
+=back
+
+=cut
+
+=back
+
+=head2 キャラクタセット情報の取得
+
+=over
+
+=item $charset->body_encoding
+
+=item body_encoding CHARSET
+
+CHARSET のメッセージ本体で推奨される伝送エンコーディングを取得する。
+
+返値は C<"B"> (BASE64)、C<"Q"> (QUOTED-PRINTABLE)、
+C<undef> (伝送エンコードしなくてよい --- 7BIT か 8BIT)
+のいずれか。これはメッセージヘッダのエンコーディングとは違うこともある。
+
+=cut
+
+=item $charset->as_string
+
+=item canonical_charset CHARSET
+
+キャラクタセットの正規の名前を取得する。
+
+=cut
+
+=item $charset->decoder
+
+キャラクタセットを Unicode に復号するのに使う
+L<"Encode::Encoding"> オブジェクトを返す。
+
+=cut
+
+=item detect_7bit_charset STRING
+
+文字列 STRING を符号化している7 ビットキャラクタセットを推測する。
+
+=cut
+
+=item $charset->dup
+
+キャラクタセットオブジェクトを複写する。
+
+=cut
+
+=item $charset->encoder([CHARSET])
+
+インターネット上の MIME
+メッセージで使うことを推奨される互換キャラクタセットで符号化するのに使う
+L<"Encode::Encoding"> オブジェクトを返す。
+
+CHARSET 引数を指定した場合、$charset オブジェクトの符号化器
+(および出力キャラクタセット名) を、CHARSET のそれに置き換える。
+つまり、$charset オブジェクトは元のキャラクタセットから新たな
+CHARSET への変換器となる。
+
+=cut
+
+=item $charset->header_encoding
+
+=item header_encoding CHARSET
+
+CHARSET のメッセージヘッダで推奨されるエンコーディング法を取得する。
+
+返値は C<"B">、C<"Q">、C<"S"> (どちらか短くなるほう)、
+C<undef> (エンコードしなくてよい)
+のいずれか。これはメッセージ本体のエンコーディングとは違うこともある。
+
+
+=cut
+
+=item $charset->output_charset
+
+=item output_charset CHARSET
+
+指定した CHARSET と互換で、インターネット上の
+MIME メッセージで使うことを推奨されるキャラクタセット名を
+(当モジュールが知っていれば) 取得する。
+
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+この関数は単に L<"canonical_charset"> の結果を返す。
+
+
+=cut
+
+=back
+
+=head2 テキストデータの変換
+
+=over
+
+=item $charset->body_encode(STRING [, OPTS])
+
+=item body_encode STRING, CHARSET [, OPTS]
+
+STRING を (必要なら) 変換したデータと、
+メッセージ本体で推奨される伝送エンコーディングを取得する。
+CHARSET は STRING を符号化しているキャラクタセット。
+
+OPTS には以下の対を指定できる。
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+変換を行わないので、以下のオプションは効果を持たない。
+
+=over 4
+
+=item Detect7bit => YESNO
+
+CHARSET がないとき、7ビットのキャラクタセットを自動認識しようとする。
+既定は C<"YES">。
+
+=item Replacement => REPLACEMENT
+
+エラー処理法の指定。L<"エラー処理"> 参照。
+
+=back
+
+3要素のリスト (I<変換ずみの文字列>, I<出力のキャラクタセット>,
+I<伝送エンコーディング>) が返る。
+I<伝送エンコーディング> は C<"BASE64">、C<"QUOTED-PRINTABLE">、
+C<"7BIT">、C<"8BIT"> のいずれか。I<出力のキャラクタセット> が決定できず、
+I<変換ずみの文字列> が ASCII以外のバイトを含むときは、
+I<出力のキャラクタセット> は C<undef>、I<伝送エンコーディング> は C<"BASE64">
+となる。
+I<出力のキャラクタセット> が C<"US-ASCII">
+となるのは、文字列が ASCII以外のバイトを含まないときに限る。
+
+
+=cut
+
+=item $charset->decode(STRING [,CHECK])
+
+STRING を Unicode 文字列に復号する。
+
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+この機能を実行すると死ぬ。
+
+=cut
+
+=item $charset->encode(STRING, [, CHECK])
+
+STRING (Unicode 文字列または普通の文字列) を、
+元のキャラクタセットと互換でインターネット上の
+MIME メッセージで使うことを推奨されるキャラクタセットを
+(当モジュールが知っていれば) 使って、符号化する。
+元のキャラクタセットと互換キャラクタセットが同じでも、
+文字列を Unicode に復号してから符号化することに注意。
+
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+この機能を実行すると死ぬ。
+
+=cut
+
+=item $charset->encoded_header_len(STRING [,ENCODING])
+
+=item encoded_header_len STRING, ENCODING, CHARSET
+
+STRING をメッセージヘッダとしてエンコードしたときの長さ
+(行折りはしないとして) を取得する。
+
+ENCODING は C<"B">、C<"Q">、C<"S">
+(C<"B"> と C<"Q"> のうち短くなるほう) のいずれか。
+
+
+=cut
+
+=item $charset->heder_encode(STRING [, OPTS])
+
+=item header_encode STRING, CHARSET [, OPTS]
+
+STRING を (必要なら) 変換したデータと、
+メッセージヘッダで推奨されるエンコーディング法を取得する。
+CHARSET は STRING を符号化しているキャラクタセット。
+
+OPTS には以下の対を指定できる。
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+変換を行わないので、以下のオプションは効果を持たない。
+
+=over 4
+
+=item Detect7bit => YESNO
+
+CHARSET がないとき、7ビットのキャラクタセットを自動認識しようとする。
+既定は C<"YES">。
+
+=item Replacement => REPLACEMENT
+
+エラー処理法の指定。L<"エラー処理"> 参照。
+
+=back
+
+3要素のリスト (I<変換ずみの文字列>, I<出力のキャラクタセット>,
+I<エンコーディング法>) が返る。
+I<エンコーディング法> は C<"B">、C<"Q">、C<undef> (エンコードしなくてよい)
+のいずれか。
+I<出力のキャラクタセット> が決定できず、I<変換ずみの文字列>
+が ASCII以外のバイトを含むときは、I<出力のキャラクタセット> は C<"8BIT">
+(これはキャラクタセットの名前ではI<なく>、符号化が不可能なデータを表す特殊値)
+で I<エンコーディング法> は C<undef> (エンコードするべきではない) となる。
+I<出力のキャラクタセット> が C<"US-ASCII">
+となるのは、文字列が ASCII以外のバイトを含まないときに限る。
+
+=cut
+
+=item $charset->undecode(STRING [,CHECK])
+
+Unicode 文字列 string を、
+$charset の入力キャラクタセットを使って文字列に変換する。
+これは C<$charset-E<gt>decoder-E<gt>encode()> と同等である。
+
+B<NOTE>:
+Unicode/マルチバイト対応が有効になっていないとき (L<"USE_ENCODE"> 参照) は、
+この機能を実行すると死ぬ。
+
+=cut
+
+=back
+
+=head2 モジュール既定値の操作
+
+=over
+
+=item alias ALIAS [, CHARSET]
+
+L<"canonical_charset"> で正規名を決定するためのキャラクタセットの別名を取得/設定する。
+
+CHARSET があって偽でないとき、ALIAS が CHARSET の別名に登録される。
+さもなければ、別名に変更はない。いずれの場合でも、
+現在 ALIAS が登録されているキャラクタセットを返す。
+
+
+=cut
+
+=item default [CHARSET]
+
+既定キャラクタセットを取得/設定する。
+
+B<既定キャラクタセット>とは、
+当モジュールで、処理のためのキャラクタセットが不明なときに用いるキャラクタセット。
+当モジュールを利用するモジュールでは、
+処理のためのキャラクタセットが不明なときや暗黙の既定値が必要なとき、
+このキャラクタセットを使うことを推奨する。
+これは既定では C<"US-ASCII">。
+
+CHARSET があって偽でなければ、それを既定キャラクタセットに設定する。
+さもなければ、既定キャラクタセットは変わらない。いずれの場合でも、
+現在の既定キャラクタセットを返す。
+
+B<NOTE>: 既定キャラクタセットは変更するI<べきではない>。
+
+
+=cut
+
+=item fallback [CHARSET]
+
+予備キャラクタセットを取得/設定する。
+
+B<予備キャラクタセット>とは、
+当モジュールで、指定されたキャラクタセットでの変換が失敗し、
+エラー処理法に C<"FALLBACK"> が指定されていたときに用いるキャラクタセット。
+当モジュールを利用するモジュールでは、
+キャラクタセット変換が失敗するときに最終手段としてこのキャラクタセットを使ってもよい。
+これは既定では C<"UTF-8">。
+
+CHARSET があって偽でなければ、それを予備キャラクタセットに設定する。
+CHARSET が C<"NONE"> であれば、予備キャラクタセットを未定にする。
+さもなければ、予備キャラクタセットは変わらない。いずれの場合でも、
+現在の予備キャラクタセットを返す。
+
+B<NOTE>: 予備キャラクタセットに C<"US-ASCII"> を指定する価値はI<ある>。
+変換の結果は、キャラクタセット情報がないときも可読となる。
+
+
+=cut
+
+=item recommended CHARSET [, HEADERENC, BODYENC [, ENCCHARSET]]
+
+キャラクタセットの特性を取得/設定する。
+
+必須でない引数があってそのどれかが偽でなければ、
+その引数で CHARSET の特性を設定する。さもなければ、特性は変わらない。
+いずれの場合でも、CHARSET の現在の特性を 3 要素のリスト
+(HEADERENC, BODYENC, ENCCHARSET) として返す。
+
+HEADERENC はメッセージヘッダで推奨されるエンコーディング法。
+C<"B">、C<"Q">、C<"S"> (どちらか短くなるほう)、
+C<undef> (エンコードしなくてよい) を指定できる。
+
+BODYENC はメッセージ本体で推奨される伝送エンコーディング。
+C<"B">、C<"Q">、C<undef> (伝送エンコードしなくてよい) を指定できる。
+
+ENCCHARSET は、指定した CHARSET と互換で、インターネット上の
+MIME メッセージで使うことを推奨されるキャラクタセット名。
+変換が必要ない (または当モジュールが適当なキャラクタセットを知らない) ときは、
+ENCCHARSET は C<undef>。
+
+B<NOTE>: この関数の今後の版では、ほかにも必須でない引数をとれるようになるかもしれない
+(たとえば、文字幅、行分割の挙動などについての属性)。
+そのため、返値の形式も変わるかもしれない。個々の特性を取得するには
+L<"header_encoding">、L<"body_encoding">、L<"output_charset"> を使ってほしい。
+
+
+=cut
+
+=back
+
+=head2 定数
+
+=over
+
+=item USE_ENCODE
+
+Unicode/マルチバイト対応フラグ。
+Unicode とマルチバイトへの対応が有効になっているときは、空でない文字列が設定されている。
+現在、このフラグは Perl 5.8.0 以降で空でなく、それより以前の Perl では空の文字列。
+
+=back
+
+=head2 エラー処理
+
+L<"body_encode"> と L<"header_encode"> の
+C<Replacement> オプションには以下のものを指定できる:
+
+=over
+
+=item C<"DEFAULT">
+
+不正な文字を置き換え文字で置き換える。
+UCM に基づく符号化器を持つキャラクタセットでは <subchar> を使うことがある。
+
+=item C<"FALLBACK">
+
+I<予備キャラクタセット> を使って C<"DEFAULT"> 方式をやってみる
+(L<"fallback"> 参照)。
+予備キャラクタセットが未定で変換がエラーを起こしたときは、
+コードはエラーメッセージを出力して死ぬ。
+
+=item C<"CROAK">
+
+コードはエラーメッセージを出力してすぐ死ぬ。
+したがって、本当にエラーで死なせたくなければ
+eval{} で致命的エラーを受け止めなければいけない。
+C<"STRICT"> でも同じ。
+
+=item C<"PERQQ">
+
+=item C<"HTMLCREF">
+
+=item C<"XMLCREF">
+
+L<Encode> モジュールで定義している
+C<FB_PERLQQ>、C<FB_HTMLCREF>、C<FB_XMLCREF>
+の方式を使う。
+
+=item 数値
+
+数値を指定することもできる。
+詳細は L<Encode/Handling Malformed Data> を見てほしい。
+
+=back
+
+エラー処理法が指定されないか、上記以外のエラー処理法が指定されたときは、
+C<"DEFAULT"> とみなす。
+
+=head2 設定ファイル
+
+オプションのパラメタの組み込み既定値は、設定ファイル
+F<MIME/Charset/Defaults.pm> で変更することができる。
+詳しくは F<MIME/Charset/Defaults.pm.sample> を読んでほしい。
+
+=head1 VERSION
+
+$VERSION 変数を見てほしい。
+
+このモジュールの開発版が
+L<http://hatuka.nezumi.nu/repos/MIME-Charset/> にある。
+
+=head1 SEE ALSO
+
+Multipurpose Internet Mail Extensions (MIME).
+
+=head1 AUTHOR
+
+Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2006-2009 Hatuka*nezumi - IKEDA Soji.
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+
+=cut

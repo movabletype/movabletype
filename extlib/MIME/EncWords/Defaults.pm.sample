@@ -1,0 +1,70 @@
+#-*- perl -*-
+
+package MIME::EncWords;
+
+=head1 NAME
+
+MIME::EncWords::Defaults - Configuration for MIME::EncWords
+
+=head1 SYNOPSIS
+
+Edit this file and place it on MIME/EncWords/Defaults.pm to activate custom
+settings.
+
+=head1 DESCRIPTION
+
+Following settings are derived from MIME/Charset/Defaults.pm,
+but you may override them for this module locally.
+
+=over 4
+
+=item Detect7bit
+
+=item Mapping
+
+=item Replacement
+
+=back
+
+Following settings are specific to this module.
+
+=over 4
+
+=item Charset
+
+=item Encoding
+
+=item Field
+
+=item Folding
+
+=item MaxLineLen
+
+=item Minimal
+
+=back
+
+=head1 SEE ALSO
+
+L<MIME::EncWords>
+
+=cut
+
+#--------------------------------------------------------------------------#
+# Add your own settings below.
+#--------------------------------------------------------------------------#
+
+## Default settings on MIME::Charset are:
+# $Config->{Detect7bit} = 'YES';
+# $Config->{Mapping} = 'EXTENDED';
+# $Config->{Replacement} = 'DEFAULT';
+
+## Default settings on current release are:
+# $Config->{Charset} = 'ISO-8859-1';
+# $Config->{Encoding} = 'A';
+# $Config->{Field} = undef;
+# $Config->{Folding} = "\n";
+# $Config->{MaxLineLen} = 76;
+# $Config->{Minimal} = 'YES';
+
+1;

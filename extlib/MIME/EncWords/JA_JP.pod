@@ -1,0 +1,355 @@
+=encoding utf-8
+
+=head1 NAME
+
+MIME::EncWords::JA_JP - RFC 2047 encoded-word 関連 (改良版)
+
+=head1 SYNOPSIS
+
+I<L<MIME::EncWords> は、RFC 2047 (旧 RFC 1522)
+の仕様により適合することをめざした L<MIME::Words> の別実装です。
+加えて、いくらかの改良がなされています。
+以下の梗概と説明は、もとの MIME::Words から採ったものに、
+改良点の説明 (B<**>) および変更点の説明と明確化 (B<*>)
+を加えたものです。>
+
+読み進める前に、L<MIME::Tools> を見るべきだ。そうして、
+あなたの成し遂げようとしていることのどこでこのモジュールを使うのかを、
+理解してほしい。
+いますぐ。待ってるから。
+
+いいかな。はじめるよ...
+
+    use MIME::EncWords qw(:all);
+
+    ### 文字列を、キャラクタセットは無視してデコードした文字列にする:
+    $decoded = decode_mimewords(
+          'To: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>',
+          );
+
+    ### 文字列を、デコードされた [DATA,CHARSET] の対の配列にする:
+    @decoded = decode_mimewords(
+          'To: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>',
+          );
+
+    ### 単一の「安全でない語」をエンコードする:
+    $encoded = encode_mimeword("\xABFran\xE7ois\xBB");
+
+    ### 文字列を、「安全でない語」を探しながらエンコードする:
+    $encoded = encode_mimewords("Me and \xABFran\xE7ois\xBB in town");
+
+=head1 DESCRIPTION
+
+合衆国の諸君。このモジュールでいったい何をやらかそうというのか、
+わからないかもしれないね。欧州、ロシア等の諸君なら、わかるだろう。C<(:-)>。
+
+たとえば、これは有効な MIME ヘッダだ:
+
+      From: =?US-ASCII?Q?Keith_Moore?= <moore@cs.utk.edu>
+      To: =?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>
+      CC: =?ISO-8859-1?Q?Andr=E9_?= Pirard <PIRARD@vm1.ulg.ac.be>
+      Subject: =?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?=
+       =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?=
+       =?US-ASCII?Q?.._cool!?=
+
+これらのフィールドは、だいたいつぎのようにデコードできる:
+
+      From: Keith Moore <moore@cs.utk.edu>
+      To: Keld Jørn Simonsen <keld@dkuug.dk>
+      CC: André  Pirard <PIRARD@vm1.ulg.ac.be>
+      Subject: If you can read this you understand the example... cool!
+
+B<追補>: 合衆国、欧州の諸君。
+このモジュールでいったいなにをやらかそうというのか、
+わからないかもしれないね。東アジア等の諸君なら、わかるだろう。
+C<(^_^)>.
+
+たとえば、これは有効な MIME ヘッダだ:
+
+      Subject: =?EUC-KR?B?sNTAuLinKGxhemluZXNzKSwgwvzB9ri7seIoaW1w?=
+       =?EUC-KR?B?YXRpZW5jZSksILGzuLgoaHVicmlzKQ==?=
+
+これらのフィールドは、だいたいつぎのようにデコードできる:
+
+      Subject: 게으름(laziness), 참지말기(impatience), 교만(hubris)
+
+=head1 PUBLIC INTERFACE
+
+=over 4
+
+
+=cut
+
+=item decode_mimewords ENCODED, [OPTS...]
+
+I<関数>。
+文字列から RFC-1522 スタイルの "Q" エンコーディング
+(quoted-printable の一種) や "B" エンコーディング (base64)
+を探し、それをデコードする。
+
+B<配列コンテクストでは>、文字列 ENCODED をデコードした
+C<[DATA, CHARSET]> の対に分割し、そのリストを返す。
+エンコードされていなかったデータは 1 要素の配列
+C<[DATA]> で返す (CHARSET は実質的に C<undef>)。
+
+    $enc = '=?ISO-8859-1?Q?Keld_J=F8rn_Simonsen?= <keld@dkuug.dk>';
+    foreach (decode_mimewords($enc)) {
+        print "", ($_[1] || 'US-ASCII'), ": ", $_[0], "\n";
+    }
+
+B<**>
+ただし、隣り合う「encoded-word」を、キャラクタセットがおなじなら連結する。
+これは、マルチバイト列を安全に扱えるようにするためである。
+
+B<*>
+エンコードされていなかったデータの両端の空白文字は取り去らない。
+これは、L<MIME::Words> との互換性を保つためである。
+
+B<スカラコンテクストでは>、上記のリストの DATA 要素をすべて連結し、
+それを返す。I<注意: 情報の損失がある>ので、
+望んだ結果が得られI<ない>かもしれない。
+だが、文字列 ENCODED
+のすべての文字のキャラクタセットが同一だとわかっているのなら、
+これは役に立つこともある。
+(これを使う前に、L<MIME::WordDecoder/unmime> を見てほしい。
+これが望みのものかもしれない。)
+B<**>
+下記の "Charset" も参照。
+
+構文エラーが発生すると、$@ にエラーの説明をセットするが、
+解析はできるかぎり (ヘッダのデコードで得られたI<なにか>を返すために)
+続行する。
+エラーが見つからなければ、$@ は偽となる。
+
+B<*>
+base64 の「encoded-word」が壊れているときは、エンコードしたままのものを返す。
+この場合、$@ をセットする。
+
+ENCODED に引き続く引数は、ハッシュによるオプションの定義とみなす。
+B<**>
+Unicode/マルチバイト文字対応が有効になっていないとき
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
+以下のオプションはなんの効果も持たない。
+
+=over 4
+
+=item Charset
+B<**>
+
+スカラコンテクストで、DATA 要素をこの名前のキャラクタセットで変換する。
+このオプションに特殊値 C<"_UNICODE_"> を指定すると、
+返す値は Unicode 文字列となる。
+
+B<Note>:
+この仕様は、I<C<"_UNICODE_"> を指定したとき以外は>、
+やはり情報の損失がある。
+
+=item Detect7bit
+B<**>
+
+エンコードされていなかった部分の 7 ビットキャラクタセットを判別しようとする。
+初期値は C<"YES">。
+
+
+=cut
+
+=item Mapping
+B<**>
+
+スカラコンテクストで、
+キャラクタセットの名前に対して実際に使うマッピングを指定する。
+C<"EXTENDED"> は拡張マッピングを使う。
+C<"STANDARD"> は標準化されている厳密なマッピングを使う。
+初期値は C<"EXTENDED">。
+
+=back
+
+
+=cut
+
+=item encode_mimeword RAW, [ENCODING], [CHARSET]
+
+I<関数>。
+「安全でない」文字のある単一の「語」RAW をエンコードする。
+「語」全体がエンコードされる。
+
+    ### "«François»" をエンコードする:
+    $encoded = encode_mimeword("\xABFran\xE7ois\xBB");
+
+エンコーディング ENCODING を指定できる (C<"Q"> または C<"B">)。
+初期値は C<"Q">。
+B<**>
+さらに、「特殊」な値も指定できる。
+C<"S"> は C<"Q"> と C<"B"> のうち短くなるほうを選ぶ。
+
+キャラクタセット CHARSET を指定できる。初期値は C<iso-8859-1>。
+
+B<*>
+C<"Q"> エンコーディングでは、空白を ``_'' でエスケープする。
+
+
+=cut
+
+=item encode_mimewords RAW, [OPTS]
+
+I<関数>。
+文字列 RAW から、「安全でない」文字の列を見つけてエンコードしようとする。
+
+    ### 「安全でない語」のある文字列をエンコードする:
+    $encoded = encode_mimewords("Me and \xABFran\xE7ois\xBB");
+
+エンコードした文字列を返す。
+
+B<**>
+RAW は Unicode でもよい。ただし Unicode/マルチバイト対応が有効な場合
+(see L<MIME::Charset::JA_JP/USE_ENCODE>)。
+さらに RAW は、L</decode_mimewords>
+が配列コンテクストで返すものへの参照でもよい。
+後の場合は、"Charset" オプション (下記参照) が適宜上書きされる
+(下の注も参照)。
+
+B<Note>:
+B<*>
+RAW が配列への参照であるときは、
+隣り合う「encoded-word」
+(つまり、ASCII 以外のキャラクタセット要素のある要素)
+を連結する。その上で、マルチバイト文字の文字境界を考慮しながら
+(ただしこれは Unicode/マルチバイト対応が有効なときだけ)、分割する。
+エンコードしないデータ部分は両端に空白文字が必要。
+そうしなければ隣り合う「encoded-word」に併合されてしまう。
+
+RAW に引き続く引数は、ハッシュによるオプションの定義とみなす:
+
+=over 4
+
+=item Charset
+
+「安全でない」ものはこのキャラクタセットでエンコードする。
+初期値は 'ISO-8859-1' (別名 "Latin-1")。
+
+=item Detect7bit
+B<**>
+
+"Encoding" オプション (下記参照) が C<"a"> に指定してあって "Charset"
+オプションが不明なら、
+RAW 文字列の 7 ビットキャラクタセットを判別しようとする。
+初期値は C<"YES">。
+Unicode/マルチバイト文字対応が有効になっていないとき
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
+このオプションはなんの効果も持たない。
+
+=item Encoding
+
+使用するエンコーディング。C<"q"> または C<"b">。
+B<**>
+「特殊」な値も指定できる。C<"a"> は推奨されるエンコーディングを自動選択する
+(キャラクタセットに別のものが推奨されるときはキャラクタセット変換も行う。
+L<MIME::Charset::JA_JP> 参照)。
+C<"s"> は C<"q"> と C<"b"> のうち短くなるほうを選ぶ。
+B<Note>:
+B<*>
+リリース 1.005 で、初期値が C<"q">
+(MIME::Words での初期値) から C<"a"> に変わった。
+
+=item Field
+
+この文字列を使うメールフィールドの名前。
+B<**>
+ヘッダをエンコードする際には、最初の行でメールフィールド名の長さを考慮する。
+
+=item Folding
+B<**>
+
+エンコードする行を「行折り」する文字の列。初期値は C<"\n">。
+空文字列 C<""> を指定すると、行長 (下記 L</MaxLineLen> 参照)
+を超える「encoded-word」を SPACE で分割するだけ。
+
+B<Note>:
+B<*>
+RFC 2822 には、行は CRLF (C<"\r\n">) で分割すると明記してあるが、
+このモジュールでは後方互換性を保つために LF (C<"\n">) を初期値としてきた。
+初期値を使っている場合、
+エンコードしたヘッダをセッションへと放つ前に、
+改行文字の変換が必要になることもある。
+
+=item Mapping
+B<**>
+
+キャラクタセットの名前に対して実際に使うマッピングを指定する。
+C<"EXTENDED"> は拡張マッピングを使う。
+C<"STANDARD"> は標準化されている厳密なマッピングを使う。
+初期値は C<"EXTENDED">。
+Unicode/マルチバイト文字対応が有効になっていないとき
+(L<MIME::Charset::JA_JP/USE_ENCODE> 参照) は、
+このオプションはなんの効果も持たない。
+
+=item MaxLineLen
+B<**>
+
+行の最大長 (改行を除く)。
+初期値は 76。
+
+=item Minimal
+B<**>
+
+エンコードするテキストの中の自然な語分離子 (要するに空白文字)
+に注意を払う。
+C<"NO"> を指定すると、このモジュールはテキストをまとめてエンコード
+(エンコードが必要なら) し、空白文字を考慮しない。
+行長を超える「encoded-word」は単にその長さによって分割される。
+初期値は C<"YES">。
+
+B<Note>:
+リリース 0.040 で、初期値が C<"YES"> に変わった。
+MIME::Words との互換性を保つためである。
+それ以前のリリースでは、このオプションは C<"NO"> 固定であった。
+
+=item Replacement
+B<**>
+
+L<MIME::Charset::JA_JP/エラー処理> 参照。
+
+=back
+
+
+=cut
+
+=back
+
+=head2 設定ファイル
+B<**>
+
+L</decode_mimewords> ('Charset' オプションを除く) および
+L</encode_mimewords> のオプション引数の組み込み初期値は、
+設定ファイルで上書きできる。
+F<MIME/Charset/Defaults.pm> と F<MIME/EncWords/Defaults.pm>。
+詳細は F<MIME/EncWords/Defaults.pm.sample> を読んでほしい。
+
+=head1 VERSION
+
+$VERSION 変数を参照してほしい。
+
+このモジュールの開発版が
+L<http://hatuka.nezumi.nu/repos/MIME-EncWords/>
+にある。
+
+=head1 SEE ALSO
+
+L<MIME::Charset::JA_JP>,
+L<MIME::Tools>
+
+=head1 AUTHORS
+
+decode_mimewords() 関数の元の版は L<MIME::Words>
+モジュールから引き継いだもので、著者は以下のとおり:
+    Eryq (F<eryq@zeegee.com>), ZeeGee Software Inc (F<http://www.zeegee.com>).
+    David F. Skoll (dfs@roaringpenguin.com) http://www.roaringpenguin.com
+
+そのほかの部分は、次の者が書き直しあるいは加えた:
+    Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>.
+
+This program is free software; you can redistribute
+it and/or modify it under the same terms as Perl itself.
+
+
+=cut
