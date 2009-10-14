@@ -31,9 +31,9 @@ BEGIN {
 
     ( $VERSION, $SCHEMA_VERSION ) = ( '5.0', '5.0016' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
-        '__PRODUCT_NAME__', 'MT',
+        'Movable Type Pro', 'MT',
         '5.0', '5.0b3',
-        '__PORTAL_URL__'
+        'http://www.sixapart.com/movabletype/'
     );
 
     # To allow MT to run straight from svn, if no build process (pre-processing)
