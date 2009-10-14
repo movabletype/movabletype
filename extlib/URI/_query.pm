@@ -27,18 +27,20 @@ sub query_form {
     my $old = $self->query;
     if (@_) {
         # Try to set query string
-	my @new = @_;
-	if (@new == 1) {
-	    my $n = $new[0];
-	    if (ref($n) eq "ARRAY") {
-		@new = @$n;
-	    }
-	    elsif (ref($n) eq "HASH") {
-		@new = %$n;
-	    }
-	}
+        my $delim;
+        my $r = $_[0];
+        if (ref($r) eq "ARRAY") {
+            $delim = $_[1];
+            @_ = @$r;
+        }
+        elsif (ref($r) eq "HASH") {
+            $delim = $_[1];
+            @_ = %$r;
+        }
+        $delim = pop if @_ % 2;
+
         my @query;
-        while (my($key,$vals) = splice(@new, 0, 2)) {
+        while (my($key,$vals) = splice(@_, 0, 2)) {
             $key = '' unless defined $key;
 	    $key =~ s/([;\/?:@&=+,\$\[\]%])/ URI::Escape::escape_char($1)/eg;
 	    $key =~ s/ /+/g;
@@ -50,12 +52,21 @@ sub query_form {
                 push(@query, "$key=$val");
             }
         }
-        $self->query(@query ? join('&', @query) : undef);
+        if (@query) {
+            unless ($delim) {
+                $delim = $1 if $old && $old =~ /([&;])/;
+                $delim ||= $URI::DEFAULT_QUERY_FORM_DELIMITER || "&";
+            }
+            $self->query(join($delim, @query));
+        }
+        else {
+            $self->query(undef);
+        }
     }
     return if !defined($old) || !length($old) || !defined(wantarray);
     return unless $old =~ /=/; # not a form
     map { s/\+/ /g; uri_unescape($_) }
-         map { /=/ ? split(/=/, $_, 2) : ($_ => '')} split(/&/, $old);
+         map { /=/ ? split(/=/, $_, 2) : ($_ => '')} split(/[&;]/, $old);
 }
 
 # Handle ...?dog+bones type of query

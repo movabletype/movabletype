@@ -2,9 +2,9 @@ package URI;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = "1.36";
+$VERSION = "1.40";
 
-use vars qw($ABS_REMOTE_LEADING_DOTS $ABS_ALLOW_RELATIVE_SCHEME);
+use vars qw($ABS_REMOTE_LEADING_DOTS $ABS_ALLOW_RELATIVE_SCHEME $DEFAULT_QUERY_FORM_DELIMITER);
 
 my %implements;  # mapping from scheme to implementor class
 
@@ -107,7 +107,7 @@ sub implementor
     # preloaded (with 'use') implementation
     $ic = "URI::$scheme";  # default location
 
-    # turn scheme into a valid perl identifier by a simple tranformation...
+    # turn scheme into a valid perl identifier by a simple transformation...
     $ic =~ s/\+/_P/g;
     $ic =~ s/\./_O/g;
     $ic =~ s/\-/_/g;
@@ -586,9 +586,15 @@ the $uri.
 
 =item $uri->query_form( $key1 => $val1, $key2 => $val2, ... )
 
+=item $uri->query_form( $key1 => $val1, $key2 => $val2, ..., $delim )
+
 =item $uri->query_form( \@key_value_pairs )
 
+=item $uri->query_form( \@key_value_pairs, $delim )
+
 =item $uri->query_form( \%hash )
+
+=item $uri->query_form( \%hash, $delim )
 
 Sets and returns query components that use the
 I<application/x-www-form-urlencoded> format.  Key/value pairs are
@@ -613,6 +619,13 @@ All the following statements have the same effect:
     $uri->query_form([ foo => 1, foo => 2 ]);
     $uri->query_form([ foo => [1, 2] ]);
     $uri->query_form({ foo => [1, 2] });
+
+The $delim parameter can be passed as ";" to force the key/value pairs
+to be delimited by ";" instead of "&" in the query string.  This
+practice is often recommended for URLs embedded in HTML or XML
+documents as this avoids the trouble of escaping the "&" character.
+You might also set the $URI::DEFAULT_QUERY_FORM_DELIMITER variable to
+";" for the same global effect.
 
 The C<URI::QueryParam> module can be loaded to add further methods to
 manipulate the form of a URI.  See L<URI::QueryParam> for details.
@@ -957,6 +970,11 @@ examples:
   local $URI::ABS_REMOTE_LEADING_DOTS = 1;
   URI->new("../../../foo")->abs("http://host/a/b")
       ==> "http://host/foo"
+
+=item $URI::DEFAULT_QUERY_FORM_DELIMITER
+
+This value can be set to ";" to have the query form C<key=value> pairs
+delimited by ";" instead of "&" which is the default.
 
 =back
 

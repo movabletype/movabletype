@@ -281,7 +281,7 @@ RFC 1630
    The special value "localhost" is used in the host field to indicate
    that the filename should really be used on whatever host one is.
    This for example allows links to be made to files which are
-   distribted on many machines, or to "your unix local password file"
+   distributed on many machines, or to "your unix local password file"
    subject of course to consistency across the users of the data.
 
    A void host field is equivalent to "localhost".

@@ -181,7 +181,7 @@ value becomes an array reference.
 
 Note that sequence information is lost.  This means that:
 
-   $u->query_form_hash($u->query_form_hash)
+   $u->query_form_hash($u->query_form_hash);
 
 is not necessarily a no-op, as it may reorder the key/value pairs.
 The values returned by the query_param() method should stay the same

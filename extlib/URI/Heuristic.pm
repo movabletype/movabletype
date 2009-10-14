@@ -172,7 +172,7 @@ sub uf_uristr ($)
 			    push(@guess, map { s/\bACME\b/$host/; $_ }
                                                @special);
 			} else {
-			    push(@guess, 'www.$host.' . MY_COUNTRY());
+			    push(@guess, "www.$host." . MY_COUNTRY());
 			}
 		    }
 		    push(@guess, map "www.$host.$_",
