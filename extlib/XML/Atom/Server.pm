@@ -1,4 +1,4 @@
-# $Id: Server.pm 25 2006-08-16 05:30:14Z miyagawa $
+# $Id$
 
 package XML::Atom::Server;
 use strict;

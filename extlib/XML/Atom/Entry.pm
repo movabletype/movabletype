@@ -1,4 +1,4 @@
-# $Id: Entry.pm 106 2008-11-14 22:04:41Z swistow $
+# $Id$
 
 package XML::Atom::Entry;
 use strict;
@@ -24,7 +24,7 @@ sub content {
     }
 }
 
-__PACKAGE__->mk_elem_accessors(qw( summary source ));
+__PACKAGE__->mk_elem_accessors(qw( summary ));
 __PACKAGE__->mk_xml_attr_accessors(qw( lang base ));
 
 __PACKAGE__->_rename_elements('issued' => 'published');
@@ -32,6 +32,8 @@ __PACKAGE__->_rename_elements('modified' => 'updated');
 
 # OMG 0.3 elements ... to be backward compatible
 __PACKAGE__->mk_elem_accessors(qw( created ));
+
+__PACKAGE__->mk_object_accessor( source => 'XML::Atom::Feed' );
 
 1;
 __END__
