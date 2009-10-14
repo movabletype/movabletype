@@ -820,7 +820,7 @@ sub core_list_filters {
         entry => {
             my_posts_on_this_context => {
                 label => sub {
-                    $app->translate( 'My [_1] of this [_2]', _entry_label, $app->blog ? $app->blog->class : 'context' );
+                    $app->translate( 'My [_1] of this [_2]', _entry_label, $app->blog ? $app->blog->class_label : 'context' );
                 },
                 condition => sub { return 0; },
                 handler => sub {
@@ -1149,7 +1149,7 @@ sub core_list_filters {
             },
             my_posts_on_this_context => {
                 label   => sub {
-                    $app->translate('Comments on my entries of [_1]', $app->blog ? $app->blog->class : 'context');
+                    $app->translate( 'Comments on my entries of [_1]', $app->blog ? $app->blog->class_label : 'context' );
                 },
                 condition => sub { return 0; },
                 handler => sub {
