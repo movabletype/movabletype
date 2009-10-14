@@ -79,7 +79,7 @@ body {
 #selector-nav #current-blog em { 
     background-color: #5C909B;
 }
-#selector-nav #current-website em { 
+.blog #selector-nav #current-website em { 
     margin-right: -4px;
 }
 #selector-nav .selector { 
@@ -93,11 +93,6 @@ body {
 #selector-nav #fav-blog-list { 
     border-top: 1px solid #9EA1A3;
 }
-
-.selector li  ul.last-child { 
-    border: 0;
-}
-
 
 /* - Navigation Menu */
 ul.menu-nav li, 
@@ -217,9 +212,12 @@ ul#asset-list li,
 .dialog .selector, 
 .user-status-disabled, 
 #template-options-header, 
-#template-options .field, 
 .widget-content .field-content, 
 #asset_container .widget-content { 
     display: block;
     zoom: 1;
+}
+
+#template-options .field-content { 
+    zoom: 0;
 }

@@ -2984,11 +2984,13 @@ body.preview-screen {
     width: 100%;
 }
 
-.templatemap-listing-table .archive-path { 
-    width: 40%;
-}
 .templatemap-listing-table .publish-options { 
     width: 20%;
+}
+
+#server_side_include-field .field-content, 
+#caching-field .field-content { 
+    margin: 10px 0 0  15px;
 }
 
 #template-options {
@@ -3003,7 +3005,7 @@ body.preview-screen {
 }
 
 .edit-template #template-options input[type="text"] { 
-    width: 80%;
+    width: 70%;
 }
 
 #template-options-header {
@@ -3087,6 +3089,10 @@ body.preview-screen {
 #template-options input#cache-time-value {
     width: 3.5em;
     text-align: center;
+}
+
+#cache-events { 
+    margin-top: 3px;
 }
 
 /* - Edit Template */
