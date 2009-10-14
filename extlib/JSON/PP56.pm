@@ -5,9 +5,10 @@ use strict;
 
 my @properties;
 
-$JSON::PP56::VERSION = '1.06';
+$JSON::PP56::VERSION = '1.08';
 
 BEGIN {
+
     sub utf8::is_utf8 {
         my $len =  length $_[0]; # char length
         {
@@ -22,12 +23,12 @@ BEGIN {
     }
 
 
-    sub utf8::downgrade (\$;$) {
-        return 1 unless ( utf8::is_utf8( ${$_[0]} ) );
+    sub utf8::downgrade ($;$) {
+        return 1 unless ( utf8::is_utf8( $_[0] ) );
 
-        if ( _is_valid_utf8(${$_[0]}) ) {
+        if ( _is_valid_utf8( $_[0] ) ) {
             my $downgrade;
-            for my $c ( unpack("U*", ${$_[0]}) ) {
+            for my $c ( unpack( "U*", $_[0] ) ) {
                 if ( $c < 256 ) {
                     $downgrade .= pack("C", $c);
                 }
@@ -35,7 +36,7 @@ BEGIN {
                     $downgrade .= pack("U", $c);
                 }
             }
-            ${$_[0]} = $downgrade;
+            $_[0] = $downgrade;
             return 1;
         }
         else {
@@ -45,26 +46,21 @@ BEGIN {
     }
 
 
-    sub utf8::encode (\$) { # UTF8 flag off
-        if ( utf8::is_utf8( ${$_[0]} ) ) {
-            ${$_[0]} = pack( "C*", unpack( "C*", ${$_[0]} ) );
+    sub utf8::encode ($) { # UTF8 flag off
+        if ( utf8::is_utf8( $_[0] ) ) {
+            $_[0] = pack( "C*", unpack( "C*", $_[0] ) );
         }
         else {
-            ${$_[0]} = pack( "U*", map {
-                if ( $_ > 127 ) {
-                    unpack ( "C*", pack("U*", $_) );
-                }
-                else {
-                    $_;
-                }
-            } unpack( "C*", ${$_[0]} ) );
+            $_[0] = pack( "U*", unpack( "C*", $_[0] ) );
+            $_[0] = pack( "C*", unpack( "C*", $_[0] ) );
         }
     }
 
 
-    sub utf8::decode (\$) { # UTF8 flag on
-        if ( _is_valid_utf8(${$_[0]}) ) {
-            ${$_[0]} = pack("U*", unpack("U*", ${$_[0]}));
+    sub utf8::decode ($) { # UTF8 flag on
+        if ( _is_valid_utf8( $_[0] ) ) {
+            utf8::downgrade( $_[0] );
+            $_[0] = pack( "U*", unpack( "U*", $_[0] ) );
         }
     }
 
@@ -73,6 +69,11 @@ BEGIN {
     *JSON::PP::JSON_PP_encode_latin1     = \&_encode_latin1;
     *JSON::PP::JSON_PP_decode_surrogates = \&JSON::PP::_decode_surrogates;
     *JSON::PP::JSON_PP_decode_unicode    = \&JSON::PP::_decode_unicode;
+
+    unless ( defined &B::SVp_NOK ) { # missing in B module.
+        eval q{ sub B::SVp_NOK () { 0x02000000; } };
+    }
+
 }
 
 
@@ -188,7 +189,7 @@ Makamaka Hannyaharamitu, E<lt>makamaka[at]cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007-2008 by Makamaka Hannyaharamitu
+Copyright 2007-2009 by Makamaka Hannyaharamitu
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
