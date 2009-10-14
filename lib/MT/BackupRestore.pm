@@ -166,6 +166,26 @@ sub _populate_obj_to_backup {
             },
             'order' => 500
         };
+
+        # Author could also be in objectscore table. 
+        unshift @object_hashes, {
+            $class => {
+                terms => undef,
+                args  => { 'join' =>
+                    [ MT->model('objectscore'), 'author_id', undef, { unique => 1 } ],
+                }
+            },
+            'order' => 500
+        };
+        unshift @object_hashes, {
+            $class => {
+                terms => undef,
+                args  => { 'join' =>
+                    [ MT->model('objectscore'), 'object_id', { object_ds => 'author' }, { unique => 1 } ],
+                }
+            },
+            'order' => 500
+        };
     }
     @object_hashes = sort { $a->{order} <=> $b->{order} } @object_hashes;
     my @obj_to_backup;
