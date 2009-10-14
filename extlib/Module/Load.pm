@@ -1,6 +1,6 @@
 package Module::Load;
 
-$VERSION = '0.10';
+$VERSION = '0.16';
 
 use strict;
 use File::Spec ();
@@ -30,18 +30,17 @@ sub load (*;@)  {
             die $err if $err;
         }
     }
-    __PACKAGE__->_export_to_level(1, $mod, @_) if @_;
-}
-
-### 5.004's Exporter doesn't have export_to_level.
-### Taken from Michael Schwerns Test::More and slightly modified
-sub _export_to_level {
-    my $pkg     = shift;
-    my $level   = shift;
-    my $mod     = shift;
-    my $callpkg = caller($level);
-
-    $mod->export($callpkg, @_);
+    
+    ### This addresses #41883: Module::Load cannot import 
+    ### non-Exporter module. ->import() routines weren't
+    ### properly called when load() was used.
+    {   no strict 'refs';
+        my $import;
+        if (@_ and $import = $mod->can('import')) {
+            unshift @_, $mod;
+            goto &$import;
+        }
+    }
 }
 
 sub _to_file{
@@ -56,6 +55,13 @@ sub _to_file{
                     : File::Spec->catfile( @parts );
 
     $file   .= '.pm' if $pm;
+    
+    ### on perl's before 5.10 (5.9.5@31746) if you require
+    ### a file in VMS format, it's stored in %INC in VMS
+    ### format. Therefor, better unixify it first
+    ### Patch in reply to John Malmbergs patch (as mentioned
+    ### above) on p5p Tue 21 Aug 2007 04:55:07
+    $file = VMS::Filespec::unixify($file) if $^O eq 'VMS';
 
     return $file;
 }
@@ -115,7 +121,7 @@ modules at runtime, since you will need to change the module notation
 (C<Acme::Comment>) to a file notation fitting the particular platform
 you are on.
 
-C<load> elimates the need for this overhead and will just DWYM.
+C<load> eliminates the need for this overhead and will just DWYM.
 
 =head1 Rules
 
@@ -144,30 +150,32 @@ If both fail, we die with the respective error messages.
 =head1 Caveats
 
 Because of a bug in perl (#19213), at least in version 5.6.1, we have
-to hardcode the path seperator for a require on Win32 to be C</>, like
-on Unix rather than the Win32 C<\>. Otherwise perl will not read it's
+to hardcode the path separator for a require on Win32 to be C</>, like
+on Unix rather than the Win32 C<\>. Otherwise perl will not read its
 own %INC accurately double load files if they are required again, or
 in the worst case, core dump.
 
-C<Module::Load> can not do implicit imports, only explicit imports.
-(in other words, you always have to specify expliclity what you wish
+C<Module::Load> cannot do implicit imports, only explicit imports.
+(in other words, you always have to specify explicitly what you wish
 to import from a module, even if the functions are in that modules'
 C<@EXPORT>)
+
+=head1 ACKNOWLEDGEMENTS
+
+Thanks to Jonas B. Nielsen for making explicit imports work.
+
+=head1 BUG REPORTS
+
+Please report bugs or other issues to E<lt>bug-module-load@rt.cpan.org<gt>.
 
 =head1 AUTHOR
 
 This module by Jos Boumans E<lt>kane@cpan.orgE<gt>.
 
-Thanks to Jonas B. Nielsen for making explicit imports work.
-
 =head1 COPYRIGHT
 
-This module is
-copyright (c) 2002 Jos Boumans E<lt>kane@cpan.orgE<gt>.
-All rights reserved.
+This library is free software; you may redistribute and/or modify it 
+under the same terms as Perl itself.
 
-This library is free software;
-you may redistribute and/or modify it under the same
-terms as Perl itself.
 
 =cut                               
