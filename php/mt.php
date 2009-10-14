@@ -68,6 +68,22 @@ class MT {
         return MT::$_instance;
     }
 
+    public function caching($val = null) {
+        if ( !is_null($val) ) {
+            $this->caching = $val;
+        }
+
+        return $this->caching;
+    }
+
+    public function conditional($val = null) {
+        if ( !is_null($val) ) {
+            $this->conditional = $val;
+        }
+
+        return $this->conditional;
+    }
+
     public function blog_id() {
         return $this->blog_id;
     }
