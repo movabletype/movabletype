@@ -76,24 +76,27 @@ foreach my $lang (qw(ja de nl fr es)) {
         }
     }
 
-    $js =~ s/\\'/\t\t/g;
+    my $enc_js = Encode::encode_utf8( $js );
+    $enc_js =~ s/\\'/\t\t/g;
     my %lexicon;
-    while ($js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
+    while ($enc_js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
         my $str = $2;
         $str =~ s/\t\t/'/g;
-        my $local = $lex->{$str} || $str;
+        my $local = Encode::encode_utf8( $lex->{$str} ) || $str;
         $str = encode_js($str);
         $local = encode_js($local);
         next if $str eq $local;
+        $str = Encode::decode_utf8( $str );
+        $local = Encode::decode_utf8( $local );
         $lexicon{$str} = $local;
     }
 
     open(my $FOUT, ">", "./mt-static/mt_$lang.js")
         or die "failed to open mt-static/mt_$lang.js for writing";
 
+    binmode $FOUT, ":utf8";
     print $FOUT "/* Movable Type language lexicon for $lang localization. */\n\n";
 
-    binmode $FOUT, ":utf8";
     for my $text ( keys %lexicon ) {
         print $FOUT "Lexicon['$text'] = '$lexicon{$text}';\n";
     }
