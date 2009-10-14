@@ -1,0 +1,29 @@
+# Index created by AutoSplit for Image/Size.pm
+#    (file acts as timestamp)
+package Image::Size;
+sub gifsize 
+;
+sub xbmsize 
+;
+sub xpmsize 
+;
+sub pngsize 
+;
+sub mngsize 
+;
+sub jpegsize 
+;
+sub ppmsize 
+;
+sub tiffsize  ;
+sub bmpsize 
+;
+sub psdsize 
+;
+sub swfsize 
+;
+sub pcdsize 
+;
+sub swfmxsize 
+;
+1;
