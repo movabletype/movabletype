@@ -282,21 +282,21 @@ function setLicense() {
             help_section="archive_url">
         <mt:if name="archive_url_subdomain">
             <div class="archive-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         <mt:elseif name="archive_url_path">
             <div class="archive-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         <mt:elseif name="archive_url" eq="">
             <div class="archive-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">"<mt:if name="is_blog"> class="extra-path"</mt:if> />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">"<mt:if name="is_blog"> class="extra-path"</mt:if> /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
@@ -556,15 +556,6 @@ function setLicense() {
         edit: '<__trans phrase="Edit">'
     });
     jQuery.mtUseSubdomain();
-    jQuery('#site_path').keyup(function() {
-        var text = jQuery(this).val();
-        if (text.match(/^\//)) {
-            jQuery(this).removeClass('extra-path')
-                .parents('#site_path-field').find('span.website-path').hide();
-        } else {
-            jQuery(this).addClass('extra-path')
-                .parents('#site_path-field').find('span.website-path').show();
-        }
-    });
+    jQuery.mtEditSitePath();
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

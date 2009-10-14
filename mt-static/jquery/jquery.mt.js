@@ -156,8 +156,9 @@ $.mtEditSiteUrl = function(options) {
         var id = this;
         var $subdomain = $('input#'+this+'_url_subdomain');
         var $path = $('input#'+this+'_url_path');
+        var subdomain = $subdomain.val();
         if ($path.val()) {
-            if ($subdomain.val()) {
+            if (subdomain) {
                 $subdomain
                     .parent('.subdomain')
                     .before('<span class="'+this+'_url_subdomain-text"></span>');
@@ -171,11 +172,26 @@ $.mtEditSiteUrl = function(options) {
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
         }
+        if (subdomain.match(/^http/)) {
+            $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
+                .find('span.archive-url-domain').hide()
+                .before('<span class="'+this+'_url_path-text">'+$subdomain.val()+'</span>');
+            if ($('button#mt-set-'+this+'_url_path').lngth == 0) {
+                $path
+                    .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                    .hide();
+            }
+        }
         $('button#mt-set-'+this+'_url_path').click(function() {
             $(this).hide();
             $('span.'+id+'_url_subdomain-text').hide();
-            if ($subdomain.val()) {
-                $subdomain.parents('.field-content').find('.subdomain').show();
+            var subdomain = $subdomain.val();
+            if (subdomain) {
+                $subdomain.parents('.field-content').find('.subdomain').show().end()
+                    .find('span.archive-url-domain').show();
+                if (subdomain.match(/^http/)) {
+                    $subdomain.val('');
+                }
             }
             $('span.'+id+'_url_path-text').hide();
             $path.show();
@@ -183,6 +199,26 @@ $.mtEditSiteUrl = function(options) {
             $('p#'+id+'_url-warning').show();
             return false;
         });
+    });
+};
+
+/*
+ * mtEditSitePath
+ *
+ * Usage:
+ *   jQuery.mtEditSitePath();
+ *
+ */
+$.mtEditSitePath = function() {
+    $('#site_path').keyup(function() {
+        var text = $(this).val();
+        if (text.match(/^\//)) {
+            $(this).removeClass('extra-path')
+                .parents('#site_path-field').find('span.website-path').hide();
+        } else {
+            $(this).addClass('extra-path')
+                .parents('#site_path-field').find('span.website-path').show();
+        }
     });
 };
 
