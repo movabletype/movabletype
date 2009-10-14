@@ -519,9 +519,9 @@ sub cfg_prefs {
         open my ($fh), $mtview_path;
         while ( my $line = <$fh> ) {
             $param{dynamic_caching} = 1
-                if $line =~ m/^\s*\$mt->caching\s*=\s*true;/i;
+                if $line =~ m/^\s*\$mt->caching\(true\);/i;
             $param{dynamic_conditional} = 1
-                if $line =~ /^\s*\$mt->conditional\s*=\s*true;/i;
+                if $line =~ /^\s*\$mt->conditional\(true\);/i;
         }
         close $fh;
     }
@@ -2265,9 +2265,9 @@ sub _create_mtview {
         my $mtphp_path = File::Spec->canonpath("$cgi_path/php/mt.php");
         my $blog_id    = $blog->id;
         my $config     = MT->instance->{cfg_file};
-        my $cache_code = $cache ? "\n    \$mt->caching = true;" : '';
+        my $cache_code = $cache ? "\n    \$mt->caching(true);" : '';
         my $conditional_code =
-          $conditional ? "\n    \$mt->conditional = true;" : '';
+          $conditional ? "\n    \$mt->conditional(true);" : '';
         my $new_mtview = <<NEW_MTVIEW;
 
     include('$mtphp_path');
