@@ -61,10 +61,10 @@ class Blog extends BaseObject
     }
 
     function site_path() {
-        $site = $this->website();
-        if ( $this->is_site_path_absolute )
-            return $site;
+        if ( $this->is_site_path_absolute() )
+            return $this->blog_site_path;
 
+        $site = $this->website();
         $path = '';
         if (!empty($site))
             $path = $site->blog_site_path . DIRECTORY_SEPARATOR;
