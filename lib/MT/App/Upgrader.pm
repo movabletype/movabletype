@@ -158,12 +158,6 @@ sub current_magic {
     return $app->{author}->magic_token if $app->{author};
 }
 
-sub mt_uri {
-    my $app = shift;
-    local $app->{is_admin} = 1;
-    return $app->base . $app->SUPER::mt_uri;
-}
-
 sub upgrade {
     my $app = shift;
 
@@ -458,6 +452,8 @@ sub init_website {
     $param{installing}    = $install_mode;
     $param{up_to_date}    = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
+    $param{mt_admin_url}  = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+                            . $app->config->AdminScript;
 
     return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }

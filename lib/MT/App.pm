@@ -3543,6 +3543,7 @@ sub app_path {
         $path =~ s!/[^/]*$!!;
     }
     elsif ( $app->{query} ) {
+        local $ENV{PATH_INFO} = q() if $ENV{PERLXS} eq "PerlIS";
         $path = $app->{query}->url;
         $path =~ s!/[^/]*$!!;
 
