@@ -2100,21 +2100,23 @@ sub convert_word_chars {
 
     if ($smart_replace) {
         # html character entity replacements
-        $s =~ s/\342\200\231/&#8217;/g;
-        $s =~ s/\342\200\230/&#8216;/g;
-        $s =~ s/\342\200\246/&#133;/g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/&#8212;/g;
-        $s =~ s/\342\200\234/&#8220;/g;
-        $s =~ s/\342\200\235/&#8221;/g;
+        $s =~ s/\x{2013}/-/g;       # EN DASH
+        $s =~ s/\x{2014}/&#8212;/g; # EM DASH
+        $s =~ s/\x{2018}/&#8216;/g; # LEFT SINGLE QUATATION MARK
+        $s =~ s/\x{2019}/&#8217;/g; # RIGHT SINGLE QUATATION MARK
+        $s =~ s/\x{201C}/&#8220;/g; # LEFT DOUBLE QUATATION MARK
+        $s =~ s/\x{201D}/&#8221;/g; # RIGHT DOUBLE QUATATION MARK
+        $s =~ s/\x{2026}/&#8230;/g; # HORIZONTAL ELLIPSIS
     }
     else {
         # ascii equivalent replacements
-        $s =~ s/\342\200[\230\231]/'/g;
-        $s =~ s/\342\200\246/.../g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/--/g;
-        $s =~ s/\342\200[\234\235]/"/g;
+        $s =~ s/\x{2013}/-/g;   # EN DASH
+        $s =~ s/\x{2014}/--/g;  # EM DASH
+        $s =~ s/\x{2018}/'/g;   # LEFT SINGLE QUATATION MARK
+        $s =~ s/\x{2019}/'/g;   # RIGHT SINGLE QUATATION MARK
+        $s =~ s/\x{201C}/"/g;   # LEFT DOUBLE QUATATION MARK
+        $s =~ s/\x{201D}/"/g;   # RIGHT DOUBLE QUATATION MARK
+        $s =~ s/\x{2026}/.../g; # HORIZONTAL ELLIPSIS
     }
 
     # While we're fixing Word, remove processing instructions with
