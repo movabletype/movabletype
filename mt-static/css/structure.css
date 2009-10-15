@@ -80,6 +80,11 @@ select {
     padding: 2px;
     font-size: 11px;
 }
+
+td.category select { 
+    width: 150px;
+}
+
 input[type="text"], 
 input[type="password"], 
 textarea { 
@@ -1792,7 +1797,8 @@ optgroup option {
 }
 .listing #folder-listing-table, 
 .listing #category-listing-table, 
-.batch-edit .listing .entry-listing-table { 
+.batch-edit .listing .entry-listing-table,
+.batch-edit .listing .page-listing-table { 
     table-layout: auto;
 }
 

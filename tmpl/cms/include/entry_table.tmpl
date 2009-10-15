@@ -152,7 +152,7 @@
                     <select name="category_id_<$mt:var name="id"$>">
                         <option value=""><__trans phrase="None"></option>
                 <mt:loop name="row_category_loop">
-                        <option value="<$mt:var name="category_id"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
+                        <option value="<$mt:var name="category_id"$>" title="<$mt:var name="category_label" encode_html="1"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label"$></option>
                 </mt:loop>
                     </select>
             <mt:else>
