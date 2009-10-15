@@ -430,7 +430,7 @@
 { "r" : "1", "t" : "<mt:authors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #427
 { "r" : "1", "t" : "<mt:authors id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #428
 { "r" : "1", "t" : "<mt:authors id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #429
-{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteLabel></mt:Websites>", "e" : "Test site"}, #430
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteName></mt:Websites>", "e" : "Test site"}, #430
 { "r" : "1", "t" : "<mt:Websites><mt:WebsiteDescription></mt:Websites>", "e" : "Narnia None Test Website"}, #431
 { "r" : "1", "t" : "<mt:Websites><mt:WebsiteURL></mt:Websites>", "e" : "http://narnia.na/"}, #432
 { "r" : "1", "t" : "<mt:Websites><mt:WebsitePath></mt:Websites>", "e" : "t/"}, #433
