@@ -172,7 +172,7 @@ $.mtEditSiteUrl = function(options) {
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
         }
-        if (subdomain.match(/^http/)) {
+        if (subdomain && subdomain.match(/^http/)) {
             $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
                 .find('span.archive-url-domain').hide()
                 .before('<span class="'+this+'_url_path-text">'+$subdomain.val()+'</span>');
