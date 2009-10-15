@@ -176,7 +176,7 @@ $.mtEditSiteUrl = function(options) {
             $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
                 .find('span.archive-url-domain').hide()
                 .before('<span class="'+this+'_url_path-text">'+$subdomain.val()+'</span>');
-            if ($('button#mt-set-'+this+'_url_path').lngth == 0) {
+            if ($('button#mt-set-'+this+'_url_path').length == 0) {
                 $path
                     .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
                     .hide();
