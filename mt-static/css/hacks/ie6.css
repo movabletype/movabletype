@@ -12,6 +12,7 @@ textarea {
 .dialog input.text,  
 .edit-entry input.text, 
 .edit-entry textarea, 
+.batch-edit td input.text, 
 .edit-template input.text, 
 .edit-template textarea { 
     width: 99%;
@@ -27,7 +28,6 @@ textarea {
 #template-options input.text { 
     width: 80%;
 }
-
 
 #sign-in input.text { 
     width: 313px;

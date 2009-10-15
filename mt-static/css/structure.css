@@ -2458,28 +2458,34 @@ td.sub-label label {
 }
 
 /* -- Tags Field */
-#tags_completion {
-    display: none;
-    position: absolute;
-    border: 1px solid gray;
-    background-color: #eaf2ff;
-    z-index: 20;
+#tags-field { 
+    position: relative;
+    height: auto;
+    overflow: visible;
 }
 
-* html #tags_completion {
-    top: -21px;
-    left: 592px;
+#tags-suggestion { 
+    position: relative;
+    top: 2px;
+    width: 100%;
+}
+
+#tags_completion {
+    display: none;
+    min-width: 200px;
+    max-width: 100%;
+    position: absolute;
+    border: 1px solid #c8c2be;
+    background-color: #F3F3F3;
 }
 
 #tags_completion div {
     padding: 1px 2px;
-    white-space: nowrap;
-    overflow: hidden;
 }
 
 #tags_completion .complete-highlight {
-    color: #fff;
-    background-color: #85afc4;
+    color: #2b2b2b;
+    background-color: #dcdddd;
 }
 
 /* -- Status Widget */

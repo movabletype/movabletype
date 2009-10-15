@@ -1225,10 +1225,9 @@ function listPreviousPings () {
                     help_section="entry_tags">
                     <input type="text" name="tags" id="tags" class="full-width" value="<$mt:var name="tags" escape="html"$>" mt:watch-change="1" autocomplete="off" />
                     <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-                    <!-- FIXME - move this styling to the ie hacks css file -->
-                    <!--[if lte IE 6.5]><div style="position:relative;"><![endif]-->
-                    <div id="tags_completion"></div>
-                    <!--[if lte IE 6.5]></div><![endif]-->
+                    <div id="tags-suggestion">
+                      <div id="tags_completion"></div>
+                    </div>
                 </mtapp:setting>
 
         <mt:else eq="excerpt">
