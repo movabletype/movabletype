@@ -2687,6 +2687,7 @@ td.sub-label label {
     padding: 1px 2px 1px 0;
 }
 .category-selector-list .list-item label {
+    display: inline-block;
     margin-left: 5px;
     white-space: nowrap;
     overflow: hidden;
