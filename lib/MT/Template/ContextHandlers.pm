@@ -303,7 +303,7 @@ sub core_tags {
 
             ## Website
             WebsiteID             => '$Core::MT::Template::Tags::Website::_hdlr_website_id',
-            WebsiteLabel          => '$Core::MT::Template::Tags::Website::_hdlr_website_label',
+            WebsiteName           => '$Core::MT::Template::Tags::Website::_hdlr_website_name',
             WebsiteDescription    => '$Core::MT::Template::Tags::Website::_hdlr_website_description',
             WebsiteLanguage       => '$Core::MT::Template::Tags::Website::_hdlr_website_language',
             WebsiteURL            => '$Core::MT::Template::Tags::Website::_hdlr_website_url',
@@ -317,14 +317,14 @@ sub core_tags {
             WebsiteThemeID        => '$Core::MT::Template::Tags::Website::_hdlr_website_theme_id',
 
             ## Author
-            AuthorID          => '$Core::MT::Template::Tags::Author::_hdlr_author_id',
-            AuthorName        => '$Core::MT::Template::Tags::Author::_hdlr_author_name',
-            AuthorDisplayName => '$Core::MT::Template::Tags::Author::_hdlr_author_display_name',
-            AuthorEmail       => '$Core::MT::Template::Tags::Author::_hdlr_author_email',
-            AuthorURL         => '$Core::MT::Template::Tags::Author::_hdlr_author_url',
-            AuthorAuthType    => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_type',
-            AuthorAuthIconURL => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
-            AuthorBasename    => '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
+            AuthorID           => '$Core::MT::Template::Tags::Author::_hdlr_author_id',
+            AuthorName         => '$Core::MT::Template::Tags::Author::_hdlr_author_name',
+            AuthorDisplayName  => '$Core::MT::Template::Tags::Author::_hdlr_author_display_name',
+            AuthorEmail        => '$Core::MT::Template::Tags::Author::_hdlr_author_email',
+            AuthorURL          => '$Core::MT::Template::Tags::Author::_hdlr_author_url',
+            AuthorAuthType     => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_type',
+            AuthorAuthIconURL  => '$Core::MT::Template::Tags::Author::_hdlr_author_auth_icon_url',
+            AuthorBasename     => '$Core::MT::Template::Tags::Author::_hdlr_author_basename',
             AuthorCommentCount => '$Core::MT::Summary::Author::_hdlr_author_comment_count',
             AuthorEntriesCount => '$Core::MT::Summary::Author::_hdlr_author_entries_count',
 

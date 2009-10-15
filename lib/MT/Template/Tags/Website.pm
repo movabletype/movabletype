@@ -15,7 +15,7 @@ use MT::Util qw( encode_xml );
 =head2 Websites
 
 A container tag which iterates over a list of all of the websites in the
-system. You can use any of the website tags (L<WebsiteLabel>, L<WebsiteURL>, etc -
+system. You can use any of the website tags (L<WebsiteName>, L<WebsiteURL>, etc -
 anything starting with MTWebsite) inside of this tag set.
 
 B<Attributes:>
@@ -97,7 +97,7 @@ across all blogs.
 B<Example:>
 
     <mt:IfWebsite>
-        <h1>Search results for <$mt:WebsiteLabel$>:</h1>
+        <h1>Search results for <$mt:WebsiteName$>:</h1>
     <mt:Else>
         <h1>Search results from all blogs:</h1>
     </mt:IfBlog>
@@ -126,7 +126,7 @@ sub _hdlr_website_id {
 
 ###########################################################################
 
-=head2 WebsiteLabel
+=head2 WebsiteName
 
 Outputs the name of the website currently in context.
 
@@ -134,7 +134,7 @@ Outputs the name of the website currently in context.
 
 =cut
 
-sub _hdlr_website_label {
+sub _hdlr_website_name {
     my ($ctx, $args, $cond) = @_;
     my $blog = $ctx->stash('blog');
     return '' unless $blog;
