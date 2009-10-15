@@ -904,10 +904,16 @@ sub backup {
                 my $name = $file->{filename};
                 print $fh "<file type='backup' name='$name' />\n";
             }
+            require MT::FileMgr::Local;
             for my $id ( keys %$asset_files ) {
                 my $name = $id . '-' . $asset_files->{$id}->[2];
                 my $tmp = File::Spec->catfile( $temp_dir, $name );
-                unless ( copy( $asset_files->{$id}->[1], $tmp ) ) {
+                unless (
+                    copy( 
+                        MT::FileMgr::Local::_local( $asset_files->{$id}->[1] ),
+                        MT::FileMgr::Local::_local( $tmp )
+                    )
+                ) {
                     $app->log(
                         {
                             message => $app->translate(
@@ -935,7 +941,7 @@ sub backup {
                 push @files,
                   {
                     url      => $url,
-                    filename => $name,
+                    filename => MT::FileMgr::Local::_local( $name ),
                   };
             }
             print $fh "</manifest>\n";
@@ -1577,13 +1583,19 @@ sub dialog_restore_upload {
     $param->{schema_version} = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
 
-    my $uploaded = $q->param('file');
+    my $uploaded = $q->param('file') || $q->param('fname');
+    $uploaded =~ s!\\!/!g;    ## Change backslashes to forward slashes
+    $uploaded =~ s!^.*/!!;    ## Get rid of full directory paths
+    if ( $uploaded =~ m!\.\.|\0|\|! ) {
+        $param->{error} = $app->translate( "Invalid filename '[_1]'", $uploaded );
+        return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
+    }
+    $uploaded = Encode::is_utf8( $uploaded ) ? $uploaded
+              :                                Encode::decode( $app->charset, $uploaded )
+              ;
     if ( defined($uploaded) ) {
-        $uploaded =~ s!\\!/!g;    ## Change backslashes to forward slashes
-        my ( $volume, $directories, $uploaded_filename ) =
-          File::Spec->splitpath($uploaded);
-        if ( $current ne $uploaded_filename ) {
-            close $fh if $uploaded_filename;
+        if ( $current ne $uploaded ) {
+            close $fh if $uploaded;
             $param->{error} =
               $app->translate( 'Please upload [_1] in this page.', $current );
             return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );

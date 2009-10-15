@@ -546,7 +546,9 @@ sub restore_asset {
     if (-w $voldir) {
         my $filename = "$old_id-" . $asset->file_name;
         $callback->(MT->translate("Copying [_1] to [_2]...", $filename, $path));
-        copy($file, $path)
+        $file = MT::FileMgr::Local::_local( $file )
+            unless ref( $file );
+        copy($file, MT::FileMgr::Local::_local( $path ))
             or $errors->{$id} = $!;
     }
 
