@@ -7,7 +7,7 @@
                 <mt:if name="can_edit_categories">
                     <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="add-category-new-link"><span>Add</span>&nbsp;</a>
                 </mt:if>
-                    <label style="width: [#= 180 - (item.path.length * 10) #]px;">
+                    <label style="width: [#= 165 - (item.path.length * 10) #]px;">
                         <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> /> [#|h item.label #]
                     </label>
                 </div>
