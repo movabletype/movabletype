@@ -279,8 +279,8 @@ a.action:hover {
     background: none;
 }
 .chromeless-wide #container {
-    width: auto;
-    margin: 20px 25px;
+    width: 360px;
+    margin: 20px auto;
     padding: 0;
     border: 0;
     background-color: transparent;
@@ -388,7 +388,7 @@ a.action:hover {
 }
 
 .upgrade #progress-bar { 
-    margin: 25px 0 30px;
+    margin: 25px 0 10px;
     text-align: right;
 }
 
