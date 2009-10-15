@@ -2098,11 +2098,6 @@ sub convert_word_chars {
     return '' unless $s;
     return $s if $smart_replace == 2;
 
-    if ( MT::I18N::is_utf8($s) ) {
-        $s = MT::I18N::utf8_off($s);
-        Encode::decode_utf8($s);
-    }
-
     if ($smart_replace) {
         # html character entity replacements
         $s =~ s/\342\200\231/&#8217;/g;
