@@ -448,10 +448,10 @@ sub cfg_system_general {
          push(@config_warnings, $config_directive) if $app->config->is_readonly($config_directive);
      }
      my $config_warning = join(", ", @config_warnings) if (@config_warnings);
-     
+
      $param{config_warning} = $app->translate("These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.", $config_warning) if $config_warning;
     $param{system_email_address} = $cfg->EmailAddressMain;
-    $param{system_debug_mode}    = $cfg->DebugMode;        
+    $param{system_debug_mode}    = $cfg->DebugMode;
     $param{system_performance_logging} = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
     $param{system_performance_logging_threshold} = $cfg->PerformanceLoggingThreshold;
@@ -488,7 +488,6 @@ sub save_cfg_system_general {
     $app->validate_magic or return;
     return $app->errtrans("Permission denied.")
       unless $app->user->is_superuser();
-
     $app->validate_magic or return;
     my $cfg = $app->config;
     $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0, 1 );
@@ -571,11 +570,14 @@ sub save_cfg_system_general {
         }
     }
     $cfg->save_config();
+    require MT::Touch;
+    MT::Touch->touch(0, 'config');
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_general',
             args   => { saved => 1 }
-        )
+        ),
+        UseMeta => $ENV{FAST_CGI},
     );
 }
 

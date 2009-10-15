@@ -128,6 +128,16 @@ sub import {
                     elsif ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
                         last;
                     }
+                    else {
+                        require MT::Touch;
+                        require MT::Util;
+                        if ( my $touched = MT::Touch->latest_touch(0, 'config') ) {
+                            $touched = MT::Util::ts2epoch(undef, $touched);
+                            if ( $touched > $app->{fcgi_startup_time} ) {
+                                last;
+                            }
+                        }
+                    }
                 }
             } else {
                 $app = $class->new( %param ) or die $class->errstr;
