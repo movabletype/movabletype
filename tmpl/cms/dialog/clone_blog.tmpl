@@ -226,12 +226,13 @@
 </mt:if>
 
 <script type="text/javascript">
+/* <![CDATA[ */
 (function () {
   var eventRegistry = [];
-  
+
   addEvent(window,'load',_init,false);
   addEvent(window,'unload',_cleanup,false);
-  
+
   <mt:Ignore>
   /**
    * Initializes the class
@@ -243,16 +244,16 @@
     _enforceCloningConstraints(document.getElementById('clone-prefs-entries-pages'),document.getElementById('clone-prefs-fields'));
     //addEvent(document.getElementById('overwrite'),'click',_handleEvents);
     addEvent(document.getElementById('clone-prefs-fields'),'click',_handleEvents);
-    
+
     var i = document.forms.length;
-    
+
     while(i--) {
       addEvent(document.forms[i],'submit',_handleEvents);
     }
-    
+
     delete count;
   }
-  
+
   <mt:Ignore>
   /**
    * Handles the removal of events and any additional cleanup
@@ -263,11 +264,11 @@
   function _cleanup (e) {
     _removeAllEvents();
   }
-  
+
   <mt:Ignore>
   /**
    * Description
-   * 
+   *
    * @constructor
    * @param
    * @return
@@ -281,11 +282,10 @@
       reg.el.removeEventListener(reg.type,reg.func,reg.capture)
     }
   }
-  
   <mt:Ignore>
   /**
    * Cross-browser solution for stopping event propagation
-   * 
+   *
    * @param {Event} e The event object
    * @return void
    */
@@ -297,10 +297,10 @@
       e.cancelBubble = true;
     }
   }
-  
+
   /**
    * Cross-browser solution for stopping event actions
-   * 
+   *
    * @param {Event} e The event object
    * @return void
    */
@@ -311,11 +311,11 @@
       e.returnValue = false;
     }
   }
-  
+
   <mt:Ignore>
   /**
    * General event handler
-   * 
+   *
    * @param {Event} e The event object
    * @return void
    */
@@ -330,7 +330,7 @@
         switch(origin.nodeName) {
           case 'A':
             break;
-            
+
           case 'INPUT':
             switch (parent.id) {
               case 'overwrite-field':
@@ -347,7 +347,6 @@
             break;
         }
         break;
-        
       case 'submit':
         switch(origin.getAttribute('id')) {
           case 'clone-verification-form':
@@ -368,23 +367,22 @@
         break;
     }
   }
-  
   <mt:Ignore>
   /**
    * Description
-   * 
-   * @param {HTMLElement} form 
-   * @return {Boolean} 
+   *
+   * @param {HTMLElement} form
+   * @return {Boolean}
    */
   </mt:Ignore>
   function _verifyForm(form) {
     return true;
   }
-  
+
   <mt:Ignore>
   /**
    * Description
-   * 
+   *
    * @param {HTMLElement} form
    * @return
    */
@@ -394,15 +392,14 @@
         prefsComments = document.getElementById('clone-prefs-comments'),
         prefsCategories = document.getElementById('clone-prefs-categories'),
         prefsTrackbacks = document.getElementById('clone-prefs-trackbacks');
-        
     prefsComments.disabled = false;
     prefsTrackbacks.disabled = false;
   }
-  
+
   <mt:Ignore>
   /**
    * Description
-   * 
+   *
    * @param {HTMLElement} form
    * @return void
    */
@@ -410,16 +407,14 @@
   function _disableButtons(form) {
     var buttons = form.getElementsByTagName('button'),
         len = buttons.length;
-    
     while(len--) {
       buttons[len].disable = true;
     }
   }
-  
   <mt:Ignore>
   /**
    * Description
-   * 
+   *
    * @param {HTMLElement} input
    * @param {HTMLElement} prefFields
    * @return void
@@ -430,7 +425,6 @@
       case 'clone-prefs-entries-pages':
         var inputEls = prefFields.getElementsByTagName('input'),
             len = inputEls && inputEls.length;
-        
         while(len--) {
           switch(inputEls[len].id) {
             case 'clone-prefs-comments':
@@ -449,11 +443,10 @@
         break;
     }
   }
-  
   <mt:Ignore>
   /**
    * Shows and hides warnings when the Overwrite checkbox is clicked
-   *  
+   *
    * @param {Boolean} state the current state of the checkbox (i.e. checked or unchecked)
    * @param {HTMLElement} sitePathDiv
    * @return void
@@ -467,11 +460,10 @@
       warning.parentNode.style.visibility = 'hidden';
     }
   }
-  
   <mt:Ignore>
   /**
    * Finds the nearest defining (i.e. with an id) parent to the given element
-   * 
+   *
    * @param {HTMLElement} origin the node from which to start the search
    * @return {HTMLElement|Boolean} The parent node with an id attribute or false
    */
@@ -482,16 +474,14 @@
         return node;
       }
     }
-    
     return false;
   }
-  
   <mt:Ignore>
   /**
    * Toggles the visibility of a given element using the CSS 'visibility' property
    * (NB: 'hidden' elements still consume page real-estate, which can be functionally
    * more useful in form verification).
-   * 
+   *
    * @param {HTMLElement} el the element to toggle
    * @param {Boolean} visible determines whether to show or hide the element
    * @return void
@@ -502,7 +492,6 @@
       el.style.visibility = visible ? 'visible' : 'hidden';
     }
   }
-  
   function checkNodeType (obj) {
     if (obj.nodeName){
       switch (obj.nodeType) {
@@ -511,11 +500,10 @@
       }
     }
   }
-  
   <mt:Ignore>
   /**
    * Performs a basic search based on the given parameters
-   * 
+   *
    * @param {HTMLElement} rootEl the element from where the search starts
    * @param {String} attr the defining attribute for which to search
    * @param {String} attrVal the defining value of the attribute
@@ -532,14 +520,12 @@
         return els[len];
       }
     }
-    
     return false
   }
-  
   <mt:Ignore>
   /**
    * Adds an eventListener to an element
-   * 
+   *
    * @param {HTMLElement} el the element to which the event needs attaching
    * @param {String} type the type of event
    * @param {Function} func the function to execute when the event fires
@@ -555,20 +541,20 @@
         'func' : func,
         'capture' : false
       });
-      
+
       el.addEventListener(type,func,false);
     } else if(obj && document.addEventListener) {
       var anonFunc = function (event) {
         func.call(obj,event);
       };
-      
+
       eventRegistry.push({
         'el' : el,
         'type' : type,
         'func' : anonFunc,
         'capture' : false
       });
-      
+
       el.addEventListener(type,anonFunc,false);
       delete anonFunc;
     } else {
@@ -578,11 +564,13 @@
     }
   }
 })();
-
-jQuery.mtUseSubdomain();
-jQuery.mtEditSitePath();
-jQuery('button.goback').click(function() {
-    jQuery('form#clone-verification-form > fieldset > input[name=clone]').val(0);
-});
+/* ]]> */
 </script>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery.mtUseSubdomain();
+    jQuery.mtEditSitePath();
+    jQuery('button.goback').click(function() {
+        jQuery('form#clone-verification-form > fieldset > input[name=clone]').val(0);
+    });
+</mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

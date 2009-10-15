@@ -247,6 +247,10 @@ function init() {
         }
         return true;
     }
+/* ]]> */
+</script>
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
 
     jQuery.validator.addMethod('url', function(value, element) {
         rex = RegExp("site_url_([0-9]+)");
@@ -260,6 +264,7 @@ function init() {
 
         return is_valid_url(parent_url + value);
     });
+
     jQuery.validator.addMethod('path', function(value, element) {
         rex = RegExp("site_path_([0-9]+)");
         parent_path = '';
@@ -323,43 +328,36 @@ function init() {
         }
     });
 
-jQuery( function () {
-    init();
-});
+    jQuery('.web_path_field').change( function () {
+        websites_path[this.name] = this.value;
 
-jQuery('.web_path_field').change( function () {
-    websites_path[this.name] = this.value;
+        var rex = RegExp("site_path_([0-9]+)");
+        if (this.name.match(rex)) {
+            var id = RegExp.$1;
+            jQuery('.parent_website').each( function () {
+                if (this.value == id) {
+                    this.onchange(this);
+                    return;
+                }
+            });
+        }
+    });
 
-    var rex = RegExp("site_path_([0-9]+)");
-    if (this.name.match(rex)) {
-        var id = RegExp.$1;
-        jQuery('.parent_website').each( function () {
-            if (this.value == id) {
-                this.onchange(this);
-                return;
-            }
-        });
-    }
-});
+    jQuery('.web_url_field').change( function () {
+        websites_url[this.name] = this.value;
+        var rex = RegExp("site_url_([0-9]+)");
+        if (this.name.match(rex)) {
+            var id = RegExp.$1;
+            jQuery('.parent_website').each( function () {
+                if (this.value == id) {
+                    this.onchange(this);
+                    return;
+                }
+            });
+        }
+    });
 
-jQuery('.web_url_field').change( function () {
-    websites_url[this.name] = this.value;
-
-    var rex = RegExp("site_url_([0-9]+)");
-    if (this.name.match(rex)) {
-        var id = RegExp.$1;
-        jQuery('.parent_website').each( function () {
-            if (this.value == id) {
-                this.onchange(this);
-                return;
-            }
-        });
-    }
-});
-
-jQuery.mtUseSubdomain();
-jQuery.mtEditSitePath();
-/* ]]> */
-</script>
-
+    jQuery.mtUseSubdomain();
+    jQuery.mtEditSitePath();
+</mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

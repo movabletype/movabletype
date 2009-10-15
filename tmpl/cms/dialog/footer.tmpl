@@ -1,22 +1,23 @@
                 <div id="bootstrapper" class="hidden"></div>
             </div><!-- /content -->
         </div><!-- /container -->
-        <script type="text/javascript">
-        /* <![CDATA[ */
-            App.bootstrapInline( false );
-            jQuery(function() {
-                jQuery.mtAddEdgeClass();
-                jQuery('button.mt-close-dialog').click(function() {
-                    parent.jQuery.fn.mtDialog.close();
-                });
-                jQuery('input').each(function() {
-                    jQuery(this).addClass(jQuery(this).attr('type'));
-                });
+<script type="text/javascript">
+/* <![CDATA[ */
+App.bootstrapInline( false );
+jQuery(function() {
+<mt:var name="jq_js_include">
+    jQuery.mtAddEdgeClass();
+    jQuery('button.mt-close-dialog').click(function() {
+        parent.jQuery.fn.mtDialog.close();
+    });
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
 <mt:if name="insert_script">
-                parent.jQuery.fn.mtDialog.close();
+    parent.jQuery.fn.mtDialog.close();
 </mt:if>
-            });
-        /* ]]> */
-        </script>
+});
+/* ]]> */
+</script>
     </body>
 </html>
