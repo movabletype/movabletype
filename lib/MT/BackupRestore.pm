@@ -1383,6 +1383,24 @@ sub backup_terms_args {
     my $class = shift;
     my ($blog_ids) = @_;
 
+    # authors are processed in _populate_obj_to_backup method
+    if ( defined($blog_ids) && scalar(@$blog_ids) ) {
+        return
+          {
+            terms => {
+                object_ds => [ 'entry', 'page' ],
+            },
+            args => { 'join' =>
+                MT->model('entry')->join_on( undef,
+                    {
+                        id => \'=objectscore_object_id',
+                        blog_id => $blog_ids,
+                    }, {
+                        unique => 1,
+                })
+            }
+          }
+    }
     return { terms => undef, args => undef };
 }
 
