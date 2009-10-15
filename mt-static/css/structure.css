@@ -3357,9 +3357,9 @@ div.archive-url {
     margin: 0 0 5px;
 }
 
+.blog span.site_path-text, 
 span.site_url_subdomain-text, 
 span.site_url_path-text, 
-span.site_path-text, 
 span.archive_url_subdomain-text, 
 span.archive_url_path-text,
 span.archive_path-text { 

@@ -210,14 +210,20 @@ $.mtEditSiteUrl = function(options) {
  *
  */
 $.mtEditSitePath = function() {
-    $('#site_path').keyup(function() {
+    $('.blog-path-text').each(function() {
+        var text = $(this).val();
+        if (text.match(/^\//)) {
+            $(this).removeClass('extra-path');
+        }
+    });
+    $('.blog-path-text').keyup(function() {
         var text = $(this).val();
         if (text.match(/^\//)) {
             $(this).removeClass('extra-path')
-                .parents('#site_path-field').find('span.website-path').hide();
+                .parents('.site-path-field').find('span.website-path').hide();
         } else {
             $(this).addClass('extra-path')
-                .parents('#site_path-field').find('span.website-path').show();
+                .parents('.site-path-field').find('span.website-path').show();
         }
     });
 };

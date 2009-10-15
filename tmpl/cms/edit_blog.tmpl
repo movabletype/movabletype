@@ -107,7 +107,7 @@ function init() {
         help_page="blog_settings_publishing"
         help_section="site_url">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-field extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="blog-url-field extra-path" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="blog-url-text extra-path" /></span>
         </div>
         <div class="use-subdomain">
             <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
@@ -116,11 +116,12 @@ function init() {
 
     <mtapp:setting
         id="site_path"
+        class="site-path-field"
         label="<__trans phrase="Site Root">"
         hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-field extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" size="50" />
+        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_edit_config">
@@ -194,6 +195,7 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
     jQuery.mtUseSubdomain();
+    jQuery.mtEditSitePath();    
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
