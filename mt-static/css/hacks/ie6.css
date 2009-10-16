@@ -101,28 +101,36 @@ textarea {
 }
 
 /* - Navigation Menu */
-ul.menu-nav li, 
-ul.menu-nav li a { 
-    height: 1%;
+ul.menu-nav li { 
+    margin-top: 0;
+    line-height: 0;
 }
-ul.menu-nav li.top-menu { 
-    margin-top: -3px;
+
+ul.menu-nav li a, 
+ul.menu-nav ul.sub-menu li a { 
+    line-height: 1.5;
 }
-ul.sub-menu li.last-child a { 
-    margin-bottom: 3px;
+
+ul.menu-nav li.top-menu.first-child { 
+    margin-top: 0;
 }
-ul.menu-nav li.last-child a { 
+
+ul.menu-nav li.top-menu-open { 
+    margin-bottom: 4px;
+}
+ul.menu-nav li.last-child div { 
     border-bottom: 1px solid #c8c2be;
 }
 
-ul.menu-nav li.top-menu-open ul.sub-menu li.last-child a, 
-ul.menu-nav li.top-menu-open ul.sub-menu li a, 
-ul.menu-nav li.top-menu-open a.top-menu-link { 
-    border-bottom: 0;
+ul.menu-nav li.last-child ul.sub-menu { 
+    border-top: 0;
+    border-bottom: 1px solid #c8c2be;
 }
 
-ul.menu-nav li.last-child ul.sub-menu li.last-child a { 
-    border-bottom: 1px;
+ul.menu-nav li.top-menu div .toggle-button, 
+ul.menu-nav li.top-menu div { 
+    height: auto !important;
+    height: 28px;
 }
 
 /* - Actions Bar */
@@ -215,6 +223,8 @@ html#dialog {
 #selector-nav .selector ul, 
 #selector-nav .selector ul li, 
 .fav-actions li a, 
+ul.menu-nav li,
+ul.menu-nav li a,
 .listing-screen .actions-bar, 
 #editor .editor-header, 
 .widget, 

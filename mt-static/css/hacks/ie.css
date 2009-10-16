@@ -119,8 +119,15 @@ ul.menu-nav li .toggle-button,
 ul.menu-nav li.top-menu { 
     margin-top: -4px;
 }
+ul.menu-nav li.top-menu.first-child { 
+    margin-top: 0;
+}
 ul.menu-nav li.first-child a { 
     margin-top: 0;
+}
+
+ul.menu-nav a.top-menu-link .menu-label { 
+    word-break: normal;
 }
 
 /* - Widgets */

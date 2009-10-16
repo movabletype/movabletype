@@ -305,14 +305,16 @@
                 <mt:loop name="top_nav_loop">
             <mt:if name="allowed">
                     <li id="menu-<mt:var name="id" lower_case="1">" class="top-menu<mt:if name="screen_group" eq="$id"> current-menu top-menu-open</mt:if>">
-                        <a href="<mt:var name="link" escape="html">" class="top-menu-link"><mt:var name="label"></a>
+                        <div>
+                            <a href="<mt:var name="link" escape="html">" class="top-menu-link"><span class="menu-label"><mt:var name="label"></span></a>
+                        </div>
                         <ul class="sub-menu">
                         <mt:loop name="sub_nav_loop">
                 <mt:if name="allowed">
                     <mt:if name="current">
-                            <li><a href="<mt:var name="link" escape="html">" class="current sub-menu-link"><em><mt:var name="label"></em></a></li>
+                            <li><a href="<mt:var name="link" escape="html">" class="current sub-menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
                     <mt:else>
-                            <li><a href="<mt:var name="link" escape="html">" class="sub-menu-link"><mt:var name="label"></a></li>
+                            <li><a href="<mt:var name="link" escape="html">" class="sub-menu-link"><span class="menu-label"><mt:var name="label"></span></a></li>
                     </mt:if>
                 </mt:if>
                         </mt:loop>

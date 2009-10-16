@@ -28,11 +28,16 @@ $.mtAddEdgeClass = function() {
  *   jQuery.mtMenu();
  *
  */
-$.mtMenu = function() {
-    $('.top-menu > a').after('<span class="toggle-button"></span>');
-    $('.top-menu .toggle-button').click(function() {
-        $(this).parent('li').toggleClass('top-menu-open');
-        $(this).next().toggle();
+$.mtMenu = function(options) {
+    var defaults = {
+        arrow_image: StaticURI+'images/menu-arrow-down.gif'
+    };
+    var opts = $.extend(defaults, options);
+    $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
+    $('.top-menu .toggle-button').click(function(event) {
+        $(this).parents('li.top-menu').toggleClass('top-menu-open');
+        $(this).parents('li.top-menu').find('.sub-menu').toggle();
+        event.preventDefault();
     });
 };
 
