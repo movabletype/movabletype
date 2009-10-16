@@ -45,11 +45,14 @@ sub compile {
     }
 
     return [ ] unless defined $text;
+    if ( $depth <= 0 && $text && Encode::is_utf8($text) ) {
+        Encode::_utf8_off($text);
+    }
 
     my $mods;
 
     # Translate any HTML::Template markup into native MT syntax.
-    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
+    if ($depth <= 0 && $text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
         translate_html_tmpl($text);
     }
 
@@ -231,6 +234,14 @@ sub compile {
         if ($errors && @$errors) {
             return $build->error( $errors->[0]->{message} );
         }
+    }
+
+    if ( $depth <= 0 ) {
+        for my $t ( @{ $state->{tokens} } ) {
+            $t->upgrade;
+        }
+        Encode::_utf8_on($text)
+            if !Encode::is_utf8($text);
     }
     return $state->{tokens};
 }
