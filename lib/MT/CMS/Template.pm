@@ -232,7 +232,7 @@ sub edit {
                     $other->compile;
                     if ( $other->{errors} && @{ $other->{errors} } ) {
                         $param->{error} = $app->translate(
-                            "One or more errors were found in included template module (".$other->name.").");
+                            "One or more errors were found in included template module ([_1]).", $other->name);
                         $param->{error} .= "<ul>\n";
                         foreach my $err ( @{ $other->{errors} } ) {
                             $param->{error} .= "<li>"

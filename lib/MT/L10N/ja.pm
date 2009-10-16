@@ -2002,6 +2002,7 @@ use vars qw( @ISA %Lexicon );
 	'email' => 'メール',
 	'system' => 'システム',
 	'One or more errors were found in this template.' => 'テンプレートでエラーが見つかりました。',
+	'One or more errors were found in included template module ([_1]).' => 'テンプレートモジュール([_1])でエラーが見つかりました。',
 	'Create template requires type' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
 	'Entry or Page' => 'ブログ記事/ウェブページ',
 	'New Template' => '新しいテンプレート',
