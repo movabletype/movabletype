@@ -2443,6 +2443,11 @@ sub build_menus {
               if exists $theme_modify->{$sub_id} && !$theme_modify->{$sub_id};
             my $sub = $menus->{$sub_id};
             $sub->{current} = 0;
+
+            ## Keep a compatibility
+            $sub->{view} = [ 'blog', 'system' ]
+                unless $sub->{view};
+
             if ( $sub->{view} ) {
                 if ( ref $sub->{view} eq 'ARRAY' ) {
                     next
