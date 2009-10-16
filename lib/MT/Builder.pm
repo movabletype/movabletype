@@ -377,11 +377,13 @@ sub build {
                 # process variables
                 foreach my $v (keys %args) {
                     if (ref $args{$v} eq 'ARRAY') {
-                        foreach (@{$args{$v}}) {
+                        my @array = @{$args{$v}};
+                        foreach (@array) {
                             if (m/^\$([A-Za-z_](\w|\.)*)$/) {
-                                local $_ = $ctx->var($1);
+                                $_ = $ctx->var($1);
                             }
                         }
+                        $args{$v} = \@array;
                     } else {
                         if ($args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
                             $args{$v} = $ctx->var($1);
