@@ -1095,12 +1095,12 @@ sub backup_terms_args {
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
         return
           {
-            terms => { 'blog_id' => $blog_ids, 'class' => '*' },
+            terms => { 'blog_id' => $blog_ids, 'class' => $class->properties->{class_type} },
             args => undef
           }
     }
     else {
-        return { terms => { 'class' => '*' }, args => undef };
+        return { terms => { 'class' => $class->properties->{class_type} }, args => undef };
     }
 }
 
