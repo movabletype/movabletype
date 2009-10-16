@@ -82,7 +82,7 @@ foreach my $lang (qw(ja de nl fr es)) {
     while ($enc_js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g) {
         my $str = $2;
         $str =~ s/\t\t/'/g;
-        my $local = Encode::encode_utf8( $lex->{$str} ) || $str;
+        my $local = $lex->{$str} ? Encode::encode_utf8( $lex->{$str} ) : $str;
         $str = encode_js($str);
         $local = encode_js($local);
         next if $str eq $local;
