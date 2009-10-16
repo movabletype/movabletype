@@ -23,7 +23,7 @@ sub preprocess_native_tags {
 
     # If we're running under MT-Search, set the context based on the search
     # parameters available.
-    unless ($args->{blog_id} || $args->{include_blogs} || $args->{exclude_blogs}) {
+    unless ($args->{blog_id} || $args->{blog_ids} || $args->{include_blogs} || $args->{exclude_blogs}) {
         my $app = MT->instance;
         if ($app->isa('MT::App::Search')) {
             if (my $excl = $app->{searchparam}{ExcludeBlogs}) {
