@@ -153,6 +153,11 @@ ul#asset-list li a.remove-asset {
     padding-top: 8px;
 }
 
+/* -Fields */
+.field-header { 
+    word-break: normal; 
+}
+
 /* - fake display: inline-block; */
 .ui-tabs-nav li, 
 ul.tabs li, 
