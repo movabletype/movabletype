@@ -17,11 +17,11 @@
                 <img src="<mt:var name="website_theme_thumb">" />
             </div>
             <div id="website-<mt:var name="website_id">-meta" class="blog-meta">
-                <h4 id="website-<mt:var name="website_id">-name" class="blog-name"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name"></a></h4>
+                <h4 id="website-<mt:var name="website_id">-name" class="blog-name"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a></h4>
                 <p id="website-<mt:var name="website_id">-link" class="blog-link"><a href="<mt:var name="website_url">"><mt:var name="website_url"></a></p>
     <mt:if name="website_description">
                 <div id="website-<mt:var name="website_id">-description" class="blog-description">
-                    <mt:var name="website_description">
+                    <mt:var name="website_description" escape="html">
                 </div>
     </mt:if>
                 <ul id="website-<mt:var name="website_id">-control" class="blog-control">
@@ -96,13 +96,13 @@
             </div>
             <div id="blog-<mt:var name="blog_id">-meta" class="blog-meta">
                 <h4 id="blog-<mt:var name="blog_id">-name" class="blog-name">
-                    <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name"></a>
-                    <span class="parent-website">(<mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name"></a><mt:else><mt:var name="website_name"></mt:if>)</span>
+                    <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a>
+                    <span class="parent-website">(<mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html"></mt:if>)</span>
                 </h4>
                 <p id="blog-<mt:var name="blog_id">-link" class="blog-link"><a href="<mt:var name="blog_url">"><mt:var name="blog_url"></a></p>
     <mt:if name="blog_description">
                 <div id="blog-<mt:var name="blog_id">-description" class="blog-description">
-                    <mt:var name="blog_description">
+                    <mt:var name="blog_description" escape="html">
                 </div>
     </mt:if>
                 <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">

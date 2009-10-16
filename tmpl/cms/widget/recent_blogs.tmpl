@@ -10,12 +10,12 @@
             </div>
             <div id="blog-<mt:var name="blog_id">-meta" class="blog-meta">
                 <h4 id="blog-<mt:var name="blog_id">-name" class="blog-name">
-                    <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name"></a>
+                    <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a>
                 </h4>
                 <p id="blog-<mt:var name="blog_id">-link" class="blog-link"><a href="<mt:var name="blog_url">"><mt:var name="blog_url"></a></p>
     <mt:if name="blog_description">
                 <div id="blog-<mt:var name="blog_id">-description" class="blog-description">
-                    <mt:var name="blog_description">
+                    <mt:var name="blog_description" escape="html">
                 </div>
     </mt:if>
                 <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">

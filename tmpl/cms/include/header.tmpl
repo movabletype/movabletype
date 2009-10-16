@@ -115,21 +115,21 @@
     <mt:elseif name="scope_type" eq="website">
                         <li id="current-website" class="current">
         <mt:if name="curr_website_can_link">
-                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name"></a></em>
+                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
         <mt:else>
-                            <em><mt:var name="curr_website_name"></em>
+                            <em><mt:var name="curr_website_name" escape="html"></em>
         </mt:if>
                         </li>
     <mt:elseif name="scope_type" eq="blog">
                         <li id="current-website" class="current">
         <mt:if name="curr_website_can_link">
-                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name"></a></em>
+                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
         <mt:else>
-                            <em><mt:var name="curr_website_name"></em>
+                            <em><mt:var name="curr_website_name" escape="html"></em>
         </mt:if>
                             <ul>
                                 <li id="current-blog" class="current">
-                                    <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_blog_id"$>"><mt:var name="curr_blog_name"></a></em>
+                                    <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_blog_id"$>"><mt:var name="curr_blog_name" escape="html"></a></em>
                                 </li>
                             </ul>
                         </li>
@@ -158,7 +158,7 @@
                             <li><span class="scope-lebel"><__trans phrase="Website"></span>
                                 <ul>
         </mt:if>
-                                    <li><mt:if name="fav_website_can_link"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"></mt:if><mt:var name="fav_website_name"><mt:if name="fav_website_can_link"></a></mt:if></li>
+                                    <li><mt:if name="fav_website_can_link"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"></mt:if><mt:var name="fav_website_name" escape="html"><mt:if name="fav_website_can_link"></a></mt:if></li>
         <mt:if name="__last__">
             <mt:unless name="selector_hide_website_chooser">
                                     <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
@@ -187,7 +187,7 @@
                             <li><span class="scope-lebel"><__trans phrase="Blog"></span>
                                 <ul>
         </mt:if>
-                                    <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_blog_name"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name">"></span></a></li>
+                                    <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_blog_name" escape="html"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">"></span></a></li>
         <mt:if name="__last__">
             <mt:unless name="selector_hide_blog_chooser">
                                     <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
@@ -214,9 +214,9 @@
     </mt:if>
     <mt:if name="can_create_blog">
         <mt:if name="scope_type" eq="website">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name">"></a></li>
+                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
         <mt:elseif name="scope_type" eq="blog">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name">"></a></li>
+                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
         </mt:if>
     </mt:if>
                         </ul>
