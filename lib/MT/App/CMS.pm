@@ -3672,8 +3672,6 @@ sub _build_category_list {
         for my $col (@$cols) {
             $row->{ 'category_' . $col } = $obj->$col();
         }
-        require MT::Util;
-        $row->{category_label} = MT::Util::encode_html( $row->{category_label} );
         if ( $obj->class eq 'folder' ) {
             my $path = $obj->publish_path;
             $row->{category_selector_label} = $path;

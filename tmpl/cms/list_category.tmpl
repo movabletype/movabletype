@@ -167,7 +167,7 @@ function setMoveMode (id) {
                     <a href="javascript:void(0)" onclick="return doExpand(<mt:var name="category_id">)" title="<__trans phrase="Expand">"><img alt="<__trans phrase="Expand">" src="<mt:var name="static_uri">images/status_icons/expand.gif" width="9" height="9" class="expcol" /></a>
     </mt:if>
 </mt:if>
-                    <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="category_id" escape="url">"><mt:var name="category_label_full"></a></div>
+                    <div style="margin-left: <mt:var name="category_pixel_depth">px;"><a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="object_type" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="category_id" escape="url">"><mt:var name="category_label_full" escape="html"></a></div>
                 </td>
                 <td id="action-<mt:var name="category_id">" class="actions">
                     <a href="javascript:void(0)" onclick="return setCreateMode(<mt:var name="category_id">)" class="icon-left icon-create" title="<__trans phrase="Create Subcategory">"><__trans phrase="Create"></a>
