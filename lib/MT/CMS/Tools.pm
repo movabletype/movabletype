@@ -584,6 +584,11 @@ sub save_cfg_system_general {
 sub upgrade {
     my $app = shift;
 
+    if  ( $ENV{FAST_CGI} ) {
+        # don't enter the FCGI loop.
+        require MT::Bootstrap;
+        MT::Bootstrap::fcgi_sig_handler('Upgrade');
+    }
     # check for an empty database... no author table would do it...
     my $driver         = MT::Object->driver;
     my $upgrade_script = $app->config('UpgradeScript');
@@ -593,7 +598,6 @@ sub upgrade {
               . $upgrade_script
               . $app->uri_params( mode => 'install' ) );
     }
-
     return $app->redirect( $app->path . $upgrade_script );
 }
 
