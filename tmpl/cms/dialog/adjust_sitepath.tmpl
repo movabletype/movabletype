@@ -174,6 +174,13 @@ function init() {
                 <div class="use-subdomain">
                     <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
                 </div>
+            <mt:elseif name="old_archive_url_path">
+                <div class="archive-url">
+                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="blog-url-text extra-path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
+                </div>
+                <div class="use_subdomain">
+                    <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="cb" /> <label for="use_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>
+                </div>
             <mt:elseif name="old_archive_url">
                 <div class="archive-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text extra-path" value="<mt:var name="old_archive_url" escape="html">" /></span>
