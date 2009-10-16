@@ -1117,12 +1117,14 @@ function listPreviousPings () {
     </mt:if>
 
     <mt:loop id="content_fields" name="field_loop">
+        <mt:var name="field_label" escape="html" setvar="label_encoded">
+        <mt:var name="description" escape="html" setvar="desc_encoded">
         <mt:if name="field_html">
             <mtapp:setting
                 id="$field_id"
-                label="$field_label"
+                label="$label_encoded"
                 label_class="$label_class"
-                hint="$description"
+                hint="$desc_encoded"
                 shown="$show_field"
                 content_class="$content_class"
                 show_hint="$show_hint"
