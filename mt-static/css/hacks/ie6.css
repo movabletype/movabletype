@@ -3,6 +3,10 @@ body {
     height: 100% ! important;
 }
 
+body.has-dialog { 
+    overflow: hidden;
+}
+
 textarea { 
     min-height: 5em;
     height: auto !important; /* min-height hack */
