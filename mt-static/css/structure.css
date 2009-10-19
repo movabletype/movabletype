@@ -3231,46 +3231,44 @@ body.preview-screen {
     clear: left;
     margin-bottom: 5px;
     padding-bottom: 5px; 
-    border-bottom: 1px dotted #cddee7;
 }
 #related-assets .asset.last-child { 
-    border-bottom: 0;
     margin-bottom: 0;
     padding-bottom: 0;
 }
 
-#related-content .asset-thumb  {
+#related-assets .asset-thumb  {
+    min-height: 80px;
     width: 80px;
     height: 80px;
     border: 1px solid #c8c2be;
 }
-#related-content .asset-no-thumbnail .asset-thumb a {
+#related-assets .asset-no-thumbnail .asset-thumb a {
     display: block;
 }
-#related-content .asset-thumbnail .asset-thumb img {
+#related-assets .asset-thumbnail .asset-thumb img {
     margin-top: 2px;
     border: 0;
 }
 
-.edit-asset #related-content .asset-thumb a span {
+.edit-asset #related-assets .asset-thumb a span {
     display: none;
 }
 
-.edit-asset #related-content .asset .asset-metadata {
+.edit-asset #related-assets .asset .asset-metadata {
     margin-left: 95px;
-    padding-top: 5px;
 }
 
-.edit-asset #related-content .asset-label { 
+.edit-asset #related-assets .asset-label { 
     margin-bottom: 5px;
     word-wrap: break-word;
+    font-size: 12px;
 }
 
-.edit-asset #related-content .asset-size li {
+.edit-asset #related-assets .asset-size li {
     margin: 0;
     line-height: 1.3;
 }
-
 
 .edit-asset .actions-bar {
     clear: both;

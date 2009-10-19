@@ -163,10 +163,16 @@ ul.menu-nav li.top-menu div {
 }
 
 /* - Edit Asset */
-.edit-asset .asset-thumb { 
+.asset-preview .asset-thumb { 
     min-height: 260px;
     height: auto !important; /* min-height hack */
     height: 260px;
+}
+
+#related-assets .asset-thumb  {
+    min-height: 80px;
+    height: auto ! important;
+    height: 80px;
 }
 
 /* - Widgets */
