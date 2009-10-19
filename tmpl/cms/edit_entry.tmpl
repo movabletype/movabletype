@@ -369,6 +369,14 @@
     <mt:setvarblock name="scheduled_button_title"><__trans phrase="Save this [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 
     <div class="actions-bar">
+        <button
+            mt:mode="preview_entry"
+            name="preview_entry"
+            type="submit"
+            accesskey="v"
+            title="<mt:var name="preview_button_title">"
+            class="preview action"
+            ><__trans phrase="Preview"></button>
 <mt:if name="can_publish_post">
         <button
             mt:mode="save_entry"
@@ -378,14 +386,6 @@
             value="1"
             ><mt:var name="draft_button_text"></button>
 </mt:if>
-        <button
-            mt:mode="preview_entry"
-            name="preview_entry"
-            type="submit"
-            accesskey="v"
-            title="<mt:var name="preview_button_title">"
-            class="preview action"
-            ><__trans phrase="Preview"></button>
     </div>
 
 <mt:if name="status_future">

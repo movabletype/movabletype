@@ -464,9 +464,6 @@ ul.tabs li a {
 #selector-nav-list #current-blog em { 
     padding-left: 0;
 }
-.system #selector-nav-list em { 
-    font-style: italic;
-}
 
 #selector-nav-list a.toggle-button { 
     position: relative;
