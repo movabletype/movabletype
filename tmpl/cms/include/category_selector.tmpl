@@ -1,7 +1,7 @@
 <script type="text/javascript">
 <!--
     /* <![CDATA[ */
-        MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1"$><mt:else>[]</mt:if>;
+        MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\\$2"$><mt:else>[]</mt:if>;
         Template.templates.categorySelectorList = '<mt:section encode_js="1">
                 [# if ( item.path == null ) item.path = [] #]
                 <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
