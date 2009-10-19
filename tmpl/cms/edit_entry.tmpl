@@ -315,20 +315,6 @@
         </mt:if>
     </div>
     <mt:else>
-        <mt:if name="can_publish_post">
-        <mt:else>
-            <mt:if name="status_draft">
-    <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished (Draft)"></span>
-            <mt:else name="status_publish">
-    <input type="hidden" name="status" id="status" value="2" /><span><__trans phrase="Published"></span>
-            <mt:else name="status_future">
-    <input type="hidden" name="status" id="status" value="4" /><span><__trans phrase="Scheduled"></span>
-            <mt:else name="status_review">
-    <input type="hidden" name="status" id="status" value="3" /><span><__trans phrase="Unpublished (Review)"></span>
-            <mt:else name="status_spam">
-    <input type="hidden" name="status" id="status" value="5" /><span><__trans phrase="Unpublished (Spam)"></span>
-            </mt:if>
-        </mt:if>
     <ul>
         <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
         <mt:if name="status_publish">
@@ -491,18 +477,21 @@
             ><__trans phrase="Update"></button>
     </mt:if>
 </mt:if>
-<mt:unless name="sitepath_configured">
-        <input type="hidden" name="status" id="status" value="1" /><span><__trans phrase="Unpublished"></span>&nbsp;<span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog you before can publish this page."></mt:if></a></span>
-</mt:unless>
     </div>
 <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <p class="alert-warning-inline">
-        <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a>
+        <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+        <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">
+    <mt:if name="object_type" eq="entry">
+            <__trans phrase="You must configure this blog before you can publish this entry.">
+    <mt:else>
+            <__trans phrase="You must configure this blog before you can publish this page.">
+    </mt:if>
+        </a>
     </p>
 </mt:unless>
 </mtapp:widget>
-
 
 <div id="category-field"<mt:unless name="disp_prefs_show_category"> class="hidden"</mt:unless>>
 <mt:if name="object_type" eq="entry">
