@@ -395,6 +395,11 @@ sub site_url {
             if (my $website = $blog->website()) {
                 $url = $website->SUPER::site_url;
             }
+            else {
+                # FIXME: there are a few occasions where
+                # a blog does not have its parent, like (bugid:102749)
+                return $blog->SUPER::site_url;
+            }
             my @paths = $blog->raw_site_url;
             if ( 2 == @paths ) {
                 if ( $paths[0] ) {
