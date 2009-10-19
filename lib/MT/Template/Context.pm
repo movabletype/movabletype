@@ -366,8 +366,13 @@ sub set_blog_load_context {
     # 'All' is not a valid value for exclude_blogs
     elsif ( $attr->{exclude_blogs} ) {
         return $ctx->error(MT->translate(
-                "The attribute exclude_blogs cannot take 'all' for a value."
-            )) if lc $args->{exclude_blogs} eq 'all';
+                "The attribute exclude_blogs cannot take '[_1]' for a value.",
+                $args->{exclude_blogs}
+            ))
+            if lc( $args->{exclude_blogs} ) eq 'all'
+            || lc( $args->{exclude_blogs} ) eq 'site'
+            || lc( $args->{exclude_blogs} ) eq 'children'
+            || lc( $args->{exclude_blogs} ) eq 'siblings';
 
         my @excluded_blogs = split /\s*,\s*/, $blog_ids;
         $terms->{$col} = [ @excluded_blogs ];
@@ -376,7 +381,13 @@ sub set_blog_load_context {
     } elsif (lc $blog_ids eq 'all') {
         delete $terms->{$col} if exists $terms->{$col};
     # "include_blogs='site'" collects all blogs in current context of website
-    } elsif ((my $blog = $ctx->stash('blog')) && lc $blog_ids eq 'site') {
+    } elsif ( ( my $blog = $ctx->stash('blog') )
+      && (
+           ( lc($blog_ids) eq 'site' )
+        || ( lc($blog_ids) eq 'children' )
+        || ( lc($blog_ids) eq 'siblings' )
+      )
+    ) {
         my $website = $blog->is_blog ? $blog->website
                     :                  $blog
                     ;

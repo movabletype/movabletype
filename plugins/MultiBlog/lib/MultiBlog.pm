@@ -223,17 +223,32 @@ sub filter_blogs_from_args {
         $err = $plugin->translate('The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.');
     }
     # exclude_blogs="all" is not allowed
-    elsif ($excl and $excl =~ /all/i) {
-        $err = $plugin->translate('The attribute exclude_blogs cannot take "all" for a value.');
+    elsif ( $excl 
+        && (   lc( $excl ) eq 'all'
+            || lc( $excl ) eq 'site'
+            || lc( $excl ) eq 'children'
+            || lc( $excl ) eq 'siblings' )
+    ) {
+        return $ctx->error(MT->translate(
+                "The attribute exclude_blogs cannot take '[_1]' for a value.",
+                $excl
+            ));
     }
     # blog_id only accepts a single blog ID
     elsif ($args->{blog_id} and $args->{blog_id} !~ /^\d+$/) {
         $err = $plugin->translate('The value of the blog_id attribute must be a single blog ID.');
     }
     # Make sure include_blogs/exclude_blogs is valid
-    elsif (($incl || $excl) !~ /(all|site)/
-        and ($incl || $excl) !~ /^\d+([,-]\d+)*$/) {
-        $err =  $plugin->translate('The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.');
+    else {
+        my $list = $incl || $excl;
+        if ( ( $list !~ /^\d+([,-]\d+)*$/ )
+          && lc( $list ) ne 'all'
+          && lc( $list ) ne 'site'
+          && lc( $list ) ne 'children'
+          && lc( $list ) ne 'siblings' )
+        {
+            $err =  $plugin->translate('The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.');
+        }
     }
     return $ctx->error($err) if $err;
 
@@ -262,6 +277,11 @@ sub filter_blogs_from_args {
     # Filter the blogs using the MultiBlog access controls
     ($attr, @blogs) = filter_blogs($plugin, $ctx, $attr, @blogs);
     return unless $attr && @blogs;
+
+    if ( ( $attr eq 'include_blogs' ) && $args->{include_with_website} ) {
+        my $blog = $ctx->stash('blog');
+        push @blogs, $blog->is_blog ? $blog->website->id : $blog->id;
+    }
     
     # Rewrite the args to the modifed value
     delete $args->{blog_ids} if exists $args->{blog_ids};  # Deprecated
@@ -308,28 +328,48 @@ sub filter_blogs {
                             } keys %$access_overrides;
             return @deny ? ('exclude_blogs', @deny)
                          : ('include_blogs', 'all');
-         }
-         # include_blogs="1,2,3,4"
-         elsif ($is_include and @blogs) {
-            # Remove any included blogs that are specifically deny override
-            # Return undef is all specified blogs are deny override
-            my @allow = grep {    $_ == $this_blog 
-                               or ! exists $access_overrides->{$_} 
-                               or $access_overrides->{$_} == ALLOWED
-                             } @blogs;
+        } elsif ( ( my $blog = $ctx->stash('blog') )
+          && (
+               ( lc($blogs[0]) eq 'site' )
+            || ( lc($blogs[0]) eq 'children' )
+            || ( lc($blogs[0]) eq 'siblings' )
+          )
+        ) {
+            my $website = $blog->is_blog ? $blog->website
+                        :                  $blog
+                        ;
+            my @children = MT->model('blog')->load(
+                { parent_id => $website->id },
+                { fetch_only => ['id'], no_triggers => 1 }
+            );
+            my @allow = map { $_->id }
+                        grep {    $_->id == $this_blog 
+                               or ! exists $access_overrides->{$_->id} 
+                               or $access_overrides->{$_->id} == ALLOWED
+                             } @children;
             return @allow ? ('include_blogs', @allow) : undef;
-         }
-         # exclude_blogs="1,2,3,4"
-         else {
-             # Add any deny overrides blogs to the list and de-dupe
-             push(@blogs, grep { $_ != $this_blog
-                                 and $access_overrides->{$_} == DENIED 
-                               } keys %$access_overrides);
-            my %seen;
-            @seen{@blogs} = ();
-            @blogs = keys %seen;
-            return ('exclude_blogs', @blogs);
-         }
+        }
+        # include_blogs="1,2,3,4"
+        elsif ($is_include and @blogs) {
+           # Remove any included blogs that are specifically deny override
+           # Return undef is all specified blogs are deny override
+           my @allow = grep {    $_ == $this_blog 
+                              or ! exists $access_overrides->{$_} 
+                              or $access_overrides->{$_} == ALLOWED
+                            } @blogs;
+           return @allow ? ('include_blogs', @allow) : undef;
+        }
+        # exclude_blogs="1,2,3,4"
+        else {
+            # Add any deny overrides blogs to the list and de-dupe
+            push(@blogs, grep { $_ != $this_blog
+                                and $access_overrides->{$_} == DENIED 
+                              } keys %$access_overrides);
+           my %seen;
+           @seen{@blogs} = ();
+           @blogs = keys %seen;
+           return ('exclude_blogs', @blogs);
+        }
     }
     # System setting does not allow access by default
     else {
@@ -340,6 +380,26 @@ sub filter_blogs {
             my @allow = grep { $_ == $this_blog 
                                or $access_overrides->{$_} == ALLOWED
                              } ($this_blog, keys %$access_overrides);
+            return @allow ? ('include_blogs', @allow) : undef;
+        } elsif ( ( my $blog = $ctx->stash('blog') )
+          && (
+               ( lc($blogs[0]) eq 'site' )
+            || ( lc($blogs[0]) eq 'children' )
+            || ( lc($blogs[0]) eq 'siblings' )
+          )
+        ) {
+            my $website = $blog->is_blog ? $blog->website
+                        :                  $blog
+                        ;
+            my @children = MT->model('blog')->load(
+                { parent_id => $website->id },
+                { fetch_only => ['id'], no_triggers => 1 }
+            );
+            my @allow = map { $_->id }
+                        grep {    $_->id == $this_blog
+                               or ( exists $access_overrides->{$_->id} 
+                                    and $access_overrides->{$_->id} == ALLOWED)
+                             } @children;
             return @allow ? ('include_blogs', @allow) : undef;
         }
         # include_blogs="1,2,3,4"
