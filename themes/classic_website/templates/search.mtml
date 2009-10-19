@@ -13,7 +13,7 @@
             </ul>
             </mt:Ignore>
 <mt:Else>
-            <input type="hidden" name="IncludeBlogs" value="<$mt:WebsiteID$><mt:WebsiteHasBlog><mt:Blogs include_blogs="site">,<mt:BlogID></mt:Blogs></mt:WebsiteHasBlog>" />
+            <input type="hidden" name="IncludeBlogs" value="<$mt:WebsiteID$><mt:WebsiteHasBlog><mt:Blogs include_blogs="children">,<mt:BlogID></mt:Blogs></mt:WebsiteHasBlog>" />
 </mt:If>
             <input type="hidden" name="limit" value="<$mt:SearchMaxResults$>" />
             <input type="submit" accesskey="4" value="<__trans phrase="Search">" />
