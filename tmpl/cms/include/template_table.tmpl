@@ -56,7 +56,7 @@
 <mt:setvarblock name="table_id"><mt:var name="template_type" default="template">-listing</mt:setvarblock>
 <mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="show-actions-bar" type="template">
     <mt:if __first__>
-        <thead>
+        <mt:setvarblock name="table_header">
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
                 <th class="template-name primary-col"><__trans phrase="Template Name"></th>
@@ -85,7 +85,13 @@
                 <th class="view"><__trans phrase="View"></th>
         </mt:unless>
             </tr>
+        </mt:setvarblock>
+        <thead>
+            <mt:var name="table_header">
         </thead>
+        <tfoot>
+            <mt:var name="table_header">
+        </tfoot>
         <tbody>
     </mt:if>
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
