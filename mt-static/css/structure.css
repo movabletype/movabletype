@@ -145,9 +145,14 @@ textarea.larger-text {
 }
 .alert-warning-inline { 
     margin: 5px 0 0;
-    color: #F39800;
+    color: #f39800;
     font-size: 11px;
 }
+
+.alert-warning-inline a { 
+    color: #f39800;
+}
+
 .disabled {
     color: #7b7c7d;
 }
@@ -1824,7 +1829,7 @@ optgroup option {
     width: 100%;
     margin: 0;
     border-bottom: 0;
-    border: solid 1px #C8C2BE;
+    border: solid 1px #c8c2be;
     table-layout: fixed;
 }
 .listing #folder-listing-table, 
@@ -1838,18 +1843,22 @@ optgroup option {
     word-wrap: break-word;
 }
 
+.listing table select { 
+    word-wrap: normal;
+}
+
 .listing table thead th { 
-    border-bottom: 1px solid #C8C2BE;
+    border-bottom: 1px solid #c8c2be;
 }
 .listing table tfoot th { 
-    border-top: 1px solid #C8C2BE;
+    border-top: 1px solid #c8c2be;
 }
 
 .listing tr { 
-    background-color: white;
+    background-color: #f8fbf8;
 }
 .listing tr.even { 
-    background-color: #f3f6f9;
+    background-color: #f3f3f3;
 }
 
 .listing th, 
@@ -1861,11 +1870,11 @@ optgroup option {
 
 .listing th { 
     width: 13%;
-    border-left: 1px solid #C8C2BE;
+    border-left: 1px solid #c8c2be;
     color: #2b2b2b;
     font-size: 11px;
     font-weight: bold;
-    text-shadow: #F8FBF8 0 1px 0;
+    text-shadow: #f8fbf8 0 1px 0;
     /* white-space: nowrap; */ 
     background: #dcdddd url(../images/widget/widget-header.png) repeat-x left top;
 }
@@ -3104,13 +3113,29 @@ body.preview-screen {
     display: block;
 }
 
-#template-options #create-inline-mapping { 
-    margin-bottom: 8px;
+/* --- Archive Mapping */
+#archive_mapping-field p { 
+    margin-bottom: 3px;
 }
 
 #template-options #templatemap-listing { 
     margin-bottom: 5px;
 }
+
+#template-options #templatemap-listing-table tr.last-child td.first-child { 
+    -moz-border-radius: 0 0 0 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -khtml-border-bottom-left-radius: 5px;
+    border-bottm-left-radius: 5px;
+}
+
+#template-options #templatemap-listing-table tr.last-child td.last-child { 
+    -moz-border-radius: 0 0 5px 0;
+    -webkit-border-bottom-right-radius: 5px;
+    -khtml-border-bottom-right-radius: 5px;
+    border-bottm-right-radius: 5px;
+}
+
 
 #caching-field ul ul {
     margin-left: 1.5em;
