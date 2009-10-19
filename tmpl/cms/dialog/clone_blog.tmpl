@@ -28,6 +28,7 @@
 
         <mtapp:setting
             id="blog-name"
+            content_class="field-content-text"
             label="<__trans phrase="Blog Name">">
             <span id="blog-name"><mt:var name="new_blog_name" escape="html"></span>
         </mtapp:setting>
@@ -35,6 +36,7 @@
         <mtapp:setting
             id="site-url"
             class="url-field"
+            content_class="field-content-text"
             label="<__trans phrase="Site URL">">
         <mt:if name="site_url_subdomain">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
@@ -55,6 +57,7 @@
 
         <mtapp:setting
             id="site-path"
+            content_class="field-content-text"
             label="<__trans phrase="Site Root">">
             <span id="site-path"><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></span>
     <mt:if name="site_path_warning">
