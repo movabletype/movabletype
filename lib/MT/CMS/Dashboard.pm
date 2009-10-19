@@ -67,13 +67,27 @@ sub dashboard {
     };
 
     my $blog = $app->blog;
-    my $blog_id = $blog->id if $blog;
-    my $is_blog = $blog->is_blog if $blog;
     my $scope = $app->view;
 
     return $app->error(
         $app->translate('Error: This blog doesn\'t have a parent website.') )
         if $blog && $blog->is_blog && !$blog->website;
+
+    my $user = $app->user;
+    my $blog_id = $app->param('blog_id');
+    if ( defined $blog_id && !$user->has_perm($blog_id) ) {
+        # Remove blog_id if it was found.
+        if ( $blog && $blog->is_blog ) {
+            my @current = grep { $_ != $blog_id } @{ $user->favorite_blogs || [] };
+            $user->favorite_blogs( \@current );
+        } elsif ( $blog && !$blog->is_blog ) {
+            my @current = grep { $_ != $blog_id } @{ $user->favorite_websites || [] };
+            $user->favorite_websites( \@current );
+        }
+        $user->save;
+
+        return $app->return_to_user_dashboard( redirect => 1, permission => 1);
+    }
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');

@@ -2706,6 +2706,15 @@ sub return_to_dashboard {
         $app->uri( mode => 'dashboard', args => \%param ) );
 }
 
+sub return_to_user_dashboard {
+    my $app = shift;
+    my (%param) = @_;
+    $param{redirect} = 1 unless %param;
+    delete $param{blog_id} if exists $param{blog_id};
+    return $app->redirect(
+        $app->uri( mode => 'dashboard', args => \%param ) );
+}
+
 sub list_pref {
     my $app      = shift;
     my ($list)   = @_;
@@ -3367,6 +3376,11 @@ sub add_to_favorite_blogs {
 
     my $auth = $app->user;
     return unless $auth;
+
+    return unless $auth->has_perm($fav)
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
+
     my @current = @{ $auth->favorite_blogs || [] };
 
     return if @current && ( $current[0] == $fav );
@@ -3385,6 +3399,11 @@ sub add_to_favorite_websites {
 
     my $auth = $app->user;
     return unless $auth;
+
+    return unless $auth->has_perm($fav)
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
+
     my @current = @{ $auth->favorite_websites || [] };
 
     return if @current && ( $current[0] == $fav );

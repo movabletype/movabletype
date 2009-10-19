@@ -360,6 +360,13 @@ sub blog_perm {
     $author->permissions($blog_id);
 }
 
+sub has_perm {
+    my $author = shift;
+    my ( $blog_id ) = @_;
+    my $perm = $author->permissions( $blog_id );
+    return $perm->permissions ? 1 : 0;
+}
+
 sub permissions {
     my $author = shift;
     my ($obj) = @_;
