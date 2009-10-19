@@ -444,7 +444,7 @@ function open_dialog(href, opts) {
             .addClass('loading')
             .appendTo($('.mt-dialog'));
     }
-    $('body').css('overflow', 'hidden');
+    $('body').addClass('has-dialog');
     $('.mt-dialog').show();
     $('.mt-dialog').bind('close', function(event, fn) {
         fn(event);
@@ -465,7 +465,7 @@ function open_dialog(href, opts) {
 };
 
 function close_dialog(url, fn) {
-    $('body').css('overflow', '');
+    $('body').removeClass('has-dialog');
     $('.mt-dialog-overlay').hide();
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
