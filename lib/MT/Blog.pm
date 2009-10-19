@@ -1273,14 +1273,12 @@ sub template_set {
     $blog->SUPER::template_set;
 }
 
-sub get_values {
+sub to_hash {
     my $obj = shift;
-    my $hash = $obj->SUPER::get_values(@_);
-
-    # site_url and archive_url must be accesed through their accessors.
-    $hash->{"site_url"}    = $obj->site_url;
-    $hash->{"archive_url"} = $obj->archive_url
-        if exists( $hash->{"archive_url"} );
+    my $hash = $obj->SUPER::to_hash( @_ );
+    $hash->{'blog.site_url'} = $obj->site_url;
+    $hash->{'blog.archive_url'} = $obj->archive_url
+        if exists( $hash->{'blog.archive_url'} );
     return $hash;
 }
 
