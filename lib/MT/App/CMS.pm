@@ -1577,6 +1577,13 @@ sub core_menus {
             view       => [ "blog", 'website', 'system' ],
             display    => 0,
         },
+        'feedback:view_ping' => {
+            order      => 10010,
+            mode       => 'view',
+            args       => { _type => 'ping' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
 
         'design:template' => {
             label             => "Templates",
