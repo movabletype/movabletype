@@ -16,17 +16,20 @@ use vars qw( %Lexicon );
 ## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
 	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'No se encontró el directorio mt-static. Por favor, configure el \'StaticFilePath\' para continuar.',
 	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => 'No se pudo crear el directorio [_1] - Compruebe que el servidor web puede escribir en la carpeta \'themes\'.',
-	'Error downloading image: [_1]' => 'Error descargando imagen: [_1]',
 	'Successfully applied new theme selection.' => 'Se aplicó con éxito la nueva selección de estilo.',
 	'Invalid URL: [_1]' => 'URL no válida: [_1]',
+	'(Untitled)' => '(sin título)', # Translate - Case
 
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a Style' => 'Seleccione un estilo',
+	'Select a [_1] Style' => 'Seleccionar un estilo de [_1]', # Translate - New
 	'3-Columns, Wide, Thin, Thin' => '3 columnas, ancha, delgada, delgada',
 	'3-Columns, Thin, Wide, Thin' => '3 columnas, delgada, ancha, delgada',
+	'3-Columns, Thin, Thin, Wide' => '3 columnas, delgada, delgada, ancha',
 	'2-Columns, Thin, Wide' => '2 columnas, delgada, ancha',
 	'2-Columns, Wide, Thin' => '2 columnas, ancha, delgada',
-	'2-Columns, Wide, Medium' => '2 columnas, ancha, media', # Translate - New
+	'2-Columns, Wide, Medium' => '2 columnas, ancha, media',
+	'2-Columns, Medium, Wide' => '2 columnas, media, ancha',
+	'1-Column, Wide, Bottom' => '1 columna, ancha, abajo',
 	'None available' => 'Ninguno disponible',
 	'Applying...' => 'Aplicando...',
 	'Apply Design' => 'Aplicar diseño',
@@ -47,12 +50,10 @@ use vars qw( %Lexicon );
 	'Selected Design' => 'Diseño seleccionado',
 	'Layout' => 'Disposición',
 
-## plugins/StyleCatcher/stylecatcher.pl
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos a su blog fácilmente. Para más información sobre los estilos de Movable Type, o para encontrar más repositorios de estilos, visite la página de <a href=\'http://www.sixapart.com/movabletype/styles\'>estilos de Movable Type</a>.',
+## plugins/StyleCatcher/config.yaml
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcher le permite navegar fácilmente por los estilos y aplicarlos en el blog con un par de clics.', # Translate - New
 	'MT 4 Style Library' => 'Librería de estilos de MT 4',
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable Type.',
-	'MT 3 Style Library' => 'Librería de estilos de MT 3',
-	'A collection of styles compatible with Movable Type 3.3+ default templates.' => 'Una colección de estilos compatible con las plantillas predefinidas de Movable 3.3+.',
 	'Styles' => 'Estilos',
 );
 
