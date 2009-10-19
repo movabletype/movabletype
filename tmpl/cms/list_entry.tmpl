@@ -220,7 +220,7 @@ function init()
                 <span id="filter-category_id" style="display: none">
                     <select id="category_id-val" name="filter_val" onchange="enableFilterButton()">
         <mt:loop name="category_loop">
-                        <option value="<mt:var name="category_id">"><mt:var name="category_label_spacer"><mt:var name="category_label"></option>
+                        <option value="<mt:var name="category_id">"><mt:var name="category_label_spacer"><mt:var name="category_label" escape="html"></option>
         </mt:loop>
                     </select>
                 </span>
