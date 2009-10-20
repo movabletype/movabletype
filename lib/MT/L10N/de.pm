@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -780,26 +780,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/TheSchwartz/ExitStatus.pm
 	'Job Exit Status' => 'Job-Zielstatus',
-
-## lib/MT/L10N/ja.pm
-	'ååãããã¾ããã' => 'ååãããã¾ããã',
-
-## lib/MT/L10N/es.pm
-	'Geen label' => 'Geen label',
-	'Sin tÃ­tulo' => 'Sin tÃ­tulo',
-
-## lib/MT/L10N/fr.pm
-	'', # Translate - New # OK
-
-## lib/MT/L10N/ja.pm
-	'' => '', # Translate - New # OK
-	'Pas d\'Ã©tiquette' => 'Pas d\'Ã©tiquette',
-
-## lib/MT/L10N/de.pm
-	'Keine Bezeichnung' => 'Keine Bezeichnung', # Translate - New # OK
-
-## lib/MT/L10N/nl.pm
-	'Zonder label' => '', # Translate - New # OK
 
 ## lib/MT/ObjectDriver/Driver/DBD/SQLite.pm
 	'Can\'t open \'[_1]\': [_2]' => 'Kann \'[_1]\' nicht öffnen: [_2]',
