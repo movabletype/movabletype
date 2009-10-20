@@ -22,7 +22,6 @@ use vars qw( %Lexicon );
 
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'Die Attribute include_blogs, exclude_blog, blog_ids und blog_id können nicht gemeinsam verwendet werden.',
-	'The attribute exclude_blogs cannot take "all" for a value.' => '"All" ist kein gültiger Wert für exclude_blogs.',
 	'The value of the blog_id attribute must be a single blog ID.' => 'blog_id erfordert genau eine Blog-ID als Wert.',
 	'The value for the include_blogs/exclude_blogs attributes must be one or more blog IDs, separated by commas.' => 'include_blogs und exclude_blogs erfordern mindestens eine Blog-ID als Wert. Mehrere IDs sind per Kommata zu trennen.',
 	'Restoring MultiBlog rebuild trigger for blog #[_1]...' => 'Stelle MultiBlog-Trigger für Blog #[_1] wieder her....',
@@ -59,12 +58,12 @@ use vars qw( %Lexicon );
 	'Create Trigger' => 'Neuen Auslöser anlegen',
 	'Search Weblogs' => 'Weblogs suchen',
 	'When this' => 'Wenn',
-	'* All blogs in this website' => '* Alle Blogs dieser Website', # Translate - New # OK
-	'Select to apply this trigger to all blogs in this website.' => 'Diesen Trigger auf alle Blogs dieser Website anwenden', # Translate - New # OK
-	'* All websites and blogs in this system' => '* Alle Websites und Blogs dieser Installation', # Translate - New  # OK
-	'Select to apply this trigger to all websites and blogs in this system.' => 'Diesen Trigger auf alle Websites und Blogs dieser Installation anwenden', # Translate - New # OK	
-	'saves an entry/page' => 'ein Eintrag / eine Seite gespeichert wird', # Translate - New # OK
-	'publishes an entry/page' => 'ein Eintrag / eine Seite veröffentlicht wird', # Translate - New # OK
+	'* All blogs in this website' => '* Alle Blogs dieser Website',
+	'Select to apply this trigger to all blogs in this website.' => 'Diesen Trigger auf alle Blogs dieser Website anwenden',
+	'* All websites and blogs in this system' => '* Alle Websites und Blogs dieser Installation',
+	'Select to apply this trigger to all websites and blogs in this system.' => 'Diesen Trigger auf alle Websites und Blogs dieser Installation anwenden',
+	'saves an entry/page' => 'ein Eintrag / eine Seite gespeichert wird',
+	'publishes an entry/page' => 'ein Eintrag / eine Seite veröffentlicht wird',
 	'publishes a comment' => 'ein Kommentar veröffentlicht wird',
 	'publishes a TrackBack' => 'ein TrackBack veröffentlicht wird',
 	'rebuild indexes.' => 'Indizes neu aufbauen.',
