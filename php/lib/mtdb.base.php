@@ -113,7 +113,11 @@ abstract class MTDatabase {
             $sql = 'not in ( ' . implode(',', $blog_ids) . ' )';            
         } elseif ($args[include_blogs] == 'all') {
             $sql = '> 0';
-        } elseif ($args[include_blogs] == 'site') {
+        } elseif (
+             ($args[include_blogs] == 'site')
+          || ($args[include_blogs] == 'children')
+          || ($args[include_blogs] == 'siblings')
+        ) {
             $mt = MT::get_instance();
             $ctx = $mt->context();
             $blog = $ctx->stash('blog');
