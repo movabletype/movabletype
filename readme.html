@@ -88,50 +88,51 @@
     
     <div id="de" style="display: none;"><!-- Start German -->
         <h1>Willkommen zu Movable Type</h1>
-        <p>Vielen Dank, daß Sie sich für Movable Type entschieden haben. Hier finden Sie alles, was Sie zur Installation wissen müssen. Die Links führen zu weitergehenden Informationen.</p>
+        <p>Vielen Dank, daß Sie sich für Movable Type, die führende Plattform für Blogging und Website-Management, entschieden haben. Hier finden Sie alles, was Sie zur Installation wissen müssen. Die Links führen zu weitergehenden Informationen.</p>
 
-        <h2></h2>
+        <h2>Bevor Sie anfangen</h2>
         <p>Movable Type erfordert folgende Software:</p>
         <ul>
-          <li><p>Perl 5.8.1 oder höher</p></li>
-          <li><p>Einen Webserver (z.B. Apache oder Windows IIS)</p></li>
-          <li><p>Zugriff auf eine SQL_Datenbank (z.B. MySQL)</p></li>
-          <li><p>Folgende Perl-Module:</p>
+          <li><p>Perl 5.8.1 oder höher,</p></li>
+          <li><p>einen Webserver, z.B. Apache oder Windows IIS,</p></li>
+          <li><p>Zugriff auf eine SQL-Datenbank, z.B. auf MySQL, sowie</p></li>
+          <li><p>diese Perl-Module:</p>
             <ul>
               <li><a href="http://search.cpan.org/dist/DBI">DBI</a></li>
               <li><a href="http://search.cpan.org/dist/Image-Size">Image::Size</a></li>
               <li><a href="http://search.cpan.org/search?query=cgi-cookie&mode=module">CGI::Cookie</a></li>
             </ul>
-            <p><em>So finden Sie heraus, <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">welche Module bereits installiert sind</a> und <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">wie sie installiert werden</a>.</em></p>
+            <p><em>In der CPAN-Dokumentation ist beschrieben, <a href="http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules">wie Sie Perl-Module installieren</a> und wie Sie herausfinden,  <a href="http://www.cpan.org/misc/cpan-faq.html#How_installed_modules">welche Module bereits installiert sind</a>.</em></p>
         </ul>
 
         <h2>Eine vorhandene Movable Type-Installation aktualisieren</h2>
-        <p>Wenn Sie eine ältere Version auf Movable Type 5 aktualisieren wollen, sollten Sie vorher eine Sicherungskopie der vorhandenen Installation erstellen. Laden Sie danach die neue Movable Type-Dateien in Ihr vorhandenes Movable Type-Verzeichnis hoch und überschreiben Sie damit die alten Dateien. Laden Sie abschließend die Movable Type-Oberfläche wie gewohnt. Sie werden Schritt für Schritt durch den Aktualisierungsvorgang geführt.</p>
+        <p>Wenn Sie eine frühere Version auf Movable Type 5 aktualisieren möchten, sollten Sie zuerst eine Sicherungskopie der vorhandenen Installation und der zugehörigen Datenbank erstellen. So können Sie die vorhandene Installation wiederherstellen, falls während der Aktualisierung Schwierigkeiten auftreten.</p>
+			<p>Laden Sie danach die neue Movable Type-Dateien in Ihr  Movable Type-Verzeichnis hoch und überschreiben Sie die vorhandenen  Dateien. Rufen Sie Movable Type wie gewohnt auf. Sie werden Schritt für Schritt durch den Aktualisierungsvorgang geführt.</p>
 
         <h2>Movable Type neu installieren</h2>
-        <p>Vor dem Installieren:</p>
+        <p>Vor der Installation:</p>
         <ol>
-          <li>Laden Sie alle zu Movable Type gehörenden Dateien auf Ihren Webserver hoch. Wählen Sie dabei einen mit dem Webbrowser erreichbaren Ordner. Normalerweise ist das der Ordner "mt" im Wurzelverzeichnis Ihrer Website.</li>
-          <li>Setzen Sie mittels chmod alle .cgi-Dateien im Movable Type-Verzeichnis (mt.cgi, mt-search.cgi usw.) auf <a href="http://www.elated.com/articles/understanding-permissions/">vom Webserver ausführbar</a>.</li>
-          <li>Stellen Sie sicher, daß im Ordner "mt" befindliche CGI-Skripte <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ausgeführt werden können</a>.</li>
-          <li>Öffnen Sie den Ordner "mt" in Ihrem Webbrowser (z.B. <tt>http://www.meineseite.de/mt/</tt>).
-          <li>Es erscheint eine Willkommensnachricht und Sie werden Schritt für Schritt durch den Installationsvorgang geführt. Erscheint die Willkommensnachricht nicht, beachten Sie die Hinweise im nächsten Abschnitt.</li>
+			<li>Laden Sie alle zu Movable Type gehörenden Dateien auf Ihren Webserver hoch. Wählen Sie dazu ein Verzeichnis, das mit Ihrem Webbrowser erreichbar ist und in dem CGI-Skripte ausgeführt werden können. Wir empfehlen, daß Movable Type-System und damit erstellte Websites in unterschiedlichen Verzeichnissen abzulegen. Typischerweise wird Movable Type-Ordner in einem Ordner 'mt' im Wurzelverzeichnis der Website installiert.</li>
+			<li>Stellen Sie sicher, daß im Movable Type-Ordner befindliche CGI-Skripte <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ausgeführt werden können</a>.</li>
+			 <li>Setzen Sie mittels chmod alle .cgi-Dateien im Movable Type-Ordner (mt.cgi, mt-search.cgi etc.) auf <a href="http://www.elated.com/articles/understanding-permissions/">vom Webserver ausführbar</a>.</li>
+			<li>Rufen Sie den Movable Type-Ordner mit Ihrem Webbrowser auf (z.B. <tt>http://www.meineseite.de/mt/</tt>).
+          <li>Es erscheint eine Willkommensnachricht und Sie werden Schritt für Schritt durch den Installationsvorgang geführt. Erscheint die Willkommensnachricht nicht, beachten Sie bitte die Hinweise im nächsten Abschnitt.</li>
         </ol>
 
-        <h2>Probleme bei der Installation</h2>
-        <h3>Statischer Webpfad</h3>
-        <p>Bei manchen Webservern oder Konfigurationen dürfen statische Dateien wie Javascript-, CSS- und Bilddateien nicht in einem cgi-bin-Ordner gespeichert werden. Wurde Movable Type in einem solchen installiert, sind die statischen Dateien in einem anderen vom Webbrowser erreichbaren Ordner abzulegen und dieser in der Movable Type-Konfiguration anzugeben: <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">mt-static-Ordner konfigurieren</a>.</p>
+        <h2>Schwierigkeiten bei der Installation</h2>
+        <h3>Wahl des statischen Webpfads</h3>
+        <p>Einige Webserver sind so konfiguriert, daß Verzeichnisse, in denen CGI-Skripte ausgeführt werden können, keine statischen Dateien abgelegt sein dürfen. Wenn Sie Movable Type im Verzeichnis cgi-bin installiert haben, müssen Sie daher den Ordner 'mt-static' möglicherweise an einer anderer vom Webserver erreichbaren Stelle ablegen. Tragen Sie diese anschließend <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">in der Movable Type-Konfigurationsdatei ein</a>.</p>
 
         <h3>Interne Serverfehler</h3>
         <p>Kommt es zu internen Serverfehlern ("Error 500 - Internal Server Error") ist ggf. der Webserver anders zu konfigurieren. Nähere Informationen finden Sie in der <a href="http://www.movabletype.org/documentation/mt5/install/">Installationsanleitung</a> und der <a href="http://www.sixapart.com/movabletype/kb/">Wissensdatenbank</a>.</p>
 
         <h3>Weitere Hilfe</h3>
-        <p>Brauchen Sie weitere Informationen oder Unterstützung? Rufen Sie bitte den <a href="http://www.movabletype.org/documentation/mt5/install/">Detailed Installation Guide</a> (in englischer Sprache) auf.</p>
+        <p>Brauchen Sie weitere Informationen oder Unterstützung? Rufen Sie bitte unsere <a href="http://www.movabletype.org/documentation/mt5/install/">detaillierte Installationsanleitung </a> auf.</p>
     </div><!-- End German -->
     
     <div id="es" style="display: none;"><!-- Start Spanish -->
         <h1>Bienvenido a Movable Type</h1>
-        <p>Gracias por elegir Movable Type, la solución ideal para todos sus blogs. Este fichero le informa cómo ponerse en marcha; haga clic en las secciones destacadas para más información sobre esos temas.</p>
+        <p>Gracias por elegir Movable Type, la solución ideal para todos sus blogs. Este fichero le informa cómo ponerse en marcha; haga clic en las secciones destacadas para más información sobre esostemas.</p>
 
         <h2>Antes de empezar</h2>
         <p>Movable Type necesita las siguientes aplicaciones:</p>
@@ -154,15 +155,15 @@
         <h2>Instalación de Movable Type</h2>
         <p>Antes de instalar Movable Type:</p>
         <ol>
-          <li>Transfiere todos los ficheros de Movable Type a una carpeta accesible a través de su navegador. (Generalmente, esta carpeta se llama 'mt' y está situada en el directorio raíz de su web).</li>
-          <li>Asegúrese de que cada fichero .cgi (p.e. mt.cgi, mt-search.cgi, etc) que se encuentra en el directorio de Movable Type tiene los <a href="http://www.elated.com/articles/understanding-permissions/">permisos de ejecución</a> habilitados.</li>
+          <li>Transfiera todos los ficheros de Movable Type a una carpeta accesible a través de su navegador. (Generalmente, esta carpeta se llama 'mt' y está situada en el directorio raíz de su web).</li>
           <li>Asegúrese de que la carpeta 'mt' que contiene los ficheros transferidos de Movable Type tiene permisos de <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">ejecución de scripts CGI</a>.</li>
+          <li>Asegúrese de que cada fichero .cgi (p.e. mt.cgi, mt-search.cgi, etc) que se encuentra en el directorio de Movable Type tiene los <a href="http://www.elated.com/articles/understanding-permissions/">permisos de ejecución</a> habilitados.</li>
           <li>Abra dicha carpeta en su navegador (p.e. <tt>http://www.misitioweb.com/mt/</tt>).
           <li>Verá una pantalla de bienvenida a Movable Type, que le guiará por el proceso de instalación. Si la pantalla de bienvenida no aparece, consulte nuestra Guía de Resolución de Problemas.</li>
-        </ol>
+	  </ol>
 
         <h2>Resolución de Problemas de Movable Type</h2>
-        <h3>Configuración de la ruta al web estático</h3>
+        <h3>Configuración de la ruta del web estático</h3>
         <p>En algunos servidores web (y en algunas configuraciones), los ficheros estáticos como los de javascript, hojas de estilo e imágenes, no están permitidos dentro de un directorio cgi-bin. Si instaló Movable Type en un directorio cgi-bin, deberá situar los ficheros estáticos en otro lugar accesible por el web. Consulte nuestra documentación sobre cómo configurar el <a href="http://www.sixapart.com/movabletype/kb/installation/images_styles_a.html">directorio mt-static</a>.</p>
 
         <h3>Errores internos del servidor</h3>
@@ -174,7 +175,7 @@
     
     <div id="fr" style="display: none;"><!-- Start French -->
         <h1>Bienvenue dans Movable Type</h1>
-        <p>Merci d'avoir choisi Movable Type, la solution privilégiée pour tous vos besoins en blogs. Ce fichier va vous montrer comment démarrer. Cliquez sur les sections surlignées pour avoir plus d'information sur ce sujet.</p>
+        <p>Merci d'avoir choisi Movable Type, la solution privilégiée pour tous vos besoins de publication. Ce fichier va vous montrer comment démarrer. Cliquez sur les sections surlignées pour avoir plus d'information sur ce sujet.</p>
 
         <h2>Avant de démarrer</h2>
         <p>Movable Type nécessite les applications suivantes:</p>
@@ -235,7 +236,7 @@
         </ul>
 
         <h2>Movable Type のアップグレード</h2>
-        <p>以前のバージョンからMovable Type 5へアップグレードする場合は、まず現在の環境のバックアップを作成してください。特に、データベースのバックアップは重要です。アップグレード中に何らかの問題が発生した場合に、以前の状態に復元するために必要です。Movable Typeのアップグレードは、以前のバージョンを上書きする方法と、別フォルダにアップロードする方法があります。いずれの場合も、アップロードしたフォルダにアクセスすると、Movable Typeは自動的にアップグレードを開始します。詳しくは、<a href="http://www.movabletype.jp/documentation/mt5/upgrade/">アップグレードガイド</a>をご覧ください。</p>
+        <p>以前のバージョンからMovable Type 5へアップグレードする場合は、まず現在の環境のバックアップを作成してください。特に、データベースのバックアップは重要です。アップグレード中に何らかの問題が発生した場合に、以前の状態に復元するために必要です。Movable Typeのアップグレードは、以前のバージョンを上書きする方法と、別フォルダにアップロードする方法があります。いずれの場合も、アップロードしたフォルダにアクセスすると、Movable Typeは自動的にアップグレードを開始します。詳しくは、<a href="http://www.movabletype.jp/documentation/mt5/upgrade/">アップグレード・ガイド</a>をご覧ください。</p>
 
         <h2>Movable Type のインストール</h2>
         <p>Movable Type をインストールする前に</p>
@@ -260,7 +261,7 @@
     
     <div id="nl" style="display: none;"><!-- Start Dutch -->
         <h1>Welkom bij Movable Type</h1>
-        <p>Bedankt om voor Movable Type te kiezen, de beste oplossing voor al uw noden in verband met bloggen. Dit bestand zal u tonen hoe u van start kunt gaan; klik op de gemarkeerde secties voor meer informatie over die onderwerpen.</p>
+        <p>Bedankt om voor Movable Type te kiezen, de beste oplossing voor al uw noden qua websitebeheer en bloggen. Dit bestand zal u tonen hoe u van start kunt gaan; klik op de gemarkeerde secties voor meer informatie over die onderwerpen.</p>
 
         <h2>Voor u begint</h2>
         <p>Movable Type vereist volgende applicaties:</p>
@@ -283,9 +284,9 @@
         <h2>Movable Type installeren</h2>
         <p>Voor u Movable Type installeert:</p>
         <ol>
-          <li>Upload alle bestanden van Movable Type naar een map die u kunt bereiken via uw webbrowser. (Meestal is de naam die men aan deze map geeft 'mt', in de hoofdmap van de website).</li>
-          <li>Verzeker u ervan dat alle .cgi bestanden (bv. mt.cgi, mt-search.cgi, etc) die te vinden zijn in de Movable Type map de <a href="http://www.elated.com/articles/understanding-permissions/">execute permissie</a> hebben.</li>
+          <li>Upload alle bestanden van Movable Type naar een map die u kunt bereiken via uw webbrowser.  Wij raden aan Movable Type te installeren in een aparte map, dus niet op dezelfde plaats waar de gepubliceerde blog(s) of website(s) zullen komen. Meestal is de naam die men aan deze map geeft 'mt', in de hoofdmap van de website, of een andere map die zo is geconfigureerd dat cgi scripts er mogen uitgevoerd worden.</li>
           <li>Controleer of de 'mt' map die de geuploade Movable Type bestanden bevat <a href="http://httpd.apache.org/docs/2.0/howto/cgi.html#nonscriptalias">is ingesteld om CGI scripts te laten uitvoerenen</a>.</li>
+          <li>Verzeker u ervan dat alle .cgi bestanden (bv. mt.cgi, mt-search.cgi, etc) die te vinden zijn in de Movable Type map de <a href="http://www.elated.com/articles/understanding-permissions/">execute permissie</a> hebben.</li>
           <li>Open de map in uw webbrowser (m.a.w. surf naar <tt>http://www.mijwebsite.com/mt/</tt>).
           <li>Er verschijnt een Movable Type verwelkomingsscherm dat u door het intstallatieproces zal leiden. Als het welkomstscherm niet verschijnt, kijk dan in onze troubleshooting gids hieronder.</li>
         </ol>
