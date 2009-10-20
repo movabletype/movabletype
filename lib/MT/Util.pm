@@ -960,12 +960,8 @@ sub make_unique_basename {
     my $i = 1;
     my $base_copy = $base;
 
-    my $class = ref $entry; 
-    while ($class->exist({ blog_id => $blog->id,
-                           basename => $base })) {
-        $base = $base_copy . '_' . $i++;
-    }
-    $base;
+    my $class = ref $entry;
+    return _get_basename( $class, $base, $blog );
 }
 
 sub make_unique_category_basename {
@@ -987,11 +983,7 @@ sub make_unique_category_basename {
     my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    while ($cat_class->exist({ blog_id => $cat->blog_id,
-                               basename => $base })) {
-        $base = $base_copy . '_' . $i++;
-    }
-    $base;
+    return _get_basename( $cat_class, $base, $blog );
 }
 
 sub make_unique_author_basename {
@@ -1018,10 +1010,67 @@ sub make_unique_author_basename {
     my $base_copy = $base;
 
     my $author_class = ref $author;
-    while ($author_class->exist({ basename => $base })) {
-        $base = $base_copy . '_' . $i++;
+    return _get_basename( $author_class, $base );
+}
+
+sub _get_basename {
+    my ( $class, $base, $blog ) = @_;
+    my %terms;
+    my $cache_key;
+    if ( $blog ) {
+        $cache_key = sprintf '%s:%s:%s:%s', 'BN', $class, $blog->id, $base;
+        $terms{blog_id} = $blog->id if $blog;
     }
-    $base;
+    else {
+        $cache_key = sprintf '%s:%s:%s', 'BN', $class,  $base;
+    }
+    my $last = MT->request($cache_key);
+    if ( defined $last ) {
+        $last++;
+        my $test = $class->load({
+            basename => $base . '_' . $last,
+            %terms,
+        });
+        if ( !$test ) {
+            MT->request( $cache_key, $last );
+            return $base . '_' . $last;
+        }
+    }
+    else {
+        ## try to load without number suffix.
+        my $test = $class->load({ basename => $base, %terms });
+        if ( !$test ) {
+            return $base;
+        }
+    }
+    my $base_num = 1;
+    my $last_id;
+    while (1) {
+        my %args;
+        $args{start_val} = $last_id if defined $last_id;
+        my $existing = $class->load({
+            basename  => { like => $base . '_%' },
+            %terms, }, {
+            limit     => 1,
+            sort      => 'id',
+            direction => 'descend',
+            %args,
+        });
+        last if !$existing;
+        $last_id = $existing->id;
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+            my $num = $1;
+            next if !$num;
+            $base_num = $num + 1;
+            my $test = $class->load({
+                basename => $base . '_' . $base_num,
+                %terms,
+            });
+            last if !$test;
+        }
+    }
+    MT->request( $cache_key, $base_num );
+    return $base . '_' . $base_num;
 }
 
 sub archive_file_for {
