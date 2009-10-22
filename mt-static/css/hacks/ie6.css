@@ -236,7 +236,6 @@ html#dialog {
 .msg, 
 .plugin, 
 .theme, 
-.theme-thumbnail, 
 .field-content ul, 
 #selector-nav .selector ul, 
 #selector-nav .selector ul li, 
@@ -259,6 +258,7 @@ ul#asset-list li,
     zoom: 1;
 }
 
-#template-options .field-content { 
+#template-options .field-content, 
+.theme-thumbnail { 
     zoom: 0;
 }
