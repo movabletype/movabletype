@@ -4484,7 +4484,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog Preferences' => 'ブログの設定',
 
 ## tmpl/cms/theme_export_replace.tmpl
-	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Folder Name?' => 'テーマをエクスポートするフォルダ([_1])は既に存在します。上書き保存するか、キャンセルしてフォルダ名を変更してください。',
+	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Basename?' => 'テーマをエクスポートするフォルダ([_1])は既に存在します。上書き保存するか、キャンセルして出力ファイル名を変更してください。',
 	'Overwrite' => '上書き保存',
 
 ## tmpl/cms/recover_password_result.tmpl

@@ -3673,7 +3673,7 @@ que la dirección provista es correcta y le pertenece.',
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'El módulo de Perl necesario para la autentificación de comentaristas mendiante OpenID (Digest::SHA1) no está instalado.',
 
 ## tmpl/cms/theme_export_replace.tmpl
-	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Folder Name?' => 'La carpeta para la exportación del tema ya existe \'[_1]\'. Puede sobreescribir un tema existente, cancelar o cambiar el nombre de la carpeta.',
+	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Basename?' => 'La carpeta para la exportación del tema ya existe \'[_1]\'. Puede sobreescribir un tema existente, cancelar o cambiar el nombre de la carpeta.',
 	'Overwrite' => 'Sobreescribir',
 
 ## tmpl/cms/list_theme.tmpl

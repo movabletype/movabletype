@@ -3677,7 +3677,7 @@ use vars qw( @ISA %Lexicon );
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'Le module Perl nécessaire pour l\'authentification OpenID (Digest::SHA1) est manquant.',
 
 ## tmpl/cms/theme_export_replace.tmpl
-	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Folder Name?' => 'Le répertoire d\'export \'[_1]\' existe déjà. Vous pouvez le remplacer ou entrer un autre nom de répertoire.',
+	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Basename?' => 'Le répertoire d\'export \'[_1]\' existe déjà. Vous pouvez le remplacer ou entrer un autre nom de répertoire.',
 	'Overwrite' => 'Remplacer',
 
 ## tmpl/cms/list_theme.tmpl

@@ -3690,7 +3690,7 @@ use vars qw( @ISA %Lexicon );
 	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'De perl module die vereist is voor authenticatie van reageerders via OpenID (Digest::SHA1) ontbreekt.',
 
 ## tmpl/cms/theme_export_replace.tmpl
-	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Folder Name?' => 'Exportmap voor thema bestaat al \'[_1]\'.  U kunt een bestaand thema overschrijven, of annuleren om de naam van de map aan te passen.',
+	'Export theme folder already exists \'[_1]\'. You can overwrite a existing theme, or cancel to change the Basename?' => 'Exportmap voor thema bestaat al \'[_1]\'.  U kunt een bestaand thema overschrijven, of annuleren om de naam van de map aan te passen.',
 	'Overwrite' => 'Overschrijven',
 
 ## tmpl/cms/list_theme.tmpl
