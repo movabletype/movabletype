@@ -252,11 +252,11 @@ sub _v5_migrate_mtview {
 sub _v5_migrate_default_site {
     my $self = shift;
 
-
     my $site_url = MT->config('DefaultSiteURL');
     my $site_path = MT->config('DefaultSiteRoot');
+    my $default_id = MT->config('NewUserDefaultWebsiteId');
 
-    if ( $site_url && $site_path ) {
+    if ( $site_url && $site_path && !$default_id) {
         $self->progress($self->translate_escape('Migrating DefaultSiteURL/DefaultSiteRoot to website...'));
 
         my $class = MT->model('website');
@@ -406,7 +406,10 @@ sub _v5_generate_websites_place_blogs {
         my $site_url = "http$ssl://$domain/";
         my $website = $website_class->load( { site_url => $site_url } );
         unless ( $website ) {
-            $website = $website_class->create_default_website(MT->translate('New WebSite [_1]', "http$ssl://$domain/"));
+            $website = $website_class->create_default_website(
+                MT->translate('New WebSite [_1]', "http$ssl://$domain/"),
+                MT->config->DefaultWebsiteTheme
+            );
             $website->site_path($blog->site_path);
             $website->site_url("http$ssl://$domain/");
             $website->save

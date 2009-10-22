@@ -1006,7 +1006,7 @@ sub core_list_filters {
                 },
             },
             my_posts => {
-                label   => 'TrackBacks on my entries',
+                label   => 'TrackBacks on my entries/pages',
                 order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
@@ -1095,7 +1095,7 @@ sub core_list_filters {
                 },
             },
             my_posts => {
-                label   => 'Comments on my entries',
+                label   => 'Comments on my entries/pages',
                 order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;

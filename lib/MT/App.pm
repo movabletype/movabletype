@@ -1996,19 +1996,6 @@ sub login {
         # $author->last_login();
         # $author->save;
 
-        ## update session so the user will be counted as active
-        require MT::Session;
-        my $sess_active
-            = MT::Session->load( { kind => 'UA', name => $author->id } );
-        if ( !$sess_active ) {
-            $sess_active = MT::Session->new;
-            $sess_active->id( make_magic_token() );
-            $sess_active->kind('UA');    # UA == User Activation
-            $sess_active->name( $author->id );
-        }
-        $sess_active->start(time);
-        $sess_active->save;
-
         return ( $author, $new_login );
     }
     else {

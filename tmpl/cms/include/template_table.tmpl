@@ -28,7 +28,7 @@
         <button
             accesskey="a"
             title="<__trans phrase="Publish selected templates (a)">"
-            class="mt-publish-<mt:var name="template_type" default="template">-templates"
+            class="mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
             ><__trans phrase="Publish"></button>
     </mt:if>
     </mt:if>
@@ -37,23 +37,23 @@
         <button
             accesskey="a"
             title="<__trans phrase="Publish selected templates (a)">"
-            class="mt-publish-<mt:var name="template_type" default="template">-templates"
+            class="mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
             ><__trans phrase="Publish"></button>
     <mt:else if name="template_type" eq="archive">
         <button
             accesskey="a"
             title="<__trans phrase="Publish selected templates (a)">"
-            class="mt-publish-<mt:var name="template_type" default="template">-templates"
+            class="mt-publish-<mt:var name="template_type" default="template" escape="html">-templates"
             ><__trans phrase="Publish"></button>
     </mt:if>
     <button
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-        class="mt-delete-<mt:var name="template_type" default="template">-templates"
+        class="mt-delete-<mt:var name="template_type" default="template" escape="html">-templates"
         ><__trans phrase="Delete"></button>
     </mt:unless></mt:unless>
 </mt:setvarblock>
-<mt:setvarblock name="table_id"><mt:var name="template_type" default="template">-listing</mt:setvarblock>
+<mt:setvarblock name="table_id"><mt:var name="template_type" default="template" escape="html">-listing</mt:setvarblock>
 <mtapp:listing id="$table_id" hide_pager="1" class="show-all" listing_class="show-actions-bar" type="template">
     <mt:if __first__>
         <mt:setvarblock name="table_header">
@@ -182,16 +182,16 @@
     </div>
 </mtapp:listing>
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.mt-delete-<mt:var name="template_type" default="template">-templates').mtDeleteItems({
-        id: '<$mt:var name="template_type" default="template"$>-listing-form',
+    jQuery('button.mt-delete-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtDeleteItems({
+        id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
         plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
     });
-    jQuery('button.mt-publish-<mt:var name="template_type" default="template">-templates').mtPublishItems({
-        id: '<$mt:var name="template_type" default="template"$>-listing-form',
+    jQuery('button.mt-publish-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtPublishItems({
+        id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
         singular: '<__trans phrase="template" escape="js">',
         plural: '<__trans phrase="templates" escape="js">',
-        mode: <mt:if name="template_type">'publish_<mt:var name="template_type">_templates'<mt:else>'publish_templates_from_search'</mt:if>,
+        mode: <mt:if name="template_type">'publish_<mt:var name="template_type" escape="js">_templates'<mt:else>'publish_templates_from_search'</mt:if>,
         args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to publish" escape="js">'
     });

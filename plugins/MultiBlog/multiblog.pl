@@ -337,7 +337,6 @@ sub save_config {
 
             my $d = $plugin->get_config_value($name, $scope) || {};
             $d->{$trigger}{$blog_id}{$action} = 1;
-            print STDERR Data::Dumper::Dumper($d);
             $plugin->set_config_value($name, $d, $scope);
         }
     }

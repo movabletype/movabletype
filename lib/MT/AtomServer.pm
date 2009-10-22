@@ -203,18 +203,6 @@ sub authenticate {
     return $app->auth_failure(403, 'X-WSSE PasswordDigest is incorrect')
         unless $expected eq $auth->{PasswordDigest};
     $app->{user} = $user;
-
-    ## update session so the user will be counted as active
-    require MT::Session;
-    my $sess_active = MT::Session->load( { kind => 'UA', name => $user->id } );
-    if (!$sess_active) {
-        $sess_active = MT::Session->new;
-        $sess_active->id($app->make_magic_token());
-        $sess_active->kind('UA'); # UA == User Activation
-        $sess_active->name($user->id);
-    }
-    $sess_active->start(time);
-    $sess_active->save;
     return 1;
 }
 

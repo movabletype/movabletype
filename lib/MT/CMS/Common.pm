@@ -1151,11 +1151,18 @@ sub delete {
         ) or return $app->publish_error();
     }
     $app->run_callbacks( 'rebuild', MT::Blog->load($blog_id) );
-    $app->add_return_arg(
-        $type eq 'ping'
-        ? ( saved_deleted_ping => 1 )
-        : ( saved_deleted => 1 )
-    );
+
+    if ( $not_deleted > 0 ) {
+        $app->add_return_arg( 'not_deleted' => 1 );
+    }
+    else {
+        $app->add_return_arg(
+            $type eq 'ping'
+            ? ( saved_deleted_ping => 1 )
+            : ( saved_deleted => 1 )
+        );
+    }
+
     if ( $q->param('is_power_edit') ) {
         $app->add_return_arg( is_power_edit => 1 );
     }
@@ -1164,8 +1171,6 @@ sub delete {
             error => $app->translate("System templates can not be deleted.") );
     }
 
-    $app->add_return_arg( 'not_deleted' => 1 )
-        if $not_deleted > 0;
     $app->call_return;
 }
 

@@ -22,14 +22,6 @@ sub system_check {
     }
 
     my %param;
-    # licensed user count: someone who has logged in within 90 days  
-    my $sess_class = $app->model('session');  
-    my $from = time - ( 60 * 60 * 24 * 90 + 60 * 60 * 24 );  
-    $sess_class->remove(
-        { kind => 'UA', start => [ undef, $from ] },  
-        { range => { start => 1 } }
-    );  
-    $param{licensed_user_count} = $sess_class->count( { kind => 'UA' } );
 
     my $author_class = $app->model('author');
     $param{user_count} = $author_class->count(

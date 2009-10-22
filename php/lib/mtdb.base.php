@@ -129,6 +129,8 @@ abstract class MTDatabase {
                 foreach($blogs as $b) {
                     array_push($ids, $b->id);
                 }
+                if ( $args[include_with_website] )
+                    array_push($blog_ids, $blog->parent_id);
                 if (count($blog_ids)) {
                     $sql = 'in ( ' . implode(',', $blog_ids) . ' )';
                 } else {
@@ -263,13 +265,13 @@ abstract class MTDatabase {
 
     public function fetch_blogs($args = null) {
         if ($blog_ids = $this->include_exclude_blogs($args))
-            $blog_filter = ' and blog_id ' . $blog_ids;
+            $blog_filter = 'blog_id ' . $blog_ids;
 
         if (!isset($args['class']))
             $args['class'] = 'blog';
 
-        $where = "blog_class = '".$args['class']."'";
-        $where .= $blog_filter;
+        $where = $blog_filter;
+        $where .= $args['class'] == '*' ? "" : " and blog_class = '".$args['class']."'";
         $where .= ' order by blog_name';
 
         require_once('class.mt_blog.php');

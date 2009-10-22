@@ -115,7 +115,7 @@ function init() {
                 <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="parent_website" onchange="changeParent(this)">
                     <option value="0"><__trans phrase="Please choose parent website."></option>
                     <mt:loop name="all_websites">
-                        <option value="<mt:var name="website_id">"<mt:if name="parent_id" eq="$website_id"> selected</mt:if>> <mt:var name="website_name"></option>
+                        <option value="<mt:var name="website_id">"<mt:if name="parent_id" eq="$website_id"> selected</mt:if>> <mt:var name="website_name" escape="html"></option>
                     </mt:loop>
                 </select>
             </mtapp:setting>
@@ -169,7 +169,7 @@ function init() {
                 <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
             <mt:if name="old_archive_url_subdomain">
                 <div class="archive-url">
-                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text extra-path" value="<mt:var name="old_archive_url" escape="html">" /></span>
+                    <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text extra-path" value="<mt:var name="old_archive_url_path" escape="html">" /></span>
                 </div>
                 <div class="use-subdomain">
                     <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain_<mt:var name="id">"><__trans phrase="Use subdomain"></label>

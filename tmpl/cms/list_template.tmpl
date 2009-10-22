@@ -70,7 +70,7 @@ function showTable(name) {
 var tableSelect = [];
 function init() {
 <mt:loop name="template_type_loop">
-    tableSelect.push(new TC.TableSelect( '<mt:var name="template_type" escape="html">-listing-table' ));
+    tableSelect.push(new TC.TableSelect( '<mt:var name="template_type" escape="js">-listing-table' ));
     tableSelect[tableSelect.length-1].rowSelect = true;
 </mt:loop>
     var name = (window.location.hash && window.location.hash.match( /^#/ ) ) ? window.location.hash.substr(1) : "all";

@@ -118,8 +118,8 @@ function blurDateFields(s) {
     <input type="hidden" name="do_search" value="" />
     <input type="hidden" name="do_replace" value="" />
 
-    <input type="hidden" name="filter" value="<mt:var name="filter">" />
-    <input type="hidden" name="filter_val" value="<mt:var name="filter_val">" />
+    <input type="hidden" name="filter" value="<mt:var name="filter" escape="html">" />
+    <input type="hidden" name="filter_val" value="<mt:var name="filter_val" escape="html">" />
 
 <div id="search-tabs">
     <ul id="search-tabs-list" class="search-tabs-list tabs"><mt:loop name="search_tabs">

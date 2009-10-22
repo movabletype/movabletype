@@ -370,8 +370,8 @@ sub _feed_ping {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog TrackBacks', $blog->name )
-        : $app->translate("All Weblog TrackBacks")
+        ? $app->translate( '[_1] TrackBacks', $blog->name )
+        : $app->translate("All TrackBacks")
     };
 
     # user has permissions to view this type of feed... continue
@@ -428,8 +428,8 @@ sub _feed_comment {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Comments', $blog->name )
-        : $app->translate("All Weblog Comments")
+        ? $app->translate( '[_1] Comments', $blog->name )
+        : $app->translate("All Comments")
     };
 
     # user has permissions to view this type of feed... continue
@@ -483,8 +483,8 @@ sub _feed_entry {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Entries', $blog->name )
-        : $app->translate("All Weblog Entries")
+        ? $app->translate( '[_1] Entries', $blog->name )
+        : $app->translate("All Entries")
     };
 
     # user has permissions to view this type of feed... continue
@@ -545,8 +545,8 @@ sub _feed_blog {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Activity', $blog->name )
-        : $app->translate("All Weblog Activity")
+        ? $app->translate( '[_1] Activity', $blog->name )
+        : $app->translate("All Activity")
     };
 
     # user has permissions to view this type of feed... continue
@@ -660,8 +660,8 @@ sub _feed_page {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Pages', $blog->name )
-        : $app->translate("All Weblog Pages")
+        ? $app->translate( '[_1] Pages', $blog->name )
+        : $app->translate("All Pages")
     };
 
     # user has permissions to view this type of feed... continue

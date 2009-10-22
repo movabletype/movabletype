@@ -173,23 +173,32 @@ function multiblog_filter_blogs_from_args(&$ctx, &$args) {
         return false;
 
     # exclude_blogs="all" is not allowed
-    if ($excl and ($excl == 'all'))
+    if ($excl and (
+        $excl == 'all'
+     or $excl == 'site'
+     or $excl == 'children'
+     or $excl == 'siblings'
+    ))
         return false; 
 
     # blog_id attribute only accepts a single blog ID
     if ($args['blog_id'] and !preg_match('/^\d+$/', $args['blog_id']))
         return false;
 
+    $attr = $incl ? 'include_blogs' : 'exclude_blogs';
+    $val = $incl ? $incl : $excl;
+
     # Make sure include_blogs/exclude_blogs is valid
-    if (($incl or $excl) != 'all' 
-        and !preg_match('/^\d+([,-]\d+)*$/', $incl or $excl)) {
-            return false;
-    }
+    if (  ( $val != 'all' )
+      and ( $val != 'site' )
+      and ( $val != 'children' )
+      and ( $val != 'siblings' )
+      and !preg_match('/^\d+([,-]\d+)*$/', $val)
+    )
+        return false;
 
     # Prepare for filter_blogs
     $blogs = array();
-    $attr = $incl ? 'include_blogs' : 'exclude_blogs';
-    $val = $incl ? $incl : $excl;
     if (preg_match('/-/', $val)) {
         # parse range blog ids out
         $list = preg_split('/\s*,\s*/', $val);
@@ -209,6 +218,13 @@ function multiblog_filter_blogs_from_args(&$ctx, &$args) {
     list($attr, $blogs) = multiblog_filter_blogs($ctx, $attr, $blogs);
     if (!($attr && count($blogs)))
         return false;
+
+    if ( ( $attr == 'include_blogs' ) && $args['include_with_website'] ) {
+        $blog = $ctx->stash('blog');
+        $website = $blog->class == 'blog' ? $blog->website() : $blog;
+        array_push($blogs, $website->blog_id);
+        $args['class'] = '*';
+    }
 
     # Rewrite the args to the modifed value
     if ($args['blog_ids'])
@@ -262,6 +278,23 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
             }
             return count($deny) ? array('exclude_blogs', $deny)
                          : array('include_blogs', array('all'));
+        } elseif ( ( $blogs[0] == 'site' )
+            || ( $blogs[0] == 'children' )
+            || ( $blogs[0] == 'siblings' )
+        ) {
+            $mt = MT::get_instance();
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if ( !empty($blog) ) {
+                $website = $blog->class == 'blog' ? $blog->website() : $blog;
+                $blogs = $website->blogs();
+                $allow = array();
+                foreach($blogs as $b) {
+                    if ($b->id == $this_blog || (!isset($access_overrides[$b->id])) || ($access_overrides[$b->id] == MULTIBLOG_ACCESS_ALLOWED))
+                    array_push($allow, $b->id);
+                }
+            }
+            return count($allow) ? array('include_blogs', $allow) : null;
         }
         # include_blogs="1,2,3,4"
         elseif ($is_include && count($blogs)) {
@@ -299,6 +332,25 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
                     $allow[] = $o;
             if (!isset($access_overrides[$this_blog]))
                 $allow[] = $this_blog;
+            return count($allow) ? array('include_blogs', $allow) : null;
+        } elseif ( ( $blogs[0] == 'site' )
+            || ( $blogs[0] == 'children' )
+            || ( $blogs[0] == 'siblings' )
+        ) {
+            $mt = MT::get_instance();
+            $ctx = $mt->context();
+            $blog = $ctx->stash('blog');
+            if (!empty($blog) && $blog->class == 'blog') {
+                require_once('class.mt_blog.php');
+                $blog_class = new Blog();
+                $blogs = $blog_class->Find("blog_parent_id = " . $blog->parent_id);
+                $allow = array();
+                foreach($blogs as $b) {
+                    if ($b->id == $this_blog
+                    || (isset($access_overrides[$b->id]) && ($access_overrides[$b->id] == MULTIBLOG_ACCESS_ALLOWED)))
+                        array_push($allow, $b->id);
+                }
+            }
             return count($allow) ? array('include_blogs', $allow) : null;
         }
         # include_blogs="1,2,3,4"

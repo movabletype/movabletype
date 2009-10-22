@@ -15,7 +15,7 @@
         <mtapp:statusmsg
             id="no-writedir"
             class="error">
-            <__trans phrase="Error: Movable Type was not able to create a directory for publishing your blog. If you create this directory yourself, grant write permission to the web server.">
+            <__trans phrase="Error: Movable Type was not able to create a directory for publishing your [_1]. If you create this directory yourself, grant write permission to the web server." params="<mt:var name="object_label" lower_case="1">">
         </mtapp:statusmsg>
     <mt:else>
 
@@ -318,9 +318,9 @@ function setLicense() {
             help_page="blog_settings_publishing"
             help_section="archive_path">
         <mt:if name="archive_path_absolute">
-            <input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" size="50" class="mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
+            <input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" size="50" class="blog-path-text mt-edit-field<mt:if name="is_blog"> extra-path</mt:if>" />
         <mt:else>
-            <span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="mt-edit-field blog-path-text extra-path" />
+            <span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="blog-path-text mt-edit-field blog-path-text extra-path" />
         </mt:if>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
         </mtapp:setting>

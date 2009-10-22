@@ -459,7 +459,12 @@ sub _generate_l10n_module {
     elsif ( MT->config('RequiredCompatibility') < 5.0 ) {
         my @paths = split '::', $class;
         $paths[-1] .= '.pm';
-        my $path = File::Spec->catfile( $c->path, 'lib', @paths );
+        my $inc_path = join '/', @paths;
+        if ( exists $INC{$inc_path} ) {
+            ## l10n class is already loaded.
+            return $class;
+        }
+        my $path = File::Spec->catfile( $c->path, 'lib', $inc_path );
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
         if ( $fmgr->exists($path) ) {
@@ -467,7 +472,7 @@ sub _generate_l10n_module {
             my $file = $fmgr->get_data($path);
             eval "$file";
             $got_class = !$@ ? 1 : 0;
-            $INC{ join '/', @paths } = $path;
+            $INC{ $inc_path } = $path;
         }
     }
     else {

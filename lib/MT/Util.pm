@@ -516,7 +516,7 @@ sub encode_js {
     $str =~ s!\f!\\f!g;
     $str =~ s!\r!\\r!g;
     $str =~ s!\t!\\t!g;
-    $str;
+    Encode::is_utf8($str) ? $str : Encode::decode_utf8($str);
 }
 
 sub encode_php {

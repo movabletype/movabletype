@@ -51,6 +51,8 @@ sub edit {
                           ? 1
                           : 0;
                     }
+                    $param->{target_type} = $entry->class;
+                    $param->{target_label} = MT->model($entry->class)->class_label;
                 }
             }
             elsif ( $tb->category_id ) {

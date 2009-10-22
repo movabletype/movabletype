@@ -52,7 +52,7 @@
         label="<__trans phrase="Useful links">">
         <ul>
             <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Manage Comments"></a></li>
-            <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View entry comment was left on"></a></mt:if></li>
+            <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View [_1] comment was left on" params="<mt:var name="entry_class_label" lower_case="1">"></a></mt:if></li>
         <mt:if name="comment_approved">
             <li><a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Reply to this comment"></a></li>
         </mt:if>
@@ -150,7 +150,7 @@
         </div>
         </mt:if>
     </mtapp:setting>
-    
+
     <mtapp:setting
         id="author"
         label="<__trans phrase="Commenter">"

@@ -55,10 +55,11 @@ use CGI;
 my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
-$version ||= '5.0b3';
+$version ||= '5.0b4';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");
+
 eval {
     require MT::App::Wizard;
     $mt = MT::App::Wizard->new();
@@ -145,6 +146,7 @@ if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
 }
 print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
 if (!$view) {
+    $lang = $cgi->escapeHTML($lang);
     print_encode( trans_templ(<<HTML) );
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
@@ -391,6 +393,7 @@ INFO
 if ($version) {
     # sanitize down to letters numbers dashes and period
     $version =~ s/[^a-zA-Z0-9\-\.]//g;
+    $version = $cgi->escapeHTML($version);
 print_encode( trans_templ(<<INFO) );
 <ul class="version">
     <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>

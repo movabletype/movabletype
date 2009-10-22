@@ -87,7 +87,7 @@ foreach my $lang (qw(ja de nl fr es)) {
         $local = encode_js($local);
         next if $str eq $local;
         $str = Encode::decode_utf8( $str );
-        $local = Encode::decode_utf8( $local );
+        $local = Encode::decode_utf8( $local ) unless Encode::is_utf8( $local );
         $lexicon{$str} = $local;
     }
 

@@ -4124,6 +4124,16 @@ body.dialog {
     margin-bottom: .25em;
 }
 
+.dialog .view-site-link {
+    float: right;
+    margin: 4px 2px 0 4px;
+}
+
+.dialog .view-site-link img {
+background-image: url(../images/status_icons/view.gif);
+}
+
+
 /* -- Asset Option */
 #asset_details { 
     margin-bottom: 30px;

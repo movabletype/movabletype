@@ -37,7 +37,8 @@ sub start_document {
 
 sub _decoder {
     my ( $text ) = @_;
-    return Encode::decode_utf8($text);
+    $text = eval { Encode::decode_utf8($text); };
+    return $text;
 }
 
 sub start_element {

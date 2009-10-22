@@ -134,18 +134,6 @@ sub _login {
     my $perms = MT::Permission->load({ author_id => $author->id,
                                        blog_id => $blog_id });
 
-    ## update session so the user will be counted as active
-    require MT::Session;
-    my $sess_active = MT::Session->load( { kind => 'UA', name => $author->id } );
-    if (!$sess_active) {
-        $sess_active = MT::Session->new;
-        $sess_active->id(_make_token());
-        $sess_active->kind('UA'); # UA == User Activation
-        $sess_active->name($author->id);
-    }
-    $sess_active->start(time);
-    $sess_active->save;
-
     ($author, $perms);
 }
 
