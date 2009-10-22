@@ -1604,12 +1604,15 @@ sub ping {
                 push @res, { good => 1, url => $url, type => "update" };
             }
             else {
+                my $err = MT::XMLRPC->errstr;
+                $err = Encode::decode_utf8($err)
+                    if ( $err && !Encode::is_utf8($err) );
                 push @res,
                   {
                     good  => 0,
                     url   => $url,
                     type  => "update",
-                    error => MT::XMLRPC->errstr
+                    error => $err,
                   };
             }
         }
@@ -1624,12 +1627,15 @@ sub ping {
                   };
             }
             else {
+                my $err = MT::XMLRPC->errstr;
+                $err = Encode::decode_utf8($err)
+                    if ( $err && !Encode::is_utf8($err) );
                 push @res,
                   {
                     good  => 0,
                     url   => $mt->{cfg}->MTPingURL,
                     type  => "update",
-                    error => MT::XMLRPC->errstr
+                    error => $err,
                   };
             }
         }
@@ -1703,6 +1709,7 @@ sub ping {
             my $res = $ua->request($req);
             if ( substr( $res->code, 0, 1 ) eq '2' ) {
                 my $c = $res->content;
+                $c = Encode::decode_utf8($c) if !Encode::is_utf8($c);
                 my ( $error, $msg ) =
                   $c =~ m!<error>(\d+).*<message>(.+?)</message>!s;
                 if ($error) {
@@ -1711,7 +1718,7 @@ sub ping {
                         good  => 0,
                         url   => $url,
                         type  => 'trackback',
-                        error => $msg
+                        error => $msg,
                       };
                 }
                 else {
