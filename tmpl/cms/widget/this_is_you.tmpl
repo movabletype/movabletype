@@ -6,9 +6,9 @@
         <ul class="user-stats-list">
 <mt:if name="last_post_id">
     <mt:if name="last_post_can_edit">
-            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name" escape="html"$>"></li>
+            <li><__trans phrase="Your <a href="[_1]">last entry</a> was [_2] in <a href="[_3]">[_4]</a>." params="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="last_post_id">&amp;blog_id=<mt:var name="last_post_blog_id">%%<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name"$>"></li>
     <mt:else>
-            <li><__trans phrase="Your last entry was [_1] in <a href="[_2]">[_3]</a>." params="<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name" escape="html"$>"></li>
+            <li><__trans phrase="Your last entry was [_1] in <a href="[_2]">[_3]</a>." params="<mt:date ts="$last_post_ts" relative="1" offset_blog_id="$last_post_blog_id">%%<mt:var name="script_url">?blog_id=<$mt:var name="last_post_blog_id"$>%%<$mt:var name="last_post_blog_name"$>"></li>
     </mt:if>
 </mt:if>
 
