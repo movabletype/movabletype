@@ -3,7 +3,7 @@
  * This program is distributed under the terms of the
  * GNU General Public License, version 2.
  *
- * $Id$
+ * $Id:$
  */
 ;(function($) {
 
