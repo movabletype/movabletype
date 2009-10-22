@@ -175,6 +175,13 @@ ul.menu-nav li.top-menu div {
     height: 80px;
 }
 
+/* - List Theme */
+.theme-thumbnail { 
+    width: 122px;
+    height: 92px;
+}
+
+
 /* - Widgets */
 /* -- Category Widget */
 .category-selector { 
@@ -229,6 +236,7 @@ html#dialog {
 .msg, 
 .plugin, 
 .theme, 
+.theme-thumbnail, 
 .field-content ul, 
 #selector-nav .selector ul, 
 #selector-nav .selector ul li, 
