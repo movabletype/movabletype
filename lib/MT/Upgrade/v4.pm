@@ -259,7 +259,7 @@ sub upgrade_functions {
             priority => 9.3,
             code => sub {
                 my $self = shift;
-                $self->add_step('core_upgrade_templates', Install => 1);
+                $self->add_step('core_upgrade_templates');
             },
         },
         'core_replace_openid_username' => {
