@@ -49,14 +49,28 @@ sub view {
     return $app->errtrans("Invalid request") unless $blog;
 
     my $static_path = $app->static_file_path;
+    my $static_webpath = $app->static_path;
+    my $support_path = $app->support_directory_path;
+    my $support_url = $app->support_directory_url;
     if (! -d $static_path ) {
         return $app->errtrans("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue.");
     }
 
     my $themeroot =
-      File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
-    my $webthemeroot = $app->static_path . 'support/themes';
+      File::Spec->catdir( $support_path, 'themes' );
+    my $webthemeroot = $support_url . 'themes';
     my $stylelibrary = listify(style_library());
+    if ( my $blog = $app->blog ) {
+        my $set = $blog->template_set;
+        $set = MT->registry(template_sets => $set)
+            if !ref $set;
+        my $lib = listify($set->{stylecatcher_libraries});
+        $stylelibrary = [ @$stylelibrary, @$lib ];
+    }
+    for my $lib ( @$stylelibrary ) {
+        $lib->{url} =~ s/{{static}}/$static_webpath/i;
+        $lib->{url} =~ s/{{support}}/$support_url/i;
+    }
     my $theme_data   = make_themes();
     my $styled_blogs = fetch_blogs();
 
