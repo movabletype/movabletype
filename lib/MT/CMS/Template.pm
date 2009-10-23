@@ -737,7 +737,20 @@ sub list {
                      ? MT->registry(template_sets => $blog->template_set => 'templates')
                      : MT->registry('default_templates')
                      ;
-
+        }
+        if (!$set) {
+            require MT::Theme;
+            ## try to load same named theme for backward compatibility.
+            if ( my $theme = MT::Theme->load( $blog->template_set ) ) {
+                my @elements = $theme->elements;
+                my ($theme_set) = grep { $_->{id} eq 'template_set' } @elements;
+                if ( $theme_set ) {
+                    my $data = $theme_set->{data};
+                    $set = ref $data ? $data->{templates}
+                         :             MT->registry( template_sets => $data => 'templates')
+                         ;
+                }
+            }
         }
         $scope = 'system';
     }
@@ -752,7 +765,7 @@ sub list {
     if ($template_type ne 'backup') {
         if ($blog) {
             # blog template listings
-            %types = ( 
+            %types = (
                 'index' => {
                     label => $app->translate("Index Templates"),
                     type => 'index',
@@ -776,7 +789,7 @@ sub list {
             );
         } else {
             # global template listings
-            %types = ( 
+            %types = (
                 'module' => {
                     label => $app->translate("Template Modules"),
                     type => 'custom',
