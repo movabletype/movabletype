@@ -54,13 +54,19 @@ function init() {
 <mtapp:listing
     hide_pager="1">
     <mt:if name="__first__">
-    <thead>
+    <mt:setvarblock name="table_header">
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
             <th class="widgetmanager-name primary-col"><__trans phrase="Name"></th>
             <th class="widgetmanager-widgets primary-col"><__trans phrase="Installed Widgets"></th>
         </tr>
+    </mt:setvarblock>
+    <thead>
+        <mt:var name="table_header">
     </thead>
+    <tfoot>
+        <mt:var name="table_header">
+    </tfoot>
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
