@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitelabel($args, &$ctx) {
+function smarty_function_mtwebsitename($args, &$ctx) {
     // status: complete
     // parameters: none
     require_once('function.mtblogname.php');
