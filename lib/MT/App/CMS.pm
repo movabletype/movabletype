@@ -797,7 +797,7 @@ sub core_list_filters {
         log => {
             this_website => {
                 label => sub {
-                    $app->translate( '[_1] of this website', 'Logs' );
+                    $app->translate( 'Only website log' );
                 },
                 order   => 100,
                 handler => sub {

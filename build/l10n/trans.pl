@@ -249,7 +249,7 @@ do {
                 my($msg, %args);
                 my $trans = '';
                 $args{phrase} = $1;
-                $args{phrase} =~ s/(^'+|'+$)//;
+                $args{phrase} =~ s/(^'+|'+$)//g;
                 $args{phrase} =~ s/'/\\'/g;
                 if ($trans eq '' && $conv{$args{phrase}}) {
                      $trans = $conv{$args{phrase}};

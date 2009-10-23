@@ -217,7 +217,7 @@ function init() {
     });
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
         id: '<mt:var name="form_id">',
-        plural: '<mt:if name="object_label_plural"><__trans phrase="<mt:var name="object_label_plural" escape="js">"></mt:if>',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
         phrase: '<__trans phrase="to act upon" escape="js">'
     });
 </mt:setvarblock>

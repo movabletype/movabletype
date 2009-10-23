@@ -33,7 +33,7 @@ echo "in default_templates..."
 find default_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in lib..."
-find lib -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find lib -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | grep -v L10N | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in mt-static..."
 find mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \

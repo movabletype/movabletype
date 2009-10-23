@@ -889,7 +889,7 @@ use vars qw( @ISA %Lexicon );
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.jp/documentation/appendices/tags/%t.html',
 
 ## lib/MT/Template/Context.pm
-	'The attribute exclude_blogs cannot take \'all\' for a value.' => 'exclude_blogs属性にはallを設定できません。',
+	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'exclude_blogs属性には\'[_1]\'を設定できません。',
 	'You used an \'[_1]\' tag outside of the context of a author; perhaps you mistakenly placed it outside of an \'MTAuthors\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of an entry; perhaps you mistakenly placed it outside of an \'MTEntries\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of the website; perhaps you mistakenly placed it outside of an \'MTWebsites\' container?' => '[_1]をコンテキスト外で利用しようとしています。MTWebsitesコンテナタグの外部で使っていませんか?',
@@ -1409,6 +1409,7 @@ use vars qw( @ISA %Lexicon );
 	'_WARNING_DELETE_USER_EUM' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化してシステムにアクセスできないようにしたい場合は、アカウントを無効化してください。本当にユーザーを削除してもよろしいですか？LDAPディレクトリ上にユーザーがまだ残っている場合、いつでも再作成されてしまいます。',
 	'_WARNING_DELETE_USER' => 'ユーザーを削除すると、そのユーザーの書いたブログ記事はユーザー不明となり、後で取り消せません。ユーザーを無効化するのが正しい方法です。本当にユーザーを削除してもよろしいですか?',
 	'_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => '選択されたブログのテンプレートを、各ブログの利用しているテーマの初期状態に戻します。テンプレートを初期化してもよろしいですか?',
+	'Only website log' => 'ウェブサイトログのみ',
 	'[_1] of this website' => 'ウェブサイト[_1]',
 	'My [_1] of this [_2]' => '[_2]の自分の[_1]',
 	'Published [_1]' => '公開されている[_1]',
@@ -1674,6 +1675,7 @@ use vars qw( @ISA %Lexicon );
 	'Migrating permissions to roles...' => '権限をロールに移行しています...',
 
 ## lib/MT/Upgrade/Core.pm
+	'Upgrading Asset path informations...' => 'アイテムパス情報を更新しています...',
 	'Creating initial website and user records...' => '初期ユーザーとウェブサイトを作成しています...',
 	'Error creating role record: [_1].' => 'ロールレコード作成エラー: [_1]',
 	'Creating new template: \'[_1]\'.' => '新しいテンプレート[_1]を作成しています...',
