@@ -10,7 +10,7 @@ use strict;
 use utf8;
 use open ':utf8';
 use base qw( MT::Object MT::Revisable );
-use MT::Util qw( weaken encode_url );
+use MT::Util qw( weaken );
 
 use MT::Template::Node;
 sub NODE () { 'MT::Template::Node' }
@@ -695,7 +695,7 @@ sub published_url {
     return undef unless $blog;
     my $site_url = $blog->site_url || '';
     $site_url .= '/' if $site_url !~ m!/$!;
-    my $url = $site_url . encode_url( $tmpl->outfile );
+    my $url = $site_url . $tmpl->outfile;
 
     if ($tmpl->build_dynamic) {
         require MT::FileInfo;

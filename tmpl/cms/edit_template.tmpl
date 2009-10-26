@@ -140,7 +140,7 @@
             <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
         </mt:if>
         <mt:if name="published_url">
-            <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
+            <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
         </ul>
     </mtapp:widget>
