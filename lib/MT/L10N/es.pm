@@ -2873,7 +2873,7 @@ que la dirección provista es correcta y le pertenece.',
 	'_USER_DISABLED' => 'Deshabilitado',
 
 ## tmpl/cms/include/calendar.tmpl
-	'_LOCALE_WEEK_START' => '_LOCALE_WEEK_START',
+	'_LOCALE_WEEK_START' => '0',
 	'S|M|T|W|T|F|S' => 'S|M|T|W|T|F|S',
 	'January' => 'Enero',
 	'Febuary' => 'Febrero',
