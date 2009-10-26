@@ -577,14 +577,6 @@ sub core_list_actions {
                 permit_action => 'remove_tags_from_assets_via_list',
             },
         },
-        'ping' => {
-            'unapprove_ping' => {
-                label      => "Unpublish TrackBack(s)",
-                order      => 100,
-                code       => "${pkg}Comment::unapprove_item",
-                permit_action => 'unapprove_trackbacks_via_list',
-            },
-        },
         'comment' => {
             'unapprove_comment' => {
                 label      => "Unpublish Comment(s)",
