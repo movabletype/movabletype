@@ -896,13 +896,15 @@ sub _query_parse_core {
     my ( $lucene_struct, $columns, $filter_types ) = @_;
 
     my $rvalue = sub {
+        my $val = $_[1];
+        $val =~ s/\\([^\\])/$1/g;
         my %rvalues = (
-            REQUIREDlike   => { like     => '%' . $_[1] . '%' },
-            REQUIRED1      => $_[1],
-            NORMALlike     => { like     => '%' . $_[1] . '%' },
-            NORMAL1        => $_[1],
-            PROHIBITEDlike => { not_like => '%' . $_[1] . '%' },
-            PROHIBITED1    => { not      => $_[1] }
+            REQUIREDlike   => { like     => '%' . $val . '%' },
+            REQUIRED1      => $val,
+            NORMALlike     => { like     => '%' . $val . '%' },
+            NORMAL1        => $val,
+            PROHIBITEDlike => { not_like => '%' . $val . '%' },
+            PROHIBITED1    => { not      => $val }
         );
         $rvalues{ $_[0] };
     };
