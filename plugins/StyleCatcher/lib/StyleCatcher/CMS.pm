@@ -294,26 +294,36 @@ sub apply {
       or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
 
     my $base_css_url;
-    my $use_support;
-    if ( my $theme = $blog->theme ) {
-        if ( $theme->{base_css} ) {
-            my ( $id, $base ) = ( $theme->id, $theme->{base_css} );
+    my $use_theme = 1;
+    my $blog_tset = $blog->template_set;
+    if ( !ref $blog_tset ) {
+        $blog_tset = MT->registry('template_sets')->{$blog_tset};
+        $use_theme = 0;
+    }
+    if ( $blog_tset->{base_css} ) {
+        if ( $use_theme ) {
+            my $theme = $blog->theme;
+            my ( $id, $base ) = ( $theme->id, $blog_tset->{base_css} );
             $base_css_url = "themes/$id/$base";
-            $use_support = 1;
         }
         else {
-            $base_css_url = 'themes-base/blog.css';
+            $base_css_url = $blog_tset->{base_css};
         }
     }
+    elsif ( defined $blog_tset->{base_css} ) {
+        # base_css is '0', so don't print base_css line.
+        $base_css_url = '';
+    }
     else {
-        my $blog_tset = $blog->template_set;
-        $base_css_url = MT->registry('template_sets')->{$blog_tset}->{base_css};
+        # base_css is undefined, so use default blog.css.
+        $use_theme = 0;
+        $base_css_url = 'themes-base/blog.css';
     }
 
     my $base_css = q{};
     if ($base_css_url) {
         require URI;
-        my $uri = URI->new_abs($base_css_url, $use_support ? $app->support_directory_url : $app->static_path);
+        my $uri = URI->new_abs($base_css_url, $use_theme ? $app->support_directory_url : $app->static_path);
         $base_css = '@import url(' . $uri->as_string() . ');'
             if $uri;
     }
