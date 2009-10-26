@@ -227,8 +227,8 @@ sub do_upgrade {
             $self->run_step($step);
             if (@steps) {
                 push @these_steps, @steps;
-                @these_steps = sort { $fn->{$a->[0]}->{priority} <=>
-                                      $fn->{$b->[0]}->{priority} } @these_steps;
+                @these_steps = sort { ( $fn->{$a->[0]}->{priority} || 0 ) <=>
+                                      ( $fn->{$b->[0]}->{priority} || 0 ) } @these_steps;
             }
 
             # Reset the request to eliminate any caching that may be
