@@ -200,7 +200,7 @@ function setLicense() {
     <mtapp:setting
         id="site_url"
         class="url-field"
-        label="<__trans phrase="Site URL">"
+        label='<__trans phrase="[_1] URL" params="<mt:var name="object_label" capitalize="1">">'
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_url">
@@ -241,7 +241,7 @@ function setLicense() {
     <mtapp:setting
         id="site_path"
         class="site-path-field"
-        label="<__trans phrase="Site Root">"
+        label='<__trans phrase="[_1] Root" params="<mt:var name="object_label" capitalize="1">">'
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
