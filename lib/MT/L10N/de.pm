@@ -1052,7 +1052,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] changed from [_2] to [_3]' => '[_1] von [_2] in [_3] geändert',
 	'Saved [_1] Changes' => '[_1] Änderungen gespeichert',
 	'Saving permissions failed: [_1]' => 'Die Rechte konnten nicht gespeichert werden: [_1]',
-	'[_1] \'[_2]\' (ID:[_3]) created by \'[_4]\'' => '_1] \'[_2]\' (ID:[_3]) angelegt von \'[_4]\'',
+	'[_1] \'[_2]\' (ID:[_3]) created by \'[_4]\'' => '[_1] \'[_2]\' (ID:[_3]) angelegt von \'[_4]\'',
 	'You did not specify a blog name.' => 'Kein Blog-Name angegeben.',
 	'Site URL must be an absolute URL.' => 'Site-URL muß eine absolute URL sein.',
 	'Archive URL must be an absolute URL.' => 'Archiv-URLs müssen absolut sein.',
