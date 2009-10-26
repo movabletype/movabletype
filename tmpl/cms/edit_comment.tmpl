@@ -299,7 +299,9 @@
             </mt:if>
             <mt:if name="url">
                 <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><img src="<mt:var name="static_uri">images/status_icons/link.gif" alt="<__trans phrase="Link">" width="16" height="9" /></a>
+                <mt:unless name="commenter_id">
                 <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+                </mt:unless>
             </mt:if>
         </mtapp:setting>
 
