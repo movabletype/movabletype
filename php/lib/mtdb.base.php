@@ -1961,7 +1961,7 @@ abstract class MTDatabase {
     public function fetch_permission($args) {
         // Blog filter
         if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'permission_blog_id ' . $sql;
+            $blog_filter = 'and permission_blog_id ' . $sql;
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $blog_filter = "and permission_blog_id = $blog_id";
