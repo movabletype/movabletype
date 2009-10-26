@@ -304,7 +304,7 @@ sub apply {
         if ( $use_theme ) {
             my $theme = $blog->theme;
             my ( $id, $base ) = ( $theme->id, $blog_tset->{base_css} );
-            $base_css_url = "themes/$id/$base";
+            $base_css_url = "themestatic/$id/$base";
         }
         else {
             $base_css_url = $blog_tset->{base_css};
