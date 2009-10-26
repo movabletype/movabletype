@@ -3740,7 +3740,8 @@ use vars qw( @ISA %Lexicon );
 	'Category Name' => 'カテゴリ名',
 
 ## tmpl/cms/include/theme_exporters/templateset.tmpl
-	'<span class="count">[_1]</span> templates are included' => '<span class="count">[_1]</span>件のテンプレートが含まれます',
+	'widget sets' => 'ウィジェットセット',
+	'<span class="count">[_1]</span> [_2] are included' => '<span class="count">[_1]</span>件の[_2]が含まれます',
 
 ## tmpl/cms/include/author_table.tmpl
 	'_USER_DISABLED' => '無効',

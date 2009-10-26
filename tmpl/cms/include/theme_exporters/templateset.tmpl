@@ -3,7 +3,12 @@
     <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
         <h3><a href="javascript:void(0);" onclick="return toggleActive('template-group-<mt:var name="template_type">-content');"><mt:var name="template_type_label"></a></h3>
         <div class="template-group-summary">
-            <__trans phrase="<span class="count">[_1]</span> templates are included" params="group_checked_count">
+            <mt:if name="template_type" eq="widgetset">
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
+            <mt:else>
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="templates">">
+            </mt:if>
+            <__trans phrase="<span class="count">[_1]</span> [_2] are included" params="group_checked_count%%<mt:var name="tmpl_type_name">">
         </div>
     </div>
     <div class="template-group-content" id="template-group-<mt:var name="template_type">-content">
