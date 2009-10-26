@@ -3027,7 +3027,7 @@ use vars qw( @ISA %Lexicon );
 	'View all comments by this commenter' => 'このコメント投稿者のすべてのコメントを見る',
 	'Email' => 'メール',
 	'Email address of commenter' => 'コメント投稿者のメールアドレス',
-	'Unavailable for OpenID user' => 'Open IDユーザは無効にする',
+	'Unavailable for OpenID user' => 'OpenIDユーザーにはありません',
 	'View all comments with this email address' => 'このメールアドレスのすべてのコメントを見る',
 	'URL of commenter' => 'コメント投稿者のURL',
 	'No url in profile' => '(URL がありません)',
