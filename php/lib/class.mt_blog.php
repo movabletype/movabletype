@@ -53,7 +53,7 @@ class Blog extends BaseObject
         $raw_path = $this->blog_site_path;
         if ( 1 == preg_match( '/^\//', $raw_path ) )
             return true;
-        if ( 1 == preg_match( '/^[a-zA-Z]:\\/', $raw_path ) )
+        if ( 1 == preg_match( '/^[a-zA-Z]:'.preg_quote('\\').'/', $raw_path ) )
             return true;
         if ( 1 == preg_match( '/^\\\\[a-zA-Z0-9\.]+/', $raw_path ) )
             return true;

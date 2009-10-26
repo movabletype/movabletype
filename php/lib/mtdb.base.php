@@ -84,6 +84,8 @@ abstract class MTDatabase {
             $attr = $args['exclude_blogs'];
             $attr or $attr = $args['exclude_websites'];
             $is_excluded = 1;
+        } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
+            return " = " . $args['blog_id'];
         } else {
             return;
         }
@@ -2420,10 +2422,8 @@ abstract class MTDatabase {
             return;
 
         $blog_filter = $this->include_exclude_blogs($args);
-        if ($blog_filter == '' and isset($args['blog_id']))
-            $blog_filter = intval($args['blog_id']);
         if ($blog_filter != '')
-            $blog_filter = 'and objecttag_blog_id = ' . $blog_filter;
+            $blog_filter = 'and objecttag_blog_id' . $blog_filter;
 
         $extras = array();
         if (isset($args['datasource']) && strtolower($args['datasource']) == 'asset') {
