@@ -98,22 +98,14 @@ button.action {
     overflow: visible;
 }
 
-/* - Navigation Menu */
-#menu { 
-    z-index: 1100;
-}
-
 /* - Menu Bar Nav */
 #menu-bar-nav { 
     width: 250px;
 }
 
-ul.menu-nav, 
-ul.submenu, 
-ul.submenu li, 
-ul.menu-nav li .toggle-button, 
-.favorite-blogs-widget .blog-content { 
-    zoom: 1;
+/* - Navigation Menu */
+#menu { 
+    z-index: 1100;
 }
 
 ul.menu-nav li.top-menu { 
@@ -187,3 +179,8 @@ ul.tabs li,
     height: 1%;
 }
 
+/* - haslayout */
+ul.menu-nav, 
+.favorite-blogs-widget .blog-content { 
+    zoom: 1;
+}

@@ -793,10 +793,7 @@ ul.tabs li a {
 ul.menu-nav { 
     position: relative;
     margin-bottom: 10px;
-}
-
-ul.menu-nav { 
-    background-color: #fff;
+    background-color: transparent;
 }
 
 ul.menu-nav * { 
@@ -810,31 +807,36 @@ ul.menu-nav li {
 
 ul.menu-nav li a { 
     display: block;
-    padding: 3px 8px;
     text-decoration: none;
     outline: 0;
 }
 
 ul.menu-nav li.top-menu { 
-    position: relative;
     min-height: 30px;
-    display: block;
     margin-top: -1px;
+    background-color: #fff;
 }
 ul.menu-nav > li.first-child { 
     margin-top: 0;
 }
 
-ul.menu-nav li.top-menu div { 
+ul.menu-nav .top-menu div { 
     position: relative;
     min-height: 28px;
     border-style: solid solid none;
-    border-width: 1px 1px 0;
+    border-width: 1px;
 }
 
 ul.menu-nav a.top-menu-link { 
     margin-right: 20px;
     padding: 0;
+}
+
+ul.menu-nav .current-menu a.top-menu-link { 
+    background: #dcdddd url(../images/menu-bg.png) no-repeat left top;
+    color: #2b2b2b;
+    font-weight: bold;
+    text-shadow: #F8FBF8 0 1px 0;
 }
 
 ul.menu-nav a.top-menu-link .menu-label { 
@@ -848,7 +850,6 @@ ul.menu-nav .toggle-button {
     top: 0px;
     right: 0px;
     width: 19px;
-    min-height: 28px;
     height: 100%;
     padding: 0;
     border-left: 1px solid #c8c2be;
@@ -873,6 +874,9 @@ ul.sub-menu {
     display: none;
     background-color: #f3f3f3;
 }
+.current-menu ul.sub-menu { 
+    display: block;
+}
 
 li.top-menu-open ul.sub-menu { 
     border-style: solid solid none;
@@ -880,46 +884,26 @@ li.top-menu-open ul.sub-menu {
 }
 
 ul.sub-menu a { 
-    display: block;
-    margin: 0;
     color: #7b7c7d;
     font-size: 95%;
     text-decoration: none;
 }
+ul.sub-menu a:active, 
+ul.sub-menu a:hover, 
 ul.sub-menu a.current { 
     background-color: #dcdddd;
     color: #2b2b2b;
-    text-decoration: none;
 }
 
-ul.sub-menu a:active, 
-ul.sub-menu a:hover { 
-    background-color: #dcdddd;
-    color: #2b2b2b;
+ul.sub-menu a .menu-label { 
+    display: inline-block;
+    padding: 3px 8px;
 }
 
 ul.sub-menu a em { 
-    display: block;
     font-style: normal;
 }
 
-ul.menu-nav .current-menu a.top-menu-link { 
-    background: #dcdddd url(../images/menu-bg.png) no-repeat left top;
-    color: #2b2b2b;
-    font-weight: bold;
-    text-shadow: #F8FBF8 0 1px 0;
-}
-
-ul.menu-nav .current-menu ul.sub-menu { 
-    display: block;
-}
-
-ul.menu-nav { 
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    border-bottom-radius: 5px;
-}
 ul.menu-nav > li.first-child > div { 
     -moz-border-radius: 5px 5px 0 0;
     -webkit-border-top-right-radius: 5px;
@@ -1228,15 +1212,16 @@ fieldset {
     margin-top: 50px;
     margin-bottom: 0.75em;
 }
+.listing .button-actions { 
+    margin-right: 10px;
+}
 
 .plugin-actions { 
-    position: absolute;
-    top: 0;
-    right: 0;
+    margin-top: 15px;
+    text-align: right;
 }
 .listing .plugin-actions { 
-    position: static;
-    margin-left: 10px;
+    margin: 0;
 }
 
 .listing-screen .actions-bar { 
