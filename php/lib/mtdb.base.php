@@ -268,6 +268,8 @@ abstract class MTDatabase {
     public function fetch_blogs($args = null) {
         if ($blog_ids = $this->include_exclude_blogs($args))
             $blog_filter = 'blog_id ' . $blog_ids;
+        else
+            $blog_filter = '1 = 1';
 
         if (!isset($args['class']))
             $args['class'] = 'blog';
