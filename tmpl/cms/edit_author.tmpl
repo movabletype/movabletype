@@ -251,18 +251,17 @@ TC.attachLoadEvent(init);
                 id="show_password"
                 label="<__trans phrase="Password">"
                 content_class="field-content-text">
-                <a href="javascript:void(0)" onclick="toggleHidden(getByID('password-fields')); DOM.addClassName(getByID('show_password-field'), 'hidden')"><__trans phrase="Change Password"></a>
+                <a href="#" id="change-password-link"><__trans phrase="Change Password"></a>
             </mtapp:setting>
         </mt:unless>
-
-        <div id="password-fields"<mt:unless name="new_object"> class="hidden"</mt:unless>>
+        <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
         <mt:unless name="new_object">
             <mt:if name="is_me">
                 <mtapp:setting
                     id="old_pass"
                     label="<__trans phrase="Current Password">"
                     hint="<__trans phrase="Existing password required to create a new password.">">
-                    <input type="password" name="old_pass" value="" id="old_pass" class="full-width" />
+                    <input type="password" name="old_pass" value="" id="old_pass" />
                 </mtapp:setting>
             </mt:if>
         </mt:unless>
@@ -281,14 +280,14 @@ TC.attachLoadEvent(init);
             label="$password_prompt"
             required="$password_required"
             hint="$password_hint">
-            <input type="password" name="pass" id="pass" class="full-width" value="" />
+            <input type="password" name="pass" id="pass" value="" />
         </mtapp:setting>
         <mtapp:setting
             id="pass_verify"
             label="<__trans phrase="Confirm Password">"
             required="$password_required"
             hint="<__trans phrase="Repeat the password for confirmation.">">
-            <input type="password" name="pass_verify" id="pass_verify" class="full-width" value="" />
+            <input type="password" name="pass_verify" id="pass_verify" value="" />
         </mtapp:setting>
         <mt:unless name="new_object">
             <mt:if name="hint">
@@ -297,7 +296,7 @@ TC.attachLoadEvent(init);
                     required="0"
                     label="<__trans phrase="Password recovery word/phrase">"
                     hint="<__trans phrase="This word or phrase is not used in the password recovery.">">
-                    <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
+                    <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
                 </mtapp:setting>
             </mt:if>
         </mt:Unless>
@@ -423,5 +422,15 @@ TC.attachLoadEvent(init);
         </mt:unless>
     </mt:unless>
 </mt:if>
+
+<mt:setvarblock name="jq_js_include" append="1">
+<mt:unless name="new_object">
+    jQuery('#change-password-link').click(function(event) {
+        $(this).parents('#show_password-field').next('#password-fields').toggle();
+        $(this).parents('#show_password-field').hide();
+        event.preventDefault();
+    });
+</mt:unless>
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
