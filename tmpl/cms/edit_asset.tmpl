@@ -84,23 +84,10 @@
     <$MTApp:PageActions$>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_head" append="1">
-    <script type="text/javascript">
-    /* <![CDATA[ */
-    function validate(form) {    
-        if (form.label.value.match(/\S/,''))
-            return true;
-        alert('<__trans phrase="You must specify a label for the asset." escape="singlequotes">');
-        form.label.focus();
-        return false;
-    }
-    /* ]]> */
-    </script>
-</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
-    <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+    <form id="edit_asset" "method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="__mode" value="save" />
         <input type="hidden" name="_type" value="<mt:var name="object_type">" />
@@ -181,4 +168,19 @@
     </form>
 </div>
 
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#edit_asset').validate({
+        rules: {
+            label: 'required'
+        },
+        messages: {
+            label: '<__trans phrase="You must specify a name for the asset." escape="singlequotes">'
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

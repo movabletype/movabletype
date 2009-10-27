@@ -2985,7 +2985,7 @@ use vars qw( @ISA %Lexicon );
 	'This asset has not been used.' => 'アイテムは利用されていません。',
 	'Related Assets' => '関連するアイテム',
 	'No thumbnail image' => 'サムネール画像がありません。',
-	'You must specify a label for the asset.' => 'アイテムにラベルを設定してください。',
+	'You must specify a name for the asset.' => 'アイテムに名前を設定してください。',
 	'[_1] is missing' => '[_1]がありません。',
 	'Type' => '種類',
 	'Embed Asset' => 'アイテムの埋め込み',
