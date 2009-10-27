@@ -679,8 +679,10 @@ sub prepare_context {
         $ctx->stash('archive_count', $count);
         $ctx->{current_archive_type} = $at;
         my $archiver = MT->publisher->archiver($at);
-        my $params = $archiver->template_params;
-        map { $ctx->var( $_, $params->{ $_ } ) } keys %$params;
+        if ( $archiver ) {
+            my $params = $archiver->template_params;
+            map { $ctx->var( $_, $params->{ $_ } ) } keys %$params;
+        }
     }
     $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
     if ($app->param('author')) {
@@ -695,7 +697,7 @@ sub prepare_context {
         $ctx->stash('category', $category);
         $ctx->var('category_archive', 1);
     }
-    
+
     $ctx;
 }
 
