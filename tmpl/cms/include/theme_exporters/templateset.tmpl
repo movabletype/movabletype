@@ -5,6 +5,8 @@
         <div class="template-group-summary">
             <mt:if name="template_type" eq="widgetset">
                 <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
+            <mt:elseif name="template_type" eq="module">
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="modules">">
             <mt:else>
                 <mt:setvar name="tmpl_type_name" value="<__trans phrase="templates">">
             </mt:if>

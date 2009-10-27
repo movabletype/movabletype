@@ -3740,6 +3740,7 @@ use vars qw( @ISA %Lexicon );
 	'Category Name' => 'カテゴリ名',
 
 ## tmpl/cms/include/theme_exporters/templateset.tmpl
+	'modules' => 'モジュール',
 	'widget sets' => 'ウィジェットセット',
 	'<span class="count">[_1]</span> [_2] are included' => '<span class="count">[_1]</span>件の[_2]が含まれます',
 
