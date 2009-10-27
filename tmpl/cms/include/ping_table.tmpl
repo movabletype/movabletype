@@ -76,9 +76,11 @@
 </mt:if>
             </td>
 <mt:unless name="tab_junk">
-            <td class="si status-<mt:if name="visible">publish<mt:else>pending</mt:if>">
+            <td class="si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
     <mt:if name="visible">
                 <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show published TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
+    <mt:elseif name="junk_status" eq="-1">
+                <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=spam" title="<__trans phrase="Only show spam TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Spam">" width="9" height="9" /></a>
     <mt:else>
                 <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=pending" title="<__trans phrase="Only show pending TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Pending">" width="9" height="9" /></a>
     </mt:if>
