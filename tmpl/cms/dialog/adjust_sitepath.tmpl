@@ -335,7 +335,7 @@ function init() {
         }
     });
 
-    jQuery('.web_path_field').change( function () {
+    jQuery('.website-path-text').change( function () {
         websites_path[this.name] = this.value;
 
         var rex = RegExp("site_path_([0-9]+)");
@@ -350,7 +350,7 @@ function init() {
         }
     });
 
-    jQuery('.web_url_field').change( function () {
+    jQuery('.website-url-text').change( function () {
         websites_url[this.name] = this.value;
         var rex = RegExp("site_url_([0-9]+)");
         if (this.name.match(rex)) {
