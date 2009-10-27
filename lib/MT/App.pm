@@ -1054,7 +1054,7 @@ sub _cb_user_provisioning {
         $dir_name .= $sfx ? $sfx : '';
         $dir_name =~ s/(.+)\-$/$1/;
 
-        $path =~ s!^$website_root!!;
+        $path =~ s!^$website_root/*!!;
         $new_blog->site_path($path);
     }
 
@@ -1063,8 +1063,8 @@ sub _cb_user_provisioning {
     $url .= '/' unless $url =~ m!/$!;
     $url .= $dir_name ? $dir_name : MT::Util::dirify( $new_blog->name );
     $url .= '/';
-    $url =~ s!^$website_url!!;
-    $new_blog->site_url($url);
+    $url =~ s!^$website_url/*!!;
+    $new_blog->site_url('/::/'.$url);
 
     my $offset = MT->config('DefaultTimezone');
     if ( defined $offset ) {
