@@ -23,7 +23,7 @@
                     <input type="text" name="note-email-<mt:var name="id">" id="note-email-<mt:var name="id">" value="<mt:var name="email" escape="html">" />
                 </span>
             </td>
-            <td class="url"><span id="note-url-link-<mt:var name="id">" onclick="edit_note(<mt:var name="id">); return false;"><a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">"><mt:var name="url" escape="html" default="-"></a><mt:if name="url">&nbsp;<a href="<mt:var name="url" escape="html">">&raquo;</a></mt:if></span>
+            <td class="url"><span id="note-url-link-<mt:var name="id">"><a href="javascript:void(0)" title="<__trans phrase="Click to edit contact">" onclick="edit_note(<mt:var name="id">); return false;"><mt:var name="url" escape="html" default="-"></a><mt:if name="url">&nbsp;<a href="<mt:var name="url" escape="html">">&raquo;</a></mt:if></span>
                 <span id="note-url-field-<mt:var name="id">" style="display: none">
                     <input type="text" name="note-url-<mt:var name="id">" id="note-url-<mt:var name="id">" value="<mt:var name="url" escape="html">" />
                     <span class="buttons">
