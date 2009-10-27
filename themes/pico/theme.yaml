@@ -23,7 +23,7 @@ elements:
             base_css: style_library/base.css
             stylecatcher_libraries:
                 pico:
-                    url: {{support}}themestatic/pico/style_library/pico.html
+                    url: '{{support}}themestatic/pico/style_library/pico.html'
                     label: Pico Style library
                     description_label: A collection of styles compatible with Pico themes.
                     order: 1
