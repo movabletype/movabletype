@@ -1,0 +1,84 @@
+/*
+
+name: Pico (Dark Grey)
+designer: Jim Ramsey
+designer_url: http://www.jimramsey.net/
+layouts: layout-w-b
+
+*/
+
+/* Darkgrey */
+
+body {
+    background: #222;
+    color: #f6f6f6;
+}
+a {
+    color: #fa0;
+}
+#container {
+    border-top: 5px solid #191919;
+}
+#header-name,
+#header-name a {
+    color: #fff;
+}
+#header-name a:hover {
+    color: #fa0;
+}
+#nav li a {
+    background: #191919;
+    color: #999;
+}
+#nav li a:hover {
+    background: #191919;
+    color: #fa0;
+}
+.date-header {
+    border-right: 1px solid #444;
+    color: #999;
+}
+.content-nav {
+    background: #444;
+    color: #999;
+}
+.asset .asset-header a {
+    color: #fff;
+}
+.asset .asset-header a:hover {
+    color: #fa0;
+}
+.asset .asset-content {
+    color: #fff;
+}
+.asset .asset-content blockquote {
+    color: #ccc;
+    border-top: 1px dotted #444;
+    border-bottom: 1px dotted #444;
+}
+.asset .asset-content pre {
+    background: #444;
+}
+.asset .asset-footer a:hover {
+    color: #fa0;
+}
+.comment-content,
+.comments-content #tpc_thread .comment-content {
+    background: #333;
+}
+.comment-footer {
+    background: url(pico-commentarrow-dkgrey.gif) no-repeat 15px 0;
+}
+.widget {
+    border-top: 1px dotted #444;
+}
+.widget-header,
+.widget-header a {
+    color: #ccc;
+}
+#footer {
+    background: #191919;
+}
+#footer a:hover {
+    color: #fa0;
+}

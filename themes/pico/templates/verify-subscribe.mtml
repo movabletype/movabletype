@@ -1,0 +1,7 @@
+<__trans phrase="Thanks for subscribing to notifications about updates to [_1]. Follow the link below to confirm your subscription:" params="<$mt:BlogName$>">
+
+<$mt:Var name="script_path"$>?__mode=confirm;email=<$mt:Var name="email" escape="url"$>;magic=<$mt:Var name="magic" escape="url"$>;blog_id=<$mt:BlogID$><mt:If name="redirect_url">;redirect=<$mt:Var name="redirect_url" escape="url"$><mt:Else><mt:If name="entry">;entry_id=<$mt:EntryID$></mt:If></mt:If>
+
+<__trans phrase="If the link is not clickable, just copy and paste it into your browser.">
+
+<$mt:Include module="<__trans phrase="Mail Footer">"$>

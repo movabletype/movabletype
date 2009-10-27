@@ -1,0 +1,195 @@
+label: Pico
+id: pico
+author_name: Six Apart, Ltd.
+author_link: http://www.sixapart.com/
+version: 1.0
+class: blog
+protected: 1
+description: <__trans phrase="Pico theme description">
+l10n_lexicon:
+    ja: l10n_ja.yaml
+thumbnail_file: thumb.png
+thumbnail_file_medium: thumb-medium.png
+thumbnail_file_small: thumb-small.png
+elements:
+    template_set:
+        component: core
+        importer: template_set
+        name: template set
+        data:
+            label: Pico
+            base_path: templates
+            require: 1
+            base_css: style_library/base.css
+            stylecatcher_libraries:
+                pico:
+                    url: {{support}}themestatic/pico/style_library/pico.html
+                    label: Pico Style library
+                    description_label: A collection of styles compatible with Pico themes.
+                    order: 1
+            templates:
+                global:email:
+                    comment_throttle:
+                        label: Comment throttle
+                    commenter_confirm:
+                        label: Commenter Confirm
+                    commenter_notify:
+                        label: Commenter Notify
+                    new-comment:
+                        label: New Comment
+                    new-ping:
+                        label: New Ping
+                    notify-entry:
+                        label: Entry Notify
+                    recover-password:
+                        label: Password Recovery
+                    verify-subscribe:
+                        label: Subscribe Verify
+                global:module:
+                    footer-email:
+                        label: Mail Footer
+                index:
+                    archive_index:
+                        label: Archive Index
+                        outfile: archives.html
+                        rebuild_me: 1
+                    feed_recent:
+                        label: 'Feed - Recent Entries'
+                        outfile: atom.xml
+                        rebuild_me: 1
+                    javascript:
+                        label: JavaScript
+                        outfile: mt.js
+                        rebuild_me: 1
+                    main_index:
+                        label: Main Index
+                        outfile: index.html
+                        rebuild_me: 1
+                    rsd:
+                        label: RSD
+                        outfile: rsd.xml
+                        rebuild_me: 1
+                    styles:
+                        label: Stylesheet
+                        outfile: styles.css
+                        rebuild_me: 1
+                individual:
+                    entry:
+                        label: Entry
+                        mappings:
+                            entry_archive:
+                                archive_type: Individual
+                archive:
+                    category_entry_listing:
+                        label: Category Entry Listing
+                        mappings:
+                            category:
+                                archive_type: Category
+                    monthly_entry_listing:
+                        label: Monthly Entry Listing
+                        mappings:
+                            monthly:
+                                archive_type: Monthly
+                module:
+                    banner_footer:
+                        label: Banner Footer
+                    banner_header:
+                        label: Banner Header
+                    navigation:
+                        label: Navigation
+                    comment_detail:
+                        label: Comment Detail
+                    comments:
+                        label: Comments
+                    entry_summary:
+                        label: Entry Summary
+                    html_head:
+                        label: HTML Head
+                    trackbacks:
+                        label: Trackbacks
+
+                page:
+                    page:
+                        label: Page
+                        mappings:
+                            page_archive:
+                                archive_type: Page
+                system:
+                    comment_listing:
+                        description_label: Improved listing of comments.
+                        label: Comment Listing
+                    comment_preview:
+                        description_label: Displays preview of comment.
+                        label: Comment Preview
+                    comment_response:
+                        description_label: 'Displays error, pending or confirmation message for comments.'
+                        label: Comment Response
+                    dynamic_error:
+                        description_label: Displays errors for dynamically published templates.
+                        label: Dynamic Error
+                    popup_image:
+                        description_label: Displays image when user clicks a popup-linked image.
+                        label: Popup Image
+                    search_results:
+                        description_label: Displays results of a search.
+                        label: Search Results
+                widget:
+                    about_this_page:
+                        label: About This Page
+                    archive_widgets_group:
+                        label: Archive Widgets Group
+                    author_archive_list:
+                        label: Author Archives
+                    calendar:
+                        label: Calendar
+                    category_archive_list:
+                        label: Category Archives
+                    creative_commons:
+                        label: Creative Commons
+                    current_author_monthly_archive_list:
+                        label: Current Author Monthly Archives
+                    current_category_monthly_archive_list:
+                        label: Current Category Monthly Archives
+                    date_based_author_archives:
+                        label: Date-Based Author Archives
+                    date_based_category_archives:
+                        label: Date-Based Category Archives
+                    main_index_widgets_group:
+                        label: Home Page Widgets Group
+                    monthly_archive_dropdown:
+                        label: Monthly Archives Dropdown
+                    monthly_archive_list:
+                        label: Monthly Archives
+                    openid:
+                        label: OpenID Accepted
+                    pages_list:
+                        label: Page Listing
+                    recent_assets:
+                        label: Recent Assets
+                    recent_comments:
+                        label: Recent Comments
+                    recent_entries:
+                        label: Recent Entries
+                    search:
+                        label: Search
+                    signin:
+                        label: Sign In
+                    syndication:
+                        label: Syndication
+                    tag_cloud:
+                        label: Tag Cloud
+                    technorati_search:
+                        label: Technorati Search
+                widgetset:
+                    related_content:
+                        label: 'Related Content'
+                        order: 1000
+                        widgets:
+                            - Search
+                            - Home Page Widgets Group
+                            - Archive Widgets Group
+                            - Page Listing
+                            - OpenID Accepted
+                            - Syndication
+                            - About This Page
+

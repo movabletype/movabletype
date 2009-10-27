@@ -1,0 +1,44 @@
+<mt:DateHeader>
+<h2 class="date-header"><$mt:EntryDate format="%x"$></h2>
+</mt:DateHeader>
+
+<div id="entry-<$mt:EntryID$>" class="entry-asset asset">
+    <h3 class="asset-header">
+        <a href="<$MTEntryPermalink$>"><$mt:EntryTitle$></a>
+    </h3>
+    <div class="asset-content">
+        <div class="asset-body">
+            <$mt:EntryBody$>
+        </div>
+<mt:If tag="EntryMore" convert_breaks="0">
+        <div class="entry-more-link">
+            <__trans phrase="Continue reading <a href="[_1]" rel="bookmark">[_2]</a>." params="<$mt:EntryPermalink$>#more%%<$mt:EntryTitle$>">
+        </div>
+</mt:If>
+    </div>
+    <div class="asset-footer">
+        <p class="asset-footer-info">
+            <span class="byline">
+<mt:If tag="EntryAuthorDisplayName">
+                <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$mt:EntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%X"$></abbr>">
+<mt:Else>
+                <abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%X"$></abbr>
+</mt:If>
+            </span>
+<mt:Unless name="hide_counts" eq="1">
+    <mt:IfCommentsActive>
+            <span class="separator">|</span> <a href="<$mt:EntryPermalink$>#comments"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></a>
+    </mt:IfCommentsActive>
+    <mt:IfPingsActive>
+            <span class="separator">|</span> <a href="<$mt:EntryPermalink$>#trackbacks"><$mt:EntryTrackbackCount singular="<__trans phrase="1 TrackBack">" plural="<__trans phrase="# TrackBacks">" none="<__trans phrase="No TrackBacks">"$></a>
+    </mt:IfPingsActive>
+</mt:Unless>
+        </p>
+<mt:EntryIfTagged>
+        <p class="asset-footer-tags"><__trans phrase="Tags"><span class="delimiter">:</span>
+            <mt:EntryTags glue='<span class="delimiter">,</span> '><a href="javascript:void(0)" onclick="location.href='<$mt:TagSearchLink encode_js="1"$>';return false;" rel="tag"><$mt:TagName$></a></mt:EntryTags>
+        </p>
+</mt:EntryIfTagged>
+    </div>
+</div>
+

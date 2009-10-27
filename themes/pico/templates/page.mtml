@@ -1,0 +1,74 @@
+<$mt:Var name="page_layout" value="layout-w-b"$>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <$mt:EntryTrackbackData$>
+    <$mt:Var name="comments_per_page" value="50"$>
+    <mt:If tag="EntryCommentCount" gt="$comments_per_page">
+    <script type="text/javascript">
+        MT.entryID = <$mt:PageID$>;
+        MT.commentsPerPage = <$mt:Var name="comments_per_page"$>;
+        MT.entryCommentCount = <$mt:EntryCommentCount$>;
+        MT.commentIds = [<mt:Comments sort_order="ascend" glue=","><mt:CommentID></mt:Comments>];
+    </script>
+    </mt:If>
+    <title><$mt:PageTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
+</head>
+<body id="<$mt:BlogThemeID$>" class="mt-page-archive">
+    <div id="container">
+        <div id="container-inner">
+
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+
+            <$mt:Include module="<__trans phrase="Navigation">"$>
+
+            <div id="content">
+                <div id="content-inner">
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+                            <div id="page-<$mt:PageID$>" class="page-asset asset">
+                                <div class="asset-header">
+                                    <h1 id="page-title" class="asset-name content-header"><$mt:PageTitle$></h1>
+                                </div>
+                                <div class="asset-content">
+<mt:If tag="PageBody">
+                                    <div class="asset-body">
+                                        <$mt:PageBody$>
+                                    </div>
+</mt:If>
+<mt:If tag="PageMore">
+                                    <div id="more" class="asset-more">
+                                        <$mt:PageMore$>
+                                    </div>
+</mt:If>
+                                </div>
+                                <div class="asset-footer"></div>
+                            </div>
+
+                    <$mt:Include module="<__trans phrase="Trackbacks">"$>
+                    <$mt:Include module="<__trans phrase="Comments">"$>
+
+                        </div>
+                    </div>
+
+                    <div id="beta">
+                        <div id="beta-inner">
+
+                            <$mt:WidgetSet name="<__trans phrase="Related Content">"$>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+
+        </div>
+    </div>
+</body>
+</html>
