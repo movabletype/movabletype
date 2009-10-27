@@ -85,7 +85,7 @@ for my $c_id ( @components ) {
             my $res;
             $c->error();
             eval { $res = $c->translate( $key, qw( 111 222 333 444 555 666 777 888 999 )) };
-            if ( $@ || $! || !defined $res ) {
+            if ( $@ || !defined $res ) {
                 $e++;
                 $total_errors++;
                 $res ||= '';
@@ -96,7 +96,6 @@ for my $c_id ( @components ) {
     |  trans: $val
 ERROR
                 $msg .= sprintf "    |   died: %s\n", $@ if $@;
-                $msg .= sprintf "    | syserr: %s\n", $! if $!;
                 $msg .= sprintf "    |  error: %s\n", $c->errstr if $c->errstr;
             }
             $i++;
