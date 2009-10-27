@@ -342,6 +342,7 @@ sub install_static_files {
 
 sub validate_versions {
     my $theme = shift;
+    my ($blog) = @_;
     my @elements = $theme->elements;
     my ( @errors, @warnings );
     my $requires = $theme->{required_components};
@@ -376,6 +377,15 @@ sub validate_versions {
     }
     for my $element ( @elements ) {
         my $result = $element->validate_version;
+        if ( !$result ) {
+            my $msg = MT->translate(
+                'Element \'[_1]\' cannot be applied because [_2]',
+                $element->{id},
+                $element->errstr,
+            );
+            $element->{require} ? push @errors, $msg : push @warnings, $msg;
+        }
+        my $result = $element->validate($element->importer, $theme, $blog);
         if ( !$result ) {
             my $msg = MT->translate(
                 'Element \'[_1]\' cannot be applied because [_2]',

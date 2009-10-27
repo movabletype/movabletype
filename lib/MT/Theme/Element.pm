@@ -84,6 +84,19 @@ sub validate_version {
     return 1;
 }
 
+sub validate {
+    my $element = shift;
+    my ( $importer, $theme, $blog ) = @_;
+    $importer ||= $element->importer
+        or die sprintf 'Theme element importer not found: %s', $element->errstr;
+    my $validator = $importer->{validator};
+    return 1 if !$validator;
+    if ( !ref $validator ) {
+        $validator = MT->handler_to_coderef($validator);
+    }
+    $validator->($element, $theme, $blog);
+}
+
 sub information_string {
     my $element = shift;
     my ($blog) = @_;

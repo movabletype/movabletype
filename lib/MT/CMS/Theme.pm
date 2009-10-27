@@ -30,11 +30,13 @@ sub list {
         my $current_theme = $blog->theme;
         if ( $blog->is_blog ) {
             $param{theme_loop} = _build_theme_table( current => $current_theme,
-                                                     classes => { blog => 1, both => 1 });
+                                                     classes => { blog => 1, both => 1 },
+                                                     blog    => $blog, );
         }
         else {
             $param{theme_loop} = _build_theme_table( current => $current_theme,
-                                                     classes => { website => 1, both => 1 } );
+                                                     classes => { website => 1, both => 1 },
+                                                     blog    => $blog, );
         }
         $param{current_theme_name} = $current_theme->label if $current_theme;
     }
@@ -73,7 +75,7 @@ sub _build_theme_table {
         $theme{theme_version} = $theme->version;
         $theme{theme_type} = $theme->{type};
         $theme{protected} = $theme->{protected};
-        my ($errors, $warnings) = $theme->validate_versions;
+        my ($errors, $warnings) = $theme->validate_versions($opts{blog});
         $theme{errors} = $errors;
         $theme{warnings} = $warnings;
         $theme{error_count} = scalar @$errors;
