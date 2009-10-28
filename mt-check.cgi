@@ -498,8 +498,11 @@ MSG
     my $dbi_is_okay = 0;
     for my $ref (@$list) {
         my($mod, $ver, $req, $desc) = @$ref;
-        if ('CODE' eq ref($desc)) {
+        if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
+        }
+        else {
+            $desc = $mt->translate($desc);
         }
         print_encode( "<div class=\"dependence-module\">\n" ) if $mod =~ m/^DBD::/;
         print_encode(  "    <h3>$mod" .

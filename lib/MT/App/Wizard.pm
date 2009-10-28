@@ -1089,6 +1089,12 @@ sub module_check {
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
         my ( $mod, $ver, $req, $desc, $name, $link ) = @$ref;
+        if ( 'CODE' eq ref($desc) ) {
+            $desc = $desc->();
+        }
+        else {
+            $desc = $self->translate($desc);
+        }
         eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
         if ($@) {
