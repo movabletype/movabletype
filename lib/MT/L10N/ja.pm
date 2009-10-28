@@ -4128,6 +4128,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_banlist.tmpl
 	'IP Banning Settings' => '禁止IPアドレスの設定',
 	'IP addresses' => 'IPアドレス',
+	'No IP Address is banned.' => '禁止IPリストがありません。',
 	'Delete selected IP Address (x)' => '選択されたIPアドレスを削除 (x)',
 	'You have added [_1] to your list of banned IP addresses.' => '禁止IPリストに[_1]を追加しました。',
 	'You have successfully deleted the selected IP addresses from the list.' => 'リストから選択したIPアドレスを削除しました。',
