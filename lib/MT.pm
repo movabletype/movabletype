@@ -507,7 +507,9 @@ sub log {
     $log->class('system')
       unless defined $log->class;
     $log->save();
-    print STDERR MT->translate( "Message: [_1]", $log->message ) . "\n"
+    print STDERR Encode::encode_utf8(
+        MT->translate( "Message: [_1]", $log->message ) . "\n"
+    )
       if $MT::DebugMode && ( $^O ne "MSWin32" );
 }
 my $plugin_full_path;
