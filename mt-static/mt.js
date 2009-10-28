@@ -190,7 +190,6 @@ function updateWidget(id) {
     args['json'] = '1';
     TC.Client.call({
         'load': function(c, responseText) { updatedWidget(id, responseText); },
-        'error': function() { showMsg("Error updating widget.", "widget-updated", "alert"); },
         'method': 'POST',
         'uri': ScriptURI,
         'arguments': args
@@ -204,7 +203,6 @@ function updatedWidget(id, responseText) {
     try {
         result = eval('(' + responseText + ')');
     } catch(e) {
-        showMsg("Error updating widget.", "widget-updated", "alert");
         return;
     }
     if (result.result.html) {
