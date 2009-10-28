@@ -1234,7 +1234,7 @@ sub dialog_select_weblog {
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
-        $row->{'link'} = $row->{site_url};
+        $row->{'link'} = $obj->site_url;
     };
 
     $app->listing(
