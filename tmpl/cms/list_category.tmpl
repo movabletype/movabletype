@@ -209,7 +209,7 @@ function setMoveMode (id) {
                     <div style="margin-left: <mt:var name="category_pixel_depth">px;">
                         <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
                         <mtapp:setting
-                            id="new_category"
+                            id="new-category"
                             label="$new_label"
                             label_class="inline field-no-header"
                             hint=""
@@ -247,7 +247,7 @@ function setMoveMode (id) {
                 <td style="padding: 5px">
                     <mt:setvarblock name="new_label"><__trans phrase="New [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
                     <mtapp:setting
-                        id="new_category"
+                        id="new-category"
                         label="$new_label"
                         label_class="inline field-no-header"
                         hint=""
@@ -285,6 +285,7 @@ function setMoveMode (id) {
         jQuery('a.mt-cancel-action').hide();
         jQuery('tr.selected').removeClass('selected');
         jQuery('input:checked').parents('tr').addClass('selected');
+        jQuery(this).parents('#new-category-field').find('input.text').val('');
         return false;
     });
 </mt:setvarblock>

@@ -254,6 +254,7 @@ function setMoveMode (id) {
         jQuery('a.mt-cancel-action').hide();
         jQuery('tr.selected').removeClass('selected');
         jQuery('input:checked').parents('tr').addClass('selected');
+        jQuery(this).parents('#new-category-field').find('input.text').val('');
         return false;
     });
 </mt:setvarblock>
