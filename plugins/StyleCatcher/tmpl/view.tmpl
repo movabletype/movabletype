@@ -261,7 +261,7 @@
         } catch (e) {
         }
         if (res && res.error) {
-            showMsg("<__trans phrase="Error applying theme: " escape="js">" + res.error, "theme-applied", "error");
+            showMsg("<p><__trans phrase="Error applying theme: " escape="js"></p>" + res.error, "theme-applied", "error");
             TC.removeClassName(btn, "disabled-button");
             btn.disabled = false;
             return;
@@ -328,9 +328,9 @@
         selectDesign();
 
         if (layout_changed && (!dynamic_blog)) {
-            showMsg("<__trans phrase="The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout." escape="js">", 'theme-applied', "info", "all", blog_id);
+            showMsg("<p><__trans phrase="The selected theme has been applied, but as you have changed the layout, you will need to republish your blog to apply the new layout." escape="js"></p>", 'theme-applied', "info", "all", blog_id);
         } else {
-            showMsg("<__trans phrase="The selected theme has been applied!" escape="js">", 'theme-applied', "info");
+            showMsg("<p><__trans phrase="The selected theme has been applied!" escape="js"></p>", 'theme-applied', "info");
         }
     }
 
@@ -346,11 +346,11 @@
         try {
             data = eval('('+styles+')');
         } catch (e) {
-            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js">".replace(/ERROR/, styles), "error", "error");
+            showMsg("<p><__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js"></p>".replace(/ERROR/, styles), "error", "error");
             return;
         }
         if (data.error) {
-            showMsg("<__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js">".replace(/ERROR/, data.error), "error", "error");
+            showMsg("<p><__trans phrase="Error loading themes! -- [_1]" params="ERROR" escape="js"></p>".replace(/ERROR/, data.error), "error", "error");
             return;
         }
         log(data.result);

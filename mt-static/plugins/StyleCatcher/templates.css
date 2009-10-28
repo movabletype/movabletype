@@ -21,6 +21,10 @@ a {
 }
 .tc-mixer-selected { 
     background-color: #dcdddd;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 .tc-mixer-selected .title { 
     font-weight: bold;
@@ -65,6 +69,10 @@ a {
 }
 #display-details .tc-mixer-selected { 
     background: transparent;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
 }
 
 /* - Layout */
