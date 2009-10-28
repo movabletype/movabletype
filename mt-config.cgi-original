@@ -21,10 +21,10 @@ CGIPath    http://www.example.com/cgi-bin/mt/
 StaticWebPath    http://www.example.com/mt-static
 
 #================ DATABASE SETTINGS ==================
-#   REMOVE all sections below that refer to databases 
-#   other than the one you will be using.
+#   CHANGE setting below that refer to databases 
+#   you will be using.
 
-##### MYSQL ( Recommended ) #####
+##### MYSQL #####
 ObjectDriver DBI::mysql
 Database DATABASE_NAME
 DBUser DATABASE_USERNAME
