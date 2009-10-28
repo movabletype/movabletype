@@ -17,7 +17,7 @@ function smarty_function_mtcaptchafields($args, &$ctx) {
 
     $provider = CaptchaFactory::get_provider($key);
     if (isset($provider)) {
-        $fields = $provider->form_fields($blog['blog_id']);
+        $fields = $provider->form_fields($blog->blog_id);
         $fields = preg_replace('/[\r\n]/', '', $fields);
         $fields = preg_replace("/[\\']/", '\\"', $fields);
         return $fields;
