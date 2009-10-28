@@ -127,22 +127,26 @@
                                 <__trans phrase="Results tagged &ldquo;[_1]&rdquo;" params="<$mt:SearchString$>">
     </mt:IfTagSearch>
                             </h1>
-                            <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$mt:SearchString$>"></p>
+                            <div class="search-results-container no-search-result">
+                                <p><__trans phrase="No results found for &ldquo;[_1]&rdquo;." params="<$mt:SearchString$>"></p>
+                            </div>
 </mt:NoSearchResults>
 
 
 <mt:Ignore><!-- Display instructions for searching if search script was accessed without a query --></mt:Ignore>
 <mt:NoSearch>
                             <h1 id="page-title" class="search-results-header"><__trans phrase="Instructions"></h1>
-                            <p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
-                            <blockquote>
-                                <p><code>"<__trans phrase="movable type">"</code></p>
-                            </blockquote>
-                            <p><__trans phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
-                            <blockquote>
-                                <p><code><__trans phrase="personal OR publishing"></code></p>
-                                <p><code><__trans phrase="publishing NOT personal"></code></p>
-                            </blockquote>
+                            <div class="search-results-container no-search">
+                                <p><__trans phrase="By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:"></p>
+                                <blockquote>
+                                    <p><code>"<__trans phrase="movable type">"</code></p>
+                                </blockquote>
+                                <p><__trans phrase="The search engine also supports AND, OR, and NOT keywords to specify boolean expressions:"></p>
+                                <blockquote>
+                                    <p><code><__trans phrase="personal OR publishing"></code></p>
+                                    <p><code><__trans phrase="publishing NOT personal"></code></p>
+                                </blockquote>
+                            </div>
 </mt:NoSearch>
 
 <mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>

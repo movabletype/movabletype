@@ -16,6 +16,26 @@ table, caption, tbody, tfoot, thead, tr, th, td {
     font-family: inherit;
     vertical-align: baseline;
 }
+
+/* Content */
+
+a:link, a:visited {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6, p, pre, blockquote, fieldset, ul, ol, dl {
+    margin-bottom: .75em;
+}
+
+blockquote, ol, ul {
+    margin-left: 30px;
+}
+
+ol { list-style: decimal outside; }
+ul { list-style: disc outside; }
+.item { list-style: none; }
+
+
 /* remember to define focus styles! */
 :focus {
     outline: 0;
@@ -421,6 +441,14 @@ strong {
 #comment-preview-content .content-header,
 #comment-respons-content .content-header {
     margin: 0 0 15px;
+}
+
+
+/* Search */
+
+.search-results-container.no-search-result, 
+.search-results-container.no-search { 
+    margin: 0 190px 15px;
 }
 
 
