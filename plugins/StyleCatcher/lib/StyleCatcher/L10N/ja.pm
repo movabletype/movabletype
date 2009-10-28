@@ -15,8 +15,21 @@ use vars qw( %Lexicon );
 
 %Lexicon = (
 
+## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
+	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',
+	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => '[_1] フォルダが作成できません。\'themes\' フォルダが書き込み可能か確認してください。',
+	'Successfully applied new theme selection.' => '新しいテーマを適用しました。',
+	'Invalid URL: [_1]' => 'URLが不正です: [_1]',
+	'(Untitled)' => '(タイトルなし)',
+
+## plugins/StyleCatcher/config.yaml
+	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
+	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
+	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
+	'Styles' => 'スタイル',
+
 ## plugins/StyleCatcher/tmpl/view.tmpl
-	'Select a Style' => 'スタイルを選択',
+	'Select a [_1] Style' => '[_1]スタイルの選択',
 	'3-Columns, Wide, Thin, Thin' => '3カラム、大・小・小',
 	'3-Columns, Thin, Wide, Thin' => '3カラム、小・大・小',
 	'3-Columns, Thin, Thin, Wide' => '3カラム、小・小・大',
@@ -44,18 +57,6 @@ use vars qw( %Lexicon );
 	'More Styles' => 'その他のスタイル',
 	'Selected Design' => '選択されたデザイン',
 	'Layout' => 'レイアウト',
-
-## plugins/StyleCatcher/config.yaml
-	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks. To find out more about Movable Type styles, or for new sources for styles, visit the <a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a> page.' => 'StyleCatcherを使うと、ほんの数回クリックするだけでスタイルを探してブログに適用することができます。Movable Typeのスタイルについての詳細やスタイルの配布元については、<a href=\'http://www.sixapart.com/movabletype/styles\'>Movable Type styles</a>のページ（英語）へアクセスしてください。',
-	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
-	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
-	'Styles' => 'スタイル',
-
-## plugins/StyleCatcher/lib/StyleCatcher/CMS.pm
-	'Your mt-static directory could not be found. Please configure \'StaticFilePath\' to continue.' => 'mt-staticディレクトリが見つかりませんでした。StaticFilePathを設定してください。',
-	'Could not create [_1] folder - Check that your \'themes\' folder is webserver-writable.' => '[_1] フォルダが作成できません。\'themes\' フォルダが書き込み可能か確認してください。',
-	'Successfully applied new theme selection.' => '新しいテーマを適用しました。',
-	'Invalid URL: [_1]' => 'URLが不正です: [_1]',
 );
 
 1;
