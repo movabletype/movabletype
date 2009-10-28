@@ -997,7 +997,7 @@ sub _upload_file {
             error => $app->translate( "Invalid filename '[_1]'", $basename ) );
     }
     $basename = Encode::is_utf8( $basename ) ? $basename
-              :                                Encode::decode( $app->charset, $basename )
+              :                                Encode::decode( $app->charset, File::Basename::basename($basename) )
               ;
 
     if (my $asset_type = $upload_param{require_type}) {
