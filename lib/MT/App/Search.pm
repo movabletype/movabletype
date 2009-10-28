@@ -827,7 +827,7 @@ sub renderjs {
     my $content = $tmpl->output
         or return $app->json_error( $tmpl->errstr );
 
-    my $next_link = $ctx->_hdlr_next_link();
+    my $next_link = $ctx->invoke_handler('nextlink');
     return $app->json_result(
         { content => $content, next_url => $next_link } );
 }
