@@ -24,7 +24,7 @@ elements:
             stylecatcher_libraries:
                 pico:
                     url: '{{support}}themestatic/pico/style_library/pico.html'
-                    label: Pico Style library
+                    label: Pico Style Library
                     description_label: A collection of styles compatible with Pico themes.
                     order: 1
             templates:
