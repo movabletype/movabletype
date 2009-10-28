@@ -502,6 +502,8 @@ sub build_tag_table {
     my $blog_ids = $app->_load_child_blog_ids($blog_id);
     push @$blog_ids, $blog_id;
 
+    my $tag_delim   = chr( $app->user->entry_prefs->{tag_delim} );
+
     my @data;
     while ( my $tag = $iter->() ) {
         my $count = $pkg->tagged_count(
@@ -512,9 +514,13 @@ sub build_tag_table {
             }
         );
         $count ||= 0;
+        my $name = $tag->name;
+        if ( $name =~ m/$tag_delim/ ) {
+            $name = '"'.$name.'"';
+        }
         my $row = {
             tag_id    => $tag->id,
-            tag_name  => $tag->name,
+            tag_name  => $name,
             tag_count => $count,
             object    => $tag,
         };
