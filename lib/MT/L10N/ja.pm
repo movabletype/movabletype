@@ -908,7 +908,7 @@ use vars qw( @ISA %Lexicon );
 	'Bad RevisioningDriver config \'[_1]\': [_2]' => 'リビジョンドライバー([_1])の設定が正しくありません: [_2]',
 	'Revision not found: [_1]' => 'リビジョンがありません: [_1]',
 	'There aren\'t the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
-	'Did not get two [_1]' => '[_オブジェクト1]を取得できませんでした。',
+	'Did not get two [_1]' => '二つの[_1]を取得できませんでした。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	'Revision Number' => 'リビジョン番号',
 
@@ -1103,7 +1103,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Import.pm
 	'Can\'t rewind' => 'ポインタを先頭に移動できません',
-	'Can\'t open directory \'[_1]\': [_2]' => 'ディレクトリ\'[_1]\'を開けませんでした] [_2]',
+	'Can\'t open directory \'[_1]\': [_2]' => 'ディレクトリ\'[_1]\'を開けませんでした: [_2]',
 	'No readable files could be found in your import directory [_1].' => '読み取れないファイルがありました: [_1]',
 	'Importing entries from file \'[_1]\'' => 'ファイル\'[_1]\'からインポートしています。',
 	'Couldn\'t resolve import format [_1]' => 'インポート形式[_1]を処理できませんでした。',
@@ -1765,7 +1765,7 @@ use vars qw( @ISA %Lexicon );
 	'General Settings' => '全般設定',
 	'New Blog' => '新しいブログ',
 	'[_1] Activity Feed' => '[_1]アクティビティーフィード',
-	'Can\'t load template #[_1].' => 'テンプレート: [_1」をロードできませんでした。',
+	'Can\'t load template #[_1].' => 'テンプレート: [_1]をロードできませんでした。',
 	'index template \'[_1]\'' => 'インデックステンプレート「[_1]」',
 	'[_1] \'[_2]\'' => '[_1]「[_2]」',
 	'Publish Site' => 'サイトを再構築',
