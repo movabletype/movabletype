@@ -6,7 +6,7 @@
 
 # Original Copyright (c) 2004-2006 David Raynes
 
-package MultiBlog::L10N::ja;
+package MultiBlog::L10N::nl;
 
 use strict;
 use utf8;
