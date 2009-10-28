@@ -385,7 +385,7 @@ sub validate_versions {
             );
             $element->{require} ? push @errors, $msg : push @warnings, $msg;
         }
-        my $result = $element->validate($element->importer, $theme, $blog);
+        $result = $element->validate($element->importer, $theme, $blog);
         if ( !$result ) {
             my $msg = MT->translate(
                 'Element \'[_1]\' cannot be applied because [_2]',
