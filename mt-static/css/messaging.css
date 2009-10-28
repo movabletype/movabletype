@@ -1,5 +1,5 @@
 /* - Status Message */
-.msg {
+.msg { 
     position: relative;
     margin: 10px 0;
     padding: 0.8em;
@@ -10,18 +10,20 @@
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
-.msg-success {
+.msg-success { 
     background-color: #cee4ae;
 }
-.msg-error, 
-.msg-alert {
+.msg-alert { 
     background-color: #fef263;
 }
-.msg-info {
+.msg-error { 
+    background-color: #f6bfbc;
+}
+.msg-info { 
     background-color: #e6eae3;
 }
 
-.msg-publishing {
+.msg-publishing { 
     padding-left: 40px;
     background-color: #fff;
     background-image: url('../images/ani-rebuild.gif');
@@ -40,23 +42,23 @@
 }
 
 #sign-in .msg p, 
-#system-allow-pings p,
+#system-allow-pings p, 
 #system-allow-comments p,
-.msg-error p,
-.rebuilding-screen .msg p,
-.restore-publishing-config .msg p,
-.insert-asset-dialog .msg p,
-.edit-template .msg-info p,
-.rebuilding-screen .msg-info p,
-.pinging-screen .msg-info p,
-.list-notification .msg-info p,
-.zero-state p {
+.msg-error p, 
+.rebuilding-screen .msg p, 
+.restore-publishing-config .msg p, 
+.insert-asset-dialog .msg p, 
+.edit-template .msg-info p, 
+.rebuilding-screen .msg-info p, 
+.pinging-screen .msg-info p, 
+.list-notification .msg-info p, 
+.zero-state p { 
     margin: 0;
 }
 
-.msg-error img.mt-close-msg,
-.insert-asset-dialog .msg img.mt-close-msg,
-.zero-state img.mt-close-msg {
+.msg-error img.mt-close-msg, 
+.insert-asset-dialog .msg img.mt-close-msg, 
+.zero-state img.mt-close-msg { 
     display: none;
 }
 
@@ -107,28 +109,31 @@ p.zero-state {
 }
 
 /* - Debug Panel Messages */
-.debug-panel {
+.debug-panel { 
     position: absolute;
     width: 100%;
-    border-top: 1px dotted #f55;
-    margin-top: 5px;
-    background-color: #daa;
+    border-top: 1px solid #c8c2be;
+    background-color: #f6bfbc;
     text-align: left;
 }
-.debug-panel h3 {
+
+.debug-panel h3 { 
     padding: 5px;
     font-size: 12px;
     margin: 0;
-    background-color: #f55;
-    color: #fff;
+    background-color: #ec6d71;
+    color: #f8fbf8;
+    text-shadow: none;
 }
 
 .debug-panel-inner li {
+    margin: 0;
+    padding: 0.2em 0.5em;
     white-space: pre;
 }
 
 .debug-panel-inner li:hover {
-    background-color: #eaa;
+    background-color: #f2a0a1;
 }
 
 .debug-panel-inner {
