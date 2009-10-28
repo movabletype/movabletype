@@ -218,7 +218,8 @@ $.mtEditSitePath = function() {
     $('.blog-path-text').each(function() {
         var text = $(this).val();
         if (text.match(/^\//)) {
-            $(this).removeClass('extra-path');
+            $(this).removeClass('extra-path')
+                .parents('.site-path-field').find('span.website-path').hide();
         }
     });
     $('.blog-path-text').keyup(function() {
