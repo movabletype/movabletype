@@ -514,7 +514,8 @@ sub list_member {
             params   => $param,
             args     => $args,
             code     => $hasher,
-            ( !defined( $app->param('filter_key') ) || $app->param('filter_key') eq 'author' )
+            ( ( !defined( $app->param('filter_key') ) && !defined( $app->param('filter') ) )
+              || $app->param('filter_key') eq 'author' )
               ? ( pre_build => sub {
                     my ($param) = @_;
                     my $data = $param->{object_loop} || [];
