@@ -70,6 +70,9 @@ sub view {
     for my $lib ( @$stylelibrary ) {
         $lib->{url} =~ s/{{static}}/$static_webpath/i;
         $lib->{url} =~ s/{{support}}/$support_url/i;
+        if ( $lib->{url} =~ m!^/! ) {
+            $lib->{url} = $app->base . $lib->{url};
+        }
     }
     my $theme_data   = make_themes();
     my $styled_blogs = fetch_blogs();
