@@ -69,6 +69,7 @@
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <$mtapp:ListFilters$>
+<mt:if name="scope_type" eq="blog">
         <ul>
             <li>
         <mt:if name="feed_url">
@@ -80,6 +81,7 @@
         </mt:if>
             </li>
         </ul>
+</mt:if>
     </mtapp:widget>
     <$mtapp:PageActions from="$mode"$>
 </mt:setvarblock>
