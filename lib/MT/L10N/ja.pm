@@ -4272,6 +4272,8 @@ use vars qw( @ISA %Lexicon );
 	'All Themes' => 'テーマの一覧',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
+    'Some error occured while applying theme.' => 'テーマの適用中にエラーがありました。',
+    'see more detail.' => 'エラーの詳細',
 	'Failed' => '失敗',
 	'Current Theme' => '現在のテーマ',
 	'In Use' => '利用中',
