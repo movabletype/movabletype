@@ -52,7 +52,11 @@
     <div class="theme-status">
 
     <mt:if name="errors">
-        <span class="alert-error-inline icon-left icon-error"><__trans phrase="Failed"></span>
+        <span class="alert-erroricon-left icon-error"><__trans phrase="Failed"></span>
+    </mt:if>
+
+    <mt:if name="warnings">
+        <span class="alert-warning icon-left icon-warning"><a href="#" class="theme-detail-link"><__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">"></a></span>
     </mt:if>
 
     <mt:if name="blog_id">
@@ -210,10 +214,10 @@
 </mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('a.theme-detail-link').click(function() {
+    jQuery('a.theme-detail-link').click(function(event) {
         jQuery('.theme').not($(this).parents('.theme')).removeClass('theme-expanded')
         jQuery(this).parents('.theme').toggleClass('theme-expanded');
-        return false;
+        event.preventDefault();
     });
 
     jQuery.each(theme_ids, function() {

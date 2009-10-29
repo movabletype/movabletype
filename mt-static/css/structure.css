@@ -3487,7 +3487,6 @@ input#system_performance_logging_threshold {
     font-size: 11px;
 }
 #list-plugins .plugin-status a.button {
-    display: inline-block;
     margin: -3px 0 0 5px;
     text-align: center;
 }
@@ -3565,6 +3564,16 @@ input#system_performance_logging_threshold {
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+#list-themes .theme-status span, 
+#list-themes .theme-status a.button {
+    margin: 0 0 0 5px;
+    text-align: center;
+}
+
+#list-themes .theme-status a { 
+    color: #2b2b2b;
 }
 
 #list-themes .theme .picture.small { 
