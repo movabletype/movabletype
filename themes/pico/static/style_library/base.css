@@ -469,9 +469,20 @@ strong {
     text-decoration: none;
 }
 .widget ul li {
-    float: left;
+    display: inline;
     margin-right: 10px;
 }
+
+.widget-tag-cloud .rank-1  { font-size: 1.75em; }
+.widget-tag-cloud .rank-2  { font-size: 1.75em; }
+.widget-tag-cloud .rank-3  { font-size: 1.625em; }
+.widget-tag-cloud .rank-4  { font-size: 1.5em; }
+.widget-tag-cloud .rank-5  { font-size: 1.375em; }
+.widget-tag-cloud .rank-6  { font-size: 1.25em; }
+.widget-tag-cloud .rank-7  { font-size: 1.125em; }
+.widget-tag-cloud .rank-8  { font-size: 1em; }
+.widget-tag-cloud .rank-9  { font-size: 0.95em; }
+.widget-tag-cloud .rank-10 { font-size: 0.9em; }
 
 .widget-recent-assets .item {
     width: 74px;
@@ -481,6 +492,7 @@ strong {
 .widget-recent-assets .item img {
     border: 1px solid #ccc;
 }
+
 
 /* footer */
 
