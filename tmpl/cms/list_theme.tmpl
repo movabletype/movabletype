@@ -50,15 +50,15 @@
 <div id="theme-<mt:var name="id">" class="theme<mt:if name="current"> current-theme</mt:if><mt:if name="errors"> disabled</mt:if>">
 
     <div class="theme-status">
-
-    <mt:if name="errors">
-        <span class="alert-erroricon-left icon-error"><__trans phrase="Failed"></span>
-    </mt:if>
-
-    <mt:if name="warnings">
-        <span class="alert-warning icon-left icon-warning"><a href="#" class="theme-detail-link"><__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">"></a></span>
-    </mt:if>
-
+    <mt:unless name="current">
+        <mt:if name="errors">
+            <span class="alert-erroricon-left icon-error"><__trans phrase="Failed"></span>
+        </mt:if>
+    
+        <mt:if name="warnings">
+            <span class="alert-warning icon-left icon-warning"><a href="#" class="theme-detail-link"><__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">"></a></span>
+        </mt:if>
+    </mt:unless>
     <mt:if name="blog_id">
         <mt:unless name="current">
             <mt:unless name="errors">
@@ -111,59 +111,64 @@
         <p class="description"><mt:var name="description" escape="html" nl2br="1"></p>
     </mt:if>
 
-    <mt:if name="errors">
-        <p class="error-text"><a href="#theme-<mt:var name="id">-errors" class="theme-detail-link"><__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">"></p>
-    </mt:if>
-
+    <mt:unless name="current">
+        <mt:if name="errors">
+            <p class="error-text"><a href="#theme-<mt:var name="id">-errors" class="theme-detail-link"><__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">"></p>
+        </mt:if>
+    </mt:unless>
     </div>
 
     <div id="theme-<mt:var name="id">-details" class="theme-details">
 
         <ul class="theme-tabs-list">
-    <mt:if name="errors">
-            <li><a href="#theme-<mt:var name="id">-errors"><__trans phrase="Errors"></a></li>
-    </mt:if>
-    <mt:if name="warnings">
-            <li><a href="#theme-<mt:var name="id">-warnings"><__trans phrase="Warnings"></a></li>
-    </mt:if>
+    <mt:unless name="current">
+        <mt:if name="errors">
+                <li><a href="#theme-<mt:var name="id">-errors"><__trans phrase="Errors"></a></li>
+        </mt:if>
+        <mt:if name="warnings">
+                <li><a href="#theme-<mt:var name="id">-warnings"><__trans phrase="Warnings"></a></li>
+        </mt:if>
+    </mt:unless>
     <mt:if name="info">
             <li><a href="#theme-<mt:var name="id">-info"><__trans phrase="Info"></a></li>
     </mt:if>
         </ul>
 
-    <mt:if name="errors">
-        <div id="theme-<mt:var name="id">-errors" class="theme-errors theme-info">
-            <h4><__trans phrase="Theme Errors"></h4>
-            <mtapp:statusmsg
-                id="saved-added"
-                class="error"
-                can_close="0">
-                <p><__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">"></p>
-            </mtapp:statusmsg>
-            <ul>
-            <mt:loop name="errors">
-               <li><mt:var name="__value__"></li>
-            </mt:loop>
-            </ul>
-        </div>
-    </mt:if>
-
-    <mt:if name="warnings">
-        <div id="theme-<mt:var name="id">-warnings" class="theme-warnings theme-info">
-            <h4><__trans phrase="Theme Warnings"></h4>
-            <mtapp:statusmsg
-                id="saved-added"
-                class="alert"
-                can_close="0">
-                <p><__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">"></p>
-            </mtapp:statusmsg>
-            <ul>
-            <mt:loop name="warnings">
-                <li><mt:var name="__value__"></li>
-            </mt:loop>
-            </ul>
-        </div>
-    </mt:if>
+    <mt:unless name="current">
+        <mt:if name="errors">
+            <div id="theme-<mt:var name="id">-errors" class="theme-errors theme-info">
+                <h4><__trans phrase="Theme Errors"></h4>
+                <mtapp:statusmsg
+                    id="saved-added"
+                    class="error"
+                    can_close="0">
+                    <p><__trans phrase="This theme cannot be applied to the website due to [_1] errors" params="<mt:var name="error_count">"></p>
+                </mtapp:statusmsg>
+                <ul>
+                <mt:loop name="errors">
+                   <li><mt:var name="__value__"></li>
+                </mt:loop>
+                </ul>
+            </div>
+        </mt:if>
+    
+        <mt:if name="warnings">
+            <div id="theme-<mt:var name="id">-warnings" class="theme-warnings theme-info">
+                <h4><__trans phrase="Theme Warnings"></h4>
+                <mtapp:statusmsg
+                    id="saved-added"
+                    class="alert"
+                    can_close="0">
+                    <p><__trans phrase="Portions of this theme cannot be applied to the website. [_1] elements will be skipped." params="<mt:var name="warning_count">"></p>
+                </mtapp:statusmsg>
+                <ul>
+                <mt:loop name="warnings">
+                    <li><mt:var name="__value__"></li>
+                </mt:loop>
+                </ul>
+            </div>
+        </mt:if>
+    </mt:unless>
 
     <mt:if name="info">
         <div id="theme-<mt:var name="id">-info" class="theme-info">
