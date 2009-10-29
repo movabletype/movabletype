@@ -403,7 +403,7 @@ MT.util = function () {
 		
 		if (found) {
 		  M.log(c.DEBUG,found);
-			if (!M.getEl(found[0]).hasOwnProperty('className')) {
+			if (!Object.prototype.hasOwnProperty.call(M.getEl(found[0]), 'className')) {
 				if (_findIdMatch(found[1])) {
     			pageNum = Math.floor(commentArrId / commentsPerPage) + 1;
     			M.log(c.DEBUG,'Comment Array Id: ' + commentArrId);
