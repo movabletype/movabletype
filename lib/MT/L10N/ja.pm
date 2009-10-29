@@ -2588,10 +2588,10 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/verify-subscribe.mtml
 
 ## themes/pico/theme.yaml
-	'Pico theme description' => '', # Translate - New
+	'Pico is the microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we\'ve moved the sidebars below the list of posts.' => 'Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。',
 	'Pico' => 'Pico',
-	'Pico Style Library' => '', # Translate - New
-	'A collection of styles compatible with Pico themes.' => '', # Translate - New
+	'Pico Styles' => 'Picoスタイル',
+	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
 
 ## search_templates/comments.tmpl
 	'Search for new comments from:' => 'コメントを検索:',
