@@ -209,7 +209,7 @@ sub this_is_you_widget {
             status    => MT::Entry::RELEASE(),
         },
         {
-            sort      => 'authored_on',
+            sort      => 'created_on',
             direction => 'descend',
             limit     => 1,
         }
@@ -218,7 +218,7 @@ sub this_is_you_widget {
         $param->{last_post_id}      = $last_post->id;
         $param->{last_post_blog_id} = $last_post->blog_id;
         $param->{last_post_blog_name} = encode_html($last_post->blog->name);
-        $param->{last_post_ts}      = $last_post->authored_on;
+        $param->{last_post_ts}      = $last_post->created_on;
         my $perms = MT::Permission->load( 
             { blog_id => $last_post->blog_id, author_id => $app->user->id } );
         $param->{last_post_can_edit}
