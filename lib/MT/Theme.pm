@@ -299,7 +299,7 @@ sub apply {
     ## also do copy static files to mt-static directory.
     my $src_dir   = $theme->{static_path} || 'static';
     my $src_path  = File::Spec->catdir($theme->path, $src_dir);
-    my $dest_path = File::Spec->catdir(MT->app->support_directory_path, 'themestatic', $theme->id );
+    my $dest_path = File::Spec->catdir(MT->app->support_directory_path, 'theme_static', $theme->id );
 
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
