@@ -10,6 +10,7 @@ package Markdown;
 require 5.006_000;
 use strict;
 use warnings;
+use bytes;
 
 use Digest::MD5 qw(md5_hex);
 use vars qw($VERSION);
