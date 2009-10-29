@@ -62,10 +62,6 @@ sub preprocess_native_tags {
         $args->{$mode} = $ctx->stash('multiblog_blog_ids');        
     }
 
-    # Save local blog ID for all tags other than
-    # MTMultiBlog since that tag handles it itself.
-    local $ctx->{__stash}{local_blog_id} = $ctx->stash('blog_id') 
-        unless $ctx->stash('multiblog_context');
     # Remove local blog ID from MTTags since it is cross-blog
     # and hence MTMultiBlogIfLocalBlog doesn't make sense there.    
     local $ctx->{__stash}{local_blog_id} = 0 if $tag eq 'tags';
