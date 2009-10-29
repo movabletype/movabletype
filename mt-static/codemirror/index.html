@@ -59,7 +59,8 @@ parsers...</p>
   <li><a href="contrib/php/index.html">HTML+PHP mixed-mode</a> (courtesy of <a href="contrib/php/LICENSE">Yahoo!</a>)</li>
   <li><a href="contrib/python/index.html">Python</a> (courtesy of <a href="contrib/python/LICENSE">Timothy Farrell</a>)</li>
   <li><a href="contrib/lua/index.html">Lua</a> (courtesy of <a href="http://francio.pl/">Franciszek Wawrzak</a>)</li>
-  <li><a href="http://stuff.hantl.cz/ruby-in-codemirror/">Ruby</a> (by Michal Hantl, <a href="http://github.com/hakunin/ruby-in-codemirror/tree/master">unfinished</a>)</li>
+  <li><a href="http://d.hantl.cz/d/ruby-in-codemirror/">Ruby</a> (by Michal Hantl, <a href="http://github.com/hakunin/ruby-in-codemirror/tree/master">unfinished</a>)</li>
+  <li><a href="contrib/sql/index.html">SQL</a> (courtesy of John Benediktsson)</li>
 </ul>
 
 <p>Or take a look at some real-world uses of the system...</p>
@@ -77,17 +78,23 @@ parsers...</p>
 
 <h2>Releases</h2>
 
+<p class="rel"><em>23-09-2009</em>: <a
+href="http://marijn.haverbeke.nl/codemirror/codemirror-0.64.zip">Version
+0.64</a>: Solves some issues introduced by the paste-handling changes
+from the previous release. Adds <code>setSpellcheck</code>,
+<code>setTextWrapping</code>, <code>setIndentUnit</code>,
+<code>setUndoDepth</code>, <code>setTabMode</code>, and
+<code>setLineNumbers</code> to customise a running editor. Introduces
+an <a href="contrib/sql/index.html">SQL</a> parser. Fixes a few small
+problems in the <a href="contrib/python/index.html">Python</a> parser.
+And, as usual, add workarounds for various newly discovered browser
+incompatibilities.</p>
+
 <p class="rel"><em>31-08-2009</em>: <a
 href="http://marijn.haverbeke.nl/codemirror/codemirror-0.63.zip">Version
 0.63</a>: Overhaul of paste-handling (less fragile), fixes for several
 serious IE8 issues (cursor jumping, end-of-document bugs) and a number
-of small problems.
-
-Introduces <a href="contrib/python/index.html">Python</a>
-and <a href="contrib/lua/index.html">Lua</a> parsers. Add
-<code>setParser</code> (on-the-fly mode changing) and
-<code>clearHistory</code> methods. Make parsing passes time-based
-instead of lines-based (see the <code>passTime</code> option).</p>
+of small problems.</p>
 
 <p class="rel"><em>30-05-2009</em>: <a
 href="http://marijn.haverbeke.nl/codemirror/codemirror-0.62.zip">Version

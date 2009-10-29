@@ -80,13 +80,13 @@ var Editor = (function(){
         if (text.length) leaving = false;
         result.push(node);
       }
-      else if (node.nodeName == "BR" && node.childNodes.length == 0) {
+      else if (isBR(node) && node.childNodes.length == 0) {
         leaving = true;
         result.push(node);
       }
       else {
         forEach(node.childNodes, simplifyNode);
-        if (!leaving && newlineElements.hasOwnProperty(node.nodeName)) {
+        if (!leaving && newlineElements.hasOwnProperty(node.nodeName.toUpperCase())) {
           leaving = true;
           if (!atEnd || !top)
             result.push(doc.createElement("BR"));
@@ -175,7 +175,7 @@ var Editor = (function(){
         nodeQueue.push(node);
         return yield(node.currentText, c);
       }
-      else if (node.nodeName == "BR") {
+      else if (isBR(node)) {
         nodeQueue.push(node);
         return yield("\n", c);
       }
@@ -195,23 +195,20 @@ var Editor = (function(){
 
   // Determine the text size of a processed node.
   function nodeSize(node) {
-    if (node.nodeName == "BR")
-      return 1;
-    else
-      return node.currentText.length;
+    return isBR(node) ? 1 : node.currentText.length;
   }
 
   // Search backwards through the top-level nodes until the next BR or
   // the start of the frame.
   function startOfLine(node) {
-    while (node && node.nodeName != "BR") node = node.previousSibling;
+    while (node && !isBR(node)) node = node.previousSibling;
     return node;
   }
   function endOfLine(node, container) {
     if (!node) node = container.firstChild;
-    else if (node.nodeName == "BR") node = node.nextSibling;
+    else if (isBR(node)) node = node.nextSibling;
 
-    while (node && node.nodeName != "BR") node = node.nextSibling;
+    while (node && !isBR(node)) node = node.nextSibling;
     return node;
   }
 
@@ -223,8 +220,10 @@ var Editor = (function(){
   // indicating whether anything was found, and can be called again to
   // skip to the next find. Use the select and replace methods to
   // actually do something with the found locations.
-  function SearchCursor(editor, string, fromCursor) {
+  function SearchCursor(editor, string, fromCursor, caseFold) {
     this.editor = editor;
+    this.caseFold = caseFold;
+    if (caseFold) string = string.toLowerCase();
     this.history = editor.history;
     this.history.commit();
 
@@ -252,7 +251,8 @@ var Editor = (function(){
       // For one-line strings, searching can be done simply by calling
       // indexOf on the current line.
       function() {
-        var match = cleanText(self.history.textAfter(self.line).slice(self.offset)).indexOf(string);
+        var line = cleanText(self.history.textAfter(self.line).slice(self.offset));
+        var match = (self.caseFold ? line.toLowerCase() : line).indexOf(string);
         if (match > -1)
           return {from: {node: self.line, offset: self.offset + match},
                   to: {node: self.line, offset: self.offset + match + string.length}};
@@ -262,19 +262,21 @@ var Editor = (function(){
       // end of the line and the last match starts at the start.
       function() {
         var firstLine = cleanText(self.history.textAfter(self.line).slice(self.offset));
-        var match = firstLine.lastIndexOf(target[0]);
+        var match = (self.caseFold ? firstLine.toLowerCase() : firstLine).lastIndexOf(target[0]);
         if (match == -1 || match != firstLine.length - target[0].length)
           return false;
         var startOffset = self.offset + match;
 
         var line = self.history.nodeAfter(self.line);
         for (var i = 1; i < target.length - 1; i++) {
-          if (cleanText(self.history.textAfter(line)) != target[i])
+          var line = cleanText(self.history.textAfter(line));
+          if ((self.caseFold ? line.toLowerCase() : line) != target[i])
             return false;
           line = self.history.nodeAfter(line);
         }
 
-        if (cleanText(self.history.textAfter(line)).indexOf(target[target.length - 1]) != 0)
+        var lastLine = cleanText(self.history.textAfter(line));
+        if ((self.caseFold ? lastLine.toLowerCase() : lastLine).indexOf(target[target.length - 1]) != 0)
           return false;
 
         return {from: {node: self.line, offset: startOffset},
@@ -366,8 +368,6 @@ var Editor = (function(){
     this.dirty = [];
     if (options.content)
       this.importCode(options.content);
-    else // FF acts weird when the editable document is completely empty
-      container.appendChild(this.doc.createElement("BR"));
 
     if (!options.readOnly) {
       if (options.continuousScanning !== false) {
@@ -402,6 +402,8 @@ var Editor = (function(){
       }
 
       addEventHandler(document, "keydown", method(this, "keyDown"));
+      addEventHandler(document, "keypress", method(this, "keyPress"));
+      addEventHandler(document, "keyup", method(this, "keyUp"));
 
       function cursorActivity() {self.cursorActivity(false);}
       addEventHandler(document.body, "mouseup", cursorActivity);
@@ -417,11 +419,10 @@ var Editor = (function(){
         catch(e) {}
         if (text !== null) {
           self.replaceSelection(text);
+          select.scrollToCursor(this.container);
           event.stop();
         }
       });
-
-      addEventHandler(document.body, "beforepaste", method(this, "reroutePasteEvent"));
 
       if (this.options.autoMatchParens)
         addEventHandler(document.body, "click", method(this, "scheduleParenBlink"));
@@ -504,7 +505,7 @@ var Editor = (function(){
       this.checkLine(line);
       var accum = [];
       for (line = line ? line.nextSibling : this.container.firstChild;
-           line && line.nodeName != "BR"; line = line.nextSibling)
+           line && !isBR(line); line = line.nextSibling)
         accum.push(nodeText(line));
       return cleanText(accum.join(""));
     },
@@ -529,7 +530,7 @@ var Editor = (function(){
             before = cur;
             break;
           }
-          var text = (cur.innerText || cur.textContent || cur.nodeValue || "");
+          var text = nodeText(cur);
           if (text.length > position) {
             before = cur.nextSibling;
             content = text.slice(0, position) + content + text.slice(position);
@@ -586,10 +587,10 @@ var Editor = (function(){
       this.capturingPaste = true;
       var te = parent.document.createElement("TEXTAREA");
       te.style.position = "absolute";
-      te.style.left = "-500px";
+      te.style.left = "-10000px";
       te.style.width = "10px";
       te.style.top = nodeTop(frameElement) + "px";
-      parent.document.body.appendChild(te);
+      window.frameElement.CodeMirror.wrapping.appendChild(te);
       parent.focus();
       te.focus();
 
@@ -598,9 +599,12 @@ var Editor = (function(){
         self.capturingPaste = false;
         self.win.focus();
         if (self.selectionSnapshot) // IE hack
-          self.win.select.selectCoords(self.win, self.selectionSnapshot);
+          self.win.select.setBookmark(self.container, self.selectionSnapshot);
         var text = te.value;
-        if (text) self.replaceSelection(text);
+        if (text) {
+          self.replaceSelection(text);
+          select.scrollToCursor(self.container);
+        }
         removeElement(te);
       }, 10);
     },
@@ -616,8 +620,8 @@ var Editor = (function(){
               offset: lastLine.length};
     },
 
-    getSearchCursor: function(string, fromCursor) {
-      return new SearchCursor(this, string, fromCursor);
+    getSearchCursor: function(string, fromCursor, caseFold) {
+      return new SearchCursor(this, string, fromCursor, caseFold);
     },
 
     // Re-indent the whole buffer
@@ -697,8 +701,10 @@ var Editor = (function(){
         event.stop();
       }
       else if (code == 36 && !event.shiftKey && !event.ctrlKey) { // home
-        if (this.home())
-          event.stop();
+        if (this.home()) event.stop();
+      }
+      else if (code == 35 && !event.shiftKey && !event.ctrlKey) { // end
+        if (this.end()) event.stop();
       }
       else if ((code == 219 || code == 221) && event.ctrlKey && !event.altKey) { // [, ]
         this.blinkParens(event.shiftKey);
@@ -727,6 +733,9 @@ var Editor = (function(){
         else if (code == 83 && this.options.saveFunction) { // S
           this.options.saveFunction();
           event.stop();
+        }
+        else if (internetExplorer && code == 86) {
+          this.reroutePasteEvent();
         }
       }
     },
@@ -839,18 +848,32 @@ var Editor = (function(){
         this.reindentSelection(direction);
     },
 
+    // Custom home behaviour that doesn't land the cursor in front of
+    // leading whitespace unless pressed twice.
     home: function() {
       var cur = select.selectionTopNode(this.container, true), start = cur;
-      if (cur === false || !(!cur || cur.isPart || cur.nodeName == "BR") || !this.container.firstChild)
+      if (cur === false || !(!cur || cur.isPart || isBR(cur)) || !this.container.firstChild)
         return false;
 
-      while (cur && cur.nodeName != "BR") cur = cur.previousSibling;
+      while (cur && !isBR(cur)) cur = cur.previousSibling;
       var next = cur ? cur.nextSibling : this.container.firstChild;
       if (next && next != start && next.isPart && hasClass(next, "whitespace"))
         select.focusAfterNode(next, this.container);
       else
         select.focusAfterNode(cur, this.container);
 
+      select.scrollToCursor(this.container);
+      return true;
+    },
+
+    // Some browsers (Opera) don't manage to handle the end key
+    // properly in the face of vertical scrolling.
+    end: function() {
+      var cur = select.selectionTopNode(this.container, true);
+      if (cur === false) return false;
+      cur = endOfLine(cur, this.container);
+      if (!cur) return false;
+      select.focusAfterNode(cur.previousSibling, this.container);
       select.scrollToCursor(this.container);
       return true;
     },
@@ -899,7 +922,7 @@ var Editor = (function(){
       function tryFindMatch() {
         var stack = [], ch, ok = true;;
         for (var runner = cursor; runner; runner = dir ? runner.nextSibling : runner.previousSibling) {
-          if (runner.className == className && runner.nodeName == "SPAN" && (ch = paren(runner))) {
+          if (runner.className == className && isSpan(runner) && (ch = paren(runner))) {
             if (forward(ch) == dir)
               stack.push(ch);
             else if (!stack.length)
@@ -908,7 +931,7 @@ var Editor = (function(){
               ok = false;
             if (!stack.length) break;
           }
-          else if (runner.dirty || runner.nodeName != "SPAN" && runner.nodeName != "BR") {
+          else if (runner.dirty || !isSpan(runner) && !isBR(runner)) {
             return {node: runner, status: "dirty"};
           }
         }
@@ -944,12 +967,11 @@ var Editor = (function(){
     // Adjust the amount of whitespace at the start of the line that
     // the cursor is on so that it is indented properly.
     indentAtCursor: function(direction) {
+      return;
       if (!this.container.firstChild) return;
       // The line has to have up-to-date lexical information, so we
       // highlight it first.
       if (!this.highlightAtCursor()) return;
-      // prevent indent for now.
-      return;
       var cursor = select.selectionTopNode(this.container, false);
       // If we couldn't determine the place of the cursor,
       // there's nothing to indent.
@@ -968,7 +990,7 @@ var Editor = (function(){
     // selection.
     indentRegion: function(start, end, direction) {
       var current = (start = startOfLine(start)), before = start && startOfLine(start.previousSibling);
-      if (end.nodeName != "BR") end = endOfLine(end, this.container);
+      if (!isBR(end)) end = endOfLine(end, this.container);
 
       do {
         var next = endOfLine(current, this.container);
@@ -985,7 +1007,7 @@ var Editor = (function(){
     cursorActivity: function(safe) {
       if (internetExplorer) {
         this.container.createTextRange().execCommand("unlink");
-        this.selectionSnapshot = select.selectionCoords(this.win);
+        this.selectionSnapshot = select.getBookmark(this.container);
       }
 
       var activity = this.options.cursorActivity;
@@ -995,7 +1017,7 @@ var Editor = (function(){
         cursor = cursor || this.container.firstChild;
         if (activity) activity(cursor);
         if (!safe) {
-          this.scheduleHighlight();
+//          this.scheduleHighlight();
           this.addDirtyNode(cursor);
         }
       }
@@ -1127,7 +1149,7 @@ var Editor = (function(){
       // Backtrack to the first node before from that has a partial
       // parse stored.
       while (from && (!from.parserFromHere || from.dirty)) {
-        if (maxBacktrack != null && from.nodeName == "BR" && (--maxBacktrack) < 0)
+        if (maxBacktrack != null && isBR(from) && (--maxBacktrack) < 0)
           return false;
         from = from.previousSibling;
       }
@@ -1208,7 +1230,7 @@ var Editor = (function(){
           // Allow empty nodes when they are alone on a line, needed
           // for the FF cursor bug workaround (see select.js,
           // insertNewlineAtCursor).
-          while (part && part.nodeName == "SPAN" && part.currentText == "") {
+          while (part && isSpan(part) && part.currentText == "") {
             var old = part;
             this.remove();
             part = this.get();
@@ -1230,7 +1252,7 @@ var Editor = (function(){
         if (token.value == "\n"){
           // The idea of the two streams actually staying synchronized
           // is such a long shot that we explicitly check.
-          if (part.nodeName != "BR")
+          if (!isBR(part))
             throw "Parser out of sync. Expected BR.";
 
           if (part.dirty || !part.indentation) lineDirty = true;
@@ -1258,7 +1280,7 @@ var Editor = (function(){
           parts.next();
         }
         else {
-          if (part.nodeName != "SPAN")
+          if (!isSpan(part))
             throw "Parser out of sync. Expected SPAN.";
           if (part.dirty)
             lineDirty = true;

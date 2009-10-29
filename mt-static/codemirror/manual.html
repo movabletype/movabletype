@@ -233,7 +233,9 @@
       'save page' dialog. Defaults to <code>null</code>.</dd>
 
       <dt><code>undoDepth</code></dt><dd>Maximum length of the undo
-      history. Default is 50.</dd>
+      history. Default is 50. This setting is changeable with the
+      <code>setUndoDepth(depth)</code> method on CodeMirror
+      instances.</dd>
 
       <dt><code>onChange</code></dt><dd>An optional function of zero
       arguments that gets called whenever the document is changed.
@@ -251,11 +253,13 @@
       <dt><code>disableSpellcheck</code></dt><dd>Should the editor
       disable spell-checking on browsers that support it (Firefox 2+).
       Default is <code>true</code>, since for most code spell-checking
-      is useless.</dd>
+      is useless. Can be changed with the
+      <code>setSpellCheck(on)</code> method.</dd>
 
       <dt><code>textWrapping</code></dt><dd>Can be used to disable or
       enable text-wrapping in the editor frame. Default is
-      <code>true</code>.</dd>
+      <code>true</code>. Changeable with the
+      <code>setTextWrapping(on)</code> method.</dd>
 
       <dt><code>lineNumbers</code></dt><dd>Show line numbers to the
       left of the editor. This requires you to specify a style for the
@@ -267,11 +271,13 @@
       an absolute ('pt' or 'px') font size. This option defaults to
       <code>false</code>. When enabling this, you have to disable
       <code>textWrapping</code>, since the line numbers don't take
-      wrapped lines into account.</dd>
+      wrapped lines into account. Changeable with the
+      <code>setLineNumbers(on)</code> method.</dd>
 
       <dt><code>indentUnit</code></dt><dd>An integer that specifies
       the amount of spaces one 'level' of indentation should add.
-      Default is <code>2</code>.</dd>
+      Default is <code>2</code>. Changeable in a running editor using
+      the <code>setIndentUnit(spaces)</code> method.</dd>
 
       <dt><code>tabMode</code></dt><dd>Determines what the effect of
       pressing tab is. Possibilities are:
@@ -289,7 +295,9 @@
         current line (or selection) one <code>indentUnit</code>
         deeper, pressing shift-tab or ctrl-tab (whichever your browser
         does not interfere with), un-indents it.</dd>
-      </dl></dd>
+      </dl>
+      This option can be changed at run-time using the
+      <code>setTabMode(mode)</code> method.</dd>
 
       <dt><code>reindentOnLoad</code></dt><dd>When <code>true</code>,
       this causes the content of the editor to be reindented
@@ -355,7 +363,11 @@
       href="js/parsejavascript.js">parseejavascript.js</a></code> (<a
       href="jstest.html">demo</a>)</dt><dd>The JavaScript parser.
       Example colours in <code><a
-      href="css/jscolors.css">css/jscolors.css</a></code></dd>
+      href="css/jscolors.css">css/jscolors.css</a></code>. Takes one
+      configuration option, <code>json</code>, that can be set when
+      the editor content is JSON data. It causes every opening brace
+      to be treated as the start of an object, rather than a
+      block.</dd>
 
       <dt><code><a href="js/parsecss.js">parsecss.js</a></code> (<a
       href="csstest.html">demo</a>)</dt><dd>A CSS parser. Styles in
@@ -403,13 +415,25 @@
     <p>To be as flexible as possible, CodeMirror implements a very
     plain editable field, without any accompanying buttons, bells, and
     whistles. <code>CodeMirror</code> objects do, however, provide a
-    number of methods that make it possible to add extra functionality
-    around the editor. <a
-    href="js/mirrorframe.js"><code>mirrorframe.js</code></a> provides a
-    basic example of their usage.</p>
+    number of methods and properties that make it possible to add
+    extra functionality around the editor. <a
+    href="js/mirrorframe.js"><code>mirrorframe.js</code></a> provides
+    a basic example of their usage.</p>
+
+    <h3>Properties</h3>
 
     <dl>
+      <dt><code>frame</code></dt><dd>The editable frame.</dd>
+      <dt><code>win</code></dt><dd>The window of the editable frame.
+      Mostly useful for attaching event handlers.</dd>
+      <dt><code>wrapping</code></dt><dd>The <code>DIV</code> element
+      wrapped around the frame. This always has a CSS class of
+      <code>CodeMirror-wrapping</code>.</dd>
+    </dl>
 
+    <h3>Methods</h3>
+
+    <dl>
       <dt><code>getCode()</code> &#8594;
       <code>string</code></dt><dd>Returns the current content of the
       editor, as a string.</dd>
@@ -443,17 +467,18 @@
       <dt><code>reindentSelection()</code></dt><dd>Automatically
       re-indent the selected lines.</dd>
 
-      <dt><code>getSearchCursor(string, atCursor)</code> &#8594;
-      <code>cursor</code></dt><dd>The first argument indicates the
-      string that should be searched for, and the second indicates
+      <dt><code>getSearchCursor(string, atCursor, caseFold)</code>
+      &#8594; <code>cursor</code></dt><dd>The first argument indicates
+      the string that should be searched for, and the second indicates
       whether searching should start at the cursor (<code>true</code>)
-      or at the start of the document (<code>false</code>). Returns an
-      object that provides an interface for searching. Call its
-      <code>findNext()</code> method to search for an occurrence of
-      the given string. This returns <code>true</code> if something is
-      found, or <code>false</code> if the end of document is reached.
-      When an occurrence has been found, you can call
-      <code>select()</code> to select it, or
+      or at the start of the document (<code>false</code>). When
+      <code>caseFold</code> is true, the search will be
+      case-insensivive. Returns an object that provides an interface
+      for searching. Call its <code>findNext()</code> method to search
+      for an occurrence of the given string. This returns
+      <code>true</code> if something is found, or <code>false</code>
+      if the end of document is reached. When an occurrence has been
+      found, you can call <code>select()</code> to select it, or
       <code>replace(string)</code> to replace it with a given string.
       Note that letting the user change the document, or
       programmatically changing it in any way except for calling
