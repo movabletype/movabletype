@@ -286,12 +286,19 @@ sub apply {
                 ));
             }
             else {
-                MT->log(
+                require MT::Log;
+                my $log = MT::Log->new;
+                $log->message(
                     MT->translate(
                         'An error occurred while applying element [_1]: [_2].',
                         $element->{label},
                         $element->errstr,
                 ));
+                $log->blog_id($blog->id);
+                $log->author_id( MT->app->user->id );
+                $log->level(2);
+                $log->category('theme');
+                MT->log($log);
             }
         }
     }

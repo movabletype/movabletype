@@ -43,6 +43,14 @@ sub apply {
                 $self->errstr,
         ));
     }
+    if ( !$self->validate($importer, $self->{theme}, $blog) ) {
+        return $self->error(
+            MT->translate(
+                'An Error occured while applying \'[_1]\': [_2].',
+                $self->{id},
+                $self->errstr,
+        ));
+    }
     my $handler = $importer->{import};
     if ( !ref $handler ) {
         $handler = MT->handler_to_coderef( $handler );
