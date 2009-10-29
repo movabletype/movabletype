@@ -116,7 +116,7 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $file_enc = MT::FileMgr::Local::_syserr( $file );
+        my $file_enc = Encode::decode_utf8( $file );
         my $f = File::Spec->catfile( $path, $file_enc );
         $obj->{_arc}->extract_file( $file, MT::FileMgr::Local::_local( $f ) );
     }
@@ -128,6 +128,8 @@ sub add_file {
     my ($path, $file_path) = @_;
     return $obj->error(MT->translate('Can\'t write to the object'))
         if 'r' eq $obj->{_mode};
+    $file_path = Encode::encode_utf8($file_path)
+        if Encode::is_utf8($file_path);
     my $filename =
         File::Spec->catfile( $path, $file_path );
     my $arc = $obj->{_arc};

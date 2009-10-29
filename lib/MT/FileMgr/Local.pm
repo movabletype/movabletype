@@ -19,9 +19,16 @@ sub _local {
 }
 
 sub _syserr {
-    return $_[0] if $^O ne 'MSWin32';
-    return Encode::decode('Shift_JIS', $_[0]) unless Encode::is_utf8($_[0]);
-    $_[0];
+    if ( $^O eq 'MSWin32' ) {
+        return Encode::is_utf8($_[0]) ? $_[0]
+                                      : Encode::decode('Shift_JIS', $_[0])
+                                      ;
+    }
+    else {
+        return Encode::is_utf8($_[0]) ? $_[0]
+                                      : Encode::decode_utf8($_[0])
+                                      ;
+    }
 }
 
 sub get_data {
