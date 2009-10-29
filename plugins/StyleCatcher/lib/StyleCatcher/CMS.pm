@@ -32,8 +32,19 @@ sub listify {
         my %entry = %{ $data->{$k} };
         $entry{key} = $k;
         delete $entry{plugin};
-        $entry{label} = $entry{label}->() if ref($entry{label});
-        $entry{description_label} = $entry{description_label}->() if ref($entry{description_label});
+        if ( ref( $entry{label} ) ) {
+            $entry{label} = $entry{label}->();
+        }
+        else {
+            $entry{label} = MT->translate( $entry{label} );
+        }
+        if ( ref( $entry{description_label} ) ) {
+            $entry{description_label} = $entry{description_label}->();
+        }
+        else {
+            $entry{description_label}
+                = MT->translate( $entry{description_label} );
+        }
         push @list, \%entry;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
