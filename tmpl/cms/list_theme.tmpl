@@ -21,6 +21,13 @@
             <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name">" escape="html">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="warning_on_apply">
+        <mtapp:statusmsg
+            id="theme_warning"
+            class="alert">
+            <__trans phrase="Some error occured while applying theme."> <a href="<mt:var name="script_url">?__mode=view_log&blog_id=<mt:var name="blog_id">"><__trans phrase="see more detail."></a>
+        </mtapp:statusmsg>
+    </mt:if>
     </div>
 </mt:setvarblock>
 

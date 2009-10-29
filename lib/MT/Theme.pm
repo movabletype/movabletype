@@ -269,6 +269,7 @@ sub apply {
         if !defined $blog;
     MT->run_callbacks('pre_apply_theme', $theme, $blog);
     my $importer_filter = $opts{importer_filter};
+    $theme->{warning_on_apply} = 0;
 
     ## run all element handlers.
     my @elements = $theme->elements;
@@ -286,6 +287,7 @@ sub apply {
                 ));
             }
             else {
+                $theme->{warning_on_apply} = 1;
                 require MT::Log;
                 my $log = MT::Log->new;
                 $log->message(

@@ -52,6 +52,7 @@ sub list {
     $param{applied} = $q->param('applied');
     $param{theme_uninstalled} = $q->param('theme_uninstalled');
     $param{uninstalled_theme_name} = $q->param('uninstalled_theme_name');
+    $param{warning_on_apply} = $q->param('warning_on_apply');
     $app->load_tmpl( 'list_theme.tmpl', \%param );
 }
 
@@ -157,6 +158,7 @@ sub apply {
             args => {
                 applied => 1,
                 blog_id => $blog->id,
+                warning_on_apply => $theme->{warning_on_apply},
             },
         )
     );
