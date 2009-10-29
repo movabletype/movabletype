@@ -141,8 +141,15 @@ sub _populate_obj_to_backup {
                  && exists($instructions->{$key}{order})
             ? $instructions->{$key}{order}
             : 500;
-        $pkg->_create_obj_to_backup(
-            $class, $blog_ids, \@object_hashes, \%populated, $order);
+
+        if ( $class->can('create_obj_to_backup') ) {
+            $class->create_obj_to_backup(
+                $blog_ids, \@object_hashes, \%populated, $order);
+        }
+        else {
+            $pkg->_create_obj_to_backup(
+                $class, $blog_ids, \@object_hashes, \%populated, $order);
+        }
     }
 
     if ( defined($blog_ids) && scalar(@$blog_ids) ) {
