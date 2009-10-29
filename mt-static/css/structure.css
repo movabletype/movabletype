@@ -3484,10 +3484,11 @@ input#system_performance_logging_threshold {
     position: absolute;
     top: 10px;
     right: 10px;
+    font-size: 11px;
 }
 #list-plugins .plugin-status a.button {
-    width: 3.5em;
-    margin-top: -3px;
+    display: inline-block;
+    margin: -3px 0 0 5px;
     text-align: center;
 }
 
