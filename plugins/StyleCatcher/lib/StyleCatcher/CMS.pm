@@ -341,8 +341,6 @@ sub apply {
         $base_css = '@import url(' . $uri->as_string() . ');'
             if $uri;
     }
-    my $blog = MT->model('blog')->load($blog_id)    
-      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text  = $tmpl->text();
