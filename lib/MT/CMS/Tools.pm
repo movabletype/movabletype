@@ -953,6 +953,10 @@ sub backup {
                 filename => "$file.manifest"
               };
             if ( '0' eq $archive ) {
+                for my $f ( @files ) {
+                    $f->{filename} = MT::FileMgr::Local::_syserr($f->{filename})
+                        if ( $f->{filename} && !Encode::is_utf8($f->{filename}));
+                }
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
@@ -1058,7 +1062,7 @@ sub backup_download {
         $contenttype = 'application/octet-stream';
     }
 
-    if ( open( my $fh, "<", $fname ) ) {
+    if ( open( my $fh, "<", MT::FileMgr::Local::_local($fname) ) ) {
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(
