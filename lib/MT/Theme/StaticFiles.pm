@@ -34,10 +34,7 @@ sub import {
 sub export_template {
     my $app = shift;
     my ( $blog, $saved ) = @_;
-    my $default =
-        '# ' . MT->translate(
-            'List the name of one directory to be included in your theme on each line.'
-        );
+    my $default = '';
     my $dirs = defined $saved ? $saved->{static_directories}
              :                  $default
              ;
