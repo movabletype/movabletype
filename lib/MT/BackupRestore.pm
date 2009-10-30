@@ -193,6 +193,16 @@ sub _populate_obj_to_backup {
             },
             'order' => 500
         };
+
+        # And objectscores.
+        my $oc = MT->model('objectscore');
+        push @object_hashes, {
+            $oc => {
+                terms => { object_ds => 'author' },
+                args => undef,
+            },
+            'order' => 510,
+        };
     }
     @object_hashes = sort { $a->{order} <=> $b->{order} } @object_hashes;
     my @obj_to_backup;
