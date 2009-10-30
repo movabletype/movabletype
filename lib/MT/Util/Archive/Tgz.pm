@@ -128,13 +128,16 @@ sub add_file {
     my ($path, $file_path) = @_;
     return $obj->error(MT->translate('Can\'t write to the object'))
         if 'r' eq $obj->{_mode};
-    $file_path = Encode::encode_utf8($file_path)
-        if Encode::is_utf8($file_path);
+    my $encoded_path = $file_path;
+    $encoded_path = MT::FileMgr::Local::_syserr($encoded_path)
+        if !Encode::is_utf8($encoded_path);
+    $encoded_path = Encode::encode_utf8($encoded_path)
+        if Encode::is_utf8($encoded_path);
     my $filename =
         File::Spec->catfile( $path, $file_path );
     my $arc = $obj->{_arc};
     my @arc_files = $arc->add_files($filename);
-    $arc_files[0]->rename( $file_path );
+    $arc_files[0]->rename( $encoded_path );
 }
 
 sub add_string {
