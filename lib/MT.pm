@@ -2368,7 +2368,7 @@ sub new_ua {
     my $proxy = exists $opt->{proxy} ? $opt->{proxy} : $cfg->HTTPProxy || $cfg->PingProxy;
     my $sec_proxy = exists $opt->{sec_proxy} ? $opt->{sec_proxy} : $cfg->HTTPSProxy;
     my $no_proxy = exists $opt->{no_proxy} ? $opt->{no_proxy} : $cfg->HTTPNoProxy || $cfg->PingNoProxy;
-    my $agent = $opt->{agent} || 'MovableType/' . $MT::VERSION;
+    my $agent = $opt->{agent} || $MT::PRODUCT_NAME . '/' . $MT::VERSION;
     my $interface = exists $opt->{interface} ? $opt->{interface} : $cfg->HTTPInterface || $cfg->PingInterface;
 
     if ( my $localaddr = $interface ) {
