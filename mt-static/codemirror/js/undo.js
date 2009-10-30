@@ -26,11 +26,10 @@
 // delay (of no input) after which it commits a set of changes, and,
 // unfortunately, the 'parent' window -- a window that is not in
 // designMode, and on which setTimeout works in every browser.
-function History(container, maxDepth, commitDelay, editor, onChange) {
+function History(container, maxDepth, commitDelay, editor) {
   this.container = container;
   this.maxDepth = maxDepth; this.commitDelay = commitDelay;
   this.editor = editor; this.parent = editor.parent;
-  this.onChange = onChange;
   // This line object represents the initial, empty editor.
   var initial = {text: "", from: null, to: null};
   // As the borders between lines are represented by BR elements, the

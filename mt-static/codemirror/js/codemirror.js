@@ -26,7 +26,6 @@ var CodeMirror = (function(){
   // options to a specific CodeMirror constructor. See manual.html for
   // their meaning.
   setDefaults(CodeMirrorConfig, {
-    lang: "en",
     stylesheet: "",
     path: "",
     parserfile: [],
@@ -34,6 +33,8 @@ var CodeMirror = (function(){
     iframeClass: null,
     passDelay: 200,
     passTime: 50,
+    lineNumberDelay: 200,
+    lineNumberTime: 50,
     continuousScanning: false,
     saveFunction: null,
     onChange: null,
@@ -42,7 +43,7 @@ var CodeMirror = (function(){
     disableSpellcheck: true,
     textWrapping: true,
     readOnly: false,
-    width: "100%",
+    width: "",
     height: "300px",
     autoMatchParens: false,
     parserConfig: null,
@@ -71,42 +72,6 @@ var CodeMirror = (function(){
     return nums;
   }
 
-  function activateLineNumbers(frame, nums) {
-    var win = frame.contentWindow, doc = win.document,
-        scroller = nums.firstChild;
-
-    var nextNum = 1, barWidth = null;
-    function sizeBar() {
-      for (var root = frame; root.parentNode; root = root.parentNode);
-      if (!nums.parentNode || root != document || !win.Editor) {
-        // Clear event handlers (their nodes might already be collected, so try/catch)
-        try{onScroll();}catch(e){}
-        try{onResize();}catch(e){}
-        clearInterval(sizeInterval);
-        return;
-      }
-
-      if (nums.offsetWidth != barWidth) {
-        barWidth = nums.offsetWidth;
-        nums.style.left = "-" + (frame.parentNode.style.marginLeft = barWidth + "px");
-      }
-    }
-    function update() {
-      var diff = 20 + Math.max(doc.body.offsetHeight, frame.offsetHeight) - scroller.offsetHeight;
-      for (var n = Math.ceil(diff / 10); n > 0; n--) {
-        var div = document.createElement("DIV");
-        div.appendChild(document.createTextNode(nextNum++));
-        scroller.appendChild(div);
-      }
-      nums.scrollTop = doc.body.scrollTop || doc.documentElement.scrollTop || 0;
-    }
-    var onScroll = win.addEventHandler(win, "scroll", update, true),
-        onResize = win.addEventHandler(win, "resize", update, true),
-        sizeInterval = setInterval(sizeBar, 500);
-    sizeBar();
-    update();
-  }
-
   function CodeMirror(place, options) {
     // Backward compatibility for deprecated options.
     if (options.dumbTabs) options.tabMode = "spaces";
@@ -121,8 +86,8 @@ var CodeMirror = (function(){
     frame.frameBorder = 0;
     frame.src = "javascript:false;";
     frame.style.border = "0";
-    frame.style.width = options.width;
-    frame.style.height = options.height;
+    frame.style.width = '100%';
+    frame.style.height = '100%';
     // display: block occasionally suppresses some Firefox bugs, so we
     // always add it, redundant as it sounds.
     frame.style.display = "block";
@@ -130,6 +95,9 @@ var CodeMirror = (function(){
     var div = this.wrapping = document.createElement("DIV");
     div.style.position = "relative";
     div.className = "CodeMirror-wrapping";
+    div.style.width = options.width;
+    div.style.height = options.height;
+
     if (place.appendChild) place.appendChild(div);
     else place(div);
     div.appendChild(frame);
@@ -145,7 +113,7 @@ var CodeMirror = (function(){
     if (typeof options.stylesheet == "string")
       options.stylesheet = [options.stylesheet];
 
-    var html = ["<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html lang="+options.lang+"><head>"];
+    var html = ["<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html><head>"];
     // Hack to work around a bunch of IE8-specific problems.
     html.push("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\"/>");
     forEach(options.stylesheet, function(file) {
@@ -166,7 +134,7 @@ var CodeMirror = (function(){
   CodeMirror.prototype = {
     init: function() {
       if (this.options.initCallback) this.options.initCallback(this);
-      if (this.lineNumbers) activateLineNumbers(this.frame, this.lineNumbers);
+      if (this.options.lineNumbers) this.activateLineNumbers();
       if (this.options.reindentOnLoad) this.reindent();
     },
 
@@ -207,14 +175,22 @@ var CodeMirror = (function(){
 
     setParser: function(name) {this.editor.setParser(name);},
     setSpellcheck: function(on) {this.win.document.body.spellcheck = on;},
-    setTextWrapping: function(on) {this.win.document.body.style.whiteSpace = on ? "" : "nowrap";},
+    setTextWrapping: function(on) {
+      if (on == this.options.textWrapping) return;
+      this.win.document.body.style.whiteSpace = on ? "" : "nowrap";
+      this.options.textWrapping = on;
+      if (this.lineNumbers) {
+        this.setLineNumbers(false);
+        this.setLineNumbers(true);
+      }
+    },
     setIndentUnit: function(unit) {this.win.indentUnit = unit;},
     setUndoDepth: function(depth) {this.editor.history.maxDepth = depth;},
     setTabMode: function(mode) {this.options.tabMode = mode;},
     setLineNumbers: function(on) {
       if (on && !this.lineNumbers) {
         this.lineNumbers = addLineNumberDiv(this.wrapping);
-        activateLineNumbers(this.frame, this.lineNumbers);
+        this.activateLineNumbers();
       }
       else if (!on && this.lineNumbers) {
         this.wrapping.removeChild(this.lineNumbers);
@@ -257,6 +233,105 @@ var CodeMirror = (function(){
     },
     currentLine: function() {
       return this.lineNumber(this.cursorPosition().line);
+    },
+
+    activateLineNumbers: function() {
+      var frame = this.frame, win = frame.contentWindow, doc = win.document, body = doc.body,
+          nums = this.lineNumbers, scroller = nums.firstChild, self = this;
+      var barWidth = null;
+
+      function sizeBar() {
+        for (var root = frame; root.parentNode; root = root.parentNode);
+        if (!nums.parentNode || root != document || !win.Editor) {
+          // Clear event handlers (their nodes might already be collected, so try/catch)
+          try{clear();}catch(e){}
+          clearInterval(sizeInterval);
+          return;
+        }
+
+        if (nums.offsetWidth != barWidth) {
+          barWidth = nums.offsetWidth;
+          nums.style.left = "-" + (frame.parentNode.style.marginLeft = barWidth + "px");
+        }
+      }
+      function doScroll() {
+        nums.scrollTop = body.scrollTop || doc.documentElement.scrollTop || 0;
+      }
+      // Cleanup function, registered by nonWrapping and wrapping.
+      var clear = function(){};
+      sizeBar();
+      sizeInterval = setInterval(sizeBar, 500);
+
+      function nonWrapping() {
+        var nextNum = 1;
+        function update() {
+          var target = 50 + Math.max(body.offsetHeight, frame.offsetHeight);
+          while (scroller.offsetHeight < target) {
+            scroller.appendChild(document.createElement("DIV"));
+            scroller.lastChild.innerHTML = nextNum++;
+          }
+          doScroll();
+        }
+        var onScroll = win.addEventHandler(win, "scroll", update, true),
+            onResize = win.addEventHandler(win, "resize", update, true);
+        clear = function(){onScroll(); onResize();};
+      }
+      function wrapping() {
+        var node, lineNum, next, pos;
+
+        function addNum(n) {
+          if (!lineNum) lineNum = scroller.appendChild(document.createElement("DIV"));
+          lineNum.innerHTML = n;
+          pos = lineNum.offsetHeight + lineNum.offsetTop;
+          lineNum = lineNum.nextSibling;
+        }
+        function work() {
+          if (!scroller.parentNode || scroller.parentNode != self.lineNumbers) return;
+
+          var endTime = new Date().getTime() + self.options.lineNumberTime;
+          while (node) {
+            addNum(next++);
+            for (; node && !win.isBR(node); node = node.nextSibling) {
+              var bott = node.offsetTop + node.offsetHeight;
+              while (bott - 3 > pos) addNum("&nbsp;");
+            }
+            if (node) node = node.nextSibling;
+            if (new Date().getTime() > endTime) {
+              pending = setTimeout(work, self.options.lineNumberDelay);
+              return;
+            }
+          }
+          // While there are un-processed number DIVs, or the scroller is smaller than the frame...
+          var target = 50 + Math.max(body.offsetHeight, frame.offsetHeight);
+          while (lineNum || scroller.offsetHeight < target) addNum(next++);
+          doScroll();
+        }
+        function start() {
+          doScroll();
+          node = body.firstChild;
+          lineNum = scroller.firstChild;
+          pos = 0;
+          next = 1;
+          work();
+        }
+
+        start();
+        var pending = null;
+        function update() {
+          if (pending) clearTimeout(pending);
+          pending = setTimeout(start, self.options.lineNumberDelay);
+        }
+        self.updateNumbers = update;
+        var onScroll = win.addEventHandler(win, "scroll", doScroll, true),
+            onResize = win.addEventHandler(win, "resize", update, true);
+        clear = function(){
+          if (pending) clearTimeout(pending);
+          if (self.updateNumbers == update) self.updateNumbers == null;
+          onScroll();
+          onResize();
+        };
+      }
+      (this.options.textWrapping ? wrapping : nonWrapping)();
     }
   };
 

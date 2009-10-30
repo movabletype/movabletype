@@ -66,7 +66,7 @@ var select = {};
       scroll = true;
     }
     if (screen_y < 0 || atEnd || screen_y > (win.innerHeight || html.clientHeight || 0) - 50) {
-      scroll_y = atEnd ? 1e10 : y;
+      scroll_y = atEnd ? 1e6 : y;
       scroll = true;
     }
     if (scroll) win.scrollTo(scroll_x, scroll_y);
