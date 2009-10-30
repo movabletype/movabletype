@@ -790,7 +790,7 @@ ul.tabs li a {
 ul.menu-nav { 
     position: relative;
     margin-bottom: 10px;
-    background-color: transparent;
+    background-color: #fff;
 }
 
 ul.menu-nav * { 
@@ -811,7 +811,6 @@ ul.menu-nav li a {
 ul.menu-nav li.top-menu { 
     min-height: 30px;
     margin-top: -1px;
-    background-color: #fff;
 }
 ul.menu-nav > li.first-child { 
     margin-top: 0;
@@ -899,6 +898,13 @@ ul.sub-menu a .menu-label {
 
 ul.sub-menu a em { 
     font-style: normal;
+}
+
+ul.menu-nav  { 
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-bottom-radius: 5px;
 }
 
 ul.menu-nav > li.first-child > div { 
@@ -1800,7 +1806,7 @@ optgroup option {
 
 .listing-filter #filter-title, 
 .listing-filter #filter-select { 
-    min-height: 1.8em;
+    line-height: 25px;
 }
 
 .listing { 
