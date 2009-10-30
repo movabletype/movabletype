@@ -4257,6 +4257,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while testing for the new tag name.' => 'このタグは使用できません。',
 
 ## tmpl/cms/list_template.tmpl
+    'Global' => 'グローバル',
 	'Manage [_1] Templates' => '[_1]テンプレートの管理',
 	'Show All Templates' => 'すべてのテンプレート',
 	'Publishing Settings' => '公開設定',
