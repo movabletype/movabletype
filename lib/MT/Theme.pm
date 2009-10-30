@@ -20,6 +20,7 @@ my %THEME_CACHE;
 sub load {
     my $pkg = shift;
     my ($id) = @_;
+    return unless $id;
     MT->run_callbacks('pre_load_theme',$id);
 
     ## try cache.
