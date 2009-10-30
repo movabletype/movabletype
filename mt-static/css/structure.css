@@ -164,17 +164,14 @@ textarea.larger-text {
     text-align: center;
 }
 .picture.small {
-    margin: 1em 0;
+    float: left;
+    margin: 0 10px 0.5em 0;
 }
 
 .picture img { 
     margin: 0 auto;
     height: auto;
     border: 1px solid #c8c2be;
-}
-.picture.small {
-    float: left;
-    margin: 0 10px 0.5em 0;
 }
 
 #progress-bar, 

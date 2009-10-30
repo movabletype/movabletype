@@ -181,6 +181,7 @@ ul.tabs li,
 
 /* - haslayout */
 ul.menu-nav, 
+.welcome-widget, 
 .favorite-blogs-widget .blog-content { 
     zoom: 1;
 }

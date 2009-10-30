@@ -52,6 +52,9 @@ App.bootstrapInline( false );
 
 jQuery(function() {
 <mt:var name="jq_js_include">
+    if (typeof document.body.style.maxHeight == "undefined") {
+        if ($.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
+    }
     jQuery.mtAddEdgeClass();
     jQuery.mtMenu();
     jQuery.mtSelector();
@@ -94,7 +97,6 @@ jQuery(function() {
             jQuery(this).children('.widget-close-link').toggle();
         }
     );
-    jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
 <mt:if name="show_display_options_link">
     jQuery.mtDisplayOptions();
 </mt:if>
