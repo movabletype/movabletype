@@ -429,23 +429,63 @@ sub post_restore {
         next unless $key =~ /^MT::PluginData#\d+$/;
         my $pd = $objects->{$key};
         my $data = $pd->data;
-        my $rebuild_triggers = $data->{rebuild_triggers}
-            or next;
-        my @restored;
-        foreach my $trg_str ( split ( '\|', $rebuild_triggers ) ) {
-            my ( $action, $id, $trigger ) = split ( ':', $trg_str );
-            if ( $id eq '_all' ) {
-                push @restored, "$action:$id:$trigger";
+        if ( my $rebuild_triggers = $data->{rebuild_triggers} ) {
+            my @restored;
+            foreach my $trg_str ( split ( '\|', $rebuild_triggers ) ) {
+                my ( $action, $id, $trigger ) = split ( ':', $trg_str );
+                if ( $id eq '_all' ) {
+                    push @restored, "$action:$id:$trigger";
+               } elsif ( $id eq '_blogs_in_website' ) {
+                   my @keys = keys %{ $data->{blogs_in_website_triggers} };
+                   foreach my $act ( @keys ) {
+                       my @old_ids = keys %{ $data->{blogs_in_website_triggers}{$act} };
+                       foreach my $old_id ( @old_ids ) {
+                           my $new_obj = $objects->{'MT::Blog#' . $old_id};
+                           $new_obj = $objects->{'MT::Website#' . $old_id}
+                               unless $new_obj;
+                           if ( $new_obj ) {
+                               $data->{blogs_in_website_triggers}{$act}{$new_obj->id} = 
+                                   delete $data->{blogs_in_website_triggers}{$act}{$old_id};
+                               $callback->(
+                                   $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $old_id));
+                           }
+                       }
+                   }
+                   push @restored, "$action:$id:$trigger";
+               } else {
+                    my $new_obj = $objects->{'MT::Blog#' . $id};
+                    $new_obj = $objects->{'MT::Website#' . $id}
+                        unless $new_obj;
+                    if ( $new_obj ) {
+                        push @restored, "$action:" . $new_obj->id . ":$trigger";
+                        $callback->(
+                            $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $id)
+                        );
+                    }
+                }
             }
-            elsif ( my $new_obj = $objects->{'MT::Blog#' . $id} ) {
-                push @restored, "$action:" . $new_obj->id . ":$trigger";
-                $callback->(
-                    $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $id)
-                );
+
+            if ( @restored ) {
+                $data->{rebuild_triggers} = join ( '|', @restored );
+                $pd->data($data);
+                $pd->save;
             }
-        }
-        if ( @restored ) {
-            $data->{rebuild_triggers} = join ( '|', @restored );
+        } elsif ( my $other_triggers = $data->{other_triggers} ) {
+            my @keys = keys %{ $other_triggers };
+            foreach my $act ( @keys ) {
+                my @old_ids = keys %{ $other_triggers->{$act} };
+                foreach my $old_id ( @old_ids ) {
+                    my $new_obj = $objects->{'MT::Blog#' . $old_id};
+                    $new_obj = $objects->{'MT::Website#' . $old_id}
+                        unless $new_obj;
+                    if ( $new_obj ) {
+                        $data->{other_triggers}{$act}{$new_obj->id} = 
+                            delete $data->{other_triggers}{$act}{$old_id};
+                        $callback->(
+                            $plugin->translate('Restoring MultiBlog rebuild trigger for blog #[_1]...', $old_id));
+                    }
+                }
+            }
             $pd->data($data);
             $pd->save;
         }

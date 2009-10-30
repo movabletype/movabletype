@@ -1154,6 +1154,9 @@ sub restore_parent_ids {
 
     if ($data->{key} =~ /^configuration:blog:(\d+)$/i) {
         my $new_blog = $objects->{'MT::Blog#' . $1};
+        $new_blog = $objects->{'MT::Website#' . $1}
+            unless $new_blog;
+
         if ($new_blog) {
             $data->{key} = 'configuration:blog:' . $new_blog->id;
         }
