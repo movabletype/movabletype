@@ -63,10 +63,7 @@
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <$mtapp:ListFilters$>
-    </mtapp:widget>
-    <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful links">">
+    <mt:if name="scope_type" eq="blog">
         <ul>
             <li>
         <mt:if name="feed_url">
@@ -76,6 +73,7 @@
         </mt:unless></mt:if>
             </li>
         </ul>
+    </mt:if>
     </mtapp:widget>
     <$mtapp:PageActions from="$mode"$>
 </mt:setvarblock>

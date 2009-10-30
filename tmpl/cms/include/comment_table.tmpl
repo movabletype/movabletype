@@ -123,7 +123,9 @@
         <__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">">
     </mt:if>
     <mt:unless name="view_expanded">
-        <mt:if name="has_edit_access"><mt:if name="visible"><span id="replyto_<mt:var name="id" escape="html">" style="visibility: hidden; margin-left: 10px"><a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>" class="mt-open-dialog"><__trans phrase="Reply"></a></span></mt:if></mt:if>
+        <mt:if name="has_edit_access">
+            <mt:if name="visible">
+                <span id="replyto_<mt:var name="id" escape="html">" style="margin-left: 10px"><a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"></mt:if>" class="mt-open-dialog"><__trans phrase="Reply"></a></span></mt:if></mt:if>
     </mt:unless>
         </td>
     <mt:if name="view_expanded">
