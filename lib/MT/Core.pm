@@ -231,12 +231,7 @@ BEGIN {
             'SMTPServer'        => { default => 'localhost', },
             'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
-            'BlogsPingURL'   => { default => 'http://ping.blo.gs/', },
             'MTPingURL' => { default => 'http://www.movabletype.org/update/', },
-            'TechnoratiPingURL' =>
-              { default => 'http://rpc.technorati.com/rpc/ping', },
-            'GooglePingURL' =>
-              { default => 'http://blogsearch.google.com/ping/RPC2', },
             'CGIMaxUpload'          => { default => 20_480_000 },
             'DBUmask'               => { default => '0111', },
             'HTMLUmask'             => { default => '0111', },
