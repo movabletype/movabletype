@@ -2364,7 +2364,11 @@ td.sub-label label {
 .edit-ping .ping-status-spam,
 .edit-author .user-status-disabled,
 .edit-group .group-status-disabled {
-    background-color: #F2F2B0;
+    background-color: #fef263;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
 #junk-message {
@@ -3580,7 +3584,7 @@ input#system_performance_logging_threshold {
     text-align: center;
 }
 
-#list-themes .theme-status a { 
+#list-themes .theme-status .alert-warning a { 
     color: #2b2b2b;
 }
 
@@ -3959,7 +3963,7 @@ div.template-group-content.active {
     left: 50%;
     width: 680px;
     margin-left: -340px;
-    background: #fff;
+    background: #fffffc;
     z-index: 3001;
     border: 1px solid #9ea1a3;
     -moz-box-shadow: #2b2b2b 0 3px 10px;
@@ -4039,7 +4043,7 @@ body.dialog {
     cursor: pointer;
     text-decoration: none;
     color: #f8fbf8;
-    background-color: #9ea1a3;
+    background-color: #7b7c7d;
 }
 
 .dialog .selected-items .items a .remove { 
@@ -4063,7 +4067,7 @@ body.dialog {
 
 .dialog .selected-items .items a:hover .remove,
 .dialog .selected-items .items a:active .remove { 
-    background-color: #c0c6c9;
+    background-color: #9ea1a3;
     color: #2b2b2b;
 }
 
@@ -4281,7 +4285,7 @@ background-image: url(../images/status_icons/view.gif);
     position: relative;
     padding: 5px;
     border: 8px solid #7b7c7d;
-    background-color: #fff;
+    background-color: #fffffc;
     -moz-border-radius: 5px;
     -khtml-border-radius: 5px;
     -webkit-border-radius: 5px;
