@@ -483,6 +483,7 @@ sub _mk_thumbnail {
         $original_file = $theme->{thumbnail_file};
         $resize = 1 if $size ne 'large';
     }
+    return unless $original_file;
     my $original_file_path = File::Spec->catfile( $theme->path, $original_file );
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local')

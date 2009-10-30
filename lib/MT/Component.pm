@@ -619,7 +619,7 @@ sub registry {
                 my $v = $r->{$p};
 
                 # check for a yaml file reference...
-                if ( !ref($v) ) {
+                if ( !ref($v) && $v ) {
                     if ( $v =~ m/^[-\w]+\.yaml$/ ) {
                         my $f = File::Spec->catfile( $c->path, $v );
                         if ( -f $f ) {
