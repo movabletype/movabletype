@@ -2079,6 +2079,8 @@ sub refresh_individual_templates {
 
     require MT::DefaultTemplates;
     my $tmpl_list;
+    my $user_lang = MT->current_language;
+    $app->set_language( $blog ? $blog->language : MT->config->DefaultLanguage );
     if ($blog_id) {
         if ( my $theme = $blog->theme ) {
             my @elements = $theme->elements;
@@ -2110,6 +2112,7 @@ sub refresh_individual_templates {
             $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
         }
     }
+    $app->set_language( $user_lang );
 
     my $t = time;
 
