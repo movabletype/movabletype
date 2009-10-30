@@ -138,6 +138,11 @@ textarea.larger-text {
     margin-right: 2px;
 }
 
+#edit-comment #text-field textarea, 
+#edit-ping #text-field textarea { 
+    height: 12em;
+}
+
 /* - Component */
 .hint { 
     max-width: 650px;
@@ -885,7 +890,11 @@ ul.sub-menu a {
     text-decoration: none;
 }
 ul.sub-menu a:active, 
-ul.sub-menu a:hover, 
+ul.sub-menu a:hover { 
+    background-color: #e7e7eb;
+    color: #2b2b2b;
+}
+
 ul.sub-menu a.current { 
     background-color: #dcdddd;
     color: #2b2b2b;
@@ -3274,10 +3283,6 @@ body.preview-screen {
 
 
 /* - Edit Comment, Ping */
-#edit-comment textarea, 
-#edit-ping textarea { 
-    height: 12em;
-}
 
 /* - Edit Role */
 #permission-list li { 
