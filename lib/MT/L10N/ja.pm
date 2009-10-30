@@ -2023,7 +2023,6 @@ use vars qw( @ISA %Lexicon );
 	'default settings' => '既定の設定',
 
 ## lib/MT/Theme/StaticFiles.pm
-	'List the name of one directory to be included in your theme on each line.' => 'ディレクトリ名を一行ずつ記述してください。',
 
 ## lib/MT/Theme/TemplateSet.pm
 	'A template set containing [_1] templates, [_2] widgets, and [_3] widget sets.' => 'テンプレートセット([_1]テンプレート, [_2]ウィジェット, [_3]ウィジェットセット)',
@@ -3246,7 +3245,6 @@ use vars qw( @ISA %Lexicon );
 	'Apply' => '適用',
 
 ## tmpl/cms/dialog/theme_element_detail.tmpl
-	'Include in Theme: [_1]' => 'テーマに含む: [_1]',
 
 ## tmpl/cms/edit_asset.tmpl
 	'Edit Asset' => 'アイテムの編集',
@@ -4040,10 +4038,9 @@ use vars qw( @ISA %Lexicon );
 	'Folder Name' => 'フォルダ名',
 
 ## tmpl/cms/include/theme_exporters/static_files.tmpl
-	'Files types that will be included in the theme are: [_1].' => '対応するファイルの種類: [_1]',
-	'Included Directories' => '含むディレクトリ',
-	'List the directories that contain the static files that you want to be included in your theme.' => 'テーマに入れたいファイルを含むディレクトリを記入してください。',
-
+	'In the specified directories, files of the following types will be included in the theme: [_1]. Other file types will be ignored.' => '指定したディレクトリ内の、以下の種類のファイルがテーマにエクスポートされます: [_1]。その他のファイルは無視されます。',
+	'Specify directories' => 'ディレクトリの指定',
+        'List directories (one per line) in the Site Root directory which contain the static files to be included in the theme. Common directories might be: css, images, js, etc.' => 'ファイルが置かれたディレクトリを、サイトパスからの相対パスで一行ずつ記入してください。例: images',
 ## tmpl/cms/include/theme_exporters/templateset.tmpl
 	'widget sets' => 'ウィジェットセット',
 	'modules' => 'モジュール',
