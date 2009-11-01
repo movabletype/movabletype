@@ -2659,7 +2659,7 @@ use vars qw( @ISA %Lexicon );
 	'This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.' => 'このオプションでユーザー、ロール、アソシエーション、ブログ、ブログ記事、カテゴリ、テンプレート、タグをバックアップできます。',
 	'Everything' => 'すべて',
 	'Reset' => 'リセット',
-	'Choose websites...' => 'ウェブサイト選択...',
+	'Choose websites...' => 'ウェブサイトを選択...',
 	'Archive Format' => '圧縮フォーマット',
 	'The type of archive format to use.' => '使用するフォーマットの種類を選択します。',
 	'Don\'t compress' => '圧縮しない',
