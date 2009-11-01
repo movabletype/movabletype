@@ -445,7 +445,7 @@ var Editor = (function(){
     else if (!options.textWrapping) {
       container.style.whiteSpace = "nowrap";
     }
-   }
+  }
 
   function isSafeKey(code) {
     return (code >= 16 && code <= 18) || // shift, control, alt
@@ -457,6 +457,7 @@ var Editor = (function(){
     importCode: function(code) {
       this.history.push(null, null, asEditorLines(code));
       this.history.reset();
+      this.contentChanged();
     },
 
     // Extract the code from the editor.
@@ -531,6 +532,7 @@ var Editor = (function(){
                         {node: line, offset: this.history.textAfter(line).length},
                         content);
       this.addDirtyNode(line);
+      this.contentChanged();
       this.scheduleHighlight();
     },
 
@@ -562,6 +564,7 @@ var Editor = (function(){
         this.container.insertBefore(makePartSpan(lines[i], doc), before);
       }
       this.addDirtyNode(line);
+      this.contentChanged();
       this.scheduleHighlight();
     },
 
@@ -631,6 +634,7 @@ var Editor = (function(){
       lines[lines.length - 1] = lastLine + this.history.textAfter(to.node).slice(to.offset);
       var end = this.history.nodeAfter(to.node);
       this.history.push(from.node, end, lines);
+      this.contentChanged();
       return {node: this.history.nodeBefore(end),
               offset: lastLine.length};
     },
@@ -778,8 +782,6 @@ var Editor = (function(){
     // released.
     keyUp: function(event) {
       this.cursorActivity(isSafeKey(event.keyCode));
-      if (event.keyCode == 13)
-        this.scheduleHighlight();
     },
 
     // Indent the line following a given <br>, or null for the first
@@ -851,6 +853,7 @@ var Editor = (function(){
       select.markSelection(this.win);
       if (this.highlight(pos, endOfLine(to, this.container), true, 20) === false)
         return false;
+      select.selectMarked();
       return true;
     },
 
@@ -1025,9 +1028,6 @@ var Editor = (function(){
         this.container.createTextRange().execCommand("unlink");
         this.selectionSnapshot = select.getBookmark(this.container);
       }
-      if (window.frameElement && window.frameElement.CodeMirror.updateNumbers) {
-        window.frameElement.CodeMirror.updateNumbers();
-      }
 
       var activity = this.options.cursorActivity;
       if (!safe || activity) {
@@ -1036,8 +1036,15 @@ var Editor = (function(){
         cursor = cursor || this.container.firstChild;
         if (activity) activity(cursor);
         if (!safe) {
+          this.contentChanged();
           this.addDirtyNode(cursor);
         }
+      }
+    },
+
+    contentChanged: function() {
+      if (window.frameElement && window.frameElement.CodeMirror.updateNumbers) {
+        window.frameElement.CodeMirror.updateNumbers();
       }
     },
 

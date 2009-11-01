@@ -269,10 +269,15 @@
       numbering element have the same height as lines in the editor.
       This is most easily done by giving them both the same font and
       an absolute ('pt' or 'px') font size. This option defaults to
-      <code>false</code>. When enabling this, you have to disable
-      <code>textWrapping</code>, since the line numbers don't take
-      wrapped lines into account. Changeable with the
+      <code>false</code>. Changeable with the
       <code>setLineNumbers(on)</code> method.</dd>
+
+      <dt><code>lineNumberDelay</code>,
+      <code>lineNumberTime</code></dt><dd>When both line numbers are
+      and text wrapping are turned on, updating line numbers can be
+      expensive. These settings can be used to control how fast the
+      updating happens &#x2015; they work in the same way as
+      <code>passDelay</code> and <code>passTime</code>.</dd>
 
       <dt><code>indentUnit</code></dt><dd>An integer that specifies
       the amount of spaces one 'level' of indentation should add.
