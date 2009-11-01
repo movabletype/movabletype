@@ -924,8 +924,10 @@ sub backup {
                     );
                     next;
                 }
+                my $xml_name = $asset_files->{$id}->[2];
+                $xml_name =~ s/'/&apos;/g;
                 print $fh "<file type='asset' name='"
-                  . $asset_files->{$id}->[2]
+                  . $xml_name
                   . "' asset_id='"
                   . $id
                   . "' />\n";
