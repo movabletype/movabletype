@@ -3694,7 +3694,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme Errors' => 'Themen-Fehler',
 	'Theme Warnings' => 'Themen-Warnungen',
 	'Portions of this theme cannot be applied to the website. [_1] elements will be skipped.' => 'Teile dieses Themas können nicht auf die Website angewendet werden. [_1] Elemente werden übersprungen.',
-	'Theme Infomation' => 'Themen-Infos',
+	'Theme Information' => 'Themen-Infos',
 	'No themes are installed.' => 'Keine Themen installiert.',
 	'Themes for Both Blogs and Websites' => 'Themen für Blogs und Websites',
 	'Themes for Blogs' => 'Themen für Blogs',

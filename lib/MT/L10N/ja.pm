@@ -4284,7 +4284,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme Errors' => 'テーマエラー',
 	'Theme Warnings' => 'テーマ警告',
 	'Portions of this theme cannot be applied to the website. [_1] elements will be skipped.' => 'テーマの一部はウェブサイトに適用できません。[_1]要素はスキップされます。',
-	'Theme Infomation' => 'テーマ情報',
+	'Theme Information' => 'テーマ情報',
 	'No themes are installed.' => 'テーマがインストールされていません。',
 	'Themes for Both Blogs and Websites' => 'ウェブサイト、およびブログ用のテーマ',
 	'Themes for Blogs' => 'ブログ用テーマ',

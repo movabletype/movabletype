@@ -3709,7 +3709,7 @@ use vars qw( @ISA %Lexicon );
 	'Theme Errors' => 'Thema fouten',
 	'Theme Warnings' => 'Thema waarschuwingen',
 	'Portions of this theme cannot be applied to the website. [_1] elements will be skipped.' => 'Delen van dit thema kunnen niet worden toegepast op de website.  [_1] elementen zullen worden overgeslagen.',
-	'Theme Infomation' => 'Thema informatie',
+	'Theme Information' => 'Thema informatie',
 	'No themes are installed.' => 'Geen thema\'s geïnstalleerd',
 	'Themes for Both Blogs and Websites' => 'Thema\'s voor zowel blogs als websites',
 	'Themes for Blogs' => 'Thema\'s voor blogs',
