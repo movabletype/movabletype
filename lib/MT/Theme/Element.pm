@@ -110,7 +110,7 @@ sub information_string {
     my ($blog) = @_;
     my $importer = $_[0] || $element->importer
         or die sprintf 'Theme element importer not found: %s', $element->errstr;
-    $info = $importer->{info};
+    $info = $importer->{info} or return;
     my $str;
     if ( defined $info ) {
         ## info can be as CODEREF, MT Handler string and constant string.

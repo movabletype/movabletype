@@ -541,7 +541,8 @@ sub information_strings {
     my @elements = $theme->elements;
     my @messages;
     for my $element ( @elements ) {
-        push @messages, $element->information_string( $blog );
+        my $str = $element->information_string( $blog );
+        push @messages, $str if $str;
     }
     return @messages;
 }
