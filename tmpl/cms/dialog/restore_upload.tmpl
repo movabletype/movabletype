@@ -36,7 +36,7 @@
         dialog.setPanels(panels);
         dialog.open({}, dialog_closed);
 
-        var next = TC.getElementsByTagAndClassName("input", "next", getByID('<mt:var name="name" escape="js">-panel'));
+        var next = TC.getElementsByTagAndClassName("button", "next", getByID('<mt:var name="name" escape="js">-panel'));
         if (next) {
             this.nextButton = next[0];
             this.nextButton.onclick = function() {
