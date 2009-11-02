@@ -87,7 +87,7 @@
 <mt:include name="include/header.tmpl">
 
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
-    <form id="edit_asset" "method="post" action="<mt:var name="script_url">">
+    <form id="edit_asset" method="post" action="<mt:var name="script_url">">
         <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
         <input type="hidden" name="__mode" value="save" />
         <input type="hidden" name="_type" value="<mt:var name="object_type">" />
