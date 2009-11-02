@@ -293,15 +293,20 @@ function setLicense() {
             </div>
         <mt:elseif name="archive_url" eq="">
             <div class="archive-url">
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text extra-path" /></span>
+            </div>
+            <div class="use-subdomain">
+                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+            </div>
+        <mt:else>
+            <div class="archive-url">
                 <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         </mt:if>
-            <div class="archive-url">
-                <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
-            </div>
+        <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
         </mtapp:setting>
 
         <mtapp:setting
