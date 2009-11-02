@@ -2008,6 +2008,8 @@ sub apply_text_filters {
         }
         $str = $code->( $str, @extra );
     }
+    $str = Encode::decode_utf8($str)
+        if !Encode::is_utf8($str);
     return $str;
 }
 
