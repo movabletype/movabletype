@@ -283,7 +283,7 @@ sub apply {
                 return $theme->error(
                     MT->translate(
                         'A fatal error occurred while applying element [_1]: [_2].',
-                        $element->{label},
+                        $element->{label} || $element->{id},
                         $element->errstr,
                 ));
             }
@@ -294,7 +294,7 @@ sub apply {
                 $log->message(
                     MT->translate(
                         'An error occurred while applying element [_1]: [_2].',
-                        $element->{label},
+                        $element->{label} || $element->{id},
                         $element->errstr,
                 ));
                 $log->blog_id($blog->id);

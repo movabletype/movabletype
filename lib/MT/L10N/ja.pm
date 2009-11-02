@@ -1989,8 +1989,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Theme.pm
 	'Failed to load theme [_1].' => '[_1]テーマの読込に失敗しました。',
-	'A fatal error occurred while applying element [_1]: [_2].' => '次の項目を適用する際に、重大なエラーが発生しました: [_1]: [_2]',
-	'An error occurred while applying element [_1]: [_2].' => '次の項目を適用する際に、エラーが発生しました: [_1] :[_2]',
+	'A fatal error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、重大なエラーが発生しました: [_2]',
+	'An error occurred while applying element [_1]: [_2].' => '項目「[_1]」を適用する際に、エラーが発生しました: [_2]',
 	'Component \'[_1]\' version [_2] or greater is needed to use this theme, but is not installed.' => 'このテーマには、次の項目の指定のバージョン以上が必要です。: [_1]: バージョン[_2]以上',
 	'Component \'[_1]\' version [_2] or greater is needed to use this theme, but the installed version is [_3].' => 'このテーマには、次の項目の指定のバージョン以上が必要です。: [_1]: バージョン[_2]以上 (インストール済みのバージョンは[_3])',
 	'Element \'[_1]\' cannot be applied because [_2]' => '次の項目が適用できません: [_1] (原因: [_2])',
