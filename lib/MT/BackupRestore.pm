@@ -1394,7 +1394,7 @@ sub parents {
             key => 'object_ds',
             entry_id => [ MT->model('entry'), MT->model('page') ],
             category_id => [ MT->model('category'), MT->model('folder') ],
-            blog_id => [ mt->model('blog'), MT->model('website') ],
+            blog_id => [ MT->model('blog'), MT->model('website') ],
         }}
     };
 }
