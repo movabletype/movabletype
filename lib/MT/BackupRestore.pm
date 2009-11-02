@@ -1393,6 +1393,8 @@ sub parents {
         object_id => { relations => {
             key => 'object_ds',
             entry_id => [ MT->model('entry'), MT->model('page') ],
+            category_id => [ MT->model('category'), MT->model('folder') ],
+            blog_id => [ mt->model('blog'), MT->model('website') ],
         }}
     };
 }
