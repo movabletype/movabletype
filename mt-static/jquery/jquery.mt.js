@@ -162,15 +162,15 @@ $.mtEditSiteUrl = function(options) {
         var $subdomain = $('input#'+this+'_url_subdomain');
         var $path = $('input#'+this+'_url_path');
         var subdomain = $subdomain.val();
-        if ($path.val()) {
-            if (subdomain) {
-                $subdomain
-                    .parent('.subdomain')
-                    .before('<span class="'+this+'_url_subdomain-text"></span>');
-                $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
-            }
-            $subdomain.parents('.field-content').find('.subdomain').hide();
-            $subdomain.parents('.field-content').find('.use-subdomain').hide();
+        if (subdomain) {
+            $subdomain
+                .parent('.subdomain')
+                .before('<span class="'+this+'_url_subdomain-text"></span>');
+            $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
+        }
+        $subdomain.parents('.field-content').find('.subdomain').hide();
+        $subdomain.parents('.field-content').find('.use-subdomain').hide();
+        if (!$path.hasClass('show-input')) {
             $path
                 .before('<span class="'+this+'_url_path-text"></span>')
                 .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
