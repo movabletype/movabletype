@@ -440,7 +440,7 @@ var Editor = (function(){
       });
 
       if (this.options.autoMatchParens)
-        addEventHandler(document.body, "click", method(this, "scheduleParenBlink"));
+        addEventHandler(document.body, "click", method(this, "scheduleParenHighlight"));
     }
     else if (!options.textWrapping) {
       container.style.whiteSpace = "nowrap";
@@ -448,7 +448,7 @@ var Editor = (function(){
   }
 
   function isSafeKey(code) {
-    return (code >= 16 && code <= 18) || // shift, control, alt
+    return (code >= 16 && code <= 18) || (code == 13) || // shift, control, alt
            (code >= 33 && code <= 40); // arrows, home, end
   }
 
@@ -695,7 +695,7 @@ var Editor = (function(){
       this.delayScanning();
       // Schedule a paren-highlight event, if configured.
       if (this.options.autoMatchParens)
-        this.scheduleParenBlink();
+        this.scheduleParenHighlight();
 
       // The various checks for !altKey are there because AltGr sets both
       // ctrlKey and altKey to true, and should not be recognised as
@@ -726,7 +726,7 @@ var Editor = (function(){
         if (this.end()) event.stop();
       }
       else if ((code == 219 || code == 221) && event.ctrlKey && !event.altKey) { // [, ]
-        this.blinkParens(event.shiftKey);
+        this.highlightParens(event.shiftKey, true);
         event.stop();
       }
       else if (event.metaKey && !event.shiftKey && (code == 37 || code == 39)) { // Meta-left/right
@@ -782,6 +782,8 @@ var Editor = (function(){
     // released.
     keyUp: function(event) {
       this.cursorActivity(isSafeKey(event.keyCode));
+      if (event.keyCode == 13)
+        this.scheduleHighlight();
     },
 
     // Indent the line following a given <br>, or null for the first
@@ -897,18 +899,45 @@ var Editor = (function(){
       return true;
     },
 
-    // Delay (or initiate) the next paren blink event.
-    scheduleParenBlink: function() {
+    // Delay (or initiate) the next paren highlight event.
+    scheduleParenHighlight: function() {
       if (this.parenEvent) this.parent.clearTimeout(this.parenEvent);
       var self = this;
-      this.parenEvent = this.parent.setTimeout(function(){self.blinkParens();}, 300);
+      this.parenEvent = this.parent.setTimeout(function(){self.highlightParens();}, 300);
     },
 
     // Take the token before the cursor. If it contains a character in
     // '()[]{}', search for the matching paren/brace/bracket, and
     // highlight them in green for a moment, or red if no proper match
     // was found.
-    blinkParens: function(jump) {
+    highlightParens: function(jump, fromKey) {
+      var self = this;
+      // give the relevant nodes a colour.
+      function highlight(node, ok) {
+        if (!node) return;
+        if (self.options.markParen) {
+          self.options.markParen(node, ok);
+        }
+        else {
+          node.style.fontWeight = "bold";
+          node.style.color = ok ? "#8F8" : "#F88";
+        }
+      }
+      function unhighlight(node) {
+        if (!node) return;
+        if (self.options.unmarkParen) {
+          self.options.unmarkParen(node);
+        }
+        else {
+          node.style.fontWeight = "";
+          node.style.color = "";
+        }
+      }
+      if (!fromKey && self.highlighted) {
+        unhighlight(self.highlighted[0]);
+        unhighlight(self.highlighted[1]);
+      }
+
       if (!window.select) return;
       // Clear the event property.
       if (this.parenEvent) this.parent.clearTimeout(this.parenEvent);
@@ -926,7 +955,7 @@ var Editor = (function(){
         return /[\(\[\{]/.test(ch);
       }
 
-      var ch, self = this, cursor = select.selectionTopNode(this.container, true);
+      var ch, cursor = select.selectionTopNode(this.container, true);
       if (!cursor || !this.highlightAtCursor()) return;
       cursor = select.selectionTopNode(this.container, true);
       if (!(cursor && ((ch = paren(cursor)) || (cursor = cursor.nextSibling) && (ch = paren(cursor)))))
@@ -956,12 +985,6 @@ var Editor = (function(){
         }
         return {node: runner, status: runner && ok};
       }
-      // Temporarily give the relevant nodes a colour.
-      function blink(node, ok) {
-        node.style.fontWeight = "bold";
-        node.style.color = ok ? "#8F8" : "#F88";
-        self.parent.setTimeout(function() {node.style.fontWeight = ""; node.style.color = "";}, 500);
-      }
 
       while (true) {
         var found = tryFindMatch();
@@ -973,11 +996,14 @@ var Editor = (function(){
           continue;
         }
         else {
-          blink(cursor, found.status);
-          if (found.node) {
-            blink(found.node, found.status);
-            if (jump) select.focusAfterNode(found.node.previousSibling, this.container);
-          }
+          highlight(cursor, found.status);
+          highlight(found.node, found.status);
+          if (fromKey)
+            self.parent.setTimeout(function() {unhighlight(cursor); unhighlight(found.node);}, 500);
+          else
+            self.highlighted = [cursor, found.node];
+          if (jump && found.node)
+            select.focusAfterNode(found.node.previousSibling, this.container);
           break;
         }
       }

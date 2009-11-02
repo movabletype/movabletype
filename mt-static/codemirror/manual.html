@@ -226,6 +226,15 @@
       the user clicks on the document. Defaults to <code>false</code>.
       Might be expensive for big documents.</dd>
 
+      <dt><code>markParen</code>,
+      <code>unmarkParen</code></dt><dd>Functions. Can be used to
+      customise the way brackets are marked (and unmarked) when
+      matched. Both take the bracket's <code>SPAN</code> node as their
+      first argument, and <code>markParen</code> takes a second
+      boolean argument indicating whether a successful match was
+      found. The default is to make the brackets bold and green (or
+      red, if not matched).</dd>
+
       <dt><code>saveFunction</code></dt><dd>If given a function
       value, that function will be invoked when the user presses
       control-s. You should advise your Opera users to use
