@@ -2861,7 +2861,7 @@ sub help_url {
 
     my $url = $pkg->config->HelpURL;
     return $url if defined $url;
-    $url = $pkg->translate('http://www.movabletype.org/documentation/');
+    $url = $pkg->translate('http://www.movabletype.org/documentation/mt5/');
     if ( $append ) {
         $url .= $append;
     }
