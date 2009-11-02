@@ -2010,6 +2010,7 @@ use vars qw( @ISA %Lexicon );
 	'Component \'[_1]\' is not found.' => '次の項目が見つかりません: [_1]',
 	'Internal error: the importer is not found.' => '内部エラー : インポーターが見つかりません。',
 	'Compatibility error occured while applying \'[_1]\': [_2].' => '次の項目の適用時にエラーが発生しました: [_1]: [_2]',
+	'An Error occured while applying \'[_1]\': [_2].' => '[_1]の適用中にエラーが発生しました: [_2]。',
 	'Fatal error occured while applying \'[_1]\': [_2].' => '次の項目の適用時に重大なエラーが発生しました: [_1]: [_2]',
 	'Importer for \'[_1]\' is too old.' => '次の項目のインポーターが古すぎます: [_1]',
 	'Theme element \'[_1]\' is too old for this environment.' => '次の項目が、この環境では古すぎます: [_1]',
