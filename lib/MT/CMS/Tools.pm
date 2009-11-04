@@ -1108,6 +1108,7 @@ sub restore {
     my ( $volume, $directories, $uploaded_filename ) =
       File::Spec->splitpath($uploaded)
       if defined($uploaded);
+    $app->mode('start_restore');
     if ( defined($uploaded_filename)
         && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
     {
@@ -2223,6 +2224,15 @@ sub restore_upload_manifest {
       . '&amp;overwrite_templates='
       . $param->{overwrite_templates}
       . '&amp;redirect=1';
+    if ( length $param->{dialog_params} > 2083 )
+    {    # 2083 is Maximum URL length in IE
+        $param->{error} = $app->translate(
+"Manifest file '[_1]' is too large. Please use import direcotry for restore.",
+            $app->param('file')
+        );
+        $param->{open_dialog} = 0;
+        $app->mode('start_restore');
+    }
     $app->load_tmpl( 'restore.tmpl', $param );
 
     #close $fh if $fh;
