@@ -256,7 +256,7 @@ sub export {
         $param{$param} = ref $val ? $val->[0] : $val;
     }
     my @output_methods = ({
-        label => MT->translate('Install into theme directory'),
+        label => MT->translate('Install into themes directory'),
         id    => 'themedir',
     });
     require MT::Util::Archive;

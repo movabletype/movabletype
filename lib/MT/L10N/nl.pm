@@ -1281,7 +1281,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to uninstall theme' => 'Thema de-installeren mislukt',
 	'Failed to uninstall theme: [_1]' => 'Thema de-installeren mislukt: [_1]',
 	'Theme from [_1]' => 'Thema van [_1]',
-	'Install into theme directory' => 'Installeren in thema-map',
+	'Install into themes directory' => 'Installeren in thema-map',
 	'Download [_1] archive' => 'Download [_1] archief',
 	'Failed to save theme export info: [_1]' => 'Opslaan exportinfo van het thema mislukt: [_1]',
 	'Themes Directory [_1] is not writable.' => 'Themadirectory [_1] is niet beschrijfbaar.',

@@ -1236,7 +1236,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to uninstall theme' => 'Fallo al desinstalar el tema',
 	'Failed to uninstall theme: [_1]' => 'Fallo al desinstalar el tema: [_1]',
 	'Theme from [_1]' => 'Tema de [_1]',
-	'Install into theme directory' => 'Instalar en el directorio de temas', # Translate - New
+	'Install into themes directory' => 'Instalar en el directorio de temas', # Translate - New
 	'Download [_1] archive' => 'Descargar archivo de [_1]', # Translate - New
 	'Failed to save theme export info: [_1]' => 'Fallo al guardar la información de exportación del tema: [_1]',
 	'Themes Directory [_1] is not writable.' => 'No se puede escribir en el directorio de los temas [_1].',

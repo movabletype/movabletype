@@ -1390,7 +1390,7 @@ use vars qw( @ISA %Lexicon );
 	'Failed to uninstall theme' => 'テーマのアンインストールに失敗しました',
 	'Failed to uninstall theme: [_1]' => 'テーマのアンインストールに失敗しました: [_1]',
 	'Theme from [_1]' => '[_1]のテーマ',
-	'Install into theme directory' => 'テーマディレクトリへのインストール',
+	'Install into themes directory' => 'テーマディレクトリへのインストール',
 	'Download [_1] archive' => '[_1]形式アーカイブでダウンロード',
 	'Failed to save theme export info: [_1]' => 'テーマエクスポート情報の保存に失敗しました: [_1]',
 	'Themes Directory [_1] is not writable.' => 'テーマディレクトリ[_1]に書き込めません。',
