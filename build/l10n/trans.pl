@@ -57,6 +57,7 @@ my $text = <>;
 my $tmpl = $ARGV;
 exit unless $text;
 do {
+    $text .= $_ if $_;
     if (($tmpl ne $ARGV) || eof()) {
         #printf "\n\t## %s\n", $tmpl;
         printf "\n## %s\n", $tmpl;
@@ -275,7 +276,6 @@ do {
         }
         $text = '';
     }
-    $text .= $_ if $_;
 } while (<>);
 exit;
 
