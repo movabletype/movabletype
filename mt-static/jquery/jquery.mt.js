@@ -697,7 +697,7 @@ $.fn.mtEditInput = function(options) {
     return this.each(function() {
         var id = $(this).attr('id');
         var $input = $('input#'+id);
-        if ($input.val()) {
+        if ($input.val() && !$input.hasClass('show-input')) {
             $input
                 .before('<span class="'+id+'-text"></span>')
                 .after('<button id="mt-set-'+id+'" class="mt-edit-field-button">'+opts.edit+'</button>')
