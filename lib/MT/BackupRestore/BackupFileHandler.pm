@@ -103,7 +103,8 @@ sub start_element {
                                 class => 'system',
                                 category => 'restore',
                             });
-                            $objects->{"$class#" . $column_data{id}} = $obj;
+                            $objects->{"$class#" . $column_data{id}} = $obj; 
+                            $objects->{"$class#" . $column_data{id}}->{no_overwrite} = 1;
                             $self->{current} = $obj;
                             $self->{loaded} = 1;
                             $self->{skip} += 1;
@@ -119,6 +120,10 @@ sub start_element {
                             });
                             my $old_id = delete $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
+                            $objects->{"$class#$old_id"}->{no_overwrite} = 1;
+                            delete $column_data{userpic_asset_id}
+                                if exists $column_data{userpic_asset_id};
+
                             my $child_classes = $obj->properties->{child_classes} || {};
                             for my $class (keys %$child_classes) {
                                 eval "use $class;";

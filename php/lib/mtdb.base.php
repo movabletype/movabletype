@@ -80,7 +80,7 @@ abstract class MTDatabase {
             unset($args['blog_ids']);
             unset($args['include_websites']);
             $is_excluded = 0;
-        } elseif (isset($args['exclude_blogs']) || isset($args['exclude_blogs'])) {
+        } elseif (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
             $attr = $args['exclude_blogs'];
             $attr or $attr = $args['exclude_websites'];
             $is_excluded = 1;

@@ -19,6 +19,14 @@ use File::Spec;
 use vars qw(%classes %functions %LegacyPerms $App $DryRun $Installing $SuperUser
             $CLI $MAX_TIME $MAX_ROWS @steps);
 
+sub app {
+    return $App;
+}
+
+sub superuser {
+    return $SuperUser;
+}
+
 sub max_rows {
     return $MAX_ROWS;
 }

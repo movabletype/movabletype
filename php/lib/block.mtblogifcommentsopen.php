@@ -11,7 +11,7 @@ function smarty_block_mtblogifcommentsopen($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         if ($ctx->mt->config('AllowComments') &&
-            (($blog->blog_allow_reg_comments && $blog->blog_commenter_authenticators)
+            (($blog->blog_allow_reg_comments && $blog->remote_auth_token)
              || $blog->blog_allow_unreg_comments))
             $open = 1;
         else

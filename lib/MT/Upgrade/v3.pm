@@ -689,4 +689,41 @@ sub mt32_xliterate_utf8 {
     $str;
 }
 
+sub core_set_superuser {
+    my $self = shift;
+
+    my $SuperUser = $self->superuser();
+    my $app = $self->app();
+    my $author;
+    if ( ( ref $app ) && ( $app->{author} ) ) {
+        require MT::Author;
+        $self->progress(
+            $self->translate_escape(
+                "Setting your permissions to administrator.")
+        );
+        $author = MT::Author->load( $app->{author}->id );
+    }
+    elsif ($SuperUser) {
+        require MT::Author;
+        $self->progress(
+            $self->translate_escape(
+                "Setting your permissions to administrator.")
+        );
+        $author = MT::Author->load($SuperUser);
+    }
+
+    if ($author) {
+        $author->is_superuser(1);
+        $author->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $author->errstr
+            )
+            );
+    }
+
+    1;
+}
+
 1;

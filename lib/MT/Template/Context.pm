@@ -364,7 +364,7 @@ sub set_blog_load_context {
     }
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
-    elsif ( $attr->{exclude_blogs} ) {
+    elsif ( $attr->{exclude_blogs} || $attr->{exclude_websites} ) {
         return $ctx->error(MT->translate(
                 "The attribute exclude_blogs cannot take '[_1]' for a value.",
                 $args->{exclude_blogs}
