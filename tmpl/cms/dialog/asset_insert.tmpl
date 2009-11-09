@@ -10,10 +10,6 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
     <mt:var name="insert_script">
 </mt:if>
 
-<mt:if name="extension_message">
-    parent.jQuery.fn.mtDialog.close();
-</mt:if>
-
 // remove the no assets text if it's there
 var Node = window.parent.document.getElementById("empty-asset-list");
 if (Node) {
@@ -77,7 +73,9 @@ if (AssetList) {
         </mt:If>
     }
 }
-
+<mt:unless name="extension_message">
+    parent.jQuery.fn.mtDialog.close();
+</mt:unless>
 /* ]]> */
 </script>
 
