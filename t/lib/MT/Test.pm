@@ -1353,6 +1353,9 @@ sub reset_table_for {
         my $dbh       = $driver->rw_handle;
         my $ddl_class = $driver->dbd->ddl_class;
 
+        $dbh->{pg_server_prepare} = 0
+            if $ddl_class =~ m/Pg/;
+
         $dbh->do( $ddl_class->drop_table_sql($class) )
           or die $dbh->errstr
           if $driver->table_exists($class);
