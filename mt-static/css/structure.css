@@ -1383,6 +1383,11 @@ optgroup option {
     color: #2b2b2b;
 }
 
+/* -- Auto save message */
+.autosave-notification { 
+    margin-top: 1em;
+}
+
 /* -- Pagination */
 .pagination { 
     position: absolute;

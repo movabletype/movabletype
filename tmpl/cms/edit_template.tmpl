@@ -226,7 +226,6 @@
         </mt:if>
     </mt:if>
     </mt:unless>
-    <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
@@ -730,6 +729,7 @@ function toggleCache(id) {
 </mt:if>
 
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+<div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 
 </form>
 <form name="archive_map_form" method="post" action="<mt:var name="script_url">">
