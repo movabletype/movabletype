@@ -3631,6 +3631,7 @@ sub _include_module {
     }
 
     # Try to read from cache
+    my $enc = MT->config->PublishCharset;
     my $cache_expire_type = 0;
     my $cache_enabled =
          $blog
@@ -3640,10 +3641,15 @@ sub _include_module {
         || $arg->{key}
         || ( exists $arg->{ttl} )
         || ( ( $cache_expire_type = ( $tmpl->cache_expire_type || 0 ) ) != 0 ) ) ? 1 : 0;
-    my $cache_key =
-        ($arg->{cache_key} || $arg->{key})
-      ? $arg->{cache_key} || $arg->{key}
-      : 'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name;
+    my $cache_key = $arg->{cache_key} || $arg->{key};
+    if ( !$cache_key ) {
+        require Digest::MD5;
+        $cache_key = Digest::MD5::md5_hex(
+            Encode::encode_utf8(
+                'blog::' . $blog_id . '::template_' . $type . '::' . $tmpl_name
+            )
+        );
+    }
     my $ttl =
       exists $arg->{ttl} ? $arg->{ttl}
           : ( $cache_expire_type == 1 ) ? $tmpl->cache_expire_interval
@@ -3680,7 +3686,7 @@ sub _include_module {
         require MT::Cache::Negotiate;
         $cache_driver = MT::Cache::Negotiate->new( ttl => $ttl );
         my $cache_value = $cache_driver->get($cache_key);
-
+        $cache_value = Encode::decode( $enc, $cache_value );
         if ($cache_value) {
             return $cache_value if !$use_ssi;
 
@@ -3715,7 +3721,7 @@ sub _include_module {
     }
 
     if ($cache_enabled) {
-        $cache_driver->replace($cache_key, $ret, $ttl);
+        $cache_driver->replace($cache_key, Encode::encode( $enc, $ret), $ttl);
     }
 
     if ($use_ssi) {
