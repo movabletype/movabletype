@@ -129,18 +129,20 @@ sub new_version_widget {
     push @{ $param->{feature_loop} ||= [] },
       {
         feature_label => MT->translate('Design with Themes'),
-        feature_url  => $app->help_url('mt5/design/'),
-        feature_description => MT->translate('Create and apply a theme to change blog templates, categories and other configurations.'),
+        feature_description => MT->translate('Create and apply a theme to change templates, categories, folders and custom fields.'),
       },
       {
         feature_label => MT->translate('Website Management'),
-        feature_url  => $app->help_url('mt5/website/'),
         feature_description => MT->translate('Manage multiple blogs for each website. Now, it\'s much easier to create a portal with MultiBlog.'),
       },
       {
         feature_label => MT->translate('Revision History'),
-        feature_url  => $app->help_url('mt5/revision/'),
         feature_description => MT->translate('The revision history for entries and templates protects users from unexpected modification.'),
+      },
+      {
+        feature_label => MT->translate('Movable Type Online Manual'),
+        feature_url  => $app->help_url('http://www.movabletype.org/documentation/'),
+        feature_description => MT->translate('Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.'),
       };
 }
 
