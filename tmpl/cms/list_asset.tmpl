@@ -149,11 +149,6 @@ function init() {
     init();
     jQuery.mtCheckbox();
 
-    jQuery('button.mt-delete-items').mtDeleteItems({
-        id: '<$mt:var name="object_type"$>-listing-form',
-        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
-        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
-    });
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
         id: '<mt:var name="form_id">',
         plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
