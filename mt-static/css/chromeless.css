@@ -148,6 +148,11 @@ input.smaller-text {
     font-weight: bold;
 }
 
+#file-field .field-content, 
+#file-field .field-content #file { 
+    margin-top: 10px;
+}
+
 /* - Actions Bar */
 .action-buttons {
     margin: 20px 0 15px;
