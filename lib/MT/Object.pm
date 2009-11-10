@@ -878,18 +878,25 @@ sub nextprev {
     # id as a secondary sort column.
 
     my ($id, $ts) = ($obj->id, $obj->$by_field());
-    local @$args{qw( sort range_incl )}
-        = ( [ { column => $by_field, desc => $next ? 'ASC' : 'DESC' },
-            { column => 'id', desc => $next ? 'ASC' : 'DESC' } ],
-            { $by_field => 1 });
-
-    my $sibling = $class->load({
-        $by_field => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        'id' => $id,
-        %{$terms}
-    }, { not => { 'id' => 1 }, limit => 1, %$args });
-
-    return $sibling;
+    my $desc = $next ? 'ASC' : 'DESC';
+    my $op   = $next ? '>'   : '<';
+    my @terms = (
+        {   $by_field => { $op => $ts },
+            %{$terms}, },
+        -or =>
+        {   $by_field => $ts,
+            id        => { $op => $id },
+            %{$terms}, },
+    );
+    my %args = (
+        %$args,
+        limit => 1,
+        sort  => [
+            { column => $by_field, desc => $desc },
+            { column => 'id',      desc => $desc },
+        ],
+    );
+    return $class->load(\@terms, \%args);
 }
 
 ## Drivers.
