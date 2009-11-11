@@ -161,7 +161,7 @@ sub display_name {
     my $tmpl     = $ctx->stash('template');
     my $at       = $ctx->{archive_type};
     my $author   = '';
-    if (   ( $tmpl && $tmpl->type eq 'index' )
+    if (   ( $tmpl && ($tmpl->type eq 'index' || $tmpl->type eq 'widget') )
         || !$obj
         || ( $obj && !$obj->author_based )
         || !$ctx->{inside_archive_list} )
