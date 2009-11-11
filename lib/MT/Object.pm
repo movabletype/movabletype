@@ -882,14 +882,14 @@ sub nextprev {
     my $op   = $next ? '>'   : '<';
     my @terms = (
         {   $by_field => { $op => $ts },
-            %{$terms}, },
+            ( ref $terms ? %$terms : () ), },
         -or =>
         {   $by_field => $ts,
             id        => { $op => $id },
-            %{$terms}, },
+            ( ref $terms ? %$terms : () ), },
     );
     my %args = (
-        %$args,
+        ( ref $args ? %$args : () ),
         limit => 1,
         sort  => [
             { column => $by_field, desc => $desc },
