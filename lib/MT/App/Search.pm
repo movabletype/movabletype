@@ -1130,8 +1130,10 @@ sub _default_throttle {
         }
     }
 
-    unless ( $^O eq 'MSWin32' ) {
-
+    if ( $^O eq 'MSWin32' ) {
+        $$result = 1;         #FIXME
+    }
+    else {
         # Use SIGALRM to stop processing in 5 seconds for each request
         $SIG{ALRM} = sub {
             my $msg
