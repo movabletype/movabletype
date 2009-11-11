@@ -2555,7 +2555,7 @@ use vars qw( @ISA %Lexicon );
 	'Continue' => 'Weiter',
 	'Back' => 'Zurück',
 	'Show current mail settings' => 'Mail-Einstellungen anzeigen',
-	'Periodically Movable Type will send email to inform users of new comments as well as other other events. For these emails to be sent properly, you must instruct Movable Type how to send email.' => 'Geben Sie an, auf welchem Wege Movable Type E-Mails verschicken soll. E-Mails werden beispielsweise zur Benachrichtigung über neue Kommentare verschickt.',
+	'Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified.' => 'Geben Sie an, auf welchem Wege Movable Type E-Mails verschicken soll. E-Mails werden beispielsweise zur Benachrichtigung über neue Kommentare verschickt.',
 	'An error occurred while attempting to send mail: ' => 'Mailversand fehlgeschlagen: ',
 	'Send email via:' => 'E-Mails versenden per:',
 	'Select One...' => 'Auswählen...',
