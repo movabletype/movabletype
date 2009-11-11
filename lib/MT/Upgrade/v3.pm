@@ -333,9 +333,10 @@ sub upgrade_functions {
             updater => {
                 type => 'category',
                 condition => sub { !defined $_[0]->basename },
-                code => sub { my $cat = shift; my %args = @_;
+                code => sub { require MT::Util;
+                    my $cat = shift; my %args = @_;
                     $args{from} < 3.20021
-                        ? $cat->basename(mt32_dirify($cat->label))
+                        ? $cat->basename(MT::Util::make_unique_category_basename($cat))
                         : 1;
                 },
                 label => 'Assigning basename for categories...',
