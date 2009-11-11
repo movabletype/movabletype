@@ -215,16 +215,17 @@ $.mtEditSiteUrl = function(options) {
  *
  */
 $.mtEditSitePath = function() {
+    var re = /^(\/|\\\\|[a-zA-Z]:(\\|\/))/;
     $('.blog-path-text').each(function() {
         var text = $(this).val();
-        if (text.match(/^\//)) {
+        if (text.match(re)) {
             $(this).removeClass('extra-path')
                 .parents('.site-path-field').find('span.website-path').hide();
         }
     });
     $('.blog-path-text').keyup(function() {
         var text = $(this).val();
-        if (text.match(/^\//)) {
+        if (text.match(re)) {
             $(this).removeClass('extra-path')
                 .parents('.site-path-field').find('span.website-path').hide();
         } else {
