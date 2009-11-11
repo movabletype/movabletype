@@ -2640,6 +2640,7 @@ use vars qw( @ISA %Lexicon );
 	'Missing Required Modules' => 'Ontbrekende vereiste modules',
 	'Minimal version requirement: [_1]' => 'Minimale versievereisten: [_1]',
 	'Learn more about installing Perl modules.' => 'Meer weten over het installeren van Perl modules',
+	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'Op uw server zijn alle vereiste modules geïnstalleerd; u hoeft geen bijkomende modules te installeren.',
 
 ## tmpl/wizard/configure.tmpl

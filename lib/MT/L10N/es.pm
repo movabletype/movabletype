@@ -2623,6 +2623,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Missing Required Modules' => 'Módulos necesarios no encontrados',
 	'Minimal version requirement: [_1]' => 'Versión mínima requerida: [_1]',
 	'Learn more about installing Perl modules.' => 'Más información sobre la instalación de módulos de Perl.',
+	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.org/documentation/installation/perl-modules.html',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'El servidor tiene instalados todos los módulos necesarios; no necesita realizar ninguna instalación adicional.',
 
 ## tmpl/wizard/configure.tmpl

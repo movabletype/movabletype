@@ -4811,6 +4811,7 @@ use vars qw( @ISA %Lexicon );
 	'Missing Required Modules' => '必要なモジュールが見つかりません',
 	'Minimal version requirement: [_1]' => '必須バージョン: [_1]',
 	'Learn more about installing Perl modules.' => 'Perlモジュールのインストールについて',
+	'http://www.movabletype.org/documentation/installation/perl-modules.html' => 'http://www.movabletype.jp/documentation/check_configuration.html',
 	'Your server has all of the required modules installed; you do not need to perform any additional module installations.' => 'すべての必要なモジュールはインストールされています。モジュールの追加インストールは必要ありません。',
 
 ## tmpl/wizard/start.tmpl
