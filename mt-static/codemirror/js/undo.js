@@ -72,7 +72,7 @@ History.prototype = {
       // shadow in the redo history.
       var item = this.history.pop();
       this.redoHistory.push(this.updateTo(item, "applyChain"));
-      if (this.onChange) this.onChange();
+      this.notifyEnvironment();
       return this.chainNode(item);
     }
   },
@@ -84,7 +84,7 @@ History.prototype = {
       // The inverse of undo, basically.
       var item = this.redoHistory.pop();
       this.addUndoLevel(this.updateTo(item, "applyChain"));
-      if (this.onChange) this.onChange();
+      this.notifyEnvironment();
       return this.chainNode(item);
     }
   },
@@ -108,7 +108,7 @@ History.prototype = {
       from = end;
     }
     this.pushChains([chain], from == null && to == null);
-    if (this.onChange) this.onChange();
+    this.notifyEnvironment();
   },
 
   pushChains: function(chains, doNotHighlight) {
@@ -162,7 +162,7 @@ History.prototype = {
     if (chains.length) {
       this.addUndoLevel(this.updateTo(chains, "linkChain"));
       this.redoHistory = [];
-      if (this.onChange) this.onChange();
+      this.notifyEnvironment();
     }
   },
 
@@ -188,8 +188,14 @@ History.prototype = {
   // Notify the editor that some nodes have changed.
   notifyDirty: function(nodes) {
     forEach(nodes, method(this.editor, "addDirtyNode"))
-    this.editor.contentChanged();
     this.editor.scheduleHighlight();
+  },
+
+  notifyEnvironment: function() {
+    // Used by the line-wrapping line-numbering code.
+    if (window.frameElement && window.frameElement.CodeMirror.updateNumbers)
+      window.frameElement.CodeMirror.updateNumbers();
+    if (this.onChange) this.onChange();
   },
 
   // Link a chain into the DOM nodes (or the first/last links for null

@@ -145,7 +145,7 @@ var Editor = (function(){
       }
       else {
         if (afterBR && window.opera)
-          point(makePartSpan(""), owner);
+          point(makePartSpan("", owner));
         afterBR = true;
       }
       part.dirty = true;
@@ -457,7 +457,6 @@ var Editor = (function(){
     importCode: function(code) {
       this.history.push(null, null, asEditorLines(code));
       this.history.reset();
-      this.contentChanged();
     },
 
     // Extract the code from the editor.
@@ -532,7 +531,6 @@ var Editor = (function(){
                         {node: line, offset: this.history.textAfter(line).length},
                         content);
       this.addDirtyNode(line);
-      this.contentChanged();
       this.scheduleHighlight();
     },
 
@@ -564,7 +562,6 @@ var Editor = (function(){
         this.container.insertBefore(makePartSpan(lines[i], doc), before);
       }
       this.addDirtyNode(line);
-      this.contentChanged();
       this.scheduleHighlight();
     },
 
@@ -634,7 +631,6 @@ var Editor = (function(){
       lines[lines.length - 1] = lastLine + this.history.textAfter(to.node).slice(to.offset);
       var end = this.history.nodeAfter(to.node);
       this.history.push(from.node, end, lines);
-      this.contentChanged();
       return {node: this.history.nodeBefore(end),
               offset: lastLine.length};
     },
@@ -711,8 +707,8 @@ var Editor = (function(){
         }
         event.stop();
       }
-      else if (code == 9 && this.options.tabMode != "default") { // tab
-        this.handleTab(!event.ctrlKey && !event.shiftKey);
+      else if (code == 9 && this.options.tabMode != "default" && !event.ctrlKey) { // tab
+        this.handleTab(!event.shiftKey);
         event.stop();
       }
       else if (code == 32 && event.shiftKey && this.options.tabMode == "default") { // space
@@ -1062,15 +1058,8 @@ var Editor = (function(){
         cursor = cursor || this.container.firstChild;
         if (activity) activity(cursor);
         if (!safe) {
-          this.contentChanged();
           this.addDirtyNode(cursor);
         }
-      }
-    },
-
-    contentChanged: function() {
-      if (window.frameElement && window.frameElement.CodeMirror.updateNumbers) {
-        window.frameElement.CodeMirror.updateNumbers();
       }
     },
 

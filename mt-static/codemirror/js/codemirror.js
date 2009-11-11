@@ -114,7 +114,7 @@ var CodeMirror = (function(){
     if (typeof options.stylesheet == "string")
       options.stylesheet = [options.stylesheet];
 
-    var html = ["<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html lang=\""+options.lang+"\"><head>"];
+    var html = ["<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"><html lang=\"" + options.lang + "\"><head>"];
     // Hack to work around a bunch of IE8-specific problems.
     html.push("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\"/>");
     forEach(options.stylesheet, function(file) {
@@ -276,6 +276,7 @@ var CodeMirror = (function(){
         var onScroll = win.addEventHandler(win, "scroll", update, true),
             onResize = win.addEventHandler(win, "resize", update, true);
         clear = function(){onScroll(); onResize();};
+        update();
       }
       function wrapping() {
         var node, lineNum, next, pos;
@@ -320,14 +321,14 @@ var CodeMirror = (function(){
         var pending = null;
         function update() {
           if (pending) clearTimeout(pending);
-          pending = setTimeout(start, self.options.lineNumberDelay);
+          start();
         }
         self.updateNumbers = update;
         var onScroll = win.addEventHandler(win, "scroll", doScroll, true),
             onResize = win.addEventHandler(win, "resize", update, true);
         clear = function(){
           if (pending) clearTimeout(pending);
-          if (self.updateNumbers == update) self.updateNumbers == null;
+          if (self.updateNumbers == update) self.updateNumbers = null;
           onScroll();
           onResize();
         };
