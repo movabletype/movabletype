@@ -17,12 +17,17 @@ function smarty_function_mtcommentbody($args, &$ctx) {
     if ($cb == '1' || $cb == '__default__') {
         $cb = 'convert_breaks';
     }
+
     require_once 'MTUtil.php';
-    $text = apply_text_filter($ctx, $text, $cb);
+    if ( $cb != '0' ) {
+        $text = apply_text_filter($ctx, $text, $cb);
+    }
+
     if (isset($args['words'])) {
         require_once("MTUtil.php");
         return first_n_text($text, $args['words']);
     }
+
     if ($blog->blog_autolink_urls) {
         $text = preg_replace('!(^|\s|>)(https?://[^\s<]+)!s', '$1<a href="$2">$2</a>', $text);
     }
