@@ -107,8 +107,9 @@ class Blog extends BaseObject
         $site = $this->website();
         $path = '';
         if (!empty($site))
-            $path = $site->blog_archive_url;
-        $path = $path . $this->blog_archive_url;
+            $path = $site->blog_site_url;
+        else
+            $path = $this->blog_site_url;
         return $path;
     }
 }
