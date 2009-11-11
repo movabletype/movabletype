@@ -308,7 +308,7 @@ sub _nextprev {
         direction => $direction,
         terms     => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args      => $args,
-        by        => 'authored_on',
+        by        => ($class eq 'MT::Page') ? 'modified_on' : 'authored_on',
     );
     weaken($obj->{$label} = $o) if $o;
     return $o;
