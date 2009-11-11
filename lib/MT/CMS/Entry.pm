@@ -1072,9 +1072,10 @@ sub _build_entry_preview {
 
     require MT::TemplateMap;
     require MT::Template;
+    my $at = $type eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {
-            archive_type => ( $type eq 'page' ? 'Page' : 'Individual' ),
+            archive_type => $at,
             is_preferred => 1,
             blog_id => $blog_id,
         }
@@ -1119,6 +1120,7 @@ sub _build_entry_preview {
     $ctx->stash( 'blog',  $blog );
     $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp} = $ts;
+    $ctx->{current_archive_type} = $at;
     $ctx->var('entry_template',    1);
     $ctx->var('archive_template',  1);
     $ctx->var('entry_template',    1);
