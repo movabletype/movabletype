@@ -58,6 +58,9 @@
             padding: 0;
             height: 1%;  /*IE6 Hack*/
         }
+        .field {
+            margin-bottom: 20px;
+        }
         label {
             font-weight: bold;
         }
@@ -96,14 +99,6 @@
             }
             .msg-error {
                 background-color: #FF9;
-            }
-            #container  div.no-static-path,
-            #container #static_webpath_config {
-                display: none;
-            }
-            #container.bad-static-path div.no-static-path,
-            #container.bad-static-path #static_webpath_config {
-                display: block;
             }
             </style>
         </mt:setvarblock>
@@ -187,7 +182,7 @@
                 hint="$hintfoo">
                 <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="">
             </mtapp:setting>
-            <br/>
+
             <mtapp:setting
                 id="set_static_file_to"
                 label="<__trans phrase="Static file path">"
@@ -211,14 +206,10 @@
     <p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
 </mt:unless>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-if (window.jQuery) {
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery(function() {
-        jQuery('#container').addClass('bad-static-path');
+        jQuery('div.no-static-path, div#static_webpath_config').hide();
     });
-}
-/* ]]> */
-</script>
+</mt:setvarblock>
 
 <mt:include name="include/chromeless_footer.tmpl">
