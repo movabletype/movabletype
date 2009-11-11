@@ -2483,6 +2483,9 @@ sub edit_widget {
             ? ( name => $name )
             : (),
     };
+    $param->{saved} = 1
+        if $app->param('saved');
+
     if ($blog_id) {
         my $blog = $app->blog;
         # include_system/include_cache are only applicable
