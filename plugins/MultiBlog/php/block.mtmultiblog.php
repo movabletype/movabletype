@@ -24,7 +24,10 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
                 or $args['include_blogs'] 
-                or $args['exclude_blogs'] )) {
+                or $args['exclude_blogs']
+                or $args['include_websites'] 
+                or $args['exclude_websites']
+                or $args['site_ids']  )) {
             $id = $ctx->stash('blog_id');
             global $multiblog_blog_config;
             if (!$multiblog_blog_config)
@@ -108,12 +111,8 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $ctx->stash('category', null);
             $ctx->stash('archive_category', null);
         }
-        if ( ( isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all' ) ||
-             ( isset($args['blog_ids']) && strtolower($args['blog_ids']) == 'all' ) ||
-             ( isset($args['site_ids']) && strtolower($args['site_ids']) == 'all' ) ) {
-            $args['class'] = '*';
-        }
 
+        $args['class'] = '*';
         $blogs = $ctx->mt->db()->fetch_blogs($args);
         $ctx->stash('_blogs', $blogs);
         $counter = 0;

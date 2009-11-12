@@ -23,9 +23,12 @@ sub MultiBlog {
 
     # If MTMultiBlog was called with no arguments, we check the 
     # blog-level settings for the default includes/excludes.
-    unless (   $args->{blog_ids} 
-            || $args->{include_blogs} 
-            || $args->{exclude_blogs} ) {
+    unless (   $args->{blog_ids}
+            || $args->{include_blogs}
+            || $args->{exclude_blogs}
+            || $args->{include_websites}
+            || $args->{exclude_websites}
+            || $args->{site_ids} ) {
         my $id = $ctx->stash('blog_id');
         my $is_include = $plugin->get_config_value( 
                 'default_mtmultiblog_action', "blog:$id" );
