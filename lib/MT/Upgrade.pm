@@ -504,6 +504,10 @@ sub post_upgrade_class {
         # 'page' instead of 'entry', for instance
         $type = $pc->class_type || $type if $pc->can('class_type');
 
+        # do nothing for website/blog at this point.
+        # this step will do later.
+        return 1 if $type eq 'website' || $type eq 'blog';
+
         my %step_param = ( type => $type );
         $step_param{plugindata} = 1 if $type eq 'category';
         $step_param{meta_column} = $pc->properties->{meta_column}
