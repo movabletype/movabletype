@@ -164,14 +164,14 @@ sub _hdlr_authors {
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
     my (@filters, %terms, %args);
-    
-    if (defined $args->{username} || defined $args->{id}) {
-        if(my $user_id = $args->{id}) {
-            return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
-            $terms{id} = $args->{id};
-        } else {
-            $terms{name} = $args->{username};
-        }
+
+    if( (defined $args->{id}) && (my $user_id = $args->{id}) ) {
+        return $ctx->error(MT->translate("The '[_2]' attribute will only accept an integer: [_1]", $user_id, 'user_id')) unless($user_id =~ m/^[\d]+$/);
+        $terms{id} = $args->{id};
+    } elsif ( defined $args->{username} ) {
+        $terms{name} = $args->{username};
+    } elsif ( defined $args->{display_name} ) {
+        $terms{nickname} = $args->{display_name};
     }
 
     if (my $status_arg = $args->{status} || 'enabled') {
