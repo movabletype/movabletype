@@ -380,7 +380,6 @@ sub set_blog_load_context {
     # include_blogs="all" removes the blog_id/id constraint
     } elsif (lc $blog_ids eq 'all') {
         delete $terms->{$col} if exists $terms->{$col};
-        $terms->{'class'} = '*';
 
     # "include_blogs='site'" collects all blogs in current context of website
     } elsif ( ( my $blog = $ctx->stash('blog') )

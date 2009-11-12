@@ -141,6 +141,10 @@ sub loop {
     # Set the context for blog loading
     $ctx->set_blog_load_context($args, \%terms, \%args, 'id')
         or return $ctx->error($ctx->errstr);
+    $terms{'class'} = '*'
+        if ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' ) ||
+           ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' ) ||
+           ( $args->{site_ids} && lc $args->{site_ids} eq 'all' );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');

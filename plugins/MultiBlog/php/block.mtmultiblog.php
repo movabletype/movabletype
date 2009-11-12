@@ -108,6 +108,12 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $ctx->stash('category', null);
             $ctx->stash('archive_category', null);
         }
+        if ( ( isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all' ) ||
+             ( isset($args['blog_ids']) && strtolower($args['blog_ids']) == 'all' ) ||
+             ( isset($args['site_ids']) && strtolower($args['site_ids']) == 'all' ) ) {
+            $args['class'] = '*';
+        }
+
         $blogs = $ctx->mt->db()->fetch_blogs($args);
         $ctx->stash('_blogs', $blogs);
         $counter = 0;
