@@ -58,6 +58,7 @@ sub _hdlr_blogs {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{archive_category} = undef
         if $args->{ignore_archive_context};
+    local $ctx->{__stash}{inside_blogs} = 1;
 
     require MT::Blog;
     $args{'sort'} = 'name';

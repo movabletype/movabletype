@@ -25,7 +25,7 @@ sub preprocess_native_tags {
     # parameters available.
     unless ($args->{blog_id} || $args->{blog_ids} || $args->{include_blogs} || $args->{exclude_blogs}) {
         my $app = MT->instance;
-        if ($app->isa('MT::App::Search')) {
+        if ($app->isa('MT::App::Search') && !$ctx->stash('inside_blogs')) {
             if (my $excl = $app->{searchparam}{ExcludeBlogs}) {
                 $args->{exclude_blogs} ||= join ',', @$excl;
             } elsif (my $incl = $app->{searchparam}{IncludeBlogs}) {
