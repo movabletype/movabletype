@@ -103,7 +103,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         }
         if ( isset($args['offset']) && ($args['offset'] == 'auto') )
             $total_count = 0;
-        $entries = $ctx->mt->db()->fetch_entries($args, &$total_count);
+        $entries = $ctx->mt->db()->fetch_entries($args, $total_count);
         if ( isset($args['offset']) && ($args['offset'] == 'auto') )
             $ctx->stash('__pager_total_count', $total_count);
         $ctx->stash('entries', $entries);
