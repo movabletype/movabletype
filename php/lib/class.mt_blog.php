@@ -104,12 +104,28 @@ class Blog extends BaseObject
     }
 
     function archive_url() {
-        $site = $this->website();
         $path = '';
-        if (!empty($site))
-            $path = $site->blog_site_url;
-        else
-            $path = $this->blog_site_url;
+        if ( empty($this->blog_archive_url) ) {
+            $path = $this->site_url();
+        } else {
+            $site = $this->website();
+            if (empty($site))
+                $this->site_url();
+            else {
+                preg_match('/^(https?):\/\/(.+)\/$/', $site->blog_site_url, $matches);
+                if ( count($matches > 1 ) ) {
+                    $site_url = preg_split( '/\/::\//', $this->blog_archive_url );
+                    if ( count($site_url > 0 ) )
+                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                    else
+                        $path = $site->blog_site_url . $this->blog_archive_url;
+                }
+                else {
+                    $path = $site->blog_site_url . $this->blog_archive_url;
+                }
+            }
+        }
+
         return $path;
     }
 }

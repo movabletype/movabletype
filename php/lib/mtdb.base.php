@@ -412,8 +412,6 @@ abstract class MTDatabase {
                 $blog_url = $blog->site_url();
             } else {
                 $blog_url = $blog->archive_url();
-                if (empty($blog_url))
-                    $blog_url = $blog->site_url();
             }
 
             require_once('MTUtil.php');
@@ -2152,7 +2150,20 @@ abstract class MTDatabase {
                 $blog_url = $row['blog_archive_url'];
                 if (empty($blog_url))
                     $blog_url = $row['blog_site_url'];
-                $blog_url = $row['website_url'] . $blog_url;
+
+                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                if ( count($matches > 1 ) ) {
+                    $site_url = preg_split( '/\/::\//', $blog_url );
+                    if ( count($site_url > 0 ) )
+                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                    else
+                        $path = $row['website_url'] . $this->blog_url;
+                }
+                else {
+                    $path = $row['website_url'] . $blog_url;
+                }
+
+                $blog_url = $path;
                 $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
                 $url = $blog_url . $row['fileinfo_url'];
                 $url = _strip_index($url, array('blog_file_extension' => $row['blog_file_extension']));
@@ -2192,7 +2203,20 @@ abstract class MTDatabase {
             foreach ($results as $row) {
                 $blog_url = $row['blog_archive_url'];
                 $blog_url or $blog_url = $row['blog_site_url'];
-                $blog_url = $row['website_url'] . $blog_url;
+
+                preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
+                if ( count($matches > 1 ) ) {
+                    $site_url = preg_split( '/\/::\//', $blog_url );
+                    if ( count($site_url > 0 ) )
+                        $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
+                    else
+                        $path = $row['website_url'] . $this->blog_url;
+                }
+                else {
+                    $path = $row['website_url'] . $blog_url;
+                }
+
+                $blog_url = $path;
                 $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
                 $url = $blog_url . $row['fileinfo_url'];
                 $url = _strip_index($url, array('blog_file_extension' => $row['blog_file_extension']));
