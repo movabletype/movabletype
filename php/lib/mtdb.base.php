@@ -1344,7 +1344,7 @@ abstract class MTDatabase {
             $order = 'asc';
         }
         $id_order = '';
-        if ($sort_col == 'tag_name') {
+        if ($sort_col == 'tag_name' || $sort_col == 'name') {
             $sort_col = 'lower(tag_name)';
         }else{
             $id_order = ', lower(tag_name)';

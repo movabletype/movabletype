@@ -79,28 +79,13 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                         $tags = array_reverse($tags);
                     }
                 }
-            } elseif (isset($args['sort_by']) || isset($args['sort_order'])) {
-                $sort_by = isset($args['sort_by']) ? strtolower($args['sort_by']) : 'name';
-                if ($sort_by == "rank" || $sort_by == "count") {
-                    $fn = create_function ('$a, $b', 'return intval($a->entry_count) == intval($b->entry_count) ? 0 : intval($a->entry_count) > intval($b->entry_count) ? 1 : -1;');
-                } elseif ($sort_by == 'name') {
-                    $fn = create_function ('$a,$b', 'return strcmp(strtolower($a->name), strtolower($b->name));');
-                } elseif ($sort_by == 'id') {
-                    $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
-                } else {
-                    $fn = create_function ('$a, $b', 'return strcmp($a->'.$sort_by.', $b->'.$sort_by.');');
-                }
+            } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
+                $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
                 usort($tags, $fn);
-                if (isset($args['sort_order'])) {
-                    $sort_order = $args['sort_order'];
-                } elseif ($sort_by == 'name') {
-                    $sort_order = 'ascend';
-                } else {
+                if ( !isset($args['sort_order']) )
                     $sort_order = 'descend';
-                }
-                if ($sort_order && $sort_order == 'descend') {
+                if ($sort_order && $sort_order == 'descend')
                     $tags = array_reverse($tags);
-                }
             }
         }
         $ctx->stash('tag_min_count', $min);
