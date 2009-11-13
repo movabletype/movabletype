@@ -4265,6 +4265,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/list_template.tmpl
 	'Manage [_1] Templates' => '[_1]テンプレートの管理',
+	'Manage Global Templates' => 'グローバルテンプレートの管理',
 	'Show All Templates' => 'すべてのテンプレート',
 	'Publishing Settings' => '公開設定',
 	'You have successfully deleted the checked template(s).' => '選択したテンプレートを削除しました。',
