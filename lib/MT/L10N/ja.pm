@@ -615,7 +615,7 @@ use vars qw( @ISA %Lexicon );
 	'Comments posted on or before [_1]' => '[_1]以前に投稿されたコメント',
 	'You are not authorized to log in to this blog.' => 'ブログにログインする権限がありません。',
 	'No such blog [_1]' => '[_1]というブログはありません。',
-	'Edit Template' => 'テンプレートを編集',
+	'Edit Template' => 'テンプレートの編集',
 	'Unknown object type [_1]' => '[_1]というオブジェクトはありません。',
 	'None' => 'なし',
 	'Error during publishing: [_1]' => '公開中にエラーが発生しました: [_1]',
@@ -3541,7 +3541,7 @@ use vars qw( @ISA %Lexicon );
 	'Last auto-save at [_1]:[_2]:[_3]' => '[_1]:[_2]:[_3]に自動保存済み',
 
 ## tmpl/cms/edit_folder.tmpl
-	'Edit Folder' => 'フォルダを編集',
+	'Edit Folder' => 'フォルダの編集',
 	'Your folder changes have been made.' => 'フォルダを編集しました。',
 	'Manage Folders' => 'フォルダの管理',
 	'Manage pages in this folder' => 'このフォルダに属するウェブページ一覧',
@@ -3596,7 +3596,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'ウィジェットの編集',
 	'Create Widget' => 'ウィジェットを作成',
-	'Create Template' => 'テンプレートを作成',
+	'Create Template' => 'テンプレートの作成',
 	'A saved version of this [_1] was auto-saved [_3]. <a href="[_2]">Recover auto-saved content</a>' => '[_1]は自動保存されました。<a href="[_2]">自動保存された内容を元に戻す</a>',
 	'You have successfully recovered your saved [_1].' => '[_1]を元に戻しました。',
 	'An error occurred while trying to recover your saved [_1].' => '[_1]を元に戻す際にエラーが発生しました。',
@@ -3663,7 +3663,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_widget.tmpl
 	'Edit Widget Set' => 'ウィジェットセットの編集',
-	'Create Widget Set' => 'ウィジェットセットを作成',
+	'Create Widget Set' => 'ウィジェットセットの作成',
 	'Your widget set changes have been saved.' => 'ウィジェットセットの変更を保存しました。',
 	'Widget Set Name' => 'ウィジェットセット名',
 	'Drag and drop the widgets that belong in this Widget Set into the \'Installed Widgets\' column.' => 'ウィジェットを「利用可能」から「インストール済み」ボックスにドラッグアンドドロップします。',
@@ -4022,10 +4022,10 @@ use vars qw( @ISA %Lexicon );
 	'Schwartz Message' => 'Schwartzメッセージ',
 
 ## tmpl/cms/include/template_table.tmpl
-	'Create Archive Template:' => 'アーカイブテンプレートを作成:',
+	'Create Archive Template:' => 'アーカイブテンプレートの作成:',
 	'Entry Listing' => 'ブログ記事リスト',
-	'Create template module' => 'テンプレートモジュールを作成',
-	'Create index template' => 'インデックステンプレートを作成',
+	'Create template module' => 'テンプレートモジュールの作成',
+	'Create index template' => 'インデックステンプレートの作成',
 	'Publish selected templates (a)' => '選択されたテンプレートを公開 (a)',
 	'SSI' => 'SSI',
 	'Cached' => 'キャッシュ',
@@ -4305,7 +4305,7 @@ use vars qw( @ISA %Lexicon );
 	'Your changes to the widget set have been saved.' => 'ウィジェットセットへの変更を保存しました。',
 	'You have successfully deleted the selected widget set(s) from your blog.' => '選択されたウィジェットセットを削除しました。',
 	'No Widget Sets could be found.' => 'ウィジェットセットが見つかりませんでした。',
-	'Create widget template' => 'ウィジェットテンプレートを作成',
+	'Create widget template' => 'ウィジェットテンプレートの作成',
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'サインイン',
