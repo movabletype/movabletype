@@ -95,7 +95,7 @@ class MTViewer extends Smarty {
     var $needs_tokens = array(
         'mtsubcategories' => 1,
         'mttoplevelcategories' => 1,
-        'mtsubfolers' => 1,
+        'mtsubfolders' => 1,
         'mttoplevelfolders' => 1,
         'mtcommentreplies' => 1,
         'mtsetvartemplate' => 1,
