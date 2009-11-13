@@ -1523,7 +1523,7 @@ sub adjust_sitepath {
     }
 
     my $param = {};
-    if ( scalar $q->param('redirect') ) {
+    if ( scalar $q->param('redirect') && $q->param('files') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
         $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
@@ -1717,7 +1717,15 @@ sub dialog_restore_upload {
         $param->{last} = 0;
     }
     $param->{is_dirty} = scalar( keys %$deferred );
-    if ($last) {
+
+    if ( $last && defined($blog_ids) && scalar(@$blog_ids)) {
+        $param->{error} = join( '; ', @errors );
+        $param->{next_mode} = 'dialog_adjust_sitepath';
+        $param->{blog_ids}  = join( ',', @$blog_ids );
+        $param->{asset_ids} = join( ',', @$asset_ids )
+            if defined($asset_ids);
+    }
+    elsif ( $last ) {
         $param->{restore_end} = 1;
         if ( $param->{is_dirty} ) {
             _log_dirty_restore( $app, $deferred );
