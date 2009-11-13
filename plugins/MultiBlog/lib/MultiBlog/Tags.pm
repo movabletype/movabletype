@@ -21,6 +21,11 @@ sub MultiBlog {
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
+    if ($args->{blog_id}) {
+        $args->{blog_ids} = $args->{blog_id};
+        delete $args->{blog_id};
+    }
+
     # If MTMultiBlog was called with no arguments, we check the 
     # blog-level settings for the default includes/excludes.
     unless (   $args->{blog_ids}
