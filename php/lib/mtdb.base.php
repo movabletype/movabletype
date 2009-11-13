@@ -1683,19 +1683,8 @@ abstract class MTDatabase {
     public function fetch_authors($args) {
         # Adds blog join
         $extras = array();
-        if ($sql = $this->include_exclude_blogs($args)) {
-            if (isset($args['need_association']) && $args['need_association']) {
-                $extras['join']['mt_permission'] = array(
-                    'condition' => "permission_author_id = author_id and permission_blog_id $sql"
-                );
-                $extras['distinct'] = 'distinct';
-            }
-        } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $extras['join']['mt_permission'] = array(
-                    'condition' => "permission_author_id = author_id and permission_blog_id = $blog_id"
-                );
-        }
+        $blog_ids = $this->include_exclude_blogs($args);
+        $blog_ids or $blog_ids = $ctx->stash('blog_id');
 
         # Adds author filter
         if (isset($args['author_id'])) {
@@ -1710,20 +1699,63 @@ abstract class MTDatabase {
         }
 
         # Adds entry join and filter
+        if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
+            $args['need_entry'] = 0;
+        if (!isset($args['need_entry']))
+            $args['need_entry'] = 1;
         if ($args['need_entry']) {
             $extras['join']['mt_entry'] = array(
                     'condition' => "author_id = entry_author_id"
                 );
             $extras['distinct'] = 'distinct';
             $entry_filter = " and entry_status = 2";
-            if (isset($extras['join']['mt_permission'])) {
-                $entry_filter .= " and entry_blog_id = permission_blog_id";
-            } else {
-                $entry_filter .= " and entry_blog_id = ".intval($args['blog_id']);
-            }
+            if ( $blog_ids )
+                $entry_filter .= " and entry_blog_id " . $blog_ids;
         } else {
-            if ( ! $args['any_type'] )
-                $author_filter .= " and author_type = 1";
+            $extras['distinct'] = 'distinct';
+            if (!isset($args['roles']) and !isset($args['role'])) {
+                $join_sql = "permission_author_id = author_id";
+                if ( isset($args['need_association']) && $args['need_association'] ) {
+                    $join_sql .= " and permission_blog_id" . $blog_ids;
+                }
+                if ( ! $args['any_type'] ) {
+                    $join_sql .= "
+                        and (
+                            (
+                                permission_blog_id $blog_ids
+                                and (
+                                    permission_permissions like '%create_post%' or
+                                    permission_permissions like '%publish_post%'
+                                )
+                            ) or (
+                                permission_blog_id = 0
+                                and 
+                                    permission_permissions like '%administer%'  
+                           )
+                       )
+                    ";
+                } else {
+                    $join_sql .= "
+                        and
+                            (
+                                (
+                                    permission_blog_id $blog_ids
+                                    and permission_permissions is not null
+                                )
+                            or
+                                (
+                                    permission_blog_id = 0
+                                    and permission_permissions like '%administer%'  
+                                )
+                            )
+                        ";
+                }
+                
+                $sql = $join_sql;
+                $extras['join']['mt_permission'] = array(
+                    'condition' => $sql
+                );
+            }
         }
 
         # a context hash for filter routines

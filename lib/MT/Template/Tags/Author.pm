@@ -237,6 +237,10 @@ sub _hdlr_authors {
                 push @filters, sub {
                     $_[0]->permissions($blog_id)->can_do('create_post');
                 };
+            } else {
+                push @filters, sub {
+                    $_[0]->permissions($blog_id)->permissions ? 1 : 0;
+                };
             }
         }
     }
