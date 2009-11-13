@@ -1240,9 +1240,9 @@ use vars qw( @ISA %Lexicon );
 	'Create and apply a theme to change templates, categories, folders and custom fields.' => 'テンプレートやフォルダ、カテゴリーを、テーマにまとめて保存。ブログのデザインを簡単に変更できます。
 ',
 	'Website Management' => 'ウェブサイト管理',
-	'Manage multiple blogs for each website. Now, it\'s much easier to create a portal with MultiBlog.' => 'それぞれのウェブサイトの複数のブログを管理します。MultiBlogを利用してポータルを作成するよりも簡単です。',
-	'Revision History' => '履歴管理',
-	'The revision history for entries and templates protects users from unexpected modification.' => '記事やテンプレートの履歴管理は意図されない変更時にも安心です。',
+	'Manage multiple blogs for each website. Now, it\'s much easier to create a portal with MultiBlog.' => '複数のブログを、ウェブサイト単位でまとめて管理。マルチブログも、さらに使いやすくなりました。',
+	'Revision History' => '更新履歴',
+	'The revision history for entries and templates protects users from unexpected modification.' => 'ブログ記事、ウェブページ、テンプレートの更新履歴を保存。任意のバージョンへ復帰できます。',
 	'Movable Type Online Manual' => 'Movable Typeオンラインマニュアル',
 	'Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.' => 'Movable Typeで何ができるか、詳しくはこちら。',
 
