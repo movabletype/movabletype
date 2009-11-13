@@ -1684,10 +1684,12 @@ abstract class MTDatabase {
         # Adds blog join
         $extras = array();
         if ($sql = $this->include_exclude_blogs($args)) {
-            $extras['join']['mt_permission'] = array(
+            if (isset($args['need_association']) && $args['need_association']) {
+                $extras['join']['mt_permission'] = array(
                     'condition' => "permission_author_id = author_id and permission_blog_id $sql"
                 );
-            $extras['distinct'] = 'distinct';
+                $extras['distinct'] = 'distinct';
+            }
         } elseif (isset($args['blog_id'])) {
             $blog_id = intval($args['blog_id']);
             $extras['join']['mt_permission'] = array(
