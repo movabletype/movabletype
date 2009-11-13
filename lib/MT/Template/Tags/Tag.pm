@@ -233,8 +233,11 @@ sub _hdlr_tags {
         }
     }
 
-    my $column = lc( $args->{sort_by} ) || 'name';
     my $top    = $args->{top}           || 0;
+    my $column = $args->{sort_by} ? lc( $args->{sort_by} )
+               : $top             ? 'rank'
+               :                    'name'
+               ;
     my $limit  = $args->{limit}         || 0;
     my @slice_tags;
     if ($top > 0 && scalar @$tags > $top) {
