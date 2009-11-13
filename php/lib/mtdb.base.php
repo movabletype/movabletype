@@ -1807,7 +1807,8 @@ abstract class MTDatabase {
                 require_once("rating_lib.php");
                 $type = $args['scoring_to'];
                 $obj = $args['_scoring_to_obj'];
-                $obj_id = $obj[$type.'_id'];
+                $field_name = $type.'_id';
+                $obj_id = $obj->$field_name;
                 if (isset($args['min_score'])) {
                     $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); } ';
                     $expr .= '$sc = get_score($ctx, '.$obj_id.', "'.$type.'", "'.$args['namespace'].'", $e->author_id);';
