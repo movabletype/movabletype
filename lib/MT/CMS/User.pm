@@ -154,7 +154,9 @@ sub edit_role {
     # Load permissions from registry
     my $registered_perms;
     my $perms = $app->registry('permissions');
-
+    for my $perm ( values %$perms ) {
+       $perm->{can_do} = 0;
+    }
     my $role;
     require MT::Role;
     if ($id) {
