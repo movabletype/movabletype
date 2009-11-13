@@ -1036,7 +1036,8 @@ sub core_upgrade_meta_for_table {
     if (!$offset) {
         $self->progress($msg, $pid);
     } else {
-        my $count = $class->count();
+        my $count = $class->count(
+            { $class->properties->{class_column} ? ( class => '*' ) : () } );
         return 0 unless $count;
         $self->progress(sprintf($msg . " (%d%%)", ($offset/$count*100)), $pid);
     }
