@@ -73,6 +73,11 @@
         DOM.addClassName(getByID('tag-' + id), 'create-inline');
         tag_name.focus();
         tag_name.select();
+        var tag_form = getByID('tag-listing-form');
+        if (!tag_form) return false;
+        tag_form['__mode'].value = 'rename_tag';
+        tag_form['__id'].value = id;
+        tag_form['tag_name'].value = tag_name.value;
         return false;
     }
 
@@ -87,6 +92,12 @@
         tag_link.style.display = 'inline';
         tag_field.style.display = 'none';
         DOM.removeClassName(getByID('tag-' + id), 'create-inline');
+    }
+
+    function change_tag(fld) {
+        var tag_form = getByID('tag-listing-form');
+        if (!tag_form) return false;
+        tag_form['tag_name'].value = fld.value;
     }
 
     function submit_edit(id) {
@@ -229,7 +240,7 @@
                         label="$new_label"
                         label_class="inline field-no-header"
                         hint="">
-                        <input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" />
+                        <input type="text" name="tag-name-<mt:var name="tag_id">" id="tag-name-<mt:var name="tag_id">" value="<mt:var name="tag_name" escape="html">" onkeyup="change_tag(this)" />
                         <span class="buttons"> 
                             <button
                                 onclick="submit_edit(<mt:var name="tag_id">); return false;"
@@ -255,6 +266,11 @@
     jQuery('button.mt-cancel-action').click(function() {
         jQuery(this).parents('tr').attr('id').match(/^tag-(\d+)/);
         cancel_edit(RegExp.$1);
+        return false;
+    });
+    jQuery('#tag-listing-form').submit(function() {
+        var id = jQuery('#tag-listing-form input[name=__id]').val();
+        submit_edit(id);
         return false;
     });
 </mt:setvarblock>
