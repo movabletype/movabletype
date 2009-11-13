@@ -141,7 +141,7 @@ sub new_version_widget {
       },
       {
         feature_label => MT->translate('Movable Type Online Manual'),
-        feature_url  => $app->help_url('http://www.movabletype.org/documentation/'),
+        feature_url  => MT->translate('http://www.movabletype.org/documentation/'),
         feature_description => MT->translate('Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.'),
       };
 }
