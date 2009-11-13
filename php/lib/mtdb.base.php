@@ -1536,16 +1536,18 @@ abstract class MTDatabase {
             }
         } else {
             $limit = $args['lastn'];
-            if (isset($args['sort_order'])) {
-                if ($args['sort_order'] == 'ascend') {
-                    $sort_order = 'asc';
-                } elseif ($args['sort_order'] == 'descend') {
-                    $sort_order = 'desc';
-                }
-            } else {
-                $sort_order = '';
-            }
         }
+
+        if (isset($args['sort_order'])) {
+            if ($args['sort_order'] == 'ascend') {
+                $sort_order = 'asc';
+            } elseif ($args['sort_order'] == 'descend') {
+                $sort_order = 'desc';
+            }
+        } else {
+            $sort_order = '';
+        }
+
         $count_column = 'placement_id';
         if ($args['show_empty']) {
             $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
@@ -1585,7 +1587,6 @@ abstract class MTDatabase {
         ";
 
         if ($limit <= 0) $limit = -1;
-
         $categories = $this->db()->SelectLimit($sql, $limit, -1);
         if ($categories->EOF)
             return null;
