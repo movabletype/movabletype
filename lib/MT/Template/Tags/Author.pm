@@ -235,8 +235,7 @@ sub _hdlr_authors {
                 );
             if ( ! $args->{any_type} ) {
                 push @filters, sub {
-                    $_[0]->permissions($blog_id)->can_administer_blog
-                        || $_[0]->permissions($blog_id)->can_post;
+                    $_[0]->permissions($blog_id)->can_do('create_post');
                 };
             }
         }
