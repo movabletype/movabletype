@@ -36,7 +36,8 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             $prefix = $today;
         }
         // gather category name...
-        $cat_name = '';
+        $cat_name = isset($args['category']) ? $args['category'] : '';
+
         // caching isn't necessary since we're not building
         // entire site-- just one page
         $today .= strftime("%d", time());
@@ -48,7 +49,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $pad_start = wday_from_ts($y, $m, 1);
         $pad_end = 6 - wday_from_ts($y, $m, $days_in_month);
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
-        $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend');
+        $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend', 'category' => $cat_name);
         $iter =& $ctx->mt->db()->fetch_entries($args);
         $ctx->stash('cal_entries', $iter);
         $ctx->stash('cal_pad_start', $pad_start);
