@@ -157,6 +157,10 @@ ul#asset-list li a.remove-asset {
     word-break: normal; 
 }
 
+#template-options #template-options-header h3 { 
+    float: left;
+}
+
 /* - fake display: inline-block; */
 .ui-tabs-nav li, 
 ul.tabs li, 

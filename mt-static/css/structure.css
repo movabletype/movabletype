@@ -3071,6 +3071,7 @@ body.preview-screen {
 #template-options-header {
     position: relative;
     padding: 10px 0;
+    overflow: auto;
 }
 
 #template-options.active #template-options-header {
@@ -3099,12 +3100,10 @@ body.preview-screen {
 }
 
 #template-options .template-options-summary {
-    position: absolute;
-    top: 12px;
-    right: 0;
+    float: right;
+    width: 350px;
     color: #2b2b2b;
     text-align: right;
-    width: 400px;
 }
 
 #template-options.active .template-options-summary {
