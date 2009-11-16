@@ -7,7 +7,7 @@
 
 function get_score(&$ctx, $obj_id, $datasource, $namespace, $user_id) {
     $score = $ctx->mt->db()->fetch_score($namespace, $obj_id, $user_id, $datasource);
-    return $score['objectscore_score'];
+    return $score->objectscore_score;
 }
 
 function score_for(&$ctx, $obj_id, $datasource, $namespace) {
