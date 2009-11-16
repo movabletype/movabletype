@@ -235,7 +235,15 @@ sub _hdlr_authors {
                 );
             if ( ! $args->{any_type} ) {
                 push @filters, sub {
-                    $_[0]->permissions($blog_id)->can_do('create_post');
+                    my $perm_iter = MT::Permission->load_iter({
+                        author_id => $_[0]->id,
+                        defined $blog_terms{blog_id} ? ( blog_id => [ 0, $blog_terms{blog_id} ] ) : (),
+                    }, \%blog_args );
+                    while ( my $perm = $perm_iter->() ) {
+                        $perm_iter->end(), return 1
+                            if $perm->can_do('create_post');
+                    }
+                    return 0;
                 };
             } else {
                 push @filters, sub {
