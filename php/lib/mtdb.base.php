@@ -1894,16 +1894,14 @@ abstract class MTDatabase {
         }
 
         $limit = 0;
-        $offset = 0;
-        if (isset($args['lastn']))
-            $limit = $args['lastn'];
-        if (isset($args['offset']))
-            $offset = $args['offset'];
+         if (isset($args['limit']))
+            $limit = $args['limit'];
 
+         $lastn = isset($args['lastn']) ? $args['lastn'] : 0;
         if ($re_sort) {
-            $post_select_limit = $limit;
-            $post_select_offset = $offset;
-            $limit = 0; $offset = 0;
+            $post_select_limit = $lastn;
+            $lastn = 0;
+            $post_select_offset = isset($args['offset']) ? $args['offset'] : 0;
         }
 
         $where = "1 = 1
@@ -1913,7 +1911,6 @@ abstract class MTDatabase {
                   $order_sql
         ";
         if ($limit) $extras['limit'] = $limit;
-        if ($offset) $extras['offset'] = $offset;
 
         require_once('class.mt_author.php');
         $author = new Author;
@@ -1936,7 +1933,7 @@ abstract class MTDatabase {
                 }
             }
             $authors[] = $e;
-            if (($limit > 0) && (count($authors) >= $limit)) break;
+            if (($lastn > 0) && (count($authors) >= $lastn)) break;
         }
 
         if (isset($args['sort_by']) && ('score' == $args['sort_by'])) {
