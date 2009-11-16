@@ -235,9 +235,25 @@ sub _hdlr_authors {
                 );
             if ( ! $args->{any_type} ) {
                 push @filters, sub {
+                    my @blog_ids;
+                    if ( $blog_terms{blog_id} ) {
+                        push @blog_ids, 0;
+                        push @blog_ids, ref ($blog_terms{blog_id}) eq 'ARRAY' ? @{$blog_terms{blog_id}} : $blog_terms{blog_id};
+                    }
                     my $perm_iter = MT::Permission->load_iter({
                         author_id => $_[0]->id,
-                        defined $blog_terms{blog_id} ? ( blog_id => [ 0, $blog_terms{blog_id} ] ) : (),
+                        ( @blog_ids ? ( blog_id => \@blog_ids ) : () ), }, \%blog_args );
+                    while ( my $perm = $perm_iter->() ) {
+                        $perm_iter->end(), return 1
+                            if $perm->can_do('create_post');
+                    }
+                    return 0;
+                };
+
+                push @filters, sub {
+                    my $perm_iter = MT::Permission->load_iter({
+                        author_id => $_[0]->id,
+                        ( defined $blog_terms{blog_id} ? ( blog_id => [ $blog_terms{blog_id} , 0 ] ) : () ),
                     }, \%blog_args );
                     while ( my $perm = $perm_iter->() ) {
                         $perm_iter->end(), return 1
