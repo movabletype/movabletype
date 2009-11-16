@@ -222,11 +222,11 @@ do {
                 my $trans = '';
                 $args{phrase} = $1;
                 $args{phrase} =~ s/(^'+|'+$)//;
-                $args{phrase} =~ s/'/\\'/g;
                 if ($trans eq '' && $conv{$args{phrase}}) {
                      $trans = $conv{$args{phrase}};
                      $is_used{$args{phrase}} = 1;
                 }
+                $args{phrase} =~ s/'/\\'/g;
                 $trans =~ s/([^\\]?)'/$1\\'/g;
                 next if ($phrase{$args{phrase}});
                 $phrase{$args{phrase}} = 1;
@@ -251,11 +251,11 @@ do {
                 my $trans = '';
                 $args{phrase} = $1;
                 $args{phrase} =~ s/(^'+|'+$)//g;
-                $args{phrase} =~ s/'/\\'/g;
                 if ($trans eq '' && $conv{$args{phrase}}) {
                      $trans = $conv{$args{phrase}};
                      $is_used{$args{phrase}} = 1;
                 }
+                $args{phrase} =~ s/'/\\'/g;
                 $trans =~ s/([^\\]?)'/$1\\'/g;
                 next if ($phrase{$args{phrase}});
                 $phrase{$args{phrase}} = 1;
