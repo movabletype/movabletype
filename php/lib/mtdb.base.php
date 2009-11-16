@@ -1825,7 +1825,7 @@ abstract class MTDatabase {
                     $filters[] = $fn;
                 }
                 else {
-                    $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_insrance(); $ctx = $mt->context(); } ';
+                    $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); } ';
                     $expr .= '$ret = !is_null($ctx->mt->db()->fetch_score('.$args['namespace'].','.$obj_id.', $e->author_id,'.$type.'));';
                     $expr .= ' return $ret;';
                     $fn = create_function('&$e,&$c', $expr);
