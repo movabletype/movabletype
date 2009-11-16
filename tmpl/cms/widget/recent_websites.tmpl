@@ -13,7 +13,7 @@
                 <p id="website-<mt:var name="website_id">-link" class="blog-link"><a href="<mt:var name="website_url">"><mt:var name="website_url"></a></p>
     <mt:if name="website_description">
                 <div id="website-<mt:var name="website_id">-description" class="blog-description">
-                    <mt:var name="website_description" escape="html">
+                    <mt:var name="website_description" remove_html="1">
                 </div>
     </mt:if>
                 <ul id="website-<mt:var name="website_id">-control" class="blog-control">

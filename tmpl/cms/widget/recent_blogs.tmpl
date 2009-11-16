@@ -15,7 +15,7 @@
                 <p id="blog-<mt:var name="blog_id">-link" class="blog-link"><a href="<mt:var name="blog_url">"><mt:var name="blog_url"></a></p>
     <mt:if name="blog_description">
                 <div id="blog-<mt:var name="blog_id">-description" class="blog-description">
-                    <mt:var name="blog_description" escape="html">
+                    <mt:var name="blog_description" remove_html="1">
                 </div>
     </mt:if>
                 <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">
