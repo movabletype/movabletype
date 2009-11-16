@@ -60,7 +60,7 @@ parameters:
                                 <td class="panel-description">
 <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
                                     <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
-                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" escape="html"><mt:if name="link"></span></mt:if>
+                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
                                 </td>
                             </tr>
         <mt:if name="blogs">
@@ -71,7 +71,7 @@ parameters:
                                 <td class="panel-description">
 <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
                                     <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
-                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" escape="html"><mt:if name="link"></span></mt:if>
+                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
                                 </td>
                             </tr>
             </mt:loop>
