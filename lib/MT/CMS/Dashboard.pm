@@ -770,6 +770,8 @@ sub _build_favorite_websites_data {
         my @ws = $class->load( \%terms, \%args );
         push @websites, @ws if @ws;
     }
+    return undef if !scalar @websites;
+
     my @website_ids = map { $_->id } @websites;
 
     # Object count
@@ -902,6 +904,8 @@ sub _build_favorite_blogs_data {
         my @tmp_blogs = $class->load( \%terms, \%args );
         push @blogs, @tmp_blogs if @tmp_blogs;
     }
+    return undef if !scalar @blogs;
+
     my @blog_ids = map { $_->id } @blogs;
 
     # Object count
