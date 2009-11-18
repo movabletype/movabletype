@@ -1344,9 +1344,9 @@ sub mark_odd_rows {
 
     'fr' => [
             [ qw( dimanche lundi mardi mercredi jeudi vendredi samedi ) ],
-            [ ('janvier', "f&#xe9;vrier", 'mars', 'avril', 'mai', 'juin',
-               'juillet', "ao&#xfb;t", 'septembre', 'octobre', 'novembre',
-               "d&#xe9;cembre") ],
+            [ ('janvier', "février", 'mars', 'avril', 'mai', 'juin',
+               'juillet', "août", 'septembre', 'octobre', 'novembre',
+               "décembre") ],
             [ qw( AM PM ) ],
               "%e %B %Y %kh%M",
               "%e %B %Y",
@@ -1354,8 +1354,8 @@ sub mark_odd_rows {
           ],
 
     'es' => [
-            [ ('Domingo', 'Lunes', 'Martes', "Mi&#xe9;rcoles", 'Jueves',
-               'Viernes', "S&#xe1;bado") ],
+            [ ('Domingo', 'Lunes', 'Martes', "Miércoles", 'Jueves',
+               'Viernes', "Sábado") ],
             [ qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
                   Septiembre Octubre Noviembre Diciembre ) ],
             [ qw( AM PM ) ],
@@ -1413,7 +1413,7 @@ sub mark_odd_rows {
     'de' => [
             [ qw( Sonntag Montag Dienstag Mittwoch Donnerstag Freitag
                   Samstag ) ],
-            [ ('Januar', 'Februar', "M&#xe4;rz", 'April', 'Mai', 'Juni',
+            [ ('Januar', 'Februar', "März", 'April', 'Mai', 'Juni',
                'Juli', 'August', 'September', 'Oktober', 'November',
                'Dezember') ],
             [ qw( FM EM ) ],
