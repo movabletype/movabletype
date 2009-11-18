@@ -7,61 +7,9 @@
 
 global $Lexicon_es;
 $Lexicon_es = array(
-## php/lib/block.mtsethashvar.php
-	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
-
-## php/lib/function.mtvar.php
-	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
-	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
-	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
-
-## php/lib/MTUtil.php
-	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
-
-## php/lib/function.mtsetvar.php
-	'\'[_1]\' is not a hash.' => '\'[_1]\' no es un hash.',
-	'Invalid index.' => 'Índice no válido.',
-	'\'[_1]\' is not an array.' => '\'[_1]\' no es un array.',
-	'\'[_1]\' is not a valid function.' => '\'[_1]\' no es una función válida.',
-
-## php/lib/function.mtcommentauthorlink.php
-	'Anonymous' => 'Anónimo',
-
-## php/lib/block.mtsetvarblock.php
-
-## php/lib/function.mtproductname.php
-	'[_1] [_2]' => '[_1] [_2]',
-
-## php/lib/block.mtentries.php
-	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
-
-## php/lib/function.mtcommentreplytolink.php
-	'Reply' => 'Responder',
-
-## php/lib/function.mtentryclasslabel.php
-	'page' => 'página',
-	'entry' => 'entrada',
-	'Page' => 'Página',
-	'Entry' => 'Entrada',
-
-## php/lib/function.mtassettype.php
-	'image' => 'Imagen',
-	'Image' => 'Imagen',
-	'file' => 'fichero',
-	'File' => 'Fichero',
-	'audio' => 'Audio',
-	'Audio' => 'Audio',
-	'video' => 'Vídeo',
-	'Video' => 'Vídeo',
-
-## php/lib/function.mtwidgetmanager.php
-	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
-	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
-
-## php/lib/function.mtcommentauthor.php
-
 ## php/lib/archive_lib.php
 	'Individual' => 'Inidivual',
+	'Page' => 'Página',
 	'Yearly' => 'Anuales',
 	'Monthly' => 'Mensuales',
 	'Daily' => 'Diarias',
@@ -77,23 +25,75 @@ $Lexicon_es = array(
 	'Category Daily' => 'Categorías diarias',
 	'Category Weekly' => 'Categorías semanales',
 
-## php/lib/block.mtauthorhaspage.php
+## php/lib/block.mtassets.php
+	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
+
+## php/lib/block.mtauthorhasentry.php
 	'No author available' => 'Ningún autor disponible',
+
+## php/lib/block.mtauthorhaspage.php
+
+## php/lib/block.mtentries.php
+
+## php/lib/block.mtif.php
+	'You used a [_1] tag without a valid name attribute.' => 'Usó la etiqueta [_1] sin un nombre de atributo válido.',
+	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3] es ilegal.',
+
+## php/lib/block.mtsethashvar.php
+
+## php/lib/block.mtsetvarblock.php
+	'\'[_1]\' is not a hash.' => '\'[_1]\' no es un hash.',
+	'Invalid index.' => 'Índice no válido.',
+	'\'[_1]\' is not an array.' => '\'[_1]\' no es un array.',
+	'\'[_1]\' is not a valid function.' => '\'[_1]\' no es una función válida.',
 
 ## php/lib/captcha_lib.php
 	'Captcha' => 'Captcha',
 	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
 
-## php/lib/block.mtif.php
+## php/lib/function.mtassettype.php
+	'image' => 'Imagen',
+	'Image' => 'Imagen',
+	'file' => 'fichero',
+	'File' => 'Fichero',
+	'audio' => 'Audio',
+	'Audio' => 'Audio',
+	'video' => 'Vídeo',
+	'Video' => 'Vídeo',
 
-## php/lib/block.mtauthorhasentry.php
+## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcommentauthorlink.php
+	'Anonymous' => 'Anónimo',
+
+## php/lib/function.mtcommentauthor.php
+
+## php/lib/function.mtcommentreplytolink.php
+	'Reply' => 'Responder',
+
+## php/lib/function.mtentryclasslabel.php
+	'page' => 'página',
+	'entry' => 'entrada',
+	'Entry' => 'Entrada',
+
+## php/lib/function.mtproductname.php
+	'[_1] [_2]' => '[_1] [_2]',
 
 ## php/lib/function.mtremotesigninlink.php
 	'TypePad authentication is not enabled in this blog.  MTRemoteSignInLink can\'t be used.' => 'La autentificación de TypePad no está habilitada en este blog. No se puede usar MTRemoteSignInLink.',
 
-## php/lib/block.mtassets.php
+## php/lib/function.mtsetvar.php
 
-## php/lib/function.mtauthordisplayname.php
+## php/lib/function.mtvar.php
+	'\'[_1]\' is not a valid function for a hash.' => '\'[_1]\' no es una función válida para un hash.',
+	'\'[_1]\' is not a valid function for an array.' => '\'[_1]\' no es una función válida para un array.',
+
+## php/lib/function.mtwidgetmanager.php
+	'Error: widgetset [_1] is empty.' => 'Error: el conjunto de widgets [_1] está vacío',
+	'Error compiling widgetset [_1]' => 'Error compilando el conjunto de widgets [_1]',
+
+## php/lib/MTUtil.php
+	'userpic-[_1]-%wx%h%x' => 'avatar-[_1]-%wx%h%x',
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Página no encontrada - [_1]',
