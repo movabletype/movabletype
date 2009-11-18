@@ -110,9 +110,6 @@
                         <th class="cb">&nbsp;</th>
                         <th class="si file-status"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
                         <th class="label primary-col"><__trans phrase="Asset Name"></th>
-        <mt:unless name="edit_blog_id">
-                        <th id="weblog"><__trans phrase="Blog"></th>
-        </mt:unless>
                         <th class="description"><span class="detail"><__trans phrase="Size"></span></th>
                     </tr>
                 </thead>
@@ -133,9 +130,6 @@
                                 </div>
                             </div>
                         </td>
-        <mt:unless name="edit_blog_id">
-                        <td class="detail"><a href="<mt:var name="script_url">?__mode=list_asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
-        </mt:unless>
                         <td class="description">
                             <span class="detail">
         <mt:if name="file_size_formatted">
