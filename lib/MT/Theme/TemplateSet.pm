@@ -8,7 +8,7 @@ use strict;
 use MT;
 use MT::Util qw( dirify );
 
-sub import {
+sub apply {
     my ( $element, $theme, $obj_to_apply, $opts ) = @_;
     my $set = $element->{data};
     if ( !ref $set ) {

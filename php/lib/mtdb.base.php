@@ -1684,7 +1684,9 @@ abstract class MTDatabase {
         # Adds blog join
         $extras = array();
         $blog_ids = $this->include_exclude_blogs($args);
-        $blog_ids or $blog_ids = $ctx->stash('blog_id');
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $blog_ids or $blog_ids = " = " . $ctx->stash('blog_id');
 
         # Adds author filter
         if (isset($args['author_id'])) {

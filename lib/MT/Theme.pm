@@ -552,7 +552,7 @@ sub core_theme_element_handlers {
         default_prefs => {
             label => 'Default Prefs',
             importer => {
-                import => '$Core::MT::Theme::Pref::import',
+                import => '$Core::MT::Theme::Pref::apply',
                 info   => '$Core::MT::Theme::Pref::info',
             },
         },
@@ -585,7 +585,7 @@ sub core_theme_element_handlers {
         template_set => {
             label => 'Template Set',
             importer => {
-                import => '$Core::MT::Theme::TemplateSet::import',
+                import => '$Core::MT::Theme::TemplateSet::apply',
                 info   => '$Core::MT::Theme::TemplateSet::info',
             },
             exporter => {
@@ -599,7 +599,7 @@ sub core_theme_element_handlers {
         blog_static_files => {
             label => 'Static Files',
             importer => {
-                import => '$Core::MT::Theme::StaticFiles::import',
+                import => '$Core::MT::Theme::StaticFiles::apply',
               # info   => '$Core::MT::Theme::StaticFiles::info',
             },
             exporter => {

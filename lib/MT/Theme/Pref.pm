@@ -7,7 +7,7 @@ package MT::Theme::Pref;
 use strict;
 use MT;
 
-sub import {
+sub apply {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $data = $element->{data};
     if ( ref $obj_to_apply ne MT->model('blog') ) {

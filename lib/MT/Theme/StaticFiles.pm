@@ -13,7 +13,7 @@ sub _default_allowed_extensions {
     )];
 }
 
-sub import {
+sub apply {
     my ( $element, $theme, $blog ) = @_;
     my $dirs = $element->{data} or return 1;
     my $exts = MT->config->ThemeStaticFileExtensions || _default_allowed_extensions();

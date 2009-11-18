@@ -71,7 +71,8 @@ $1
 </soap:Envelope>
 SOAP
         }
-        return Encode::decode_utf8($out);
+        $out = Encode::decode_utf8($out) unless Encode::is_utf8($out);
+        return $out;
     };
     if (my $e = $@) {
         $app->error(500, $e);
@@ -151,7 +152,8 @@ sub get_auth_info {
             $v =~ s/^"//;
             $v =~ s/"$//;
             # it's probably not utf-8 but ascii
-            $param{$k} = Encode::decode_utf8($v);
+            $v = Encode::decode_utf8($v) unless Encode::is_utf8($v);
+            $param{$k} = $v;
         }
     }
     \%param;

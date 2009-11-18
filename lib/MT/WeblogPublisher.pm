@@ -1774,7 +1774,7 @@ sub publish_future_posts {
     require MT::Util;
     my $mt            = MT->instance;
     my $total_changed = 0;
-    my @blogs = MT::Blog->load(undef, {
+    my @blogs = MT::Blog->load({ class => '*' }, {
         join => MT::Entry->join_on('blog_id', {
             status => MT::Entry::FUTURE(),
         }, { unique => 1 })
