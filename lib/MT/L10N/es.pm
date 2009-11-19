@@ -6771,6 +6771,10 @@ Búsqueda base: [_2]",
 	'Import WordPress exported RSS into MT.' => 'Importar WordPress exported RSS hacia MT.',
 	'WordPress eXtended RSS (WXR)' => 'RSS Extendido de WordPress (WXR)',
 	'Download WP attachments via HTTP.' => 'Descargar adjuntos de WP vía HTTP.',
+	
+	'Create and apply a theme to change templates, categories, folders and custom fields.' => 'Crear y aplicar un tema para cambiar las plantillas, categorías y campos personalizados.', # Translate - New
+	'Specifies the default Post Status when creating a new entry.' => 'Especifica el estado de la publicación al crear una nueva entrada.', # Translate - New
+	'Manage Global Templates' => 'Administrar plantillas globales', # Translate - New
 
 );
 

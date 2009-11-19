@@ -3,7 +3,7 @@
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::de;
 use strict;
@@ -1211,7 +1211,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Dashboard.pm
 	'Error: This blog doesn\'t have a parent website.' => 'Fehler: Dieses Blog gehört zu keiner übergeordneten Website',
 	'Design with Themes' => 'Mit  Themen gestalten',
-	'Create and apply a theme to change templates, categories, folders and custom fields.' => '', # Translate - New #OK
+	'Create and apply a theme to change templates, categories, folders and custom fields.' => 'Erstellen und nutzen Sie Themen, um Vorlagen, Kategorien, Ordner und eigene Felder zusammenhängend zu ändern.', # Translate - New #OK
 	'Website Management' => 'Komplexe Websites betreiben',
 	'Manage multiple blogs for each website. Now, it\'s much easier to create a portal with MultiBlog.' => 'Der Betrieb von Portalen wurde enorm vereinfacht: statt zahlreicher Einzelblogs können Sie jetzt auch direkt Websites mit mehreren zugehörigen Blogs erstellen.',
 	'Revision History' => 'Revisionshistorie',
