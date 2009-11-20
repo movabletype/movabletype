@@ -17,6 +17,13 @@ use MT::Test qw(:db :data);
 my $mt = MT->new() or die MT->errstr;
 isa_ok($mt, 'MT');
 
+# Adjust authored_on because result of load_iter is undetermined.
+my $entry_iter = MT::Entry->load_iter();
+while ( my $e = $entry_iter->() ) {
+    $e->authored_on( $e->authored_on + $e->id );
+    $e->save;
+}
+
 my $base_uri = '/mt-xmlrpc.cgi';
 my $username = 'Chuck D';
 my $password = 'seecret';

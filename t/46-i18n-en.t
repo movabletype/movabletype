@@ -20,6 +20,8 @@
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 16;
 
+use utf8;
+
 use Encode;
 use MT;
 use MT::Test;

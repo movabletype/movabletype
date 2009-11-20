@@ -79,6 +79,7 @@ $place2->category_id($cat2->id);
 $place2->is_primary(0);
 $place2->save or die "Couldn't save placement record: " . $place2->errstr;
 
+$entry->clear_cache;
 my $category = $entry->category;
 ok ($category, "Primary category " . $category->label . " exists");
 

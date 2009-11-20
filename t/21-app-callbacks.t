@@ -37,7 +37,7 @@ MT->add_callback('AppPostEntrySave', 1, $plugin,
 
 MT::unplug();
 my $q = CGI->new();
-#$q->param(id => $entry2->id);
+$q->param(id => $entry2->id);
 $q->param(blog_id => $entry2->blog_id);
 $q->param(category_ids => 17);
 $q->param(author_id => 1);

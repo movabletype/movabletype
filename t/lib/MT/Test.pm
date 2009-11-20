@@ -445,10 +445,10 @@ sub init_data {
     my $blog = MT::Blog->new();
     $blog->set_values({
         name => 'none',
-        site_url => '/nana/',
-        archive_url => '/nana/archives/',
-        site_path => 'site/',
-        archive_path => 'site/archives/',
+        site_url => '/:://nana/',
+        archive_url => '/:://nana/archives/',
+        site_path => '/::/site/',
+        archive_path => '/::/site/archives/',
         archive_type=>'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred => 'Individual',
         description => "Narnia None Test Blog",
