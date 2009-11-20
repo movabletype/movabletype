@@ -57,8 +57,8 @@ sub install_properties {
 
     my $super_props = $class->SUPER::properties();
     for my $which (qw( meta summary )) {
-	    $props->{$which} = 1 if $super_props && $super_props->{$which};
-	}
+        $props->{$which} = 1 if $super_props && $super_props->{$which};
+    }
 
     if ($props->{meta}) {
         # yank out any meta columns before we start working on column_defs
@@ -140,11 +140,11 @@ sub install_properties {
     }
     
     if ($props->{summary}) {
-    	my $type_summaries = MT->registry('summaries', $type_id);
-    	%summary = map { $_ => 
-    			($type_summaries->{$_}->{type} =~ /(string|integer)/)
-    			? "$1 indexed meta" : "$type_summaries->{$_}->{type} meta"
-    		} keys %$type_summaries;
+        my $type_summaries = MT->registry('summaries', $type_id);
+        %summary = map { $_ => 
+                ($type_summaries->{$_}->{type} =~ /(string|integer)/)
+                ? "$1 indexed meta" : "$type_summaries->{$_}->{type} meta"
+            } keys %$type_summaries;
     }
     
     $props->{get_driver} ||= sub {
@@ -244,19 +244,19 @@ sub install_properties {
     }
 
     # inherit parent's metadata setup
-	if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
-		$class->install_meta(
-			{ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) },
-			'meta'
-		);
-		$class->add_trigger( post_remove => \&remove_meta );
-	}
-	if ($props->{summary}) { # if ($super_props && $super_props->{meta_installed}) {
-		$class->install_meta(
-			{ ( %summary ? ( column_defs => \%summary ) : ( columns => [] ) ) },
-			'summary'
-		);
-	}
+    if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta(
+            { ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) },
+            'meta'
+        );
+        $class->add_trigger( post_remove => \&remove_meta );
+    }
+    if ($props->{summary}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta(
+            { ( %summary ? ( column_defs => \%summary ) : ( columns => [] ) ) },
+            'summary'
+        );
+    }
 
     return $props;
 }
@@ -413,10 +413,10 @@ sub new {
     my $class = shift;
     my $obj = $class->SUPER::new(@_);
     for my $which (qw( meta summary )) {
-		if ($obj->properties->{$which . '_installed'}) {
-			$obj->init_meta($which);
-		}
-	}
+        if ($obj->properties->{$which . '_installed'}) {
+            $obj->init_meta($which);
+        }
+    }
     return $obj;
 }
 
@@ -440,7 +440,7 @@ sub install_meta {
         return;
     }
 
-	eval("require $meta_class");
+    eval("require $meta_class");
     my $pkg = ref $class || $class;
     if (!$pkg->SUPER::properties->{$installed}) {
         $pkg->add_trigger( post_save => \&_post_save_save_metadata );
@@ -586,18 +586,18 @@ sub has_summary {
 sub _post_load_initialize_metadata {
     my $obj = shift;
     for my $which (qw( meta summary )) {
-		if (defined $obj && $obj->properties->{$which . '_installed'}) {
-			$obj->init_meta($which);
-			$obj->{"__$which"}->set_primary_keys($obj);
-		}
-	}
+        if (defined $obj && $obj->properties->{$which . '_installed'}) {
+            $obj->init_meta($which);
+            $obj->{"__$which"}->set_primary_keys($obj);
+        }
+    }
 }
 
 sub is_meta_column {
     my $obj = shift;
     my ($field, $which) = @_;
-	$which ||= 'meta';
-	my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
+    $which ||= 'meta';
+    my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
     my $props = $obj->properties;
     return unless $props->{$which . '_installed'};
 
@@ -608,8 +608,8 @@ sub is_meta_column {
 }
 
 sub is_summary {
-	my $obj = shift;
-	$obj->is_meta_column($_[0], 'summary');
+    my $obj = shift;
+    $obj->is_meta_column($_[0], 'summary');
 }
 
 sub meta_pkg {
@@ -663,10 +663,10 @@ sub meta {
 sub summary {
     my $obj = shift;
     my ( $terms, $value ) = @_;
-	$obj->{__summary}->set_primary_keys($obj);
-	return undef if (!$obj->{__summary});
-	return $obj->{__summary}->set( $terms, $value ) if (scalar @_ == 2);
-	return $obj->{__summary}->get($terms);
+    $obj->{__summary}->set_primary_keys($obj);
+    return undef if (!$obj->{__summary});
+    return $obj->{__summary}->set( $terms, $value ) if (scalar @_ == 2);
+    return $obj->{__summary}->get($terms);
 }
 
 sub meta_obj {
@@ -688,6 +688,12 @@ sub column_func {
             $obj->{__meta}->set($col, @_);
         }
         else {
+            # Repopulate meta fields if they are missing; this fixes an issue with memcached caching an incomplete object
+            if (! exists $obj->{__meta}->{__objects}->{$col}) {
+              my $proxy = $obj->{__meta};
+              $proxy->set_primary_keys($obj) if $obj->has_primary_key;
+              $proxy->load_objects($col);
+            }
             $obj->{__meta}->get($col);
         }
     };
@@ -819,11 +825,11 @@ sub remove {
     my $obj = shift;
     my(@args) = @_;
     if (!ref $obj) {
-    	for my $which (qw( meta summary )) {
-    		my $meth = "remove_$which";
-    		my $has = "has_$which";
-	        $obj->$meth( @args ) if $obj->$has;
-	    }
+        for my $which (qw( meta summary )) {
+            my $meth = "remove_$which";
+            my $has = "has_$which";
+            $obj->$meth( @args ) if $obj->$has;
+        }
         $obj->remove_scores( @args ) if $obj->isa('MT::Scorable');
         MT->run_callbacks($obj . '::pre_remove_multi', @args);
         return $obj->driver->direct_remove($obj, @args);
@@ -993,11 +999,11 @@ sub clone_all {
         $clone->init_meta();
         $clone->meta( $obj->meta );
         if (!$param || !ref($param) || (ref($param) ne 'HASH') || !$param->{wantmeta}) {
-			for my $meta ( keys %{ $clone->{__meta}->{__objects} } ) {
-				$clone->{__meta}->{__objects}{$meta}->{changed_cols}
-					= $obj->{__meta}->{__objects}->{$meta}->{changed_cols} || {};
-			}
-		}
+            for my $meta ( keys %{ $clone->{__meta}->{__objects} } ) {
+                $clone->{__meta}->{__objects}{$meta}->{changed_cols}
+                    = $obj->{__meta}->{__objects}->{$meta}->{changed_cols} || {};
+            }
+        }
     }
     return $clone;
 }
@@ -1074,11 +1080,11 @@ sub join_on {
 sub remove_meta {
     my $obj = shift;
     my $which;
-	if ($_[0] && !ref($_[0]) && (($_[0] || '') =~ /meta|summary/)) {
-		$which = shift;
-	}
-	$which ||= 'meta';
-	my $mpkg = $obj->meta_pkg($which || 'meta') or return;
+    if ($_[0] && !ref($_[0]) && (($_[0] || '') =~ /meta|summary/)) {
+        $which = shift;
+    }
+    $which ||= 'meta';
+    my $mpkg = $obj->meta_pkg($which || 'meta') or return;
     if ( ref $obj ) {
         my $id_field = $obj->datasource . '_id';
         return $mpkg->remove({ $id_field => $obj->id });
@@ -1112,8 +1118,8 @@ sub remove_meta {
 }
 
 sub remove_summary {
-	my $obj = shift;
-	$obj->remove_meta('summary', @_);
+    my $obj = shift;
+    $obj->remove_meta('summary', @_);
 }
 
 sub remove_scores {
@@ -1191,11 +1197,11 @@ sub deflate {
     my $obj = shift;
     my $data = $obj->SUPER::deflate();
     for my $which (qw( meta summary )) {
-    	my $meth = "has_$which";
-		if ($obj->$meth()) {
-			$data->{$which} = $obj->{"__$which"}->deflate_meta();
-		}
-	}
+        my $meth = "has_$which";
+        if ($obj->$meth()) {
+            $data->{$which} = $obj->{"__$which"}->deflate_meta();
+        }
+    }
     return $data;
 }
 
@@ -1203,12 +1209,14 @@ sub inflate {
     my $class = shift;
     my ($data) = @_;
     my $obj = $class->SUPER::inflate(@_);
-    for my $which (qw( meta summary )) {
-    	my $meth = "has_$which";
-		if ($class->$meth()) {
-			$obj->{"__$which"}->inflate_meta($data->{$which});
-		}
-	}
+    for my $which (qw( meta )) {
+        # only inflate meta; don't inflate summary as this create zombie objects in the cache
+        # that prevent real MT::*::Summary objects from being used
+        my $meth = "has_$which";
+        if ($class->$meth()) {
+            $obj->{"__$which"}->inflate_meta($data->{$which});
+        }
+    }
     return $obj;
 }
 
@@ -2614,7 +2622,9 @@ the class.
 For object classes that have metadata storage, this method will initialize
 the metadata member.
 
-=item * Class->install_meta( \%meta_properties )
+=item * Class->install_meta( \%meta_properties, [ $which ] )
+
+Called to register metadata or summary properties on a particular class. If 'summary' is passed in the optional C<$which> parameter, summary properties will be installed, and metadata properties otherwise.
 
 Called to register metadata properties on a particular class. The
 C<%meta_properties> may contain an arrayref of 'columns', or a hashref
@@ -2650,14 +2660,20 @@ and C<%args> parameters.
 
 Returns the L<MT::Object> class
 
-=item * Class->meta_pkg()
+=item * Class->meta_pkg( [ $which ] )
 
-Returns the Perl package name for storing it's metadata objects.
+Returns the Perl package name for storing the class's metadata objects,
+or the class's summary objects if 'summary' is passed in C<$which>.
 
 =item * Class->meta_args
 
 Returns the source of a Perl package declaration that is loaded to
 declare and process metadata objects for the C<Class>.
+
+=item * Class->summary_args
+
+Returns the source of a Perl package declaration that is loaded to 
+declare and process summary data objects for the C<Class>.
 
 =item * Class->has_meta( [ $name ] )
 
@@ -2665,10 +2681,22 @@ Returns a boolean as to whether the class has metadata when called
 without a parameter, or whether there exists a metadata column
 of the given C<$name>.
 
-=item * Class->is_meta_column( $name )
+=item * Class->has_summary( [ $name ] )
+
+Returns a boolean as to whether the class supports summaries when 
+called without a parameter, or whether a summary type of the given 
+C<$name> is defined for the class.
+
+=item * Class->is_meta_column( $name, [ $which ] )
 
 Returns a boolean as to whether the class has a meta column named
-C<$name>.
+C<$name>, or a summary of type C<$name> if 'summary' is passed
+in C<$which>.
+
+=item * Class->is_summary( $name )
+
+Returns a boolean as to whether a summary type of the given C<$name> 
+is defined for the class.
 
 =back
 

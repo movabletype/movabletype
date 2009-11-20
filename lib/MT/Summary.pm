@@ -77,6 +77,18 @@ sub expire_all {
     $parent_obj->expire_summary($terms);
 }
 
+=head1 NAME
+
+MT::Summary - Manage summary data (calculated, denormalized metadata) associated with an MT::Object
+
+=head1 DESCRIPTION
+
+The I<MT::Summary> class manages the configuration of summary data. Summary data is similar to 
+metadata, and I<MT::Summary> is descended from I<MT::Meta>. You should normally not need to access 
+I<MT::Meta> directly, but will use the interface provided by I<MT::Summarizable>.
+
+=cut
+
 package MT::Summarizable;
 
 sub install_properties {
@@ -299,9 +311,9 @@ sub expire_summary {
             }
             else {
                 if ($summary) {
-                	$obj->summary($terms->{type});
-					$obj->{__summary}->{__objects}->{$terms->{type}}->expired($regenerate);
-					$obj->{__summary}->save_one($terms);
+                    $obj->summary($terms->{type});
+                    $obj->{__summary}->{__objects}->{$terms->{type}}->expired($regenerate);
+                    $obj->{__summary}->save_one($terms);
                 }
                 if ( $regenerate == MT::Summary::IN_QUEUE() ) {
                     $priority ||= $r->{priority};
@@ -320,5 +332,177 @@ sub expire_summary {
     }
     return 1;
 }
+
+=head1 NAME
+
+MT::Summarizable - interface for I<MT::Object> subclasses that support summary
+objects.
+
+=head1 SYNOPSIS
+
+    package Foo;
+    use base qw( MT::Object MT::Summarizable );
+    __PACKAGE__->install_properties({
+        ...
+        summary => 1
+        ...
+    });
+    
+    package main;
+    
+    my $foo = Foo->new;
+    my $bar_value = $foo->get_summary('bar');
+    my @related_foos = $foo->lookup_summary_objs('related');
+    my $baz_iter = $foo->get_summary_iter({
+        class => 'baz_per_blog',
+        type => $foo->blog_id
+    });
+
+=head1 DESCRIPTION
+
+Summary data objects are a special type of metadata that can be stored for an 
+object belonging to a subclass of I<MT::Object>: values that are calculated 
+based on other objects in the system, and which must be recalculated (or expired 
+for later on-demand recalculation) in response to changes in those objects. For 
+example, a count of all the comments belonging to an author, or a list of all 
+the entries in a particular blog category. 
+
+Essentially, summaries are a way of denormalizing the database schema by storing 
+values that require expensive database queries to calculate, to prevent having 
+to perform the same calculations repeatedly. The framework provides for 
+trigger-based expiration of summaries, marking them as needing to be 
+recalculated.
+
+Summary types are declared in the Registry, and may be declared by any Movable 
+Type component--core, addons, or plugins.
+
+I<MT::Summarizable> provides an interface for accessing summary data on an 
+object. In order to use summaries, an object class must declare itself a 
+subclass of I<MT::Summarizable> as well as of I<MT::Object>, and include 
+"summary => 1" in its properties.
+
+=head1 USAGE
+
+=head2 $terms
+
+Most of the methods described below take a I<$terms> argument. This can be 
+either a scalar value or a hashref, depending on how the summary in question is 
+implemented.
+
+As stored in the database, every summary value for a given object has two 
+identifiers: a I<class> and a I<type>. The I<class> is what's declared in the 
+Registry.
+
+In the case of a I<simple> summary, where only one summary of a given I<class> 
+exists per object (eg. "total comment count" for an MT::Author), I<type> is 
+equal to I<class>.
+
+In the case of a I<parameterized> summary, where multiple summaries of a given 
+I<class> can exist per object (eg. "comment count per blog" for an MT::Author), 
+I<type> is of the form I<[class]::[parameter(s)]> -- I<comments_per_blog::4> 
+might contain the author's comment count for blog_id 4.
+
+To access a parameterized summary value, pass a fully specified 
+i<[class]::[parameters]> string, either as a scalar or in the I<type> element of 
+the I<$terms> hashref; or pass a I<terms> hashref with both a I<type> and a 
+I<class> element, and the full type will be constructed if the I<type> does not 
+appear to be fully specified. In other words, the following are equivalent:
+
+    $obj->get_summary("comments_per_blog::4");
+
+    $obj->get_summary({ type => "comments_per_blog::4" });
+
+    $obj->get_summary({ class => "comments_per_blog", type => "4" });
+
+    $obj->get_summary({
+        class => "comments_per_blog", type => "comments_per_blog::4"
+    });
+
+=head2 $obj->get_summary( $terms )
+
+Returns the summary value for I<$obj> of the class and/or type matching 
+I<$terms>. If the value has not yet been generated or is expired, it will be 
+recalculated inline, stored, and returned.
+
+=head2 $obj->get_summary_objs( $terms, $class, [ $args ] )
+
+Returns a set of objects of object class I<$class>, by retrieving the summary 
+value for I<$obj> matching I<$terms> and then treating it as a comma-delimited 
+string of object IDs, which are loaded with any additional query parameters 
+(sort order or join terms, for example) specified in the optional I<$args>.
+
+=head2 $obj->get_summary_iter( $terms, $class, [ $args ] )
+
+Selects objects based on a summary value as I<get_summary_objs> does, but 
+returns an iterator that will loop over the objects.
+
+=head2 $obj->lookup_summary_objs( $terms, $class )
+
+Returns a set of objects of object class I<$class>, by retrieving the summary 
+value for I<$obj> matching I<$terms> and then treating it as a comma-delimited 
+string of object IDs. If no additional arguments are needed in loading the 
+objects, I<lookup_summary_objs> is preferred over I<get_summary_objs> or 
+I<get_summary_iter> because it does a I<lookup_multi>, which is optimized for 
+caching.
+
+=head2 $obj->set_summary( $terms, $value, $reset )
+
+Sets the summary value for I<$obj> matching I<$terms> to I<$value>. If the 
+passed value is I<undef>, the I<$reset> flag must also be passed to indicate 
+that this is intentional.
+
+Note that I<set_summary> immediately saves the summary value to the database; 
+unlike with MT's metadata, it is not necessary to save the parent object in 
+order to save summary values.
+
+=head2 $obj->summary_is_expired( $terms )
+
+Returns true if the summary for I<$obj> matching I<$terms> is expired and needs 
+to be recalculated.
+
+=head2 $obj->expire_summary( $terms, [ $options ] )
+
+Marks the summary for I<$obj> matching I<$terms> as expired, and processes it 
+for recalculation according to the regenerate option specified in its Registry 
+definition, which can be overridden with the 'regenerate' option described 
+below.
+
+The optional I<$options> is a hashref that can include two elements:
+
+=over 4
+
+=item * regenerate: an integer specifying how the summary should be regenerated, 
+which may be one of the following constants:
+
+=over 4
+
+=item * MT::Summary::INLINE(): the summary will be recalculated and stored 
+immediately upon expiration.
+
+=item * MT::Summary::NEEDS_JOB(): the summary will be marked as needing to be 
+regenerated by a TheSchwartz job, so that a job to regenerate it will be 
+inserted by an MT::Worker::SummaryWatcher custodian worker.
+
+=item * MT::Summary::IN_QUEUE(): an MT::Worker::Summarize worker will be 
+inserted into the job queue to regenerate the summary.
+
+=item * MT::Summary::NO_AUTO_GENERATE(): the summary will not be automatically 
+regenerated until the next time it's called for (i.e. by a template tag handler).
+
+=back
+
+=item * priority: for IN_QUEUE regeneration, an integer specifying the priority 
+for the queued job, which will override the default priority specified in the 
+Registry for this summary type.
+
+=back
+
+=head2 $obj->expire_all
+
+Marks all summaries for I<$obj> as expired, and processes each one for 
+regeneration according to the 'regenerate' option for that summary type in the 
+Registry.
+
+=cut
 
 1;

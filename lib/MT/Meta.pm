@@ -93,11 +93,11 @@ our($Registry, $RegistryById);
 # Public Class Methods
 
 sub _meta_args {
-	my $class = shift;
-	my ($pkg, $which) = @_;
-	$which ||= 'meta';
-	my $meth = $which . '_args';
-	$pkg->$meth;
+    my $class = shift;
+    my ($pkg, $which) = @_;
+    $which ||= 'meta';
+    my $meth = $which . '_args';
+    $pkg->$meth;
 }
 
 sub install {
@@ -297,10 +297,13 @@ you should not need to access I<MT::Meta> directly.
 These class methods allow you to retrieve information about the metadata
 defined for specific classes and metadata fields.
 
-=head2 MT::Meta->install($class, $params)
+=head2 MT::Meta->install($class, $params, [ $which ])
 
 Defines the set of metadata for the class I<$class> as described in the hash
 reference I<$params>, and configures I<$class> for use as a metadata host.
+
+If 'summary' is passed in the optional I<$which> argument, defines the set of 
+summary data, rather than metadata, for the class.
 
 Members of I<$params> can include:
 

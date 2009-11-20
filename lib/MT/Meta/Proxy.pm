@@ -13,8 +13,8 @@ sub META_CLASS { 'MT::Meta' }
 sub META_WHICH { 'meta' };
 
 BEGIN {
-	my $meta_class = __PACKAGE__->META_CLASS();
-	eval("require $meta_class;");
+    my $meta_class = __PACKAGE__->META_CLASS();
+    eval("require $meta_class;");
 }
 
 use MT::Serialize;
@@ -67,9 +67,9 @@ sub get {
 
     $proxy->lazier_load_objects;
     if (exists $proxy->{__objects}->{$col}) {
-    	if (!$proxy->{__loaded}->{$col}) {
-    		$proxy->load_objects($col);
-    	}
+        if (!$proxy->{__loaded}->{$col}) {
+            $proxy->load_objects($col);
+        }
         my $pkg  = $proxy->{pkg};
         my $meta = $proxy->{__objects}->{$col};
 
@@ -169,11 +169,11 @@ sub set {
     
     $proxy->{__loaded}->{$col} = 1;
     if (%{$proxy->{__loaded}}) {
-		$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
-	} else {
-		delete $proxy->{__pkeys}->{type};
-	}
-	$proxy->get($col);
+        $proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+    } else {
+        delete $proxy->{__pkeys}->{type};
+    }
+    $proxy->get($col);
 }
 
 sub save {
@@ -190,7 +190,7 @@ sub save {
 
         ## primary key from core object
         foreach my $pkey (keys %{ $proxy->{__pkeys} } ) {
-        	next if ($pkey eq 'type');
+            next if ($pkey eq 'type');
             my $pval = $proxy->{__pkeys}->{$pkey};
             $meta_obj->$pkey($pval);
         }
@@ -211,13 +211,13 @@ sub save {
             serialize_blob($field, $meta_obj) if $meta_is_blob;
             my $meta_class = $proxy->META_CLASS();
             {
-				no strict 'refs';
-				if (${"${meta_class}::REPLACE_ENABLED"}) {
-					$meta_obj->replace;
-				} 
-				else {
-					$meta_obj->save;
-				}
+                no strict 'refs';
+                if (${"${meta_class}::REPLACE_ENABLED"}) {
+                    $meta_obj->replace;
+                } 
+                else {
+                    $meta_obj->save;
+                }
             }
             unserialize_blob($meta_obj) if $meta_is_blob;
         }
@@ -269,36 +269,36 @@ sub lazy_load_objects {
 }
 
 sub lazier_load_objects {
-	my $proxy = shift;
-	require MT::Memcached;
-	return $proxy->lazy_load_objects if MT::Memcached->is_available;
-	if (! exists $proxy->{__objects} && $proxy->{__pkeys}) {
-		my $meta_pkg = $proxy->meta_pkg;
-		my @objs = $meta_pkg->search(
-			$proxy->{__pkeys},
-			{
-				fetchonly => [ 'type' ]
-			}
-		);
-		for my $obj (@objs) {
-			$proxy->{__objects}->{$obj->type} = $meta_pkg->new;
-		}
-		$proxy->{__loaded} = {};
-	}
+    my $proxy = shift;
+    require MT::Memcached;
+    return $proxy->lazy_load_objects if MT::Memcached->is_available;
+    if (! exists $proxy->{__objects} && $proxy->{__pkeys}) {
+        my $meta_pkg = $proxy->meta_pkg;
+        my @objs = $meta_pkg->search(
+            $proxy->{__pkeys},
+            {
+                fetchonly => [ 'type' ]
+            }
+        );
+        for my $obj (@objs) {
+            $proxy->{__objects}->{$obj->type} = $meta_pkg->new;
+        }
+        $proxy->{__loaded} = {};
+    }
 }
 
 sub load_objects {
     my $proxy = shift;
 
     return unless $proxy->{__pkeys};
-	my ($col) = @_;
+    my ($col) = @_;
     my $pkg = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
     my @objs  = $meta_pkg->search({
-		%{$proxy->{__pkeys}},
-		$col ? ( type => $col ) : ()
-	});
+        %{$proxy->{__pkeys}},
+        $col ? ( type => $col ) : ()
+    });
 
     foreach my $meta_obj (@objs) {
         my $type_id = $meta_obj->type;
@@ -321,8 +321,8 @@ sub load_objects {
         $proxy->{__objects}->{$name} = $meta_obj;
         $proxy->{__loaded} ||= {};
         if (!$proxy->{__loaded}->{$name}) {
-        	$proxy->{__loaded}->{$name} = 1;
-        	$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+            $proxy->{__loaded}->{$name} = 1;
+            $proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
         }
     }
 }
@@ -409,8 +409,8 @@ sub deflate_meta {
     for my $field (keys %{ $proxy->{__objects} } ) {
         next if $field eq '';
         if ($proxy->{__loaded}->{$field}) {
-	        $meta->{$field} = $proxy->get($field);
-	    }
+            $meta->{$field} = $proxy->get($field);
+        }
     }
     $meta->{__loaded} = $proxy->{__loaded};
     $meta;
