@@ -78,6 +78,25 @@ sub upgrade_functions {
                 code      => sub { $_[0]->rebuild; },
             },
         },
+        'v5_migrate_cf_type' => {
+            version_limit => 5.0017,
+            priority      => 5.0,
+            updater       => {
+                type      => 'field',
+                label     => 'Migrating CustomFields type...',
+                condition => sub { MT->model('field') },
+                code      => sub {
+                    if ( $_[0]->type =~ m/^asset\.*(.*)/i ) {
+                        if ( $1 ) {
+                            $_[0]->type($1);
+                        } else {
+                            $_[0]->type('file');
+                        }
+                        $_[0]->save;
+                    }
+                },
+            },
+        },
     };
 }
 
