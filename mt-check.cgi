@@ -55,7 +55,7 @@ use CGI;
 my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
-$version ||= '5.0rc3';
+$version ||= '5.0';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");
