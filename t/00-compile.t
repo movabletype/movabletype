@@ -7,7 +7,7 @@ use warnings;
 use lib 't/lib', 'lib', 'extlib';
 use MT::Test;
 
-use Test::More tests => 182;
+use Test::More tests => 229;
 
 use_ok('MT::Bootstrap');
 use_ok('MT::ErrorHandler');
@@ -125,6 +125,8 @@ use_ok('MT::Serialize');
 use_ok('MT::Memcached');
 use_ok('MT::PublishOption');
 use_ok('MT::Scorable');
+use_ok('MT::Template::Node');
+use_ok('MT::Template::Handler');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
@@ -134,6 +136,9 @@ use_ok('MT::Util::Captcha');
 use_ok('MT::Util::LogProcessor');
 use_ok('MT::Util::PerformanceData');
 use_ok('MT::Util::ReqTimer');
+use_ok('MT::Util::YAML');
+use_ok('MT::Util::YAML::Syck');
+use_ok('MT::Util::YAML::Tiny');
 
 # TheSchwartz support
 use_ok('MT::TheSchwartz');
@@ -182,7 +187,7 @@ use_ok('MT::Task');
 use_ok('MT::TaskMgr');
 use_ok('MT::Template::Context');
 use_ok('MT::Template::ContextHandlers');
-use_ok('MT::Upgrade');
+use_ok('MT::Template::Context::Search');
 use_ok('MT::WeblogPublisher');
 
 # Archive code
@@ -233,3 +238,56 @@ use_ok('MT::Meta::Proxy');
 # Job worker
 use_ok('MT::Worker::Publish');
 use_ok('MT::Worker::Sync');
+use_ok('MT::Worker::Summarize');
+use_ok('MT::Worker::SummaryWatcher');
+
+# Tag Handlers
+use_ok('MT::Template::Tags::Archive');
+use_ok('MT::Template::Tags::Asset');
+use_ok('MT::Template::Tags::Author');
+use_ok('MT::Template::Tags::Blog');
+use_ok('MT::Template::Tags::Calendar');
+use_ok('MT::Template::Tags::Category');
+use_ok('MT::Template::Tags::Comment');
+use_ok('MT::Template::Tags::Commenter');
+use_ok('MT::Template::Tags::Entry');
+use_ok('MT::Template::Tags::Filters');
+use_ok('MT::Template::Tags::Folder');
+use_ok('MT::Template::Tags::Misc');
+use_ok('MT::Template::Tags::Page');
+use_ok('MT::Template::Tags::Pager');
+use_ok('MT::Template::Tags::Ping');
+use_ok('MT::Template::Tags::Score');
+use_ok('MT::Template::Tags::Search');
+use_ok('MT::Template::Tags::Tag');
+use_ok('MT::Template::Tags::Userpic');
+use_ok('MT::Template::Tags::Website');
+
+# Upgrader
+use_ok('MT::Upgrade');
+use_ok('MT::Upgrade::Core');
+use_ok('MT::Upgrade::v1');
+use_ok('MT::Upgrade::v2');
+use_ok('MT::Upgrade::v3');
+use_ok('MT::Upgrade::v4');
+use_ok('MT::Upgrade::v5');
+
+# Revision Management Framework
+use_ok('MT::Revisable');
+use_ok('MT::Revisable::Local');
+
+# Summary framework
+use_ok('MT::Summary');
+use_ok('MT::Summary::Author');
+use_ok('MT::Summary::Entry');
+use_ok('MT::Summary::Proxy');
+use_ok('MT::Summary::Triggers');
+
+# Themes
+use_ok('MT::Theme');
+use_ok('MT::Theme::Category');
+use_ok('MT::Theme::Element');
+use_ok('MT::Theme::Entry');
+use_ok('MT::Theme::Pref');
+use_ok('MT::Theme::StaticFiles');
+use_ok('MT::Theme::TemplateSet');

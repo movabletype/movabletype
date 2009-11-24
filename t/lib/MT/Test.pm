@@ -447,7 +447,7 @@ sub init_data {
         name => 'none',
         site_url => '/:://nana/',
         archive_url => '/:://nana/archives/',
-        site_path => '/::/site/',
+        site_path => 'site/',
         archive_path => '/::/site/archives/',
         archive_type=>'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred => 'Individual',

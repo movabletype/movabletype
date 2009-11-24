@@ -2,10 +2,10 @@
 # $Id: 01-serialize.t 1100 2007-12-12 01:48:53Z hachi $
 use strict;
 use warnings;
-use lib 'lib';
-use lib 'extlib';
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 73;
 use_ok 'MT::Serialize';
+use MT;
 
 my @TESTS = (
     { },
