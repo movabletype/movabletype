@@ -1,29 +1,34 @@
 <script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:setvarblock name="action_buttons">
     <mt:if name="can_delete_files">
-        <a href="javascript:void(0)"
-            onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="asset" escape="js">', '<__trans phrase="assets" escape="js">'); return false;" name="delete_assets"
+        <button
             accesskey="x"
             title="<__trans phrase="Delete selected assets (x)">"
-            ><__trans phrase="Delete"></a>
+            class="mt-delete-items"
+            ><__trans phrase="Delete"></button>
     </mt:if>
 </mt:setvarblock>
 <mtapp:listing>
     <mt:if __first__>
-        <thead>
+        <mt:setvarblock name="table_header">
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th id="as-file-status" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-                <th id="as-file-name"><__trans phrase="Title"></th>
-    <mt:unless name="edit_blog_id">
-                <th id="as-weblog"><__trans phrase="Blog"></th>
+                <th class="file-status si">&nbsp;</th>
+                <th class="file-name primary-col"><__trans phrase="Label"></th>
+    <mt:unless name="blog_view">
+                <th class="blog"><__trans phrase="Website/Blog"></th>
     </mt:unless>
-                <th id="as-file-size"><__trans phrase="Size"></th>
-                <th id="as-created-by"><__trans phrase="Created By"></th>
-                <th id="as-created-on"><__trans phrase="Created On"></th>
-                <th id="as-view" class="status-view"><__trans phrase="View"></th>
+                <th class="file-size"><__trans phrase="Size"></th>
+                <th class="created-by"><__trans phrase="Created By"></th>
+                <th class="created-on"><__trans phrase="Created On"></th>
             </tr>
+        </mt:setvarblock>
+        <thead>
+            <mt:var name="table_header">
         </thead>
+        <tfoot>
+            <mt:var name="table_header">
+        </tfoot>
         <tbody>
     </mt:if>
             <tr id="asset-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if> status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
@@ -31,7 +36,7 @@
                     <input type="hidden" id="asset-<mt:var name="id">-json" value="<mt:var name="metadata_json" escape="html">" />
                     <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
                 </td>
-                <td class="si as-file-status asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+                <td class="si file-status asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
                     <div class="asset-thumb">
                         <div class="asset-thumb-inner">
     <mt:if name="file_is_missing">
@@ -51,17 +56,17 @@
                         </div>
                     </div>
                 </td>
-                <td>
+                <td class="file-name">
                     <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
                     <div class="as-asset-type"><mt:if name="file_is_missing"><__trans phrase="[_1] is missing" params="<mt:var name="asset_class" escape="html">"><mt:else><mt:var name="asset_class" escape="html"></mt:if></div>
                     <div id="asset-<mt:var name="id">-preview" class="asset-preview">
                         <div id="asset-<mt:var name="id">-preview-inner" class="asset-preview-inner"></div>
                     </div>
                 </td>
-    <mt:unless name="edit_blog_id">
-                <td><a href="<mt:var name="script_url">?__mode=list_assets&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+    <mt:unless name="blog_view">
+                <td class="blog"><a href="<mt:var name="script_url">?__mode=list_asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
     </mt:unless>
-                <td class="as-file-size" title="<mt:var name="file_size">">
+                <td class="file-size" title="<mt:var name="file_size">">
     <mt:if name="asset_type" eq="image">
                     <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">px<br />
     </mt:if>
@@ -71,11 +76,17 @@
                     <mt:var name="file_size">
     </mt:if>
                 </td>
-                <td class="as-created-by"><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
-                <td><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
-                <td class="si status-view"><mt:if name="url"><a href="<mt:var name="url">" target="view_uploaded" title="<__trans phrase="View">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="View">" width="13" height="9" /></a><mt:else>&nbsp;</mt:if></td>
+                <td class="created-by"><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+                <td class="created-on"><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
             </tr>
     <mt:if __last__>
         </tbody>
     </mt:if>
 </mtapp:listing>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
+    });
+</mt:setvarblock>

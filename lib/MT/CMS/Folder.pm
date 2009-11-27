@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Folder;
 
 use strict;
@@ -7,23 +12,27 @@ sub edit {
     return MT::CMS::Category::edit(@_);
 }
 
+sub list {
+    my $app = shift;
+    my $filter_key = $app->param('filter_key') || 'folder';
+    $app->param( 'type', 'folder' );
+    return $app->forward( 'list_category',
+        { type => 'folder', filter_key => $filter_key } );
+}
+
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_manage_pages();
+    $app->can_do('open_folder_edit_screen');
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_manage_pages();
+    $app->can_do('save_folder');
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
-    return $perms && $perms->can_manage_pages();
+    $app->can_do('delete_folder');
 }
 
 sub pre_save {

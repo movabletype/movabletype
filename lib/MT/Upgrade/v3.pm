@@ -216,7 +216,7 @@ sub upgrade_functions {
             version_limit => 3.20021,
             code => sub {
                 require MT::Permission;
-                &core_update_records
+                &MT::Upgrade::core_update_records
             },
             priority => 9.3,
             updater => {
@@ -333,9 +333,10 @@ sub upgrade_functions {
             updater => {
                 type => 'category',
                 condition => sub { !defined $_[0]->basename },
-                code => sub { my $cat = shift; my %args = @_;
+                code => sub { require MT::Util;
+                    my $cat = shift; my %args = @_;
                     $args{from} < 3.20021
-                        ? $cat->basename(mt32_dirify($cat->label))
+                        ? $cat->basename(MT::Util::make_unique_category_basename($cat))
                         : 1;
                 },
                 label => 'Assigning basename for categories...',
@@ -687,6 +688,43 @@ sub mt32_xliterate_utf8 {
     
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
     $str;
+}
+
+sub core_set_superuser {
+    my $self = shift;
+
+    my $SuperUser = $self->superuser();
+    my $app = $self->app();
+    my $author;
+    if ( ( ref $app ) && ( $app->{author} ) ) {
+        require MT::Author;
+        $self->progress(
+            $self->translate_escape(
+                "Setting your permissions to administrator.")
+        );
+        $author = MT::Author->load( $app->{author}->id );
+    }
+    elsif ($SuperUser) {
+        require MT::Author;
+        $self->progress(
+            $self->translate_escape(
+                "Setting your permissions to administrator.")
+        );
+        $author = MT::Author->load($SuperUser);
+    }
+
+    if ($author) {
+        $author->is_superuser(1);
+        $author->save
+            or return $self->error(
+            $self->translate_escape(
+                "Error saving record: [_1].",
+                $author->errstr
+            )
+            );
+    }
+
+    1;
 }
 
 1;

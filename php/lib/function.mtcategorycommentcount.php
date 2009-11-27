@@ -6,10 +6,10 @@
 # $Id$
 
 function smarty_function_mtcategorycommentcount($args, &$ctx) {
-    global $mt;
-    $db =& $mt->db;
+    $mt = MT::get_instance();
+    $db = $mt->db();
     $category = $ctx->stash('category');
-    $cat_id = (int)$category['category_id'];
+    $cat_id = (int)$category->category_id;
     $count = 0;
     if ($cat_id) {
         $count = $db->category_comment_count(array( 'category_id' => $cat_id ));

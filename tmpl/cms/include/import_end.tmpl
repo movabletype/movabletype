@@ -10,13 +10,13 @@ if (progress) {
 /* ]]> */
 </script>
 
-<TMPL_IF NAME=IMPORT_SUCCESS>
-<p><strong><MT_TRANS phrase="All data imported successfully!"></strong></p>
-<TMPL_UNLESS NAME=IMPORT_UPLOAD>
-<p><MT_TRANS phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
-</TMPL_UNLESS>
-<TMPL_ELSE>
-<p><strong><MT_TRANS phrase="An error occurred during the import process: [_1]. Please check your import file." params="<TMPL_VAR NAME=ERROR>"></strong></p>
-</TMPL_IF>
+<mt:if name="import_success">
+<p><strong><__trans phrase="All data imported successfully!"></strong></p>
+<mt:unless name="import_upload">
+<p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
+</mt:unless>
+<mt:else>
+<p><strong><__trans phrase="An error occurred during the import process: [_1]. Please check your import file." params="<mt:var name="error">"></strong></p>
+</mt:if>
 
-<TMPL_INCLUDE NAME="include/footer.tmpl">
+<mt:include name="include/footer.tmpl">

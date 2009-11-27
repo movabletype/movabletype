@@ -1,14 +1,5 @@
-<mt:if name="object_type" eq="entry">
-    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this entry">"$>
-    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this entry (s)">"$>
-    <$mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this entry">"$>
-    <$mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this entry (e)">"$>
-<mt:else>
-    <$mt:setvar name="save_button_value" value="<__trans phrase="Save this page">"$>
-    <$mt:setvar name="save_button_title" value="<__trans phrase="Save this page (s)">"$>
-    <$mt:setvar name="edit_button_value" value="<__trans phrase="Re-Edit this page">"$>
-    <$mt:setvar name="edit_button_title" value="<__trans phrase="Re-Edit this page (e)">"$>
-</mt:if>
+<mt:setvar name="edit_button_value" value="<__trans phrase="Return to the compose screen">">
+<mt:setvar name="edit_button_title" value="<__trans phrase="Return to the compose screen (e)">">
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
@@ -44,8 +35,12 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url_id">"></script>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <mt:else>
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 </mt:if>
     <script type="text/javascript">
         /* <![CDATA[ */
@@ -64,42 +59,37 @@
 <$mt:var name="js_include"$>
 </head>
 <body class="main-screen preview-screen">
-<div id="brand"><h1><a href="<$mt:var name="mt_url"$>"><span><$mt:var name="mt_product_name"$></span></a></h1></div>
+<div id="brand">
+    <span><img alt="<$mt:var name="mt_product_name"$>" src="<$mt:var name="static_uri"$>images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span>
+</div>
 <table id="preview-layout">
     <tr>
         <td id="entry-preview-control-strip">
-            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page titled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></div>
+            <div id="preview-label"><mt:if name="object_type" eq="entry"><__trans phrase="You are previewing the entry entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"><mt:else><__trans phrase="You are previewing the page entitled &ldquo;[_1]&rdquo;" params="<$mt:var name="title" remove_html="1" escape="html"$>"></mt:if></div>
             <form method="post" action="<$mt:var name="script_url"$>">
-                <div class="actions-bar">
-                    <div class="actions-bar-inner pkg actions">
-                        <button
-                            mt:mode="save_entry"
-                            type="submit"
-                            name="save"
-                            value="save"
-                            accesskey="s"
-                            title="<$mt:var name="save_button_title"$>"
-                            class="primary-button"
-                            ><$mt:var name="save_button_value"$></button>
-                        <button
-                            mt:mode="view"
-                            type="submit"
-                            name="reedit"
-                            value="reedit"
-                            accesskey="e"
-                            title="<$mt:var name="edit_button_title"$>"
-                            class="primary-button"
-                            ><$mt:var name="edit_button_value"$></button>
-                    </div>
-                </div>
                 <input type="hidden" name="__mode" value="save_entry" />
                 <input type="hidden" name="_type" value="<$mt:var name="object_type"$>" />
                 <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
                 <input type="hidden" name="_preview_file" value="<$mt:var name="preview_file" escape="html"$>" />
-                <input type="hidden" name="dirty" value="1" />
+                <input type="hidden" name="dirty" value="<mt:var name="dirty">" />
     <mt:loop name="entry_loop">
                 <input type="hidden" name="<$mt:var name="data_name" escape="html"$>" value="<$mt:var name="data_value" escape="html"$>" />
     </mt:loop>
+
+
+    <mt:setvarblock name="action_buttons">
+        <button
+            mt:mode="view"
+            type="submit"
+            name="reedit"
+            value="reedit"
+            accesskey="e"
+            title="<$mt:var name="edit_button_title"$>"
+            class="edit action primary-button"
+            ><$mt:var name="edit_button_value"$></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
             </form>
         </td>
     </tr>
@@ -109,11 +99,13 @@
         </td>
     </tr>
 </table>
+
 <div id="bootstrapper" class="hidden"></div>
 <mt:unless name="delayed_bootstrap">
 <script type="text/javascript">
     /* <![CDATA[ */
         App.bootstrapInline( false );
+        jQuery('#brand span').pngfix();
     /* ]]> */
 </script>
 </mt:unless>

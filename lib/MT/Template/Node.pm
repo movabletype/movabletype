@@ -89,9 +89,7 @@ sub attribute_list {
 }
 
 sub tag {
-    my $node = shift;
-    return $node->[EL_NODE_NAME] = shift if @_;
-    return $node->[EL_NODE_NAME];
+    return $_[1] ? $_[0]->[EL_NODE_NAME] = $_[1] : $_[0]->[EL_NODE_NAME];
 }
 
 sub setAttribute {
@@ -234,6 +232,51 @@ sub appendChild {
 
 sub removeChild {
     my $node = shift;
+}
+
+## Decode all items
+sub upgrade {
+    my $node = shift;
+    my $i;
+    for my $v ( @$node ) {
+        _upgrade(\$v);
+        $i++;
+        ## Don't decode parents.
+        last if $i >= 5;
+    }
+}
+
+sub _upgrade {
+    my $ref = ref $_[0];
+    if ( !$ref ) {
+        Encode::_utf8_on($_[0])
+            if !Encode::is_utf8($_[0]);
+    }
+    elsif ( $ref eq 'HASH' ) {
+        for my $v ( values %{$_[0]} ) {
+            _upgrade(\$v);
+        }
+    }
+    elsif ( $ref eq 'ARRAY' ) {
+        for my $v ( @{$_[0]} ) {
+            _upgrade(\$v);
+        }
+    }
+    elsif ( $ref eq 'SCALAR' ) {
+        Encode::_utf8_on(${$_[0]})
+            if !Encode::is_utf8(${$_[0]});
+    }
+    elsif ( $ref eq 'MT::Template::Node' ) {
+        $_[0]->upgrade;
+    }
+    elsif ( $ref eq 'MT::Template::Tokens' ) {
+        for my $n ( @{$_[0]} ) {
+            $n->upgrade;
+        }
+    }
+    elsif ( $ref eq 'REF' ) {
+        _upgrade( ${ $_[0] } );
+    }
 }
 
 *inner_html = \&innerHTML;

@@ -1,29 +1,37 @@
 <mt:setvarblock name="action_buttons">
 <mt:if name="can_manage">
-    <a href="javascript:void(0)"
+    <button
         onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 'id', {}, { 'mode': 'remove_user_assoc', 'singular_prompt': '<__trans phrase="Are you sure you want to remove the selected user from this blog?" escape="js">', 'plural_prompt': '<__trans phrase="Are you sure you want to remove the [_1] selected users from this blog?" params="[_1]" escape="js">' }); return false;"
         accesskey="r"
         title="<__trans phrase="Remove selected user(s) (r)">"
-        ><__trans phrase="Remove"></a>
+        ><__trans phrase="Remove"></button>
 </mt:if>
 </mt:setvarblock>
 
 <mtapp:listing>
     <mt:if name="__first__">
-        <thead>
-            <!-- for role_revoke mode -->
-            <input type="hidden" name="role_id" value="" />
-            <input type="hidden" name="author_id" value="" />
+        <!-- for role_revoke mode -->
+        <input type="hidden" name="role_id" value="" />
+        <input type="hidden" name="author_id" value="" />
+
+        <mt:setvarblock name="table_header">
             <tr>
                 <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th id="at-flag si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
-                <th id="at-username"><__trans phrase="Username"></th>
-                <th id="at-name"><__trans phrase="Name"></th>
+                <th class="status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+                <th class="username primary-col"><__trans phrase="Username"></th>
+                <th class="name"><__trans phrase="Name"></th>
                 <mt:if name="filter_key" eq="commenter"><mt:else>
-                <th id="at-roles"><__trans phrase="Roles"></th>
+                <th class="roles"><__trans phrase="Roles"></th>
                 </mt:if><mt:loop name="more_column_headers"><mt:var name="__value__"></mt:loop>
             </tr>
+        </mt:setvarblock>
+
+        <thead>
+            <mt:var name="table_header">
         </thead>
+        <tfoot>
+            <mt:var name="table_header">
+        </tfoot>
         <tbody>
     </mt:if>
             <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">

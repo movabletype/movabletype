@@ -3,37 +3,45 @@ use warnings;
 use strict;
 use UNIVERSAL::require;
 
-our $VERSION = '0.11';
+sub PROTOCOL_VERSION_1_0() {1}
+sub PROTOCOL_VERSION_1_0A() {1.001}
+
+sub OAUTH_VERSION() {'1.0'}
+
+our $VERSION = '0.19';
+our $SKIP_UTF8_DOUBLE_ENCODE_CHECK = 0;
+our $PROTOCOL_VERSION = PROTOCOL_VERSION_1_0;
 
 sub request {
     my $self = shift;
-	my $what = shift;
+    my $what = shift;
     return $self->message($what . ' Request');
 }
 
 sub response {
     my $self = shift;
-	my $what = shift;
+    my $what = shift;
     return $self->message($what . ' Response');
 }
 
 sub message {
     my $self = shift;
+    my $base_class = ref $self || $self;
     my $type = camel(shift);
-    my $class = 'Net::OAuth::' . $type;
-	$class->require;
+    my $class = $base_class . '::' . $type;
+    $class->require;
     return $class;
 }
 
 sub camel {
-	my @words;
-	foreach (@_) {
-		while (/([A-Za-z0-9]+)/g) {
-			(my $word = $1) =~ s/authentication/auth/i;
-			push @words, $word;
-		}
-	}
-	my $name = join('', map("\u$_", @words));
+    my @words;
+    foreach (@_) {
+        while (/([A-Za-z0-9]+)/g) {
+            (my $word = $1) =~ s/authentication/auth/i;
+            push @words, $word;
+        }
+    }
+    my $name = join('', map("\u$_", @words));
 }
 
 =head1 NAME
@@ -42,13 +50,14 @@ Net::OAuth - OAuth protocol support
 
 =head1 SYNOPSIS
 
-	# Consumer sends Request Token Request
+    # Consumer sends Request Token Request
 
-	use Net::OAuth;
-	use HTTP::Request::Common;
-	my $ua = LWP::UserAgent->new;
+    use Net::OAuth;
+    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+    use HTTP::Request::Common;
+    my $ua = LWP::UserAgent->new;
 
-	my $request = Net::OAuth->request("request token")->new(
+    my $request = Net::OAuth->request("request token")->new(
         consumer_key => 'dpf43f3p2l4k3l03',
         consumer_secret => 'kd94hf93k423kf44',
         request_url => 'https://photos.example.net/request_token',
@@ -56,54 +65,57 @@ Net::OAuth - OAuth protocol support
         signature_method => 'HMAC-SHA1',
         timestamp => '1191242090',
         nonce => 'hsu94j3884jdopsl',
-		extra_params => {
-			apple => 'banana',
-			kiwi => 'pear',
-		}
-	);
+        callback => 'http://printer.example.com/request_token_ready',
+        extra_params => {
+            apple => 'banana',
+            kiwi => 'pear',
+        }
+    );
 
-	$request->sign;
+    $request->sign;
 
-	my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
-	
-	if ($res->is_success) {
-		my $response = Net::OAuth->response('request token')->from_post_body($res->content);
-		print "Got Request Token ", $response->token, "\n";
-		print "Got Request Token Secret ", $response->token_secret, "\n";
-	}
-	else {
-		die "Something went wrong";
-	}
-	
-	# Etc..
+    my $res = $ua->request(POST $request->to_url); # Post message to the Service Provider
 
-	# Service Provider receives Request Token Request
-	
-	use Net::OAuth;
-	use CGI;
-	my $q = new CGI;
-	
-	my $request = Net::OAuth->request("request token")->from_hash($q->Vars,
-		request_url => 'https://photos.example.net/request_token',
-		request_method => $q->request_method,
-		consumer_secret => 'kd94hf93k423kf44',
-	);
+    if ($res->is_success) {
+        my $response = Net::OAuth->response('request token')->from_post_body($res->content);
+        print "Got Request Token ", $response->token, "\n";
+        print "Got Request Token Secret ", $response->token_secret, "\n";
+    }
+    else {
+        die "Something went wrong";
+    }
 
-	if (!$request->verify) {
-		die "Signature verification failed";
-	}
-	else {
-		# Service Provider sends Request Token Response
+    # Etc..
 
-		my $response = Net::OAuth->response("request token")->new( 
-			token => 'abcdef',
-			token_secret => '0123456',
-		);
+    # Service Provider receives Request Token Request
 
-		print $response->to_post_body;
-	}	
+    use Net::OAuth;
+    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+    use CGI;
+    my $q = new CGI;
 
-	# Etc..
+    my $request = Net::OAuth->request("request token")->from_hash($q->Vars,
+        request_url => 'https://photos.example.net/request_token',
+        request_method => $q->request_method,
+        consumer_secret => 'kd94hf93k423kf44',
+    );
+
+    if (!$request->verify) {
+        die "Signature verification failed";
+    }
+    else {
+        # Service Provider sends Request Token Response
+
+        my $response = Net::OAuth->response("request token")->new( 
+            token => 'abcdef',
+            token_secret => '0123456',
+            callback_confirmed => 'true',
+        );
+
+        print $response->to_post_body;
+    }    
+
+    # Etc..
 
 =head1 ABSTRACT
 
@@ -124,6 +136,8 @@ Net::OAuth provides:
 =item * message signing
 
 =item * message serialization and parsing.
+
+=item * 2-legged requests (aka. tokenless requests, aka. consumer requests), see L</"CONSUMER REQUESTS"> 
 
 =back
 
@@ -154,6 +168,8 @@ Requests
 =item * User Authentication (Net::OAuth::UserAuthRequest)
 
 =item * Protected Resource (Net::OAuth::ProtectedResourceRequest)
+
+=item * Consumer Request (Net::OAuth::ConsumerRequest) (2-legged / token-less request)
 
 =back
 
@@ -201,7 +217,7 @@ Before sending a request, the Consumer must first sign it:
 
 When receiving a request, the Service Provider should first verify the signature:
 
- $request->verify;
+ die "Signature verification failed" unless $request->verify;
 
 When sending a message the last step is to serialize it and send it to wherever it needs to go.  The following serialization methods are available:
 
@@ -249,6 +265,29 @@ All parameters can be get/set using accessor methods. E.g.
 
  my $consumer_key = $request->consumer_key;
  $request->request_method('POST');
+
+=head2 THE REQUEST_URL PARAMETER
+
+Any query parameters in the request_url are removed and added to the extra_params hash when generating the signature.
+
+E.g. the following requests are pretty much equivalent:
+
+ my $request = Net::OAuth->request('Request Token')->new(
+  %params,
+  request_url => 'https://photos.example.net/request_token',
+  extra_params => {
+   foo => 'bar'
+  },
+);
+
+ my $request = Net::OAuth->request('Request Token')->new(
+  %params,
+  request_url => 'https://photos.example.net/request_token?foo=bar',
+ );
+
+Calling $request->request_url will still return whatever you set it to originally. If you want to get the request_url with the query parameters removed, you can do:
+
+    my $url = $request->normalized_request_url;
 
 =head2 SIGNATURE METHODS
 
@@ -304,6 +343,88 @@ Service Provider:
 
 Note that you can pass the key in as a parameter called 'signature_key' to the message constructor, rather than passing it to the sign/verify method, if you like.
 
+=head2 CONSUMER REQUESTS
+
+To send a request without including a token, use a Consumer Request:
+
+    my $request = Net::OAuth->request('consumer')->new(
+            consumer_key => 'dpf43f3p2l4k3l03',
+            consumer_secret => 'kd94hf93k423kf44',
+            request_url => 'http://provider.example.net/profile',
+            request_method => 'GET',
+            signature_method => 'HMAC-SHA1',
+            timestamp => '1191242096',
+            nonce => 'kllo9940pd9333jh',
+    );
+
+    $request->sign;
+
+See L<Net::OAuth::ConsumerRequest>
+
+=head2 I18N
+
+Per the OAuth spec, when making the signature Net::OAuth first encodes parameters to UTF-8. This means that any parameters you pass to Net::OAuth, if they are outside of ASCII character set, should be run through Encode::decode() (or an equivalent PerlIO layer) first to decode them to Perl's internal character sructure.
+
+There is a check in Net::OAuth's parameter encoding function that guesses if the data you are passing in looks like it is already UTF-8 and warns that you should decode it first. This accidental double-encoding of UTF-8 may be a source of headaches - if you find that the signature check is failing when you send non-ASCII data, that is a likely cause. 
+
+You can silence this warning by setting:
+
+    $Net::OAuth::SKIP_UTF8_DOUBLE_ENCODE_CHECK = 1;
+
+Following is an example of decoding some UTF-8 form data before sending it in an OAuth messaage (from the Twitter demo included in the Net::OAuth package):
+
+    my $request = Net::OAuth->request("protected resource")->new(
+        $self->_default_request_params,
+        request_url => 'http://twitter.com/statuses/update.xml',
+        token => $self->session->param('token'),
+        token_secret => $self->session->param('token_secret'),
+        request_method => 'POST',
+        extra_params => {status => decode_utf8($self->query->param('status'))}
+    );
+
+=head2 OAUTH 1.0A
+
+Background:
+
+L<http://mojodna.net/2009/05/20/an-idiots-guide-to-oauth-10a.html>
+
+L<http://oauth.googlecode.com/svn/spec/core/1.0a/drafts/3/oauth-core-1_0a.html>
+
+Net::OAuth defaults to OAuth 1.0 spec compliance, and supports OAuth 1.0 Rev A with an optional switch:
+
+ use Net::OAuth
+ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+
+It is recommended that any new projects use this switch if possible, and existing projects move to supporting this switch as soon as possible.  Probably the easiest way for existing projects to do this is to turn on the switch and run your test suite.  The Net::OAuth constructor will throw an exception where the new protocol parameters (callback, callback_confirmed, verifier) are missing.
+
+Internally, the Net::OAuth::Message constructor checks $Net::OAuth::PROTOCOL_VERSION and attempts to load the equivalent subclass in the Net::OAuth::V1_0A:: namespace.  So if you instantiate a Net::OAuth::RequestTokenRequest object, you will end up with a Net::OAuth::V1_0A::RequestTokenRequest (a subclass of Net::OAuth::RequestTokenRequest) if the protocol version is set to PROTOCOL_VERSION_1_0A.  You can also select a 1.0a subclass on a per-message basis by passing 
+    
+    protocol_version => Net::OAuth::PROTOCOL_VERSION_1_0A
+
+in the API parameters hash.
+
+If you are not sure whether the entity you are communicating with is 1.0A compliant, you can try instantiating a 1.0A message first and then fall back to 1.0 if that fails:
+
+    use Net::OAuth
+    $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
+    my $is_oauth_1_0 = 0;
+    my $response = eval{Net::OAuth->response('request token')->from_post_body($res->content)};
+    if ($@) {
+        if ($@ =~ /Missing required parameter 'callback_confirmed'/) {
+            # fall back to OAuth 1.0
+            $response = Net::OAuth->response('request token')->from_post_body(
+                $res->content, 
+                protocol_version => Net::OAuth::PROTOCOL_VERSION_1_0
+            );
+            $is_oauth_1_0 = 1; # from now on treat the server as OAuth 1.0 compliant
+        }
+        else {
+            die $@;
+        }
+    }
+
+At some point in the future, Net::OAuth will default to Net::OAuth::PROTOCOL_VERSION_1_0A.
+
 =head1 DEMO
 
 There is a demo Consumer CGI in this package, also available online at L<http://oauth.kg23.com/>
@@ -312,13 +433,19 @@ There is a demo Consumer CGI in this package, also available online at L<http://
 
 L<http://oauth.net>
 
+Check out L<Net::OAuth::Simple> - it has a simpler API that may be more to your liking
+
+Check out L<Net::Twitter::OAuth> for a Twitter-specific OAuth API
+
+Check out L<WWW::Netflix::API> for a Netflix-specific OAuth API
+
 =head1 AUTHOR
 
 Keith Grennan, C<< <kgrennan at cpan.org> >>
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2007 Keith Grennan, all rights reserved.
+Copyright 2009 Keith Grennan, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

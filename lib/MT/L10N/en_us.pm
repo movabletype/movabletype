@@ -7,6 +7,7 @@
 package MT::L10N::en_us;   # American English
 
 use strict;
+use utf8;
 use MT::L10N;
 use vars qw( @ISA %Lexicon );
 @ISA = qw( MT::L10N );
@@ -109,7 +110,6 @@ sub ascii_only { ((ref $_[0]) || $_[0]) eq __PACKAGE__ }
 
     '_USAGE_PING_LIST_BLOG' => 'Here is the list of TrackBacks for [_1]  which you can filter, manage and edit.',
     '_USAGE_PING_LIST_OVERVIEW' => 'Here is the list of TrackBacks for all weblogs which you can filter, manage and edit.',
-    
     '_USAGE_PING_LIST_ALL_WEBLOGS' => 'Here is the list of TrackBack pings for all weblogs  which you can filter, manage and edit.',
 
     '_USAGE_NOTIFICATIONS' => 'Here is the list of users who wish to be notified when you publish to your site. To add a new user, enter their email address in the form below. The URL field is optional. To delete a user, check the delete box in the table below and press the DELETE button.',
@@ -158,8 +158,10 @@ the address you provided is correct and belongs to you.',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
      '_WARNING_DELETE_USER_EUM' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
      '_WARNING_DELETE_USER' => 'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
-    '_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'This action will restore the templates in the selected blog(s) to factory settings. Are you sure you want to refresh templates in the selected blog(s)?',
+    '_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' => 'This action will restore the templates in the selected blog(s) to theme default settings. Are you sure you want to refresh templates in the selected blog(s)?',
 
+    '_WEBMASTER_MT4' => 'Webmaster',
+    '_THEME_AUTHOR' => 'Author',
 );
 
 1;

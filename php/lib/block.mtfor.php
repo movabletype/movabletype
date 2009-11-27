@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
-    $localvars = array('__for_end', '__for_var', '__out');
+    $localvars = array('__for_end', '__for_var', '__out', '__for_increment');
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -30,8 +30,10 @@ function smarty_block_mtfor($args, $content, &$ctx, &$repeat) {
         $ctx->stash('__for_end', $end);
         $ctx->stash('__for_var', $var);
         $ctx->stash('__out', false);
+        $ctx->stash('__for_increment', isset($args['increment']) ? $args['increment'] : 1);
     } else {
-        $index = $ctx->__stash['vars']['__index__'] + 1;
+        $inc = $ctx->stash('__for_increment');
+        $index = $ctx->__stash['vars']['__index__'] + $inc;
         $counter = $ctx->__stash['vars']['__counter__'] + 1;
         $end = $ctx->stash('__for_end');
         $var = $ctx->stash('__for_var');

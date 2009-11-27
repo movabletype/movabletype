@@ -10,13 +10,13 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
-        $args['entry_id'] = $entry['entry_id'];
-        $primary_category_id = $entry['placement_category_id'];
-        $categories = $ctx->mt->db->fetch_categories($args);
+        $args['entry_id'] = $entry->entry_id;
+        $primary_category_id = $entry->placement_category_id;
+        $categories = $ctx->mt->db()->fetch_categories($args);
         if ($categories && $primary_category_id) {
             $list = array();
             foreach ($categories as $cat) {
-                if ($cat['category_id'] != $primary_category_id)
+                if ($cat->category_id != $primary_category_id)
                     $list[] = $cat;
             }
             $categories = $list;

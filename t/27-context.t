@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 27-context.t 1100 2007-12-12 01:48:53Z hachi $
 use strict;
 use warnings;
 
@@ -88,11 +88,11 @@ is(build($ctx, '<$MTBlogDescription$>'), $blog->description, 'MTBlogDescription'
 is(build($ctx, '<a href="<$MTBlogURL$>"><$MTBlogName$></a>'),
    qq(<a href="@{[ $blog->site_url ]}">@{[ $blog->name ]}</a>), 'href');
 
+my @cmts = MT::Comment->load({entry_id => 1});
+for (@cmts) { $_->remove() }
 my $entry = MT::Entry->load(1);
 $entry->text_more("Something\nelse");
-my @cmts = MT::Comment->load({entry_id => $entry->id});
-for (@cmts) { $_->remove() }
- $ctx->stash('entry', $entry);
+$ctx->stash('entry', $entry);
 my $ts = local $ctx->{current_timestamp} = $entry->created_on;
 my @ts = unpack 'A4A2A2A2A2A2', $ts;
 $ts = sprintf "%04d.%02d.%02d %02d:%02d:%02d", @ts;
@@ -100,7 +100,7 @@ $ts = sprintf "%04d.%02d.%02d %02d:%02d:%02d", @ts;
 is(build($ctx, '<$MTEntryTitle$>'), $entry->title, 'MTEntryTitle');
 is(build($ctx, '<$MTEntryAuthor$>'), $entry->author->name, 'MTEntryAuthor');
 is(build($ctx, '<$MTEntryMore$>'), html_text_transform($entry->text_more), 'MTEntryMore');
-is(build($ctx, '<$MTEntryCommentCount$>'), 3, 'MTEntryCommentCount');
+is(build($ctx, '<$MTEntryCommentCount$>'), 0, 'MTEntryCommentCount');
 is(build($ctx, '<$MTEntryDate format="%Y.%m.%d %H:%M:%S"$>'), $ts, 'MTEntryDate format');
 
 is(build($ctx, '<$MTEntryBody words="2"$>'), first_n_words($entry->text, 2), 'MTEntryBody words 2');

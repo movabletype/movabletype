@@ -149,10 +149,7 @@ sub init_request{
         || ( $app->{searchparam}{Type} eq 'tag' ) ) {
         if ($q->param('search')) {
             $app->{search_string} = $q->param('search');
-            $app->{search_string_decoded} = MT::I18N::decode(
-                $app->config->PublishCharset,
-                $app->{search_string}
-            );
+            $app->{search_string_decoded} = $app->{search_string};
         } else {
             $app->{search_string} = $app->{search_string_decoded} = q();
         }
@@ -694,21 +691,8 @@ sub _set_form_elements {
     $tmpl;
 }
 
-my $decoder_ring;
 sub is_a_match { 
     my($app, $txt) = @_;
-    use utf8;
-    unless ($decoder_ring) {
-        my $enc = $app->config->PublishCharset;
-        eval { 
-            require Encode;
-            $decoder_ring = sub { Encode::decode($enc, shift) };
-        };
-        if ($@) {
-            $decoder_ring = sub { MT::I18N::decode($enc, shift) };
-        }
-    }
-    $txt = $decoder_ring->($txt);
 
     if ($app->{searchparam}{RegexSearch}) {
         my $keyword = $app->{searchparam}{search_string_decoded};
@@ -732,8 +716,7 @@ sub is_a_match {
 sub query_parse {
     my $app = shift;
     return unless $app->{search_string};
-    use utf8;
-    #local $_ = MT::I18N::decode_utf8($app->{search_string});
+
     local $_ = $app->{search_string_decoded};
 
     s/^\s//;            # Remove leading whitespace

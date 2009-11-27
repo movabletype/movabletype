@@ -8,7 +8,6 @@ package MT::Summary::Proxy;
 use strict;
 use warnings;
 use base qw( MT::Meta::Proxy );
-use Data::Dumper;
 
 sub META_CLASS { 'MT::Summary' }
 

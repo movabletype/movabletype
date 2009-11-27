@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 11-sanitize.t 3219 2008-12-03 07:58:25Z fumiakiy $
 use strict;
 use warnings;
 use lib 't/lib';

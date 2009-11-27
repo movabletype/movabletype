@@ -95,7 +95,7 @@ setTimeout('doRedirect()', 200);
 
 <mt:if name="total">
 <div class="progress-bar<mt:unless name="complete"> progress-bar-indeterminate<mt:else>" style="background-position: <mt:var name="incomplete">% 0</mt:unless>">
-    <span><$mt:var name="complete"$>% Complete</span>&nbsp;
+    <span><__trans phrase="[_1]% Complete" params="<$mt:var name="complete"$>"></span>&nbsp;
 </div>
 </mt:if>
 

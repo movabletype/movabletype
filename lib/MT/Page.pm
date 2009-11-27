@@ -16,6 +16,19 @@ __PACKAGE__->install_properties({
     child_classes => ['MT::Comment','MT::Placement','MT::Trackback','MT::FileInfo'],
 });
 
+# Callbacks: clean list of changed columns to only
+# include versioned columns
+MT->add_callback( 'api_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
+MT->add_callback( 'cms_pre_save.' . 'page', 1, undef, \&MT::Revisable::mt_presave_obj );
+
+# Callbacks: object-level callbacks could not be 
+# prioritized and thus caused problems with plugins
+# registering a post_save and saving     
+MT->add_callback( 'api_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );
+MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_postsave_obj );               
+
+__PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisable::mt_postremove_obj );
+
 sub class_label {
     return MT->translate("Page");
 }

@@ -30,12 +30,12 @@ $provider = new HatenaCommenterAuth();
 $_commenter_auths[$provider->get_key()] = $provider;
 
 function _auth_icon_url($static_path, $author) {
-    $auth_type = $author["author_auth_type"];
+    $auth_type = $author->author_auth_type;
     if (!$auth_type) {
         return '';
     }
 
-    if ( $author["author_type"] == 1 ) {
+    if ( $author->author_type == 1 ) {
         return $static_path . 'images/comment/mt_logo.png';
     }
 

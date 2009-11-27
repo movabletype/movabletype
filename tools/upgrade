@@ -8,6 +8,7 @@
 
 package MT::Tool::Upgrade;
 use strict;
+use utf8;
 
 use lib  qw( extlib lib );
 use base qw( MT::Tool );
@@ -77,6 +78,9 @@ sub main {
     if ( $install ) {
         $MT::Upgrade::Installing = 1;
     }
+
+    local $SIG{__WARN__} = sub { __PACKAGE__->trace( $_[0] ) };
+
     my $updated = MT::Upgrade->do_upgrade(
         App       => __PACKAGE__, 
         DryRun    => $dryrun,
@@ -87,6 +91,10 @@ sub main {
     );
 
     if ($install) {
+        my $blog = MT->model('blog')->load(1);
+        $blog->theme_id('classic_website');
+        $blog->save;
+        $blog->apply_theme;
         print "Installation complete.\n";
     } else {
         print "Upgrade complete!\n" if !$dryrun && $updated;
@@ -97,13 +105,13 @@ sub main {
 sub progress {
     my $pkg = shift;
     my $msg = shift;
-    print "\t* " . $msg . "\n" unless $sqlonly;
+    print "\t* " . Encode::encode( MT->config->PublishCharset || 'UTF-8', $msg ) . "\n" unless $sqlonly;
 }
 
 sub error {
     my $pkg = shift;
     my $err = shift;
-    confess $err;
+    confess Encode::encode( MT->config->PublishCharset || 'UTF-8', $err );
 }
 
 sub sql_cb {
@@ -112,6 +120,10 @@ sub sql_cb {
     print "$stmt\n";
 }
 
+sub trace {
+    my $pkg = shift;
+    print "[warn] >> \t" . Encode::encode( MT->config->PublishCharset || 'UTF-8', $_[0] ) . "\n"; 
+}
 
 __PACKAGE__->main() unless caller;
 

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: Vox.pm 1174 2008-01-08 21:02:50Z bchoate $
+# $Id$
 
 package MT::Auth::Hatena;
 use strict;

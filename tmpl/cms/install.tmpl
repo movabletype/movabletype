@@ -25,74 +25,6 @@ div.warning#version-warning {
 }
 </style>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-window.onload = init;
-
-function init() {
-    if (!getByID) {
-        // javascript files failed to load... alert user
-        return;
-    }
-    var user = getByID("admin_username");
-    if (user) {
-        user.focus();
-    }
-}
-
-function dismiss(id) {
-    var el = getByID(id);
-    if (el) {
-        el.style.display= 'none';
-    }
-    var elh = getByID(id + "-header");
-    if (elh) {
-        elh.style.display= 'none';
-    }
-}
-
-function show(id) {
-    var el = getByID(id);
-    if (el) {
-        el.style.display= 'block';
-    }
-    var elh = getByID(id + "-header");
-    if (elh) {
-        elh.style.display= 'block';
-    }
-}
-
-function validate(f) {
-
-    if (!f.admin_username.value) {
-        alert('<__trans phrase="The initial account name is required." escape="singlequotes">');
-        f.admin_username.focus();
-        return false;
-    }
-
-<mt:if name="auth_mode_mt">
-    if (!f.admin_nickname.value) {
-        alert('<__trans phrase="The display name is required." escape="singlequotes">');
-        f.admin_nickname.focus();
-        return false;
-    }
-    if (!f.admin_email.value) {
-        alert('<__trans phrase="The e-mail address is required." escape="singlequotes">');
-        f.admin_email.focus();
-        return false;
-    }
-    if (!f.hint.value) {
-        alert('<__trans phrase="Password recovery word/phrase is required." escape="singlequotes">');
-        f.hint.focus();
-        return false;
-    }
-</mt:if>
-
-    return true;
-}
-/* ]]> */
-</script>
-
 <div class="upgrade">
 
 <mt:if name="version_warning">
@@ -101,28 +33,27 @@ function validate(f) {
     <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
     <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions right">
-            <input type="hidden" name="continue" value="1" />
-            <button
-                onclick="dismiss('version-warning'); show('welcome'); return false;"
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Yes (s)">"
-                class="primary-button"
-                ><__trans phrase="Yes"></button>
-            <button
-                onclick="javascript:location.href='mt-check.cgi'"
-                type="submit"
-                accesskey="x"
-                title="<__trans phrase="View MT-Check (x)">"
-                ><__trans phrase="No"></button>
-        </div>
+        <input type="hidden" name="continue" value="1" />
+        <button
+           onclick="dismiss('version-warning'); show('welcome'); return false;"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Yes (s)">"
+           class="action primary-button"
+           ><__trans phrase="Yes"></button>
+        <button
+           onclick="javascript:location.href='mt-check.cgi'"
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="View MT-Check (x)">"
+           class="action"
+           ><__trans phrase="No"></button>
     </div>
 </div>
 </mt:if>
 
 <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
-<p class="intro"><__trans phrase="Before you can begin blogging, you must create an administrator account for your system. When you are done, Movable Type will then initialize your database."></p>  
+<p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>  
 
 <mt:if name="error">
 <mtapp:statusmsg
@@ -132,7 +63,7 @@ function validate(f) {
 </mtapp:statusmsg>
 </mt:if>
 
-<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<form id="install_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="init_user">
 
 <mt:if name="auth_mode_ldap">
@@ -157,7 +88,7 @@ function validate(f) {
         label="<__trans phrase="Display Name">"
         label_class="top-label"
         hint="<__trans phrase="The name used when published.">">
-        <input name="admin_nickname" id="admin_nickname" class="ti" value="<mt:var name="admin_nickname" escape="html">" />
+        <input type="text" name="admin_nickname" id="admin_nickname" class="ti" value="<mt:var name="admin_nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -197,7 +128,7 @@ function validate(f) {
 
     <mtapp:setting
         id="admin_password_confirm"
-        label="<__trans phrase="Password Confirm">"
+        label="<__trans phrase="Confirm Password">"
         label_class="top-label"
         hint="<__trans phrase="Repeat the password for confirmation.">">
         <input type="password" class="pw" name="admin_password_confirm" />
@@ -238,22 +169,52 @@ function validate(f) {
     </fieldset>
 
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions right">
-            <input type="hidden" name="continue" value="1" />
-            <button
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Continue (s)">"
-                class="primary-button"
-                ><__trans phrase="Continue"></button>
-        </div>
+        <input type="hidden" name="continue" value="1" />
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Continue (s)">"
+           class="save action primary-button"
+           ><__trans phrase="Continue"></button>
     </div>
 </form>
 
 </div>
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+function dismiss(id) {
+    jQuery('#'+id).hide();
+    jQuery('#'+id+'-header').hide();
+}
 
+function show(id) {
+    jQuery('#'+id).show();
+    jQuery('#'+id+'-header').show();
+}
 
-
-
+jQuery(function() {
+    jQuery('#admin_username').focus();
+    jQuery('#install_form').validate({
+        rules: {
+            admin_username: 'required'<mt:if name="auth_mode_mt">,
+            admin_nickname: 'required',
+            admin_email: 'required',
+            hint: 'required'</mt:if>
+        },
+        messages: {
+            admin_username: '<__trans phrase="The initial account name is required." escape="singlequotes">'<mt:if name="auth_mode_mt">,
+            admin_nickname: '<__trans phrase="The display name is required." escape="singlequotes">',
+            admin_email: '<__trans phrase="The e-mail address is required." escape="singlequotes">',
+            hint: '<__trans phrase="Password recovery word/phrase is required." escape="singlequotes">'</mt:if>
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+});
+/* ]]> */
+</script>
 <mt:include name="include/chromeless_footer.tmpl">

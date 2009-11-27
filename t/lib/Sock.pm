@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Sock.pm 3531 2009-03-12 09:11:52Z fumiakiy $
 
 package Classfree::Sock;
 

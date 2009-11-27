@@ -8,7 +8,7 @@
 function smarty_function_mtentryexcerpt($args, &$ctx) {
     // todo: needs work
     $e = $ctx->stash('entry');
-    if ($excerpt = $e['entry_excerpt']) {
+    if ($excerpt = $e->entry_excerpt) {
         if ((!isset($args['convert_breaks'])) || (!$args['convert_breaks'])) {
             return $excerpt;
         }
@@ -19,7 +19,7 @@ function smarty_function_mtentryexcerpt($args, &$ctx) {
         return '';
     }
     $blog = $ctx->stash('blog');
-    $words = $blog['blog_words_in_excerpt'];
+    $words = $blog->blog_words_in_excerpt;
     if (!isset($words) or empty($words)) {
         $words = 40;
     }

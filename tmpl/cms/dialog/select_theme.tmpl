@@ -1,0 +1,73 @@
+<mt:setvarblock name="page_title"><__trans phrase="Select Personal blog theme"></mt:setvarblock>
+<mt:setvar name="screen_id" value="select-personal-blog-theme">
+<mt:include name="dialog/header.tmpl">
+
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+var themes = <mt:var theme_json to_json="1" >;
+function returnSelectedTheme(ok, id) {
+    if (ok) {
+        var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
+        var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];
+        parent.jQuery('#<mt:var name="imagefield" escape="js">').empty().append(
+            '<img src="' + themes[id]['thumb']
+                + '" width="' + themes[id]['thumb_w']
+                + '" height="' + themes[id]['thumb_h'] + '" />'
+        );
+
+        if (el_id && el_name) {
+            el_id.value = id;
+            el_name.innerHTML = themes[id]['label'];
+        }
+        parent.jQuery.fn.mtDialog.close();
+    } else {
+        parent.jQuery.fn.mtDialog.close();
+    }
+}
+
+function init() {    // setup
+    return;
+}
+/* ]]> */
+</script>
+
+<div id="available-themes" class="select-theme">
+<mt:loop name="theme_loop">
+    <div id="theme-<mt:var name="id">" class="theme<mt:if name="current"> current-theme</mt:if>">
+        <div class="theme-thumbnail picture small">
+            <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')">
+                <img alt="<$mt:var name="label" escape="html"$>" src="<mt:var name="thumbnail_url">" />
+            </a>
+        </div>
+        <div class="theme-meta">
+            <h2 class="theme-title"><mt:var name="label"></h2>
+            <p class="theme-description description"><mt:var name="description"></p>
+            <span class="action-link">
+                <a href="javascript:returnSelectedTheme(1,'<mt:var name="theme_id">')"><__trans phrase="Apply"></a>
+            </span>
+        </div>
+    </div>
+</mt:loop>
+</div>
+
+<div class="actions-bar actions-bar-bottom">
+    <button
+        type="submit"
+        accesskey="x"
+        class="cancel action mt-close-dialog"
+        title="<__trans phrase="Cancel (x)">"
+        ><__trans phrase="Cancel"></button>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
+<mt:include name="dialog/footer.tmpl">

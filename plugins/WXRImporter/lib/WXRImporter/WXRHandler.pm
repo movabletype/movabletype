@@ -29,16 +29,15 @@ sub start_document {
 
     $self->{start} = 1;
     $self->{basename_limit} = 255; # max length of the column
+    *_decoder = sub { $_[0]; }
+        unless $self->{is_pp};
 
     1;
 }
 
-sub _encoder {
+sub _decoder {
     my ( $text ) = @_;
-    $text = MT::I18N::encode_text($text, 'utf-8');
-    if ( MT->config->PublishCharset =~ /utf-?8/i ) {
-        $text = MT::I18N::utf8_off($text);
-    }
+    $text = eval { Encode::decode_utf8($text); };
     return $text;
 }
 
@@ -73,7 +72,7 @@ sub start_element {
     }
 
     my %values = map { $attrs->{$_}->{LocalName} => 
-            _encoder($attrs->{$_}->{Value})
+            _decoder($attrs->{$_}->{Value})
         } keys(%$attrs);
 
     $self->{in_wp_comment_content} = 1 if ('wp' eq $prefix) && ('comment_content' eq $name);
@@ -129,7 +128,7 @@ sub end_element {
     my $element = pop @{$self->{'bucket'}};
     if ('HASH' eq ref($element)) {
         $element->{$prefix . '_' . $name} = 
-            _encoder($element->{$prefix . '_' . $name})
+            _decoder($element->{$prefix . '_' . $name})
                 if exists $element->{$prefix . '_' . $name};
     }
     push @{$self->{'bucket'}}, $element;

@@ -88,9 +88,6 @@ sub textile_2 {
         $textile = _new_textile();
     }
 
-    require MT::I18N;
-    $str = MT::I18N::encode_text( $str, MT->instance->config->PublishCharset, 'utf-8' );
-
     $str = $textile->process($str);
 
     if ((defined $ctx) && (ref($ctx) eq 'MT::Template::Context')) {
@@ -108,8 +105,6 @@ sub textile_2 {
     if ($beautifier) {
         $str =~ s|<((block)?code)([^>]*?) language="([^"]+?)"([^>]*?)>(.+?)</\1>|_highlight($1, $3, $5, $4, $textile->decode_html($6))|ges; # "
     }
-
-    $str = MT::I18N::encode_text( $str, 'utf-8', MT->instance->config->PublishCharset );
 
     $str;
 }

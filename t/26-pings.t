@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 26-pings.t 2697 2008-07-03 19:58:49Z bchoate $
 use strict;
 use warnings;
 
@@ -9,7 +9,7 @@ use lib 'lib';
 
 use Test::More;
 
-plan tests => 14;
+plan tests => 15;
 #plan skip_all => "Needs rewrite to eliminate HTTP server requirement.";
 #exit;
 
@@ -57,7 +57,7 @@ for (my $i = 1; $i < 7; $i++) {
 my $server = "192.168.1.104";
 my $p = Net::Ping->new();
 SKIP: {
-    skip("Test update server $server is unreachable", 5)
+    skip("Test update server $server is unreachable", 7)
         unless $p->ping($server);
     ok(1, "ping");
 

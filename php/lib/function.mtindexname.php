@@ -10,6 +10,6 @@ function smarty_function_mtindexname($args, &$ctx) {
     $counter = $ctx->stash('index_templates_counter');
     $idx = $tmpl[$counter];
     if (!$idx) return '';
-    return $idx['template_name'];
+    return $idx->template_name;
 }
 ?>

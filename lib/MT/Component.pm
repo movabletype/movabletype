@@ -148,16 +148,10 @@ sub load_registry {
     my $path   = $c->path or return;
     $path = File::Spec->catfile( $c->path, $file );
     return unless -f $path;
-    require YAML::Tiny;
-    my $y = eval { YAML::Tiny->read($path) }
-        or die "Error reading $path: " . (YAML::Tiny->errstr||$@||$!);
-    if ( ref($y) ) {
-
-        # skip over non-hash elements
-        shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
-        return $y->[0] if @$y;
-    }
-    return {};
+    require MT::Util::YAML;
+    my $y = eval { MT::Util::YAML::LoadFile($path) }
+        or die "Error reading $path: " . (MT::Util::YAML->errstr||$@||$!);
+    return $y;
 }
 
 sub init_registry {
@@ -340,6 +334,13 @@ sub template_paths {
             push @paths, $alt_path;
         }
     }
+    if ( UNIVERSAL::isa( $c, 'MT::Plugin' ) ) {
+        for my $addon ( @{ $mt->find_addons('pack') } ) {
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $mt->{template_dir})
+                if $mt->{template_dir};
+            push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
+        }
+    }
     push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
       if $mt->{template_dir};
     push @paths, $path;
@@ -388,43 +389,26 @@ sub load_tmpl {
     return $tmpl;
 }
 
-sub l10n_class { _getset( shift, 'l10n_class', @_ ) || 'MT::L10N' }
+sub l10n_class { _getset( shift, 'l10n_class', @_ ) || '' }
 
 sub translate {
     my $c       = shift;
     my $handles = MT->request('l10n_handle') || {};
+    my $lang    = MT->current_language || MT->config->DefaultLanguage;
     my $h       = $handles->{ $c->id };
-    unless ($h) {
-        my $lang = MT->current_language || MT->config->DefaultLanguage;
-        eval "require " . $c->l10n_class . ";";
-        if ($@) {
-            $h = MT->language_handle;
-        }
-        else {
-            $h = $c->l10n_class->get_handle($lang);
-        }
-        $handles->{ $c->id } = $h;
+
+    if ( !defined $h ) {
+        $h = $handles->{ $c->id } = $c->_init_l10n_handle($lang) || 0;
         MT->request( 'l10n_handle', $handles );
     }
+
     my ( $format, @args ) = @_;
     foreach (@args) {
         $_ = $_->() if ref($_) eq 'CODE';
     }
-    my $enc = MT->instance->config('PublishCharset');
     my $str;
     if ($h) {
-        if ( $enc =~ m/utf-?8/i ) {
-            $str = $h->maketext( $format, @args );
-        }
-        else {
-            $str = MT::I18N::encode_text(
-                $h->maketext(
-                    $format,
-                    map { MT::I18N::encode_text( $_, $enc, 'utf-8' ) } @args
-                ),
-                'utf-8', $enc
-            );
-        }
+        $str = $h->maketext( $format, @args );
     }
     if ( !defined $str ) {
         $str = MT->translate(@_);
@@ -432,15 +416,126 @@ sub translate {
     $str;
 }
 
+## If Component has Lexicon in his registry, merge them to L10N modules, or
+## create as new module.
+## Locale::Maketext::get_handle has NO second try, so we have to create all
+## possibly modules before invoking Locale::Maketext::get_handle.
+sub _init_l10n_handle {
+    my $c = shift;
+    my ($lang) = @_;
+    my $l10n_reg = $c->registry('l10n_lexicon') || {};
+    my $base_class = $c->l10n_class;
+    if ( !$base_class ) {
+        my $id = $c->id;
+        $id =~ s/[\W]//g;
+        return if $id !~ /^[a-zA-Z]/;
+        $base_class = join('::', $id, 'L10N');
+    }
+    $c->_generate_l10n_module( $base_class, 'MT::Plugin::L10N' );
+    ## we need en_us because he is the default language.
+    ## TBD: ... is it truth?
+    my $en_us = join '::', $base_class, 'en_us';
+    my $en_us_lexicon = $c->registry('l10n_lexicon','en_us') || {};
+    $c->_generate_l10n_module($en_us, $base_class, $en_us_lexicon);
+    my $lang_tag = lc $lang;
+    $lang_tag =~ s/-/_/g;
+    if ( $lang_tag ne 'en_us' ) {
+        my $lexicon = $c->registry( 'l10n_lexicon', $lang_tag );
+        my $class = join '::', $base_class, $lang_tag;
+        $c->_generate_l10n_module($class, $en_us, $lexicon);
+    }
+    require Locale::Maketext;
+    return Locale::Maketext::get_handle( $base_class, $lang_tag );
+}
+
+sub _generate_l10n_module {
+    my $c = shift;
+    my ($class, $base, $lexicon) = @_;
+    my $got_class;
+    if ( $c->id eq 'core' ) {
+        eval "require $class";
+        $got_class = 1;
+    }
+    elsif ( MT->config('RequiredCompatibility') < 5.0 ) {
+        my @paths = split '::', $class;
+        $paths[-1] .= '.pm';
+        my $inc_path = join '/', @paths;
+        if ( exists $INC{$inc_path} ) {
+            ## l10n class is already loaded.
+            return $class;
+        }
+        my $path = File::Spec->catfile( $c->path, 'lib', $inc_path );
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        if ( $fmgr->exists($path) ) {
+            ## automatically decoded here!
+            my $file = $fmgr->get_data($path);
+            eval "$file";
+            $got_class = !$@ ? 1 : 0;
+            $INC{ $inc_path } = $path;
+        }
+    }
+    else {
+        eval "require $class";
+        $got_class = !$@ ? 1 : 0;
+    }
+
+    if ( $got_class ) {
+        if ( !ref $lexicon) {
+            $lexicon = MT->handler_to_coderef($lexicon);
+        }
+        if ( 'CODE' eq ref $lexicon ) {
+            $lexicon = $lexicon->();
+        }
+        if ( 'HASH' eq ref $lexicon ) {
+            no strict 'refs';
+            %{$class.'::Lexicon'} = ( %{$class.'::Lexicon'}, %$lexicon );
+        }
+    }
+    else {
+        my $lexicon_code = $lexicon ? 'use vars qw( %Lexicon );' : '';
+        my $code = <<"CODE";
+package $class;
+use base qw( $base );
+$lexicon_code
+1;
+CODE
+        eval $code;
+        die "Failed to make L10N handle: $code : $@" if $@;
+        if ($lexicon) {
+            if ( !ref $lexicon) {
+                $lexicon = MT->handler_to_coderef($lexicon);
+            }
+            if ( 'CODE' eq ref $lexicon ) {
+                $lexicon = $lexicon->();
+            }
+            {
+                no strict 'refs';
+                %{$class.'::Lexicon'} = ( %$lexicon );
+            }
+        }
+    }
+    return $class;
+}
+
 sub translate_templatized {
     my $c = shift;
     my ($text) = @_;
+    # Here, the text must be handled as binary ( non utf-8 ) data,
+    # because regexp for utf-8 string is too heavy.
+    # things we have to do is
+    #  * encode $text before parse
+    #  * decode the strings captured by regexp
+    #  * encode the translated string from translate()
+    #  * decode again for return
+    $text = Encode::encode('utf8', $text)
+        if Encode::is_utf8($text);
     my @cstack;
     while (1) {
         $text =~ s!(<(/)?(?:_|MT)_TRANS(_SECTION)?(?:(?:\s+((?:\w+)\s*=\s*(["'])(?:(<(?:[^"'>]|"[^"]*"|'[^']*')+)?>|[^\5]+?)*?\5))+?\s*/?)?>)!
         my($msg, $close, $section, %args) = ($1, $2, $3);
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<(?:[^"'>]|"[^"]*"|'[^']*')+?>|[^\2])*?)?\2/g) {  #"
-            $args{$1} = $3;
+            $args{$1} = Encode::is_utf8($3) ? $3 : Encode::decode_utf8($3);
         }
         if ($section) {
             if ($close) {
@@ -459,7 +554,9 @@ sub translate_templatized {
             $args{params} = '' unless defined $args{params};
             my @p = split /\s*%%\s*/, $args{params}, -1;
             @p = ('') unless @p;
-            my $translation = $c->translate($args{phrase}, @p);
+            my $phrase = $args{phrase};
+            $phrase = Encode::decode_utf8($phrase) unless Encode::is_utf8($phrase);
+            my $translation = $c->translate($phrase, @p);
             if (exists $args{escape}) {
                 if (lc($args{escape}) eq 'html') {
                     $translation = MT::Util::encode_html($translation);
@@ -470,10 +567,13 @@ sub translate_templatized {
                     $translation = encode_js($translation);
                 }
             }
+            $translation = Encode::encode('utf8', $translation)
+                if Encode::is_utf8($translation);
             $translation;
         }
         !igem or last;
     }
+    $text = Encode::decode_utf8($text) unless Encode::is_utf8($text);
     return $text;
 }
 
@@ -493,8 +593,15 @@ sub registry {
             return $c->{registry} = shift;
         }
         my @path = @_;
-        my $r    = $c->{registry};
-        return undef unless $r;
+        my $r    = $c->{registry} ||= {};
+        my $setter = grep { ref $_ } @_;
+        return undef if ( !$r && !$setter );
+
+        # deepscan for any label elements since they will need translation
+        if ( !$c->{__localized} ) {
+            __deep_localize_labels( $c, $r );
+            $c->{__localized} = 1;
+        }
         my ( $last_r, $last_p );
         foreach my $p (@path) {
             if ( ref $p ) {
@@ -502,48 +609,60 @@ sub registry {
                 # Handle the case where an assignment
                 # is being made to a registry item. Ie
                 # $comp->registry("foo","bar","baz", { stuff => ... })
+                __deep_localize_labels($c, $p);
                 $last_r->{$last_p} = $p;
                 $r = $last_r;
                 last;
             }
+
             if ( exists $r->{$p} ) {
                 my $v = $r->{$p};
 
                 # check for a yaml file reference...
-                if ( !ref($v) ) {
+                if ( !ref($v) && $v ) {
                     if ( $v =~ m/^[-\w]+\.yaml$/ ) {
                         my $f = File::Spec->catfile( $c->path, $v );
                         if ( -f $f ) {
-                            require YAML::Tiny;
-                            my $y = eval { YAML::Tiny->read($f) }
-                                or die "Error reading $f: " . (YAML::Tiny->errstr||$@||$!);
-                            # skip over non-hash elements
-                            shift @$y
-                                while @$y && ( ref( $y->[0] ) ne 'HASH' );
-                            $r->{$p} = $y->[0] if @$y;
+                            require MT::Util::YAML;
+                            my $y = eval { MT::Util::YAML::LoadFile($f) }
+                                or die "Error reading $f: " . (MT::Util::YAML->errstr||$@||$!);
+                            if ($y) {
+                                __deep_localize_labels($c, $y) if ref $y eq 'HASH';
+                                $r->{$p} = $y;
+                            }
                         }
                     } elsif ($v =~ m/^\$\w+::/) {
                         my $code = MT->handler_to_coderef($v);
                         if (ref $code eq 'CODE') {
-                            $r->{$p} = $code->($c);
+                            my $res = $code->($c);
+                            __deep_localize_labels($c, $res)
+                                if $res && ref $res eq 'HASH';
+                            $r->{$p} = $res;
                         }
                     }
                 }
                 elsif ( ref($v) eq 'CODE' ) {
-                    $r->{$p} = $v->($c);
+                    my $res = $v->($c);
+                    __deep_localize_labels($c, $res)
+                        if $res && ref $res eq 'HASH';
+                    $r->{$p} = $res;
                 }
                 $last_r = $r;
                 $last_p = $p;
                 $r      = $r->{$p};
+            }
+            elsif ( $setter ) {
+                $r->{$p} = {};
+                $last_r = $r;
+                $last_p = $p;
+                $r = $r->{$p};
             }
             else {
                 return undef;
             }
         }
 
-        # deepscan for any label elements since they will need translation
         if ( ref $r eq 'HASH' ) {
-            __deep_localize_labels( $c, $r );
             weaken($_->{plugin} = $c)
                 for grep { ref $_ eq 'HASH' } values %$r;
         }

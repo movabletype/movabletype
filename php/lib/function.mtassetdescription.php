@@ -3,13 +3,13 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: function.mtassetdescription.php 70395 2007-12-21 01:45:41Z bchoate $
+# $Id$
 
 function smarty_function_mtassetdescription($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
 
-    return $asset['asset_description'];
+    return $asset->asset_description;
 }
 ?>
 

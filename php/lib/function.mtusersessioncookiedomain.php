@@ -10,7 +10,7 @@ function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
     if ($domain == '<$MTBlogHost exclude_port="1"$>') {
         # optimize for the default case
         $blog = $ctx->stash('blog');
-        $host = $blog['blog_site_url'];
+        $host = $blog->site_url();
         if (preg_match('!^https?://([^/:]+)/!', $host, $matches)) {
             $domain = $matches[1];
         }

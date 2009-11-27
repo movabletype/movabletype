@@ -1,0 +1,544 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    font-family: inherit;
+    vertical-align: baseline;
+}
+
+/* Content */
+
+a:link, a:visited {
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6, p, pre, blockquote, fieldset, ul, ol, dl {
+    margin-bottom: .75em;
+}
+
+blockquote, ol, ul {
+    margin-left: 30px;
+}
+
+ol { list-style: decimal outside; }
+ul { list-style: disc outside; }
+.item { list-style: none; }
+
+
+/* remember to define focus styles! */
+:focus {
+    outline: 0;
+}
+body {
+    line-height: 1.4;
+    color: black;
+    background: white;
+}
+ol, ul {
+    list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+caption, th, td {
+    text-align: left;
+    font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+}
+blockquote, q {
+    quotes: "" "";
+}
+
+
+/* layout */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: arial;
+    font-size: 62.5%;
+    color: #333;
+    background: #fff;
+}
+a {
+    color: #059;
+}
+em {
+    font-style: italic;
+}
+strong {
+    font-weight: bold;
+}
+#container {
+    border-top: 5px solid #eee;
+}
+#container-inner {
+    width: 960px;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+}
+#header {
+    margin: 0 190px 1em 190px;
+    padding: 7em 0 6em 0;
+    font-family: georgia;
+    line-height: 1.3;
+}
+#header-name {
+    font-size: 3em;
+    display: inline;
+    padding: 6px 0;
+    margin-right: 10px;
+}
+#header-name a {
+    color: #222;
+    text-decoration: none;
+}
+#header-name a:hover {
+    color: #059;
+}
+#header-description {
+    font-size: 2.2em;
+    color: #aaa;
+    display: inline;
+    padding: 6px 0 6px 10px;
+}
+#content {
+    font-size: 1.2em;
+    line-height: 1.4;
+}
+
+
+/* nav */
+
+#nav {
+    position: absolute;
+    z-index: 100;
+    right: 190px;
+    top: 0px;
+}
+#nav li {
+    float: left;
+    margin-left: 3px;
+    font-size: 1.1em;
+}
+#nav li a {
+    background: #eee;
+    display: block;
+    color: #999;
+    padding: 4px 10px 6px;
+    text-decoration: none;
+    -moz-border-radius-bottomleft: 2px;
+    -webkit-border-bottom-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    -moz-border-radius-bottomright: 2px;
+    -webkit-border-bottom-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+}
+#nav li a:hover {
+    background: #f2f2f2;
+    color: #059;
+}
+
+
+/*  pagination */
+
+.date-header {
+    float: left;
+    text-align: right;
+    padding: 5px 20px 4px 0;
+    margin-left: 20px;
+    border-right: 1px solid #eee;
+    width: 128px;
+    color: #999;
+}
+.content-nav {
+    text-align: center;
+    margin: 0 190px 2.5em 190px;
+    padding: 3px 10px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+    background: #eee;
+    position: absolute;
+    margin-top: -40px;
+    color: #999;
+}
+.content-nav a {
+    text-decoration: none;
+}
+.pager-bottom {
+    margin-top: 20px;
+    position: relative;
+}
+
+
+/* entry, page */
+
+.asset {
+    margin: 0 190px 3.5em 190px;
+}
+.asset .asset-header {
+    font-size: 2em;
+    font-size: 18px;
+    line-height: 1.3;
+    margin: 0 0 15px 0;
+    font-weight: bold;
+}
+.asset .asset-header a {
+    text-decoration: none;
+    color: #333;
+}
+.asset .asset-header a:hover {
+    color: #059;
+}
+.asset .asset-content {
+    line-height: 1.5;
+    font-family: georgia;
+    font-size: 14px;
+}
+.asset .asset-content,
+.asset .asset-content p,
+.asset .asset-content h1,
+.asset .asset-content h2,
+.asset .asset-content h3,
+.asset .asset-content h4,
+.asset .asset-content h5,
+.asset .asset-content h6,
+.asset .asset-content ul,
+.asset .asset-content ol,
+.asset .asset-content embed {
+    margin-bottom: 10px;
+}
+.asset .asset-content h1,
+.asset .asset-content h2,
+.asset .asset-content h3,
+.asset .asset-content h4,
+.asset .asset-content h5,
+.asset .asset-content h6 {
+    font-weight: bold;
+    font-family: arial;
+}
+.asset .asset-content pre {
+    margin: 0 20px 10px;
+    font-family: monaco, courier;
+    font-size: 11px;
+    background: #f6f6f6;
+    padding: 15px;
+}
+.asset .asset-content ul {
+    margin-left: 36px;
+    list-style: disc outside none;
+}
+.asset .asset-content ol {
+    margin-left: 36px;
+    list-style: decimal outside none;
+}
+.asset .asset-content blockquote {
+    color: #777;
+    font-family: arial;
+    font-size: 14px;
+    margin: 0 20px 10px;
+    padding: 10px 0 5px 0;
+    border-top: 1px dotted #eee;
+    border-bottom: 1px dotted #eee;
+}
+.asset .asset-content small {
+    color: #999;
+    font-style: italic;
+}
+.asset .asset-footer {
+    color: #999;
+    clear: left;
+}
+.asset .asset-footer a {
+    color: #999;
+}
+.asset .asset-footer a:hover {
+    color: #059;
+}
+
+/* comments and trackbacks */
+
+.trackbacks,
+.comments, 
+#comment-preview-content,
+#comment-respons-content {
+    margin: 0 190px 2.5em 190px;
+}
+
+.comments-open {
+    margin-top: 2.5em;
+}
+.comments-header,
+.trackbacks-header,
+.comments-open-header {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+.comments-header {
+    margin: 0 190px 3px 190px;
+}
+.comments .comments-header {
+    margin: 0 0 3px 0;
+}
+
+.comment-footer, 
+.comments-open-header, 
+.comments-open-content, 
+#comments-open-footer, 
+.comments-closed, 
+#comment-form-external-auth, 
+#comment-greeting, 
+.comments-open-moderated, 
+#comment-form-name, 
+#comment-form-email, 
+#comment-form-url, 
+#comment-form-remember-me, 
+#comment-form-reply, 
+#comments-open-text, 
+.trackbacks-header, 
+.trackbacks-info, 
+.trackback-header, 
+.trackback-content, 
+.trackback-footer {
+    margin-bottom: 0.75em;
+}
+
+.trackback { 
+    padding-top: 15px;
+}
+
+.comments-info,
+.comment-footer,
+.comments-open-subtext {
+    color: #999;
+}
+
+#comments-open-data p {
+    margin: 4px 0;
+}
+#comments-open-login,
+#comments-open-logout {
+    margin-bottom: 10px;
+}
+.comment {
+    padding-top: 15px;
+}
+.comment-content {
+    padding: 1px 15px;
+    background: #eee;
+    font-family: georgia;
+    font-size: 13px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+.comment-content p {
+    margin: 10px 0;
+}
+.comment-footer {
+    padding: 5px 0 0 35px;
+    background: url(pico-commentarrow-gray.gif) no-repeat 15px 0;
+}
+#comment-text {
+    width: 99%;
+    height: 80px;
+    background: #fcfcfc;
+    border: 1px solid #aaa;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.comment-footer .command-edit-comment,
+.comment-footer .command-delete-comment {
+    font-weight: bold;
+}
+
+.comment-footer .comment-footerlinks {
+    float: left;
+}
+
+.comment-footer .comment-datetime {
+    float: right;
+    clear: right;
+}
+
+#top-comment-nav,
+#comment-nav {
+    line-height: 25px;
+    list-style: none;
+    width: 100%;
+    height: 25px;
+    margin: 1em 0;
+    padding: 0;
+    text-align: center;
+}
+
+#top-comment-nav li,
+#comment-nav li {
+    display: inline;
+    padding: 0;
+}
+
+#top-prev-comments,
+#prev-comments {
+    text-align: left;
+    margin: 0 1em 0 0;
+}
+
+#top-next-comments,
+#next-comments {
+    text-align: right;
+    margin: 0 0 0 1em;
+}
+
+#top-num-comments,
+#num-comments {
+    text-align: center;
+}
+
+/* archives */
+
+.archive {
+    margin: 0 190px;
+    font-size: 13px;
+}
+.archive ul {
+    margin-bottom: 15px;
+}
+
+
+/* content-header */
+
+.content-header,
+.archive-title,
+.search-results-header {
+    margin: 0 190px 15px;
+    font-family: georgia;
+    font-size: 16px;
+    color: #999;
+}
+
+.page-asset .content-header,
+#comment-preview-content .content-header,
+#comment-respons-content .content-header {
+    margin: 0 0 15px;
+}
+
+
+/* Search */
+
+.search-results-container.no-search-result, 
+.search-results-container.no-search { 
+    margin: 0 190px 15px;
+}
+
+
+/* widget */
+
+.widget {
+    margin: 0 190px;
+    padding: 15px 0;
+    border-top: 1px dotted #ddd;
+}
+.widget-header {
+    font-weight: bold;
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+.widget-header a {
+    color: #333;
+    text-decoration: none;
+}
+.widget ul li {
+    display: inline;
+    margin-right: 10px;
+}
+
+.widget-tag-cloud .rank-1  { font-size: 1.75em; }
+.widget-tag-cloud .rank-2  { font-size: 1.75em; }
+.widget-tag-cloud .rank-3  { font-size: 1.625em; }
+.widget-tag-cloud .rank-4  { font-size: 1.5em; }
+.widget-tag-cloud .rank-5  { font-size: 1.375em; }
+.widget-tag-cloud .rank-6  { font-size: 1.25em; }
+.widget-tag-cloud .rank-7  { font-size: 1.125em; }
+.widget-tag-cloud .rank-8  { font-size: 1em; }
+.widget-tag-cloud .rank-9  { font-size: 0.95em; }
+.widget-tag-cloud .rank-10 { font-size: 0.9em; }
+
+.widget-recent-assets .item {
+    width: 74px;
+    margin: 0 4px 3px;
+}
+
+.widget-recent-assets .item img {
+    border: 1px solid #ccc;
+}
+
+
+/* footer */
+
+#footer {
+    margin: 0 170px;
+    padding: 1.5em 20px 3em;
+    clear: left;
+    background: #eee;
+    font-size: 1.1em;
+    -moz-border-radius-topleft: 4px;
+    -webkit-border-top-left-radius: 4px;
+    border-top-left-radius: 4px;
+    -moz-border-radius-topright: 4px;
+    -webkit-border-top-right-radius: 4px;
+    border-top-right-radius: 4px;
+}
+#footer ul li {
+    float: left;
+    margin-right: 10px;
+}
+#footer a {
+    color: #999;
+}
+#footer a:hover {
+    color: #059;
+}
+
+
+/* utilities */
+
+.hidden {
+    display: none;
+}
+
+/* .pkg class wraps enclosing block element around inner floated elements */
+.widget ul:after, .pkg:after {
+    content: " ";
+    display: block;
+    visibility: hidden;
+    clear: both;
+    height: 0.1px;
+    font-size: 0.1em;
+    line-height: 0;
+}
+.widget ul, .pkg { display: inline-block; }
+/* no ie mac \*/
+* html .widget ul, * html .pkg { height: 1%; }
+.widget ul, .pkg { display: block; }
+/* */

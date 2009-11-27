@@ -1,5 +1,6 @@
-# $Id$
+# $Id: 08-util.t 3531 2009-03-12 09:11:52Z fumiakiy $
 
+use utf8;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test;
 use MT;

@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: block.mtsethashvar.php 70395 2007-12-21 01:45:41Z bchoate $
+# $Id$
 
 function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
     $vars =& $ctx->__stash['vars'];

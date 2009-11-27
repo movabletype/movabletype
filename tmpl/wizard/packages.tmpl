@@ -2,43 +2,6 @@
 
 <mt:include name="include/chromeless_header.tmpl">
 
-<script type="text/javascript">
-/* <![CDATA[ */
-function go(mode) {
-    var f = document.forms[0];
-    f['__mode'].value = mode;
-}
-
-function toggleList() {
-    var list = getByID('package-list');
-    var list_msg = getByID('package-list-msg');
-    if (list) {
-        if (list.style.display == 'none') {
-            list.style.display = 'block';
-            list_msg.style.display = 'none';
-        } else {
-            list.style.display = 'none';
-            list_msg.style.display = 'block';
-        }
-    }
-    var bttns = getByID('buttons');
-    if (bttns) {
-        if (bttns.style.display == 'none')
-            bttns.style.display = 'block';
-        else
-            bttns.style.display = 'none';
-    }
-    var more = getByID('show-more');
-    if (more) {
-        if (more.style.display == 'none')
-            more.style.display = 'block';
-        else
-            more.style.display = 'none';
-    }
-}
-/* ]]> */
-</script>
-
 <form method="post">
 <input type="hidden" name="__mode" value="" />
 <input type="hidden" name="step" value="start" />
@@ -48,18 +11,21 @@ function toggleList() {
 
 <mt:if name="missing_db">
     <mtapp:statusmsg
-        id="missing_db"
+        id="missing-db"
         class="error">
         <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your blog's data.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
     </mtapp:statusmsg>
 </mt:if>
+
 <mt:if name="optional">
-<p class="intro"><span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type."></p>
-<div class="right pkg">
-   <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
-</div>
+<p class="intro">
+  <span class="ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type.">
+</p>
+
 <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
+
 </mt:if>
+
 <mt:if name="required">
     <mtapp:statusmsg
         id="required"
@@ -99,18 +65,21 @@ function toggleList() {
         <__trans phrase="Missing Required Modules">
     </mtapp:statusmsg>
 </mt:if>
-<ul id="packages-list">
-<mt:loop name="package_loop">
-<li><span class="module-name"><a href="<mt:var name="link">" target="cpan"><mt:var name="module"></a></span> - <mt:var name="description">
-<mt:if name="version">
-<br /><em><__trans phrase="Minimal version requirement: [_1]" params="<mt:var name="version">"></em>
-</mt:if>
-</li>
+
+<dl id="packages-list">
+<Mt:loop name="package_loop">
+    <dt><span class="module-name"><a href="<mt:var name="link">" target="cpan"><mt:var name="module"></a></span></dt>
+    <dd>
+        <p class="module-description"><mt:var name="description"></p>
+    <mt:if name="version">
+        <p><em><__trans phrase="Minimal version requirement: [_1]" params="<mt:var name="version">"></em></p>
+    </mt:if>
+    </dd>
 </mt:loop>
-</ul>
+</dl>
 
 <mt:if name="optional">
-<p><a target="cpan" href="http://www.cpan.org/modules/INSTALL.html"><__trans phrase="Learn more about installing Perl modules."></a></p>
+<p><a target="cpan" href="<__trans phrase="http://www.movabletype.org/documentation/installation/perl-modules.html">"><__trans phrase="Learn more about installing Perl modules."></a></p>
 </div>
 </mt:if>
 
@@ -121,33 +90,96 @@ function toggleList() {
 </div>
 </mt:if>
 
-<div id="buttons" <mt:if name="optional">style="display:none;"</mt:if>>
-<div class="left">
-<input name="back" type="submit" class="sb" value="<__trans phrase="Back">" onclick="this.form.reset(); go('previous_step');" />
-</div>
-<div class="right">
+<div class="actions-bar">
 <mt:if name="missing_db_or_optional">
-<mt:if name="missing_db">
-   <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
+    <mt:if name="missing_db">
+    <button
+        name="retry"
+        type="submit"
+        onclick="go('retry');"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+    <mt:else>
+        <mt:if name="optional">
+    <button 
+        name="continue"
+        type="submit"
+        onclick="go('next_step');"
+        class="continue action primary-button"
+        ><__trans phrase="Continue"></button>
+
+    <button
+        name="retry"
+        type="submit"
+        onclick="go('retry');"
+        id="retry-btn"
+        style="display: none;"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+        <mt:else>
+    <button
+        name="retry"
+        type="submit"
+        value="<__trans phrase="Retry">"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+        </mt:if>
+    </mt:if>
 <mt:else>
-   <mt:if name="optional">
-      <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
-      <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
-   <mt:else>
-      <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
-   </mt:if>
-</mt:if>
-<mt:else>
-<mt:if name="required">
-   <input name="retry" type="submit" class="sb" value="<__trans phrase="Retry">" onclick="go('retry');" />
-</mt:if>
+    <mt:if name="required">
+    <button
+        name="retry"
+        type="submit"
+        value="<__trans phrase="Retry">"
+        class="retry action"
+        ><__trans phrase="Retry"></button>
+    </mt:if>
 </mt:if>
 
 <mt:if name="success">
-   <input name="continue" type="submit" class="sb" value="<__trans phrase="Continue">" onclick="go('next_step');" />
+    <button 
+        name="continue"
+        type="submit"
+        onclick="go('next_step');"
+        class="continue action primary-button"
+        ><__trans phrase="Continue"></button>
 </mt:if>
-</div>
-</div>
 
+    <button 
+        name="back"
+        type="submit"
+        onclick="this.form.reset(); go('previous_step');"
+        class="goback action"
+        ><__trans phrase="Back"></button>
+</div>
 </form>
+<script type="text/javascript">
+/* <![CDATA[ */
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+
+function toggleList() {
+    var list = getByID('package-list');
+    var list_msg = getByID('package-list-msg');
+    if (list) {
+        if (list.style.display == 'none') {
+            list.style.display = 'block';
+            list_msg.style.display = 'none';
+        } else {
+            list.style.display = 'none';
+            list_msg.style.display = 'block';
+        }
+    }
+    var retry_btn = getByID('retry-btn');
+    if (retry_btn) {
+        if (retry_btn.style.display == 'none')
+            retry_btn.style.display = 'block';
+        else
+            retry_btn.style.display = 'none';
+    }
+}
+/* ]]> */
+</script>
 <mt:include name="include/chromeless_footer.tmpl">

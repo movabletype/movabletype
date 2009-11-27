@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 12-dsa.t 3032 2008-09-05 00:39:59Z bchoate $
 use strict;
 use warnings;
 

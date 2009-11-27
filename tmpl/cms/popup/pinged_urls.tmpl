@@ -26,14 +26,13 @@
 </mt:loop>
 
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <button
-            onclick="window.close(); return false"
-            type="submit"
-            accesskey="x"
-            title="<__trans phrase="Close (x)">"
-            ><__trans phrase="Close"></button>
-    </div>
-</div> 
+    <button
+       onclick="window.close(); return false"
+       type="submit"
+       accesskey="x"
+       title="<__trans phrase="Close (x)">"
+       class="close action"
+       ><__trans phrase="Close"></button>
+</div>
 
 <mt:include name="include/chromeless_footer.tmpl">

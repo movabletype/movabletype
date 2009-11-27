@@ -96,12 +96,15 @@ sub thumbnail_path {
 sub thumbnail_file {
     my $asset     = shift;
     my (%param)   = @_;
-    my $file_path = $asset->file_path;
-    my @imginfo   = stat($file_path);
-    return undef unless @imginfo;
-
-    my $blog = $param{Blog} || $asset->blog;
     my $fmgr;
+    my $blog = $param{Blog} || $asset->blog;
+
+    require MT::FileMgr;
+    $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
+    return undef unless $fmgr;
+
+    my $file_path = $asset->file_path;
+    return undef unless $fmgr->exists( $file_path );
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path($param{Path});
@@ -121,7 +124,6 @@ sub thumbnail_file {
             $param{Width} = $param{Height};
         }
     }
-
     if ( my $scale = $param{Scale} ) {
         $param{Width}  = int( ( $i_w * $scale ) / 100 );
         $param{Height} = int( ( $i_h * $scale ) / 100 );
@@ -137,17 +139,13 @@ sub thumbnail_file {
 
     my $file = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
-    my @thumbinfo = stat($thumbnail);
 
     # thumbnail file exists and is dated on or later than source image
-    if ( @thumbinfo && ( $thumbinfo[9] >= $imginfo[9] ) ) {
+    if ( $fmgr->exists($thumbnail)
+      && ( $fmgr->file_mod_time($thumbnail) >= $fmgr->file_mod_time($file_path))) {
         return ( $thumbnail, $n_w, $n_h );
     }
-
     # stale or non-existent thumbnail. let's create one!
-    require MT::FileMgr;
-    $fmgr ||= $blog ? $blog->file_mgr : MT::FileMgr->new('Local');
-    return undef unless $fmgr;
     return undef unless $fmgr->can_write($asset_cache_path);
 
     my $data;
@@ -156,7 +154,6 @@ sub thumbnail_file {
         $data = $fmgr->get_data( $file_path, 'upload' );
     }
     else {
-
         # create a thumbnail for this file
         require MT::Image;
         my $img = new MT::Image( Filename => $file_path )
@@ -263,6 +260,7 @@ sub as_html {
     my $app = MT->instance;
     $param->{enclose} = 0 unless ($app->param('edit_field') =~ /^customfield/);
     $param->{enclose} = 1 unless exists $param->{enclose};
+    $param->{enclose} = 1 if $param->{community_pack};
 
     if ( $param->{include} ) {
 
@@ -375,7 +373,7 @@ sub insert_options {
     eval { require MT::Image; MT::Image->new or die; };
     $param->{do_thumb} = $@ ? 0 : 1;
 
-    $param->{can_save_image_defaults} = $perms->can_save_image_defaults ? 1 : 0;
+    $param->{can_save_image_defaults} = $perms->can_do('save_image_defaults') ? 1 : 0;
 
     #$param->{constrain} = $blog->image_default_constrain ? 1 : 0;
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
@@ -438,7 +436,7 @@ sub on_upload {
                 'Permission denied setting image defaults for blog #[_1]',
                 $blog_id
             )
-        ) unless $app->{perms}->can_save_image_defaults;
+        ) unless $app->{perms}->can_do('save_image_defaults');
 
         # Save new defaults if requested.
         $blog->image_default_wrap_text( $param->{wrap_text} ? 1 : 0 );
@@ -459,7 +457,7 @@ sub on_upload {
         $blog->image_default_popup( $param->{popup} ? 1 : 0 );
         $blog->save or die $blog->errstr;
     }
-
+    my $fmgr = $blog->file_mgr;
     require MT::Util;
     # Thumbnail creation
     if ( $thumb = $param->{thumb} ) {
@@ -499,7 +497,7 @@ sub on_upload {
         # for callbacks
         $thumbnail = $asset_thumb->file_path;
         my $thumbnail_url = $asset_thumb->url;
-        my $thumb_file_size = ( stat($thumbnail) )[7];
+        my $thumb_file_size = $fmgr->file_size($thumbnail);
 
         $app->run_callbacks( 'cms_post_save.asset', $app, $asset_thumb,
             $original );
@@ -572,7 +570,6 @@ sub on_upload {
             $ctx->stash( 'image_width',  $width );
             $ctx->stash( 'image_height', $height );
             my $popup = $tmpl->build($ctx) or die $tmpl->errstr;
-            my $fmgr = $blog->file_mgr;
             my $root_path = $asset->_make_cache_path;
             my $pseudo_path = $asset->_make_cache_path( undef, 1 );
             my $abs_file_path =

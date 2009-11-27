@@ -7,7 +7,7 @@
 
 function smarty_function_mtentrycreateddate($args, &$ctx) {
     $e = $ctx->stash('entry');
-    $args['ts'] = $e['entry_created_on'];
+    $args['ts'] = $e->entry_created_on;
     return $ctx->_hdlr_date($args, $ctx);
 }
 ?>

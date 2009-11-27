@@ -12,8 +12,10 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('include_blogs', $args['include_blogs']);
         $ctx->stash('exclude_blogs', $args['exclude_blogs']);
         $ctx->stash('blog_ids', $args['blog_ids']);
-        $blog_id = $ctx->stash('blog_id');
-        $args['blog_id'] = $ctx->stash('blog_id');
+        if (!isset($args['include_blogs']) && !isset($args['exclude_blogs']) && !isset($args['blog_ids']) && !isset($args['blog_id'])) {
+            $blog_id = $ctx->stash('blog_id');
+            $args['blog_id'] = $ctx->stash('blog_id');
+        }
         if (isset($args['top'])) {
             $post_sort_by = $args['sort_by'];
             $post_sort_order = $args['sort_order'];
@@ -35,18 +37,18 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         }
         if ('page' == $type) {
             $args['class'] = 'page';
-            $tags = $ctx->mt->db->fetch_entry_tags($args);
+            $tags = $ctx->mt->db()->fetch_entry_tags($args);
         } elseif ('asset' == $type) {
-            $tags = $ctx->mt->db->fetch_asset_tags($args);
+            $tags = $ctx->mt->db()->fetch_asset_tags($args);
         } else {
-          $args['class'] = 'entry';
-            $tags = $ctx->mt->db->fetch_entry_tags($args);
+            $args['class'] = 'entry';
+            $tags = $ctx->mt->db()->fetch_entry_tags($args);
         }
         $min = 0; $max = 0;
         $all_count = 0;
         if ($tags) {
             foreach ($tags as $tag) {
-                $count = $tag['tag_count'];
+                $count = $tag->tag_count;
                 if ($count > $max) $max = $count;
                 if ($count < $min or $min == 0) $min = $count;
                 $all_count += $count;
@@ -65,7 +67,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                 if ($post_sort_by == 'name') {
                     $post_sort_order or $post_sort_order = 'ascend';
                     require_once("MTUtil.php");
-                    usort($tags, 'tagarray_name_sort');
+                    uasort($tags, 'tagarray_name_sort');
                     if ($post_sort_order && ($post_sort_order == 'descend')) {
                         $tags = array_reverse($tags);
                     }
@@ -77,6 +79,13 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                         $tags = array_reverse($tags);
                     }
                 }
+            } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
+                $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
+                usort($tags, $fn);
+                if ( !isset($args['sort_order']) )
+                    $sort_order = 'descend';
+                if ($sort_order && $sort_order == 'descend')
+                    $tags = array_reverse($tags);
             }
         }
         $ctx->stash('tag_min_count', $min);

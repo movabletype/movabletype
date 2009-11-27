@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Asset;
 
 use strict;
@@ -97,21 +102,15 @@ sub list {
     my $app = shift;
 
     my $blog_id = $app->param('blog_id');
-    my $blog;
-    if ($blog_id) {
-        my $blog_class = $app->model('blog');
-        $blog = $blog_class->load($blog_id)
-          or return $app->errtrans("Invalid request.");
-        my $perms = $app->permissions;
-        return $app->errtrans("Permission denied.")
-          unless $app->user->is_superuser
-          || (
-            $perms
-            && (   $perms->can_edit_assets
-                || $perms->can_edit_all_posts
-                || $perms->can_create_post )
-          );
-    }
+    my $mode_userpic = $app->param('upload_mode') || '';
+    return $app->return_to_dashboard( redirect => 1 )
+        if  !$blog_id && $mode_userpic ne 'upload_userpic';
+
+    my $blog_class = $app->model('blog');
+    my $blog = $blog_class->load($blog_id) if $blog_id;
+    my $perms = $app->permissions;
+    return $app->errtrans("Permission denied.")
+        if $mode_userpic ne 'upload_userpic' && !$app->can_do('access_to_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
@@ -142,17 +141,12 @@ sub list {
     }
 
     $app->add_breadcrumb( $app->translate("Files") );
+
+
     if ($blog_id) {
-        $terms{blog_id} = $blog_id;
-    }
-    else {
-        unless ( $app->user->is_superuser ) {
-            my @perms = MT::Permission->load( { author_id => $app->user->id } );
-            my @blog_ids;
-            push @blog_ids, $_->blog_id
-              foreach grep { $_->can_edit_assets } @perms;
-            $terms{blog_id} = @blog_ids ? \@blog_ids : 0;
-        }
+        my $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+        $terms{blog_id} = $blog_ids;
     }
 
     my $hasher = build_asset_hasher( $app,
@@ -182,13 +176,14 @@ sub list {
     @class_loop = sort { $a->{class_label} cmp $b->{class_label} } @class_loop;
 
     my $dialog_view = $app->param('dialog_view') ? 1 : 0;
+    my $dialog = $app->param('dialog') ? 1 : 0;
     my $no_insert = $app->param('no_insert') ? 1 : 0;
-    my $perms = $app->permissions;
     my %carry_params = map { $_ => $app->param($_) || '' }
         (qw( edit_field upload_mode require_type next_mode asset_select ));
     $carry_params{'user_id'} = $app->param('filter_val')
         if $filter eq 'userpic';
     _set_start_upload_params($app, \%carry_params);
+    my ($ext_from, $ext_to) = ( $app->param('ext_from'), $app->param('ext_to') );
     $app->listing(
         {
             terms    => \%terms,
@@ -206,22 +201,27 @@ sub list {
                         blog_name => $blog->name
                           || '',
                         edit_blog_id => $blog_id,
+                        ($blog->is_blog ? (blog_view => 1) : ()),
                       )
                     : (),
                 ),
                 is_image         => defined $class_filter
                   && $class_filter eq 'image' ? 1 : 0,
                 dialog_view      => $dialog_view,
+                dialog           => $dialog,
                 no_insert        => $no_insert,
                 search_label     => MT::Asset->class_label_plural,
                 search_type      => 'asset',
                 class_loop       => \@class_loop,
-                can_delete_files => (
-                    $perms ? $perms->can_edit_assets : $app->user->is_superuser
-                ),
+                can_delete_files => $app->can_do('delete_asset_file'),
                 nav_assets       => 1,
                 panel_searchable => 1,
                 object_type      => 'asset',
+                (
+                    ( $ext_from && $ext_to )
+                        ? ( ext_from => $ext_from, ext_to => $ext_to )
+                        : ()
+                ),
                 %carry_params,
             },
         }
@@ -274,11 +274,10 @@ sub asset_userpic {
         $asset = $app->model('asset')->lookup($id);
     }
 
-    my $thumb_html = $app->model('author')->userpic_html( Asset => $asset );
-
     my $user_id = $param->{user_id} || $app->param('user_id');
+    my $user;
     if ($user_id) {
-        my $user = $app->model('author')->load( {id => $user_id} );
+        $user = $app->model('author')->load( {id => $user_id} );
         if ($user) {
             # Delete the author's userpic thumb (if any); it'll be regenerated.
             if ($user->userpic_asset_id != $asset->id) {
@@ -293,6 +292,10 @@ sub asset_userpic {
         }
     }
 
+    my $thumb_html = $user
+        ? $user->userpic_html( Asset => $asset )
+        : $app->model('author')->userpic_html( Asset => $asset );
+
     $app->load_tmpl(
         'dialog/asset_userpic.tmpl',
         {
@@ -305,6 +308,10 @@ sub asset_userpic {
 
 sub start_upload {
     my $app = shift;
+
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$app->blog && !$app->param('dialog');
+
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
     %param = @_ if @_;
@@ -316,7 +323,17 @@ sub start_upload {
         $param{$field} ||= $app->param($field);
     }
 
-    $app->load_tmpl( 'dialog/asset_upload.tmpl', \%param );
+    if ( $app->param('uploaded') ) {
+        $param{uploaded} = 1;
+        $param{uploaded_filename} = $app->param('uploaded_filename');
+    }
+
+    $param{search_label} = $app->translate('Assets');
+    $param{search_type}  = 'asset';
+
+    $param{dialog} = $app->param('dialog');
+    my $tmpl_file = $app->param('dialog') ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
+    $app->load_tmpl( $tmpl_file, \%param );
 }
 
 sub upload_file {
@@ -328,7 +345,6 @@ sub upload_file {
     );
     return if !defined $asset;
     return $asset if !defined $bytes;  # whatever it is
-
     complete_insert( $app,
         asset => $asset,
         bytes => $bytes,
@@ -371,17 +387,24 @@ sub complete_insert {
         middle_path         => $app->param('middle_path') || '',
         extra_path          => $app->param('extra_path') || '',
     };
-    for my $field (qw( direct_asset_insert edit_field entry_insert site_path asset_select )) {
+    for my $field (qw( direct_asset_insert edit_field entry_insert site_path
+      asset_select )) {
         $param->{$field} = scalar $app->param($field) || '';
     }
     if ( $args{is_image} ) {
         $param->{width}  = $asset->image_width;
         $param->{height} = $asset->image_height;
-    } if ($app->param('changed_file_ext')) {
-        my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
-        $param->{extension_message} = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
     }
-    if ( !$app->param('asset_select') && ($perms->can_create_post || $app->user->is_superuser) ) {
+    my ($extension_message, $ext_from, $ext_to);
+    if ($app->param('changed_file_ext')) {
+        ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+        $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
+        $param->{extension_message} = $extension_message;
+        $param->{ext_from} = $ext_from;
+        $param->{ext_to} = $ext_to;
+    }
+    if ( !$app->param('asset_select')
+      && ($perms->can_do('insert_asset')) ) {
         my $html = $asset->insert_options($param);
         if ( $param->{direct_asset_insert} && !$html ) {
             $app->param( 'id', $asset->id );
@@ -390,7 +413,8 @@ sub complete_insert {
         $param->{options_snippet} = $html;
     }
     if ($perms) {
-        my $pref_param = $app->load_entry_prefs( $perms->entry_prefs );
+        my $pref_param = $app->load_entry_prefs(
+            { type => 'entry', prefs => $perms->entry_prefs } );
         %$param = ( %$param, %$pref_param );
 
         # Completion for tags
@@ -412,10 +436,43 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} = MT::Util::to_json( MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
+        $param->{tags_js} =
+          MT::Util::to_json(
+            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
     }
+
     $param->{'no_insert'} = $app->param('no_insert');
-    $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
+    if ( $app->param('dialog') ) {
+        $app->load_tmpl( 'dialog/asset_options.tmpl', $param );
+    }
+    else {
+        if ( $app->user->can_do('access_to_asset_list') ) {
+            my $redirect_args = {
+                blog_id => $app->param('blog_id'),
+                ( ( $ext_from && $ext_to )
+                    ? ( ext_from => $ext_from, ext_to => $ext_to )
+                    : ()
+                ),
+            };
+            $app->redirect(
+                $app->uri(
+                    'mode' => 'list_asset',
+                    args   => $redirect_args,
+                )
+            );
+        } else {
+            $app->redirect(
+                $app->uri(
+                    'mode' => 'start_upload',
+                    args   => {
+                        blog_id => $app->param('blog_id'),
+                        uploaded => 1,
+                        uploaded_filename => $asset->file_name,
+                    },
+                )
+            );
+        }
+    }
 }
 
 sub complete_upload {
@@ -438,17 +495,11 @@ sub complete_upload {
 
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-        unless $app->user->is_superuser
-        || (
-            $perms
-            && (   $perms->can_edit_assets
-                || $perms->can_edit_all_posts
-                || $perms->can_create_post )
-        );
+        unless $app->can_do('access_to_asset_list');
 
     return $app->redirect(
         $app->uri(
-            'mode' => 'list_assets',
+            'mode' => 'list_asset',
             args   => { 'blog_id' => $app->param('blog_id') }
         )
     );
@@ -457,7 +508,11 @@ sub complete_upload {
 sub start_upload_entry {
     my $app = shift;
     my $q   = $app->param;
-    $q->param( '_type', 'entry' );
+    my $blog = $app->blog;
+    my $type = 'entry';
+    $type = 'page'
+        if ($blog && !$blog->is_blog());
+    $q->param( '_type', $type );
     defined( my $text = _process_post_upload($app) ) or return;
     $q->param( 'text', $text );
     $q->param ('asset_id', $q->param('id'));
@@ -468,15 +523,12 @@ sub start_upload_entry {
 
 sub can_view {
     my ($eh, $app, $id) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_edit_assets();
+    return $app->can_do('open_asset_edit_screen');
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
-    return $perms && $perms->can_edit_assets();
+    return $app->can_do('delete_asset');
 }
 
 sub pre_save {
@@ -564,9 +616,22 @@ sub asset_list_filters {
             },
         };
     }
+
+    # If current context is website, adding the website filter.
+    if ( $app->blog && !$app->blog->is_blog ) {
+        $filters{'this_website'} = {
+            label => $app->translate('[_1] of this website', MT::Asset->class_label_plural),
+            order => 100,
+            handler => sub {
+                my ( $terms, $args ) = @_;
+                $terms->{blog_id} = $app->blog->id;
+            },
+        };
+    }
+
     my @types =
       sort { $filters{$a}{label} cmp $filters{$b}{label} } keys %filters;
-    my $order = 100;
+    my $order = 200;
     foreach (@types) {
         $filters{$_}{order} = $order;
         $order += 100;
@@ -598,11 +663,14 @@ sub build_asset_hasher {
         $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path; # has to be called to calculate
         my $meta = $obj->metadata;
-        if ( $file_path && ( -f $file_path ) ) {
+
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        ## TBD: Make sure $file_path is file, not directory.
+        if ( $file_path && $fmgr->exists( $file_path ) ) {
             $row->{file_path} = $file_path;
             $row->{file_name} = File::Basename::basename( $file_path );
-            my @stat = stat( $file_path );
-            my $size = $stat[7];
+            my $size = $fmgr->file_size( $file_path );
             $row->{file_size} = $size;
             if ( $size < 1024 ) {
                 $row->{file_size_formatted} = sprintf( "%d Bytes", $size );
@@ -705,7 +773,7 @@ sub build_asset_table {
     $app->load_list_actions( 'asset', $param );
     $param->{object_loop} = \@data;
     $param->{can_delete_files} = 1
-        if (($perms && $perms->can_edit_assets) || $app->user->is_superuser);
+        if $app->can_do('delete_asset_file');
     \@data;
 }
 
@@ -752,9 +820,8 @@ sub save {
       or return $app->errtrans("Invalid request.");
 
     $app->validate_magic() or return;
-
     return $app->errtrans("Permission denied.")
-      unless $perms && $perms->can_edit_assets;
+        unless $app->can_do('save_asset');
 
     my $blog_id = $q->param('blog_id');
     my $id = $q->param('id');
@@ -763,6 +830,14 @@ sub save {
     my $original = $obj->clone();
 
     $obj->set_values_from_query($q);
+
+    my $filter_result = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
+    if ( !$filter_result ) {
+        my %param = ();
+        $param{error}       = $app->errstr;
+        $param{return_args} = $app->param('return_args');
+        return $app->forward( "view", \%param );
+    }
 
     $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $original )
       || return $app->errtrans( "Saving [_1] failed: [_2]", $type,
@@ -797,7 +872,8 @@ sub _set_start_upload_params {
 
     if (my $perms = $app->permissions) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_upload;
+            unless $perms->can_do('upload');
+
         my $blog_id = $app->param('blog_id');
         require MT::Blog;
         my $blog = MT::Blog->load($blog_id)
@@ -890,7 +966,7 @@ sub _upload_file {
 
     if (my $perms = $app->permissions) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_upload;
+          unless $app->can_do('upload');
     }
 
     $app->validate_magic() or return;
@@ -920,6 +996,9 @@ sub _upload_file {
         return start_upload( $app, %param,
             error => $app->translate( "Invalid filename '[_1]'", $basename ) );
     }
+    $basename = Encode::is_utf8( $basename ) ? $basename
+              :                                Encode::decode( $app->charset, File::Basename::basename($basename) )
+              ;
 
     if (my $asset_type = $upload_param{require_type}) {
         require MT::Asset;
@@ -967,7 +1046,7 @@ sub _upload_file {
         }
         return $app->error(
             $app->translate(
-                "Before you can upload a file, you need to publish your blog."
+                'Movable Type was unable to write on the "Upload Destination". Please make sure that the folder is writable from the web server.'
             )
         ) unless -d $root_path;
         $relative_path = $q->param('extra_path');
@@ -1123,10 +1202,11 @@ sub _upload_file {
                   );
                 close $tmp_fh;
                 my ( $vol, $path, $tmp ) = File::Spec->splitpath($tmp_file);
-                my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext'));
+                my ($ext_from, $ext_to) = split(",", $app->param('changed_file_ext')); 
                 my $extension_message = $app->translate("Extension changed from [_1] to [_2]", $ext_from, $ext_to) if ($ext_from && $ext_to);
+                my $dialog = $app->param('dialog') ? 1 : 0;
                 return $app->load_tmpl(
-                    'dialog/asset_replace.tmpl',
+                    $dialog ? 'dialog/asset_replace.tmpl' : 'asset_replace.tmpl',
                     {
                         temp         => $tmp,
                         extra_path   => $relative_path_save,
@@ -1145,10 +1225,10 @@ sub _upload_file {
     }
     else {
         $blog_id        = 0;
-        $asset_base_url = '%s/support/uploads';
-        $base_url       = $app->static_path . 'support/uploads';
+        $asset_base_url = '%s/uploads';
+        $base_url       = $app->support_directory_url . 'uploads';
         $param{support_path} =
-          File::Spec->catdir( $app->static_file_path, 'support', 'uploads' );
+          File::Spec->catdir( $app->support_directory_path, 'uploads' );
 
         require MT::FileMgr;
         $fmgr = MT::FileMgr->new('Local');
@@ -1178,7 +1258,7 @@ sub _upload_file {
         my $unique_basename = $unique_stem . $type;
         $relative_path  = $unique_basename;
         $relative_url   = encode_url($unique_basename);
-        $asset_file     = File::Spec->catfile( '%s', 'support', 'uploads',
+        $asset_file     = File::Spec->catfile( '%s', 'uploads',
           $unique_basename );
     }
 

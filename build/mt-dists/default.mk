@@ -1,4 +1,5 @@
 PRODUCT_NAME = Movable Type Core
+PRODUCT_VERSION = 5.0
 
 VERSION_SUFFIX = 
 

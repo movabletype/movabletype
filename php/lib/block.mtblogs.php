@@ -8,7 +8,7 @@
 function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize(array('_blogs', '_blogs_counter', 'blog', 'blog_id'));
-        $blogs = $ctx->mt->db->fetch_blogs($args);
+        $blogs = $ctx->mt->db()->fetch_blogs($args);
         $ctx->stash('_blogs', $blogs);
         $counter = 0;
     } else {
@@ -18,7 +18,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     if ($counter < count($blogs)) {
         $blog = $blogs[$counter];
         $ctx->stash('blog', $blog);
-        $ctx->stash('blog_id', $blog['blog_id']);
+        $ctx->stash('blog_id', $blog->blog_id);
         $ctx->stash('_blogs_counter', $counter + 1);
         $count = $counter + 1;
         $ctx->__stash['vars']['__counter__'] = $count;

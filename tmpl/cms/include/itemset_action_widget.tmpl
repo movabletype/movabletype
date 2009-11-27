@@ -7,7 +7,6 @@
 </mt:loop>
 /* ]]> */
 </script>
-<div style="position:relative; display:inline;">
 <select name="plugin_action_selector" onchange="updatePluginAction(this)">
     <option value="0"><__trans phrase="More actions..."></option>
     <mt:loop name="list_actions">
@@ -23,6 +22,13 @@
         </mt:if>
     </mt:loop>
 </select>
-</div>
-<a href="javascript:void(0)" class="small-button" onclick="doPluginAction(getByID('<mt:if name="form_id"><mt:var name="form_id"><mt:else><$mt:var name="object_type"$>-listing-form</mt:if>'), '<mt:if name="object_label_plural"><__trans phrase="<mt:var name="object_label_plural">"></mt:if>', '<__trans phrase="to act upon" escape="js">'); return false;"><__trans phrase="Go"></a>
+<mt:if name="form_id">
+<button
+     class="small-button mt-<mt:var name="form_id">-action"
+     ><__trans phrase="Go"></button>
+<mt:else>
+<button
+     class="small-button mt-<mt:var name="object_type">-listing-form-action"
+     ><__trans phrase="Go"></button>
+</mt:if>
 </mt:if>

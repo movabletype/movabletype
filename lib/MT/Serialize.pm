@@ -7,13 +7,13 @@
 package MT::Serialize;
 
 use strict;
-our $VERSION = 4;
+our $VERSION = 5;
 
 {
     my %Types = (
         Storable => [ \&_freeze_storable,    \&_thaw_storable ],
         JSON     => [ \&_freeze_json,        \&_thaw_json ],
-        MT       => [ \&_freeze_mt_2,        \&_thaw_mt    ],
+        MT       => [ \&_freeze_mt_5,        \&_thaw_mt    ],
         MT2      => [ \&_freeze_mt_2,        \&_thaw_mt    ],
         MTS      => [ \&_freeze_mt_storable, \&_thaw_mt    ],
         MTJ      => [ \&_freeze_mt_json,     \&_thaw_mt    ],
@@ -70,6 +70,7 @@ sub _freeze_mt_1 {
 }
 
 sub _macrofreeze {
+    use bytes;
     my $value = shift;
     my $ref_cnt = 1; # for compatibility with the existing algorithm
     my %refs;
@@ -86,12 +87,12 @@ sub _macrofreeze {
             $frozen .= pack('N', length($key)) . $key;
           } else {
             die "Unexpected type '@{[$top->[0]]}' in _macrofreeze\n";
-          } 
+          }
           pop @stack if @$top <= 1;
         }
 
         my $ref = ref $value;
-    
+
         if ($ref) {
             if (exists $refs{$value}) {
                 $frozen .= 'P' . pack('N', $refs{$value});
@@ -109,12 +110,10 @@ sub _macrofreeze {
                   push(@stack, ['REF' => $$value]);
                 } elsif ($ref eq 'ARRAY') {
                   $frozen .= 'A' . pack('N', scalar(@$value));
-                  push(@stack, ['ARRAY' => @$value])
-                    if scalar @$value;                  
+                  push(@stack, ['ARRAY' => @$value]) if scalar @$value;
                 } elsif ($ref eq 'HASH') {
                   $frozen .= 'H' . pack('N', scalar(keys %$value));
-                  push(@stack, ['HASH' => %$value])
-                    if scalar keys %$value;
+                  push(@stack, ['HASH' => %$value]) if keys %$value;
                 } else {
                   die "Unexpected type '$ref' in _macrofreeze\n";
                 }
@@ -162,6 +161,18 @@ sub no_utf8 {
     }
 }
 
+sub _freeze_mt_5 {
+    my $enc = MT->config('PublishCharset') || 'UTF-8';
+    no warnings 'redefine';
+    local *no_utf8 = sub {
+        for (@_) {
+            next if ref;
+            $_ = Encode::encode( $enc, $_ ) if Encode::is_utf8( $_ );
+        }
+    };
+    _freeze_mt_2(@_);
+}
+
 sub _thaw_mt {
     my ($frozen) = @_;
     return \{} unless $frozen && substr($frozen, 0, 4) eq 'SERG';
@@ -200,16 +211,19 @@ sub _thaw_mt_1 {
 }
 
 sub _macrowave {
+    use bytes;
     @_ == 2 or die "_macrowave expects: \$frozen, \$pos\n";
     my($frozen, $pos) = @_;
     my $refs = [undef];
     my $len = length $frozen;
     my(@stack, $value);
+    my $enc = MT->app->config('PublishCharset') || 'UTF-8';
     while ($pos < $len) {
-      my $type = substr($frozen, $pos, 1); $pos++;
+      my $type = substr($frozen, $pos, 1);
+      $pos++;
 
       my $newref;
-      $value = 
+      $value =
       $type eq 'H' ? do {   # hashref
             my $keys = unpack 'N', substr($frozen, $pos, 4);
             $pos += 4;
@@ -229,6 +243,8 @@ sub _macrowave {
       $type eq 'S' ? do {   # scalarref
             my $slen = unpack 'N', substr($frozen, $pos, 4);
             my $col_val = substr($frozen, $pos+4, $slen);
+            $col_val = Encode::decode( $enc, $col_val )
+                if !( Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             push @$refs, \$col_val;
             \$col_val;
@@ -242,6 +258,8 @@ sub _macrowave {
       $type eq  '-' ? do {   # scalar value
             my $slen = unpack 'N', substr($frozen, $pos, 4);
             my $col_val = substr($frozen, $pos+4, $slen);
+            $col_val = Encode::decode( $enc, $col_val )
+                if !( Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             $col_val;
         } :
@@ -274,7 +292,7 @@ sub _macrowave {
       # pop all completed elements
       while (@stack && $stack[-1]->[1] == 0) {
         $value = $stack[-1]->[0];
-        pop(@stack); 
+        pop(@stack);
       }
 
       # if the top one is hash, process next key

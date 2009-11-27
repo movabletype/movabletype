@@ -21,7 +21,7 @@ function smarty_function_mtvar($args, &$ctx) {
     if (preg_match('/^(config|request)\.(.+)$/i', $name, $m)) {
         if (strtolower($m[1]) == 'config') {
             if (!preg_match('/password/i', $m[2])) {
-                global $mt;
+                $mt = MT::get_instance();
                 return $mt->config[strtolower($m[2])];
             }
         }
@@ -178,13 +178,9 @@ function smarty_function_mtvar($args, &$ctx) {
         if ($esc == 'js') {
             $return_val = encode_js($return_val);
         } elseif ($esc == 'html') {
-            if (version_compare(phpversion(), '4.3.0', '>=')) {
-                global $mt;
-                $charset = $mt->config('PublishCharset');
-                $return_val = htmlentities($return_val, ENT_COMPAT, $charset);
-            } else {
-                $return_val = htmlentities($return_val, ENT_COMPAT);
-            }
+            $mt = MT::get_instance();
+            $charset = $mt->config('PublishCharset');
+            $return_val = htmlentities($return_val, ENT_COMPAT, $charset);
         } elseif ($esc == 'url') {
             $return_val = urlencode($return_val);
             $return_val = preg_replace('/\+/', '%20', $return_val);

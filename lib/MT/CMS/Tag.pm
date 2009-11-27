@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Tag;
 
 use strict;
@@ -14,6 +19,10 @@ sub list {
     if ( !$app->blog && !$app->user->is_superuser ) {
         return $app->errtrans("Permission denied.");
     }
+
+    my $blog = $app->blog;
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $app->param('blog_id');
 
     my $perms = $app->permissions;
     if ( $app->blog && ( ( !$perms ) || ( $perms && $perms->is_empty ) ) ) {
@@ -47,8 +56,7 @@ sub rename_tag {
     my $app     = shift;
     my $perms   = $app->permissions;
     my $blog_id = $app->blog->id if $app->blog;
-    ( $blog_id && $perms && $perms->can_edit_tags )
-      || ( $app->user->is_superuser() )
+    $app->can_do('rename_tag')
       or return $app->errtrans("Permission denied.");
     my $id        = $app->param('__id');
     my $name      = $app->param('tag_name')
@@ -67,8 +75,14 @@ sub rename_tag {
     }
 
     my $terms = { tag_id => $tag->id };
-    $terms->{blog_id} = $blog_id if $blog_id;
-
+    if ( $blog_id ) {
+        my $blog = $app->model('blog')->load( $blog_id );
+        if ( $blog->is_blog ) {
+            $terms->{blog_id} = $blog_id if $blog_id;
+        } else {
+            my @blog_ids = map { $_->id } @{ $blog->blogs };
+        }
+    }
     my $iter = $obj_class->load_iter(
         {
             (
@@ -196,11 +210,7 @@ sub js_recent_entries_for_tag {
     $tmpl->param( 'script_url', $app->uri );
     $tmpl->param( 'tag',        $tag_name );
     $tmpl->param( 'blog_id',    $blog_id ) if $blog_id;
-    my $editable = $app->user->is_superuser;
-    if ( $blog_id && !$editable ) {
-        $editable = $user->permissions($blog_id)->can_edit_all_posts;
-    }
-    $tmpl->param('editable',    $editable);
+    $tmpl->param( 'editable',   $app->can_do('edit_all_entries') );
     my $html = $app->build_page( $tmpl );
     return $app->json_result( { html => $html } );
 }
@@ -274,7 +284,8 @@ sub add_tags_to_assets {
     my $app = shift;
 
     my @id = $app->param('id');
-
+    return $app->call_return
+        unless $app->can_do('add_tags_to_assets');
     require MT::Tag;
     my $tags      = $app->param('itemset_action_input');
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
@@ -282,17 +293,9 @@ sub add_tags_to_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
-
-    my $user  = $app->user;
-    my $perms = $app->permissions;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
-        next
-          unless $asset
-          || $user->is_superuser
-          || $perms->can_edit_assets;
-
         $asset->add_tags(@tags);
         $asset->save
           or
@@ -305,7 +308,8 @@ sub add_tags_to_assets {
 
 sub remove_tags_from_assets {
     my $app = shift;
-
+    return $app->call_return
+        unless $app->can_do('remove_tags_from_assets');
     my @id = $app->param('id');
 
     require MT::Tag;
@@ -315,16 +319,9 @@ sub remove_tags_from_assets {
     return $app->call_return unless @tags;
 
     require MT::Asset;
-
-    my $user  = $app->user;
-    my $perms = $app->permissions;
     foreach my $id (@id) {
         next unless $id;
         my $asset = MT::Asset->load($id) or next;
-        next
-          unless $asset
-          || $user->is_superuser
-          || $perms->can_edit_assets;
         $asset->remove_tags(@tags);
         $asset->save
           or
@@ -337,12 +334,7 @@ sub remove_tags_from_assets {
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
-    return 1
-      if $app->blog
-      && ( $perms->can_administer_blog() || $perms->can_edit_tags );
-    return 0;
+    return $app->can_do('remove_tag') ? 1 : 0;
 }
 
 sub post_delete {
@@ -375,11 +367,14 @@ sub list_tag_for {
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
 
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id;
+
     my ( %terms, %arg );
 
     my $tag_class = $app->model('tag');
     my $ot_class  = $app->model('objecttag');
-    my $total = $pkg->tag_count( $blog_id ? { blog_id => $blog_id } : undef )
+    my $total = $pkg->tag_count( $blog_id ? { blog_id => $blog_ids } : undef )
       || 0;
 
     $arg{'sort'} = 'name';
@@ -401,7 +396,7 @@ sub list_tag_for {
         'tag_id',
         {
             object_datasource => $pkg->datasource,
-            ( $blog_id ? ( blog_id => $blog_id ) : () )
+            ( $blog_ids ? ( blog_id => $blog_ids ) : () )
         },
         {
             unique => 1,
@@ -504,20 +499,28 @@ sub build_tag_table {
     my $param   = $args{param} || {};
     my $blog_id = $app->param('blog_id');
     my $pkg     = $args{'package'};
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id;
+
+    my $tag_delim   = chr( $app->user->entry_prefs->{tag_delim} );
 
     my @data;
     while ( my $tag = $iter->() ) {
         my $count = $pkg->tagged_count(
             $tag->id,
             {
-                ( $blog_id ? ( blog_id => $blog_id ) : () ),
+                ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
                 ( $pkg =~ m/asset/i ? ( class => '*' ) : () )
             }
         );
         $count ||= 0;
+        my $name = $tag->name;
+        if ( $name =~ m/$tag_delim/ ) {
+            $name = '"'.$name.'"';
+        }
         my $row = {
             tag_id    => $tag->id,
-            tag_name  => $tag->name,
+            tag_name  => $name,
             tag_count => $count,
             object    => $tag,
         };

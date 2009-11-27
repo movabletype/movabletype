@@ -13,48 +13,79 @@ package CGI::Cookie;
 # wish, but if you redistribute a modified version, please attach a note
 # listing the modifications you have made.
 
-$CGI::Cookie::VERSION='1.20';
+$CGI::Cookie::VERSION='1.29';
 
 use CGI::Util qw(rearrange unescape escape);
+use CGI;
 use overload '""' => \&as_string,
     'cmp' => \&compare,
     'fallback'=>1;
+
+my $PERLEX = 0;
+# Turn on special checking for ActiveState's PerlEx
+$PERLEX++ if defined($ENV{'GATEWAY_INTERFACE'}) && $ENV{'GATEWAY_INTERFACE'} =~ /^CGI-PerlEx/;
+
+# Turn on special checking for Doug MacEachern's modperl
+# PerlEx::DBI tries to fool DBI by setting MOD_PERL
+my $MOD_PERL = 0;
+if (exists $ENV{MOD_PERL} && ! $PERLEX) {
+  if (exists $ENV{MOD_PERL_API_VERSION} && $ENV{MOD_PERL_API_VERSION} == 2) {
+      $MOD_PERL = 2;
+      require Apache2::RequestUtil;
+      require APR::Table;
+  } else {
+    $MOD_PERL = 1;
+    require Apache;
+  }
+}
 
 # fetch a list of cookies from the environment and
 # return as a hash.  the cookies are parsed as normal
 # escaped URL data.
 sub fetch {
     my $class = shift;
-    my $raw_cookie = $ENV{HTTP_COOKIE} || $ENV{COOKIE};
-    return () unless $raw_cookie;
+    my $raw_cookie = get_raw_cookie(@_) or return;
     return $class->parse($raw_cookie);
 }
 
-# fetch a list of cookies from the environment and
-# return as a hash.  the cookie values are not unescaped
-# or altered in any way.
-sub raw_fetch {
-    my $class = shift;
-    my $raw_cookie = $ENV{HTTP_COOKIE} || $ENV{COOKIE};
-    return () unless $raw_cookie;
-    my %results;
-    my($key,$value);
+# Fetch a list of cookies from the environment or the incoming headers and
+# return as a hash. The cookie values are not unescaped or altered in any way.
+ sub raw_fetch {
+   my $class = shift;
+   my $raw_cookie = get_raw_cookie(@_) or return;
+   my %results;
+   my($key,$value);
+   
+   my @pairs = split("[;,] ?",$raw_cookie);
+   foreach (@pairs) {
+     s/\s*(.*?)\s*/$1/;
+     if (/^([^=]+)=(.*)/) {
+       $key = $1;
+       $value = $2;
+     }
+     else {
+       $key = $_;
+       $value = '';
+     }
+     $results{$key} = $value;
+   }
+   return \%results unless wantarray;
+   return %results;
+}
 
-    my(@pairs) = split("; ?",$raw_cookie);
-    foreach (@pairs) {
-      s/\s*(.*?)\s*/$1/;
-      if (/^([^=]+)=(.*)/) {
-	$key = $1;
-	$value = $2;
-      }
-      else {
-	$key = $_;
-	$value = '';
-      }
-      $results{$key} = $value;
+sub get_raw_cookie {
+  my $r = shift;
+  $r ||= eval { $MOD_PERL == 2                    ? 
+                  Apache2::RequestUtil->request() :
+                  Apache->request } if $MOD_PERL;
+  if ($r) {
+    $raw_cookie = $r->headers_in->{'Cookie'};
+  } else {
+    if ($MOD_PERL && !exists $ENV{REQUEST_METHOD}) {
+      die "Run $r->subprocess_env; before calling fetch()";
     }
-    return \%results unless wantarray;
-    return %results;
+    $raw_cookie = $ENV{HTTP_COOKIE} || $ENV{COOKIE};
+  }
 }
 
 
@@ -62,7 +93,7 @@ sub parse {
   my ($self,$raw_cookie) = @_;
   my %results;
 
-  my(@pairs) = split("; ?",$raw_cookie);
+  my @pairs = split("[;,] ?",$raw_cookie);
   foreach (@pairs) {
     s/\s*(.*?)\s*/$1/;
     my($key,$value) = split("=",$_,2);
@@ -87,8 +118,11 @@ sub parse {
 sub new {
   my $class = shift;
   $class = ref($class) if ref($class);
-  my($name,$value,$path,$domain,$secure,$expires) =
-    rearrange([NAME,[VALUE,VALUES],PATH,DOMAIN,SECURE,EXPIRES],@_);
+  # Ignore mod_perl request object--compatability with Apache::Cookie.
+  shift if ref $_[0]
+        && eval { $_[0]->isa('Apache::Request::Req') || $_[0]->isa('Apache') };
+  my($name,$value,$path,$domain,$secure,$expires,$httponly) =
+    rearrange([NAME,[VALUE,VALUES],PATH,DOMAIN,SECURE,EXPIRES,HTTPONLY],@_);
   
   # Pull out our parameters.
   my @values;
@@ -117,6 +151,8 @@ sub new {
   $self->domain($domain) if defined $domain;
   $self->secure($secure) if defined $secure;
   $self->expires($expires) if defined $expires;
+  $self->httponly($httponly) if defined $httponly;
+#  $self->max_age($expires) if defined $expires;
   return $self;
 }
 
@@ -124,15 +160,17 @@ sub as_string {
     my $self = shift;
     return "" unless $self->name;
 
-    my(@constant_values,$domain,$path,$expires,$secure);
+    my(@constant_values,$domain,$path,$expires,$max_age,$secure,$httponly);
 
-    push(@constant_values,"domain=$domain") if $domain = $self->domain;
-    push(@constant_values,"path=$path") if $path = $self->path;
+    push(@constant_values,"domain=$domain")   if $domain = $self->domain;
+    push(@constant_values,"path=$path")       if $path = $self->path;
     push(@constant_values,"expires=$expires") if $expires = $self->expires;
+    push(@constant_values,"max-age=$max_age") if $max_age = $self->max_age;
     push(@constant_values,"secure") if $secure = $self->secure;
+    push(@constant_values,"HttpOnly") if $httponly = $self->httponly;
 
     my($key) = escape($self->name);
-    my($cookie) = join("=",$key,join("&",map escape($_),$self->value));
+    my($cookie) = join("=",(defined $key ? $key : ''),join("&",map escape(defined $_ ? $_ : ''),$self->value));
     return join("; ",$cookie,@constant_values);
 }
 
@@ -140,6 +178,22 @@ sub compare {
     my $self = shift;
     my $value = shift;
     return "$self" cmp $value;
+}
+
+sub bake {
+  my ($self, $r) = @_;
+
+  $r ||= eval {
+      $MOD_PERL == 2
+          ? Apache2::RequestUtil->request()
+          : Apache->request
+  } if $MOD_PERL;
+  if ($r) {
+      $r->headers_out->add('Set-Cookie' => $self->as_string);
+  } else {
+      print CGI::header(-cookie => $self);
+  }
+
 }
 
 # accessors
@@ -172,7 +226,7 @@ sub value {
 sub domain {
     my $self = shift;
     my $domain = shift;
-    $self->{'domain'} = $domain if defined $domain;
+    $self->{'domain'} = lc $domain if defined $domain;
     return $self->{'domain'};
 }
 
@@ -190,11 +244,26 @@ sub expires {
     return $self->{'expires'};
 }
 
+sub max_age {
+  my $self = shift;
+  my $expires = shift;
+  $self->{'max-age'} = CGI::Util::expire_calc($expires)-time() if defined $expires;
+  return $self->{'max-age'};
+}
+
 sub path {
     my $self = shift;
     my $path = shift;
     $self->{'path'} = $path if defined $path;
     return $self->{'path'};
+}
+
+
+sub httponly { # HttpOnly
+    my $self     = shift;
+    my $httponly = shift;
+    $self->{'httponly'} = $httponly if defined $httponly;
+    return $self->{'httponly'};
 }
 
 1;
@@ -283,11 +352,24 @@ that all scripts at your site will receive the cookie.
 If the "secure" attribute is set, the cookie will only be sent to your
 script if the CGI request is occurring on a secure channel, such as SSL.
 
+=item B<4. httponly flag>
+
+If the "httponly" attribute is set, the cookie will only be accessible
+through HTTP Requests. This cookie will be inaccessible via JavaScript
+(to prevent XSS attacks).
+
+But, currently this feature only used and recognised by 
+MS Internet Explorer 6 Service Pack 1 and later.
+
+See this URL for more information:
+
+L<http://msdn.microsoft.com/en-us/library/ms533046%28VS.85%29.aspx>
+
 =back
 
 =head2 Creating New Cookies
 
-	$c = new CGI::Cookie(-name    =>  'foo',
+	my $c = new CGI::Cookie(-name    =>  'foo',
                              -value   =>  'bar',
                              -expires =>  '+3M',
                              -domain  =>  '.capricorn.com',
@@ -317,11 +399,31 @@ pages at your site.
 B<-secure> if set to a true value instructs the browser to return the
 cookie only when a cryptographic protocol is in use.
 
+B<-httponly> if set to a true value, the cookie will not be accessible
+via JavaScript.
+
+For compatibility with Apache::Cookie, you may optionally pass in
+a mod_perl request object as the first argument to C<new()>. It will
+simply be ignored:
+
+  my $c = new CGI::Cookie($r,
+                          -name    =>  'foo',
+                          -value   =>  ['bar','baz']);
+
 =head2 Sending the Cookie to the Browser
 
-Within a CGI script you can send a cookie to the browser by creating
-one or more Set-Cookie: fields in the HTTP header.  Here is a typical
-sequence:
+The simplest way to send a cookie to the browser is by calling the bake()
+method:
+
+  $c->bake;
+
+Under mod_perl, pass in an Apache request object:
+
+  $c->bake($r);
+
+If you want to set the cookie yourself, Within a CGI script you can send
+a cookie to the browser by creating one or more Set-Cookie: fields in the
+HTTP header.  Here is a typical sequence:
 
   my $c = new CGI::Cookie(-name    =>  'foo',
                           -value   =>  ['bar','baz'],
@@ -331,8 +433,6 @@ sequence:
   print "Content-Type: text/html\n\n";
 
 To send more than one cookie, create several Set-Cookie: fields.
-Alternatively, you may concatenate the cookies together with "; " and
-send them in one field.
 
 If you are using CGI.pm, you send cookies by providing a -cookie
 argument to the header() method:
@@ -342,7 +442,7 @@ argument to the header() method:
 Mod_perl users can set cookies using the request object's header_out()
 method:
 
-  $r->header_out('Set-Cookie',$c);
+  $r->headers_out->set('Set-Cookie' => $c);
 
 Internally, Cookie overloads the "" operator to call its as_string()
 method when incorporated into the HTTP header.  as_string() turns the
@@ -377,6 +477,11 @@ form using the parse() class method:
 
        $COOKIES = `cat /usr/tmp/Cookie_stash`;
        %cookies = parse CGI::Cookie($COOKIES);
+
+If you are in a mod_perl environment, you can save some overhead by
+passing the request object to fetch() like this:
+
+   CGI::Cookie->fetch($r);
 
 =head2 Manipulating Cookies
 

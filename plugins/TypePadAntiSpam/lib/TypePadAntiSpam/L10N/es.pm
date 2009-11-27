@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: ja.pm 81672 2008-05-26 10:30:44Z fyoshimatsu $
+# $Id$
 
 package TypePadAntiSpam::L10N::es;
 

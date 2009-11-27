@@ -27,7 +27,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     $blog_id or $blog_id = $ctx->stash('blog_id');
     if ($args['local'])
         $blog_id = $ctx->stash('local_blog_id');
-    $blog = $ctx->mt->db->fetch_blog($blog_id);
+    $blog = $ctx->mt->db()->fetch_blog($blog_id);
 
     // When the module name starts by 'Widget', it converts to 'Widget' from 'Module'.
     if (isset($args['module']) && ($args['module'])) {
@@ -55,15 +55,15 @@ function smarty_function_mtinclude($args, &$ctx) {
     $tmpl_meta = array();
     if (!empty($load_type)) {
         $is_global = isset($args['global']) && $args['global'] ? 1 : 0;
-        $tmpl_meta = $ctx->mt->db->fetch_template_meta($load_type, $load_name, $blog_id, $is_global);
+        $tmpl_meta = $ctx->mt->db()->fetch_template_meta($load_type, $load_name, $blog_id, $is_global);
     }
 
     # Convert to phrase of PHP Include
     $ssi_enable = false;
     $include_file = '';
     if (!empty($load_type) &&
-        isset($blog) && $blog['blog_include_system'] == 'php' &&
-        ((isset($args['ssi']) && $args['ssi']) || (isset($tmpl_meta['include_with_ssi']) && $tmpl_meta['include_with_ssi']))) {
+        isset($blog) && $blog->blog_include_system == 'php' &&
+        ((isset($args['ssi']) && $args['ssi']) || $tmpl_meta->include_with_ssi)) {
 
         $ssi_enable = true;
 
@@ -77,11 +77,11 @@ function smarty_function_mtinclude($args, &$ctx) {
         $include_path_array = _include_path($base_path);
 
         require_once('MTUtil.php');
-        $filename = dirify($tmpl_meta['template_name']);
-        $filename or $filename = 'template_' . $tmpl_meta['template_id'];
-        $filename .= '.'.$blog['blog_file_extension'];
+        $filename = dirify($tmpl_meta->template_name);
+        $filename or $filename = 'template_' . $tmpl_meta->template_id;
+        $filename .= '.'.$blog->blog_file_extension;
 
-        $include_path = $blog['blog_site_path'];
+        $include_path = $blog->site_path();
         if (substr($include_path, strlen($include_path) - 1, 1) != DIRECTORY_SEPARATOR)
             $include_path .= DIRECTORY_SEPARATOR;
         foreach ($include_path_array as $p) {
@@ -96,29 +96,32 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cacje_key = '';
     $cache_ttl = 0;
     if (!empty($load_type) &&
-        isset($blog) && $blog['blog_include_cache'] == 1 &&
-        ((isset($tmpl_meta['cache_expire_type']) && ($tmpl_meta['cache_expire_type'] == '1' || $tmpl_meta['cache_expire_type'] == '2')) ||
-         ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['cache_key']) || isset($args['ttl']))))
+        isset($blog) && $blog->blog_include_cache == 1 &&
+        ($tmpl_meta->cache_expire_type == '1' || $tmpl_meta->cache_expire_type == '2') ||
+         ((isset($args['cache']) && $args['cache'] == '1') || isset($args['key']) || isset($args['cache_key']) || isset($args['ttl'])))
     {
-        global $mt;
+        $cache_blog_id = isset($args['global']) && $args['global'] == 1
+            ? 0
+            : $blog_id;
+        $mt = MT::get_instance();
         $cache_enable = true;
         $cache_key = isset($args['key'])
             ? $args['key']
             : isset($args['cache_key'])
                 ? $args['cache_key']
-                : 'blog::' . $blog_id . '::template_' . $load_type  . '::' . $load_name;
+                : 'blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name;
 
         if (isset($args['ttl']))
             $cache_ttl = $args['ttl'];
-        elseif (isset($tmpl_meta['cache_expire_type']) && $tmpl_meta['cache_expire_type'] == '1')
-            $cache_ttl = $tmpl_meta['cache_expire_interval'];
+        elseif (isset($tmpl_meta->cache_expire_type) && $tmpl_meta->cache_expire_type == '1')
+            $cache_ttl = $tmpl_meta->cache_expire_interval;
         else
             $cache_ttl = 60 * 60; # default 60 min.
 
-        if (isset($tmpl_meta['cache_expire_type']) && $tmpl_meta['cache_expire_type'] == '2') {
-            $expire_types = preg_split('/,/', $tmpl_meta['cache_expire_event'], -1, PREG_SPLIT_NO_EMPTY);
+        if (isset($tmpl_meta->cache_expire_type) && $tmpl_meta->cache_expire_type == '2') {
+            $expire_types = preg_split('/,/', $tmpl_meta->cache_expire_event, -1, PREG_SPLIT_NO_EMPTY);
             if (!empty($expire_types)) {
-                $latest = $ctx->mt->db->get_latest_touch($blog_id, $expire_types);
+                $latest = $ctx->mt->db()->get_latest_touch($blog_id, $expire_types);
                 if ($latest) {
                     if ($ssi_enable) {
                         $file_stat = stat($include_file);
@@ -134,8 +137,8 @@ function smarty_function_mtinclude($args, &$ctx) {
             }
         }
 
-        if ($cache_ttl == 0 || (time() - strtotime($tmpl_meta['template_modified_on']) < $cache_ttl)) {
-            $cache_ttl = time() - strtotime($tmpl_meta['template_modified_on']);
+        if ($cache_ttl == 0 || (time() - strtotime($tmpl_meta->template_modified_on) < $cache_ttl)) {
+            $cache_ttl = time() - strtotime($tmpl_meta->template_modified_on);
         }
 
         $cache_driver = $mt->cache_driver($cache_ttl);
@@ -167,11 +170,14 @@ function smarty_function_mtinclude($args, &$ctx) {
     $_var_compiled = '';
 
     if (!empty($load_type)) {
-        $cache_id = $load_type . '::' . $blog_id . '::' . $load_name;
+        $cache_blog_id = isset($args['global']) && $args['global'] == 1
+            ? 0
+            : $blog_id;
+        $cache_id = $load_type . '::' . $cache_blog_id . '::' . $load_name;
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
+            $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
             if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");
@@ -197,9 +203,9 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db->load_special_template($ctx, null, $type, $blog_id);
+            $tmpl = $ctx->mt->db()->load_special_template($ctx, null, $type, $blog_id);
             if ($tmpl) {
-                if ($ctx->_compile_source('evaluated template', $tmpl['template_text'], $_var_compiled)) {
+                if ($ctx->_compile_source('evaluated template', $tmpl->template_text, $_var_compiled)) {
                     $_include_cache[$cache_id] = $_var_compiled;
                 } else {
                     if ($type != 'dynamic_error') {
@@ -256,10 +262,10 @@ function _get_template_from_file ($ctx, $file, $blog_id) {
         $tmpl = implode('', $contents);
     } else {
         $blog = $ctx->stash('blog');
-        if ($blog['blog_id'] != $blog_id) {
-            $blog = $ctx->mt->db->fetch_blog($blog_id);
+        if ($blog->blog_id != $blog_id) {
+            $blog = $ctx->mt->db()->fetch_blog($blog_id);
         }
-        $path = $blog['blog_site_path'];
+        $path = $blog->site_path();
         if (!preg_match('!/$!', $path))
             $path .= '/';
         $path .= $file;
@@ -289,7 +295,7 @@ function _include_path($path) {
         $path_array = preg_split('/\//', $path, -1, PREG_SPLIT_NO_EMPTY);
     } else {
         $path_array = preg_split('/\//', $path, -1, PREG_SPLIT_NO_EMPTY);
-        global $mt;
+        $mt = MT::get_instance();
         array_unshift($path_array, $mt->config('IncludesDir'));
     }
     return $path_array;

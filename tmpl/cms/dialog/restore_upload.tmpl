@@ -1,7 +1,6 @@
 <$mt:setvar name="page_title" value="<__trans phrase="Restore: Multiple Files">"$>
 <mt:setvarblock name="html_head" append="1">
     <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
     <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 
     <script type="text/javascript">
@@ -20,9 +19,9 @@
             }
     </mt:if>
     <mt:unless name="start">
-            closeDialog('<mt:var name="script_url">?__mode=restore_premature_cancel&magic_token=<mt:var name="magic_token">&deferred_json=<mt:var name="deferred_json" escape="url">');
+            parent.jQuery.fn.mtDialog.close('<mt:var name="script_url">?__mode=restore_premature_cancel&magic_token=<mt:var name="magic_token">&deferred_json=<mt:var name="deferred_json" escape="url">');
     <mt:else>
-            closeDialog('');
+            parent.jQuery.fn.mtDialog.close();
     </mt:unless>
         }
     }
@@ -37,7 +36,7 @@
         dialog.setPanels(panels);
         dialog.open({}, dialog_closed);
 
-        var next = TC.getElementsByTagAndClassName("input", "next", getByID('<mt:var name="name" escape="js">-panel'));
+        var next = TC.getElementsByTagAndClassName("button", "next", getByID('<mt:var name="name" escape="js">-panel'));
         if (next) {
             this.nextButton = next[0];
             this.nextButton.onclick = function() {
@@ -84,23 +83,23 @@
     show_hint="0">
     <input name="file" id="restore_file" type="file" size="50" />
 </mtapp:setting>
-<div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-            <button
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Continue (s)">"
-                class="primary-button next"
-                ><__trans phrase="Continue"></button>
-            <button
-                onclick="closeDialog(); return false"
-                type="submit"
-                accesskey="x"
-                class="cancel"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
-    </div>
-</div>
+
+<mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Continue (s)">"
+       class="action primary-button next"
+       ><__trans phrase="Continue"></button>
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel action mt-close-dialog"
+       title="<__trans phrase="Cancel (x)">"
+       ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
 </form>
 </div>
 <mt:include name="dialog/footer.tmpl">

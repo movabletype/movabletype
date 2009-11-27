@@ -6,16 +6,16 @@
 # $Id$
 
 function smarty_function_mtcommentauthorlink($args, &$ctx) {
-    global $mt;
+    $mt = MT::get_instance();
     $comment = $ctx->stash('comment');
-    $name = $comment['comment_author'];
+    $name = $comment->comment_author;
     if (!$name && isset($args['default_name']))
         $name = $args['default_name'];
     $name or $name = $mt->translate("Anonymous");
     require_once "MTUtil.php";
     $name = encode_html( $name );
-    $email = $comment['comment_email'];
-    $url = $comment['comment_url'];
+    $email = $comment->comment_email;
+    $url = $comment->comment_url;
     if (isset($args['show_email']))
         $show_email = $args['show_email'];
     else
@@ -30,13 +30,13 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
     _comment_follow($args, $ctx);
 
     $cmntr = $ctx->stash('commenter');
-    if (!isset($cmntr) && isset($comment['comment_commenter_id']))
-        $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+    if (!isset($cmntr) && isset($comment->comment_commenter_id))
+        $cmntr = $comment->commenter();
 
     if ( $cmntr ) {
-        $name = isset($cmntr['author_nickname']) ? encode_html( $cmntr['author_nickname'] ) : $name;
-        if ($cmntr['author_url'])
-            return sprintf('<a title="%s" href="%s"%s>%s</a>', encode_html( $cmntr['author_url'] ), encode_html( $cmntr['author_url'] ), $target, $name);
+        $name = isset($cmntr->author_nickname) ? encode_html( $cmntr->author_nickname ) : $name;
+        if ($cmntr->author_url)
+            return sprintf('<a title="%s" href="%s"%s>%s</a>', encode_html( $cmntr->author_url ), encode_html( $cmntr->author_url ), $target, $name);
         return $name;
     } elseif ($show_url && $url) {
         require_once "function.mtcgipath.php";
@@ -44,8 +44,8 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         $comment_script = $ctx->mt->config('CommentScript');
         $name = strip_tags($name);
         $url = encode_html( strip_tags($url) );
-        if ($comment['comment_id'] && !isset($args['no_redirect']) && !isset($args['nofollowfy']))
-            return sprintf('<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>', $url, $cgi_path, $comment_script, $comment['comment_id'], $target, $name);
+        if ($comment->comment_id && !isset($args['no_redirect']) && !isset($args['nofollowfy']))
+            return sprintf('<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>', $url, $cgi_path, $comment_script, $comment->comment_id, $target, $name);
         else
             return sprintf('<a title="%s" href="%s"%s>%s</a>', $url, $url, $target, $name);
     } elseif ($show_email && $email && is_valid_email($email)) {
@@ -66,15 +66,15 @@ function _comment_follow (&$args, $ctx) {
         return;
 
     $blog = $ctx->stash('blog');
-    if (!empty($blog) && $blog['blog_nofollow_urls']) {
-        if ($blog['blog_follow_auth_links']) {
+    if (!empty($blog) && $blog->blog_nofollow_urls) {
+        if ($blog->blog_follow_auth_links) {
             $cmntr = $ctx->stash('commenter');
-            if (!isset($cmntr) && isset($comment['comment_commenter_id'])) {
-                $cmntr = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+            if (!isset($cmntr) && isset($comment->comment_commenter_id)) {
+                $cmntr = $comment->commenter();
                 if (!empty($cmntr))
                     $ctx->stash('commenter', $cmntr);
             }
-            if (empty($cmntr) || (!empty($cmntr) && !is_trusted($cmntr, $ctx, $blog['blog_id'])))
+            if (empty($cmntr) || (!empty($cmntr) && !is_trusted($cmntr, $ctx, $blog->blog_id)))
                 $args['nofollowfy'] = 1;
         } else {
             $args['nofollowfy'] = 1;
@@ -87,24 +87,24 @@ function is_trusted ($cmntr, $ctx, $blog_id) {
         return false;
 
     // commenter is superuser?
-    $perms = $ctx->mt->db->fetch_permission(array('blog_id' => 0, 'id' => $cmntr['author_id']));
+    $perms = $ctx->mt->db()->fetch_permission(array('blog_id' => 0, 'id' => $cmntr->author_id));
     if (!empty($perms)) {
         $perms = $perms[0];
-        if (strstr($perms['permission_permissions'], '\'administer\''))
+        if (strstr($perms->permission_permissions, '\'administer\''))
             return true;
     }
 
-    if (intval($ctx->mt->config['singlecommunity']))
+    if (intval($ctx->mt->config('singlecommunity')))
         $blog_id = 0;
 
     // commenter has permission?
-    $perms = $ctx->mt->db->fetch_permission(array('blog_id' => $blog_id, 'id' => $cmntr['author_id']));
+    $perms = $ctx->mt->db()->fetch_permission(array('blog_id' => $blog_id, 'id' => $cmntr->author_id));
     if (!empty($perms))
         return false;
     $perms = $perms[0];
-    if (strstr($perms['permission_restrictions'], "'comment'"))
+    if (strstr($perms->permission_restrictions, "'comment'"))
         return false;
-    elseif (strstr($perms['permission_permissions'], "'comment'") || strstr($perms['permission_permissions'], "'manage_feedback'"))
+    elseif (strstr($perms->permission_permissions, "'comment'") || strstr($perms->permission_permissions, "'manage_feedback'"))
         return true;
     else
         return false;

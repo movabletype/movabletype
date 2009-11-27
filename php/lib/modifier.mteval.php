@@ -8,7 +8,7 @@
 function smarty_modifier_mteval($text, $arg) {
     if (!$arg) return $text;
 
-    global $mt;
+    $mt = MT::get_instance();
     $ctx =& $mt->context();
     $_var_compiled = '';
     if (!$ctx->_compile_source('evaluated template', $text, $_var_compiled)) {

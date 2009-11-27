@@ -53,6 +53,11 @@ sub remove {
     $tb->SUPER::remove(@_);
 }
 
+sub child_key {
+    my $class = shift;
+    return 'tb_id';
+}
+
 sub entry {
     my $tb = shift;
     return undef unless $tb->entry_id;

@@ -1,4 +1,4 @@
-# $Id: Base.pm 106 2008-11-14 22:04:41Z swistow $
+# $Id$
 
 package XML::Atom::Base;
 use strict;

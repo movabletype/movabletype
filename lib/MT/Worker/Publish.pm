@@ -62,7 +62,9 @@ sub work {
         # Important: prevents requeuing!
         $fi->{from_queue} = 1;
 
-        my $mtime = (stat($fi->file_path))[9];
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        my $mtime = $fmgr->file_mod_time($fi->file_path);
 
         my $throttle = MT::PublishOption::get_throttle($fi);
 

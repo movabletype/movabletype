@@ -1,9 +1,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Restore from a Backup"></mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="restore" value="1">
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/tools_content_nav.tmpl">
-</MTSetVarBlock>
 
 <mt:include name="include/header.tmpl">
 
@@ -14,13 +11,12 @@
         <mt:var name="error">
     </mtapp:statusmsg>
 </mt:if>
-
 <div id="restore-panel">
     <mt:if name="missing_sax">
         <mtapp:statusmsg
             id="missing-sax"
             class="error">
-            <__trans phrase="Perl module XML::SAX and/or its dependencies are missing - Movable Type can not restore the system without it.">
+            <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
         </mtapp:statusmsg>
     <mt:else>
     <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
@@ -28,8 +24,8 @@
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
         <mtapp:setting
             id="file"
-            label="<__trans phrase="Backup file">"
-            hint="<__trans phrase="If your backup file is located on your computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder of your Movable Type directory.">"
+            label="<__trans phrase="Backup File">"
+            hint="<__trans phrase="If your backup file is located on a remote computer, you can upload it here.  Otherwise, Movable Type will automatically look in the 'import' folder within your Movable Type directory.">"
             help_page="backup_restore"
             help_section="source_file">
                 <input name="file" type="file" size="50" />
@@ -48,7 +44,7 @@
             id="overwrite_global_templates"
             label="<__trans phrase="Options">"
             show_label="0"
-            hint="<__trans phrase="Check this and existing global templates will be overwritten from the backup file.">">
+            hint="<__trans phrase="Allow existing global templates to be overwritten by global templates in the backup file.">">
                 <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" />
                 <label for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
         </mtapp:setting>
@@ -57,7 +53,7 @@
                 type="submit"
                 accesskey="r"
                 title="<__trans phrase="Restore (r)">"
-                class="primary-button"
+                class="restore action primary-button"
                 ><__trans phrase="Restore"></button>
         </mt:setvarblock>
         <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

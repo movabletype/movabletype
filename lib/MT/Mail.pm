@@ -10,7 +10,7 @@ use strict;
 
 use MT;
 use base qw( MT::ErrorHandler );
-use MT::I18N qw(encode_text);
+use Encode;
 
 sub send {
     my $class = shift;
@@ -31,11 +31,10 @@ sub send {
     my $mgr = MT->config;
     my $xfer = $mgr->MailTransfer;
 
-    my $enc = $mgr->PublishCharset;
-    my $mail_enc = uc ($mgr->MailEncoding || $enc);
+    my $mail_enc = uc ($mgr->MailEncoding || $mgr->PublishCharset);
+    $mail_enc = lc $mail_enc;
 
-
-    $body = encode_text($body, $enc, lc $mail_enc);
+    $body = Encode::encode($mail_enc, $body);
 
     eval "require MIME::EncWords;";
     unless ($@) {
@@ -44,38 +43,38 @@ sub send {
 
             if (ref $val eq 'ARRAY') {
                 foreach (@$val) {
-                    if ((lc($mail_enc) ne 'iso-8859-1') || (m/[^[:print:]]/)) {
+                    if (($mail_enc ne 'iso-8859-1') || (m/[^[:print:]]/)) {
                         if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::EncWords::encode_mimeword(
-                                    encode_text($1, $enc, lc $mail_enc), 'b', lc $mail_enc) . ' ' . $2;
+                                    Encode::encode($mail_enc, $1), 'b', $mail_enc) . ' ' . $2;
                             }
                         } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
                             $_ = MIME::EncWords::encode_mimeword(
-                                    encode_text($_, $enc, lc $mail_enc), 'b', lc $mail_enc);
+                                    Encode::encode($mail_enc, $_), 'b', $mail_enc);
                         }
                     }
                 }
             } else {
-                if ((lc($mail_enc) ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
+                if (($mail_enc ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
                     if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                         if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                             $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                                    encode_text($1, $enc, lc $mail_enc), 'b', lc $mail_enc) . ' ' . $2;
+                                    Encode::encode($mail_enc, $1), 'b', $mail_enc) . ' ' . $2;
                         }
                     } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
                         $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                            encode_text($val, $enc, lc $mail_enc), 'b', lc $mail_enc);
+                            Encode::encode($mail_enc, $val), 'b', $mail_enc);
                     }
                 }
             }
         }
     } else {
-        $hdrs{Subject} = encode_text($hdrs{Subject}, $enc, lc $mail_enc);
-        $hdrs{From} = encode_text($hdrs{From}, $enc, lc $mail_enc);
+        $hdrs{Subject} = Encode::encode($mail_enc, $hdrs{Subject});
+        $hdrs{From} = Encode::encode($mail_enc, $hdrs{From});
     }
-    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . lc $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'} = ((lc $mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
+    $hdrs{'Content-Transfer-Encoding'} = (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};

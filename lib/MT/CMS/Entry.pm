@@ -1,10 +1,14 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Entry;
 
 use strict;
 use MT::Util qw( format_ts relative_date remove_html encode_html encode_js
-    encode_url archive_file_for offset_time_list );
-use MT::I18N qw( substr_text const length_text wrap_text encode_text
-    break_up_text first_n_text guess_encoding );
+    encode_url archive_file_for offset_time_list break_up_text first_n_words );
+use MT::I18N qw( const wrap_text );
 
 sub edit {
     my $cb = shift;
@@ -19,12 +23,46 @@ sub edit {
     my $author = $app->user;
     my $class = $app->model($type);
 
+    if ($blog_id) {
+        my $blog_class = $app->model('blog');
+        my $blog = $blog_class->load($blog_id);
+        return $app->return_to_dashboard( redirect => 1 )
+            if (!$blog || (!$blog->is_blog && $type eq 'entry'));
+    }
+
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
+    my $original_revision;
     if ($id) {
         return $app->error( $app->translate("Invalid parameter") )
           if $obj->class ne $type;
+
+        if ( $blog->use_revision ) {
+            $original_revision = $obj->revision;
+            my $rn = $q->param('r');
+            if ( $rn != $obj->current_revision ) {
+                my $status_text = MT::Entry::status_text( $obj->status );
+                $param->{current_status_text} = $status_text;
+                $param->{current_status_label} = $app->translate( $status_text );
+                my $rev = $obj->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $obj = $rev->[0];
+                    my $values = $obj->get_values;
+                    $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{loaded_revision} = 1;
+                }
+                $param->{rev_number} = $rn;
+                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+                $param->{missing_cats_rev} = 1
+                    if exists($obj->{__missing_cats_rev}) && $obj->{__missing_cats_rev};
+                $param->{missing_tags_rev} = 1
+                    if exists($obj->{__missing_tags_rev}) && $obj->{__missing_tags_rev};
+            }
+            $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
+                $obj->modified_on, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+        }
 
         $param->{nav_entries} = 1;
         $param->{entry_edit}  = 1;
@@ -32,7 +70,7 @@ sub edit {
             $app->add_breadcrumb(
                 $app->translate('Entries'),
                 $app->uri(
-                    'mode' => 'list_entries',
+                    'mode' => 'list_entry',
                     args   => { blog_id => $blog_id }
                 )
             );
@@ -41,7 +79,7 @@ sub edit {
             $app->add_breadcrumb(
                 $app->translate('Pages'),
                 $app->uri(
-                    'mode' => 'list_pages',
+                    'mode' => 'list_page',
                     args   => { blog_id => $blog_id }
                 )
             );
@@ -77,7 +115,7 @@ sub edit {
 
         # Check permission to send notifications and if the
         # blog has notification list subscribers
-        if (   $perms->can_send_notifications
+        if (   $perms->can_do('send_notifications')
             && $obj->status == MT::Entry::RELEASE() )
         {
             my $not_class = $app->model('notification');
@@ -87,19 +125,28 @@ sub edit {
         }
 
         ## Load next and previous entries for next/previous links
-        if ( my $next = $obj->next ) {
+        my $nextprev_option = {};
+        if ( $type eq 'entry' ) {
+            $nextprev_option->{author_id} = $author->id
+                if !$app->can_do('edit_all_posts');
+        }
+        elsif ( $type eq 'page' ) {
+            $nextprev_option->{author_id} = $author->id
+                if !$app->can_do('edit_all_pages');
+        }
+        if ( my $next = $obj->next( $nextprev_option ) ) {
             $param->{next_entry_id} = $next->id;
         }
-        if ( my $prev = $obj->previous ) {
+        if ( my $prev = $obj->previous( $nextprev_option ) ) {
             $param->{previous_entry_id} = $prev->id;
         }
 
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $q->param('ping_errors');
-        $param->{can_view_log}        = $app->user->can_view_log;
+        $param->{can_view_log}        = $app->can_do('view_log');
         $param->{entry_permalink}     = $obj->permalink;
         $param->{'mode_view_entry'}   = 1;
-        $param->{'basename_old'}      = $obj->basename;
+        $param->{'basename'}          = $obj->basename;
 
         if ( my $ts = $obj->authored_on ) {
             $param->{authored_on_ts} = $ts;
@@ -115,7 +162,7 @@ sub edit {
                 $app->add_breadcrumb(
                     $app->translate('Entries'),
                     $app->uri(
-                        'mode' => 'list_entries',
+                        'mode' => 'list_entry',
                         args   => { blog_id => $blog_id }
                     )
                 );
@@ -126,7 +173,7 @@ sub edit {
                 $app->add_breadcrumb(
                     $app->translate('Pages'),
                     $app->uri(
-                        'mode' => 'list_pages',
+                        'mode' => 'list_page',
                         args   => { blog_id => $blog_id }
                     )
                 );
@@ -174,47 +221,70 @@ sub edit {
         $param->{authored_on_time} = $q->param('authored_on_time')
           || POSIX::strftime( "%H:%M:%S", @now );
     }
-    
+
     ## show the necessary associated assets
-    if ($type eq 'entry' || $type eq 'page') {
-       require MT::Asset;
-       require MT::ObjectAsset;
-       my $assets =();
-       if ($q->param('reedit') && $q->param('include_asset_ids')) {
-           my $include_asset_ids = $app->param('include_asset_ids');
-           my @asset_ids = split(',', $include_asset_ids);
-           foreach my $asset_id (@asset_ids) {
-               my $asset = MT::Asset->load($asset_id);
-               if ($asset) {
-                   my $asset_1;
-                   if ($asset->class eq 'image') {
-                       $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Width=>100)};
-                   } else {
-                       $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
-                   }
-                   push @{$assets}, $asset_1;
-               }
-           }
-       }
-       elsif ($q->param('asset_id') && !$id) {
-           my $asset = MT::Asset->load($q->param('asset_id'));
-           my $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
-           push @{$assets}, $asset_1;
-       }
-       elsif ($id) {
-           my @assets = MT::Asset->load({ class => '*' },
-                                        { join => MT::ObjectAsset->join_on(undef, {asset_id => \'= asset_id', object_ds => 'entry', object_id => $id })});
-           foreach my $asset (@assets) {
-               my $asset_1;
-               if ($asset->class eq 'image') {
-                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Width=>100)};
-               } else {
-                   $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
-               }
-               push @{$assets}, $asset_1;
-           }
-       }
-       $param->{asset_loop} = $assets;
+    if ( $type eq 'entry' || $type eq 'page' ) {
+        require MT::Asset;
+        require MT::ObjectAsset;
+        my $assets = ();
+        if ($q->param('reedit') && $q->param('include_asset_ids')) {
+            my $include_asset_ids = $app->param('include_asset_ids');
+            my @asset_ids = split(',', $include_asset_ids);
+            foreach my $asset_id (@asset_ids) {
+                my $asset = MT::Asset->load($asset_id);
+                if ($asset) {
+                    my $asset_1;
+                    if ($asset->class eq 'image') {
+                        $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name, asset_thumb => $asset->thumbnail_url(Width=>100)};
+                    } else {
+                        $asset_1 = {asset_id => $asset->id, asset_name => $asset->file_name};
+                    }
+                    push @{$assets}, $asset_1;
+                }
+            }
+        }
+        elsif ($q->param('asset_id') && !$id) {
+            my $asset   = MT::Asset->load( $q->param('asset_id') );
+            my $asset_1 = {
+                asset_id   => $asset->id,
+                asset_name => $asset->file_name,
+                asset_type => $asset->class
+            };
+            push @{$assets}, $asset_1;
+        }
+        elsif ($id) {
+            my @assets = MT::Asset->load(
+                { class => '*' },
+                {   join => MT::ObjectAsset->join_on(
+                        undef,
+                        {   asset_id  => \'= asset_id',
+                            object_ds => 'entry',
+                            object_id => $id
+                        }
+                    )
+                }
+            );
+            foreach my $asset (@assets) {
+                my $asset_1;
+                if ( $asset->class eq 'image' ) {
+                    $asset_1 = {
+                        asset_id    => $asset->id,
+                        asset_name  => $asset->file_name,
+                        asset_thumb => $asset->thumbnail_url( Width => 100 ),
+                        asset_type  => $asset->class
+                    };
+                }
+                else {
+                    $asset_1 = {
+                        asset_id   => $asset->id,
+                        asset_name => $asset->file_name,
+                        asset_type => $asset->class
+                    };
+                }
+                push @{$assets}, $asset_1;
+            }
+        }
+        $param->{asset_loop} = $assets;
     }
     
     ## Load categories and process into loop for category pull-down.
@@ -227,9 +297,8 @@ sub edit {
     $param->{dirty} = $q->param('dirty') ? 1 : 0;
 
     if ($id) {
-        my @places =
-          MT::Placement->load( { entry_id => $id, is_primary => 0 } );
-        %places = map { $_->category_id => 1 } @places;
+        my $cats = $obj->categories; 
+        %places = map { $_->id => 1 } @$cats;
     }
     my $cats = $q->param('category_ids');
     if ( defined $cats ) {
@@ -240,8 +309,13 @@ sub edit {
     }
     if ( $q->param('reedit') ) {
         $param->{reedit} = 1;
-        if ( !$q->param('basename_manual') ) {
-            $param->{'basename'} = '';
+        $param->{'basename'} = $q->param('basename');
+        $param->{'revision-note'} = $q->param('revision-note');
+        if ( $q->param('save_revision') ) {
+            $param->{'save_revision'} = 1;
+        }
+        else {
+            $param->{'save_revision'} = 0;
         }
     }
     if ($blog) {
@@ -256,7 +330,9 @@ sub edit {
     ## Now load user's preferences and customization for new/edit
     ## entry page.
     if ($perms) {
-        my $pref_param = $app->load_entry_prefs( $perms->entry_prefs );
+        my $prefs_type = $type . '_prefs';
+        my $pref_param = $app->load_entry_prefs(
+            { type => $type, prefs => $perms->$prefs_type } );
         %$param = ( %$param, %$pref_param );
         $param->{disp_prefs_bar_colspan} = $param->{new_object} ? 1 : 2;
 
@@ -285,7 +361,7 @@ sub edit {
         $tags_js =~ s!/!\\/!g;
         $param->{tags_js} = $tags_js;
 
-        $param->{can_edit_categories} = $perms->can_edit_categories;
+        $param->{can_edit_categories} = $perms->can_do('edit_categories');
     }
 
     my $data = $app->_build_category_list(
@@ -318,6 +394,7 @@ sub edit {
             label => $_->{category_label} . ( $type eq 'page' ? '/' : '' ),
             basename => $_->{category_basename} . ( $type eq 'page' ? '/' : '' ),
             path => $_->{category_path_ids} || [],
+            fields => $_->{category_fields} || [],
           };
         push @sel_cats, $_->{category_id}
           if $places{ $_->{category_id} }
@@ -410,6 +487,7 @@ sub edit {
     }
 
     $param->{object_type}  = $type;
+    $param->{object_label} = $class->class_label;
     $param->{field_loop} ||= [ map { {
         field_name => $_,
         field_id => $_,
@@ -425,6 +503,30 @@ sub edit {
         $param->{screen_class} = 'edit-page edit-entry';
     }
     $param->{sitepath_configured} = $blog && $blog->site_path ? 1 : 0;
+    if ( $blog->use_revision ) {
+        $param->{use_revision} = 1;
+    #TODO: the list of revisions won't appear on the edit screen.
+    #    $param->{revision_table} = $app->build_page(
+    #        MT::CMS::Common::build_revision_table(
+    #            $app,
+    #            object => $obj || $class->new,
+    #            param => {
+    #                template => 'include/revision_table.tmpl',
+    #                args     => {
+    #                    sort_order => 'rev_number',
+    #                    direction  => 'descend',
+    #                    limit      => 5,              # TODO: configurable?
+    #                },
+    #                revision => $original_revision
+    #                  ? $original_revision
+    #                  : $obj
+    #                    ? $obj->revision || $obj->current_revision
+    #                    : 0,
+    #            }
+    #        ),
+    #        { show_actions => 0, hide_pager => 1 }
+    #    );
+    }
     1;
 }
 
@@ -488,48 +590,34 @@ sub list {
 
     my $q     = $app->param;
     my $perms = $app->permissions;
-    unless ($app->user->is_superuser) {
-        if ( $type eq 'page' ) {
-            if ( $app->param('blog_id') ) {
-                return $app->errtrans("Permission denied.")
-                    unless $perms && $perms->can_manage_pages;
-            } else {
-                require MT::Permission;
-                my @blogs
-                    = map { $_->blog_id }
-                    grep {
-                    $_->can_manage_pages
-                    } MT::Permission->load(
-                    { author_id => $app->user->id } );
-                return $app->errtrans("Permission denied.") unless @blogs;
-            }
-        } else {
-            if ( $app->param('blog_id') ) {
-                return $app->errtrans("Permission denied.")
-                    unless $perms && ( 
-                               $perms->can_create_post
-                            || $perms->can_publish_post
-                            || $perms->can_edit_all_posts );
-            } else {
-                require MT::Permission;
-                my @blogs
-                    = map { $_->blog_id }
-                    grep {
-                    $_->can_create_post
-                        || $_->can_publish_post
-                        || $_->can_edit_all_posts
-                    } MT::Permission->load(
-                    { author_id => $app->user->id } );
-                return $app->errtrans("Permission denied.") unless @blogs;
-            }
-        }
-    }
 
     my $list_pref = $app->list_pref($type);
     my %param     = %$list_pref;
     my $blog_id   = $q->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog_id;
+    my $blog = $app->model('blog')->load($blog_id);
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog;
+
+    PERMCHECK: {
+        my $action = $type eq 'page' ? 'access_to_page_list'
+            :                          'access_to_entry_list'
+            ;
+        if ($blog_id) {
+            last PERMCHECK if $app->can_do($action);
+        }
+        else {
+            last PERMCHECK if $app->user->can_do($action, at_least_one => 1 );
+        }
+        return $app->errtrans('Permission denied.');
+    }
+
     my %terms;
-    $terms{blog_id} = $blog_id if $blog_id;
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id;
+
+    $terms{blog_id} = $blog_ids;
     $terms{class} = $type;
     my $limit = $list_pref->{rows};
     my $offset = $app->param('offset') || 0;
@@ -538,7 +626,7 @@ sub list {
         require MT::Permission;
         $terms{blog_id} = [
             map { $_->blog_id }
-              grep { $_->can_create_post || $_->can_edit_all_posts }
+              grep { $_->can_do('access_to_entry_list') }
               MT::Permission->load( { author_id => $app->user->id } )
         ];
     }
@@ -673,6 +761,9 @@ sub list {
                 return $app->errtrans( "Load failed: [_1]", MT::Author->errstr )
                   unless $author;
                 $filter_value = $author->name;
+
+                # Special case, set author name as well as filter_val
+                $param{filter_value} = $filter_value;
             }
             elsif ( $filter_col eq 'status' ) {
                 $filter_name = $app->translate('Entry Status');
@@ -827,11 +918,10 @@ sub list {
     $param{page_actions}        = $app->page_actions( $app->mode );
     $param{list_filters}        = $app->list_filters('entry');
     $param{can_power_edit}      = $blog_id && !$is_power_edit;
-    $param{can_republish}       = $blog_id
-                                    ? $perms->can_rebuild
-                                    : $app->user->is_superuser
-                                        ? 1
-                                        : 0;
+    $param{can_republish}       = $blog_id ? $perms->can_do('rebuild')
+                                :            $app->user->is_superuser
+                                ;
+    $param{blog_view}           = 1 if $blog->is_blog;
     $param{is_power_edit}       = $is_power_edit;
     $param{saved_deleted}       = $q->param('saved_deleted');
     $param{no_rebuild}          = $q->param('no_rebuild');
@@ -885,13 +975,19 @@ sub list {
 }
 
 sub preview {
-    my $app         = shift;
-    my $q           = $app->param;
-    my $type        = $q->param('_type') || 'entry';
+    my $app = shift;
+    my $entry = _create_temp_entry($app);
+    
+    return _build_entry_preview($app, $entry);
+}
+
+sub _create_temp_entry {
+    my $app = shift;
+    my $type        = $app->param('_type') || 'entry';
     my $entry_class = $app->model($type);
-    my $blog_id     = $q->param('blog_id');
+    my $blog_id     = $app->param('blog_id');
     my $blog        = $app->blog;
-    my $id          = $q->param('id');
+    my $id          = $app->param('id');
     my $entry;
     my $user_id = $app->user->id;
 
@@ -906,23 +1002,36 @@ sub preview {
         $entry->id(-1); # fake out things like MT::Taggable::__load_tags
         $entry->blog_id($blog_id);
     }
-    my $cat;
-    my $names = $entry->column_names;
 
+    my $names = $entry->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
-    delete $values{'id'} unless $q->param('id');
+    delete $values{'id'} unless $app->param('id');
     ## Strip linefeed characters.
     for my $col (qw( text excerpt text_more keywords )) {
         $values{$col} =~ tr/\r//d if $values{$col};
     }
     $values{allow_comments} = 0
       if !defined( $values{allow_comments} )
-      || $q->param('allow_comments') eq '';
+      || $app->param('allow_comments') eq '';
     $values{allow_pings} = 0
       if !defined( $values{allow_pings} )
-      || $q->param('allow_pings') eq '';
+      || $app->param('allow_pings') eq '';
     $entry->set_values( \%values );
+    
+    return $entry;
+}
 
+sub _build_entry_preview {
+    my $app = shift;
+    my ($entry, %param) = @_;
+    my $q           = $app->param;
+    my $type        = $q->param('_type') || 'entry';
+    my $entry_class = $app->model($type);
+    my $blog_id     = $q->param('blog_id');
+    my $blog        = $app->blog;
+    my $id          = $q->param('id');
+    my $user_id = $app->user->id;
+    my $cat;
     my $cat_ids = $q->param('category_ids');
     if ($cat_ids) {
         my @cats = split /,/, $cat_ids;
@@ -963,9 +1072,10 @@ sub preview {
 
     require MT::TemplateMap;
     require MT::Template;
+    my $at = $type eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {
-            archive_type => ( $type eq 'page' ? 'Page' : 'Individual' ),
+            archive_type => $at,
             is_preferred => 1,
             blog_id => $blog_id,
         }
@@ -1010,6 +1120,7 @@ sub preview {
     $ctx->stash( 'blog',  $blog );
     $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp} = $ts;
+    $ctx->{current_archive_type} = $at;
     $ctx->var('entry_template',    1);
     $ctx->var('archive_template',  1);
     $ctx->var('entry_template',    1);
@@ -1017,7 +1128,6 @@ sub preview {
     $ctx->var('archive_class',     'entry-archive');
     $ctx->var('preview_template',  1);
     my $html = $tmpl->output;
-    my %param;
     unless ( defined($html) ) {
         my $preview_error = $app->translate( "Publish error: [_1]",
             MT::Util::encode_html( $tmpl->errstr ) );
@@ -1120,14 +1230,8 @@ sub preview {
           || $col eq 'class'
           || $col eq 'meta'
           || $col eq 'comment_count'
-          || $col eq 'ping_count';
-        if ( $col eq 'basename' ) {
-            if (   ( !defined $q->param('basename') )
-                || ( $q->param('basename') eq '' ) )
-            {
-                $q->param( 'basename', $q->param('basename_old') );
-            }
-        }
+          || $col eq 'ping_count'
+          || $col eq 'current_revision';
         push @data,
           {
             data_name  => $col,
@@ -1135,7 +1239,7 @@ sub preview {
           };
     }
     for my $data (
-        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags include_asset_ids )
+        qw( authored_on_date authored_on_time basename_manual basename_old category_ids tags include_asset_ids save_revision revision-note )
       )
     {
         push @data,
@@ -1150,11 +1254,11 @@ sub preview {
     my $list_title;
     if ( $type eq 'page' ) {
         $list_title = 'Pages';
-        $list_mode  = 'list_pages';
+        $list_mode  = 'list_page';
     }
     else {
         $list_title = 'Entries';
-        $list_mode  = 'list_entries';
+        $list_mode  = 'list_entry';
     }
     if ($id) {
         $app->add_breadcrumb(
@@ -1176,6 +1280,16 @@ sub preview {
     }
     $param{object_type}  = $type;
     $param{object_label} = $entry_class->class_label;
+    
+    $param{diff_view} = $app->param('rev_numbers') || $app->param('collision');
+    $param{collision} = 1;
+    if(my @rev_numbers = split /,/, $app->param('rev_numbers')) {
+        $param{comparing_revisions} = 1;
+        $param{rev_a} = $rev_numbers[0];
+        $param{rev_b} = $rev_numbers[1];
+    }
+    $param{dirty} = $q->param('dirty') ? 1 : 0;
+
     if ($fullscreen) {
         return $app->load_tmpl( 'preview_entry.tmpl', \%param );
     }
@@ -1221,16 +1335,22 @@ sub save {
     my $perms = $app->permissions
       or return $app->errtrans("Permission denied.");
 
-    if ( $type eq 'page' ) {
-        return $app->errtrans("Permission denied.")
-          unless $perms->can_manage_pages;
-    }
-
     my $id = $app->param('id');
     if ( !$id ) {
-        return $app->errtrans("Permission denied.")
-          unless ( ( 'entry' eq $type ) && $perms->can_create_post )
-          || ( ( 'page' eq $type ) && $perms->can_manage_pages );
+        if ( $type eq 'page' ) {
+            return $app->errtrans("Permission denied.")
+                unless $perms->can_do('create_new_page');
+        }
+        elsif ( $type eq 'entry' ) {
+            return $app->errtrans("Permission denied.")
+                unless $perms->can_do('create_new_entry');
+        }
+    }
+    else {
+        if ( $type eq 'page' ) {
+            return $app->errtrans("Permission denied.")
+                unless $perms->can_do('edit_all_pages');
+        }
     }
 
     $app->validate_magic() or return;
@@ -1297,7 +1417,9 @@ sub save {
     delete $values{week_number}
       if ( $app->param('week_number') || '' ) eq '';
     delete $values{basename}
-      unless $perms->can_publish_post || $perms->can_edit_all_posts;
+      unless $perms->can_do('edit_entry_basename');
+    require MT::Entry;
+    $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
     $obj->set_values( \%values );
     $obj->allow_pings(0)
       if !defined $app->param('allow_pings')
@@ -1318,6 +1440,11 @@ sub save {
                 $obj->basename( MT::Util::make_unique_basename($obj) );
             }
         }
+    }
+
+    # Cut a basename by blog settings
+    if ( $app->param('basename_manual') ) {
+        first_n_words( $obj->basename, $blog->basename_limit )
     }
 
     if ( $type eq 'page' ) {
@@ -1350,9 +1477,7 @@ sub save {
 
     if ( $type eq 'entry' ) {
         $obj->status( MT::Entry::HOLD() )
-          if !$id
-          && !$perms->can_publish_post
-          && !$perms->can_edit_all_posts;
+          if !$id && !$perms->can_do('publish_own_entry');
     }
 
     my $filter_result = $app->run_callbacks( 'cms_save_filter.' . $type, $app );
@@ -1377,8 +1502,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if (   ( $perms->can_publish_post || $perms->can_edit_all_posts )
-        && ($ao_d) )
+    if ( $perms->can_do('edit_entry_authored_on') && ($ao_d) )
     {
         my %param = ();
         my $ao = $ao_d . ' ' . $ao_t;
@@ -1421,8 +1545,6 @@ $ao
 
     MT::Util::translate_naughty_words($obj);
 
-    $obj->modified_by( $author->id ) unless $is_new;
-
     $app->run_callbacks( 'cms_pre_save.' . $type, $app, $obj, $orig_obj )
       || return $app->error(
         $app->translate(
@@ -1430,6 +1552,10 @@ $ao
             $class->class_label, $app->errstr
         )
       );
+      
+    # Setting modified_by updates modified_on which we want to do before
+    # a save but after pre_save callbacks fire.  
+    $obj->modified_by( $author->id ) unless $is_new;
 
     $obj->save
       or return $app->error(
@@ -1645,16 +1771,14 @@ sub save_entries {
     my $app   = shift;
     my $perms = $app->permissions;
     my $type  = $app->param('_type');
-    return $app->errtrans("Permission denied.")
-      unless $perms
-      && (
-        $type eq 'page'
-        ? ( $perms->can_manage_pages )
-        : (      $perms->can_publish_post
-              || $perms->can_create_post
-              || $perms->can_edit_all_posts )
-      );
-
+    if ( $type eq 'page' ) {
+        $app->can_do('save_multiple_pages')
+            or return $app->errtrans('Permission denied.');
+    }
+    elsif ( $type eq 'entry' ) {
+        $app->can_do('save_multiple_entries')
+            or return $app->errtrans('Permission denied.');
+    }
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -1666,19 +1790,10 @@ sub save_entries {
     my $this_author    = $app->user;
     my $this_author_id = $this_author->id;
     for my $p (@p) {
-        next unless $p =~ /^category_id_(\d+)/;
+        next unless $p =~ /^author_id_(\d+)/;
         my $id    = $1;
         my $entry = MT::Entry->load($id)
             or next;
-        return $app->error( $app->translate("Permission denied.") )
-            unless $perms
-              && (
-                $type eq 'page'
-                ? ( $perms->can_manage_pages )
-                : (      $perms->can_publish_post
-                      || $perms->can_create_post
-                      || $perms->can_edit_all_posts )
-              );
         my $orig_obj = $entry->clone;
         if ( $perms->can_edit_entry( $entry, $this_author ) ) {
             my $author_id = $q->param( 'author_id_' . $id );
@@ -1765,7 +1880,7 @@ sub save_entries {
                 $place->blog_id($blog_id);
                 $place->is_primary(1);
             }
-            $place->category_id( scalar $q->param($p) );
+            $place->category_id( $cat_id );
             $place->save
               or return $app->error(
                 $app->translate(
@@ -1834,7 +1949,7 @@ sub send_pings {
                 message => $app->translate(
                     "Ping '[_1]' failed: [_2]",
                     $res->{url},
-                    encode_text( $res->{error}, undef, undef )
+                    $res->{error}
                 ),
                 class => 'system',
                 level => MT::Log::WARNING()
@@ -1866,9 +1981,10 @@ sub save_entry_prefs {
     my $perms = $app->permissions
       or return $app->error( $app->translate("No permissions") );
     $app->validate_magic() or return;
-    my $q     = $app->param;
-    my $prefs = $app->_entry_prefs_from_params;
-    $perms->entry_prefs($prefs);
+    my $q          = $app->param;
+    my $prefs      = $app->_entry_prefs_from_params;
+    my $prefs_type = $q->param('_type') . '_prefs';
+    $perms->$prefs_type($prefs);
     $perms->save
       or return $app->error(
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr ) );
@@ -1889,16 +2005,16 @@ sub draft_entries {
 }
 
 sub open_batch_editor {
-    my $app = shift;
-    my @ids = $app->param('id');
+    my $app  = shift;
+    my @ids  = $app->param('id');
+    my $type = $app->param('_type');
 
     $app->param( 'is_power_edit', 1 );
     $app->param( 'filter',        'power_edit' );
     $app->param( 'filter_val',    \@ids );
-    $app->param( 'type', $app->param('_type') );
-    $app->mode(
-        'list_' . ( 'entry' eq $app->param('_type') ? 'entries' : 'pages' ) );
-    $app->forward( "list_entry", { type => $app->param('_type') } );
+    $app->param( 'type',          $type );
+    $app->mode( 'list_' . $type );
+    $app->forward( "list_entry", { type => $type } );
 }
 
 sub build_entry_table {
@@ -2011,21 +2127,21 @@ sub build_entry_table {
         if ( !defined( $row->{title_short} ) || $row->{title_short} eq '' ) {
             my $title = remove_html( $obj->text );
             $row->{title_short} =
-              substr_text( defined($title) ? $title : "", 0, $title_max_len )
+              substr( defined($title) ? $title : "", 0, $title_max_len )
               . '...';
         }
         else {
             $row->{title_short} = remove_html( $row->{title_short} );
             $row->{title_short} =
-              substr_text( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
-              if length_text( $row->{title_short} ) > $title_max_len;
+              substr( $row->{title_short}, 0, $title_max_len + 3 ) . '...'
+              if length( $row->{title_short} ) > $title_max_len;
         }
         if ( $row->{excerpt} ) {
             $row->{excerpt} = remove_html( $row->{excerpt} );
         }
         if ( !$row->{excerpt} ) {
             my $text = remove_html( $row->{text} ) || '';
-            $row->{excerpt} = first_n_text( $text, $excerpt_max_len );
+            $row->{excerpt} = first_n_words( $text, $excerpt_max_len );
             if ( length($text) > length( $row->{excerpt} ) ) {
                 $row->{excerpt} .= ' ...';
             }
@@ -2042,15 +2158,13 @@ sub build_entry_table {
             && $blog_perms->can_edit_entry( $obj, $app_author ) )
           || ( ( 'page' eq $type )
             && $blog_perms
-            && $blog_perms->can_manage_pages );
+            && ( $app_author->id == $obj->author_id ? $blog_perms->can_do('edit_own_page')
+                                  :                   $blog_perms->can_do('edit_all_pages') ) );
         if ($is_power_edit) {
             $row->{has_publish_access} = $app_author->is_superuser
               || ( ( 'entry' eq $type )
                 && $blog_perms
-                && $blog_perms->can_edit_entry( $obj, $app_author, 1 ) )
-              || ( ( 'page' eq $type )
-                && $blog_perms
-                && $blog_perms->can_manage_pages );
+                && $blog_perms->can_edit_entry( $obj, $app_author, 1 ) );
             $row->{is_editable} = $row->{has_edit_access};
 
             ## This is annoying. In order to generate and pre-select the
@@ -2077,6 +2191,8 @@ sub build_entry_table {
                 );
                 $row->{row_author_id} = $obj->author_id,
              }
+
+            $row->{entry_blog_id} = $obj->blog_id;
         }
         if ( my $blog = $blogs{ $obj->blog_id } ||=
             MT::Blog->load( $obj->blog_id ) )
@@ -2109,14 +2225,14 @@ sub quickpost_js {
     my $uri = $app->base . $app->uri( 'mode' => 'view', args => \%args );
     my $script = qq!javascript:d=document;w=window;t='';if(d.selection)t=d.selection.createRange().text;else{if(d.getSelection)t=d.getSelection();else{if(w.getSelection)t=w.getSelection()}}void(w.open('$uri&title='+encodeURIComponent(d.title)+'&text='+encodeURIComponent(d.location.href)+encodeURIComponent('<br/><br/>')+encodeURIComponent(t),'_blank','scrollbars=yes,status=yes,resizable=yes,location=yes'))!;
     # Translate the phrase here to avoid ActivePerl DLL bug.
-    $app->translate('<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar then click it when you are on a site you want to blog about.', encode_html($script), encode_html($blog->name));
+    $app->translate('<a href="[_1]">QuickPost to [_2]</a> - Drag this link to your browser\'s toolbar, then click it when you are visiting a site that you want to blog about.', encode_html($script), encode_html($blog->name));
 }
 
 sub can_view {
     my ( $eh, $app, $id, $objp ) = @_;
     my $perms = $app->permissions;
     if (   !$id
-        && !$perms->can_create_post )
+        && !$perms->can_do('access_to_new_entry_editor') )
     {
         return 0;
     }

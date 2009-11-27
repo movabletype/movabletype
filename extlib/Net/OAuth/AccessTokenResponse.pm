@@ -12,7 +12,7 @@ Net::OAuth::AccessTokenResponse - An OAuth protocol response for an Access Token
 
 =head1 SEE ALSO
 
-L<Net::OAuth::Response>, L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 

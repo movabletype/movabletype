@@ -1,113 +1,320 @@
 /* Chromeless ------------------------------------------------------------ */
-
-body{
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+/* - Generic */
+body {
+    background-color: #F8FBF8;
     font-size: 12px;
-    background-color: #fff;
+    font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 
-h1, h2, p, ul {
-    margin-bottom: 12px;
+a { 
+    color: #5C909B;
+}
+a:hover, 
+a:active { 
+    color: #839B5C;
 }
 
+p { 
+    margin-bottom: 1.8em;
+}
+
+ul li {
+    list-style-type: disc;
+    margin-left: 15px;
+}
+
+fieldset {
+    margin: 0;
+}
+
+/* -- Hn */
 h2 {
     font-weight: bold;
     font-size: 14px;
 }
 
-strong {
-    font-weight: bold;
+h3 {
+    font-size: 14px;
+    text-shadow: #fff 0 1px 0;
+    margin-bottom: 20px;
 }
 
-em {
-    font-style: italic;
+#page-title {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: normal;
 }
 
-a:link,
-a:visited {
-    color: #33789c;
+/* -- Form */
+select,
+input,
+textarea {
+    font-size: 14px;
+}
+textarea { 
+    min-height: 5em;
+}
+select { 
+    width: 100%;
+    padding: 3px;
+    border: 1px solid #c8c2be;
+    font-size: 12px;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.listing-filter select, 
+.actions-bar select { 
+    height: 2em;
+    padding: 2px;
+    font-size: 11px;    
+}
+input[type="text"], 
+input[type="password"], 
+textarea { 
+    width: 100%;
+    padding: 3px;
+    border: 1px solid #c8c2be;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+input[type="password"] { 
+    width: 15em;
+}
+input[readonly="readonly"] { 
+    background-color: #dcdddd ! important;
+    color: #7b7c7d;
+}
+input.extra-path { 
+    width: 12em;
+    margin-left: 5px;
 }
 
-a:hover,
-a:active {
-    color: #a2ad00;
+input.smaller-text { 
+    width: 3.5em;
+}
+.larger-text { 
+    width: 100%;
 }
 
-#container {
-    margin: 50px auto 0;
-    text-align: left;
-    width: 360px;
+.actions-bar input[type="image"], 
+.actions-bar input[type="submit"],
+.actions-bar button {
+    float: right;
+    margin-left: 12px;
 }
 
+#change-password #container input { 
+    width: 100%;
+}
+
+/* - Component */
 .ready {
     font-weight: bold;
     color: #93b06b;
 }
+
 .note {
     clear: both;
     padding: 10px 0 10px 0;
 }
-#page-title {
-    font-size: 24px;
-    font-weight: normal;
-    margin-top: 10px;
-}
-p.intro {
-    font-size: 14px;
-    font-weight: normal;
-}
+
 .hint {
     line-height: 1.1;
     font-size: 11px;
     padding-top: 2px;
 }
-#db_hint {
-    margin-top: -10px;
-    margin-bottom: 10px;
+.input-hint {
+    color:#999;
 }
-#db_hint p {
-    margin-bottom: 3px;
+
+.msg .mt-close-msg {
+    display: none;
 }
-#error_more {
-    margin: 10px 0 15px;
-    font-weight: normal;
-    overflow: auto;
-    padding: 5px 0 10px 0;
-}
-#continue {
+
+/* - Field */
+.field {
     margin-bottom: 20px;
 }
-.module-name {
+
+.field-header label {
+    color: #777;
     font-weight: bold;
 }
-.module-name a {
-    color: black;
+
+#file-field .field-content, 
+#file-field .field-content #file { 
+    margin-top: 10px;
+}
+
+/* - Actions Bar */
+.action-buttons {
+    margin: 20px 0 15px;
+    text-align: right;
+}
+
+.actions-bar {
+    overflow: hidden;
+    position: relative;
+    min-height: 30px;
+    margin: 25px 0 5px;
+    text-align: right;
+}
+
+#container.show-actions-bar-top .actions-bar-top {
+    display: block;
+}
+#container.show-actions-bar-bottom .actions-bar-bottom {
+    display: block;
+}
+
+.actions-bar-login { 
+    text-align: right;
+}
+
+/* -- Buttons */
+button, 
+a.button { 
+    min-width: 7em;
+    overflow: visible;
+    display: inline-block;
+    outline: 0;
+    padding: 2px 4px;
+    border: 1px solid #85afc4;
+    border-top-color: #cddee7;
+    border-left-color: #cddee7;
+    border-style: solid;
+    background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
+    color: #33789c;
+    font-size: 11px;
+    text-shadow: #F8FBF8 0 1px 0;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+a.button { 
+    padding: 3px 6px;
     text-decoration: none;
 }
-.module-name a:hover {
-    text-decoration: underline;
+button:hover, 
+a.button:hover {
+    color: #33789c;
+    background-position: 50% 30%;
+}
+button.action, 
+a.action {
+    padding: 3px 8px;
+    border: 0;
+    background: #2b2b2b url('../images/buttons/button.gif') no-repeat 0 center;
+    color: #F3F3F3;
+    font-size: 13px;
+    text-align: center;
+    text-shadow: #2b2b2b 0 -1px 0;
+    cursor: pointer;
+    -moz-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+a.action { 
+    padding: 5px 8px;
+}
+
+button.primary-button, 
+a.primary-button {
+    background-image: url(../images/buttons/button-primary.gif);
+}
+button.disabled-button {
+    background-image: url(../images/buttons/button-primary-disabled.gif);
+}
+
+.chromeless-wide .actions-bar button { 
+    min-width: 0px;
+}
+
+button.action:hover,
+a.action:hover {
+    background-color: #666;
+    background-position: -500px center;
+    color: #fff;
+}
+
+.actions-bar button.goback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-left: 0;
+}
+.chromeless-wide .actions-bar button.goback { 
+    position: static;
+    margin-left: 12px;
+}
+
+/* - Layout */
+#container {
+    position: relative;
+    width: 520px;
+    margin: 45px auto 30px;
+    padding: 30px 30px 25px;
+    border: 1px solid #C8C2BE;
+    background-color: #fff;
+    -moz-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+}
+
+/* -- Wide Layout */
+.error-screen #container {
+    width: 95%;
+}
+
+.chromeless-wide { 
+    background-color: #fff;
+}
+.chromeless-wide #container-inner {
+    background: none;
+}
+.chromeless-wide #container {
+    width: 360px;
+    margin: 20px auto;
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+}
+
+/* - Header */
+#header {
+    background: transparent #fff;
+}
+#header .comment_signin_title {
+    margin-left: 20px;
 }
 
 #brand {
-    position: relative;
-    margin: 30px 0 0 20px;
-    background: url('../images/chromeless/mt_logo.gif') no-repeat;
-    height: 34px;
-    width: 192px;
+    width: 250px;
+    height: 38px;
+    margin: 0 0 20px;
+    font-size: 26px;
+    background: #fff url(../images/chromeless/mt_logo.png) center no-repeat;
 }
 
-#container-inner {
-    border: 1px solid #cfdde5;
-    background: url('../images/chromeless/chromeless_bg_b.png') repeat-x bottom center;
-}
-
-#content #content-inner {
-    margin: 0 18px;
+#brand span { 
+    display: none;
 }
 
 #nav {
-    float: right;
-    margin-right: 20px;
+    position: absolute;
+    top: 30px;
+    right: 20px;
 }
 
 #nav .step {
@@ -124,423 +331,59 @@ p.intro {
     width: 14px;
 }
 
-.edit-entry .actions-bar-top,
-.edit-entry .actions-bar-bottom {
-    display: none;
-}
-#container.show-actions-bar-top .actions-bar-top {
-    display: block;
-}
-#container.show-actions-bar-bottom .actions-bar-bottom {
-    display: block;
+/* - Sign in Screen */
+#sign-in #container { 
+    width: 340px;
 }
 
-ul li {
-    list-style-type: disc;
-    margin-left: 15px;
-}
-
-fieldset {
-    margin: 0;
-}
-
-.field {
-    border: 0;
-    margin-bottom: .75em;
-}
-
-.field-header label {
-    font-weight: bold;
-}
-
-.field-content select,
-.field-content input.ti,
-.field-content textarea.ta,
-.field-content input.pw {
-    margin: 0;
-    width: 318px;
-}
-
-#header {
-    background: transparent #fff;
-}
-#header .comment_signin_title {
-    margin-left: 20px;
-}
-
-#main-content {
-    position: relative;
-}
-
-#main-content-inner {
-    margin-bottom: 10px;
-}
-
-.comment_signin_options {
-    position: absolute;
-    left: 341px;
-    width: 200px;
-    margin-top: -60px;
-}
-
-.comment_signin_options p {
-    margin-left: 10px;
-    font-weight: bold;
-}
-
-.comment_signin_options li {
-    margin-left: 0;
-    list-style: none;
-    height: 26px;
-}
-
-.choice_on,
-.choice_on a {
-    color: #fff;
-}
-
-.choice_on {
-    background: #a3becc url('../images/comment/signin_on.png') no-repeat right center;
-}
-
-.choice_off,
-.choice_off a {
-    color: #000;
-    background-color: #fff;
-}
-
-.signin_logo {
-    float: left;
-    width: 36px;
-    height: 26px;
-}
-
-.choice_on .signin_logo {
-    background: url('../images/comment/signin_logo_on.png') no-repeat center;
-}
-
-.auth_name {
-    padding-top: .45em;
-}
-
-#packages-list li {
-    margin-bottom: .5em;
-}
-
-.input-hint {
-    color:#999;
-}
-
-.msg a.close-me {
-    display: none;
-}
-
-h3 {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-table.show-admin {
-    margin-bottom: 10px;
-    width: 99%;
-    border: 1px solid #cfdde5;
-    background-color: #fff;
-}
-table.show-admin th {
-    color: #666;
-    padding: 1%;
-    overflow: hidden;
-}
-table.show-admin td {
-    width: 32%;
-    padding: 1px 1% 0 1%;
-    overflow: hidden;
-}
-
-/* Corners -------------------------------------------------------------------------------- */
-
-#ctl, #ctr,
-#cbl, #cbr {
-    background: url('../images/chromeless/chromeless_corners.gif') no-repeat;
-}
-#ctl, #ctr {
-    width: 10px;
-    height: 20px;
-    position: relative;
-    top: -1px;
-    z-index:5;
-}
-#ctl {
-    background-position: top left;
-    left: -1px;
-    float: left;
-}
-#ctr {
-    background-position: top right;
-    left: 1px;
-    float: right;
-}
-#cbl, #cbr {
-    width: 14px;
-    height: 115px;
-    position: relative;
-    top: -114px;
-    z-index:4;
-}
-#cbl {
-    background-position: bottom left;
-    left: -1px;
-    float: left;
-}
-#cbr {
-    background-position: bottom right;
-    left: 1px;
-    float: right;
-}
-
-/* Wide Styles -------------------------------------------------------------------------------- */
-
-.error-screen #container {
-    width: 760px;
-}
-
-.chromeless-wide #ctl, .chromeless-wide #ctr,
-.chromeless-wide #cbl, .chromeless-wide #cbr {
-    display: none;
-}
-.chromeless-wide #container-inner {
-    background: none;
-}
-.chromeless-wide #brand {
-    position: absolute;
-    top: 0;
-    margin: 15px 0 0 20px;
-    background: url('../images/chromeless/movable-type-logo.gif') no-repeat 0 7px;
-    height: 34px;
-    width: 192px;
-}
-.chromeless-wide {
-    background: url('../images/chromeless/chromeless_top_bg.gif') repeat-x;
-    padding-top: 59px;
-}
-.chromeless-wide #container {
-    margin-top: 10px;
-}
-.chromeless-wide #container-inner {
-    border:0;
-}
-.chromeless-wide #content {
-    margin: 0;
-}
-.chromeless-wide #footer .inner {
-    border-top: 1px solid #ccc;
-    padding-top: 10px;
-    margin: 0 18px;
-}
-
-
-/* Progress Bar ---------------------------------------------------------------------------------- */
-
-.progress-bar {
-    height: 20px;
-    width: 322px;
-    background: url('../images/progress-bar.gif') repeat-x 100% 0;
-    border: 1px solid #9CBCCB;
-}
-.progress-bar span {
-    display: none;
-}
-
-.progress-bar-indeterminate {
-    background: url('../images/progress-bar-indeterminate.gif') repeat-x 0 0;
-}
-
-.full-width {
+#sign-in #username, 
+#sign-in #password { 
+    font-size: 22px;
     width: 100%;
+    color: #2b2b2b;
 }
 
-.action-buttons {
-    height: 1%;  /*IE6 Hack*/
+#sign-in #page-title { 
+    display: none;
 }
 
-/* Buttons ---------------------------------------------------------------------------------- */
-
-/* Buttons */
-.actions-bar .actions a,
-.actions-bar .actions button,
-.actions-bar .actions select {
-    float: left;
-    margin: 0 5px 0 0;
-}
-.dialog .actions-bar .actions a,
-.dialog .actions-bar .actions button,
-.dialog .actions-bar .actions select {
-    float: right;
-    margin: 0 0 0 5px;
-}
-.actions-bar .actions .plugin-actions a,
-.actions-bar .actions .plugin-actions button,
-.actions-bar .actions .plugin-actions select {
-    margin: 0 0 0 5px;
-}
-.actions-bar .actions a:link,
-.actions-bar .actions a:visited,
-.actions-bar .actions button {
-    display: block;
-    background: #333 url('../images/buttons/button.gif') no-repeat 0 center;
-    border: none;
-    border-top: 1px solid #d4d4d4;
-    font-weight: bold;
-    font-size: 14px;
-    line-height: 1.3;
-    text-decoration: none;
-    color: #eee;
-    cursor: pointer;
-    padding: 2px 10px 4px;
-}
-.actions-bar .actions button {
-    width: auto;
-    overflow: visible;
-    padding: 2px 10px 1px; /* IE6 */
-}
-.actions-bar .actions button[type] {
-    padding: 3px 10px 3px; /* Firefox */
-}
-.actions-bar .actions a {
-    padding: 3px 10px 4px !important; /* Firefox */
-}
-*:first-child+html button[type]{
-    padding: 4px 10px 3px; /* IE7 */
-}
-.actions-bar .actions button.primary-button,
-.actions-bar .actions a.primary-button {
-    background-image: url('../images/buttons/button-primary.gif');
-}
-.system .actions-bar .actions button.primary-button,
-.system .actions-bar .actions a.primary-button {
-    background-image: url('../images/buttons/button-primary-system.gif');
-}
-.actions-bar .actions button.disabled-button,
-.actions-bar .actions a.disabled-button {
-    background-image: url('../images/buttons/button-primary-disabled.gif');
-    background-image: url('../images/buttons/button.gif');
-}
-.system .actions-bar .actions button.disabled-button,
-.system .actions-bar .actions a.disabled-button {
-    background-image: url('../images/buttons/button-primary-disabled-system.gif');
-    background-image: url('../images/buttons/button.gif');
-}
-
-.actions-bar .actions a:hover,
-.actions-bar .actions a:active,
-.actions-bar .actions button:hover {
-    color: #fff;
-    background-color: #666;
-    background-position: -500px center;
-}
-
-.buttons a,
-.buttons button,
-.buttons select, 
-.listing .actions-bar .actions a,
-.listing .actions-bar .actions button,
-.listing .actions-bar .actions select, 
-.actions-bar .plugin-actions a,
-.actions-bar .plugin-actions button,
-.actions-bar .plugin-actions select {
-    margin: 0 5px 0 0;
-    font-size: 12px;
-}
-.listing .actions-bar .actions select {
-    margin-left: 5px;
-}
-
-.buttons a:link,
-.buttons a:visited,
-.buttons button,
-.listing .actions-bar .actions a:link,
-.listing .actions-bar .actions a:visited,
-.listing .actions-bar .actions button,
-.actions-bar .plugin-actions a:link,
-.actions-bar .plugin-actions a:visited,
-.actions-bar .plugin-actions button {
-    color: #33789c !important;
-    border: 1px solid #85afc4;
-    border-top-color: #cddee7;
-    border-left-color: #cddee7;
-    padding: 1px 2px;
-    background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
-    margin: 0 5px 0 0;
-}
-.system .buttons a,
-.system .buttons button,
-.system .listing .actions-bar .actions a,
-.system .listing .actions-bar .actions button,
-.system .actions-bar .plugin-actions a,
-.system .actions-bar .plugin-actions button {
-    color: #7f8833 !important;
-    border-color: #a2a48d;
-    border-top-color: #c9ccb0;
-    border-left-color: #c9ccb0;
-    background-image: url('../images/buttons/button-list-system.gif');
-}
-.buttons a:link,
-.buttons a:visited,
-.buttons button {
-    margin: 0 2px 0 0;
-}
-.actions-bar .plugin-actions a:link,
-.actions-bar .plugin-actions a:visited,
-.actions-bar .plugin-actions button {
+#forget-password { 
+    position: absolute;
+    top: 5px;
+    left: 0;
     margin: 0;
 }
-.buttons button,
-.listing .actions-bar .actions button,
-.actions-bar .plugin-actions button {
-    width: auto;
-    overflow: visible;
+
+#sign-up { 
+    clear: both;
+    margin: 15px 0 0;
+    text-align: right;
 }
 
-.buttons a:hover,
-.buttons a:active,
-.buttons button:hover,
-.listing .actions-bar .actions a:hover,
-.listing .actions-bar .actions a:active,
-.listing .actions-bar .actions button:hover,
-.actions-bar .plugin-actions a:hover,
-.actions-bar .plugin-actions a:active,
-.actions-bar .plugin-actions button:hover {
-    color: #33789c !important;
-    background-position: 50% 30%;
-}
-.system .buttons a:hover,
-.system .buttons a:active,
-.system .buttons button:hover,
-.system .listing .actions-bar .actions a:hover,
-.system .listing .actions-bar .actions a:active,
-.system .listing .actions-bar .actions button:hover,
-.system .actions-bar .plugin-actions a:hover,
-.system .actions-bar .plugin-actions a:active,
-.system .actions-bar .plugin-actions button:hover {
-    color: #7f8833 !important;
+#sign-in dl { 
+    margin: 0;
 }
 
-/* Actions Bar Chromeless ---------------------------------------------------------------------------------- */
-
-.dialog .actions-bar {
-    margin-bottom: 10px;
+#sign-in dd { 
+    margin-left: 0;
 }
 
-.dialog .actions-bar-login .actions a,
-.dialog .actions-bar-login .actions button,
-.dialog .actions-bar-login .actions select {
-    float: left;
-    margin: 0 5px 0 0;
+#sign-in .has-auth-icon input { 
+    padding-left: 22px;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-position: 3px center;
 }
 
+/* -- Reset Password, Change Password */
+#reset-password #container, 
+#change-password #container { 
+    width: 340px;
+}
 
-/* Upgrade ---------------------------------------------------------------------------------- */
-
+/* - Upgrade */
 .upgrade .upgrade-process {
+    position: relative;
     overflow: auto;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -549,18 +392,12 @@ table.show-admin td {
     height: 200px;
 }
 
-/* Wizard ---------------------------------------------------------------------------------- */
-
-.mt-config-file-path {
-    overflow: auto;
-    overflow-x: auto;
-    overflow-y: hidden;
-    height: 2.75em;
-    font-weight:bold;
+.upgrade #progress-bar { 
+    margin: 25px 0 10px;
+    text-align: right;
 }
 
-/* Profile ---------------------------------------------------------------------------------- */
-
+/* - Profile */
 ul#profile-data li {
     margin-left: 0;
     padding-left: 0;
@@ -583,3 +420,90 @@ ul#profile-data li {
     list-style: none;
     margin-left: 0;
 }
+
+/* - Wizerd */
+#error_more {
+    margin: 10px 0 15px;
+    font-weight: normal;
+    overflow: auto;
+    padding: 5px 0 10px 0;
+}
+#continue {
+    margin-bottom: 20px;
+}
+
+/* -- Start */
+.mt-config-file-path {
+    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    height: 2.75em;
+    font-weight:bold;
+}
+
+/* -- System Check */
+#packages-list dt { 
+    margin-bottom: 5px;
+}
+#packages-list dd { 
+    margin-bottom: 15px;
+    color: #7B7C7D;
+}
+.module-name {
+    font-weight: bold;
+}
+.module-name a {
+    color: black;
+    text-decoration: none;
+}
+.module-name a:hover {
+    text-decoration: underline;
+}
+.module-description { 
+    margin-bottom: 5px;
+}
+
+/* -- Database Setting */
+#db_hint {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+#db_hint p {
+    margin-bottom: 3px;
+}
+
+/* -- LDAP */
+table.show-admin {
+    margin-bottom: 10px;
+    width: 99%;
+    border: 1px solid #cfdde5;
+    background-color: #fff;
+}
+table.show-admin th {
+    color: #666;
+    padding: 1%;
+    overflow: hidden;
+}
+table.show-admin td {
+    width: 32%;
+    padding: 1px 1% 0 1%;
+    overflow: hidden;
+}
+
+/* - Publush */
+/* -- Progress Bar */
+.progress-bar {
+    height: 20px;
+    width: 322px;
+    background: url('../images/progress-bar.gif') repeat-x 100% 0;
+    border: 1px solid #9CBCCB;
+}
+.progress-bar span {
+    display: none;
+}
+
+.progress-bar-indeterminate {
+    background: url('../images/progress-bar-indeterminate.gif') repeat-x 0 0;
+}
+
+

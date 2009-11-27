@@ -2,8 +2,6 @@
 <mt:setvarblock name="insert_script" id="insert_script">
 window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:var name="edit_field" escape="js">' );
 </mt:setvarblock>
-
-
 <script type="text/javascript">
 /* <![CDATA[ */
 
@@ -11,10 +9,6 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
 <mt:if name="upload_html">
     <mt:var name="insert_script">
 </mt:if>
-
-<mt:unless name="extension_message">
-    closeDialog();
-</mt:unless>
 
 // remove the no assets text if it's there
 var Node = window.parent.document.getElementById("empty-asset-list");
@@ -40,22 +34,18 @@ if (AssetList) {
         // create the link to the asset page with asset name as label
         var myAssetLink = window.document.createElement('a');
         myAssetLink.setAttribute('href', '<mt:CGIPath><mt:AdminScript>?__mode=view&_type=asset&blog_id=<mt:var name="blog_id">&id=<mt:AssetID>');
+        myAssetLink.setAttribute('class', 'asset-title');
         myAssetLink.appendChild(document.createTextNode('<mt:AssetFileName encode_js="1">'));
-
-        // create the remove link icon
-        var myRemoveIcon = window.document.createElement('img');
-        myRemoveIcon.setAttribute('src', '<mt:StaticWebPath>images/status_icons/close.gif');
-        myRemoveIcon.setAttribute('alt', 'Remove asset');
 
         // create the remove link for this asset
         var myRemoveLink = window.document.createElement('a');
         myRemoveLink.setAttribute('href', 'javascript:removeAssetFromList(<mt:AssetID>)');
         myRemoveLink.setAttribute('class', 'remove-asset');
-        myRemoveLink.appendChild(myRemoveIcon);
 
         // create the asset list item
         var myElement = window.document.createElement('li');
         myElement.setAttribute('id', 'list-asset-<mt:AssetID>');
+        myElement.setAttribute('class', 'asset-type-<mt:AssetProperty property="class"$>');
         <mt:If tag="AssetType" eq="image">
             myElement.setAttribute('onmouseover', 'show(\'list-image-<mt:AssetID>\', window.parent.document)');
             myElement.setAttribute('onmouseout','hide(\'list-image-<mt:AssetID>\', window.parent.document)');
@@ -66,8 +56,7 @@ if (AssetList) {
         // I HATE IE!
         if (document.attachEvent) {
             var oldLis = window.parent.document.getElementById("asset-list").innerHTML;
-            var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="show(\'list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'list-image-<mt:AssetID>\', window.parent.document)">' 
-                         + myElement.innerHTML + '</li>';
+            var newLi  = '<li id="list-asset-<mt:AssetID>" onmouseover="show(\'list-image-<mt:AssetID>\', window.parent.document)" onmouseout="hide(\'list-image-<mt:AssetID>\', window.parent.document)">' + myElement.innerHTML + '</li>';
             window.parent.document.getElementById("asset-list").innerHTML = oldLis + newLi;
         } 
         else {
@@ -84,7 +73,9 @@ if (AssetList) {
         </mt:If>
     }
 }
-
+<mt:unless name="extension_message">
+    parent.jQuery.fn.mtDialog.close();
+</mt:unless>
 /* ]]> */
 </script>
 
@@ -98,15 +89,13 @@ if (AssetList) {
     <div class="actions-bar-inner pkg actions">
         <form action="" method="get" onsubmit="return false">
             <button
-                onclick="closeDialog(); return false"
                 type="submit"
                 accesskey="x"
-                class="cancel"
+                class="cancel mt-close-dialog"
                 title="<__trans phrase="Close (x)">"
                 ><__trans phrase="Close"></button>
         </form>
     </div>
 </mt:if>
-
 
 <mt:include name="dialog/footer.tmpl">

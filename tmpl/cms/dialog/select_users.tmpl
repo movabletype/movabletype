@@ -2,15 +2,13 @@
 <mt:setvarblock name="page_title"><mt:var name="dialog_title"></span></mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
 
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
-
 <script type="text/javascript">
 /* <![CDATA[ */
 var dialog;
 
-var win = window.parent;
 function returnMemberSelection(ok) {
     if (ok) {
 <mt:unless name="idfield">
@@ -21,15 +19,15 @@ function returnMemberSelection(ok) {
         frm.elements['ids'].value = added.join(",");
         frm.submit();
 <mt:else>
-        var el_id = getByID("<mt:var name="idfield" escape="js">", win.document);
-        var el_name = getByID("<mt:var name="namefield" escape="js">", win.document);
-        if (el_id && el_name) {
+        var el_id = parent.jQuery('#<mt:var name="idfield" escape="js">')[0];
+        <mt:if name="namefield">var el_name = parent.jQuery('#<mt:var name="namefield" escape="js">')[0];</mt:if>
+        if (el_id) {
             var ids = new Array();
             var names = new Array();
             var inputs = dialog.panels[0].tableSelect.selected();
             for (var i = 0; i < inputs.length; ++i) {
                 var inp = inputs[i];
-                var row = TC.getParentByTagName( inp, "tr" );
+                var row = jQuery(inp).parents('tr')[0];
                 if (!row) continue;
                 var labels = row.getElementsByTagName('label');
                 if (labels.length == 0) continue;
@@ -37,12 +35,12 @@ function returnMemberSelection(ok) {
                 ids.push(inp.value);
             }
             el_id.value = ids.join(',');
-            el_name.innerHTML = names.join(',');
+            <mt:if name="namefield">el_name.innerHTML = names.join(',');</mt:if>
         }
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
 </mt:unless>
     } else {
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
     }
 }
 
@@ -54,8 +52,6 @@ function init() {
     dialog.setPanels([userPanel]);
     dialog.open({}, returnMemberSelection);
 }
-
-TC.attachLoadEvent( init );
 /* ]]> */
 </script>
 
@@ -71,5 +67,12 @@ TC.attachLoadEvent( init );
 <mt:include name="include/listing_panel.tmpl">
 <mt:unless name="json">
 </div><!-- /modal_width#dialog-select-member -->
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
 <mt:include name="dialog/footer.tmpl">
 </mt:unless>

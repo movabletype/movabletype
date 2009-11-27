@@ -13,8 +13,8 @@ function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
         $token_fn = $args['token_fn'];
         $comment = $ctx->stash('comment');
         if (!$comment) { $repeat = false; return ''; }
-        $args['comment_id'] = $comment['comment_id'];
-        $comments = $ctx->mt->db->fetch_comment_replies($args);
+        $args['comment_id'] = $comment->comment_id;
+        $comments = $ctx->mt->db()->fetch_comment_replies($args);
         if (!$comments) { $repeat = false; return ''; }
         $ctx->stash('comments', $comments);
         $ctx->stash('_comment_replies_tokens', $token_fn);
@@ -35,19 +35,19 @@ function smarty_block_mtcommentreplies($args, $content, &$ctx, &$repeat) {
     if ($counter < count($comments)) {
         $blog_id = $ctx->stash('blog_id');
         $comment = $comments[$counter];
-        if ($comment['comment_commenter_id']) {
-            $commenter = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+        if ($comment->comment_commenter_id) {
+            $commenter = $comment->commenter();
             $ctx->stash('commenter', $commenter);
         } else {
             $ctx->__stash['commenter'] = null;
         }
-        if ($blog_id != $comment['comment_blog_id']) {
-            $blog_id = $comment['comment_blog_id'];
+        if ($blog_id != $comment->comment_blog_id) {
+            $blog_id = $comment->comment_blog_id;
             $ctx->stash('blog_id', $blog_id);
-            $ctx->stash('blog', $ctx->mt->db->fetch_blog($blog_id));
+            $ctx->stash('blog', $comment->blog());
         }
         $ctx->stash('comment', $comment);
-        $ctx->stash('current_timestamp', $comment['comment_created_on']);
+        $ctx->stash('current_timestamp', $comment->comment_created_on);
         $ctx->stash('comment_order_num', $counter + 1);
         $repeat = true;
         $count = $counter + 1;

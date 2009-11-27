@@ -18,9 +18,6 @@
         </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/cfg_content_nav.tmpl">
-</MTSetVarBlock>
 <mt:include name="include/header.tmpl">
 
 <form name="cfg_form" method="post" action="<mt:var name="script_url">">
@@ -34,13 +31,13 @@
 
 <fieldset>
 
-<h3><__trans phrase="Six Apart Services"></h3>
+<h3><__trans phrase="Web Services from Six Apart"></h3>
 
     <mtapp:setting
         id="typekey_settings"
         label="<__trans phrase="TypePad">"
         content_class="field-content-text"
-        hint="<__trans phrase="Your TypePad token is used to access Six Apart services like its free Authentication service.">"
+        hint="<__trans phrase="Your TypePad token is used to access services from Six Apart like TypePad Connect and TypePad AntiSpam.">"
         help_page=""
         help_setion=""
         show_hint="1">
@@ -59,10 +56,10 @@
         <p><span class="icon-left icon-neutral"><__trans phrase="TypePad is not enabled."></span></p>
         <p>
             <label for="remote_auth_token"><__trans phrase="TypePad token:"></label> <input type="text" name="remote_auth_token" id="remote_auth_token" value="<mt:var name="REMOTE_AUTH_TOKEN" escape="HTML">" />
-            &nbsp;<__trans phrase="or">&nbsp;<a href="javascript:void(0)" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&amp;</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&amp;blog_id=<mt:var name="BLOG_ID">');return false"><__trans phrase="Obtain TypePad token"></a>
+            <__trans phrase="&nbsp;or&nbsp;[_1]obtain a TypePad token[_2] from TypePad.com."  params="<a href="javascript:void(0)" onclick="window.open('<mt:var name="IDENTITY_SYSTEM">/handshake?<mt:if name="LANG">lang=<mt:var name="LANG">&amp;</mt:if>url=<mt:var name="HANDSHAKE_RETURN" escape="URL">&amp;blog_id=<mt:var name="BLOG_ID">');return false">%%</a>">
         </p>
         <p id="save_token_msg" style="display:none">
-            <span class="alert-warning-inline icon-left icon-warning"><__trans phrase="Please click the Save Changes button below to enable TypePad."></span>
+            <span class="alert-warning-inline icon-left icon-warning"><__trans phrase="Please click the 'Save Changes' button below to enable TypePad."></span>
         </p>
         </mt:if>
         </div>
@@ -75,14 +72,14 @@
 
     <mtapp:setting
         id="ping_blogs"
-        label="<__trans phrase="Notify of blog updates">"
+        label="<__trans phrase="Notify ping services of website updates">"
         content_class="field-content-text"
-        hint="<__trans phrase="When this blog is updated, Movable Type will automatically notify the selected sites.">"
+        hint="<__trans phrase="When this website is updated, Movable Type will automatically notify the selected sites.">"
         help_page="blog_settings_entry_defaults"
         help_section="update_pings">
             <mt:if name="system_disabled_notify_pings">
             <p><img src="<mt:var name="static_uri">images/status_icons/warning.gif" alt="<__trans phrase="Setting Ignored">" width="9" height="9" />
-            <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored since outbound notification pings are disabled system-wide."></span></p>
+            <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span></p>
             </mt:if>
             <ul>
             <mt:if name="pings_loop">
@@ -90,24 +87,19 @@
                 <li><input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></li>
             </mt:loop>
             </mt:if>
-                <li><label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span></label>
-                    <div class="textarea-wrapper">
-                        <textarea name="ping_others" id="ping_others" rows="" cols="" class="full-width short"><mt:var name="ping_others" escape="html"></textarea>
-                    </div>
-                </li>
             </ul>
+            <label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span></label><br />
+            <textarea name="ping_others" id="ping_others" rows="" cols="" class="full-width short"><mt:var name="ping_others" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
         id="mt_update_key"
         label="<__trans phrase="Recently Updated Key">"
-        hint="<__trans phrase="If you have received a recently updated key (by virtue of your purchase), enter it here.">"
+        hint="<__trans phrase="If you received a Recently Updated Key with the purchase of a Movable Type license, enter it here.">"
         help_page="blog_settings_entry_defaults"
         help_section="recently_updated_key"
         show_hint="1">
-        <div class="textarea-wrapper half-width">
-            <input name="mt_update_key" id="mt_update_key" value="<mt:var name="mt_update_key" escape="html">" class="full-width" />
-        </div>
+        <input type="text" name="mt_update_key" id="mt_update_key" value="<mt:var name="mt_update_key" escape="html">" class="full-width" />
     </mtapp:setting>
 
 </fieldset>
@@ -117,7 +109,7 @@
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
-        class="primary-button"
+        class="save action primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

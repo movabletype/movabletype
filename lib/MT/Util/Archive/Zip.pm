@@ -20,7 +20,7 @@ sub new {
 
     return $pkg->error(MT->translate('Type must be zip'))
         unless $type eq ARCHIVE_TYPE;
-    
+
     my $zip = Archive::Zip->new;
     my $obj = { _flushed => 0, _arc => $zip };
     if ( ref $file ) {
@@ -100,8 +100,9 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $f = File::Spec->catfile( $path, $file );
-        $obj->{_arc}->extractMember( $file, $f );
+        my $file_enc = Encode::decode('Shift_JIS', $file );
+        my $f = File::Spec->catfile( $path, $file_enc );
+        $obj->{_arc}->extractMember( $file, MT::FileMgr::Local::_local( $f ) );
     }
     1;
 }
@@ -113,6 +114,8 @@ sub add_file {
         if 'r' eq $obj->{_mode};
     my $filename =
         File::Spec->catfile( $path, $file_path );
+    $file_path = Encode::encode('Shift_JIS', $file_path)
+        if Encode::is_utf8($file_path);
     $obj->{_arc}->addFile( $filename, $file_path );
 }
 
@@ -123,8 +126,17 @@ sub add_string {
         if 'r' eq $obj->{_mode};
     return $obj->error(MT->translate('Both data and file name must be specified.'))
         unless $string && $file_name;
-
+    $file_name = Encode::encode('Shift_JIS', $file_name)
+        if Encode::is_utf8($file_name);
     $obj->{_arc}->addString($string, $file_name);
+}
+
+sub add_tree {
+    my $obj = shift;
+    my ($dir_path) = @_;
+    return $obj->error(MT->translate('Can\'t write to the object'))
+        if 'r' eq $obj->{_mode};
+    $obj->{_arc}->addTree($dir_path, '');
 }
 
 1;

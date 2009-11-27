@@ -8,7 +8,6 @@ package MT::Auth::OpenID;
 use strict;
 
 use MT::Util qw( decode_url is_valid_email escape_unicode ts2epoch );
-use MT::I18N qw( encode_text );
 
 sub NS_OPENID_AX   { "http://openid.net/srv/ax/1.0" }
 sub NS_OPENID_SREG { "http://openid.net/extensions/sreg/1.1" }
@@ -99,8 +98,9 @@ sub handle_sign_in {
         }
 
         if (my $userpic = $cmntr->userpic) {
-            my @stat = stat($userpic->file_path());
-            my $mtime = $stat[9];
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+            my $mtime = $fmgr->file_mod_time($userpic->file_path());
             if ( $mtime > time - $INTERVAL ) {
                 # newer than 7 days ago, don't download the userpic
                 return $cmntr;
@@ -252,13 +252,7 @@ sub _get_nickname {
         }
         $xml->cleanup;
 
-        if ( $name ) {
-            $name = MT::I18N::utf8_off($name);
-            if ( MT->config->PublishCharset !~ /utf-?8/i ) {
-                $name = encode_text( $name, 'UTF-8', MT->config->PublishCharset );
-            }
-            return $name;
-        }
+        return $name if $name;
     }
 
     ## Atom
@@ -275,13 +269,7 @@ sub _get_nickname {
                 }
                 $xml->cleanup;
             
-                if ( $name ) {
-                    $name = MT::I18N::utf8_off($name);
-                    if ( MT->config->PublishCharset !~ /utf-?8/i ) {
-                        $name = encode_text( $name, 'UTF-8', MT->config->PublishCharset );
-                    }
-                    return $name;
-                }
+                return $name if $name;
             }
         }
     }
@@ -335,9 +323,9 @@ sub _asset_from_url {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
 
-    my $save_path  = '%s/support/uploads/';
+    my $save_path  = '%s/uploads/';
     my $local_path =
-      File::Spec->catdir( MT->instance->static_file_path, 'support', 'uploads' );
+      File::Spec->catdir( MT->instance->support_directory_path, 'uploads' );
     $local_path =~ s|/$||
       unless $local_path eq '/';    ## OS X doesn't like / at the end in mkdir().
     unless ( $fmgr->exists($local_path) ) {

@@ -4,7 +4,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id:$
+# $Id$
 # 
 # to make XX.pm, 
 #  $ cd /PATH/TO/MT_ROOT_DIR
@@ -24,31 +24,34 @@ if [ -z $TARGET ]; then
 fi
 
 echo "in php..."
-find php -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find php -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in cgi..."
-find *.cgi -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find *.cgi -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in default_templates..."
-find default_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find default_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in lib..."
-find lib -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find lib -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | grep -v L10N | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in mt-static..."
-find mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find mt-static -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
+awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
+echo "in themes..."
+find themes -type f -name "*.yaml" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in search_templates..."
-find search_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find search_templates -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in tmpl..."
-find tmpl -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | \
+find tmpl -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in addons..."
-find addons -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.cfg" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.yaml" | \
+find addons -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.cfg" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.yaml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 echo "in plugins..."
-find plugins -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.cfg" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.yaml" | \
+find plugins -type f -name "*.cgi" -or -name "*.pm" -or -name "*.pl" -or -name "*.cfg" -or -name "*.tmpl" -or -name "*.php" -or -name "*.pre" -or -name "*.js" -or -name "*.mtml" -or -name "*.yaml" | sort | \
 awk -v target=$TARGET -v dir=$SCRIPT_DIR '{print "perl", dir "/trans.pl -t lib/MT/L10N/" target ".pm", $1 }' | bash >> $TEMP_DIR/$TARGET-base.pm
 perl $SCRIPT_DIR/diff.pl -old lib/MT/L10N/$TARGET.pm -target $TEMP_DIR/$TARGET-base.pm -new $TEMP_DIR/$TARGET-nodupe.pm > $TEMP_DIR/$TARGET-old.pm
 #cat $TEMP_DIR/$TARGET-old.pm >> $TEMP_DIR/$TARGET-base.pm

@@ -7,10 +7,10 @@
 
 function smarty_modifier_sanitize($text, $spec = '1') {
     if ($spec == '1') {
-        global $mt;
+        $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog = $ctx->stash('blog');
-        $spec = $blog['blog_sanitize_spec'];
+        $spec = $blog->blog_sanitize_spec;
         $spec or $spec = $mt->config('GlobalSanitizeSpec');
     }
     require_once("sanitize_lib.php");

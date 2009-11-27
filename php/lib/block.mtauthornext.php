@@ -12,11 +12,11 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
         $ctx->localize(array('author'));
         $author = $ctx->stash('author');
         if ($author) {
-            $author_id = $author['author_id'];
+            $author_id = $author->author_id;
             if (isset($_next_cache[$author_id])) {
                 $next_author = $_next_cache[$author_id];
             } else {
-                $name = $author['author_name'];
+                $name = $author->author_name;
                 $blog_id = $ctx->stash('blog_id');
                 $args = array('sort_by' => 'author_name',
                               'sort_order' => 'ascend',
@@ -24,7 +24,7 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'need_entry' => 1);
-                list($next_author) = $ctx->mt->db->fetch_authors($args);
+                list($next_author) = $ctx->mt->db()->fetch_authors($args);
                 if ($next_author) {
                     $_next_cache[$author_id] = $next_author;
                     $ctx->stash('author', $next_author);

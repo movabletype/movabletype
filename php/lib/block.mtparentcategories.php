@@ -6,13 +6,13 @@
 # $Id$
 
 function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
-    if ($cat['category_parent']) {
+    if ($cat->category_parent) {
         if ($class == 'folder')
-            $parent = $ctx->mt->db->fetch_folder($cat['category_parent']);
+            $parent = $ctx->mt->db()->fetch_folder($cat->category_parent);
         else
-            $parent = $ctx->mt->db->fetch_category($cat['category_parent']);
+            $parent = $ctx->mt->db()->fetch_category($cat->category_parent);
         if ($parent) {
-            $cat['_parent'] =& $parent;
+            $cat->parent_category = $parent;
             array_unshift($list, 0); $list[0] =& $parent;
             get_parent_categories($parent, $ctx, $list);
         }
@@ -28,7 +28,7 @@ function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
         $cat = get_category_context($ctx, $class);
         $parents = array();
         get_parent_categories($cat, $ctx, $parents, $class);
-        if (!isset($args['exclude_current'])) {
+        if (!isset($args['exclude_current']) || ($args['exclude_current'] == 0)) {
             $parents[] = $cat;
         }
         if (isset($args['glue'])) {

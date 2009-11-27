@@ -259,7 +259,7 @@ sub upgrade_functions {
             priority => 9.3,
             code => sub {
                 my $self = shift;
-                $self->add_step('core_upgrade_templates', Install => 1);
+                $self->add_step('core_upgrade_templates');
             },
         },
         'core_replace_openid_username' => {
@@ -378,7 +378,6 @@ sub upgrade_functions {
                     require MT::PublishOption;
                     my @tmpls = MT::Template->load( { blog_id => $blog->id } );
                     foreach my $tmpl (@tmpls) {
-
                         if ( $tmpl->build_dynamic ) {
                             require MT::TemplateMap;
                             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
@@ -391,9 +390,13 @@ sub upgrade_functions {
                                 $map->save;
                             }
                         }
-                        if ( !$tmpl->rebuild_me && $tmpl->type eq 'index' ) {
+                        elsif ( !$tmpl->rebuild_me && $tmpl->type eq 'index' ) {
                             $tmpl->build_type(
                                 MT::PublishOption::MANUALLY() );
+                            $tmpl->save;
+                        }
+                        elsif ( !defined $tmpl->build_type ) {
+                            $tmpl->build_type( MT::PublishOption::ONDEMAND() );
                             $tmpl->save;
                         }
                     }
@@ -469,7 +472,7 @@ sub upgrade_functions {
         'core_disable_cloner_plugin' => {
             version_limit => 4.0073,
             code => sub {
-              my $cfg = MT->config;
+            	my $cfg = MT->config;
                 $cfg->PluginSwitch("Cloner/cloner.pl=0", 1);
                 $cfg->save_config;
             }
@@ -797,7 +800,7 @@ sub core_populate_author_auth_type {
         if ($u->name =~ m(^openid\n(.*)$)) {
             my $url = $1;
             if (eval { require Digest::MD5; 1; }) {
-                $url = Digest::MD5::md5_hex($url);
+                $url = Digest::MD5::md5_hex(Encode::encode_utf8($url));
             } else {
                 $url = substr $url, 0, 255;
             }
@@ -1033,7 +1036,8 @@ sub core_upgrade_meta_for_table {
     if (!$offset) {
         $self->progress($msg, $pid);
     } else {
-        my $count = $class->count();
+        my $count = $class->count(
+            { $class->properties->{class_column} ? ( class => '*' ) : () } );
         return 0 unless $count;
         $self->progress(sprintf($msg . " (%d%%)", ($offset/$count*100)), $pid);
     }

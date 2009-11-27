@@ -9,15 +9,15 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     $cmt = $ctx->stash('comment');
     $cmntr = $ctx->stash('commenter');
     if (!$cmntr) {
-        if ($cmt['comment_commenter_id']) {
+        if ($cmt->comment_commenter_id) {
             # load author related to this commenter.
-            $cmntr = $ctx->mt->db->fetch_author($cmt['comment_commenter_id']);
+            $cmntr = $cmt->commenter();
             if (!$cmntr) return "";
         }
     }
     if (!$cmntr) return "";
-    if (isset($cmntr['author_url']))
-        $link = $cmntr['author_url'];
+    if (isset($cmntr->author_url))
+        $link = $cmntr->author_url;
     require_once "function.mtstaticwebpath.php";
     $static_path = smarty_function_mtstaticwebpath($args, $ctx);
     require_once "commenter_auth_lib.php";

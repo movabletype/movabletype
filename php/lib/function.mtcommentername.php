@@ -7,7 +7,7 @@
 
 function smarty_function_mtcommentername($args, &$ctx) {
     $a =& $ctx->stash('commenter');
-    $name = isset($a) ? $a['author_nickname'] : '';
+    $name = isset($a) ? $a->author_nickname : '';
     if ($name == '') {
         $name = $ctx->tag('CommentName');
     }

@@ -7,7 +7,7 @@
 
 function smarty_block_mtasset($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
-        $asset = $ctx->mt->db->fetch_assets($args);
+        $asset = $ctx->mt->db()->fetch_assets($args);
     } else {
         $asset = array();
     }

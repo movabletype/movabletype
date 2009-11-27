@@ -5,21 +5,20 @@
 #
 # $Id$
 
-define('STATUS_HOLD', 1);
-define('STATUS_RELEASE', 2);
-define('STATUS_REVIEW', 3);
-define('STATUS_FUTURE', 4);
-
 function status_text($s) {
-    // TODO: translations of these statuses
-    return $s == STATUS_HOLD ? "Draft" :
-        ($s == STATUS_RELEASE ? "Publish" :
-            ($s == STATUS_REVIEW ? "Review" :
-                ($s == STATUS_FUTURE ? "Future" : '')));
+    $status = array(
+        1 => "Draft",    # STATUS_HOLD
+        2 => "Publish",  # STATUS_RELEASE
+        3 => "Review",   # STATUS_REVIEW
+        4 => "Future"    # STATUS_FUTURE
+    );
+
+    $mt = MT::get_instance();
+    return $mt->translate($status[$s]);
 }
 
 function smarty_function_mtentrystatus($args, &$ctx) {
     $entry = $ctx->stash('entry');
-    return status_text($entry['entry_status']);
+    return status_text($entry->entry_status);
 }
 ?>

@@ -203,6 +203,14 @@ sub save {
         my $meta_col_def = $meta_obj->column_def($type);
         my $meta_is_blob = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
 
+        my $enc = MT->config->PublishCharset || 'UTF-8';
+        my ( $data, $utf8_data );
+        $data = $utf8_data = $meta_obj->$type;
+        unless ( ref $data ) {
+            $data = Encode::encode($enc, $data) if Encode::is_utf8( $data );
+        }
+        $meta_obj->$type( $data, { no_changed_flag => 1 } );
+
         ## xxx can be a hook?
         if ( ! defined $meta_obj->$type() ) {
             $meta_obj->remove;
@@ -211,15 +219,18 @@ sub save {
             serialize_blob($field, $meta_obj) if $meta_is_blob;
             my $meta_class = $proxy->META_CLASS();
             {
-				no strict 'refs';
-				if (${"${meta_class}::REPLACE_ENABLED"}) {
-					$meta_obj->replace;
-				} 
-				else {
-					$meta_obj->save;
-				}
+                no strict 'refs';
+                if (${"${meta_class}::REPLACE_ENABLED"}) {
+                $meta_obj->replace;
+                }
+                else {
+                    $meta_obj->save;
+                }
             }
             unserialize_blob($meta_obj) if $meta_is_blob;
+        }
+        unless ( ref $utf8_data ) {
+            $meta_obj->$type( $utf8_data, { no_changed_flag => 1 } );
         }
     }
 }
@@ -317,6 +328,13 @@ sub load_objects {
             elsif ( $meta_col_def->{type} eq 'datetime' ) {
                 $meta_obj->$type( _db2ts( $meta_obj->$type ) );
             }
+
+            my $enc = MT->config->PublishCharset || 'UTF-8';
+            my $data = $meta_obj->$type;
+            unless ( ref $data ) {
+                $data = Encode::decode($enc, $data) unless Encode::is_utf8( $data );
+            }
+            $meta_obj->$type( $data, { no_changed_flag => 1 } );
         }
         $proxy->{__objects}->{$name} = $meta_obj;
         $proxy->{__loaded} ||= {};
@@ -360,7 +378,7 @@ sub do_unserialization {
         }
     } elsif ($prefix eq 'ASC') {
         my $enc = MT->config('PublishCharset');
-        $$dataref = MT::I18N::encode_text( $$dataref, undef, $enc );
+        $$dataref = Encode::decode( $enc, $$dataref ) unless Encode::is_utf8( $$dataref );
         return $dataref;
     } else {
         warn "Something's wrong with the data: prefix is $prefix";

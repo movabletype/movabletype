@@ -101,6 +101,7 @@ sub start_import {
     require MT::Util;
     my $parser = MT::Util::sax_parser();
     $param{Callback}->(ref($parser) . "\n") if MT::ConfigMgr->instance->DebugMode;
+    $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
     my $e;
     eval { $parser->parse_string($xml); };

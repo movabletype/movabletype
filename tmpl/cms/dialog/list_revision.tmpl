@@ -1,0 +1,20 @@
+<$mt:setvar name="screen_type" value="dialog-screen list-revision-dialog"$>
+<mt:setvarblock name="page_title"><__trans phrase="Revision History"></mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<p class="hint"><__trans phrase="Select the revision to populate the values of the Edit screen."></p>
+
+<mt:include name="include/revision_table.tmpl" show_actions="0">
+
+<mt:setvarblock name="action_buttons">
+        <button
+            type="submit"
+            accesskey="x"
+            class="cancel action mt-close-dialog"
+            title="<__trans phrase="Cancel (x)">"
+            ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+
+<mt:include name="dialog/footer.tmpl">

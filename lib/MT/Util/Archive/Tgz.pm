@@ -116,8 +116,9 @@ sub extract {
 
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
-        my $f = File::Spec->catfile( $path, $file );
-        $obj->{_arc}->extract_file( $file, $f );
+        my $file_enc = Encode::decode_utf8( $file );
+        my $f = File::Spec->catfile( $path, $file_enc );
+        $obj->{_arc}->extract_file( $file, MT::FileMgr::Local::_local( $f ) );
     }
     1;
 }
@@ -127,11 +128,16 @@ sub add_file {
     my ($path, $file_path) = @_;
     return $obj->error(MT->translate('Can\'t write to the object'))
         if 'r' eq $obj->{_mode};
+    my $encoded_path = $file_path;
+    $encoded_path = MT::FileMgr::Local::_syserr($encoded_path)
+        if !Encode::is_utf8($encoded_path);
+    $encoded_path = Encode::encode_utf8($encoded_path)
+        if Encode::is_utf8($encoded_path);
     my $filename =
         File::Spec->catfile( $path, $file_path );
     my $arc = $obj->{_arc};
     my @arc_files = $arc->add_files($filename);
-    $arc_files[0]->rename( $file_path );
+    $arc_files[0]->rename( $encoded_path );
 }
 
 sub add_string {
@@ -143,6 +149,28 @@ sub add_string {
         unless $string && $file_name;
 
     $obj->{_arc}->add_data($file_name, $string);
+}
+
+sub add_tree {
+    my $obj = shift;
+    my ( $dir_path ) = @_;
+    return $obj->error(MT->translate('Can\'t write to the object'))
+        if 'r' eq $obj->{_mode};
+    my $arc = $obj->{_arc};
+    require File::Find;
+    require File::Spec;
+    require Cwd;
+    my $oldcwd = File::Spec->rel2abs(Cwd::getcwd());
+    chdir $dir_path;
+    $arc->setcwd($dir_path);
+    my $sub = sub {
+        my $file = $File::Find::name;
+        return if -d $file;
+        my $rel = File::Spec->abs2rel( $file, $dir_path );
+        $arc->add_files($rel);
+    };
+    File::Find::find( { wanted => $sub, no_chdir => 1, }, $dir_path );
+    chdir $oldcwd;
 }
 
 1;

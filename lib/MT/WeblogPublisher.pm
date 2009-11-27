@@ -1274,18 +1274,17 @@ sub rebuild_file {
         $html = $tmpl->build( $ctx, $cond );
         unless (defined($html)) {
             $timer->unpause if $timer;
-            require MT::I18N;
             return $mt->error(
             (
                 $category ? MT->translate(
                     "An error occurred publishing [_1] '[_2]': [_3]",
-                    MT::I18N::lowercase( $category->class_label ),
+                    lc( $category->class_label ),
                     $category->id,
                     $tmpl->errstr
                   )
                 : $entry ? MT->translate(
                     "An error occurred publishing [_1] '[_2]': [_3]",
-                    MT::I18N::lowercase( $entry->class_label ),
+                    lc( $entry->class_label ),
                     $entry->title,
                     $tmpl->errstr
                   )
@@ -1775,7 +1774,7 @@ sub publish_future_posts {
     require MT::Util;
     my $mt            = MT->instance;
     my $total_changed = 0;
-    my @blogs = MT::Blog->load(undef, {
+    my @blogs = MT::Blog->load({ class => '*' }, {
         join => MT::Entry->join_on('blog_id', {
             status => MT::Entry::FUTURE(),
         }, { unique => 1 })
@@ -1928,6 +1927,8 @@ sub remove_entry_archive_file {
 ## but if the entry is not available it uses the time_start
 ## and time_end values
 ##
+{
+my %tokens_cache;
 sub archive_file_for {
     my $mt = shift;
     init_archive_types() unless %ArchiveTypes;
@@ -2003,7 +2004,7 @@ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '"
         local $ctx->{archive_type} = $at;
         require MT::Builder;
         my $build = MT::Builder->new;
-        my $tokens = $build->compile( $ctx, $file_tmpl )
+        my $tokens = $tokens_cache{ $file_tmpl } ||= $build->compile( $ctx, $file_tmpl )
           or return $blog->error( $build->errstr() );
         defined( $file = $build->build( $ctx, $tokens ) )
           or return $blog->error( $build->errstr() );
@@ -2013,6 +2014,7 @@ s!(<\$?MT[^>]+?>)|(%[_-]?[A-Za-z])!$1 ? $1 : '<MTFileTemplate format="'. $2 . '"
         $file .= '.' . $ext if $ext;
     }
     $file;
+}
 }
 
 # Adds an element to the rebuild queue when the plugin is enabled.

@@ -1,5 +1,4 @@
-<$mt:setvar name="list_users" value="1"$>
-<mt:setvarblock name="page_title"><__trans phrase="Users: System-wide"></mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Manage Users"></mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_status_disabled">
         <mtapp:statusmsg
@@ -47,27 +46,33 @@
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="content_header">
+<mt:setvarblock name="add_new_button">
     <mt:unless name="external_user_management">
         <mt:if name="can_create_user">
-        <ul class="action-link-list">
-            <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create User"></a></li>
-        </ul>
+            <a class="add-new button" href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create New"></a></li>
         </mt:if>
     </mt:unless>
 </mt:setvarblock>
 
-<mtsetvarblock name="content_nav">
-    <mt:include name="include/users_content_nav.tmpl">
-</mtsetvarblock>
-
 <mt:setvarblock name="related_content">
+<mt:if name="user_view">
+    <mt:unless name="blog_id">
+        <mtapp:widget
+            id="user-properties"
+            label="<__trans phrase="User properties">">
+            <mt:include name="include/users_content_nav.tmpl">
+        </mtapp:widget>
+    </mt:unless>
+</mt:if>
+
+<mt:if tag="mtapp:listfilters">
     <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <$mtapp:listfilters$>
     </mtapp:widget>
-    <$mtapp:pageactions from="list_authors"$>
+</mt:if>
+    <$mtapp:pageactions from="list_author"$>
 </mt:setvarblock>
 
 <mt:setvarblock name="html_body_footer">
@@ -76,81 +81,57 @@
 
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <a href="javascript:void(0)"
-        onclick="setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1); return false;"
+    <button
         accesskey="e"
         title="<__trans phrase="Enable selected users (e)">"
-        ><__trans phrase="_USER_ENABLE" escape="js"></a>
-    <a href="javascript:void(0)"
-        onclick="var sysadmin = getByID('sysadmin'); if (sysadmin && sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); return false; } setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0); return false;"
+        class="mt-enable-users"
+        ><__trans phrase="_USER_ENABLE" escape="js"></button>
+    <button
         accesskey="d"
         title="<__trans phrase="Disable selected users (d)">"
-        ><__trans phrase="_USER_DISABLE" escape="js"></a>
+        class="mt-disable-users"
+        ><__trans phrase="_USER_DISABLE" escape="js"></button>
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-    <script type="text/javascript">
-    /* <![CDATA[ */
-    function enableFilterButton() {
-        getByID("filter-button").style.display = "inline";
-    }
-    function toggleFilter() {
-        var filterActive = getByID("filter-active");
-        if (filterActive.style.display == "none") {
-            filterActive.style.display = "block";
-            getByID("filter-select").style.display = "none";
-        } else {
-            filterActive.style.display = "none";
-            getByID("filter-select").style.display = "block";
-        }
-    }
+<script type="text/javascript">
+/* <![CDATA[ */
+function enableFilterButton() {
+    jQuery('#filter-button').css('display', 'inline');
+}
 
-    function setFilterCol(choice) {
-        var sel = getByID('filter-select');
-        if (!sel) return;
-        sel.className = "filter-" + choice;
-        if (choice == 'none')
-            getByID('filter-mode').selectedIndex = 0;
-        else {
-            getByID('filter-mode').selectedIndex = 1;
-            var fld = getByID('filter-col');
-            if (choice == 'status')
-                fld.selectedIndex = 0;
-            else if (choice == 'commenter')
-                fld.selectedIndex = 1;
-            col_span = getByID("filter-text-col");
-            if (fld.selectedIndex > -1 && col_span)
-                col_span.innerHTML = '<strong>' +
-                    fld.options[fld.selectedIndex].text + '</strong>';
-        }
-    }
+function toggleFilter() {
+    jQuery('#filter-active').toggle();
+    jQuery('#filter-select').toggle();
+}
 
-    var tableSelect;
-    function init() {
-        // setup
-        tableSelect = new TC.TableSelect( "author-listing-table" );
-        tableSelect.rowSelect = true;
-        setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
-        setFilterVal('<mt:var name="filter_val" escape="js">');
-    </mt:if>
+function setFilterCol(choice) {
+    if (!jQuery('#filter-select').length) return;
+    if (choice != 'none') {
+        jQuery('#filter-select span').show().children('span').hide();
+        jQuery('#filter-'+choice).show().addClass('filter-'+choice);
+        jQuery('#filter-col').val(choice);
+        jQuery('#filter-text-col').html('<strong>'+jQuery('#filter-col option:selected').text()+'</strong>');
     }
+}
 
-    TC.attachLoadEvent( init );
-    /* ]]> */
-    </script>
+function init() {
+    setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);
+    <mt:if name="filter">setFilterVal('<mt:var name="filter_val" escape="js">');</mt:if>
+}
+/* ]]> */
+</script>
 </mt:setvarblock>
 <mt:setvarblock name="list_filter_form">
     <div class="listing-filter">
-        <div class="listing-filter-inner inner pkg">
-            <div class="filter">
-                <div id="filter-title">
+        <div class="filter">
+            <div id="filter-title">
                 <mt:if name="filter_label">
                     <__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_label"$>">
-                    <a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+                    <a href="<mt:var name="script_url">?__mode=list_author<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
                 <mt:else>
                     <__trans phrase="Showing All Users">
                 </mt:if>
-                </div>
             </div>
         </div>
     </div>
@@ -158,4 +139,25 @@
 <mt:include name="include/header.tmpl">
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/author_table.tmpl"$>
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+
+    jQuery('button.mt-enable-users').mtEnableUsers({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-disable-users').mtDisableUsers({
+        message: '<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">',
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

@@ -3,7 +3,7 @@
         <li id="tag-tab" class="tab <mt:if name="tab" eq="tag">selected-tab</mt:if>" mt:tab="tag" mt:command="select-tab" onclick="return blogStatsTabSelect('tag');"><a href="javascript:void(0);"><span><__trans phrase="Tags"></span></a></li>
     </mt:setvarblock>
 
-    <div id="tag-panel" class="<mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
+    <div id="tag-panel" class="blog-stats-widget-panel <mt:unless name="tab" eq="tag">hidden</mt:unless>" mt:tab-content="tag">
 <mt:Section cache_prefix="tagcloud" period="3600" by_blog="1" by_user="1">
         <div id="tag-cloud">
             <ul id="tag-cloud-list">

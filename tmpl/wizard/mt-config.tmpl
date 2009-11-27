@@ -34,11 +34,10 @@ DBPassword <mt:var name="database_password"></mt:if><mt:if name="database_host">
 DBHost <mt:var name="database_host"></mt:if><mt:if name="database_port">
 DBPort <mt:var name="database_port"></mt:if><mt:if name="database_socket">
 DBSocket <mt:var name="database_socket"></mt:if></mt:if><mt:if name="use_sqlite2">
-UseSQLite2 1</mt:if><mt:if name="email_address_main">
+UseSQLite2 1</mt:if>
 
-#======== MAIL =======================
+#======== MAIL =======================<mt:if name="mail_transfer">
 
-EmailAddressMain <mt:var name="email_address_main"></mt:if><mt:if name="mail_transfer">
 MailTransfer <mt:var name="mail_transfer"><mt:if name="smtp_server">
 SMTPServer <mt:var name="smtp_server"><mt:else><mt:if name="sendmail_path">
 SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="temp_dir">

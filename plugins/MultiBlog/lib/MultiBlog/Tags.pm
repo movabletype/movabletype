@@ -21,11 +21,19 @@ sub MultiBlog {
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
+    if ($args->{blog_id}) {
+        $args->{blog_ids} = $args->{blog_id};
+        delete $args->{blog_id};
+    }
+
     # If MTMultiBlog was called with no arguments, we check the 
     # blog-level settings for the default includes/excludes.
-    unless (   $args->{blog_ids} 
-            || $args->{include_blogs} 
-            || $args->{exclude_blogs} ) {
+    unless (   $args->{blog_ids}
+            || $args->{include_blogs}
+            || $args->{exclude_blogs}
+            || $args->{include_websites}
+            || $args->{exclude_websites}
+            || $args->{site_ids} ) {
         my $id = $ctx->stash('blog_id');
         my $is_include = $plugin->get_config_value( 
                 'default_mtmultiblog_action', "blog:$id" );
@@ -141,6 +149,10 @@ sub loop {
     # Set the context for blog loading
     $ctx->set_blog_load_context($args, \%terms, \%args, 'id')
         or return $ctx->error($ctx->errstr);
+    $terms{'class'} = '*'
+        if ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' ) ||
+           ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' ) ||
+           ( $args->{site_ids} && lc $args->{site_ids} eq 'all' );
 
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');

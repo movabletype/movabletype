@@ -36,6 +36,7 @@ sub rename;
 sub delete;
 sub content_is_updated { 1 }
 sub file_mod_time { undef }
+sub file_size { undef }
 
 sub is_handle {
     my($fmgr, $f) = @_;

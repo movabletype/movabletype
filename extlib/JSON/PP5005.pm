@@ -5,14 +5,9 @@ use strict;
 
 my @properties;
 
-$JSON::PP5005::VERSION = '1.07';
+$JSON::PP5005::VERSION = '1.09';
 
 BEGIN {
-    *JSON::PP::JSON_PP_encode_ascii      = \&_encode_ascii;
-    *JSON::PP::JSON_PP_encode_latin1     = \&_encode_latin1;
-    *JSON::PP::JSON_PP_decode_surrogates = \&_decode_surrogates;
-    *JSON::PP::JSON_PP_decode_unicode    = \&_decode_unicode;
-
 
     sub utf8::is_utf8 {
         0; # It is considered that UTF8 flag off for Perl 5.005.
@@ -30,6 +25,11 @@ BEGIN {
 
     sub utf8::decode {
     }
+
+    *JSON::PP::JSON_PP_encode_ascii      = \&_encode_ascii;
+    *JSON::PP::JSON_PP_encode_latin1     = \&_encode_latin1;
+    *JSON::PP::JSON_PP_decode_surrogates = \&_decode_surrogates;
+    *JSON::PP::JSON_PP_decode_unicode    = \&_decode_unicode;
 
     # missing in B module.
     sub B::SVf_IOK () { 0x00010000; }
@@ -70,6 +70,11 @@ sub _decode_surrogates { # from http://homepage1.nifty.com/nomenclator/unicode/u
 sub _decode_unicode {
     my ($u) = @_;
     my ($utf8bit);
+
+    if ( $u =~ /^00([89a-f][0-9a-f])$/i ) { # 0x80-0xff
+         return pack( 'H2', $1 );
+    }
+
     my $bit = unpack("B*", pack("H*", $u));
 
     if ( $bit =~ /^00000(.....)(......)$/ ) {
@@ -83,40 +88,6 @@ sub _decode_unicode {
     }
 
     return pack('B*', $utf8bit);
-}
-
-
-sub _is_valid_utf8 {
-    my $str = $_[0];
-    my $is_utf8;
-
-    while ($str =~ /(?:
-          (
-             [\x00-\x7F]
-            |[\xC2-\xDF][\x80-\xBF]
-            |[\xE0][\xA0-\xBF][\x80-\xBF]
-            |[\xE1-\xEC][\x80-\xBF][\x80-\xBF]
-            |[\xED][\x80-\x9F][\x80-\xBF]
-            |[\xEE-\xEF][\x80-\xBF][\x80-\xBF]
-            |[\xF0][\x90-\xBF][\x80-\xBF][\x80-\xBF]
-            |[\xF1-\xF3][\x80-\xBF][\x80-\xBF][\x80-\xBF]
-            |[\xF4][\x80-\x8F][\x80-\xBF][\x80-\xBF]
-          )
-        | (.)
-    )/xg)
-    {
-        if (defined $1) {
-            $is_utf8 = 1 if (!defined $is_utf8);
-        }
-        else {
-            $is_utf8 = 0 if (!defined $is_utf8);
-            if ($is_utf8) { # eventually, not utf8
-                return;
-            }
-        }
-    }
-
-    return $is_utf8;
 }
 
 
@@ -168,7 +139,7 @@ Makamaka Hannyaharamitu, E<lt>makamaka[at]cpan.orgE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2007-2008 by Makamaka Hannyaharamitu
+Copyright 2007-2009 by Makamaka Hannyaharamitu
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 

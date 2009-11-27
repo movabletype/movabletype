@@ -1,0 +1,16 @@
+<__trans phrase="Thank you registering for an account to comment on [_1]." params="<$mt:BlogName$>"> 
+
+<__trans phrase="For your own security and to prevent fraud, we ask that you please confirm your account and email address before continuing. Once confirmed you will immediately be allowed to comment on [_1]." params="<$mt:BlogName$>">
+
+<__trans phrase="To confirm your account, please click on or cut and paste the following URL into a web browser:">
+
+<$mt:Var name="confirm_url"$>
+
+<__trans phrase="If you did not make this request, or you don't want to register for an account to comment on [_1], then no further action is required." params="<$mt:BlogName$>">
+
+<__trans phrase="Thank you very much for your understanding.">
+
+<__trans phrase="Sincerely,">
+<mt:If tag="AuthorDisplayName"><$mt:AuthorDisplayName encode_html="1"$><mt:Else>Movable Type</mt:If>
+
+<$mt:Include module="<__trans phrase="Mail Footer">"$>

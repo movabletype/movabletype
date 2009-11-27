@@ -8,7 +8,7 @@
 function smarty_function_mtentrybasename($args, &$ctx) {
     $entry = $ctx->stash('entry');
     if (!$entry) return '';
-    $basename = $entry['entry_basename'];
+    $basename = $entry->entry_basename;
     if ($sep = $args['separator']) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);

@@ -1,0 +1,54 @@
+<$mt:var name="pager" value="$hide_pager" default="0"$>
+<div id="selector" class="selector listing">
+<mtapp:listing
+    hide_pager="$pager"
+    show_actions="$show_actions"
+    target="_self"
+    empty_message="<__trans phrase="No revisions could be found.">">
+    <mt:if name="__first__">
+        <thead>
+            <tr>
+                <th class="datetime"><__trans phrase="Date"></th>
+                <th class="note primary-col"><__trans phrase="Note"></th>
+        <mt:if name="object_type" like="(entry|page)">
+                <th class="status"><__trans phrase="Status"></th>
+        </mt:if>
+                <th class="created-by"><__trans phrase="Saved By"></th>
+            <mt:loop name="more_column_headers">
+                <mt:var name="__value__">
+            </mt:loop>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:if name="is_current"> current-revision</mt:if>">
+                <td class="datetime"><span class="revision-datetime"><a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a></span></td>
+                <td class="note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
+        <mt:if name="object_type" like="(entry|page)">
+                <td class="status">
+            <mt:if name="rev_status" eq="1">
+                    <span class="icon-left-wide icon-draft"><__trans phrase="Draft"></span>
+            <mt:else name="rev_status" eq="3">
+                    <span class="icon-left-wide icon-warning"><__trans phrase="Review"></span>
+            <mt:else name="rev_status" eq="4">
+                    <span class="icon-left-wide icon-future"><__trans phrase="Scheduled"></span>
+            <mt:else name="rev_status" eq="2">
+                    <span class="icon-left-wide icon-success"><__trans phrase="Published"></span>
+            <mt:else name="rev_status" eq="5">
+                    <span class="icon-left-wide icon-spam"><__trans phrase="Spam"></span>
+            </mt:if>
+                </td>
+        </mt:if>
+                <td class="created-by"><span class="revision-by"><mt:var name="created_by" escape="html"></span></td>
+             <mt:loop name="more_columns">
+                <mt:var name="__value__">
+             </mt:loop>
+            </tr>
+    <mt:if name="__last__">
+        </tbody>
+    </mt:if>
+</mtapp:listing>
+
+<mt:include name="include/pagination.tmpl">
+
+</div>

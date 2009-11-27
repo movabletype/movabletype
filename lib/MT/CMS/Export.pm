@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Export;
 
 use strict;
@@ -10,7 +15,7 @@ sub start_export {
 
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      if ( $perms && !$perms->can_administer_blog );
+      if !$app->can_do('open_blog_export_screen');
 
     $param{blog_id} = $blog_id;
     $app->load_tmpl( 'export.tmpl', \%param );
@@ -31,7 +36,7 @@ sub export {
       );
     my $perms = $app->permissions;
     return $app->error( $app->translate("You do not have export permissions") )
-      unless $perms && $perms->can_edit_config;
+      unless $perms && $perms->can_do('export_blog');
     $app->validate_magic() or return;
     my $file = dirify( $blog->name ) . ".txt";
 
@@ -51,7 +56,7 @@ sub export {
         : 'text/plain'
     );
     require MT::ImportExport;
-    MT::ImportExport->export( $blog, sub { $app->print(@_) } )
+    MT::ImportExport->export( $blog, sub { $app->print_encode( @_ ) } )
       or return $app->error( MT::ImportExport->errstr );
     1;
 }

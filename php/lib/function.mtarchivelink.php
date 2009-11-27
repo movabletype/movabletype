@@ -21,23 +21,22 @@ function smarty_function_mtarchivelink($args, &$ctx) {
          $ts = $ws;
     } elseif ($at == 'Yearly') {
          $ts = substr($ts, 0, 4) . '0101000000';
-    } elseif ($at == 'Individual') {
+    } elseif ($at == 'Individual' || $at == 'Page') {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('EntryPermalink', $args);
     } elseif ($at == 'Category') {
         return $ctx->tag('CategoryArchiveLink', $args);
     }
-    $args['blog_id'] = $blog['blog_id'];
-    global $_archivers;
-    if(!isset($_archivers[$at])) {
-        return '';
-    }
-    $link_sql = $_archivers[$at]->get_archive_link_sql($ctx, $ts, $at, $args);
-    $link = $ctx->mt->db->archive_link($ts, $at, $link_sql, $args);
-    if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {
+    $args['blog_id'] = $blog->blog_id;
+
+    $ar = ArchiverFactory::get_archiver($at);
+    $link_sql = $ar->get_archive_link_sql($ts, $at, $args);
+    $link = $ctx->mt->db()->archive_link($ts, $at, $link_sql, $args);
+
+    if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
-        $ext = $blog['blog_file_extension'];
+        $ext = $blog->blog_file_extension;
         if ($ext) $ext = '.' . $ext;
         $index .= $ext;
         $link = preg_replace('/\/(#.*)?$/', "/$index\$1", $link);

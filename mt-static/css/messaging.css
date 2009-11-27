@@ -1,83 +1,138 @@
-/* Status Messages -------------------------------------------------------------------------------- */
-.msg {
-    margin: 0 0 10px 0;
-    padding: 16px 10px 16px 46px;
+/* - Status Message */
+.msg { 
+    position: relative;
+    margin: 10px 0;
+    padding: 0.8em;
     background-repeat: no-repeat;
-    background-position: 12px center;
+    background-position: 8px center;
+    -moz-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
 }
-.msg-success {
-    background-color: #CFC;
-    background-image: url('../images/icon_success.png');
+.msg-success { 
+    background-color: #cee4ae;
 }
-.msg-error {
-    background-color: #FF9;
-    background-image: url('../images/icon_error.png');
+.msg-alert { 
+    background-color: #fef263;
 }
-.msg-info {
-    background-color: #fff;
-    background-image: url('../images/icon_info.gif');
+.msg-error { 
+    background-color: #f6bfbc;
 }
-.msg-alert {
-    background-color: #FF9;
-    background-image: url('../images/icon_alert.png');
-}
-.msg-publishing {
-    background-color: #fff;
-    background-image: url('../images/ani-rebuild.gif');
+.msg-info { 
+    background-color: #e6eae3;
 }
 
-.msg a.close-me {
-    background: transparent url('../images/icon_close.png') no-repeat scroll 3px 4px;
-    display: block;
-    float: right;
-    height: 18px;
-    min-width: 0;
-    padding: 2px;
-    width: 22px;
+.msg-publishing { 
+    padding-left: 40px;
+    background-image: url(../images/ani-rebuild.gif);
+}
+
+.msg p { 
+    margin: 0 45px 0 0;
+}
+
+.msg img.mt-close-msg { 
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    margin-top: -5px;
+    cursor: pointer;
+}
+
+#sign-in .msg p, 
+#system-allow-pings p, 
+#system-allow-comments p,
+.msg-error p, 
+.rebuilding-screen .msg p, 
+.restore-publishing-config .msg p, 
+.insert-asset-dialog .msg p, 
+.edit-template .msg-info p, 
+.rebuilding-screen .msg-info p, 
+.pinging-screen .msg-info p, 
+.list-notification .msg-info p, 
+.zero-state p { 
     margin: 0;
 }
-.msg a.close-me span {
-    display: none;
-}
 
-#system-allow-pings a.close-me,
-#system-allow-comments a.close-me,
-.msg-error a.close-me,
-.rebuilding-screen .msg a.close-me,
-.restore-publishing-config .msg a.close-me,
-.insert-asset-dialog .msg a.close-me,
-.edit-template .msg-info a.close-me,
-.rebuilding-screen .msg-info a.close-me,
-.pinging-screen .msg-info a.close-me,
-.list-notification .msg-info a.close-me,
-.zero-state a.close-me {
+.msg-error img.mt-close-msg, 
+.insert-asset-dialog .msg img.mt-close-msg, 
+.zero-state img.mt-close-msg { 
     display: none;
 }
 
 
-/* Debug Panel Messages ---------------------------------------------------------------------------------- */
-
-.debug-panel {
-    width: 100%;
-    border-top: 1px dotted #f55;
+.field-content label.msg-error { 
+    display: block;
     margin-top: 5px;
-    background-color: #daa;
+    border: 0;
+    background-color: transparent;
+    color: #c60;
+}
+
+.error-field input[type="text"] { 
+    border-color: red;
+}
+
+/* -- for Permission Message */
+.msg .detail { 
+    margin: 10px 0 0 10px;
+    color: #7b7c7d;
+}
+
+.msg.active .title .detail-link { 
+    display: none;
+}
+
+/* - for Widget Content */
+p.zero-state { 
+    margin-bottom: 0;
+}
+
+/* - Generic Website Message */
+#is-generic-website { 
+    margin: 0;
+    padding: 0.75em 0;
+    border-bottom: 1px solid #c8c2be;
+    background-color: #F2F2B0;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
+}
+
+#is-generic-website p { 
+    margin: 0 auto;
+    padding: 0 20px;
+    font-size: 95%;
+}
+
+/* - Debug Panel Messages */
+.debug-panel { 
+    position: absolute;
+    width: 100%;
+    border-top: 1px solid #c8c2be;
+    background-color: #f6bfbc;
     text-align: left;
 }
-.debug-panel h3 {
+
+.debug-panel h3 { 
     padding: 5px;
     font-size: 12px;
     margin: 0;
-    background-color: #f55;
-    color: #fff;
+    background-color: #ec6d71;
+    color: #f8fbf8;
+    text-shadow: none;
 }
 
 .debug-panel-inner li {
+    margin: 0;
+    padding: 0.2em 0.5em;
     white-space: pre;
 }
 
 .debug-panel-inner li:hover {
-    background-color: #eaa;
+    background-color: #f2a0a1;
 }
 
 .debug-panel-inner {

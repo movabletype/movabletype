@@ -16,7 +16,7 @@ function smarty_function_mtusersessioncookiename($args, &$ctx) {
     }
     if (preg_match('/%b/', $name)) {
         $blog = $ctx->stash('blog');
-        $name = preg_replace('/%b/', $blog['blog_id'], $name);
+        $name = preg_replace('/%b/', $blog->blog_id, $name);
     }
     return $name;
 }

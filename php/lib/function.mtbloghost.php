@@ -9,7 +9,7 @@ function smarty_function_mtbloghost($args, &$ctx) {
     // status: complete
     // parameters: exclude_port, signature
     $blog = $ctx->stash('blog');
-    $host = $blog['blog_site_url'];
+    $host = $blog->site_url();
     if (!preg_match('!/$!', $host))
         $host .= '/';
 

@@ -244,21 +244,109 @@ sub install_properties {
     }
 
     # inherit parent's metadata setup
-	if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
-		$class->install_meta(
-			{ ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) },
-			'meta'
-		);
-		$class->add_trigger( post_remove => \&remove_meta );
-	}
-	if ($props->{summary}) { # if ($super_props && $super_props->{meta_installed}) {
-		$class->install_meta(
-			{ ( %summary ? ( column_defs => \%summary ) : ( columns => [] ) ) },
-			'summary'
-		);
-	}
+    if ($props->{meta}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta(
+            { ( %meta ? ( column_defs => \%meta ) : ( columns => [] ) ) },
+            'meta'
+        );
+        $class->add_trigger( post_remove => \&remove_meta );
+    }
+    if ($props->{summary}) { # if ($super_props && $super_props->{meta_installed}) {
+        $class->install_meta(
+            { ( %summary ? ( column_defs => \%summary ) : ( columns => [] ) ) },
+            'summary'
+        );
+    }
+    
+    # Because of the inheritance of MT::Entry by MT::Page, we need to do this here
+    if($class->isa('MT::Revisable')) {
+        $class->init_revisioning();
+    }
+
+    my $enc = MT->config->PublishCharset || 'UTF-8';
+    # install these callbacks that is guaranteed to be called
+    # at the very last in the callback list to encode everything.
+    $class->add_trigger( '__core_final_pre_save',
+        sub {
+            my ($obj, $original) = @_;
+            my $data = $obj->get_values;
+            foreach ( keys %$data ) {
+                $data->{$_} = Encode::encode($enc, $data->{$_})
+                    if Encode::is_utf8( $data->{$_} );
+            }
+            $obj->set_values($data, { no_changed_flag => 1 });
+        },
+    );
+
+    $class->add_trigger( '__core_final_pre_search',
+        sub {
+            my ($class, $terms, $args) = @_;
+            if ( 'HASH' eq ref($terms) ) {
+                while ( my ( $k, $v ) = each %$terms ) {
+                    $terms->{$k} = _encode_terms( $v );
+                }
+            }
+            elsif ( 'ARRAY' eq ref( $terms ) ) {
+                for ( my $i = 0; $i < scalar(@$terms); ++$i ) {
+                    $terms->[$i] = _encode_terms( $terms->[$i] );
+                }
+            }
+        },
+    );
+
+    # install the callback that is guaranteed to be called
+    # at the very first in the callback list to decode everything.
+    $class->add_trigger( '__core_final_post_load',
+        sub {
+            my ($obj) = @_;
+            my $data = $obj->{column_values};
+            my $props = $obj->properties;
+            my $cols = $props->{columns};
+            my $col_defs = $obj->column_defs;
+            my %is_blob;
+            for my $col ( @$cols ) {
+                $is_blob{$col} = 1
+                    if $col_defs->{$col} && $col_defs->{$col}{type} =~ /\bblob\b/;
+            }
+            foreach ( keys %$data ) {
+                my $v = $data->{$_};
+                if ( !( Encode::is_utf8($data->{$_})) && !$is_blob{$_} ) {
+                    $data->{$_} = Encode::decode($enc, $v);
+                }
+            }
+            $obj->{__core_final_post_load_mark} = 1;
+        },
+    );
 
     return $props;
+}
+
+sub _encode_terms {
+    my ( $value ) = @_;
+    my $enc = MT->config->PublishCharset || 'UTF-8';
+
+    if ( 'SCALAR' eq ref( $value ) ) {
+        return $value unless Encode::is_utf8( $$value );
+        my $val = Encode::encode( $enc, $$value );
+        return \$val;
+    }
+    elsif ( 'HASH' eq ref( $value ) ) {
+        while ( my ( $key, $val ) = each %$value ) {
+            $value->{$key} = _encode_terms( $val );
+        }
+        return $value;
+    }
+    elsif ( 'ARRAY' eq ref( $value ) ) {
+        my @values;
+        foreach my $val ( @$value ) {
+            push @values, _encode_terms( $val );
+        }
+        return \@values;
+    }
+    elsif ( !ref( $value ) ) {
+        return $value unless Encode::is_utf8( $value );
+        return Encode::encode( $enc, $value );
+    }
 }
 
 # A post-load trigger for classed objects
@@ -268,6 +356,7 @@ sub _post_load_rebless_object {
     if (my $col = $props->{class_column}) {
         my $type = $obj->column($col);
         my $pkg = ref($obj);
+        return unless $pkg->class_type;
         if ($pkg->class_type ne $type) {
             if (my $class = $props->{__type_to_class}{$type}) {
                 bless $obj, $class;
@@ -424,9 +513,21 @@ sub init_meta {
     my $obj = shift;
     my ($which) = @_;
     $which ||= 'meta';
-    my $class = 'MT::' . ucfirst($which) . '::Proxy';
-    eval("require $class;");
-    $obj->{"__$which"} = $class->new($obj);
+    my $res;
+    if ( lc $which eq 'meta' ) {
+        require MT::Meta::Proxy;
+        $obj->{"__meta"} = $res = MT::Meta::Proxy->new($obj);
+    }
+    elsif ( lc $which eq 'summary' ) {
+        require MT::Summary::Proxy;
+        $obj->{"__summary"} = $res = MT::Summary::Proxy->new($obj);
+    }
+    else {
+        my $class = 'MT::' . ucfirst($which) . '::Proxy';
+        eval("require $class;");
+        $obj->{"__$which"} = $res = $class->new($obj);
+    }
+    $res;
 }
 
 sub install_meta {
@@ -545,7 +646,7 @@ sub summary_args {
         key         => $class->datasource,
         column_defs => {
             $id_field         => 'integer not null',
-            type              => 'string(255) not null',
+            type              => 'string(75) not null',
             class             => 'string(75) not null',
             vchar_idx         => 'string(255)',
             vinteger_idx      => 'integer',
@@ -596,8 +697,8 @@ sub _post_load_initialize_metadata {
 sub is_meta_column {
     my $obj = shift;
     my ($field, $which) = @_;
-	$which ||= 'meta';
-	my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
+    $which ||= 'meta';
+    my $which_fields = ($which eq 'meta') ? 'fields' : 'summaries';
     my $props = $obj->properties;
     return unless $props->{$which . '_installed'};
 
@@ -777,18 +878,25 @@ sub nextprev {
     # id as a secondary sort column.
 
     my ($id, $ts) = ($obj->id, $obj->$by_field());
-    local @$args{qw( sort range_incl )}
-        = ( [ { column => $by_field, desc => $next ? 'ASC' : 'DESC' },
-            { column => 'id', desc => $next ? 'ASC' : 'DESC' } ],
-            { $by_field => 1 });
-
-    my $sibling = $class->load({
-        $by_field => ($next ? [ $ts, undef ] : [ undef, $ts ]),
-        'id' => $id,
-        %{$terms}
-    }, { not => { 'id' => 1 }, limit => 1, %$args });
-
-    return $sibling;
+    my $desc = $next ? 'ASC' : 'DESC';
+    my $op   = $next ? '>'   : '<';
+    my @terms = (
+        {   $by_field => { $op => $ts },
+            ( ref $terms ? %$terms : () ), },
+        -or =>
+        {   $by_field => $ts,
+            id        => { $op => $id },
+            ( ref $terms ? %$terms : () ), },
+    );
+    my %args = (
+        ( ref $args ? %$args : () ),
+        limit => 1,
+        sort  => [
+            { column => $by_field, desc => $desc },
+            { column => 'id',      desc => $desc },
+        ],
+    );
+    return $class->load(\@terms, \%args);
 }
 
 ## Drivers.
@@ -924,9 +1032,20 @@ sub call_trigger {
     my $name = shift;
     my $class = ref $obj || $obj;
     my $pre_trigger = $name =~ m/^pre_/;
-    $obj->SUPER::call_trigger($name, @_) if $pre_trigger;
-    MT->run_callbacks($class . '::' . $name, $obj, @_);
-    $obj->SUPER::call_trigger($name, @_) unless $pre_trigger;
+    if ( $pre_trigger ) {
+        $obj->SUPER::call_trigger($name, @_);
+        MT->run_callbacks($class . '::' . $name, $obj, @_);
+        $obj->SUPER::call_trigger('__core_final_pre_save', @_)
+            if 'pre_save' eq $name;
+        $obj->SUPER::call_trigger('__core_final_pre_search', @_)
+            if 'pre_search' eq $name;
+    }
+    else {
+        $obj->SUPER::call_trigger('__core_final_post_load', @_)
+            if 'post_load' eq $name;
+        MT->run_callbacks($class . '::' . $name, $obj, @_);
+        $obj->SUPER::call_trigger($name, @_);
+    }
 }
 
 # Support for MT-based callbacks.
@@ -957,6 +1076,7 @@ sub __properties { }
 our $DRIVER;
 sub driver {
     my $class = shift;
+    require MT::ObjectDriverFactory;
     return $DRIVER ||= MT::ObjectDriverFactory->instance
         if UNIVERSAL::isa($class, 'MT::Object');
     my $driver = $class->SUPER::driver(@_);
@@ -1160,7 +1280,34 @@ sub remove_children {
     my $obj_id = $obj->id;
     for my $class (@classes) {
         eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $class;";
-        $class->remove({ $key => $obj_id });
+        $class->remove_children_multi( { $key => $obj_id } );
+    }
+    1;
+}
+
+sub child_key {
+    my $class = shift;
+    $class->datasource . '_id';
+} 
+
+sub remove_children_multi {
+    my $class = shift;
+    Carp::croak('Class method should not be called by an instance')
+        if ref($class);
+
+    my ( $terms ) = @_;
+    my $child_classes = $class->properties->{child_classes} || {};
+    my @classes = keys %$child_classes;
+
+    my @ids = map { $_->id } $class->load( $terms, { fetchonly => [ 'id' ], no_triggers => 1 } );
+    if ( @ids ) {
+        for my $child (@classes) {
+            eval "# line " . __LINE__ . " " . __FILE__ . "\nno warnings 'all';require $child;";
+            $child->remove_children_multi( { $class->child_key() => \@ids } )
+                if @ids;
+        }
+
+        return $class->remove( $terms );
     }
     1;
 }
@@ -1214,12 +1361,19 @@ sub inflate {
 
 sub set_values {
     my $obj = shift;
-    my ($values) = @_;
+    my ($values, $args) = @_;
+    $args ||= {};
     for my $col (keys %$values) {
         if ( $obj->has_column($col) ) {
             # there's no point in croaking here; just set the
             # values that are defined; ignore any others
-            $obj->$col($values->{$col}) if defined $values->{$col};
+            next unless defined $values->{$col};
+            if ( $args && exists($args->{no_changed_flag}) && $args->{no_changed_flag} ) {
+                $obj->column($col, $values->{$col}, $args);
+            }
+            else {
+                $obj->$col($values->{$col}, $args);
+            }
         }
     }
 }
@@ -1254,10 +1408,12 @@ sub column_defs {
     my $defs = $props->{column_defs};
     return undef if !$defs;
     my ($key) = keys %$defs;
-    if (!(ref $defs->{$key})) {
+    unless ($props->{column_defs_parsed}) { 
         $obj->__parse_defs($props->{column_defs});
-    }
-    $props->{column_defs};
+        $props->{column_defs_parsed} = 1; 
+    } 
+    
+    return $props->{column_defs};
 }
 
 sub __parse_defs {
@@ -1285,6 +1441,7 @@ sub __parse_def {
     $def{key} = 1 if $def =~ m/\bprimary key\b/i;
     $def{key} = 1 if ($props->{primary_key}) && ($props->{primary_key} eq $col);
     $def{auto} = 1 if $def =~ m/\bauto[_ ]increment\b/i;
+    $def{revisioned} = 1 if $def =~ m/\brevisioned\b/i;
     $def{default} = $props->{defaults}{$col}
         if exists $props->{defaults}{$col};
     \%def;
@@ -2807,6 +2964,11 @@ Be careful how you handle errors. If you transform data as it goes
 into and out of the database, and it is possible for one of your
 callbacks to fail, the data may get saved in an undefined state. It
 may then be difficult or impossible for the user to recover that data.
+
+=head1 I<Final> triggers
+
+Those three "final" triggers installed in the install_properties method
+is strictly for internal use only.
 
 =head1 AUTHOR & COPYRIGHTS
 

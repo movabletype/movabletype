@@ -7,7 +7,7 @@
 
 function smarty_modifier_filters($text,$filters) {
     // status: complete
-    global $mt;
+    $mt = MT::get_instance();
     $ctx =& $mt->context();
     require_once 'MTUtil.php';
     $text = apply_text_filter($ctx, $text, $filters);

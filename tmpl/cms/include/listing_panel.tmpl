@@ -1,4 +1,5 @@
 <mt:unless name="json">
+<mt:ignore>
 <mt:if name="6A">
 <!--
 parameters:
@@ -20,6 +21,7 @@ parameters:
         disabled (row is shown, but unselectable)
 -->
 </mt:if>
+</mt:ignore>
 <!-- ListingPanel -->
 <div id="<mt:var name="panel_type">-panel" class="hidden panel">
     <div class="panel-header">
@@ -30,33 +32,26 @@ parameters:
 </mt:if>
     </div>
     <div class="listing-filter">
-        <div class="listing-filter-inner inner pkg">
 <mt:if name="panel_searchable">
-            <form id="modal-search" action="" method="get">
-                <input type="text" value="<$mt:var name="search_label"$>" class="search-input search-query" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit<mt:unless name="blog_id">-system</mt:unless>.gif" title="<__trans phrase="Search">" />
-                <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
-            </form>
+        <form id="modal-search" action="" method="get">
+            <input type="text" value="<$mt:var name="search_label"$>" class="search-input search-query" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+            <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+            <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
+        </form>
 </mt:if>
-            &nbsp;
-        </div>
     </div>
-    <div class="selector listing <mt:if name="panel_multi"> list-multi</mt:if>">
+    <div id="selector" class="selector listing list-data<mt:if name="panel_multi"> list-multi</mt:if>">
         <form action="" method="get" onsubmit="return false">
             <table cellspacing="0" class="list-heading">
                 <thead>
                     <tr>
                         <th class="cb"><mt:if name="panel_multi"><input type="checkbox" value="all" class="select" style="padding:0;margin:0;" /><mt:else>&nbsp;</mt:if></th>
-                        <th class="panel-label"><mt:var name="panel_label"></th>
-                        <th class="panel-description"><mt:var name="panel_description"></th>
+                        <th class="panel-label primary-col"><mt:var name="panel_label"></th>
+                        <th class="panel-description primary-col"><mt:var name="panel_description"></th>
                     </tr>
                 </thead>
-            </table>
-            <div class="list-data-wrapper list-data">
 </mt:unless>
 <mt:if name="object_loop">
-                <div class="listing list-data-layout">
-                    <table cellspacing="0" class="scrollable">
                         <tbody>
     <mt:loop name="object_loop">
                             <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
@@ -65,13 +60,27 @@ parameters:
                                 <td class="panel-description">
 <mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
                                     <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
-                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" escape="html"><mt:if name="link"></span></mt:if>
+                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
                                 </td>
                             </tr>
+        <mt:if name="blogs">
+            <mt:loop name="blogs">
+                            <tr id="<mt:var name="panel_type">-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                                <td class="cb"><input type="<mt:if name="panel_multi">checkbox<mt:else>radio</mt:if>" class="select" name="<mt:var name="panel_type">-cb" value="<mt:var name="id">" <mt:if name="disabled">disabled="disabled"</mt:if> /></td>
+                                <td class="panel-label sub-label"><label><mt:var name="label" escape="html"></label></td>
+                                <td class="panel-description">
+<mt:Ignore><!-- No, the duplicate escape modifiers below is not a typo. --></mt:Ignore>
+                                    <mt:if name="link"><span class="view-site-link"><a href="<mt:var name="link" escape="html">" target="_blank"><img src="<mt:var name="static_uri">images/spacer.gif" title="<__trans phrase="Go to [_1]" params="<mt:var name="label" escape="html" escape="html">">" width="13" height="9" alt="" /></a></span></mt:if>
+                                    <mt:if name="link"><span class="float_desc"></mt:if><mt:var name="description" remove_html="1"><mt:if name="link"></span></mt:if>
+                                </td>
+                            </tr>
+            </mt:loop>
+        </mt:if>
     </mt:loop>
                         </tbody>
+<mt:unless name="json">
                     </table>
-                </div>
+</mt:unless>
 <mt:else>
     <mt:if name="search">
         <mtapp:statusmsg
@@ -88,48 +97,44 @@ parameters:
     </mt:if>
 </mt:if>
 <mt:unless name="json">
-            </div>
         </form>
+        <div class="pagination"></div>
     </div>
-    <div class="pagination"></div>
     <$mt:var name="after_listing_panel"$>
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions">
-            <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <mt:if name="panel_last">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Confirm (s)">"
-                    class="primary-button close disabled-button"
-                    disabled="true"
-                    ><__trans phrase="Confirm"></button>
-            <mt:else>
-                <button
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Continue (s)">"
-                    class="primary-button next"
-                    disabled="true"
-                    ><__trans phrase="Continue"></button>
-            </mt:if>
-            <mt:unless name="panel_first">
-                <button
-                    type="submit"
-                    accesskey="b"
-                    title="<__trans phrase="Back (b)">"
-                    class="previous"
-                    ><__trans phrase="Back"></button>
-            </mt:unless>
-                <button
-                    onclick="closeDialog(); return false"
-                    type="submit"
-                    accesskey="x"
-                    class="cancel"
-                    title="<__trans phrase="Cancel (x)">"
-                    ><__trans phrase="Cancel"></button>
-            </form>
-        </div>
+        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+        <mt:if name="panel_last">
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="OK (s)">"
+                class="close action primary-button disabled-button"
+                disabled="true"
+                ><__trans phrase="OK"></button>
+        <mt:else>
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Continue (s)">"
+                class="continue action primary-button next"
+                disabled="true"
+                ><__trans phrase="Continue"></button>
+        </mt:if>
+        <mt:unless name="panel_first">
+            <button
+                type="submit"
+                accesskey="b"
+                title="<__trans phrase="Back (b)">"
+                class="action previous"
+                ><__trans phrase="Back"></button>
+        </mt:unless>
+            <button
+                type="submit"
+                accesskey="x"
+                class="cancel action mt-close-dialog"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+        </form>
     </div>
 </div>
 </mt:unless>

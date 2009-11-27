@@ -21,6 +21,7 @@ BEGIN {
 
 package MT::L10N::$LANG;
 use strict;
+use utf8;
 use MT::L10N;
 use MT::L10N::en_us;
 use vars qw( \@ISA \%Lexicon );

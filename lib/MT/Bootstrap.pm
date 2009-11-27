@@ -12,7 +12,7 @@ sub BEGIN {
     my ($dir, $orig_dir);
     require File::Spec;
     if (!($dir = $ENV{MT_HOME})) {
-        if (($ENV{SCRIPT_FILENAME} || $0) =~ m!(.*([/\\]))!) {
+        if ($0 =~ m!(.*([/\\]))!) {
             $orig_dir = $dir = $1;
             my $slash = $2;
             $dir =~ s!(?:[/\\]|^)(?:plugins[/\\].*|tools[/\\])$!$slash!;
@@ -128,6 +128,16 @@ sub import {
                     elsif ( $max_requests && ( $app->{fcgi_request_count} >= $max_requests ) ) {
                         last;
                     }
+                    else {
+                        require MT::Touch;
+                        require MT::Util;
+                        if ( my $touched = MT::Touch->latest_touch(0, 'config') ) {
+                            $touched = MT::Util::ts2epoch(undef, $touched);
+                            if ( $touched > $app->{fcgi_startup_time} ) {
+                                last;
+                            }
+                        }
+                    }
                 }
             } else {
                 $app = $class->new( %param ) or die $class->errstr;
@@ -192,13 +202,20 @@ sub import {
                 };
                 $err = $@;
             }
-            if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
-                $err = $1;
+            elsif ($app && UNIVERSAL::isa($app, 'MT::App::Wizard')) {
+                ## Because mt-config.cgi was not found in this time.
+                $err = '';
             }
-            print "Content-Type: text/plain; charset=$charset\n\n";
-            print $app
-              ? $app->translate( "Got an error: [_1]", $err )
-              : "Got an error: $err";
+
+            if ($err) {
+                if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
+                    $err = $1;
+                }
+                print "Content-Type: text/plain; charset=$charset\n\n";
+                print $app
+                  ? $app->translate( "Got an error: [_1]", $err )
+                  : "Got an error: $err";
+            }
         }
     }
 }

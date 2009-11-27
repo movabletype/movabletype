@@ -10,7 +10,7 @@ use strict;
 use base 'MT::App';
 
 use MT::Comment;
-use MT::I18N qw( wrap_text encode_text );
+use MT::I18N qw( wrap_text );
 use MT::Util
     qw( remove_html encode_html encode_url decode_url is_valid_email is_valid_url is_url escape_unicode format_ts encode_js );
 use MT::Entry qw(:constants);
@@ -959,6 +959,11 @@ sub post {
         }
     }
 
+    $app->param('_type', 'comment');
+    if (! $app->run_callbacks( 'api_save_filter.comment', $app ) ) {
+        return $app->handle_error( $app->errstr );
+    }
+
     $comment = $app->eval_comment( $blog, $commenter, $comment, $entry );
     return $app->preview('pending') unless $comment;
 
@@ -1221,7 +1226,7 @@ sub _check_commenter_author {
         );
         return 0;
     }
-    elsif ( $commenter->blog_perm($blog_id)->can_comment ) {
+    elsif ( $commenter->blog_perm($blog_id)->can_do('post_comment') ) {
         return 1;
     }
     else {
@@ -1473,7 +1478,7 @@ sub session_js {
     $app->{no_print_body} = 1;
     $app->send_http_header("text/javascript");
     my $json = MT::Util::to_json($state);
-    $app->print( "$jsonp(" . $json . ");\n" );
+    $app->print_encode( "$jsonp(" . $json . ");\n" );
     return undef;
 }
 
@@ -1511,8 +1516,8 @@ sub comment_listing {
     my $method = $app->param('method');
     $method ||= 'displayComments';
     my $tmpl = MT::Template->load(
-        {   name    => 'Comment Listing',
-            blog_id => $entry->blog_id
+        {   identifier => 'comment_listing',
+            blog_id    => $entry->blog_id
         }
     );
     return '1;' if ( !$tmpl );
@@ -1555,7 +1560,7 @@ sub _commenter_status {
         );
         if ($perm) {
             if ( $perm->is_restricted('comment')
-                && !$perm->can_administer_blog() )
+                && !$perm->can_do('force_post_comment') )
             {
                 $commenter_status = '0';
             }
@@ -1577,7 +1582,7 @@ sub _commenter_status {
 sub commenter_status_js {
     local $SIG{__WARN__} = sub { };
     my $app = shift;
-    my $ids = $app->cookie_val('commenter_id') || q();
+    my $ids = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
 
     my $commenter_id;
     if ($ids) {
@@ -1599,18 +1604,15 @@ JS
 sub commenter_name_js {
     local $SIG{__WARN__} = sub { };
     my $app            = shift;
-    my $commenter_name = $app->cookie_val('commenter_name');
-    my $ids            = $app->cookie_val('commenter_id') || q();
-    my $commenter_url  = $app->cookie_val('commenter_url') || q();
+    my $commenter_name = Encode::decode_utf8( $app->cookie_val('commenter_name') );
+    my $ids            = Encode::decode_utf8( $app->cookie_val('commenter_id') ) || q();
+    my $commenter_url  = Encode::decode_utf8( $app->cookie_val('commenter_url') ) || q();
 
     my $commenter_id;
     if ($ids) {
         my @ids = split ':', $ids;
         $commenter_id = $ids[0];
     }
-
-    # FIXME: how do we know this is coming in as utf-8?
-    $commenter_name = encode_text( $commenter_name, 'utf-8' );
 
     $app->set_header( 'Cache-Control' => 'no-cache' );
     $app->set_header( 'Expires'       => '-1' );
@@ -1758,6 +1760,10 @@ sub do_preview {
             }
         );
     }
+
+    my @data;
+    $app->run_callbacks( 'cms_pre_preview', $app, $comment, \@data );
+
     my %cond;
     my $html = $tmpl->build( $ctx, \%cond );
     $html = $tmpl->errstr unless defined $html;
@@ -1859,6 +1865,11 @@ sub save_commenter_profile {
     }
     if ( $param{url} && (!is_url( $param{url} ) || ($param{url} =~ m/[<>]/) ) ) {
         $param{error} = $app->translate('URL is invalid.');
+        return $app->build_page( 'profile.tmpl', \%param );
+    }
+
+    if (! $app->run_callbacks( 'api_save_filter.author', $app ) ) {
+        $param{error} = $app->errstr;
         return $app->build_page( 'profile.tmpl', \%param );
     }
 

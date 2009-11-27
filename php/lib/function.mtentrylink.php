@@ -11,7 +11,7 @@ function smarty_function_mtentrylink($args, &$ctx) {
     if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
-        $ext = $blog['blog_file_extension'];
+        $ext = $blog->blog_file_extension;
         if ($ext) $ext = '.' . $ext; 
         $index .= $ext;
         $link = preg_replace('/\/(#.*)?$/', "/$index\$1", $link);

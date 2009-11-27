@@ -7,7 +7,9 @@
 package MT::Template;
 
 use strict;
-use base qw( MT::Object );
+use utf8;
+use open ':utf8';
+use base qw( MT::Object MT::Revisable );
 use MT::Util qw( weaken );
 
 use MT::Template::Node;
@@ -19,18 +21,49 @@ __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
         'blog_id' => 'integer not null',
-        'name' => 'string(255) not null',
+        'name' => {
+            type => 'string',
+            size => '255',
+            not_null => 1,
+            label => 'Name',
+            revisioned => 1,
+        },
         'type' => 'string(25) not null',
-        'outfile' => 'string(255)',
-        'text' => 'text',
+        'outfile' => {
+            type => 'string',
+            size => '255',
+            label => 'Output File',
+            revisioned => 1
+        },
+        'text' => {
+            type => 'text',
+            label => 'Template Text',
+            revisioned => 1
+        },
         'linked_file' => 'string(255)',
         'linked_file_mtime' => 'string(10)',
         'linked_file_size' => 'integer',
-        'rebuild_me' => 'boolean',
-        'build_dynamic' => 'boolean',
+        'rebuild_me' => {
+            type => 'boolean',
+            label => 'Rebuild with Indexes',
+            revisioned => 1,
+        },
+        'build_dynamic' => {
+            type => 'boolean',
+            label => 'Dynamicity',
+            revisioned => 1
+        },
         'identifier' => 'string(50)',
-        'build_type' => 'smallint',
-        'build_interval' => 'integer',
+        'build_type' => {
+            type => 'smallint',
+            label => 'Build Type',
+            revisioned => 1
+        },
+        'build_interval' => {
+            type => 'integer',
+            label => 'Interval',
+            revisioned => 1,
+        },
 
         # meta properties
         'last_rebuild_time' => 'integer meta',
@@ -41,6 +74,7 @@ __PACKAGE__->install_properties({
         'cache_expire_event' => 'string meta',
         'cache_path' => 'string meta',
         'modulesets' => 'string meta',
+        'revision' => 'integer meta',
     },
     indexes => {
         blog_id => 1,
@@ -136,12 +170,11 @@ sub load_file {
         }
     }
     return $tmpl->trans_error("File not found: [_1]", $file) unless -e $file;
-    local *FH;
-    open FH, $file
+    open my $fh, '<', $file
         or return $tmpl->trans_error("Error reading file '[_1]': [_2]", $file, $!);
     my $c;
-    do { local $/; $c = <FH> };
-    close FH;
+    do { local $/; $c = <$fh> };
+    close $fh;
     return $c;
 }
 
@@ -233,11 +266,12 @@ sub build {
             unless $ctx->stash('local_blog_id');
         my $blog = $ctx->stash('blog');
         unless ($blog) {
-            $blog = MT::Blog->load($blog_id) or
+            $blog = MT->model('blog')->load($blog_id) or
                 return $tmpl->error(MT->translate(
                     "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr ));
             $ctx->stash('blog', $blog);
         } else {
+            $blog = MT->model('blog')->load($blog_id) if $blog->id != $blog_id;
             $ctx->stash('blog_id', $blog->id);
             $ctx->stash('local_blog_id', $blog->id)
                 unless $ctx->stash('local_blog_id');
@@ -245,7 +279,10 @@ sub build {
         MT->config->TimeOffset($blog->server_offset);
         $page_layout = $blog->page_layout;
     }
-    $page_layout = $tmpl->page_layout if $tmpl->page_layout;
+    my $type = $tmpl->type;
+    if ( $type && $type ne 'module' && $type ne 'widget' && $type ne 'custom' ) {
+        $page_layout = $tmpl->page_layout if $tmpl->page_layout;
+    }
     $ctx->var( 'page_layout', $page_layout )
         unless $ctx->var('page_layout');
     if (my $layout = $ctx->var('page_layout')) {
@@ -749,7 +786,7 @@ sub createTextNode {
 sub insertAfter {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_node = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ( $node2 ) {
         for (my $i = 0; $i < scalar @$parent_array; $i++) {
@@ -772,7 +809,7 @@ sub insertAfter {
 sub insertBefore {
     my $tmpl = shift;
     my ($node1, $node2) = @_;
-    my $parent_node = $node2 ? $node2->parentNode : $tmpl;
+    my $parent_node = $node2 && $node2->parentNode ? $node2->parentNode : $tmpl;
     my $parent_array = $parent_node->childNodes;
     if ( $node2 ) {
         for (my $i = 0; $i < scalar @$parent_array; $i++) {

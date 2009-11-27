@@ -21,7 +21,7 @@ else {
   plan tests => 112;
 }
 
-is($MT::Serialize::VERSION, 4, 'Default version is v4');
+is($MT::Serialize::VERSION, 5, 'Default version is v5');
 
 my %sers = map { $_ => MT::Serialize->new($_) } qw(MTJ JSON MT MT2 MTS Storable);
 

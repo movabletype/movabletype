@@ -1,6 +1,6 @@
 <?php
 function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
-    $localvars = array('subCatTokens', 'subCatsSortOrder', 'subCatsSortMethod', '__categories', 'inside_mt_categories', '_subcats_counter', 'entries', 'subCatIsFirst', 'subCatIsLast', 'category','current_archive_type');
+    $localvars = array('subCatTokens', 'subCatsSortOrder', 'subCatsSortMethod', '__categories', 'inside_mt_categories', '_subcats_counter', 'entries', 'subCatIsFirst', 'subCatIsLast', 'category','current_archive_type', 'subFolderHead', 'subFolderFoot');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $token_fn = $args['token_fn'];
@@ -46,12 +46,12 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
                 $cats = array($current_cat);
             } else {
                 # Otherwise, use its children
-                $cats = $ctx->mt->db->fetch_categories(array('blog_id' => $blog_id, 'category_id' => $current_cat['category_id'], 'children' => 1, 'show_empty' => 1, 'sort_order' => $sort_order, 'class' => $class));
+                $cats = $ctx->mt->db()->fetch_categories(array('blog_id' => $blog_id, 'category_id' => $current_cat->category_id, 'children' => 1, 'show_empty' => 1, 'sort_order' => $sort_order, 'class' => $class));
             }
         }
         if (($top || $args['top_level_categories']) && !$cats) {
             # Otherwise, use the top level categories
-            $cats = $ctx->mt->db->fetch_categories(array('blog_id' => $blog_id, 'top_level_categories' => 1, 'show_empty' => 1, 'sort_order' => $sort_order, 'class' => $class));
+            $cats = $ctx->mt->db()->fetch_categories(array('blog_id' => $blog_id, 'top_level_categories' => 1, 'show_empty' => 1, 'sort_order' => $sort_order, 'class' => $class));
         }
 
         if (!$cats) {

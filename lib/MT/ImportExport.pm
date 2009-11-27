@@ -12,8 +12,8 @@ use MT::Entry;
 use MT::Placement;
 use MT::Category;
 use base qw( MT::ErrorHandler );
-use MT::I18N qw( first_n_text const encode_text );
-use MT::Util qw( encode_html );
+use MT::I18N qw( const guess_encoding );
+use MT::Util qw( encode_html first_n_words );
 
 use vars qw( $SEP $SUB_SEP );
 $SEP = ('-' x 8);
@@ -32,7 +32,6 @@ sub import_contents {
     my $encoding = $param{Encoding};
 
     require MT::Permission;
-    require MT::I18N;
     require MT::Tag;
 
     ## Determine the author as whom we will import the entries.
@@ -65,17 +64,13 @@ sub import_contents {
     my $blog_id = $blog->id;
     my $author_id = $author->id if $author;
 
-    #-------------
-
-#   $cb->(MT->translate("Importing entries from file '[_1]'", $f) ."\n");
-# open FH, $file
-#     or return $class->error(MT->translate(
-#         "Can't open file '[_1]': [_2]", $file, "$!"));
+    my $importer = MT::Import->importer('import_mt');
+    my $additional_keys = $importer->{additional_keys};
  
     my $import_result = eval {
         my(%authors, %categories);
 
-        my $entry_excerpt_len = MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT');
+        my $entry_excerpt_len = const('LENGTH_ENTRY_TITLE_FROM_TEXT');
 
         while (my $stream = $iter->()) {
             my $result = eval {
@@ -85,11 +80,11 @@ sub import_contents {
                 while (<$stream>) {
                     if ($encoding) {
                         if ($encoding eq 'guess') {
-                            $guessed_encoding = MT::I18N::guess_encoding($_);
+                            $guessed_encoding = guess_encoding($_);
                         } else {
                             $guessed_encoding = $encoding;
                         }
-                        $_ = MT::I18N::encode_text($_, $guessed_encoding, undef);
+                        $_ = Encode::decode($guessed_encoding, $_);
                     }
                     my($meta, @pieces) = split /^$SUB_SEP$/m;
                     next unless $meta && @pieces;
@@ -337,6 +332,18 @@ sub import_contents {
                             $ping->approve;
                             push @pings, $ping;
                         }
+                        else {
+                            if ( $additional_keys ) {
+                                foreach my $add_key ( @$additional_keys ) {
+                                    my $handler = $add_key->{import_handler};
+                                    $handler = MT->handler_to_coderef( $handler );
+                                    my $import_key = $add_key->{import_key};
+                                    if ( $piece =~ /^$import_key\w+:/ ) {
+                                        $handler->( $piece, $entry );
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     ## Assign a title if one is not already assigned.
@@ -348,7 +355,7 @@ sub import_contents {
                             $entry->title($title);
                             $entry->text($body);
                         } else {
-                            $entry->title( first_n_text($body, $entry_excerpt_len) );
+                            $entry->title( first_n_words($body, $entry_excerpt_len) );
                         }
                     }
 
@@ -525,8 +532,12 @@ DATE: <$MTPingDate format="%m/%d/%Y %I:%M:%S %p"$>
 <$MTPingExcerpt$>
 -----
 </MTPings>
---------
 TEXT
+
+    require MT::Import;
+    my $importer = MT::Import->importer('import_mt');
+    my $handler = $importer->{export_handler};
+    $handler = MT->handler_to_coderef( $handler );
 
     my $iter = MT::Entry->load_iter({ blog_id => $blog->id },
         { 'sort' => 'created_on', direction => 'ascend' });
@@ -543,6 +554,11 @@ TEXT
                 "Export failed on entry '[_1]': [_2]", $entry->title,
                 $tmpl->errstr));
         $cb->($res);
+        if ( $handler ) {
+            $cb->( $MT::ImportExport::SUB_SEP . "\n" );
+            $cb->( $handler->( $entry ) );
+        }
+        $cb->("--------\n");
     }
     1;
 }
@@ -567,6 +583,7 @@ sub _convert_date {
     }
     sprintf "%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s;
 }
+
 
 1;
 __END__

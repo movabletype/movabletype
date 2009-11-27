@@ -1,12 +1,15 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::BanList;
 
 use strict;
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms
-      && ( $perms->can_edit_config || $perms->can_manage_feedback );
+    return $app->can_do('save_banlist');
 }
 
 sub save_filter {

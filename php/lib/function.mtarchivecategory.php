@@ -12,6 +12,6 @@ function smarty_function_mtarchivecategory($args, &$ctx) {
     }
 
     $cat = $ctx->stash('archive_category');
-    return $cat ? $cat['category_label'] : '';
+    return $cat ? $cat->category_label : '';
 }
 ?>

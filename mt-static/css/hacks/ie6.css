@@ -1,63 +1,264 @@
-.dashboard #main-content {
-    margin-left: 5px;
+/* - Generic */
+body { 
+    height: 100% ! important;
+}
+
+body.has-dialog { 
     overflow: hidden;
 }
 
-#dialog-container {
-    position: absolute;
+textarea { 
+    min-height: 5em;
+    height: auto !important; /* min-height hack */
+    height: 5em;
 }
 
-#selector-nav #create-entry a {
-    display: inline;
+.dialog input.text,  
+.edit-entry input.text, 
+.edit-entry textarea, 
+.batch-edit td input.text, 
+.edit-template input.text, 
+.edit-template textarea { 
+    width: 99%;
 }
 
-#blog-nav li li a,
-#selector-nav li li a,
-#utility-nav li li a,
-#blog-nav li li span,
-#selector-nav li li span,
-#utility-nav li li span {
+.widget input.text, 
+.widget select, 
+.widget textarea { 
+    padding-left: 0;
+    width: 97%;
+}
+
+#template-options input.text { 
+    width: 80%;
+}
+
+#sign-in input.text { 
+    width: 313px;
+}
+
+.list-notification .create-inline input.text { 
+    width: 25%;
+}
+
+#notification-listing-table input.text { 
     width: 100%;
 }
 
-#new_entry_prefs {
-    height: 1%;
+#notification-listing-table .url input.text { 
+    width: 60%;
 }
 
-#content-nav ul li a {
-    height: 1%;
+.batch-edit table input.text { 
+    width: 99%;
 }
 
-#folder-selector {
-    left: 0;
+/* -- Component */
+.picture.small { 
+    padding-bottom: 1px;
 }
 
-#category-field.selector-active .field-content {
+/* - App Header */
+/* -- Brand */
+#brand a,
+.preview-screen #brand {
+    background-image: none ! important;
+    text-align: center;
+}
+
+#brand a span, 
+.preview-screen #brand span { 
+    display: inline-block;
+    width: 170px;
+    height: 25px;
+    margin-top: 5px;
+    background: transparent url(../../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+}
+
+.website #brand a span {
+    background-image: url(../../images/logo/movable-type-brand-logo-website.png);
+}
+.system #brand a span {
+    background-image: url(../../images/logo/movable-type-brand-logo-system.png);
+}
+
+/* -- Menu bar, Content Nav */
+#selector-nav #current-website em { 
+    background-color: #839B5C;
+}
+#selector-nav #current-blog em { 
+    background-color: #5C909B;
+}
+.blog #selector-nav #current-website em { 
+    margin-right: -4px;
+}
+#selector-nav .selector { 
+    width: 300px;
+}
+
+.selector ul.last-child, 
+#selector-nav .user-dashboard, 
+#selector-nav .system-overview, 
+#selector-nav #fav-website-list, 
+#selector-nav #fav-blog-list { 
+    border-top: 1px solid #9EA1A3;
+}
+
+/* - Navigation Menu */
+ul.menu-nav li { 
+    margin-top: 0;
+    line-height: 0;
+}
+
+ul.menu-nav li a, 
+ul.menu-nav ul.sub-menu li a { 
+    line-height: 1.5;
+}
+
+ul.menu-nav li.top-menu.first-child { 
+    margin-top: 0;
+}
+
+ul.menu-nav li.top-menu-open { 
+    margin-bottom: 4px;
+}
+ul.menu-nav li.last-child div { 
+    border-bottom: 1px solid #c8c2be;
+}
+
+ul.menu-nav li.last-child ul.sub-menu { 
+    border-top: 0;
+    border-bottom: 1px solid #c8c2be;
+}
+
+ul.menu-nav li.top-menu div .toggle-button, 
+ul.menu-nav li.top-menu div { 
+    height: auto !important;
+    height: 28px;
+}
+
+/* - Actions Bar */
+.chromeless .actions-bar { 
+    height: 25px;
+}
+#sign-in .actions-bar { 
+    height: 35px;
+}
+
+.chromeless .actions-bar button { 
+    float: right;
+    margin-left: 12px;
+}
+.chromeless .actions-bar button.goback { 
+    margin-left: 0;
+}
+
+/* - Dashbord Widget */
+.blog-stats-widget-panel { 
+    width: 100%;
+}
+
+#favorite_blogs #favorite-blogs-tabs li { 
     position: relative;
-    height: 180px;
 }
 
-#category-field.selector-active #folder-selector {
+/* - Edit Asset */
+.asset-preview .asset-thumb { 
+    min-height: 260px;
+    height: auto !important; /* min-height hack */
+    height: 260px;
+}
+
+#related-assets .asset-thumb  {
+    min-height: 80px;
+    height: auto ! important;
+    height: 80px;
+}
+
+/* - List Theme */
+.theme-thumbnail { 
+    width: 122px;
+    height: 92px;
+}
+
+
+/* - Widgets */
+/* -- Category Widget */
+.category-selector { 
+    width: 215px;
+}
+
+.category-selector .add-category-form { 
+    width: 190px;
+}
+
+/* - Footer */
+#footer { 
+    position: static;
+    margin-top: 0;
+}
+
+/* - for IE6 Duplicate Characters Bug */
+#related-content { 
+    margin-left: -3px;
+}
+
+html#dialog {
+    overflow-x: hidden;
+    border: 0;
+}
+
+#dialog .dialog #container {
+    width: 92%;
+}
+
+.backup-status pre,
+.import-process pre { 
+    width: 97%;
+}
+
+/* - Date picker */
+.ui-datepicker-cover {
+    display: block;
     position: absolute;
-    left: -90px;
-    top: 30px;
+    z-index: -1;
+    filter: mask();
+    top: -4px;
+    left: -4px;
+    width: 200px;
+    height: 200px;
 }
 
-.msg {
-    height: 1%;
+/* - haslayout */
+#main-content-inner, 
+#content-header, 
+#related-content, 
+.msg, 
+.plugin, 
+.theme, 
+.field-content ul, 
+#selector-nav .selector ul, 
+#selector-nav .selector ul li, 
+.fav-actions li a, 
+ul.menu-nav li,
+ul.menu-nav li a,
+.listing-screen .actions-bar, 
+#editor .editor-header, 
+.widget, 
+.widget-header, 
+.allow-feedback li, 
+ul#asset-list li, 
+.dialog #selector, 
+.dialog .selector, 
+.user-status-disabled, 
+#template-options-header, 
+.widget-content .field-content, 
+#asset_container .widget-content { 
+    display: block;
+    zoom: 1;
 }
 
-.widget-close-link {
-    margin-right: 5px; /* http://www.jaymeblackmon.com/ie6-double-margin-bug-fix */
-}
-
-.edit-category .field-top-label .field-content, 
-.edit-folder .field-top-label .field-content { 
-    float: left ! important;
-    margin-left: 0 ! important;
-}
-
-ul#asset-list li a.remove-asset {
-	top: -1px;
-	right: 13px;
+#template-options .field-content, 
+.theme-thumbnail { 
+    zoom: 0;
 }

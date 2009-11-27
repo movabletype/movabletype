@@ -10,7 +10,7 @@ function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
-        $ping_list = $entry['entry_pinged_urls'];
+        $ping_list = $entry->entry_pinged_urls;
         $pings = preg_split('/\r?\n/', $ping_list);
         $ctx->stash('_pinged_urls', $pings);
         $counter = 0;

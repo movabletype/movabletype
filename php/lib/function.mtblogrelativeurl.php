@@ -8,8 +8,20 @@
 function smarty_function_mtblogrelativeurl($args, &$ctx) {
     // status: complete
     // parameters: none
-    $blog = $ctx->stash('blog');
-    $host = $blog['blog_site_url'];
+    if (isset($args['id']) && is_numeric($args['id'])) {
+        require_once('class.mt_blog.php');
+        $blog = new Blog();
+        $ret = $blog->Load('blog_id = '.$args['id']);
+        if (!$ret)
+            $blog = null;
+    }
+    if (empty($blog)) {
+        $blog = $ctx->stash('blog');
+    }
+    if (empty($blog))
+        return '';
+
+    $host = $blog->site_url();
     if (!preg_match('!/$!', $host))
         $host .= '/';
 

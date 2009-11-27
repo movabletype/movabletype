@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::User;
 
 use strict;
@@ -11,22 +16,28 @@ sub edit {
 
     my $author = $app->user;
 
+    # Load permissions from registry
+    my $registered_perms;
+    my $perms = $app->registry('permissions');
+    my %user_perms;
+
     if ($id) {
         # TODO: Populate permissions / blogs for this user
         # populate blog_loop, permission_loop
         $param->{is_me} = 1 if $id == $author->id;
         $param->{editing_other_profile} = 1
-          if !$param->{is_me} && $author->is_superuser;
+          if !$param->{is_me} && $app->can_do('edit_other_profile');
 
         $param->{userpic} = $obj->userpic_html();
 
-        require MT::Permission;
-
         # General permissions...
-        my $sys_perms = MT::Permission->perms('system');
-        foreach (@$sys_perms) {
-            $param->{ 'perm_can_' . $_->[0] } =
-              ($obj->is_superuser || $obj->permissions(0)->has( $_->[0] )) ? 1 : 0;
+        my $sys_perms = $obj->permissions(0);
+        if ($sys_perms) {
+            my @sys_perms = split(',', $sys_perms->permissions);
+            foreach my $perm (@sys_perms) {
+                $perm =~ s/'(.+)'/$1/;
+                $user_perms{'system.'.$perm} = 1;
+            }
         }
         $param->{perm_is_superuser} = $obj->is_superuser;
 
@@ -55,9 +66,41 @@ sub edit {
         $param->{can_recover_password} = MT::Auth->can_recover_password;
     }
 
+    # Make permission list
+    my @perms;
+    my @keys = keys %$perms;
+    foreach my $key (@keys) {
+        next if $key !~ m/^system./;
+        my $perm;
+        ($perm->{id} = $key) =~ s/^system\.//;
+        $perm->{id} = 'can_' . $perm->{id};
+        $perm->{label} = $app->translate($perms->{$key}->{label}->());
+        $perm->{order} = $perms->{$key}->{order};
+        $perm->{can_do} = $user_perms{$key};
+
+        if (exists $perms->{$key}->{inherit_from}) {
+            my @inherit;
+            my $inherit_from = $perms->{$key}->{inherit_from};
+            if ($inherit_from) {
+                my @child;
+                foreach (@$inherit_from) {
+                    my $child = $_;
+                    $child =~ s/^system\.//;
+                    push @child, '#can_'.$child;
+                }
+                $perm->{children} = join ',', @child;
+            }
+        }
+
+        push @perms,  $perm;
+    }
+
+    @perms = sort { $a->{order} <=> $b->{order} } @perms;
+    $param->{'loaded_permissions'} = \@perms;
+
     $app->add_breadcrumb( $app->translate("Users"),
           $app->user->is_superuser
-        ? $app->uri( mode => 'list_authors' )
+        ? $app->uri( mode => 'list_author' )
         : undef );
     my $auth_prefs;
     if ($obj) {
@@ -104,8 +147,15 @@ sub edit_role {
     my $id     = $q->param('id');
 
     require MT::Permission;
-    if ( !$author->is_superuser ) {
+    if ( !$app->can_do('edit_role') ) {
         return $app->error( $app->translate("Invalid request.") );
+    }
+
+    # Load permissions from registry
+    my $registered_perms;
+    my $perms = $app->registry('permissions');
+    for my $perm ( values %$perms ) {
+       $perm->{can_do} = 0;
     }
     my $role;
     require MT::Role;
@@ -125,7 +175,6 @@ sub edit_role {
         my $permissions = $role->permissions;
         if ( defined($permissions) && $permissions ) {
             my @perms = split ',', $permissions;
-
             my @roles = MT::Role->load_same(
                 { 'id' => [$id] },
                 { not  => { id => 1 } },
@@ -141,10 +190,53 @@ sub edit_role {
                   };
             }
             $param{same_perm_loop} = \@same_perms if @same_perms;
+
+            foreach my $perm (@perms) {
+                $perm =~ s/'(.+)'/$1/;
+                $perms->{'blog.'.$perm}->{can_do} = 1;
+            }
         }
         require MT::Association;
         $param{user_count} = MT::Author->count( undef, { join  => MT::Association->join_on( 'author_id', { role_id => $id }, { unique => 1 } ) } );
     }
+    else {
+        for my $p ( values %$perms ) {
+            $p->{can_do} = 0;
+        }
+    }
+
+    # Make permission list
+    my @perms;
+    my @keys = keys %$perms;
+    foreach my $key (@keys) {
+        next if $key !~ m/^blog./;
+        my $perm;
+        ($perm->{id} = $key) =~ s/^blog\.//;
+        $perm->{label} = $app->translate($perms->{$key}->{label}->());
+        $perm->{order} = $perms->{$key}->{order};
+        $perm->{group} = $perms->{$key}->{group};
+        $perm->{can_do} = exists $perms->{$key}->{can_do} ? $perms->{$key}->{can_do} : 0;
+
+        if (exists $perms->{$key}->{inherit_from}) {
+            my @inherit;
+            my $inherit_from = $perms->{$key}->{inherit_from};
+            if ($inherit_from) {
+                my @child;
+                foreach (@$inherit_from) {
+                    my $child = $_;
+                    $child =~ s/^blog\.//;
+                    push @child, '#'.$child;
+                }
+                $perm->{children} = join ',', @child;
+            }
+        }
+
+        push @perms,  $perm;
+    }
+
+    @perms = sort { $a->{order} <=> $b->{order} } @perms;
+
+    $param{'loaded_permissions'} = \@perms;
 
     my $all_perm_flags = MT::Permission->perms('blog');
 
@@ -157,7 +249,7 @@ sub edit_role {
     $param{saved}          = $q->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb( $app->translate('Roles'),
-        $app->uri( mode => 'list_roles' ) );
+        $app->uri( mode => 'list_role' ) );
     if ($id) {
         $app->add_breadcrumb( $role->name );
     }
@@ -181,7 +273,7 @@ sub list {
 
     my $this_author = $app->user;
     return $app->return_to_dashboard( permission => 1 )
-      unless $this_author->is_superuser();
+        unless $app->can_do('access_to_system_author_list');
 
     my $this_author_id = $this_author->id;
     my $list_pref      = $app->list_pref('author');
@@ -219,7 +311,7 @@ sub list {
             }
         }
     }
-    $param{can_create_user}           = $this_author->is_superuser;
+    $param{can_create_user}           = $app->can_do('create_user');
     $param{synchronized}              = 1 if $app->param('synchronized');
     $param{error}                     = 1 if $app->param('error');
     my $author_iter = MT::Author->load_iter( \%terms, $args );
@@ -299,7 +391,7 @@ sub list {
     $param{unchanged} = encode_html( $app->param('unchanged') );
     $app->load_list_actions( 'author', \%param );
     $param{page_actions} =
-      $app->page_actions('list_authors');
+      $app->page_actions('list_author');
 
     $param{nav_authors} = 1;
     $param{listing_screen} = 1;
@@ -320,7 +412,7 @@ sub list_member {
     my $user  = $app->user;
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      unless $user->is_superuser() || ($perms && ($perms->can_administer_blog() || $perms->can_manage_users()) );
+        unless $app->can_do('access_to_blog_member_list');
 
     my $super_user = 1 if $user->is_superuser();
     my $args       = {};
@@ -403,7 +495,7 @@ sub list_member {
                   if $role->has( $_->[0] );
             }
             my $role_perms = join(", ", @perms);
-            my $is_removable = !$role->has('administer_blog') || $user->is_superuser || $perms->can_administer_blog();
+            my $is_removable = !$role->has('administer_blog') || $app->can_do('remove_administer_member');
             push @role_loop, {
                 role_name    => $role->name,
                 role_id      => $role->id,
@@ -424,7 +516,8 @@ sub list_member {
             params   => $param,
             args     => $args,
             code     => $hasher,
-            ( !defined( $app->param('filter_key') ) || $app->param('filter_key') eq 'author' )
+            ( ( !defined( $app->param('filter_key') ) && !defined( $app->param('filter') ) )
+              || $app->param('filter_key') eq 'author' )
               ? ( pre_build => sub {
                     my ($param) = @_;
                     my $data = $param->{object_loop} || [];
@@ -445,17 +538,15 @@ sub list_association {
     my $author_id = $app->param('author_id');
     my $role_id   = $app->param('role_id');
     my $this_user = $app->user;
-    if ( !$this_user->is_superuser ) {
-        if (
-            (
-                   !$blog_id
-                || !$this_user->permissions($blog_id)->can_administer_blog
-            )
-            && ( !$author_id || ( $author_id != $this_user->id ) )
-          )
-        {
-            return $app->errtrans("Permission denied.");
-        }
+
+    PERMCHECK: {
+        last PERMCHECK
+            if $app->can_do('access_to_all_association_list');
+        last PERMCHECK
+            if $blog_id && $this_user->permissions($blog_id)->can_do('access_to_blog_association_list');
+        last PERMCHECK
+            if $author_id && $author_id == $this_user->id;
+        return $app->errtrans('Permission denied');
     }
 
     my ( $user, $role );
@@ -464,7 +555,7 @@ sub list_association {
     if ($author_id) {
         $app->add_breadcrumb( $app->translate('Users'),
               $app->user->is_superuser
-            ? $app->uri( mode => 'list_authors' )
+            ? $app->uri( mode => 'list_author' )
             : undef );
         if ( 'PSEUDO' ne $author_id ) {
             my $author_class = $app->model('author');
@@ -486,11 +577,11 @@ sub list_association {
         my $role_class = $app->model('role') or return;
         $role = $role_class->load($role_id);
         $app->add_breadcrumb( $app->translate("Roles"),
-            $app->uri( mode => "list_roles" ) );
+            $app->uri( mode => "list_role" ) );
         $app->add_breadcrumb(
             $role->name,
             $app->uri(
-                mode => 'edit_role',
+                mode => 'view',
                 args => { _type => 'role', id => $role_id }
             )
         );
@@ -612,7 +703,7 @@ sub list_association {
             pre_build => $pre_build,
             params => {
                 can_create_association => $app->user->is_superuser || ( $blog_id
-                    && $app->user->permissions($blog_id)->can_administer_blog ),
+                    && $app->user->permissions($blog_id)->can_do('create_association') ),
                 has_expanded_mode => 1,
                 nav_privileges =>
                   ( $author_id || $blog_id ? 0 : 1 ) || $role_id,
@@ -720,7 +811,7 @@ sub list_role {
             params => {
                 nav_privileges    => 1,
                 list_noncron      => 1,
-                can_create_role   => $app->user->is_superuser,
+                can_create_role   => $app->can_do('create_role'),
                 has_expanded_mode => 1,
                 search_label      => $app->translate('Users'),
                 object_type       => 'role',
@@ -734,7 +825,7 @@ sub save_role {
     my $app = shift;
     my $q   = $app->param;
     $app->validate_magic()   or return;
-    $app->user->is_superuser or return $app->errtrans("Invalid request.");
+    $app->can_do('save_role') or return $app->errtrans("Invalid request.");
 
     my $id    = $q->param('id');
     my @perms = $q->param('permission');
@@ -768,8 +859,8 @@ sub save_role {
 
     my $url;
     $url = $app->uri(
-        'mode' => 'edit_role',
-        args   => { id => $role->id, saved => 1 }
+        'mode' => 'view',
+        args   => { _type => 'role', id => $role->id, saved => 1 }
     );
     $app->redirect($url);
 }
@@ -908,22 +999,36 @@ sub cfg_system_users {
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
 
-    $param{default_site_root} = $app->config('DefaultSiteRoot');
-    $param{default_site_url}  = $app->config('DefaultSiteURL');
     $param{personal_weblog_readonly} =
       $app->config->is_readonly('NewUserAutoProvisioning');
     $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
-    if ( my $id = $param{new_user_template_blog_id} =
-        $app->config('NewUserTemplateBlogId') || '' )
+    if ( my $id = $param{new_user_theme_id} =
+        $app->config('NewUserBlogTheme') || 'classic_blog' )
     {
-        my $blog = MT::Blog->load($id);
-        if ($blog) {
-            $param{new_user_template_blog_name} = $blog->name;
+        require MT::Theme;
+        my $theme = MT::Theme->load($id);
+        if ($theme) {
+            $param{new_user_theme_name} = $theme->label;
+            my ( $thumb, $t_w, $t_h ) = $theme->thumbnail(size => 'small');
+            $param{new_user_theme_thumbnail} = $thumb;
+            $param{new_user_theme_thumbnail_w} = $t_w;
+            $param{new_user_theme_thumbnail_h} = $t_h;
         }
         else {
-            $app->config( 'NewUserTemplateBlogId', undef, 1 );
+            $app->config( 'NewUserBlogTheme', undef, 1 );
             $cfg->save_config();
-            delete $param{new_user_template_blog_id};
+            delete $param{new_user_theme_id};
+        }
+    }
+    if (my $id = $param{new_user_default_website_id} = $app->config('NewUserDefaultWebsiteId') || '' ) {
+        require MT::Website;
+        my $website = MT::Website->load($id);
+        if ($website) {
+            $param{new_user_default_website_name} = $website->name;
+        } else {
+            $app->config('NewUserDefaultWebsiteId', undef, 1);
+            $cfg->save_config();
+            delete $param{new_user_default_website_id};
         }
     }
     $param{system_email_address} = $cfg->EmailAddressMain;
@@ -968,19 +1073,30 @@ sub save_cfg_system_users {
     return $app->errtrans("Permission denied.")
       unless $app->user->is_superuser();
 
-    my $tmpl_blog_id = $app->param('new_user_template_blog_id') || '';
-    if ( $tmpl_blog_id =~ m/^\d+$/ ) {
-        MT::Blog->load($tmpl_blog_id)
+    my $theme_id = $app->param('new_user_theme_id') || '';
+    if ( $theme_id ) {
+        require MT::Theme;
+        MT::Theme->load($theme_id)
           or return $app->error(
             $app->translate(
-                "Invalid ID given for personal blog clone source ID.")
+                "Invalid ID given for personal blog theme.")
+          );
+    }
+
+    my $default_website_id = $app->param('new_user_default_website_id') || '';
+    if ( $default_website_id =~ m/^\d+$/ ) {
+        require MT::Website;
+        MT::Website->load($default_website_id)
+          or return $app->error(
+            $app->translate(
+                "Invalid ID given for personal blog clone location ID.")
           );
     }
     else {
-        if ( $tmpl_blog_id ne '' ) {
+        if ( $default_website_id ne '' ) {
             return $app->error(
                 $app->translate(
-                    "Invalid ID given for personal blog clone source ID.")
+                    "Invalid ID given for personal blog clone location ID.")
             );
         }
     }
@@ -988,13 +1104,10 @@ sub save_cfg_system_users {
     my $cfg = $app->config;
     my $tz  = $app->param('default_time_zone');
     $app->config( 'DefaultTimezone', $tz || undef, 1 );
-    $app->config( 'DefaultSiteRoot', $app->param('default_site_root') || undef,
-        1 );
-    $app->config( 'DefaultSiteURL', $app->param('default_site_url') || undef,
-        1 );
     $app->config( 'NewUserAutoProvisioning',
         $app->param('personal_weblog') ? 1 : 0, 1 );
-    $app->config( 'NewUserTemplateBlogId', $tmpl_blog_id || undef, 1 );
+    $app->config( 'NewUserBlogTheme', $theme_id || undef, 1 );
+    $app->config( 'NewUserDefaultWebsiteId', $default_website_id || undef, 1 );
     $app->config( 'DefaultUserLanguage', $app->param('default_language'), 1 );
     $app->config( 'DefaultUserTagDelimiter',
         $app->param('default_user_tag_delimiter') || undef, 1 );
@@ -1012,12 +1125,12 @@ sub save_cfg_system_users {
 
     my $args = ();
 
-    if ( $app->config->NewUserAutoProvisioning() ne
-        ( $app->param('personal_weblog') ? 1 : 0 ) )
+    if ( $app->param('personal_weblog') &&
+         !$app->config('NewUserDefaultWebsiteId') )
     {
         $args->{error} =
           $app->translate(
-'If personal blog is set, the default site URL and root are required.'
+'If personal blog is set, the personal blog location are required.'
           );
     }
     else {
@@ -1039,8 +1152,8 @@ sub remove_user_assoc {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless $perms->can_administer_blog || $perms->can_manage_users;
-    my $can_remove_administrator = $user->is_superuser || $perms->can_administer_blog;
+        unless $app->can_do('remove_user_association');
+    my $can_remove_administrator = $app->can_do('remove_administrator_association');
 
     my $blog_id = $app->param('blog_id');
     my @ids = $app->param('id');
@@ -1075,7 +1188,7 @@ sub revoke_role {
     my $user = $app->user;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        unless ( $perms->can_administer_blog || $perms->can_manage_users );
+        unless $app->can_do('revoke_role');
 
     my $blog_id = $app->param('blog_id');
     my $role_id = $app->param('role_id');
@@ -1093,7 +1206,7 @@ sub revoke_role {
     return $app->errtrans("Invalid request.")
         unless $blog && $role && $author;
     return $app->errtrans("Permission denied.")
-        if !$user->is_superuser && !$perms->can_administer_blog && $role->has('administer_blog');
+        if !$app->can_do('revoke_administer_role') && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
 
@@ -1106,7 +1219,7 @@ sub grant_role {
 
     my $user = $app->user;
     return unless $app->validate_magic;
-    my $blogs   = $app->param('blog')   || '';
+    my $blogs   = $app->param('blog')   || $app->param('website') || '';
     my $authors = $app->param('author') || '';
     my $roles   = $app->param('role')   || '';
     my $author_id = $app->param('author_id');
@@ -1130,9 +1243,9 @@ sub grant_role {
     my $can_grant_administer = 1;
     if ( !$user->is_superuser ) {
         if (   ( scalar @blogs != 1 )
-            || !$user->permissions( $blogs[0] )->can_administer_blog ) {
+            || !$user->permissions( $blogs[0] )->can_do('grant_administer_role') ) {
             $can_grant_administer = 0;
-            if ( !$user->permissions( $blogs[0] )->can_manage_users ) {
+            if ( !$user->permissions( $blogs[0] )->can_do('grant_role_for_blog') ) {
                 return $app->errtrans("Permission denied.");
             }
         }
@@ -1169,9 +1282,18 @@ sub grant_role {
         }
     }
 
-    require MT::Association;
-
     my @default_assignments;
+
+    # Load permission which has administer_blog
+    require MT::Association;
+    require MT::Role;
+    my @admin_roles = MT::Role->load_by_permission("administer_blog");
+    my $admin_role;
+    foreach my $r ( @admin_roles ) {
+        next if $r->permissions =~ m/\'administer_website\'/;
+        $admin_role = $r;
+        last;
+    }
 
     # TBD: handle case for associating system roles to users/groups
     foreach my $blog (@blogs) {
@@ -1184,6 +1306,12 @@ sub grant_role {
             foreach my $ug ( @authors ) {
                 next unless ref $ug;
                 MT::Association->link( $ug => $role => $blog );
+                if ( $admin_role && $role->has( 'manage_member_blogs' ) && !$blog->is_blog ) {
+                    my $blogs = $blog->blogs;
+                    foreach my $mem_blog ( @$blogs ) {
+                        MT::Association->link( $ug => $admin_role => $mem_blog );
+                    }
+                }
             }
         }
     }
@@ -1209,6 +1337,22 @@ sub dialog_select_author {
         $row->{description} = $row->{nickname};
     };
 
+    my %hash = $app->param_hash();
+
+    my $entry_type = $app->param('entry_type') if $app->param('entry_type');
+    $entry_type ||= 'entry';
+
+    my $blog = $app->blog;
+    my @blog_ids;
+    if ( !$blog->is_blog && $app->param('include_child') ) {
+        my $blogs = $blog->blogs;
+        foreach ( @$blogs ) {
+            push @blog_ids, $_->id;
+        }
+    }
+    push @blog_ids, $blog->id
+        if ( !$blog->is_blog && $entry_type eq 'page' ) || ( $blog->is_blog );
+
     $app->listing(
         {
             type  => 'author',
@@ -1221,22 +1365,27 @@ sub dialog_select_author {
                 join => MT::Permission->join_on(
                     'author_id',
                     {
-                        permissions => "\%'create_post'\%",
-                        blog_id     => $app->blog->id,
+                        ( $entry_type eq 'page'
+                            ? (permissions => "%\'manage_pages\'%")
+                            : (permissions => "%\'create_post\'%") ),
+                        blog_id     => \@blog_ids,
                     },
-                    { 'like' => { 'permissions' => 1 } }
+                    { 'like' => { 'permissions' => 1 }, unique => 1 }
                 ),
             },
             code     => $hasher,
             template => 'dialog/select_users.tmpl',
             params   => {
-                dialog_title =>
-                  $app->translate("Select a entry author"),
+                ( $entry_type eq 'entry'
+                    ? ( dialog_title => $app->translate("Select a entry author") )
+                    : ( dialog_title => $app->translate("Select a page author") ) ),
                 items_prompt =>
                   $app->translate("Selected author"),
                 search_prompt => $app->translate(
                     "Type a username to filter the choices below."),
-                panel_label       => $app->translate("Entry author"),
+                ( $entry_type eq 'entry'
+                    ? ( panel_label       => $app->translate("Entry author") )
+                    : ( panel_label       => $app->translate("Page author") ) ),
                 panel_description => $app->translate("Name"),
                 panel_type        => 'author',
                 panel_multi       => defined $app->param('multi')
@@ -1321,13 +1470,13 @@ sub dialog_grant_role {
     my $role_id   = $app->param('role_id');
 
     my $this_user = $app->user;
-    if ( !$this_user->is_superuser ) {
-        if (   !$blog_id
-            || ( !$this_user->permissions($blog_id)->can_administer_blog
-                && !$this_user->permissions($blog_id)->can_manage_users ) )
-        {
-            return $app->errtrans("Permission denied.");
-        }
+
+    PERMCHECK: {
+        last PERMCHECK
+            if $app->can_do('grant_role_for_all_blogs');
+        last PERMCHECK
+            if $blog_id && $this_user->permissions($blog_id)->can_do('grant_role_for_blog');
+        return $app->errtrans('Permission denied.');
     }
 
     my $type = $app->param('_type');
@@ -1345,9 +1494,24 @@ sub dialog_grant_role {
         $row->{label} = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         $row->{disabled} = 1 if UNIVERSAL::isa($obj, 'MT::Role')
-                             && $obj->has('administer_blog')
-                             && !$this_user->is_superuser
-                             && !$this_user->permissions($blog_id)->can_administer_blog;
+            && ($obj->has('administer_blog') || $obj->has('administer_website'))
+            && !$app->can_do('grant_role_for_all_blogs')
+            && !$this_user->permissions($blog_id)->can_do('grant_role_for_blog');
+        if (   $app->param('type')
+            && $app->param('type') eq 'blog'
+            && UNIVERSAL::isa( $obj, 'MT::Role' )
+            && $obj->has('administer_website') )
+        {
+            $row->{disabled} = 1;
+        }
+        if (   $app->param('type')
+            && $app->param('type') eq 'website'
+            && UNIVERSAL::isa( $obj, 'MT::Role' )
+            && $obj->has('administer_blog')
+            && !$obj->has('administer_website') )
+        {
+            $row->{disabled} = 1;
+        }
     };
 
     # Only show active users who are not commenters.
@@ -1423,7 +1587,7 @@ sub dialog_grant_role {
         }
         if ( !$blog_id ) {
             my @blogs;
-            my $iter = MT::Blog->load_iter();
+            my $iter = MT::Blog->load_iter( { class => '*' } );
             while ( my $blog = $iter->() ) {
                 push @blogs, $blog->id;
             }
@@ -1433,9 +1597,11 @@ sub dialog_grant_role {
                 $blog_id = $blogs[0];
             }
             else {
-                push @panels, 'blog';
+                push @panels, 'blog' if ( $app->param('type') && $app->param('type') eq 'blog' );
+                push @panels, 'website' if ( $app->param('type') && $app->param('type') eq 'website' );
             }
         }
+
         if ( !$author_id ) {
             if ( $type eq 'user' ) {
                 unshift @panels, 'author';
@@ -1443,6 +1609,13 @@ sub dialog_grant_role {
         }
 
         my $panel_info = {
+            'website' => {
+                panel_title       => $app->translate("Select Website"),
+                panel_label       => $app->translate("Website Name"),
+                items_prompt      => $app->translate("Websites Selected"),
+                search_label      => $app->translate("Search Websites"),
+                panel_description => $app->translate("Description"),
+            },
             'blog' => {
                 panel_title       => $app->translate("Select Blogs"),
                 panel_label       => $app->translate("Blog Name"),
@@ -1487,6 +1660,7 @@ sub dialog_grant_role {
 
             # Only show active user/groups.
             my $terms = {};
+            my $args = { sort => 'name' };
             if ( $source eq 'author' ) {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
@@ -1499,7 +1673,7 @@ sub dialog_grant_role {
                     type    => $source,
                     params  => $panel_params,
                     terms   => $terms,
-                    args    => { sort => 'name' },
+                    args    => $args,
                 }
             );
             if ( $source && ( $source eq 'author' ) ) {
@@ -1551,7 +1725,7 @@ sub can_delete_association {
     my $blog_id = $app->param('blog_id');
     my $user    = $app->user;
     if ( !$user->is_superuser ) {
-        if ( !$blog_id || !$user->permissions($blog_id)->can_administer_blog ) {
+        if ( !$blog_id || !$user->permissions($blog_id)->can_do('delete_association') ) {
             return $eh->error( MT->translate("Permission denied.") );
         }
         if ( $obj->author_id == $user->id ) {
@@ -1715,8 +1889,7 @@ sub pre_save {
     else {
         $delim = ord(',');
     }
-    $obj->entry_prefs( 'tag_delim' => $delim );
-
+    $obj->entry_prefs( "tag_delim=$delim" );
     unless ( $obj->id ) {
         $obj->created_by( $app->user->id );
     }
@@ -1895,7 +2068,7 @@ sub build_author_table {
 
     $app->load_list_actions( 'author', $param->{author_table}[0] );
     $param->{page_actions} = $param->{author_table}[0]{page_actions} =
-      $app->page_actions('list_authors');
+      $app->page_actions('list_author');
     $param->{object_loop} = $param->{author_table}[0]{object_loop};
 
     \@author;

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 14-archive.t 2562 2008-06-12 05:12:23Z bchoate $
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use Test::More tests => 38;

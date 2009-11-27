@@ -145,7 +145,7 @@ sub score {
 sub task_expire_junk {
     my $pkg = shift;
     require MT::Blog;
-    my $iter    = MT::Blog->load_iter;
+    my $iter    = MT::Blog->load_iter({ class => '*' });
     my $removed = 0;
     my @blogs;
     my $blog;

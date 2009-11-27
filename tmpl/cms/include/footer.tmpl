@@ -1,64 +1,108 @@
-        </div></div><!-- /main-content -->
+                        </div><!-- /main-content inner -->
+                    </div><!-- /main-content -->
 <mt:if name="related_content">
-        <div id="related-content"><div id="related-content-inner">
-            <$mt:var name="related_content"$>
-            <mt:if name="agent_ie"><div>&nbsp;<!-- IE Duplicate Characters Bug -->&nbsp;</div></mt:if>
-        </div></div> <!-- /related-content -->
+                    <div id="related-content">
+                        <mt:var name="related_content">
+                    </div><!-- /related-content -->
 </mt:if>
-    </div></div><!-- /content -->
+                    <mt:var name="form_footer">
+                </div><!-- /content-body -->
+            </div><!-- /content -->
+        </div><!-- /container -->
 
-    <mt:if name="mt_beta">
-    <div id="msg-beta">
-        <p id="msg-beta-inner" class="inner"><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
-    </div>
-    </mt:if>
+        <div id="footer">
+<mt:if name="mt_beta">
+            <div id="msg-beta">
+                <p><__trans phrase="This is a beta version of Movable Type and is not recommended for production use."></p>
+            </div>
+</mt:if>
 
-    <div id="footer"><div id="footer-inner" class="inner">
 <mt:if name="author_name">
-        <ul id="footer-nav" class="inline-nav">
-            <li class="first"><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
-            <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
-            <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
-            <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
-            <li><a href="<__trans phrase="http://www.movabletype.com/support/">"><__trans phrase="Support"></a></li>
-            <li><a href="<__trans phrase="http://www.movabletype.org/feedback.html">"><__trans phrase="Send us Feedback"></a></li>
-        </ul>
+            <ul id="footer-nav" class="inline-nav">
+                <li><a href="<__trans phrase="http://www.movabletype.org">"><__trans phrase="MovableType.org"></a></li>
+                <li><a href="<__trans phrase="http://plugins.movabletype.org/">"><__trans phrase="Plugins"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.org/documentation/">"><__trans phrase="Documentation"></a></li>
+                <li><a href="<__trans phrase="http://wiki.movabletype.org/">"><__trans phrase="Wiki"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.com/support/">"><__trans phrase="Support"></a></li>
+                <li><a href="<__trans phrase="http://forums.movabletype.org/">"><__trans phrase="Forums"></a></li>
+                <li><a href="<__trans phrase="http://www.movabletype.org/feedback.html">"><__trans phrase="Send Us Feedback"></a></li>
+            </ul>
 </mt:if>
-        <mt:include name="include/copyright.tmpl">
-        <div id="version">
-            <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
-            <mt:if name="packs_installed">
-            <__trans phrase="with">:
-            <mt:loop name="packs_installed" glue=", "><a href="<mt:var name="portal_url">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
-            </mt:if>
-        </div>
-    </div></div> 
-</div>
-</div><!-- /container -->
-<$mt:var name="form_footer"$>
-<div id="resize-mask" class="hidden modal-mask resize-mask autolayout-height-parent" mt:delegate="resizer">
-    <div class="modal-mask"></div>
-</div>
-<mt:if name="agent_ie"><$mt:var name="header_block"$></mt:if>
-<$mt:var name="html_body_footer"$>
-<div id="dialog-container" class="autolayout-height-parent">
-    <div class="modal-mask opaque-mask"></div>
-    <div id="dialog"><iframe frameborder="0" scrolling="auto" src="<$mt:var name="static_uri">html/blank.html" id="dialog-iframe" name="dialog_iframe"></iframe></div>
-</div>
-<mt:if name=open_dialog> 
-<script type="text/javascript"> 
-/* <![CDATA[ */
-openDialog(false, '<mt:var name="dialog_mode">', '<mt:var name="dialog_params">'); 
-/* ]]> */
-</script> 
-</mt:if> 
-<div id="bootstrapper" class="hidden"></div>
-<mt:unless name="delayed_bootstrap">
+            <mt:include name="include/copyright.tmpl">
+            <p id="version">
+                <strong><__trans phrase="<a href="[_1]"><mt:var name="mt_product_name"></a> version [_2]" params="<mt:var name="portal_url">%%<mt:var name="mt_version_id">"></strong>
+<mt:if name="packs_installed">
+                <__trans phrase="with">: <mt:loop name="packs_installed" glue=", "><a href="<__trans phrase="http://www.sixapart.com/movabletype/">pack/<mt:var name="id">/"><mt:var name="label" escape="html"> <mt:var name="version" escape="html"></a></mt:loop>
+</mt:if>
+            </p>
+        </div><!-- /footer -->
+
+        <mt:var name="html_body_footer">
+
+        <div id="bootstrapper" class="hidden"></div>
+
 <script type="text/javascript">
-    /* <![CDATA[ */
-        App.bootstrapInline( false );
-    /* ]]> */
-</script>
+/* <![CDATA[ */
+<mt:if name="open_dialog">
+jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&amp;<mt:var name="dialog_params">'); 
+</mt:if>
+<mt:unless name="delayed_bootstrap">
+App.bootstrapInline( false );
 </mt:unless>
-</body>
+
+jQuery(function() {
+<mt:var name="jq_js_include">
+    if (typeof document.body.style.maxHeight == "undefined") {
+        if ($.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
+    }
+    jQuery.mtAddEdgeClass();
+    jQuery.mtMenu();
+    jQuery.mtSelector();
+    jQuery.mtFavActions();
+    jQuery.mtCMSSearch();
+    jQuery('a.mt-open-dialog').mtDialog();
+    jQuery('a.mt-rebuild').mtRebuild(<mt:if name="blog_id">{blog_id: '<$mt:var name="blog_id"$>'}</mt:if>);
+    jQuery('img.mt-close-msg').live('click', function() {
+        jQuery(this).parent('div.msg').remove();
+    });
+    jQuery('input.mt-edit-field').mtEditInput({
+        edit: '<__trans phrase="Edit">'
+    });
+    jQuery('div.has-option').mtCheckboxOption();
+    jQuery('.msg').mtToggleNext();
+    jQuery('input.text-date').datepicker({
+        dateFormat: 'yy-mm-dd',
+        dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+        monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+        showMonthAfterYear: true,
+        prevText: '&lt;',
+        nextText: '&gt;'
+    });
+    jQuery('#brand > a').hover(
+        function() {
+            jQuery(this).after('<span class="tips"><__trans phrase="Your Dashboard"></span>');
+        },
+        function(){
+            jQuery('#brand span.tips').remove();
+        }
+    );
+    jQuery('input').each(function() {
+        jQuery(this).addClass(jQuery(this).attr('type'));
+    });
+    jQuery('.widget-header').hover(
+        function() {
+            jQuery(this).children('.widget-close-link').toggle();
+        },
+        function() {
+            jQuery(this).children('.widget-close-link').toggle();
+        }
+    );
+<mt:if name="show_display_options_link">
+    jQuery.mtDisplayOptions();
+</mt:if>
+});
+/* ]]> */
+</script>
+
+    </body>
 </html>

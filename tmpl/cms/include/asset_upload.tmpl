@@ -9,10 +9,12 @@ function setExtraPath(sel) {
 }
 
 function validate(f) {
+<mt:if name="extra_paths">
     if (!is_valid_path(f.extra_path.value)){
-        alert('You must set a valid destination.');
+        alert('<__trans phrase="You must set a valid destination." escape="js">');
         return false;
     }
+</mt:if>
 }
 
 function is_valid_path(path_){
@@ -31,27 +33,34 @@ function is_valid_path(path_){
 
 <mt:if name="missing_paths">
     <mt:if name="have_permissions">
-<p><__trans phrase="Before you can upload a file, you need to publish your blog. [_1]Configure your blog's publishing paths[_2] and rebuild your blog." params="<a href="javascript:void(0);" onclick="closeDialog('<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
     <mt:else>
-<p><__trans phrase="Your system or blog administrator needs to publish the blog before you can upload files. Please contact your system or blog administrator."></p>
+<p><__trans phrase="Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator." params="<mt:var name="scope_label">"></p>
     </mt:if>
+    <mt:if name="dialog">
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <button
-            onclick="closeDialog(); return false"
-            type="submit"
-            accesskey="x"
-            title="<__trans phrase="Close (x)">"
-            ><__trans phrase="Close"></button>
-    </div>
-</div> 
-
+    <button
+        type="submit"
+        accesskey="x"
+        class="close action mt-close-dialog"
+        title="<__trans phrase="Close (x)">"
+        class="close action mt-close-dialog"
+        ><__trans phrase="Close"></button>
+</div>
+    </mt:if>
 <mt:else>
     <mt:if name="error">
         <mtapp:statusmsg
             id="generic-error"
             class="error">
             <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="uploaded">
+        <mtapp:statusmsg
+            id="asset-uploaded"
+            class="success">
+            <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">">
         </mtapp:statusmsg>
     </mt:if>
 
@@ -69,6 +78,9 @@ function is_valid_path(path_){
     </mt:if>
     <mt:if name="user_id">
     <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+    </mt:if>
+    <mt:if name="dialog">
+    <input type="hidden" name="dialog" value="<mt:var name="dialog">" />
     </mt:if>
 
     <mtapp:setting
@@ -164,41 +176,41 @@ function is_valid_path(path_){
                 </mt:loop>
             </mt:if>
             </select>
-            / <input name="extra_path" id="extra_path" value="<mt:var name="extra_path" escape="html">" />
+            / <input type="text" name="extra_path" id="extra_path" class="extra-path" value="<mt:var name="extra_path" escape="html">" />
             &nbsp;<a href="javascript:void(0);" mt:command="open-folder-selector"><__trans phrase="Choose Folder"></a>
         </mtapp:setting>
     </mt:if>
 
+    <mt:if name="enable_destination">
+        <mt:var name="container_type" value="folder">
+        <mt:include name="include/category_selector.tmpl">
+    </mt:if>
+
     <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions">
-            <button
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Upload (s)">"
-                class="primary-button"
-                ><__trans phrase="Upload"></button>
-            <mt:if name="included_upload_asset">
-                <button
-                    onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"
-                    type="submit"
-                    accesskey="b"
-                    title="<__trans phrase="Back (b)">"
-                    ><__trans phrase="Back"></button>
-            </mt:if>
-            <button
-                onclick="closeDialog(); return false"
-                type="submit"
-                accesskey="x"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
-        </div>
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Upload (s)">"
+           class="upload action primary-button"
+           ><__trans phrase="Upload"></button>
+    <mt:if name="dialog">
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action mt-close-dialog"
+           title="<__trans phrase="Cancel (x)">"
+           ><__trans phrase="Cancel"></button>
+    </mt:if>
+    <mt:if name="included_upload_asset">
+        <button
+           onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"
+           type="submit"
+           accesskey="b"
+           class="goback action"
+           title="<__trans phrase="Back (b)">"
+           ><__trans phrase="Back"></button>
+    </mt:if>
     </div>
-
 </form>
-
-<mt:if name="enable_destination">
-   <$mt:var name="container_type" value="folder"$>
-   <mt:include name="include/category_selector.tmpl">
-</mt:if>
 
 </mt:if>

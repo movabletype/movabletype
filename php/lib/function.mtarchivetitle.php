@@ -7,7 +7,6 @@
 
 require_once("archive_lib.php");
 function smarty_function_mtarchivetitle($args, &$ctx) {
-    global $_archivers;
     $at = $ctx->stash('current_archive_type');
     if (isset($args['type'])) {
         $at = $args['type'];
@@ -17,9 +16,8 @@ function smarty_function_mtarchivetitle($args, &$ctx) {
     if ($at == 'Category') {
         return $ctx->tag('CategoryLabel', $args);
     } else {
-        if (isset($_archivers[$at])) {
-            return $_archivers[$at]->get_title($args, $ctx);
-        }
+        $ar = ArchiverFactory::get_archiver($at);
+        return $ar->get_title($args, $ctx);
     }
 }
 ?>

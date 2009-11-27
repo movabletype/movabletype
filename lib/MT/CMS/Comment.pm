@@ -1,8 +1,13 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Comment;
 
 use strict;
-use MT::Util qw( remove_html format_ts relative_date encode_html );
-use MT::I18N qw( const break_up_text substr_text length_text );
+use MT::Util qw( remove_html format_ts relative_date encode_html break_up_text );
+use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;
@@ -24,12 +29,7 @@ sub edit {
             )
         );
         $app->add_breadcrumb( $app->translate('Edit Comment') );
-        $param->{has_publish_access} = 1 if $app->user->is_superuser;
-        $param->{has_publish_access} = (
-            ( $perms->can_manage_feedback || $perms->can_edit_all_posts )
-            ? 1
-            : 0
-        ) unless $app->user->is_superuser;
+        $param->{has_publish_access} = $app->can_do('edit_comment_status');
         if ( my $entry = $obj->entry ) {
             my $title_max_len = const('DISPLAY_LENGTH_EDIT_COMMENT_TITLE');
             $param->{entry_title} =
@@ -37,14 +37,14 @@ sub edit {
               ? $app->translate('(untitled)')
               : $entry->title;
             $param->{entry_title} =
-              substr_text( $param->{entry_title}, 0, $title_max_len ) . '...'
+              substr( $param->{entry_title}, 0, $title_max_len ) . '...'
               if $param->{entry_title}
-              && length_text( $param->{entry_title} ) > $title_max_len;
+              && length( $param->{entry_title} ) > $title_max_len;
             $param->{entry_permalink} = $entry->permalink;
             unless ( $param->{has_publish_access} ) {
-                $param->{has_publish_access} =
-                  ( $perms->can_publish_post
-                      && ( $app->user->id == $entry->author_id ) ) ? 1 : 0;
+                $param->{has_publish_access}
+                    = $app->can_do('edit_comment_status_of_own_entry') ? 1 : 0
+                        if $app->user->id == $entry->author_id;
             }
         }
         else {
@@ -137,9 +137,7 @@ sub edit_commenter {
         }->{ $obj->commenter_status($blog_id) };
         $param->{"commenter_" . $param->{status}} = 1;
         $param->{commenter_url} = $obj->url if $obj->url;
-
-        if ( $app->user->is_superuser()
-          || ($perms && $perms->can_administer_blog ) ) {
+        if ( $app->can_do('search_authors') ) {
             $param->{search_type}   = 'author';
             $param->{search_label}  = $app->translate('Users');
         }
@@ -154,6 +152,19 @@ sub edit_commenter {
 
 sub list {
     my $app = shift;
+    my $blog_id = $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog_id;
+
+    PERMCHECK: {
+        if ($blog_id) {
+            last PERMCHECK if $app->can_do('access_to_comment_list');
+        }
+        else {
+            last PERMCHECK if $app->user->can_do('access_to_comment_list', at_least_one => 1 );
+        }
+        return $app->errtrans('Permission denied.');
+    }
 
     my $trim_length =
       $app->config('ShowIPInformation')
@@ -169,49 +180,19 @@ sub list {
     my ( %entries, %blogs, %cmntrs );
     my $perms = $app->permissions;
     my $user  = $app->user;
-    my $admin = $user->is_superuser
-      || ( $perms && $perms->can_administer_blog );
-
-	my %perms;
-	
-    unless ($app->user->is_superuser) {
-        if ( $app->param('blog_id') ) {
-            return $app->errtrans("Permission denied.")
-                unless $perms && $perms->can_view_feedback;
-        } else {
-            require MT::Permission;
-            my @blogs
-                = map { $_->blog_id }
-                grep {
-                    $_->can_view_feedback
-                } MT::Permission->load(
-                { author_id => $app->user->id } );
-            return $app->errtrans("Permission denied.") unless @blogs;
-        }
-    }
-
-    my $can_empty_junk = $admin
-      || ( $perms && $perms->can_manage_feedback )
-      ? 1 : 0;
-    my $state_editable = $admin
-      || ( $perms
-        && ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
-      ? 1 : 0;
-    my $state_entry_editable = $admin
-      || ( $perms && $perms->can_edit_all_posts )
-      ? 1 : 0;
-    my $state_commenter_editable = $perms
-      && ( $perms->can_publish_post
-        || $perms->can_edit_all_posts || $perms->can_manage_feedback )
-      ? 1 : 0;
+    my $admin                    = $app->can_do('administer_blog');
+    my $can_empty_junk           = $app->can_do('delete_junk_comments');
+    my $state_editable           = $app->can_do('edit_all_comments');
+    my $state_entry_editable     = $app->can_do('edit_all_entries');
+    my $state_commenter_editable = $app->can_do('edit_commenter');
     my $entry_pkg = $app->model('entry');
     my $code      = sub {
         my ( $obj, $row ) = @_;
 
         # Comment column
         $row->{comment_short} =
-          ( substr_text( $obj->text(), 0, $trim_length )
-              . ( length_text( $obj->text ) > $trim_length ? "..." : "" ) );
+          ( substr( $obj->text(), 0, $trim_length )
+              . ( length( $obj->text ) > $trim_length ? "..." : "" ) );
         $row->{comment_short} =
           break_up_text( $row->{comment_short}, $comment_short_len )
           ;    # break up really long strings
@@ -223,9 +204,9 @@ sub list {
         # Commenter name column
         $row->{author_display} = $row->{author};
         $row->{author_display} =
-          substr_text( $row->{author_display}, 0, $author_max_len ) . '...'
+          substr( $row->{author_display}, 0, $author_max_len ) . '...'
           if $row->{author_display}
-          && length_text( $row->{author_display} ) > $author_max_len;
+          && length( $row->{author_display} ) > $author_max_len;
         if ( $row->{commenter_id} ) {
             my $cmntr = $cmntrs{ $row->{commenter_id} } ||=
               MT::Author->load( { id => $row->{commenter_id} } );
@@ -260,9 +241,9 @@ sub list {
         $row->{entry_title} = $app->translate('(untitled)')
           if $row->{entry_title} eq '';
         $row->{entry_title} =
-          substr_text( $row->{entry_title}, 0, $title_max_len ) . '...'
+          substr( $row->{entry_title}, 0, $title_max_len ) . '...'
           if $row->{entry_title}
-          && length_text( $row->{entry_title} ) > $title_max_len;
+          && length( $row->{entry_title} ) > $title_max_len;
 
         # Date column
         my $blog = $blogs{ $obj->blog_id } ||= $obj->blog;
@@ -277,20 +258,11 @@ sub list {
 
         # Permissions
         $row->{has_edit_access} = $state_editable
-          || ( $entry && ( $user->id == $entry->author_id ) );
-		if (!$row->{has_edit_access}) {
-			$perms->{$obj->blog_id} ||= MT->model('permission')->load({
-				blog_id => $obj->blog_id,
-				author_id => $app->user->id
-			});
-			if ($perms->{$obj->blog_id}) {
-				$row->{has_edit_access} = 
-					$perms->{$obj->blog_id}->can_edit_all_posts
-					|| $perms->{$obj->blog_id}->can_manage_feedback;
-			}
-		}
-        $row->{can_edit_entry} = $row->{has_edit_access};
-        $row->{can_edit_commenter} = $user->is_superuser ? 1 : 0;
+          || ( $entry && ( $user->id == $entry->author_id ) && $app->can_do('open_own_entry_comment_edit_screen') );
+        $row->{can_edit_entry} = $state_entry_editable
+          || ( $entry && ( $user->id == $entry->author_id ) && $app->can_do('open_existing_own_entry_screen') );
+        ## if permitted to edit author, every comment authors could be editable.
+        $row->{can_edit_commenter} = $app->can_do('edit_author');
         if ( !$row->{can_edit_commenter} && $row->{commenter_id} ) {
             my $cmntr = $cmntrs{ $row->{commenter_id} };
             if ($cmntr) {
@@ -343,8 +315,11 @@ sub list {
         }
     }
 
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id;
+    $terms{blog_id} = $blog_ids;
+
     my %param;
-    my $blog_id = $app->param('blog_id');
     $param{feed_name} = $app->translate("Comments Activity Feed");
     $param{feed_url} =
       $app->make_feed_link( 'comment',
@@ -358,7 +333,8 @@ sub list {
     $param{search_label}      = $app->translate('Comments');
     $param{state_editable}    = $state_editable;
     $param{can_empty_junk}    = $can_empty_junk;
-    return $app->listing(
+
+   return $app->listing(
         {
             type   => 'comment',
             code   => $code,
@@ -381,7 +357,7 @@ sub list_member {
     my $user  = $app->user;
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      unless $user->is_superuser() || ($perms && $perms->can_administer_blog());
+        unless $app->can_do('access_to_member_list');
 
     my $super_user = 1 if $user->is_superuser();
     my $args       = {};
@@ -490,7 +466,7 @@ sub list_member {
 
 sub list_commenter {
     my $app = shift;
-    unless ( $app->user_can_admin_commenters ) {
+    unless ( $app->can_do('access_to_commenter_list') ) {
         return $app->error( $app->translate("Permission denied.") );
     }
 
@@ -667,7 +643,7 @@ sub build_commenter_table {
         $row->{commenter_banned} =
           $cmtr->commenter_status($blog_id) == MT::Author::BANNED();
         $row->{commenter_url}   = $cmtr->url if $cmtr->url;
-        $row->{has_edit_access} = $app->user_can_admin_commenters;
+        $row->{has_edit_access} = $app->can_do('open_commenter_edit_screen');
         $row->{object}          = $cmtr;
         push @data, $row;
     }
@@ -852,23 +828,6 @@ sub unapprove_item {
     set_item_visible($app);
 }
 
-sub cfg_comments {
-    my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
-    return $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
-    $app->forward( "view",
-        {
-            output         => 'cfg_comments.tmpl',
-            screen_class   => 'settings-screen',
-            screen_id      => 'comment-settings',
-        }
-    );
-}
-
 sub cfg_registration {
     my $app     = shift;
     my $q       = $app->param;
@@ -976,16 +935,14 @@ sub empty_junk {
     my $perms   = $app->permissions;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    return $app->errtrans("Permission denied.")
-      if ( !$blog_id && !$user->is_superuser() )
-      || (
-        $perms
-        && !(
-               $perms->can_administer_blog
-            || $perms->can_edit_all_posts
-            || $perms->can_manage_feedback
-        )
-      );
+    if ( $blog_id ) {
+        $app->can_do('delete_junk_comments')
+            or return $app->errtrans('Permission denied');
+    }
+    else {
+        $app->can_do('delete_all_junk_comments')
+            or return $app->errtrans('Permission denied');
+    }
 
     my $type  = $app->param('_type');
     my $class = $app->model($type);
@@ -1044,12 +1001,7 @@ sub handle_junk {
     }
 
     my $perms = $app->permissions;
-    my $perm_checked = ( $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_edit_all_posts )
-      ) ) ? 1 : 0;
+    my $perm_checked = $app->can_do('handle_junk');
 
     foreach my $id (@ids) {
         next unless $id;
@@ -1063,7 +1015,7 @@ sub handle_junk {
             elsif ( $obj->isa('MT::Comment') ) {
                 next if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_publish_post;
+            next unless $perms->can_do('handle_junk_for_own_entry');
         }
         $obj->junk;
         $app->run_callbacks( 'handle_spam', $app, $obj )
@@ -1106,12 +1058,7 @@ sub not_junk {
     my $class = $app->model($type);
     my %rebuild_set;
 
-    my $perm_checked = ( $app->user->is_superuser()
-      || (
-        $app->param('blog_id')
-        && (   $perms->can_manage_feedback
-            || $perms->can_edit_all_posts )
-      ) ) ? 1 : 0;
+    my $perm_checked = $app->can_do('handle_not_junk');
 
     foreach my $id (@ids) {
         next unless $id;
@@ -1124,7 +1071,7 @@ sub not_junk {
             elsif ( $obj->isa('MT::Comment') ) {
                 next if $obj->entry->author_id != $app->user->id;
             }
-            next unless $perms->can_publish_post;
+            next unless $perms->can_do('handle_not_junk_for_own_entry');
         }
         $obj->approve;
         $app->run_callbacks( 'handle_ham', $app, $obj );
@@ -1148,110 +1095,6 @@ sub not_junk {
     $app->rebuild_these( \%rebuild_set, how => MT::App::CMS::NEW_PHASE() );
 }
 
-sub cfg_system_feedback {
-    my $app = shift;
-    my %param;
-    return $app->redirect(
-        $app->uri(
-            mode => 'cfg_comments',
-            args => { blog_id => $app->param('blog_id') }
-        )
-    ) if $app->param('blog_id');
-
-    return $app->errtrans("Permission denied.")
-      unless $app->user->is_superuser();
-
-    my $cfg = $app->config;
-    $param{nav_config} = 1;
-    $app->add_breadcrumb( $app->translate('Feedback Settings') );
-    $param{nav_settings}         = 1;
-    $param{comment_disable}      = $cfg->AllowComments ? 0 : 1;
-    $param{ping_disable}         = $cfg->AllowPings ? 0 : 1;
-    $param{disabled_notify_ping} = $cfg->DisableNotificationPings ? 1 : 0;
-    $param{system_no_email}      = 1 unless $cfg->EmailAddressMain;
-    my $send = $cfg->OutboundTrackbackLimit || 'any';
-
-    if ( $send =~ m/^(any|off|selected|local)$/ ) {
-        $param{ "trackback_send_" . $cfg->OutboundTrackbackLimit } = 1;
-        if ( $send eq 'selected' ) {
-            my @domains = $cfg->OutboundTrackbackDomains;
-            my $domains = join "\n", @domains;
-            $param{trackback_send_domains} = $domains;
-        }
-    }
-    else {
-        $param{"trackback_send_any"} = 1;
-    }
-    $param{saved}        = $app->param('saved');
-    $param{screen_class} = "settings-screen system-feedback-settings";
-    $app->load_tmpl( 'cfg_system_feedback.tmpl', \%param );
-}
-
-sub save_cfg_system_feedback {
-    my $app = shift;
-    return $app->errtrans("Permission denied.")
-      unless $app->user->is_superuser();
-
-    $app->validate_magic or return;
-    my $cfg = $app->config;
-    
-    # construct the message to the activity log
-    my @meta_messages = ();
-    if ($app->param('comment_disable')) {
-        push(@meta_messages, 'Allow comments is on');
-    } else {
-        push(@meta_messages, 'Allow comments is off');
-    } 
-    if ($app->param('ping_disable')) {
-        push(@meta_messages, 'Allow trackbacks is on');
-    } else {
-        push(@meta_messages, 'Allow trackbacks is off');
-    }
-    if ($app->param('disable_notify_ping')) {
-        push(@meta_messages, 'Allow outbound trackbacks is on');
-    } else {
-        push(@meta_messages, 'Allow outbound trackbacks is off');
-    }
-    push(@meta_messages, 'Outbound trackback limit is ' . $app->param('trackback_send')) 
-        if ($app->param('trackback_send') =~ /\w+/);
-    
-    # throw the messages in the activity log
-    if (scalar(@meta_messages) > 0) {
-        my $message = join(', ', @meta_messages);
-        $app->log({
-            message  => 'System Settings Changes Took Place',
-            level    => MT::Log::INFO(),
-            class    => 'system',
-            metadata => $message,
-        });
-    }
-    
-    # actually assign the changes
-    $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
-    $cfg->AllowPings(    ( $app->param('ping_disable')    ? 0 : 1 ), 1 );
-    $cfg->DisableNotificationPings(
-        ( $app->param('disable_notify_ping') ? 1 : 0 ), 1 );
-    my $send = $app->param('trackback_send') || 'any';
-    if ( $send =~ m/^(any|off|selected|local)$/ ) {
-        $cfg->OutboundTrackbackLimit( $send, 1 );
-        if ( $send eq 'selected' ) {
-            my $domains = $app->param('trackback_send_domains') || '';
-            $domains =~ s/[\r\n]+/ /gs;
-            $domains =~ s/\s{2,}/ /gs;
-            my @domains = split /\s/, $domains;
-            $cfg->OutboundTrackbackDomains( \@domains, 1 );
-        }
-    }
-
-    $cfg->save_config();
-    $app->redirect(
-        $app->uri(
-            'mode' => 'cfg_system_feedback',
-            args   => { saved => 1 }
-        )
-    );
-}
-
 sub reply {
     my $app = shift;
     my $q   = $app->param;
@@ -1260,7 +1103,7 @@ sub reply {
     my $magic_token = encode_html( $q->param('magic_token') );
     my $blog_id     = encode_html( $q->param('blog_id') );
     my $return_url  = encode_html( $q->param('return_url') );
-    my $text        = encode_html( $q->param('text') );
+    my $text        = encode_html( $q->param('comment-reply') );
     my $indicator   = $app->static_path . 'images/indicator.gif';
     my $url         = $app->uri;
     <<SPINNER;
@@ -1279,7 +1122,7 @@ window.setTimeout("init()", 1500);
 <input type="hidden" name="magic_token" value="$magic_token" />
 <input type="hidden" name="blog_id" value="$blog_id" />
 <input type="hidden" name="return_url" value="$return_url" />
-<input type="hidden" name="text" value="$text" />
+<input type="hidden" name="comment-reply" value="$text" />
 </form></div></body></html>
 SPINNER
 }
@@ -1390,7 +1233,7 @@ sub reply_preview {
     $param->{'preview_html'} = $tmpl->output;
 
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { %$param, text => $q->param('text') } );
+        { %$param, 'text' => $q->param('comment-reply') } );
 }
 
 sub dialog_post_comment {
@@ -1415,10 +1258,7 @@ sub dialog_post_comment {
     my $entry_class = $app->_load_driver_for('entry');
     my $entry       = $entry_class->load( $parent->entry_id );
 
-    unless ( $user->is_superuser()
-        || $perms->can_edit_all_posts
-        || $perms->can_manage_feedback )
-    {
+    unless ( $app->can_do('reply_comment_from_cms') ){
         return $app->errtrans("Permission denied.")
           unless $perms->can_edit_entry( $entry, $user, 1 )
           ;    # check for publish_post
@@ -1457,17 +1297,12 @@ sub can_view {
     my $entry = MT::Entry->load( $obj->entry_id )
       or return 0;
     my $perms = $app->permissions;
-    if (
-        !(
-               $entry->author_id == $app->user->id
-            || $perms->can_edit_all_posts
-            || $perms->can_manage_feedback
-        )
-      )
-    {
-        return 0;
+    if ( $entry->author_id == $app->user->id ) {
+        return $app->can_do('open_own_entry_comment_edit_screen');
     }
-    1;
+    else {
+        return $app->can_do('open_comment_edit_screen');
+    }
 }
 
 sub can_save {
@@ -1475,30 +1310,19 @@ sub can_save {
     return 0 unless $id;    # Can't create new comments here
     return 1 if $app->user->is_superuser();
 
-    my $perms = $app->permissions;
     return 1
-      if $perms
-      && ( $perms->can_edit_all_posts
-        || $perms->can_manage_feedback );
+      if $app->can_do('save_existing_comment');
 
     my $c = MT::Comment->load($id)
         or return 0;
-    if ( $perms && $perms->can_create_post && $perms->can_publish_post ) {
+    if ( $app->can_do('edit_own_entry_comment') ) {
         return $c->entry->author_id == $app->user->id;
     }
-    elsif ( $perms && $perms->can_create_post ) {
+    elsif ( $app->can_do('edit_own_entry_comment_without_status') ) {
         return ( $c->entry->author_id == $app->user->id )
           && ( ( $c->is_junk && ( 'junk' eq $app->param('status') ) )
             || ( $c->is_moderated && ( 'moderate' eq $app->param('status') ) )
             || ( $c->is_published && ( 'publish' eq $app->param('status') ) ) );
-    }
-    elsif ( $perms && $perms->can_publish_post ) {
-        return 0 unless $c->entry->author_id == $app->user->id;
-        return 0
-          unless ( $c->text eq $app->param('text') )
-          && ( $c->author eq $app->param('author') )
-          && ( $c->email  eq $app->param('email') )
-          && ( $c->url    eq $app->param('url') );
     }
     else {
         return 0;
@@ -1517,11 +1341,11 @@ sub can_delete {
         $perms ||= $author->permissions( $entry->blog_id );
     }
 
+    # TBD: replace this check to new permission syntax.
+
     # publish_post allows entry author to delete comment.
-    return 1
-      if $perms->can_edit_all_posts
-      || $perms->can_manage_feedback
-      || $perms->can_edit_entry( $entry, $author, 1 );
+    return 1 if $app->can_do('delete_every_comment');
+    return 1 if $perms->can_edit_entry( $entry, $author, 1 );
     return 0 if $obj->visible;    # otherwise, visible comment can't be deleted.
     return $perms && $perms->can_edit_entry( $entry, $author );
 }
@@ -1530,19 +1354,16 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
     my $perms = $app->permissions;
-    return 1
-      unless $perms->can_publish_post
-      || $perms->can_edit_all_posts
-      || $perms->can_manage_feedback;
 
-    unless ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) {
-        return 1 unless $perms->can_publish_post;
+    if ( !$app->can_do('edit_all_comments') ) {
+        $app->can_do('edit_own_entry_comment')
+            or return 1;
         require MT::Entry;
         my $entry = MT::Entry->load( $obj->entry_id )
           or return 1;
         return 1 unless $entry->author_id == $app->user->id;
     }
-
+    
     my $status = $app->param('status');
     if ( $status eq 'publish' ) {
         $obj->approve;
@@ -1622,7 +1443,7 @@ sub can_delete_commenter {
     my $author = $app->user;
     return 1 if $author->is_superuser();
     my $perms = $author->permissions( $obj->blog_id );
-    ( $perms && $perms->can_administer_blog );
+    ( $perms && $perms->can_do('administer_blog') );
 }
 
 sub build_junk_table {
@@ -1745,24 +1566,18 @@ sub set_item_visible {
                     );
                 }
                 else {
-                    if ( !$author->is_superuser ) {
-                        if ( !$perms || $perms->blog_id != $obj->blog_id ) {
-                            $perms = $author->permissions( $obj->blog_id );
-                        }
-                        unless ($perms) {
+                    if ( !$perms || $perms->blog_id != $obj->blog_id ) {
+                        $perms = $author->permissions( $obj->blog_id );
+                    }
+                    if ( !$app->can_do('approve_all_trackback', $perms) ) {
+                        if ( $app->can_do('approve_own_entry_trackback', $perms) ) {
                             return $app->errtrans(
-"You don't have permission to approve this comment."
-                            );
+                                "You don't have permission to approve this trackback."
+                            ) if $obj_parent->author_id != $author->id;
                         }
-                        unless (
-                            $perms->can_manage_feedback
-                            || $perms->can_edit_all_posts
-                            || ( $perms->can_publish_post
-                                && ( $obj_parent->author_id == $author->id ) )
-                          )
-                        {
+                        else {
                             return $app->errtrans(
-"You don't have permission to approve this comment."
+                                "You don't have permission to approve this trackback."
                             );
                         }
                     }
@@ -1775,22 +1590,22 @@ sub set_item_visible {
                 my $entry = MT::Entry->load( $obj->entry_id )
                   || return $app->error(
                     $app->translate("Comment on missing entry!") );
-                if ( !$author->is_superuser ) {
-                    if ( !$perms || $perms->blog_id != $obj->blog_id ) {
-                        $perms = $author->permissions( $obj->blog_id );
-                    }
-                    unless ($perms) {
+
+                if ( !$perms || $perms->blog_id != $obj->blog_id ) {
+                    $perms = $author->permissions( $obj->blog_id );
+                }
+                unless ($perms) {
+                    return $app->errtrans(
+                        "You don't have permission to approve this comment."
+                    );
+                }
+                if ( !$app->can_do('approve_all_comment', $perms) ) {
+                    if ( $app->can_do('approve_own_entry_comment', $perms) ) {
                         return $app->errtrans(
                             "You don't have permission to approve this comment."
-                        );
+                        ) if $entry->author_id != $author->id;
                     }
-                    unless (
-                        $perms->can_manage_feedback
-                        || $perms->can_edit_all_posts
-                        || ( $perms->can_publish_post
-                            && ( $entry->author_id == $author->id ) )
-                      )
-                    {
+                    else {
                         return $app->errtrans(
                             "You don't have permission to approve this comment."
                         );
@@ -1798,7 +1613,12 @@ sub set_item_visible {
                 }
                 $rebuild_set{ $obj->entry_id } = $entry;
             }
-            $obj->visible($new_visible);
+            if ( $new_visible ) {
+                $obj->approve;
+            }
+            else {
+                $obj->visible( $new_visible );
+            }
             $obj->save();
         }
     }
@@ -1849,7 +1669,7 @@ sub _prepare_reply {
     my $comment = $comment_class->new;
 
     ## Strip linefeed characters.
-    my $text = $q->param('text');
+    my $text = $q->param('comment-reply');
     $text = '' unless defined $text;
     $text =~ tr/\r//d;
     $comment->ip( $app->remote_ip );
@@ -1921,12 +1741,12 @@ sub build_comment_table {
         my $row = $obj->get_values;
         $row->{author_display} = $row->{author};
         $row->{author_display} =
-          substr_text( $row->{author_display}, 0, $author_max_len ) . '...'
+          substr( $row->{author_display}, 0, $author_max_len ) . '...'
           if $row->{author_display}
-          && length_text( $row->{author_display} ) > $author_max_len;
+          && length( $row->{author_display} ) > $author_max_len;
         $row->{comment_short} =
-          ( substr_text( $obj->text(), 0, $trim_length )
-              . ( length_text( $obj->text ) > $trim_length ? "..." : "" ) );
+          ( substr( $obj->text(), 0, $trim_length )
+              . ( length( $obj->text ) > $trim_length ? "..." : "" ) );
         $row->{comment_short} =
           break_up_text( $row->{comment_short}, $comment_short_len )
           ;    # break up really long strings
@@ -1954,9 +1774,9 @@ sub build_comment_table {
         $row->{entry_title} = $app->translate('(untitled)')
           if $row->{entry_title} eq '';
         $row->{entry_title} =
-          substr_text( $row->{entry_title}, 0, $title_max_len ) . '...'
+          substr( $row->{entry_title}, 0, $title_max_len ) . '...'
           if $row->{entry_title}
-          && length_text( $row->{entry_title} ) > $title_max_len;
+          && length( $row->{entry_title} ) > $title_max_len;
         $row->{commenter_id} = $obj->commenter_id() if $obj->commenter_id();
         my $cmntr;
         if ( $obj->commenter_id ) {
@@ -1994,16 +1814,18 @@ sub build_comment_table {
             my $perms = $perms{ $obj->blog_id } ||=
               $author->permissions( $obj->blog_id );
             $row->{has_bulk_access} = (
-                $perms && ( $perms->can_edit_all_posts
-                    || $perms->can_manage_feedback )
-                  || ( ( $perms->can_publish_post )
-                    && ( $author->id == $entry->author_id ) )
+                $perms 
+                && ( $app->can_do('bulk_edit_all_comments', $perms) 
+                     || ( $app->can_do('bulk_edit_own_entry_comments', $perms)
+                          && ( $author->id == $entry->author_id ) )
+                )
             );
             $row->{has_edit_access} = (
-                $perms && ( $perms->can_edit_all_posts
-                    || $perms->can_manage_feedback )
-                  || ( ( $perms->can_create_post )
-                    && ( $author->id == $entry->author_id ) )
+                $perms 
+                && ( $app->can_do('open_all_comment_edit_screen', $perms) 
+                     || ( $app->can_do('open_own_entry_comment_edit_screen', $perms)
+                          && ( $author->id == $entry->author_id ) )
+                )
             );
         }
         if ($blog) {

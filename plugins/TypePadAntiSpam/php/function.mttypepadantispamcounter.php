@@ -8,7 +8,7 @@
 function smarty_function_mttypepadantispamcounter($args, &$ctx) {
     $blog = $ctx->stash('blog');
     $cfg = $ctx->mt->db->fetch_plugin_config('MT::Plugin::TypePadAntiSpam',
-        'blog:' . $blog['blog_id']);
+        'blog:' . $blog->blog_id);
     $count = $cfg['blocked'];
     $count or $count = 0;
     return $ctx->count_format($count, $args);

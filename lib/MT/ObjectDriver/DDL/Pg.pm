@@ -108,9 +108,11 @@ sub column_defs {
     return undef if $sth->err;
     return undef unless %$attr;
 
-    my @pri_keys = $dbh->primary_key( undef, undef, $table_name );
-    $attr->{$_}->{PRIMARY_KEY} = 0 for keys %$attr;
-    $attr->{$_}->{PRIMARY_KEY} = 1 for @pri_keys;
+    my @key_column_names = $dbh->primary_key(undef, undef, $table_name);
+    my $key_columns = {};
+    foreach ( @key_column_names ) {
+        $key_columns->{$_} = 1;
+    }
 
     my $defs = {};
     foreach my $field_name (keys %$attr) {
@@ -130,6 +132,8 @@ sub column_defs {
             $defs->{$colname}{not_null} = 1;
         }
         if ( $col->{PRIMARY_KEY} ) {
+            $defs->{$colname}{key} = 1;
+        } elsif ( exists $key_columns->{$field_prefix.'_'.$colname} ) {
             $defs->{$colname}{key} = 1;
         }
     }

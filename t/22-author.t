@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 22-author.t 1927 2008-04-16 15:36:30Z mpaschal $
 use strict;
 use warnings;
 

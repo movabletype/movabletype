@@ -1,49 +1,59 @@
 <mt:setvartemplate name="line_items" function="unshift">
-<mt:if name="USER_VIEW">
-    <mt:unless name="EDIT_AUTHOR_ID" eq="PSEUDO">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><b><__trans phrase="Profile"></b></a></li>
+<mt:if name="user_view">
+    <mt:unless name="edit_author_id">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id" escape="html">"><__trans phrase="Profile"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="author_id" escape="html">"><__trans phrase="Permissions"></a></li>
+    <mt:else>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Profile"></a></li>
+        <mt:unless name="profile_inactive">
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></em></li>
+        <mt:else>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></li>
+        </mt:unless>
     </mt:unless>
-    <li<mt:unless name="profile_inactive"> class="active"</mt:unless>><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><b><__trans phrase="Permissions"></b></a></li>
 </mt:if>
 
 <mt:if name="edit_author">
-    <li<mt:unless name="profile_inactive"> class="active"</mt:unless>><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id" escape="html"></mt:if>"><b><__trans phrase="Profile"></b></a></li>
+    <mt:unless name="profile_inactive">
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id" escape="html"></mt:if>"><__trans phrase="Profile"></a></em></li>
+    <mt:else>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author<mt:if name="id">&amp;id=<mt:var name="id" escape="html"></mt:if>"><__trans phrase="Profile"></a></li>
+    </mt:unless>
     <mt:unless name="new_object">
-        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;author_id=<mt:var name="id" escape="html">"><b><__trans phrase="Permissions"></b></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="id" escape="html">"><__trans phrase="Permissions"></a></li>
     </mt:unless>
 </mt:if>
 
 <mt:if name="ROLE_VIEW">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=edit_role&amp;id=<mt:var name="ROLE_ID" escape="html">"><b><__trans phrase="Details"></b></a></li>
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ROLE_ID" escape="html">"><b><__trans phrase="Users"></b></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=role&amp;id=<mt:var name="ROLE_ID" escape="html">"><__trans phrase="Details"></a></li>
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;role_id=<mt:var name="ROLE_ID" escape="html">"><__trans phrase="Users"></a></em></li>
 </mt:if>
 
 <mt:if name="edit_role">
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=edit_role&amp;id=<mt:var name="ID" escape="html">"><b><__trans phrase="Details"></b></a></li>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;role_id=<mt:var name="ID" escape="html">"><b><__trans phrase="Users"></b></a></li>
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=role&amp;id=<mt:var name="ID" escape="html">"><__trans phrase="Details"></a></em></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;role_id=<mt:var name="ID" escape="html">"><__trans phrase="Users"></a></li>
 </mt:if>
 
 <mt:if name="USERGROUP_VIEW">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><b><__trans phrase="Users"></b></a></li>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><b><__trans phrase="Roles"></b></a></li>
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><b><__trans phrase="Permissions"></b></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_role"><__trans phrase="Roles"></a></li>
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><__trans phrase="Permissions"></a></em></li>
 </mt:if>
 
-
 <mt:if name="list_users">
-    <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><b><__trans phrase="Users"></b></a></li>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><b><__trans phrase="Roles"></b></a></li>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><b><__trans phrase="Permissions"></b></a></li>
+    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></em></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_role"><__trans phrase="Roles"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><__trans phrase="Permissions"></a></li>
 </mt:if>
 
 <mt:if name="list_role">
     <mt:if name="EDIT_AUTHOR_ID">
-        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><b><__trans phrase="Profile"></b></a></li>
-        <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><b><__trans phrase="Roles"></b></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Profile"></a></li>
+        <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_role&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Roles"></a></em></li>
     <mt:else>
-        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_authors"><b><__trans phrase="Users"></b></a></li>
-        <li class="active"><a href="<mt:var name="SCRIPT_URL">?__mode=list_roles"><b><__trans phrase="Roles"></b></a></li>
-        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_associations&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><b><__trans phrase="Permissions"></b></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></li>
+        <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_role"><__trans phrase="Roles"></a></em></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><__trans phrase="Permissions"></a></li>
     </mt:if>
 </mt:if>
 </mt:setvartemplate>

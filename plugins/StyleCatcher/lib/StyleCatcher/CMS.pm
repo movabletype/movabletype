@@ -32,8 +32,19 @@ sub listify {
         my %entry = %{ $data->{$k} };
         $entry{key} = $k;
         delete $entry{plugin};
-        $entry{label} = $entry{label}->() if ref($entry{label});
-        $entry{description_label} = $entry{description_label}->() if ref($entry{description_label});
+        if ( ref( $entry{label} ) ) {
+            $entry{label} = $entry{label}->();
+        }
+        else {
+            $entry{label} = MT->translate( $entry{label} );
+        }
+        if ( ref( $entry{description_label} ) ) {
+            $entry{description_label} = $entry{description_label}->();
+        }
+        else {
+            $entry{description_label}
+                = MT->translate( $entry{description_label} );
+        }
         push @list, \%entry;
     }
     @list = sort { $a->{order} <=> $b->{order} } @list;
@@ -49,14 +60,31 @@ sub view {
     return $app->errtrans("Invalid request") unless $blog;
 
     my $static_path = $app->static_file_path;
+    my $static_webpath = $app->static_path;
+    my $support_path = $app->support_directory_path;
+    my $support_url = $app->support_directory_url;
     if (! -d $static_path ) {
         return $app->errtrans("Your mt-static directory could not be found. Please configure 'StaticFilePath' to continue.");
     }
 
     my $themeroot =
-      File::Spec->catdir( $app->static_file_path, 'support', 'themes' );
-    my $webthemeroot = $app->static_path . 'support/themes';
+      File::Spec->catdir( $support_path, 'themes' );
+    my $webthemeroot = $support_url . 'themes';
     my $stylelibrary = listify(style_library());
+    if ( my $blog = $app->blog ) {
+        my $set = $blog->template_set;
+        $set = MT->registry(template_sets => $set)
+            if !ref $set;
+        my $lib = listify($set->{stylecatcher_libraries});
+        $stylelibrary = [ @$stylelibrary, @$lib ];
+    }
+    for my $lib ( @$stylelibrary ) {
+        $lib->{url} =~ s/{{static}}/$static_webpath/i;
+        $lib->{url} =~ s/{{support}}/$support_url/i;
+        if ( $lib->{url} =~ m!^/! ) {
+            $lib->{url} = $app->base . $lib->{url};
+        }
+    }
     my $theme_data   = make_themes();
     my $styled_blogs = fetch_blogs();
 
@@ -67,6 +95,7 @@ sub view {
     my ($blog_theme, $blog_layout);
     foreach my $blog (@$styled_blogs) {
         my $curr_theme = $config->{"current_theme_" . $blog->id} || '';
+        next unless $curr_theme;
         my $curr_layout = $config->{"current_layout_" . $blog->id} || 'layout-wtt';
         push @blog_loop,
           {
@@ -109,6 +138,8 @@ sub view {
         current_theme => $blog_theme || '',
         current_layout => $blog_layout || 'layout-wtt',
         dynamic_blog => (($blog->custom_dynamic_templates || '') eq 'all'),
+        search_label => $app->translate('Templates'),
+        object_type  => 'template',
     );
 
     if ( $blog_id && @$styled_blogs ) {
@@ -275,18 +306,41 @@ sub apply {
 
     my $blog = MT->model('blog')->load($blog_id)
       or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
+
+    my $base_css_url;
+    my $use_theme = 1;
     my $blog_tset = $blog->template_set;
-    my $base_css_url = MT->registry('template_sets')->{$blog_tset}->{base_css};
+    if ( !ref $blog_tset ) {
+        $blog_tset = MT->registry('template_sets')->{$blog_tset};
+        $use_theme = 0;
+    }
+    if ( $blog_tset->{base_css} ) {
+        if ( $use_theme ) {
+            my $theme = $blog->theme;
+            my ( $id, $base ) = ( $theme->id, $blog_tset->{base_css} );
+            $base_css_url = "theme_static/$id/$base";
+        }
+        else {
+            $base_css_url = $blog_tset->{base_css};
+        }
+    }
+    elsif ( defined $blog_tset->{base_css} ) {
+        # base_css is '0', so don't print base_css line.
+        $base_css_url = '';
+    }
+    else {
+        # base_css is undefined, so use default blog.css.
+        $use_theme = 0;
+        $base_css_url = 'themes-base/blog.css';
+    }
 
     my $base_css = q{};
     if ($base_css_url) {
         require URI;
-        my $uri = URI->new_abs($base_css_url, $app->static_path);
+        my $uri = URI->new_abs($base_css_url, $use_theme ? $app->support_directory_url : $app->static_path);
         $base_css = '@import url(' . $uri->as_string() . ');'
             if $uri;
     }
-    my $blog = MT->model('blog')->load($blog_id)    
-      or return $app->json_error( $app->translate('No such blog [_1]', $blog_id) );
 
     # Replacing the theme import or adding a new one at the beginning
     my $template_text  = $tmpl->text();
@@ -690,7 +744,7 @@ sub metadata_for_stylesheet {
         ($metadata{$best_name}) = grep { defined }
             delete @metadata{ @$possible_names }, q{};
         # TODO: do html mashing later
-        $metadata{$best_name} = decode_html(remove_html($metadata{$best_name}));
+        $metadata{$best_name} = decode_html(remove_html(Encode::decode_utf8($metadata{$best_name})));
     }
 
     return %metadata;
@@ -769,7 +823,7 @@ sub metadata_for_theme {
     my $data = {
         name         => $theme{id},
         description  => $metadata{description} || q{},
-        title        => $metadata{title} || '(Untitled)',
+        title        => $metadata{title} || $app->translate('(Untitled)'),
         url          => $url,
         imageSmall   => $thumbnails{thumbnail},
         imageBig     => $thumbnails{thumbnail_large},

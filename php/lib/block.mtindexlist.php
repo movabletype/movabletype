@@ -9,7 +9,7 @@ function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
     $localvars = array('index_templates', 'index_templates_counter');
     if (!isset($content)) {
         $ctx->localize($localvars);
-        $tmpl = $ctx->mt->db->fetch_templates(array(
+        $tmpl = $ctx->mt->db()->fetch_templates(array(
             type => 'index',
             blog_id => $ctx->stash('blog_id')
         ));

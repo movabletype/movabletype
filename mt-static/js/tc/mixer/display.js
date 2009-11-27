@@ -41,7 +41,12 @@ TC.Mixer.Display = function( mixer, elementOrId, source, start, count, imageProp
 
 
 /* config */
-
+//For make-js script
+//trans('Title:');
+//trans('Description:');
+//trans('Author:');
+//trans('Tags:');
+//trans('URL:');
 TC.Mixer.Display.prototype.entryClassName = "tc-mixer-entry";
 TC.Mixer.Display.prototype.selectedClassName = "tc-mixer-selected";
 TC.Mixer.Display.prototype.selectedEntryClassName = "tc-mixer-entry tc-mixer-selected";
@@ -49,11 +54,11 @@ TC.Mixer.Display.prototype.disabledClassName = "tc-mixer-disabled";
 TC.Mixer.Display.prototype.propsClassName = "tc-mixer-props";
 TC.Mixer.Display.prototype.entryProperties =
 {
-	"title" : "Title:",
-	"description" : "Description:",
-	"author" : "Author:",
-	"tags" : "Tags:"
-	,"url" : "URL:"
+        "title" : "Title:",
+        "description" : "Description:",
+        "author" : "Author:",
+        "tags" : "Tags:",
+        "url" : "URL:"
 };
 
 
@@ -225,7 +230,7 @@ TC.Mixer.Display.prototype.makeEntryElement = function( entry )
 		for( var ep in this.entryProperties )
 		{
 			// get natural language label
-			var epLabel = this.entryProperties[ ep ];
+                        var epLabel = trans(this.entryProperties[ ep ]);
 			var epValue = entry[ ep ] || " ";
 			
 			// fix array values

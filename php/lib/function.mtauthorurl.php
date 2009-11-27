@@ -10,13 +10,13 @@ function smarty_function_mtauthorurl($args, &$ctx) {
     if (empty($author)) {
         $entry = $ctx->stash('entry');
         if (!empty($entry)) {
-            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+            $author = $entry->author();
         }
     }
 
     if (empty($author)) {
         return $ctx->error("No author available");
     }
-    return isset($author['author_url']) ? $author['author_url'] : '';
+    return isset($author->author_url) ? $author->author_url : '';
 }
 ?>

@@ -11,7 +11,7 @@ function smarty_block_mtifisdescendant($args, $content, &$ctx, &$repeat) {
        require_once("MTUtil.php");
        $cat = get_category_context($ctx);
        $ctx->localize($localvars);
-       $parents = $ctx->mt->db->fetch_categories(array('label' => $args['parent'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
+       $parents = $ctx->mt->db()->fetch_categories(array('label' => $args['parent'], 'blog_id' => $ctx->stash('blog_id'), 'show_empty' => 1));
        $ret = false;
        if ($parents) {
            require_once("block.mtifisancestor.php");

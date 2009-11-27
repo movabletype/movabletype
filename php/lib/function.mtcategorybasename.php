@@ -8,7 +8,7 @@
 function smarty_function_mtcategorybasename($args, &$ctx) {
     $cat = $ctx->stash('category');
     if (!$cat) return '';
-    $basename = $cat['category_basename'];
+    $basename = $cat->category_basename;
     if ($sep = $args['separator']) {
         if ($sep == '-') {
             $basename = preg_replace('/_/', '-', $basename);

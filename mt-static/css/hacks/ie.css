@@ -1,108 +1,191 @@
-ul.main-nav-list ul a {
-    display: inline-block; /* removes vertical space in menus */
+/* - Generic */
+/* -- form */
+body { 
+    word-break: break-all;
 }
 
-.field-left-label .field-content {
-    margin-left: 0 !important;
-    float: left !important;
+input.text, 
+input.password, 
+select, 
+textarea { 
+    padding: 2px 0 2px 2px ! important;
+    border: 1px solid #c8c2be;
 }
 
-.system_check {
-    width: 736px; /* scrollbars are wider in IE */
+input.text, 
+textarea { 
+    width: 28em;
 }
 
-/* checkboxes are bigger in IE, so remove padding */
-.listing .cb {
-    padding: 0 2px;
+input.password { 
+    width: 15em ! important;
 }
 
-.add-category-new-parent-link {
-    right: 4px;
+input.smaller-text { 
+    width: 3.5em ! important;
 }
 
-.add-category-ok-link {
-    margin-bottom: 3px;
+input.extra-path { 
+    width: 12em ! important;
 }
 
-.add-category-new-link {
-    background: url('../../images/spacer.gif') no-repeat left center;
+#basic-search input.search-query {
+    padding-left: 0 ! important;
 }
 
-#category-field .field-content {
-    width: 190px;
+.widget input[type="text"], 
+.widget textarea, 
+.edit-entry input[type="text"], 
+.edit-entry textarea, 
+.edit-template input[type="text"], 
+.edit-template textarea { 
+    width: 99%;
 }
 
+.edit-entry #editor-content-textarea { 
+    width: 100%;
+    padding-left: 0;
+}
 
-#entryfield-options li input.cb,
-#entryfield-options li input.rb { margin: -2px -4px; }
+.widget input[type="text"], 
+.widget input[type="password"], 
+.widget textarea { 
+    width: 96%;
+}
 
-#basic-search .search-query {
+#sign-in input[type="text"] { 
+    width: 313px;
+}
+
+#sign-in #username, 
+#sign-in #password, 
+#reset-password input, 
+#change-password input { 
+    width: 335px ! important;
+}
+
+#sign-in .has-auth-icon input {
+    padding-left: 22px ! important;
+}
+
+/* -- Button */
+button { 
+    min-height: 20px;
+}
+
+button.action { 
+    font-weight: bold;
+    height: 23px;
+}
+
+/* - Component */
+.icon-left { 
+    background-position: left 2px;
+}
+
+/* - App Header */
+#header { 
+    z-index: 1200;
+}
+
+/* - Selector Nav */
+#selector-nav-list a.toggle-button img { 
     margin-top: 0;
 }
 
-.dashboard .shortcuts-widget li {
-    width: 49%;
+#selector-nav .selector a,
+#selector-nav .selector span { 
+    overflow: visible;
 }
 
-.dashboard .you-widget .widget-header {
-    height: 1%;
+/* - Menu Bar Nav */
+#menu-bar-nav { 
+    width: 250px;
 }
 
-.actions-bar button,
-button.big-button {
-    border: none !important;
+/* - Navigation Menu */
+#menu { 
+    z-index: 1100;
 }
 
-.search-replace .search-bar-replace-wrapper {
-    margin-left: -46px;
+ul.menu-nav li.top-menu { 
+    margin-top: -4px;
+}
+ul.menu-nav li.top-menu.first-child { 
+    margin-top: 0;
+}
+ul.menu-nav li.first-child a { 
+    margin-top: 0;
 }
 
-.search-replace #search-bar-search-field {
-    margin-left: 2px;
+ul.menu-nav a.top-menu-link .menu-label { 
+    word-break: normal;
 }
 
-#system-check iframe {
-    width: 756px; /* 2px less to account for border width */
+/* - Widgets */
+/* -- Favorite Website, Blog Widget */
+.favorite-blogs-widget .blog-container { 
+    height: auto;
+    margin-right: 0;
+    overflow: visible;
 }
 
-.log-listing-table tr.active { display: inline; }
-.list-tag .create-inline { display: inline; }
-
-/* 3.3x hacks that may still be needed */
-/*    body.edit-entry #entry-container select { margin: 0; }*/
-/*    * html body.edit-entry #entry-container select { margin-top: 1px; }*/
-
-/** html body.edit-entry input.cb { margin: -2px -4px; }*/
-
-
-
-/* PNG transprancy fix */
-/** html img {*/
-/*   behavior: url("pngbehavior.htc");*/
-/*}*/
-/* to be sure IE displays pointer */
-/*a:link, a:visited { cursor: pointer; }*/
-
-/* In IE, the header block is actually placed at the bottom of the document
-   but above the modal dialog iframe; this allows the pulldown menus to
-   display above all other elements on the screen */
-
-.main-screen #content-header {
-    margin-top: 120px;
-}
-.main-screen #header {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-}
-
-#editor .editor-header .tab {
-    position: relative;
-    top: 1px;
-    margin-bottom: 0;
+.favorite-blogs-widget .blog-action {
+    right: 0;
 }
 
 ul#asset-list li a.remove-asset {
-	top: -4px;
+    top: 6px;
+    margin-top: 0;
+}
+
+/* - Listing Table */
+.listing th, 
+.listing td { 
+    padding: 6px 8px;
+}
+
+.listing td.view, 
+.listing td.cb, 
+.listing td.si, 
+.listing td.number { 
+    padding-top: 8px;
+}
+
+/* -Fields */
+.field-header { 
+    word-break: normal; 
+}
+
+#template-options #template-options-header h3 { 
+    float: left;
+}
+
+/* - fake display: inline-block; */
+.ui-tabs-nav li, 
+ul.tabs li, 
+#utility-nav li, 
+#selector-nav .current, 
+.object-nav li, 
+#editor .editor-header .tab, 
+#field-convert_breaks, 
+#template-options #template-options-header h3, 
+#caching-field li li, 
+#permission-list li, 
+.settings-screen ul#editor-fields li, 
+.edit-author #system_permissions-field li, 
+.template-group-header h3, 
+#search-bar-advanced-search li, 
+.search-replace .advanced-options li, 
+.dialog .selected-items .items a .remove, 
+.mt-beta #footer #msg-beta p { 
+    display: inline;
+    height: 1%;
+}
+
+/* - haslayout */
+ul.menu-nav, 
+.welcome-widget, 
+.favorite-blogs-widget .blog-content { 
+    zoom: 1;
 }

@@ -150,7 +150,7 @@ sub mode_default {
                 $app->set_header( 'Last-Modified', $last_update )
                     if $last_update;
                 $app->send_http_header("application/atom+xml");
-                $app->print($feed);
+                $app->print_encode( $feed );
             }
         }
         else {
@@ -344,7 +344,7 @@ sub _feed_ping {
                 }
             );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm;
+                unless ( $perm && $perm->can_do('get_trackback_feed') );
         }
         $blog = MT::Blog->load($blog_id) or return;
     }
@@ -356,7 +356,7 @@ sub _feed_ping {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list;
+            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_trackback_feed') } @perms;
             push @blog_list, $_->blog_id foreach @perms;
             $blog_id = join ',', @blog_list;
         }
@@ -370,8 +370,8 @@ sub _feed_ping {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog TrackBacks', $blog->name )
-        : $app->translate("All Weblog TrackBacks")
+        ? $app->translate( '[_1] TrackBacks', $blog->name )
+        : $app->translate("All TrackBacks")
     };
 
     # user has permissions to view this type of feed... continue
@@ -403,7 +403,7 @@ sub _feed_comment {
                 }
             );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm;
+                unless ( $perm && $perm->can_do('get_comment_feed') );
         }
 
         $blog = MT::Blog->load($blog_id) or return;
@@ -415,8 +415,7 @@ sub _feed_comment {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list;
-            push @blog_list, $_->blog_id foreach @perms;
+            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_comment_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -429,8 +428,8 @@ sub _feed_comment {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Comments', $blog->name )
-        : $app->translate("All Weblog Comments")
+        ? $app->translate( '[_1] Comments', $blog->name )
+        : $app->translate("All Comments")
     };
 
     # user has permissions to view this type of feed... continue
@@ -459,7 +458,7 @@ sub _feed_entry {
             my $perm = MT::Permission->load(
                 { author_id => $user->id, blog_id => $blog_id } );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm;
+                unless ( $perm && $perm->can_do('get_entry_feed') );
         }
 
         $blog = MT::Blog->load($blog_id) or return;
@@ -471,22 +470,21 @@ sub _feed_entry {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list;
-            push @blog_list, $_->blog_id foreach @perms;
+            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_entry_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_entries',
+        mode => 'list_entry',
         args => { $blog ? ( blog_id => $blog_id ) : () }
         );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Entries', $blog->name )
-        : $app->translate("All Weblog Entries")
+        ? $app->translate( '[_1] Entries', $blog->name )
+        : $app->translate("All Entries")
     };
 
     # user has permissions to view this type of feed... continue
@@ -516,7 +514,7 @@ sub _feed_blog {
             my $perm = MT::Permission->load(
                 { author_id => $user->id, blog_id => $blog_id } );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm;
+                unless ( $perm && $perm->can_do('get_blog_feed') );
         }
 
         $blog = MT::Blog->load($blog_id) or return;
@@ -528,8 +526,7 @@ sub _feed_blog {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list;
-            push @blog_list, $_->blog_id foreach @perms;
+            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_blog_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
@@ -548,8 +545,8 @@ sub _feed_blog {
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Activity', $blog->name )
-        : $app->translate("All Weblog Activity")
+        ? $app->translate( '[_1] Activity', $blog->name )
+        : $app->translate("All Activity")
     };
 
     # user has permissions to view this type of feed... continue
@@ -577,13 +574,11 @@ sub _feed_system {
             my $perm = MT::Permission->load(
                 { author_id => $user->id, blog_id => $blog_id } );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm
-                    && (   $perm->can_administer_blog
-                        || $perm->can_view_blog_log );
+                unless $perm && $perm->can_do('get_system_feed');
         }
         else {
             return $cb->error( $app->translate("No permissions.") )
-                unless $user->can_view_log;
+                unless $app->can_do('get_all_system_feed');
         }
     }
 
@@ -608,7 +603,7 @@ sub _feed_debug {
     my ( $cb, $app, $view, $feed ) = @_;
 
     my $user = $app->user;
-    return unless $user->is_superuser;
+    return unless $app->can_do('get_debug_feed');
     my $blog_id = $app->param('blog_id');
     my $args    = {
         'filter'     => 'class',
@@ -640,7 +635,7 @@ sub _feed_page {
             my $perm = MT::Permission->load(
                 { author_id => $user->id, blog_id => $blog_id } );
             return $cb->error( $app->translate("No permissions.") )
-                unless $perm;
+                unless ( $perm && $perm->can_do('get_page_feed') );
         }
 
         $blog = MT::Blog->load($blog_id) or return;
@@ -652,22 +647,21 @@ sub _feed_page {
             my @perms = MT::Permission->load( { author_id => $user->id } );
             return $cb->error( $app->translate("No permissions.") )
                 unless @perms;
-            my @blog_list;
-            push @blog_list, $_->blog_id foreach @perms;
+            my @blog_list = map { $_->blog_id } grep { $_->can_do('get_page_feed') } @perms;
             $blog_id = join ',', @blog_list;
         }
     }
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_pages',
+        mode => 'list_page',
         args => { $blog ? ( blog_id => $blog_id ) : () }
         );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
-        ? $app->translate( '[_1] Weblog Pages', $blog->name )
-        : $app->translate("All Weblog Pages")
+        ? $app->translate( '[_1] Pages', $blog->name )
+        : $app->translate("All Pages")
     };
 
     # user has permissions to view this type of feed... continue

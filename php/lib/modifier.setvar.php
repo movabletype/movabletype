@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_modifier_setvar($text, $name) {
-    global $mt;
+    $mt = MT::get_instance();
     $ctx =& $mt->context();
     if (array_key_exists('__inside_set_hashvar', $ctx->__stash)) {
         $vars =& $ctx->__stash['__inside_set_hashvar'];

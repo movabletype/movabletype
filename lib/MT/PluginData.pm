@@ -68,7 +68,8 @@ sub remove {
             return undef unless defined $data;
             if (substr($data, 0, 4) eq 'SERG') {
                 my $thawed = $ser->unserialize( $data );
-                defined $thawed ? $$thawed : undef;
+                my $ret = defined $thawed ? $$thawed : undef;
+                return $ret;
             } else {
                 # signature is not a match, so the data must be stored
                 # using Storable...

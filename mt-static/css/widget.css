@@ -54,11 +54,10 @@ td.widgetmanager-name {
     position: absolute;
     display: none;
     width: 100%;
-    border: 1px solid #a3b8cc;
+    border: 1px solid #c8c2be;
     background-color: #fff;
     padding: 5px;
-    font-size: x-small;
-    line-height: 1;
+    font-size: 11px;
 }
 #available-column .module {
     border: 1px solid #bbb;

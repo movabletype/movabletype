@@ -11,7 +11,7 @@ function smarty_function_mtcgipath($args, &$ctx) {
     $path = $ctx->mt->config('CGIPath');
     if (substr($path, 0, 1) == '/') {  # relative
         $blog = $ctx->stash('blog');
-        $host = $blog['blog_site_url'];
+        $host = $blog->site_url();
         if (!preg_match('!/$!', $host))
             $host .= '/';
         if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {

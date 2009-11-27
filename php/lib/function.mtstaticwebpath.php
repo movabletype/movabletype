@@ -13,7 +13,7 @@ function smarty_function_mtstaticwebpath($args, &$ctx) {
         $path .= 'mt-static/';
     } elseif (substr($path, 0, 1) == '/') {
         $blog = $ctx->stash('blog');
-        $host = $blog['blog_site_url'];
+        $host = $blog->site_url();
         if (!preg_match('!/$!', $host))
             $host .= '/';
         if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {

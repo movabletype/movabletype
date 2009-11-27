@@ -1,8 +1,5 @@
 <mt:setvar name="list_role" value="1">
-    <mt:setvarblock name="page_title"><__trans phrase="Roles: System-wide"></mt:setvarblock>
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/users_content_nav.tmpl">
-</MTSetVarBlock>
+<mt:setvarblock name="page_title"><__trans phrase="Manage Roles"></mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
@@ -14,11 +11,11 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:if name="is_administrator">
-    <a href="javascript:void(0)"
+    <button
         onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="role" escape="js">', '<__trans phrase="roles" escape="js">'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected [_1] (x)">"
-        ><__trans phrase="Delete"></a>
+        ><__trans phrase="Delete"></button>
     </mt:if>
 </mt:setvarblock>
 <mt:if name="object_loop">
@@ -32,18 +29,17 @@
     var tableSelect;
     function init()
     {
-    	// setup
-    	tableSelect = new TC.TableSelect( "role-listing-table" );
-    	tableSelect.rowSelect = true;
+        // setup
+        tableSelect = new TC.TableSelect( "role-listing-table" );
+        tableSelect.rowSelect = true;
     }
-    TC.attachLoadEvent( init );
     /* ]]> */
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <mt:if name="can_create_role">
     <ul class="action-link-list">
-        <li><a href="<mt:var name="script_url">?__mode=edit_role" class="icon-left icon-create"><__trans phrase="Create Role"></a></li>
+        <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=role" class="icon-left icon-create"><__trans phrase="Create Role"></a></li>
     </ul>
     </mt:if>
 </mt:setvarblock>
@@ -51,17 +47,22 @@
 <mtapp:listing
     type="role">
     <mt:if name="__first__">
-    <thead>
+    <mt:setvarblock name="table_header">
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-            <th id="at-flag" class="si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="_USER_STATUS_CAPTION">" title="<__trans phrase="_USER_STATUS_CAPTION">" width="9"height="9" /></th>
-            <th id="rt-name"><__trans phrase="Role"></th>
-            <th id="rt-description"><__trans phrase="Description"></th>
-            <th id="rt-members"><__trans phrase="Members"></th>
-            <th id="rt-weblogs"><__trans phrase="Blogs"></th>
-            <th id="rt-created-by"><__trans phrase="Created By"></th>
+            <th class="status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="_USER_STATUS_CAPTION">" title="<__trans phrase="_USER_STATUS_CAPTION">" width="9"height="9" /></th>
+            <th class="name"><__trans phrase="Role"></th>
+            <th class="description primary-col"><__trans phrase="Description"></th>
+            <th class="members"><__trans phrase="Members"></th>
+            <th class="created-by"><__trans phrase="Created By"></th>
         </tr>
+    </mt:setvarblock>
+    <thead>
+        <mt:var name="table_header">
     </thead>
+    <tfoot>
+        <mt:var name="table_header">
+    </tfoot>
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if><mt:unless name="members"> inactive</mt:unless>">
@@ -69,10 +70,9 @@
             <td class="si <mt:if name="members">role-status-active<mt:else>role-status-inactive</mt:if>">
                 <img src="<mt:var name="static_uri">images/spacer.gif" alt="<mt:if name="members"><__trans phrase="Role Is Active"><mt:else><__trans phrase="Role Not Being Used"></mt:if>" width="9" height="9" />
             </td>
-            <td><a href="<mt:var name="script_url">?__mode=edit_role&amp;id=<mt:var name="id" escape="html">"><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
+            <td><a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="html">"><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
             <td><mt:var name="description" escape="html"></td>
             <td><mt:var name="members"></td>
-            <td><mt:var name="weblogs"></td>
             <td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
         </tr>
     <mt:if name="view_expanded">
@@ -85,4 +85,8 @@
     </mt:if>
 </mtapp:listing>
 
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

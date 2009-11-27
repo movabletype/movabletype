@@ -7,8 +7,9 @@
 package MT::Util;
 
 use strict;
+use utf8;
 use base 'Exporter';
-
+use MT::I18N qw( const );
 use Time::Local qw( timegm );
 
 our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
@@ -25,21 +26,13 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  extract_urls extract_domain extract_domains is_valid_date
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
-                 weaken log_time make_string_csv browser_language sanitize_embed );
+                 weaken log_time make_string_csv browser_language sanitize_embed
+                 extract_url_path break_up_text );
 
 {
 my $Has_Weaken;
 sub weaken {
     no warnings;
-    my $disable_cache = MT->instance->config('DisableObjectCache');
-
-    return if $disable_cache;
-    if (!$disable_cache && UNIVERSAL::isa($_[0], 'MT::Object')) {
-        if (my $props = $_[0]->properties) {
-            return  if (defined $props->{cacheable}) && (!$props->{cacheable});
-        }
-    }
-
     return Scalar::Util::weaken($_[0]) if $Has_Weaken;
     $Has_Weaken = eval 'use Scalar::Util; 1' && Scalar::Util->can('weaken') ? 1 : 0;
     Scalar::Util::weaken($_[0]) if $Has_Weaken;
@@ -345,12 +338,14 @@ sub format_ts {
     }
     $format =~ s!%(\w)!$f{$1}!g if defined $format;
 
+    ## FIXME: This block must go away after Languages hash
+    ## removes all of the character references
     if ($is_mail) {
         $format =~ s!&#([0-9]+);!chr($1)!ge;
         $format =~ s!&#[xX]([0-9A-Fa-f]+);!chr(hex $1)!ge;
 
         require MT::I18N;
-        my $enc   = MT->config->PublishCharset;
+        my $enc = MT->config->PublishCharset;
         $format = MT::I18N::encode_text( $format, undef, 'utf-8' );
         $format = MT::I18N::encode_text( $format, 'utf-8', $enc )
             unless 'utf-8' eq lc $enc;
@@ -507,6 +502,7 @@ sub html_text_transform {
 }
 
 sub encode_js {
+    use bytes;
     my($str) = @_;
     return '' unless defined $str;
     $str =~ s!\\!\\\\!g;
@@ -520,7 +516,7 @@ sub encode_js {
     $str =~ s!\f!\\f!g;
     $str =~ s!\r!\\r!g;
     $str =~ s!\t!\\t!g;
-    $str;
+    Encode::is_utf8($str) ? $str : Encode::decode_utf8($str);
 }
 
 sub encode_php {
@@ -549,15 +545,20 @@ sub encode_phphere {
 }
 
 sub encode_url {
-    my($str) = @_;
-    $str =~ s!([^a-zA-Z0-9_.~-])!uc sprintf "%%%02x", ord($1)!eg;
-    $str;
+    my($str, $enc) = @_;
+    $enc ||= MT->config->PublishCharset;
+    my $encoded = Encode::encode( $enc, $str );
+    $encoded =~ s!([^a-zA-Z0-9_.~-])!uc sprintf "%%%02x", ord($1)!eg;
+    $encoded;
 }
 
 sub decode_url {
-    my($str) = @_;
+    my($str, $enc) = @_;
+    $enc ||= MT->config->PublishCharset;
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
-    $str;
+    my $decoded = Encode::is_utf8($str) ? $str
+                :                         Encode::decode($enc, $str);
+    $decoded;
 }
 
 {
@@ -580,6 +581,7 @@ sub decode_url {
                 ## Encode any & not followed by something that looks like
                 ## an entity, numeric or otherwise.
                 $html =~ s/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w{1,8});)/&amp;/g;
+
             }
             $html =~ s!"!&quot;!g;    #"
             $html =~ s!<!&lt;!g;
@@ -651,10 +653,13 @@ sub decode_url {
 sub remove_html {
     my($text) = @_;
     return '' if !defined $text;  # suppress warnings
-    $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
-        defined $1 ? $1 : ''
-        /geisx;
-    $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
+    {
+        use bytes;
+        $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
+            defined $1 ? $1 : ''
+            /geisx;
+        $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
+    }
     return $text;
 }
 
@@ -691,12 +696,11 @@ sub utf8_dirify {
     $s =~ s!&[^;\s]+;!!gs;        ## remove HTML entities.
     $s =~ s![^\w\s-]!!gs;          ## remove non-word/space chars.
     $s =~ s!\s+!$sep!gs;          ## change space chars to underscores.
-    $s;    
+    $s;
 }
 
 sub dirify {
-    ($MT::VERSION && MT->instance->{cfg}->PublishCharset =~ m/utf-?8/i)
-        ? utf8_dirify(@_) : iso_dirify(@_);
+    return utf8_dirify(@_);
 }
 
 sub convert_high_ascii {
@@ -706,6 +710,7 @@ sub convert_high_ascii {
 
 sub xliterate_utf8 {
     my ($str) = @_;
+    $str = Encode::encode_utf8( $str );
     my %utf8_table = (
           "\xc3\x80" => 'A',    # A`
           "\xc3\xa0" => 'a',    # a`
@@ -900,6 +905,7 @@ sub xliterate_utf8 {
     );
 
     $str =~ s/([\200-\377]{2})/$utf8_table{$1}||''/ge;
+    $str = Encode::decode_utf8( $str );
     $str;
 }
 
@@ -942,7 +948,7 @@ sub make_unique_basename {
     $title =~ s/^\s+|\s+$//gs;
     if ($title eq '') {
         if (my $text = $entry->text) {
-            $title = MT::I18N::first_n_text($text, MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT'));
+            $title = first_n_words($text, const('LENGTH_ENTRY_TITLE_FROM_TEXT'));
         }
         $title = 'Post' if $title eq '';
     }
@@ -954,12 +960,8 @@ sub make_unique_basename {
     my $i = 1;
     my $base_copy = $base;
 
-    my $class = ref $entry; 
-    while ($class->exist({ blog_id => $blog->id,
-                           basename => $base })) {
-        $base = $base_copy . '_' . $i++;
-    }
-    $base;
+    my $class = ref $entry;
+    return _get_basename( $class, $base, $blog );
 }
 
 sub make_unique_category_basename {
@@ -981,11 +983,7 @@ sub make_unique_category_basename {
     my $base_copy = $base;
 
     my $cat_class = ref $cat;
-    while ($cat_class->exist({ blog_id => $cat->blog_id,
-                               basename => $base })) {
-        $base = $base_copy . '_' . $i++;
-    }
-    $base;
+    return _get_basename( $cat_class, $base, $blog );
 }
 
 sub make_unique_author_basename {
@@ -998,7 +996,7 @@ sub make_unique_author_basename {
         else {
             require Digest::MD5;
             $name = "author" . substr(
-                Digest::MD5::md5_hex($author->name ),
+                Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
                 0, 5
             );
         }
@@ -1012,10 +1010,67 @@ sub make_unique_author_basename {
     my $base_copy = $base;
 
     my $author_class = ref $author;
-    while ($author_class->exist({ basename => $base })) {
-        $base = $base_copy . '_' . $i++;
+    return _get_basename( $author_class, $base );
+}
+
+sub _get_basename {
+    my ( $class, $base, $blog ) = @_;
+    my %terms;
+    my $cache_key;
+    if ( $blog ) {
+        $cache_key = sprintf '%s:%s:%s:%s', 'BN', $class, $blog->id, $base;
+        $terms{blog_id} = $blog->id if $blog;
     }
-    $base;
+    else {
+        $cache_key = sprintf '%s:%s:%s', 'BN', $class,  $base;
+    }
+    my $last = MT->request($cache_key);
+    if ( defined $last ) {
+        $last++;
+        my $test = $class->load({
+            basename => $base . '_' . $last,
+            %terms,
+        });
+        if ( !$test ) {
+            MT->request( $cache_key, $last );
+            return $base . '_' . $last;
+        }
+    }
+    else {
+        ## try to load without number suffix.
+        my $test = $class->load({ basename => $base, %terms });
+        if ( !$test ) {
+            return $base;
+        }
+    }
+    my $base_num = 1;
+    my $last_id;
+    while (1) {
+        my %args;
+        $args{start_val} = $last_id if defined $last_id;
+        my $existing = $class->load({
+            basename  => { like => $base . '_%' },
+            %terms, }, {
+            limit     => 1,
+            sort      => 'id',
+            direction => 'descend',
+            %args,
+        });
+        last if !$existing;
+        $last_id = $existing->id;
+        if ( $existing->basename =~ /^$base\_([1-9]\d*)$/o ) {
+            my $num = $1;
+            next if !$num;
+            $base_num = $num + 1;
+            my $test = $class->load({
+                basename => $base . '_' . $base_num,
+                %terms,
+            });
+            last if !$test;
+        }
+    }
+    MT->request( $cache_key, $base_num );
+    return $base . '_' . $base_num;
 }
 
 sub archive_file_for {
@@ -1073,6 +1128,7 @@ sub is_valid_email {
 }
 
 sub is_valid_url {
+    use bytes;
     my($url, $stringent) = @_;
 
     $url ||= "";
@@ -1148,7 +1204,7 @@ sub discover_tb {
         next unless $item->{ping_url};
         $item->{title} = decode_xml($item->{'dc:title'});
         if (!$item->{title} && $rdf =~ m!dc:description="([^"]+)"!) { #"
-            $item->{title} = MT::I18N::first_n_text($1, MT::I18N::const('LENGTH_ENTRY_TITLE_FROM_TEXT')) . '...';
+            $item->{title} = first_n_words($1, const('LENGTH_ENTRY_TITLE_FROM_TEXT')) . '...';
         }
         push @items, $item;
         last unless $find_all;
@@ -1288,9 +1344,9 @@ sub mark_odd_rows {
 
     'fr' => [
             [ qw( dimanche lundi mardi mercredi jeudi vendredi samedi ) ],
-            [ ('janvier', "f&#xe9;vrier", 'mars', 'avril', 'mai', 'juin',
-               'juillet', "ao&#xfb;t", 'septembre', 'octobre', 'novembre',
-               "d&#xe9;cembre") ],
+            [ ('janvier', "février", 'mars', 'avril', 'mai', 'juin',
+               'juillet', "août", 'septembre', 'octobre', 'novembre',
+               "décembre") ],
             [ qw( AM PM ) ],
               "%e %B %Y %kh%M",
               "%e %B %Y",
@@ -1298,8 +1354,8 @@ sub mark_odd_rows {
           ],
 
     'es' => [
-            [ ('Domingo', 'Lunes', 'Martes', "Mi&#xe9;rcoles", 'Jueves',
-               'Viernes', "S&#xe1;bado") ],
+            [ ('Domingo', 'Lunes', 'Martes', "Miércoles", 'Jueves',
+               'Viernes', "Sábado") ],
             [ qw( Enero Febrero Marzo Abril Mayo Junio Julio Agosto
                   Septiembre Octubre Noviembre Diciembre ) ],
             [ qw( AM PM ) ],
@@ -1357,7 +1413,7 @@ sub mark_odd_rows {
     'de' => [
             [ qw( Sonntag Montag Dienstag Mittwoch Donnerstag Freitag
                   Samstag ) ],
-            [ ('Januar', 'Februar', "M&#xe4;rz", 'April', 'Mai', 'Juni',
+            [ ('Januar', 'Februar', "März", 'April', 'Mai', 'Juni',
                'Juli', 'August', 'September', 'Oktober', 'November',
                'Dezember') ],
             [ qw( FM EM ) ],
@@ -1444,17 +1500,17 @@ sub mark_odd_rows {
           ],
 
     'jp' => [
-            [ '&#26085;&#26332;&#26085;', '&#26376;&#26332;&#26085;',
-              '&#28779;&#26332;&#26085;', '&#27700;&#26332;&#26085;',
-              '&#26408;&#26332;&#26085;', '&#37329;&#26332;&#26085;',
-              '&#22303;&#26332;&#26085;'],
+            [ '日曜日', '月曜日',
+              '火曜日', '水曜日',
+              '木曜日', '金曜日',
+              '土曜日'],
             [ qw( 1 2 3 4 5 6 7 8 9 10 11 12 ) ],
             [ qw( AM PM ) ],
-            "%Y&#24180;%b&#26376;%e&#26085; %H:%M",
-            "%Y&#24180;%b&#26376;%e&#26085;",
+            "%Y年%b月%e日 %H:%M",
+            "%Y年%b月%e日",
             "%H:%M",
-            "%Y&#24180;%b&#26376;",
-            "%b&#26376;%e&#26085;",
+            "%Y年%b月",
+            "%b月%e日",
           ],
 
     'et' => [
@@ -1739,6 +1795,7 @@ sub dsa_verify {
 
 # TBD: fill in the contracts of these.
 sub sanitize_input {
+    use bytes;
     my $str = shift;
 
     # Convert decimal entities (&#112; => p)
@@ -1761,13 +1818,23 @@ sub sanitize_input {
     return $str;
 }
 
+sub extract_url_path {
+    my $str = shift;
+    my @split = $str =~
+        m!(?:([^:/?#]+):)?(?://([^/?#]*))?([^?#]*)(?:\?([^#]*))?(?:#(.*))?!;
+
+    return $split[2];
+}
+
 sub extract_domain {
+    use bytes;
     my $str = shift;
     $str =~ s#^(.*?)/.*$#$1#;
     lc($str);
 }
 
 sub extract_urls {
+    use bytes;
     my @strings = @_;
     my (%domain,@urls);
     foreach (@strings) {
@@ -1797,7 +1864,7 @@ sub escape_unicode {
                 (?:(?:\xf0[\x90-\xbf])|
                    (?:[\xf1-\xf3][\x80-\xbf])|
                    (?:\xf4[\x80-\x8f])[\x80-\xbf]{2}))/
-                '&#'.hex(unpack("H*", MT::I18N::encode_text($1, 'utf-8', 'ucs2'))).';'
+                '&#'.hex(unpack("H*", Encode::encode('ucs2', $1))).';'
             /egx;
     $text;
 }
@@ -1805,7 +1872,7 @@ sub escape_unicode {
 sub unescape_unicode {
     my $text = shift;
     $text =~ s/\&\#(\d+);/pack("H*", sprintf("%X",$1))/egx;
-    $text = MT::I18N::encode_text($text, 'ucs2', undef);
+    $text = Encode::decode('ucs2', $text);
 }
 
 {
@@ -1908,11 +1975,11 @@ sub asset_cleanup {
 
 sub caturl {
     return '' unless @_;
- 
     my $url = shift;
     foreach (@_) {
         my $u = $_;
         next unless $u;
+        $url = $u, next unless $url;
         $u =~ s!^/!!;
         $url .= '/' unless $url =~ m!/$!;
         $url .= $u;
@@ -1927,7 +1994,7 @@ sub get_newsbox_html {
     return unless is_url($newsbox_url);
     return unless $kind && (length($kind) == 2);
     $cached_only ||= 0;
-
+    my $enc = MT->config('PublishCharset');
     my $NEWSCACHE_TIMEOUT = 60 * 60 * 24;
     my $sess_class        = MT->model('session');
     my ($news_object)     = ("");
@@ -1939,8 +2006,10 @@ sub get_newsbox_html {
     {
         $refresh_news = 1;
     }
-    my $last_available_news = MT::I18N::encode_text( $news_object->data(), 'utf-8', undef )
+    my $last_available_news = $news_object->data()
       if $news_object;
+    $last_available_news = Encode::decode( $enc, $last_available_news )
+        unless Encode::is_utf8( $last_available_news );
     return $last_available_news unless $refresh_news || !$news_object;
     return q() if $cached_only;
 
@@ -1952,6 +2021,8 @@ sub get_newsbox_html {
     my $req = new HTTP::Request( GET => $newsbox_url );
     my $resp = $ua->request($req);
     my $result = $resp->content();
+    $result = Encode::decode_utf8( $result ) ## news pages are written in UTF-8.
+        unless Encode::is_utf8( $result );
     if ( !$resp->is_success() || !$result ) {
         # failure; either timeout or worse
         # if news_object is available, bump up it's expiration
@@ -1986,11 +2057,10 @@ sub get_newsbox_html {
             id    => $kind,
             kind  => $kind,
             start => time(),
-            data  => $result
+            data  => Encode::encode($enc, $result),
         }
     );
     $news_object->save();
-    $result = MT::I18N::encode_text( $result, 'utf-8', undef );
     return $result;
 }
 
@@ -2068,7 +2138,7 @@ sub make_string_csv {
     {
         $value = "\"$value\"";
     }
-    return MT::I18N::encode_text( $value, undef, $enc );
+    return $value;
 }
 
 sub convert_word_chars {
@@ -2079,21 +2149,23 @@ sub convert_word_chars {
 
     if ($smart_replace) {
         # html character entity replacements
-        $s =~ s/\342\200\231/&#8217;/g;
-        $s =~ s/\342\200\230/&#8216;/g;
-        $s =~ s/\342\200\246/&#133;/g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/&#8212;/g;
-        $s =~ s/\342\200\234/&#8220;/g;
-        $s =~ s/\342\200\235/&#8221;/g;
+        $s =~ s/\x{2013}/-/g;       # EN DASH
+        $s =~ s/\x{2014}/&#8212;/g; # EM DASH
+        $s =~ s/\x{2018}/&#8216;/g; # LEFT SINGLE QUATATION MARK
+        $s =~ s/\x{2019}/&#8217;/g; # RIGHT SINGLE QUATATION MARK
+        $s =~ s/\x{201C}/&#8220;/g; # LEFT DOUBLE QUATATION MARK
+        $s =~ s/\x{201D}/&#8221;/g; # RIGHT DOUBLE QUATATION MARK
+        $s =~ s/\x{2026}/&#8230;/g; # HORIZONTAL ELLIPSIS
     }
     else {
         # ascii equivalent replacements
-        $s =~ s/\342\200[\230\231]/'/g;
-        $s =~ s/\342\200\246/.../g;
-        $s =~ s/\342\200\223/-/g;
-        $s =~ s/\342\200\224/--/g;
-        $s =~ s/\342\200[\234\235]/"/g;
+        $s =~ s/\x{2013}/-/g;   # EN DASH
+        $s =~ s/\x{2014}/--/g;  # EM DASH
+        $s =~ s/\x{2018}/'/g;   # LEFT SINGLE QUATATION MARK
+        $s =~ s/\x{2019}/'/g;   # RIGHT SINGLE QUATATION MARK
+        $s =~ s/\x{201C}/"/g;   # LEFT DOUBLE QUATATION MARK
+        $s =~ s/\x{201D}/"/g;   # RIGHT DOUBLE QUATATION MARK
+        $s =~ s/\x{2026}/.../g; # HORIZONTAL ELLIPSIS
     }
 
     # While we're fixing Word, remove processing instructions with
@@ -2133,70 +2205,17 @@ sub translate_naughty_words {
     }
 }
 
-sub _pre_to_json {
-    my ( $ref ) = @_;
-    if ( 'ARRAY' eq ref($ref) ) {
-        my @tmp;
-        foreach ( @$ref ) {
-            next unless defined $_;
-            if ( ref($_) ) {
-                push @tmp, _pre_to_json($_);
-            }
-            else {
-                # Do not decode numeric values because 
-                # they may be used as a boolean value in JavaScript.
-                if ( $_ !~ /^\d+$/ ) {
-                    push @tmp, MT::I18N::decode( MT->config->PublishCharset, $_ );
-                }
-                else {
-                    push @tmp, 0 + $_;
-                }
-            }
-        }
-        return \@tmp;
-    }
-    elsif ( 'HASH' eq ref($ref) ) {
-        my %tmp;
-        while ( my ( $k, $v ) = each %$ref ) {
-            next unless defined $v;
-            if ( ref($v) ) {
-                $tmp{$k} = _pre_to_json($v);
-            }
-            else {
-                # Do not decode numeric values because 
-                # they may be used as a boolean value in JavaScript.
-                if ( $v !~ /^\d+$/ ) {
-                    $tmp{$k} = MT::I18N::decode( MT->config->PublishCharset, $v );
-                }
-                else {
-                    $tmp{$k} = 0 + $v;
-                }
-            }
-        }
-        return \%tmp;
-    }
-    elsif ( 'SCALAR' eq ref($ref) ) {
-        # Do not decode numeric values because 
-        # they may be used as a boolean value in JavaScript.
-        my $tmp;
-        if ( $$ref !~ /^\d+$/ ) {
-            $tmp = MT::I18N::decode( MT->config->PublishCharset, $$ref );
-        }
-        else {
-            $tmp = 0 + $$ref;
-        }
-        return \$tmp;
-    }
-    return $ref;
+sub to_json {
+    my ( $value, $args ) = @_;
+    require JSON;
+    return JSON::to_json($value, $args);
 }
 
-sub to_json {
-    my ( $orig_val, $args ) = @_;
-    require MT::I18N;
-    my $value = _pre_to_json( $orig_val );
-    require JSON;
-    my $js = JSON::to_json($value, $args);
-    return MT::I18N::encode( MT->config->PublishCharset, $js );
+sub break_up_text {
+    my ($text, $length) = @_;
+    return '' unless defined $text;
+    $text =~ s/(\S{$length})/$1 /g;
+    return $text;
 }
 
 1;

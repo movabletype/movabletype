@@ -1,0 +1,193 @@
+<mtapp:widget tabbed="1" class="favorite-blogs-widget" label="<__trans phrase="Your recent websites and blogs">" can_close="1">
+    <input type="hidden" name="tab" value="<mt:var name="tab" escape="html">" />
+<mt:setvarblock name="widget_header">
+<div id="favorite-blogs-tabs">
+    <ul id="favorite-blogs-tabs-list" class="tabs">
+        <li class="tab"><a href="#favorite-website"><__trans phrase="Websites"></a></li>
+        <li class="tab"><a href="#favorite-blog"><__trans phrase="Blogs"></a></li>
+    </ul>
+</div>
+</mt:setvarblock>
+<div id="favorite-website">
+<mt:if name="website_object_loop">
+    <div id="favorite-website-container" class="blog-container">
+    <mt:loop name="website_object_loop">
+        <div id="website-<mt:var name="website_id">" class="blog-content">
+            <div id="website-<mt:var name="website_id">-theme-thumbnail" class="blog-theme-thumbnail picture small">
+                <img src="<mt:var name="website_theme_thumb">" />
+            </div>
+            <div id="website-<mt:var name="website_id">-meta" class="blog-meta">
+                <h4 id="website-<mt:var name="website_id">-name" class="blog-name"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a></h4>
+                <p id="website-<mt:var name="website_id">-link" class="blog-link"><a href="<mt:var name="website_url">"><mt:var name="website_url"></a></p>
+    <mt:if name="website_description">
+                <div id="website-<mt:var name="website_id">-description" class="blog-description">
+                    <mt:var name="website_description" remove_html="1">
+                </div>
+    </mt:if>
+                <ul id="website-<mt:var name="website_id">-control" class="blog-control">
+                    <li>
+    <mt:if name="can_access_to_blog_list">
+                        <a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="[quant,_1,blog,blogs]" params="<mt:var name="website_blog_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,blog,blogs]" params="<mt:var name="website_blog_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_page_list">
+                        <a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="website_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_comment_list">
+                        <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">">
+    </mt:if>
+                    </li>
+    <mt:if name="can_access_to_template_list">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Templates"></a>
+                    </li>
+    </mt:if>
+    <mt:if name="can_access_to_blog_setting_screen">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Settings"></a>
+                    </li>
+    </mt:if>
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Search"></a>
+                    </li>
+                </ul>
+                <ul id="website-<mt:var name="website_id">-action" class="blog-action">
+    <mt:if name="can_create_new_page">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=page&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Page"></a></li>
+    </mt:if>
+    <mt:if name="can_create_blog">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Blog"></a></li>
+    </mt:if>
+                </ul>
+            </div>
+        </div>
+    </mt:loop>
+    </div>
+<mt:else>
+    <mtapp:statusmsg
+        id="zero-state"
+        class="info zero-state">
+        <__trans phrase="No website could be found. [_1]" params="<mt:if name="can_create_website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="has_more_websites">
+    <div class="select-website">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;return_args=__mode=dashboard&amp;select_favorites=1" class="mt-open-dialog"><__trans phrase="Select another website..."></a>
+    </div>
+</mt:if>
+</div>
+
+<div id="favorite-blog">
+<mt:if name="blog_object_loop">
+    <div id="favorite-blog-container" class="blog-container">
+    <mt:loop name="blog_object_loop">
+        <div id="blog-<mt:var name="blog_id">-content" class="blog-content">
+            <div id="blog-<mt:var name="blog_id">-theme-thumbnail" class="blog-theme-thumbnail picture small">
+                <img src="<mt:var name="blog_theme_thumb">" />
+            </div>
+            <div id="blog-<mt:var name="blog_id">-meta" class="blog-meta">
+                <h4 id="blog-<mt:var name="blog_id">-name" class="blog-name">
+                    <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a>
+                    <span class="parent-website">(<mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html"></mt:if>)</span>
+                </h4>
+                <p id="blog-<mt:var name="blog_id">-link" class="blog-link"><a href="<mt:var name="blog_url">"><mt:var name="blog_url"></a></p>
+    <mt:if name="blog_description">
+                <div id="blog-<mt:var name="blog_id">-description" class="blog-description">
+                    <mt:var name="blog_description" remove_html="1">
+                </div>
+    </mt:if>
+                <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">
+                    <li>
+    <mt:if name="can_access_to_entry_list">
+                        <a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_page_list">
+                        <a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_comment_list">
+                        <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=my_posts_on_this_context"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">">
+    </mt:if>
+                    </li>
+    <mt:if name="can_access_to_template_list">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Template"></a>
+                    </li>
+    </mt:if>
+    <mt:if name="can_access_to_blog_setting_screen">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Settings"></a>
+                    </li>
+    </mt:if>
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="Search"></a>
+                    </li>
+                </ul>
+                <ul id="blog-<mt:var name="blog_id">-action" class="blog-action">
+    <mt:if name="can_create_new_entry">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="New Entry"></a></li>
+    </mt:if>
+                </ul>
+            </div>
+        </div>
+    </mt:loop>
+    </div>
+<mt:else>
+    <mtapp:statusmsg
+        id="zero-state"
+        class="info zero-state">
+        <__trans phrase="No blog could be found.">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="has_more_blogs">
+    <div class="select-blog">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;return_args=__mode=dashboard&amp;select_favorites=1" class="mt-open-dialog"><__trans phrase="Select another blog..."></a>
+    </div>
+</mt:if>
+</div>
+</mtapp:widget>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var index = <mt:if name="tab" eq="website">0<mt:else>1</mt:if>
+var updateTabPrefTimeout;
+jQuery('#favorite-blogs-tabs').tabs({
+    select: function (event, ui) {
+        index = ui.index == 0 ? 'website' : 'blog';
+        if (updateTabPrefTimeout) {
+            window.clearTimeout(updateTabPrefTimeout);
+        }
+        // update after 1 seconds, but will restart timer if
+        // user selects again
+        updateTabPrefTimeout = window.setTimeout('favoriteUpdateTabPref()', 1000);
+    },
+    selected: index
+});
+
+function favoriteUpdateTabPref() {
+    updateTabPrefTimeout = null;
+    var f = getByID("<mt:var name="widget_id">-form");
+    f['tab'].value =  index;
+    updateWidget('favorite_blogs');
+}
+
+/* ]]> */
+</script>

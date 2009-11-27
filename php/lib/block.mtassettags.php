@@ -11,9 +11,9 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         $ctx->localize($localvars);
         require_once("MTUtil.php");
         $asset = $ctx->stash('asset');
-        $blog_id = $asset['asset_blog_id'];
+        $blog_id = $asset->asset_blog_id;
 
-        $tags = $ctx->mt->db->fetch_asset_tags(array('asset_id' => $asset['asset_id'], 'blog_id' => $blog_id));
+        $tags = $ctx->mt->db()->fetch_asset_tags(array('asset_id' => $asset->asset_id, 'blog_id' => $blog_id));
         if (!is_array($tags)) $tags = array();
         $ctx->stash('_tags', $tags);
         $ctx->stash('__out', false);

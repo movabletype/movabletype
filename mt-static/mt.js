@@ -190,7 +190,6 @@ function updateWidget(id) {
     args['json'] = '1';
     TC.Client.call({
         'load': function(c, responseText) { updatedWidget(id, responseText); },
-        'error': function() { showMsg("Error updating widget.", "widget-updated", "alert"); },
         'method': 'POST',
         'uri': ScriptURI,
         'arguments': args
@@ -204,7 +203,6 @@ function updatedWidget(id, responseText) {
     try {
         result = eval('(' + responseText + ')');
     } catch(e) {
-        showMsg("Error updating widget.", "widget-updated", "alert");
         return;
     }
     if (result.result.html) {
@@ -251,9 +249,10 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
         alert(trans('You did not select any [_1] [_2].', plural, phrase));
         return false;
     }
-    f.target = "_top";
+    f.target = f.target || "_top";
     if (f.elements['itemset_action_input'])
         f.elements['itemset_action_input'].value = '';
+    f.elements["__mode"].value = mode;
     if (args) {
         var opt;
         var input;
@@ -275,17 +274,20 @@ function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
                     return false;
                 }
             }
-            if (opt['dialog']) {
-                f.target = "dialog_iframe";
-                show("dialog-container");
-                DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
-            }
         }
         for (var arg in args) {
             if (f.elements[arg]) f.elements[arg].value = args[arg];
+            if (arg == 'search' && f.elements['return_args'].value) {
+                f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
+            }
+        }
+        if (opt && opt['dialog']) {
+            var q = jQuery(f).serialize();
+            var url = ScriptURI+'?'+q;
+            jQuery.fn.mtDialog.open(url);
+            return false;
         }
     }
-    f.elements["__mode"].value = mode;
     f.submit();
 }
 
@@ -359,25 +361,6 @@ function dialogKeyPress(e) {
         DOM.removeEventListener( document.body, "keypress", dialogKeyPress, true );
         closeDialog();
     }
-}
-
-function openDialog(f, mode, params) {
-    var url = ScriptURI;
-    url += '?__mode=' + mode;
-    if (params) url += '&' + params;
-    url += '&__type=dialog';
-    if (window.app) window.app.closeFlyouts();
-    show("dialog-container");
-    // handle escape key for closing modal dialog
-    DOM.addEventListener( document.body, "keypress", dialogKeyPress, true );
-    openDialogUrl(url);
-    if ( document.all && DOM.getElement( "dialog-container" ) ) {
-        DOM.addClassName( "dialog-container", "hidden" );
-        new Timer(function() {
-            DOM.removeClassName( "dialog-container", "hidden" );
-        }, 500, 1 );
-    }
-    return false;
 }
 
 function openDialogUrl(url) {
@@ -1021,13 +1004,14 @@ function setElementValue(domID, newVal) {
  *     the dataset.
  */
 Datasource = new Class(Object, {
-    init: function(el, datatype) {
+    init: function(el, datatype, searchtype) {
         // this.id = id;
         // this.document = doc || document;
         this.element = TC.elementOrId(el);
         this.searching = false;
         this.navigating = false;
         this.type = datatype;
+        this.searchtype = searchtype;
         this.onUpdate = null;
     },
     setPager: function(pager, pager2) {
@@ -1047,8 +1031,11 @@ Datasource = new Class(Object, {
         args = args.replace(/&?offset=\d+/, '');
         args = 'search=' + escape(str) + (args ? '&' + args : '') + '&json=1';
         if (this.type) {
-            args = args.replace(/&?_type=\w+/, '');
+            args = args.replace(/&_type=\w+/, '');
             args += '&_type=' + this.type;
+        }
+        if (this.searchtype) {
+            args += '&search_type=' + this.searchtype;
         }
 
         this.searching = true;
@@ -1091,7 +1078,15 @@ Datasource = new Class(Object, {
     },
     update: function(html) {
         if (!this.element) return;
-        this.element.innerHTML = html;
+        jQuery('div.msg').remove();
+        if (jQuery(html).hasClass('msg')) {
+            jQuery('table.list-heading').hide();
+            jQuery(this.element).append(html);
+        } else {
+            jQuery(this.element).find('table.list-heading').show();
+            jQuery(this.element).find('tbody').remove();
+            jQuery(this.element).find('thead').after(html);
+        }
         this.updated();
     },
     updated: function() {
@@ -1109,7 +1104,7 @@ Datasource = new Class(Object, {
         args = args.replace(/&?offset=\d+/, '');
         args = 'offset=' + offset + (args ? '&' + args : '') + '&json=1';
         if (this.type) {
-            args = args.replace(/&?_type=\w+/, '');
+            args = args.replace(/&_type=\w+/, '');
             args = args + '&_type=' + this.type;
         }
 
@@ -1808,6 +1803,7 @@ MT.App = new Class( App, {
         }
             
         this.changed = true;
+        if ( this.form && this.form["dirty"] ) this.form["dirty"].value = 1;
         if ( autoSaveDelay < 1 )
             return;
 
@@ -2864,7 +2860,7 @@ function showMsg(message, id, type, rebuild, blogID) {
         DOM.addClassName(msg, 'msg');
         DOM.addClassName(msg, 'msg-'+type);
     }
-    msg.innerHTML = "<a href=\"javascript:void(0)\" onclick=\"javascript:hide('"+id+"');\" class=\"close-me\"><span>close</span></a>"+message;
+    msg.innerHTML = message + '<img alt="'+ trans('Close') + '" src="' + StaticURI + 'images/icon_close.png" class="mt-close-msg" />';
     if (rebuild == 'all')
         msg.innerHTML += ' ' + trans('[_1]Publish[_2] your site to see these changes take effect.', '<a href="javascript:void(0);" class="rebuild-link" onclick="doRebuild(\''+blogID+'\');">', '</a>');
     if (rebuild == 'index')

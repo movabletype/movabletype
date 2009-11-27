@@ -1,4 +1,4 @@
-# $Id$
+# $Id: FuncMap.pm 1406 2008-02-23 01:33:03Z bchoate $
 
 package TheSchwartz::FuncMap;
 use strict;

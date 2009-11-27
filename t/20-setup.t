@@ -6,7 +6,7 @@ use lib 't/lib';
 use lib 'lib';
 use lib 'extlib';
 
-# $Id$
+# $Id: 20-setup.t 2562 2008-06-12 05:12:23Z bchoate $
 
 use Test::More qw(no_plan);
 

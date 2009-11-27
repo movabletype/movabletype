@@ -1,12 +1,11 @@
 /* editor */
-
 .editor {
-    border: 1px solid #ccc;
-    border-top: 0;
     display: block;
     position: relative;
-    overflow: hidden;
     padding: 0 0 10px 0;
+    border: 1px solid #c8c2be;
+    border-top: 0;
+    overflow: hidden;
 }
 
 .editor-plaintext .editor-toolbar a.button.command-toggle-wysiwyg,
@@ -26,8 +25,7 @@
     height: 0;
     border: 0;
     margin: 0;
-    padding: 0;
-    background: transparent;
+    background: #fff;
 }
 
 .editor-mode-iframe iframe,
@@ -36,35 +34,43 @@
     height: 100%;
 }
 
+.edit-entry #editor-content-enclosure { 
+    height: 350px;
+}
+.edit-entry #editor-content-textarea { 
+    height: 355px;
+    border: 0 ! important;
+}
+
 
 /* toolbar */
-
 .editor-toolbar {
     -moz-user-select: none !important;
     -moz-user-focus: none !important;
 }
 
 .editor-header select {
-    margin-right: 3px;
     margin-top: 3px;
 }
 
+.editor-toolbar span { 
+    display: inline-block;
+}
+
 .editor-toolbar a.button {
-    display: block;
-    overflow: hidden;
-    float: left;
+    display: inline-block;
     width: 22px;
     height: 22px;
-    margin: 0 4px 0 0;
+    margin: 4px 0 0;
     padding: 0;
-    color: #000;
-    background: url(../../images/buttons/toolbar/toolbar.gif) left top no-repeat;
-    text-indent: 1000em;
-    min-width: 0;
-    -moz-user-select: none !important;
-    -moz-user-focus: none !important;
-    -moz-outline: none !important;
-    -khtml-user-select: none !important;
+    border: 0;
+    color: #2b2b2b;
+    background: transparent url(../../images/buttons/toolbar/toolbar.gif) left top no-repeat;
+    overflow: hidden;
+    -moz-border-radius: 0;
+    -khtml-border-radius: 0;
+    -webkit-border-radius: 0;
+    border-radius: 0;
 }
 
 .webkit-detected .editor-toolbar a.button.command-insert-link,
@@ -276,7 +282,6 @@
 
 
 /* toggle */
-
 .editor-toolbar a.button.command-toggle-wysiwyg,
 .editor-toolbar a.button.command-toggle-html {
     background-image: url(../../images/buttons/toolbar/toggle.gif);
@@ -294,7 +299,7 @@
 
 .editor-toolbar a.button.command-toggle-wysiwyg,
 .editor-toolbar a.button.command-toggle-wysiwyg:hover {
-    margin-right: 0;
+    margin-right: -3px;
     border-right: 1px solid #b2b2b2;
     background-position: 0 0;
 }
@@ -306,7 +311,6 @@
 
 
 /* comment */
-
 .comment-form-toolbar a.button.command-underline,
 .comment-form-toolbar a.button.command-insert-link {
     margin-right: 10px;

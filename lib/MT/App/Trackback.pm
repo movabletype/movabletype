@@ -7,6 +7,7 @@
 package MT::App::Trackback;
 
 use strict;
+use utf8;
 use base qw( MT::App );
 
 use File::Spec;
@@ -15,8 +16,7 @@ use MT::Trackback;
 use MT::Util qw( first_n_words encode_xml is_valid_url
     start_background_task );
 use MT::JunkFilter qw(:constants);
-use MT::I18N
-    qw( encode_text guess_encoding const length_text wrap_text substr_text first_n_text );
+use MT::I18N qw( const );
 
 sub id {'tb'}
 
@@ -92,11 +92,11 @@ sub _response {
     $app->send_http_header('text/xml; charset=utf-8');
     $app->{no_print_body} = 1;
 
+    my $res;
     if ( my $err = $param{Error} ) {
         my $re = join '|', keys %map;
         $err =~ s!($re)!$map{$1}!g;
-        $err = encode_text( $err, undef, 'utf-8' );
-        print <<XML;
+        $res = <<XML;
 <?xml version="1.0" encoding="utf-8"?>
 <response>
 <error>1</error>
@@ -105,20 +105,19 @@ sub _response {
 XML
     }
     else {
-        print <<XML;
+        $res = <<XML;
 <?xml version="1.0" encoding="utf-8"?>
 <response>
 <error>0</error>
 XML
         if ( my $rss = $param{RSS} ) {
-            $rss = encode_text( $rss, undef, 'utf-8' );
-            print $rss;
+            $res .= $rss;
         }
-        print <<XML;
+        $res .= <<XML;
 </response>
 XML
     }
-
+    $app->print( Encode::encode_utf8( $res ) );
     1;
 }
 
@@ -249,7 +248,7 @@ sub ping {
         = map scalar $q->param($_),
         qw( title excerpt url blog_name);
 
-    no_utf8( $tb_id, $title, $excerpt, $url, $blog_name );
+    #no_utf8( $tb_id, $title, $excerpt, $url, $blog_name );
 
     return $app->_response(
         Error => $app->translate("Need a Source URL (url).") )
@@ -302,12 +301,12 @@ sub ping {
     }
     my $excerpt_max_len = const('LENGTH_ENTRY_PING_EXCERPT');
     if ($excerpt) {
-        if ( length_text($excerpt) > $excerpt_max_len ) {
+        if ( length($excerpt) > $excerpt_max_len ) {
             $excerpt
-                = substr_text( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
+                = substr( $excerpt, 0, $excerpt_max_len - 3 ) . '...';
         }
         $title
-            = first_n_text( $excerpt,
+            = first_n_words( $excerpt,
             const('LENGTH_ENTRY_PING_TITLE_FROM_TEXT') )
             unless defined $title;
         $ping->excerpt($excerpt);
@@ -530,9 +529,7 @@ sub _send_ping_notification {
             unapproved     => !$ping->visible(),
             state_editable => (
                 $author->is_superuser()
-                    || (
-                       $author->permissions( $blog->id )->can_manage_feedback
-                    || $author->permissions( $blog->id )->can_publish_post )
+                    || $author->permissions( $blog->id )->can_do('edit_trackback_status_via_notify_mail')
                 ) ? 1 : 0,
         );
         $param{entry}    = $entry if $entry;
@@ -608,8 +605,6 @@ RSS
         $rss .= qq(</item>\n);
     }
     $rss .= qq(</channel>\n</rss>);
-    my $enc = MT->config->PublishCharset || 'utf-8';
-    $rss = MT::I18N::encode_text( $rss, $enc, 'utf-8' ) if $enc ne 'utf-8';
     $rss;
 }
 

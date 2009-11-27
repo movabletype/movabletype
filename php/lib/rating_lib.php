@@ -6,8 +6,8 @@
 # $Id$
 
 function get_score(&$ctx, $obj_id, $datasource, $namespace, $user_id) {
-    $score = $ctx->mt->db->fetch_score($namespace, $obj_id, $user_id, $datasource);
-    return $score['objectscore_score'];
+    $score = $ctx->mt->db()->fetch_score($namespace, $obj_id, $user_id, $datasource);
+    return $score->objectscore_score;
 }
 
 function score_for(&$ctx, $obj_id, $datasource, $namespace) {
@@ -15,13 +15,13 @@ function score_for(&$ctx, $obj_id, $datasource, $namespace) {
     if (isset($sum) && ($sum >= 0)) {
         return $sum;
     } else {
-        $scores = $ctx->mt->db->fetch_scores($namespace, $obj_id, $datasource);
+        $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
         if (!isset($scores) || !$scores) {
             return '';
         }
         $sum = 0;
         foreach ($scores as $score) {
-            $sum += $score['objectscore_score'];
+            $sum += $score->objectscore_score;
         }
         $ctx->stash($datasource . '_score_sum_' . $obj_id . '_' . $namespace, $sum);
         return $sum;
@@ -29,12 +29,12 @@ function score_for(&$ctx, $obj_id, $datasource, $namespace) {
 }
 
 function vote_for(&$ctx, $obj_id, $datasource, $namespace) {
-    $scores = $ctx->mt->db->fetch_scores($namespace, $obj_id, $datasource);
+    $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
     return count($scores);
 }
 
 function _score_top(&$ctx, $obj_id, $datasource, $namespace, $block) {
-    $scores = $ctx->mt->db->fetch_scores($namespace, $obj_id, $datasource);
+    $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
     if (0 == count($scores)) {
         return 0;
     }
@@ -72,7 +72,7 @@ function score_count(&$ctx, $obj_id, $datasource, $namespace) {
     if ($count) {
         return $count;
     } else {
-        $scores = $ctx->mt->db->fetch_scores($namespace, $obj_id, $datasource);
+        $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
         $count = count($scores);
         $ctx->stash($datasource . '_score_count_' . $obj_id . '_' . $namespace, $count);
         return $count;
@@ -106,7 +106,7 @@ function rank_for(&$ctx, $obj_id, $datasource, $namespace, $max, $filter) {
     $low = $ctx->stash($datasource . '_score_lowest_' . $namespace);
     $total = $ctx->stash($datasource . '_score_total_' . $namespace);
     if (!($total && $high && $low)) {
-        $scores = $ctx->mt->db->fetch_sum_scores($namespace, $datasource, 'desc', $filter);
+        $scores = $ctx->mt->db()->fetch_sum_scores($namespace, $datasource, 'desc', $filter);
         foreach($scores as $s) {
             $score = $s['sum_objectscore_score'];
             if ($score > $high) $high = $score;
@@ -149,7 +149,7 @@ function hdlr_score($ctx, $datasource, $namespace, $default, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    $score = score_for($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $score = score_for($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
     if ( !isset($score) || ( $score == '' ) ) {
         if ( isset($default) )
             return $default;

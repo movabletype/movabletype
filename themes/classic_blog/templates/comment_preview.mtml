@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    var user = <$mt:UserSessionState$>;
+    var is_preview = true;
+    /* ]]> */
+    </script>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <title><$mt:BlogName encode_html="1"$>: <__trans phrase="Previewing your Comment"></title>
+</head>
+<body id="<$mt:BlogThemeID$>" class="mt-comment-preview <$mt:Var name="page_layout"$>" onload="mtEntryOnLoad()" onunload="mtEntryOnUnload()">
+    <div id="container">
+        <div id="container-inner">
+
+
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <h1 id="page-title"><$mt:Var name="page_title"$></h1>
+
+
+<mt:Ignore><!-- Comment Preview --></mt:Ignore>
+                            <div class="comment" id="comment-<$mt:CommentID$>">
+                                <div class="inner">
+                                    <div class="comment-header">
+                                        <div class="asset-meta">
+                                            <span class="byline">
+                                                <$mt:CommentAuthorIdentity$>
+    <mt:IfCommentParent>
+                                                <__trans phrase="[_1] replied to <a href="[_2]">comment from [_3]</a>" params="<span class="vcard author"><$mt:CommentAuthorLink$></span>%%<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>%%<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>">
+    <mt:Else>
+                                                <span class="vcard author"><$mt:CommentAuthorLink$></span>
+    </mt:IfCommentParent>
+                                                | <a href="<$mt:CommentLink$>"><abbr class="published" title="<$mt:CommentDate format_name="iso8601"$>"><$mt:CommentDate$></abbr></a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="comment-content">
+                                        <$mt:CommentBody$>
+                                    </div>
+                                </div>
+                            </div>
+
+
+<mt:Ignore><!-- Comment Form --></mt:Ignore>
+                            <div class="comments-open" id="comments-open">
+                                <h2 class="comments-open-header"><__trans phrase="Leave a comment"></h2>
+                                <div class="comments-open-content">
+                                    <div id="comment-greeting"></div>
+                                    <form method="post" action="<$mt:CGIPath$><$mt:CommentScript$>" name="comments_form" id="comments-form" onsubmit="return mtCommentOnSubmit(this)">
+                                        <input type="hidden" name="static" value="1" />
+                                        <input type="hidden" name="armor" value="1" />
+                                        <input type="hidden" name="preview" value="" />
+                                        <input type="hidden" name="entry_id" value="<$mt:EntryID$>" />
+                                        <input type="hidden" name="__lang" value="<$mt:BlogLanguage$>" />
+<mt:IfCommentParent>
+                                            <input type="hidden" name="parent_id" value="<$mt:CommentParentID escape="html"$>" id="comment-parent-id">
+</mt:IfCommentParent>
+                                        <div id="comments-open-data">
+                                            <div id="comment-form-name">
+                                                <label for="comment-author"><__trans phrase="Name"></label>
+                                                <input id="comment-author" name="author" size="30" value="<$mt:CommentAuthor encode_html="1"$>" onfocus="mtShowCaptcha()" />
+                                            </div>
+                                            <div id="comment-form-email">
+                                                <label for="comment-email"><__trans phrase="Email Address"></label>
+                                                <input id="comment-email" name="email" size="30" value="<$mt:CommentEmail encode_html="1"$>" onfocus="mtShowCaptcha()" />
+                                            </div>
+                                            <div id="comment-form-url">
+                                                <label for="comment-url"><__trans phrase="URL"></label>
+                                                <input id="comment-url" name="url" size="30" value="<$mt:CommentURL encode_html="1"$>" onfocus="mtShowCaptcha()" />
+                                            </div>
+                                        </div>
+<mt:IfCommentParent>
+                                        <div id="comment-form-reply">
+                                            <input type="checkbox" id="comment-reply" name="comment_reply" value="<$mt:CommentParentID escape="html"$>" checked="checked" onclick="mtSetCommentParentID()" />
+                                            <label for="comment-reply" id="comment-reply-label"><__trans phrase="Replying to comment from [_1]" params="<mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent>"></label>
+                                        </div>
+</mt:IfCommentParent>
+                                        <div id="comments-open-text">
+                                            <label for="comment-text"><__trans phrase="Comments"> <mt:IfAllowCommentHTML><__trans phrase="(You may use HTML tags for style)"></mt:IfAllowCommentHTML></label>
+                                            <textarea id="comment-text" name="text" rows="15" cols="50" onfocus="mtShowCaptcha()"><$mt:CommentBody autolink="0" sanitize="0" convert_breaks="0" encode_html="1"$></textarea>
+                                        </div>
+                                        <div id="comments-open-captcha"></div>
+                                        <div id="comments-open-footer">
+                                            <input type="submit" accesskey="v" name="preview_button" id="comment-preview" value="<__trans phrase="Preview">" onclick="this.form.preview.value='1';" />
+                                            <input type="submit" accesskey="s" name="post" id="comment-submit" value="<__trans phrase="Submit">" />
+                                            <input type="button" name="cancel" id="comment-cancel" value="<__trans phrase="Cancel">" onclick="window.location='<$mt:EntryPermalink$>'" />
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

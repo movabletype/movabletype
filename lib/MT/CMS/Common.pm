@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Common;
 
 use strict;
@@ -70,10 +75,11 @@ sub save {
         $param{return_args} = $app->param('return_args');
 
         if ( ( $type eq 'notification' ) || ( $type eq 'banlist' ) ) {
-            return list( $app, \%param );
+            $app->mode('list');
+            return $app->forward( 'list', \%param );
         }
-        elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_archives' ) {
-            return MT::CMS::Blog::cfg_archives( $app, \%param );
+        elsif ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) {
+            return MT::CMS::Blog::cfg_prefs( $app, \%param );
         }
         else {
             if ($type) {
@@ -114,21 +120,47 @@ sub save {
     my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
 
     if ( $type eq 'blog' ) {
+        my $subdomain = $q->param('site_url_subdomain');
+        $subdomain = '' if !$q->param('use_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        my $path = $q->param('site_url_path');
+        if ( $subdomain || $path ) {
+            $values{site_url} = "$subdomain/::/$path";
+        }
+
         unless ( $author->is_superuser
-            || ( $perms && $perms->can_administer_blog ) )
+            || ( $perms && $perms->can_do('save_all_settings_for_blog') ) )
         {
-            if ( $id && !( $perms->can_set_publish_paths ) ) {
+            if ( $id && !( $perms->can_do('save_blog_pathinfo') ) ) {
                 delete $values{site_url};
                 delete $values{site_path};
                 delete $values{archive_url};
                 delete $values{archive_path};
             }
-            if ( $id && !( $perms->can_edit_config ) ) {
+            if ( $id && !( $perms->can_do('save_blog_config') ) ) {
                 delete $values{$_} foreach grep {
                          $_ ne 'site_path'
                       && $_ ne 'site_url'
                       && $_ ne 'archive_path'
                       && $_ ne 'archive_url'
+                } @$names;
+            }
+        }
+    }
+
+    if ( $type eq 'website' ) {
+        unless ( $author->is_superuser
+            || ( $perms && $perms->can_do('save_all_settings_for_website') ) )
+        {
+            if ( $id && !( $perms->can_do('save_blog_pathinfo') ) ) {
+                delete $values{site_url};
+                delete $values{site_path};
+            }
+            if ( $id && !( $perms->can_do('save_blog_config') ) ) {
+                delete $values{$_} foreach grep {
+                         $_ ne 'site_path'
+                      && $_ ne 'site_url'
                 } @$names;
             }
         }
@@ -149,14 +181,13 @@ sub save {
                     unless $obj->auth_type;
                 if ( $values{'status'} == MT::Author::ACTIVE() ) {
                     my $sys_perms = MT::Permission->perms('system');
-                    if ( defined($q->param('is_superuser'))
-                      && $q->param('is_superuser')) {
+                    if ( defined($q->param('can_administer'))
+                      && $q->param('can_administer')) {
                         $obj->is_superuser(1);
                     }
                     else {
                         foreach (@$sys_perms) {
                             my $name = 'can_' . $_->[0];
-                            $name = 'is_superuser' if $name eq 'can_administer';
                             if ( defined $q->param($name) ) {
                                 $obj->$name( $q->param($name) );
                                 delete $values{$name};
@@ -172,16 +203,17 @@ sub save {
         delete $values{'password'};
     }
 
-    if ( $type eq 'blog' ) {
+    if ( $type eq 'blog' || $type eq 'website' ) {
         # If this is a new blog, set the preferences, archive settings
         # and template set to the defaults.
         if ( !$obj->id ) {
-            $obj->language( $q->param('blog_language') || $app->user->preferred_language );
+            $obj->language( $q->param('blog_language') || MT->config->DefaultLanguage );
             $obj->nofollow_urls(1);
             $obj->follow_auth_links(1);
             $obj->page_layout('layout-wtt');
             my @authenticators = qw( MovableType );
-            foreach my $auth (qw( Vox LiveJournal )) {
+            my @default_auth = split /,/, MT->config('DefaultCommenterAuth');
+            foreach my $auth (@default_auth) {
                 my $a = MT->commenter_authenticator($auth);
                 if ( !defined $a
                     || ( exists $a->{condition} && ( !$a->{condition}->() ) ) )
@@ -191,8 +223,10 @@ sub save {
                 push @authenticators, $auth;
             }
             $obj->commenter_authenticators( join ',', @authenticators );
-            my $set = $app->param('template_set') || 'mt_blog';
-            $obj->template_set( $set );
+            require MT::Theme;
+            my $theme = MT::Theme->load($app->param($type.'_theme'))
+                or return $app->error('Internal error: Unknown theme!');
+            $obj->theme_id( $theme->{id} );
         }
 
         if ( $values{file_extension} ) {
@@ -253,7 +287,7 @@ sub save {
 
     # Done pre-processing the record-to-be-saved; now save it.
 
-    $obj->touch() if ( $type eq 'blog' );
+    $obj->touch() if ( $type eq 'blog' || $type eq 'website' );
 
     $obj->save
       or return $app->error(
@@ -263,9 +297,9 @@ sub save {
     $app->run_callbacks( 'cms_post_save.' . $type, $app, $obj, $original )
       or return $app->error( $app->errstr() );
 
-    # Save NWC settings
+    # Save NWC settings and revision settings
     my $screen = $q->param('cfg_screen') || '';
-    if ( $type eq 'blog' && $screen eq 'cfg_entry' ) {
+    if ( ($type eq 'blog' || $type eq 'website') && $screen eq 'cfg_entry' ) {
         my @fields;
         push( @fields, 'title' )     if $q->param('nwc_title');
         push( @fields, 'text' )      if $q->param('nwc_text');
@@ -281,7 +315,7 @@ sub save {
 
     # Finally, decide where to go next, depending on the object type.
     my $blog_id = $q->param('blog_id');
-    if ( $type eq 'blog' ) {
+    if ( $type eq 'blog' || $type eq 'website' ) {
         $blog_id = $obj->id;
     }
 
@@ -335,7 +369,7 @@ sub save {
             }
         }
         if ( $cfg_screen eq 'cfg_templatemaps' ) {
-            $cfg_screen = 'cfg_archives';
+            $cfg_screen = 'cfg_prefs';
         }
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
@@ -407,7 +441,7 @@ sub save {
             }
         }
     }
-    elsif ( $type eq 'blog' ) {
+    elsif ( $type eq 'blog' || $type eq 'website' ) {
         return $app->redirect(
             $app->uri(
                 'mode' => 'cfg_prefs',
@@ -460,7 +494,6 @@ sub edit {
 
     $app->remove_preview_file;
 
-    my $enc = $app->config->PublishCharset;
     if ( $q->param('_recover') ) {
         my $sess_obj = $app->autosave_session_obj;
         if ($sess_obj) {
@@ -480,9 +513,7 @@ sub edit {
     elsif ( $q->param('qp') ) {
         foreach (qw( title text )) {
             my $data = $q->param($_);
-            my $encoded = MT::I18N::encode_text( $data, undef, $enc )
-              if $data;
-            $q->param( $_, $encoded );
+            $q->param( $_, $data );
         }
     }
 
@@ -607,6 +638,20 @@ sub edit {
         }
     }
 
+    if ( $type eq 'website' || $type eq 'blog' ) {
+        require MT::Theme;
+        my $themes = MT::Theme->load_all_themes;
+        $param{ theme_loop } = [
+            map {
+                { key => $_->{id}, label => $_->label, }
+            }
+            grep {
+                !defined $_->{class} || $_->{class} eq 'both' || $_->{class} eq $type
+            } values %$themes
+        ];
+        $param{'master_revision_switch'} = $app->config->TrackRevisions;
+    }
+
     my $res = $app->run_callbacks('cms_edit.' . $type, $app, $id, $obj, \%param);
     if (!$res) {
         return $app->error($app->callback_errstr());
@@ -667,15 +712,23 @@ sub list {
     my $perms = $app->permissions;
     return $app->return_to_dashboard( redirect => 1 )
       unless $perms;
-    if (
-        $perms
-        && (   ( $type eq 'blog' && !$perms->can_edit_config )
-            || ( $type eq 'template'     && !$perms->can_edit_templates )
-            || ( $type eq 'notification' && !$perms->can_edit_notifications ) )
-      )
-    {
+
+    PERMCHECK: {
+        if ( $type eq 'blog' ) {
+            last PERMCHECK if $perms->can_do('access_to_blog_list');
+        }
+        elsif ( $type eq 'template' ) {
+            last PERMCHECK if $perms->can_do('access_to_template_list');
+        }
+        elsif ( $type eq 'notification' ) {
+            last PERMCHECK if $perms->can_do('access_to_notification_list');
+        }
+        elsif ( $type eq 'banlist' ) {
+            last PERMCHECK if $perms->can_do('access_to_banlist');
+        }
         return $app->return_to_dashboard( permission => 1 );
     }
+
     my $id        = $q->param('id');
     my $class     = $app->model($type) or return;
     my $blog_id   = $q->param('blog_id');
@@ -691,6 +744,7 @@ sub list {
           if $name eq 'blog_id';
     }
     if ( $type eq 'notification' ) {
+        $args{sort}      = 'created_on';
         $args{direction} = 'descend';
         $args{offset}    = $offset;
         $args{limit}     = $limit + 1;
@@ -782,8 +836,8 @@ sub list {
             if ( my $ts = $obj->created_on ) {
                 $row->{created_on_time_formatted} =
                   format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, $blog, $app->user ? $app->user->preferred_language : undef );
-                $row->{has_edit_access} = $perms->can_edit_all_posts
-                  || $app->user->id == $entry->author_id;
+                $row->{has_edit_access} = $perms->can_do('open_all_trackback_edit_screen')
+                  || ( ( $app->user->id == $entry->author_id ) && $perms->can_do('open_own_entry_trackback_edit_screen') );
             }
         }
     }    # end loop over the set of objects;
@@ -826,8 +880,8 @@ sub list {
         $param{show_ip_info}                     = 1;
         $param{list_noncron}                     = 1;
         $param{search_type} = 'entry';
-        $param{can_edit_config_or_publish_paths} = $perms->can_edit_config
-          || $perms->can_set_publish_paths;
+        $param{can_edit_config_or_publish_paths} = $perms->can_do('edit_blog_config')
+          || $perms->can_do('edit_blog_pathinfo');
     }
     elsif ( $type eq 'ping' ) {
         $app->add_breadcrumb( $app->translate('TrackBacks') );
@@ -898,6 +952,7 @@ sub delete {
     my %rebuild_entries;
     my @rebuild_cats;
     my $required_items = 0;
+    my $not_deleted = 0;
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
@@ -932,13 +987,21 @@ sub delete {
         elsif ( $type eq 'tag' ) {
 
             # if we're in a blog context, remove ONLY tags from that weblog
+            # Also, if we're in a website context, remove ONLY tags from that website and weblog which belongs to website.
             if ($blog_id) {
                 my $ot_class  = $app->model('objecttag');
                 my $obj_type  = $q->param('__type') || 'entry';
                 my $obj_class = $app->model($obj_type);
+                my $blog      = $app->model('blog')->load( $blog_id );
                 my $iter      = $ot_class->load_iter(
                     {
-                        blog_id           => $blog_id,
+                        (   $blog->is_blog
+                            ? ( blog_id => $blog_id )
+                            : ( blog_id => [
+                                    map { $_->id } @{ $blog->blogs }, $blog
+                                ]
+                            )
+                            ),
                         object_datasource => $obj_class->datasource,
                         tag_id            => $id
                     },
@@ -1043,6 +1106,15 @@ sub delete {
                     $app->add_return_arg( author_ldap_found => 1 );
                 }
             }
+        } elsif ( $type eq 'website' ) {
+            my $blog_class = $app->model('blog');
+            my $count = $blog_class->count({
+                parent_id => $obj->id,
+            });
+            if ( $count > 0 ) {
+                $not_deleted++;
+                next;
+            }
         }
 
         # FIXME: enumeration of types
@@ -1080,11 +1152,18 @@ sub delete {
         ) or return $app->publish_error();
     }
     $app->run_callbacks( 'rebuild', MT::Blog->load($blog_id) );
-    $app->add_return_arg(
-        $type eq 'ping'
-        ? ( saved_deleted_ping => 1 )
-        : ( saved_deleted => 1 )
-    );
+
+    if ( $not_deleted > 0 ) {
+        $app->add_return_arg( 'not_deleted' => 1 );
+    }
+    else {
+        $app->add_return_arg(
+            $type eq 'ping'
+            ? ( saved_deleted_ping => 1 )
+            : ( saved_deleted => 1 )
+        );
+    }
+
     if ( $q->param('is_power_edit') ) {
         $app->add_return_arg( is_power_edit => 1 );
     }
@@ -1092,226 +1171,8 @@ sub delete {
         $app->add_return_arg(
             error => $app->translate("System templates can not be deleted.") );
     }
+
     $app->call_return;
-}
-
-sub clone_blog {
-  my $app = shift;
-  my($param) = {};
-  my $user = $app->user;
-  
-  return $app->error($app->translate("Permission denied.")) unless $user->is_superuser;
-
-  my @id = $app->param('blog_id') || $app->param('id');
-  
-  if (!@id) {
-    return $app->error($app->translate("No blog was selected to clone."));
-  }
-  
-  if (scalar @id > 1) {
-    return $app->error($app->translate("This action can only be run on a single blog at a time."));
-  }
-  
-  # Get blog_id from params and validate
-  require MT::Blog;
-  my $blog_id = shift @id;
-  my $blog = MT::Blog->load($blog_id)
-    or return $app->error($app->translate("Invalid blog_id"));
-  
-  my $base = $blog->site_url || $app->config('DefaultSiteURL') || $app->base;
-  $base =~ s/\/$//;
-  
-  $param->{'blog_id'} = $blog->id;
-  $param->{'new_blog_name'} = $app->param('new_blog_name') || 'Clone of ' . MT::Util::encode_html($blog->name);
-  $param->{'site_url'} =  $app->param('site_url') || $base . '_clone';
-  $param->{'site_path'} = $app->param('site_path') || $blog->site_path . '_clone';
-  
-  if($app->param('clone_prefs_entries_pages')) {
-    $param->{'clone_prefs_entries_pages'} = $app->param('clone_prefs_entries_pages');
-  }
-  
-  if($app->param('clone_prefs_comments')) {
-    $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
-  }
-  
-  if($app->param('clone_prefs_trackbacks')) {
-    $param->{'clone_prefs_trackbacks'} = $app->param('clone_prefs_trackbacks');
-  }
-  
-  if($app->param('clone_prefs_categories')) {
-    $param->{'clone_prefs_categories'} = $app->param('clone_prefs_categories');
-  }
-  
-  my $clone = $app->param('back_to_form') ? 0 : $app->param('clone');
-  $param = _has_valid_form($app,$blog,$param);
-  
-  if ($blog_id && $clone && $param->{'isValidForm'}) {
-    print_status_page($app,$blog,$param);
-    return;
-  } elsif ($app->param('verify')) {
-    # build form
-    $param->{'verify'} = 1;
-    $param->{'system_msg'} = 1;
-  }
-    
-  my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
-  
-  return $tmpl;
-}
-
-sub _has_valid_form {
-  my($app) = $_[0];
-  my($blog) = $_[1];
-  my($param) = $_[2];
-  
-  if($blog->site_url eq $param->{'site_url'}) {
-    $param->{'site_url_warning'} = 1;
-  } elsif(!$param->{'site_url'}) {
-    push(@{$param->{'errors'}},$app->translate("You need to specify a Site URL"));
-  }
-  
-  if($blog->site_path eq $param->{'site_path'}) {
-    $param->{'site_path_warning'} = 1;
-  } elsif(!$param->{'site_path'}) {
-    push(@{$param->{'errors'}},$app->translate("You need to specify a Site Path"));
-  }
-  
-  if((!$param->{'clone_prefs_comments'} || !$param->{'clone_prefs_trackbacks'}) && $param->{'clone_prefs_entries_pages'}) {
-    if(!$param->{'clone_prefs_comments'} && !$param->{'clone_prefs_trackbacks'}) {
-      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments and trackbacks are cloned"));
-    } elsif($param->{'clone_prefs_comments'}) {
-      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if comments are cloned"));
-    } elsif($param->{'clone_prefs_trackbacks'}) {
-      push(@{$param->{'errors'}},$app->translate("Entries must be cloned if trackbacks are cloned"));
-    }
-  }
-   
-  $param->{'isValidForm'} = $param->{'errors'} ? 0 : 1;
-
-  return $param;
-}
-
-sub print_status_page {
-  my($app) = $_[0];
-  my($blog) = $_[1];
-  my($param) = $_[2];
-  my($cloning_prefs) = {};
-  $| = 1;
-
-  if($app->param('clone_prefs_comments')) {
-    $cloning_prefs->{'MT::Comment'} = 0;
-  }
-  
-  if($app->param('clone_prefs_trackbacks')) {
-    # need to exclude both Trackbacks and Pings
-    $cloning_prefs->{'MT::Trackback'} = 0;
-    $cloning_prefs->{'MT::TBPing'} = 0;
-  }
-  
-  if($app->param('clone_prefs_categories')) {
-    $cloning_prefs->{'MT::Category'} = 0;
-  }
-  
-  if($app->param('clone_prefs_entries_pages')) {
-    $cloning_prefs->{'MT::Entry'} = 0;
-  }
-
-  my $blog_name = $param->{'new_blog_name'};
-  
-  # Set up and commence app output
-  $app->{no_print_body} = 1;
-  $app->send_http_header;
-  my $html_head = <<'SCRIPT';
-<script type="text/javascript">
-function progress(str, id) {
-    var el = getByID(id);
-    if (el) el.innerHTML = str;
-}
-</script>
-SCRIPT
-
-  $app->print($app->build_page('dialog/header.tmpl', { page_title => $app->translate("Clone Blog"), html_head => $html_head }));
-  $app->print($app->translate_templatized(<<"HTML"));
-<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
-
-<div class="modal_width" id="dialog-clone-weblog">
-
-<div id="msg-container" style="height: 310px; overflow: auto; overflow-x: auto">
-<ul>
-HTML
-
-  my $new_blog;
-  eval {
-    $new_blog = $blog->clone({
-      BlogName => ($blog_name),
-      Children => 1,
-      Except => ({ site_path => 1, site_url => 1 }),
-      Callback => sub { _progress($app, @_) },
-      Classes => ($cloning_prefs)
-    });
-    
-    $new_blog->site_path($param->{'site_path'});
-    $new_blog->site_url($param->{'site_url'});
-    $new_blog->save();
-  };
-  if (my $err = $@) {
-    $app->print($app->translate_templatized(qq{<p class="error-message"><MT_TRANS phrase="Error">: $err</p>}));
-  } else {
-  	$app->add_return_arg('__mode' => 'list_blog');
-    my $return_url = $app->return_uri;
-    my $blog_url = $app->uri(mode => 'dashboard', args => {
-      blog_id => $new_blog->id
-    });
-    my $setting_url = $app->uri(mode => 'view', args => {
-      blog_id => $new_blog->id,
-      _type => 'blog',
-      id => $new_blog->id
-    });
-
-    $app->print($app->translate_templatized(<<"HTML"));
-</ul>
-</div>
-
-<p><strong><__trans phrase="Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">return to the blog listing</a> or <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_2]');\">configure the Site root and URL of the new blog</a>." params="$return_url%%$setting_url"></strong></p>
-
-<form method="GET">
-  <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-    <button
-      onclick="closeDialog('$return_url'); return false"
-      type="submit"
-      accesskey="x"
-      class="primary-button"
-      ><__trans phrase="Close"></button>
-    </div>
-  </div>
-</form>
-
-</div>
-
-HTML
-  }
-
-  $app->print($app->build_page('dialog/footer.tmpl'));
-}
-
-sub _progress {
-    my $app = shift;
-    my $ids = $app->request('progress_ids') || {};
-
-    my ($str, $id) = @_;
-    if ($id && $ids->{$id}) {
-        require MT::Util;
-        my $str_js = MT::Util::encode_js($str);
-        $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
-    } elsif ($id) {
-        $ids->{$id} = 1;
-        $app->print(qq{<li id="$id">$str</li>\n});
-    } else {
-        $app->print("<li>$str</li>");
-    }
-
-    $app->request('progress_ids', $ids);
 }
 
 sub not_junk_test {
@@ -1319,6 +1180,217 @@ sub not_junk_test {
     require MT::JunkFilter;
     MT::JunkFilter->filter($obj);
     $obj->is_junk ? 0 : 1;
+}
+
+sub build_revision_table {
+    my $app = shift;
+    my (%args) = @_;
+
+    my $q = $app->param;
+    my $type = $q->param('_type');
+    my $class = $app->model($type);
+    my $param = $args{param};
+    my $obj   = $args{object};
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $lang = $app->user ? $app->user->preferred_language : undef;
+
+    my $js = $param->{rev_js};
+    unless ( $js ) {
+        $js = "location.href='"
+          . $app->uri
+          . '?__mode=view&amp;_type='
+          . $type;
+        if ( my $id = $obj->id ) {
+            $js .= '&amp;id=' . $id;
+        }
+        if ( defined $blog ) {
+            $js .= '&amp;blog_id=' . $blog->id;
+        }
+    }
+    my %users;
+    my $hasher = sub {
+        my ( $rev, $row ) = @_;
+        if ( my $ts = $rev->created_on ) {
+            $row->{created_on_formatted} =
+              format_ts( MT::App::CMS::LISTING_DATE_FORMAT(), $ts, $blog, $lang );
+            $row->{created_on_time_formatted} =
+              format_ts( MT::App::CMS::LISTING_TIMESTAMP_FORMAT(), $ts, $blog, $lang );
+            $row->{created_on_relative} =
+              relative_date( $ts, time, $blog );
+        }
+        if ( $row->{created_by} ) {
+            my $created_user = $users{ $row->{created_by} } ||=
+              MT::Author->load( $row->{created_by} );
+            if ($created_user) {
+                $row->{created_by} = $created_user->nickname;
+            }
+            else {
+                $row->{created_by} = $app->translate('(user deleted)');
+            }
+        }
+        my $revision = $obj->object_from_revision( $rev );
+        my $column_defs = $obj->column_defs;
+        #my @changed = map {
+        #    my $label = $column_defs->{$_}->{label};
+        #    $label ||= $_;
+        #    $app->translate( $label );
+        #} @{ $revision->[1] };
+        #$row->{changed_columns} = \@changed;
+        if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
+            $row->{rev_status} = $revision->[0]->status;
+        }
+        $row->{rev_js} = $js . '&amp;r=' . $row->{rev_number} . "'";
+        $row->{is_current} = $param->{revision} == $row->{rev_number};
+    };
+    return $app->listing(
+        {
+            type   => "$type:revision",
+            code   => $hasher,
+            terms  => { $class->datasource . '_id' => $obj->id },
+            source => $type,
+            params => { dialog => $q->param('dialog'), },
+            %$param
+        }
+    );
+}
+
+sub list_revision {
+    my $app = shift;
+    my $q = $app->param;
+    my $type = $q->param('_type');
+    my $class = $app->model($type);
+    my $id = $q->param('id');
+    my $rn = $q->param('r');
+    $id =~ s/\D//g;
+    my $obj = $class->load( $id )
+        or return $app->error($app->translate('Can\'t load [_1] #[_1].', $class->class_label, $id));
+    my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+
+    my $js = "parent.location.href='"
+      . $app->uri
+      . '?__mode=view&amp;_type='
+      . $type
+      . '&amp;id=' . $obj->id;
+    if ( defined $blog ) {
+        $js .= '&amp;blog_id=' . $blog->id;
+    }
+    my $revision = $rn
+        || (
+          $obj->has_meta('revision')
+        ? $obj->revision || $obj->current_revision
+        : $obj->current_revision
+        || 0
+        );
+    return build_revision_table( $app,
+        object => $obj,
+        param  => {
+            template => 'dialog/list_revision.tmpl',
+            args     => {
+                sort_order => 'rev_number',
+                direction => 'descend',
+            },
+            rev_js => $js,
+            revision => $revision,
+        }
+    );
+}
+
+sub save_snapshot {
+    my $app = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type');
+    my $id = $q->param('id');
+    my $param = {};
+
+    return $app->errtrans("Invalid request.")
+      unless $type;
+
+    $app->validate_magic() or return;
+
+    $app->run_callbacks( 'cms_save_permission_filter.' . "$type:revision", $app, $id )
+      || return $app->error(
+        $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+
+    my $filter_result = $app->run_callbacks( 'cms_save_filter.' . "$type:revision", $app );
+    if ( !$filter_result ) {
+        my %param = (%$param);
+        $param{error}       = $app->errstr;
+        $param{return_args} = $app->param('return_args');
+        my $mode = 'view_' . $type;
+        if ( $app->handlers_for_mode($mode) ) {
+            return $app->forward( $mode, \%param );
+        }
+        return $app->forward( 'view', \%param );
+    }
+
+    my $class = $app->model($type)
+      or return $app->errtrans( "Invalid type [_1]", $type );
+    my $obj;
+    if ($id) {
+        $obj = $class->load($id)
+            or return $app->error($app->translate("Invalid ID [_1]", $id));
+    }
+    else {
+        $obj = $class->new;
+    }
+
+    my $original = $obj->clone();
+    my $names  = $obj->column_names;
+    my %values = map { $_ => ( scalar $q->param($_) ) } @$names;
+
+    if ( ( 'entry' eq $type ) || ( 'page' eq $type ) ) {
+        $app->_translate_naughty_words($obj);
+    }
+    delete $values{'id'} if exists( $values{'id'} ) && !$values{'id'};
+    $obj->set_values( \%values );
+    unless (
+        $app->run_callbacks( 'cms_pre_save.' . "$type:revision", $app, $obj, undef ) )
+    {
+        $param->{return_args} = $app->param('return_args');
+        return edit( $app,
+            {
+                %$param,
+                error => $app->translate( "Saving snapshot failed: [_1]", $app->errstr )
+            }
+        );
+    }
+    $obj->gather_changed_cols($original);
+    if ( exists $obj->{changed_revisioned_cols} ) {
+        my $col = 'max_revisions_' . $obj->datasource;
+        if ( my $blog = $obj->blog ) {
+            my $max = $blog->$col;
+            $obj->handle_max_revisions( $max );
+        }
+        my $revision = $obj->save_revision( $q->param('revision-note') );
+        $app->add_return_arg( r => $revision );
+        if ( $id ) {
+            my $obj_revision = $original->revision || 0;
+            unless ( $obj_revision ) {
+                $original->revision($revision - 1);
+                # hack to bypass instance save method
+                $original->{__meta}->save;
+            }
+            $original->current_revision($revision);
+            # call update to bypass instance save method
+            $original->update or return $original->error($original->errstr);
+        }
+
+        $app->run_callbacks( 'cms_post_save.' . "$type:revision", $app, $obj, undef )
+          or return $app->error( $app->errstr() );
+    
+        $app->add_return_arg( 'saved_snapshot' => 1 );
+    }
+    else {
+        $app->add_return_arg( 'no_snapshot' => 1 );
+    }
+
+    $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
+    $app->call_return;
+}
+
+sub empty_dialog {
+    my $app = shift;
+    $app->build_page( 'dialog/empty_dialog.tmpl' );
 }
 
 1;

@@ -16,8 +16,8 @@ function _file_template_format($m) {
         'c' => "<MTSubCategoryPath SEP>",
         '-c' => "<MTSubCategoryPath separator='-'>",
         '_c' => "<MTSubCategoryPath separator='_'>",
-        'C' => "<MTArchiveCategory DIR default=''>",
-        '-C' => "<MTArchiveCategory dirify='-' default=''>",
+        'C' => "<MTCategoryBasename DIR>",
+        '-C' => "<MTCategoryBasename dirify='-'>",
         'd' => "<MTArchiveDate format='%d'>",
         'D' => "<MTArchiveDate format='%e' trim='1'>",
         'e' => "<MTEntryID pad='1'>",
@@ -32,6 +32,7 @@ function _file_template_format($m) {
         'I' => "<MTIndexBasename>",
         'j' => "<MTArchiveDate format='%j'>",  # 3-digit day of year
         'm' => "<MTArchiveDate format='%m'>",  # 2-digit month
+        'M' => "<MTArchiveDate format='%b'>",  # 3-digit month
         'n' => "<MTArchiveDate format='%M'>",  # 2-digit minute
         's' => "<MTArchiveDate format='%S'>",  # 2-digit second
         'x' => "<MTBlogFileExtension>",

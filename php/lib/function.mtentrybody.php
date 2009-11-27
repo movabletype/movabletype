@@ -7,14 +7,14 @@
 
 function smarty_function_mtentrybody($args, &$ctx) {
     $entry = $ctx->stash('entry');
-    $text = $entry['entry_text'];
+    $text = $entry->entry_text;
 
-    $cb = $entry['entry_convert_breaks'];
+    $cb = $entry->entry_convert_breaks;
     if (isset($args['convert_breaks'])) {
         $cb = $args['convert_breaks'];
     } elseif (!isset($cb)) {
         $blog = $ctx->stash('blog');
-        $cb = $blog['blog_convert_paras'];
+        $cb = $blog->blog_convert_paras;
     }
     if ($cb) {
         if (($cb == '1') || ($cb == '__default__')) {

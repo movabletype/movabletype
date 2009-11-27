@@ -19,6 +19,14 @@ use File::Spec;
 use vars qw(%classes %functions %LegacyPerms $App $DryRun $Installing $SuperUser
             $CLI $MAX_TIME $MAX_ROWS @steps);
 
+sub app {
+    return $App;
+}
+
+sub superuser {
+    return $SuperUser;
+}
+
 sub max_rows {
     return $MAX_ROWS;
 }
@@ -207,7 +215,7 @@ sub do_upgrade {
 
     @steps = ();
     if ($opt{Install}) {
-        my %init_params = (%{$opt{User} || {}}, %{$opt{Blog} || {}});
+        my %init_params = (%{$opt{User} || {}}, %{$opt{Website} || {}});
         $self->install_database(\%init_params);
     } else {
         $self->upgrade_database();
@@ -227,8 +235,8 @@ sub do_upgrade {
             $self->run_step($step);
             if (@steps) {
                 push @these_steps, @steps;
-                @these_steps = sort { $fn->{$a->[0]}->{priority} <=>
-                                      $fn->{$b->[0]}->{priority} } @these_steps;
+                @these_steps = sort { ( $fn->{$a->[0]}->{priority} || 0 ) <=>
+                                      ( $fn->{$b->[0]}->{priority} || 0 ) } @these_steps;
             }
 
             # Reset the request to eliminate any caching that may be
@@ -302,10 +310,15 @@ sub check_type {
 
     # handle schema updates for meta tables
     for my $which (qw( meta summary )) {
-		if ($class->meta_pkg($which)) {
-			$self->check_type($type . ":$which");
-		}
-	}
+        if ($class->meta_pkg($which)) {
+            $self->check_type($type . ":$which");
+        }
+    }
+
+    # handle schema updates for revision table
+    if ($class->isa('MT::Revisable')) {
+        $self->check_type($type . ':revision');
+    }
 
     if (my $result = $self->type_diff($type)) {
         if ($result->{fix}) {
@@ -491,6 +504,10 @@ sub post_upgrade_class {
         # 'page' instead of 'entry', for instance
         $type = $pc->class_type || $type if $pc->can('class_type');
 
+        # do nothing for website/blog at this point.
+        # this step will do later.
+        return 1 if $type eq 'website' || $type eq 'blog';
+
         my %step_param = ( type => $type );
         $step_param{plugindata} = 1 if $type eq 'category';
         $step_param{meta_column} = $pc->properties->{meta_column}
@@ -601,7 +618,6 @@ sub translate_escape {
     my $self = shift;
     my $trans = MT->translate(@_);
     return $trans if $CLI;
-    $trans = MT::I18N::encode_text($trans, undef, 'utf-8');
     return MT::Util::escape_unicode($trans);
 }
 

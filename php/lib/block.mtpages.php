@@ -17,15 +17,15 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
         $args['category'] = $args['folder'];
     }
 
-    if(isset($args['no_folder'])) {
-        $folders =& $ctx->mt->db->fetch_folders(array("blog_id" => $ctx->stash('blog_id')));
+    if(isset($args['no_folder']) && $args['no_folder']) {
+        $folders =& $ctx->mt->db()->fetch_folders(array("blog_id" => $ctx->stash('blog_id')));
         $not_folder = '';
         if (isset($folders)) {
             foreach ($folders as $folder) {
                 if ($not_folder == '') {
-                    $not_folder = $folder['category_label'];
+                    $not_folder = $folder->category_label;
                 } else {
-                    $not_folder = $not_folder.' OR '.$folder['category_label'];
+                    $not_folder = $not_folder.' OR '.$folder->category_label;
                 }
             }
         }
@@ -39,7 +39,6 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
     foreach ($localvars as $localvar) {
         $ctx->__stash[$localvar] = null;
     }
-
     $out = smarty_block_mtentries($args, $content, $ctx, $repeat);
 
     $ctx->restore($localvars);

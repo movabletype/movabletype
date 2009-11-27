@@ -1,0 +1,60 @@
+<mtapp:listing id="default_folders" loop="folders" hide_pager="1" show_actions="0" type="category">
+    <mt:if __first__>
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th class="display-name"><__trans phrase="Folder Name"></th>
+                <th class="path primary-col"><__trans phrase="Path"></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td class="cb">
+                    <input
+                        type="checkbox"
+                        name="default_folder_export_ids"
+                        id="default_folder_<mt:var name="category_id">"
+                        class="select folder-tree"
+                        value="<mt:var name="category_id">"
+                        <mt:if name="category_parent">folder_parent="<mt:var name="category_parent">"</mt:if>
+                        <mt:if name="category_path_ids">folder_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+                        <mt:if checked>checked="checked"</mt:if>
+                    />
+                </td>
+                <td class="display-name">
+                    <span>
+                        <mt:var name="category_label" escape="html">
+                    <span>
+                </td>
+                <td class="path">
+                    <em><__trans phrase="Site URL"></em>/<mt:var name="category_selector_label" escape="html">
+                </td>
+    </mt:if>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>
+
+<script type="text/javascript">
+jQuery('.folder-tree').click( function(){
+    var cat = this;
+    if ( $(cat).attr('checked') ) {
+        var parent = jQuery( '#default_folder_' + jQuery(cat).attr('folder_parent') );
+        if ( parent ) {
+            var path_ids = jQuery(cat).attr('folder_path').toString().slice(1,-1).split(')(');
+            jQuery.each(path_ids, function() {
+                jQuery("#default_folders #default_folder_" + this ).attr('checked','checked');
+            });
+        }
+    }
+    else {
+        var id = jQuery(cat).attr('value');
+        jQuery("#default_folders input[folder_path*='(" + id + ")']:checked").each(function() {
+            jQuery(this).attr('checked', 0);
+        });
+    }
+});
+jQuery.mtCheckbox();
+</script>

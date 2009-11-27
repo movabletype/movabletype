@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Foo.pm 2185 2008-05-01 21:17:43Z mpaschal $
 
 package Foo;
 

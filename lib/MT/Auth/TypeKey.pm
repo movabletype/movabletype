@@ -8,7 +8,6 @@ package MT::Auth::TypeKey;
 use strict;
 
 use MT::Util qw( decode_url is_valid_email escape_unicode );
-use MT::I18N qw( encode_text );
 
 sub password_exists { 0 }
 
@@ -47,11 +46,6 @@ sub handle_sign_in {
         # This implies tampering, not a user mistake.
         $app->error($app->translate("The sign-in validation failed."));
         return 0;
-    }
-
-    # handle_sign_in is forced to believe input is in utf-8
-    if ( $nick && ( MT->config->PublishCharset !~ /utf-?8/i ) ) {
-        $nick = encode_text( decode_url($nick), 'UTF-8', MT->config->PublishCharset );
     }
 
     if ($blog->require_typekey_emails && !is_valid_email($email)) {

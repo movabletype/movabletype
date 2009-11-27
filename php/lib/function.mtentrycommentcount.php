@@ -7,6 +7,6 @@
 
 function smarty_function_mtentrycommentcount($args, &$ctx) {
     $entry = $ctx->stash('entry');
-    $count = $entry['entry_comment_count'];
+    $count = $entry->entry_comment_count;
     return $ctx->count_format($count, $args);
 }

@@ -16,7 +16,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
         $e = $ctx->stash('entry');
-        if ($e) $cat = $ctx->mt->db->fetch_category($e['placement_category_id']);
+        if ($e) $cat = $e->category();
         $cat or $cat = $ctx->stash('category');
         $cat or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
@@ -32,7 +32,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         }
         $idx = 0;
         foreach ($cats as $c) {
-            if ($c['category_id'] == $cat['category_id']) {
+            if ($c->category_id == $cat->category_id) {
                 $pos = $idx;
                 break;
             }
@@ -42,7 +42,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if (isset($pos)) {
             $pos += $step;
             while (($pos >= 0) && ($pos < count($cats))) {
-                if ($cats[$pos]['category_count'] == 0) {
+                if ($cats[$pos]->category_count == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;
@@ -63,12 +63,12 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
 }
 
 function _catx_load_categories(&$ctx, $cat, $class) {
-    $blog_id = $cat['category_blog_id'];
-    $parent = $cat['category_parent'];
+    $blog_id = $cat->category_blog_id;
+    $parent = $cat->category_parent;
     $parent or $parent = 0;
     $cats = $ctx->stash('__cat_cache_'.$blog_id . '_' . $parent);
     if (!$cats) {
-        $cats = $ctx->mt->db->fetch_categories(array('blog_id' => $blog_id, 'parent' => $parent, 'show_empty' => 1, 'class' => $class));
+        $cats = $ctx->mt->db()->fetch_categories(array('blog_id' => $blog_id, 'parent' => $parent, 'show_empty' => 1, 'class' => $class));
         $ctx->stash('__cat_cache_'.$blog_id. '_' . $parent, $cats);
     }
     return $cats;

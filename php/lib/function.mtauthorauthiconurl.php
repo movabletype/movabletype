@@ -10,7 +10,7 @@ function smarty_function_mtauthorauthiconurl($args, &$ctx) {
     if (empty($author)) {
         $entry = $ctx->stash('entry');
         if (!empty($entry)) {
-            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+            $author = $entry->author();
         }
     }
 

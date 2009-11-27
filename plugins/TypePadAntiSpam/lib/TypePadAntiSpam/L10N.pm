@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: L10N.pm 81360 2008-05-21 03:39:58Z fyoshimatsu $
+# $Id$
 
 package TypePadAntiSpam::L10N;
 use strict;

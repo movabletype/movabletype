@@ -47,7 +47,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
     // function tags.
     $var_export = function_exists('var_export');
 
-    global $mt;
+    $mt = MT::get_instance();
     $ctx =& $mt->context();
     $ldelim = $ctx->left_delimiter;
     $rdelim = $ctx->right_delimiter;
@@ -150,6 +150,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
             } elseif (($mttag == 'mtentries') ||
                 ($mttag == 'mtcomments') ||
                 ($mttag == 'mtpages') ||
+                ($mttag == 'mtassets') ||
                 ($mttag == 'mtcommentreplies')) {
                 $conditional = 1;
             } else {

@@ -2,6 +2,7 @@ package Net::OAuth::UserAuthResponse;
 use warnings;
 use strict;
 use base 'Net::OAuth::Response';
+use Net::OAuth;
 
 sub allow_extra_params {1}
 
@@ -11,7 +12,7 @@ Net::OAuth::UserAuthResponse - An OAuth protocol response for an Access Token
 
 =head1 SEE ALSO
 
-L<Net::OAuth::UserAuthResponse>, L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 

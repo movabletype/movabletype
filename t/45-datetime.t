@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 45-datetime.t 1744 2008-04-03 08:14:20Z fumiakiy $
 
 use strict;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';

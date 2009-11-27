@@ -10,7 +10,7 @@ function smarty_function_mtauthoruserpicurl($args, &$ctx) {
     if (empty($author)) {
         $entry = $ctx->stash('entry');
         if (!empty($entry)) {
-            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+            $author = $entry->atuhor();
         }
     }
 
@@ -18,8 +18,8 @@ function smarty_function_mtauthoruserpicurl($args, &$ctx) {
         return $ctx->error("No author available");
     }
 
-    $asset_id = isset($author['author_userpic_asset_id']) ? $author['author_userpic_asset_id'] : 0;
-    $asset = $ctx->mt->db->fetch_assets(array('id' => $asset_id));
+    $asset_id = isset($author->author_userpic_asset_id) ? $author->author_userpic_asset_id : 0;
+    $asset = $ctx->mt->db()->fetch_assets(array('id' => $asset_id));
     if (!$asset) return '';
 
     $blog =& $ctx->stash('blog');

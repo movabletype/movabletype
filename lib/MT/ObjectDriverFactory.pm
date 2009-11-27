@@ -76,24 +76,6 @@ sub dbd_class {
         }
     }
 
-    unless ( $class ) {
-        my $all_drivers = MT->registry("object_drivers");
-        foreach my $driver ( %$all_drivers ) {
-            if ( my $re = $all_drivers->{$driver}{match} ) {
-                if ( (lc $type) =~ m/^$re$/ ) {
-                    $class = $all_drivers->{$driver}{config_package};
-                    last;
-                }
-            }
-        }
-    }
-    $class ||= $type;
-    die "Unsupported driver $type" unless $class;
-    $class = 'MT::ObjectDriver::Driver::DBD::' . $class
-        unless $class =~ m/::/;
-    eval "use $class;";
-    die "Unsupported driver $type: $@" if $@;
-
     unless ( $dbd_class ) {
         my $all_drivers = MT->registry("object_drivers");
         foreach my $driver ( %$all_drivers ) {

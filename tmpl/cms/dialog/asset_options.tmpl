@@ -98,26 +98,22 @@
     <div>
         <div id="asset_details">
     <mtapp:setting
-        id="file_name"
+        id="label"
         label_class="top-label"
-        label="<__trans phrase="Name">">
-            <div class="textarea-wrapper">
-                <input type="text" name="label" id="file_name" value="<mt:var name="fname" escape="html">" class="full-width">
-            </div>
+        label="<__trans phrase="Label">">
+        <input type="text" name="label" id="label" value="<mt:var name="fname" escape="html">" class="larger-text">
     </mtapp:setting>
     <mtapp:setting
-        id="file_desc"
+        id="description"
         label_class="top-label"
         label="<__trans phrase="Description">">
-            <textarea name="description" id="file_desc" cols="" rows="" class="full-width short"></textarea>
+        <textarea name="description" id="description" cols="" rows="" class="larger-text"></textarea>
     </mtapp:setting>
     <mtapp:setting
-        id="file_tags"
+        id="tags"
         label_class="top-label"
         label="<__trans phrase="Tags">">
-            <div class="textarea-wrapper">
-                <input type="text" name="tags" id="file_tags" class="full-width" value="" mt:watch-change="1" autocomplete="0" />
-            </div>
+        <input type="text" name="tags" id="tags" class="larger-text" value="" mt:watch-change="1" autocomplete="0" />
     </mtapp:setting>
         </div>
     <mt:unless name="asset_select">
@@ -141,22 +137,23 @@
 
 <mt:var name="options_snippet">
     </div>
-    <div class="actions-bar">
-        <div class="actions-bar-inner actions">
-            <button
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Finish (s)">"
-                class="primary-button"
-                ><__trans phrase="Finish"></button>
-            <button
-                onclick="closeDialog(); return false"
-                type="submit"
-                accesskey="x"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
-        </div>
-    </div>
+
+
+<mt:setvarblock name="action_buttons">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Finish (s)">"
+           class="action primary-button"
+           ><__trans phrase="Finish"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="Cancel (x)">"
+           class="cancel action mt-close-dialog"
+           ><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 <mt:include name="dialog/footer.tmpl">

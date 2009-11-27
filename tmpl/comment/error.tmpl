@@ -8,15 +8,14 @@
     <mt:var name="error">
 </mtapp:statusmsg>
 
-<div class="actions-bar">
-    <div class="actions-bar-inner pkg actions right">
-        <button
-            onclick="<mt:var name="goback">"
-            accesskey="s"
-            title="<__trans phrase="Go Back (s)">"
-            class="primary-button"
-            ><__trans phrase="Go Back"></button>
-    </div>
-</div>
+<mt:setvarblock name="action_buttons">
+    <button
+        onclick="<mt:var name="goback">"
+        accesskey="s"
+        title="<__trans phrase="Go Back (s)">"
+        class="go-back action primary-button"
+        ><__trans phrase="Go Back"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 
 <mt:include name="include/chromeless_footer.tmpl">

@@ -11,14 +11,13 @@ function smarty_block_mtentryauthoruserpicasset($args, $content, &$ctx, &$repeat
         return $ctx->error("No entry available");
     }
 
-    $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+    $author = $entry->author();
     if (!$author) return '';
 
-    $asset_id = isset($author['author_userpic_asset_id']) ? $author['author_userpic_asset_id'] : 0;
-    $asset = $ctx->mt->db->fetch_assets(array('id' => $asset_id));
+    $asset = $author->userpic();
     if (!$asset) return '';
 
-    $ctx->stash('asset',  $asset[0]);
+    $ctx->stash('asset',  $asset);
 
     return $content;
 }

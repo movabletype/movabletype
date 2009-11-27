@@ -23,6 +23,8 @@ __PACKAGE__->install_properties({
         'parent' => 'integer',
         'allow_pings' => 'boolean',
         'basename' => 'string(255)',
+
+        'show_fields' => 'string meta',
     },
     indexes => {
         blog_id => 1,
@@ -390,7 +392,8 @@ sub parent_category {
     my $class = ref($cat);
     unless ($cat->{__parent_category}) {
         $cat->{__parent_category} = ($cat->parent) ? $class->load($cat->parent) : undef;
-        weaken( $cat->{__parent_category} );
+        weaken( $cat->{__parent_category} )
+            if !MT->config->DisableObjectCache;
     }
     $cat->{__parent_category};
 }
@@ -448,6 +451,30 @@ sub entry_count {
         scalar $class->count(@args);
     }, @_);
 }
+
+sub populate_category_hierarchy {
+    my $class = shift;
+    my ( $blog_id, $parent_id, $depth ) = @_;
+
+    my @cats;
+    # sort in reverse order since we unshift objects here
+    my $iter = $class->load_iter(
+        { blog_id => $blog_id, parent => $parent_id },
+        { sort => 'label', direction => 'descend' }
+    );
+    while ( my $cat = $iter->() ) {
+        my $subcats = $class->populate_category_hierarchy( $blog_id, $cat->id, $depth + 1 );
+        unshift @cats, @$subcats if @$subcats;
+
+        my $values = $cat->get_values;
+        my $fields = $cat->show_fields;
+        $values->{selected_fields} = $fields;
+        $values->{category_pixel_depth} = 10 * $depth;
+        unshift @cats, $values;
+    }
+    return \@cats;
+}
+
 
 1;
 __END__
@@ -565,9 +592,18 @@ removing the category record, all of the entry-category mappings
 
 =item * MT::Category->top_level_categories($blog_id)
 
-
 Returns an array of I<MT::Category> objects representing the top level of
 the category hierarchy in the blog identified by $blog_id.
+
+=back
+
+=over 4
+
+=item * MT::Category->populate_category_hierarchy($blog_id, $parent_id, $depth)
+
+Returns a reference to an array of hashrefs that contains category objects of
+the specified blog, ordered in a "thread"; parent category comes first, children
+next, grand children third, and the next parent, etc.
 
 =back
 

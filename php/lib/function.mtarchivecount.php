@@ -10,8 +10,7 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     $archiver = null;
     if ($at = $ctx->stash('current_archive_type')) {
         require_once("archive_lib.php");
-        global $_archivers;
-        $archiver = $_archivers[$at];
+        $archiver = ArchiverFactory::get_archiver($at);
     }
     $count = 0;
     if ((!isset($archiver) && $ctx->stash('inside_mt_categories')) ||
@@ -37,7 +36,7 @@ function smarty_function_mtarchivecount($args, &$ctx) {
                 $archiver->setup_args($ctx, $eargs);
             }
             $eargs['lastn'] = -1;
-            $entries =& $ctx->mt->db->fetch_entries($eargs);
+            $entries =& $ctx->mt->db()->fetch_entries($eargs);
             $count = count($entries);
         }
     }

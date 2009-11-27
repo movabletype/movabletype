@@ -28,6 +28,7 @@ class MTViewer extends Smarty {
         'mthasparentfolder' => 1,
         'mtauthorhasentry' => 1,
         'mtauthorhaspage' => 1,
+        'mtwebsitehasblog' => 1,
     );
     var $sanitized = array(
         'mtcommentauthor' => 1,
@@ -94,7 +95,7 @@ class MTViewer extends Smarty {
     var $needs_tokens = array(
         'mtsubcategories' => 1,
         'mttoplevelcategories' => 1,
-        'mtsubfolers' => 1,
+        'mtsubfolders' => 1,
         'mttoplevelfolders' => 1,
         'mtcommentreplies' => 1,
         'mtsetvartemplate' => 1,
@@ -144,7 +145,7 @@ class MTViewer extends Smarty {
     function add_conditional_tag($name, $code = null, $cacheable = null, $cache_attrs = null) {
         $this->conditionals[$name] = 1;
         if (isset($code)) {
-            $this->register_block($name, $code, $cacheable, $cache_attrs);
+            return $this->register_tag_handler($name, $code, 'block');
         }
     }
 
@@ -315,12 +316,12 @@ class MTViewer extends Smarty {
                 $ts[5]+1900, $ts[4]+1, $ts[3], $ts[2], $ts[1], $ts[0]);
         }
         if (isset($args['utc'])) {
-            if (!is_array($blog)) {
-                $blog = $ctx->mt->db->fetch_blog($blog);
+            if (!is_object($blog)) {
+                $blog = $ctx->mt->db()->fetch_blog($blog);
             }
             preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
             list($all, $y, $mo, $d, $h, $m, $s) = $matches;
-            $so = $blog['blog_server_offset'];
+            $so = $blog->blog_server_offset;
             $timelocal = mktime($h, $m, $s, $mo, $d, $y);
             $localtime = localtime($timelocal);
             if ($localtime[8])
@@ -336,9 +337,9 @@ class MTViewer extends Smarty {
                 if (!$args['utc']) {
                     $blog = $ctx->stash('blog');
                     if (!is_array($blog)) {
-                        $blog = $ctx->mt->db->fetch_blog($blog);
+                        $blog = $ctx->mt->db()->fetch_blog($blog->id);
                     }
-                    $so = $blog['blog_server_offset'];
+                    $so = $blog->blog_server_offset;
                     $partial_hour_offset = 60 * abs($so - intval($so));
                     if ($format == 'rfc822') {
                         $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
@@ -410,7 +411,7 @@ EOT;
             if (!$hdlr) {
                 $fntag = 'smarty_function_mt'.$tag;
                 if (!function_exists($fntag))
-                  if (file_exists($this->mt->config['phplibdir']."/function.mt$tag.php"))
+                    if (file_exists($this->mt->config('phplibdir')."/function.mt$tag.php"))
                         @include_once("function.mt$tag.php");
                 if (function_exists($fntag))
                     $hdlr = $fntag;
@@ -418,7 +419,7 @@ EOT;
             if (!$hdlr) { // try block tags
                 $fntag = 'smarty_block_mt'.$tag;
                 if (!function_exists($fntag))
-                    if (file_exists($this->mt->config['phplibdir']."/block.mt$tag.php"))
+                    if (file_exists($this->mt->config('phplibdir')."/block.mt$tag.php"))
                         @include_once("block.mt$tag.php");
                 if (function_exists($fntag)) {
                     $hdlr = $fntag;

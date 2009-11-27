@@ -12,7 +12,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');
-        $categories = $ctx->mt->db->fetch_categories($args);
+        $categories = $ctx->mt->db()->fetch_categories($args);
         $glue = $args['glue'];
         $ctx->stash('_categories_glue', $glue);
         $ctx->stash('_categories', $categories);
@@ -31,11 +31,11 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('category', $category);
         $ctx->stash('entries', null);
         $ctx->stash('_categories_counter', $counter + 1);
-        $ctx->stash('blog_id', $category['category_blog_id']);
+        $ctx->stash('blog_id', $category->category_blog_id);
         $ctx->stash('ArchiveListHeader', $counter == 0);
         $ctx->stash('ArchiveListFooter', $counter+1 == count($categories));
         $ctx->stash('blog',
-            $ctx->mt->db->fetch_blog($category['category_blog_id']));
+                    $category->blog());
         if (!empty($glue) && !empty($content)) {
             if ($out)
                 $content = $glue . $content;

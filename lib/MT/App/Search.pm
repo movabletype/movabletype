@@ -160,7 +160,7 @@ sub init_request {
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
-            $app->{searchparam}{IncludeBlogs} = $list if ($list && %$list);
+            $app->{searchparam}{IncludeBlogs} = keys %$list if ($list && %$list);
         }
         else {
             my $blog_list = $app->create_blog_list(%no_override);
@@ -168,9 +168,9 @@ sub init_request {
                 if $blog_list
                     && %$blog_list
                     && $blog_list->{IncludeBlogs}
-                    && %{ $blog_list->{IncludeBlogs} };
+                    && @{ $blog_list->{IncludeBlogs} };
             return $app->error( $app->translate('Invalid request.') )
-                if ! $processed && ( !exists $app->{searchparam}{IncludeBlogs} || !%{$app->{searchparam}{IncludeBlogs}} );
+                if ! $processed && ( !exists $app->{searchparam}{IncludeBlogs} || !@{$app->{searchparam}{IncludeBlogs}} );
         }
     }
     else {
@@ -184,9 +184,14 @@ sub generate_cache_keys {
     my $q = $app->param;
     my @p = sort { $a cmp $b } $q->param;
     my ( $key, $count_key );
-    $key .= lc($_) . encode_url( $q->param($_) ) foreach @p;
-    $count_key .= lc($_) . encode_url( $q->param($_) )
-        foreach grep { ( 'limit' ne lc($_) ) && ( 'offset' ne lc($_) ) } @p;
+    foreach my $p ( @p ) {
+        foreach my $pp ( $q->param($p) ) {
+            $key .= lc($p) . encode_url( $pp  );
+            $count_key .= lc($p) . encode_url( $pp )
+                if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
+        }
+    }
+
     $app->{cache_keys} = { result => $key, count => $count_key, content_type => "HTTP_CONTENT_TYPE::$key" };
 }
 
@@ -239,19 +244,19 @@ sub create_blog_list {
     }
 
     my %blog_list;
-     
+
     ## If IncludeBlogs is all, then set IncludeBlogs to ""
-    ## this will get all the blogs by default later on 
+    ## this will get all the blogs by default later on
     if ($q->param('IncludeBlogs') eq 'all') {
         $q->param('IncludeBlogs', '');
     }
-    
+
     ## Combine user-selected included/excluded blogs
     ## with config file settings.
     for my $type (qw( IncludeBlogs ExcludeBlogs )) {
-        $blog_list{$type} = {};
+        $blog_list{$type} = ();
         if ( my $list = $cfg->$type() ) {
-            $blog_list{$type} = { map { $_ => 1 } split /\s*,\s*/, $list };
+            push @{$blog_list{$type}}, (split /\s*,\s*/, $list);
         }
         next if exists( $no_override{$type} ) && $no_override{$type};
         for my $blog_id ( $q->param($type) ) {
@@ -260,12 +265,12 @@ sub create_blog_list {
                 s/\D+//g for @ids;    # only numeric values.
                 foreach my $id (@ids) {
                     next unless $id;
-                    $blog_list{$type}{$id} = 1;
+                    push @{$blog_list{$type}}, $id;
                 }
             }
             else {
                 $blog_id =~ s/\D+//g;    # only numeric values.
-                $blog_list{$type}{$blog_id} = 1 if $blog_id;
+                push @{$blog_list{$type}}, $blog_id if $blog_id;
             }
         }
     }
@@ -273,12 +278,12 @@ sub create_blog_list {
     ## If IncludeBlogs has not been set, we need to build a list of
     ## the blogs to search. If ExcludeBlogs was set, exclude any blogs
     ## set in that list from our final list.
-    unless ( %{$blog_list{IncludeBlogs}} ) {
+    unless ( $blog_list{IncludeBlogs} ) {
         my $exclude = $blog_list{ExcludeBlogs};
-        my $iter    = $app->model('blog')->load_iter;
+        my $iter    = $app->model('blog')->load_iter({ class => '*' });
         while ( my $blog = $iter->() ) {
-            $blog_list{IncludeBlogs}{ $blog->id } = 1
-                unless $exclude && $exclude->{ $blog->id };
+            push @{$blog_list{IncludeBlogs}}, $blog->id
+                unless $exclude && grep { $_ == $blog->id } @$exclude;
         }
     }
 
@@ -299,7 +304,10 @@ sub check_cache {
         my $content_type = $cache->{ $app->{cache_keys}{content_type} };
         $app->{response_content_type} = $content_type;
     }
-
+    if ( !Encode::is_utf8($result) ) {
+        my $enc = MT->config->PublishCharset;
+        $result = Encode::decode( $enc, $result );
+    }
     ( $count, $result );
 }
 
@@ -442,7 +450,7 @@ sub search_terms {
     delete $def_terms{'plugin'};
 
     if ( my $incl_blogs = $app->{searchparam}{IncludeBlogs} ) {
-        $def_terms{blog_id} = [ keys %$incl_blogs ] if %$incl_blogs;
+        $def_terms{blog_id} = $incl_blogs if $incl_blogs;
     }
 
     my @terms;
@@ -545,10 +553,13 @@ sub _cache_out {
     else {
         $result = $out;
     }
-
+    if ( Encode::is_utf8($result) ) {
+        my $enc = MT->config->PublishCharset;
+        $result = Encode::encode( $enc, $result );
+    }
     my $cache_driver = $app->{cache_driver};
     $cache_driver->set( $app->{cache_keys}{result},
-        $out, $app->config->SearchCacheTTL );
+        $result, $app->config->SearchCacheTTL );
     if ( exists( $app->{response_content_type} )
       && ( 'text/html' ne $app->{response_content_type} ) )
     {
@@ -604,9 +615,9 @@ sub first_blog_id {
         }
     }
     elsif ( exists( $app->{searchparam}{IncludeBlogs} )
-        && keys( %{ $app->{searchparam}{IncludeBlogs} } ) )
+        && @{ $app->{searchparam}{IncludeBlogs} } )
     {
-        my @blog_ids = keys %{ $app->{searchparam}{IncludeBlogs} };
+        my @blog_ids = $app->{searchparam}{IncludeBlogs};
         $blog_id = $blog_ids[0] if @blog_ids;
     }
     $blog_id;
@@ -636,7 +647,7 @@ sub prepare_context {
     $ctx->stash( 'stash_key',  $app->{searchparam}{Type} );
     $ctx->stash( 'maxresults', $app->{searchparam}{SearchMaxResults} );
     $ctx->stash( 'include_blogs', join ',',
-        keys %{ $app->{searchparam}{IncludeBlogs} } );
+        @{ $app->{searchparam}{IncludeBlogs} } );
     $ctx->stash( 'results', $iter );
     $ctx->stash( 'count',   $count );
     $ctx->stash( 'offset',
@@ -664,12 +675,16 @@ sub prepare_context {
     }
 
     # now we need to figure out the archive types
-    $ctx->stash('archive_count', $count) if ($app->param('archive_type'));
-    $ctx->{current_archive_type} = $app->param('archive_type') if ($app->param('archive_type'));
+    if ( my $at = $q->param('archive_type') ) {
+        $ctx->stash('archive_count', $count);
+        $ctx->{current_archive_type} = $at;
+        my $archiver = MT->publisher->archiver($at);
+        if ( $archiver ) {
+            my $params = $archiver->template_params;
+            map { $ctx->var( $_, $params->{ $_ } ) } keys %$params;
+        }
+    }
     $ctx->{current_timestamp} = $app->param('context_date_start') ? $app->param('context_date_start') : MT::Util::epoch2ts( $blog_id, time);
-    $ctx->var('datebased_archive', 1) if ($app->param('archive_type') && 
-                                          ( $app->param('archive_type') =~ /Daily/i || $app->param('archive_type') =~ /Weekly/i
-                                            || $app->param('archive_type') =~ /Monthly/i || $app->param('archive_type') =~ /Yearly/i ));
     if ($app->param('author')) {
         require MT::Author;
         my $author = MT::Author->load($app->param('author'));
@@ -682,7 +697,7 @@ sub prepare_context {
         $ctx->stash('category', $category);
         $ctx->var('category_archive', 1);
     }
-    
+
     $ctx;
 }
 
@@ -702,9 +717,9 @@ sub load_search_tmpl {
             )
             )
         {
-            for my $tmpl (@tmpls) {
-                next unless defined $tmpl;
-                my ( $nickname, $file ) = split /\s+/, $tmpl;
+            for my $tmpl_ (@tmpls) {
+                next unless defined $tmpl_;
+                my ( $nickname, $file ) = split /\s+/, $tmpl_;
                 if ( $nickname eq $q->param('Template') ) {
                     $filename = $file;
                     last;
@@ -743,7 +758,7 @@ sub load_search_tmpl {
 
                 if ($at ne 'Index') {
                     return $app->errtrans( 'Template must have identifier entry_listing for non-Index archive types' )
-                        unless ($app->config->SearchAlwaysAllowTemplateID || $tmpl->identifier eq 'entry_listing');
+                        unless ($app->config->SearchAlwaysAllowTemplateID || $tmpl->identifier =~ /entry_listing$/ );
                     my $blog = $app->model('blog')->load($tmpl->blog_id);
                     return $app->errtrans( 'Blog file extension cannot be asp or php for these archives' )
                         if (!$app->config->SearchAlwaysAllowTemplateID
@@ -812,7 +827,7 @@ sub renderjs {
     my $content = $tmpl->output
         or return $app->json_error( $tmpl->errstr );
 
-    my $next_link = $ctx->_hdlr_next_link();
+    my $next_link = $ctx->invoke_handler('nextlink');
     return $app->json_result(
         { content => $content, next_url => $next_link } );
 }
@@ -883,13 +898,15 @@ sub _query_parse_core {
     my ( $lucene_struct, $columns, $filter_types ) = @_;
 
     my $rvalue = sub {
+        my $val = $_[1];
+        $val =~ s/\\([^\\])/$1/g;
         my %rvalues = (
-            REQUIREDlike   => { like     => '%' . $_[1] . '%' },
-            REQUIRED1      => $_[1],
-            NORMALlike     => { like     => '%' . $_[1] . '%' },
-            NORMAL1        => $_[1],
-            PROHIBITEDlike => { not_like => '%' . $_[1] . '%' },
-            PROHIBITED1    => { not      => $_[1] }
+            REQUIREDlike   => { like     => '%' . $val . '%' },
+            REQUIRED1      => $val,
+            NORMALlike     => { like     => '%' . $val . '%' },
+            NORMAL1        => $val,
+            PROHIBITEDlike => { not_like => '%' . $val . '%' },
+            PROHIBITED1    => { not      => $val }
         );
         $rvalues{ $_[0] };
     };
@@ -930,25 +947,25 @@ sub _query_parse_core {
                     }
                 }
                 elsif ( exists $columns->{ $term->{field} } ) {
-                    my $test = $rvalue->(
+                    my $test_ = $rvalue->(
                         ( $term->{type} || '' )
                         . $columns->{ $term->{field} },
                         $term->{term}
                     );
-                    push @tmp, { $term->{field} => $test };
+                    push @tmp, { $term->{field} => $test_ };
                 }
             }
             else {
                 my @cols   = keys %$columns;
                 my $number = scalar @cols;
                 for ( my $i = 0; $i < $number; $i++ ) {
-                    my $test = $rvalue->(
+                    my $test_ = $rvalue->(
                         ( $term->{type} || '' ) . $columns->{ $cols[$i] },
                         $term->{term}
                     );
                     if ( 'PROHIBITED' eq $term->{type} ) {
                         my @this_term;
-                        push @this_term, { $cols[$i] => $test };
+                        push @this_term, { $cols[$i] => $test_ };
                         push @this_term, '-or';
                         push @this_term, { $cols[$i] => \' IS NULL' };
                         push @tmp, \@this_term;
@@ -957,7 +974,7 @@ sub _query_parse_core {
                         }
                     }
                     else {
-                        push @tmp, { $cols[$i] => $test };
+                        push @tmp, { $cols[$i] => $test_ };
                         unless ( $i == $number - 1 ) {
                             push @tmp, '-or';
                         }
@@ -966,16 +983,16 @@ sub _query_parse_core {
             }
         }
         elsif ( 'SUBQUERY' eq $term->{query} ) {
-            my ( $test, $more_joins )
+            my ( $test_, $more_joins )
                 = $app->_query_parse_core( $term->{subquery}, $columns,
                 $filter_types );
-            next unless $test && @$test;
+            next unless $test_ && @$test_;
             if (@structure) {
                 push @structure, 'PROHIBITED' eq $term->{type}
                     ? '-and_not'
                     : '-and';
             }
-            push @structure, @$test;
+            push @structure, @$test_;
             push @joins,     @$more_joins;
             next;
         }
@@ -1113,8 +1130,10 @@ sub _default_throttle {
         }
     }
 
-    unless ( $^O eq 'Win32' ) {
-
+    if ( $^O eq 'MSWin32' ) {
+        $$result = 1;         #FIXME
+    }
+    else {
         # Use SIGALRM to stop processing in 5 seconds for each request
         $SIG{ALRM} = sub {
             my $msg

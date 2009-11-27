@@ -1,0 +1,44 @@
+#-*- perl -*-
+
+package MIME::Charset;
+
+=head1 NAME
+
+MIME::Charset::Defaults - Configuration for MIME::Charset
+
+=head1 SYNOPSIS
+
+Edit this file and place it on MIME/Charset/Defaults.pm to activate custom
+settings.
+
+=head1 DESCRIPTION
+
+Following settings are available.
+
+=over 4
+
+=item Detect7bit
+
+=item Replacement
+
+=item Mapping
+
+=back
+
+=head1 SEE ALSO
+
+L<MIME::Charset>
+
+=cut
+
+#--------------------------------------------------------------------------#
+# Add your own settings below.
+#--------------------------------------------------------------------------#
+
+## Default settings on current release are:
+# $Config->{Detect7bit} = 'YES';
+# $Config->{Replacement} = 'DEFAULT';
+# $Config->{Mapping} = 'EXTENDED';
+
+1;
+

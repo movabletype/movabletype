@@ -9,11 +9,9 @@ function smarty_function_mtcategorylabel($args, &$ctx) {
     $cat = $ctx->stash('category');
     if (!$cat) {
         if ($e = $ctx->stash('entry')) {
-            if ($cat_id = $e['placement_category_id']) {
-                $cat = $ctx->mt->db->fetch_category($cat_id);
-            }
+            $cat = $e->category();
         }
     }
     if (!$cat) return '';
-    return $cat['category_label'];
+    return $cat->category_label;
 }

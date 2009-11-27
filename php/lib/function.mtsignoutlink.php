@@ -29,7 +29,7 @@ function smarty_function_mtsignoutlink($args, &$ctx) {
         $static_arg .
         '&logout=1';
     if ($entry) {
-        $path .= '&entry_id=' . $entry['entry_id'];
+        $path .= '&entry_id=' . $entry->entry_id;
     }
     return $path;
 }

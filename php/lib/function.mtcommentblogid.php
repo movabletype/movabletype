@@ -7,6 +7,6 @@
 
 function smarty_function_mtcommentblogid($args, &$ctx) {
     $comment = $ctx->stash('comment');
-    return (isset($args['pad']) && $args['pad']) ? sprintf("%06d", $comment['comment_blog_id']) : $comment['comment_blog_id'];
+    return (isset($args['pad']) && $args['pad']) ? sprintf("%06d", $comment->comment_blog_id) : $comment->comment_blog_id;
 }
 ?>

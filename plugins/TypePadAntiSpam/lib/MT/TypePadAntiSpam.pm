@@ -3,7 +3,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: TypePadAntiSpam.pm 81617 2008-05-23 20:11:13Z bchoate $
+# $Id$
 
 package MT::TypePadAntiSpam;
 

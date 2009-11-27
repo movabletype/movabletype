@@ -17,12 +17,12 @@
         </mtapp:statusmsg>
     </mt:if>
 </MTSetVarBlock>
-<mt:setvarblock name="related_content">
+<mt:setvarblock name="useful_links">
     <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_cat&amp;_type=folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_category&amp;_type=folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
             <li><a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage pages in this folder"></a></li>
         </ul>
     </mtapp:widget>
@@ -82,9 +82,7 @@ TC.attachLoadEvent( init );
             label="<__trans phrase="Label">"
             help_page="folders"
             help_section="folder_label">
-            <div class="textarea-wrapper">
-                <input name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
-            </div>
+            <input type="text" name="label" id="label" maxlength="100" value="<mt:var name="label" escape="html">" class="full-width" />
         </mtapp:setting>
 
         <mtapp:setting
@@ -95,7 +93,7 @@ TC.attachLoadEvent( init );
             <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
             <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
 
-            <$mt:var name="path_prefix" escape="html"$><input name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" class="quarter-width" onchange="setElementValue('basename', dirify(this.value))" style="float: none;" />
+            <$mt:var name="path_prefix" escape="html"$><input type="text" name="basename" id="basename" maxlength="250" value="<mt:var name="basename" escape="html">" class="mt-edit-field extra-path" onchange="setElementValue('basename', dirify(this.value))" />
         </mtapp:setting>
 
         <mtapp:setting
@@ -111,7 +109,7 @@ TC.attachLoadEvent( init );
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to this folder (s)">"
-        class="primary-button"
+        class="save action primary-button"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

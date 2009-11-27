@@ -10,8 +10,8 @@ function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
-        $args['entry_id'] = $entry['entry_id'];
-        $categories = $ctx->mt->db->fetch_categories($args);
+        $args['entry_id'] = $entry->entry_id;
+        $categories = $ctx->mt->db()->fetch_categories($args);
         $ctx->stash('_categories', $categories);
         $ctx->stash('__out', false);
         $counter = 0;

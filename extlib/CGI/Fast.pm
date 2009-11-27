@@ -1,4 +1,6 @@
 package CGI::Fast;
+use strict;
+$^W=1; # A way to say "use warnings" that's compatible with even older perls.
 
 # See the bottom of this file for the POD documentation.  Search for the
 # string '=head'.
@@ -9,24 +11,26 @@ package CGI::Fast;
 
 # Copyright 1995,1996, Lincoln D. Stein.  All rights reserved.
 # It may be used and modified freely, but I do request that this copyright
-# notice remain attached to the file.  You may modify this module as you 
+# notice remain attached to the file.  You may modify this module as you
 # wish, but if you redistribute a modified version, please attach a note
 # listing the modifications you have made.
 
-# The most recent version and complete docs are available at:
-#   http://www.genome.wi.mit.edu/ftp/pub/software/WWW/cgi_docs.html
-#   ftp://ftp-genome.wi.mit.edu/pub/software/WWW/
-$CGI::Fast::VERSION='1.04';
+$CGI::Fast::VERSION='1.07';
 
 use CGI;
 use FCGI;
+# use vars works like "our", but is compatible with older Perls.
+use vars qw(
+    @ISA
+    $ignore
+);
 @ISA = ('CGI');
 
 # workaround for known bug in libfcgi
 while (($ignore) = each %ENV) { }
 
 # override the initialization behavior so that
-# state is NOT maintained between invocations 
+# state is NOT maintained between invocations
 sub save_request {
     # no-op
 }
@@ -41,7 +45,7 @@ BEGIN {
 	my $path    = $ENV{FCGI_SOCKET_PATH};
 	my $backlog = $ENV{FCGI_LISTEN_QUEUE} || 100;
 	my $socket  = FCGI::OpenSocket( $path, $backlog );
-	$Ext_Request = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR, 
+	$Ext_Request = FCGI::Request( \*STDIN, \*STDOUT, \*STDERR,
 					\%ENV, $socket, 1 );
    }
 }
@@ -57,6 +61,8 @@ sub new {
          return undef unless FCGI::accept() >= 0;
      }
      }
+     CGI->_reset_globals;
+     $self->_setup_symbols(@CGI::SAVED_SYMBOLS) if @CGI::SAVED_SYMBOLS;
      return $CGI::Q = $self->SUPER::new($initializer, @param);
 }
 
@@ -83,46 +89,30 @@ CGI::Fast - CGI Interface for Fast CGI
 
 =head1 DESCRIPTION
 
-CGI::Fast is a subclass of the CGI object created by
-CGI.pm.  It is specialized to work well with the Open Market
-FastCGI standard, which greatly speeds up CGI scripts by
-turning them into persistently running server processes.  Scripts
-that perform time-consuming initialization processes, such as
-loading large modules or opening persistent database connections,
-will see large performance improvements.
+CGI::Fast is a subclass of the CGI object created by CGI.pm.  It is
+specialized to work well FCGI module, which greatly speeds up CGI
+scripts by turning them into persistently running server processes.
+Scripts that perform time-consuming initialization processes, such as
+loading large modules or opening persistent database connections, will
+see large performance improvements.
 
 =head1 OTHER PIECES OF THE PUZZLE
 
-In order to use CGI::Fast you'll need a FastCGI-enabled Web
-server.  Open Market's server is FastCGI-savvy.  There are also
-freely redistributable FastCGI modules for NCSA httpd 1.5 and Apache.
-FastCGI-enabling modules for Microsoft Internet Information Server and
-Netscape Communications Server have been announced.
-
-In addition, you'll need a version of the Perl interpreter that has
-been linked with the FastCGI I/O library.  Precompiled binaries are
-available for several platforms, including DEC Alpha, HP-UX and 
-SPARC/Solaris, or you can rebuild Perl from source with patches
-provided in the FastCGI developer's kit.  The FastCGI Perl interpreter
-can be used in place of your normal Perl without ill consequences.
-
-You can find FastCGI modules for Apache and NCSA httpd, precompiled
-Perl interpreters, and the FastCGI developer's kit all at URL:
-
-  http://www.fastcgi.com/
+In order to use CGI::Fast you'll need the FCGI module.  See
+http://www.cpan.org/ for details.
 
 =head1 WRITING FASTCGI PERL SCRIPTS
 
-FastCGI scripts are persistent: one or more copies of the script 
+FastCGI scripts are persistent: one or more copies of the script
 are started up when the server initializes, and stay around until
 the server exits or they die a natural death.  After performing
-whatever one-time initialization it needs, the script enters a 
+whatever one-time initialization it needs, the script enters a
 loop waiting for incoming connections, processing the request, and
 waiting some more.
 
 A typical FastCGI script will look like this:
 
-    #!/usr/local/bin/perl    # must be a FastCGI version of perl!
+    #!/usr/bin/perl
     use CGI::Fast;
     &do_some_initialization();
     while ($q = new CGI::Fast) {
@@ -160,7 +150,7 @@ install, you must add something like the following to srm.conf:
 
     FastCgiServer /usr/etc/httpd/fcgi-bin/file_upload.fcgi -processes 2
 
-This instructs Apache to launch two copies of file_upload.fcgi at 
+This instructs Apache to launch two copies of file_upload.fcgi at
 startup time.
 
 =head1 USING FASTCGI SCRIPTS AS CGI SCRIPTS
@@ -191,7 +181,7 @@ script to which bind an listen for incoming connections from the web server.
 
 =item FCGI_LISTEN_QUEUE
 
-Maximum length of the queue of pending connections.  
+Maximum length of the queue of pending connections.
 
 =back
 
@@ -212,7 +202,7 @@ I haven't tested this very much.
 
 =head1 AUTHOR INFORMATION
 
-Copyright 1996-1998, Lincoln D. Stein.  All rights reserved.  
+Copyright 1996-1998, Lincoln D. Stein.  All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

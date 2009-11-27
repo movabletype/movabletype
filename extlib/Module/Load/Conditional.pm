@@ -3,21 +3,26 @@ package Module::Load::Conditional;
 use strict;
 
 use Module::Load;
-use Params::Check qw[check];
-use Locale::Maketext::Simple Style => 'gettext';
+use Params::Check                       qw[check];
+use Locale::Maketext::Simple Style  => 'gettext';
 
 use Carp        ();
 use File::Spec  ();
 use FileHandle  ();
+use version;
+
+use constant ON_VMS  => $^O eq 'VMS';
 
 BEGIN {
-    use vars        qw[$VERSION @ISA $VERBOSE $CACHE @EXPORT_OK $ERROR];
+    use vars        qw[ $VERSION @ISA $VERBOSE $CACHE @EXPORT_OK 
+                        $FIND_VERSION $ERROR $CHECK_INC_HASH];
     use Exporter;
-    @ISA        =   qw[Exporter];
-    $VERSION    =   '0.08';
-    $VERBOSE    =   0;
-
-    @EXPORT_OK  =   qw[check_install can_load requires];
+    @ISA            = qw[Exporter];
+    $VERSION        = '0.30';
+    $VERBOSE        = 0;
+    $FIND_VERSION   = 1;
+    $CHECK_INC_HASH = 0;
+    @EXPORT_OK      = qw[check_install can_load requires];
 }
 
 =pod
@@ -42,7 +47,7 @@ Module::Load::Conditional - Looking up module information / loading at runtime
             : 'failed to load required modules';
 
 
-    my $rv = check_install( module => 'LWP', verion => 5.60 )
+    my $rv = check_install( module => 'LWP', version => 5.60 )
                 or print 'LWP is not installed!';
 
     print 'LWP up to date' if $rv->{uptodate};
@@ -53,6 +58,9 @@ Module::Load::Conditional - Looking up module information / loading at runtime
     print "LWP requires the following modules to be installed:\n";
     print join "\n", requires('LWP');
 
+    ### allow M::L::C to peek in your %INC rather than just
+    ### scanning @INC
+    $Module::Load::Conditional::CHECK_INC_HASH = 1;
 
     ### reset the 'can_load' cache
     undef $Module::Load::Conditional::CACHE;
@@ -76,7 +84,7 @@ and so forth.
 
 =head1 Methods
 
-=head1 check_install
+=head1 $href = check_install( module => NAME [, version => VERSION, verbose => BOOL ] );
 
 C<check_install> allows you to verify if a certain module is installed
 or not. You may call it with the following arguments:
@@ -108,10 +116,17 @@ to find the file:
 
 Full path to the file that contains the module
 
+=item dir
+
+Directory, or more exact the C<@INC> entry, where the module was
+loaded from.
+
 =item version
 
 The version number of the installed module - this will be C<undef> if
-the module had no (or unparsable) version number.
+the module had no (or unparsable) version number, or if the variable
+C<$Module::Load::Conditional::FIND_VERSION> was set to true.
+(See the C<GLOBAL VARIABLES> section below for details)
 
 =item uptodate
 
@@ -148,7 +163,10 @@ sub check_install {
         return;
     }
 
-    my $file = File::Spec->catfile( split /::/, $args->{module} ) . '.pm';
+    my $file     = File::Spec->catfile( split /::/, $args->{module} ) . '.pm';
+    my $file_inc = File::Spec::Unix->catfile( 
+                        split /::/, $args->{module} 
+                    ) . '.pm';
 
     ### where we store the return value ###
     my $href = {
@@ -156,79 +174,106 @@ sub check_install {
             version     => undef,
             uptodate    => undef,
     };
+    
+    my $filename;
 
-    DIR: for my $dir ( @INC ) {
+    ### check the inc hash if we're allowed to
+    if( $CHECK_INC_HASH ) {
+        $filename = $href->{'file'} = 
+            $INC{ $file_inc } if defined $INC{ $file_inc };
 
-        my( $fh, $filename );
-
-        if ( ref $dir ) {
-            ### @INC hook -- we invoke it and get the filehandle back
-            ### this is actually documented behaviour as of 5.8 ;)
-
-            if (UNIVERSAL::isa($dir, 'CODE')) {
-                ($fh) = $dir->($dir, $file);
-
-            } elsif (UNIVERSAL::isa($dir, 'ARRAY')) {
-                ($fh) = $dir->[0]->($dir, $file, @{$dir}{1..$#{$dir}})
-
-            } elsif (UNIVERSAL::can($dir, 'INC')) {
-                ($fh) = $dir->INC->($dir, $file);
-            }
-
-            if (!UNIVERSAL::isa($fh, 'GLOB')) {
-                warn loc(q[Cannot open file '%1': %2], $file, $!)
-                        if $args->{verbose};
-                next;
-            }
-
-            $filename = $INC{$file} || $file;
-
-        } else {
-            $filename = File::Spec->catfile($dir, $file);
-            next unless -e $filename;
-
-            $fh = new FileHandle;
-            if (!$fh->open($filename)) {
-                warn loc(q[Cannot open file '%1': %2], $file, $!)
-                        if $args->{verbose};
-                next;
-            }
+        ### find the version by inspecting the package
+        if( defined $filename && $FIND_VERSION ) {
+            no strict 'refs';
+            $href->{version} = ${ "$args->{module}"."::VERSION" }; 
         }
+    }     
 
-        $href->{file} = $filename;
+    ### we didnt find the filename yet by looking in %INC,
+    ### so scan the dirs
+    unless( $filename ) {
 
-        while (local $_ = <$fh> ) {
+        DIR: for my $dir ( @INC ) {
+    
+            my $fh;
+    
+            if ( ref $dir ) {
+                ### @INC hook -- we invoke it and get the filehandle back
+                ### this is actually documented behaviour as of 5.8 ;)
+    
+                if (UNIVERSAL::isa($dir, 'CODE')) {
+                    ($fh) = $dir->($dir, $file);
+    
+                } elsif (UNIVERSAL::isa($dir, 'ARRAY')) {
+                    ($fh) = $dir->[0]->($dir, $file, @{$dir}{1..$#{$dir}})
+    
+                } elsif (UNIVERSAL::can($dir, 'INC')) {
+                    ($fh) = $dir->INC->($dir, $file);
+                }
+    
+                if (!UNIVERSAL::isa($fh, 'GLOB')) {
+                    warn loc(q[Cannot open file '%1': %2], $file, $!)
+                            if $args->{verbose};
+                    next;
+                }
+    
+                $filename = $INC{$file_inc} || $file;
+    
+            } else {
+                $filename = File::Spec->catfile($dir, $file);
+                next unless -e $filename;
+    
+                $fh = new FileHandle;
+                if (!$fh->open($filename)) {
+                    warn loc(q[Cannot open file '%1': %2], $file, $!)
+                            if $args->{verbose};
+                    next;
+                }
+            }
+    
+            ### store the directory we found the file in
+            $href->{dir} = $dir;
+    
+            ### files need to be in unix format under vms,
+            ### or they might be loaded twice
+            $href->{file} = ON_VMS
+                ? VMS::Filespec::unixify( $filename )
+                : $filename;
+    
+            ### user wants us to find the version from files
+            if( $FIND_VERSION ) {
+                
+                my $in_pod = 0;
+                while ( my $line = <$fh> ) {
+    
+                    ### stolen from EU::MM_Unix->parse_version to address
+                    ### #24062: "Problem with CPANPLUS 0.076 misidentifying
+                    ### versions after installing Text::NSP 1.03" where a 
+                    ### VERSION mentioned in the POD was found before
+                    ### the real $VERSION declaration.
+                    $in_pod = $line =~ /^=(?!cut)/  ? 1 : 
+                              $line =~ /^=cut/      ? 0 : 
+                              $in_pod;
+                    next if $in_pod;
+                    
+                    ### try to find a version declaration in this string.
+                    my $ver = __PACKAGE__->_parse_version( $line );
 
-	    ### skip commented out lines, they won't eval to anything.
-	    next if /^\s*#/;
-
-            ### the following regexp comes from the ExtUtils::MakeMaker
-            ### documentation.
-            if ( /([\$*])(([\w\:\']*)\bVERSION)\b.*\=/ ) {
-
-                ### this will eval the version in to $VERSION if it
-                ### was declared as $VERSION in the module.
-                ### else the result will be in $res.
-                ### this is a fix on skud's Module::InstalledVersion
-
-                local $VERSION;
-                my $res = eval $_;
-
-                ### default to '0.0' if there REALLY is no version
-                ### all to satisfy warnings
-                $href->{version} = $VERSION || $res || '0.0';
-
-                last DIR;
+                    if( defined $ver ) {
+                        $href->{version} = $ver;
+        
+                        last DIR;
+                    }
+                }
             }
         }
     }
-
+    
     ### if we couldn't find the file, return undef ###
     return unless defined $href->{file};
 
-    ### only complain if we expected fo find a version higher than 0.0 anyway
-    if( !defined $href->{version} ) {
-
+    ### only complain if we're expected to find a version higher than 0.0 anyway
+    if( $FIND_VERSION and not defined $href->{version} ) {
         {   ### don't warn about the 'not numeric' stuff ###
             local $^W;
 
@@ -241,13 +286,82 @@ sub check_install {
     } else {
         ### don't warn about the 'not numeric' stuff ###
         local $^W;
-        $href->{uptodate} = $args->{version} <= $href->{version} ? 1 : 0;
+        
+        ### use qv(), as it will deal with developer release number
+        ### ie ones containing _ as well. This addresses bug report
+        ### #29348: Version compare logic doesn't handle alphas?
+        ###
+        ### Update from JPeacock: apparently qv() and version->new
+        ### are different things, and we *must* use version->new
+        ### here, or things like #30056 might start happening
+        $href->{uptodate} = 
+            version->new( $args->{version} ) <= version->new( $href->{version} )
+                ? 1 
+                : 0;
     }
 
     return $href;
 }
 
-=head2 can_load
+sub _parse_version {
+    my $self    = shift;
+    my $str     = shift or return;
+    my $verbose = shift or 0;
+
+    ### skip commented out lines, they won't eval to anything.
+    return if $str =~ /^\s*#/;
+        
+    ### the following regexp & eval statement comes from the 
+    ### ExtUtils::MakeMaker source (EU::MM_Unix->parse_version) 
+    ### Following #18892, which tells us the original
+    ### regex breaks under -T, we must modifiy it so
+    ### it captures the entire expression, and eval /that/
+    ### rather than $_, which is insecure.
+    my $taint_safe_str = do { $str =~ /(^.*$)/sm; $1 };
+        
+    if( $str =~ /(?<!\\)([\$*])(([\w\:\']*)\bVERSION)\b.*\=/ ) {
+        
+        print "Evaluating: $str\n" if $verbose;
+        
+        ### this creates a string to be eval'd, like:
+        # package Module::Load::Conditional::_version;
+        # no strict;
+        # 
+        # local $VERSION;
+        # $VERSION=undef; do {
+        #     use version; $VERSION = qv('0.0.3');
+        # }; $VERSION        
+        
+        my $eval = qq{
+            package Module::Load::Conditional::_version;
+            no strict;
+
+            local $1$2;
+            \$$2=undef; do {
+                $taint_safe_str
+            }; \$$2
+        };
+        
+        print "Evaltext: $eval\n" if $verbose;
+        
+        my $result = do {
+            local $^W = 0;
+            eval($eval); 
+        };
+        
+        
+        my $rv = defined $result ? $result : '0.0';
+
+        print( $@ ? "Error: $@\n" : "Result: $rv\n" ) if $verbose;
+
+        return $rv;
+    }
+    
+    ### unable to find a version in this string
+    return;
+}
+
+=head2 $bool = can_load( modules => { NAME => VERSION [,NAME => VERSION] }, [verbose => BOOL, nocache => BOOL] )
 
 C<can_load> will take a list of modules, optionally with version
 numbers and determine if it is able to load them. If it can load *ALL*
@@ -325,9 +439,18 @@ sub can_load {
             ### else, check if the hash key is defined already,
             ### meaning $mod => 0,
             ### indicating UNSUCCESSFUL prior attempt of usage
+
+            ### use qv(), as it will deal with developer release number
+            ### ie ones containing _ as well. This addresses bug report
+            ### #29348: Version compare logic doesn't handle alphas?
+            ###
+            ### Update from JPeacock: apparently qv() and version->new
+            ### are different things, and we *must* use version->new
+            ### here, or things like #30056 might start happening            
             if (    !$args->{nocache}
                     && defined $CACHE->{$mod}->{usable}
-                    && (($CACHE->{$mod}->{version}||0) >= $href->{$mod})
+                    && (version->new( $CACHE->{$mod}->{version}||0 ) 
+                        >= version->new( $href->{$mod} ) )
             ) {
                 $error = loc( q[Already tried to use '%1', which was unsuccessful], $mod);
                 last BLOCK;
@@ -382,13 +505,15 @@ sub can_load {
     if( defined $error ) {
         $ERROR = $error;
         Carp::carp( loc(q|%1 [THIS MAY BE A PROBLEM!]|,$error) ) if $args->{verbose};
-        return undef;
+        return;
     } else {
         return 1;
     }
 }
 
-=head2 requires
+=back
+
+=head2 @list = requires( MODULE );
 
 C<requires> can tell you what other modules a particular module
 requires. This is particularly useful when you're intending to write
@@ -439,6 +564,30 @@ explanations as to why certain things may have failed. If you set it
 to 0, Module::Load::Conditional will not output any warnings.
 The default is 0;
 
+=head2 $Module::Load::Conditional::FIND_VERSION
+
+This controls whether Module::Load::Conditional will try to parse
+(and eval) the version from the module you're trying to load. 
+
+If you don't wish to do this, set this variable to C<false>. Understand
+then that version comparisons are not possible, and Module::Load::Conditional
+can not tell you what module version you have installed.
+This may be desirable from a security or performance point of view. 
+Note that C<$FIND_VERSION> code runs safely under C<taint mode>.
+
+The default is 1;
+
+=head2 $Module::Load::Conditional::CHECK_INC_HASH
+
+This controls whether C<Module::Load::Conditional> checks your
+C<%INC> hash to see if a module is available. By default, only
+C<@INC> is scanned to see if a module is physically on your
+filesystem, or avialable via an C<@INC-hook>. Setting this variable
+to C<true> will trust any entries in C<%INC> and return them for
+you.
+
+The default is 0;
+
 =head2 $Module::Load::Conditional::CACHE
 
 This holds the cache of the C<can_load> function. If you explicitly
@@ -455,17 +604,17 @@ C<undef>.
 
 C<Module::Load>
 
+=head1 BUG REPORTS
+
+Please report bugs or other issues to E<lt>bug-module-load-conditional@rt.cpan.orgE<gt>.
+
 =head1 AUTHOR
 
-This module by
-Jos Boumans E<lt>kane@cpan.orgE<gt>.
+This module by Jos Boumans E<lt>kane@cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-This module is
-copyright (c) 2002 Jos Boumans E<lt>kane@cpan.orgE<gt>.
-All rights reserved.
+This library is free software; you may redistribute and/or modify it 
+under the same terms as Perl itself.
 
-This library is free software;
-you may redistribute and/or modify it under the same
-terms as Perl itself.
+=cut

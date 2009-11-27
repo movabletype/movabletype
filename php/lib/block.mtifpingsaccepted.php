@@ -10,9 +10,9 @@ function smarty_block_mtifpingsaccepted($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $entry = $ctx->stash('entry');
-        $blog_accepted = $blog['blog_allow_pings'] && $ctx->mt->config('AllowPings');
+        $blog_accepted = $blog->blog_allow_pings && $ctx->mt->config('AllowPings');
         if ($entry) {
-            $accepted = $blog_accepted && $entry['entry_allow_pings'];
+            $accepted = $blog_accepted && $entry->entry_allow_pings;
         } else {
             $accepted = $blog_accepted;
         }

@@ -38,6 +38,9 @@ mt-static/themes/unity-green
 mt-static/themes/unity-purple
 mt-static/themes/unity-tricolor
 
+# Theme package for test
+themes/broken_blog_theme
+
 # Conditional SKIP rule; format: #?(var=value) RULE
 #?package=MT ^COPYING
 #?package=MT ^COPYRIGHT
@@ -185,3 +188,10 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 
+^mt-static/plugins/Motion
+^mt-static/jquery/themes/Motion
+^mt-static/jquery/themes/flora
+^mt-static/plugins/ActionStreams
+^plugins/Motion
+^plugins/ActionStreams
+^plugins/CommunityActionStreams

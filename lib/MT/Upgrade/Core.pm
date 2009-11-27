@@ -98,6 +98,32 @@ sub upgrade_functions {
             on_class => 'MT::Role',
             priority => 3.1,
         },
+        ## FIXME: currently MT::Upgrade::core_update_records can't run
+        ## with multi-class like asset.* ...
+        ## should fix it and rewrite this as simple updater.
+        'core_update_asset_pathinfo' => {
+            version_limit => 5.0,
+            priority => 3.1,
+            code => sub {
+                my $upgrade = shift;
+                require MT::Asset;
+                my $iter = MT::Asset->load_iter({ class => '*' });
+                $upgrade->progress(MT::Upgrade->translate_escape("Upgrading Asset path informations..."));
+                while ( my $asset = $iter->() ) {
+                    my $values = $asset->get_values;
+                    my ( $path, $url ) = (
+                        $values->{file_path},
+                        $values->{url}
+                    );
+                    $path =~ s{%s/support/}{%s/};
+                    $url  =~ s{%s/support/}{%s/};
+                    $asset->file_path( $path );
+                    $asset->url( $url );
+                    $asset->save;
+                }
+                0;
+            },
+        },
     };
 }
 
@@ -111,7 +137,7 @@ sub seed_database {
     require MT::Author;
     return undef if MT::Author->exist;
 
-    $self->progress($self->translate_escape("Creating initial blog and user records..."));
+    $self->progress($self->translate_escape("Creating initial website and user records..."));
 
     local $MT::CallbacksEnabled = 1;
 
@@ -120,15 +146,15 @@ sub seed_database {
     my $LH = MT::L10N->get_handle($lang);
 
     # TBD: parameter for username/password provided by user from $app
-    use URI::Escape;
     my $author = MT::Author->new;
-    $author->name(exists $param{user_name} ? uri_unescape($param{user_name}) : 'Melody');
+    $author->name(exists $param{user_name} ? _uri_unescape_utf8($param{user_name}) : 'Melody');
     $author->type(MT::Author::AUTHOR());
-    $author->set_password(exists $param{user_password} ? uri_unescape($param{user_password}) : 'Nelson');
-    $author->email(exists $param{user_email} ? uri_unescape($param{user_email}) : '');
-    $author->nickname(exists $param{user_nickname} ? uri_unescape($param{user_nickname}) : '');
+    $author->set_password(exists $param{user_password} ? _uri_unescape_utf8($param{user_password}) : 'Nelson');
+    $author->email(exists $param{user_email} ? _uri_unescape_utf8($param{user_email}) : '');
+    $author->nickname(exists $param{user_nickname} ? _uri_unescape_utf8($param{user_nickname}) : '');
     $author->is_superuser(1);
     $author->can_create_blog(1);
+    $author->can_create_website(1);
     $author->can_view_log(1);
     $author->can_manage_plugins(1);
     $author->preferred_language($lang);
@@ -143,50 +169,29 @@ sub seed_database {
     MT::Role->create_default_roles(%param)
         or return $self->error($self->translate_escape("Error creating role record: [_1].", MT::Role->errstr));
 
-    require MT::Blog;
-    my $blog = MT::Blog->create_default_blog(
-        exists $param{blog_name}
-          ? uri_unescape($param{blog_name})
-          : MT->translate('First Blog'),
-        $param{blog_template_set})
-            or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Blog->errstr));
-    $blog->site_path(exists $param{blog_path} ? uri_unescape($param{blog_path}) : '');
-    $blog->site_url(exists $param{blog_url} ? uri_unescape($param{blog_url}) : '');
-    $blog->server_offset(exists $param{blog_timezone} ? ($param{blog_timezone} || 0) : 0);
-    $blog->template_set($param{blog_template_set});
-    $blog->save;
-    MT->run_callbacks( 'blog_template_set_change', { blog => $blog } );
-
-    # Create an initial entry and comment for this blog
-    require MT::Entry;
-    my $entry = MT::Entry->new;
-    $entry->blog_id($blog->id);
-    $entry->title(MT->translate("I just finished installing Movable Type [_1]!", int(MT->product_version)));
-    $entry->text(MT->translate("Welcome to my new blog powered by Movable Type. This is the first post on my blog and was created for me automatically when I finished the installation process. But that is ok, because I will soon be creating posts of my own!"));
-    $entry->author_id($author->id);
-    $entry->status(MT::Entry::RELEASE());
-    $entry->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Entry->errstr));
-
-    require MT::Comment;
-    my $comment = MT::Comment->new;
-    $comment->entry_id($entry->id);
-    $comment->blog_id($blog->id);
-    $comment->text(MT->translate("Movable Type also created a comment for me as well so that I could see what a comment will look like on my blog once people start submitting comments on all the posts I will write."));
-    $comment->visible(1);
-    $comment->junk_status(1);
-    $comment->author(exists $param{user_nickname} ? uri_unescape($param{user_nickname}) : undef);
-    $comment->save
-        or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Comment->errstr));
+    require MT::Website;
+    my $website = MT::Website->create_default_website(
+        exists $param{website_name}
+          ? _uri_unescape_utf8($param{website_name})
+          : MT->translate('First Website'),
+        $param{website_theme})
+            or return $self->error($self->translate_escape("Error saving record: [_1].", MT::Website->errstr));
+    $website->site_path(exists $param{website_path} ? _uri_unescape_utf8($param{website_path}) : '');
+    $website->site_url(exists $param{website_url} ? _uri_unescape_utf8($param{website_url}) : '');
+    $website->server_offset(exists $param{website_timezone} ? ($param{website_timezone} || 0) : 0);
+    $website->save
+        or return $self->error($self->translate_escape("Error saving record: [_1].", $website->errstr));
+    MT->run_callbacks( 'blog_template_set_change', { blog => $website } );
+    $author->save;
 
     require MT::Association;
     require MT::Role;
-    my ($blog_admin_role) = MT::Role->load_by_permission("administer_blog");
-    MT::Association->link( $blog => $blog_admin_role => $author );
+    my ($website_admin_role) = MT::Role->load_by_permission("administer_website");
+    MT::Association->link( $website => $website_admin_role => $author );
 
     if ($param{use_system_email}) {
         my $cfg = MT->config;
-        $cfg->EmailAddressMain(uri_unescape($param{user_email}), 1);
+        $cfg->EmailAddressMain(_uri_unescape_utf8($param{user_email}), 1);
         $cfg->save;
     }
 
@@ -296,6 +301,13 @@ sub upgrade_templates {
     }
 
     $updated;
+}
+
+sub _uri_unescape_utf8 {
+    my ( $text ) = @_;
+    use URI::Escape;
+    $text = uri_unescape( $text );
+    return Encode::decode_utf8( $text );
 }
 
 1;

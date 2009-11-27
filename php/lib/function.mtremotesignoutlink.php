@@ -30,7 +30,7 @@ function smarty_function_mtremotesignoutlink($args, &$ctx) {
         $static_arg .
         '&amp;logout=1';
     if ($entry) {
-        $path .= '&amp;entry_id=' . $entry['entry_id'];
+        $path .= '&amp;entry_id=' . $entry->entry_id;
     }
     return $path;
 }

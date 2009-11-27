@@ -172,7 +172,7 @@ sub search_terms {
     delete $terms{'plugin'}; #FIXME: why is this in here?
 
     if ( exists $app->{searchparam}{IncludeBlogs} ) {
-        $terms{blog_id} = [ keys %{ $app->{searchparam}{IncludeBlogs} } ];
+        $terms{blog_id} = $app->{searchparam}{IncludeBlogs};
     }
 
     my $depth = 1;
@@ -236,7 +236,7 @@ sub search_terms {
         my $blog_selected;
         my $iter;
         if ($app->{searchparam}{IncludeBlogs}) {
-            $iter = $blog_class->load_iter({ id => [ keys %{ $app->{searchparam}{IncludeBlogs} }] });
+            $iter = $blog_class->load_iter({ id => $app->{searchparam}{IncludeBlogs} });
         } else {
             $iter = $blog_class->load_iter;
         }

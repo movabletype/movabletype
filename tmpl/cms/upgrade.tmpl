@@ -14,24 +14,6 @@ div.warning#version-warning {
 }
 </style>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-function dismiss(id) {
-    var el = getByID(id);
-    if (el) {
-        el.style.display = 'none';
-    }
-}
-
-function show(id) {
-    var el = getByID(id);
-    if (el) {
-        el.style.display= 'block';
-    }
-}
-/* ]]> */
-</script>
-
 <div class="upgrade">
 
 <mt:if name="needs_upgrade">
@@ -42,22 +24,21 @@ function show(id) {
         <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
         <p><__trans phrase="Do you want to proceed with the upgrade anyway?"></p>
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions right">
-                <input type="hidden" name="continue" value="1" />
-                <button
-                    onclick="dismiss('version-warning'); show('warning_gone'); return false;"
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Yes (s)">"
-                    class="primary-button"
-                    ><__trans phrase="Yes"></button>
-                <button
-                    onclick="javascript:location.href='mt-check.cgi'"
-                    type="submit"
-                    accesskey="x"
-                    title="<__trans phrase="View MT-Check (x)">"
-                    ><__trans phrase="No"></button>
-            </div>
+            <input type="hidden" name="continue" value="1" />
+            <button
+                onclick="dismiss('version-warning'); show('warning_gone'); return false;"
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Yes (s)">"
+                class="action primary-button"
+                ><__trans phrase="Yes"></button>
+            <button
+                onclick="javascript:location.href='mt-check.cgi'"
+                type="submit"
+                accesskey="x"
+                title="<__trans phrase="View MT-Check (x)">"
+                class="action"
+                ><__trans phrase="No"></button>
         </div>
     </div>
     </mt:if>
@@ -65,7 +46,7 @@ function show(id) {
     <div id="warning_gone"<mt:if name="version_warning"> style="display:none;"</mt:if>>
     <mt:if name="mt_upgrade">
         <p><__trans phrase="A new version of Movable Type has been installed.  We'll need to complete a few tasks to update your database."></p>
-        <p><__trans phrase="Information about this upgrade can be found <a href='[_1]' target='_blank'>here</a>." params="<mt:var name="help_url">upgrade/?to_schema=<mt:var name="to_schema" escape="url">&amp;from_schema=<mt:var name="from_schema" escape="url">&amp;mt_version=<mt:var name="mt_version_id" escape="url">"></p>
+        <p><__trans phrase="The Movable Type Upgrade Guide can be found <a href='[_1]' target='_blank'>here</a>." params="http://www.movabletype.org/documentation/upgrade/"></p>
     </mt:if>
 
     <mt:if name="plugin_upgrades">
@@ -86,14 +67,12 @@ function show(id) {
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
         <input type="hidden" name="__mode" value="upgrade" />
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions right">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Begin Upgrade"> (s)"
-                    class="primary-button"
-                    ><__trans phrase="Begin Upgrade"></button>
-            </div>
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Begin Upgrade"> (s)"
+                class="upgrade action primary-button"
+                ><__trans phrase="Begin Upgrade"></button>
         </div>
         </form>
     </div>
@@ -103,14 +82,12 @@ function show(id) {
 
     <form method="get" action="<mt:var name="mt_url">">
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions right">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Return to Movable Type"> (s)"
-                    class="primary-button"
-                    ><__trans phrase="Return to Movable Type"></button>
-            </div>
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Return to Movable Type"> (s)"
+                class="action primary-button"
+                ><__trans phrase="Return to Movable Type"></button>
         </div>
     </form>
 
@@ -119,20 +96,27 @@ function show(id) {
 
     <form method="get" action="<mt:var name="mt_url">">
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions right">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    title="<__trans phrase="Return to Movable Type"> (s)"
-                    class="primary-button"
-                    ><__trans phrase="Return to Movable Type"></button>
-            </div>
+            <button
+                type="submit"
+                accesskey="s"
+                title="<__trans phrase="Return to Movable Type"> (s)"
+                class="action primary-button"
+                ><__trans phrase="Return to Movable Type"></button>
         </div>
     </form>
 
 </mt:if></mt:if>
 
 </div>
+<script type="text/javascript">
+/* <![CDATA[ */
+function dismiss(id) {
+    jQuery('#'+id).hide();
+}
 
+function show(id) {
+    jQuery('#'+id).show();
+}
+/* ]]> */
+</script>
 <mt:include name="include/chromeless_footer.tmpl">
-    

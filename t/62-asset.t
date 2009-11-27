@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 62-asset.t 3531 2009-03-12 09:11:52Z fumiakiy $
 use strict;
 use warnings;
 use File::Copy;

@@ -10,20 +10,20 @@ function smarty_modifier_nofollowfy($str, $arg = 1) {
     if (!isset($str)) return $str;
     if (!$arg) return $str;
 
-    global $mt;
+    $mt = MT::get_instance();
     $ctx =& $mt->context();
     $blog = $ctx->stash('blog');
 
-    if (!$blog['blog_nofollow_urls'])
+    if (!$blog->blog_nofollow_urls)
         return $str;
 
     $arg = strtolower($arg);
     if ($arg == 'mtcommentbody' || $arg == 'mtcommentauthorlink' || $arg == 'mtcommenturl') {
         $comment = $ctx->stash('comment');
-        if ($comment['comment_commenter_id']) {
+        if ($comment->comment_commenter_id) {
             // is an authenticated comment
-            $auth = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
-            if ($auth && $blog['blog_follow_auth_links'])
+            $auth = $ctx->mt->db()->fetch_author($comment->comment_commenter_id);
+            if ($auth && $blog->blog_follow_auth_links)
                 return $str;
         }
     }

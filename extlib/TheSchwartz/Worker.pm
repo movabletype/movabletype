@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Worker.pm 1104 2007-12-12 01:49:35Z hachi $
 
 package TheSchwartz::Worker;
 use strict;

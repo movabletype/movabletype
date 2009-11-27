@@ -12,10 +12,10 @@ function smarty_block_mtauthorhasentry($args, $content, &$ctx, &$repeat) {
             return $ctx->error($ctx->mt->translate("No author available"));
         }
         $args['blog_id'] = $ctx->stash('blog_id');
-        $args['author_id'] = $author['author_id'];
+        $args['author_id'] = $author->author_id;
         $args['class'] = 'entry';
-        $count = $ctx->mt->db->author_entry_count($args);
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $count);
+        $count = $ctx->mt->db()->author_entry_count($args);
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $count > 0);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }

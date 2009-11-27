@@ -11,7 +11,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         $blog = $ctx->stash('blog');
         $at = $args['type'];
         $at or $at = $args['archive_type'];
-        $at or $at = $blog['blog_archive_type'];
+        $at or $at = $blog->blog_archive_type;
         if (empty($at) || $at == 'None') {
             $repeat = false;
             return '';
@@ -20,7 +20,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
 
         $ctx->localize($localvars);
         $ctx->stash('archive_types', $at);
-        $ctx->stash('old_preferred_archive_type', $blog['blog_archive_type_preferred']);
+        $ctx->stash('old_preferred_archive_type', $blog->blog_archive_type_preferred);
         $i = 0;
     } else {
         $at = $ctx->stash('archive_types');
@@ -32,11 +32,11 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         $curr_at = $at[$i];
         $ctx->stash('current_archive_type', $curr_at);
         $ctx->stash('archive_type_index', $i);
-        $blog['blog_archive_type_preferred'] = $curr_at;
+        $blog->blog_archive_type_preferred = $curr_at;
         $ctx->stash('blog', $blog);
         $repeat = true;
     } else {
-        $blog['blog_archive_type_preferred'] = $ctx->stash('old_preferred_archive_type');
+        $blog->blog_archive_type_preferred = $ctx->stash('old_preferred_archive_type');
         $ctx->stash('blog', $blog);
         $ctx->restore($localvars);
         $repeat = false;

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 51-objectsync.t 3531 2009-03-12 09:11:52Z fumiakiy $
 use strict;
 my $number = 38;
 

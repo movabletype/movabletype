@@ -1,0 +1,94 @@
+<mt:loop tmpl_groups>
+<div id="template-group-<mt:var name="template_type">" class="template-group">
+    <div id="template-group-<mt:var name="template_type">-header" class="template-group-header">
+        <h3><a href="javascript:void(0);" onclick="return toggleActive('template-group-<mt:var name="template_type">-content');"><mt:var name="template_type_label"></a></h3>
+        <div class="template-group-summary">
+            <mt:if name="template_type" eq="widgetset">
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="widget sets">">
+            <mt:elseif name="template_type" eq="module">
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="modules">">
+            <mt:else>
+                <mt:setvar name="tmpl_type_name" value="<__trans phrase="templates">">
+            </mt:if>
+            <__trans phrase="<span class="count">[_1]</span> [_2] are included" params="group_checked_count%%<mt:var name="tmpl_type_name">">
+        </div>
+    </div>
+    <div class="template-group-content" id="template-group-<mt:var name="template_type">-content">
+        <mtapp:listing id="$template_type" loop="templates" hide_pager="1" show_actions="0" type="template">
+            <mt:if name="__first__">
+                <thead>
+                    <tr>
+                        <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                        <th class="template-name primary-col"><__trans phrase="Template Name"></th>
+                <mt:if name="template_type" eq="index">
+                        <th class="output-file"><__trans phrase="Output File"></th>
+                </mt:if>
+                <mt:if name="template_type" eq="archive">
+                        <th class="output-file"><__trans phrase="Archive Path"></th>
+                </mt:if>
+                </thead>
+                <tbody>
+            </mt:if>
+                    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> template-<$mt:var name="template_type" default="template" escape="html"$>">
+                        <td class="cb">
+                            <input
+                                type="checkbox"
+                                name="template_set_export_ids"
+                                class="select template_set_id"
+                                value="<mt:var name="tmpl_id">"
+                                <mt:if includes>tmpl_includes="<mt:loop includes glue=","><mt:var name="__value__"></mt:loop>"</mt:if>
+                                <mt:if checked>checked="checked" </mt:if>
+                            />
+                        </td>
+                        <td class="template-name"><mt:var name="tmpl_label" escape="html"></td>
+            <mt:if name="template_type" like="/(index|archive)/">
+                        <td class="output-file">
+                <mt:if name="outfile">
+                    <mt:var name="outfile" escape="html"> <mt:if name="published_url"><a href="<mt:var name="published_url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View Published Template">"><img src="<mt:var name="static_uri">images/status_icons/view.gif" alt="<__trans phrase="View Published Template">" width="13" height="9" /></a></mt:if>
+                <mt:else name="template_type" eq="archive">
+                            <ul>
+                    <mt:loop name="archive_types">
+                        <mt:loop name="archive_tmpl_loop">
+                                <mt:if name="selected"><li><mt:var name="name" escape="html"><mt:var name="build_type" value="$map_build_type"></li></mt:if>
+                        </mt:loop>
+                    </mt:loop>
+                            </ul>
+                <mt:else>
+                            <span><__trans phrase="-"></span>
+                </mt:if>
+                        </td>
+            </mt:if>
+                    </tr>
+            <mt:if name="__last__">
+                </tbody>
+            </mt:if>
+        </mtapp:listing>
+    </div>
+</div>
+</mt:loop>
+
+<script type="text/javascript">
+function resetCheckedTemplateCount () {
+    jQuery('.template-group').each( function() {
+        var count = jQuery(this).find('.template_set_id:checked').length;
+        jQuery(this).find('.count').text(count);
+    });
+}
+
+jQuery('input.template_set_id[type=checkbox]').click( function(){
+    var includes = jQuery(this).attr('tmpl_includes');
+    if (includes) {
+        var ids = includes.toString().split(',');
+        if ( $(this).attr('checked') ) {
+            jQuery.each(ids, function () {
+                jQuery("input.template_set_id[value="+this+"]").attr('checked','checked');
+            });
+        }
+    }
+    resetCheckedTemplateCount();
+});
+
+resetCheckedTemplateCount();
+jQuery.mtCheckbox();
+
+</script>

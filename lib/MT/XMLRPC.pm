@@ -11,7 +11,6 @@ use MT;
 use MT::Util qw( encode_xml );
 use MT::ErrorHandler;
 @MT::XMLRPC::ISA = qw( MT::ErrorHandler );
-use MT::I18N qw( encode_text );
 
 sub weblogs_ping {
     my $class = shift;
@@ -47,7 +46,7 @@ sub ping_update {
     my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
     my $req = HTTP::Request->new('POST', $url);
     $req->header('Content-Type' => 'text/xml');
-    my $blog_name = encode_xml(encode_text($blog->name, undef, 'utf-8'));
+    my $blog_name = encode_xml($blog->name);
     my $blog_url = encode_xml($blog->site_url);
     my $text = <<XML;
 <?xml version="1.0"?>

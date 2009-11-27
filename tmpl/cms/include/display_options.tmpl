@@ -1,16 +1,7 @@
 <$mt:setvar name="show_display_options_link" value="1"$>
-<script type="text/javascript">
-    /* <![CDATA[ */
-    function restoreBarPosition() {
-        var current_bar_position = '<mt:if name="position_actions_both">both<mt:elseif name="position_actions_bottom">bottom<mt:elseif name="position_actions_top">top<mt:else>top</mt:if>';
-        setBarPosition( current_bar_position );
-        getByID( 'view-actions-' + current_bar_position ).checked = 'checked';
-    }
-    /* ]]> */
-</script>
 <mtapp:widget
     id="display-options-widget"
-    class="display-options-widget autolayout-flyout-smart hidden"
+    class="display-options-widget"
     label="<__trans phrase="Display Options">">
     <form method="get" action="<mt:var name="SCRIPT_URL">" id="display-options-form">
         <input type="hidden" name="__mode" value="update_list_prefs" />
@@ -27,7 +18,6 @@
                 <option value="200"<mt:if name="LIMIT_200"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="200"></option>
             </select>
         </mtapp:setting>
-                
 <mt:if name="HAS_EXPANDED_MODE">
         <mtapp:setting
             id="view_mode"
@@ -39,16 +29,6 @@
             </ul>
         </mtapp:setting>
 </mt:if>
-        <mtapp:setting
-            id="actions_position"
-            label="<__trans phrase="Action Bar">"
-            label_class="display-options">
-            <ul>
-                <li><input type="radio" name="actions" value="above" <mt:unless name="position_actions_both"><mt:if name="position_actions_top">checked="checked"</mt:if></mt:unless> id="view-actions-top" class="rb" onclick="setBarPosition('top')" /> <label for="view-actions-top"><__trans phrase="Top"></label></li>
-                <li><input type="radio" name="actions" value="both" <mt:if name="position_actions_both">checked="checked"</mt:if> id="view-actions-both" class="rb" onclick="setBarPosition(this)" /> <label for="view-actions-both"><__trans phrase="Both"></label></li>
-                <li><input type="radio" name="actions" value="below" <mt:unless name="position_actions_both"><mt:if name="position_actions_bottom">checked="checked"</mt:if></mt:unless> id="view-actions-bottom" class="rb" onclick="setBarPosition('bottom')" /> <label for="view-actions-bottom"><__trans phrase="Bottom"></label></li>
-            </ul>
-        </mtapp:setting>
 <mt:unless name="LIST_NONCRON">
     <mt:unless name="IS_POWER_EDIT">
         <mtapp:setting
@@ -63,15 +43,10 @@
     </mt:unless>
 </mt:unless>
         <div class="actions-bar display-options-actions-bar buttons">
-            <div class="actions-bar-inner">
-                <a href="javascript:void(0)" mt:command="submit"
-                    title="<__trans phrase="Save display options">"
-                    ><__trans phrase="Save"></a>
-                <a href="javascript:void(0)" mt:command="close-flyout"
-                    onclick="restoreBarPosition();"
-                    title="<__trans phrase="Close display options">"
-                    ><__trans phrase="Cancel"></a>
-            </div>
+            <button
+                mt:command="submit"
+                title="<__trans phrase="Save display options">"
+                ><__trans phrase="Save"></button>
         </div>
     </form>
 </mtapp:widget>

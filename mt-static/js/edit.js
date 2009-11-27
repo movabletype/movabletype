@@ -332,7 +332,6 @@ MT.App.CategoryList = new Class( Object, {
             case "primary":
                 if ( !defined( id ) )
                     return;
-                id = parseInt( id );
                 /* make category primary */
                 var idx = MT.App.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
@@ -346,9 +345,8 @@ MT.App.CategoryList = new Class( Object, {
             case "remove":
                 if ( !defined( id ) )
                     return;
-                id = parseInt( id );
                 /* remove a category */
-                var idx = MT.App.selectedCategoryList.indexOf( parseInt( id ) );
+                var idx = MT.App.selectedCategoryList.indexOf( id );
                 if ( idx == -1 )
                     return log.error('could not find cat id:'+id);
                 MT.App.selectedCategoryList.splice( idx, 1 );

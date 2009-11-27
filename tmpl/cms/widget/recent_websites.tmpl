@@ -1,0 +1,81 @@
+<mtapp:widget class="favorite-blogs-widget" label="<__trans phrase="Websites">" can_close="1">
+
+<div id="favorite-website">
+<mt:if name="website_object_loop">
+    <div id="favorite-website-container" class="blog-container">
+    <mt:loop name="website_object_loop">
+        <div id="website-<mt:var name="website_id">" class="blog-content">
+            <div id="website-<mt:var name="website_id">-theme-thumbnail" class="blog-theme-thumbnail picture small">
+                <img alt="" src="<mt:var name="website_theme_thumb">" />
+            </div>
+            <div id="website-<mt:var name="website_id">-meta" class="blog-meta">
+                <h4 id="website-<mt:var name="website_id">-name" class="blog-name"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a></h4>
+                <p id="website-<mt:var name="website_id">-link" class="blog-link"><a href="<mt:var name="website_url">"><mt:var name="website_url"></a></p>
+    <mt:if name="website_description">
+                <div id="website-<mt:var name="website_id">-description" class="blog-description">
+                    <mt:var name="website_description" remove_html="1">
+                </div>
+    </mt:if>
+                <ul id="website-<mt:var name="website_id">-control" class="blog-control">
+                    <li>
+    <mt:if name="can_access_to_blog_list">
+                        <a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="[quant,_1,blog,blogs]" params="<mt:var name="website_blog_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,blog,blogs]" params="<mt:var name="website_blog_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_page_list">
+                        <a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="website_id">&amp;filter_key=this_website"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="website_page_count">">
+    </mt:if>
+                    </li>
+                    <li>
+    <mt:if name="can_access_to_comment_list">
+                        <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="website_id">&amp;filter_key=this_website"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">"></a>
+    <mt:else>
+                        <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="website_comment_count">">
+    </mt:if>
+                    </li>
+    <mt:if name="can_access_to_template_list">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Template"></a>
+                    </li>
+    </mt:if>
+    <mt:if name="can_access_to_blog_setting_screen">
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Settings"></a>
+                    </li>
+    </mt:if>
+                    <li>
+                        <a href="<mt:var name="script_url">?__mode=search_replace&amp;blog_id=<mt:var name="website_id">"><__trans phrase="Search"></a>
+                    </li>
+                </ul>
+                <ul id="website-<mt:var name="website_id">-action" class="blog-action">
+    <mt:if name="can_create_new_page">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=page&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Page"></a></li>
+    </mt:if>
+    <mt:if name="can_create_blog">
+                    <li><a class="button" href="<mt:var name="script_url">?__mode=view&_type=blog&amp;blog_id=<mt:var name="website_id">"><__trans phrase="New Blog"></a></li>
+    </mt:if>
+                </ul>
+            </div>
+        </div>
+    </mt:loop>
+    </div>
+<mt:else>
+    <mtapp:statusmsg
+        id="zero-state"
+        class="info zero-state">
+        <__trans phrase="No website could be found. [_1]" params="<mt:if name="can_create_website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create a new"></a></mt:if>">
+    </mtapp:statusmsg>
+</mt:if>
+<mt:if name="has_more_websites">
+    <div class="select-website">
+        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;return_args=__mode=dashboard&amp;select_favorites=1" class="mt-open-dialog"><__trans phrase="Select another website..."></a>
+    </div>
+</mt:if>
+</div>
+
+</mtapp:widget>

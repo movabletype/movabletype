@@ -1,37 +1,58 @@
 package File::Copy::Recursive;
 
 use strict;
+BEGIN {
+    # Keep older versions of Perl from trying to use lexical warnings
+    $INC{'warnings.pm'} = "fake warnings entry for < 5.6 perl ($])" if $] < 5.006;
+}
 use warnings;
 
 use Carp;
 use File::Copy; 
 use File::Spec; #not really needed because File::Copy already gets it, but for good measure :)
 
-require Exporter;
-our @ISA = qw(Exporter);
-our @EXPORT_OK = qw(fcopy rcopy dircopy fmove rmove dirmove pathmk pathrm pathempty pathrmdir);
-our $VERSION = '0.23';
+use vars qw( 
+    @ISA      @EXPORT_OK $VERSION  $MaxDepth $KeepMode $CPRFComp $CopyLink 
+    $PFSCheck $RemvBase $NoFtlPth  $ForcePth $CopyLoop $RMTrgFil $RMTrgDir 
+    $CondCopy $BdTrgWrn $SkipFlop  $DirPerms
+);
 
-our $MaxDepth = 0;
-our $KeepMode = 1;
-our $CPRFComp = 0; 
-our $CopyLink = eval { symlink '',''; 1 } || 0;
-our $PFSCheck = 1;
-our $RemvBase = 0;
-our $NoFtlPth = 0;
-our $ForcePth = 0;
-our $CopyLoop = 0;
-our $RMTrgFil = 0;
-our $RMTrgDir = 0;
-our $CondCopy = {};
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT_OK = qw(fcopy rcopy dircopy fmove rmove dirmove pathmk pathrm pathempty pathrmdir);
+$VERSION = '0.38';
+
+$MaxDepth = 0;
+$KeepMode = 1;
+$CPRFComp = 0; 
+$CopyLink = eval { local $SIG{'__DIE__'};symlink '',''; 1 } || 0;
+$PFSCheck = 1;
+$RemvBase = 0;
+$NoFtlPth = 0;
+$ForcePth = 0;
+$CopyLoop = 0;
+$RMTrgFil = 0;
+$RMTrgDir = 0;
+$CondCopy = {};
+$BdTrgWrn = 0;
+$SkipFlop = 0;
+$DirPerms = 0777; 
 
 my $samecheck = sub {
+   return 1 if $^O eq 'MSWin32'; # need better way to check for this on winders...
+   return if @_ != 2 || !defined $_[0] || !defined $_[1];
+   return if $_[0] eq $_[1];
+
    my $one = '';
    if($PFSCheck) {
       $one    = join( '-', ( stat $_[0] )[0,1] ) || '';
       my $two = join( '-', ( stat $_[1] )[0,1] ) || '';
-      croak "$_[0] and $_[1] are identical" if $one eq $two && $one;
+      if ( $one eq $two && $one ) {
+          carp "$_[0] and $_[1] are identical";
+          return;
+      }
    }
+
    if(-d $_[0] && !$CopyLoop) {
       $one    = join( '-', ( stat $_[0] )[0,1] ) if !$one;
       my $abs = File::Spec->rel2abs($_[1]);
@@ -40,10 +61,31 @@ my $samecheck = sub {
          my $cur = File::Spec->catdir(@pth);
          last if !$cur; # probably not necessary, but nice to have just in case :)
          my $two = join( '-', ( stat $cur )[0,1] ) || '';
-         croak "Caught Deep Recursion Condition: $_[0] contains $_[1]" if $one eq $two && $one;
+         if ( $one eq $two && $one ) {
+             # $! = 62; # Too many levels of symbolic links
+             carp "Caught Deep Recursion Condition: $_[0] contains $_[1]";
+             return;
+         }
+      
          pop @pth;
       }
    }
+
+   return 1;
+};
+
+my $glob = sub {
+    my ($do, $src_glob, @args) = @_;
+    
+    local $CPRFComp = 1;
+    
+    my @rt;
+    for my $path ( glob($src_glob) ) {
+        my @call = [$do->($path, @args)] or return;
+        push @rt, \@call;
+    }
+    
+    return @rt;
 };
 
 my $move = sub {
@@ -62,7 +104,7 @@ my $move = sub {
       }
       if($RemvBase) {
          my ($volm, $path) = File::Spec->splitpath($_[0]);
-         pathrm(File::Spec->catpath($volm,$path), $ForcePth, $NoFtlPth) or return;
+         pathrm(File::Spec->catpath($volm,$path,''), $ForcePth, $NoFtlPth) or return;
       }
    }
   return wantarray ? @x : $x[0];
@@ -83,13 +125,14 @@ my $ok_todo_asper_condcopy = sub {
 };
 
 sub fcopy { 
-   $samecheck->(@_);
+   $samecheck->(@_) or return;
    if($RMTrgFil && (-d $_[1] || -e $_[1]) ) {
       my $trg = $_[1];
       if( -d $trg ) {
         my @trgx = File::Spec->splitpath( $_[0] );
         $trg = File::Spec->catfile( $_[1], $trgx[ $#trgx ] );
       }
+      $samecheck->($_[0], $trg) or return;
       if(-e $trg) {
          if($RMTrgFil == 1) {
             unlink $trg or carp "\$RMTrgFil failed: $!";
@@ -100,9 +143,11 @@ sub fcopy {
    }
    my ($volm, $path) = File::Spec->splitpath($_[1]);
    if($path && !-d $path) {
-      pathmk(File::Spec->catpath($volm,$path), $NoFtlPth);
+      pathmk(File::Spec->catpath($volm,$path,''), $NoFtlPth);
    }
-   if(-l $_[0] && $CopyLink) {
+   if( -l $_[0] && $CopyLink ) {
+      carp "Copying a symlink ($_[0]) whose target does not exist" 
+          if !-e readlink($_[0]) && $BdTrgWrn;
       symlink readlink(shift()), shift() or return;
    } else {  
       copy(@_) or return;
@@ -116,8 +161,16 @@ sub fcopy {
 }
 
 sub rcopy { 
-    -d $_[0] || substr( $_[0], ( 1 * -1), 1) eq '*' ? dircopy(@_) 
-                                                    : fcopy(@_); 
+    if (-l $_[0] && $CopyLink) {
+        goto &fcopy;    
+    }
+    
+    goto &dircopy if -d $_[0] || substr( $_[0], ( 1 * -1), 1) eq '*';
+    goto &fcopy;
+}
+
+sub rcopy_glob {
+    $glob->(\&rcopy, @_);
 }
 
 sub dircopy {
@@ -135,10 +188,12 @@ sub dircopy {
        $globstar = 1;
        $_zero = substr( $_zero, 0, ( length( $_zero ) - 1 ) );
    }
-   croak "$_zero and $_[1] are the same" if $_zero eq $_[1]; 
-   $samecheck->(@_);
-   croak "$_zero is not a directory" if !-d $_zero;
-   croak "$_[1] is not a directory" if -e $_[1] && !-d $_[1];
+
+   $samecheck->(  $_zero, $_[1] ) or return;
+   if ( !-d $_zero || ( -e $_[1] && !-d $_[1] ) ) {
+       $! = 20; 
+       return;
+   } 
 
    if(!-d $_[1]) {
       pathmk($_[1], $NoFtlPth) or return;
@@ -159,7 +214,9 @@ sub dircopy {
       my ($str,$end,$buf) = @_;
       $filen++ if $end eq $baseend; 
       $dirn++ if $end eq $baseend;
-      mkdir $end or return if !-d $end;
+      
+      $DirPerms = oct($DirPerms) if substr($DirPerms,0,1) eq '0';
+      mkdir($end,$DirPerms) or return if !-d $end;
       chmod scalar((stat($str))[2]), $end if $KeepMode;
       if($MaxDepth && $MaxDepth =~ m/^\d+$/ && $level >= $MaxDepth) {
          return ($filen,$dirn,$level) if wantarray;
@@ -167,15 +224,26 @@ sub dircopy {
       }
       $level++;
 
-      opendir(my $pth_dh, $str) or return;
-      my @files = grep( $_ ne '.' && $_ ne '..', readdir($pth_dh));
-      closedir $pth_dh;
+      
+      my @files;
+      if ( $] < 5.006 ) {
+          opendir(STR_DH, $str) or return;
+          @files = grep( $_ ne '.' && $_ ne '..', readdir(STR_DH));
+          closedir STR_DH;
+      }
+      else {
+          opendir(my $str_dh, $str) or return;
+          @files = grep( $_ ne '.' && $_ ne '..', readdir($str_dh));
+          closedir $str_dh;
+      }
 
       for my $file (@files) {
           my ($file_ut) = $file =~ m{ (.*) }xms;
           my $org = File::Spec->catfile($str, $file_ut);
           my $new = File::Spec->catfile($end, $file_ut);
-          if(-l $org && $CopyLink) {
+          if( -l $org && $CopyLink ) {
+              carp "Copying a symlink ($org) whose target does not exist" 
+                  if !-e readlink($org) && $BdTrgWrn;
               symlink readlink($org), $new or return;
           } 
           elsif(-d $org) {
@@ -186,8 +254,14 @@ sub dircopy {
           } 
           else {
               if($ok_todo_asper_condcopy->($org)) {
-                  fcopy($org,$new,$buf) or return if defined $buf;
-                  fcopy($org,$new) or return if !defined $buf;
+                  if($SkipFlop) {
+                      fcopy($org,$new,$buf) or next if defined $buf;
+                      fcopy($org,$new) or next if !defined $buf;                      
+                  }
+                  else {
+                      fcopy($org,$new,$buf) or return if defined $buf;
+                      fcopy($org,$new) or return if !defined $buf;
+                  }
                   chmod scalar((stat($org))[2]), $new if $KeepMode;
                   $filen++;
               }
@@ -203,11 +277,16 @@ sub dircopy {
 sub fmove { $move->(1, @_) } 
 
 sub rmove { 
-    my $_zero = shift;
-    $_zero = substr( $_zero, 0, ( length( $_zero ) - 1 ) )
-        if substr( $_[0], ( 1 * -1), 1) eq '*';
+    if (-l $_[0] && $CopyLink) {
+        goto &fmove;    
+    }
+    
+    goto &dirmove if -d $_[0] || substr( $_[0], ( 1 * -1), 1) eq '*';
+    goto &fmove;
+}
 
-    -d $_zero ? dirmove($_zero, @_) : fmove($_zero, @_);
+sub rmove_glob {
+    $glob->(\&rmove, @_);
 }
 
 sub dirmove { $move->(0, @_) }
@@ -222,8 +301,9 @@ sub pathmk {
       $zer = 1;
    }
    for($zer..$#parts) {
-      mkdir $pth or return if !-d $pth && !$nofatal;
-      mkdir $pth if !-d $pth && $nofatal;
+      $DirPerms = oct($DirPerms) if substr($DirPerms,0,1) eq '0';
+      mkdir($pth,$DirPerms) or return if !-d $pth && !$nofatal;
+      mkdir($pth,$DirPerms) if !-d $pth && $nofatal;
       $pth = File::Spec->catdir($pth, $parts[$_ + 1]) unless $_ == $#parts;
    }
    1;
@@ -231,17 +311,42 @@ sub pathmk {
 
 sub pathempty {
    my $pth = shift; 
+
    return 2 if !-d $pth;
-   opendir(my $pth_dh, $pth) or return;
-   for(grep !/^\.+$/, readdir($pth_dh)) {
-      my $flpth = File::Spec->catdir($pth, $_);
-      if(-d $flpth) {
-         pathrmdir($flpth) or return;
-      } else {
-         unlink $flpth or return;
+
+   my @names;
+   my $pth_dh;
+   if ( $] < 5.006 ) {
+       opendir(PTH_DH, $pth) or return;
+       @names = grep !/^\.+$/, readdir(PTH_DH);
+   }
+   else {
+       opendir($pth_dh, $pth) or return;
+       @names = grep !/^\.+$/, readdir($pth_dh);       
+   }
+   
+   for my $name (@names) {
+      my ($name_ut) = $name =~ m{ (.*) }xms;
+      my $flpth     = File::Spec->catdir($pth, $name_ut);
+
+      if( -l $flpth ) {
+	      unlink $flpth or return; 
+      }
+      elsif(-d $flpth) {
+          pathrmdir($flpth) or return;
+      } 
+      else {
+          unlink $flpth or return;
       }
    }
-   closedir $pth_dh;
+
+   if ( $] < 5.006 ) {
+       closedir PTH_DH;
+   }
+   else {
+       closedir $pth_dh;
+   }
+   
    1;
 }
 
@@ -257,7 +362,8 @@ sub pathrm {
       if(!shift()) {
          pathempty($cur) or return if $force;
          rmdir $cur or return;
-      } else {
+      } 
+      else {
          pathempty($cur) if $force;
          rmdir $cur;
       }
@@ -267,10 +373,17 @@ sub pathrm {
 }
 
 sub pathrmdir {
-   my $dir = shift;
-   return 2 if !-d $dir;
-   pathempty($dir) or return;
-   rmdir $dir or return;
+    my $dir = shift;
+    if( -e $dir ) {
+        return if !-d $dir;
+    }
+    else {
+        return 2;
+    }
+
+    pathempty($dir) or return;
+    
+    rmdir $dir or return;
 }
 
 1;
@@ -292,6 +405,9 @@ File::Copy::Recursive - Perl extension for recursively copying files and directo
   fmove($orig,$new[,$buf]) or die $!;
   rmove($orig,$new[,$buf]) or die $!;
   dirmove($orig,$new[,$buf]) or die $!;
+  
+  rcopy_glob("orig/stuff-*", $trg [, $buf]) or die $!;
+  rmove_glob("orig/stuff-*", $trg [,$buf]) or die $!;
 
 =head1 DESCRIPTION
 
@@ -321,6 +437,12 @@ In list context it returns the number of files and directories, number of direct
 
   my $num_of_files_and_dirs = dircopy($orig,$new);
   my($num_of_files_and_dirs,$num_of_dirs,$depth_traversed) = dircopy($orig,$new);
+  
+Normally it stops and return's if a copy fails, to continue on regardless set $File::Copy::Recursive::SkipFlop to true.
+
+    local $File::Copy::Recursive::SkipFlop = 1;
+
+That way it will copy everythgingit can ina directory and won't stop because of permissions, etc...
 
 =head2 rcopy()
 
@@ -328,17 +450,29 @@ This function will allow you to specify a file *or* directory. It calls fcopy() 
 If you call rcopy() (or fcopy() for that matter) on a file in list context, the values will be 1,0,0 since no directories and no depth are used. 
 This is important becasue if its a directory in list context and there is only the initial directory the return value is 1,1,1.
 
+=head2 rcopy_glob()
+
+This function lets you specify a pattern suitable for perl's glob() as the first argument. Subsequently each path returned by perl's glob() gets rcopy()ied.
+
+It returns and array whose items are array refs that contain the return value of each rcopy() call.
+
+It forces behavior as if $File::Copy::Recursive::CPRFComp is true.
+
 =head2 fmove()
 
 Copies the file then removes the original. You can manage the path the original file is in according to $RemvBase.
 
 =head2 dirmove()
 
-Copies the directory then removes the original. You can manage the path the original directory is in according to $RemvBase.
+Uses dircopy() to copy the directory then removes the original. You can manage the path the original directory is in according to $RemvBase.
 
 =head2 rmove()
 
 Like rcopy() but calls fmove() or dirmove() instead.
+
+=head2 rmove_glob()
+
+Like rcopy_glob() but calls rmove() instead of rcopy()
 
 =head3 $RemvBase
 
@@ -349,7 +483,7 @@ So if you:
    rmove('foo/bar/baz', '/etc/');
    # "baz" is removed from foo/bar after it is successfully copied to /etc/
    
-   $File::Copy::Recursive::Remvbase = 1;
+   local $File::Copy::Recursive::Remvbase = 1;
    rmove('foo/bar/baz','/etc/');
    # if baz is successfully copied to /etc/ :
    # first "baz" is removed from foo/bar
@@ -366,6 +500,12 @@ Default is false. When set to true it calls pathempty() before any directories a
 Default is false. If set to true  rmdir(), mkdir(), and pathempty() calls in pathrm() and pathmk() do not return() on failure.
 
 If its set to true they just silently go about their business regardless. This isn't a good idea but its there if you want it.
+
+=head3 $DirPerms
+
+Mode to pass to any mkdir() calls. Defaults to 0777 as per umask()'s POD. Explicitly having this allows older perls to be able to use FCR and might add a bit of flexibility for you.
+
+Any value you set it to should be suitable for oct()
 
 =head3 Path functions
 
@@ -391,7 +531,7 @@ An optional second argument makes it call pathempty() before any rmdir()'s when 
   File::Copy::Recursive::pathrm('foo/bar/baz', 1) or die $!;
   # foo no longer exists
 
-Same as:
+Same as:PFSCheck
 
   File::Copy::Recursive::pathempty('foo/bar/baz') or die $!;
   rmdir 'foo/bar/baz' or die $!;
@@ -420,7 +560,7 @@ An optional second argument if true acts just like $File::Copy::Recursive::NoFtl
 =head4 pathrmdir()
 
 Same as rmdir() but it calls pathempty() first to recursively empty it first since rmdir can not remove a directory with contents.
-Just removes the top directory the path given insetad of the entire path like pathrm(). Return 2 if the given argument is not a directory.
+Just removes the top directory the path given instead of the entire path like pathrm(). Return 2 if given argument does not exist (IE its already gone). Return false if it exists but is not a directory.
 
 =head2 Preserving Mode
 
@@ -447,6 +587,10 @@ It is already set to true or false dending on your system's support of symlinks 
     } else {
         print "Symlinks will not be preserved because your system does not support it\n";
     }
+
+If symlinks are being copied you can set $File::Copy::Recursive::BdTrgWrn to true to make it carp when it copies a link whose target does not exist. Its false by default.
+
+    local $File::Copy::Recursive::BdTrgWrn  = 1;
 
 =head2 Removing existing target file or directory before copying.
 
@@ -521,14 +665,20 @@ This is false by default so that a check is done to see if the source directory 
 
 If you ever find a situation where $CopyLoop = 1 is desirable let me know (IE its a bad bad idea but is there if you want it)
 
+(Note: On Windows this was necessary since it uses stat() to detemine samedness and stat() is essencially useless for this on Windows. 
+The test is now simply skipped on Windows but I'd rather have an actual reliable check if anyone in Microsoft land would care to share)
+
 =head1 SEE ALSO
 
 L<File::Copy> L<File::Spec>
 
 =head1 TO DO
 
-Add OO interface so you can have different behavior with different objects instead of relying on global variables.
-This will give better control in environments where behavior based on global variables is not very desireable.
+I am currently working on and reviewing some other modules to use in the new interface so we can lose the horrid globals as well as some other undesirable traits and also more easily make available some long standing requests.
+
+Tests will be easier to do with the new interface and hence the testing focus will shift to the new interface and aim to be comprehensive.
+
+The old interface will work, it just won't be brought in until it is used, so it will add no overhead for users of the new interface.
 
 I'll add this after the latest verision has been out for a while with no new features or issues found :)
 

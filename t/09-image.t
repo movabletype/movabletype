@@ -1,5 +1,5 @@
 #!/usr/bin/perl -w
-# $Id$
+# $Id: 09-image.t 2713 2008-07-04 05:01:40Z bchoate $
 
 use strict;
 use warnings;

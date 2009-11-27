@@ -71,7 +71,9 @@ sub session_credentials {
     my $app = $ctx->{app} or return;
     my $cookies = $app->cookies;
     if ($cookies->{$app->user_cookie}) {
-        my ($user, $session_id, $remember) = split /::/, $cookies->{$app->user_cookie}->value;
+        my $cookie = $cookies->{$app->user_cookie}->value;
+        $cookie = Encode::decode( $app->charset, $cookie ) unless Encode::is_utf8($cookie);
+        my ($user, $session_id, $remember) = split /::/, $cookie;
         return { %$ctx, username => $user, session_id => $session_id, permanent => $remember, auth_type => 'MT' };
     }
     return undef;

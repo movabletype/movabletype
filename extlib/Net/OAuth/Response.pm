@@ -15,6 +15,7 @@ __PACKAGE__->mk_classdata(required_api_params => [qw/
 
 __PACKAGE__->mk_classdata(optional_api_params => [qw/
 	extra_params
+	protocol_version
 	/]);
 
 __PACKAGE__->mk_classdata(signature_elements => [qw/
@@ -45,7 +46,7 @@ Net::OAuth::Response - base class for OAuth responses
 
 =head1 SEE ALSO
 
-L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 

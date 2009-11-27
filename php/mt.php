@@ -3,11 +3,16 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: mt.php 2703 2008-07-03 22:19:49Z bchoate $
+# $Id$
 
-define('VERSION', '4.25');
-define('VERSION_ID', '4.25');
-define('PRODUCT_VERSION', '4.25');
+/***
+ * Loading exception classes
+ */
+require_once('lib/class.exception.php');
+
+define('VERSION', '5.0');
+define('VERSION_ID', '5.0');
+define('PRODUCT_VERSION', '5.0');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -19,7 +24,7 @@ global $Lexicon;
 $Lexicon = array();
 
 class MT {
-    var $mime_types = array(
+    protected $mime_types = array(
         '__default__' => 'text/html',
         'css' => 'text/css',
         'txt' => 'text/plain',
@@ -27,33 +32,60 @@ class MT {
         'rss' => 'text/xml',
         'xml' => 'text/xml',
     );
-    var $blog_id;
-    var $db;
-    var $config;
-    var $debugging = false;
-    var $caching = false;
-    var $conditional = false;
-    var $log = array();
-    var $warning = array();
-    var $id;
-    var $request;
-    var $http_error;
-    var $cfg_file;
-    var $cache_driver;
+    protected $blog_id;
+    protected $db;
+    protected $config;
+    protected $debugging = true;
+    protected $caching = false;
+    protected $conditional = false;
+    protected $log = array();
+    protected $warning = array();
+    protected $id;
+    protected $request;
+    protected $http_error;
+    protected $cfg_file;
+
+    private  $cache_driver = null;
+    private static $_instance = null;
 
     /***
-     * Constructor for MT class. Also declares a global variable
-     * '$mt' and assigns itself to that. There can only be one
-     * instance of this class.
+     * Constructor for MT class.
+     * Currently, constructor moved to private method because this class implemented Singleton Design Pattern.
+     * You can get instance as following code.
+     *
+     * $mt = MT::get_instance();
      */
-    function MT($blog_id = null, $cfg_file = null) {
+    private function __construct($blog_id = null, $cfg_file = null) {
         error_reporting(E_ALL ^ E_NOTICE);
-        global $mt;
-        if (isset($mt)) {
-            die("Only one instance of the MT class can be created.");
-        }
         $this->id = md5(uniqid('MT',true));
         $this->init($blog_id, $cfg_file);
+    }
+
+    public static function get_instance($blog_id = null, $cfg_file = null) {
+        if (is_null(MT::$_instance)) {
+            MT::$_instance = new MT($blog_id, $cfg_file);
+        }
+        return MT::$_instance;
+    }
+
+    public function caching($val = null) {
+        if ( !is_null($val) ) {
+            $this->caching = $val;
+        }
+
+        return $this->caching;
+    }
+
+    public function conditional($val = null) {
+        if ( !is_null($val) ) {
+            $this->conditional = $val;
+        }
+
+        return $this->conditional;
+    }
+
+    public function blog_id() {
+        return $this->blog_id;
     }
 
     function init($blog_id = null, $cfg_file = null) {
@@ -148,46 +180,47 @@ class MT {
         }
     }
 
+    public function cfg_file() {
+        return $this->cfg_file;
+    }
+
     /***
      * Retreives a handle to the database and assigns it to
      * the member variable 'db'.
      */
-    function &db() {
-        if (isset($this->db)) return $this->db;
-
-        require_once("mtdb_".$this->config('DBDriver').".php");
-        $mtdbclass = 'MTDatabase_'.$this->config('DBDriver');
-        $this->db = new $mtdbclass($this->config('DBUser'),
-            $this->config('DBPassword'), $this->config('Database'),
-            $this->config('DBHost'), $this->config('DBPort'), $this->config('DBSocket'));
+    function db() {
+        if (!isset($this->db)) {
+            require_once("mtdb.".$this->config('DBDriver').".php");
+            $mtdbclass = 'MTDatabase'.$this->config('DBDriver');
+            $this->db = new $mtdbclass($this->config('DBUser'),
+                $this->config('DBPassword'), $this->config('Database'),
+                $this->config('DBHost'), $this->config('DBPort'), $this->config('DBSocket'));
+        }
         return $this->db;
     }
 
     /***
      * Retreives a handle to the cache driver.
      */
-    function &cache_driver() {
+    public function cache_driver() {
         if (isset($this->cache_driver)) return $this->cache_driver;
     
         # Check for memcached enabled
-        $servers  = $this->config['MemcachedServers'];
-        if (isset($servers)) {
-            if (extension_loaded('memcache')) {
-                require_once("mtcache_memcached.php");
-                $this->cache_driver = new MTCache_memcached($servers);
-            }
-        } else {
-            require_once("mtcache_session.php");
-            $this->cache_driver = new MTCache_session();
+        require_once("class.basecache.php");
+        try {
+            $this->cache_driver = CacheProviderFactory::get_provider('memcached');
+        } catch (Exception $e) {
+            # Memcached not supported.
+            $this->cache_driver = CacheProviderFactory::get_provider('session');
         }
         return $this->cache_driver;
     }
 
-    function config($id, $value = null) {
+    public function config($id, $value = null) {
         $id = strtolower($id);
         if (isset($value))
             $this->config[$id] = $value;
-        return $this->config[$id];
+        return isset($this->config[$id]) ? $this->config[$id] : null;
     }
 
     /***
@@ -246,18 +279,6 @@ class MT {
             }
         }
 
-        // Changes dbdriver from native to PDO, if we can.
-        // * PHP Version >= 5.0
-        // * DBDriver == sqlite / with out UseSQLite2
-        // * PDO and PDO_SQLITE extensions loaded
-        if (version_compare(PHP_VERSION, '5.0') > 0
-            && $cfg['dbdriver'] == 'sqlite'
-            && !isset($cfg['usesqlite2'])
-            && extension_loaded('pdo')
-            && extension_loaded('pdo_sqlite'))
-        {
-            $cfg['dbdriver'] = 'pdo_sqlite';
-        }
         $this->config =& $cfg;
         $this->config_defaults();
 
@@ -283,6 +304,8 @@ class MT {
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "lib" . $path_sep .
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . $path_sep .
             $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "smarty" . DIRECTORY_SEPARATOR . "libs" . $path_sep .
+            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "adodb5" . $path_sep .
+            $cfg['phpdir'] . DIRECTORY_SEPARATOR . "extlib" . DIRECTORY_SEPARATOR . "FirePHPCore" . $path_sep .
             ini_get('include_path')
         );
     }
@@ -292,34 +315,12 @@ class MT {
         $mtdb =& $this->db();
         $db_config = $mtdb->fetch_config();
         if ($db_config) {
-            $data = $db_config['config_data'];
-            $data = preg_split('/[\r?\n]/', $data);
-            foreach ($data as $line) {
-                // search through the file
-                if (!ereg('^\s*\#',$line)) {
-                    // ignore lines starting with the hash symbol
-                    if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
-                        $key = strtolower(trim($regs[1]));
-                        $value = trim($regs[2]);
-                        if (($key === 'pluginswitch') || ($key === 'pluginschemaversion')) { # special case for hash
-                            if (preg_match('/^(.+)=(.+)$/', $value, $match))
-                                $cfg[$key][trim($match[1])] = trim($match[2]);
-                        } else {
-                            $cfg[$key] or $cfg[$key] = $value;
-                        }
-                    }
-                }
+            $data = $db_config->data();
+            foreach ($data as $key => $value) {
+                $cfg[$key] = $value;
             }
             if ($cfg['dbdriver'] == 'mysql' or $cfg['dbdriver'] == 'postgres') {
-                if ($cfg['sqlsetnames']) {
-                    $Charset = array( 
-                        'postgres' => array('utf-8' => 'UNICODE', 'shift_jis' => 'SJIS', 'euc-jp' => 'EUC_JP'),
-                        'mysql' => array('utf-8' => 'utf8', 'shift_jis' => 'sjis', 'euc-jp' => 'ujis'));
-                    $lang = $Charset[$cfg['dbdriver']][strtolower($cfg['publishcharset'])];
-                    if ($lang) {
-                        $mtdb->query("SET NAMES '$lang'");
-                    }
-                }
+                $mtdb->set_names($this);
             }           
         }
     }
@@ -345,6 +346,8 @@ class MT {
             $cfg['xmlrpcscript'] = 'mt-xmlrpc.cgi';
         isset($cfg['searchscript']) or
             $cfg['searchscript'] = 'mt-search.cgi';
+        isset($cfg['notifyscript']) or
+            $cfg['notifyscript'] = 'mt-add-notify.cgi';
         isset($cfg['defaultlanguage']) or
             $cfg['defaultlanguage'] = 'en_US';
         isset($cfg['globalsanitizespec']) or
@@ -428,9 +431,6 @@ class MT {
         $mtdb =& $this->db();
         $ctx->mt->db =& $mtdb;
 
-        // Set up our customer error handler
-        set_error_handler(array(&$this, 'error_handler'));
-
         // User-specified request through request variable
         $path = $this->request;
 
@@ -472,7 +472,7 @@ class MT {
 
         $this->blog_id = $blog_id;
 
-        $data =& $this->resolve_url($path);
+        $data = $this->resolve_url($path);
         if (!$data) {
             // 404!
             $this->http_error = 404;
@@ -480,40 +480,42 @@ class MT {
             return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
         }
 
-        $info =& $data['fileinfo'];
-        $fi_path = $info['fileinfo_url'];
-        $fid = $info['fileinfo_id'];
-        $at = $info['fileinfo_archive_type'];
-        $ts = $info['fileinfo_startdate'];
-        $tpl_id = $info['fileinfo_template_id'];
-        $cat = $info['fileinfo_category_id'];
-        $auth = $info['fileinfo_author_id'];
-        $entry_id = $info['fileinfo_entry_id'];
-        $blog_id = $info['fileinfo_blog_id'];
-        $blog =& $data['blog'];
+        $fi_path = $data->fileinfo_url;
+        $fid = $data->fileinfo_id;
+        $at = $data->fileinfo_archive_type;
+        $ts = $data->fileinfo_startdate;
+        $tpl_id = $data->fileinfo_template_id;
+        $cat = $data->fileinfo_category_id;
+        $auth = $data->fileinfo_author_id;
+        $entry_id = $data->fileinfo_entry_id;
+        $blog_id = $data->fileinfo_blog_id;
+        $blog = $data->blog();
         if ($at == 'index') {
             $at = null;
             $ctx->stash('index_archive', true);
         } else {
             $ctx->stash('index_archive', false);
         }
-        $tts = $data['template']['template_modified_on'];
+        $tmpl = $data->template();
+        $ctx->stash('template', $tmpl);
+
+        $tts = $tmpl->template_modified_on;
         if ($tts) {
             $tts = offset_time(datetime_to_timestamp($tts), $blog);
         }
         $ctx->stash('template_timestamp', $tts);
-        $ctx->stash('template_created_on', $data['template']['template_created_on']);
+        $ctx->stash('template_created_on', $tmpl->template_created_on);
 
-        $page_layout = $data['blog']['blog_page_layout'];
+        $page_layout = $blog->blog_page_layout;
         $columns = get_page_column($page_layout);
         $vars =& $ctx->__stash['vars'];
         $vars['page_columns'] = $columns;
         $vars['page_layout'] = $page_layout;
 
-        if (isset($data['template']['template_identifier']))
-            $vars[$data['template']['template_identifier']] = 1;
+        if (isset($tmpl->template_identifier))
+            $vars[$tmpl->template_identifier] = 1;
 
-        $this->configure_paths($blog['blog_site_path']);
+        $this->configure_paths($blog->site_path());
 
         // start populating our stash
         $ctx->stash('blog_id', $blog_id);
@@ -526,7 +528,7 @@ class MT {
             $this->cache_modified_check = true;
         }
         if ($this->conditional) {
-            $last_ts = $blog['blog_children_modified_on'];
+            $last_ts = $blog->blog_children_modified_on;
             $last_modified = $ctx->_hdlr_date(array('ts' => $last_ts, 'format' => '%a, %d %b %Y %H:%M:%S GMT', 'language' => 'en', 'utc' => 1), $ctx);
             $this->doConditionalGet($last_modified);
         }
@@ -534,16 +536,15 @@ class MT {
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
             if (isset($at) && ($at != 'Category')) {
-                global $_archivers;
                 require_once("archive_lib.php");
-                global $_archivers;
-                if (!isset($_archivers[$at])) {
+                try {
+                    $archiver = ArchiverFactory::get_archiver($at);
+                } catch (Execption $e) {
                     // 404
                     $this->http_errr = 404;
                     header("HTTP/1.1 404 Not Found");
                     return $ctx->error($this->translate("Page not found - [_1]", $at), E_USER_ERROR);
                 }
-                $archiver = $_archivers[$at];
                 $archiver->template_params($ctx);
             }
 
@@ -559,7 +560,7 @@ class MT {
             }
             if (isset($at)) {
                 if (($at != 'Category') && isset($ts)) {
-                    list($ts_start, $ts_end) = $archiver->get_range($ctx, $ts);
+                    list($ts_start, $ts_end) = $archiver->get_range($ts);
                     $ctx->stash('current_timestamp', $ts_start);
                     $ctx->stash('current_timestamp_end', $ts_end);
                 }
@@ -573,7 +574,7 @@ class MT {
                     $entry =& $mtdb->fetch_page($entry_id);
                 }
                 $ctx->stash('entry', $entry);
-                $ctx->stash('current_timestamp', $entry['entry_authored_on']);
+                $ctx->stash('current_timestamp', $entry->entry_authored_on);
             }
 
             if ($at == 'Category') {
@@ -615,31 +616,32 @@ class MT {
             $this->_dump($this->warning);
         }
 
-        if ($this->debugging) {
-            $this->log("Queries: ".$mtdb->num_queries);
-            $this->log("Queries executed:");
-            $queries = $mtdb->savedqueries;
-            foreach ($queries as $q) {
-                $this->log($q);
-            }
-            $this->log_dump();
-        }
-        restore_error_handler();
+#        if ($this->debugging) {
+#            $this->log("Queries: ".$mtdb->num_queries);
+#            $this->log("Queries executed:");
+#            $queries = $mtdb->savedqueries;
+#            foreach ($queries as $q) {
+#                $this->log($q);
+#            }
+#            $this->log_dump();
+#        }
+#        restore_error_handler();
     }
 
-    function &resolve_url($path) {
-        $data =& $this->db->resolve_url($path, $this->blog_id);
+    function resolve_url($path) {
+        $data = $this->db->resolve_url($path, $this->blog_id);
         if ( isset($data)
-            && isset($data['fileinfo']['fileinfo_entry_id'])
-            && is_numeric($data['fileinfo']['fileinfo_entry_id'])
+            && isset($data->fileinfo_entry_id)
+            && is_numeric($data->fileinfo_entry_id)
         ) {
-            if (strtolower($data['templatemap']['templatemap_archive_type']) == 'page') {
-                $entry = $this->db->fetch_page($data['fileinfo']['fileinfo_entry_id']);
+            $tmpl_map = $data->templatemap();
+            if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
+                $entry = $this->db->fetch_page($data->fileinfo_entry_id);
             } else {
-                $entry = $this->db->fetch_entry($data['fileinfo']['fileinfo_entry_id']);
+                $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
             }
             require_once('function.mtentrystatus.php');
-            if (!isset($entry) || $entry['entry_status'] != STATUS_RELEASE)
+            if (!isset($entry) || $entry->entry_status != 2)
                 return;
         }
         return $data;
@@ -687,7 +689,7 @@ class MT {
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
             $ctx->stash('local_blog_id', $this->blog_id);
-            $this->configure_paths($blog['blog_site_path']);
+            $this->configure_paths($blog->site_path());
         }
         return $ctx->display($tpl, $cid);
     }
@@ -703,7 +705,7 @@ class MT {
             $ctx->stash('blog', $blog);
             $ctx->stash('blog_id', $this->blog_id);
             $ctx->stash('local_blog_id', $this->blog_id);
-            $this->configure_paths($blog['blog_site_path']);
+            $this->configure_paths($blog->site_path());
         }
         return $ctx->fetch($tpl, $cid);
     }
@@ -772,7 +774,7 @@ class MT {
     /***
      * Retrieves a context and rendering object.
      */
-    function &context() {
+    public function &context() {
         static $ctx;
         if (isset($ctx)) return $ctx;
 
@@ -822,6 +824,10 @@ class MT {
     function warning_log($str) {
         $this->warning[] = $str;
     }
+
+    function get_current_blog_id() {
+        return $this->blog_id;
+    }
 }
 
 function is_valid_email($addr) {
@@ -838,19 +844,13 @@ function spam_protect($str) {
     return strtr($str, $spam_protect_map);
 }
 
-function datetime_to_timestamp($dt) {
-    $dt = preg_replace('/[^0-9]/', '', $dt);
-    $ts = mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
-    return $ts;
-}
-
 function offset_time($ts, $blog = null, $dir = null) {
     if (isset($blog)) {
         if (!is_array($blog)) {
             global $mt;
-            $blog = $mt->db->fetch_blog($blog);
+            $blog = $mt->db()->fetch_blog($blog->id);
         }
-        $offset = $blog['blog_server_offset'];
+        $offset = $blog->blog_server_offset;
     } else {
         global $mt;
         $offset = $mt->config('TimeOffset');
@@ -866,15 +866,6 @@ function offset_time($ts, $blog = null, $dir = null) {
     }
     $ts += $offset * 3600;
     return $ts;
-}
-function _strip_index($url, $blog) {
-    global $mt;
-    $index = $mt->config('IndexBasename');
-    $ext = $blog['blog_file_extension'];
-    if ($ext != '') $ext = '.' . $ext;
-    $index = preg_quote($index . $ext);
-    $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
-    return $url;
 }
 
 function translate_phrase_param($str, $params = null) {

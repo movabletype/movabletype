@@ -18,9 +18,9 @@ sub BEGIN {
     $VERSION = '2.11';
     my $plugin;
     $plugin = new MT::Plugin::SpamLookup::Link({
-        name => '<MT_TRANS phrase="SpamLookup - Link">',
+        name => 'SpamLookup - Link',
         version => $VERSION,
-        description => '<MT_TRANS phrase="SpamLookup module for junking and moderating feedback based on link filters.">',
+        description => '<__trans phrase="SpamLookup module for junking and moderating feedback based on link filters.">',
         doc_link => 'http://www.spamlookup.com/wiki/LinkFilter',
         author_name => 'Six Apart, Ltd.',
         author_link => 'http://www.sixapart.com/',

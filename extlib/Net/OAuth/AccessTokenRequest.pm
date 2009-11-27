@@ -10,11 +10,11 @@ sub sign_message {1}
 
 =head1 NAME
 
-Net::OAuth::RequestTokenRequest - An OAuth protocol request for an Access Token
+Net::OAuth::AccessTokenRequest - An OAuth protocol request for an Access Token
 
 =head1 SEE ALSO
 
-L<Net::OAuth::Request>, L<http://oauth.net>
+L<Net::OAuth>, L<http://oauth.net>
 
 =head1 AUTHOR
 

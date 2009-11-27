@@ -6,17 +6,18 @@
 # $Id$
 
 function smarty_block_mtentrieswithsubcategories($args, $content, &$ctx, &$repeat) {
-    $localvars = array('entries');
+    $localvars = array('entries', 'inside_with_subcategories');
     if (!isset($content)) {
         $cat = $args['category'];
         if (!$cat) {
             $cat = $ctx->stash('category');
             if (isset($cat))
-                $args['category'] = $cat['category_label'];
+                $args['category'] = $cat->category_label;
         }
         $args['include_subcategories'] = 1;
         $ctx->localize($localvars);
         $ctx->stash('entries', null);
+        $ctx->stash('inside_with_subcategories', 1);
         require_once("block.mtentries.php");
     }
     $output = smarty_block_mtentries($args, $content, $ctx, $repeat);

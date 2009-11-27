@@ -15,7 +15,7 @@
     <li><input id="ipbl_mode_junk" onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this);" type="radio" name="ipbl_mode" value="1" <TMPL_IF NAME=IPBL_MODE_1>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Junk feedback from blacklisted IP addresses"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'ipbl_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="ipbl_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
 
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_ipbl_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
-    <input type="text" size="3" id="sl_ipbl_weight" name="ipbl_weight" value="<TMPL_VAR NAME=IPBL_WEIGHT ESCAPE=HTML>" />
+    <input type="text" size="3" id="sl_ipbl_weight" name="ipbl_weight" value="<TMPL_VAR NAME=IPBL_WEIGHT ESCAPE=HTML>" class="smaller-text" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_ipbl_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
 
     <!-- <span class="hint">Applies a negative rating to feedback matching this test.</span> -->
@@ -47,7 +47,7 @@
     <li><input onclick="toggleSubPrefs(this);toggleAdvancedPrefs(event,this)" type="radio" id="domainbl_mode_junk" name="domainbl_mode" value="1" <TMPL_IF NAME=DOMAINBL_MODE_1>checked="checked"</TMPL_IF> class="rb" /> <MT_TRANS phrase="Junk feedback containing blacklisted domains"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'domainbl_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="domainbl_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
 
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_domainbl_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
-    <input type="text" size="3" name="domainbl_weight" id="sl_domainbl_weight" value="<TMPL_VAR NAME=DOMAINBL_WEIGHT ESCAPE=HTML>" />
+    <input type="text" size="3" name="domainbl_weight" id="sl_domainbl_weight" value="<TMPL_VAR NAME=DOMAINBL_WEIGHT ESCAPE=HTML>" class="smaller-text" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_domainbl_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
 
     </span></li>
@@ -78,7 +78,7 @@
     <li><input type="radio" id="tborigin_mode_junk" name="tborigin_mode" value="1" <TMPL_IF NAME=TBORIGIN_MODE_1>checked="checked"</TMPL_IF> class="rb" onclick="toggleAdvancedPrefs(event,this)" /> <MT_TRANS phrase="Junk TrackBacks from suspicious sources"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'tborigin_mode_junk')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="tborigin_mode_junk-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
 
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_tborigin_weight')"><!-- <MT_TRANS phrase="Less"> --><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
-    <input type="text" size="3" name="tborigin_weight" id="sl_tborigin_weight" value="<TMPL_VAR NAME=TBORIGIN_WEIGHT ESCAPE=HTML>" />
+    <input type="text" size="3" name="tborigin_weight" id="sl_tborigin_weight" value="<TMPL_VAR NAME=TBORIGIN_WEIGHT ESCAPE=HTML>" class="smaller-text" />
     <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_tborigin_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /><!-- <MT_TRANS phrase="More"> --></a>
 
     </span></li>

@@ -9,7 +9,7 @@ function smarty_function_mtcclicenserdf($args, &$ctx) {
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');
-    $cc = $blog['blog_cc_license'];
+    $cc = $blog->blog_cc_license;
     if (empty($cc)) return '';
 
     require_once("cc_lib.php");
@@ -27,9 +27,9 @@ RDF;
     $entry = $ctx->stash('entry');
     if ($entry) {
         $permalink = $ctx->tag('EntryPermalink');
-        $title = encode_xml(strip_hyphen($entry['entry_title']));
+        $title = encode_xml(strip_hyphen($entry->entry_title));
         $desc = encode_xml(strip_hyphen($ctx->tag('EntryExcerpt')));
-        $creator = encode_xml(strip_hyphen($entry['entry_author_id'] ? $entry['author_nickname'] : ''));
+        $creator = encode_xml(strip_hyphen($entry->entry_author_id ? $entry->author()->nickname : ''));
         $date = $ctx->_hdlr_date(array('format' => "%Y-%m-%dT%H:%M:%S"), $ctx) . $ctx->tag('BlogTimezone');
         $rdf .= <<<RDF
 <Work rdf:about="$permalink">
@@ -42,12 +42,12 @@ RDF;
 
 RDF;
     } else {
-        $site_url = $blog['blog_site_url'];
+        $site_url = $blog->site_url();
         if (!preg_match('!/$!', $site_url))
             $site_url .= '/';
 
-        $title = encode_xml(strip_hyphen($blog['blog_name']));
-        $desc = encode_xml(strip_hyphen($blog['blog_description']));
+        $title = encode_xml(strip_hyphen($blog->blog_name));
+        $desc = encode_xml(strip_hyphen($blog->blog_description));
         $rdf .= <<<RDF
 <Work rdf:about="$site_url">
 <dc:title>$title</dc:title>

@@ -12,7 +12,7 @@ if (author_userpic != '') {
     if (window.parent.DOM.hasClassName( 'userpic-preview', 'hidden' ))
         window.parent.toggleHidden( 'userpic-preview' );
 }
-closeDialog();
+parent.jQuery.fn.mtDialog.close();
 /* ]]> */
 </script>
 <mt:include name="dialog/footer.tmpl">

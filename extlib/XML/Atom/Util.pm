@@ -1,4 +1,4 @@
-# $Id: Util.pm 89 2007-10-04 20:28:06Z miyagawa $
+# $Id$
 
 package XML::Atom::Util;
 use strict;

@@ -247,8 +247,8 @@ sub save_config {
 
     my ($config) = $cfg_class->load() || $cfg_class->new;
 
-    if ($data !~ m/schemaversion/i) {
-        if ($config->id && (($config->data || '') =~ m/schemaversion/i)) {
+    if ($data !~ m/^schemaversion/im) {
+        if ($config->id && (($config->data || '') =~ m/^schemaversion/im)) {
             require Carp;
             MT->log(Carp::longmess("Caught attempt to clear SchemaVersion setting. New config settings were:\n$data"));
             return;
@@ -318,7 +318,7 @@ sub read_config_db {
 sub DESTROY {
     # save_config here so not to miss any dirty config change to persist
     # particularly for those which does not construct MT::App.
-    $_[0]->save_config unless UNIVERSAL::isa( MT->instance, 'MT::App' );
+    $_[0]->save_config;
 }
 
 use vars qw( $AUTOLOAD );

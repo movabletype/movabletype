@@ -12,11 +12,11 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
         $ctx->localize(array('author'));
         $author = $ctx->stash('author');
         if ($author) {
-            $author_id = $author['author_id'];
+            $author_id = $author->author_id;
             if (isset($_prev_cache[$author_id])) {
                 $prev_author = $_prev_cache[$author_id];
             } else {
-                $name = $author['author_name'];
+                $name = $author->author_name;
                 $blog_id = $ctx->stash('blog_id');
                 $args = array('sort_by' => 'author_name',
                               'sort_order' => 'descend',
@@ -24,7 +24,7 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'need_entry' => 1);
-                list($prev_author) = $ctx->mt->db->fetch_authors($args);
+                list($prev_author) = $ctx->mt->db()->fetch_authors($args);
                 if ($prev_author) {
                     $_prev_cache[$author_id] = $prev_author;
                     $ctx->stash('author', $prev_author);

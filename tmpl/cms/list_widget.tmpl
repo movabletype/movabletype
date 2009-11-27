@@ -1,5 +1,4 @@
-<mt:setvarblock name="page_title"><__trans phrase="Widgets"></mt:setvarblock>
-
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1] Widgets" params="<mt:if name="blog_id"><mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if><mt:else><__trans phrase="Global"></mt:if>"></mt:setvarblock>
 <mt:var name="position_actions_top" value="1">
 <mt:setvarblock name="html_head" append="1">
 <link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css" type="text/css" />
@@ -15,17 +14,15 @@ function init() {
     widgetTableSelect = new TC.TableSelect( "widget-listing-table" );
     widgetTableSelect.rowSelect = true;
 }
-
-TC.attachLoadEvent( init );
 /* ]]> */
 </script>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-    <a href="javascript:void(0)"
+    <button
         onclick="doRemoveItems(getByID('template-listing-form'), '<__trans phrase="Widget Set" escape="js">', '<__trans phrase="Widget Sets" escape="js">', '', '', 'delete_widget'); return false;"
         accesskey="x"
         title="<__trans phrase="Delete selected Widget Sets (x)">"
-        ><__trans phrase="Delete"></a>
+        ><__trans phrase="Delete"></button>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mt:if name="object_loop">
@@ -57,19 +54,25 @@ TC.attachLoadEvent( init );
 <mtapp:listing
     hide_pager="1">
     <mt:if name="__first__">
-    <thead>
+    <mt:setvarblock name="table_header">
         <tr>
             <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-            <th width="40%" class="widgetmanager-name"><__trans phrase="Name"></th>
-            <th width="59%" class="widgetmanager-widgets"><__trans phrase="Installed Widgets"></th>
+            <th class="widgetmanager-name primary-col"><__trans phrase="Name"></th>
+            <th class="widgetmanager-widgets primary-col"><__trans phrase="Installed Widgets"></th>
         </tr>
+    </mt:setvarblock>
+    <thead>
+        <mt:var name="table_header">
     </thead>
+    <tfoot>
+        <mt:var name="table_header">
+    </tfoot>
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
             <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="select" /></td>
-            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager"></a></td>
-            <td class="widgetmanager-widgets"><mt:var name="names"></td>
+            <td class="widgetmanager-name"><a href="?__mode=edit_widget&blog_id=<mt:var name="blog_id">&id=<mt:var name="id" escape="url">"><mt:var name="widgetmanager" escape="html"></a></td>
+            <td class="widgetmanager-widgets"><mt:var name="names" escape="html"></td>
         </tr>
     <mt:if name="__last__">
     </tbody>
@@ -90,17 +93,15 @@ TC.attachLoadEvent( init );
 <mt:SetVarBlock name="create_link">
 <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;type=widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create widget template"></a></p>
 </mt:SetVarBlock>
-<mt:SetVarBlock name="label_singular"><__trans phrase='Widget Template'></mt:SetVarBlock>
-<mt:SetVarBlock name="label_plural">Widget Templates</mt:SetVarBlock>
-<mt:Ignore><__trans phrase='widget templates'></mt:Ignore>
 <mt:include name="include/template_table.tmpl"
     object_loop="$widget_table"
     template_type="widget"
     has_list_actions="$widget_has_list_actions"
     list_actions="$widget_list_actions"
-    more_list_actions="$widget_more_list_actions"
-    object_label="$label_singular"
-    object_label_plural="$label_plural"
-    template_type_label="$label_plural">
+    more_list_actions="$widget_more_list_actions">
 
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

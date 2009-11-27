@@ -10,7 +10,6 @@ use strict;
 use base qw( MT::App );
 
 use MT::Util qw( trim browser_language );
-use MT::I18N qw( encode_text );
 
 
 sub id {'wizard'}
@@ -45,9 +44,10 @@ sub init_request {
     $app->SUPER::init_request(@_);
     $app->set_no_cache;
     $app->{requires_login} = 0;
-    
+
     my $default_lang = $app->param('default_language') || browser_language();
     $app->set_language($default_lang);
+    $app->init_lang_defaults();
 
     my $mode = $app->mode;
     return
@@ -63,6 +63,7 @@ sub init_request {
 
     if ( $mode eq 'retry' ) {
         $new_step = $step;
+        $app->delete_param('test') if $app->param('test');
     }
     elsif ( $mode eq 'test' ) {
         $new_step = $step;
@@ -86,6 +87,7 @@ sub init_request {
             }
             $prev_step = $s->{key};
         }
+        $app->delete_param('test') if $app->param('test');
     }
 
     # If mt-check.cgi exists, redirect to errro screen
@@ -297,6 +299,32 @@ sub init_core_registry {
                     'File::Spec is required for path manipulation across operating systems.',
             }
         },
+        database_options => {
+            'mysql' => {
+                options => {
+                    login_required => 1,
+                },
+                default_database => 'test',
+                list_sql => 'SHOW DATABASES;'
+            },
+            'postgres' => {
+                options => {
+                    login_required => 1,
+                },
+                default_database => 'template1',
+                list_sql => 'SELECT datname FROM pg_database ORDER BY datname;'
+            },
+            'sqlite' => {
+                options => {
+                    path_required => 1,
+                },
+            },
+            'sqlite2' => {
+                options => {
+                    path_required => 1,
+                },
+            },
+        },
     };
 }
 
@@ -363,7 +391,7 @@ sub pre_start {
         if $app->is_valid_static_path( $app->static_path );
     $param{mt_static_exists} = $app->mt_static_exists;
     $param{static_file_path} = $static_file_path;
-      
+
     $param{languages} = MT::I18N::languages_list( $app, $app->current_language );
 
     return $app->build_page( "start.tmpl", \%param );
@@ -410,6 +438,8 @@ sub build_page {
 sub start {
     my $app   = shift;
     my %param = @_;
+
+    $param{languages} = MT::I18N::languages_list( $app, $app->current_language );
 
     my $static_path = $app->param('set_static_uri_to');
     my $static_file_path
@@ -537,29 +567,17 @@ sub configure {
     # set static web path
     $app->config->set( 'StaticWebPath', $param{set_static_uri_to} );
     delete $param{publish_charset};
+    my $db_options = $app->registry('database_options');
     if ( my $dbtype = $param{dbtype} ) {
         $param{"dbtype_$dbtype"} = 1;
-        if ( $dbtype eq 'mysql' ) {
-            $param{login_required} = 1;
+        foreach (keys %{$db_options->{$dbtype}->{options}}) {
+            $param{$_} = $db_options->{$dbtype}->{options}->{$_};
         }
-        elsif ( $dbtype eq 'postgres' ) {
-            $param{login_required} = 1;
-        }
-        elsif ( $dbtype eq 'oracle' ) {
-            $param{login_required} = 1;
-        }
-        elsif ( $dbtype eq 'mssqlserver' ) {
-            $param{login_required}  = 1;
+        if ( $dbtype eq 'mssqlserver' ) {
             $param{publish_charset} = $app->param('publish_charset')
                 || ( $app->{cfg}->DefaultLanguage eq 'ja'
                 ? 'Shift_JIS'
                 : 'ISO-8859-1' );
-        }
-        elsif ( $dbtype eq 'sqlite' ) {
-            $param{path_required} = 1;
-        }
-        elsif ( $dbtype eq 'sqlite2' ) {
-            $param{path_required} = 1;
         }
     }
 
@@ -633,7 +651,17 @@ sub configure {
         if ($driver) {
             my $cfg = $app->config;
             $cfg->ObjectDriver($driver);
-            $cfg->Database( $param{dbname} )   if $param{dbname};
+
+            my $exec_show_db = '';
+            if ( !$param{dbname} ) {
+                # set default database
+                if ($db_options->{$dbtype}->{default_database}) {
+                    $cfg->Database( $db_options->{$dbtype}->{default_database} );
+                    $exec_show_db = $db_options->{$dbtype}->{list_sql};
+                }
+            } else {
+                $cfg->Database( $param{dbname} );
+            }
             $cfg->DBUser( $param{dbuser} )     if $param{dbuser};
             $cfg->DBPassword( $param{dbpass} ) if $param{dbpass};
             $cfg->DBPort( $param{dbport} )     if $param{dbport};
@@ -661,24 +689,45 @@ sub configure {
             # test loading of object driver with these parameters...
             require MT::ObjectDriverFactory;
             my $od = MT::ObjectDriverFactory->new($driver);
-
             $cfg->PublishCharset( $current_charset );
 
-            eval { $od->rw_handle; };    ## to test connection
+            # to test connection
+            my @dbs;
+            eval {
+                my $handle = $od->rw_handle;
+                if ($exec_show_db) {
+                    my $sth = $handle->prepare($exec_show_db)
+                        or die $handle->errstr;
+                    $sth->execute
+                        or die $handle->errstr;
+                    while (my @row = $sth->fetchrow) {
+                        push @dbs, { name => @row };
+                    }
+                }
+            };
+
             if ( my $err = $@ ) {
                 $err_msg
                     = $app->translate(
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
-                if ( $param{publish_charset} ne $current_charset ) {
-                    # $param{publish_charset} is sometimes undef which forces encode_text
-                    # to guess_encode which should handle all of the cases.
-                    $err = encode_text( $err, $param{publish_charset}, $current_charset );
+                if ( exists( $param{publish_charset} )
+                  && $param{publish_charset}
+                  && ( $param{publish_charset} ne $current_charset ) )
+                {
+                    require Encode;
+                    $err = Encode::decode( $param{publish_charset}, $err );
                 }
                 $err_more = $err;
             }
             else {
-                $ok = 1;
+                if (@dbs) {
+                    $param{database_list} = \@dbs;
+                    $param{one_database}  = @dbs == 0;
+                    $err_msg = $app->translate('Please select database from the list of database and try again.');
+                } else {
+                    $ok = 1;
+                }
             }
         }
         if ($ok) {
@@ -1040,6 +1089,12 @@ sub module_check {
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
         my ( $mod, $ver, $req, $desc, $name, $link ) = @$ref;
+        if ( 'CODE' eq ref($desc) ) {
+            $desc = $desc->();
+        }
+        else {
+            $desc = $self->translate($desc);
+        }
         eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
         if ($@) {

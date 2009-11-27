@@ -14,40 +14,36 @@ if (progress) {
     <mt:if name="error">
         <mtapp:statusmsg
             id="restore-error"
+            can_close="0"
             class="error">
             <__trans phrase="An error occurred during the restore process: [_1] Please check your restore file." params="<mt:var name="error">">
         </mtapp:statusmsg>
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <button
-                onclick="return closeDialog('<mt:var name="error_url">'); return false"
-                type="submit"
-                accesskey="v"
-                title="<__trans phrase="View Activity Log (v)">"
-                class="primary-button"
-                ><__trans phrase="View Activity Log"></button>
-        </form>
-    </div>
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+        <button
+            type="submit"
+            accesskey="v"
+            title="<__trans phrase="View Activity Log (v)">"
+            class="action primary-button mt-close-dialog-error"
+            ><__trans phrase="View Activity Log"></button>
+    </form>
 </div>
     <mt:else>
         <mtapp:statusmsg
             id="restore-success"
+            can_close="0"
             class="success">
             <__trans phrase="All data restored successfully!">
         </mtapp:statusmsg>
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <button
-                onclick="return closeDialog('<mt:var name="ok_url">'); return false"
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Close (s)">"
-                class="primary-button"
-                ><__trans phrase="Close"></button>
-        </form>
-    </div>
+    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Close (s)">"
+            class="close action primary-button mt-close-dialog"
+            ><__trans phrase="Close"></button>
+    </form>
 </div>
     </mt:if>
 
@@ -70,18 +66,16 @@ if (progress) {
 
 </form>
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
-            <button
-                onclick="submit_form();"
-                type="submit"
-                id="next-page-button"
-                class="hidden"
-                accesskey="s"
-                title="<__trans phrase="Next Page"> (s)"
-                ><__trans phrase="Next Page"></button>
-        </form>
-    </div>
+    <form id="command_form" action="" method="get" onsubmit="return false" onclick="window.focus();">
+        <button
+            onclick="submit_form();"
+            type="submit"
+            id="next-page-button"
+            class="action hidden"
+            accesskey="s"
+            title="<__trans phrase="Next Page"> (s)"
+            ><__trans phrase="Next Page"></button>
+    </form>
 </div>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -105,4 +99,17 @@ function stopTimer() {
 </script>
 <p id="message"><__trans phrase="The page will redirect to a new page in 3 seconds. [_1]Stop the redirect.[_2]" params="<a href='javascript:void(0)' onclick='return stopTimer()'>%%</a>"></p>
 </mt:if>
+<script type="text/javascript">
+/* <![CDATA[ */
+App.bootstrapInline( false );
+jQuery(function() {
+    jQuery('button.mt-close-dialog-error').click(function() {
+        parent.jQuery.fn.mtDialog.close('<mt:var name="error_url">');
+    });
+    jQuery('button.mt-close-dialog-url').click(function() {
+        parent.jQuery.fn.mtDialog.close('<mt:var name="ok_url">');
+    });
+});
+/* ]]> */
+</script>
 <mt:include name="dialog/footer.tmpl">

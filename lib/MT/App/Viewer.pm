@@ -131,7 +131,7 @@ sub _view_index {
     ( my $ext = $tmpl->outfile ) =~ s/.*\.//;
     my $mime = $MimeTypes{$ext} || 'text/html';
     $app->send_http_header($mime);
-    $app->print($out);
+    $app->print_encode( $out );
     $app->{no_print_body} = 1;
     1;
 }

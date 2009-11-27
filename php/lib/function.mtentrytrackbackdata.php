@@ -7,16 +7,17 @@
 
 function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     $e = $ctx->stash('entry');
-    if (!$e['trackback_id'])
+    $tb = $e->trackback();
+    if (empty($tb))
         return '';
-    if ($e['trackback_is_disabled'])
+    if ($tb->trackback_is_disabled)
         return '';
 
     $blog = $ctx->stash('blog');
     $entry = $ctx->stash('entry');
-    $blog_accepted = $blog['blog_allow_pings'] && $ctx->mt->config('AllowPings');
+    $blog_accepted = $blog->blog_allow_pings && $ctx->mt->config('AllowPings');
     if ($entry) {
-        $accepted = $blog_accepted && $entry['entry_allow_pings'];
+        $accepted = $blog_accepted && $entry->entry_allow_pings;
     } else {
         $accepted = $blog_accepted;
     }
@@ -25,11 +26,11 @@ function smarty_function_mtentrytrackbackdata($args, &$ctx) {
 
     require_once "function.mtcgipath.php";
     $path = smarty_function_mtcgipath($args, $ctx);
-    $path .= $ctx->mt->config('TrackbackScript') . '/' . $e['trackback_id'];
+    $path .= $ctx->mt->config('TrackbackScript') . '/' . $tb->trackback_id;
     if ($at = $ctx->stash('current_archive_type')) {
         $url = $ctx->tag('ArchiveLink');
         if ($at != 'Individual') {
-            $url .= '#entry-' . sprintf("%06d", $e['entry_id']);
+            $url .= '#entry-' . sprintf("%06d", $e->entry_id);
         }
     } else {
         $url = $ctx->tag('EntryPermalink');
@@ -43,7 +44,7 @@ function smarty_function_mtentrytrackbackdata($args, &$ctx) {
     require_once("MTUtil.php");
     ## SGML comments cannot contain double hyphens, so we convert
     ## any double hyphens to single hyphens.
-    $title = encode_xml(strip_hyphen($e['entry_title']), 1);
+    $title = encode_xml(strip_hyphen($e->entry_title), 1);
     $subject = encode_xml(strip_hyphen($ctx->tag('EntryCategory')), 1);
     $excerpt = encode_xml(strip_hyphen($ctx->tag('EntryExcerpt')), 1);
     $creator = encode_xml(strip_hyphen($ctx->tag('EntryAuthorDisplayName')), 1);

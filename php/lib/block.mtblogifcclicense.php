@@ -10,7 +10,7 @@ function smarty_block_mtblogifcclicense($args, $content, &$ctx, &$repeat) {
     // parameters: none
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
-        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, !empty($blog['blog_cc_license']));
+        return $ctx->_hdlr_if($args, $content, $ctx, $repeat, !empty($blog->blog_cc_license));
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }

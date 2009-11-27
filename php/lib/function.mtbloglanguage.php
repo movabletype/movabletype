@@ -8,7 +8,7 @@
 function smarty_function_mtbloglanguage($args, &$ctx) {
     $real_lang = array('cz' => 'cs', 'dk' => 'da', 'jp' => 'ja', 'si' => 'sl');
     $blog = $ctx->stash('blog');
-    $lang_tag = $blog['blog_language'];
+    $lang_tag = $blog->blog_language;
     if ($real_lang[$lang_tag]) {
         $lang_tag = $real_lang[$lang_tag];
     }

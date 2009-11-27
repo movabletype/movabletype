@@ -68,6 +68,9 @@ sub archive_group_iter {
     my $obj = shift;
     my ( $ctx, $args ) = @_;
 
+    my $order =
+      ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+
     require MT::Page;
     my $blog_id = $ctx->stash('blog')->id;
     my $iter    = MT::Page->load_iter(
@@ -75,7 +78,11 @@ sub archive_group_iter {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        { sort => 'title', direction => 'ascend' }
+        {
+            'sort'    => 'authored_on',
+            direction => $order,
+            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
+        }
     );
     return sub {
         while ( my $entry = $iter->() ) {

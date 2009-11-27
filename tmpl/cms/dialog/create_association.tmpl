@@ -32,7 +32,6 @@ one page to the following page.
 -->
 
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 
 <script type="text/javascript">
@@ -55,7 +54,7 @@ function dialog_closed(ok) {
         // commit!
         frm.submit();
     } else {
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
     }
 }
 
@@ -91,41 +90,39 @@ TC.attachLoadEvent(init);
         <mtapp:statusmsg
             id="generic-info"
             class="info">
-            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=edit_role");'>">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=role");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_group">
         <mtapp:statusmsg
             id="generic-info"
             class="info">
-            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=group");'>">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=group");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_author">
         <mtapp:statusmsg
             id="generic-info"
             class="info">
-            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=author");'>">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=author");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_blog">
         <mtapp:statusmsg
             id="generic-info"
             class="info">
-            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href='javascript:void(0)' onclick='closeDialog("<mt:var name="script_url">?__mode=view&amp;_type=blog");'>">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=blog");'>">
         </mtapp:statusmsg>
     </mt:if>
 <div class="actions-bar">
-    <div class="actions-bar-inner pkg actions">
-        <form onsubmit="return false" onclick="window.focus();">
-            <button
-                type="submit"
-                accesskey="x"
-                class="cancel primary-button"
-                title="<__trans phrase="Close (x)">"
-                ><__trans phrase="Close"></button>
-        </form>
-    </div>
+    <form onsubmit="return false" onclick="window.focus();">
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action primary-button"
+           title="<__trans phrase="Close (x)">"
+           ><__trans phrase="Close"></button>
+    </form>
 </div>
 <mt:else>
     <mt:loop name="panel_loop">

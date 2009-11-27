@@ -176,8 +176,8 @@ FlashTag.prototype.toString = function()
             flashTag += 'id="'+this.id+'" ';
         }
         flashTag += 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version='+this.version+'" ';
-        flashTag += 'width="'+this.width+'" ';
-        flashTag += 'height="'+this.height+'">';
+         flashTag += 'width="'+this.width+'" ';
+         flashTag += 'height="'+this.height+'">';
         flashTag += '<param name="movie" value="'+this.src+'"/>';
         flashTag += '<param name="quality" value="high"/>';
         flashTag += '<param name="bgcolor" value="#'+this.bgcolor+'"/>';

@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Category;
 
 use strict;
@@ -47,13 +52,30 @@ sub edit {
                 'pings' );
         }
     }
+
+    my $type = $app->param('type') || $app->param('_type') || MT::Category->class_type;
+    my $entry_class;
+    my $entry_type;
+    if ( $type eq 'category' ) {
+        $entry_type = 'entry';
+    }
+    elsif ( $type eq 'folder' ) {
+        $entry_type = 'page';
+    }
+    $entry_class = $app->model($entry_type);
+
+    $param->{search_label}     = $entry_class->class_label_plural;
+    $param->{search_type}      = $entry_type;
+
     1;
 }
 
 sub list {
     my $app   = shift;
     my $q     = $app->param;
-    my $type  = $q->param('_type') || 'category';
+
+    require MT::Category;
+    my $type = $app->param('type') || $app->param('_type') || MT::Category->class_type;
     my $class = $app->model($type);
 
     my $perms = $app->permissions;
@@ -62,18 +84,20 @@ sub list {
     if ( $type eq 'category' ) {
         $entry_type = 'entry';
         return $app->return_to_dashboard( redirect => 1 )
-          unless $perms && $perms->can_edit_categories;
+            unless $app->can_do('access_to_category_list');
     }
     elsif ( $type eq 'folder' ) {
         $entry_type = 'page';
         return $app->return_to_dashboard( redirect => 1 )
-          unless $perms && $perms->can_manage_pages;
+            unless $app->can_do('access_to_folder_list');
     }
     $entry_class = $app->model($entry_type);
     my $blog_id = scalar $q->param('blog_id');
     require MT::Blog;
-    my $blog = MT::Blog->load($blog_id)
-      or return $app->errtrans("Invalid request.");
+    my $blog = MT::Blog->load($blog_id);
+    return $app->return_to_dashboard( redirect => 1 )
+        if (!$blog || (!$blog->is_blog && $type eq 'category'));
+
     my %param;
     my %authors;
     my $data = $app->_build_category_list(
@@ -129,11 +153,11 @@ sub save {
 
     if ( $type eq 'category' ) {
         return $app->errtrans("Permission denied.")
-          unless $perms && $perms->can_edit_categories;
+            unless $app->can_do('save_category');
     }
     elsif ( $type eq 'folder' ) {
         return $app->errtrans("Permission denied.")
-          unless $perms && $perms->can_manage_pages;
+            unless $app->can_do('save_folder');
     }
 
     $app->validate_magic() or return;
@@ -183,17 +207,7 @@ sub save {
     return $app->errtrans( "The [_1] must be given a name!", $class->class_label )
       if !$cat;
 
-    $app->redirect(
-        $app->uri(
-            'mode' => 'list_cat',
-            args   => {
-                _type      => $type,
-                blog_id    => $blog_id,
-                saved      => 1,
-                new_cat_id => $cat->id
-            }
-        )
-    );
+    $app->call_return( 'saved' => 1, new_cat_id => $cat->id, );
 }
 
 sub category_add {
@@ -335,21 +349,17 @@ sub js_add_category {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_edit_categories();
+    return $app->can_do('open_category_edit_screen');
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return $perms->can_edit_categories();
+    return $app->can_do('save_category');
 }
 
 sub can_delete {
     my ( $eh, $app, $obj ) = @_;
-    return 1 if $app->user->is_superuser();
-    my $perms = $app->permissions;
-    return $perms && $perms->can_edit_categories();
+    $app->can_do('delete_category');
 }
 
 sub pre_save {

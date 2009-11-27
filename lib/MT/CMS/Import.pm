@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Import;
 
 use strict;
@@ -10,8 +15,11 @@ sub start_import {
 
     my $perms = $app->permissions;
     return $app->return_to_dashboard( permission => 1 )
-      if $perms
-      && ( !( $perms->can_edit_config || $perms->can_administer_blog ) );
+        unless $app->can_do('open_start_import_screen');
+
+    return $app->return_to_dashboard( redirect => 1 )
+        if $app->blog && !$app->blog->is_blog;
+
     my %param;
 
     # FIXME: This should build a category hierarchy!
@@ -88,7 +96,8 @@ sub do_import {
     my $q = $app->param;
     require MT::Blog;
     my $blog_id = $q->param('blog_id')
-      or return $app->error( $app->translate("Please select a blog.") );
+      or return $app->return_to_dashboard( redirect => 1 );
+
     my $blog = MT::Blog->load($blog_id)
       or return $app->error(
         $app->translate(
@@ -96,6 +105,9 @@ sub do_import {
             $blog_id, MT::Blog->errstr
         )
       );
+
+    return $app->return_to_dashboard( redirect => 1 )
+        if !$blog->is_blog;
 
     if ( 'POST' ne $app->request_method ) {
         return $app->redirect(
@@ -105,23 +117,20 @@ sub do_import {
             )
         );
     }
-    
+
     my $import_as_me = $q->param('import_as_me');
 
     ## Determine the user as whom we will import the entries.
     my $author    = $app->user;
     my $author_id = $author->id;
-    if ( !$author->is_superuser ) {
-        my $perms = $author->permissions($blog_id);
-        return $app->error(
-            $app->translate("You do not have import permissions") )
-          unless $perms
-          && ( $perms->can_edit_config || $perms->can_administer_blog );
-        if ( !$import_as_me ) {
-            return $app->error(
-                $app->translate("You do not have permission to create users") )
-              unless $perms->can_administer_blog;
-        }
+
+    $app->can_do('import_blog_as_me')
+        or $app->error(
+            $app->translate('You do not have import permission') );
+    if ( !$import_as_me ) {
+        $app->can_do('import_blog_with_authors')
+            or $app->error(
+                $app->translate('You do not have permission to create users'));
     }
 
     my ($pass);
@@ -149,7 +158,7 @@ sub do_import {
     my $param;
     $param = { import_as_me => $import_as_me, import_upload => ($fh ? 1 : 0) };
 
-    $app->print( $app->build_page( 'include/import_start.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'include/import_start.tmpl', $param ) );
 
     require MT::Entry;
     require MT::Placement;
@@ -173,7 +182,7 @@ sub do_import {
         Key      => $import_type,
         Blog     => $blog,
         Stream   => $stream,
-        Callback => sub { $app->print(@_) },
+        Callback => sub { $app->print_encode( @_ ) },
         Encoding => $encoding,
         ($import_as_me)
         ? ( ImportAs => $author )
@@ -187,7 +196,7 @@ sub do_import {
     $param->{import_success} = $import_result;
     $param->{error} = $importer->{type}->errstr unless $import_result;
 
-    $app->print( $app->build_page( "include/import_end.tmpl", $param ) );
+    $app->print_encode( $app->build_page( "include/import_end.tmpl", $param ) );
 
     close $fh if $fh;
     1;

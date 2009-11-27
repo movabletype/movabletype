@@ -29,7 +29,7 @@ __PACKAGE__->install_properties({
 sub latest_touch {
     my $pkg = shift;
     my ($blog_id, @types) = @_;
-    my $user = grep 'author', @types;
+    my $user = grep { $_ eq 'author' } @types;
     my $latest = $pkg->load({ object_type => \@types, blog_id => $blog_id },
         { sort => 'modified_on', direction => 'descend' });
     # Special case for 'user' type, which has no blog_id value

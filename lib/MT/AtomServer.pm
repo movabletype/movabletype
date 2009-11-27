@@ -7,7 +7,6 @@
 package MT::AtomServer;
 use strict;
 
-use MT::I18N qw( encode_text );
 use XML::Atom;
 use XML::Atom::Util qw( first textValue );
 use base qw( MT::App );
@@ -17,9 +16,11 @@ use MT::Atom;
 use MT::Util qw( encode_xml );
 use MT::Author;
 
-use constant NS_SOAP => 'http://schemas.xmlsoap.org/soap/envelope/';
-use constant NS_WSSE => 'http://schemas.xmlsoap.org/ws/2002/07/secext';
-use constant NS_WSU => 'http://schemas.xmlsoap.org/ws/2002/07/utility';
+sub NS_SOAP { 'http://schemas.xmlsoap.org/soap/envelope/'; }
+sub NS_WSSE { 'http://schemas.xmlsoap.org/ws/2002/07/secext'; }
+sub NS_WSU  { 'http://schemas.xmlsoap.org/ws/2002/07/utility'; }
+
+$XML::Atom::ForceUnicode = 1;
 
 sub init {
     my $app = shift;
@@ -70,6 +71,7 @@ $1
 </soap:Envelope>
 SOAP
         }
+        $out = Encode::decode_utf8($out) unless Encode::is_utf8($out);
         return $out;
     };
     if (my $e = $@) {
@@ -149,6 +151,8 @@ sub get_auth_info {
             my($k, $v) = split /=/, $i, 2;
             $v =~ s/^"//;
             $v =~ s/"$//;
+            # it's probably not utf-8 but ascii
+            $v = Encode::decode_utf8($v) unless Encode::is_utf8($v);
             $param{$k} = $v;
         }
     }
@@ -178,7 +182,7 @@ sub authenticate {
     $nonce_record->save();
 # xxx Expire sessions on shorter timeout?
     my $enc = $app->config('PublishCharset');
-    my $username = encode_text($auth->{Username},undef,$enc);
+    my $username = $auth->{Username};
     my $user = MT::Author->load({ name => $username, type => 1 })
         or return $app->auth_failure(403, 'Invalid login');
     return $app->auth_failure(403, 'Invalid login')
@@ -201,18 +205,6 @@ sub authenticate {
     return $app->auth_failure(403, 'X-WSSE PasswordDigest is incorrect')
         unless $expected eq $auth->{PasswordDigest};
     $app->{user} = $user;
-
-    ## update session so the user will be counted as active
-    require MT::Session;
-    my $sess_active = MT::Session->load( { kind => 'UA', name => $user->id } );
-    if (!$sess_active) {
-        $sess_active = MT::Session->new;
-        $sess_active->id($app->make_magic_token());
-        $sess_active->kind('UA'); # UA == User Activation
-        $sess_active->name($user->id);
-    }
-    $sess_active->start(time);
-    $sess_active->save;
     return 1;
 }
 
@@ -297,7 +289,6 @@ sub iso2epoch {
 package MT::AtomServer::Weblog;
 use strict;
 
-use MT::I18N qw( encode_text );
 use XML::Atom;
 use XML::Atom::Feed;
 use base qw( MT::AtomServer );
@@ -308,9 +299,11 @@ use MT::Permission;
 use File::Spec;
 use File::Basename;
 
-use constant NS_APP => 'http://www.w3.org/2007/app';
-use constant NS_DC => 'http://purl.org/dc/elements/1.1/';
-use constant NS_TYPEPAD => 'http://sixapart.com/atom/typepad#';
+sub NS_APP { 'http://www.w3.org/2007/app'; }
+sub NS_DC { 'http://purl.org/dc/elements/1.1/'; }
+sub NS_TYPEPAD { 'http://sixapart.com/atom/typepad#'; }
+
+$XML::Atom::ForceUnicode = 1;
 
 sub script { $_[0]->{cfg}->AtomScript . '/1.0' }
 
@@ -404,7 +397,7 @@ sub authenticate {
         my $perms = $app->{perms} = MT::Permission->load({
                     author_id => $app->{user}->id,
                     blog_id => $app->{blog}->id });
-        return $app->error(403, "Permission denied.") unless $perms && $perms->can_create_post;
+        return $app->error(403, "Permission denied.") unless $perms && $perms->can_do('access_to_atom_server');
     }
     1;
 }
@@ -447,7 +440,7 @@ sub get_weblogs {
     while (my $thing = $iter->()) {
         # TODO: provide media collection if author can upload to this blog.
         if ($thing->isa('MT::Permission')) {
-            next if !$thing->can_create_post;
+            next if !$thing->can_do('get_blog_info_via_atom_server');
         }
 
         my $blog = $thing->isa('MT::Blog') ? $thing
@@ -459,7 +452,7 @@ sub get_weblogs {
         $doc->appendChild($workspace);
 
         my $title = XML::XPath::Node::Element->new('atom:title', 'atom');
-        my $blogname = encode_text($blog->name, $enc, 'utf-8');
+        my $blogname = $blog->name;
         $title->appendChild(XML::XPath::Node::Text->new($blogname));
         $workspace->appendChild($title);
 
@@ -468,7 +461,7 @@ sub get_weblogs {
         $workspace->appendChild($entries);
 
         my $e_title = XML::XPath::Node::Element->new('atom:title', 'atom');
-        my $feed_title = encode_text(MT->translate('[_1]: Entries', $blog->name), $enc, 'utf-8');
+        my $feed_title = MT->translate('[_1]: Entries', $blog->name);
         $e_title->appendChild(XML::XPath::Node::Text->new($feed_title));
         $entries->appendChild($e_title);
 
@@ -516,6 +509,8 @@ sub new_post {
     my $app = shift;
     my $atom = $app->atom_body or return $app->error(500, "No body!");
     my $blog = $app->{blog};
+    return $app->error(500, MT->translate("Invalid blog ID '[_1]'", ($blog ? ($blog->id) : (''))))
+        if !$blog || !$blog->is_blog;
     my $user = $app->{user};
     my $perms = $app->{perms};
     my $enc = $app->config('PublishCharset');
@@ -523,14 +518,13 @@ sub new_post {
     ## it's present, but we want to give an error now if necessary.
     my($cat);
     if (my $label = $atom->get(NS_DC, 'subject')) {
-        my $label_enc = encode_text($label,'utf-8',$enc);
-        $cat = MT::Category->load({ blog_id => $blog->id, label => $label_enc })
+        $cat = MT::Category->load({ blog_id => $blog->id, label => $label })
             or return $app->error(400, "Invalid category '$label'");
     }
 
     my $content = $atom->content;
     my $type = $content->type; 
-    my $body = encode_text(MT::I18N::utf8_off($content->body),'utf-8',$enc); 
+    my $body = $content->body; 
     my $asset;
     if ($type && $type !~ m!^application/.*xml$!) {
         if ($type !~ m!^text/!) {
@@ -548,7 +542,10 @@ sub new_post {
         $app->response_code(201);
         $app->response_content_type('application/atom_xml');
         my $a = MT::Atom::Entry->new_with_asset($asset);
-        return $a->as_xml; 
+        $app->send_http_header($app->response_content_type . '; charset=utf-8');
+        $app->{no_print_body} = 1;
+        $app->print( $a->as_xml );
+        return 1;
     } 
 
     my $entry = MT::Entry->new;
@@ -556,13 +553,13 @@ sub new_post {
     $entry->blog_id($blog->id);
     $entry->author_id($user->id);
     $entry->created_by($user->id);
-    $entry->status($perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
+    $entry->status($perms->can_do('publish_new_post_via_atom_server') ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
     $entry->allow_comments($blog->allow_comments_default);
     $entry->allow_pings($blog->allow_pings_default);
     $entry->convert_breaks($blog->convert_paras);
-    $entry->title(encode_text($atom->title,'utf-8',$enc));
-    $entry->text(encode_text(MT::I18N::utf8_off($atom->content()->body()),'utf-8',$enc));
-    $entry->excerpt(encode_text($atom->summary,'utf-8',$enc));
+    $entry->title($atom->title);
+    $entry->text($atom->content()->body());
+    $entry->excerpt($atom->summary);
     if (my $iso = $atom->issued) {
         my $pub_ts = MT::Util::iso2ts($blog, $iso);
         $entry->authored_on($pub_ts);
@@ -636,7 +633,10 @@ sub new_post {
                       href => $edit_uri,
                       type => 'application/atom+xml',  # even in Legacy
                       title => $entry->title });
-    $atom->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $atom->as_xml );
+    return 1;
 }
 
 sub edit_post {
@@ -651,9 +651,9 @@ sub edit_post {
     return $app->error(403, "Access denied")
         unless $app->{perms}->can_edit_entry($entry, $app->{user});
     my $orig_entry = $entry->clone;
-    $entry->title(encode_text($atom->title,'utf-8',$enc));
-    $entry->text(encode_text(MT::I18N::utf8_off($atom->content()->body()),'utf-8',$enc));
-    $entry->excerpt(encode_text($atom->summary,'utf-8',$enc));
+    $entry->title($atom->title);
+    $entry->text($atom->content()->body());
+    $entry->excerpt($atom->summary);
     $entry->modified_by($app->{user}->id);
     if (my $iso = $atom->issued) {
         my $pub_ts = MT::Util::iso2ts($blog, $iso);
@@ -693,7 +693,10 @@ sub edit_post {
     $app->response_code(200);
     $app->response_content_type($app->atom_content_type);
     $atom = $app->new_with_entry($entry);
-    $atom->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $atom->as_xml );
+    return 1;
 }
 
 sub get_posts {
@@ -706,7 +709,7 @@ sub get_posts {
     my $iter = MT::Entry->load_iter(\%terms, \%arg);
     my $feed = $app->new_feed();
     my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
-    my $blogname = encode_text($blog->name, undef, 'utf-8');
+    my $blogname = $blog->name;
     $feed->add_link({ rel => 'alternate', type => 'text/html',
                       href => $blog->site_url });
     $feed->add_link({ rel => 'self', type => $app->atom_x_content_type,
@@ -730,7 +733,7 @@ sub get_posts {
     while (my $entry = $iter->()) {
         my $e = $app->new_with_entry($entry);
         $e->add_link({ rel => $app->edit_link_rel, type => $app->atom_x_content_type,
-                       href => ($uri . $entry->id), title => encode_text($entry->title, undef,'utf-8') });
+                       href => ($uri . $entry->id), title => $entry->title });
         $e->add_link({ rel => 'replies', type => $app->atom_x_content_type,
                 href => $app->base . $app->app_path . $app->config->AtomScript . '/comments/blog_id=' . $blog->id . '/entry_id=' . $entry->id });
 
@@ -746,8 +749,10 @@ sub get_posts {
     $feed->add_entry($_) foreach @entries;
     ## xxx add next/prev links
     $app->run_callbacks( 'get_posts', $feed, $blog );
-    $app->response_content_type($app->atom_content_type);
-    $feed->as_xml;
+    $app->send_http_header($app->atom_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $feed->as_xml );
+    1;
 }
 
 sub get_post {
@@ -764,7 +769,7 @@ sub get_post {
     my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
     $uri .= '/entry_id=';
     $atom->add_link({ rel => $app->edit_link_rel, type => $app->atom_x_content_type,
-        href => ($uri . $entry->id), title => encode_text($entry->title, undef,'utf-8') });
+        href => ($uri . $entry->id), title => $entry->title });
     $atom->add_link({ rel => 'replies', type => $app->atom_x_content_type,
         href => $app->base
             . $app->app_path
@@ -774,7 +779,10 @@ sub get_post {
     });
     $app->run_callbacks( 'get_post', $atom, $entry );
     $app->response_content_type($app->atom_content_type);
-    $atom->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $atom->as_xml );
+    return 1;
 }
 
 sub delete_post {
@@ -841,7 +849,7 @@ sub _upload_to_asset {
         'audio/ogg-vorbis'   => '.ogg',
     );
 
-    return $app->error(403, "Access denied") unless $app->{perms}->can_upload;
+    return $app->error(403, "Access denied") unless $app->{perms}->can_do('upload_asset_via_atom_server');
     my $content = $atom->content;
     my $type = $content->type
         or return $app->error(400, "content \@type is required");
@@ -946,7 +954,10 @@ sub handle_upload {
     $atom->add_link($link);
     $app->response_code(201);
     $app->response_content_type('application/x.atom+xml');
-    $atom->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $atom->as_xml );
+    return 1;
 }
 
 package MT::AtomServer::Weblog::Legacy;
@@ -954,14 +965,15 @@ use strict;
 
 use base qw( MT::AtomServer::Weblog );
 
-use MT::I18N qw( encode_text );
 use XML::Atom;  # for LIBXML
 use XML::Atom::Feed;
 use MT::Blog;
 use MT::Permission;
 
-use constant NS_CATEGORY => 'http://sixapart.com/atom/category#';
-use constant NS_DC => MT::AtomServer::Weblog->NS_DC();
+sub NS_CATEGORY { 'http://sixapart.com/atom/category#'; }
+sub NS_DC { MT::AtomServer::Weblog->NS_DC(); }
+
+$XML::Atom::ForceUnicode = 1;
 
 sub script { $_[0]->{cfg}->AtomScript . '/weblog' }
 
@@ -1001,13 +1013,13 @@ sub get_weblogs {
     }
     while (my $thing = $iter->()) {
         if ($thing->isa('MT::Permission')) {
-            next unless $thing->can_create_post;
+            next unless $thing->can_do('get_blog_info_via_atom_server');
         }
         my $blog = $thing->isa('MT::Blog') ? $thing
             : MT::Blog->load($thing->blog_id);
         next unless $blog;
         my $uri = $base . '/blog_id=' . $blog->id;
-        my $blogname = encode_text($blog->name . ' #' . $blog->id, undef, 'utf-8');
+        my $blogname = $blog->name . ' #' . $blog->id;
         $feed->add_link({ rel => 'service.post', title => $blogname,
                           href => $uri, type => 'application/x.atom+xml' });
         $feed->add_link({ rel => 'service.feed', title => $blogname,
@@ -1023,8 +1035,10 @@ sub get_weblogs {
                           type => 'text/html' });
     }
     $app->response_code(200);
-    $app->response_content_type('application/x.atom+xml');
-    $feed->as_xml;
+    $app->send_http_header('application/x.atom+xml; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $feed->as_xml );
+    1;
 }
 
 sub get_categories {
@@ -1042,7 +1056,7 @@ sub get_categories {
         $doc->appendNamespace($ns);
     }
     while (my $cat = $iter->()) {
-        my $catlabel = encode_text($cat->label, undef, 'utf-8');
+        my $catlabel = $cat->label;
         if (LIBXML) {
             my $elem = $doc->createElementNS(NS_DC, 'subject');
             $doc->getDocumentElement->appendChild($elem);
@@ -1051,8 +1065,8 @@ sub get_categories {
             my $elem = XML::XPath::Node::Element->new('subject');
             my $ns = XML::XPath::Node::Namespace->new('#default' => NS_DC);
             $elem->appendNamespace($ns);
-            $doc->appendChild($elem);
             $elem->appendChild(XML::XPath::Node::Text->new($catlabel));
+            $doc->appendChild($elem);
         }
     }
     $app->response_code(200);
@@ -1068,7 +1082,6 @@ package MT::AtomServer::Comments;
 use strict;
 
 use base qw( MT::AtomServer::Weblog );
-use MT::I18N qw( encode_text );
 
 sub script { $_[0]->{cfg}->AtomScript . '/comments' }
 
@@ -1133,7 +1146,10 @@ sub get_comment {
             href => $entry->permalink } );
     $app->run_callbacks( 'get_comment', $c, $comment );
     $app->response_content_type($app->atom_content_type);
-    $c->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $c->as_xml );
+    return 1;
 }
 
 sub get_blog_comments {
@@ -1146,7 +1162,7 @@ sub get_blog_comments {
 
     my $feed = $app->new_feed();
     my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
-    my $blogname = encode_text($blog->name, undef, 'utf-8');
+    my $blogname = $blog->name;
     $feed->add_link({ rel => 'alternate', type => 'text/html',
                       href => $blog->site_url });
     $feed->add_link({ rel => 'self', type => $app->atom_x_content_type,
@@ -1164,7 +1180,10 @@ sub get_blog_comments {
     $app->run_callbacks( 'get_blog_comments', $feed, $blog );
     ## xxx add next/prev links
     $app->response_content_type($app->atom_content_type);
-    $feed->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $feed->as_xml );
+    return 1;
 }
 
 sub get_comments {
@@ -1181,7 +1200,7 @@ sub get_comments {
 
     my $feed = $app->new_feed();
     my $uri = $app->base . $app->uri . '/blog_id=' . $blog->id;
-    my $blogname = encode_text($blog->name, undef, 'utf-8');
+    my $blogname = $blog->name;
     $feed->add_link({ rel => 'alternate', type => 'text/html',
                       href => $entry->permalink });
     $feed->add_link({ rel => 'self', type => $app->atom_x_content_type,
@@ -1192,7 +1211,10 @@ sub get_comments {
     $app->run_callbacks( 'get_comments', $feed, $entry );
     ## xxx add next/prev links
     $app->response_content_type($app->atom_content_type);
-    $feed->as_xml;
+    $app->send_http_header($app->response_content_type . '; charset=utf-8');
+    $app->{no_print_body} = 1;
+    $app->print( $feed->as_xml );
+    return 1;
 }
 
 sub _comments_in_atom {

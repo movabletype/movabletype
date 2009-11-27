@@ -5,20 +5,164 @@
 #
 # $Id$
 
+require_once('class.exception.php');
+
 class Thumbnail {
 
-    var $src_file;
-    var $src_w;
-    var $src_h;
-    var $src_type;
+    private $src_file;
+    private $src_w;
+    private $src_h;
+    private $src_type;
+    private $src_img;
+    private $src_attr;
+
+    private $dest_img;
+    private $dest_w;
+    private $dest_h;
+    private $dest_scale;
+    private $dest_square;
+    private $dest_id;
+    private $dest_format;
+    private $dest_type;
+    private $dest_file;
 
     # construct
-    function Thumbnail ($src) {
-        $this->src_file = $src;
+    public function __construct ($src = null) {
+        if (!$this->is_available())
+            throw new MTExtensionNotFoundException('GD');
+
+        $this->src_file    = null;
+        $this->src_w       = 0;
+        $this->src_h       = 0;
+        $this->src_type    = null;
+        $this->src_img     = null;
+        $this->src_attr    = null;
+        $this->dest_w      = 0;
+        $this->dest_h      = 0;
+        $this->dest_scale  = 0;
+        $this->dest_square = false;
+        $this->dest_id     = null;
+        $this->dest_format = '%f-thumb-%wx%h-%i%x';
+        $this->dest_type   = 'auto';
+        $this->dest_img    = null;
+        $this->dest_file   = '';
+
+        if (!is_null($src))
+            $this->src_file = $src;
+    }
+
+    # destruct
+    public function __destruct () {
+        if (!empty($this->src_img))
+            @imagedestroy($this->src_img);
+        if (!empty($this->dest_img))
+            @imagedestroy($this->dest_img);
+    }
+
+    # property accessor
+    public function src_file($src = null) {
+        if (!is_null($src))
+            $this->src_file = $src;
+
+        $src_file = $this->src_file;
+        if (strtoupper(substr(PHP_OS, 0,3) == 'WIN') && extension_loaded('mbstring')) {
+            // Changes character-set of filename to SJIS on Windows.
+            $src_file = mb_convert_encoding($src_file, "SJIS", "auto");
+        }
+        return $src_file;
+    }
+
+    public function dest_file($dest = null) {
+        if (!is_null($dest))
+            $this->dest_file = $dest;
+
+        $dest_file = $this->dest_file;
+        if (strtoupper(substr(PHP_OS, 0,3) == 'WIN') && extension_loaded('mbstring')) {
+            // Changes character-set of filename to SJIS on Windows.
+            $src_file = mb_convert_encoding($dest_file, "SJIS", "auto");
+        }
+        return $dest_file;
+    }
+
+    public function width($w = null) {
+        if (!is_null($w))
+            $this->dest_w = $w;
+        return $this->dest_w;
+    }
+
+    public function height($h = null) {
+        if (!is_null($h))
+            $this->dest_h = $h;
+        return $this->dest_h;
+    }
+
+    public function scale($scale = null) {
+        if (!is_null($scale))
+            $this->dest_scale = $scale;
+        return $this->dest_scale;
+    }
+
+    public function square($square = null) {
+        if (!is_null($square))
+            $this->dest_square = $square;
+        return $this->dest_square;
+    }
+
+    public function id($id = null) {
+        if (!is_null($id))
+            $this->dest_id = $id;
+        return $this->dest_id;
+    }
+
+    public function format($fmt = null) {
+        if (!is_null($fmt))
+            $this->dest_format = $fmt;
+        return $this->dest_format;
+    }
+
+    public function type($type = null) {
+        if (!is_null($type))
+            $this->dest_type = $type;
+        return $this->dest_type;
+    }
+
+    public function dest() {
+        $dest_file = $this->dest_file();
+        if ( strtoupper(substr(PHP_OS, 0,3) == 'WIN') && extension_loaded('mbstring') ) {
+            // Changes character-set of filename to 'UTF-8' on Windows.
+            $dest_file = mb_convert_encoding($dest_file, mb_internal_encoding(), "auto");
+        }
+        return $dest_file;
+    }
+
+    private function load_image () {
+        $src_file = $this->src_file();
+        if (empty($src_file)) return false;
+        if (!file_exists($src_file)) return false;
+
+        # Get source image information
+        list($this->src_w, $this->src_h, $this->src_type, $this->src_attr) = getimagesize($src_file);
+
+        switch($this->src_type) {
+        case 1: #GIF
+            $this->src_img = @imagecreatefromgif($src_file);
+            break;
+        case 2: #JPEG
+            $this->src_img = @imagecreatefromjpeg($src_file);
+            break;
+        case 3: #PNG
+            $this->src_img = @imagecreatefrompng($src_file);
+            break;
+        default: #Unsupported format
+            throw new MTUnsupportedImageTypeException($src_file);
+        }
+        if (empty($this->src_img)) return false;
+
+        return true;
     }
 
     # Can we use function of GD?
-    function is_available () {
+    public function is_available () {
         return extension_loaded('gd');
     }
 
@@ -28,66 +172,72 @@ class Thumbnail {
     #   [1] thumbnail height
     #   [2] thumbnail width for file name
     #   [3] thumbnail width for file name
-    function _calculate_size ($width, $height, $scale, $square) {
+    private function _calculate_size () {
         # Calculate thumbnail size
         $thumb_w = $this->src_w;
         $thumb_h = $this->src_h;
         $thumb_w_name = $this->src_w;
         $thumb_h_name = $this->src_h;
 
-        if ($scale > 0) {
-            $thumb_w = $this->src_w * $scale / 100;
-            $thumb_h = $this->src_h * $scale / 100;
+        if ($this->dest_scale > 0) {
+            $thumb_w = intval($this->src_w * $this->dest_scale / 100);
+            $thumb_h = intval($this->src_h * $this->dest_scale / 100);
             $thumb_w_name = $thumb_w;
             $thumb_h_name = $thumb_h;
-        } elseif ($square) {
-            if ($width > 0) {
-                $thumb_w = $width;
-                $thumb_h = $width;
-                $thumb_w_name = $width;
-                $thumb_h_name = $width;
+        } elseif ($this->dest_square) {
+            if ($this->dest_w > 0) {
+                $thumb_w = $this->dest_w;
+                $thumb_h = $this->dest_w;
+                $thumb_w_name = $this->dest_w;
+                $thumb_h_name = $this->dest_w;
             } else {
-                $thumb_w = $height;
-                $thumb_h = $height;
-                $thumb_w_name = $height;
-                $thumb_h_name = $height;
+                $thumb_w = $this->dest_h;
+                $thumb_h = $this->dest_h;
+                $thumb_w_name = $this->dest_h;
+                $thumb_h_name = $this->dest_h;
             }
-        } elseif ($width > 0 || $height > 0) {
+        } elseif ($this->dest_w > 0 || $this->dest_h > 0) {
             $thumb_w_name = 'auto';
             $thumb_h_name = 'auto';
-            $x = $width; if ($width > 0) $thumb_w;
-            $y = $height; if ($height > 0) $thumb_h;
-            $pct = $width > 0 ? ($x / $thumb_w) : ($y / $thumb_h);
+            $x = $this->dest_w; if ($this->dest_w > 0) $thumb_w;
+            $y = $this->dest_h; if ($this->dest_h > 0) $thumb_h;
+            $pct = $this->dest_w > 0 ? ($x / $thumb_w) : ($y / $thumb_h);
             $thumb_w = (int)($thumb_w * $pct);
             $thumb_h = (int)($thumb_h * $pct);
-            if ($width > 0) $thumb_w_name = $width;
-            if ($height > 0) $thumb_h_name = $height;
+            if ($this->dest_w > 0) $thumb_w_name = $this->dest_w;
+            if ($this->dest_h > 0) $thumb_h_name = $this->dest_h;
         }
 
         return array($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name);
     }
 
-    function _make_dest_name ($w, $h, $format, $dest_type, $id) {
-        $output = $this->src_type;
-        if ($dest_type != 'auto') {
-            $output = strtolower($dest_type) == 'gif' ? 1
-              : strtolower($dest_type) == 'jpeg' ? 2
-              : strtolower($dest_type) == 'png' ? 3
-              : $src_type;
+    private function _make_dest_name ($w, $h) {
+        if ($this->dest_type == 'auto') {
+            $output = $this->src_type;
+        } elseif (strtolower($this->dest_type) == 'gif') {
+            $output = 1;
+        } elseif (strtolower($this->dest_type) == 'jpeg') {
+            $output = 2;
+        } elseif (strtolower($this->dest_type) == 'png') {
+            $output = 3;
+        } else {
+            $output = $this->src_type;
         }
         switch($output) {
-        case 1: #GIF
+        case 1:
             $ext = '.gif';
             break;
-        case 2: #JPEG
+        case 2:
             $ext = '.jpg';
             break;
-        case 3: #PNG
+        case 3:
             $ext = '.png';
             break;
+        default:
+            $ext = image_type_to_extension($output);
         }
 
-        $pathinfo = pathinfo($this->src_file);
+        $pathinfo = pathinfo($this->src_file());
         $basename = basename($pathinfo['basename'], '.'.$pathinfo['extension']);
 
         $patterns[0] = '/%w/';
@@ -98,60 +248,54 @@ class Thumbnail {
         $replacement[0] = $w;
         $replacement[1] = $h;
         $replacement[2] = $basename;
-        $replacement[3] = $id;
+        $replacement[3] = $this->dest_id;
         $replacement[4] = $ext;
 
-        return preg_replace($patterns, $replacement, $format);
+        return preg_replace($patterns, $replacement, $this->dest_format);
     }
 
     # Load or generate a thumbnail.
-    function get_thumbnail (&$dest, &$width, &$height, $id, $scale = 0, $format = '%f-thumb-%wx%h-%i%x', $dest_type = 'auto', $square = false) {
-        if (empty($this->src_file)) return false;
-        if (!file_exists($this->src_file)) return false;
-        if (!$this->is_available()) {
-            global $mt;
-            $mt->warning_log($mt->translate('GD support has not been available. Please install GD support.'));
-            return false;
+    public function get_thumbnail ($args = null) {
+        # Parse args
+        if (!empty($args)) {
+            if (!empty($args['dest']))
+                $this->dest_file = $args['dest'];
+            if (!empty($args['width']))
+                $this->dest_w = $args['width'];
+            if (!empty($args['height']))
+                $this->dest_h = $args['height'];
+            if (!empty($args['id']))
+                $this->dest_id = $args['id'];
+            if (!empty($args['scale']))
+                $this->dest_scale = $args['scale'];
+            if (!empty($args['format']))
+                $this->dest_format = $args['format'];
+            if (!empty($args['dest_type']))
+                $this->dest_type = $args['dest_type'];
+            if (!empty($args['square']))
+                $this->dest_square = $args['square'];
         }
-
-        # Get source image information
-        list($this->src_w, $this->src_h, $this->src_type, $src_attr) = getimagesize($this->src_file);
 
         # Load source image
-        $src_img;
-        switch($this->src_type) {
-        case 1: #GIF
-            $src_img = @imagecreatefromgif($this->src_file);
-            break;
-        case 2: #JPEG
-            $src_img = @imagecreatefromjpeg($this->src_file);
-            break;
-        case 3: #PNG
-            $src_img = @imagecreatefrompng($this->src_file);
-            break;
-        default: #Unsupported format
-            return false;
-        }
-        if (empty($src_img)) {
-            return false;
-        }
+        if (!$this->load_image()) return false;
 
         # Calculate thumbnail size
-        list ($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name) = $this->_calculate_size($width, $height, $scale, $square);
-        $width = $thumb_w;
-        $height = $thumb_h;
+        list ($thumb_w, $thumb_h, $thumb_w_name, $thumb_h_name) = $this->_calculate_size();
+        $this->dest_w = $thumb_w;
+        $this->dest_h = $thumb_h;
 
         # Decide a destination file name
-        if (empty($dest)) {
-            $dest = $this->_make_dest_name($thumb_w_name, $thumb_h_name, $format, $dest_type, $id);
+        if (empty($this->dest_file)) {
+            $this->dest_file($this->_make_dest_name($thumb_w_name, $thumb_h_name));
         }
+
         # Generate
-        if(!file_exists($dest)) {
-            $dir_name = dirname($dest);
+        $dest_file = $this->dest_file();
+        if(!file_exists($dest_file)) {
+            $dir_name = dirname($dest_file);
             if (!file_exists($dir_name))
                 mkpath($dir_name, 0777);
             if (!is_writable($dir_name)) {
-                imagedestroy($src_img);
                 return false;
             }
 
@@ -160,7 +304,7 @@ class Thumbnail {
             $src_y = 0;
             $target_w = $this->src_w;
             $target_h = $this->src_h;
-            if ($square) {
+            if ($this->dest_square) {
                 if ($this->src_w > $this->src_h) {
                     $src_x = (int)($this->src_w - $this->src_h) / 2;
                     $src_y = 0;
@@ -173,31 +317,31 @@ class Thumbnail {
             }
 
             # Create thumbnail
-            $dst_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
-            $result = imagecopyresampled ( $dst_img, $src_img, 0, 0, $src_x, $src_y,
+            $this->dest_img = imagecreatetruecolor ( $thumb_w, $thumb_h );
+            $result = imagecopyresampled ( $this->dest_img, $this->src_img, 0, 0, $src_x, $src_y,
                     $thumb_w, $thumb_h, $target_w, $target_h);
 
             $output = $this->src_type;
-            if ($dest_type != 'auto') {
-                $output = strtolower($dest_type) == 'gif' ? 1
-                  : strtolower($dest_type) == 'jpeg' ? 2
-                  : strtolower($dest_type) == 'png' ? 3
-                  : $src_type;
+            if ($this->dest_type != 'auto') {
+                $output = strtolower($this->dest_type) == 'gif' ? 1
+                  : strtolower($this->dest_type) == 'jpeg' ? 2
+                  : strtolower($this->dest_type) == 'png' ? 3
+                  : $this->src_type;
             }
             switch($output) {
             case 1: #GIF
-                imagegif($dst_img, $dest);
+                imagegif($this->dest_img, $dest_file);
                 break;
             case 2: #JPEG
-                imagejpeg($dst_img, $dest);
+                imagejpeg($this->dest_img, $dest_file);
                 break;
             case 3: #PNG
-                imagepng($dst_img, $dest);
+                imagepng($this->dest_img, $dest_file);
                 break;
             }
-            imagedestroy($dst_img);
+            imagedestroy($this->dest_img);
         }
-        imagedestroy($src_img);
+        imagedestroy($this->src_img);
 
         return true;
     }

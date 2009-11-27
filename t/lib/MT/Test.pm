@@ -1,6 +1,6 @@
 #############################################################################
-# Copyright Â© 2008-2009 Six Apart Ltd.
-# $Id$
+# Copyright å© 2008-2009 Six Apart Ltd.
+# $Id: Test.pm 3886 2009-06-19 04:11:07Z fumiakiy $
 
 package MT::Test;
 use base qw( Exporter );
@@ -385,6 +385,7 @@ sub init_upgrade {
 
         # line __LINE__ __FILE__
         MT::Entry->remove;
+        MT::Page->remove;
         MT::Comment->remove;
     };
     require MT::ObjectDriver::Driver::Cache::RAM;
@@ -411,38 +412,68 @@ sub init_data {
     # nix the old site just in case
     `rm -fR t/site` if ( -d 't/site' );
 
+    require MT::Website;
+    my $website = MT::Website->new();
+    $website->set_values({
+        name => 'Test site',
+        site_url => 'http://narnia.na/',
+        site_path => 't/',
+        description => "Narnia None Test Website",
+        custom_dynamic_templates => 'custom',
+        convert_paras => 1,
+        allow_reg_comments => 1,
+        allow_unreg_comments => 0,
+        allow_pings => 1,
+        sort_order_posts => 'descend',
+        sort_order_comments => 'ascend',
+        remote_auth_token => 'token',
+        convert_paras_comments => 1,
+        cc_license => 'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        server_offset => '-3.5',
+        children_modified_on => '20000101000000',
+        language => 'en_us',
+        file_extension => 'html',
+    });
+    $website->id(2);
+    $website->class('website');
+    $website->commenter_authenticators('enabled_TypeKey');
+    $website->save() or die "Couldn't save website 2: ". $website->errstr;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+    diag "Saved Website";
+
+    require MT::Blog;
     my $blog = MT::Blog->new();
-    $blog->set_values(
-        {
-            name         => 'none',
-            site_url     => 'http://narnia.na/nana/',
-            archive_url  => 'http://narnia.na/nana/archives/',
-            site_path    => 't/site/',
-            archive_path => 't/site/archives/',
-            archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
-            archive_type_preferred   => 'Individual',
-            description              => "Narnia None Test Blog",
-            custom_dynamic_templates => 'custom',
-            convert_paras            => 1,
-            allow_reg_comments       => 1,
-            allow_unreg_comments     => 0,
-            allow_pings              => 1,
-            sort_order_posts         => 'descend',
-            sort_order_comments      => 'ascend',
-            remote_auth_token        => 'token',
-            convert_paras_comments   => 1,
-            google_api_key           => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
-            cc_license =>
-'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
-            server_offset        => '-3.5',
-            children_modified_on => '20000101000000',
-            language             => 'en_us',
-            file_extension       => 'html',
-        }
-    );
+    $blog->set_values({
+        name => 'none',
+        site_url => '/:://nana/',
+        archive_url => '/:://nana/archives/',
+        site_path => 'site/',
+        archive_path => '/::/site/archives/',
+        archive_type=>'Individual,Monthly,Weekly,Daily,Category,Page',
+        archive_type_preferred => 'Individual',
+        description => "Narnia None Test Blog",
+        custom_dynamic_templates => 'custom',
+        convert_paras => 1,
+        allow_reg_comments => 1,
+        allow_unreg_comments => 0,
+        allow_pings => 1,
+        sort_order_posts => 'descend',
+        sort_order_comments => 'ascend',
+        remote_auth_token => 'token',
+        convert_paras_comments => 1,
+        google_api_key => 'r9Vj5K8PsjEu+OMsNZ/EEKjWmbCeQAv1',
+        cc_license => 'by-nc-sa http://creativecommons.org/licenses/by-nc-sa/2.0/ http://creativecommons.org/images/public/somerights20.gif',
+        server_offset => '-3.5',
+        children_modified_on => '20000101000000',
+        language => 'en_us',
+        file_extension => 'html',
+    });
     $blog->id(1);
+    $blog->class('blog');
+    $blog->parent_id(2);
     $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
+    $blog->create_default_templates('mt_blog');
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     require MT::Entry;
@@ -528,7 +559,7 @@ sub init_data {
             {
                 name => 'Author',
                 description =>
-'Can create entries, edit their own, upload files and publish.',
+'Can create entries, edit their own entries, upload files, and publish.',
                 perms => [
                     'comment',      'create_post',
                     'publish_post', 'upload',
@@ -1321,6 +1352,9 @@ sub reset_table_for {
         my $driver    = $class->dbi_driver;
         my $dbh       = $driver->rw_handle;
         my $ddl_class = $driver->dbd->ddl_class;
+
+        $dbh->{pg_server_prepare} = 0
+            if $ddl_class =~ m/Pg/;
 
         $dbh->do( $ddl_class->drop_table_sql($class) )
           or die $dbh->errstr

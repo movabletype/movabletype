@@ -13,7 +13,7 @@
         </mt:if>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="has_name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
+<mt:setvarblock name="html_title"><mt:if name="id"><mt:if name="name"><mt:var name="name" escape="html"><mt:else><mt:var name="template_name"></mt:if> - <__trans phrase="Edit Template"><mt:else><__trans phrase="Create Template"></mt:if></mt:setvarblock>
 <mt:var name="position_actions_bottom" value="1">
 <mt:setvarblock name="system_msg">
     <mt:unless name="recovered_object">
@@ -38,6 +38,13 @@
             id="recovered-failed"
             class="error">
             <__trans phrase="An error occurred while trying to recover your saved [_1]." params="<mt:var name="object_label">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="loaded_revision">
+        <mtapp:statusmsg
+            id="loaded_revision"
+            class="info">
+            <__trans phrase="Restored revision (Date:[_1])." params="<$mt:var name="rev_date" escape="html"$>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="saved">
@@ -89,18 +96,51 @@
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
+
+<mt:if name="use_revision">
+<mtapp:widget
+    id="template-status-widget"
+    class="status-widget"
+    label="<__trans phrase="Status">">
+    <mt:if name="new_object">
+    <p class="zero-state"><__trans phrase="New Template"></p>
+    <mt:else>
+    <div class="revision-info">
+        <mt:if name="rev_date">
+        <p><__trans phrase="Revision: <strong>[_1]</strong>" params="<mt:var name="rev_date" escape="html">"></p>
+        <a href="<mt:var name="script_url">?__mode=list_revision&_type=<mt:var name="object_type" default="entry">&id=<$mt:var name="id"$>&blog_id=<$mt:var name="blog_id"$>&r=<mt:var name="rev_number" escape="html">" class="mt-open-dialog" title="<__trans phrase="View revisions of this template">"><__trans phrase="View revisions"></a>
+        <mt:else>
+        <p class="zero-state"><__trans phrase="No revision(s) associated with this template"></p>
+        </mt:if>
+    </div>
+    </mt:if>
+</mtapp:widget>
+</mt:if>
+
     <mtapp:widget
         id="useful-links"
         label="<__trans phrase="Useful Links">">
         <ul>
+        <mt:if name="type" eq="backup">
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
+        </mt:if>
         <mt:if name="template_group" eq="widget">
             <li><a href="<mt:var name="script_url">?__mode=list_widget&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Widgets"></a></li>
+            <mt:if name="can_edit_config">
+            <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+            </mt:if>
+        <mt:elseif name="template_group" eq="module">
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+            <mt:if name="can_edit_config">
+            <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related"><__trans phrase="Module Option Settings"></a></li>
+            </mt:if>
         <mt:else>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">#<$mt:var name="template_group"$>" class="icon-left icon-related"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="List all templates"></a></li>
         </mt:if>
         <mt:if name="published_url">
-            <li><a href="<mt:var name="published_url">" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
+            <li><a href="<mt:var name="published_url" escape="html" />" class="icon-left icon-related" target="<__trans phrase="_external_link_target">"><__trans phrase="View Published Template"></a></li>
         </mt:if>
         </ul>
     </mtapp:widget>
@@ -140,22 +180,33 @@
     <$MTApp:PageActions from="edit_template"$>
 </mt:setvarblock>
 <mt:setvartemplate name="action_buttons">
+    <mt:if name="new_object">
     <button
         onclick="return validate(this.form);"
         type="submit"
         accesskey="s"
         tabindex="12"
         title="<__trans phrase="Save (s)">"
-        class="primary-button"
+        class="save action primary-button"
         ><__trans phrase="Save"></button>
+    <mt:else>
+    <button
+        onclick="return validate(this.form);"
+        type="submit"
+        accesskey="s"
+        tabindex="12"
+        title="<__trans phrase="Save Changes (s)">"
+        class="save action primary-button"
+        ><__trans phrase="Save Changes"></button>
+    </mt:if>
     <mt:if name="can_preview">
     <button
-        mt:mode="preview_template"
         name="preview_template"
         type="submit"
         accesskey="v"
         tabindex="13"
         title="Preview"
+        class="preview action"
         onclick="return validate(this.form);"
         ><__trans phrase="Preview"></button>
     </mt:if>
@@ -168,30 +219,19 @@
         accesskey="r"
         tabindex="14"
         title="<__trans phrase="Save and Publish this template (r)">"
+        class="publish action"
         onclick="return validate(this.form, 1);"
         ><__trans phrase="Save &amp; Publish"></button>
             </mt:if>
         </mt:if>
     </mt:if>
     </mt:unless>
-    <div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
 </mt:setvartemplate>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 var tag_inserts = {};
-var snippets = [];
-<mt:loop name="template_snippets">
-var content = "<mt:var name="content" escape="js">";
-<mt:if name="trigger">
-var output = content.replace(/\$(?!0)/g, '');
-snippets.push({ 'input' : '<mt:var name="trigger" escape="js">',
-    'output' : output });
-</mt:if>
-content = content.replace(/\$0/, '');
-tag_inserts['<mt:var name="id" escape="js">'] = content;
-</mt:loop>
 
 if ( !window.Editor )
     Editor = { strings: {} };
@@ -213,13 +253,8 @@ var tag_docs = <tmpl_var name="tag_docs" to_json="1">;
 function documentTags( useTextInput ) {
     // scan text of editor for tags
     var str;
-    if ( !useTextInput && ( window.app && window.app.cpeList.length > 0
-        && window.app.cpeList[0].editor ) ) {
-        str = window.app.cpeList[0].getCode();
-    } else {
-        var area = DOM.getElement('text_cpe') || DOM.getElement('text');
-        str = area.value;
-    }
+    var area = DOM.getElement('text');
+    str = area.value;
     
     if ( !defined( str ) )
         str = '';
@@ -315,15 +350,6 @@ function archiveFileSelect(sel) {
     }
 }
 
-function insertSnippet(el) {
-    if (el.selectedIndex == -1) return false;
-    var opt = el.options[el.selectedIndex].value;
-    if (!opt) return false;
-    el.selectedIndex = 0;
-    if (tag_inserts[opt]) {
-        app.insertCode( tag_inserts[opt] );
-    }
-}
 function setRebuild(f) {
     f['rebuild'].value = 'Y';
 }
@@ -448,26 +474,6 @@ function toggleCache(id) {
         [#= trans("Last auto-save at [_1]:[_2]:[_3]", hh, mm, ss ) #]
     [# } #]
     </mt:section>';
-
-function init() {
-    var txt = getByID("text");
-    if (txt) {
-        var w;
-        if (w = txt.contentWindow) {
-            if (w.Language) {
-                if (w.Language && !w.Language.snippets) {
-                    w.Language.snippets = [];
-                }
-                var fsnippets = w.Language.snippets;
-                for (var i = 0; i < snippets.length; i++) {
-                    fsnippets.push(snippets[i]);
-                }
-            }
-        }
-    }
-}
-
-TC.attachLoadEvent( init );
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -491,19 +497,21 @@ TC.attachLoadEvent( init );
 <input type="hidden" name="rebuild" value="" />
 <input type="hidden" name="action_name" value="" />
 <input type="hidden" name="action_input" value="" />
+<mt:if name="use_revision">
+<input type="hidden" name="save_revision" id="save_revision" value="1" />
+<input type="hidden" name="current_revision" id="current_revision" value="<mt:var name="current_revision">" />
+</mt:if>
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-
-<mt:include name="include/actions_bar.tmpl" hide_pager="1">
 
 <mtapp:setting
     id="title"
     label="<__trans phrase="Template Name">"
-    label_class = "no-header"
+    label_class="no-header"
     help_page="templates"
     help_section="template_name">
     <mt:if name="has_name">
-    <input name="name" id="title" tabindex="1" value="<mt:var name="name" escape="html">" maxlength="255" mt:watch-change="1" />
+    <input type="text" name="name" id="title" tabindex="1" value="<mt:var name="name" escape="html">" maxlength="255" mt:watch-change="1" />
     <mt:else>
     <input type="hidden" name="name" value="<$mt:var name="name" escape="html"$>" />
     <input type="text" id="title" name="name_display" value="<$mt:var name="name" escape="html">" disabled="disabled" />
@@ -521,26 +529,8 @@ TC.attachLoadEvent( init );
     label_class="no-header"
     help_page="templates"
     help_section="template_name">
-    <div id="template-body-actions">
-        <span class="codepress-toolbar" style="float:right">
-            <a href="javascript: void 0;" title="<__trans phrase="Syntax Highlight On" escape="singlequotes">" mt:command="set-mode-codepress-on" class="command-toggle-codepress-on toolbar button"><b>Syntax Hightlight On</b><s></s></a>
-            <a href="javascript: void 0;" title="<__trans phrase="Syntax Highlight Off" escape="singlequotes">" mt:command="set-mode-codepress-off" class="command-toggle-codepress-off toolbar button"><b>Syntax Hightlight Off</b><s></s></a>
-        </span>
-        <mt:if name="template_snippets">
-        <select id="tag-insert" tabindex="2" name="tag-insert" onchange="insertSnippet(this)">
-            <option value=""><__trans phrase="Insert..."></option>
-            <mt:loop name="template_snippets">
-            <option value="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"><mt:if name="trigger"> (<mt:var name="trigger" escape="html">)</mt:if></option>
-            </mt:loop>
-        </select>
-        </mt:if>
-    </div>
-    <div id="textarea-enclosure" style="position: relative; padding-bottom: 10px; height: <mt:var name="disp_prefs_height_text" default="290">px" mt:min-height="66" mt:update-field-height="text_height">
-        <textarea tabindex="3" class="full-width monospace medium" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" style="height: <mt:var name="disp_prefs_height_text" default="290">px" mt:editor="codepress" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
-        <input type="hidden" name="text_height" id="text_height" value="<mt:var name="disp_prefs_height_text" default="290">" />
-        <div class="resizer" mt:delegate="resizer" mt:target="textarea-enclosure" mt:lock="x">
-            <img src="<$mt:var name="static_uri"$>images/spacer.gif" width="100%" height="10"/>
-        </div>
+    <div id="textarea-enclosure" style="position: relative;">
+        <textarea tabindex="3" class="monospace" spellcheck="false" name="text" id="text" cols="" rows="" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
     </div>
 </mtapp:setting>
 
@@ -553,11 +543,11 @@ TC.attachLoadEvent( init );
 </mt:if>
 
 <div id="template-options"<mt:if name="template_options_active"> class="active"</mt:if>>
-    <div id="template-options-header" class="pkg">
+    <div id="template-options-header">
         <h3><a href="javascript:void(0);" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
         <div class="template-options-summary">
 <mt:if name="has_outfile">
-            <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html">">
+            <__trans phrase="Output file: <strong>[_1]</strong>" params="<mt:var name="outfile" escape="html" escape="html">">
 </mt:if>
 <mt:if name="enabled_archive_types">
             <__trans phrase="Enabled Mappings: [_1]" params="<mt:var name="enabled_archive_types">">
@@ -569,17 +559,17 @@ TC.attachLoadEvent( init );
     <mtapp:setting
         id="outfile"
         label="<__trans phrase="Output File">"
+        label_class="top_label"
         help_page="templates"
         help_section="output_file">
-        <div class="textarea-wrapper">
-            <input name="outfile" id="outfile" tabindex="4" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
-        </div>
+        <input type="text" name="outfile" id="outfile" tabindex="4" value="<mt:var name="outfile" escape="html">" class="full-width" mt:watch-change="1" />
     </mtapp:setting>
 </mt:if>
 
 <mt:if name="type" eq="index">
     <mtapp:setting
         label="<__trans phrase="Template Type">"
+        label_class="top_label"
         id="identifier"
         help_page="templates"
         help_section="template_type">
@@ -593,13 +583,12 @@ TC.attachLoadEvent( init );
 </mt:if>
 
 <mtapp:setting
-    label="<__trans phrase="Link to File">"
     id="linked_file"
+    label="<__trans phrase="Link to File">"
+    label_class="top_label"
     help_page="templates"
     help_section="linked_templates">
-        <div class="textarea-wrapper">
-            <input name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
-        </div>
+    <input type="text" name="linked_file" id="linked_file" tabindex="8" value="<mt:var name="linked_file" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
 </mtapp:setting>
 
 <mt:setvarblock name="publishing_hint">
@@ -609,8 +598,8 @@ TC.attachLoadEvent( init );
     <mtapp:setting
         id="archive_mapping"
         label="<__trans phrase="Archive Mapping">"
+        label_class="top_label"
         content_class="field-content-text"
-        hint=""
         show_hint="0">
         <p><a href="javascript:void(0)" onclick="return setCreateMode()" class="icon-left icon-create"><__trans phrase="Create Archive Mapping"></a></p>
         <div id="msg-block"></div>
@@ -623,10 +612,10 @@ TC.attachLoadEvent( init );
             </select>
             &nbsp;
             <span class="buttons">
-                <a href="javascript:void(0)"
+                <a class="button" href="javascript:void(0)"
                     onclick="addMap(); return false;"
                     ><__trans phrase="Add"></a>
-                <a href="javascript:void(0)"
+                <a class="button" href="javascript:void(0)"
                     onclick="cancelCreateMode(); return false"
                     ><__trans phrase="Cancel"></a>
             </span>
@@ -641,6 +630,7 @@ TC.attachLoadEvent( init );
         <mtapp:setting
             id="build_dynamic"
             label="<__trans phrase="Publishing">"
+            label_class="top_label"
             hint="$publishing_hint"
             show_hint="1"
             help_page="templates"
@@ -674,7 +664,7 @@ TC.attachLoadEvent( init );
         <mtapp:setting
             id="server_side_include"
             label="<__trans phrase="Server Side Include">"
-            content_class="field-content-text">
+            label_class="top_label">
             <input type="checkbox" id="server-side-include" name="include_with_ssi" value="1" onclick="toggleHidden('include_cache_path-field')"<mt:if name="include_with_ssi"> checked</mt:if> />
             <label for="server-side-include"><__trans phrase="Process as <strong>[_1]</strong> include" params="<$mt:var name="ssi_type"$>"></label>
         </mtapp:setting>
@@ -682,6 +672,7 @@ TC.attachLoadEvent( init );
             <mtapp:setting
                 id="include_cache_path"
                 label="<__trans phrase="Include cache path">"
+                label_class="top_label"
                 shown="<mt:if name="include_with_ssi">0<mt:else>1</mt:if>">
                 <div class="textarea-wrapper">
                     <input type="text" id="include-cache-path" name="cache_path" value="<mt:var name="cache_path" escape="html">" maxlength="255" class="full-width" mt:watch-change="1" />
@@ -694,14 +685,14 @@ TC.attachLoadEvent( init );
         <mtapp:setting
             id="caching"
             label="<__trans phrase="Module Caching">"
-            content_class="field-content-text">
+            label_class="top_label">
             <mt:if name="caching_disabled">
-            <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">">
+            <__trans phrase="Disabled (<a href="[_1]">change publishing settings</a>)" params="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">
             <mt:else>
             <ul id="cache-options">
                 <li><input type="radio" value="0" name="cache_expire_type" id="no-cache" onclick="toggleCache('cache-none');"<mt:if name="cache_expire_type" eq="0"> checked="checked"</mt:if>> <label for="no-cache"><__trans phrase="No caching"></label></li>
                 <li><input type="radio" value="1" name="cache_expire_type" id="expire-time" onclick="toggleCache('expire-time');"<mt:if name="cache_expire_type" eq="1"> checked="checked"</mt:if>> <label for="expire-time"><__trans phrase="Expire after"></label>
-                    <input type="text" id="cache-time-value" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
+                    <input type="text" id="cache-time-value" class="smaller-text" name="cache_expire_interval" value="<$mt:var name="cache_expire_interval" escape="html">" size="4" maxlength="3" <mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless> />
                     <select id="cache-time-unit" name="cache_expire_period"<mt:unless name="cache_expire_type" eq="1"> disabled="disabled"</mt:unless>>
                         <option value="minutes"<mt:if name="cache_expire_period" eq="minutes"> selected="selected"</mt:if>><__trans phrase="minutes"></option>
                         <option value="hours"<mt:if name="cache_expire_period" eq="hours"> selected="selected"</mt:if>><__trans phrase="hours"></option>
@@ -728,7 +719,18 @@ TC.attachLoadEvent( init );
     </div>
 </div>
 
+<mt:if name="use_revision">
+<mtapp:setting
+    id="revision-note"
+    label="<__trans phrase="Change note">"
+    label_class="top-label">
+    <input type="text" name="revision-note" id="revision-note" value="<mt:var name="revision-note" escape="html">"<mt:if name="save_revision" eq="0"> style="display:none"</mt:if>/>
+</mtapp:setting>
+</mt:if>
+
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+<div id="autosave-notification-<$mt:var name="bar_position" escape="html" default="top"$>" class="autosave-notification"></div>
+
 </form>
 <form name="archive_map_form" method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="" />
@@ -737,6 +739,7 @@ TC.attachLoadEvent( init );
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 </form>
 
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/js/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
 App.singletonConstructor =
@@ -753,7 +756,42 @@ MT.App = new Class( MT.App, {
     }
 
 } );
+
+var options = jQuery('#text').attr('mt:editor-options');
+var parsers;
+if (options.match('lang:css')) {
+    parsers = ["parsecss.js"];
+} else if (options.match('lang:javascript')) {
+    parsers = ["tokenizejavascript.js", "parsejavascript.js"];
+} else {
+    parsers = ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "parsehtmlmixed.js"];
+}
+var editor = CodeMirror.fromTextArea('text', {
+    parserfile: parsers,
+    stylesheet: ["<$mt:var name="static_uri"$>codemirror/css/xmlcolors.css", "<$mt:var name="static_uri"$>codemirror/css/jscolors.css", "<$mt:var name="static_uri"$>codemirror/css/csscolors.css"],
+    path: "<mt:var name="static_uri">codemirror/js/",
+    lineNumbers: true,
+    textWrapping: false,
+    tabMode: "default",
+    indentUnit: 0,
+    height: "500px",
+    lang: "<mt:var name="language_tag">"
+});
 /* ]]> */
 </script>
-
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.save, button.publish').click(function() {
+        jQuery('form#template-listing-form > input[name=__mode]').val('save');
+    });
+    jQuery('button.preview').click(function() {
+        jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
+    });
+    jQuery('input#save_revision').click(function() {
+        jQuery('input#revision-note').toggle();
+    });
+    jQuery('button.mt-template-listing-form-action').mtDoPluginAction({
+        plural: 'Templates',
+        phrase: 'to act upon'
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

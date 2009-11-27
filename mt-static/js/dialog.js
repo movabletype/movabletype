@@ -37,6 +37,7 @@ Dialog.MultiPanel = new Class(Dialog.Simple, {
         this.currentPanel = 0;
     },
     setPanels: function(panels) {
+        this.panels = []; // reset
         // sets the order...
         for (var i = 0; i < panels.length; i++) {
             var panel;
@@ -48,6 +49,7 @@ Dialog.MultiPanel = new Class(Dialog.Simple, {
             panel.parent = this;
             this.panels[this.panels.length] = panel;
         }
+        this.currentPanel = 0;
         this.panels[0].show();
     },
     nextPanel: function() {
@@ -66,6 +68,18 @@ Dialog.MultiPanel = new Class(Dialog.Simple, {
         var new_panel = this.panels[this.currentPanel-1];
         new_panel.show(); old_panel.hide();
         this.currentPanel--;
+    },
+    selectPanel: function(index) {
+        index = 1 * index;  // Make sure index is number.
+        if (index < 0 || this.panels.length <= index )
+            return;
+        if ( index == this.currentPanel )
+            return;
+        var old_panel = this.panels[this.currentPanel];
+        var new_panel = this.panels[index];
+        new_panel.show();
+        old_panel.hide();
+        this.currentPanel = index;
     }
 });
 
@@ -140,13 +154,14 @@ SelectionList = new Class(Object, {
         var self = this;
         var makeclosure = function(x) { return function() { self.remove(x) } };
         for (var i = 0; i < this.itemList.length; i++) {
-            var link = doc.createElement("a");
-            link.setAttribute("href","javascript:void(0);");
             var p = this.itemList[i];
             var d = this.itemHash[p];
             var l = d.label;
-            link.onclick = makeclosure(p);
             l.replace(/\s/g, '&nbsp;');
+            var link = doc.createElement("a");
+            link.setAttribute("href","javascript:void(0);");
+            link.setAttribute("id","selected-"+p);
+            link.onclick = makeclosure(p);
             link.innerHTML = l + "&nbsp;<span class='remove'>x</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
@@ -259,7 +274,7 @@ ListingPanel = new Class(Panel, {
             }
         }
     },
-    init: function(name) {
+    init: function(name, searchtype) {
         ListingPanel.superClass.init.apply(this, arguments);
 
         // for closures
@@ -269,7 +284,7 @@ ListingPanel = new Class(Panel, {
             "list-data", this.element)[0];
 
         // FIXME: name != type...
-        this.datasource = new Datasource(this.listData, name);
+        this.datasource = new Datasource(this.listData, name, searchtype);
         this.pager = new Pager(TC.getElementsByTagAndClassName("div",
             "pagination", this.element)[0]);
         this.datasource.setPager(this.pager);

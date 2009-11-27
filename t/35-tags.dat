@@ -429,5 +429,25 @@
 { "r" : "1", "t" : "<mt:entries lastn='1' tags='verse'><mt:EntryTitle></mt:Entries>", "e" : "Verse 5" }, #426
 { "r" : "1", "t" : "<mt:authors username='Chuck D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #427
 { "r" : "1", "t" : "<mt:authors id='2' username='Bob D'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #428
-{ "r" : "1", "t" : "<mt:authors id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"} #429
+{ "r" : "1", "t" : "<mt:authors id='2'><MTAuthorName>;<MTAuthorDisplayName>;<MTAuthorEmail>;<MTAuthorURL>;</mt:authors>", "e" : "Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;"}, #429
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteName></mt:Websites>", "e" : "Test site"}, #430
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteDescription></mt:Websites>", "e" : "Narnia None Test Website"}, #431
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteURL></mt:Websites>", "e" : "http://narnia.na/"}, #432
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsitePath></mt:Websites>", "e" : "t/"}, #433
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteID></mt:Websites>", "e" : "2"}, #434
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteTimezone></mt:Websites>", "e" : "-03:30"}, #435
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteTimezone no_colon='1'></mt:Websites>", "e" : "-0330"}, #436
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteLanguage></mt:Websites>", "e" : "en_us"}, #437
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteLanguage locale='1'></mt:Websites>", "e" : "en_US"}, #438
+{ "r" : "1", "t" : "<mt:Websites><mt:IfWebsite>1</mt:IfWebsite></mt:Websites>", "e" : "1"}, #439
+{ "r" : "1", "t" : "<mt:Websites><MTWebsiteCCLicenseURL></mt:Websites>", "e" : "http://creativecommons.org/licenses/by-nc-sa/2.0/"}, #440
+{ "r" : "1", "t" : "<mt:Websites><MTWebsiteCCLicenseImage></mt:Websites>", "e" : "http://creativecommons.org/images/public/somerights20.gif"}, #441
+{ "r" : "1", "t" : "<mt:Websites><MTWebsiteIfCCLicense>1</MTWebsiteIfCCLicense></mt:Websites>", "e" : "1"}, #442
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteFileExtension></mt:Websites>", "e" : ".html"}, #443
+{ "r" : "1", "t" : "<MTBlogURL id='1'>", "e" : "http://narnia.na/nana/"}, #444
+{ "r" : "1", "t" : "<MTBlogRelativeURL id='1'>", "e" : "/nana/"}, #445
+{ "r" : "1", "t" : "<MTBlogSitePath is='1'>", "e" : "t/site/"}, #446
+{ "r" : "1", "t" : "<MTBlogArchiveURL id='1'>", "e" : "http://narnia.na/nana/archives/"}, #447
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:Websites>", "e" : "true"}, #448
+{ "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"} #449
 ]

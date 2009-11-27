@@ -12,7 +12,7 @@ function dialog_closed(ok) {
         var frm = getByID("publishing_profiles_form");
         frm.submit();
     } else {
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
     }
 }
 function init() {
@@ -26,7 +26,6 @@ function init() {
     dialog.setPanels(panels);
     dialog.open({}, dialog_closed);
 }
-TC.attachLoadEvent(init);
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -63,7 +62,15 @@ TC.attachLoadEvent(init);
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
-                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing"> <span class="hint"><__trans phrase="Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically."></span></label>
+                    <label for="dynamicity-partialasync"><__trans phrase="High Priority Static Publishing">
+                        <span class="hint">
+                <mt:if name="is_blog">
+                            <__trans phrase="Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.">
+                <mt:else>
+                            <__trans phrase="Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.">
+                </mt:if>
+                        </span>
+                    </label>
                 </li>
                 <li>
                     <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
@@ -76,20 +83,17 @@ TC.attachLoadEvent(init);
             </ul>
         </mtapp:setting>
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    class="primary-button next"
-                    ><__trans phrase="Continue"></button>
-                <button
-                    onclick="closeDialog(); return false"
-                    type="submit"
-                    class="cancel"
-                    accesskey="x"
-                    title="<__trans phrase="Cancel (x)">"
-                    ><__trans phrase="Cancel"></button>
-            </div>
+            <button
+               type="submit"
+               accesskey="s"
+               class="action primary-button next"
+               ><__trans phrase="Continue"></button>
+            <button
+               type="submit"
+               accesskey="x"
+               title="<__trans phrase="Cancel (x)">"
+               class="action mt-close-dialog"
+               ><__trans phrase="Cancel"></button>
         </div>
     </div>
     <div id="confirm-panel" class="hidden panel">
@@ -98,30 +102,33 @@ TC.attachLoadEvent(init);
         <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
 
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions">
-                <button
-                    type="button"
-                    accesskey="s"
-                    class="primary-button close"
-                    ><__trans phrase="Confirm"></button>
-                <button
-                    onclick="closeDialog(); return false"
-                    type="submit"
-                    class="cancel"
-                    accesskey="x"
-                    title="<__trans phrase="Cancel (x)">"
-                    ><__trans phrase="Cancel"></button>
-                <!-- <button
-                    onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
-                    type="submit"
-                    accesskey="b"
-                    title="<__trans phrase="Back (b)">"
-                    ><__trans phrase="Back"></button> -->
-            </div>
+            <button
+                type="button"
+                accesskey="s"
+                class="action primary-button close"
+                ><__trans phrase="Confirm"></button>
+            <button
+                type="submit"
+                class="cancel action mt-close-dialog"
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">"
+                ><__trans phrase="Cancel"></button>
+            <!-- <button
+                onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
+                type="submit"
+                accesskey="b"
+                title="<__trans phrase="Back (b)">"
+                ><__trans phrase="Back"></button> -->
         </div>
 
     </div>
 
 </form>
-
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
 <mt:include name="dialog/footer.tmpl">

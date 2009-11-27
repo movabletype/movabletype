@@ -1,4 +1,4 @@
-<mt:setvar name="page_title" value="<__trans phrase="Manage Address Book">">
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1] Address Book" params="<mt:if name="blog_id"><mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if><mt:else><__trans phrase="Global"></mt:if>"></mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
         <mtapp:statusmsg
@@ -47,17 +47,17 @@
     var old_note_url = '';
     function highlight_note(id) {
         if (current_edit) return;
-        var note_link = getByID('note-link-' + id);
-        if (!note_link) return;
-        note_link.style.backgroundColor = '#FFC';
-        note_link.style.borderColor = '#FFC';
+        jQuery('#note-link-' + id).css({
+            'backgroundColor': '#FFC',
+            'borderColor': '#FFC'
+        });
     }
 
     function unhighlight_note(id) {
-        var note_link = getByID('note-link-' + id);
-        if (!note_link) return;
-        note_link.style.backgroundColor = 'transparent';
-        note_link.style.borderColor = '#3F658C';
+        jQuery('#note-link-' + id).css({
+            'backgroundColor': 'transparent',
+            'borderColor': '#3F658C'
+        });
     }
 
     function edit_note(id) {
@@ -138,39 +138,26 @@
     }
 
     function setCreateMode () {
-        getByID('email').value = '';
-        getByID('url').value = '';
-        getByID('create-inline-notification').style.display = 'block';
-        getByID('create-contact').style.display = 'none';
-        var el = getByID('saved-msg');
-        if (el) el.style.display = 'none';
-        var el = getByID('saved-deleted-msg');
-        if (el) el.style.display = 'none';
-        getByID('email').focus();
+        jQuery('#email').val('').focus();
+        jQuery('#url').val('');
+        jQuery('#create-inline-notification').show();
+        jQuery('#create-contact').hide();
+        jQuery('#saved-msg').hide();
+        jQuery('#saved-deleted-msg').hide();
     }
 
     function cancelCreateMode () {
-    	getByID('create-inline-notification').style.display = 'none';
-        getByID('create-contact').style.display = 'block';
+    	jQuery('#create-inline-notification').hide();
+        jQuery('#create-contact').show();
     }
-
-    var tableSelect;
-    function init()
-    {
-    	// setup
-    	tableSelect = new TC.TableSelect( "notification-listing-table" );
-    }
-
-    TC.attachLoadEvent( init );
-    /* ]]> */
     </script>
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
-<a href="javascript:void(0)"
+<button
     onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="contact" escape="js">', '<__trans phrase="contacts" escape="js">'); return false;"
     accesskey="x"
     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-    ><__trans phrase="Delete"></a>
+    ><__trans phrase="Delete"></button>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
     <ul class="action-link-list">
@@ -186,14 +173,14 @@
 <input type="hidden" name="_type" value="notification" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-<input type="hidden" name="id" value="" />  
+<input type="hidden" name="id" value="" />
 <mtapp:setting
     id="email"
     label="<__trans phrase="Email">"
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="email" id="email" value="<mt:var name="email" escape="html">" />
+    <input type="text" name="email" id="email" value="<mt:var name="email" escape="html">" />
 </mtapp:setting>
 <mtapp:setting
     id="website"
@@ -201,23 +188,30 @@
     label_class="inline"
     hint=""
     show_hint="0">
-    <input name="url" id="url" value="<mt:var name="url" escape="html">">
+    <input type="text" name="url" id="url" value="<mt:var name="url" escape="html">">
 </mtapp:setting>
-<mtapp:setting
-    id="actions"
-    label="<__trans phrase="Actions">"
-    label_class="inline field-no-header"
-    hint=""
-    show_hint="0">
     <span class="buttons">
-        <a href="javascript:void(0)" mt:command="submit"
-            ><__trans phrase="Add Contact"></a>
-        <a href="javascript:void(0)"
-            onclick="cancelCreateMode(); return false"
-            ><__trans phrase="Cancel"></a>
+        <button
+            type="submit"
+            class="small-button"
+            ><__trans phrase="Add Contact"></button>
+        <button
+            type="button"
+            class="small-button mt-cancel-action"
+            ><__trans phrase="Cancel"></button> 
     </span>
-</mtapp:setting>
 </form>
 </div>
 <mt:include name="include/notification_table.tmpl">
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery.mtCheckbox();
+
+    jQuery('button.mt-do-action').click(function() {
+        jQuery('#create-inline-notification-form').submit();
+    });
+    jQuery('button.mt-cancel-action').click(function() {
+        cancelCreateMode();
+        return false;
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

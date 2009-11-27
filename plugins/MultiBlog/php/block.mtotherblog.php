@@ -27,7 +27,7 @@ function smarty_block_mtotherblog($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        $blog = $ctx->mt->db->fetch_blog($blog_id);
+        $blog = $ctx->mt->db()->fetch_blog($blog_id);
         $ctx->stash('blog', $blog);
         $ctx->stash('blog_id', $blog_id);
     } else {

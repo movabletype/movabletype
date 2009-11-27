@@ -22,10 +22,10 @@ function smarty_function_mttagrank($args, &$ctx) {
             if ('entry' == $class or 'page' == $class) {
                 # for Entry/Page
                 $class = strtolower($ctx->stash('class_type'));
-                $tags = $ctx->mt->db->fetch_entry_tags(array('blog_id' => $blog_id, 'class' => $class));
+                $tags = $ctx->mt->db()->fetch_entry_tags(array('blog_id' => $blog_id, 'class' => $class));
             } elseif ('asset' == $class) {
                 # for Asset
-                $tags = $ctx->mt->db->fetch_asset_tags(array('blog_id' => $blog_id));
+                $tags = $ctx->mt->db()->fetch_asset_tags(array('blog_id' => $blog_id));
             } else {
                 return '';
             }
@@ -36,7 +36,7 @@ function smarty_function_mttagrank($args, &$ctx) {
         $ntags = 0;
         $tagnames = '';
         foreach ($tags as $_tag) {
-            $count = $_tag['tag_count'];
+            $count = $_tag->tag_count;
             if ($count > $max) $max = $count;
             if ($count < $min or $min == 0) $min = $count;
             $ntags += $count;
@@ -59,9 +59,9 @@ function smarty_function_mttagrank($args, &$ctx) {
         $factor *= ($ntags / $max_level);
     }
 
-    $count = $tag['tag_count'];
+    $count = $tag->tag_count;
     if($count == ''){
-        $count = $ctx->mt->db->tags_entry_count($tag['tag_id'], $ctx->stash('class_type'));
+        $count = $ctx->mt->db()->tags_entry_count($tag->tag_id, $ctx->stash('class_type'));
     }
 
     $level = intval(log($count - $min + 1) * $factor);

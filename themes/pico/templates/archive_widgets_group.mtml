@@ -1,0 +1,14 @@
+<mt:Ignore>
+    <__trans phrase="This is a custom set of widgets that are conditioned to serve different content based upon what type of archive it is included. More info: [_1]" params="http://www.movabletype.org/documentation/designer/widget-sets.html">
+</mt:Ignore>
+<mt:If name="category_archive">
+    <mt:IfArchiveTypeEnabled archive_type="Category-Monthly">
+        <$mt:Include widget="<__trans phrase="Current Category Monthly Archives">"$>
+    </mt:IfArchiveTypeEnabled>
+</mt:If>
+<mt:IfArchiveTypeEnabled archive_type="Category">
+    <$mt:Include widget="<__trans phrase="Category Archives">"$>
+</mt:IfArchiveTypeEnabled>
+<mt:IfArchiveTypeEnabled archive_type="Monthly">
+    <$mt:Include widget="<__trans phrase="Monthly Archives">"$>
+</mt:IfArchiveTypeEnabled>

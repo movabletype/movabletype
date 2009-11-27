@@ -8,10 +8,9 @@ package MT::App::Upgrader;
 use strict;
 
 use MT::App;
-@MT::App::Upgrader::ISA = qw(MT::App);
+use base qw( MT::App );
 use MT::BasicAuthor;
 use MT::Util;
-use MT::I18N;
 use JSON;
 
 sub id {'upgrade'}
@@ -25,18 +24,21 @@ sub BEGIN {
 sub init {
     my $app = shift;
     $app->SUPER::init(@_) or return;
-    $app->add_methods(
+    $app->{user_class}           = 'MT::BasicAuthor';
+    $app->{template_dir}         = 'cms';
+    $app->{plugin_template_path} = '';
+    $app;
+}
+
+sub core_methods {
+    return {
         'main'        => \&main,
         'install'     => \&upgrade,
         'upgrade'     => \&upgrade,
         'run_actions' => \&run_actions,
         'init_user'   => \&init_user,
-        'init_blog'   => \&init_blog,
-    );
-    $app->{user_class}           = 'MT::BasicAuthor';
-    $app->{template_dir}         = 'cms';
-    $app->{plugin_template_path} = '';
-    $app;
+        'init_website'   => \&init_website,
+    };
 }
 
 sub init_request {
@@ -164,10 +166,10 @@ sub upgrade {
 
     my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
-    if ( $] < 5.006001 ) {    # our minimal requirement for support
+    if ( $] < 5.008001 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
         $param{perl_version}    = $ver;
-        $param{perl_minimum}    = '5.6.1';
+        $param{perl_minimum}    = '5.8.1';
     }
 
     my $method = $app->request_method;
@@ -210,6 +212,8 @@ sub upgrade {
 
     $param{up_to_date} = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
+    $param{mt_admin_url}  = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+                            . $app->config->AdminScript;
 
     return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
@@ -279,7 +283,7 @@ sub init_user {
         else {
             $param{error}
                 = $app->translate(
-                "Failed to authenticate using given credentials: [_1].",
+                "Could not authenticate using the credentials provided: [_1].",
                 $err );
             return $app->build_page( 'install.tmpl', \%param );
         }
@@ -295,20 +299,20 @@ sub init_user {
             }
             else {
                 $param{error} = $app->translate(
-                    "You failed to validate your password.");
+                    "Both passwords must match.");
                 return $app->build_page( 'install.tmpl', \%param );
             }
         }
         else {
             $param{error}
-                = $app->translate("You failed to supply a password.");
+                = $app->translate("You must supply a password.");
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
     if ( $mode eq 'MT' ) {
         if ( !MT::Util::is_valid_email($initial_email) ) {
             $param{error}
-                = $app->translate("The e-mail address is required.");
+                = $app->translate("An e-mail address is required.");
             return $app->build_page( 'install.tmpl', \%param );
         }
     }
@@ -324,36 +328,41 @@ sub init_user {
     $param{initial_external_id} = $initial_external_id;
     $param{initial_use_system}  = $initial_use_system;
     $param{config}              = $app->serialize_config(%param);
-    $app->init_blog( \%param );
+    $app->init_website( \%param );
 }
 
-sub init_blog {
+sub init_website {
     my $app = shift;
     my ($param) = @_;
     my %param;
 
-    $param{config}            = $param->{config} || $app->param('config');
-    $param{blog_name}         = $app->param('blog_name');
-    $param{blog_url}          = $app->param('blog_url') || '';
-    $param{blog_path}         = $app->param('blog_path') || '';
-    $param{blog_timezone}     = $app->param('blog_timezone');
-    $param{blog_template_set} = $app->param('blog_template_set');
-    $param{blog_path} =~ s!(/|\\)$!!;
-    $param{blog_url} .= '/' if $param{blog_url} !~ m!/$!;
+    $param{config}           = $param->{config} || $app->param('config');
+    $param{website_name}     = $app->param('website_name');
+    $param{website_url}      = $app->param('website_url') || '';
+    $param{website_path}     = $app->param('website_path') || '';
+    $param{website_timezone} = $app->param('website_timezone');
+    $param{website_theme}    = $app->param('website_theme');
+    $param{website_path} =~ s!(/|\\)$!!;
+    $param{website_url} .= '/' if $param{website_url} !~ m!/$!;
 
-    my $tz = $app->param('blog_timezone') || $app->config('DefaultTimezone');
-    my $param_name = 'blog_timezone_' . $tz;
+    my $tz = $app->param('website_timezone') || $app->config('DefaultTimezone');
+    my $param_name = 'website_timezone_' . $tz;
     $param_name =~ s/[\-\.]/_/g;
     $param{$param_name} = 1;
 
-    my $sets = $app->registry("template_sets");
-    $sets->{$_}{key} = $_ for keys %$sets;
-    $sets->{'mt_blog'}{selected} = 1;
-    $sets = [ values %$sets ];
-    no warnings;
-    @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
-    $param{'template_set_loop'}  = $sets;
-    $param{'template_set_index'} = $#$sets;
+    require MT::Theme;
+    my $themes = MT::Theme->load_all_themes;
+    my @theme_loop =
+        map {{
+            key   => $_->id,
+            label => $_->label,
+        }}
+        grep {
+            ( $_->{class} || '' ) eq 'both'
+            || ( $_->{class} || '' ) eq 'website'
+        } values %$themes;
+    $param{'theme_loop'} = \@theme_loop;
+    $param{'theme_index'} = scalar @theme_loop;
 
     if ( $app->param('back') ) {
         return $app->init_user;
@@ -361,38 +370,32 @@ sub init_blog {
     if ( !$app->param('finish') ) {
 
         # suggest site_path & site_url
-        my $path = $app->config('DefaultSiteRoot');
-        if ( !$path ) {
-            $path = $app->document_root();
-        }
-        $param{blog_path} = File::Spec->catdir( $path, 'BLOG-NAME' );
+        my $path = $app->document_root();
+        $param{website_path} = File::Spec->catdir( $path, 'WEBSITE-NAME' );
 
-        my $url = $app->config('DefaultSiteURL');
-        if ( !$url ) {
-            $url = $app->base . '/';
-            $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
-            $url =~ s!/mt/?$!/!i;
-        }
-        $param{blog_url} = $url . 'BLOG-NAME/';
+        my $url = $app->base . '/';
+        $url =~ s!/cgi(?:-bin)?(/.*)?$!/!;
+        $url =~ s!/mt/?$!/!i;
+        $param{website_url} = $url . 'WEBSITE-NAME/';
 
-        return $app->build_page( 'setup_initial_blog.tmpl', \%param );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
     # check to publishing path (writable?)
     my $site_path;
-    if ( -d $param{blog_path} ) {
-        $site_path = $param{blog_path};
+    if ( -d $param{website_path} ) {
+        $site_path = $param{website_path};
     }
     else {
-        my @dirs = File::Spec->splitdir( $param{blog_path} );
+        my @dirs = File::Spec->splitdir( $param{website_path} );
         pop @dirs;
         $site_path = File::Spec->catdir(@dirs);
     }
     if ( !-w $site_path ) {
         $param{error}
-            = $app->translate( "The path provided below is not writable.",
-            $param{blog_path} );
-        return $app->build_page( 'setup_initial_blog.tmpl', \%param );
+            = $app->translate( "The 'Publishing Path' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click 'Finish Install' again.",
+            $param{website_path} );
+        return $app->build_page( 'setup_initial_website.tmpl', \%param );
     }
 
     my %config = $app->unserialize_config();
@@ -401,25 +404,25 @@ sub init_blog {
     }
 
     my $new_user;
-    my $new_blog;
+    my $new_website;
     use URI::Escape;
     $new_user = {
-        user_name        => uri_escape( $param{initial_user} ),
-        user_nickname    => uri_escape( $param{initial_nickname} ),
-        user_password    => uri_escape( $param{initial_password} ),
-        user_email       => uri_escape( $param{initial_email} ),
+        user_name        => uri_escape_utf8( $param{initial_user} ),
+        user_nickname    => uri_escape_utf8( $param{initial_nickname} ),
+        user_password    => uri_escape_utf8( $param{initial_password} ),
+        user_email       => uri_escape_utf8( $param{initial_email} ),
         user_lang        => $param{initial_lang},
         user_external_id => $param{initial_external_id},
     };
     if ( my $email_system = $param{initial_use_system} || $param{use_system_email} ) {
         $new_user->{'use_system_email'} = $email_system;
     }
-    $new_blog = {
-        blog_name         => uri_escape( $param{blog_name} ),
-        blog_url          => uri_escape( $param{blog_url} ),
-        blog_path         => uri_escape( $param{blog_path} ),
-        blog_timezone     => $param{blog_timezone},
-        blog_template_set => $param{blog_template_set} || 'mt_blog',
+    $new_website = {
+        website_name     => uri_escape_utf8( $param{website_name} ),
+        website_url      => uri_escape_utf8( $param{website_url} ),
+        website_path     => uri_escape_utf8( $param{website_path} ),
+        website_timezone => $param{website_timezone},
+        website_theme    => $param{website_theme} || '',
     };
 
     my $steps;
@@ -431,7 +434,7 @@ sub init_blog {
             Install => $install_mode,
             DryRun  => 1,
             App     => $app,
-            ( $install_mode ? ( User => $new_user, Blog => $new_blog ) : () )
+            ( $install_mode ? ( User => $new_user, Website => $new_website ) : () )
         );
         my $steps = $app->response->{steps};
         my $fn    = \%MT::Upgrade::functions;
@@ -451,6 +454,8 @@ sub init_blog {
     $param{installing}    = $install_mode;
     $param{up_to_date}    = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
+    $param{mt_admin_url}  = ( $app->config->AdminCGIPath || $app->config->CGIPath )
+                            . $app->config->AdminScript;
 
     return $app->build_page( 'upgrade_runner.tmpl', \%param );
 }
@@ -546,7 +551,7 @@ sub run_actions {
 
 sub json_response {
     my $app = shift;
-    $app->print( ' JSON:' . MT::Util::to_json( $app->response ) );
+    $app->print_encode( ' JSON:' . MT::Util::to_json( $app->response ) );
 }
 
 sub response {
@@ -574,7 +579,7 @@ sub progress {
         my $id = MT::Util::dirify($make_id);
         $msg = qq{#$id $msg};
     }
-    $app->print( $msg . "\n" );
+    $app->print_encode( $msg . "\n" );
 }
 
 sub error {
@@ -595,7 +600,9 @@ sub serialize_config {
     my $ser = MT::Serialize->new('MT');
     my %set;
     foreach my $key (@keys) {
-        $set{$key} = $param{$key};
+        $set{$key} = Encode::is_utf8( $param{$key} ) ? Encode::encode( $app->charset, $param{$key} )
+                   :                                   $param{$key}
+                   ;
     }
     my $set = \%set;
     unpack 'H*', $ser->serialize( \$set );
@@ -614,7 +621,9 @@ sub unserialize_config {
             my $saved_cfg = $$thawed;
             if ( keys %$saved_cfg ) {
                 foreach my $p ( keys %$saved_cfg ) {
-                    $config{$p} = $saved_cfg->{$p};
+                    $config{$p} = Encode::is_utf8( $saved_cfg->{$p} ) ? $saved_cfg->{$p}
+                                :                                       Encode::decode( $app->charset, $saved_cfg->{$p} )
+                                ;
                 }
             }
         }

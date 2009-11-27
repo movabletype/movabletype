@@ -1,38 +1,33 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Tools;
 
 use strict;
 use Symbol;
 
-use MT::I18N qw( encode_text wrap_text );
+use MT::I18N qw( wrap_text );
 use MT::Util qw( encode_url encode_html decode_html encode_js trim );
 
 sub system_check {
     my $app = shift;
 
     if ( my $blog_id = $app->param('blog_id') ) {
-        return $app->redirect(
-            $app->uri(
-                'mode' => 'view_log',
-                args => { blog_id => $blog_id }
-            )
-        );
+        return $app->return_to_dashboard( redirect => 1 );
+    }
+    if ( !$app->can_do('open_system_check_screen') ) {
+        return $app->return_to_dashboard( permission => 1 );
     }
 
     my %param;
-    # licensed user count: someone who has logged in within 90 days  
-    my $sess_class = $app->model('session');  
-    my $from = time - ( 60 * 60 * 24 * 90 + 60 * 60 * 24 );  
-    $sess_class->remove(
-        { kind => 'UA', start => [ undef, $from ] },  
-        { range => { start => 1 } }
-    );  
-    $param{licensed_user_count} = $sess_class->count( { kind => 'UA' } );
 
     my $author_class = $app->model('author');
     $param{user_count} = $author_class->count(
         { type => MT::Author::AUTHOR() } );
 
-    $param{commenter_count} = q[N/A];
+    $param{commenter_count} = 0;
     $param{screen_id} = "system-check";
 
     require MT::Memcached;
@@ -59,7 +54,7 @@ sub get_syscheck_content {
     my $app = shift;
 
     my $syscheck_url = $app->base . $app->mt_path . $app->config('CheckScript') .
-        '?view=tools&version=' . MT->version_id;
+        '?view=tools&version=' . MT->version_id . '&language=' . MT->current_language;
     if ( $syscheck_url && $syscheck_url ne 'disable' ) {
         my $SYSCHECKCACHE_TIMEOUT = 60 * 60 * 24;
         my $sess_class        = $app->model('session');
@@ -72,8 +67,11 @@ sub get_syscheck_content {
             $syscheck_object->remove;
             $syscheck_object = undef;
         }
-        return encode_text( $syscheck_object->data(), 'utf-8', undef )
-          if ($syscheck_object);
+        if ( $syscheck_object ) {
+            my $data = $syscheck_object->data();
+            MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
+            return Encode::decode_utf8($data);
+        }
 
         my $ua = $app->new_ua({ timeout => 20 });
         return unless $ua;
@@ -88,6 +86,7 @@ sub get_syscheck_content {
 
             # allowed html
             my $spec = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
+            $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
             $result = MT::Sanitize->sanitize( $result, $spec );
             $syscheck_object = MT::Session->new();
             $syscheck_object->set_values(
@@ -99,7 +98,6 @@ sub get_syscheck_content {
                 }
             );
             $syscheck_object->save();
-            $result = encode_text( $result, 'utf-8', undef );
         }
         return $result;
     }
@@ -392,8 +390,6 @@ sub cfg_system_general {
     $tz =~ s!_00$!!;
     $param{ 'server_offset_' . $tz } = 1;
 
-    $param{default_site_root} = $app->config('DefaultSiteRoot');
-    $param{default_site_url}  = $app->config('DefaultSiteURL');
     $param{personal_weblog_readonly} =
       $app->config->is_readonly('NewUserAutoProvisioning');
     $param{personal_weblog} = $app->config->NewUserAutoProvisioning ? 1 : 0;
@@ -410,10 +406,10 @@ sub cfg_system_general {
             delete $param{new_user_template_blog_id};
         }
     }
-    
+
     if ($app->param('to_email_address')) {
-    	return $app->errtrans("You don't have a system email address configured.  Please set this first, save it, then try the test email again.")
-    	  unless ($cfg->EmailAddressMain);
+       return $app->errtrans("You don't have a system email address configured.  Please set this first, save it, then try the test email again.")
+         unless ($cfg->EmailAddressMain);
         return $app->errtrans("Please enter a valid email address") 
           unless (MT::Util::is_valid_email($app->param('to_email_address')));
        
@@ -437,23 +433,45 @@ sub cfg_system_general {
         });
         $param{test_mail_sent} = 1;
     }
-    
-    my @config_warnings;
-    for my $config_directive ( qw( EmailAddressMain DebugMode PerformanceLogging 
-                                   PerformanceLoggingPath PerformanceLoggingThreshold ) ) {
-        push(@config_warnings, $config_directive) if $app->config->is_readonly($config_directive);
-    }
-    my $config_warning = join(", ", @config_warnings) if (@config_warnings);
-    
-    $param{config_warning} = $app->translate("These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.", $config_warning) if $config_warning;
+
+     my @config_warnings;
+     for my $config_directive ( qw( EmailAddressMain DebugMode PerformanceLogging 
+                                    PerformanceLoggingPath PerformanceLoggingThreshold ) ) {
+         push(@config_warnings, $config_directive) if $app->config->is_readonly($config_directive);
+     }
+     my $config_warning = join(", ", @config_warnings) if (@config_warnings);
+
+     $param{config_warning} = $app->translate("These setting(s) are overridden by a value in the MT configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.", $config_warning) if $config_warning;
     $param{system_email_address} = $cfg->EmailAddressMain;
-    $param{system_debug_mode}    = $cfg->DebugMode;        
+    $param{system_debug_mode}    = $cfg->DebugMode;
     $param{system_performance_logging} = $cfg->PerformanceLogging;
     $param{system_performance_logging_path} = $cfg->PerformanceLoggingPath;
     $param{system_performance_logging_threshold} = $cfg->PerformanceLoggingThreshold;
+    $param{track_revisions}      = $cfg->TrackRevisions;
     $param{saved}                = $app->param('saved');
     $param{error}                = $app->param('error');
     $param{screen_class}         = "settings-screen system-general-settings";
+
+    # for feedback settings
+    $param{comment_disable}      = $cfg->AllowComments            ? 0 : 1;
+    $param{ping_disable}         = $cfg->AllowPings               ? 0 : 1;
+    $param{disabled_notify_ping} = $cfg->DisableNotificationPings ? 1 : 0;
+    $param{system_no_email} = 1 unless $cfg->EmailAddressMain;
+    my $send = $cfg->OutboundTrackbackLimit || 'any';
+
+    if ( $send =~ m/^(any|off|selected|local)$/ ) {
+        $param{ "trackback_send_" . $cfg->OutboundTrackbackLimit } = 1;
+        if ( $send eq 'selected' ) {
+            my @domains = $cfg->OutboundTrackbackDomains;
+            my $domains = join "\n", @domains;
+            $param{trackback_send_domains} = $domains;
+        }
+    }
+    else {
+        $param{"trackback_send_any"} = 1;
+    }
+    $param{saved}        = $app->param('saved');
+    $param{screen_class} = "settings-screen system-feedback-settings";
     $app->load_tmpl( 'cfg_system_general.tmpl', \%param );
 }
 
@@ -462,7 +480,9 @@ sub save_cfg_system_general {
     $app->validate_magic or return;
     return $app->errtrans("Permission denied.")
       unless $app->user->is_superuser();
+    $app->validate_magic or return;
     my $cfg = $app->config;
+    $app->config( 'TrackRevisions', $app->param('track_revisions') ? 1 : 0, 1 );
 
     # construct the message to the activity log
     my @meta_messages = (); 
@@ -479,17 +499,6 @@ sub save_cfg_system_general {
         if ($app->param('system_performance_logging_path') =~ /\w+/);
     push(@meta_messages, $app->translate('Performance log threshold is [_1]', $app->param('system_performance_logging_threshold')))
         if ($app->param('system_performance_logging_threshold') =~ /\d+/);
-    
-    # throw the messages in the activity log
-    if (scalar(@meta_messages) > 0) {
-        my $message = join(', ', @meta_messages);
-        $app->log({
-            message  => $app->translate('System Settings Changes Took Place'),
-            level    => MT::Log::INFO(),
-            class    => 'system',
-            metadata => $message,
-        });
-    }
 
     # actually assign the changes
     $app->config( 'EmailAddressMain', $app->param('system_email_address') || undef, 1 );
@@ -504,20 +513,74 @@ sub save_cfg_system_general {
         if ($app->param('system_performance_logging_path') =~ /\w+/);
     $app->config('PerformanceLoggingThreshold', $app->param('system_performance_logging_threshold'), 1)
         if ($app->param('system_performance_logging_threshold') =~ /\d+/);
+
+    # construct the message to the activity log
+
+    if ($app->param('comment_disable')) {
+        push(@meta_messages, 'Allow comments is on');
+    } else {
+        push(@meta_messages, 'Allow comments is off');
+    } 
+    if ($app->param('ping_disable')) {
+        push(@meta_messages, 'Allow trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow trackbacks is off');
+    }
+    if ($app->param('disable_notify_ping')) {
+        push(@meta_messages, 'Allow outbound trackbacks is on');
+    } else {
+        push(@meta_messages, 'Allow outbound trackbacks is off');
+    }
+    push(@meta_messages, 'Outbound trackback limit is ' . $app->param('trackback_send')) 
+        if ($app->param('trackback_send') =~ /\w+/);
+
+    # throw the messages in the activity log
+    if (scalar(@meta_messages) > 0) {
+        my $message = join(', ', @meta_messages);
+        $app->log({
+            message  => $app->translate('System Settings Changes Took Place'),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            metadata => $message,
+        });
+    }
+
+    # for feedback settings
+    $cfg->AllowComments( ( $app->param('comment_disable') ? 0 : 1 ), 1 );
+    $cfg->AllowPings( ( $app->param('ping_disable') ? 0 : 1 ), 1 );
+    $cfg->DisableNotificationPings(
+        ( $app->param('disable_notify_ping') ? 1 : 0 ), 1 );
+    my $send = $app->param('trackback_send') || 'any';
+    if ( $send =~ m/^(any|off|selected|local)$/ ) {
+        $cfg->OutboundTrackbackLimit( $send, 1 );
+        if ( $send eq 'selected' ) {
+            my $domains = $app->param('trackback_send_domains') || '';
+            $domains =~ s/[\r\n]+/ /gs;
+            $domains =~ s/\s{2,}/ /gs;
+            my @domains = split /\s/, $domains;
+            $cfg->OutboundTrackbackDomains( \@domains, 1 );
+        }
+    }
     $cfg->save_config();
-    my $args = ();
-    $args->{saved} = 1;
+    require MT::Touch;
+    MT::Touch->touch(0, 'config');
     $app->redirect(
         $app->uri(
-            'mode' => 'cfg_system',
-            args   => $args
-        )
+            'mode' => 'cfg_system_general',
+            args   => { saved => 1 }
+        ),
+        UseMeta => $ENV{FAST_CGI},
     );
 }
 
 sub upgrade {
     my $app = shift;
 
+    if  ( $ENV{FAST_CGI} ) {
+        # don't enter the FCGI loop.
+        require MT::Bootstrap;
+        MT::Bootstrap::fcgi_sig_handler('Upgrade');
+    }
     # check for an empty database... no author table would do it...
     my $driver         = MT::Object->driver;
     my $upgrade_script = $app->config('UpgradeScript');
@@ -527,7 +590,6 @@ sub upgrade {
               . $upgrade_script
               . $app->uri_params( mode => 'install' ) );
     }
-
     return $app->redirect( $app->path . $upgrade_script );
 }
 
@@ -584,13 +646,22 @@ sub start_backup {
 
     unless ( $user->is_superuser ) {
         return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_administer_blog;
+          unless defined($blog_id) && $perms->can_do('start_backup');
     }
 
     my %param = ();
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
         $app->add_breadcrumb( $app->translate('Backup') );
+        my $blog = $app->model('blog')->load($blog_id);
+        if ( defined $blog && !$blog->is_blog ) {
+            my $blogs = $blog->blogs;
+            my @blog_ids = map { $_->id } @$blogs;
+            push @blog_ids, $blog_id;
+            $param{backup_what} = join ',', @blog_ids;
+        } else {
+            $param{backup_what} = $blog_id;
+        }
     }
     else {
         $app->add_breadcrumb( $app->translate('Backup & Restore') );
@@ -625,13 +696,17 @@ sub start_restore {
 
     unless ( $user->is_superuser ) {
         return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_administer_blog;
+          unless defined($blog_id) && $perms->can_do('start_restore');
     }
+
+    return $app->return_to_dashboard( redirect => 1 )
+        if $blog_id;
 
     my %param = ();
     if ( defined($blog_id) ) {
         $param{blog_id} = $blog_id;
         $app->add_breadcrumb( $app->translate('Backup') );
+        my $blog = $app->model('blog')->load($blog_id);
     }
     else {
         $app->add_breadcrumb( $app->translate('Backup & Restore') );
@@ -649,6 +724,15 @@ sub start_restore {
 'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.'
           );
     }
+
+    my $website_class = $app->model('website');
+    unless(my $count = $website_class->count()) {
+        $param{error} =
+          $app->translate(
+'No website could be found. You must create a website first.'
+          );
+    }
+
     $app->load_tmpl( 'restore.tmpl', \%param );
 }
 
@@ -660,7 +744,7 @@ sub backup {
     my $perms   = $app->permissions;
     unless ( $user->is_superuser ) {
         return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_administer_blog;
+          unless defined($blog_id) && $perms->can_do('backup_blog');
     }
     $app->validate_magic() or return;
 
@@ -672,6 +756,18 @@ sub backup {
       if $size !~ /^\d+$/;
 
     my @blog_ids = split ',', $blog_ids;
+    if ( @blog_ids ) {
+        my @child_ids;
+        my $blog_class = $app->model('blog');
+        foreach my $bid ( @blog_ids ) {
+            my $target = $blog_class->load( $bid );
+            if ( !$target->is_blog && scalar @{$target->blogs} ) {
+                my @blogs = map { $_->id } @{$target->blogs};
+                push @child_ids, @blogs;
+            }
+        }
+        push @blog_ids, @child_ids if @child_ids;
+    }
 
     my $archive = $q->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
@@ -694,7 +790,7 @@ sub backup {
 
     local $| = 1;
     $app->send_http_header('text/html');
-    $app->print( $app->build_page( 'include/backup_start.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'include/backup_start.tmpl', $param ) );
     require File::Temp;
     require File::Spec;
     use File::Copy;
@@ -702,9 +798,11 @@ sub backup {
 
     require MT::BackupRestore;
     my $count_term =
-      $blog_id
-      ? { class => '*', blog_id => [ 0, $blog_id ] }
-      : { class => '*' };
+        @blog_ids
+          ? { class => '*', blog_id => [ [ 0 ], @blog_ids ] }
+          : $blog_id
+            ? { class => '*', blog_id => [ 0, $blog_id ] }
+            : { class => '*' };
     my $num_assets = $app->model('asset')->count($count_term);
     my $printer;
     my $splitter;
@@ -741,7 +839,7 @@ sub backup {
                 close $fh;
                 unlink $filepath;
                 my $arc = MT::Util::Archive->new($archive, $filepath);
-                $arc->add_string( $arc_buf, "$file.xml" );
+                $arc->add_string( Encode::encode_utf8($arc_buf), "$file.xml" );
                 $arc->add_string(
                         "<manifest xmlns='"
                       . MT::BackupRestore::NS_MOVABLETYPE()
@@ -768,9 +866,10 @@ sub backup {
             filename => $file . "-1.xml"
           };
         $printer =
-          sub { my ($data) = @_; print $fh $data; return length($data); };
+          sub { require bytes; my ($data) = @_; print $fh $data; return bytes::length($data); };
         $splitter = sub {
-            my ($findex) = @_;
+            my ($findex, $header) = @_;
+
             print $fh '</movabletype>';
             close $fh;
             my $filename =
@@ -787,11 +886,6 @@ sub backup {
                 url      => $url,
                 filename => $file . "-$findex.xml"
               };
-            my $header .=
-              "<movabletype xmlns='"
-              . MT::BackupRestore::NS_MOVABLETYPE() . "'>\n";
-            $header = "<?xml version='1.0' encoding='$enc'?>\n$header"
-              if $enc !~ m/utf-?8/i;
             print $fh $header;
         };
         $finisher = sub {
@@ -806,10 +900,16 @@ sub backup {
                 my $name = $file->{filename};
                 print $fh "<file type='backup' name='$name' />\n";
             }
+            require MT::FileMgr::Local;
             for my $id ( keys %$asset_files ) {
                 my $name = $id . '-' . $asset_files->{$id}->[2];
                 my $tmp = File::Spec->catfile( $temp_dir, $name );
-                unless ( copy( $asset_files->{$id}->[1], $tmp ) ) {
+                unless (
+                    copy( 
+                        MT::FileMgr::Local::_local( $asset_files->{$id}->[1] ),
+                        MT::FileMgr::Local::_local( $tmp )
+                    )
+                ) {
                     $app->log(
                         {
                             message => $app->translate(
@@ -824,8 +924,10 @@ sub backup {
                     );
                     next;
                 }
+                my $xml_name = $asset_files->{$id}->[2];
+                $xml_name =~ s/'/&apos;/g;
                 print $fh "<file type='asset' name='"
-                  . $asset_files->{$id}->[2]
+                  . $xml_name
                   . "' asset_id='"
                   . $id
                   . "' />\n";
@@ -837,7 +939,7 @@ sub backup {
                 push @files,
                   {
                     url      => $url,
-                    filename => $name,
+                    filename => MT::FileMgr::Local::_local( $name ),
                   };
             }
             print $fh "</manifest>\n";
@@ -853,6 +955,10 @@ sub backup {
                 filename => "$file.manifest"
               };
             if ( '0' eq $archive ) {
+                for my $f ( @files ) {
+                    $f->{filename} = MT::FileMgr::Local::_syserr($f->{filename})
+                        if ( $f->{filename} && !Encode::is_utf8($f->{filename}));
+                }
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
@@ -903,7 +1009,7 @@ sub backup_download {
     unless ( $user->is_superuser ) {
         my $perms = $app->permissions;
         return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_administer_blog;
+          unless defined($blog_id) && $perms->can_do('backup_download');
     }
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
@@ -958,7 +1064,7 @@ sub backup_download {
         $contenttype = 'application/octet-stream';
     }
 
-    if ( open( my $fh, "<", $fname ) ) {
+    if ( open( my $fh, "<", MT::FileMgr::Local::_local($fname) ) ) {
         binmode $fh;
         $app->{no_print_body} = 1;
         $app->set_header(
@@ -969,7 +1075,7 @@ sub backup_download {
             $data .= $chunk;
         }
         close $fh;
-        $app->print($data);
+        $app->print( $data );
         $app->log(
             {
                 message => $app->translate(
@@ -991,7 +1097,8 @@ sub backup_download {
 sub restore {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->errtrans("Permission denied.")
+        unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -1001,6 +1108,7 @@ sub restore {
     my ( $volume, $directories, $uploaded_filename ) =
       File::Spec->splitpath($uploaded)
       if defined($uploaded);
+    $app->mode('start_restore');
     if ( defined($uploaded_filename)
         && ( $uploaded_filename =~ /^.+\.manifest$/i ) )
     {
@@ -1022,7 +1130,7 @@ sub restore {
     local $| = 1;
     $app->send_http_header('text/html');
 
-    $app->print( $app->build_page( 'restore_start.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'restore_start.tmpl', $param ) );
 
     require File::Path;
 
@@ -1106,9 +1214,8 @@ sub restore {
                         }
                     );
                 }
-                $app->print( $error );
-                $app->print(
-                    $app->build_page( "restore_end.tmpl", $param ) );
+                $app->print_encode( $error );
+                $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
                 close $fh if $fh;
                 return 1;
             }
@@ -1116,6 +1223,7 @@ sub restore {
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
+            $tmp = Encode::decode( MT->config->PublishCharset, $tmp );
             $arc->extract($tmp);
             $arc->close;
             my ( $blog_ids, $asset_ids ) =
@@ -1176,7 +1284,7 @@ sub restore {
         }
     }
 
-    $app->print( $app->build_page( "restore_end.tmpl", $param ) );
+    $app->print_encode( $app->build_page( "restore_end.tmpl", $param ) );
     close $fh if $fh;
     1;
 }
@@ -1232,7 +1340,7 @@ sub _restore_non_blog_asset {
         my $filename = $old_id . '-' . $asset->file_name;
         my $file    = File::Spec->catfile( $tmp_dir, $filename );
         MT::BackupRestore->restore_asset( $file, $asset, $old_id, $fmgr,
-            $error_assets, sub { $app->print(@_); } );
+            $error_assets, sub { $app->print_encode( @_ ); } );
     }
 }
 
@@ -1254,7 +1362,7 @@ sub adjust_sitepath {
     local $| = 1;
     $app->send_http_header('text/html');
 
-    $app->print( $app->build_page( 'dialog/restore_start.tmpl', {} ) );
+    $app->print_encode( $app->build_page( 'dialog/restore_start.tmpl', {} ) );
 
     my $asset_class = $app->model('asset');
     my %error_assets;
@@ -1269,20 +1377,29 @@ sub adjust_sitepath {
         my $old_site_url  = scalar $q->param("old_site_url_$id");
         my $site_path     = scalar $q->param("site_path_$id") || q();
         my $site_url      = scalar $q->param("site_url_$id") || q();
+        my $site_url_path = scalar $q->param("site_url_path_$id") || q();
+        my $site_url_subdomain = scalar $q->param("site_url_subdomain_$id") || q();
+        $site_url_subdomain .= '.' if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
+        my $parent_id     = scalar $q->param("parent_id_$id") || undef;
         $blog->site_path($site_path);
-        $blog->site_url($site_url);
+        $blog->parent_id($parent_id)
+            if $blog->is_blog() && $parent_id;
+        if ( $site_url_path ) {
+            $blog->site_url("$site_url_subdomain/::/$site_url_path");
+        }
+        else {
+            $blog->site_url($site_url);
+        }
 
-        if ( $site_url || $site_path ) {
-            $app->print(
-                $app->translate(
+        if ( $site_url || $site_url_path || $site_path ) {
+            $app->print_encode( $app->translate(
                     "Changing Site Path for the blog '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ), $blog->id
                 )
             );
         }
         else {
-            $app->print(
-                $app->translate(
+            $app->print_encode( $app->translate(
                     "Removing Site Path for the blog '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ), $blog->id
                 )
@@ -1292,40 +1409,46 @@ sub adjust_sitepath {
         my $old_archive_url  = scalar $q->param("old_archive_url_$id");
         my $archive_path     = scalar $q->param("archive_path_$id") || q();
         my $archive_url      = scalar $q->param("archive_url_$id") || q();
+        my $archive_url_path = scalar $q->param("archive_url_path_$id") || q();
+        my $archive_url_subdomain = scalar $q->param("archive_url_subdomain_$id") || q();
+        $archive_url_subdomain .= '.' if $archive_url_subdomain && $archive_url_subdomain !~ /\.$/;
         $blog->archive_path($archive_path);
-        $blog->archive_url($archive_url);
-        if (   ( $old_archive_url && $archive_url )
+        if ( $archive_url_path ) {
+            $blog->archive_url("$archive_url_subdomain/::/$archive_url_path");
+        }
+        else {
+            $blog->archive_url($archive_url);
+        }
+        if (   ( $old_archive_url && ( $archive_url || $archive_url_path ) )
             || ( $old_archive_path && $archive_path ) )
         {
-            $app->print(
-                "\n"
+            $app->print_encode( "\n"
                   . $app->translate(
                     "Changing Archive Path for the blog '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ), $blog->id
-                  )
+                )
             );
         }
         elsif ( $old_archive_url || $old_archive_path ) {
-            $app->print(
-                "\n"
+            $app->print_encode( "\n"
                   . $app->translate(
                     "Removing Archive Path for the blog '[_1]' (ID:[_2])...",
                     encode_html( $blog->name ), $blog->id
-                  )
+                )
             );
         }
-        $blog->save or $app->print( $app->translate("failed") . "\n" ), next;
-        $app->print( $app->translate("ok") . "\n" );
+        $blog->save or $app->print_encode( $app->translate("failed") . "\n" ), next;
+        $app->print_encode( $app->translate("ok") . "\n" );
 
         $blogs_meta{$id} = {
             'old_archive_path' => $old_archive_path,
             'old_archive_url'  => $old_archive_url,
-            'archive_path'     => $archive_path,
-            'archive_url'      => $archive_url,
+            'archive_path'     => $blog->archive_path,
+            'archive_url'      => $blog->archive_url,
             'old_site_path'    => $old_site_path,
             'old_site_url'     => $old_site_url,
-            'site_path'        => $site_path,
-            'site_url'         => $site_url,
+            'site_path'        => $blog->site_path,
+            'site_url'         => $blog->site_url,
         };
         next unless %asset_ids;
 
@@ -1353,21 +1476,21 @@ sub adjust_sitepath {
                 $url =~ s/^\Q$old_site_url\E/$site_url/i;
                 $asset->url($url);
             }
-            $app->print(
-                $app->translate(
+            $app->print_encode( $app->translate(
                     "Changing file path for the asset '[_1]' (ID:[_2])...",
                     encode_html( $asset->label ), $asset->id
                 )
             );
             $asset->save
-              or $app->print( $app->translate("failed") . "\n" ), next;
-            $app->print( $app->translate("ok") . "\n" );
+              or $app->print_encode( $app->translate("failed") . "\n" )
+            , next;
+            $app->print_encode( $app->translate("ok") . "\n" );
             unless ( $q->param('redirect') ) {
                 my $old_id   = delete $asset_ids{ $asset->id };
                 my $filename = "$old_id-" . $asset->file_name;
                 my $file     = File::Spec->catfile( $tmp_dir, $filename );
                 MT::BackupRestore->restore_asset( $file, $asset, $old_id, $fmgr,
-                    \%error_assets, sub { $app->print(@_); } );
+                    \%error_assets, sub { $app->print_encode( @_ ); } );
             }
         }
     }
@@ -1400,7 +1523,7 @@ sub adjust_sitepath {
     }
 
     my $param = {};
-    if ( scalar $q->param('redirect') ) {
+    if ( scalar $q->param('redirect') && $q->param('files') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
         $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
@@ -1410,7 +1533,7 @@ sub adjust_sitepath {
     }
     if ($error) {
         $param->{error}     = $error;
-        $param->{error_url} = $app->uri( mode => 'view_log', args => {} );
+        $param->{error_url} = $app->base . $app->uri( mode => 'view_log', args => {} );
     }
     for my $key (
         qw(files last redirect is_dirty is_asset objects_json deferred_json))
@@ -1419,7 +1542,7 @@ sub adjust_sitepath {
     }
     $param->{name}   = $q->param('current_file');
     $param->{assets} = encode_html( $q->param('assets') );
-    $app->print( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
 }
 
 sub dialog_restore_upload {
@@ -1463,13 +1586,21 @@ sub dialog_restore_upload {
     $param->{schema_version} = $schema_version;
     $param->{overwrite_templates} = $overwrite_template;
 
-    my $uploaded = $q->param('file');
+    my $uploaded = $q->param('file') || $q->param('fname');
     if ( defined($uploaded) ) {
         $uploaded =~ s!\\!/!g;    ## Change backslashes to forward slashes
-        my ( $volume, $directories, $uploaded_filename ) =
-          File::Spec->splitpath($uploaded);
-        if ( $current ne $uploaded_filename ) {
-            close $fh if $uploaded_filename;
+        $uploaded =~ s!^.*/!!;    ## Get rid of full directory paths
+        if ( $uploaded =~ m!\.\.|\0|\|! ) {
+            $param->{error} = $app->translate( "Invalid filename '[_1]'", $uploaded );
+            return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
+        }
+        $uploaded = Encode::is_utf8( $uploaded ) ? $uploaded
+                  :                                Encode::decode( $app->charset, $uploaded )
+                  ;
+    }
+    if ( defined($uploaded) ) {
+        if ( $current ne $uploaded ) {
+            close $fh if $uploaded;
             $param->{error} =
               $app->translate( 'Please upload [_1] in this page.', $current );
             return $app->load_tmpl( 'dialog/restore_upload.tmpl', $param );
@@ -1487,7 +1618,7 @@ sub dialog_restore_upload {
     local $| = 1;
     $app->send_http_header('text/html');
 
-    $app->print( $app->build_page( 'dialog/restore_start.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
     if ( defined $objects_json ) {
         my $objects_tmp = JSON::from_json($objects_json);
@@ -1540,7 +1671,7 @@ sub dialog_restore_upload {
         $asset->{fh} = $fh;
         my $blogs_meta = JSON::from_json( $q->param('blogs_meta') || '{}' );
         MT::BackupRestore->_restore_asset_multi( $asset, $objects,
-            $error_assets, sub { $app->print(@_); }, $blogs_meta );
+            $error_assets, sub { $app->print_encode( @_ ); }, $blogs_meta );
         if ( defined( $error_assets->{ $asset->{asset_id} } ) ) {
             $app->log(
                 {
@@ -1586,11 +1717,19 @@ sub dialog_restore_upload {
         $param->{last} = 0;
     }
     $param->{is_dirty} = scalar( keys %$deferred );
-    if ($last) {
+
+    if ( $last && defined($blog_ids) && scalar(@$blog_ids)) {
+        $param->{error} = join( '; ', @errors );
+        $param->{next_mode} = 'dialog_adjust_sitepath';
+        $param->{blog_ids}  = join( ',', @$blog_ids );
+        $param->{asset_ids} = join( ',', @$asset_ids )
+            if defined($asset_ids);
+    }
+    elsif ( $last ) {
         $param->{restore_end} = 1;
         if ( $param->{is_dirty} ) {
             _log_dirty_restore( $app, $deferred );
-            my $log_url = $app->uri( mode => 'view_log', args => {} );
+            my $log_url = $app->base . $app->uri( mode => 'view_log', args => {} );
             $param->{error} =
               $app->translate(
 'Some objects were not restored because their parent objects were not restored.'
@@ -1642,7 +1781,7 @@ sub dialog_restore_upload {
     }
     MT->run_callbacks('restore', $objects, $deferred, \@errors, sub { _progress( $app, @_ ) });
 
-    $app->print( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'dialog/restore_end.tmpl', $param ) );
     close $fh if $fh;
 }
 
@@ -1652,34 +1791,82 @@ sub dialog_adjust_sitepath {
     return $app->errtrans("Permission denied.") if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    my $q         = $app->param;
-    my $tmp_dir   = $q->param('tmp_dir');
-    my $error     = $q->param('error') || q();
-    my $uploaded  = $q->param('restore_upload') || 0;
-    my @blog_ids  = split ',', $q->param('blog_ids');
-    my $asset_ids = $q->param('asset_ids');
-    my @blogs     = $app->model('blog')->load( { id => \@blog_ids } );
-    my @blogs_loop;
+    my $q          = $app->param;
+    my $tmp_dir    = $q->param('tmp_dir');
+    my $error      = $q->param('error') || q();
+    my $uploaded   = $q->param('restore_upload') || 0;
+    my @blog_ids   = split ',', $q->param('blog_ids');
+    my $asset_ids  = $q->param('asset_ids');
+    my $blog_class = $app->model('blog');
+    my @blogs      = $blog_class->load( { id => \@blog_ids } );
+    my ( @blogs_loop, @website_loop );
 
     foreach my $blog (@blogs) {
-        push @blogs_loop,
-          {
-            name          => $blog->name,
-            id            => $blog->id,
-            old_site_path => $blog->site_path,
-            old_site_url  => $blog->site_url,
-            $blog->column('archive_path')
-            ? ( old_archive_path => $blog->archive_path )
-            : (),
-            $blog->column('archive_url')
-            ? ( old_archive_url => $blog->archive_url )
-            : (),
-          };
+        if ( $blog->is_blog() ) {
+            my $params = 
+              {
+                name          => $blog->name,
+                id            => $blog->id,
+                old_site_path => $blog->column('site_path'),
+                $blog->column('archive_path')
+                  ? ( old_archive_path => $blog->column('archive_path') )
+                  : (),
+                $blog->column('parent_id')
+                  ? ( parent_id    => $blog->parent_id )
+                  : (),
+              };
+            $params->{site_path_absolute} = 1
+                if $blog_class->is_site_path_absolute($blog->column('site_path'));
+            $params->{archive_path_absolute} = 1
+                if exists( $params->{old_archive_path} )
+                && $blog_class->is_site_path_absolute($blog->column('archive_path'));
+            $params->{old_site_url} = $blog->site_url;
+            my @raw_site_url = $blog->raw_site_url; 
+            if ( 2 == @raw_site_url ) {
+                my $subdomain = $raw_site_url[0];
+                $subdomain =~ s/\.$//;
+                $params->{old_site_url_subdomain} = $subdomain;
+                $params->{old_site_url_path}      = $raw_site_url[1];
+            }
+            $params->{old_archive_url} = $blog->archive_url if $blog->column('archive_url');
+            my @raw_archive_url = $blog->raw_archive_url; 
+            if ( 2 == @raw_archive_url ) {
+                my $subdomain = $raw_archive_url[0];
+                $subdomain =~ s/\.$//;
+                $params->{old_archive_url_subdomain} = $subdomain;
+                $params->{old_archive_url_path}      = $raw_archive_url[1];
+            }
+            push @blogs_loop, $params;
+        } else {
+            push @website_loop,
+              {
+                name          => $blog->name,
+                id            => $blog->id,
+                old_site_path => $blog->column('site_path'),
+                old_site_url  => $blog->column('site_url'),
+              };
+        }
     }
+
+    # Load all website
+    my $iter = MT->model('website')->load_iter();
+    my @all_websites;
+    while ( my $website = $iter->() ) {
+        push @all_websites, {
+            website_name      => $website->name,
+            website_id        => $website->id,
+            website_site_path => $website->site_path,
+            website_site_url  => $website->site_url,
+        };
+    }
+
     my $param = { blogs_loop => \@blogs_loop, tmp_dir => $tmp_dir };
     $param->{error}          = $error     if $error;
     $param->{restore_upload} = $uploaded  if $uploaded;
     $param->{asset_ids}      = $asset_ids if $asset_ids;
+    $param->{website_loop}   = \@website_loop if @website_loop;
+    $param->{all_websites}   = \@all_websites if @all_websites;
+
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)
       )
@@ -1786,7 +1973,7 @@ sub reset_password {
       return ( 0, $app->translate("User name or password hint is incorrect.") )
       unless $author->hint eq $hint;
 
-    return ( 0, $app->translate("User does not have email address") )
+    return ( 0, $app->translate("User '[_1]' (user #[_2]) does not have email address", $author->name, $author->id) )
       unless $author->email;
 
     # Generate Token
@@ -2045,6 +2232,15 @@ sub restore_upload_manifest {
       . '&amp;overwrite_templates='
       . $param->{overwrite_templates}
       . '&amp;redirect=1';
+    if ( length $param->{dialog_params} > 2083 )
+    {    # 2083 is Maximum URL length in IE
+        $param->{error} = $app->translate(
+"Manifest file '[_1]' is too large. Please use import direcotry for restore.",
+            $app->param('file')
+        );
+        $param->{open_dialog} = 0;
+        $app->mode('start_restore');
+    }
     $app->load_tmpl( 'restore.tmpl', $param );
 
     #close $fh if $fh;
@@ -2089,7 +2285,7 @@ sub _backup_finisher {
             category => 'restore'
         }
     );
-    $app->print( $app->build_page( 'include/backup_end.tmpl', $param ) );
+    $app->print_encode( $app->build_page( 'include/backup_end.tmpl', $param ) );
 }
 
 sub _progress {
@@ -2099,16 +2295,16 @@ sub _progress {
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
-        $app->print(
+        $app->print_encode(
 qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
         );
     }
     elsif ($id) {
         $ids->{$id} = 1;
-        $app->print(qq{\n<span id="$id">$str</span>});
+        $app->print_encode( qq{\n<span id="$id">$str</span>} );
     }
     else {
-        $app->print("<span>$str</span>");
+        $app->print_encode( "<span>$str</span>" );
     }
 
     $app->request( 'progress_ids', $ids );

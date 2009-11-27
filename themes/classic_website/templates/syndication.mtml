@@ -1,0 +1,12 @@
+<div class="widget-syndication widget">
+    <div class="widget-content">
+        <ul>
+            <li><img src="<$mt:StaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$mt:Link template="feed_recent"$>"><__trans phrase="Subscribe to this website's feed"></a></li>
+<mt:If name="search_results">
+    <mt:If tag="SearchString">
+            <li class="search-results-feed"><img src="<$mt:StaticWebPath$>images/status_icons/feed.gif" alt="<__trans phrase="Subscribe to feed">" width="9" height="9" /> <a href="<$mt:CGIPath$><$mt:SearchScript$>?<mt:IfTagSearch>tag<mt:else>search</mt:IfTagSearch>=<$mt:SearchString encode_url="1"$>&amp;Template=feed&amp;IncludeBlogs=<$mt:SearchIncludeBlogs$>&amp;limit=<$mt:SearchMaxResults$>" title="<mt:IfTagSearch><__trans phrase="Subscribe to a feed of all future entries tagged &ldquo;[_1]&ldquo;" params="<$mt:SearchString$>"><mt:Else><__trans phrase="Subscribe to a feed of all future entries matching &ldquo;[_1]&ldquo;" params="<$mt:SearchString$>"></mt:IfTagSearch>"><mt:IfTagSearch><__trans phrase="Feed of results tagged &ldquo;[_1]&ldquo;" params="<$mt:SearchString$>"><mt:Else><__trans phrase="Feed of results matching &ldquo;[_1]&ldquo;" params="<$mt:SearchString$>"></mt:IfTagSearch></a></li>
+    </mt:If>
+</mt:If>
+        </ul>
+    </div>
+</div>

@@ -18,7 +18,7 @@ function doValidateNotifyRecips(f) {
 </mt:setvarblock>
 <mt:include name="dialog/header.tmpl">
 
-<p><__trans phrase="Your blog's name, this entry's title and a link to view it will be sent in the notification.  Additionally, you can add a  message, include an excerpt of the entry and/or send the entire entry."></p>
+<p><__trans phrase="Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body." params="<mt:var name="scope_label">"></p>
 
 <form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
     <input type="hidden" name="__mode" value="send_notify" />
@@ -30,7 +30,7 @@ function doValidateNotifyRecips(f) {
         label="<__trans phrase="Recipients">"
         label_class="top-label"
         show_hint="1"
-        hint="<__trans phrase="Enter email addresses on separate lines, or comma separated.">">
+        hint="<__trans phrase="Enter email addresses on separate lines or separated by commas.">">
         <ul>
 <mt:if name="config.enableaddressbook">
             <li><input type="checkbox" name="send_notify_list" id="send_notify_list" value="1" class="cb" checked="checked" /> <label for="send_notify_list"><__trans phrase="All addresses from Address Book"></label></li>
@@ -52,26 +52,26 @@ function doValidateNotifyRecips(f) {
         show_hint="0">
         <ul>
             <li><input type="checkbox" name="send_excerpt" id="send_excerpt" value="1" /> <label for="send_excerpt"><__trans phrase="Entry Excerpt"></label></li>
-            <li><input type="checkbox" name="send_body" id="send_body" value="1" /> <label for="send_body"><__trans phrase="Entry Body"> <span class="disabled"><__trans phrase="(Entry Body will be sent without any text formatting applied)"></span></label></li>
+            <li><input type="checkbox" name="send_body" id="send_body" value="1" /> <label for="send_body"><__trans phrase="Body"> <span class="disabled"><__trans phrase="(Body will be sent without any text formatting applied.)"></span></label></li>
         </ul>
     </mtapp:setting>
 
-    <div class="actions-bar">
-        <div class="actions-bar-inner pkg actions">
-            <button
-                onclick="return doValidateNotifyRecips(this.form);"
-                type="submit"
-                accesskey="s"
-                title="<__trans phrase="Send notification (s)">"
-                class="primary-button"
-                ><__trans phrase="Send"></button>
-            <button
-                onclick="closeDialog(); return false"
-                type="submit"
-                accesskey="x"
-                title="<__trans phrase="Cancel (x)">"
-                ><__trans phrase="Cancel"></button>
-        </div>
-    </div>
+    <mt:setvarblock name="action_buttons">
+        <button
+           onclick="return doValidateNotifyRecips(this.form);"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Send notification (s)">"
+           class="send action primary-button"
+           ><__trans phrase="Send"></button>
+        <button
+           type="submit"
+           accesskey="x"
+           title="<__trans phrase="Cancel (x)">"
+           class="cancel action mt-close-dialog"
+           ><__trans phrase="Cancel"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
 </form>
 <mt:include name="dialog/footer.tmpl">

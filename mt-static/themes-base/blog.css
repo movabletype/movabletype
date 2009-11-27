@@ -509,7 +509,7 @@ ul { list-style: disc outside; }
     display: inline;
     margin: 0 5px 0 0;
     padding: 0;
-    line-height: 1.2;
+    line-height: 1.6;
     background: none;
 }
 
@@ -586,6 +586,17 @@ ul { list-style: disc outside; }
     color: #666;
     text-decoration: underline;
     font-weight: normal;
+}
+
+.widget-calendar .widget-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+.widget-calendar .widget-content th, 
+.widget-calendar .widget-content td {
+    text-align: center;
+    width: 14%;
+    padding: 2px 0;
 }
 
 .input-default {

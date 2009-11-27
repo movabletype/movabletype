@@ -9,10 +9,13 @@ function smarty_function_mtassetaddedby($args, &$ctx) {
     $asset = $ctx->stash('asset');
     if (!$asset) return '';
 
-    if ($asset['author_nickname'] != '')
-        return $asset['author_nickname'];
+    require_once('class.mt_author.php');
+    $author = new Author();
+    $author->Load("author_id = " . $asset->created_by);
+    if ($author->nickname != '')
+        return $author->nickname;
 
-    return $asset['author_name'];
+    return $author->name;
 }
 ?>
 

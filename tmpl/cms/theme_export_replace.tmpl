@@ -1,0 +1,71 @@
+<mt:setvar name="page_title" value="<__trans phrase="Export Theme">">
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function submit_form(f, command) {
+    f['overwrite_' + command].value = 1;
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl" id="header_include">
+
+<form method="get" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="do_export_theme" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="theme_class" value="<mt:var name="theme_class" escape="html"/>" />
+    <input type="hidden" name="output" value="<mt:var name="output" escape="html"/>" />
+    <input type="hidden" name="theme_name" value="<mt:var name="theme_name" escape="html">" />
+    <input type="hidden" name="theme_id" value="<mt:var name="theme_id" escape="html">" />
+    <input type="hidden" name="theme_author_name" value="<mt:var name="theme_author_name" escape="html">" />
+    <input type="hidden" name="theme_author_link" value="<mt:var name="theme_author_link" escape="html">" />
+    <input type="hidden" name="theme_version" value="<mt:var name="theme_version" escape="html">" />
+    <input type="hidden" name="description" value="<mt:var name="description" escape="html">">
+<mt:loop name="include">
+    <input type="hidden" name="include" value="<mt:var name="__value__" escape="html">">
+</mt:loop>
+    <input type="hidden" name="overwrite_yes" value="0" />
+    <input type="hidden" name="overwrite_no" value="0" />
+
+    <div class="error-message">
+    <mt:if name="extension_message">
+        <mtapp:statusmsg
+            id="extension-changed"
+            class="success">
+            <mt:var name="extension_message">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mtapp:statusmsg
+        id="error-message"
+        class="alert"
+        can_close="0">
+        <__trans phrase="Export theme folder already exists '[_1]'. You can overwrite a existing theme, or cancel to change the Basename?" params="<mt:var name="theme_folder" escape="html">">
+    </mtapp:statusmsg>
+    </div>
+    <mt:setvarblock name="action_buttons">
+        <button
+           onclick="submit_form(this.form, 'yes');"
+           name="overwrite_yes_button"
+           value="1"
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Overwrite">"
+           class="action primary-button"
+           ><__trans phrase="Overwrite"></button>
+        <button
+           onclick="submit_form(this.form, 'no');"
+           name="overwrite_no_button"
+           value="1"
+           type="submit"
+           title="<__trans phrase="Cancel">"
+           class="action"
+           ><__trans phrase="Cancel"></button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+<mt:include name="include/footer.tmpl" id="footer_include">

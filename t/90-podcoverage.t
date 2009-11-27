@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 90-podcoverage.t 1460 2008-03-04 23:07:53Z mpaschal $
 
 use strict;
 use warnings;

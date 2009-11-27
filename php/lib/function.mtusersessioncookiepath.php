@@ -17,7 +17,7 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
     if ($path == '<$MTBlogRelativeURL$>') {
         # optimize for the default case
         $blog = $ctx->stash('blog');
-        $host = $blog['blog_site_url'];
+        $host = $blog->site_url();
         if (!preg_match('!/$!', $host))
             $host .= '/';
         if (preg_match('!^https?://[^/]+(/.*)$!', $host, $matches))

@@ -1,8 +1,13 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::TrackBack;
 
 use strict;
-use MT::Util qw( format_ts relative_date encode_url encode_html );
-use MT::I18N qw( const break_up_text substr_text );
+use MT::Util qw( format_ts relative_date encode_url encode_html break_up_text );
+use MT::I18N qw( const );
 
 sub edit {
     my $cb = shift;
@@ -28,9 +33,7 @@ sub edit {
         $param->{unapproved}         = $app->param('unapproved');
         $param->{has_publish_access} = 1 if $app->user->is_superuser;
         $param->{has_publish_access} = (
-            ( $perms->can_manage_feedback || $perms->can_edit_all_posts )
-            ? 1
-            : 0
+            $app->can_do('publish_trackback') ? 1 : 0
         ) unless $app->user->is_superuser;
         require MT::Trackback;
 
@@ -43,11 +46,13 @@ sub edit {
                     $param->{entry_id}    = $entry->id;
                     unless ( $param->{has_publish_access} ) {
                         $param->{has_publish_access} =
-                          ( $perms->can_publish_post
+                          ( $perms->can_do('publish_own_entry_trackback')
                               && ( $app->user->id == $entry->author_id ) )
                           ? 1
                           : 0;
                     }
+                    $param->{target_type} = $entry->class;
+                    $param->{target_label} = MT->model($entry->class)->class_label;
                 }
             }
             elsif ( $tb->category_id ) {
@@ -109,40 +114,29 @@ sub list {
     my $admin = $app->user->is_superuser
       || ( $perms && $perms->can_administer_blog );
     if ($perms) {
-        unless ( $perms->can_view_feedback ) {
-            return $app->error( $app->translate("Permission denied.") );
-        }
+        $app->can_do('access_to_trackback_list')
+            or return $app->error( $app->translate("Permission denied.") );
         $can_empty_junk = $admin
-          || ( $perms && $perms->can_manage_feedback )
+          || $app->can_do('delete_junk_trackbacks')
           ? 1 : 0;
         $state_editable = $admin
-          || ( $perms
-            && ( $perms->can_publish_post
-              || $perms->can_edit_all_posts || $perms->can_manage_feedback ) )
-          ? 1 : 0;
+          || $app->can_do('edit_trackback_status') ? 1 : 0;
     }    # otherwise we simply filter the list of objects
 
     my $list_pref = $app->list_pref('ping');
     my $class     = $app->model("ping") or return;
     my $blog_id   = $q->param('blog_id');
-    my $blog;
-    if ($blog_id) {
-        $blog = $app->model('blog')->load($blog_id);
-    }
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog_id;
+    my $blog = $app->model('blog')->load($blog_id);
+
     my %param = %$list_pref;
     my %terms;
-    if ($blog_id) {
-        $terms{blog_id} = $blog_id;
-    }
-    elsif ( !$app->user->is_superuser ) {
-        $terms{blog_id} = [
-            map    { $_->blog_id }
-              grep { $_->can_view_feedback }
-              MT::Permission->load( { author_id => $app->user->id } )
-        ];
-        return $app->errtrans("Permission denied.")
-          unless @{ $terms{blog_id} };
-    }
+
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id;
+    $terms{blog_id} = $blog_ids;
+
     my $cols           = $class->column_names;
     my $limit          = $list_pref->{rows};
     my $offset         = $app->param('offset') || 0;
@@ -306,10 +300,7 @@ sub list {
     $param{tab}               = $app->param('tab') || 'pings';
     $param{ "tab_" . ( $app->param('tab') || 'pings' ) } = 1;
 
-    unless ($blog_id) {
-        $param{system_overview_nav} = 1;
-        $param{nav_pings}           = 1;
-    }
+    $param{blog_view} = 1 if $blog->is_blog;
     $param{filter_spam} =
       ( $app->param('filter_key') && $app->param('filter_key') eq 'spam' );
     if ( $param{'tab'} ne 'junk' ) {
@@ -324,23 +315,6 @@ sub list {
     $app->load_tmpl( "list_ping.tmpl", \%param );
 }
 
-sub cfg_trackbacks {
-    my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
-    return $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
-    $app->forward( "view",
-        {
-            output       => 'cfg_trackbacks.tmpl',
-            screen_class => 'settings-screen',
-            screen_id    => 'trackback-settings',
-        }
-    );
-}
-
 sub can_view {
     my $eh = shift;
     my ( $app, $id, $objp ) = @_;
@@ -353,19 +327,22 @@ sub can_view {
             require MT::Entry;
             my $entry = MT::Entry->load( $tb->entry_id );
             return ( !$entry
-                  || $entry->author_id == $app->user->id
-                  || $perms->can_manage_feedback
-                  || $perms->can_edit_all_posts );
+                  || ( $entry->author_id == $app->user->id
+                       && $app->can_do('open_own_entry_trackback_edit_screen') )
+                  || $perms->can_do('open_all_trackback_edit_screen') );
         }
         elsif ( $tb->category_id ) {
             require MT::Category;
             my $cat = MT::Category->load( $tb->category_id );
-            return $cat && $perms->can_edit_categories;
+            return $cat && $perms->can_do('open_category_trackback_edit_screen');
         }
+
+
     }
     else {
         return 0;    # no TrackBack center--no edit
     }
+    return 1;
 }
 
 sub can_save {
@@ -375,37 +352,26 @@ sub can_save {
 
     my $perms = $app->permissions;
     return 1
-      if $perms
-      && ( $perms->can_edit_all_posts
-        || $perms->can_manage_feedback );
+        if $app->can_do('save_all_trackback');
     my $p      = MT::TBPing->load($id)
         or return 0;
     my $tbitem = $p->parent;
     if ( $tbitem->isa('MT::Entry') ) {
-        if ( $perms && $perms->can_publish_post && $perms->can_create_post ) {
-            return $tbitem->author_id == $app->user->id;
-        }
-        elsif ( $perms->can_create_post ) {
-            return ( $tbitem->author_id == $app->user->id )
-              && (
-                ( $p->is_junk && ( 'junk' eq $app->param('status') ) )
-                || ( $p->is_moderated
-                    && ( 'moderate' eq $app->param('status') ) )
-                || ( $p->is_published
-                    && ( 'publish' eq $app->param('status') ) )
-              );
-        }
-        elsif ( $perms && $perms->can_publish_post ) {
-            return 0 unless $tbitem->author_id == $app->user->id;
-            return 0
-              unless ( $p->excerpt eq $app->param('excerpt') )
-              && ( $p->blog_name  eq $app->param('blog_name') )
-              && ( $p->title      eq $app->param('title') )
-              && ( $p->source_url eq $app->param('source_url') );
-        }
+        return 0
+            if $tbitem->author_id != $app->user->id;
+
+        my $status_is_changed
+            = $p->is_junk      ? ( 'junk'      ne $app->param('status') )
+            : $p->is_moderated ? ( 'moderated' ne $app->param('status') )
+            : $p->is_published ? ( 'publish'   ne $app->param('status') )
+            :                    1
+            ;
+        return $status_is_changed ? $app->can_do('edit_own_entry_trackback_status')
+                                  : $app->can_do('edit_own_entry_trackback_without_status')
+                                  ;
     }
     else {
-        return $perms && $perms->can_edit_categories;
+        return $app->can_do('save_category_trackback');
     }
 }
 
@@ -424,16 +390,17 @@ sub can_delete {
 
         # publish_post allows entry author to delete comment.
         return 1
-          if $perms->can_edit_all_posts
-          || $perms->can_manage_feedback
-          || $perms->can_edit_entry( $entry, $author, 1 );
+          if $perms->can_do('delete_all_trackbacks')
+          || ( $perms->can_edit_entry( $entry, $author, 1 )
+               && $perms->can_do('delete_own_entry_trackback') );
         return 0
           if $obj->visible;    # otherwise, visible comment can't be deleted.
-        return $perms->can_edit_entry( $entry, $author );
+        return $perms->can_edit_entry( $entry, $author )
+               && $perms->can_do('delete_own_entry_unpublished_trackback');
     }
     elsif ( $tb->category_id ) {
         $perms ||= $author->permissions( $tb->blog_id );
-        return ( $perms && $perms->can_edit_categories() );
+        return ( $perms && $perms->can_do('delete_category_trackback') );
     }
     return 0;
 }
@@ -442,31 +409,29 @@ sub pre_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
     my $perms = $app->permissions;
-    return 1
-      unless $perms->can_publish_post
-      || $perms->can_edit_categories
-      || $perms->can_edit_all_posts
-      || $perms->can_manage_feedback;
 
-    unless ( $perms->can_edit_all_posts || $perms->can_manage_feedback ) {
-        return 1 unless $perms->can_publish_post || $perms->can_edit_categories;
+    PERMCHECK: {
+        last PERMCHECK
+            if $app->can_do('handle_junk_for_all_trackbacks');
         require MT::Trackback;
         my $tb = MT::Trackback->load( $obj->tb_id )
-            or return 0;
-        if ($tb) {
-            if ( $tb->entry_id ) {
-                require MT::Entry;
-                my $entry = MT::Entry->load( $tb->entry_id );
-                return 1
-                  if ( !$entry || $entry->author_id != $app->user->id )
-                  && $perms->can_publish_post;
-            }
+            or return 0; # wrong trackback id. callback was failed.
+        if ( $tb->entry_id ) {
+            require MT::Entry;
+            my $entry = MT::Entry->load( $tb->entry_id );
+            last PERMCHECK
+                if $entry
+                    && $entry->author_id == $app->user->id
+                    && $app->can_do('handle_junk_for_own_entry_trackback');
         }
         elsif ( $tb->category_id ) {
             require MT::Category;
             my $cat = MT::Category->load( $tb->category_id );
-            return 1 unless $cat && $perms->can_edit_categories;
+            last PERMCHECK
+                if $cat && $app->can_do('handle_junk_for_category_trackback');
         }
+        ## do nothing.
+        return 1;
     }
 
     my $status = $app->param('status');
@@ -584,7 +549,7 @@ sub build_ping_table {
         }
         if ( !defined( $row->{title} ) ) {
             $row->{title} =
-              substr_text( $row->{excerpt} || "", 0, $excerpt_max_len ) . '...';
+              substr( $row->{excerpt} || "", 0, $excerpt_max_len ) . '...';
         }
         $row->{excerpt} ||= '';
         $row->{title}     = break_up_text( $row->{title},     $title_max_len );
@@ -660,50 +625,19 @@ sub build_ping_table {
         else {
             my $perms = $perms{ $obj->blog_id } ||=
               $author->permissions( $obj->blog_id );
-            $row->{has_bulk_access} = (
-                (
-                    $perms
-                      && (
-                        (
-                            $entry && ( $perms->can_edit_all_posts
-                                || $perms->can_manage_feedback )
-                        )
-                        || (
-                            $cat
-                            && (   $perms->can_edit_categories
-                                || $perms->can_manage_feedback )
-                        )
-                      )
-                )
-                  || ( $cat && $author->id == $cat->author_id )
-                  || (
-                    $entry
-                    && ( ( $author->id == $entry->author_id )
-                        && $perms->can_publish_post )
-                  )
-            );
-            $row->{has_edit_access} = (
-                (
-                    $perms
-                      && (
-                        (
-                            $entry && ( $perms->can_edit_all_posts
-                                || $perms->can_manage_feedback )
-                        )
-                        || (
-                            $cat
-                            && (   $perms->can_edit_categories
-                                || $perms->can_manage_feedback )
-                        )
-                      )
-                )
-                  || ( $cat && $author->id == $cat->author_id )
-                  || (
-                    $entry
-                    && ( ( $author->id == $entry->author_id )
-                        && $perms->can_create_post )
-                  )
-            );
+            my $own_entry = $entry && $author->id == $entry->author_id;
+
+            $row->{has_bulk_access}
+                = $cat       ? $perms->can_do('bulk_edit_category_trackbacks')
+                : $own_entry ? $perms->can_do('bulk_edit_own_entry_trackbacks')
+                :              $perms->can_do('bulk_edit_all_entry_trackbacks')
+                ;
+
+            $row->{has_edit_access}
+                = $cat       ? $perms->can_do('open_category_trackback_edit_screen')
+                : $own_entry ? $perms->can_do('open_own_entry_trackback_edit_screen')
+                :              $perms->can_do('open_all_trackback_edit_screen')
+                ;
         }
     }
     return [] unless @data;

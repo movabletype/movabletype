@@ -28,7 +28,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
         $class = $args['class'];
     }
     
-    $cats =& $ctx->mt->db->fetch_categories(array('blog_id' => $ctx->stash('blog_id'), 'category_id' => $cat['category_id'], 'children' => 1, 'show_empty' => 1, 'class' => $class));
+    $cats =& $ctx->mt->db()->fetch_categories(array('blog_id' => $ctx->stash('blog_id'), 'category_id' => $cat->category_id, 'children' => 1, 'show_empty' => 1, 'class' => $class));
 
     #$cats = sort_cats($ctx, $sort_method, $sort_order, $child_cats);
     if (!$cats) {

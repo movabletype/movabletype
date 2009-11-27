@@ -188,10 +188,6 @@ Token stored for commenter registration.
 
 Cache of the result of blog search via mt-search.cgi
 
-=item UA
-
-Active user records indicate when the particular user logged in the last time.
-
 =item CO
 
 Cached Object records store cache data of objects via MT::Cache::Session class.

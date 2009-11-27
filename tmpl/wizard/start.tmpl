@@ -1,92 +1,71 @@
 <mt:setvarblock name="inline_styles">
     <style type="text/css" media="screen">
         body {
-            font-family: Candara, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8fbf8;
+            font-family: "Helvetica Neue", Arial, sans-serif;
             font-size: 12px;
-            background-color: #fff;
         }
-
-        .chromeless body {
-            text-align: center;
-            height: 100%;
+        a { 
+            color: #7b7c7d;
         }
-
-        .chromeless #container {
-            position: relative;
-            margin: 0 auto;
-            text-align: left;
+        a:hover, 
+        a:active { 
+            color: #2b2b2b;
         }
-        .chromeless #container {
-            width: 450px;
+        #brand {
+            margin: 0 0 20px;
+            font-size: 26px;
         }
-
-        .chromeless #header {
-            position: relative;
-            height: 34px;
-        }
-
-        .chromeless #footer {
-            padding: 5px 20px 20px;
-            bottom: 0px;
-        }
-        .chromeless body {
-            background-color: #fff;
-        }
-
-        .chromeless #container {
-            margin-top: 50px;
-        }
-
-        .chromeless #content {
-            border: 1px solid #cfdde5;
-            background-color: #fafbfc;
-            padding: 20px;
-        }
-
-        .chromeless #page-title {
-            font-size: 24px;
+        h2 {
+            margin: 20px 0 10px;
+            font-size: 16px;
             font-weight: normal;
-            margin-top: 10px;
         }
-
-        .chromeless p.intro {
-            font-size: 14px;
+        #container {
+            position: relative;
+            width: 520px;
+            margin: 45px auto 30px;
+            padding: 30px;
+            border: 1px solid #C8C2BE;
+            background-color: #fff;
+            text-align: left;
+            -moz-border-radius: 8px;
+            -khtml-border-radius: 8px;
+            -webkit-border-radius: 8px;
+            border-radius: 8px;
         }
-
-
-        h1 {
-            margin-top: 0;
+        #page-title {
+            font-size:18px;
+            font-weight:normal;
         }
-        #set_static_uri_to {
-            width: 100%;
+        .actions-bar {
+            height: 1%; /*IE6 Hack*/
+            margin: 10px 0 20px;
         }
+        button {
+            float: right;
+            min-width: 7em;
+        }
+        #set_static_uri_to, 
         #set_static_file_to {
             width: 100%;
         }
         .no-static-path,
         fieldset {
-            border: 1px solid #cfdde5;
+            border: 0;
             background: #fff;
-            padding: 10px;
             margin-bottom: 1em;
+            padding: 0;
             height: 1%;  /*IE6 Hack*/
         }
-        .no-static-path h3 {
-            margin-top: 0;
-        }
-        #footer {
-            color: #999;
-            font-size: 85%;
-            text-align: center;
-        }
-        #footer a {
-            color: #999;
+        .field {
+            margin-bottom: 20px;
         }
         label {
             font-weight: bold;
         }
         .hint {
-            color: #666;
+            color: #7b7c7d;
             font-size: 85%;
         }
         .msg {
@@ -94,25 +73,15 @@
             padding: 16px 10px;
         }
         .msg-error {
-            background-color: #FF9;
+            background-color: #fef263;
         }
         .msg, .no-static-path, fieldset {
             height: 1%;  /* IE6 Hack */
         }
         </style>
 
-    <script type="text/javascript">
-        /* <![CDATA[ */
-        function getByID(n, d) {
-            if (!d) d = document;
-            if (d.getElementById)
-                return d.getElementById(n);
-            else if (d.all)
-                return d.all[n];
-        }
-        /* ]]> */
-    </script>
 </mt:setvarblock>
+
 <mt:unless name="cfg_exists">
     <mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock>
     <mt:unless name="valid_static_path">
@@ -131,40 +100,19 @@
             .msg-error {
                 background-color: #FF9;
             }
-            #container  div.no-static-path,
-            #container #static_webpath_config {
-                display: none;
-            }
-            #container.bad-static-path div.no-static-path,
-            #container.bad-static-path #static_webpath_config {
-                display: block;
-            }
             </style>
-            <script type="text/javascript">
-            /* <![CDATA[ */
-            function js_check() {
-                if (! openManual ) {
-                    // mt.js not loading properly; static path incorrect
-                    var c = getByID("container");
-                    c.className = "bad-static-path";
-                }
-            }
-            window.onload = js_check;
-            /* ]]> */
-        </script>
         </mt:setvarblock>
     </mt:unless>
 <mt:else>
     <mt:setvarblock name="page_title"><__trans phrase="Configuration File Exists"></mt:setvarblock>
-    <$mt:var name="inline_styles"$>
+    <mt:setvarblock name="html_head" append="1">
+        <$mt:var name="inline_styles"$>
+    </mt:setvarblock>
 </mt:unless>
 
 <mt:include name="include/chromeless_header.tmpl">
 
-<mt:if name="cfg_exists">
-    <p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
-    <p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
-<mt:else>
+<mt:unless name="cfg_exists">
 <form method="post">
     <input type="hidden" name="__mode" value="next_step" />
     <input type="hidden" name="step" value="pre_start" />
@@ -175,12 +123,12 @@
     </noscript>
 
     <p class="intro"><__trans phrase="This wizard will help you configure the basic settings needed to run Movable Type."></p>
-    
+
     <mtapp:setting
                 id="default_language"
                 label="<__trans phrase="Language">"
                 hint="<__trans phrase="Default language.">">
-                <select name="default_language" id="default_language" class="se" onchange="changeLanguage(this.form);"><mt:loop name="languages">
+                <select name="default_language" id="default_language" class="se"><mt:loop name="languages">
                     <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
                 </select>
             </mtapp:setting>
@@ -204,7 +152,7 @@
 
     <div class="no-static-path">
 
-        <h3><__trans phrase="Configure Static Web Path"></h3>
+        <h2><__trans phrase="Configure Static Web Path"></h2>
 
         <p><__trans phrase="Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets." params="<strong>mt-static</strong>"></p>
 
@@ -234,7 +182,7 @@
                 hint="$hintfoo">
                 <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="ti" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="">
             </mtapp:setting>
-            <br/>
+
             <mtapp:setting
                 id="set_static_file_to"
                 label="<__trans phrase="Static file path">"
@@ -245,11 +193,23 @@
             </mtapp:setting>
         </fieldset>
     </div>
-    <div class="action-buttons">
-        <div class="right"><input type="submit" class="sb" value="<__trans phrase="Begin">" /></div>
+    <div class="actions-bar">
+      <button
+         type="submit"
+         title="<__trans phrase="Begin">"
+         class="next action primary-button"
+         ><__trans phrase="Begin"></button>
     </div>
 </form>
+<mt:else>
+    <p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
+    <p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
+</mt:unless>
 
-</mt:if>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery(function() {
+        jQuery('div.no-static-path, div#static_webpath_config').hide();
+    });
+</mt:setvarblock>
 
 <mt:include name="include/chromeless_footer.tmpl">

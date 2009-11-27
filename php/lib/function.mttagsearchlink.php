@@ -8,8 +8,8 @@
 function smarty_function_mttagsearchlink($args, &$ctx) {
     $tag = $ctx->stash('Tag');
     if (!$tag) return '';
-    if (is_array($tag)) {
-        $name = $tag['tag_name'];
+    if (is_object($tag)) {
+        $name = $tag->tag_name;
     } else {
         $name = $tag;
     }

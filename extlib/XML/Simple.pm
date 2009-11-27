@@ -1,4 +1,4 @@
-# $Id: Simple.pm,v 1.23 2005/01/29 04:16:10 grantm Exp $
+# $Id: Simple.pm,v 1.40 2007/08/15 10:36:48 grantm Exp $
 
 package XML::Simple;
 
@@ -18,7 +18,7 @@ Or the object oriented way:
 
     require XML::Simple;
 
-    my $xs = new XML::Simple(options);
+    my $xs = XML::Simple->new(options);
 
     my $ref = $xs->XMLin([<xml file or string>] [, <options>]);
 
@@ -53,15 +53,10 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK $PREFERRED_PARSER);
 @ISA               = qw(Exporter);
 @EXPORT            = qw(XMLin XMLout);
 @EXPORT_OK         = qw(xml_in xml_out);
-$VERSION           = '2.14';
+$VERSION           = '2.18';
 $PREFERRED_PARSER  = undef;
 
 my $StrictMode     = 0;
-my %CacheScheme    = (
-                       storable => [ \&StorableSave, \&StorableRestore ],
-                       memshare => [ \&MemShareSave, \&MemShareRestore ],
-                       memcopy  => [ \&MemCopySave,  \&MemCopyRestore  ]
-                     );
 
 my @KnownOptIn     = qw(keyattr keeproot forcecontent contentkey noattr
                         searchpath forcearray cache suppressempty parseropts
@@ -95,14 +90,14 @@ my %MemCopyCache   = ();
 #
 
 sub import {
-
   # Handle the :strict tag
   
   $StrictMode = 1 if grep(/^:strict$/, @_);
 
   # Pass everything else to Exporter.pm
 
-  __PACKAGE__->export_to_level(1, grep(!/^:strict$/, @_));
+  @_ = grep(!/^:strict$/, @_);
+  goto &Exporter::import;
 }
 
 
@@ -135,6 +130,26 @@ sub new {
 
 
 ##############################################################################
+# Sub: _get_object()
+#
+# Helper routine called from XMLin() and XMLout() to create an object if none
+# was provided.  Note, this routine does mess with the caller's @_ array.
+#
+
+sub _get_object {
+  my $self;
+  if($_[0]  and  UNIVERSAL::isa($_[0], 'XML::Simple')) {
+    $self = shift;
+  }
+  else {
+    $self = XML::Simple->new();
+  }
+  
+  return $self;
+}
+
+
+##############################################################################
 # Sub/Method: XMLin()
 #
 # Exported routine for slurping XML into a hashref - see pod for info.
@@ -146,96 +161,155 @@ sub new {
 #
 
 sub XMLin {
+  my $self = &_get_object;      # note, @_ is passed implicitly
 
-  # If this is not a method call, create an object
+  my $target = shift;
 
-  my $self;
-  if($_[0]  and  UNIVERSAL::isa($_[0], 'XML::Simple')) {
-    $self = shift;
+
+  # Work out whether to parse a string, a file or a filehandle
+
+  if(not defined $target) {
+    return $self->parse_file(undef, @_);
   }
+
+  elsif($target eq '-') {
+    local($/) = undef;
+    $target = <STDIN>;
+    return $self->parse_string(\$target, @_);
+  }
+
+  elsif(my $type = ref($target)) {
+    if($type eq 'SCALAR') {
+      return $self->parse_string($target, @_);
+    }
+    else {
+      return $self->parse_fh($target, @_);
+    }
+  }
+
+  elsif($target =~ m{<.*?>}s) {
+    return $self->parse_string(\$target, @_);
+  }
+
   else {
-    $self = new XML::Simple();
+    return $self->parse_file($target, @_);
+  }
+}
+
+
+##############################################################################
+# Sub/Method: parse_file()
+#
+# Same as XMLin, but only parses from a named file.
+#
+
+sub parse_file {
+  my $self = &_get_object;      # note, @_ is passed implicitly
+
+  my $filename = shift;
+
+  $self->handle_options('in', @_);
+
+  $filename = $self->default_config_file if not defined $filename;
+
+  $filename = $self->find_xml_file($filename, @{$self->{opt}->{searchpath}});
+
+  # Check cache for previous parse
+
+  if($self->{opt}->{cache}) {
+    foreach my $scheme (@{$self->{opt}->{cache}}) {
+      my $method = 'cache_read_' . $scheme;
+      my $opt = $self->$method($filename);
+      return($opt) if($opt);
+    }
   }
 
+  my $ref = $self->build_simple_tree($filename, undef);
+
+  if($self->{opt}->{cache}) {
+    my $method = 'cache_write_' . $self->{opt}->{cache}->[0];
+    $self->$method($ref, $filename);
+  }
+
+  return $ref;
+}
+
+
+##############################################################################
+# Sub/Method: parse_fh()
+#
+# Same as XMLin, but only parses from a filehandle.
+#
+
+sub parse_fh {
+  my $self = &_get_object;      # note, @_ is passed implicitly
+
+  my $fh = shift;
+  croak "Can't use " . (defined $fh ? qq{string ("$fh")} : 'undef') .
+        " as a filehandle" unless ref $fh;
+
+  $self->handle_options('in', @_);
+
+  return $self->build_simple_tree(undef, $fh);
+}
+
+
+##############################################################################
+# Sub/Method: parse_string()
+#
+# Same as XMLin, but only parses from a string or a reference to a string.
+#
+
+sub parse_string {
+  my $self = &_get_object;      # note, @_ is passed implicitly
 
   my $string = shift;
 
   $self->handle_options('in', @_);
 
-
-  # If no XML or filename supplied, look for scriptname.xml in script directory
-
-  unless(defined($string))  {
-    
-    # Translate scriptname[.suffix] to scriptname.xml
-
-    require File::Basename;
-
-    my($ScriptName, $ScriptDir, $Extension) =
-      File::Basename::fileparse($0, '\.[^\.]+');
-
-    $string = $ScriptName . '.xml';
+  return $self->build_simple_tree(undef, ref $string ? $string : \$string);
+}
 
 
-    # Add script directory to searchpath
-    
-    if($ScriptDir) {
-      unshift(@{$self->{opt}->{searchpath}}, $ScriptDir);
-    }
-  }
+##############################################################################
+# Method: default_config_file()
+#
+# Returns the name of the XML file to parse if no filename (or XML string) 
+# was provided.
+#
+
+sub default_config_file {
+  my $self = shift;
+
+  require File::Basename;
+
+  my($basename, $script_dir, $ext) = File::Basename::fileparse($0, '\.[^\.]+');
+
+  # Add script directory to searchpath
   
-
-  # Are we parsing from a file?  If so, is there a valid cache available?
-
-  my($filename, $scheme);
-  unless($string =~ m{<.*?>}s  or  ref($string)  or  $string eq '-') {
-
-    require File::Basename;
-    require File::Spec;
-
-    $filename = $self->find_xml_file($string, @{$self->{opt}->{searchpath}});
-
-    if($self->{opt}->{cache}) {
-      foreach $scheme (@{$self->{opt}->{cache}}) {
-        croak "Unsupported caching scheme: $scheme"
-          unless($CacheScheme{$scheme});
-
-        my $opt = $CacheScheme{$scheme}->[1]->($filename);
-        return($opt) if($opt);
-      }
-    }
-  }
-  else {
-    delete($self->{opt}->{cache});
-    if($string eq '-') {
-      # Read from standard input
-
-      local($/) = undef;
-      $string = <STDIN>;
-    }
+  if($script_dir) {
+    unshift(@{$self->{opt}->{searchpath}}, $script_dir);
   }
 
-
-  # Parsing is required, so let's get on with it
-
-  my $tree =  $self->build_tree($filename, $string);
+  return $basename . '.xml';
+}
 
 
-  # Now work some magic on the resulting parse tree
+##############################################################################
+# Method: build_simple_tree()
+#
+# Builds a 'tree' data structure as provided by XML::Parser and then 
+# 'simplifies' it as specified by the various options in effect.
+#
 
-  my($ref);
-  if($self->{opt}->{keeproot}) {
-    $ref = $self->collapse({}, @$tree);
-  }
-  else {
-    $ref = $self->collapse(@{$tree->[1]});
-  }
+sub build_simple_tree {
+  my $self = shift;
 
-  if($self->{opt}->{cache}) {
-    $CacheScheme{$self->{opt}->{cache}->[0]}->[0]->($ref, $filename);
-  }
+  my $tree = $self->build_tree(@_);
 
-  return($ref);
+  return $self->{opt}->{keeproot}
+         ? $self->collapse({}, @$tree)
+         : $self->collapse(@{$tree->[1]});
 }
 
 
@@ -246,14 +320,15 @@ sub XMLin {
 # cache.  It parses the XML and returns an XML::Parser 'Tree' style data
 # structure (summarised in the comments for the collapse() routine below).
 #
-# XML::Simple requires the services of another module that knows how to
-# parse XML.  If XML::SAX is installed, the default SAX parser will be used,
+# XML::Simple requires the services of another module that knows how to parse
+# XML.  If XML::SAX is installed, the default SAX parser will be used,
 # otherwise XML::Parser will be used.
 #
-# This routine expects to be passed a 'string' as argument 1 or a filename as
-# argument 2.  The 'string' might be a string of XML or it might be a 
-# reference to an IO::Handle.  (This non-intuitive mess results in part from
-# the way XML::Parser works but that's really no excuse).
+# This routine expects to be passed a filename as argument 1 or a 'string' as
+# argument 2.  The 'string' might be a string of XML (passed by reference to
+# save memory) or it might be a reference to an IO::Handle.  (This
+# non-intuitive mess results in part from the way XML::Parser works but that's
+# really no excuse).
 #
 
 sub build_tree {
@@ -288,11 +363,11 @@ sub build_tree {
     $tree = $sp->parse_uri($filename);
   }
   else {
-    if(ref($string)) {
+    if(ref($string) && ref($string) ne 'SCALAR') {
       $tree = $sp->parse_file($string);
     }
     else {
-      $tree = $sp->parse_string($string);
+      $tree = $sp->parse_string($$string);
     }
   }
 
@@ -326,7 +401,7 @@ sub build_tree_xml_parser {
     carp "'nsexpand' option requires XML::SAX";
   }
 
-  my $xp = new XML::Parser(Style => 'Tree', @{$self->{opt}->{parseropts}});
+  my $xp = XML::Parser->new(Style => 'Tree', @{$self->{opt}->{parseropts}});
   my($tree);
   if($filename) {
     # $tree = $xp->parsefile($filename);  # Changed due to prob w/mod_perl
@@ -336,7 +411,7 @@ sub build_tree_xml_parser {
     close(XML_FILE);
   }
   else {
-    $tree = $xp->parse($string);
+    $tree = $xp->parse($$string);
   }
 
   return($tree);
@@ -344,17 +419,16 @@ sub build_tree_xml_parser {
 
 
 ##############################################################################
-# Sub: StorableSave()
+# Method: cache_write_storable()
 #
 # Wrapper routine for invoking Storable::nstore() to cache a parsed data
 # structure.
 #
 
-sub StorableSave {
-  my($data, $filename) = @_;
+sub cache_write_storable {
+  my($self, $data, $filename) = @_;
 
-  my $cachefile = $filename;
-  $cachefile =~ s{(\.xml)?$}{.stor};
+  my $cachefile = $self->storable_filename($filename);
 
   require Storable;           # We didn't need it until now
 
@@ -370,18 +444,17 @@ sub StorableSave {
 
 
 ##############################################################################
-# Sub: StorableRestore()
+# Method: cache_read_storable()
 #
 # Wrapper routine for invoking Storable::retrieve() to read a cached parsed
 # data structure.  Only returns cached data if the cache file exists and is
 # newer than the source XML file.
 #
 
-sub StorableRestore {
-  my($filename) = @_;
+sub cache_read_storable {
+  my($self, $filename) = @_;
   
-  my $cachefile = $filename;
-  $cachefile =~ s{(\.xml)?$}{.stor};
+  my $cachefile = $self->storable_filename($filename);
 
   return unless(-r $cachefile);
   return unless((stat($cachefile))[9] > (stat($filename))[9]);
@@ -399,27 +472,43 @@ sub StorableRestore {
 
 
 ##############################################################################
-# Sub: MemShareSave()
+# Method: storable_filename()
+#
+# Translates the supplied source XML filename into a filename for the storable
+# cached data.  A '.stor' suffix is added after stripping an optional '.xml'
+# suffix.
+#
+
+sub storable_filename {
+  my($self, $cachefile) = @_;
+
+  $cachefile =~ s{(\.xml)?$}{.stor};
+  return $cachefile;
+}
+
+
+##############################################################################
+# Method: cache_write_memshare()
 #
 # Takes the supplied data structure reference and stores it away in a global
 # hash structure.
 #
 
-sub MemShareSave {
-  my($data, $filename) = @_;
+sub cache_write_memshare {
+  my($self, $data, $filename) = @_;
 
   $MemShareCache{$filename} = [time(), $data];
 }
 
 
 ##############################################################################
-# Sub: MemShareRestore()
+# Method: cache_read_memshare()
 #
 # Takes a filename and looks in a global hash for a cached parsed version.
 #
 
-sub MemShareRestore {
-  my($filename) = @_;
+sub cache_read_memshare {
+  my($self, $filename) = @_;
   
   return unless($MemShareCache{$filename});
   return unless($MemShareCache{$filename}->[0] > (stat($filename))[9]);
@@ -430,14 +519,14 @@ sub MemShareRestore {
 
 
 ##############################################################################
-# Sub: MemCopySave()
+# Method: cache_write_memcopy()
 #
 # Takes the supplied data structure and stores a copy of it in a global hash
 # structure.
 #
 
-sub MemCopySave {
-  my($data, $filename) = @_;
+sub cache_write_memcopy {
+  my($self, $data, $filename) = @_;
 
   require Storable;           # We didn't need it until now
   
@@ -446,14 +535,14 @@ sub MemCopySave {
 
 
 ##############################################################################
-# Sub: MemCopyRestore()
+# Method: cache_read_memcopy()
 #
 # Takes a filename and looks in a global hash for a cached parsed version.
 # Returns a reference to a copy of that data structure.
 #
 
-sub MemCopyRestore {
-  my($filename) = @_;
+sub cache_read_memcopy {
+  my($self, $filename) = @_;
   
   return unless($MemCopyCache{$filename});
   return unless($MemCopyCache{$filename}->[0] > (stat($filename))[9]);
@@ -473,16 +562,7 @@ sub MemCopyRestore {
 #
 
 sub XMLout {
-
-  # If this is not a method call, create an object
-
-  my $self;
-  if($_[0]  and  UNIVERSAL::isa($_[0], 'XML::Simple')) {
-    $self = shift;
-  }
-  else {
-    $self = new XML::Simple();
-  }
+  my $self = &_get_object;      # note, @_ is passed implicitly
 
   croak "XMLout() requires at least one argument" unless(@_);
   my $ref = shift;
@@ -546,7 +626,12 @@ sub XMLout {
 
   if($self->{opt}->{outputfile}) {
     if(ref($self->{opt}->{outputfile})) {
-      return($self->{opt}->{outputfile}->print($xml));
+      my $fh = $self->{opt}->{outputfile};
+      if(UNIVERSAL::isa($fh, 'GLOB') and !UNIVERSAL::can($fh, 'print')) {
+        eval { require IO::Handle; };
+        croak $@ if $@;
+      }
+      return($fh->print($xml));
     }
     else {
       local(*OUT);
@@ -676,6 +761,11 @@ sub handle_options  {
   }
   if($opt->{cache}) {
     $_ = lc($_) foreach (@{$opt->{cache}});
+    foreach my $scheme (@{$opt->{cache}}) {
+      my $method = 'cache_read_' . $scheme;
+      croak "Unsupported caching scheme: $scheme"
+        unless($self->can($method));
+    }
   }
   
   if(exists($opt->{parseropts})) {
@@ -785,8 +875,14 @@ sub handle_options  {
 
   # make sure there's nothing weird in {grouptags}
 
-  if($opt->{grouptags} and !UNIVERSAL::isa($opt->{grouptags}, 'HASH')) {
-    croak "Illegal value for 'GroupTags' option - expected a hashref";
+  if($opt->{grouptags}) {
+    croak "Illegal value for 'GroupTags' option - expected a hashref"
+      unless UNIVERSAL::isa($opt->{grouptags}, 'HASH');
+
+    while(my($key, $val) = each %{$opt->{grouptags}}) {
+      next if $key ne $val;
+      croak "Bad value in GroupTags: '$key' => '$val'";
+    }
   }
 
 
@@ -821,8 +917,10 @@ sub find_xml_file  {
   my @search_path = @_;
 
 
-  my($filename, $filedir) =
-    File::Basename::fileparse($file);
+  require File::Basename;
+  require File::Spec;
+
+  my($filename, $filedir) = File::Basename::fileparse($file);
 
   if($filename ne $file) {        # Ignore searchpath if dir component
     return($file) if(-e $file);
@@ -894,7 +992,7 @@ sub collapse {
 
   if(my $var = $self->{_var_values}) {
     while(my($key, $val) = each(%$attr)) {
-      $val =~ s{\$\{(\w+)\}}{ $self->get_var($1) }ge;
+      $val =~ s{\$\{([\w.]+)\}}{ $self->get_var($1) }ge;
       $attr->{$key} = $val;
     }
   }
@@ -1119,7 +1217,7 @@ sub array_to_hash {
   my $name     = shift;
   my $arrayref = shift;
 
-  my $hashref  = {};
+  my $hashref  = $self->new_hashref;
 
   my($i, $key, $val, $flag);
 
@@ -1135,23 +1233,19 @@ sub array_to_hash {
       ) {
         $val = $arrayref->[$i]->{$key};
         if(ref($val)) {
-          if($StrictMode) {
-            croak "<$name> element has non-scalar '$key' key attribute";
-          }
-          if($^W) {
-            carp "Warning: <$name> element has non-scalar '$key' key attribute";
-          }
+          $self->die_or_warn("<$name> element has non-scalar '$key' key attribute");
           return($arrayref);
         }
         $val = $self->normalise_space($val)
           if($self->{opt}->{normalisespace} == 1);
+        $self->die_or_warn("<$name> element has non-unique value in '$key' key attribute: $val")
+          if(exists($hashref->{$val}));
         $hashref->{$val} = { %{$arrayref->[$i]} };
         $hashref->{$val}->{"-$key"} = $hashref->{$val}->{$key} if($flag eq '-');
         delete $hashref->{$val}->{$key} unless($flag eq '+');
       }
       else {
-        croak "<$name> element has no '$key' key attribute" if($StrictMode);
-        carp "Warning: <$name> element has no '$key' key attribute" if($^W);
+        $self->die_or_warn("<$name> element has no '$key' key attribute");
         return($arrayref);
       }
     }
@@ -1161,15 +1255,24 @@ sub array_to_hash {
   # Or assume keyattr => [ .... ]
 
   else {
+    my $default_keys =
+      join(',', @DefKeyAttr) eq join(',', @{$self->{opt}->{keyattr}});
+
     ELEMENT: for($i = 0; $i < @$arrayref; $i++)  {
       return($arrayref) unless(UNIVERSAL::isa($arrayref->[$i], 'HASH'));
 
       foreach $key (@{$self->{opt}->{keyattr}}) {
         if(defined($arrayref->[$i]->{$key}))  {
           $val = $arrayref->[$i]->{$key};
-          return($arrayref) if(ref($val));
+          if(ref($val)) {
+            $self->die_or_warn("<$name> element has non-scalar '$key' key attribute")
+              if not $default_keys;
+            return($arrayref);
+          }
           $val = $self->normalise_space($val)
             if($self->{opt}->{normalisespace} == 1);
+          $self->die_or_warn("<$name> element has non-unique value in '$key' key attribute: $val")
+            if(exists($hashref->{$val}));
           $hashref->{$val} = { %{$arrayref->[$i]} };
           delete $hashref->{$val}->{$key};
           next ELEMENT;
@@ -1187,6 +1290,39 @@ sub array_to_hash {
   }
  
   return($hashref);
+}
+
+
+##############################################################################
+# Method: die_or_warn()
+#
+# Takes a diagnostic message and does one of three things:
+# 1. dies if strict mode is enabled
+# 2. warns if warnings are enabled but strict mode is not
+# 3. ignores message and resturns silently if neither strict mode nor warnings
+#    are enabled
+# 
+
+sub die_or_warn {
+  my $self = shift;
+  my $msg  = shift;
+
+  croak $msg if($StrictMode);
+  carp "Warning: $msg" if($^W);
+}
+
+
+##############################################################################
+# Method: new_hashref()
+#
+# This is a hook routine for overriding in a sub-class.  Some people believe
+# that using Tie::IxHash here will solve order-loss problems.
+# 
+
+sub new_hashref {
+  my $self = shift;
+
+  return { @_ };
 }
 
 
@@ -1457,6 +1593,7 @@ sub value_to_xml {
 
   elsif(UNIVERSAL::isa($ref, 'ARRAY')) {
     foreach $value (@$ref) {
+      next if !defined($value) and $self->{opt}->{suppressempty};
       if(!ref($value)) {
         push @result,
              $indent, '<', $name, '>',
@@ -1860,7 +1997,7 @@ will be parsed directly.  eg:
 
 An IO::Handle object will be read to EOF and its contents parsed. eg:
 
-  $fh = new IO::File('/etc/params.xml');
+  $fh = IO::File->new('/etc/params.xml');
   $ref = XMLin($fh);
 
 =back
@@ -2444,6 +2581,10 @@ and later for output using an encoding other than UTF-8, eg:
   open my $fh, '>:encoding(iso-8859-1)', $path or die "open($path): $!";
   XMLout($ref, OutputFile => $fh);
 
+Note, XML::Simple does not require that the object you pass in to the
+OutputFile option inherits from L<IO::Handle> - it simply assumes the object
+supports a C<print> method.
+
 =head2 ParserOpts => [ XML::Parser Options ] I<# in - don't use this>
 
 I<Note: This option is now officially deprecated.  If you find it useful, email
@@ -2540,6 +2681,8 @@ A 'variable' is any text of the form C<${name}> which occurs in an attribute
 value or in the text content of an element.  If 'name' matches a key in the
 supplied hashref, C<${name}> will be replaced with the corresponding value from
 the hashref.  If no matching key is found, the variable will not be replaced.
+Names must match the regex: C<[\w.]+> (ie: only 'word' characters and dots are
+allowed).
 
 =head2 VarAttr => 'attr_name' I<# in - handy>
 
@@ -2605,7 +2748,7 @@ defaults with your preferred values.  It works like this:
 
 First create an XML::Simple parser object with your preferred defaults:
 
-  my $xs = new XML::Simple(ForceArray => 1, KeepRoot => 1);
+  my $xs = XML::Simple->new(ForceArray => 1, KeepRoot => 1);
 
 then call C<XMLin()> or C<XMLout()> as a method of that object:
 
@@ -2616,14 +2759,108 @@ You can also specify options when you make the method calls and these values
 will be merged with the values specified when the object was created.  Values
 specified in a method call take precedence.
 
-Overriding methods is a more advanced topic but might be useful if for example
-you wished to provide an alternative routine for escaping character data (the
-escape_value method) or for building the initial parse tree (the build_tree
-method).
-
 Note: when called as methods, the C<XMLin()> and C<XMLout()> routines may be
 called as C<xml_in()> or C<xml_out()>.  The method names are aliased so the
 only difference is the aesthetics.
+
+=head2 Parsing Methods
+
+You can explicitly call one of the following methods rather than rely on the
+C<xml_in()> method automatically determining whether the target to be parsed is
+a string, a file or a filehandle:
+
+=over 4
+
+=item parse_string(text)
+
+Works exactly like the C<xml_in()> method but assumes the first argument is
+a string of XML (or a reference to a scalar containing a string of XML).
+
+=item parse_file(filename)
+
+Works exactly like the C<xml_in()> method but assumes the first argument is
+the name of a file containing XML.
+
+=item parse_fh(file_handle)
+
+Works exactly like the C<xml_in()> method but assumes the first argument is
+a filehandle which can be read to get XML.
+
+=back
+
+=head2 Hook Methods
+
+You can make your own class which inherits from XML::Simple and overrides
+certain behaviours.  The following methods may provide useful 'hooks' upon
+which to hang your modified behaviour.  You may find other undocumented methods
+by examining the source, but those may be subject to change in future releases.
+
+=over 4
+
+=item handle_options(direction, name => value ...)
+
+This method will be called when one of the parsing methods or the C<XMLout()>
+method is called.  The initial argument will be a string (either 'in' or 'out')
+and the remaining arguments will be name value pairs.
+
+=item default_config_file()
+
+Calculates and returns the name of the file which should be parsed if no
+filename is passed to C<XMLin()> (default: C<$0.xml>).
+
+=item build_simple_tree(filename, string)
+
+Called from C<XMLin()> or any of the parsing methods.  Takes either a file name
+as the first argument or C<undef> followed by a 'string' as the second
+argument.  Returns a simple tree data structure.  You could override this
+method to apply your own transformations before the data structure is returned
+to the caller.
+
+=item new_hashref()
+
+When the 'simple tree' data structure is being built, this method will be
+called to create any required anonymous hashrefs.
+
+=item sorted_keys(name, hashref)
+
+Called when C<XMLout()> is translating a hashref to XML.  This routine returns
+a list of hash keys in the order that the corresponding attributes/elements
+should appear in the output.
+
+=item escape_value(string)
+
+Called from C<XMLout()>, takes a string and returns a copy of the string with
+XML character escaping rules applied.
+
+=item numeric_escape(string)
+
+Called from C<escape_value()>, to handle non-ASCII characters (depending on the
+value of the NumericEscape option).
+
+=item copy_hash(hashref, extra_key => value, ...)
+
+Called from C<XMLout()>, when 'unfolding' a hash of hashes into an array of
+hashes.  You might wish to override this method if you're using tied hashes and
+don't want them to get untied.
+
+=back
+
+=head2 Cache Methods
+
+XML::Simple implements three caching schemes ('storable', 'memshare' and
+'memcopy').  You can implement a custom caching scheme by implementing
+two methods - one for reading from the cache and one for writing to it.
+
+For example, you might implement a new 'dbm' scheme that stores cached data
+structures using the L<MLDBM> module.  First, you would add a
+C<cache_read_dbm()> method which accepted a filename for use as a lookup key
+and returned a data structure on success, or undef on failure.  Then, you would
+implement a C<cache_read_dbm()> method which accepted a data structure and a
+filename.
+
+You would use this caching scheme by specifying the option:
+
+  Cache => [ 'dbm' ]
 
 =head1 STRICT MODE
 
@@ -2656,6 +2893,12 @@ Data error - KeyAttr is set to say { part => 'partnum' } but the XML contains
 one or more E<lt>partE<gt> elements without a 'partnum' attribute (or nested
 element).  Note: if strict mode is not set but -w is, this condition triggers a
 warning.
+
+=item * 
+
+Data error - as above, but non-unique values are present in the key attribute
+(eg: more than one E<lt>partE<gt> element with the same partnum).  This will
+also trigger a warning if strict mode is not enabled.
 
 =item * 
 

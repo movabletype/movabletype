@@ -1,4 +1,4 @@
-<$mt:setvar name="page_title" value="<__trans phrase="Manage Trackbacks">"$>
+<$mt:setvar name="page_title" value="<__trans phrase="Manage TrackBacks">"$>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved">
         <mtapp:statusmsg
@@ -63,10 +63,7 @@
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <$mtapp:ListFilters$>
-    </mtapp:widget>
-    <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful links">">
+    <mt:if name="scope_type" eq="blog">
         <ul>
             <li>
         <mt:if name="feed_url">
@@ -76,6 +73,7 @@
         </mt:unless></mt:if>
             </li>
         </ul>
+    </mt:if>
     </mtapp:widget>
     <$mtapp:PageActions from="$mode"$>
 </mt:setvarblock>
@@ -129,7 +127,6 @@ function init() {
     setFilterVal('<mt:var name="filter_val" escape="js">');
 </mt:if>
 }
-TC.attachLoadEvent( init );
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -200,4 +197,26 @@ TC.attachLoadEvent( init );
 <$mt:include name="include/header.tmpl"$>
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/ping_table.tmpl"$>
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+
+    jQuery('button.mt-pubish-trachbacks').mtPublishItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<__trans phrase="TrackBack" escape="js">',
+        plural: '<__trans phrase="TrackBacks" escape="js">',
+        mode: 'approve_item',
+        phrase: '<__trans phrase="to republish" escape="js">'
+    });
+    jQuery('button.mt-delete-trachbacks').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<__trans phrase="TrackBack" escape="js">',
+        plural: '<__trans phrase="TrackBacks" escape="js">'
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>
 <$mt:include name="include/footer.tmpl"$>

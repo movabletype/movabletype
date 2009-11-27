@@ -10,7 +10,7 @@ function smarty_function_mtauthorentrycount($args, &$ctx) {
     if (empty($author)) {
         $entry = $ctx->stash('entry');
         if (!empty($entry)) {
-            $author = $ctx->mt->db->fetch_author($entry['entry_author_id']);
+            $author = $entry->author();
         }
     }
 
@@ -19,7 +19,7 @@ function smarty_function_mtauthorentrycount($args, &$ctx) {
     }
 
     $args['blog_id'] = $ctx->stash('blog_id');
-    $args['author_id'] = $$author['id'];
-    $count = $ctx->mt->db->blog_entry_count($args);
+    $args['author_id'] = $$author->id;
+    $count = $ctx->mt->db()->blog_entry_count($args);
     return $ctx->count_format($count, $args);
 }

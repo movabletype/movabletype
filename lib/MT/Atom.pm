@@ -8,8 +8,9 @@ package MT::Atom;
 use strict;
 
 package MT::Atom::Entry;
-use MT::I18N qw( encode_text );
 use base qw( XML::Atom::Entry );
+
+$XML::Atom::ForceUnicode = 1;
 
 sub _create_issued {
     my ($ts, $blog) = @_;
@@ -30,9 +31,9 @@ sub new_with_entry {
     my $rfc_compat = $param{Version} && $param{Version} eq '1';
 
     my $atom = $class->new(%param);
-    $atom->title(encode_text($entry->title, undef, 'utf-8'));
-    $atom->summary(encode_text($entry->excerpt, undef, 'utf-8'));
-    $atom->content(encode_text($entry->text, undef, 'utf-8'));
+    $atom->title($entry->title);
+    $atom->summary($entry->excerpt);
+    $atom->content($entry->text);
     # Old Atom API gets application/xhtml+xml for compatibility -- but why
     # do we say it's that when all we're guaranteed is it's an opaque blob
     # of text? So use 'html' for new RFC compatible output.
@@ -44,7 +45,7 @@ sub new_with_entry {
     my $mt_author = MT::Author->load($entry->author_id)
         or return undef;
     my $atom_author = new XML::Atom::Person(%param);
-    $atom_author->name(encode_text($mt_author->nickname, undef, 'utf-8'));
+    $atom_author->name($mt_author->nickname);
     $atom_author->email($mt_author->email) if $mt_author->email;
     my $author_url_field = $rfc_compat ? 'uri' : 'url';
     $atom_author->$author_url_field($mt_author->url) if $mt_author->url;
@@ -113,8 +114,8 @@ sub new_with_comment {
     return unless $blog;
 
     my $atom = $class->new(%param);
-    $atom->title(encode_text($entry->title, undef, 'utf-8'));
-    $atom->content(encode_text($comment->text, undef, 'utf-8'));
+    $atom->title($entry->title);
+    $atom->content($comment->text);
     # Old Atom API gets application/xhtml+xml for compatibility -- but why
     # do we say it's that when all we're guaranteed is it's an opaque blob
     # of text? So use 'html' for new RFC compatible output.
@@ -124,7 +125,7 @@ sub new_with_comment {
     }
 
     my $atom_author = new XML::Atom::Person(%param);
-    $atom_author->name(encode_text($comment->author, undef, 'utf-8'));
+    $atom_author->name($comment->author);
     $atom_author->email($comment->email) if $comment->email;
     my $author_url_field = $rfc_compat ? 'uri' : 'url';
     $atom_author->$author_url_field($comment->url) if $comment->url;

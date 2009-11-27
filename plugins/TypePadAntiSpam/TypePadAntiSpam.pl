@@ -4,7 +4,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: TypePadAntiSpam.pl 82073 2008-05-29 02:58:04Z fyoshimatsu $
+# $Id$
 
 package MT::Plugin::TypePadAntiSpam;
 

@@ -9,16 +9,16 @@ function smarty_function_mtcommentauthor($args, &$ctx) {
     $c = $ctx->stash('comment');
     if (!$c)
         return $ctx->error("No comment available");
-    $a = isset($c['comment_author']) ? $c['comment_author'] : '';
-    if ($c['comment_commenter_id']) {
+    $a = isset($c->comment_author) ? $c->comment_author : '';
+    if ($c->comment_commenter_id) {
         $commenter = $ctx->stash('commenter');
         if ($commenter)
-            $a = $commenter['author_nickname'];
+            $a = $commenter->nickname;
     }
     if (isset($args['default']))
         $a or $a = $args['default'];
     else {
-        global $mt;
+        $mt = MT::get_instance();
         $a or $a = $mt->translate("Anonymous");
     }
     $a or $a = '';

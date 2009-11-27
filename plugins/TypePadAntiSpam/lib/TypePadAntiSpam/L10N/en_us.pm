@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id: en_us.pm 81624 2008-05-23 21:35:31Z bsmith $
+# $Id$
 
 package TypePadAntiSpam::L10N::en_us;
 

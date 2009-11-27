@@ -11,8 +11,8 @@ function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
 
     $comment = $ctx->stash('comment');
     if (!$comment) { $repeat = false; return ''; }
-    $args['comment_id'] = $comment['comment_id'];
-    $comments = $ctx->mt->db->fetch_comment_replies($args);
+    $args['comment_id'] = $comment->comment_id;
+    $comments = $ctx->mt->db()->fetch_comment_replies($args);
     if (!$comments) { $repeat = false; return ''; }
     $ctx->stash('comments', $comments);
 
@@ -22,19 +22,19 @@ function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
     $ctx->localize($localvars);
     while ($comment = array_shift($comments)) {
         $blog_id = $ctx->stash('blog_id');
-        if ($comment['comment_commenter_id']) {
-            $commenter = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+        if ($comment->comment_commenter_id) {
+            $commenter = $ctx->mt->db()->fetch_author($comment->comment_commenter_id);
             $ctx->stash('commenter', $commenter);
         } else {
             $ctx->__stash['commenter'] = null;
         }
-        if ($blog_id != $comment['comment_blog_id']) {
-            $blog_id = $comment['comment_blog_id'];
+        if ($blog_id != $comment->comment_blog_id) {
+            $blog_id = $comment->comment_blog_id;
             $ctx->stash('blog_id', $blog_id);
-            $ctx->stash('blog', $ctx->mt->db->fetch_blog($blog_id));
+            $ctx->stash('blog', $ctx->mt->db()->fetch_blog($blog_id));
         }
         $ctx->stash('comment', $comment);
-        $ctx->stash('current_timestamp', $comment['comment_created_on']);
+        $ctx->stash('current_timestamp', $comment->comment_created_on);
         $ctx->stash('comment_order_num', $counter + 1);
         $count = $counter + 1;
         $ctx->__stash['vars']['__counter__'] = $count;

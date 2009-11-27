@@ -11,11 +11,11 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
         if ($entry)
-            $args['entry_id'] = $entry['entry_id'];
+            $args['entry_id'] = $entry->entry_id;
         $blog = $ctx->stash('blog');
         if ($blog)
-            $args['blog_id'] = $blog['blog_id'];
-        $comments = $ctx->mt->db->fetch_comments($args);
+            $args['blog_id'] = $blog->blog_id;
+        $comments = $ctx->mt->db()->fetch_comments($args);
         $ctx->stash('comments', $comments);
         $counter = 0;
         $out = false;
@@ -38,26 +38,23 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
     if ($counter < count($comments)) {
         $blog_id = $ctx->stash('blog_id');
         $comment = $comments[$counter];
-        if ($comment['comment_commenter_id']) {
-            $commenter = $ctx->mt->db->fetch_author($comment['comment_commenter_id']);
+        if ($comment->comment_commenter_id) {
+            $commenter = $comment->commenter();
             if (empty($commenter)) {
                 $ctx->__stash['commenter'] = null;
             } else {
-                $permission = $ctx->mt->db->fetch_permission(array('blog_id' => $comment['comment_blog_id'], 'id' => $comment['comment_commenter_id']));
-                if (!empty($permission))
-                    $commenter = array_merge($commenter, $permission[0]);
                 $ctx->stash('commenter', $commenter);
             }
         } else {
             $ctx->__stash['commenter'] = null;
         }
-        if ($blog_id != $comment['comment_blog_id']) {
-            $blog_id = $comment['comment_blog_id'];
+        if ($blog_id != $comment->comment_blog_id) {
+            $blog_id = $comment->comment_blog_id;
             $ctx->stash('blog_id', $blog_id);
-            $ctx->stash('blog', $ctx->mt->db->fetch_blog($blog_id));
+            $ctx->stash('blog', $comment->blog());
         }
         $ctx->stash('comment', $comment);
-        $ctx->stash('current_timestamp', $comment['comment_created_on']);
+        $ctx->stash('current_timestamp', $comment->comment_created_on);
         $ctx->stash('comment_order_num', $counter + 1);
         $repeat = true;
         $count = $counter + 1;

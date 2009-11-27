@@ -10,18 +10,18 @@ function smarty_block_mtcommententry($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $comment = $ctx->stash('comment');
         if (!$comment) { $repeat = false; return ''; }
-        $entry_id = $comment['comment_entry_id'];
+        $entry_id = $comment->comment_entry_id;
         $method = 'fetch_entry';
-        $entry_class = $comment['entry_class'];
-        if (isset($entry_class)) {
-            $method = 'fetch_' . $entry_class;
+        $entry = $comment->entry();
+        if ($entry->class != 'entry') {
+            $method = 'fetch_' . $entry->class;
+            $entry = $ctx->mt->db()->$method($entry_id);
         }
-        $entry = $ctx->mt->db->$method($entry_id);
         if (!$entry) { $repeat = false; return ''; }
         $ctx->localize($localvars);
         $ctx->stash('entry', $entry);
-        $ctx->stash('current_timestamp', $entry['entry_authored_on']);
-        $ctx->stash('modification_timestamp', $entry['entry_modified_on']);
+        $ctx->stash('current_timestamp', $entry->entry_authored_on);
+        $ctx->stash('modification_timestamp', $entry->entry_modified_on);
     } else {
         $ctx->restore($localvars);
     }

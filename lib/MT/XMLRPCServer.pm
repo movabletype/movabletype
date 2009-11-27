@@ -9,7 +9,6 @@ use strict;
 use Time::Local qw( timegm );
 use MT;
 use MT::Util qw( offset_time_list );
-use MT::I18N qw( encode_text first_n_text const );
 
 sub mt_new {
     my $cfg = $ENV{MOD_PERL} ?
@@ -62,7 +61,6 @@ use strict;
 
 use MT;
 use MT::Util qw( first_n_words decode_html start_background_task archive_file_for );
-use MT::I18N qw( encode_text first_n_text const );
 use base qw( MT::ErrorHandler );
 
 our $MT_DIR;
@@ -78,7 +76,7 @@ sub _fault {
     my $enc = $mt->config('PublishCharset');
     SOAP::Fault->faultcode(1)->faultstring(
         SOAP::Data->type(
-            string => _encode_text_for_soap($_[0], $enc, 'utf-8')));
+            string => $_[0]));
 }
 
 ## This is sort of a hack. XML::Parser automatically makes everything
@@ -122,11 +120,8 @@ sub _make_token {
 sub _login {
     my $class = shift;
     my($user, $pass, $blog_id) = @_;
-    no_utf8($user, $pass);
     my $mt = MT::XMLRPCServer::Util::mt_new();
     my $enc = $mt->config('PublishCharset');
-    $user = encode_text($user, 'utf-8', $enc);
-    $pass = encode_text($pass, 'utf-8', $enc);
     require MT::Author;
     my $author = MT::Author->load({ name => $user, type => 1 }) or return;
     die _fault(MT->translate("No web services password assigned.  Please see your user profile to set it.")) unless $author->api_password;
@@ -138,18 +133,6 @@ sub _login {
     require MT::Permission;
     my $perms = MT::Permission->load({ author_id => $author->id,
                                        blog_id => $blog_id });
-
-    ## update session so the user will be counted as active
-    require MT::Session;
-    my $sess_active = MT::Session->load( { kind => 'UA', name => $author->id } );
-    if (!$sess_active) {
-        $sess_active = MT::Session->new;
-        $sess_active->id(_make_token());
-        $sess_active->kind('UA'); # UA == User Activation
-        $sess_active->name($author->id);
-    }
-    $sess_active->start(time);
-    $sess_active->save;
 
     ($author, $perms);
 }
@@ -305,23 +288,24 @@ sub _new_entry {
     my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault(MT->translate("No blog_id")) unless $blog_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    no_utf8($blog_id, values %$item);
     for my $f (qw( title description mt_text_more
                    mt_excerpt mt_keywords mt_tags mt_basename wp_slug )) {
         next unless defined $item->{$f}; 
         my $enc = $mt->{cfg}->PublishCharset;
-        $item->{$f} = encode_text($item->{$f}, 'utf-8', $enc);
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html($item->{$f});
             $item->{$f} =~ s!&apos;!'!g;  #'
         }
     }
     require MT::Blog;
-    my $blog = MT::Blog->load($blog_id)
+    my $blog = MT::Blog->load( { id => $blog_id, class => [ 'blog', 'website' ] } )
         or die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id));
+    die _fault(MT->translate("Invalid blog ID '[_1]'", $blog_id))
+        if !$blog->is_blog && !$param{page};
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
+    die _fault(MT->translate("Permission denied."))
+        unless $perms && $perms->can_do('create_new_entry_via_xmlrpc_server');
     my $entry = MT->model($obj_type)->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
@@ -333,9 +317,9 @@ sub _new_entry {
     ## *unless* the user has set "NoPublishMeansDraft 1" in mt.cfg, which
     ## enables the old behavior.
     if ($mt->{cfg}->NoPublishMeansDraft) {
-        $entry->status($publish && $perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD());
+        $entry->status($publish && $perms->can_do('publish_new_post_via_xmlrpc_server') ? MT::Entry::RELEASE() : MT::Entry::HOLD());
     } else {
-        $entry->status($perms->can_publish_post ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
+        $entry->status($perms->can_do('publish_new_post_via_xmlrpc_server') ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
     }
     $entry->allow_comments($blog->allow_comments_default);
     $entry->allow_pings($blog->allow_pings_default);
@@ -367,7 +351,6 @@ sub _new_entry {
         $entry->set_tags(@tags);
     }
     if (my $urls = $item->{mt_tb_ping_urls}) {
-        no_utf8(@$urls);
         $entry->to_ping_urls(join "\n", @$urls);
     }
     if (my $iso = $item->{dateCreated}) {
@@ -444,12 +427,10 @@ sub _edit_entry {
     my $obj_type = $param{page} ? 'page' : 'entry';
     die _fault(MT->translate("No entry_id")) unless $entry_id;
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
-    no_utf8(values %$item);
     for my $f (qw( title description mt_text_more
                    mt_excerpt mt_keywords mt_tags mt_basename wp_slug )) {
         next unless defined $item->{$f}; 
         my $enc = $mt->config('PublishCharset');
-        $item->{$f} = encode_text($item->{$f}, 'utf-8', $enc);
         unless ($HAVE_XML_PARSER) {
             $item->{$f} = decode_html($item->{$f});
             $item->{$f} =~ s!&apos;!'!g;  #'
@@ -468,7 +449,7 @@ sub _edit_entry {
     die _fault(MT->translate("Not privileged to edit entry"))
         unless $perms && $perms->can_edit_entry($entry, $author);
     my $orig_entry = $entry->clone;
-    $entry->status(MT::Entry::RELEASE()) if $publish && $perms->can_publish_post;
+    $entry->status(MT::Entry::RELEASE()) if $publish && $perms->can_do('publish_entry_via_xmlrpc_server');
     $entry->title($item->{title}) if $item->{title};
 
     $class->_apply_basename($entry, $item, \%param);
@@ -496,7 +477,6 @@ sub _edit_entry {
         $entry->set_tags(@tags);
     }
     if (my $urls = $item->{mt_tb_ping_urls}) {
-        no_utf8(@$urls);
         $entry->to_ping_urls(join "\n", @$urls);
     }
     if (my $iso = $item->{dateCreated}) {
@@ -581,12 +561,12 @@ sub getUsersBlogs {
     my $iter = MT::Permission->load_iter({ author_id => $author->id });
     my @res;
     while (my $perms = $iter->()) {
-        next unless $perms->can_create_post;
+        next unless $perms->can_do('get_blog_info_via_xmlrpc_server');
         my $blog = MT::Blog->load($perms->blog_id);
         next unless $blog;
         push @res, { url => SOAP::Data->type(string => $blog->site_url),
                      blogid => SOAP::Data->type(string => $blog->id),
-                     blogName => SOAP::Data->type(string => _encode_text_for_soap($blog->name, undef, 'utf-8')) };
+                     blogName => SOAP::Data->type(string => $blog->name) };
     }
     \@res;
 }
@@ -602,12 +582,12 @@ sub getUserInfo {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author) = $class->_login($user, $pass);
     die _fault(MT->translate("Invalid login")) unless $author;
-    my($fname, $lname) = map { encode_text($_, undef, 'utf-8') } split /\s+/, $author->name;
+    my($fname, $lname) = split /\s+/, $author->name;
     $lname ||= '';
     { userid => SOAP::Data->type(string => $author->id),
       firstname => SOAP::Data->type(string => $fname),
       lastname => SOAP::Data->type(string => $lname),
-      nickname => SOAP::Data->type(string => _encode_text_for_soap($author->nickname, undef, 'utf-8')),
+      nickname => SOAP::Data->type(string => $author->nickname),
       email => SOAP::Data->type(string => $author->email),
       url => SOAP::Data->type(string => $author->url) };
 }
@@ -621,7 +601,7 @@ sub _get_entries {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
+    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_do('get_entries_via_xmlrpc_server');
     my $iter = MT->model($obj_type)->load_iter({ blog_id => $blog_id },
         { 'sort' => 'authored_on',
           direction => 'descend',
@@ -635,25 +615,25 @@ sub _get_entries {
         $row->{ $param{page} ? 'page_id' : 'postid' } =
             SOAP::Data->type(string => $entry->id);
         if ($class eq 'blogger') {
-            $row->{content} = SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8'));
+            $row->{content} = SOAP::Data->type(string => $entry->text);
         } else {
-            $row->{title} = SOAP::Data->type(string => _encode_text_for_soap($entry->title, undef, 'utf-8'));
+            $row->{title} = SOAP::Data->type(string => $entry->title);
             unless ($titles_only) {
                 require MT::Tag;
                 my $tag_delim = chr($author->entry_prefs->{tag_delim});
                 my $tags = MT::Tag->join($tag_delim, $entry->tags);
-                $row->{description} = SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8'));
+                $row->{description} = SOAP::Data->type(string => $entry->text);
                 my $link = $entry->permalink;
                 $row->{link} = SOAP::Data->type(string => $link);
                 $row->{permaLink} = SOAP::Data->type(string => $link),
-                $row->{mt_basename} = SOAP::Data->type(string => _encode_text_for_soap($entry->basename, undef, 'utf-8'));
+                $row->{mt_basename} = SOAP::Data->type(string => $entry->basename);
                 $row->{mt_allow_comments} = SOAP::Data->type(int => $entry->allow_comments);
                 $row->{mt_allow_pings} = SOAP::Data->type(int => $entry->allow_pings);
                 $row->{mt_convert_breaks} = SOAP::Data->type(string => $entry->convert_breaks);
-                $row->{mt_text_more} = SOAP::Data->type(string => _encode_text_for_soap($entry->text_more, undef, 'utf-8'));
-                $row->{mt_excerpt} = SOAP::Data->type(string => _encode_text_for_soap($entry->excerpt, undef, 'utf-8'));
-                $row->{mt_keywords} = SOAP::Data->type(string => _encode_text_for_soap($entry->keywords, undef, 'utf-8'));
-                $row->{mt_tags} = SOAP::Data->type(string => _encode_text_for_soap($tags, undef, 'utf-8'));
+                $row->{mt_text_more} = SOAP::Data->type(string => $entry->text_more);
+                $row->{mt_excerpt} = SOAP::Data->type(string => $entry->excerpt);
+                $row->{mt_keywords} = SOAP::Data->type(string => $entry->keywords);
+                $row->{mt_tags} = SOAP::Data->type(string => $tags);
             }
         }
         push @res, $row;
@@ -787,13 +767,13 @@ sub _get_entry {
             [ map { $_->[0] } @cat_ids ]);
     }
 
-    my $basename = SOAP::Data->type(string => _encode_text_for_soap($entry->basename, undef, 'utf-8'));
+    my $basename = SOAP::Data->type(string => $entry->basename);
     {
         dateCreated => SOAP::Data->type(dateTime => $co),
         userid => SOAP::Data->type(string => $entry->author_id),
         ($param{page} ? 'page_id' : 'postid') => SOAP::Data->type(string => $entry->id),
-        description => SOAP::Data->type(string => _encode_text_for_soap($entry->text, undef, 'utf-8')),
-        title => SOAP::Data->type(string => _encode_text_for_soap($entry->title, undef, 'utf-8')),
+        description => SOAP::Data->type(string => $entry->text),
+        title => SOAP::Data->type(string => $entry->title),
         mt_basename => $basename,
         wp_slug => $basename,
         link => SOAP::Data->type(string => $link),
@@ -802,10 +782,10 @@ sub _get_entry {
         mt_allow_comments => SOAP::Data->type(int => $entry->allow_comments),
         mt_allow_pings => SOAP::Data->type(int => $entry->allow_pings),
         mt_convert_breaks => SOAP::Data->type(string => $entry->convert_breaks),
-        mt_text_more => SOAP::Data->type(string => _encode_text_for_soap($entry->text_more, undef, 'utf-8')),
-        mt_excerpt => SOAP::Data->type(string => _encode_text_for_soap($entry->excerpt, undef, 'utf-8')),
-        mt_keywords => SOAP::Data->type(string => _encode_text_for_soap($entry->keywords, undef, 'utf-8')),
-        mt_tags => SOAP::Data->type(string => _encode_text_for_soap($tags, undef, 'utf-8')),
+        mt_text_more => SOAP::Data->type(string => $entry->text_more),
+        mt_excerpt => SOAP::Data->type(string => $entry->excerpt),
+        mt_keywords => SOAP::Data->type(string => $entry->keywords),
+        mt_tags => SOAP::Data->type(string => $tags),
     }
 }
 
@@ -865,13 +845,13 @@ sub getCategoryList {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_create_post;
+        unless $perms && $perms->can_do('get_category_list_via_xmlrpc_server');
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
     while (my $cat = $iter->()) {
         push @data, {
-            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
+            categoryName => SOAP::Data->type(string => $cat->label),
             categoryId => SOAP::Data->type(string => $cat->id)
         };
     }
@@ -885,7 +865,7 @@ sub getCategories {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_create_post;
+        unless $perms && $perms->can_do('get_categories_via_xmlrpc_server');
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
@@ -894,12 +874,12 @@ sub getCategories {
     while (my $cat = $iter->()) {
         my $url = File::Spec->catfile($blog->site_url, archive_file_for( undef, $blog, 'Category', $cat ));
         push @data, {
-            categoryId => SOAP::Data->type(string => _encode_text_for_soap($cat->id, undef, 'utf-8')),
-            parentId => ($cat->parent_category ? SOAP::Data->type(string => _encode_text_for_soap($cat->parent_category->id, undef, 'utf-8')) : undef),
-            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
-            title => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
-            description => SOAP::Data->type(string => _encode_text_for_soap($cat->description, undef, 'utf-8')),
-            htmlUrl => SOAP::Data->type(string => _encode_text_for_soap($url, undef, 'utf-8')),
+            categoryId => SOAP::Data->type(string => $cat->id),
+            parentId => ($cat->parent_category ? SOAP::Data->type(string => $cat->parent_category->id) : undef),
+            categoryName => SOAP::Data->type(string => $cat->label),
+            title => SOAP::Data->type(string => $cat->label),
+            description => SOAP::Data->type(string => $cat->description),
+            htmlUrl => SOAP::Data->type(string => $url),
         };
     }
     \@data;
@@ -912,14 +892,14 @@ sub getTagList {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_create_post;
+        unless $perms && $perms->can_do('get_tag_list_via_xmlrpc_server');
     require MT::Tag;
     require MT::ObjectTag;
     my $iter = MT::Tag->load_iter(undef, { join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id }, { unique => 1 } ] } );
     my @data;
     while (my $tag = $iter->()) {
         push @data, {
-            tagName => SOAP::Data->type(string => _encode_text_for_soap($tag->name, undef, 'utf-8')),
+            tagName => SOAP::Data->type(string => $tag->name),
             tagId => SOAP::Data->type(string => $tag->id)
         };
     }
@@ -935,14 +915,14 @@ sub getPostCategories {
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_create_post;
+    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_do('get_post_categories_via_xmlrpc_server');
     my @data;
     my $prim = $entry->category;
     my $cats = $entry->categories;
     for my $cat (@$cats) {
         my $is_primary = $prim && $cat->id == $prim->id ? 1 : 0;
         push @data, {
-            categoryName => SOAP::Data->type(string => _encode_text_for_soap($cat->label, undef, 'utf-8')),
+            categoryName => SOAP::Data->type(string => $cat->label),
             categoryId => SOAP::Data->type(string => $cat->id),
             isPrimary => SOAP::Data->type(boolean => $is_primary),
         };
@@ -1002,7 +982,7 @@ sub getTrackbackPings {
     my @data;
     while (my $ping = $iter->()) {
         push @data, {
-            pingTitle => SOAP::Data->type(string => _encode_text_for_soap($ping->title, undef, 'utf-8')),
+            pingTitle => SOAP::Data->type(string => $ping->title),
             pingURL => SOAP::Data->type(string => $ping->source_url),
             pingIP => SOAP::Data->type(string => $ping->ip),
         };
@@ -1132,7 +1112,7 @@ sub newMediaObject {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to upload files"))
-        unless $perms && $perms->can_upload;
+        unless $perms && $perms->can_do('upload_asset_via_xmlrpc_server');
     require MT::Blog;
     require File::Spec;
     my $blog = MT::Blog->load($blog_id)

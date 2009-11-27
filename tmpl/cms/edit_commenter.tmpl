@@ -43,6 +43,7 @@
             type="submit"
             accesskey="t"
             title="<__trans phrase="Trust user (t)">"
+            class="action"
             ><__trans phrase="Trust"></button>
             <mt:else>
         <button
@@ -50,6 +51,7 @@
             type="submit"
             accesskey="t"
             title="<__trans phrase="Untrust user (t)">"
+            class="action"
             ><__trans phrase="Untrust"></button>
             </mt:unless>
             </mt:unless>
@@ -59,6 +61,7 @@
             type="submit"
             accesskey="b"
             title="<__trans phrase="Ban user (b)">"
+            class="action"
             ><__trans phrase="Ban"></button>
             <mt:else>
         <button
@@ -66,6 +69,7 @@
             type="submit"
             accesskey="b"
             title="<__trans phrase="Unban user (b)">"
+            class="action"
             ><__trans phrase="Unban"></button>
             </mt:unless>
         <mt:else>
@@ -80,6 +84,7 @@
             type="submit"
             accesskey="b"
             title="<__trans phrase="Ban user (b)">"
+            class="action"
             ><__trans phrase="Ban"></button>
             />
         </mt:if>
@@ -147,7 +152,6 @@ TC.attachLoadEvent(init);
             hint="<__trans phrase="The URL of the commenter">"
             show_hint="0">
             <mt:if name="url"><a href="<mt:var name="url" escape="html">"><mt:var name="url" escape="html"> &raquo;</a><mt:else>&nbsp;</mt:if>
-            <mt:if name="url"><a title="<__trans phrase="View all comments with this URL address">" href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;search_cols=url&amp;search=<mt:var name="url" escape="url">&amp;do_search=1"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a><mt:else>&nbsp;</mt:if>
         </mtapp:setting>
     
         <mtapp:setting

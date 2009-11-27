@@ -80,11 +80,9 @@ sub normalize {
     }
 
     my $private = $str =~ m/^@/;
-    $str = MT::I18N::encode_text( $str, MT->instance->config->PublishCharset, 'utf-8' );
     $str =~ s/[@!`\\<>\*&#\/~\?'"\.\,=\(\)\${}\[\];:\ \+\-\r\n]+//gs;
     $str = lc $str;
     $str = '@' . $str if $private;
-    $str = MT::I18N::encode_text( $str, 'utf-8', MT->instance->config->PublishCharset );
     $str;
 }
 

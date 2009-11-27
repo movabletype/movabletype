@@ -16,9 +16,7 @@ function rebuildMultiBlogTriggerTable() {
         for (var i = 0; i < multiBlogRebuilds.length; i++) {
             str += "<tr class=\"" + ((i + 1) % 2 == 0 ? "even" : "odd") + "\">";
             str += "<td> <MT_TRANS phrase="When"> <strong>"
-                + (multiBlogRebuilds[i][3] == "_all"
-                    ? "<em><MT_TRANS phrase="Any Weblog"></em>"
-                    : multiBlogRebuilds[i][2])
+                + multiBlogRebuilds[i][2]
                 + "</strong></td><td>"
                 + multiBlogRebuilds[i][4]
                 + "</td>";
@@ -84,7 +82,7 @@ function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerN
     label_class="top-label"
     hint=""
     show_hint="0">
-    <p><a href="javascript:void(0)" onclick="return openDialog(this.form, 'multiblog_add_trigger', 'blog_id=<mt:var name="blog_id">')" class="icon-left icon-create"><__trans phrase="Create Rebuild Trigger"></a></p>
+    <p><a href="<mt:var name="script_url">?__mode=multiblog_add_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Create Rebuild Trigger"></a></p>
 
     <TMPL_UNLESS NAME=REBUILDS_LOOP>
     <em id="multiblog_blog_list_zero_state"><MT_TRANS phrase="You have not defined any rebuild triggers."></em>

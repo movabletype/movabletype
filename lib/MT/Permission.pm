@@ -27,6 +27,7 @@ __PACKAGE__->install_properties(
             # 'role_mask4'      => 'integer',
             'permissions'    => 'text',
             'entry_prefs'    => 'text',
+            'page_prefs'     => 'text',
             'blog_prefs'     => 'string(255)',
             'template_prefs' => 'string(255)',
             'restrictions'   => 'text',
@@ -134,8 +135,26 @@ sub global_perms {
         # permission field. So it works with MT::Permission and MT::Role.
         my ($more_perm) = @_;
         if ( my $more = $more_perm->permissions ) {
-            if ( $more =~ /'administer_blog'/ ) {
+            if ( $more =~ /\'manage_member_blogs\'/ ) {
                 $more = _all_perms('blog');
+            } else {
+                my @more = split ',', $more;
+                my @more_perms;
+                for my $p ( @more )  {
+                    $p =~ s/'(.+)'/$1/;
+                    if ( $perms->blog_id ) {
+                        $p = "blog.$p";
+                    } else {
+                        $p = "system.$p";
+                    }
+                    my $perms = __PACKAGE__->_load_inheritance_permissions($p);
+                    push @more_perms, @$perms if $perms;
+                }
+                if ( @more_perms ) {
+                    my %tmp;
+                    my @sort = grep(  !$tmp{$_}++, @more_perms );
+                    $more = join ',', @sort;
+                }
             }
             my $cur_perm = $perms->permissions;
             my @newperms;
@@ -155,7 +174,7 @@ sub global_perms {
         my $perms = shift;
         my ($more_perm) = @_;
         if ( my $more = $more_perm->restrictions ) {
-            if ( $more =~ /'administer_blog'/ ) {
+            if ( $more =~ /'administer_blog' | 'administer_website'/ ) {
                 $more = _all_perms('blog');
             }
             my $cur_perm = $perms->restrictions;
@@ -273,7 +292,6 @@ sub global_perms {
         no strict 'refs';
         my $ref  = shift;
         my $meth = 'can_' . $ref->[0];
-
         $Perms{ $ref->[0] } = $ref;
         my $set = $ref->[2];
 
@@ -302,8 +320,11 @@ sub global_perms {
                       if ( ( $meth ne 'can_administer' )
                         && $author->is_superuser );
                     return 1
-                      if ( ( $_[0]->blog_id )
+                      if ( ( $_[0]->blog && $_[0]->blog->is_blog )
                         && $_[0]->has('administer_blog') );
+                    return 1
+                      if ( ( $_[0]->blog && !$_[0]->blog->is_blog )
+                        && $_[0]->has('administer_website') );
                 }
             }
             # return negative if a restriction is present
@@ -388,6 +409,43 @@ sub global_perms {
     }
 }
 
+sub can_do {
+    my $self = shift;
+    my $action = shift;
+    my @perms = split /,/, $self->permissions;
+    for my $perm ( @perms ) {
+        $perm =~ s/'(.+)'/$1/;
+        return 1 if 'administer' eq $perm;
+        next if $self->is_restricted( $perm );
+        $perm = join( '.', (( $self->blog_id != 0 ? 'blog' : 'system' ), $perm));
+        my $result = __PACKAGE__->_confirm_action($perm, $action);
+        return $result if defined $result;
+    }
+    return;
+}
+
+sub _confirm_action {
+    my $pkg = shift;
+    my ($perm_name, $action, $permissions) = @_;
+    $permissions ||= MT->registry('permissions');
+    my $perm = $permissions->{$perm_name};
+
+    ## No such permission.
+    return unless defined $perm;
+    if ( exists $perm->{permitted_action}{$action} ) {
+        return $perm->{permitted_action}{$action}
+    }
+
+    ## search from ancestors
+    my $inherits = $perm->{inherit_from};
+    return unless defined $inherits;
+    for my $inherit ( @$inherits ) {
+        my $res = __PACKAGE__->_confirm_action($inherit, $action, $permissions);
+        return $res if defined $res;
+    }
+    return;
+}
+
 sub can_post {
     my $perms = shift;
     if ( my ($val) = @_ ) {
@@ -418,12 +476,16 @@ sub can_edit_entry {
     if ( 'page' eq $entry->class ) {
         return $perms->can_manage_pages;
     }
-    return $perms->can_edit_all_posts
-      || (
-        defined $status
-        ? ( $perms->can_publish_post && $entry->author_id == $author->id )
-        : ( $perms->can_create_post && $entry->author_id == $author->id )
-      );
+    my $own_entry = $entry->author_id == $author->id;
+    
+    if ( defined $status ) {
+        return $own_entry ? $perms->can_do('edit_own_published_entry')
+                          : $perms->can_do('edit_all_published_entry');
+    }
+    else {
+        return $own_entry ? $perms->can_do('edit_own_unpublished_entry')
+                          : $perms->can_do('edit_all_unpublished_entry');
+    }
 }
 
 sub can_upload {
@@ -435,15 +497,12 @@ sub can_upload {
             $perms->clear_permissions('upload');
         }
     }
-    return $perms->can_edit_assets || $perms->has('upload');
+    return $perms->can_do('upload');
 }
 
 sub can_view_feedback {
     my $perms = shift;
-         $perms->can_edit_all_posts
-      || $perms->can_create_post
-      || $perms->can_publish_post
-      || $perms->can_manage_feedback;
+    $perms->can_do('view_feedback');
 }
 
 sub is_empty {
@@ -599,6 +658,46 @@ sub to_hash {
         $hash->{"permission.$perm"} = $perms->$perm();
     }
     $hash;
+}
+
+sub _load_inheritance_permissions {
+    my $pkg = shift;
+    my ( $perm_name ) = @_;
+    my $permissions = MT->registry('permissions');
+    my $perms = $pkg->_load_recursive( $perm_name, $permissions );
+
+    my $hash;
+    if ( @$perms ) {
+        foreach ( @$perms ) {
+            my ( $s, $p ) = split /\./, $_;
+            $hash->{$p} = 1;
+        }
+        @$perms = keys %$hash;
+    }
+
+    return $perms;
+}
+
+sub _load_recursive {
+    my $pkg = shift;
+    my ( $perm_name, $permissions ) = @_;
+    $permissions ||= MT->registry('permissions');
+
+    my $perms;
+    push @$perms, $perm_name;
+
+    my $permission = $permissions->{$perm_name};
+    return $perms unless $permission;
+
+    my $inherits = $permission->{inherit_from};
+    return $perms unless $inherits;
+
+    foreach my $inherit ( @$inherits ) {
+        my $res = __PACKAGE__->_load_recursive( $inherit, $permissions );
+        push @$perms, @$res if defined $res;
+    }
+
+    return $perms;
 }
 
 1;
@@ -864,6 +963,10 @@ Returns true if the user can view system level activity log, false otherwise.
 
 Returns true if the user can create a new weblog, false otherwise.
 
+=head2 $perms->can_create_website
+
+Returns true if the user can create a new website, false otherwise.
+
 =head2 $perms->can_manage_plugins
 
 Returns true if the user can enable/disable, and configure plugins in system level,
@@ -946,6 +1049,11 @@ Permissions are stored in this column like 'Perm1','Perm_2','Pe_rm_3'.
 =item * entry_prefs
 
 The setting of display fields of "edit entry" page.  The value
+at author_id 0 means default setting of a blog.
+
+=item * page_prefs
+
+The setting of display fields of "edit page" page.  The value
 at author_id 0 means default setting of a blog.
 
 =item * template_prefs

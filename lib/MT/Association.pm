@@ -137,6 +137,7 @@ sub objects_to_terms {
     $terms->{group_id} = $param{'MT::Group'}->id if $param{'MT::Group'};
     $terms->{role_id} = $param{'MT::Role'}->id if $param{'MT::Role'};
     $terms->{blog_id} = $param{'MT::Blog'}->id if $param{'MT::Blog'};
+    $terms->{blog_id} = $param{'MT::Website'}->id if $param{'MT::Website'};
     if ($terms->{author_id} && $terms->{blog_id} && $terms->{role_id}) {
         $terms->{type} = USER_BLOG_ROLE;
     } elsif ($terms->{group_id} && $terms->{blog_id} && $terms->{role_id}) {

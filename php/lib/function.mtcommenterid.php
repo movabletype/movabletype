@@ -10,6 +10,6 @@ function smarty_function_mtcommenterid($args, &$ctx) {
     if (!$comment) return '';
     $cmntr = $ctx->stash('commenter');
     if (!$cmntr) return '';
-    return $cmntr['author_id'];
+    return $cmntr->author_id;
 }
 ?>

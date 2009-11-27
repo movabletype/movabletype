@@ -24,13 +24,16 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
         # blog-level settings for the default includes/excludes.
         if ( !( $args['blog_ids']
                 or $args['include_blogs'] 
-                or $args['exclude_blogs'] )) {
+                or $args['exclude_blogs']
+                or $args['include_websites'] 
+                or $args['exclude_websites']
+                or $args['site_ids']  )) {
             $id = $ctx->stash('blog_id');
             global $multiblog_blog_config;
             if (!$multiblog_blog_config)
                 $multiblog_blog_config = array();
             if (!isset($multiblog_blog_config[$id]))
-                $multiblog_blog_config[$id] = $ctx->mt->db->fetch_plugin_data("MultiBlog", "configuration:blog:$id");
+                $multiblog_blog_config[$id] = $ctx->mt->db()->fetch_plugin_data("MultiBlog", "configuration:blog:$id");
             if (!isset($multiblog_blog_config[$id]))
                 $multiblog_blog_config[$id] = array();
             $is_include = $multiblog_blog_config[$id]['default_mtmultiblog_action'];
@@ -108,7 +111,9 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $ctx->stash('category', null);
             $ctx->stash('archive_category', null);
         }
-        $blogs = $ctx->mt->db->fetch_blogs($args);
+
+        $args['class'] = '*';
+        $blogs = $ctx->mt->db()->fetch_blogs($args);
         $ctx->stash('_blogs', $blogs);
         $counter = 0;
     } else {
@@ -118,10 +123,10 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
     if ($counter < count($blogs)) {
         $blog = $blogs[$counter];
         $ctx->stash('blog', $blog);
-        $ctx->stash('blog_id', $blog['blog_id']);
+        $ctx->stash('blog_id', $blog->blog_id);
         $ctx->stash('_blogs_counter', $counter + 1);
         $ctx->stash('multiblog_context', 'include_blogs');
-        $ctx->stash('multiblog_blog_ids', $blog['blog_id']);
+        $ctx->stash('multiblog_blog_ids', $blog->blog_id);
         $repeat = true;
     } else {
         # Restore localized variables once we're 

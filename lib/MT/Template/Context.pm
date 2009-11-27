@@ -15,7 +15,7 @@ use Exporter;
 use vars qw( @EXPORT );
 @EXPORT = qw( FALSE );
 use MT::Util qw( weaken );
-use MT::I18N qw( substr_text length_text );
+use MT::Template::Handler;
 
 our (%Handlers, %Filters);
 
@@ -124,17 +124,9 @@ sub init_handlers {
 
 sub super_handler {
     my ($ctx) = @_;
-    my $tag = lc $ctx->stash('tag');
-    my ($hdlr, $type, $orig_tag) = $ctx->handler_for($tag);
-    if ($orig_tag && $orig_tag->[0]) {
-        my $orig_hdlr = $orig_tag->[0];
-        unless (ref $orig_hdlr) {
-            $orig_tag->[0] = $orig_hdlr = MT->handler_to_coderef( $orig_hdlr );
-        }
-        local $ctx->{__handlers}{$tag} = $orig_tag;
-        return $orig_hdlr->(@_);
-    }
-    return undef;
+    my $hdlr = $ctx->stash('__handler');
+    return unless defined $hdlr;
+    $hdlr->invoke_super(@_);
 }
 
 sub stash {
@@ -182,11 +174,11 @@ sub this_tag {
 sub tag {
     my $ctx = shift;
     my $tag = lc shift;
-    my ($h) = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
+    my $h = $ctx->handler_for($tag) or return $ctx->error("No handler for tag $tag");
     local $ctx->{__stash}{tag} = $tag;
     my ($args, $cond) = @_;
     $args ||= {};
-    my $out = $h->($ctx, $args, $cond);
+    my $out = $h->invoke($ctx, $args, $cond);
     if (defined $out) {
         if (my $ph = $ctx->post_process_handler) {
             $out = $ph->( $ctx, $args, $out );
@@ -199,19 +191,37 @@ sub handler_for {
     my $ctx = shift;
     my $tag = lc $_[0];
     my $v = $ctx->{__handlers}{$tag};
+    if (ref($v) eq 'MT::Template::Handler') {
+        return wantarray ? $v->values : $v; 
+    }
     if (ref($v) eq 'HASH') { 
-    $v = $ctx->{__handlers}{$tag} = $v->{handler};
+        $v = $ctx->{__handlers}{$tag} = $v->{handler};
     }
-    my @h = ref($v) eq 'ARRAY' ? @$v : $v;
-    if (!ref($h[0])) {
-        $h[0] = MT->handler_to_coderef($h[0]);
-        if (ref($v)) {
-            $ctx->{__handlers}{$tag}[0] = $h[0];
-        } else {
-            $ctx->{__handlers}{$tag} = $h[0];
+    if (wantarray) {
+        my @h = ref($v) eq 'ARRAY' ? @$v : $v;
+        if (!ref($h[0])) {
+            $h[0] = MT->handler_to_coderef($h[0]);
+            if (ref($v)) {
+                $ctx->{__handlers}{$tag}[0] = $h[0];
+            } else {
+                $ctx->{__handlers}{$tag} = $h[0];
+            }
         }
+        return ref($v) eq 'ARRAY' ? @h : $h[0];
     }
-    return ref($v) eq 'ARRAY' ? @h : $h[0];
+    else {
+        my @h = ref($v) eq 'ARRAY' ? @$v : $v;
+        my $hdlr = MT::Template::Handler->new(@h);
+        return $ctx->{__handlers}{$tag} = $hdlr;
+    }
+}
+
+sub invoke_handler {
+    my $ctx = shift;
+    my $tag = shift;
+    my $handler = $ctx->handler_for( $tag );
+    die "cannot find handler for $tag" unless $handler;
+    $handler->invoke( $ctx, @_ );
 }
 
 {
@@ -262,6 +272,9 @@ sub handler_for {
             if (my $code = $filters->{$name}) {
                 if (ref $code eq 'HASH') {
                     $code = $code->{code} ||= MT->handler_to_coderef($code->{handler});
+                }
+                elsif ( !ref $code ) {
+                    $code = MT->handler_to_coderef( $code );
                 }
                 elsif (defined $code and ! ref $code) {
                     $code = MT->handler_to_coderef($code);
@@ -317,7 +330,10 @@ sub set_blog_load_context {
     # Grab specified blog IDs
     my $blog_ids = $attr->{blog_ids}
                 || $attr->{include_blogs}
-                || $attr->{exclude_blogs};
+                || $attr->{exclude_blogs}
+                || $attr->{site_ids}
+                || $attr->{include_websites}
+                || $attr->{exclude_websites};
 
     if (defined($blog_ids) && ($blog_ids =~ m/-/)) {
         my @list = split /\s*,\s*/, $blog_ids;
@@ -332,16 +348,31 @@ sub set_blog_load_context {
         $blog_ids = join ",", @ids;
     }
 
+    # Find blog_id which belongs to the specified websites
+    if ($col eq 'blog_id' && ($attr->{site_ids} || $attr->{include_websites} || $attr->{exclude_websites})) {
+        my @blogs = MT::Blog->load({
+            'id' => \@$blog_ids,
+        });
+        $blog_ids = [ map { $_->id } @blogs ] if @blogs;
+    }
+
     # If no blog IDs specified, use the current blog
     if ( ! $blog_ids ) {
-        $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
-    } 
+        if (my $blog = $ctx->stash('blog')) {
+            $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
+        }
+    }
     # If exclude blogs, set the terms and the NOT arg for load
     # 'All' is not a valid value for exclude_blogs
-    elsif ( $attr->{exclude_blogs} ) {
+    elsif ( $attr->{exclude_blogs} || $attr->{exclude_websites} ) {
         return $ctx->error(MT->translate(
-                "The attribute exclude_blogs cannot take 'all' for a value."
-            )) if lc $args->{exclude_blogs} eq 'all';
+                "The attribute exclude_blogs cannot take '[_1]' for a value.",
+                $args->{exclude_blogs}
+            ))
+            if lc( $args->{exclude_blogs} ) eq 'all'
+            || lc( $args->{exclude_blogs} ) eq 'site'
+            || lc( $args->{exclude_blogs} ) eq 'children'
+            || lc( $args->{exclude_blogs} ) eq 'siblings';
 
         my @excluded_blogs = split /\s*,\s*/, $blog_ids;
         $terms->{$col} = [ @excluded_blogs ];
@@ -349,6 +380,23 @@ sub set_blog_load_context {
     # include_blogs="all" removes the blog_id/id constraint
     } elsif (lc $blog_ids eq 'all') {
         delete $terms->{$col} if exists $terms->{$col};
+
+    # "include_blogs='site'" collects all blogs in current context of website
+    } elsif ( ( my $blog = $ctx->stash('blog') )
+      && (
+           ( lc($blog_ids) eq 'site' )
+        || ( lc($blog_ids) eq 'children' )
+        || ( lc($blog_ids) eq 'siblings' )
+      )
+    ) {
+        my $website = $blog->is_blog ? $blog->website
+                    :                  $blog
+                    ;
+        my ( @blogs, $blog_ids );
+        @blogs = MT->model('blog')->load({ parent_id => $website->id });
+        $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
+        push @$blog_ids, $website->id if $attr->{include_with_website};
+        $terms->{$col} = $blog_ids;
     # Blogs are specified in include_blogs so set the terms
     } else {
         my $blogs = { map { $_ => 1 } split /\s*,\s*/, $blog_ids };
@@ -629,6 +677,26 @@ sub _no_entry_error {
     ));
 }
 
+sub _no_website_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of the website; " .
+        "perhaps you mistakenly placed it outside of an 'MTWebsites' container?", $tag_name
+    ));
+}
+
+sub _no_blog_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(MT->translate(
+        "You used an '[_1]' tag outside of the context of the blog; " .
+        "perhaps you mistakenly placed it outside of an 'MTBlogs' container?", $tag_name
+    ));
+}
+
 sub _no_comment_error {
     my ($ctx) = @_;
     my $tag_name = $ctx->stash('tag');
@@ -672,6 +740,9 @@ sub _no_page_error {
         $tag_name
     ));
 }
+
+# overridden in other contexts
+sub context_script { '' }
 
 1;
 __END__

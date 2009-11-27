@@ -1,0 +1,58 @@
+<mtapp:listing id="default_categories" loop="categories" hide_pager="1" show_actions="0" type="category">
+    <mt:if __first__>
+        <thead>
+            <tr>
+                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+                <th class="display-name"><__trans phrase="Category Name"></th>
+                <th class="description primary-col"><__trans phrase="Description"></th>
+            </tr>
+        </thead>
+        <tbody>
+    </mt:if>
+            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+                <td class="cb">
+                    <input
+                        type="checkbox"
+                        name="default_category_export_ids"
+                        id="default_category_<mt:var name="category_id">"
+                        class="select category-tree"
+                        value="<mt:var name="category_id">"
+                        <mt:if name="category_parent">category_parent="<mt:var name="category_parent">"</mt:if>
+                        <mt:if name="category_path_ids">category_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+                        <mt:if checked>checked="checked"</mt:if>
+                    />
+                </td>
+                <td class="display-name">
+                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+                        <mt:var name="category_label" escape="html">
+                    <span>
+                </td>
+                <td class="description">
+                    <mt:var name="category_description" escape="html">
+                </td>
+    </mt:if>
+            </tr>
+    <mt:if __last__>
+        </tbody>
+    </mt:if>
+</mtapp:listing>
+
+<script type="text/javascript">
+jQuery('.category-tree').click( function(){
+    var cat = this;
+    if ( $(cat).attr('checked') ) {
+        var parent = jQuery( '#default_category_' + jQuery(cat).attr('category_parent') );
+        var path_ids = jQuery(cat).attr('category_path').toString().slice(1,-1).split(')(');
+        jQuery.each(path_ids, function() {
+            jQuery("#default_categories #default_category_" + this ).attr('checked','checked');
+        });
+    }
+    else {
+        var id = jQuery(cat).attr('value');
+        jQuery("#default_categories input[category_path*='(" + id + ")']:checked").each(function() {
+            jQuery(this).attr('checked', 0);
+        });
+    }
+});
+jQuery.mtCheckbox();
+</script>

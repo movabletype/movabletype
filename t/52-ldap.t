@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 52-ldap.t 2680 2008-07-02 22:21:31Z bchoate $
 
 use strict;
 my $number = 15;

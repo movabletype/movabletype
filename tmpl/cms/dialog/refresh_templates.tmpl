@@ -1,7 +1,7 @@
 <mt:if name="blog_id">
     <mt:var
         name="page_title"
-        value="<__trans phrase="Refresh Template Set">">
+        value="<__trans phrase="Refresh Templates">">
 <mt:else>
     <mt:var
         name="page_title"
@@ -30,7 +30,7 @@ function dialog_closed(ok) {
         var frm = getByID("refresh_form");
         frm.submit();
     } else {
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
     }
 }
 function init() {
@@ -44,13 +44,29 @@ function init() {
     dialog.setPanels(panels);
     dialog.open({}, dialog_closed);
 }
-TC.attachLoadEvent(init);
 /* ]]> */
 </script>
 </mt:setvarblock>
 
 <mt:include name="dialog/header.tmpl">
 
+<mt:if name="template_set_not_found">
+    <mtapp:statusmsg
+        id="template_set_not_found"
+        can_close="0"
+        class="error">
+            <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');">%%</a>">
+    </mtapp:statusmsg>
+
+<div class="actions-bar">
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel close action mt-close-dialog"
+       title="<__trans phrase="Close">"
+       ><__trans phrase="Close"></button>
+</div>
+<mt:else>
 <form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
     <input type="hidden" name="__mode" value="refresh_all_templates" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
@@ -59,14 +75,15 @@ TC.attachLoadEvent(init);
 
     <div id="refresh-panel" class="hidden panel">
 
-    <mt:setvarblock name="refresh_label">
-        <mt:if name="blog_id">
-            <mt:loop name="template_set_loop"><mt:if name="selected"><__trans phrase="Refresh [_1] template set" params="<mt:var name="label" escape="html">"></mt:if></mt:loop>
-        <mt:else>
-            <__trans phrase="Refresh global templates">
-        </mt:if>
-    </mt:setvarblock>
-
+    <mt:if name="blog_id">
+        <mt:setvarblock name="refresh_label"><__trans phrase="Revert modifications of theme templates" params="<mt:var name="current_label" escape="html">"></mt:setvarblock>
+        <mt:setvarblock name="new_label"><__trans phrase="Reset to theme defaults"></mt:setvarblock>
+        <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and install the selected theme's default."></mt:setvarblock>
+    <mt:else>
+        <mt:setvarblock name="refresh_label"><__trans phrase="Refresh global templates"></mt:setvarblock>
+        <mt:setvarblock name="new_label"><__trans phrase="Reset to factory defaults"></mt:setvarblock>
+        <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and installs factory default template set."></mt:setvarblock>
+    </mt:if>
     <mtapp:setting
         id="refresh_templates"
         label="$refresh_label"
@@ -78,15 +95,6 @@ TC.attachLoadEvent(init);
             <label for="refresh_type_refresh"><input type="radio" name="refresh_type" id="refresh_type_refresh" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" /> <$mt:var name="refresh_label"$></label>
         </div>
     </mtapp:setting>
-
-    <mt:if name="template_set_count" gt="1">
-    <mt:setvarblock name="new_label"><__trans phrase="Apply a new template set"></mt:setvarblock>
-    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and install the selected template set."></mt:setvarblock>
-    <mt:else>
-    <mt:setvarblock name="new_label"><__trans phrase="Reset to factory defaults"></mt:setvarblock>
-    <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and installs factory default template set."></mt:setvarblock>
-    </mt:if>
-
     <mtapp:setting
         id="clean_start"
         label="$new_label"
@@ -98,20 +106,8 @@ TC.attachLoadEvent(init);
         <div class="field-header">
             <label for="refresh_type_clean"><input type="radio" name="refresh_type" id="refresh_type_clean" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" /> <$mt:var name="new_label"$></label>
         </div>
-
-        <mt:if name="template_set_count" gt="1">
-        <select id="template_set" name="template_set" size="1" disabled="disabled">
-            <mt:loop name="template_set_loop">
-            <option value="<mt:var name="key" escape="html">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
-            </mt:loop>
-        <mt:else>
-            <mt:loop name="template_set_loop">
-            <input type="hidden" name="template_set" value="<mt:var name="key" escape="html">" />
-            </mt:loop>
-        </mt:if>
-        </select>
-
     </mtapp:setting>
+
 
 
         <div>
@@ -120,20 +116,17 @@ TC.attachLoadEvent(init);
         </div>
 
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions">
-                <button
-                    type="submit"
-                    accesskey="s"
-                    class="primary-button next"
-                    ><__trans phrase="Continue"></button>
-                <button
-                    onclick="closeDialog(); return false"
-                    type="submit"
-                    class="cancel"
-                    accesskey="x"
-                    title="<__trans phrase="Cancel (x)">"
-                    ><__trans phrase="Cancel"></button>
-            </div>
+            <button
+               type="submit"
+               accesskey="s"
+               class="action primary-button next"
+               ><__trans phrase="Continue"></button>
+            <button
+               type="submit"
+               accesskey="x"
+               title="<__trans phrase="Cancel (x)">"
+               class="close action mt-close-dialog"
+               ><__trans phrase="Cancel"></button>
         </div>
 
     </div>
@@ -175,30 +168,36 @@ TC.attachLoadEvent(init);
         <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
 
         <div class="actions-bar">
-            <div class="actions-bar-inner pkg actions">
-                <button
-                    type="button"
-                    accesskey="s"
-                    class="primary-button close"
-                    ><__trans phrase="Confirm"></button>
-                <button
-                    onclick="closeDialog(); return false"
-                    type="submit"
-                    class="cancel"
-                    accesskey="x"
-                    title="<__trans phrase="Cancel (x)">"
-                    ><__trans phrase="Cancel"></button>
-                <!-- <button
-                    onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
-                    type="submit"
-                    accesskey="b"
-                    title="<__trans phrase="Back (b)">"
-                    ><__trans phrase="Back"></button> -->
-            </div>
+            <button
+               type="button"
+               accesskey="s"
+               class="action primary-button close"
+               ><__trans phrase="Confirm"></button>
+            <button
+               type="submit"
+               accesskey="x"
+               class="cancel close action mt-close-dialog"
+               title="<__trans phrase="Cancel (x)">"
+               ><__trans phrase="Cancel"></button>
+            <!-- <button
+                 onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
+                 type="submit"
+                 accesskey="b"
+                 title="<__trans phrase="Back (b)">"
+                 ><__trans phrase="Back"></button> -->
         </div>
 
     </div>
 
 </form>
+</mt:if>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
 
 <mt:include name="dialog/footer.tmpl">

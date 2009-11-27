@@ -1,4 +1,4 @@
-# $Id$
+# $Id: 53-grouptsync.t 2679 2008-07-02 21:59:58Z bchoate $
 
 use strict;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';

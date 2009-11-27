@@ -70,7 +70,7 @@ sub file_path {
         my $path = $asset->SUPER::file_path();
         if ($path && ($path =~ m!^\%([ras])!)) {
             my $blog = $asset->blog;
-            my $root = !$blog || $1 eq 's' ? MT->instance->static_file_path
+            my $root = !$blog || $1 eq 's' ? MT->instance->support_directory_path
                      : $1 eq 'r'           ? $blog->site_path
                      :                       $blog->archive_path
                      ;
@@ -91,7 +91,7 @@ sub url {
         my $url = $asset->SUPER::url();
         if ($url =~ m!^\%([ras])!) {
             my $blog = $asset->blog;
-            my $root = !$blog || $1 eq 's' ? MT->instance->static_path
+            my $root = !$blog || $1 eq 's' ? MT->instance->support_directory_url
                      : $1 eq 'r'           ? $blog->site_url
                      :                       $blog->archive_url
                      ;
@@ -306,9 +306,7 @@ sub thumbnail_url {
         my $site_url;
         my $blog = $asset->blog;
         if (!$blog) {
-            $site_url = $param{Pseudo} ? '%s' : MT->instance->static_path;
-            $site_url .= '/' unless $site_url =~ m!/$!;
-            $site_url .= 'support/';
+            $site_url = $param{Pseudo} ? '%s' : MT->instance->support_directory_url;
         }
         elsif ( $asset_file_path =~ m/^%a/ ) {
             $site_url = $param{Pseudo} ? '%a' : $blog->archive_url;
@@ -425,7 +423,7 @@ sub _make_cache_path {
     my $root_path;
     if ( !$blog ) {
         $format = '%s';
-        $root_path = File::Spec->catdir(MT->instance->static_file_path, 'support');
+        $root_path = MT->instance->support_directory_path;
     }
     elsif ( $asset_file_path =~ m/^%a/ ) {
         $format = '%a';

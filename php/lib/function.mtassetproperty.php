@@ -33,14 +33,16 @@ function smarty_function_mtassetproperty($args, &$ctx) {
         }
         return $filesize;
     } elseif (($args['property'] == 'image_width') || ($args['property'] == 'image_height')) {
-        if ($asset['asset_class'] == 'image')
-            return $asset['asset_'.$args['property']];
-        else
+        if ($asset->asset_class == 'image') {
+            $prop = 'asset_'.$args['property'];
+            return $asset->$prop;
+        } else
             return 0;
     } else {
-        if (!isset($asset['asset_'.$args['property']]))
+        $prop = 'asset_'.$args['property'];
+        if (is_null($asset->$prop))
             return '';
-        return $asset['asset_'.$args['property']];
+        return $asset->$prop;
     }
 }
 ?>

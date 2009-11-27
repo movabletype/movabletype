@@ -1,17 +1,37 @@
-<mt:setvar name="page_title" value="<__trans phrase="Blogs">">
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:if name="scope_type" eq="system"><__trans phrase="Websites"><mt:else><__trans phrase="Blogs"></mt:if>"></mt:setvarblock>
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
-        <mtapp:statusmsg
-            id="saved-deleted"
-            class="success">
-            <__trans phrase="You have successfully deleted the blogs from the Movable Type system.">
-        </mtapp:statusmsg>
+        <mt:if name="object_type" eq="website">
+            <mtapp:statusmsg
+                id="saved-deleted"
+                class="success">
+                <__trans phrase="You have successfully deleted the website from the Movable Type system.">
+            </mtapp:statusmsg>
+        <mt:else>
+            <mtapp:statusmsg
+                id="saved-deleted"
+                class="success">
+                <__trans phrase="You have successfully deleted the blog from the website.">
+            </mtapp:statusmsg>
+        </mt:if>
     </mt:if>
     <mt:if name="refreshed">
         <mtapp:statusmsg
             id="refreshed"
             class="success">
             <__trans phrase="You have successfully refreshed your templates.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="moved">
+        <mtapp:statusmsg
+            id="moved"
+            class="success">
+            <__trans phrase="You have successfully moved selected blogs to another website.">
+        </mtapp:statusmsg>
+        <mtapp:statusmsg
+            id="moved-warning"
+            class="alert">
+            <__trans phrase="Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="error">
@@ -21,14 +41,33 @@
             <__trans phrase="You can not refresh templates: [_1]" params="<mt:var name="blog_name" escape="html">">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="not_deleted">
+        <mt:if name="object_type" eq="website">
+            <mtapp:statusmsg
+                id="not-deleted"
+                class="error">
+                <__trans phrase="The website was not deleted. You need to delete blogs under the website.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="content_header">
-    <mt:if name="can_create_blog">
-    <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
+    <mt:if name="object_type" eq="website">
+        <mt:if name="can_create_website">
+        <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=website" class="icon-left icon-create"><__trans phrase="Create Website"></a></p>
+        </mt:if>
+    <mt:else>
+        <mt:if name="can_create_blog">
+        <p><a href="<mt:var name="script_url">?__mode=view&amp;_type=blog&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create"><__trans phrase="Create Blog"></a></p>
+        </mt:if>
     </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="related_content">
+  <mt:if name="object_type" eq="website">
+    <$mtapp:pageactions from="list_website"$>
+  <mt:else>
     <$mtapp:pageactions from="list_blog"$>
+  </mt:if>
 </mt:setvarblock>
 <mt:setvarblock name="html_body_footer">
     <$mt:include name="include/display_options.tmpl"$>
@@ -39,15 +78,28 @@
     var tableSelect;
     function init()
     {
-    	// setup
-    	tableSelect = new TC.TableSelect( "blog-listing-table" );
-    	tableSelect.rowSelect = true;
+        // setup
+        tableSelect = new TC.TableSelect( "blog-listing-table" );
+        tableSelect.rowSelect = true;
     }
-
-    TC.attachLoadEvent( init );
     /* ]]> */
     </script> 
 </mt:setvarblock>
 <$mt:include name="include/header.tmpl"$>
 <$mt:include name="include/blog_table.tmpl"$>
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>
 <$mt:include name="include/footer.tmpl"$>

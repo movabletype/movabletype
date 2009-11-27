@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 05-errorhandler.t 1100 2007-12-12 01:48:53Z hachi $
 use strict;
 use warnings;
 

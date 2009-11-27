@@ -28,16 +28,11 @@ var orig_site_path = "<mt:var name="site_path" _default="$suggested_site_path" e
 function dirify_blog_name(fld) {
     var dir_blog_name = dirify(fld.value);
     if (!dir_blog_name.length) return;
-    var url = fld.form['site_url'];
+    var url = fld.form['site_url_path'];
     var path = fld.form['site_path'];
-    /* detect linux/mac or windows path separator */
-    var slash = orig_site_path.match( /(\\|\/)/ )[ 0 ];
-    var basic_site_url = orig_site_url.replace(/\/BLOG-NAME\/$/, '/');
-    var basic_site_path = orig_site_path.replace(/(\/|\\)BLOG-NAME(\/|\\)?$/, slash);
-    if (basic_site_url && (url.value.indexOf(basic_site_url) == 0))
-        url.value = basic_site_url + dir_blog_name + '/';
-    if (basic_site_path && (path.value.indexOf(basic_site_path) == 0))
-        path.value = basic_site_path + dir_blog_name;
+
+    url.value = dir_blog_name + '/';
+    path.value = dir_blog_name;
 }
 function validate (f) {
 <mt:if name="can_edit_config">
@@ -47,35 +42,8 @@ function validate (f) {
     } else if (f.server_offset.value == '') {
         alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
         return false;
-</mt:if>
-<mt:if name="can_set_publish_paths">
-<mt:if name="can_edit_config">
-    } else if (!f.site_path.value) {
-<mt:else>
-    if (!f.site_path.value) {
-</mt:if>
-        alert('<__trans phrase="You must set your Local Site Path." escape="singlequotes">');
-        return false;
-    } else if (!f.site_url.value) {
-        alert('<__trans phrase="You must set your Site URL." escape="singlequotes">');
-        return false;
-    } else if (f.server_offset.value == '') {
-        alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
-        return false;
-    } else if (!is_valid_url(f.site_url.value)){
-        alert('<__trans phrase="Your Site URL is not valid." escape="singlequotes">');
-        return false;
-    } else if (checkUrlSpaces(f.site_url.value)){
-        alert('<__trans phrase="You can not have spaces in your Site URL." escape="singlequotes">');
-        return false;
-    } else if (checkPathSpaces(f.site_path.value)){
-        alert('<__trans phrase="You can not have spaces in your Local Site Path." escape="singlequotes">');
-        return false;
-    } else if (!is_valid_path(f.site_path.value)){
-        alert('<__trans phrase="Your Local Site Path is not valid." escape="singlequotes">');
-        return false;
-</mt:if>
     }
+</mt:if>
     return true;
 }
 function init() {
@@ -89,33 +57,6 @@ function init() {
     }
 </mt:if>
 }
-function checkUrlSpaces(url_){
-    if (url_.match(/\s+/)){
-        return true;
-    }
-}
-function is_valid_url(url_){
-    return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
-}
-function checkPathSpaces(path_){
-    if (path_.match(/\s+/)){
-        return true;
-    }
-}
-function is_valid_path(path_){
-    for(i = 0; i < path_.length; i++){
-        var buf = escape(path_.substr(i, 1));
-        if (buf.match(/^%u.*/)){
-            return false;
-        }
-        if (buf.match(/(%.{2}){2}?/)){
-            return false;
-        }
-    }
-    return true;
-}
-
-TC.attachLoadEvent(init);
 
 /* ]]> */
 </script>
@@ -134,8 +75,19 @@ TC.attachLoadEvent(init);
     <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
 <fieldset>
-    <h3><__trans phrase="Blog Details"></h3>
 <mt:if name="can_edit_config">
+    <mtapp:setting
+        id="blog_theme"
+        label="<__trans phrase="Blog Theme">"
+        hint="<__trans phrase="Select the theme you wish to use for this blog.">"
+        help_page="blog_settings_general"
+        help_section="blog_theme">
+        <select name="blog_theme">
+        <mt:loop name="theme_loop">
+            <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultBlogTheme'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select>
+    </mtapp:setting>
 
     <mtapp:setting
         id="name"
@@ -143,46 +95,39 @@ TC.attachLoadEvent(init);
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
-                <input name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
+        <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)"/>
     </mtapp:setting>
-<mt:if name="template_set_index">
-    <mtapp:setting
-        id="template_set"
-        label="<__trans phrase="Template Set">"
-        hint="<__trans phrase="Select the templates you wish to use for this new blog.">"
-        help_page="blog_settings_general"
-        help_section="template_set">
-        <select name="template_set">
-        <mt:loop name="template_set_loop">
-            <option value="<mt:var name="key" escape="html">"<mt:if name="key" eq='$config.DefaultTemplateSet'> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
-        </mt:loop>
-        </select>
-    </mtapp:setting>
-</mt:if>
 </mt:if>
 <mt:if name="can_set_publish_paths">
     <mtapp:setting
         id="site_url"
-        label="<__trans phrase="Site URL">"
-        hint="<__trans phrase="Enter the URL of your public website. Do not include a filename (i.e. exclude index.html). Example: http://www.example.com/weblog/">"
+        class="url-field"
+        label="<__trans phrase="Blog URL">"
+        hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
         help_page="blog_settings_publishing"
         help_section="site_url">
-            <input name="site_url" id="site_url" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="50" />
+        <div class="site-url">
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="blog-url-text extra-path" /></span>
+        </div>
+        <div class="use-subdomain">
+            <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
     </mtapp:setting>
 
     <mtapp:setting
         id="site_path"
-        label="<__trans phrase="Site Root">"
+        class="site-path-field"
+        label="<__trans phrase="Blog Root">"
         hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
         help_page="blog_settings_publishing"
         help_section="site_root">
-            <input name="site_path" id="site_path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" size="50" />
+        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_edit_config">
     <mtapp:setting
         id="server_offset"
-        label="<__trans phrase="Timezone">"
+        label="<__trans phrase="Time Zone">"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
         help_page="blog_settings_general"
         help_section="blog_timezone">
@@ -225,10 +170,14 @@ TC.attachLoadEvent(init);
 <mtapp:setting
     id="blog_language"
     label="<__trans phrase="Language">"
-    hint="<__trans phrase="Blog language.">">
-    <select name="blog_language" id="blog_language" class="se" onchange="changeLanguage(this.form);"><mt:loop name="languages">
-        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+    hint="<__trans phrase="Blog language.">"
+    show_warning="1">
+    <select name="blog_language" id="blog_language" class="se">
+    <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+    </mt:loop>
     </select>
+    <p class="hint"><__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules."></p>
 </mtapp:setting>
 
 <mt:setvarblock name="action_buttons">
@@ -236,11 +185,17 @@ TC.attachLoadEvent(init);
         type="submit"
         accesskey="s"
         title="<__trans phrase="Create Blog (s)">"
-        class="primary-button"
+        class="save action primary-button"
         ><__trans phrase="Create Blog"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
     </fieldset>
 </form>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtUseSubdomain();
+    jQuery.mtEditSitePath();    
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

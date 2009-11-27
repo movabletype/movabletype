@@ -11,13 +11,17 @@ function smarty_function_mtassetfilepath($args, &$ctx) {
 
     $blog = $ctx->stash('blog');
 
-    $asset_file = $asset['asset_file_path'];
+    $asset_file = $asset->asset_file_path;
 
-    $blog_site_path = $blog['blog_site_path'];
+    $blog_site_path = $blog->site_path();
     $blog_site_path = preg_replace('/\/$/', '', $blog_site_path);
     $asset_file = preg_replace('/^%a/', $blog_site_path, $asset_file);
 
-    $blog_archive_path = $blog['blog_archive_path'];
+    require_once('MTUtil.php');
+    $static_path = static_file_path();
+    $asset_file = preg_replace('/^%s/', $static_path, $asset_file);    
+
+    $blog_archive_path = $blog->archive_path();
     if (!$blog_archive_path) $blog_archive_path = $blog_site_path;
     if ($blog_archive_path) {
         $blog_archive_path = preg_replace('/\/$/', '', $blog_archive_path);

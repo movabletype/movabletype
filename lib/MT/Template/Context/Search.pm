@@ -279,6 +279,9 @@ This tag is only recognized in search templates.
 sub _hdlr_results {
     my($ctx, $args, $cond) = @_;
 
+    my $orig_blog = $ctx->stash('blog');
+    my $orig_blog_id = $ctx->stash('blog_id');
+
     ## If there are no results, return the empty string, knowing
     ## that the handler for <MTNoSearchResults> will fill in the
     ## no results message.
@@ -365,6 +368,9 @@ sub _hdlr_results {
         last unless $this_object;
         $blog_header = $blog_footer ? 1 : 0;
     }
+
+    $ctx->stash('blog', $orig_blog);
+    $ctx->stash('blog_id', $orig_blog_id);
     $output;
 }
 
@@ -372,7 +378,7 @@ sub context_script {
 	my ( $ctx, $args, $cond ) = @_;
 
     my $search_string = decode_html( $ctx->stash('search_string') ) ;
-    my $cgipath = $ctx->_hdlr_cgi_path($args);
+    my $cgipath = $ctx->invoke_handler('cgipath', $args);
     my $script = $ctx->{config}->SearchScript;
     my $link = $cgipath.$script . '?search=' . encode_url( $search_string );
     if ( my $mode = $ctx->stash('mode') ) {
@@ -389,6 +395,28 @@ sub context_script {
     elsif ( my $blog_id = $ctx->stash('blog_id') ) {
         $link .= "&blog_id=$blog_id";
     }
+ 
+    my $category = $ctx->stash('search_category');
+    $link .= "&category=$category" if $category;
+    
+    my $author = $ctx->stash('search_author');
+    $link .= "&author=$author" if $author;
+
+    my $year = $ctx->stash('search_year');
+    $link .= "&year=$year" if $year;
+
+    my $month = $ctx->stash('search_month');
+    $link .= "&month=$month" if $month;
+
+    my $day = $ctx->stash('search_day');
+    $link .= "&day=$day" if $day;
+
+    my $archive_type = $ctx->stash('search_archive_type');
+    $link .= "&archive_type=$archive_type" if $archive_type;
+
+    my $template_id = $ctx->stash('search_template_id');
+    $link .= "&template_id=$template_id" if $template_id;
+
     if ( my $format = $ctx->stash('format') ) {
         $link .= '&format=' . encode_url($format);
     }

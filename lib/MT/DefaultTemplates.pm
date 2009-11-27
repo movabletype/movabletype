@@ -7,6 +7,8 @@
 package MT::DefaultTemplates;
 
 use strict;
+use utf8;
+use open ':utf8';
 
 =pod
 Registry storage format for default templates:
@@ -313,12 +315,19 @@ sub templates {
     my $pkg = shift;
     my ($set) = @_;
     require File::Spec;
+    my $all_tmpls;
+    my $theme_envelope;
+    if ( ref $set ) {
+        $all_tmpls = [ $set ];
+        $theme_envelope = $set->{envelope};
+    }
+    else {
+        # A set of default templates as returned by MT::Component->registry
+        # yields an array of hashes.
 
-    # A set of default templates as returned by MT::Component->registry
-    # yields an array of hashes.
-
-    my @tmpl_path = $set ? ("template_sets", $set) : ("default_templates");
-    my $all_tmpls = MT::Component->registry(@tmpl_path) || [];
+        my @tmpl_path = $set ? ("template_sets", $set) : ("default_templates");
+        $all_tmpls = MT::Component->registry(@tmpl_path) || [];
+    }
     my $weblog_templates_path = MT->config('WeblogTemplatesPath');
 
     my (%tmpls, %global_tmpls);
@@ -343,6 +352,9 @@ sub templates {
                 if ($p && $base_path) {
                     $base_path = File::Spec->catdir($p->path, $base_path);
                 }
+                elsif ( $theme_envelope ) {
+                    $base_path = File::Spec->catdir($theme_envelope, $base_path);
+                }
                 else {
                     $base_path = $weblog_templates_path;
                 }
@@ -359,7 +371,9 @@ sub templates {
                 $type = 'custom' if $type eq 'module';
                 $type = $tmpl_id if $type eq 'system';
                 my $name = $tmpl->{label};
-                $name = $name->() if ref($name) eq 'CODE';
+                if ( ref $name eq 'CODE' ) {
+                    $name = $name->();
+                }
                 $tmpl->{name} = $name;
                 $tmpl->{type} = $type;
                 $tmpl->{key} = $tmpl_id;
@@ -380,11 +394,11 @@ sub templates {
                 } else {
                     # load template if it hasn't been loaded already
                     if (!exists $tmpl->{text}) {
-                        local (*FIN, $/);
                         my $filename = $tmpl->{filename} || ($tmpl_id . '.mtml');
                         my $file = File::Spec->catfile($base_path, $filename);
                         if ((-e $file) && (-r $file)) {
-                            open FIN, "<$file"; my $data = <FIN>; close FIN;
+                            local $/ = undef;
+                            open my $fin, '<', $file; my $data = <$fin>; close $fin;
                             $tmpl->{text} = $data;
                         } else {
                             $tmpl->{text} = '';

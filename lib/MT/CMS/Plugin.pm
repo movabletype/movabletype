@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Plugin;
 
 use strict;
@@ -18,7 +23,7 @@ sub cfg_plugins {
     }
     else {
         my $cfg = $app->config;
-        $param{can_config}  = $app->user->can_manage_plugins;
+        $param{can_config}  = $app->can_do('config_plugins');
         $param{use_plugins} = $cfg->UsePlugins;
         build_plugin_table( $app, param => \%param, scope => 'system' );
         $param{nav_config}   = 1;
@@ -46,9 +51,7 @@ sub save_config {
 
     $app->validate_magic or return;
     return $app->errtrans("Permission denied.")
-        unless $app->user->can_manage_plugins
-            or ($blog_id
-            and $app->user->permissions($blog_id)->can_administer_blog);
+        unless $app->can_do('save_plugin_setting');
 
     my %param;
     my @params = $q->param;
@@ -80,9 +83,7 @@ sub reset_config {
 
     $app->validate_magic or return;
     return $app->errtrans("Permission denied.")
-        unless $app->user->can_manage_plugins
-            or ($blog_id
-            and $app->user->permissions($blog_id)->can_administer_blog);
+        unless $app->can_do('reset_plugin_setting');
 
     my %param;
     if ( $profile && $profile->{object} ) {
@@ -97,7 +98,7 @@ sub plugin_control {
     my $app = shift;
 
     $app->validate_magic or return;
-    return unless $app->user->can_manage_plugins;
+    return unless $app->can_do('toggle_plugin_switch');
 
     my $plugin_sig = $app->param('plugin_sig') || '';
     my $state      = $app->param('state')      || '';

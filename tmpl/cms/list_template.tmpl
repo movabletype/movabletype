@@ -1,10 +1,10 @@
-<mt:if name="blog_id"><mt:setvarblock name="page_title"><__trans phrase="Blog Templates"></mt:setvarblock><mt:else><mt:setvarblock name="page_title"><__trans phrase="Global Templates"></mt:setvarblock></mt:if>
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Manage [_1] Templates" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Manage Global Templates"></mt:if></mt:setvarblock>
 <mt:setvarblock name="related_content">
     <mtapp:widget
         id="quickfilters"
         label="<__trans phrase="Quickfilters">">
         <mt:if name="filter_key" eq="backup_templates">
-            <mt:setvarblock name="script_url_plus"><mt:var name="script_url">?__mode=list&amp;_type=template&amp;blog_id=<mt:var name="blog_id"></mt:setvarblock>
+            <mt:setvarblock name="script_url_plus"><mt:var name="script_url">?__mode=list_template&amp;blog_id=<mt:var name="blog_id"></mt:setvarblock>
         </mt:if>
         <ul>
         <mt:if name="blog_id">
@@ -14,10 +14,10 @@
             <li id="archive-tab"><a href="<$mt:var name="script_url_plus"$>#archive" onclick="showTable('archive-listing');"><__trans phrase="Archive Templates"></a></li>
             <li id="module-tab"><a href="<$mt:var name="script_url_plus"$>#module" onclick="showTable('module-listing');"><__trans phrase="Template Modules"></a></li>
         <mt:else>
-            <li id="all-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#all" onclick="showTable('all-listing');"><__trans phrase="Show All Templates"></a></li>
-            <li id="module-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#module" onclick="showTable('module-listing');"><__trans phrase="Template Modules"></a></li>
-            <li id="email-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#email" onclick="showTable('email-listing');"><__trans phrase="Email Templates"></a></li>
-            <li id="system-tab"><a href="<mt:var name="script_url">?__mode=list&amp;_type=template#system" onclick="showTable('system-listing');"><__trans phrase="System Templates"></a></li>
+            <li id="all-tab"><a href="<mt:var name="script_url">?__mode=list_template#all" onclick="showTable('all-listing');"><__trans phrase="Show All Templates"></a></li>
+            <li id="module-tab"><a href="<mt:var name="script_url">?__mode=list_template#module" onclick="showTable('module-listing');"><__trans phrase="Template Modules"></a></li>
+            <li id="email-tab"><a href="<mt:var name="script_url">?__mode=list_template#email" onclick="showTable('email-listing');"><__trans phrase="Email Templates"></a></li>
+            <li id="system-tab"><a href="<mt:var name="script_url">?__mode=list_template#system" onclick="showTable('system-listing');"><__trans phrase="System Templates"></a></li>
         </mt:if>
         </ul>
         <$mtapp:ListFilters$>
@@ -26,9 +26,9 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
         <mt:if name="can_edit_config">
-            <li><a href="<mt:var name="script_url">?__mode=cfg_archives&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Blog Publishing Settings"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Publishing Settings"></a></li>
         </mt:if>
         </ul>
     </mtapp:widget>
@@ -70,13 +70,12 @@ function showTable(name) {
 var tableSelect = [];
 function init() {
 <mt:loop name="template_type_loop">
-    tableSelect.push(new TC.TableSelect( '<mt:var name="template_type" escape="html">-listing-table' ));
+    tableSelect.push(new TC.TableSelect( '<mt:var name="template_type" escape="js">-listing-table' ));
     tableSelect[tableSelect.length-1].rowSelect = true;
 </mt:loop>
     var name = (window.location.hash && window.location.hash.match( /^#/ ) ) ? window.location.hash.substr(1) : "all";
     showTable(name + "-listing");
 }
-TC.attachLoadEvent(init);
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -127,4 +126,8 @@ TC.attachLoadEvent(init);
 <$mt:include name="include/template_table.tmpl"$>
 </mt:loop>
 
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">

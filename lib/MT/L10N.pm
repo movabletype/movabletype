@@ -24,14 +24,12 @@ sub ascii_only { 0 }
 
 sub lc {
     my $lh = shift;
-    require MT::I18N;
-    MT::I18N::lowercase(@_);
+    lc($_[0]);
 }
 
 sub uc {
     my $lh = shift;
-    require MT::I18N;
-    MT::I18N::uppercase(@_);
+    uc($_[0]);
 }
 
 1;

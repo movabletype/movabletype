@@ -50,10 +50,14 @@ sub core_methods {
         'list'           => "${pkg}Common::list",
         'delete'         => "${pkg}Common::delete",
         'search_replace' => "${pkg}Search::search_replace",
+        'list_revision'  => "${pkg}Common::list_revision",
+        'save_snapshot'  => "${pkg}Common::save_snapshot",
 
         ## Edit methods
         'edit_role'   => "${pkg}User::edit_role",
         'edit_widget' => "${pkg}Template::edit_widget",
+        'view_role'   => "${pkg}User::edit_role",
+        'view_widget' => "${pkg}Template::edit_widget",
 
         ## Listing methods
         'list_ping'     => "${pkg}TrackBack::list",
@@ -68,10 +72,13 @@ sub core_methods {
         'list_commenter'   => "${pkg}Comment::list_commenter",
         'list_asset'       => "${pkg}Asset::list",
         'list_blog'        => "${pkg}Blog::list",
+        'list_website'     => "${pkg}Website::list",
         'list_category'    => "${pkg}Category::list",
+        'list_folder'      => "${pkg}Folder::list",
         'list_tag'         => "${pkg}Tag::list",
         'list_association' => "${pkg}User::list_association",
         'list_role'        => "${pkg}User::list_role",
+        'list_theme'       => "${pkg}Theme::list",
 
         'asset_insert'        => "${pkg}Asset::insert",
         'asset_userpic'       => "${pkg}Asset::asset_userpic",
@@ -81,13 +88,12 @@ sub core_methods {
         'approve_item'        => "${pkg}Comment::approve_item",
         'unapprove_item'      => "${pkg}Comment::unapprove_item",
         'preview_entry'       => "${pkg}Entry::preview",
-
+        'apply_theme'         => "${pkg}Theme::apply",
+        'uninstall_theme'     => "${pkg}Theme::uninstall",
         ## Blog configuration screens
-        'cfg_archives'     => "${pkg}Blog::cfg_archives",
         'cfg_prefs'        => "${pkg}Blog::cfg_prefs",
+        'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
         'cfg_plugins'      => "${pkg}Plugin::cfg_plugins",
-        'cfg_comments'     => "${pkg}Comment::cfg_comments",
-        'cfg_trackbacks'   => "${pkg}TrackBack::cfg_trackbacks",
         'cfg_registration' => "${pkg}Comment::cfg_registration",
         'cfg_spam'         => "${pkg}Comment::cfg_spam",
         'cfg_entry'        => "${pkg}Entry::cfg_entry",
@@ -144,6 +150,7 @@ sub core_methods {
             requires_login => 0,
         },
 
+        'start_move_blogs'     => "${pkg}Website::move_blogs",
         'view_rpt_log'         => "${pkg}RptLog::view",
         'view_log'             => "${pkg}Log::view",
         'list_log'             => "${pkg}Log::view",
@@ -155,6 +162,10 @@ sub core_methods {
         'start_export'         => "${pkg}Export::start_export",
         'export'               => "${pkg}Export::export",
         'import'               => "${pkg}Import::do_import",
+        'export_theme'         => "${pkg}Theme::export",
+        'theme_element_detail' => "${pkg}Theme::element_dialog",
+        'save_theme_detail'    => "${pkg}Theme::save_detail",
+        'do_export_theme'      => "${pkg}Theme::do_export",
         'pinged_urls'          => "${pkg}Entry::pinged_urls",
         'save_entry_prefs'     => "${pkg}Entry::save_entry_prefs",
         'save_favorite_blogs'  => "${pkg}Blog::save_favorite_blogs",
@@ -166,13 +177,10 @@ sub core_methods {
         'handshake'            => "${pkg}Blog::handshake",
         'itemset_action'       => "${pkg}Tools::do_list_action",
         'page_action'          => "${pkg}Tools::do_page_action",
-        'cfg_system'           => "${pkg}Tools::cfg_system_general",
+        'cfg_system_general'   => "${pkg}Tools::cfg_system_general",
         'cfg_system_users'     => "${pkg}User::cfg_system_users",
-        'cfg_system_feedback'  => "${pkg}Comment::cfg_system_feedback",
         'save_plugin_config'   => "${pkg}Plugin::save_config",
         'reset_plugin_config'  => "${pkg}Plugin::reset_config",
-        'save_cfg_system_feedback' =>
-            "${pkg}Comment::save_cfg_system_feedback",
         'save_cfg_system_general' => "${pkg}Tools::save_cfg_system_general",
         'save_cfg_system_users'   => "${pkg}User::save_cfg_system_users",
         'update_welcome_message'  => "${pkg}Blog::update_welcome_message",
@@ -196,8 +204,8 @@ sub core_methods {
         'system_check'             => "${pkg}Tools::system_check",
         'dialog_refresh_templates' =>
             "${pkg}Template::dialog_refresh_templates",
-        'dialog_clone_blog' => "${pkg}Common::clone_blog",
-                'dialog_publishing_profile' =>
+        'dialog_clone_blog' => "${pkg}Blog::clone",
+        'dialog_publishing_profile' =>
             "${pkg}Template::dialog_publishing_profile",
         'refresh_all_templates' => "${pkg}Template::refresh_all_templates",
         'preview_template'      => "${pkg}Template::preview",
@@ -218,6 +226,8 @@ sub core_methods {
         'dialog_adjust_sitepath' => "${pkg}Tools::dialog_adjust_sitepath",
         'dialog_post_comment'    => "${pkg}Comment::dialog_post_comment",
         'dialog_select_weblog'   => "${pkg}Blog::dialog_select_weblog",
+        'dialog_select_website'  => "${pkg}Website::dialog_select_website",
+        'dialog_select_theme'    => "${pkg}Theme::dialog_select_theme",
         'dialog_select_sysadmin' => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'      => "${pkg}User::dialog_grant_role",
         'dialog_select_author'   => "${pkg}User::dialog_select_author",
@@ -260,30 +270,28 @@ sub core_widgets {
             template => 'widget/new_install.tmpl',
             set      => 'main',    # forces this widget to the main group
             singular => 1,
+            view     => 'user',
         },
         new_user => {
             template => 'widget/new_user.tmpl',
             set      => 'main',    # forces this widget to the main group
             singular => 1,
+            view     => 'user',
         },
         new_version => {
             template => 'widget/new_version.tmpl',
             set      => 'main',
             singular => 1,
             handler  => "${pkg}Dashboard::new_version_widget",
+            view     => 'user',
         },
         this_is_you => {
             label    => 'This is You',
             template => 'widget/this_is_you.tmpl',
             handler  => "${pkg}Dashboard::this_is_you_widget",
-            set      => 'sidebar',
+            set      => 'main',
             singular => 1,
-        },
-        mt_shortcuts => {
-            label    => 'Handy Shortcuts',
-            template => 'widget/mt_shortcuts.tmpl',
-            singular => 1,
-            set      => 'sidebar',
+            view     => 'user',
         },
         mt_news => {
             label    => 'Movable Type News',
@@ -291,6 +299,7 @@ sub core_widgets {
             handler  => "${pkg}Dashboard::mt_news_widget",
             singular => 1,
             set      => 'sidebar',
+            view     => 'user',
         },
         blog_stats => {
             label    => 'Blog Stats',
@@ -298,6 +307,37 @@ sub core_widgets {
             handler  => "${pkg}Dashboard::mt_blog_stats_widget",
             singular => 1,
             set      => 'main',
+            view     => 'blog',
+            param    => {
+                tab => 'entry'
+            },
+        },
+        recent_websites => {
+            label    => 'Websites',
+            template => 'widget/recent_websites.tmpl',
+            handler  => "${pkg}Dashboard::recent_websites_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'system',
+        },
+        recent_blogs => {
+            label    => 'Blogs',
+            template => 'widget/recent_blogs.tmpl',
+            handler  => "${pkg}Dashboard::recent_blogs_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'website',
+        },
+        favorite_blogs => {
+            label    => 'Websites and Blogs',
+            template => 'widget/favorite_blogs.tmpl',
+            handler  => "${pkg}Dashboard::favorite_blogs_widget",
+            singular => 1,
+            set      => 'main',
+            view     => 'user',
+            param    => {
+                tab => 'website'
+            },
         },
     };
 }
@@ -330,28 +370,31 @@ sub core_page_actions {
     return {
         list_templates => {
             refresh_all_blog_templates => {
-                label     => "Refresh Blog Templates",
-                dialog    => 'dialog_refresh_templates',
+                label     => "Refresh Templates",
+                mode      => 'dialog_refresh_templates',
                 condition => sub {
                     MT->app->blog,;
                 },
                 order => 1000,
+                dialog    => 1
             },
             refresh_global_templates => {
-                label     => "Refresh Global Templates",
-                dialog    => 'dialog_refresh_templates',
+                label     => "Refresh Templates",
+                mode      => 'dialog_refresh_templates',
                 condition => sub {
                     !MT->app->blog,;
                 },
                 order => 1000,
+                dialog    => 1
             },
             publishing_profile => {
                 label     => "Use Publishing Profile",
-                dialog    => 'dialog_publishing_profile',
+                mode      => 'dialog_publishing_profile',
                 condition => sub {
                     MT->app->blog,;
                 },
                 order => 1100,
+                dialog    => 1
             },
         },
     };
@@ -381,6 +424,9 @@ sub init_request {
     # other than an integer, die
     if ( my $blog_id = $app->param('blog_id') ) {
         if ( $blog_id ne int($blog_id) ) {
+            die $app->translate("Invalid request");
+        }
+        if ( $blog_id > 0 && !$app->model('blog')->load({ id => $blog_id }) ) {
             die $app->translate("Invalid request");
         }
     }
@@ -428,7 +474,7 @@ sub core_list_actions {
                 label      => "Unpublish Entries",
                 order      => 200,
                 code       => "${pkg}Entry::draft_entries",
-                permission => 'edit_all_posts,publish_post',
+                permit_action => 'set_entry_draft_via_list',
                 condition  => sub {
                     return 0 if $app->mode eq 'view';
                     return $app->blog && $app->blog->site_path ? 1 : 0;
@@ -440,7 +486,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::add_tags_to_entries",
                 input       => 1,
                 input_label => 'Tags to add to selected entries',
-                permission  => 'edit_all_posts',
+                permit_action => 'add_tags_to_entry_via_list',
                 condition   => sub {
                     return $app->mode ne 'view';
                     }
@@ -451,7 +497,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::remove_tags_from_entries",
                 input       => 1,
                 input_label => 'Tags to remove from selected entries',
-                permission  => 'edit_all_posts',
+                permit_action => 'remove_tags_from_entry_via_list',
                 condition   => sub {
                     return $app->mode ne 'view';
                     }
@@ -462,11 +508,10 @@ sub core_list_actions {
                 order     => 500,
                 condition => sub {
                     return 0 if $app->mode eq 'view';
+                    return 0 if $app->param('filter_key')
+                        && $app->param('filter_key') eq 'spam_entries';
                     $app->param('blog_id')
-                        && ( $app->user->is_superuser()
-                            || $app->permissions->can_edit_all_posts )
-                        && $app->param('filter_val') != MT::Entry::JUNK()
-                        && $app->param('filter_key') ne 'spam_entries'
+                        && $app->can_do('open_batch_entry_editor_via_list');
                 },
             },
         },
@@ -475,7 +520,7 @@ sub core_list_actions {
                 label      => "Unpublish Pages",
                 order      => 200,
                 code       => "${pkg}Entry::draft_entries",
-                permission => 'manage_pages',
+                permit_action => 'set_page_draft_via_list',
                 condition  => sub {
                     return 0 if $app->mode eq 'view';
                     return $app->blog && $app->blog->site_path ? 1 : 0;
@@ -487,7 +532,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::add_tags_to_entries",
                 input       => 1,
                 input_label => 'Tags to add to selected pages',
-                permission  => 'manage_pages',
+                permit_action => 'add_tags_to_pages_via_list',
                 condition   => sub {
                     return $app->mode ne 'view';
                 },
@@ -498,7 +543,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::remove_tags_from_entries",
                 input       => 1,
                 input_label => 'Tags to remove from selected pages',
-                permission  => 'manage_pages',
+                permit_action => 'remove_tags_from_pages_via_list',
                 condition   => sub {
                     return $app->mode ne 'view';
                 },
@@ -510,8 +555,7 @@ sub core_list_actions {
                 condition => sub {
                     return 0 if $app->mode eq 'view';
                     $app->param('blog_id')
-                        && ( $app->user->is_superuser()
-                        || $app->permissions->can_manage_pages );
+                        && $app->can_do('open_batch_page_editor_via_list');
                 },
             },
         },
@@ -522,7 +566,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::add_tags_to_assets",
                 input       => 1,
                 input_label => 'Tags to add to selected assets',
-                permission  => 'edit_assets',
+                permit_action => 'add_tags_to_assets_via_list',
             },
             'remove_tags' => {
                 label       => "Remove Tags...",
@@ -530,15 +574,7 @@ sub core_list_actions {
                 code        => "${pkg}Tag::remove_tags_from_assets",
                 input       => 1,
                 input_label => 'Tags to remove from selected assets',
-                permission  => 'edit_assets',
-            },
-        },
-        'ping' => {
-            'unapprove_ping' => {
-                label      => "Unpublish TrackBack(s)",
-                order      => 100,
-                code       => "${pkg}Comment::unapprove_item",
-                permission => 'edit_all_posts,manage_feedback,publish_post',
+                permit_action => 'remove_tags_from_assets_via_list',
             },
         },
         'comment' => {
@@ -546,34 +582,46 @@ sub core_list_actions {
                 label      => "Unpublish Comment(s)",
                 order      => 100,
                 code       => "${pkg}Comment::unapprove_item",
-                permission => 'edit_all_posts,manage_feedback,publish_post',
-                condition  => sub {
-                    return 1;
+                permit_action => 'unapprove_comments_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
                 },
             },
             'trust_commenter' => {
                 label      => "Trust Commenter(s)",
                 order      => 200,
                 code       => "${pkg}Comment::trust_commenter_by_comment",
-                permission => 'manage_feedback',
+                permit_action => 'trust_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'untrust_commenter' => {
                 label      => "Untrust Commenter(s)",
                 order      => 300,
                 code       => "${pkg}Comment::untrust_commenter_by_comment",
-                permission => 'manage_feedback',
+                permit_action => 'untrust_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'ban_commenter' => {
                 label      => "Ban Commenter(s)",
                 order      => 400,
                 code       => "${pkg}Comment::ban_commenter_by_comment",
-                permission => 'manage_feedback',
+                permit_action => 'ban_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
             'unban_commenter' => {
                 label      => "Unban Commenter(s)",
                 order      => 500,
                 code       => "${pkg}Comment::unban_commenter_by_comment",
-                permission => 'manage_feedback',
+                permit_action => 'unban_commenters_via_list',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                    }
             },
         },
         'commenter' => {
@@ -581,13 +629,13 @@ sub core_list_actions {
                 label      => "Untrust Commenter(s)",
                 order      => 100,
                 code       => "${pkg}Comment::untrust_commenter",
-                permission => 'manage_feedback',
+                permit_action => 'untrust_commenters_via_list',
             },
             'unban' => {
                 label      => "Unban Commenter(s)",
                 order      => 200,
                 code       => "${pkg}Comment::unban_commenter",
-                permission => 'manage_feedback',
+                permit_action => 'unban_commenters_via_list',
             },
         },
         'author' => {
@@ -612,9 +660,7 @@ sub core_list_actions {
                         : MT->translate("_WARNING_DELETE_USER");
                 },
                 code      => "${pkg}Common::delete",
-                condition => sub {
-                    $app->user->is_superuser();
-                },
+                permit_action => 'delete_user_via_list',
             },
         },
         'blog' => {
@@ -630,20 +676,53 @@ sub core_list_actions {
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
             },
+            move_blogs => {
+                label         => "Move blog(s) ",
+                order         => 200,
+                code          => "${pkg}Website::dialog_move_blogs",
+                permit_action => 'move_blogs',
+                dialog        => 1,
+                condition     => sub {
+                    my $count = MT->model('website')->count();
+                    $count > 1 ? 1 : 0;
+                }
+            },
             clone_blog => {
                 label => "Clone Blog",
-                code => "${pkg}Common::clone_blog",
+                code => "${pkg}Blog::clone",
                 permission => 'administer',
                 max => 1,
                 dialog => 1,
+            },
+        },
+        'website' => {
+            refresh_website_templates => {
+                label                   => "Refresh Template(s)",
+                continue_prompt_handler => sub {
+                    MT->translate("_WARNING_REFRESH_TEMPLATES_FOR_BLOGS");
+                },
+                code => sub {
+                    my $app = MT->app;
+                    $app->param( 'backup', 1 );
+                    require MT::CMS::Template;
+                    MT::CMS::Template::refresh_all_templates( $app, @_ );
+                },
             },
         },
         'template' => {
             refresh_tmpl_templates => {
                 label      => "Refresh Template(s)",
                 code       => "${pkg}Template::refresh_individual_templates",
-                permission => 'edit_templates',
+                permit_action => 'refresh_template_via_list',
                 order      => 100,
+                condition  => sub {
+                    my $app = MT->app;
+                    my $tmpl_type = $app->param('filter_key') || '';
+                    return
+                        $tmpl_type eq 'backup_templates'
+                            ? 0
+                            : 1;
+                },
             },
 
             # Now a button!
@@ -682,13 +761,14 @@ sub core_list_actions {
             copy_templates => {
                 label      => "Clone Template(s)",
                 code       => "${pkg}Template::clone_templates",
-                permission => 'edit_templates',
+                permit_action => 'copy_template_via_list',
                 condition  => sub {
                     my $app = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return
                           $tmpl_type eq 'system_templates' ? 0
                         : $tmpl_type eq 'email_templates'  ? 0
+                        : $tmpl_type eq 'backup_templates'  ? 0
                         :                                    1;
                 },
                 order => 400,
@@ -706,16 +786,47 @@ sub _entry_label {
 sub core_list_filters {
     my $app = shift;
     return {
+        log => {
+            this_website => {
+                label => sub {
+                    $app->translate( 'Only website log' );
+                },
+                order   => 100,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{blog_id} = $app->blog->id
+                        if $app->blog;
+                },
+                condition => sub {
+                    my $app = MT->instance;
+                    return 0 unless $app->blog;
+                    return 0 if $app->blog->is_blog;
+                    return 1;
+                  },
+            },
+        },
         asset => sub {
             require MT::CMS::Asset;
             return MT::CMS::Asset::asset_list_filters( $app, @_ );
         },
         entry => {
+            my_posts_on_this_context => {
+                label => sub {
+                    $app->translate( 'My [_1] of this [_2]', _entry_label, $app->blog ? $app->blog->class_label : 'context' );
+                },
+                condition => sub { return 0; },
+                handler => sub {
+                    my $app = MT->instance;
+                    my ( $terms, $args ) = @_;
+                    $terms->{author_id} = $app->user->id;
+                    $terms->{blog_id} = $app->blog->id;
+                },
+            },
             published => {
                 label => sub {
                     $app->translate( 'Published [_1]', _entry_label );
                 },
-                order   => 100,
+                order   => 200,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     $terms->{status} = 2;
@@ -725,7 +836,7 @@ sub core_list_filters {
                 label => sub {
                     $app->translate( 'Unpublished [_1]', _entry_label );
                 },
-                order   => 200,
+                order   => 300,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     $terms->{status} = 1;
@@ -735,7 +846,7 @@ sub core_list_filters {
                 label => sub {
                     $app->translate( 'Scheduled [_1]', _entry_label );
                 },
-                order   => 300,
+                order   => 400,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     $terms->{status} = 4;
@@ -745,7 +856,7 @@ sub core_list_filters {
                 label => sub {
                     $app->translate( 'My [_1]', _entry_label );
                 },
-                order   => 400,
+                order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     $terms->{author_id} = $app->user->id;
@@ -756,7 +867,7 @@ sub core_list_filters {
                     $app->translate( '[_1] with comments in the last 7 days',
                         _entry_label );
                 },
-                order   => 500,
+                order   => 600,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     my $ts = time - 7 * 24 * 60 * 60;
@@ -819,6 +930,25 @@ sub core_list_filters {
                     $terms->{authored_on} = [ $from, $to ];
                     $args->{range_incl}{authored_on} = 1;
                 },
+                order => 700,
+            },
+            this_website => {
+                label => sub {
+                    $app->translate( '[_1] of this website', _entry_label );
+                },
+                order   => 100,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{blog_id} = $app->blog->id;
+                },
+                condition => sub {
+                    my $app = MT->instance;
+                    return 0
+                      if $app->blog && $app->blog->is_blog
+                          || ( $app->blog  && !$app->blog->is_blog
+                              && $app->param('__mode') eq 'list_entry' );
+                    return 1;
+                  },
             },
         },
         ping => {
@@ -831,9 +961,45 @@ sub core_list_filters {
                     $terms->{junk_status} = MT::TBPing::NOT_JUNK();
                 },
             },
-            my_posts => {
-                label   => 'TrackBacks on my entries',
+            this_website => {
+                label => sub {
+                    $app->translate( 'Non-spam TrackBacks on this website' );
+                },
                 order   => 200,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{blog_id} = $app->blog->id;
+                    require MT::TBPing;
+                    $terms->{junk_status} = MT::TBPing::NOT_JUNK();
+                },
+                condition => sub {
+                    my $app = MT->instance;
+                    return 0 unless $app->blog;
+                    return 0 if $app->blog->is_blog;
+                    return 1;
+                  },
+            },
+            unpublished => {
+                label   => 'Pending TrackBacks',
+                order   => 300,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    require MT::TBPing;
+                    $terms->{junk_status} = MT::TBPing::NOT_JUNK();
+                    $terms->{visible}     = 0;
+                },
+            },
+            published => {
+                label   => 'Published TrackBacks',
+                order   => 400,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{visible} = 1;
+                },
+            },
+            my_posts => {
+                label   => 'TrackBacks on my entries/pages',
+                order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     require MT::Entry;
@@ -854,36 +1020,9 @@ sub core_list_filters {
                     );
                 },
             },
-            published => {
-                label   => 'Published TrackBacks',
-                order   => 200,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    $terms->{visible} = 1;
-                },
-            },
-            unpublished => {
-                label   => 'Unpublished TrackBacks',
-                order   => 300,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    require MT::TBPing;
-                    $terms->{junk_status} = MT::TBPing::NOT_JUNK();
-                    $terms->{visible}     = 0;
-                },
-            },
-            spam => {
-                label   => 'TrackBacks marked as Spam',
-                order   => 400,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    require MT::TBPing;
-                    $terms->{junk_status} = MT::TBPing::JUNK();
-                },
-            },
             last_7_days => {
-                label   => 'All TrackBacks in the last 7 days',
-                order   => 700,
+                label   => 'TrackBacks in the last 7 days',
+                order   => 600,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     my $ts = time - 7 * 24 * 60 * 60;
@@ -891,6 +1030,15 @@ sub core_list_filters {
                     $terms->{created_on} = [ $ts, undef ];
                     $args->{range_incl}{created_on} = 1;
                     $terms->{junk_status} = MT::TBPing::NOT_JUNK();
+                },
+            },
+            spam => {
+                label   => 'Spam TrackBacks',
+                order   => 700,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    require MT::TBPing;
+                    $terms->{junk_status} = MT::TBPing::JUNK();
                 },
             },
         },
@@ -904,9 +1052,43 @@ sub core_list_filters {
                     $terms->{junk_status} = MT::Comment::NOT_JUNK();
                 },
             },
-            my_posts => {
-                label   => 'Comments on my entries',
+            this_website => {
+                label => sub {
+                    $app->translate( 'Non-spam Comments on this website' );
+                },
                 order   => 200,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{blog_id} = $app->blog->id;
+                },
+                condition => sub {
+                    my $app = MT->instance;
+                    return 0 unless $app->blog;
+                    return 0 if $app->blog && $app->blog->is_blog;
+                    return 1;
+                  },
+            },
+            unpublished => {
+                label   => 'Pending comments',
+                order   => 300,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    require MT::Comment;
+                    $terms->{junk_status} = MT::Comment::NOT_JUNK();
+                    $terms->{visible}     = 0;
+                },
+            },
+            published => {
+                label   => 'Published comments',
+                order   => 400,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    $terms->{visible} = 1;
+                },
+            },
+            my_posts => {
+                label   => 'Comments on my entries/pages',
+                order   => 500,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     require MT::Entry;
@@ -935,36 +1117,9 @@ sub core_list_filters {
                     );
                 },
             },
-            unpublished => {
-                label   => 'Pending comments',
-                order   => 300,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    require MT::Comment;
-                    $terms->{junk_status} = MT::Comment::NOT_JUNK();
-                    $terms->{visible}     = 0;
-                },
-            },
-            spam => {
-                label   => 'Spam Comments',
-                order   => 400,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    require MT::Comment;
-                    $terms->{junk_status} = MT::Comment::JUNK();
-                },
-            },
-            published => {
-                label   => 'Published comments',
-                order   => 500,
-                handler => sub {
-                    my ( $terms, $args ) = @_;
-                    $terms->{visible} = 1;
-                },
-            },
             last_7_days => {
                 label   => 'Comments in the last 7 days',
-                order   => 700,
+                order   => 600,
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     require MT::Comment;
@@ -973,6 +1128,36 @@ sub core_list_filters {
                     $terms->{created_on} = [ $ts, undef ];
                     $args->{range_incl}{created_on} = 1;
                     $terms->{junk_status} = MT::Comment::NOT_JUNK();
+                },
+            },
+            spam => {
+                label   => 'Spam Comments',
+                order   => 700,
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    require MT::Comment;
+                    $terms->{junk_status} = MT::Comment::JUNK();
+                },
+            },
+            my_posts_on_this_context => {
+                label   => sub {
+                    $app->translate( 'Comments on my entries of [_1]', $app->blog ? $app->blog->class_label : 'context' );
+                },
+                condition => sub { return 0; },
+                handler => sub {
+                    my ( $terms, $args ) = @_;
+                    my $app = MT->instance;
+                    $terms->{blog_id} = $app->blog->id;
+
+                    require MT::Entry;
+                    require MT::Comment;
+                    $terms->{junk_status} = MT::Comment::NOT_JUNK();
+                    $args->{join} = MT::Entry->join_on(
+                        undef,
+                        {   id        => \'= comment_entry_id',
+                            author_id => $app->user->id
+                        }
+                    );
                 },
             },
             _comments_by_user => {
@@ -1126,415 +1311,549 @@ sub core_list_filters {
 sub core_menus {
     my $app = shift;
     return {
-        'create' => {
-            label => "Create",
+        'website' => {
+            label => "Websites",
+            order => 50,
+        },
+        'blog' => {
+            label => "Blogs",
             order => 100,
         },
-        'manage' => {
-            label => "Manage",
+        'entry' => {
+            label => "Entries",
             order => 200,
+        },
+        'page' => {
+            label => "Pages",
+            order => 300,
+        },
+        'asset' => {
+            label => "Assets",
+            order => 400,
+        },
+        'feedback' => {
+            label => "Comments",
+            order => 500,
+        },
+        'user' => {
+            label => "Users",
+            order => 600,
         },
         'design' => {
             label => "Design",
-            order => 300,
+            order => 700,
         },
-        'prefs' => {
-            label => "Preferences",
-            order => 400,
+        'settings' => {
+            label => "Settings",
+            order => 800,
         },
         'tools' => {
             label => "Tools",
-            order => 500,
+            order => 900,
         },
 
-        'create:blog' => {
-            label => "Blog",
+        'website:manage' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => "list_website",
+            view       => "system",
+        },
+        'website:create' => {
+            label         => "New",
+            order         => 200,
+            mode          => 'view',
+            args          => { _type => 'website' },
+            permit_action => 'use_website:create_menu',
+            view          => "system",
+        },
+
+        'blog:manage' => {
+            label => "Manage",
             order => 100,
-            view  => "system",
+            mode  => "list_blog",
+            view  => "website",
         },
-        'create:blog' => {
-            label      => "Blog",
-            order      => 200,
-            view       => "system",
-            mode       => "view",
-            args       => { _type => "blog" },
-            permission => "create_blog",
+        'blog:create' => {
+            label         => "New",
+            order         => 200,
+            mode          => 'view',
+            args          => { _type => 'blog' },
+            permit_action => 'use_blog:create_menu',
+            view          => "website",
         },
-        'create:user' => {
-            label      => "User",
-            order      => 200,
+
+        'user:member' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => 'list_member',
+            view       => [ "blog", "website" ],
+            permission => 'administer_blog,manage_users,administer_website',
+            system_permission => 'administer',
+        },
+        'user:manage' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => "list_author",
+            permission => "administer",
             view       => "system",
+        },
+        'user:create' => {
+            label      => "New",
+            order      => 200,
             mode       => "view",
             args       => { _type => "author" },
             permission => "administer",
             condition  => sub {
                 return !MT->config->ExternalUserManagement;
             },
+            view => "system",
         },
-        'create:entry' => {
-            label      => "Entry",
-            order      => 100,
+        'user:itemset_action' => {
+            order      => 10000,
+            mode       => 'itemset_action',
+            args       => { _type => "author" },
+            display    => 0,
+        },
+
+        'entry:manage' => {
+            label     => "Manage",
+            order     => 100,
+            mode      => 'list_entry',
+            permit_action => 'use_entry:manage_menu',
+            view => [ "blog", "website" ],
+        },
+        'entry:create' => {
+            label      => "New",
+            order      => 200,
             mode       => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
             view       => "blog",
         },
-        'create:page' => {
-            label      => "Page",
+        'entry:category' => {
+            label      => "Categories",
+            order      => 300,
+            mode       => 'list_category',
+            permission => 'edit_categories',
+            view       => "blog",
+        },
+        'entry:tag' => {
+            label             => "Tags",
+            order             => 400,
+            mode              => 'list_tag',
+            args              => { filter_key => 'entry' },
+            permission        => 'edit_tags',
+            system_permission => 'administer',
+            view              => [ "blog", "website"] ,
+        },
+        'entry:view_category' => {
+            order      => 10000,
+            mode       => 'view',
+            args       => { _type => 'category' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+
+        'page:manage' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => 'list_page',
+            permission => 'manage_pages',
+            view       => [ "blog", 'website' ],
+        },
+        'page:create' => {
+            label      => "New",
             order      => 200,
             mode       => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => "blog",
+            view       => [ "blog", 'website' ],
         },
-        'create:file' => {
-            label      => "Upload File",
-            order      => 300,
-            dialog     => 'start_upload',
-            permission => 'upload,edit_assets',
-            view       => "blog",
-        },
-
-        'manage:blog' => {
-            label => "Blogs",
-            mode  => "list_blog",
-            order => 100,
-            view  => "system",
-        },
-        'manage:user' => {
-            label      => "Users",
-            mode       => "list_user",
-            order      => 200,
-            permission => "administer",
-            view       => "system",
-        },
-        'manage:entry' => {
-            label     => "Entries",
-            mode      => 'list_entry',
-            order     => 1000,
-            condition => sub {
-                return 1 if $app->user->is_superuser;
-                if ( $app->param('blog_id') ) {
-                    my $perms
-                        = $app->user->permissions( $app->param('blog_id') );
-                    return 1
-                        if $perms->can_create_post
-                            || $perms->can_publish_post
-                            || $perms->can_edit_all_posts;
-                }
-                else {
-                    require MT::Permission;
-                    my @blogs
-                        = map { $_->blog_id }
-                        grep {
-                        $_->can_create_post
-                            || $_->can_publish_post
-                            || $_->can_edit_all_posts
-                        } MT::Permission->load(
-                        { author_id => $app->user->id } );
-                    return 1 if @blogs;
-                }
-                return 0;
-            },
-
-            #permission => 'create_post,publish_post,edit_all_posts',
-        },
-        'manage:comment' => {
-            label     => "Comments",
-            mode      => 'list_comment',
-            order     => 2000,
-            condition => sub {
-                return 1 if $app->user->is_superuser;
-                if ( $app->param('blog_id') ) {
-                    my $perms
-                        = $app->user->permissions( $app->param('blog_id') );
-                    return 1
-                        if $perms && $perms->can_view_feedback;
-                }
-                else {
-                    require MT::Permission;
-                    my @blogs
-                        = map { $_->blog_id }
-                        grep {
-                            $_->can_view_feedback
-                        } MT::Permission->load(
-                        { author_id => $app->user->id } );
-                    return 1 if @blogs;
-                }
-                return 0;
-            },
-
-          #permission => 'create_post,edit_all_posts,manage_feedback,comment',
-        },
-        'manage:asset' => {
-            label      => "Assets",
-            mode       => 'list_asset',
-            order      => 3000,
-            permission => 'edit_assets',
-        },
-        'manage:page' => {
-            label      => "Pages",
-            mode       => 'list_pages',
-            order      => 4000,
-            permission => 'manage_pages',
-        },
-        'manage:ping' => {
-            label      => "TrackBacks",
-            mode       => 'list_pings',
-            order      => 5000,
-            permission => 'create_post,edit_all_posts,manage_feedback',
-        },
-        'manage:category' => {
-            label      => "Categories",
-            mode       => 'list_cat',
-            order      => 6000,
-            permission => 'edit_categories',
-            view       => "blog",
-        },
-        'manage:folder' => {
+        'page:folder' => {
             label      => "Folders",
-            mode       => 'list_cat',
-            args       => { _type => 'folder' },
-            order      => 7000,
+            order      => 300,
+            mode       => 'list_folder',
+            args       => { filter_key => 'page' },
             permission => 'manage_pages',
-            view       => "blog",
+            view       => [ "blog", 'website' ],
         },
-        'manage:tag' => {
+        'page:tag' => {
             label             => "Tags",
+            order             => 400,
             mode              => 'list_tag',
-            order             => 8000,
+            args              => { filter_key => 'page' },
             permission        => 'edit_tags',
             system_permission => 'administer',
+            view              => [ "blog", 'website' ],
         },
-        'manage:blog_user' => {
-            label             => "Users",
-            mode              => 'list_member',
-            order             => 9000,
-            view              => "blog",
-            permission        => 'administer_blog,manage_users',
-            system_permission => 'administer',
-        },
-        'manage:notification' => {
-            label      => "Address Book",
-            mode       => 'list',
-            args       => { _type => 'notification' },
+        'page:view_folder' => {
             order      => 10000,
-            permission => 'edit_notifications',
-            view       => "blog",
-            condition  => sub {
-                return $app->config->EnableAddressBook;
+            mode       => 'view',
+            args       => { _type => 'folder' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+
+        'asset:manage' => {
+            label      => "Manage",
+            order      => 100,
+            mode       => 'list_asset',
+            permission => 'edit_assets',
+            view       => [ "blog", 'website' ],
+        },
+        'asset:upload' => {
+            label      => "New",
+            order      => 200,
+            mode       => 'start_upload',
+            permission => 'upload,edit_assets',
+            view       => [ "blog", 'website' ],
+            dialog     => 1,
+        },
+        'asset:tag' => {
+            label             => "Tags",
+            order             => 400,
+            mode              => 'list_tag',
+            args              => { filter_key => 'asset' },
+            permission        => 'edit_tags',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'asset:view_asset' => {
+            order      => 10000,
+            mode       => 'view',
+            args       => { _type => 'asset' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+        'asset:upload_file' => {
+            order      => 10000,
+            mode       => 'upload_file',
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+
+        'feedback:comment' => {
+            label     => "Comments",
+            order     => 100,
+            mode      => 'list_comment',
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+                if ( $app->param('blog_id') ) {
+                    my $perms =
+                      $app->user->permissions( $app->param('blog_id') );
+                    return 1
+                      if $perms && $perms->can_view_feedback;
+                }
+                else {
+                    require MT::Permission;
+                    my @blogs = map { $_->blog_id }
+                      grep { $_->can_view_feedback }
+                      MT::Permission->load( { author_id => $app->user->id } );
+                    return 1 if @blogs;
+                }
+                return 0;
             },
+            view => [ "blog", 'website' ],
+        },
+        'feedback:ping' => {
+            label      => "TrackBacks",
+            order      => 200,
+            mode       => 'list_pings',
+            permission => 'create_post,edit_all_posts,manage_feedback',
+            view       => [ "blog", 'website' ],
+        },
+        'feedback:view_comment' => {
+            order      => 10000,
+            mode       => 'view',
+            args       => { _type => 'comment' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+        'feedback:view_ping' => {
+            order      => 10010,
+            mode       => 'view',
+            args       => { _type => 'ping' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
         },
 
         'design:template' => {
             label             => "Templates",
-            mode              => 'list',
-            args              => { _type => 'template' },
             order             => 100,
+            mode              => 'list_template',
             permission        => 'edit_templates',
             system_permission => 'edit_templates',
+            view              => [ "blog", 'website', 'system' ],
         },
         'design:widgets' => {
             label             => 'Widgets',
-            mode              => 'list_widget',
             order             => 200,
+            mode              => 'list_widget',
             permission        => 'edit_templates',
             system_permission => "edit_templates",
+            view              => [ "blog", 'website', 'system' ],
+        },
+        'design:themes' => {
+            label => 'Themes',
+            order => 500,
+            mode  => 'list_theme',
+            view  => [ "blog", 'website', 'system' ],
+            permit_action => 'use_design:themes_menu',
+        },
+        'design:view_template' => {
+            order      => 10000,
+            mode       => 'view',
+            args       => { _type => 'template' },
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
+        },
+        'design:edit_widget' => {
+            order      => 10000,
+            mode       => 'edit_widget',
+            view       => [ "blog", 'website', 'system' ],
+            display    => 0,
         },
 
-        'prefs:general' => {
+        'settings:general' => {
             label      => "General",
             order      => 100,
-            mode       => "cfg_system",
+            mode       => 'cfg_prefs',
+            permission => 'administer_blog,edit_config,set_publish_paths',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'settings:compose' => {
+            label      => "Compose",
+            order      => 300,
+            mode       => 'cfg_entry',
+            permission => 'administer_blog,edit_config,set_publish_paths',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'settings:feedback' => {
+            label      => "Feedback",
+            order      => 400,
+            mode       => 'cfg_feedback',
+            permission => 'administer_blog,edit_config,set_publish_paths',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'settings:registration' => {
+            label      => "Registration",
+            order      => 500,
+            mode       => 'cfg_registration',
+            permission => 'administer_blog,edit_config,set_publish_paths',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'settings:web_services' => {
+            label      => "Web Services",
+            order      => 600,
+            mode       => 'cfg_web_services',
+            permission => 'administer_blog,edit_config,set_publish_paths',
+            system_permission => 'administer',
+            view              => [ "blog", 'website' ],
+        },
+        'settings:ip_info' => {
+            label      => "IP Banning",
+            order      => 700,
+            mode       => 'list',
+            args       => { _type => 'banlist' },
+            permission => 'manage_feedback',
+            condition  => sub {
+                $app->config->ShowIPInformation;
+            },
+            view => [ "blog", 'website' ],
+        },
+        'settings:system' => {
+            label      => "General",
+            order      => 100,
+            mode       => "cfg_system_general",
             view       => "system",
             permission => "administer",
         },
-        'prefs:user' => {
+        'settings:user' => {
             label      => "User",
             order      => 200,
             mode       => "cfg_system_users",
             view       => "system",
             permission => "administer",
         },
-        'prefs:feedback' => {
-            label      => "Feedback",
-            order      => 300,
-            mode       => "cfg_system_feedback",
-            view       => "system",
-            permission => "administer",
-        },
-        'prefs:settings' => {
-            label      => "General",
-            mode       => 'cfg_prefs',
-            order      => 100,
-            permission => 'administer_blog,edit_config,set_publish_paths',
+        'settings:role' => {
+            label             => "Roles",
+            order             => 300,
+            mode              => "list_role",
             system_permission => 'administer',
-            view              => "blog",
+            view              => "system",
         },
-        'prefs:publishing' => {
-            label      => "Publishing",
-            mode       => 'cfg_archives',
-            order      => 110,
-            permission => 'administer_blog,edit_config,set_publish_paths',
+        'settings:association' => {
+            label             => "Permissions",
+            order             => 400,
+            mode              => "list_association",
             system_permission => 'administer',
-            view              => "blog",
+            view              => "system",
         },
-        'prefs:entry' => {
-            label      => "Entry",
-            mode       => 'cfg_entry',
-            order      => 120,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:comment' => {
-            label      => "Comment",
-            mode       => 'cfg_comments',
-            order      => 130,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:trackback' => {
-            label      => "TrackBack",
-            mode       => 'cfg_trackbacks',
-            order      => 140,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:registration' => {
-            label      => "Registration",
-            mode       => 'cfg_registration',
-            order      => 150,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:spam' => {
-            label      => "Spam",
-            mode       => 'cfg_spam',
-            order      => 160,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:web_services' => {
-            label      => "Web Services",
-            mode       => 'cfg_web_services',
-            order      => 170,
-            permission => 'administer_blog,edit_config,set_publish_paths',
-            system_permission => 'administer',
-            view              => "blog",
-        },
-        'prefs:ip_info' => {
-            label      => "IP Banning",
-            mode       => 'list',
-            args       => { _type => 'banlist' },
-            order      => 180,
-            permission => 'manage_feedback',
-            condition  => sub {
-                $app->config->ShowIPInformation;
-            },
-            view => "blog",
+        'settings:view_role' => {
+            order      => 10000,
+            mode       => 'view',
+            args       => { _type => 'role' },
+            view       => 'system',
+            display    => 0,
         },
 
+        'tools:search' => {
+            label             => "Search &amp; Replace",
+            order             => 100,
+            mode              => "search_replace",
+            view              => [ "blog", 'website', 'system' ],
+            condition         => sub {
+                return 1 if $app->user->is_superuser;
+                if ( $app->param('blog_id') ) {
+                    my $perms = $app->user->permissions( $app->param('blog_id') );
+                    return 0 unless $perms;
+                    return 0 unless $perms->permissions;
+                    return 0 unless $perms->can_do('use_tools:search');
+                }
+                return 1;
+            }
+        },
         'tools:plugins' => {
             label             => "Plugins",
-            order             => 100,
+            order             => 200,
             mode              => "cfg_plugins",
             permission        => "administer_blog",
             system_permission => "manage_plugins",
-        },
-        'tools:activity_log' => {
-            label             => "Activity Log",
-            order             => 200,
-            mode              => "view_log",
-            permission        => "view_blog_log",
-            system_permission => "view_log",
+            view              => [ "blog", 'website', 'system' ],
         },
         'tools:import' => {
-            label      => "Import",
+            label      => "Import Entries",
             order      => 400,
             mode       => "start_import",
-            view       => "blog",
             permission => "administer_blog",
+            view       => "blog",
         },
         'tools:export' => {
-            label      => "Export",
+            label      => "Export Entries",
             order      => 500,
             mode       => "start_export",
-            view       => "blog",
             permission => "administer_blog",
+            view       => "blog",
+        },
+        'tools:themeexport' => {
+            label      => "Export Theme",
+            order      => 550,
+            mode       => 'export_theme',
+            permit_action => 'use_tools:themeexport_menu',
+            view       => [ 'blog', 'website' ],
         },
         'tools:backup' => {
             label      => "Backup",
             order      => 600,
             mode       => "start_backup",
             permission => "administer_blog",
+            view       => [ "blog", 'website', 'system' ],
         },
         'tools:restore' => {
             label      => "Restore",
-            order      => 700,
+            order      => 650,
             mode       => "start_restore",
             permission => "administer_blog",
             view       => "system",
         },
+        'tools:notification' => {
+            label      => "Address Book",
+            order      => 700,
+            mode       => 'list',
+            args       => { _type => 'notification' },
+            permission => 'edit_notifications',
+            view       => [ "blog", 'website' ],
+            condition  => sub {
+                return $app->config->EnableAddressBook;
+            },
+        },
+        'tools:activity_log' => {
+            label             => "Activity Log",
+            order             => 800,
+            mode              => "view_log",
+            permission        => "view_blog_log",
+            system_permission => "view_log",
+            view              => [ "blog", 'website', 'system' ],
+        },
         'tools:system_information' => {
             label => "System Information",
-            order => 800,
+            order => 900,
             mode  => "tools",
             view  => "system",
+            permit_action => 'use_tools:system_info_menu',
         },
+        'tools:do_export_theme' => {
+            order      => 10000,
+            mode       => 'do_export_theme',
+            view       => [ 'blog', 'website' ],
+            display    => 0,
+        },
+    };
+}
 
-        # System menu which is actually separate
-        # in the CMS navigation
-        'system' => {
-            label => "System Overview",
-            mode  => 'dashboard',
-            order => 10000,
-        },
-        'system:user' => {
-            label             => "Users",
-            mode              => 'list_authors',
-            order             => 100,
-            permission        => 'administer_blog',
-            system_permission => 'administer',
-        },
-        'system:blog' => {
-            label => "Blogs",
-            mode  => 'list_blogs',
-            order => 200,
-        },
-        'system:template' => {
-            label             => "Global Templates",
-            mode              => 'list_template',
-            order             => 250,
-            system_permission => 'edit_templates',
-        },
-        'system:settings' => {
-            label             => "Settings",
-            mode              => 'cfg_system',
-            order             => 300,
-            system_permission => 'administer',
-        },
-        'system:plugins' => {
-            label             => "Plugins",
-            mode              => 'cfg_plugins',
-            order             => 400,
-            system_permission => 'manage_plugins',
-        },
-        'system:log' => {
-            label             => "Activity Log",
-            mode              => 'view_log',
-            order             => 500,
-            system_permission => 'view_log',
-        },
-        'system:tools' => {
-            label             => "Tools",
-            mode              => 'tools',
-            order             => 600,
-            system_permission => 'administer',
+sub core_compose_menus {
+    my $app = shift;
+
+    return {
+        compose_menus => {
+            label => 'Create New',
+            order => 100,
+            menus => {
+                'entry' => {
+                    label      => "Entry",
+                    order      => 100,
+                    mode       => 'view',
+                    args       => { _type => 'entry' },
+                    permission => 'create_post',
+                    view       => "blog",
+                },
+                'page' => {
+                    label      => "Page",
+                    order      => 200,
+                    mode       => 'view',
+                    args       => { _type => 'page' },
+                    permission => 'manage_pages',
+                    view       => [ "blog", 'website' ],
+                },
+                'asset' => {
+                    label      => "Asset",
+                    order      => 300,
+                    mode       => 'start_upload',
+                    permission => 'upload,edit_assets',
+                    view       => [ "blog", 'website' ],
+                },
+                'website' => {
+                    label         => "Website",
+                    order         => 200,
+                    mode          => 'view',
+                    args          => { _type => 'website' },
+                    permit_action => 'use_website:create_menu',
+                    view          => "system",
+                },
+                'user' => {
+                    label      => "User",
+                    order      => 100,
+                    mode       => "view",
+                    args       => { _type => "author" },
+                    permission => "administer",
+                    condition  => sub {
+                        return !MT->config->ExternalUserManagement;
+                    },
+                    view => "system",
+                },
+                'blog:create' => {
+                    label         => "Blog",
+                    order         => 400,
+                    mode          => 'view',
+                    args          => { _type => 'blog' },
+                    permit_action => 'use_blog:create_menu',
+                    view          => "website",
+                },
+            },
         },
     };
 }
@@ -1579,6 +1898,11 @@ sub init_core_callbacks {
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
+
+            # website callbacks
+            $pkg . 'post_save.website'   => "${pfx}Website::post_save",
+            $pkg . 'edit.website'        => "${pfx}Website::edit",
+            $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",
@@ -1718,6 +2042,7 @@ sub init_core_callbacks {
     );
 }
 
+## TBD: This should be removed.
 sub user_can_admin_commenters {
     my $app   = shift;
     my $perms = $app->permissions;
@@ -1781,6 +2106,7 @@ sub set_default_tmpl_params {
     if ( my $auth = $app->user ) {
         $param->{is_administrator} = $auth->is_superuser;
         $param->{can_create_newblog}  = $auth->can_create_blog;
+        $param->{can_create_newbwebsite}  = $auth->can_create_website;
         $param->{can_view_log} ||= $auth->can_view_log;
         $param->{can_manage_plugins}    = $auth->can_manage_plugins;
         $param->{can_edit_templates}    = $auth->can_edit_templates;
@@ -1790,6 +2116,9 @@ sub set_default_tmpl_params {
         $param->{author_id}             = $auth->id;
         $param->{author_name}           = $auth->name;
         $param->{author_display_name}   = $auth->nickname || $auth->name;
+        if (my ($url) = $auth->userpic_url(Width => 36, Height => 36)) {
+            $param->{author_userpic_url}    = $url;
+        }
     }
 
     if ( my $perms = $app->permissions ) {
@@ -1856,16 +2185,30 @@ sub build_page {
     my $blog;
     my $blog_class = $app->model('blog');
     $blog ||= $blog_class->load($blog_id) if $blog_id;
-    if ( $blog_id && $page ne 'login.tmpl' ) {
-        if ($blog) {
-            $param->{blog_name}         = $blog->name;
-            $param->{blog_id}           = $blog->id;
-            $param->{blog_url}          = $blog->site_url;
-            $param->{blog_template_set} = $blog->template_set;
-        }
-        else {
-            $app->error( $app->translate( "No such blog [_1]", $blog_id ) );
-        }
+    if ($page ne 'login.tmpl') {
+        if ($blog_id) {
+            if ($blog) {
+                my $scope_type = $blog->is_blog ? 'blog' : 'website';
+                my $class = $app->model($scope_type);
+                $param->{blog_name}         = $blog->name;
+                $param->{blog_id}           = $blog->id;
+                $param->{blog_url}          = $blog->site_url;
+                $param->{blog_template_set} = $blog->template_set;
+                $param->{is_blog}           = $blog->is_blog ? 1 : 0;
+                $param->{scope_type}        = $scope_type;
+                $param->{scope_label}       = $class->class_label;
+                $param->{is_generic_website}   = 1
+                    if !$blog->is_blog && ( !$blog->column('site_path') || !$blog->column('site_url'));
+            }
+            else {
+                $app->error( $app->translate( "No such blog [_1]", $blog_id ) );
+            }
+        } else {
+            $param->{scope_type} =
+                !defined $app->param('blog_id') && $app->mode eq'dashboard'
+                ? 'user'
+                : 'system';
+       }
     }
     if ( $page ne 'login.tmpl' ) {
         if ( ref $app eq 'MT::App::CMS' ) {
@@ -1877,8 +2220,10 @@ sub build_page {
         }
     }
 
-    $app->build_blog_selector($param);
-    $app->build_menus($param);
+    my $build_blog_selector = exists $param->{build_blog_selector} ? $param->{build_blog_selector} : 1;
+    $app->build_blog_selector($param) if $build_blog_selector;
+    my $build_menus = exists $param->{build_menus} ? $param->{build_menus} : 1;
+    $app->build_menus($param) if $build_menus;
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
     {
@@ -1886,6 +2231,9 @@ sub build_page {
         # templates actually utilize them.
         $param->{page_actions} ||= sub { $app->page_actions( $app->mode ) };
     }
+    my $build_compose_menus = exists $param->{build_compose_menus} ? $param->{build_compose_menus} : 1;
+    $app->build_compose_menus( $param )
+        if $build_compose_menus;
 
     $app->SUPER::build_page( $page, $param );
 }
@@ -1894,128 +2242,156 @@ sub build_blog_selector {
     my $app = shift;
     my ($param) = @_;
 
-    return if exists $param->{top_blog_loop};
+    return if exists $param->{load_selector_data};
 
     my $blog = $app->blog;
     my $blog_id = $blog->id if $blog;
     $param->{dynamic_all} = $blog->custom_dynamic_templates eq 'all' if $blog;
 
     my $blog_class = $app->model('blog');
-    my $auth = $app->user or return;
+    my $website_class = $app->model('website');
 
     # Any access to a blog will put it on the top of your
     # recently used blogs list (the blog selector)
-    $app->add_to_favorite_blogs($blog_id) if $blog_id;
+    if ( $blog && $blog->is_blog ) {
+        $app->add_to_favorite_blogs($blog_id);
+        $app->add_to_favorite_websites($blog->parent_id);
+    } elsif ( $blog && !$blog->is_blog ) {
+        $app->add_to_favorite_websites($blog_id);
+    }
+    my $auth = $app->user or return;
 
-    my %args;
-    $args{join} = MT::Permission->join_on( 'blog_id',
-        { author_id => $auth->id, permissions => { not => "'comment'" } } );
-    $args{limit} = 11;    # don't load more than 11
-    my @blogs = $blog_class->load( undef, \%args );
-
+    # Load favorites blogs
     my @fav_blogs = @{ $auth->favorite_blogs || [] };
-    @fav_blogs = grep { $_ != $blog_id } @fav_blogs if $blog_id;
-
-    # Special case for when a user only has access to a single blog.
-    if (   ( !defined( $app->param('blog_id') ) )
-        && ( @blogs == 1 )
-        && ( scalar @fav_blogs <= 1 ) )
-    {
-
-        # User only has visibility to a single blog. Don't
-        # bother giving them a dashboard link for 'all blogs', or
-        # to 'select a blog'.
-        $param->{single_blog_mode} = 1;
-        my $blog = $blogs[0];
-        $blog_id = $blog->id;
-        my $perms = MT::Permission->load(
-            {   blog_id   => $blog_id,
-                author_id => $auth->id
-            }
-        );
-        if ( !$app->blog ) {
-            if ( $app->mode eq 'dashboard' ) {
-                $app->param( 'blog_id', $blog_id );
-                $param->{blog_id}   = $blog_id;
-                $param->{blog_name} = $blog->name;
-                $app->permissions($perms);
-                $app->blog($blog);
-            }
-            else {
-                @fav_blogs = ($blog_id);
-                $blog_id   = undef;
-            }
-        }
-    }
-    elsif ( @blogs && ( @blogs <= 10 ) ) {
-
-        # This user only has visibility to 10 or fewer blogs;
-        # no need to reference their 'favorite' blogs list.
-        my @ids = map { $_->id } @blogs;
-        if ($blog_id) {
-            @ids = grep { $_ != $blog_id } @ids;
-        }
-        @fav_blogs = @ids;
-        if ( $auth->is_superuser ) {
-
-            # Better check to see if there are more than
-            # 10 blogs in the system; if so, a superuser
-            # will still want the 'Select a blog...' chooser.
-            # Otherwise, hide it.
-            my $all_blog_count = $blog_class->count();
-            if ( $all_blog_count < 11 ) {
-                $param->{selector_hide_chooser} = 1;
-            }
-        }
-        else {
-
-            # This user is not a superuser and only has
-            # 10 blogs, so they don't need a 'select blog'
-            # link...
-            $param->{selector_hide_chooser} = 1;
-        }
-    }
-    $param->{selector_hide_chooser} ||= 0;
-
-    # Logic for populating the blog selector control
-    #   * Pull list of 'favorite blogs' from user record
-    #   * Load all of those blogs so we can display them
-    #   * Exclude the current blog from the favorite list so it isn't
-    #     shown twice.
-    @blogs = $blog_class->load( { id => \@fav_blogs } ) if @fav_blogs;
-    my %blogs = map { $_->id => $_ } @blogs;
-    @blogs = ();
-    foreach my $id (@fav_blogs) {
-        push @blogs, $blogs{$id} if $blogs{$id};
+    if ( scalar @fav_blogs > 5 ) {
+        @fav_blogs = @fav_blogs[ 0..4 ];
     }
 
-    my @data;
-    if (@blogs) {
-        my @perms = grep { !$_->is_empty } MT::Permission->load(
-            {   author_id => $auth->id,
-                blog_id   => \@fav_blogs,
-            }
-        );
-        my %perms = map { $_->blog_id => $_ } @perms;
-        for my $blog (@blogs) {
-            my $perm = $perms{ $blog->id };
-            next
-                unless $auth->is_superuser || ( $perm && !$perm->is_empty );
-            push @data,
+    # How many blogs that the user can access?
+    my %args;
+    my %terms;
+    $args{join} = MT::Permission->join_on( 'blog_id',
+        { author_id => $auth->id, permissions => { not => "'comment'" } }
+    ) if !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates');
+    $terms{class} = 'blog';
+    $terms{parent_id} = \">0";
+    $args{limit} = 6; # Don't load over 6 blogs
+    my @blogs = $blog_class->load( \%terms, \%args );
+
+    # Special case. If this user can access 5 blogs or smaller then load those blogs.
+    $param->{selector_hide_blog_chooser} = 1;
+    if ( @blogs && scalar @blogs == 6 ) {
+        # This user can access over 6 blogs.
+        if ( @fav_blogs ) {
+            @blogs = $blog_class->load( { id => \@fav_blogs } );
+        } else {
+            @blogs = ();
+        }
+        $param->{selector_hide_blog_chooser} = 0;
+    }
+
+
+    # Load favorites or all websites
+    my @fav_websites = @{ $auth->favorite_websites || [] };
+
+    # How many websites that the user can access?
+    my $max_load = $blog && $blog->is_blog ? 3 : 4;
+    %args = ();
+    %terms = ();
+    $args{join} = MT::Permission->join_on( 'blog_id',
+        { author_id => $auth->id, permissions => { not => "'comment'" } }
+    ) if !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates');
+    $terms{class} = 'website';
+    $terms{id} = { not => $blog->website->id } if $blog && $blog->is_blog;
+    $args{limit} = $max_load; # Don't load over 3 ~ 4 websites.
+    my @websites = $website_class->load( \%terms, \%args );
+    unshift @websites, $blog->website if $blog && $blog->is_blog;
+
+    # Special case. If this user can access 3 websites or smaller then load those websites.
+    $param->{selector_hide_website_chooser} = 1;
+    if ( @websites && scalar @websites == 4 ) {
+        # This user can access over 4 websites.
+        if ( @fav_websites ) {
+            @websites = $website_class->load( { id => \@fav_websites } ) if @fav_websites;
+        } else {
+            @websites = ();
+        }
+        $param->{selector_hide_website_chooser} = 0;
+    }
+
+    # Build selector data
+    my @website_data;
+    if (@websites) {
+        for my $ws (@websites) {
+            next unless $ws;
+
+            my @perms = MT::Permission->load(
                 {
-                top_blog_id   => $blog->id,
-                top_blog_name => $blog->name
-                };
-            $data[-1]{top_blog_selected} = 1
-                if $blog_id && ( $blog->id == $blog_id );
+                    author_id => $auth->id,
+                    blog_id   => $ws->id,
+                }
+            );
+
+            if (( $blog && $blog->is_blog && $blog->parent_id == $ws->id ) || ( $blog && !$blog->is_blog && $blog->id == $ws->id) ) {
+                $param->{curr_website_id} = $ws->id;
+                $param->{curr_website_name} = $ws->name;
+                $param->{curr_website_can_link} = ( $auth->is_superuser || $auth->permissions(0)->can_do('edit_templates') || @perms > 0 ) ? 1 : 0;
+            } else {
+                my $fav_data;
+                $fav_data->{ fav_website_id } = $ws->id;
+                $fav_data->{ fav_website_name } = $ws->name;
+                $fav_data->{ fav_website_can_link } = ( $auth->is_superuser || $auth->permissions(0)->can_do('edit_templates') || @perms > 0 ) ? 1 : 0;
+
+                push @website_data, \%$fav_data;
+            }
         }
     }
-    $param->{top_blog_loop} = \@data;
-    if ( !$app->user->can_create_blog
-        && ( $param->{single_blog_mode} || scalar(@data) <= 1 ) )
-    {
-        $param->{no_submenu} = 1;
+    $param->{fav_website_loop} = \@website_data;
+
+    if ( !$param->{curr_website_id} ) {
+        my $ws;
+        if ( $blog && $blog->is_blog && $blog->website ) {
+            $ws = $blog->website;
+        } elsif ( $blog && !$blog->is_blog ) {
+            $ws = $blog;
+        }
+        if ( $ws ) {
+            $param->{curr_website_id} = $ws->id;
+            $param->{curr_website_name} = $ws->name;
+            $param->{curr_website_can_link} = 0;
+        }
     }
+
+    my @blog_data;
+    if ( @blogs ) {
+        foreach $b ( @blogs ) {
+            if ( $blog && $blog->is_blog && $blog->id == $b->id ) {
+                $param->{curr_blog_id} = $b->id;
+                $param->{curr_blog_name} = $b->name;
+            } else {
+                my $fav_data;
+                $fav_data->{ fav_blog_id } = $b->id;
+                $fav_data->{ fav_blog_name } = $b->name;
+                $fav_data->{ fav_parent_name } = $b->website->name if $b->website;
+                $fav_data->{ fav_parent_id } = $b->website->id if $b->website;
+
+                push @blog_data, \%$fav_data;
+            }
+        }
+    }
+    $param->{fav_blog_loop} = \@blog_data;
+
+    if ( !$param->{curr_blog_id} ) {
+        if ( $blog && $blog->is_blog ) {
+            $param->{curr_blog_id} = $blog->id;
+            $param->{curr_blog_name} = $blog->name;
+        }
+    }
+
+    $param->{load_selector_data} = 1;
+    $param->{can_create_blog} = $auth->can_do('create_blog') && $blog;
+    $param->{can_create_website} = $auth->can_do('create_website');
+    $param->{can_access_overview} = $auth->can_do('access_to_system_dashboard');
 }
 
 sub build_menus {
@@ -2023,24 +2399,28 @@ sub build_menus {
     my ($param) = @_;
     return if exists $param->{top_nav_loop};
 
-    my $menus   = $app->registry('menus');
-    my $blog    = $app->blog;
-    my $blog_id = $blog->id if $blog;
+    my $menus        = $app->registry('menus');
+    my $blog         = $app->blog;
+    my $blog_id      = $blog ? $blog->id : 0;
+    my $theme        = $blog ? $blog->theme : undef;
+    my $theme_modify = $theme ? $theme->{menu_modification} : {};
+    my $mode         = $app->mode;
 
     my @top_ids = grep { !/:/ } keys %$menus;
     my @top;
     my @sys;
     my $user = $app->user
-        or return;
+      or return;
     my $perms = $app->permissions || $user->permissions;
-    my $view = $blog_id ? "blog" : "system";
+    my $view = $app->view;
+    my $hide_disabled_options = $app->config('HideDisabledMenus') || 1;
 
-    my $hide_disabled_options = $app->config('HideDisabledMenus') || 0;
-
-    my $admin = $user->is_superuser()
-        ;    # || ($perms && $perms->has('administer_blog'));
+    my $admin =
+      $user->is_superuser();    # || ($perms && $perms->has('administer_blog'));
 
     foreach my $id (@top_ids) {
+        ## skip only if false value was set explicitly.
+        next if exists $theme_modify->{$id} && !$theme_modify->{$id};
         my $menu = $menus->{$id};
         next if $menu->{view} && $menu->{view} ne $view;
         if ( my $cond = $menu->{condition} ) {
@@ -2051,32 +2431,80 @@ sub build_menus {
         }
 
         $menu->{allowed} = 1;
+        $menu->{current} = 0;
         $menu->{'id'} = $id;
 
-        my @sub_ids = grep {m/^$id:/} keys %$menus;
+        my @sub_ids = grep { m/^$id:/ } keys %$menus;
         my @sub;
         foreach my $sub_id (@sub_ids) {
-            my $sub = $menus->{$sub_id};
+            ## skip only if false value was set explicitly.
             next
-                if $sub->{view}
-                    && ( $sub->{view} ne $view );
+              if exists $theme_modify->{$sub_id} && !$theme_modify->{$sub_id};
+            my $sub = $menus->{$sub_id};
+            $sub->{current} = 0;
+
+            ## Keep a compatibility
+            $sub->{view} = [ 'blog', 'system' ]
+                unless $sub->{view};
+
+            if ( $sub->{view} ) {
+                if ( ref $sub->{view} eq 'ARRAY' ) {
+                    next
+                      unless ( scalar grep { $_ eq $view } @{ $sub->{view} } );
+                }
+                else {
+                    next if $sub->{view} ne $view;
+                }
+            }
+            $sub->{view_permit} = 1;
             $sub->{'id'} = $sub_id;
             if ( my $cond = $sub->{condition} ) {
                 if ( !ref($cond) ) {
-                    $cond = $sub->{condition}
-                        = $app->handler_to_coderef($cond);
+                    $cond = $sub->{condition} = $app->handler_to_coderef($cond);
                 }
                 next unless $cond->();
+            }
+            if ( $sub->{args} ) {
+                foreach my $arg (qw(_type filter_key)) {
+                    next if !$sub->{args}->{$arg};
+                    if (   $sub->{mode} eq $mode
+                        && $sub->{args}->{$arg} eq $app->param($arg) )
+                    {
+                        $param->{screen_group} = $id;
+                        if ( $app->param('id') ) {
+                            $sub->{current} = 1
+                              if ( $app->param('_type') eq 'blog' )
+                              || ( $app->param('_type') eq 'website' );
+                        }
+                        else {
+                            $sub->{current} = 1;
+                        }
+                    }
+                }
+            }
+            else {
+                if ( $sub->{mode} eq $mode ) {
+                    $param->{screen_group} = $id;
+                    if ( $app->param('id') ) {
+                        $sub->{current} = 1
+                          if ( $app->param('_type') eq 'blog' )
+                          || ( $app->param('_type') eq 'website' );
+                    }
+                    else {
+                        $sub->{current} = 1;
+                    }
+                }
             }
             push @sub, $sub;
         }
 
-        if (my $p
-            = $blog_id
+        if (
+            my $p =
+              $blog_id
             ? $menu->{permission} || $menu->{system_permission}
             : $menu->{system_permission}
             || $menu->{permission}
-            )
+          )
         {
             my $allowed = 0;
             my @p = split /,/, $p;
@@ -2085,6 +2513,9 @@ sub build_menus {
                 $allowed = 1, last if ( $perms && $perms->$perm() ) || $admin;
             }
             $menu->{allowed} = $allowed;
+        }
+        elsif ( my $action = $menu->{permit_action} ) {
+            $menu->{allowed} = $app->can_do($action) ? 1 : 0;
         }
         elsif ( !$perms && !$blog_id ) {
             $menu->{allowed} = 0 if $menu->{system_permission} && !$admin;
@@ -2102,6 +2533,7 @@ sub build_menus {
 
             my $has_sub = 0;
             foreach my $sub (@sub) {
+                next if defined $sub->{display} && !$sub->{display};
                 my $sys_only = $sub->{id} =~ m/^system:/;
                 $sub->{allowed} = 1;
                 if ( $sub->{mode} ) {
@@ -2109,7 +2541,8 @@ sub build_menus {
                         mode => $sub->{mode},
                         args => {
                             %{ $sub->{args} || {} },
-                            (   $blog_id && !$sys_only
+                            (
+                                ($blog_id && !$sys_only) || $app->view eq 'system'
                                 ? ( blog_id => $blog_id )
                                 : ()
                             )
@@ -2117,48 +2550,56 @@ sub build_menus {
                     );
                 }
                 $sub->{allowed} = 0
-                    if $sub->{view} && ( $sub->{view} ne $view );
+                  if $sub->{view} && ( !$sub->{view_permit} );
                 if ( $sub->{allowed} ) {
-                    my $sub_perms
-                        = ( $sys_only || ( $sub->{view} || '' ) eq 'system' )
-                        ? $app->user->permissions(0)
-                        : $perms;
-                    if ($sub_perms
-                        && (my $p
-                            = $blog_id
+                    my $sub_perms =
+                      ( $sys_only || ( $sub->{view} || '' ) eq 'system' )
+                      ? $app->user->permissions(0)
+                      : $perms;
+                    if (
+                        $sub_perms
+                        && (
+                            my $p =
+                              $blog_id
                             ? $sub->{permission} || $sub->{system_permission}
                             : $sub->{system_permission}
                             || $sub->{permission}
                         )
-                        )
+                      )
                     {
                         my $allowed = 0;
                         my @p = split /,/, $p;
                         foreach my $p (@p) {
                             my $perm = 'can_' . $p;
                             $allowed = 1, last
-                                if ( $sub_perms && $sub_perms->$perm() )
-                                || $admin;
+                              if ( $sub_perms && $sub_perms->$perm() )
+                              || $admin;
                         }
                         $sub->{allowed} = $allowed;
                     }
+                    elsif ( my $action = $sub->{permit_action} ) {
+                        $sub->{allowed} = $app->can_do($action) ? 1 : 0;
+                    }
                     elsif ( !$sub_perms && !$blog_id ) {
                         $sub->{allowed} = 0
-                            if ( $sub->{system_permission}
+                          if ( $sub->{system_permission}
                             || $sub->{permission} )
-                            && !$admin;
+                          && !$admin;
                     }
                     $has_sub = 1 if $sub->{allowed};
                 }
             }
+
             if ( $menu->{mode} ) {
                 my $sys_only = 1 if $menu->{id} eq 'system';
                 $menu->{link} = $app->uri(
                     mode => $menu->{mode},
                     args => {
                         %{ $menu->{args} || {} },
-                        (   $blog_id
-                                && !$sys_only ? ( blog_id => $blog_id ) : ()
+                        (
+                            ($blog_id && !$sys_only) || $app->view eq 'system'
+                                ? ( blog_id => $blog_id )
+                                : ()
                         )
                     }
                 );
@@ -2170,7 +2611,6 @@ sub build_menus {
                 $menu->{link} = $sub[0]->{link};
             }
             $menu->{sub_nav_loop} = \@sub;
-
             if ( $menu->{allowed} ) {
                 $menu->{allowed} = 0 unless $has_sub;
             }
@@ -2182,6 +2622,77 @@ sub build_menus {
     @top = sort { $a->{order} <=> $b->{order} } @top;
     $param->{top_nav_loop} = \@top;
     $param->{sys_nav_loop} = \@sys;
+    $param->{view}         = $view;
+}
+
+sub build_compose_menus {
+    my $app = shift;
+    my ( $param ) = @_;
+    return if exists $param->{compose_menus};
+
+    my $user = $app->user
+      or return;
+
+    my $scope = $app->blog
+        ? $app->blog->is_blog
+            ? 'blog'
+            : 'website'
+        : defined $app->param('blog_id')
+            ? 'system'
+            : 'user';
+    my $blog_id = $app->blog
+        ? $app->blog->id
+        : 0;
+
+    my $menus = $app->registry('compose_menus');
+    my @root_keys = keys %$menus;
+    my @root_menus;
+
+    foreach my $root_key ( @root_keys ) {
+        my @menus;
+        my $items;
+        my $sub_menus = $menus->{$root_key}{menus};
+
+        foreach my $key ( keys %$sub_menus ) {
+            my $item = $sub_menus->{$key};
+            if ( $item->{view} ) {
+                if ( ref $item->{view} eq 'ARRAY' ) {
+                    next
+                        unless ( scalar grep { $_ eq $scope } @{ $item->{view} } );
+                }
+                else {
+                    next if $item->{view} ne $scope;
+                }
+            }
+            if ( $item->{mode} ) {
+                $item->{link} = $app->uri(
+                    mode => $item->{mode},
+                    args => {
+                        %{ $item->{args} || {} },
+                        (
+                            $blog_id
+                                ? ( blog_id => $blog_id )
+                                : ()
+                            )
+                    }
+                );
+            }
+
+            push @menus, $item;
+        }
+        next unless @menus;
+
+        my $compose_menus = $app->filter_conditional_list( \@menus, ($param) );
+        @$compose_menus = sort { $a->{order} <=> $b->{order} } @$compose_menus;
+        $items->{menus} = $compose_menus;
+        $items->{root_label} = $menus->{$root_key}{label};
+        $items->{order} = $menus->{$root_key}{order};
+
+        push @root_menus, $items;
+    }
+
+    @root_menus = sort { $a->{order} <=> $b->{order} } @root_menus;
+    $param->{compose_menus} = \@root_menus;
 }
 
 sub return_to_dashboard {
@@ -2189,7 +2700,16 @@ sub return_to_dashboard {
     my (%param) = @_;
     $param{redirect} = 1 unless %param;
     my $blog_id = $app->param('blog_id');
-    $param{blog_id} = $blog_id if $blog_id;
+    $param{blog_id} = $blog_id if $blog_id || $blog_id == 0;
+    return $app->redirect(
+        $app->uri( mode => 'dashboard', args => \%param ) );
+}
+
+sub return_to_user_dashboard {
+    my $app = shift;
+    my (%param) = @_;
+    $param{redirect} = 1 unless %param;
+    delete $param{blog_id} if exists $param{blog_id};
     return $app->redirect(
         $app->uri( mode => 'dashboard', args => \%param ) );
 }
@@ -2462,6 +2982,49 @@ sub load_default_entry_prefs {
     return $prefs;
 }
 
+sub load_default_page_prefs {
+    my $app = shift;
+    my $prefs;
+    require MT::Permission;
+    my $blog_id;
+    $blog_id = $app->blog->id if $app->blog;
+    my $perm = MT::Permission->load( { blog_id => $blog_id, author_id => 0 } );
+    my %default = %{ $app->config->DefaultEntryPrefs };
+    %default = map { lc $_ => $default{$_} } keys %default;
+
+    if ( $perm && $perm->page_prefs ) {
+        $prefs = $perm->page_prefs;
+    }
+    else {
+        if ( lc( $default{type} ) eq 'custom' ) {
+            my %map = (
+                Category   => 'category',
+                Excerpt    => 'excerpt',
+                Keywords   => 'keywords',
+                Tags       => 'tags',
+                Publishing => 'publishing',
+                Feedback   => 'feedback',
+                Assets     => 'assets',
+            );
+            my @p;
+            foreach my $p ( keys %map ) {
+                push @p, $map{$p} . ':' . $default{ lc $p }
+                  if $default{ lc $p };
+            }
+            $prefs = join ',', @p;
+            $prefs ||= 'Custom';
+        }
+        elsif ( lc( $default{type} ) ne 'default' ) {
+            $prefs = 'Advanced';
+        }
+        $default{button} = 'Bottom' if lc( $default{button} ) eq 'below';
+        $default{button} = 'Top'    if lc( $default{button} ) eq 'above';
+        $prefs .= '|' . $default{button} if $prefs;
+    }
+    $prefs ||= 'Default|Bottom';
+    return $prefs;
+}
+
 sub load_template_prefs {
     my $app = shift;
     my ($prefs) = @_;
@@ -2481,8 +3044,7 @@ sub load_template_prefs {
 
 sub _parse_entry_prefs {
     my $app = shift;
-    my ( $prefs, $param, $fields ) = @_;
-
+    my ( $prefix, $prefs, $param, $fields ) = @_;
     my @p = split /,/, $prefs;
     for my $p (@p) {
         if ( $p =~ m/^(.+?):(\d+)$/ ) {
@@ -2490,29 +3052,29 @@ sub _parse_entry_prefs {
             if ($num) {
                 $param->{ 'disp_prefs_height_' . $name } = $num;
             }
-            $param->{ 'disp_prefs_show_' . $name } = 1;
+            $param->{ $prefix . 'disp_prefs_show_' . $name } = 1;
             push @$fields, { name => $name };
         }
         else {
             $p = 'Default' if lc($p) eq 'basic';
             if ( ( lc($p) eq 'advanced' ) || ( lc($p) eq 'default' ) ) {
-                $param->{ 'disp_prefs_' . $p } = 1;
+                $param->{ $prefix . 'disp_prefs_' . $p } = 1;
                 foreach my $def (
-                    qw( title body category tags keywords feedback publishing assets )
-                    )
+                    qw( title body category tags feedback publishing assets )
+                  )
                 {
-                    $param->{ 'disp_prefs_show_' . $def } = 1;
+                    $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
                     push @$fields, { name => $def };
                 }
                 if ( lc($p) eq 'advanced' ) {
                     foreach my $def (qw(excerpt feedback)) {
-                        $param->{ 'disp_prefs_show_' . $def } = 1;
+                        $param->{ $prefix . 'disp_prefs_show_' . $def } = 1;
                         push @$fields, { name => $def };
                     }
                 }
             }
             else {
-                $param->{ 'disp_prefs_show_' . $p } = 1;
+                $param->{ $prefix . 'disp_prefs_show_' . $p } = 1;
                 push @$fields, { name => $p };
             }
         }
@@ -2521,31 +3083,37 @@ sub _parse_entry_prefs {
 
 sub load_entry_prefs {
     my $app = shift;
-    my ($prefs) = @_;
+    my ($p) = @_;
     my %param;
     my $pos;
     my $is_from_db = 1;
 
     # defaults:
+    my $type               = $p->{type} || 'entry';
+    my $prefs              = $p->{prefs};
+    my $prefix             = exists $p->{prefs} ? '' : $type . '_';
+    my $load_default_prefs = 'load_default_' . $type . '_prefs';
+
     if ( !$prefs ) {
-        $prefs = $app->load_default_entry_prefs;
+        $prefs = $app->$load_default_prefs;
         ( $prefs, $pos ) = split /\|/, $prefs;
         $is_from_db = 0;
-        $app->_parse_entry_prefs( $prefs, \%param, \my @fields );
+        $app->_parse_entry_prefs( $prefix, $prefs, \%param, \my @fields );
         $param{disp_prefs_default_fields} = \@fields;
     }
     else {
         ( $prefs, $pos ) = split /\|/, $prefs;
     }
-    $app->_parse_entry_prefs( $prefs, \%param, \my @custom_fields );
+    $app->_parse_entry_prefs( $prefix, $prefs, \%param, \my @custom_fields );
     if ($is_from_db) {
-        my $default_prefs = $app->load_default_entry_prefs;
+        my $default_prefs = $app->$load_default_prefs;
         ( $default_prefs, my ($default_pos) ) = split /\|/, $default_prefs;
         $pos ||= $default_pos;
-        $app->_parse_entry_prefs( $default_prefs, \my %def_param, \my @fields );
+        $app->_parse_entry_prefs( $prefix, $default_prefs, \my %def_param,
+            \my @fields );
         if ( $prefs eq 'Default' ) {
             foreach my $p ( keys %param ) {
-                delete $param{$p} if $p =~ m/^disp_prefs_show_/;
+                delete $param{$p} if $p =~ m/^${prefix}disp_prefs_show_/;
             }
         }
         if ( $param{disp_prefs_Default} ) {
@@ -2648,7 +3216,7 @@ sub autosave_object {
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
     require JSON;
-    $app->print("true");
+    $app->print_encode( "true" );
 }
 
 sub model {
@@ -2806,26 +3374,58 @@ sub add_to_favorite_blogs {
     my ($fav) = @_;
 
     my $auth = $app->user;
+    return unless $auth;
+
+    return unless $auth->has_perm($fav)
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
+
     my @current = @{ $auth->favorite_blogs || [] };
+
     return if @current && ( $current[0] == $fav );
     @current = grep { $_ != $fav } @current;
     unshift @current, $fav;
     @current = @current[ 0 .. 9 ]
         if @current > 10;
+
     $auth->favorite_blogs( \@current );
     $auth->save;
 }
 
+sub add_to_favorite_websites {
+    my $app = shift;
+    my ($fav) = @_;
+
+    my $auth = $app->user;
+    return unless $auth;
+
+    return unless $auth->has_perm($fav)
+        || $auth->is_superuser
+        || $auth->permissions(0)->can_do('edit_templates');
+
+    my @current = @{ $auth->favorite_websites || [] };
+
+    return if @current && ( $current[0] == $fav );
+    @current = grep { $_ != $fav } @current;
+    unshift @current, $fav;
+    @current = @current[ 0 .. 2 ]
+        if @current > 3;
+
+    $auth->favorite_websites( \@current );
+    $auth->save;
+}
+
 sub _entry_prefs_from_params {
-    my $app  = shift;
-    my $q    = $app->param;
-    my $type = $q->param('entry_prefs');
+    my $app      = shift;
+    my ($prefix) = @_;
+    my $q        = $app->param;
+    my $disp     = $q->param('entry_prefs');
     my %fields;
-    if ( $type && lc $type ne 'custom' ) {
-        $fields{$type} = 1;
+    if ( $disp && lc $disp ne 'custom' ) {
+        $fields{$disp} = 1;
     }
     else {
-        $fields{$_} = 1 foreach $q->param('custom_prefs');
+        $fields{$_} = 1 foreach $q->param( $prefix . 'custom_prefs' );
     }
     if ( my $body_height = $q->param('text_height') ) {
         $fields{'body'} = $body_height;
@@ -2836,8 +3436,8 @@ sub _entry_prefs_from_params {
         $prefs .= $_;
         $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
     }
-    if ( $type && lc $type eq 'custom' ) {
-        my @fields = split /,/, $q->param('custom_prefs');
+    if ( $disp && lc $disp eq 'custom' ) {
+        my @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
         foreach (@fields) {
             $prefs .= ',' if $prefs ne '';
             $prefs .= $_;
@@ -3090,7 +3690,6 @@ sub _build_category_list {
         for my $col (@$cols) {
             $row->{ 'category_' . $col } = $obj->$col();
         }
-        $row->{category_label} = remove_html( $row->{category_label} );
         if ( $obj->class eq 'folder' ) {
             my $path = $obj->publish_path;
             $row->{category_selector_label} = $path;
@@ -3143,6 +3742,10 @@ sub _build_category_list {
                     );
             }
         }
+        if ( my $fields = $obj->show_fields ) {
+            my @fields = split /,/, $fields;
+            $row->{category_fields} = \@fields;
+        }
         $row->{category_is_expanded} = 1 if $expanded{ $obj->id };
         $row->{category_pixel_depth} = 10 * $depth;
         $row->{top_cat}              = $top_cat;
@@ -3172,6 +3775,56 @@ sub publish_error {
         );
     }
     return undef;
+}
+
+sub template_paths {
+    my $app = shift;
+    my @paths;
+    my $blog = $app->blog;
+    if ( $blog ) {
+        my $theme = $blog->theme;
+        push @paths, $theme->alt_tmpl_path
+            if $theme;
+    }
+    push @paths, $app->SUPER::template_paths( @_ );
+    return @paths;
+}
+
+sub _load_child_blog_ids {
+    my $app = shift;
+    my ( $blog_id ) = @_;
+    return unless $blog_id;
+
+    my $blog_class = $app->model('blog');
+    my $blog = $blog_class->load($blog_id);
+    return unless $blog;
+
+    my $user = $app->user;
+    return unless $user;
+
+    my @ids;
+    if (!$blog->is_blog && $user->permissions($blog->id)->can_do('manage_member_blogs')) {
+        my $blogs = $blog->blogs();
+        @ids = map { $_->id } @$blogs
+            if @$blogs;
+    }
+
+    return \@ids;
+}
+
+sub view {
+    my $app = shift;
+    my $blog = $app->blog;
+    my $blog_id = $blog->id if $blog;
+
+    return
+        $blog_id
+      ? $blog->is_blog
+          ? "blog"
+          : "website"
+      : !defined $app->param('blog_id') && $app->mode eq 'dashboard'
+          ? "user"
+          : 'system';
 }
 
 1;

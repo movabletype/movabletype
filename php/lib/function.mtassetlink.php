@@ -20,7 +20,7 @@ function smarty_function_mtassetlink($args, &$ctx) {
     return sprintf("<a href=\"%s\"%s>%s</a>",
         $url,
         $target,
-        $asset['asset_file_name']);
+        $asset->asset_file_name);
 }
 ?>
 

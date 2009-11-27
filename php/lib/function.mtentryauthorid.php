@@ -10,6 +10,6 @@ function smarty_function_mtentryauthorid($args, &$ctx) {
     // parameters: none
     $entry = $ctx->stash('entry');
     if (!$entry) return '';
-    return $entry['entry_author_id'];
+    return $entry->entry_author_id;
 }
 ?>

@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" id="sixapart-standard">
+<head>
+    <$mt:Include module="<__trans phrase="HTML Head">"$>
+    <mt:EntryPrevious><link rel="prev bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryPrevious>
+    <mt:EntryNext><link rel="next bookmark" href="<$mt:EntryPermalink$>" title="<$mt:EntryTitle encode_html="1"$>" /></mt:EntryNext>
+    <$mt:EntryTrackbackData$>
+    <title><$mt:EntryTitle encode_html="1"$> - <$mt:BlogName encode_html="1"$></title>
+</head>
+<body id="<$mt:WebsiteThemeID$>" class="mt-entry-archive <$mt:Var name="page_layout"$>">
+    <div id="container">
+        <div id="container-inner">
+
+
+            <$mt:Include module="<__trans phrase="Banner Header">"$>
+
+
+            <div id="content">
+                <div id="content-inner">
+
+
+                    <div id="alpha">
+                        <div id="alpha-inner">
+
+
+                            <div id="entry-<$mt:EntryID$>" class="entry-asset asset hentry">
+                                <div class="asset-header">
+                                    <h1 id="page-title" class="asset-name entry-title"><$mt:EntryTitle$></h1>
+                                    <div class="asset-meta">
+                                        <span class="byline">
+<mt:If tag="EntryAuthorDisplayName">
+                                            <__trans phrase="By [_1] on [_2]" params="<span class="vcard author"><$mt:EntryAuthorLink show_hcard="1"$></span>%%<abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%x %X"$></abbr>">
+<mt:Else>
+                                            <abbr class="published" title="<$mt:EntryDate format_name="iso8601"$>"><$mt:EntryDate format="%x %X"$></abbr>
+</mt:If>
+                                        </span>
+<mt:IfCommentsActive>
+                                        <span class="separator">|</span> <a href="<$mt:EntryPermalink$>#comments"><$mt:EntryCommentCount singular="<__trans phrase="1 Comment">" plural="<__trans phrase="# Comments">" none="<__trans phrase="No Comments">"$></a>
+</mt:IfCommentsActive>
+<mt:IfPingsActive>
+                                        <span class="separator">|</span> <a href="<$mt:EntryPermalink$>#trackbacks"><$mt:EntryTrackbackCount singular="<__trans phrase="1 TrackBack">" plural="<__trans phrase="# TrackBacks">" none="<__trans phrase="No TrackBacks">"$></a>
+</mt:IfPingsActive>
+                                    </div>
+                                </div>
+                                <div class="asset-content entry-content">
+<mt:If tag="EntryBody">
+                                    <div class="asset-body">
+                                        <$mt:EntryBody$>
+                                    </div>
+</mt:If>
+<mt:If tag="EntryMore" convert_breaks="0">
+                                    <div id="more" class="asset-more">
+                                        <$mt:EntryMore$>
+                                    </div>
+</mt:If>
+                                </div>
+                                <div class="asset-footer">
+<mt:IfArchiveTypeEnabled archive_type="Category">
+    <mt:If tag="EntryCategories">
+                                    <div class="entry-categories">
+                                        <h4><__trans phrase="Categories"><span class="delimiter">:</span></h4>
+                                        <ul>
+                                            <li><mt:EntryCategories glue='<span class="delimiter">,</span></li> <li class="entry-category">'><a href="<$mt:CategoryArchiveLink$>" rel="tag"><$mt:CategoryLabel$></a></mt:EntryCategories></li>
+                                        </ul>
+                                    </div>
+    </mt:If>
+</mt:IfArchiveTypeEnabled>
+<mt:EntryIfTagged>
+                                    <div class="entry-tags">
+                                        <h4><__trans phrase="Tags"><span class="delimiter">:</span></h4>
+                                        <ul>
+                                            <li><mt:EntryTags glue='<span class="delimiter">,</span></li> <li>'><a href="javascript:void(0)" onclick="location.href='<$mt:TagSearchLink encode_js="1"$>';return false;" rel="tag"><$mt:TagName$></a></mt:EntryTags></li>
+                                        </ul>
+                                    </div>
+</mt:EntryIfTagged>
+                                </div>
+                            </div>
+
+
+                    <$mt:Include module="<__trans phrase="Trackbacks">"$>
+                    <$mt:Include module="<__trans phrase="Comments">"$>
+
+
+                        </div>
+                    </div>
+
+
+                    <$mt:Include module="<__trans phrase="Sidebar">"$>
+
+
+                </div>
+            </div>
+
+
+            <$mt:Include module="<__trans phrase="Banner Footer">"$>
+
+
+        </div>
+    </div>
+</body>
+</html>

@@ -9,7 +9,7 @@ function smarty_function_mtcommentreplytolink($args, &$ctx) {
     $comment = $ctx->stash('comment');
     if (!$comment) return '';
 
-    global $mt;
+    $mt = MT::get_instance();
     $label = $args['label'];
     $label or $label = $args['text'];
     $label or $label = $mt->translate("Reply");
@@ -17,11 +17,11 @@ function smarty_function_mtcommentreplytolink($args, &$ctx) {
     $onclick = $args['onclick'];
     $onclick or $onclick = "mtReplyCommentOnClick(%d, '%s')";
 
-    $comment_author = $comment['comment_author'];
+    $comment_author = $comment->comment_author;
     require_once("MTUtil.php");
     $comment_author = encode_html(encode_js($comment_author));
 
-    $onclick = sprintf($onclick, $comment['comment_id'], $comment_author);
+    $onclick = sprintf($onclick, $comment->comment_id, $comment_author);
     return sprintf("<a title=\"%s\" href=\"javascript:void(0);\" onclick=\"$onclick\">%s</a>",
         $label, $label);
 }

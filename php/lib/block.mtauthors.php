@@ -26,9 +26,7 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
         if (!isset($args['status'])) {
             $args['status'] = 'enabled';
         }
-        if (!isset($args['need_entry'])) {
-            $args['need_entry'] = 1;
-        }
+
         if (isset($args['scoring_to'])) {
             $args['_scoring_to_obj'] = $ctx->stash($args['scoring_to']);
             if (is_null($args['_scoring_to_obj'])) {
@@ -37,7 +35,7 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
                 return;
             }
         }
-        $authors = $ctx->mt->db->fetch_authors($args);
+        $authors = $ctx->mt->db()->fetch_authors($args);
         $ctx->stash('authors', $authors);
         $counter = 0;
     } else {

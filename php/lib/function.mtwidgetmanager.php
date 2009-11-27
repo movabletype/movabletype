@@ -14,7 +14,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if (!$widgetmanager) 
         return;
 
-    $tmpl = $ctx->mt->db->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global']);
+    $tmpl = $ctx->mt->db()->get_template_text($ctx, $widgetmanager, $blog_id, 'widgetset', $args['global']);
     if ( !isset($tmpl) || !$tmpl ) {
         # TODO: doing save_widgetset should write template text
         # error status for now to see if there is any pattern

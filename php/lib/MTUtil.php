@@ -5,6 +5,12 @@
 #
 # $Id$
 
+function datetime_to_timestamp($dt) {
+    $dt = preg_replace('/[^0-9]/', '', $dt);
+    $ts = mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
+    return $ts;
+}
+
 function start_end_ts($ts) {
     if ($ts) {
         if (strlen($ts) == 4) {
@@ -169,8 +175,8 @@ function substr_wref($str, $start, $length) {
 function format_ts($format, $ts, $blog, $lang = null) {
     global $Languages;
     if (!isset($lang) || empty($lang)) { 
-        global $mt;
-        $lang = ($blog && $blog['blog_language'] ? $blog['blog_language'] : 
+        $mt = MT::get_instance();
+        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
                      $mt->config('DefaultLanguage'));
     }
     if ($lang == 'jp') {
@@ -259,7 +265,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
 }
 
 function dirify($s, $sep = '_') {
-    global $mt;
+    $mt = MT::get_instance();
     $charset = $mt->config('PublishCharset');
     $charset or $charset = 'utf-8';
     if (preg_match('/utf-?8/i', $charset)) {
@@ -551,7 +557,7 @@ $Latin1_ASCII = array(
     "\xff" => 'y'     # yuml
 );
 function convert_high_ascii($s) {
-    global $mt;
+    $mt = MT::get_instance();
     $lang = $mt->config('DefaultLanguage');
     if ($lang == 'ja') {
         $s = mb_convert_encoding($s, 'UTF-8');
@@ -768,7 +774,8 @@ $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '\'' => '&apos;');
 
 function encode_xml($str, $nocdata = 0) {
-    global $mt, $_encode_xml_Map;
+    $mt = MT::get_instance();
+    global $_encode_xml_Map;
     $cfg_nocdata = $mt->config('NoCDATA');
     $nocdata or (isset($cfg_nocdata) and $nocdata = $cfg_nocdata);
     if ((!$nocdata) && (preg_match('/
@@ -895,13 +902,11 @@ function get_category_context(&$ctx, $class = 'category') {
         # No category found so far, test the entry
         if ($ctx->stash('entry')) {
             $entry = $ctx->stash('entry');
-            if (empty($entry['placement_category_id']))
+            $place = $entry->placement();
+            if (empty($place))
                 return null;
-            if ($class == 'folder')
-                $cat = $ctx->mt->db->fetch_folder($entry['placement_category_id']);
-            else
-                $cat = $ctx->mt->db->fetch_category($entry['placement_category_id']);
-  
+            $cat = $place[0]->category();
+
             # Return empty string if entry has no category
             # as the tag has been used in the correct context
             # but there is no category to work with
@@ -917,10 +922,10 @@ function get_category_context(&$ctx, $class = 'category') {
 }
 
 function munge_comment($text, $blog) {
-    if (!$blog['blog_allow_comment_html']) {
+    if (!$blog->blog_allow_comment_html) {
         $text = strip_tags($text);
     }
-    if ($blog['blog_autolink_urls']) {
+    if ($blog->blog_autolink_urls) {
         $text = preg_replace('!(^|\s|>)(https?://[^\s<]+)!s', '$1<a href="$2">$2</a>', $text);
     }
     return $text;
@@ -946,8 +951,8 @@ function substr_text($text, $startpos, $length) {
 
 function first_n_text($text, $n) {
     if (!isset($lang) || empty($lang)) { 
-        global $mt;
-        $lang = ($blog && $blog['blog_language'] ? $blog['blog_language'] : 
+        $mt = MT::get_instance();
+        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
                      $mt->config('DefaultLanguage'));
     }
     if ($lang == 'jp') {
@@ -984,15 +989,15 @@ function tag_split($str) {
 }
 
 function catarray_path_length_sort($a, $b) {
-	$al = strlen($a['category_label_path']);
-	$bl = strlen($b['category_label_path']);
+	$al = strlen($a->category_label_path);
+	$bl = strlen($bcategory_label_path);
 	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
 }
 
 # sorts by length of category label, from longest to shortest
 function catarray_length_sort($a, $b) {
-	$al = strlen($a['category_label']);
-	$bl = strlen($b['category_label']);
+	$al = strlen($a->category_label);
+	$bl = strlen($b->category_label);
 	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
 }
 
@@ -1004,7 +1009,7 @@ function create_expr_exception($m) {
 }
 
 function create_cat_expr_function($expr, &$cats, $param) {
-    global $mt;
+    $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
 
@@ -1014,7 +1019,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
     if (preg_match('/\//', $expr)) {
         foreach ($cats as $id => $cat) {
             $catp = category_label_path($cat);
-            $cats[$id]['category_label_path'] = $catp;
+            $cats[$id]->category_label_path = $catp;
         }
         $cols = array('category_label_path', 'category_label');
     } else {
@@ -1028,8 +1033,8 @@ function create_cat_expr_function($expr, &$cats, $param) {
         }
         $cats_replaced = array();
         foreach ($cats as $cat) {
-            $catl = $cat[$col];
-            $catid = $cat['category_id'];
+            $catl = $cat->$col;
+            $catid = $cat->category_id;
             $catre = preg_quote($catl, "/");
             if (!preg_match("/(?:(?<![#\d])\[$catre\]|$catre)|(?:#$catid\b)/", $expr))
                 continue;
@@ -1037,8 +1042,8 @@ function create_cat_expr_function($expr, &$cats, $param) {
                 $kids = array($cat);
                 $child_cats = array();
                 while ($c = array_shift($kids)) {
-                    $child_cats[$c['category_id']] = $c;
-                    $children = $mt->db->fetch_categories(array('category_id' => $c['category_id'], 'children' => 1, 'show_empty' => 1, 'class' => $c['category_class']));
+                    $child_cats[$c->category_id] = $c;
+                    $children = $mt->db()->fetch_categories(array('category_id' => $c->category_id, 'children' => 1, 'show_empty' => 1, 'class' => $c->category_class));
                     if ($children) {
                         foreach ($children as $child) {
                             $kids[] = $child;
@@ -1087,7 +1092,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
 	    $cats = array_values($cats_used);
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
-    $expr = '$pm = array_key_exists($e["entry_id"], $c["p"]) ? $c["p"][$e["entry_id"]] : array(); return (' . $expr . ');';
+    $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
@@ -1097,29 +1102,29 @@ function create_cat_expr_function($expr, &$cats, $param) {
 }
 
 function category_label_path($cat) {
-    global $mt;
+    $mt = MT::get_instance();
     $mtdb =& $mt->db;
-    if (isset($cat['__label_path']))
-        return $cat['__label_path'];
-    $result = preg_match('/\//', $cat['category_label']) ? '[' . $cat['category_label'] . ']' : $cat['category_label'];
+    if (isset($cat->__label_path))
+        return $cat->__label_path;
+    $result = preg_match('/\//', $cat->category_label) ? '[' . $cat->category_label . ']' : $cat->category_label;
     while ($cat) {
-        $cat = $cat['category_parent'] ? $mtdb->fetch_category($cat['category_parent']) : null;
+        $cat = $cat->category_parent ? $mtdb->fetch_category($cat->category_parent) : null;
         if ($cat)
-            $result = (preg_match('/\//', $cat['category_label']) ? '[' . $cat['category_label'] . ']' : $cat['category_label']) . '/' . $result;
+            $result = (preg_match('/\//', $cat->category_label) ? '[' . $cat->category_label . ']' : $cat->category_label) . '/' . $result;
     }
     # caching this information may be problematic IF
     # parent category labels are changed.
-    $cat['__label_path'] = $result;
+    $cat->__label_path = $result;
     return $result;
 }
 
 function cat_path_to_category($path, $blogs = null, $class = 'category') {
-    global $mt;
+    $mt = MT::get_instance();
     if (!$blogs)
-        $blogs = array('include_blogs' => $mt->blog_id);
+        $blogs = array('include_blogs' => $mt->blog_id());
     if (!is_array($blogs))
         $blogs = array($blogs);
-    $mtdb =& $mt->db;
+    $mtdb =& $mt->db();
     if (preg_match_all('/(\[[^]]+?\]|[^]\/]+)/', $path, $matches)) {
         # split on slashes, fields quoted by []
         $cat_path = $matches[1];
@@ -1133,7 +1138,7 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
                 break;
             $last_cat_ids = array();
             foreach ($cats as $cat)
-                $last_cat_ids[] = $cat['category_id'];
+                $last_cat_ids[] = $cat->category_id;
         }
     }
     if ($cats)
@@ -1148,12 +1153,12 @@ function cat_path_to_category($path, $blogs = null, $class = 'category') {
 
 # sorts by length of tag name, from longest to shortest
 function tagarray_name_sort($a, $b) {
-    return strcmp($a['tag_name'], $b['tag_name']);
+    return strcmp(strtolower($a->tag_name), strtolower($b->tag_name));
 }
 
 function tagarray_length_sort($a, $b) {
-	$al = strlen($a['tag_name']);
-	$bl = strlen($b['tag_name']);
+	$al = strlen($a->tag_name);
+	$bl = strlen($b->tag_name);
 	return $al == $bl ? 0 : $al < $bl ? 1 : -1;
 }
 
@@ -1167,8 +1172,8 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # Modify the tag argument, replacing the tag name with '#TagID'
     # Create a ID-based hash of the tags that are used in the arg
     foreach ($tags as $tag) {
-        $tagn = $tag['tag_name'];
-        $tagid = $tag['tag_id'];
+        $tagn = $tag->tag_name;
+        $tagid = $tag->tag_id;
         $oldexpr = $expr;
 	    $expr = preg_replace("!(?:\Q[$tagn]\E|\Q$tagn\E)!", "#$tagid",
 	        $expr);
@@ -1204,7 +1209,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # Create a PHP-blessed function of that code and return it
     # if all is well.  This function will be used later to 
     # test for existence of specified tags in entries.
-    $expr = '$tm = array_key_exists($e["'.$datasource.'_id"], $c["t"]) ? $c["t"][$e["'.$datasource.'_id"]] : array(); return ' . $expr .
+    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return ' . $expr .
         ';';
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
@@ -1224,7 +1229,7 @@ function tag_normalize($str) {
 }
 
 function static_path($host) {
-    global $mt;
+    $mt = MT::get_instance();
     $path = $mt->config('StaticWebPath');
     if (!$path) {
         $path = $mt->config('CGIPath');
@@ -1252,7 +1257,7 @@ function static_path($host) {
 }
 
 function static_file_path() {
-    global $mt;
+    $mt = MT::get_instance();
     $path = $mt->config('StaticFilePath');
     if (!$path) {
         $path = dirname(dirname(dirname(__FILE__)));
@@ -1264,16 +1269,40 @@ function static_file_path() {
     return $path;
 }
 
+function support_directory_url() {
+    $mt = MT::get_instance();
+    $url = $mt->config('SupportDirectoryURL');
+    if (!$url) {
+        $url = static_path('');
+        $url .= 'support/';
+    }
+    elseif (!preg_match('!/$!', $url) ) {
+        $url .= '/';
+    }
+    return $url;
+}
+
+function support_directory_path() {
+    $mt = MT::get_instance();
+    $path = $mt->config('SupportDirectoryPath');
+    if (!$path) {
+        $path = static_file_path();
+        $path .= 'support';
+    }
+
+    return $path;
+}
+
 function asset_path($path, $blog) {
-    $site_path = $blog['blog_site_path'];
+    $site_path = $blog->site_path();
     $site_path = preg_replace('/\/$/', '', $site_path);
     $path = preg_replace('/^%r/', $site_path, $path);
 
-    $static_file_path = static_file_path();
+    $static_file_path = support_directory_path();
     $static_file_path = preg_replace('/\/$/', '', $static_file_path);
     $path = preg_replace('/^%s/', $static_file_path, $path);
 
-    $archive_path = $blog['blog_archive_path'];
+    $archive_path = $blog->archive_path();
     if ($archive_path) {
         $archive_path = preg_replace('/\/$/', '', $archive_path);
         $path = preg_replace('/^%a/', $archive_path, $path);
@@ -1283,68 +1312,56 @@ function asset_path($path, $blog) {
 }
 
 function userpic_url($asset, $blog, $author) {
-    global $mt;
-    $format = $mt->translate('userpic-[_1]-%wx%h%x', array($author['author_id']));
+    $mt = MT::get_instance();
+    $format = $mt->translate('userpic-[_1]-%wx%h%x', array($author->author_id));
     $max_dim = $mt->config('UserpicThumbnailSize');
 
     # generate thumbnail
-    $src_file = asset_path($asset['asset_file_path'], $blog);
+    $src_file = asset_path($asset->asset_file_path, $blog);
 
     $cache_path = $mt->config('AssetCacheDir');
     $image_path = $cache_path . DIRECTORY_SEPARATOR . 'userpics';
-    $static_file_path = static_file_path().'support';
+    $support_directory_path = support_directory_path();
 
     require_once('thumbnail_lib.php');
     $thumb = new Thumbnail($src_file);
-    $thumb_w = $max_dim;
-    $thumb_h = $max_dim;
-    $dest;
-    $thumb_name = $static_file_path.DIRECTORY_SEPARATOR.$image_path.DIRECTORY_SEPARATOR.$format;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'png', true)) {
+    $thumb->width($max_dim);
+    $thumb->height($max_dim);
+    $thumb->format($support_directory_path.DIRECTORY_SEPARATOR .$image_path.DIRECTORY_SEPARATOR.$format);
+    $thumb->type('png');
+    $thumb->id($asset->asset_id);
+    if (!$thumb->get_thumbnail()) {
         return '';
     }
-    $basename = basename($dest);
+    $basename = basename($thumb->dest());
 
-    $static_path = $mt->config('StaticWebPath');
-    $static_path = preg_replace('/\/$/', '', $static_path);
-    $static_path .= '/support';
-    $url = sprintf("%s/%s/%s", $static_path, $image_path, $basename);
+    $support_directory_url = support_directory_url();
+    $url = sprintf("%s%s/%s", $support_directory_url, $image_path, $basename);
     return $url;
 }
 
 function get_thumbnail_file($asset, $blog, $args) {
     # Parse args
-    $width = 0;
-    $height = 0;
-    $scale = 0;
-    $square = false;
     $format = '%f-thumb-%wx%h-%i%x';
-    if (isset($args['width']))
-        $width = $args['width'];
-    if (isset($args['height']))
-        $height = $args['height'];
-    if (isset($args['scale']))
-        $scale = $args['scale'];
     if (isset($args['format']))
         $format = $args['format'];
-    if (isset($args['square']))
-        $square = ((int)$args['square'] == 1) ? true : false;
 
     # Get parameter
-    $site_path = $blog['blog_site_path'];
+    $site_path = $blog->site_path();
     $site_path = preg_replace('/\/$/', '', $site_path);
-    $filename = asset_path($asset['asset_file_path'], $blog);
+    $filename = asset_path($asset->asset_file_path, $blog);
 
     # Retrieve thumbnail
-    global $mt;
+    $mt = MT::get_instance();
     $path_parts = pathinfo($filename);
     $cache_path = $mt->config('AssetCacheDir');
 
-    $ts = preg_replace('![^0-9]!', '', $asset['asset_created_on']);
+    $ts = preg_replace('![^0-9]!', '', $asset->asset_created_on);
     $date_stamp = format_ts('%Y/%m', $ts, $blog);
     $base_path = $site_path;
-    if (preg_match('/^%a/', $asset['asset_file_path']) && !empty($blog['blog_archive_path'])) {
-        $base_path = $blog['blog_archive_path'];
+    $archive_path = $blog->archive_path();
+    if (preg_match('/^%a/', $asset->asset_file_path) && !empty($archive_path)) {
+        $base_path = $blog->archive_path();
         $base_path = preg_replace('/\/$/', '', $base_path);
     }
 
@@ -1354,24 +1371,33 @@ function get_thumbnail_file($asset, $blog, $args) {
     # generate thumbnail
     require_once('thumbnail_lib.php');
     $thumb = new Thumbnail($filename);
-    $thumb_w = $width;
-    $thumb_h = $height;
-    $dest;
-    if (!$thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $asset['asset_id'], $scale, $thumb_name, 'auto', $square )) {
+    $thumb->id($asset->id);
+    $thumb->format($thumb_name);
+    $thumb->type('auto');
+    if (isset($args['width']))
+        $thumb->width($args['width']);
+    if (isset($args['height']))
+        $thumb->height($args['height']);
+    if (isset($args['scale']))
+        $thumb->scale($args['scale']);
+    if (isset($args['square']))
+        $thumb->square($args['square'] ? true : false);
+    if (!$thumb->get_thumbnail()) {
         return '';
     }
 
     # make url
-    $basename = basename($dest);
-    $base_url = $blog['blog_site_url'];
-    if (preg_match('/^%a/', $asset['asset_file_path']) && !empty($blog['blog_archive_url']))
-        $base_url = $blog['blog_archive_url'];
+    $basename = basename($thumb->dest());
+    $base_url = $blog->site_url();
+    $archive_url = $blog->archive_url();
+    if (preg_match('/^%a/', $asset->asset_file_path) && !empty($archive_url))
+        $base_url = $blog->archive_url();
     if (!preg_match('!/$!', $base_url))
         $base_url .= '/';
 
     $thumb_url = $base_url . $cache_path . '/' . $date_stamp . '/' . $basename;
 
-    return array($thumb_url, $thumb_w, $thumb_h, $thumb_name);
+    return array($thumb_url, $thumb->width(), $thumb->height(), $thumb->dest());
 }
 
 function asset_cleanup($str) {
@@ -1393,8 +1419,8 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = preg_replace('/,/i', ' OR ', $expr);
 
     foreach ($roles as $role) {
-        $rolen = $role['role_name'];
-        $roleid = $role['role_id'];
+        $rolen = $role->role_name;
+        $roleid = $role->role_id;
         $oldexpr = $expr;
         $expr = preg_replace("!(?:\Q[$rolen]\E|\Q$rolen\E)!", "#$roleid", $expr);
         if ($oldexpr != $expr)
@@ -1418,7 +1444,7 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $column_name = $datasource . '_id';
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$tm)", $expr);
 
-    $expr = '$tm = array_key_exists($e["'.$datasource.'_id"], $c["r"]) ? $c["r"][$e["'.$datasource.'_id"]] : array(); return ' . $expr . ';';
+    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["r"]) ? $c["r"][$e->'.$datasource.'_id] : array(); return ' . $expr . ';';
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid role filter: $orig_expr";
@@ -1446,9 +1472,8 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
         return;
     }
 
-    $expr = preg_replace('/#(\d+)/', '$e["'.$datasource.'_status"] == \\1', $expr);
+    $expr = preg_replace('/#(\d+)/', '$e->status == $1', $expr);
     $expr = 'return ' . $expr . ';';
-
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid status filter: $orig_expr";
@@ -1461,23 +1486,23 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
     $orig_expr = $expr;
 
     require_once 'rating_lib.php';
-    $expr = '$ctx = $c; if ($ctx == null) { global $mt; $ctx = $mt->context(); } $old = $ctx->mt->db->result; ';
+    $expr = '$ctx = $c; if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); }';
     if ($filter == 'min_score') {
-        $expr .= '$ret = score_for($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+        $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
     } elseif ($filter == 'max_score') {
-        $expr .= '$ret = score_for($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+        $expr .= '$ret = score_for($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
     } elseif ($filter == 'min_rate') {
-        $expr .= '$ret = score_avg($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+        $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
     } elseif ($filter == 'max_rate') {
-        $expr .= '$ret = score_avg($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+        $expr .= '$ret = score_avg($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
     } elseif ($filter == 'min_count') {
-        $expr .= '$ret = score_count($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
+        $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  >= '.$orig_expr.';';
     } elseif ($filter == 'max_count') {
-        $expr .= '$ret = score_count($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
+        $expr .= '$ret = score_count($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'")  <= '.$orig_expr.';';
     } elseif ($filter == 'scored_by') {
-        $expr .= '$ret = get_score($ctx, $e["'.$datasource.'_id"], "'.$datasource.'", "'.$namespace.'", '.$orig_expr.') > 0;';
+        $expr .= '$ret = get_score($ctx, $e->'.$datasource.'_id, "'.$datasource.'", "'.$namespace.'", '.$orig_expr.') > 0;';
     }
-    $expr .= ' $ctx->mt->db->result = $old; return $ret;';
+    $expr .= ' return $ret;';
 
     $fn = create_function('&$e,&$c', $expr);
     if ($fn === FALSE) {
@@ -1568,25 +1593,20 @@ function get_page_column ($layout) {
 }
 
 function mkpath($path, $mode = 0777) {
-    // PHP5 supports recursive param
-    if (version_compare(PHP_VERSION, '5.0.0', ">="))
-        return mkdir($path, $mode, true);
-
-    // for php4
-    is_dir(dirname($path)) || mkpath(dirname($path), $mode);
-    return is_dir($path) || @mkdir($path, $mode);
+    return mkdir($path, $mode, true);
 }
 
-# for compatibility...
-function make_thumbnail_file($src, $dest, $width, $height, $scale = 0, $dest_type = 'auto', $id = 0, $scale = false) {
-    require_once('thumbnail_lib.php');
-    $thumb = new Thumbnail($src);
-
-    $thumb_w = $width;
-    $thumb_h = $height;
-    $thumb->get_thumbnail($dest, $thumb_w, $thumb_h, $id, $scale, null, $dest_type, $scale);
-
-    return array($thumb_w, $thumb_h);
+function _strip_index($url, $blog) {
+    $mt = MT::get_instance();
+    $index = $mt->config('IndexBasename');
+    if (is_array($blog))
+        $ext = $blog['blog_file_extension'];
+    else
+        $ext = $blog->file_extension;
+    if ($ext != '') $ext = '.' . $ext;
+    $index = preg_quote($index . $ext);
+    $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
+    return $url;
 }
 
 ?>

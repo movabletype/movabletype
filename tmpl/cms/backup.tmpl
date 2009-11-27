@@ -1,9 +1,6 @@
-<mt:setvar name="page_title" value="<__trans phrase="Backup">">
+<mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Backup [_1]" params="<mt:if name="is_blog"><__trans phrase="Blog"><mt:else><__trans phrase="Website"></mt:if>"><mt:else><__trans phrase="Backup"></mt:if></mt:setvarblock>
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="backup" value="1">
-<MTSetVarBlock name="content_nav">
-    <mt:include name="include/tools_content_nav.tmpl">
-</MTSetVarBlock>
 <mt:include name="include/header.tmpl">
 
     <a href="javascript:void(0)" onclick="return openManual('backup_restore', 'backup_restore_main')" class="help-link">?</a>
@@ -21,11 +18,11 @@
         <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 <mt:if name="blog_id">
             <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
-            <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="blog_id">" />
+            <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="backup_what">" />
 <mt:else>
     <mtapp:setting
         id="backup_what"
-        label="<__trans phrase="What to backup">"
+        label="<__trans phrase="What to Backup">"
         content_class="field-content-text"
         hint="<__trans phrase="This option will backup Users, Roles, Associations, Blogs, Entries, Categories, Templates and Tags.">"
         help_page="backup_restore"
@@ -33,8 +30,8 @@
 <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
 <div><strong id="selected_blogs"><__trans phrase="Everything"></strong></div>
 <span id="selected_blogs_link" class="hidden"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').className='hidden';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a>&nbsp;|&nbsp;</span>
-<a href="javascript:void(0)" onclick="openDialog(false,'dialog_select_weblog','multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs'); return false;">
-<__trans phrase="Choose blogs..."></a>
+<a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog">
+<__trans phrase="Choose websites..."></a>
     </mtapp:setting>
 </mt:if>
     <mtapp:setting
@@ -58,7 +55,7 @@
         help_page="backup_restore"
         help_section="backup_num_size">
                     <select name="size_limit" id="size_limit">
-                        <option value="0" selected="selected"><__trans phrase="Don't Divide"></option>
+                        <option value="0" selected="selected"><__trans phrase="No size limit"></option>
 <mt:if name="OVER_300">
                         <option value="300">300KB</option>
     <mt:if name="OVER_500">
@@ -78,7 +75,7 @@
                 type="submit"
                 accesskey="b"
                 title="<__trans phrase="Make Backup (b)">"
-                class="primary-button"
+                class="action primary-button"
                 ><__trans phrase="Make Backup"></button>
         </mt:setvarblock>
         <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
@@ -93,7 +90,7 @@
     <mt:if name="open_dialog">
     <script type="text/javascript">
     /* <![CDATA[ */
-    openDialog(false, 'dialog_restore_upload', 'magic_token=<mt:var name="magic_token" escape="url">&amp;files=<mt:var name="files" escape="url">&amp;assets=<mt:var name="assets" escape="url">&amp;current_file=<mt:var name="filename" escape="url">&amp;last=<mt:var name="last" escape="url">&amp;schema_version=<mt:var name="schema_version" escape="url">&amp;redirect=1;');
+    jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_restore_upload&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;files=<mt:var name="files" escape="url">&amp;assets=<mt:var name="assets" escape="url">&amp;current_file=<mt:var name="filename" escape="url">&amp;last=<mt:var name="last" escape="url">&amp;schema_version=<mt:var name="schema_version" escape="url">&amp;redirect=1;');
     /* ]]> */
     </script>
     </mt:if>

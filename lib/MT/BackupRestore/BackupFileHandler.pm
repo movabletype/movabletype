@@ -24,6 +24,8 @@ sub start_document {
     my $data = shift;
 
     $self->{start} = 1;
+    *_decode = sub { $_[0] }
+        unless $self->{is_pp};
 
     1;
 }
@@ -46,7 +48,7 @@ sub start_element {
             #if (('ignore' ne $self->{schema_version}) && ($schema > $self->{schema_version})) {
             if ( $schema != $self->{schema_version} ) {
                 $self->{critical} = 1;
-                my $message = MT->translate('Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', MT::I18N::encode_text(MT::I18N::utf8_off($schema), 'utf-8'), $self->{schema_version});
+                my $message = MT->translate('Uploaded file was backed up from Movable Type but the different schema version ([_1]) from the one in this system ([_2]).  It is not safe to restore the file to this version of Movable Type.', $schema, $self->{schema_version});
                 MT->log({ 
                     message => $message,
                     level => MT::Log::ERROR(),
@@ -85,9 +87,9 @@ sub start_element {
                     $callback->($state, $name);
                     $self->{state} = $state;
                 }
-                my %column_data = map { $attrs->{$_}->{LocalName} => 
-                        MT::I18N::encode_text(MT::I18N::utf8_off($attrs->{$_}->{Value}), 'utf-8')
-                    } keys(%$attrs);
+                my %column_data = map {
+                    $attrs->{$_}->{LocalName} => $attrs->{$_}->{Value}
+                } keys(%$attrs);
                 my $obj;
                 if ( 'author' eq $name ) {
                     $obj = $class->load({ name => $column_data{name} });
@@ -101,7 +103,8 @@ sub start_element {
                                 class => 'system',
                                 category => 'restore',
                             });
-                            $objects->{"$class#" . $column_data{id}} = $obj;
+                            $objects->{"$class#" . $column_data{id}} = $obj; 
+                            $objects->{"$class#" . $column_data{id}}->{no_overwrite} = 1;
                             $self->{current} = $obj;
                             $self->{loaded} = 1;
                             $self->{skip} += 1;
@@ -117,6 +120,10 @@ sub start_element {
                             });
                             my $old_id = delete $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
+                            $objects->{"$class#$old_id"}->{no_overwrite} = 1;
+                            delete $column_data{userpic_asset_id}
+                                if exists $column_data{userpic_asset_id};
+
                             my $child_classes = $obj->properties->{child_classes} || {};
                             for my $class (keys %$child_classes) {
                                 eval "use $class;";
@@ -124,8 +131,9 @@ sub start_element {
                             }
                             my $success = $obj->restore_parent_ids(\%column_data, $objects);
                             if ($success) {
-                                my %realcolumns = map { $_ => delete($column_data{$_}) }
-                                    @{ $obj->column_names };
+                                my %realcolumns = map {
+                                    $_ => _decode( delete($column_data{$_}) )
+                                } @{ $obj->column_names };
                                 $obj->set_values(\%realcolumns);
                                 $obj->$_($column_data{$_}) foreach keys( %column_data );
                                 $self->{current} = $obj;
@@ -139,13 +147,19 @@ sub start_element {
                     }
                 } elsif ('template' eq $name) {
                     if (!$column_data{blog_id}) {
-                        $obj = $class->load({ blog_id => 0, identifier => $column_data{identifier} });
+                        $obj = $class->load({
+                            blog_id => 0,
+                            ( $column_data{identifier}
+                                  ? ( identifier => $column_data{identifier} )
+                                  : ( name => $column_data{name} ) ),
+                        });
                         if ($obj) {
                             my $old_id = delete $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
                             if ($self->{overwrite_template}) {
-                                my %realcolumns = map { $_ => delete($column_data{$_}) }
-                                    @{ $obj->column_names };
+                                my %realcolumns = map {
+                                    $_ => _decode( delete($column_data{$_}) )
+                                } @{ $obj->column_names };
                                 $obj->set_values(\%realcolumns);
                                 $obj->$_($column_data{$_}) foreach keys( %column_data );
                                 $self->{current} = $obj;
@@ -160,19 +174,26 @@ sub start_element {
                     $obj = $class->new;
                 }
                 unless ($obj->id) {
+                    # Pass through even if an blog doesn't restore the parent object
                     my $success = $obj->restore_parent_ids(\%column_data, $objects);
-                    if ($success) {
+                    if ($success || (!$success && 'blog' eq $name)) {
                         require MT::Meta;
                         my @metacolumns = MT::Meta->metadata_by_class( ref($obj) );
                         my %metacolumns = map { $_->{name} => $_->{type} } @metacolumns;
                         $self->{metacolumns}{ref($obj)} = \%metacolumns;
-                        my %realcolumn_data = map { $_ => $column_data{$_} }
-                            grep { !exists($metacolumns{$_}) }
-                                keys %column_data;
+                        my %realcolumn_data = map {
+                            $_ => _decode( $column_data{$_} )
+                        } grep { !exists($metacolumns{$_}) }
+                            keys %column_data;
+
+                        if (!$success && 'blog' eq $name) {
+                            $realcolumn_data{parent_id} = undef;
+                        }
+
                         $obj->set_values(\%realcolumn_data);
                         foreach my $metacol ( keys %metacolumns ) {
                             next if ( 'vclob' eq $metacolumns{$metacol} )
-                                 || ( 'vblob' eq $metacolumns{$metacol} );
+                                || ( 'vblob' eq $metacolumns{$metacol} );
                             $obj->$metacol( $column_data{$metacol} );
                         }
                         $self->{current} = $obj;
@@ -198,7 +219,7 @@ sub characters {
     return if $self->{skip};
     return if !exists($self->{current});
     if (my $text_data = $self->{current_text}) {
-        push @$text_data, MT::I18N::utf8_off($data->{Data});
+        push @$text_data, $data->{Data};
         $self->{current_text} = $text_data;
     }
     1;
@@ -222,13 +243,12 @@ sub end_element {
             my $column_name = shift @$text_data;
             my $text;
             $text .= $_ foreach @$text_data;
-            
+
             my $defs = $obj->column_defs;
             if ( exists( $defs->{$column_name} ) ) {
                 if ('blob' eq $defs->{$column_name}->{type}) {
                     $obj->column($column_name, MIME::Base64::decode_base64($text));
                 } else {
-                    $text = MT::I18N::encode_text($text, 'utf-8');
                     $obj->column($column_name, $text);
                 }
             }
@@ -240,7 +260,6 @@ sub end_element {
                         $obj->$column_name( $$text );
                     }
                     else {
-                        $text = MT::I18N::encode_text($text, 'utf-8');
                         $obj->$column_name( $text );
                     }
                 }
@@ -384,6 +403,10 @@ sub end_document {
     }
 
     1;
+}
+
+sub _decode {
+    Encode::decode_utf8( $_[0] );
 }
 
 1;

@@ -2,7 +2,7 @@
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-# $Id$
+# $Id: Blog.pm 4532 2009-10-02 02:25:27Z fumiakiy $
 
 package MT::Blog;
 
@@ -15,6 +15,8 @@ use MT::Util;
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
+        'parent_id' => 'integer',
+        'theme_id' => 'string(255)',
         'name' => 'string(255) not null',
         'description' => 'text',
         'archive_type' => 'string(255)',
@@ -67,6 +69,7 @@ __PACKAGE__->install_properties({
         'basename_limit' => 'smallint',
         'use_comment_confirmation' => 'boolean',
         'allow_commenter_regist' => 'boolean',
+        'use_revision' => 'boolean',
         ## Have to keep these around for use in mt-upgrade.cgi.
         'archive_url' => 'string(255)',
         'archive_path' => 'string(255)',
@@ -98,11 +101,15 @@ __PACKAGE__->install_properties({
         'page_layout' => 'string meta',
         'include_system' => 'string meta',
         'include_cache' => 'integer meta',
+        'max_revisions_entry' => 'integer meta',
+        'max_revisions_template' => 'integer meta',
+        'theme_export_settings' => 'hash meta',
     },
     meta => 1,
     audit => 1,
     indexes => {
         name => 1,
+        parent_id => 1,
     },
     defaults => {
         'custom_dynamic_templates' => 'none',
@@ -111,9 +118,10 @@ __PACKAGE__->install_properties({
                       'MT::Category', 'MT::Folder', 'MT::Notification', 'MT::Log',
                       'MT::ObjectTag', 'MT::Association', 'MT::Comment',
                       'MT::TBPing', 'MT::Trackback', 'MT::TemplateMap',
-                      'MT::Touch'],
+                      'MT::Touch',],
     datasource => 'blog',
     primary_key => 'id',
+    class_type => 'blog',
 });
 
 # Image upload defaults.
@@ -132,6 +140,8 @@ sub class_label_plural {
 my $default_text_format;
 sub set_defaults {
     my $blog = shift;
+    $blog->SUPER::set_defaults(@_);
+
     unless ($default_text_format) {
         if (my $allowed = MT->config('AllowedTextFilters')) {
             $allowed =~ s/\s*,.*//;
@@ -188,14 +198,20 @@ sub set_defaults {
         server_offset => MT->config('DefaultTimezone') || 0,
         # something far in the future to force dynamic side to read it.
         children_modified_on => '20101231120000',
+        use_revision => 1,
     });
     return $blog;
 }
 }
 
+sub is_blog {
+    my $class = shift;
+    return $class->class eq 'blog';
+}
+
 sub create_default_blog {
     my $class = shift;
-    my ($blog_name, $blog_template) = @_;
+    my ($blog_name, $blog_template, $website_id) = @_;
     $blog_name ||= MT->translate("First Blog");
     $class = ref $class if ref $class;
 
@@ -205,12 +221,18 @@ sub create_default_blog {
     # Enable nofollow options
     $blog->nofollow_urls(1);
     $blog->follow_auth_links(1);
-    
+
     # Enable default commenter authentication
     $blog->commenter_authenticators(MT->config('DefaultCommenterAuth'));
 
     # set default page layout
     $blog->page_layout('layout-wtt');
+
+    # Set class type
+    $blog->class('blog');
+
+    # Set parent
+    $blog->parent_id($website_id);
 
     $blog->save or return $class->error($blog->errstr);
     $blog->create_default_templates($blog_template || 'mt_blog')
@@ -240,7 +262,9 @@ sub create_default_templates {
         my $obj = MT::Template->new;
         my $p = $val->{plugin} || 'MT'; # component and/or MT package for translate
         local $val->{name} = $val->{name}; # name field is translated in "templates" call
-        local $val->{text} = $p->translate_templatized($val->{text});
+        my $text = $val->{text};
+        local $val->{text};
+        $val->{text} = $p->translate_templatized($text) if defined $text;
         $obj->build_dynamic(0);
         foreach my $v (keys %$val) {
             $obj->column($v, $val->{$v}) if $obj->has_column($v);
@@ -323,30 +347,205 @@ sub current_timestamp {
         $ts[5]+1900, $ts[4]+1, @ts[3,2,1,0];
 }
 
+sub website {
+    my $blog = shift;
+    return $blog unless $blog->is_blog;
+    return undef unless $blog->parent_id;
+
+    require MT::Website;
+    return MT::Website->load($blog->parent_id);
+}
+
+sub theme {
+    require MT::Theme;
+    my $blog = shift;
+    my $id = $blog->theme_id;
+    return MT::Theme->load($id);
+}
+
+sub raw_site_url {
+    my $blog = shift;
+    my $site_url = $blog->SUPER::site_url || '';
+    if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
+        if ( $subdomain ne $site_url ) {
+            return ( $subdomain, $path );
+        }
+    }
+    return $site_url;
+}
+
 sub site_url {
     my $blog = shift;
-    if (!@_ && $blog->is_dynamic) {
+
+    if (@_) {
+        return $blog->SUPER::site_url(@_);
+    } elsif ( $blog->is_dynamic ) {
         my $cfg = MT->config;
         my $path = $cfg->CGIPath;
-        $path .= '/' unless $path =~ m!/$!;
-        return $path . $cfg->ViewScript . '/' . $blog->id;
+        if ($path =~ m!^/!) {
+            # relative path, prepend blog domain
+            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
+            $path = $blog_domain . $path;
+        }
+        $path .= '/' unless $path =~ m{/$};
+        return $path;
     } else {
-        return $blog->SUPER::site_url(@_);
+        my $url = '';
+        if ($blog->is_blog()) {
+            if (my $website = $blog->website()) {
+                $url = $website->SUPER::site_url;
+            }
+            else {
+                # FIXME: there are a few occasions where
+                # a blog does not have its parent, like (bugid:102749)
+                return $blog->SUPER::site_url;
+            }
+            my @paths = $blog->raw_site_url;
+            if ( 2 == @paths ) {
+                if ( $paths[0] ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
+                }
+                if ( $paths[1] ) {
+                    $url = MT::Util::caturl( $url, $paths[1] );
+                }
+            }
+            else {
+                $url = MT::Util::caturl( $url, $paths[0] );
+            }
+        }
+        else {
+            $url = $blog->SUPER::site_url;
+        }
+
+        return $url;
     }
+}
+
+sub is_site_path_absolute {
+    my $blog = shift;
+
+    my $raw_path;
+    if ( ref $blog ) {
+        $raw_path = $blog->SUPER::site_path;
+    }
+    else {
+        $raw_path = $_[0];
+    }
+
+    return 1 if $raw_path =~ m!^/!;
+    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
+    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC
+    return 0;
+}
+
+sub site_path {
+    my $blog = shift;
+
+    if (@_) {
+        $blog->SUPER::site_path(@_);
+    } else {
+        my $raw_path = $blog->SUPER::site_path;
+        return $raw_path if $blog->is_site_path_absolute;
+
+        my $base_path = '';
+        my $path = '';
+        my $website = $blog->website();
+        if ($blog->is_blog() && $website) {
+            $base_path = $website->column('site_path');
+            if ( $base_path ) {
+                $path = File::Spec->catdir( $base_path, $raw_path );
+            } else {
+                $path = $raw_path;
+            }
+        } else {
+            $path = $raw_path;
+        }
+        return $path;
+    }
+}
+
+sub raw_archive_url {
+    my $blog = shift;
+    my $archive_url = $blog->SUPER::archive_url;
+    if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
+        return ( $subdomain, $path );
+        if ( $subdomain ne $archive_url ) {
+            return ( $subdomain, $path );
+        }
+    }
+    return $archive_url;
 }
 
 sub archive_url {
     my $blog = shift;
-    if (!@_ && $blog->is_dynamic) {
-        $blog->site_url;
-    } else {
+
+    if (@_) {
         $blog->SUPER::archive_url(@_) || $blog->site_url;
     }
+    elsif ($blog->is_dynamic) {
+        return $blog->site_url;
+    }
+    else {
+        my $url = $blog->site_url;
+        if ($blog->is_blog()) {
+            if (my $website = $blog->website()) {
+                $url = $website->SUPER::site_url;
+            }
+            my $archive_url = $blog->SUPER::archive_url;
+            return $blog->site_url unless $archive_url;
+            return $archive_url if $archive_url =~ m!^https?://!;
+            my @paths = $blog->raw_archive_url;
+            if ( 2 == @paths  ) {
+                if ( $paths[0] ) {
+                    $url =~ s!^(https?)://(.+)/$!$1://$paths[0]$2/!;
+                }
+                if ( $paths[1] ) {
+                    $url = MT::Util::caturl( $url, $paths[1] );
+                }
+            }
+            else {
+                $url = MT::Util::caturl( $url, $paths[0] );
+            }
+        }
+        return $url;
+    }
+}
+
+sub is_archive_path_absolute {
+    my $blog = shift;
+
+    my $raw_path = $blog->SUPER::archive_path;
+    return 0 unless $raw_path;
+    return 1 if $raw_path =~ m!^/!;
+    return 1 if $raw_path =~ m!^[a-zA-Z]:\\!;
+    return 1 if $raw_path =~ m!^\\\\[a-zA-Z0-9\.]+!; # UNC
+    return 0;
 }
 
 sub archive_path {
     my $blog = shift;
-    $blog->SUPER::archive_path(@_) || $blog->site_path;
+
+    if (@_) {
+        $blog->SUPER::archive_path(@_) || $blog->site_path;
+    } else {
+        return $blog->site_path if !$blog->column('archive_path');
+
+        my $raw_path = $blog->SUPER::archive_path;
+        return $raw_path if $blog->is_archive_path_absolute;
+
+        my $base_path = '';
+        my $path = '';
+        if (my $website = $blog->website()) {
+            $base_path = $website->SUPER::site_path;
+        }
+        $path = $raw_path;
+        if ( $base_path ) {
+            $path = File::Spec->catdir( $base_path, $raw_path );
+        } else {
+            $path = $blog->site_path;
+        }
+        return $path;
+    }
 }
 
 sub comment_text_filters {
@@ -475,11 +674,16 @@ sub file_mgr {
 
 sub remove {
     my $blog = shift;
+    my $blog_id = $blog->id
+        if ref( $blog );
+
     $blog->remove_children({ key => 'blog_id'});
     my $res = $blog->SUPER::remove(@_);
-    if ((ref $blog) && $res) {
+    if ($blog_id && $res) {
         require MT::Permission;
-        MT::Permission->remove({ blog_id => $blog->id });
+        MT::Permission->remove({ blog_id => $blog_id });
+        require MT::PluginData;
+        MT::PluginData->remove( { blog_id => $blog_id } );
     }
     $res;
 }
@@ -566,6 +770,7 @@ sub clone_with_children {
     my $callback = $params->{Callback} || sub {};
     my $classes = $params->{Classes};
     my $blog_name = $params->{BlogName};
+    my $website_id = $params->{Website};
     delete $$params{Children} if ($params->{Children});
     my $old_blog_id = $blog->id;
 
@@ -589,6 +794,7 @@ sub clone_with_children {
     # Cloning blog
     my $new_blog = $blog->clone($params);
     $new_blog->name($blog_name ? $blog_name : MT->translate("Clone of [_1]", $blog->name));
+    $new_blog->parent_id($website_id);
     delete $new_blog->{column_values}->{id};
     delete $new_blog->{changed_cols}->{id};
     $new_blog->modified_on(undef);
@@ -1017,6 +1223,65 @@ sub smart_replace_fields {
 #trans('blog')
 #trans('blogs')
 
+sub apply_theme {
+    my $blog = shift;
+    my ($theme_id) = @_;
+    require MT::Theme;
+    $theme_id ||= $blog->theme_id;
+    $theme_id ||= $blog->is_blog ? MT->config->DefaultBlogTheme : MT->config->DefaultWebsiteTheme;
+    my $theme = MT::Theme->load($theme_id);
+    if ( !defined $theme ) {
+        return $blog->error(
+            MT->translate(
+                "Failed to load theme [_1]: [_2]", $theme_id, MT::Theme->errstr
+            )
+        );
+    }
+    $theme->apply($blog)
+        or return $blog->error(
+            MT->translate(
+                "Failed to apply theme [_1]: [_2]", $theme_id, MT::Theme->errstr
+            )
+        );
+    return 1;
+}
+
+sub use_revision {
+    my $blog = shift;
+    return unless ref($blog);
+    return $blog->SUPER::use_revision( @_ )
+        if 0 < scalar( @_ );
+    return 0 unless MT->config->TrackRevisions;
+    return $blog->SUPER::use_revision;
+}
+
+sub template_set {
+    my $blog = shift;
+    if (@_ ) {
+        return $blog->SUPER::template_set( @_ );
+    }
+    if ( my $theme = $blog->theme ) {
+        my @elements = $theme->elements;
+        my ( $elem ) = grep { $_->{importer} eq 'template_set' } @elements;
+        if ( $elem ) {
+            my $set = $elem->{data};
+            $set->{envelope} = $theme->path
+                if ref $set;
+            return $set;
+        }
+    }
+    $blog->SUPER::template_set;
+}
+
+sub to_hash {
+    my $obj = shift;
+    my $hash = $obj->SUPER::to_hash( @_ );
+    $hash->{'blog.site_url'} = $obj->site_url;
+    $hash->{'blog.archive_url'} = $obj->archive_url
+        if exists( $hash->{'blog.archive_url'} );
+    return $hash;
+}
+
 1;
 __END__
 
@@ -1195,6 +1460,11 @@ The language for date and time display for this particular blog.
 The welcome message to be displayed on the main Editing Menu for this blog.
 Should contain all desired HTML formatting.
 
+=item * use_revision
+
+Returns 0 if TrackRevisions master switch in mt-config is off.
+Otherwise it returns the value stored in the column.
+
 =back
 
 =head1 METHODS
@@ -1223,6 +1493,10 @@ exclude particular classes:
 Note: Certain exclusions will prevent the clone process from including
 other classes. For instance, if you exclude MT::Trackback, all MT::TBPing
 objects are automatically excluded.
+
+=item * apply_theme
+
+TODO
 
 =back
 

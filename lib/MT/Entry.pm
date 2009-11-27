@@ -10,7 +10,7 @@ use strict;
 
 use MT::Tag; # Holds MT::Taggable
 use MT::Summary; # Holds MT::Summarizable
-use base qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable );
+use base qw( MT::Object MT::Taggable MT::Scorable MT::Summarizable MT::Revisable );
 
 use MT::Blog;
 use MT::Author;
@@ -20,7 +20,8 @@ use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
-                 extract_domains weaken );
+                 extract_domains weaken first_n_words );
+use MT::I18N qw( const );
 
 sub CATEGORY_CACHE_TIME () { 604800 } ## 7 * 24 * 60 * 60 == 1 week
 
@@ -28,27 +29,81 @@ __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
         'blog_id' => 'integer not null',
-        'status' => 'smallint not null',
-        'author_id' => 'integer not null',
-        'allow_comments' => 'boolean',
-        'title' => 'string(255)',
-        'excerpt' => 'text',
-        'text' => 'text',
-        'text_more' => 'text',
-        'convert_breaks' => 'string(30)',
+        'status' => {
+            type        => 'smallint',
+            not_null    => 1,
+            label       => 'Status',
+            revisioned  => 1
+        },
+        'author_id' => {
+            type        => 'integer',
+            not_null    => 1,
+            label       => 'Author',
+            revisioned  => 1
+        },
+        'allow_comments' => {
+            type        => 'boolean',
+            label       => 'Accept Comments',
+            revisioned  => 1
+        },
+        'title' => {
+            type        => 'string',
+            size        => 255,
+            label       => 'Title',
+            revisioned  => 1
+        },
+        'excerpt' => {
+            type        => 'text',
+            label       => 'Excerpt',
+            revisioned  => 1
+        },
+        'text' => {
+            type        => 'text',
+            label       => 'Body',
+            revisioned  => 1
+        },
+        'text_more' => {
+            type        => 'text',
+            label       => 'Extended',
+            revisioned  => 1
+        },
+        'convert_breaks' => {
+            type        => 'string',
+            size        => 30,
+            label       => 'Format',
+            revisioned  => 1
+        },
         'to_ping_urls' => 'text',
         'pinged_urls' => 'text',
-        'allow_pings' => 'boolean',
-        'keywords' => 'text',
+        'allow_pings' => {
+            type        => 'boolean',
+            label       => 'Accept Trackbacks',
+            revisioned  => 1
+        },
+        'keywords' => {
+            type        => 'text',
+            label       => 'Keywords',
+            revisioned  => 1
+        },
         'tangent_cache' => 'text',
-        'basename' => 'string(255)',
+        'basename' => {
+            type        => 'string',
+            size        => 255,
+            label       => 'Basename',
+            revisioned  => 1 
+        },
         'atom_id' => 'string(255)',
-        'authored_on' => 'datetime',
+        'authored_on' => {
+            type        => 'datetime',
+            label       => 'Publish Date',
+            revisioned  => 1
+        },
         'week_number' => 'integer',
         'template_id' => 'integer',
         'comment_count' => 'integer',
         'ping_count' => 'integer',
         'junk_log' => 'string meta',
+        'revision' => 'integer meta',
 ## Have to keep this around for use in mt-upgrade.cgi.
         'category_id' => 'integer',
     },
@@ -253,7 +308,7 @@ sub _nextprev {
         direction => $direction,
         terms     => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args      => $args,
-        by        => 'authored_on',
+        by        => ($class eq 'MT::Page') ? 'modified_on' : 'authored_on',
     );
     weaken($obj->{$label} = $o) if $o;
     return $o;
@@ -312,7 +367,9 @@ sub flush_category_cache {
 }
 
 MT::Placement->add_trigger(
-    post_save   => \&flush_category_cache,
+    post_save   => \&flush_category_cache
+);
+MT::Placement->add_trigger(
     post_remove => \&flush_category_cache
 );
 
@@ -534,7 +591,7 @@ sub get_excerpt {
     return $entry->excerpt if $entry->excerpt;
     my $excerpt = MT->apply_text_filters($entry->text, $entry->text_filters);
     my $blog = $entry->blog() || return;
-    MT::I18N::first_n_text($excerpt, $words || $blog->words_in_excerpt || MT::I18N::const('DEFAULT_LENGTH_ENTRY_EXCERPT')) . '...';
+    first_n_words($excerpt, $words || $blog->words_in_excerpt || const('DEFAULT_LENGTH_ENTRY_EXCERPT')) . '...';
 }
 
 sub pinged_url_list {
@@ -795,6 +852,163 @@ sub to_hash {
     $hash->{"entry.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
     $hash;
+}
+
+# overrides MT::Revisable method
+sub gather_changed_cols {
+    my $obj = shift;
+    my ($orig, $app) = @_;
+
+    MT::Revisable::gather_changed_cols( $obj, @_ );
+    my $changed_cols = $obj->{changed_revisioned_cols} || [];
+
+    return 1 unless $obj->id;
+    # there is a changed col; no need to check something else
+    return 1 if @$changed_cols;
+
+    # check if tag was changed
+    my $tag_changed = 0;
+    my @objecttags = MT->model('objecttag')->load(
+        { object_id => $obj->id, object_datasource => $obj->datasource, blog_id => $obj->blog_id }
+    );
+    # This relies on the fact that MT::CMS::Entry::pre_save is called before
+    # (callback priority) and set_tags has already done the right job to tags.
+    my @tag_names = $obj->get_tags;
+
+    # the number of tags have changed
+    $tag_changed = 1 if scalar( @tag_names ) != scalar( @objecttags );
+
+    unless ( $tag_changed ) {
+        my @tags = MT::Tag->load({ name => \@tag_names },
+            { binary => { name => 1 } } );
+        # XXX: just in case...
+        $tag_changed = 1 if scalar( @tags ) != scalar( @objecttags );
+
+        my %tags = map { $_->id => 1 } @tags;
+        foreach my $objecttag ( @objecttags ) {
+            delete $tags{ $objecttag->tag_id };
+        }
+        # there are changes in the list of tags
+        $tag_changed = 1 if keys( %tags );
+    }
+
+    push @$changed_cols, 'tags' if $tag_changed;
+
+    # check if category was changed
+    my $cat_changed = 0;
+    my @category_ids;
+    eval {
+        @category_ids = split /\s*,\s*/,
+          ( $app->param('category_ids') || '' );
+    };
+    unless ( $@ ) {
+        my @placements = MT->model('placement')->load( { entry_id => $obj->id } );
+
+        # the number of categories have changed
+        $cat_changed = 1 if scalar( @category_ids ) != scalar( @placements );
+
+        my $primary_cat_id;
+        unless ( $cat_changed ) {
+            my %categories = map { $_ => 1 } @category_ids;
+            foreach my $placement ( @placements ) {
+                $primary_cat_id = $placement->category_id if $placement->is_primary;
+                delete $categories{ $placement->category_id };
+            }
+            # there are changes in the list of categories
+            $cat_changed = 1 if keys( %categories );
+        }
+
+        unless ( $cat_changed ) {
+            if ( ( @category_ids && ( $category_ids[0] != $primary_cat_id )
+              || ( !$primary_cat_id && @category_ids )
+              || ( $primary_cat_id && !@category_ids )
+              || ( $category_ids[0] != $primary_cat_id ) ) )
+            {
+                # primary category was changed
+                $cat_changed = 1;
+            }
+        }
+
+        push @$changed_cols, 'categories' if $cat_changed;
+    }
+
+    $obj->{changed_revisioned_cols} = $changed_cols
+        if $cat_changed || $tag_changed;
+    1;
+}
+
+sub pack_revision {
+    my $obj = shift;
+    my $values = MT::Revisable::pack_revision( $obj );
+
+    # add category placements and tag associations
+    my ( @tags, @cats );
+    if ( my $tags = $obj->get_tag_objects ) {
+        @tags = map { $_->id } @$tags
+            if @$tags;
+    }
+    # a revision may remove all the tags
+    $values->{__rev_tags} = \@tags;
+
+    my $primary = $obj->category;
+    if ( my $cats = $obj->categories ) {
+        @cats = map { [
+            $_->id,
+            $_->id == $primary->id ? 1 : 0
+        ] } @$cats
+            if @$cats;
+    }
+    # a revision may remove all the categories
+    $values->{__rev_cats} = \@cats;
+
+    $values;
+}
+
+sub unpack_revision {
+    my $obj = shift;
+    my ($packed_obj) = @_;
+    MT::Revisable::unpack_revision( $obj, @_ );
+
+    # restore category placements and tag associations
+    if ( my $rev_tags = delete $packed_obj->{__rev_tags} ) {
+        delete $obj->{__tags};
+        delete $obj->{__tag_objects};
+        MT::Tag->clear_cache(datasource => $obj->datasource,
+            ($obj->blog_id ? (blog_id => $obj->blog_id) : ()));
+
+        require MT::Memcached;
+        MT::Memcached->instance->delete( $obj->tag_cache_key );
+
+        if ( @$rev_tags ) {
+            my $lookups = MT::Tag->lookup_multi($rev_tags);
+            my @tags = grep { defined } @$lookups;
+            $obj->{__tags} = [ map { $_->name } @tags ];
+            $obj->{__tag_objects} = \@tags;
+            $obj->{__missing_tags_rev} = 1
+                if scalar( @tags ) != scalar( @$lookups );
+        }
+        else {
+            $obj->{__tags} = [];
+            $obj->{__tag_objects} = [];
+        }
+    }
+
+    if ( my $rev_cats = delete $packed_obj->{__rev_cats} ) {
+        $obj->clear_cache('category');
+        $obj->clear_cache('categories');
+
+        my ( $cat, @cats );
+        if ( @$rev_cats ) {
+            my ($primary) = grep { $_->[1] } @$rev_cats;
+            $cat = MT::Category->lookup( $primary->[0] );
+            my $cats = MT::Category->lookup_multi([ map { $_->[0] } @$rev_cats ]);
+            my @cats = sort { $a->label cmp $b->label } grep { defined } @$cats;
+            $obj->{__missing_cats_rev} = 1
+                if scalar( @cats ) != scalar( @$cats );
+        }
+        $obj->cache_property( 'category', undef, $cat );
+        $obj->cache_property( 'categories', undef, \@cats );
+    }
 }
 
 #trans('Draft')

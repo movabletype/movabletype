@@ -18,14 +18,18 @@ use lib 'extlib', 'lib', '../extlib', '../lib';
 use base qw( MT::Tool );
 use Time::HiRes qw( tv_interval gettimeofday );
 
-my ($blog, $blog_name,
+my ($blog,
+    $blog_name,
     $template_name,
     $template_obj,
     $category_name,
     $entry_title,
     $author_name,
     $archive_type,
-    $debug_mode, $profile_flag);
+    $debug_mode,
+    $profile_flag,
+    $stdout_flag,
+);
 
 sub options {
     return (
@@ -37,6 +41,7 @@ sub options {
         'archive=s' => \$archive_type,
         'profile!' => \$profile_flag,
         'debug=i' => \$debug_mode,
+        'stdout'  => \$stdout_flag,
     );
 }
 
@@ -50,6 +55,7 @@ sub help {
         --archive <type>   Specify a archive type.
         --profile          Enables SQL and template tag profiling.
         --debug <mode>     Sets MT's DebugMode.
+        --stdout           No prints any profile but prints elapsed time to STDOUT.
     };
 }
 
@@ -202,7 +208,7 @@ sub main {
 
     my ($verbose) = $class->SUPER::main(@_);
 
-    if ($profile_flag) {
+    if ($profile_flag || $stdout_flag) {
         $ENV{DOD_PROFILE} = 1;
         $Data::ObjectDriver::PROFILE = 1;
 	eval "use Text::SimpleTable";
@@ -332,19 +338,22 @@ sub main {
     my $out = $builder->build($ctx, $tokens, {});
     my $end = [ gettimeofday ];
 
-    if ( defined $out ) {
+    if ( defined $out && !$stdout_flag ) {
         print $out . "\n";
     } else {
         print STDERR "Builder error: ".$builder->errstr if $builder->errstr;
         print STDERR "Context error: ".$ctx->errstr if $ctx->errstr;
     }
 
-    if ($profile_flag) {
+    if ($profile_flag && !$stdout_flag) {
         print STDERR BuildProfiler->report();
         print STDERR "  Total Build Time: " . tv_interval($start, $end) . "\n";
     }
-    if ($ENV{DOD_PROFILE}) {
+    if ($ENV{DOD_PROFILE} && !$stdout_flag) {
         print STDERR Data::ObjectDriver->profiler->report_query_frequency();
+    }
+    if ( $stdout_flag ) {
+        printf "%f", tv_interval($start, $end);
     }
 }
 
@@ -417,6 +426,12 @@ sub install {
                 $tags->{$tagname} = _make_tracker($tags->{$tagname});
             }
         }
+        for my $type (qw( modifier )) {
+            my $tags = $tag_set->{$type} or next;
+            for my $tagname ( keys %$tags ) {
+                $tags->{$tagname} = _filter_tracker($tagname, $tags->{$tagname});
+            }
+        }
     }
 }
 
@@ -429,6 +444,22 @@ sub _make_tracker {
         my $meth = MT->handler_to_coderef($original_method)
             unless $original_method eq 'CODEREF';
         my $res = $meth->($ctx, $args, $cond);
+        post_process_tag($res);
+        return $res;
+    };
+}
+
+sub _filter_tracker {
+    my ( $tagname, $original_method ) = @_;
+    return sub {
+        my ($str, $args, $ctx) = @_;
+        {
+            local $ctx->{__stash}{tag} = " * $tagname";
+            pre_process_tag($ctx, $args, undef);
+        }
+        my $meth = MT->handler_to_coderef($original_method)
+            unless $original_method eq 'CODEREF';
+        my $res = $meth->(@_);
         post_process_tag($res);
         return $res;
     };

@@ -7,6 +7,7 @@
 # $Id$
 
 use strict;
+use Encode;
 sub BEGIN {
     my $dir;
     if (eval { require File::Spec; 1; }) {
@@ -54,10 +55,11 @@ use CGI;
 my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
-# $version ||= '__PRODUCT_VERSION_ID__';
+$version ||= '5.0';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");
+
 eval {
     require MT::App::Wizard;
     $mt = MT::App::Wizard->new();
@@ -94,7 +96,7 @@ sub trans_templ {
         $translation =~ s/([\\'])/\\$1/sg if $args{escape};
         $translation;
     !ge;
-    $text;
+    return $text;
 }
 
 sub translate {
@@ -128,9 +130,24 @@ sub merge_params {
     $msg;
 }
 
-print "Content-Type: text/html; charset=utf-8\n\n";
+sub print_encode {
+    my ( $text ) = @_;
+    if ( $mt ) {
+        print Encode::encode( $mt->config->PublishCharset, $text );
+    }
+    else {
+        print Encode::encode_utf8( $text );
+    }
+}
+
+if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
+    print_encode( "HTTP/1.0 200 OK\n" );
+    print_encode( "Connection: close\n" );
+}
+print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
 if (!$view) {
-    print trans_templ(<<HTML);
+    $lang = $cgi->escapeHTML($lang);
+    print_encode( trans_templ(<<HTML) );
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -138,45 +155,50 @@ if (!$view) {
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="content-language" content="$lang" />
-    
     <title><MT_TRANS phrase="Movable Type System Check"> [mt-check.cgi]</title>
-    
     <style type=\"text/css\">
         <!--
-        
             body {
-                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-                font-size: 13px;
+                position: relative;
+                min-height: 100%;
+                line-height: 1.3;
                 margin: 0;
                 padding: 0;
-                background-color: #fff;
+                color: #2b2b2b;
+                background-color: #f8fbf8;
+                font-size: 12px;
+                font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
             }
-            
-            body.has-static {
-                background: #fff url('$mt_static_path/images/chromeless/chromeless_top_bg.gif') repeat-x;
+
+            #header {
+                position: relative;
+                height: 45px;
+                padding: 1px;
+                background-color: #2b2b2b;
             }
-            
-            body.has-static #header {
-                background: url('$mt_static_path/images/chromeless/movable-type-logo.gif') no-repeat 25px 15px;
-                height: 55px;
-            }
-            
-            #content {
-                margin: 20px 20px 100px;
-            }
-            
-            h1 {
-                margin: 0;
-                padding: 10px;
-                text-align: center;
-                font-size: 22px;
-                color: #fff;
-                background: #000;
-            }
-            body.has-static #header h1 {
+            body.has-static #header h1 span {
                 display: none;
             }
-            
+
+            body.has-static h1#brand {
+                display: block;
+                position: absolute;
+                top: 5px;
+                left: 15px;
+                width: 180px;
+                height: 35px;
+                margin: 0;
+                text-decoration: none;
+                background: #2b2b2b url($mt_static_path/images/logo/movable-type-brand-logo.png) center 3px no-repeat;
+                outline: 0;
+            }
+
+            h1 {
+                margin: 8px 0 0 10px;
+                color: #F8FBF8;
+
+            }
+
             h2 {
                 margin-top: 2em;
                 margin-bottom: .5em;
@@ -186,81 +208,58 @@ if (!$view) {
             h2#system-info {
                 margin-top: 1em;
             }
-            
+
             h3 {
-                color: #333;
                 font-size: 16px;
                 margin-bottom: 0px;
             }
-    
-            p, ul {
-                margin: 0 0 .75em 0;
-                padding: 0;
+
+            #content {
+                margin: 20px 20px 100px;
             }
-            
-            ul {
-                padding-left: 20px;
+
+            .dependence-module {
+                margin-left: 45px;
             }
-            
+
             .msg {
-                margin: 0 0 10px 0;
-                padding: 16px 10px 16px 46px;
+                position: relative;
+                margin: 10px 0;
+                padding: 0.8em;
                 background-repeat: no-repeat;
+                background-position: 8px center;
+            }
+            .msg-error, 
+            .msg-alert, 
+            .warning {
+                background-color: #fef263;
             }
             .msg-info {
-                background-color: #eaf2ff;
-                background-image: url('$mt_static_path/images/icon_info.gif');
-                background-position: 12px center;
-                border: 1px solid #999;
+                background-color: #e6eae3;
             }
-
-			.ready {
-				color: #fff;
-				background-color: #9C6;
-                border: 0;
-                padding-left: 5px;
-			}
-
             .msg-success {
-                background-color: #CFC;
-                background-image: url('$mt_static_path/images/icon_success.png');
+                margin-top: 50px;
+                padding-left: 20px;
+                background-color: #cee4ae;
                 background-position: 12px .75em;
-                font-size: 24px;
             }
             .msg-success h2 {
-                margin-top: 0;
+                margin-top: 5px;
+                font-size: 24px;
             }
             .msg-success p {
                 font-size: 13px;
             }
 
-            .info {
-                margin-left: 60px;
-                margin-right: 60px;
-                padding: 20px;
-                border: 1px solid #eaf2ff;
-                background: #eaf2ff;
-                color: #000;
-            }
-
             .installed {
-                color: #93b06b;
+                color: #9EA1A3;
                 padding-top: 0px;
                 margin-top: 0px;
             }
 
-            .warning {
-                padding-top: 0px;
-                margin-top: 4px;
-                border-left: 1px solid red;
-                padding-left: 10px;
-                margin-left: 20px;
-            }
-            
             ul.version {
                 margin-bottom: 0;
             }
-        
         //-->
     </style>
 
@@ -268,12 +267,12 @@ if (!$view) {
 
 HTML
     if ($mt_static_path) {
-        print "<body class=\"has-static\">\n";
+        print_encode( "<body class=\"has-static\">\n" );
     } else {
-        print "<body>\n";
+        print_encode( "<body>\n" );
     }
-    print trans_templ(<<HTML);
-<div id="header"><h1><MT_TRANS phrase="Movable Type System Check"> [mt-check.cgi]</h1></div>
+    print_encode( trans_templ(<<HTML) );
+<div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
 <p class="msg msg-info"><MT_TRANS phrase="The mt-check.cgi script provides you with information on your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
@@ -324,6 +323,7 @@ my @CORE_OPT = (
     [ 'Image::Magick', 0, 0, translate('Image::Magick is optional; It is needed if you would like to be able to create thumbnails of uploaded images.') ],
 
     [ 'GD', 0, 0, translate('This module is needed if you would like to be able to create thumbnails of uploaded images.')],
+
     [ 'IPC::Run', 0, 0, translate('This module is needed if you would like to be able to use NetPBM as the image driver for MT.')],
 
     [ 'Storable', 0, 0, translate('Storable is optional; it is required by certain MT plugins available from third parties.')],
@@ -372,44 +372,45 @@ my $cwd = '';
 
 my $ver = ref($^V) eq 'version' ? $^V->normal : ( $^V ? join('.', unpack 'C*', $^V) : $] );
 my $perl_ver_check = '';
-if ($] < 5.006001) {  # our minimal requirement for support
+if ($] < 5.008001) {  # our minimal requirement for support
     $perl_ver_check = <<EOT;
-<p class="warning"><MT_TRANS phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.6.1"></p>
+<p class="msg warning"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p>
 EOT
 }
 my $config_check = '';
 if (!$cfg_exist) {
     $config_check = <<CONFIG;
-<p class="warning"><MT_TRANS phrase="Movable Type configuration file was not found."></p>
+<p class="msg warning"><__trans phrase="Movable Type configuration file was not found."></p>
 CONFIG
 }
 my $server = $ENV{SERVER_SOFTWARE};
 my $inc_path = join "<br />\n", @INC;
-print trans_templ(<<INFO);
-<h2 id="system-info"><MT_TRANS phrase="System Information"></h2>
+print_encode( trans_templ(<<INFO) );
+<h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 $config_check
 INFO
 if ($version) {
     # sanitize down to letters numbers dashes and period
     $version =~ s/[^a-zA-Z0-9\-\.]//g;
-print trans_templ(<<INFO);
+    $version = $cgi->escapeHTML($version);
+print_encode( trans_templ(<<INFO) );
 <ul class="version">
-    <li><strong><MT_TRANS phrase="Movable Type version:"></strong> <code>$version</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$version</code></li>
 </ul>
 INFO
 }
-print trans_templ(<<INFO);
+print_encode( trans_templ(<<INFO) );
 <ul>
-	<li><strong><MT_TRANS phrase="Current working directory:"></strong> <code>$cwd</code></li>
-	<li><strong><MT_TRANS phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
-	<li><strong><MT_TRANS phrase="Operating system:"></strong> $^O</li>
-	<li><strong><MT_TRANS phrase="Perl version:"></strong> <code>$ver</code></li>
-	<li><strong><MT_TRANS phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
+	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
+	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>
+	<li><strong><__trans phrase="Operating system:"></strong> $^O</li>
+	<li><strong><__trans phrase="Perl version:"></strong> <code>$ver</code></li>
+	<li><strong><__trans phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO
 if ($server) {
-print trans_templ(<<INFO);
-    <li><strong><MT_TRANS phrase="Web server:"></strong> <code>$server</code></li>
+print_encode( trans_templ(<<INFO) );
+    <li><strong><__trans phrase="Web server:"></strong> <code>$server</code></li>
 INFO
 }
 
@@ -421,10 +422,10 @@ local *FH;
 if (open(FH, ">$TMP")) {
     close FH;
     unlink($TMP);
-    print trans_templ('    <li><MT_TRANS phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n");
+    print_encode( trans_templ('    <li><__trans phrase="(Probably) Running under cgiwrap or suexec"></li>' . "\n") );
 }
 
-print "\n\n</ul>\n";
+print_encode( "\n\n</ul>\n" );
 
 exit if $ENV{QUERY_STRING} && $ENV{QUERY_STRING} eq 'sys-check';
 
@@ -476,19 +477,19 @@ for my $list (\@REQ, \@DATA, \@OPT) {
     } else {
         $type = translate("Optional");
     }
-    print trans_templ(qq{<h2><MT_TRANS phrase="[_1] [_2] Modules" params="$phrase%%$type"></h2>\n\t<div>\n});
+    print_encode( trans_templ(qq{<h2><__trans phrase="[_1] [_2] Modules" params="$phrase%%$type"></h2>\n\t<div>\n}) );
     if (!$req && !$data) {
         if (!$view) {
-        print trans_templ(<<MSG);
-    <p class="msg msg-info"><MT_TRANS phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides."></p>
+        print_encode( trans_templ(<<MSG) );
+    <p class="msg msg-info"><__trans phrase="The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that the module provides."></p>
 
 MSG
        }
     }
     if ($data) {
         if (!$view) {
-        print trans_templ(<<MSG);
-        <p class="msg msg-info"><MT_TRANS phrase="Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have DBI and at least one of the other modules installed."></p>
+        print_encode( trans_templ(<<MSG) );
+        <p class="msg msg-info"><__trans phrase="Some of the following modules are required by the various data storage options in Movable Type. In order run the system, your server needs to have DBI and at least one of the other modules installed."></p>
 
 MSG
         }
@@ -497,50 +498,53 @@ MSG
     my $dbi_is_okay = 0;
     for my $ref (@$list) {
         my($mod, $ver, $req, $desc) = @$ref;
-        if ('CODE' eq ref($desc)) {
+        if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
-        print "<blockquote>\n" if $mod =~ m/^DBD::/;
-        print "    <h3>$mod" .
-            ($ver ? " (version &gt;= $ver)" : "") . "</h3>";
+        else {
+            $desc = $mt->translate($desc);
+        }
+        print_encode( "<div class=\"dependence-module\">\n" ) if $mod =~ m/^DBD::/;
+        print_encode(  "    <h3>$mod" .
+            ($ver ? " (version &gt;= $ver)" : "") . "</h3>" );
         eval("use $mod" . ($ver ? " $ver;" : ";"));
         if ($@) {
             $is_good = 0 if $req;
             my $msg = $ver ?
-                      trans_templ(qq{<p class="warning"><MT_TRANS phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
-                      trans_templ(qq{<p class="warning"><MT_TRANS phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
-            $msg   .= $desc .
-                      trans_templ(qq{ <MT_TRANS phrase="Please consult the installation instructions for help in installing [_1]." params="$mod"></p>\n\n});
-            print $msg . "\n\n";
+                      trans_templ(qq{<p class="msg warning"><__trans phrase="Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed." params="$mod"> }) :
+                      trans_templ(qq{<p class="msg warning"><__trans phrase="Your server does not have [_1] installed, or [_1] requires another module that is not installed." params="$mod"> });
+            print_encode( $desc );
+            print_encode(  trans_templ(qq{ <__trans phrase="Please consult the installation instructions for help in installing [_1]." params="$mod"></p>\n\n}) );
+            print_encode(  $msg );
+            print_encode(  "\n\n" );
         } else {
             if ($data) {
                 $dbi_is_okay = 1 if $mod eq 'DBI';
                 if ($mod eq 'DBD::mysql') {
                     if ($DBD::mysql::VERSION == 3.0000) {
-                        print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>});
+                        print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the current release available from CPAN."></p>}) );
                     }
                 }
                 if (!$dbi_is_okay) {
-                    print trans_templ(qq{<p class="warning"><MT_TRANS phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>});
+                    print_encode(  trans_templ(qq{<p class="msg warning"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see note above regarding the DBI module requirements."></p>}) );
                 } else {
                     $got_one_data = 1 if $mod ne 'DBI';
                 }
             }
-            print trans_templ(qq{<p class="installed"><MT_TRANS phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n});
+            print_encode(  trans_templ(qq{<p class="installed"><__trans phrase="Your server has [_1] installed (version [_2])." params="$mod%%} . $mod->VERSION . qq{"></p>\n\n}) );
         }
-        print "</blockquote>\n" if $mod =~ m/^DBD::/;
+        print_encode(  "</div>\n" ) if $mod =~ m/^DBD::/;
     }
     $is_good &= $got_one_data if $data;
-    print "\n\t</div>\n\n";
+    print_encode( "\n\t</div>\n\n" );
 }
 
 if ($is_good && $cfg_exist) {
     if (!$view) {
-    print trans_templ(<<HTML);
-    
+    print_encode( trans_templ(<<HTML) );
     <div class="msg msg-success">
-        <h2><MT_TRANS phrase="Movable Type System Check Successful"></h2>
-        <p><strong><MT_TRANS phrase="You're ready to go!"></strong> <MT_TRANS phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions."></p>
+        <h2><__trans phrase="Movable Type System Check Successful"></h2>
+        <p><strong><__trans phrase="You're ready to go!"></strong> <__trans phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions."></p>
     </div>
 
 </div>
@@ -549,4 +553,4 @@ HTML
     }
 }
 
-print "</body>\n\n</html>\n";
+print_encode( "</body>\n\n</html>\n" );

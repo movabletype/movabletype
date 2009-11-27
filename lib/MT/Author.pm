@@ -45,6 +45,7 @@ __PACKAGE__->install_properties({
         # meta properties
         'widgets' => 'hash meta',
         'favorite_blogs' => 'array meta',
+        'favorite_websites' => 'array meta',
         'password_reset' => 'string meta',
         'password_reset_expires' => 'string meta',
         'password_reset_return_to' => 'string meta',
@@ -186,12 +187,16 @@ sub commenter_status {
         $blog_id = 0;
     }
 
-    require MT::Permission;
-    my $perm = MT::Permission->load(
-        { author_id => $this->id, blog_id => $blog_id } );
-    return PENDING if !$perm;
-    return BANNED if $perm->is_restricted('comment');
-    return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
+    my $perm = $this->permissions( $blog_id );
+    if ( $perm ) {
+        return BANNED if $perm->is_restricted('comment');
+        return APPROVED if $perm->can_comment() || $perm->can_manage_feedback();
+    }
+    else {
+        return PENDING unless MT->config->SingleCommunity;
+    }
+    return APPROVED if MT->config->SingleCommunity
+      && ( AUTHOR() == $this->type ) && $this->is_active();
     return PENDING;
 }
 
@@ -282,12 +287,17 @@ sub can_edit_entry {
 sub is_superuser {
     my $author = shift;
     if (@_) {
+        my $perms = MT->registry('permissions');
+        my $admin_perm = $perms->{'system.administer'};
         $author->permissions(0)->can_administer(@_);
         if ($_[0]) {
-            $author->permissions(0)->can_create_blog(@_);
-            $author->permissions(0)->can_view_log(@_);
-            $author->permissions(0)->can_manage_plugins(@_);
-            $author->permissions(0)->can_edit_templates(@_);
+            my $inherit = $admin_perm->{inherit_from};
+            foreach (@$inherit) {
+                my $name = $_;
+                $name =~ s/^.*\.(.*)$/$1/;
+                $name = 'can_' . $name;
+                $author->permissions(0)->$name(@_);
+            }
         }
     } else {
         $author->permissions(0)->can_administer();
@@ -301,6 +311,16 @@ sub can_create_blog {
     } else {
         $author->is_superuser() ||
             $author->permissions(0)->can_create_blog(@_);
+    }
+}
+
+sub can_create_website {
+    my $author = shift;
+    if (@_) {
+        $author->permissions(0)->can_create_website(@_);
+    } else {
+        $author->is_superuser() ||
+            $author->permissions(0)->can_create_website(@_);
     }
 }
 
@@ -338,6 +358,13 @@ sub blog_perm {
     my $author = shift;
     my ($blog_id) = @_;
     $author->permissions($blog_id);
+}
+
+sub has_perm {
+    my $author = shift;
+    my ( $blog_id ) = @_;
+    my $perm = $author->permissions( $blog_id );
+    return $perm->permissions ? 1 : 0;
 }
 
 sub permissions {
@@ -430,7 +457,8 @@ sub common_blogs { # returns the blogs in the form of permission records of $thi
     die "This was removed";        # FIXME: this is to catch mistakes
 }
 sub can_administer {
-    die "This was removed";        # FIXME: this is to catch mistakes
+    my $author = shift;
+    return $author->is_superuser(@_);
 }
 
 sub entry_prefs {
@@ -657,7 +685,7 @@ sub auth_icon_url {
     if ( $author->type == MT::Author::AUTHOR() ) {
         return $static_path . 'images/comment/mt_logo.png' ;
     }
-    
+
     my $authenticator = MT->commenter_authenticator( $auth_type );
     return q() unless $authenticator;
     return q() unless exists $authenticator->{$size};
@@ -754,6 +782,25 @@ sub userpic_html {
     return unless $thumb_url;
     sprintf q{<img src="%s?%d" width="%d" height="%d" alt="" />},
       MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
+}
+
+sub can_do {
+    my $author = shift;
+    my ($action, %opts) = @_;
+    my $sys_perm = MT->model('permission')->load({ blog_id => 0, author_id => $author->id });
+    my $sys_priv;
+    if ($sys_perm) {
+        $sys_priv = $sys_perm->can_do($action);
+    }
+    return $sys_priv if $sys_priv;
+    if ( $opts{at_least_one} ) {
+        my $perm_iter = MT->model('permission')->load_iter({ author_id => $author->id });
+        while (my $perm = $perm_iter->() ) {
+            my $blog_priv = $perm->can_do($action);
+            return $blog_priv if $blog_priv;
+        }
+    }
+    return;
 }
 
 1;

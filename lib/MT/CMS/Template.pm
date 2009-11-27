@@ -7,6 +7,7 @@
 package MT::CMS::Template;
 
 use strict;
+use MT::Util qw( format_ts );
 
 sub edit {
     my $cb = shift;
@@ -17,7 +18,7 @@ sub edit {
 
     # FIXME: enumeration of types
     unless ( $blog_id ) {
-        my $type = $q->param('type') || ( $obj ? $obj->type : undef );
+        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
         return $app->return_to_dashboard( redirect => 1 )
             if $type eq 'archive'
             || $type eq 'individual'
@@ -26,15 +27,31 @@ sub edit {
             || $type eq 'index';
     }
 
+    my $blog = $app->blog;
+    if ( defined $blog && !$blog->is_blog ) {
+        my $type = $q->param('type') || ( $obj ? $obj->type : '' );
+        return $app->return_to_dashboard( redirect => 1 )
+            if $type eq 'archive'
+            || $type eq 'individual';
+    }
+
     # to trigger autosave logic in main edit routine
     $param->{autosave_support} = 1;
 
     my $type = $q->param('_type');
-    my $blog = $app->blog;
     my $cfg = $app->config;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     my $can_preview = 0;
 
+    if ( $q->param('reedit') ) {
+        $param->{'revision-note'} = $q->param('revision-note');
+        if ( $q->param('save_revision') ) {
+            $param->{'save_revision'} = 1;
+        }
+        else {
+            $param->{'save_revision'} = 0;
+        }
+    }
     if ($blog) {
         # include_system/include_cache are only applicable
         # to blog-level templates
@@ -52,9 +69,26 @@ sub edit {
     }
 
     if ($id) {
-        # FIXME: Template types should not be enumerated here
+        if ( $blog && $blog->use_revision ) {
+            my $rn = $q->param('r') || 0;
+            if ( $rn != $obj->current_revision ) {
+                my $rev = $obj->load_revision( { rev_number => $rn } );
+                if ( $rev && @$rev ) {
+                    $obj = $rev->[0];
+                    my $values = $obj->get_values;
+                    $param->{$_} = $values->{$_} foreach keys %$values;
+                    $param->{loaded_revision} = 1;
+                }
+                $param->{rev_number} = $rn;
+                $param->{rev_date} = format_ts( "%Y-%m-%d %H:%M:%S",
+                    $obj->modified_on, $blog,
+                    $app->user ? $app->user->preferred_language : undef );
+                $param->{no_snapshot} = 1 if $q->param('no_snapshot');
+            }
+        }
         $param->{nav_templates} = 1;
         my $tab;
+        # FIXME: Template types should not be enumerated here
         if ( $obj->type eq 'index' ) {
             $tab = 'index';
             $param->{template_group_trans} = $app->translate('index');
@@ -80,6 +114,10 @@ sub edit {
         elsif ( $obj->type eq 'email' ) {
             $tab = 'email';
             $param->{template_group_trans} = $app->translate('email');
+        }
+        elsif ( $obj->type eq 'backup' ) {
+            $tab = 'backup';
+            $param->{template_group_trans} = $app->translate('backup');
         }
         else {
             $tab = 'system';
@@ -130,6 +168,8 @@ sub edit {
             $app->param( 'filter_key', 'email_templates' );
         }elsif  ($param->{template_group} eq 'system') {
             $app->param( 'filter_key', 'system_templates' );
+        } elsif ( $obj->type eq 'backup' ) {
+            $app->param('filter_key', 'backup_templates');
         }
         $app->load_list_actions( 'template', $param );
         $app->param( 'filter_key', $filter );
@@ -158,19 +198,25 @@ sub edit {
                 my $mod = $include->{include_module} = $attr->{module} || $attr->{widget};
                 next unless $mod;
                 my $type = $attr->{widget} ? 'widget' : 'custom';
-                next if exists $seen{$type}{$mod};
-                $seen{$type}{$mod} = 1;
+                my $inc_blog_id = $tag->[1]->{global}  ? 0
+                                : $tag->[1]->{blog_id} ? $tag->[1]->{blog_id}
+                                :                        [ $obj->blog_id, 0 ]
+                                ;
+                $inc_blog_id = [ $obj->blog_id, 0 ]
+                    if $inc_blog_id && $inc_blog_id =~ /\D/;
+                my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $obj->blog_id : $inc_blog_id );
+                next if exists $seen{$type}{$mod_id};
+                $seen{$type}{$mod_id} = 1;
                 my $other = MT::Template->load(
                     {
-                        blog_id => ( $tag->[1]->{global}
-                          ? 0
-                          : [ $obj->blog_id, 0 ]
-                        ),
+                        blog_id => $inc_blog_id,
                         name    => $mod,
                         type    => $type,
                     }, {
-                        sort      => 'blog_id',
-                        direction => 'descend',
+                        limit => 1,
+                        ref $inc_blog_id ? ( sort      => 'blog_id',
+                                             direction => 'descend', )
+                                         : ()
                     }
                 );
                 if ($other) {
@@ -186,7 +232,7 @@ sub edit {
                     $other->compile;
                     if ( $other->{errors} && @{ $other->{errors} } ) {
                         $param->{error} = $app->translate(
-                            "One or more errors were found in included template module (".$other->name.").");
+                            "One or more errors were found in included template module ([_1]).", $other->name);
                         $param->{error} .= "<ul>\n";
                         foreach my $err ( @{ $other->{errors} } ) {
                             $param->{error} .= "<li>"
@@ -200,7 +246,7 @@ sub edit {
                     $include->{create_link} = $app->mt_uri(
                         mode => 'view',
                         args => {
-                            blog_id => $obj->blog_id,
+                            blog_id => ref $inc_blog_id ? $obj->blog_id : $inc_blog_id,
                             '_type' => 'template',
                             type    => $type,
                             name    => $mod,
@@ -347,8 +393,13 @@ sub edit {
                 my $def_tmpl = MT::DefaultTemplates->templates($set) || [];
                 my ($tmpl) =
                   grep { $_->{identifier} eq $template_id } @$def_tmpl;
+
+                my $lang = $blog_id ? $blog->language : MT->config->DefaultLanguage;
+                my $current_lang = MT->current_language;
+                MT->set_language($lang);
                 $param->{text} = $app->translate_templatized( $tmpl->{text} )
                   if $tmpl;
+                MT->set_language($current_lang);
                 $param->{type} = $template_type;
             }
         }
@@ -571,6 +622,26 @@ sub edit {
     $param->{can_preview} = 1
         if (!$param->{is_special}) && (!$obj || ($obj && ($obj->outfile || '') !~ m/\.(css|xml|rss|js)$/)) && (!exists $param->{can_preview});
 
+    if ( $blog && $blog->use_revision ) {
+        $param->{use_revision} = 1;
+        #TODO: the list of revisions won't appear on the edit screen.
+        #$param->{revision_table} = $app->build_page(
+        #    MT::CMS::Common::build_revision_table(
+        #        $app,
+        #        object => $obj || MT::Template->new,
+        #        param => {
+        #            template => 'include/revision_table.tmpl',
+        #            args     => {
+        #                sort_order => 'rev_number',
+        #                direction  => 'descend',
+        #                limit      => 5,              # TODO: configurable?
+        #            },
+        #            revision => $obj ? $obj->revision || $obj->current_revision : 0,
+        #        }
+        #    ),
+        #    { show_actions => 0, hide_pager => 1 }
+        #);
+    }
     1;
 }
 
@@ -594,10 +665,10 @@ sub list {
         my ( $obj, $row ) = @_;
         my $template_type;
         my $type = $row->{type} || '';
+        my $tblog = MT::Blog->load( $obj->blog_id ) if $obj->blog_id;
         if ( $type =~ m/^(individual|page|category|archive)$/ ) {
             $template_type = 'archive';
             # populate context with templatemap loop
-            my $tblog = $obj->blog_id == $blog->id ? $blog : MT::Blog->load( $obj->blog_id );
             if ($tblog) {
                 $row->{archive_types} = _populate_archive_loop( $app, $tblog, $obj );
             }
@@ -620,7 +691,8 @@ sub list {
         else {
             $template_type = 'system';
         }
-        $row->{use_cache} = ( ($obj->cache_expire_type || 0) != 0 ) ? 1 : 0;
+        $row->{use_cache} = ( $tblog && $tblog->include_cache && ($obj->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_ssi} = ( $tblog && $tblog->include_system && $obj->include_with_ssi )  ? 1 : 0;
         $row->{template_type} = $template_type;
         $row->{type} = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
@@ -650,21 +722,50 @@ sub list {
     my $scope;
     my $set;
     if ( $blog ) {
-        $set   = $blog->template_set;
+        if ( my $theme = $blog->theme ) {
+            my @elements = $theme->elements;
+            my ($theme_set) = grep { $_->{id} eq 'template_set' } @elements;
+            if ( $theme_set ) {
+                my $data = $theme_set->{data};
+                $set = ref $data ? $data->{templates}
+                     :             MT->registry( template_sets => $data => 'templates')
+                     ;
+            }
+        }
+        if (!$set) {
+            $set = $blog->template_set && $blog->template_set ne 'mt_blog'
+                     ? MT->registry(template_sets => $blog->template_set => 'templates')
+                     : MT->registry('default_templates')
+                     ;
+        }
+        if (!$set) {
+            require MT::Theme;
+            ## try to load same named theme for backward compatibility.
+            if ( my $theme = MT::Theme->load( $blog->template_set ) ) {
+                my @elements = $theme->elements;
+                my ($theme_set) = grep { $_->{id} eq 'template_set' } @elements;
+                if ( $theme_set ) {
+                    my $data = $theme_set->{data};
+                    $set = ref $data ? $data->{templates}
+                         :             MT->registry( template_sets => $data => 'templates')
+                         ;
+                }
+            }
+        }
         $scope = 'system';
     }
     else {
+        $set = MT->registry('default_templates');
         $scope = 'global:system';
     }
-    my @tmpl_path = ( $set && ($set ne 'mt_blog')) ? ("template_sets", $set, 'templates', $scope) : ("default_templates", $scope);
-    my $sys_tmpl = MT->registry(@tmpl_path) || {};
 
+    my $sys_tmpl = $set->{$scope};
     my @tmpl_loop;
     my %types;
     if ($template_type ne 'backup') {
         if ($blog) {
             # blog template listings
-            %types = ( 
+            %types = (
                 'index' => {
                     label => $app->translate("Index Templates"),
                     type => 'index',
@@ -688,7 +789,7 @@ sub list {
             );
         } else {
             # global template listings
-            %types = ( 
+            %types = (
                 'module' => {
                     label => $app->translate("Template Modules"),
                     type => 'custom',
@@ -708,7 +809,7 @@ sub list {
         }
     } else {
         # global template listings
-        %types = ( 
+        %types = (
             'backup' => {
                 label => $app->translate("Template Backups"),
                 type => 'backup',
@@ -736,6 +837,9 @@ sub list {
         }
         elsif ( $tmpl_type eq 'module' ) {
             $app->param( 'filter_key', 'module_templates' );
+        }
+        elsif ( $tmpl_type eq 'backup' ) {
+            $app->param( 'filter_key', 'backup_templates' );
         }
         my $tmpl_param = {};
         unless ( exists($types{$tmpl_type}->{type})
@@ -1005,7 +1109,7 @@ sub preview {
         $q->param( 'build_type', $tmpl->build_type );
     }
     my $cols = $tmpl->column_names;
-    for my $col (@$cols) {
+    for my $col ( ( @$cols, 'save_revision', 'revision-note' ) ) {
         push @data,
           {
             data_name  => $col,
@@ -1061,13 +1165,14 @@ sub create_preview_content {
     return @obj;
 }
 
+## Unused?
 sub reset_blog_templates {
     my $app   = shift;
     my $q     = $app->param;
     my $perms = $app->permissions
       or return $app->error( $app->translate("No permissions") );
     return $app->error( $app->translate("Permission denied.") )
-      unless $perms->can_edit_templates;
+      unless $perms->can_do('reset_blog_templates');
     $app->validate_magic() or return;
     my $blog = MT::Blog->load( $perms->blog_id )
         or return $app->error($app->translate('Can\'t load blog #[_1].', $perms->blog_id));
@@ -1271,7 +1376,7 @@ sub delete_map {
         $q->param('template_id') );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
-    $app->print($html);
+    $app->print_encode( $html );
 }
 
 sub add_map {
@@ -1303,7 +1408,7 @@ sub add_map {
       _generate_map_table( $app, $blog_id, scalar $q->param('template_id') );
     $app->{no_print_body} = 1;
     $app->send_http_header("text/plain");
-    $app->print($html);
+    $app->print_encode( $html );
 }
 
 sub can_view {
@@ -1592,7 +1697,8 @@ sub build_template_table {
           if $row->{name} eq '';
         my $published_url = $tmpl->published_url;
         $row->{published_url} = $published_url if $published_url;
-        $row->{use_cache} = ( ($tmpl->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_cache} = ( $blog && $blog->include_cache && ($tmpl->cache_expire_type || 0) != 0 )  ? 1 : 0;
+        $row->{use_ssi} = ( $blog && $blog->include_system && $tmpl->include_with_ssi )  ? 1 : 0;
 
         # FIXME: enumeration of types
         $row->{can_delete} = 1
@@ -1656,34 +1762,21 @@ sub dialog_refresh_templates {
                              || $perms->can_administer_blog() ) );
 
     my $param = {};
-    my $blog = $app->blog;
-    $param->{return_args} = $app->param('return_args');
-
-    if ($blog) {
-        $param->{blog_id} = $blog->id;
-
-        my $sets = $app->registry("template_sets");
-        $sets->{$_}{key} = $_ for keys %$sets;
-        $sets = $app->filter_conditional_list([ values %$sets ]);
-
-        no warnings; # some sets may not define an order
-        @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
-
-        my $existing_set = $blog->template_set || 'mt_blog';
-        my @sets;
-        foreach (@$sets) {
-            my %set = %{$_};
-            if ($set{key} eq $existing_set) {
-                $set{selected} = 1;
-            }
-            push @sets, \%set;
+    if ( my $blog = $app->blog ) {
+        if ( my $theme = $blog->theme ) {
+            $param->{current_label} = $theme->label;
         }
-        $param->{'template_set_index'} = $#sets;
-        $param->{'template_set_count'} = scalar @sets;
-        $param->{'template_set_loop'} = \@sets;
-
+        else {
+            my $set = $blog->template_set;
+            my $tmpl_set = MT->registry('template_sets', $set );
+            if ( $tmpl_set ) {
+                $param->{current_label} = $tmpl_set->{label};
+            } else {
+                $param->{template_set_not_found} = 1;
+            }
+        }
     }
-
+    $param->{return_args} = $app->param('return_args');
     $param->{screen_id} = "refresh-templates-dialog";
 
     # load template sets
@@ -1699,17 +1792,23 @@ sub refresh_all_templates {
         # refresh templates dialog uses a 'backup' field
         $backup = 1;
     }
-
-    my $template_set = $app->param('template_set');
+    my $template_set;
     my $refresh_type = $app->param('refresh_type') || 'refresh';
-
     my $t = time;
 
     my @id;
     if ($app->param('blog_id')) {
-        @id = ( scalar $app->param('blog_id') );
+        if ( 'refresh_blog_templates' eq $app->param('plugin_action_selector') ) {
+            ## called from website wide blog listing screen.
+            @id  = $app->param('id');
+        }
+        else {
+            ## called from template listing screen of each website/blog.
+            @id = ( scalar $app->param('blog_id') );
+        }
     }
     else {
+        ## if no blog_id, called from system-wide listing screen
         @id = $app->param('id');
         if (! @id) {
             # refresh global templates
@@ -1727,12 +1826,16 @@ sub refresh_all_templates {
     my @blogs_not_refreshed;
     my $refreshed;
     my $can_refresh_system = $user->is_superuser() ? 1 : 0;
+    my $default_language = MT->config->DefaultLanguage;
     BLOG: for my $blog_id (@id) {
         my $blog;
         if ($blog_id) {
             $blog = MT::Blog->load($blog_id);
             next BLOG unless $blog;
         }
+        my $tmpl_lang;
+        $tmpl_lang = $blog->language if $blog_id;
+        $tmpl_lang ||= $default_language;
 
         if (!$can_refresh_system) {  # system refreshers can refresh all blogs
             my $perms = MT::Permission->load(
@@ -1788,24 +1891,39 @@ sub refresh_all_templates {
             if ($blog_id) {
                 # Create the default templates and mappings for the selected
                 # set here, instead of below.
-                $blog->create_default_templates( $template_set ||
-                    $blog->template_set || 'mt_blog' );
-
-                if ($template_set) {
-                    $blog->template_set( $template_set );
-                    $blog->save;
+                if ( my $theme = $blog->theme ) {
+                    $theme->apply( $blog, {
+                        importer_filter => {
+                            template_set => 1,
+                        }
+                    });
+                }
+                else {
+                    $blog->create_default_templates( $blog->template_set || 'mt_blog' );
                     $app->run_callbacks( 'blog_template_set_change', { blog => $blog } );
                 }
-
                 next BLOG;
             }
         }
 
         # Load default templates for the given template set, if any.
+        my $current_lang = MT->current_language;
+        MT->set_language($tmpl_lang);
         if ($blog_id) {
-            $tmpl_list = MT::DefaultTemplates->templates($template_set || $blog->template_set);            
+            if ( my $theme = $blog->theme ) {
+                my @elements = $theme->elements;
+                my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
+                $set = $set->{data};
+                $set->{envelope} = $theme->path;
+                $theme->__deep_localize_labels( $set );
+                $tmpl_list = MT::DefaultTemplates->templates( $set );
+            }
+            else {
+                $tmpl_list = MT::DefaultTemplates->templates( $blog->template_set );
+            }
         }
         $tmpl_list ||= MT::DefaultTemplates->templates();
+        MT->set_language($current_lang);
 
         TEMPLATE: for my $val (@$tmpl_list) {
             if ($blog_id) {
@@ -1820,7 +1938,10 @@ sub refresh_all_templates {
 
             if ( !$val->{orig_name} ) {
                 $val->{orig_name} = $val->{name};
-                $val->{text}      = $app->translate_templatized( $val->{text} );
+                my $current_lang = MT->current_language;
+                MT->set_language($tmpl_lang);
+                $val->{text} = $app->translate_templatized( $val->{text} );
+                MT->set_language($current_lang);
             }
 
             my $orig_name = $val->{orig_name};
@@ -1950,15 +2071,30 @@ sub refresh_individual_templates {
           || $perms->can_administer_blog ) );
 
     my $set;
-    if ( my $blog_id = $app->param('blog_id') ) {
-        my $blog = $app->model('blog')->load($blog_id)
-            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
-        $set = $blog->template_set()
-            if $blog;
-    }
+    my $blog_id = $app->param('blog_id');
+    my $blog = $app->blog;
+    # force saving the revision when indiv. templates are refreshed.
+    $app->param('save_revision', 1);
+    $app->param('revision-note', $app->translate('Template Referesh'));
 
     require MT::DefaultTemplates;
-    my $tmpl_list = MT::DefaultTemplates->templates($set) or return;
+    my $tmpl_list;
+    my $user_lang = MT->current_language;
+    $app->set_language( $blog ? $blog->language : MT->config->DefaultLanguage );
+    if ($blog_id) {
+        if ( my $theme = $blog->theme ) {
+            my @elements = $theme->elements;
+            my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
+            $set = $set->{data};
+            $set->{envelope} = $theme->path;
+            $theme->__deep_localize_labels( $set );
+            $tmpl_list = MT::DefaultTemplates->templates( $set );
+        }
+        else {
+            $tmpl_list = MT::DefaultTemplates->templates( $blog->template_set || 'mt_blog' );
+        }
+    }
+    $tmpl_list ||= MT::DefaultTemplates->templates();
 
     my $tmpl_types = {};
     my $tmpl_ids   = {};
@@ -1976,6 +2112,7 @@ sub refresh_individual_templates {
             $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
         }
     }
+    $app->set_language( $user_lang );
 
     my $t = time;
 
@@ -2014,6 +2151,7 @@ sub refresh_individual_templates {
         if ($text ne $def_text) {
             # if it has been customized, back it up to a new tmpl record
             my $backup = $tmpl->clone;
+            my $orig_obj = $tmpl->clone;
             delete $backup->{column_values}
               ->{id};    # make sure we don't overwrite original
             delete $backup->{changed_cols}->{id};
@@ -2035,7 +2173,15 @@ sub refresh_individual_templates {
             $tmpl->text( $val->{text} );
             $tmpl->identifier( $val->{identifier} );
             $tmpl->linked_file('');
+            $app->run_callbacks( 'cms_pre_save.template', $app, $tmpl, $orig_obj )
+              || return $app->error(
+                $app->translate(
+                    "Saving [_1] failed: [_2]",
+                    $tmpl->class_label, $app->errstr
+                )
+              );
             $tmpl->save;
+            $app->run_callbacks( 'cms_post_save.template', $app, $tmpl, $orig_obj );
         } else {
             push @msg, $app->translate("Skipping template '[_1]' since it has not been changed.", $tmpl->name);
         }
@@ -2192,31 +2338,43 @@ sub publish_archive_templates {
     my $return_args;
     my $reedit = $app->param('reedit');
     if (@ids) {
+
         # we have more to do after this, so save the list
         # of remaining archive templates...
         $return_args = $app->uri_params(
             mode => 'publish_archive_templates',
             args => {
                 magic_token => $app->current_magic,
-                blog_id => scalar $app->param('blog_id'),
-                id => join(",", @ids),
-                reedit => $reedit,
-                from_search => $app->param('from_search'),
+                blog_id     => scalar $app->param('blog_id'),
+                id          => join( ",", @ids ),
+                reedit      => $reedit,
+                (   $app->param('from_search')
+                    ? ( from_search => $app->param('from_search') )
+                    : ()
+                ),
+                (   $app->return_args ? ( return_args => $app->return_args )
+                    : ()
+                ),
             }
         );
-    } else {
-        my $mode = $reedit ? 'view' : 'list';
-        $mode = 'search_replace' if $app->param('from_search');
-        $return_args = $app->uri_params(
-            mode => $mode,
-            args => {
-                _type     => 'template',
-                blog_id   => scalar $app->param('blog_id'),
-                published => 1,
-                ( $reedit ? ( saved => 1 )       : () ),
-                ( $reedit ? ( id    => $reedit ) : () ),
-            }
-        );
+    }
+    else {
+        if ( $app->param('from_search') ) {
+            $return_args = $app->return_args;
+        }
+        else {
+            my $mode = $reedit ? 'view' : 'list_template';
+            $return_args = $app->uri_params(
+                mode => $mode,
+                args => {
+                    ( $reedit ? ( _type => 'template' ) : () ),
+                    blog_id   => scalar $app->param('blog_id'),
+                    published => 1,
+                    ( $reedit ? ( saved => 1 )       : () ),
+                    ( $reedit ? ( id    => $reedit ) : () ),
+                }
+            );
+        }
     }
     $return_args =~ s/^\?//;
 
@@ -2325,6 +2483,9 @@ sub edit_widget {
             ? ( name => $name )
             : (),
     };
+    $param->{saved} = 1
+        if $app->param('saved');
+
     if ($blog_id) {
         my $blog = $app->blog;
         # include_system/include_cache are only applicable
@@ -2466,7 +2627,10 @@ sub list_widget {
         search_label   => MT::Template->class_label_plural,
         listing_screen => 1,
         screen_id      => "list-widget-set",
-        $blog_id ? ( blog_view => 1, blog_id => $blog_id ) : (),
+        object_label   => $app->translate('Widget Template'),
+        object_label_plural  => $app->translate('Widget Templates'),
+        template_type_label  => $app->translate('Widget Templates'),
+        blog_view => 1,
         exists($opt{rebuild}) ? ( rebuild => $opt{rebuild} ) : (),
         exists($opt{error}) ? ( error => $opt{error} ) : (),
         exists($opt{deleted}) ? ( saved => $opt{deleted} ) : ()

@@ -3,7 +3,6 @@
 <mt:setvarblock name="page_title"><__trans phrase="Create MultiBlog Trigger"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/json.js"></script>
 <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 
 <style type="text/css">
@@ -35,7 +34,7 @@ var dialog;
 var win = window.parent;
 function returnTrigger(ok) {
     if (!ok) // user cancelled
-        return closeDialog();
+        return parent.jQuery.fn.mtDialog.close();
 
     // populate form and submit
     frm = TC.getElementsByTagAndClassName("form", "multiblog-trigger", dialog.panels[0].element);
@@ -59,7 +58,7 @@ function returnTrigger(ok) {
         var trigger = frm.multiblog_blog_trigger.options[frm.multiblog_blog_trigger.selectedIndex];
         var action = frm.multiblog_blog_action.options[frm.multiblog_blog_action.selectedIndex];
         win.addMultiBlogTrigger(action.text, action.value, blog_name, blog_id, trigger.text, trigger.value);
-        closeDialog();
+        parent.jQuery.fn.mtDialog.close();
     }
 }
 

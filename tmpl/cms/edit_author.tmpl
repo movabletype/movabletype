@@ -10,9 +10,6 @@
       </mt:if>    
       <mt:setvarblock name="page_title"><__trans phrase="Edit Profile"></mt:setvarblock>
     </mt:if>
-<mt:setvarblock name="content_nav">
-    <mt:include name="include/users_content_nav.tmpl">
-</mt:setvarblock>
 <mt:setvarblock name="related_content">
     <$mtapp:PageActions$>
 </mt:setvarblock>
@@ -44,13 +41,23 @@
     <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js"></script>
 </mt:setvarblock>
 
+<mt:setvarblock name="related_content">
+    <mt:unless name="new_object">
+        <mtapp:widget
+            id="user-properties"
+            label="<__trans phrase="User properties">">
+            <mt:include name="include/users_content_nav.tmpl">
+        </mtapp:widget>
+    </mt:unless>
+</mt:setvarblock>
+
 <mt:include name="include/header.tmpl">
 
 <script type="text/javascript">
 /* <![CDATA[ */
 function reveal_api_password() {
     var pw = getByID("api_password");
-    alert("<__trans phrase="Your Web services password is currently">: " + pw.value);
+    alert("<__trans phrase="Your web services password is currently">: " + pw.value);
     return false;
 }
 function tagDelimChoice(sel) {
@@ -63,19 +70,6 @@ function tagDelimChoice(sel) {
     }
 }
 
-function togglePerms(c) {
-    var p = TC.getElementsByTagAndClassName("input", "subPerm", TC.elementOrId("permission-list"));
-    for (var i = 0; i < p.length; i++) {
-        var sc = p[i];
-        if (c.checked) {
-            sc.checked = true;
-            sc.disabled = true;
-        } else {
-            sc.checked = false;
-            sc.disabled = false;
-        }
-    }
-}
 function passwordResetConfirm() {
     var username = '<mt:var name="name" escape="js">';
     var email = '<mt:var name="email" escape="js">';
@@ -94,17 +88,21 @@ function toggleDisabled( state ){
         elements[i].disabled = state;
     }
 }
-function togglePerms(c) {
-    var p = TC.getElementsByTagAndClassName("input", "subPerm", TC.elementOrId("permission-list"));
-    for (var i = 0; i < p.length; i++) {
-        var sc = p[i];
-        if (c.checked) {
-            sc.checked = true;
-            sc.disabled = true;
-        } else {
-            sc.checked = false;
-            sc.disabled = false;
-        }
+function togglePerms(c, a) {
+    if (a == '') {
+        return;
+    }
+
+    if (c.checked) {
+        jQuery(a).each(function(){
+            this.checked = true;
+            this.disabled = true;
+        });
+    } else {
+        jQuery(a).each(function(){
+            this.checked = false;
+            this.disabled = false;
+        });
     }
 }
 
@@ -132,9 +130,9 @@ function removedUserpic(c) {
 }
 
 function init() {
-    var c = document.forms['profile'].elements['is_superuser'];
+    var c = document.forms['profile'].elements['can_administer'];
     if (c.checked)
-        togglePerms(document.forms['profile'].elements['is_superuser']);
+        document.forms['profile'].elements['can_administer'].onclick();
 }
 
 TC.attachLoadEvent(init);
@@ -172,7 +170,7 @@ TC.attachLoadEvent(init);
         id="status"
         label="<__trans phrase="_USER_STATUS_CAPTION">"
         label_class="left-label <$mt:var name="user_status"$>"
-        hint="<__trans phrase="Status of user in the system. Disabling a user removes their access to the system but preserves their content and history.">">
+        hint="<__trans phrase="Status of user in the system. Disabling a user prevents that person from using the system but preserves their content and history.">">
     <select name="status" id="status" class="half-width" onchange="toggleDisabled(this.value);">
         <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
         <mt:if name="status_pending"><option selected="selected" value="3"><__trans phrase="_USER_PENDING"></option></mt:if>
@@ -186,9 +184,7 @@ TC.attachLoadEvent(init);
     required="1"
     label="<__trans phrase="Username">"
     hint="<__trans phrase="The username used to login.">">
-    <div class="textarea-wrapper">
-        <input name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
-    </div>
+    <input type="text" name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> /><mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth"><input name="name" type="hidden" value="<mt:var name="name" escape="html">" /></mt:unless></mt:unless>
 </mtapp:setting>
 
 <mt:if name="external_id"><mt:if name="show_external_id">
@@ -206,10 +202,9 @@ TC.attachLoadEvent(init);
         id="nickname"
         required="1"
         label="<__trans phrase="Display Name">"
-        hint="<__trans phrase="The name used when published.">">
-        <div class="textarea-wrapper">
-            <input name="nickname" id="nickname" class="full-width" value="<mt:var name="nickname" escape="html">" />
-        </div>
+        show_hint="1"
+        hint="<__trans phrase="The name displayed when content from this user is published.">">
+        <input type="text" name="nickname" id="nickname" class="full-width" value="<mt:var name="nickname" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -217,18 +212,15 @@ TC.attachLoadEvent(init);
         required="$auth_mode_mt"
         label="<__trans phrase="Email Address">"
         hint="<__trans phrase="The email address associated with this user.">">
-        <div class="textarea-wrapper">
-            <input name="email" id="email" class="full-width" value="<mt:var name="email" escape="html">" />
-        </div>
+        <input type="text" name="email" id="email" class="full-width" value="<mt:var name="email" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
         id="url"
         label="<__trans phrase="Website URL">"
-        hint="<__trans phrase="The URL of the site associated with this user. eg. http://www.movabletype.com/">">
-        <div class="textarea-wrapper">
-            <input name="url" id="url" class="full-width" value="<mt:var name="url" escape="html">" />
-        </div>
+        show_hint="1"
+        hint="<__trans phrase="This User's website (e.g. http://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.">">
+        <input type="text" name="url" id="url" class="full-width" value="<mt:var name="url" escape="html">" />
     </mtapp:setting>
 
 <mt:if name="id">
@@ -242,7 +234,7 @@ TC.attachLoadEvent(init);
             <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
             <br />
         </span>
-        <a href="javascript:void(0)" onclick="return openDialog(false, 'list_assets', '_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic')"><__trans phrase="Select Userpic"></a>
+        <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog"><__trans phrase="Select Userpic"></a>
         <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />
@@ -259,20 +251,17 @@ TC.attachLoadEvent(init);
                 id="show_password"
                 label="<__trans phrase="Password">"
                 content_class="field-content-text">
-                <a href="javascript:void(0)" onclick="toggleHidden(getByID('password-fields')); DOM.addClassName(getByID('show_password-field'), 'hidden')"><__trans phrase="Change Password"></a>
+                <a href="#" id="change-password-link"><__trans phrase="Change Password"></a>
             </mtapp:setting>
         </mt:unless>
-
-        <div id="password-fields"<mt:unless name="new_object"> class="hidden"</mt:unless>>
+        <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
         <mt:unless name="new_object">
             <mt:if name="is_me">
                 <mtapp:setting
                     id="old_pass"
                     label="<__trans phrase="Current Password">"
                     hint="<__trans phrase="Existing password required to create a new password.">">
-                    <div class="textarea-wrapper">
-                        <input type="password" name="old_pass" value="" id="old_pass" class="full-width" />
-                    </div>
+                    <input type="password" name="old_pass" value="" id="old_pass" />
                 </mtapp:setting>
             </mt:if>
         </mt:unless>
@@ -291,18 +280,14 @@ TC.attachLoadEvent(init);
             label="$password_prompt"
             required="$password_required"
             hint="$password_hint">
-            <div class="textarea-wrapper">
-                <input type="password" name="pass" id="pass" class="full-width" value="" />
-            </div>
+            <input type="password" name="pass" id="pass" value="" />
         </mtapp:setting>
         <mtapp:setting
             id="pass_verify"
             label="<__trans phrase="Confirm Password">"
             required="$password_required"
             hint="<__trans phrase="Repeat the password for confirmation.">">
-            <div class="textarea-wrapper">
-                <input type="password" name="pass_verify" id="pass_verify" class="full-width" value="" />
-            </div>
+            <input type="password" name="pass_verify" id="pass_verify" value="" />
         </mtapp:setting>
         <mt:unless name="new_object">
             <mt:if name="hint">
@@ -311,9 +296,7 @@ TC.attachLoadEvent(init);
                     required="0"
                     label="<__trans phrase="Password recovery word/phrase">"
                     hint="<__trans phrase="This word or phrase is not used in the password recovery.">">
-                    <div class="textarea-wrapper">
-                        <input name="hint" id="hint" class="full-width" value="<mt:var name="hint" escape="html">" />
-                    </div>
+                    <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
                 </mtapp:setting>
             </mt:if>
         </mt:Unless>
@@ -327,7 +310,8 @@ TC.attachLoadEvent(init);
     <mtapp:setting
         id="preferred_language"
         label="<__trans phrase="Language">"
-        hint="<__trans phrase="Preferred language of this user.">">
+        show_hint="1"
+        hint="<__trans phrase="Display language for the Movable Type interface.">">
         <select name="preferred_language" id="preferred_language" class="se"><mt:loop name="languages">
             <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
         </select>
@@ -336,10 +320,11 @@ TC.attachLoadEvent(init);
     <mtapp:setting
         id="text_format"
         label="<__trans phrase="Text Format">"
-        hint="<__trans phrase="Preferred text format option.">">
+        show_hint="1"
+        hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
         <select name="text_format" id="text_format" class="se">
         <mt:loop name="text_filters">
-            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
+            <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>><mt:if name="key" eq="0"><__trans phrase="(Use Website/Blog Default)"><mt:else><mt:var name="label" escape="html"></mt:if></option>
         </mt:loop>
         </select>
     </mtapp:setting>
@@ -347,6 +332,7 @@ TC.attachLoadEvent(init);
     <mtapp:setting
         id="tag_delim"
         label="<__trans phrase="Tag Delimiter">"
+        show_hint="1"
         hint="<__trans phrase="Preferred method of separating tags.">">
         <select name="tag_delim" id="tag_delim" class="se">
             <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
@@ -360,9 +346,7 @@ TC.attachLoadEvent(init);
         id="api_password"
         label="<__trans phrase="Web Services Password">"
         hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
-        <div class="textarea-wrapper">
-            <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
-        </div>
+        <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
         <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
 </mt:if>
@@ -376,11 +360,9 @@ TC.attachLoadEvent(init);
         content_class="field-content-text"
         show_label="0">
         <ul class="inline-list">
-            <li><input name="is_superuser" id="is_superuser" type="checkbox" value="1"<mt:if name="perm_is_superuser"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this)" /> <label for="is_superuser"><__trans phrase="System Administrator"></label></li>
-            <li><input name="can_create_blog" id="can_create_blog" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_create_blog"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_create_blog"><__trans phrase="Create Blogs"></label></li>
-            <li><input name="can_view_log" id="can_view_log" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_view_log"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_view_log"><__trans phrase="View Activity Log"></label></li>
-            <li><input name="can_edit_templates" id="can_edit_templates" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_edit_templates"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_edit_templates"><__trans phrase="Manage Templates"></label></li>
-            <li><input name="can_manage_plugins" id="can_manage_plugins" class="subPerm" type="checkbox" value="1"<mt:if name="perm_can_manage_plugins"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> /> <label for="can_manage_plugins"><__trans phrase="Manage Plugins"></label></li>
+        <mt:loop name="loaded_permissions">
+            <li><input name="<mt:var name="id">" id="<mt:var name="id">" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="new_object"><mt:unless name="editing_other_profile">disabled="disabled"</mt:unless></mt:unless> onclick="togglePerms(this, '<mt:var name="children">')" /> <label for="<mt:var name="id">"><mt:var name="label"></label></li>
+        </mt:loop>
         </ul>
     </mtapp:setting>
             </fieldset>
@@ -393,8 +375,10 @@ TC.attachLoadEvent(init);
         content_label="field-content-text"
         hint="<__trans phrase="Create personal blog for user">"
         show_hint="0">
-        <input type="checkbox" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"</mt:if> />
-        <span class="hint"><__trans phrase="Create personal blog for user"></span>
+        <label for="create_personal_weblog">
+            <input type="checkbox" id="create_personal_weblog" name="create_personal_weblog" <mt:if name="create_personal_weblog">checked="checked"<mt:else>disabled="disabled"</mt:if> />
+            <__trans phrase="Create personal blog for user">
+        </label>
     </mtapp:setting>
             </fieldset>
 </mt:if>
@@ -404,14 +388,14 @@ TC.attachLoadEvent(init);
         type="submit"
         accesskey="s"
         title="<__trans phrase="Create User (s)">"
-        class="primary-button"
+        class="create action primary-button"
         ><__trans phrase="Create User"></button>
     <mt:else>
     <button
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to this author (s)">"
-        class="primary-button"
+        class="save action primary-button"
         ><__trans phrase="Save Changes"></button>
     </mt:if>
 </mt:setvarblock>
@@ -438,5 +422,15 @@ TC.attachLoadEvent(init);
         </mt:unless>
     </mt:unless>
 </mt:if>
+
+<mt:setvarblock name="jq_js_include" append="1">
+<mt:unless name="new_object">
+    jQuery('#change-password-link').click(function(event) {
+        $(this).parents('#show_password-field').next('#password-fields').toggle();
+        $(this).parents('#show_password-field').hide();
+        event.preventDefault();
+    });
+</mt:unless>
+</mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

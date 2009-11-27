@@ -36,6 +36,7 @@
                 <li><a href="<mt:var name="script_url">?__mode=view_log"><__trans phrase="System Activity Log"></a></li>
                 </mt:if>
             </mt:if>
+    <mt:unless name="scope_type" eq="website">
         <mt:if name="filter">
             <li><a href="<mt:var name="feed_url" escape="html">" title="<__trans phrase="Filtered"> <mt:var name="feed_name" escape="html">" class="icon-left icon-feed"><__trans phrase="Filtered Activity Feed"></a></li>
             <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Filtered Log (CSV)"></a></li>
@@ -43,6 +44,7 @@
             <li><mt:include name="include/feed_link.tmpl"></li>
             <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Log (CSV)"></a></li>
         </mt:if>
+    </mt:unless>
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions from="$mode"$>
@@ -52,9 +54,9 @@
 </mt:setvarblock>
 <mt:setvarblock name="action_buttons">
     <mt:unless name="search_replace_template">
-    <a href="javascript:void(0)"
+    <button
         onclick="doResetLog(this.form); return false;"
-        ><__trans phrase="Clear Activity Log"></a>
+        ><__trans phrase="Clear Activity Log"></button>
     </mt:unless>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
@@ -67,32 +69,24 @@
     }
 
     function enableFilterButton() {
-        getByID("filter-button").style.display = "inline";
+        jQuery('#filter-button').css('display', 'inline');
     }
+
     function toggleFilter() {
-        var filterActive = getByID("filter-title");
-        if (filterActive.style.display == "none") {
-            filterActive.style.display = "block";
-            getByID("filter-select").style.display = "none";
-        } else {
-            filterActive.style.display = "none";
-            getByID("filter-select").style.display = "block";<mt:unless name="filter">setFilterCol('level');</mt:unless>
+        if (jQuery('#filter-title').toggle().css('display') == 'none') {
+            <mt:unless name="filter">setFilterCol('level');</mt:unless>
         }
+        jQuery('#filter-select').toggle();
     }
 
     function setFilterCol(choice) {
-        var sel = getByID('filter-select');
-        if (!sel) return;
-        sel.className = "filter-" + choice;
-        var fld = getByID('filter-col');
-        if (choice == 'level')
-            fld.selectedIndex = 0;
-        else if (choice == 'class')
-            fld.selectedIndex = 1;
-        col_span = getByID("filter-text-col");
-        if (fld.selectedIndex > -1 && col_span)
-            col_span.innerHTML = '<strong>' +
-                fld.options[fld.selectedIndex].text + '</strong>';
+        if (!jQuery('#filter-select').length) return;
+        if (choice != 'none') {
+            jQuery('#filter-select span').show().children('span').hide();
+            jQuery('#filter-'+choice).show().addClass('filter-'+choice);
+            jQuery('#filter-col').val(choice);
+            jQuery('#filter-text-col').html('<strong>'+jQuery('#filter-col option:selected').text()+'</strong>');
+        }
     }
 
     function init() {
@@ -100,8 +94,6 @@
     	setFilterVal('<mt:var name="filter_val" escape="js">');
     </mt:if>
     }
-
-    TC.attachLoadEvent( init );
     /* ]]> */
     </script>
 </mt:setvarblock>
@@ -161,15 +153,16 @@
     </mt:if>
             </span>
             <span class="buttons">
-                <a href="javascript:void(0)"
+                <button
                     id="filter-button"
                     onclick="return execFilter(getByID('filter-select-form'))"
                     type="submit"
-                    ><__trans phrase="Filter"></a>
-                <a href="javascript:void(0)"
+                    ><__trans phrase="Filter"></button>
+                <button
+                    class="button"
                     onclick="toggleFilter(); return false;"
                     type="submit"
-                    ><__trans phrase="Cancel"></a>
+                    ><__trans phrase="Cancel"></button>
             </span>
         </div>
     </div>
@@ -180,4 +173,9 @@
 <$mt:include name="include/header.tmpl"$>
 <$mt:var name="list_filter_form"$>
 <$mt:include name="include/log_table.tmpl"$>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+</mt:setvarblock>
+
 <$mt:include name="include/footer.tmpl"$>

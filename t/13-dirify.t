@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id$
+# $Id: 13-dirify.t 2562 2008-06-12 05:12:23Z bchoate $
 use strict;
 use warnings;
 
@@ -34,6 +34,7 @@ MT->set_language('en_US');
 
 for my $test (@tests) {
     my ($text, $iso, $utf8) = @{ $test }{qw( text iso utf8 )};
+    $text = Encode::decode_utf8($text);
     is(MT::Util::iso_dirify($text), $iso, "String '$text' iso_dirifies correctly")
         if $iso;
     is(MT::Util::utf8_dirify($text), $utf8, "String '$text' utf8_dirifies correctly")

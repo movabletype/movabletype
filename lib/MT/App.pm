@@ -12,8 +12,8 @@ use base qw( MT );
 use File::Spec;
 use MT::Request;
 use MT::Util qw( encode_html offset_time_list decode_html encode_url
-    is_valid_email is_url escape_unicode );
-use MT::I18N qw( encode_text wrap_text );
+    is_valid_email is_url escape_unicode extract_url_path);
+use MT::I18N qw( wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
 sub COMMENTER_COOKIE_NAME () {"mt_commenter"}
@@ -85,9 +85,9 @@ sub __massage_page_action {
                 }
             }
         }
-        if ( $action->{mode} ) {
+        if ( $action->{mode} || $action->{dialog} ) {
             $action->{link} = $app->uri(
-                mode => $action->{mode},
+                mode => ($action->{mode} ? $action->{mode} : $action->{dialog}),
                 args => $action->{args}
             );
         }
@@ -135,33 +135,44 @@ sub filter_conditional_list {
 
     my $test = sub {
         my ($item) = @_;
-        if ( $system_perms
-            && ( my $sp = $item->{system_permission} ) )
-        {
-            my $allowed = 0;
-            my @sp = split /,/, $sp;
-            foreach my $sp (@sp) {
-                my $perm = 'can_' . $sp;
-                $allowed = 1, last
-                    if $admin
-                        || (   $system_perms
-                            && $system_perms->can($perm)
-                            && $system_perms->$perm() );
-            }
-            return 0 unless $allowed;
+        if ( my $action = $item->{permit_action} ) {
+            $app->can_do($action) or return 0;
         }
-        if ( my $p = $item->{permission} ) {
-            my $allowed = 0;
-            my @p = split /,/, $p;
-            foreach my $p (@p) {
-                my $perm = 'can_' . $p;
-                $allowed = 1, last
-                    if $admin
-                        || (   $perms
-                            && $perms->can($perm)
-                            && $perms->$perm() );
+        else {
+            return 0
+                if !$system_perms
+                   && $item->{system_permission}
+                   && !$item->{permission};
+
+            if ( $system_perms && (my $sp = $item->{system_permission} ) )
+            {
+                my $allowed = 0;
+                my @sp = split /,/, $sp;
+                foreach my $sp_ (@sp) {
+                    $sp_ =~ s/'(.+)'/$1/;
+                    my $perm = 'can_' . $sp_;
+                    $allowed = 1, last
+                        if $admin
+                            || (   $system_perms
+                                && $system_perms->can($perm)
+                                && $system_perms->$perm() );
+                }
+                return 0 unless $allowed;
+            } else {
+                if ( my $p = $item->{permission} ) {
+                    my $allowed = 0;
+                    my @p = split /,/, $p;
+                    foreach my $p_ (@p) {
+                        my $perm = 'can_' . $p_;
+                        $allowed = 1, last
+                            if $admin
+                                || (   $perms
+                                    && $perms->can($perm)
+                                    && $perms->$perm() );
+                    }
+                    return 0 unless $allowed;
+                }
             }
-            return 0 unless $allowed;
         }
         if ( my $cond = $item->{condition} ) {
             if ( !ref($cond) ) {
@@ -299,7 +310,7 @@ sub listing {
     my $class = $app->model($type) or return;
     my $list_pref = $app->list_pref($type) if $app->can('list_pref');
     $param->{$_} = $list_pref->{$_} for keys %$list_pref;
-    my $limit = $list_pref->{rows};
+    my $limit = $args->{limit} || $list_pref->{rows};
     $limit =~ s/\D//g;
     my $offset = $app->param('offset') || 0;
     $offset =~ s/\D//g;
@@ -311,7 +322,7 @@ sub listing {
     if ( my $search = $app->param('search') ) {
         $app->param( 'do_search', 1 );
         if ( $app->can('do_search_replace') ) {
-            my $search_param = $app->do_search_replace();
+            my $search_param = $app->do_search_replace( { terms => $terms, args => $args } );
             if ($hasher) {
                 my $data = $search_param->{object_loop};
                 if ( $data && @$data ) {
@@ -417,7 +428,7 @@ sub listing {
 
             # In blog context, class defines blog_id as a column,
             # so restrict listing to active blog:
-            if ( $class->column_def('blog_id') ) {
+            if ( $class->has_column('blog_id') ) {
                 $terms->{blog_id} ||= $blog->id;
             }
         }
@@ -447,8 +458,8 @@ sub listing {
         $param->{object_loop} = \@data;
 
         # handle pagination
-$limit += 0;
-$offset += 0;
+        $limit += 0;
+        $offset += 0;
         my $pager = {
             offset        => $offset,
             limit         => $limit,
@@ -489,7 +500,7 @@ $offset += 0;
             pager => $param->{pager_json},
         };
         $app->send_http_header("text/javascript+json");
-        $app->print( MT::Util::to_json($data) );
+        $app->print_encode( MT::Util::to_json($data) );
         $app->{no_print_body} = 1;
     }
     else {
@@ -513,7 +524,7 @@ sub json_result {
     my ($result) = @_;
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
-    $app->print( MT::Util::to_json( { error => undef, result => $result } ) );
+    $app->print_encode( MT::Util::to_json( { error => undef, result => $result } ) );
     return undef;
 }
 
@@ -522,7 +533,7 @@ sub json_error {
     my ($error) = @_;
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
-    $app->print( MT::Util::to_json( { error => $error } ) );
+    $app->print_encode( MT::Util::to_json( { error => $error } ) );
     return undef;
 }
 
@@ -604,6 +615,12 @@ sub print {
     if ( $MT::DebugMode & 128 ) {
         CORE::print STDERR @_;
     }
+}
+
+sub print_encode {
+    my $app = shift;
+    my $enc = $app->charset || 'UTF-8';
+    $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
 sub handler ($$) {
@@ -836,15 +853,16 @@ sub init_query {
                 }
                 $d = MT::I18N::default->encode_text_encode( $d, $request_charset, $charset )
                     if $transcode;
-                my $saved = $d;
-                eval { Encode::decode( $charset, $d, 1 ); };
-                return $app->errtrans(
-                    "Invalid request: corrupt character data for character set [_1]",
-                    $charset
-                ) if $@;
-                push @param, $saved if $transcode;
+                unless ( ref($d) && ( 'Fh' eq ref($d) ) ) {
+                    eval { $d = Encode::decode( $charset, $d, 1 ); };
+                    return $app->errtrans(
+                        "Invalid request: corrupt character data for character set [_1]",
+                        $charset
+                    ) if $@;
+                }
+                push @param, $d;
             }
-            if ( $transcode && @param ) {
+            if ( @param ) {
                 if ( 1 == scalar(@param) ) {
                     $params{ $p } = $param[0];
                 }
@@ -854,7 +872,7 @@ sub init_query {
             }
         }
         while ( my ( $key, $val ) = each %params ) {
-            if ( ref $val ) {
+            if ( ref($val) && ( 'ARRAY' eq ref($val) ) ) {
                 $app->param( $key, @{ $params{ $key } } ) ;
             }
             else {
@@ -931,13 +949,43 @@ sub _cb_mark_blog {
 sub _cb_user_provisioning {
     my ( $cb, $user ) = @_;
 
-    # Supply user with what they need...
+    # Cannot supply if website are not seleted.
+    my $website_class = MT->model('website');
+    my $website_id = MT->config('NewUserDefaultWebsiteId');
+    my $website = $website_id
+        ? $website_class->load($website_id)
+        : undef;
+    if ( !$website_id || !$website) {
+        MT->log(
+            {   message => MT->translate(
+                    "Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.",
+                    ($website_id ? $website_id : '')
+                ),
+                level => MT::Log::ERROR(),
+            }
+        );
+        return;
+    }
 
+    # Supply user with what they need...
     require MT::Blog;
     require MT::Util;
     my $new_blog;
     my $blog_name = $user->nickname || MT->translate("First Weblog");
-    if ( my $blog_id = MT->config('NewUserTemplateBlogId') ) {
+
+    my $theme_id = MT->config('NewUserBlogTheme');
+    my $blog_id = MT->config('NewUserTemplateBlogId');
+    if ( $theme_id ) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ( $theme ) {
+            $new_blog = MT::Blog->create_default_blog($blog_name, undef, $website_id);
+            $new_blog->theme_id($theme_id);
+            $new_blog->save;
+            $new_blog->apply_theme;
+        }
+    }
+    elsif ( $blog_id ) {
         my $blog = MT::Blog->load($blog_id);
         if ( !$blog ) {
             MT->log(
@@ -954,6 +1002,7 @@ sub _cb_user_provisioning {
             {   Children => 1,
                 Classes  => { 'MT::Permission' => 0, 'MT::Association' => 0 },
                 BlogName => $blog_name,
+                Website => $website_id,
             }
         );
         if ( !$new_blog ) {
@@ -970,53 +1019,58 @@ sub _cb_user_provisioning {
         }
     }
     else {
-        $new_blog = MT::Blog->create_default_blog($blog_name);
+        $new_blog = MT::Blog->create_default_blog($blog_name, undef, $website_id);
     }
 
     my $dir_name;
-    if ( my $root = MT->config('DefaultSiteRoot') ) {
-        my $fmgr = $new_blog->file_mgr;
-        if ( -d $root ) {
-            my $path;
-            $dir_name = MT::Util::dirify( $new_blog->name );
-            $dir_name = 'blog-' if ( $dir_name =~ /^_*$/ );
-            my $sfx = 0;
-            while (1) {
-                $path = File::Spec->catdir( $root,
-                    $dir_name . ( $sfx ? $sfx : '' ) );
-                $path =~ s/(.+)\-$/$1/;
+    my $website_root = $website->site_path;
+    my $fmgr = $new_blog->file_mgr;
+    if ( -d $website_root ) {
+        my $path;
+        $dir_name = MT::Util::dirify( $new_blog->name );
+        $dir_name = 'blog-' if ( $dir_name =~ /^_*$/ );
+        my $sfx = 0;
+        while (1) {
+            $path = File::Spec->catdir( $website_root,
+                $dir_name . ( $sfx ? $sfx : '' ) );
+            $path =~ s/(.+)\-$/$1/;
+            if ( !-d $path ) {
+                $fmgr->mkpath($path);
                 if ( !-d $path ) {
-                    $fmgr->mkpath($path);
-                    if ( !-d $path ) {
-                        MT->log(
-                            {   message => MT->translate(
-                                    "Error creating directory [_1] for blog #[_2].",
-                                    $path,
-                                    $new_blog->id
-                                ),
-                                level => MT::Log::ERROR(),
-                            }
-                        );
-                    }
-                    last;
+                    MT->log(
+                        {   message => MT->translate(
+                            "Error creating directory [_1] for blog #[_2].",
+                            $path,
+                            $new_blog->id
+                        ),
+                            level => MT::Log::ERROR(),
+                        }
+                    );
                 }
-                $sfx++;
+                last;
             }
-            $dir_name .= $sfx ? $sfx : '';
-            $dir_name =~ s/(.+)\-$/$1/;
-            $new_blog->site_path($path);
+            $sfx++;
         }
+        $dir_name .= $sfx ? $sfx : '';
+        $dir_name =~ s/(.+)\-$/$1/;
+
+        $path =~ s!^$website_root/*!!;
+        $new_blog->site_path($path);
     }
-    if ( my $url = MT->config('DefaultSiteURL') ) {
-        $url .= '/' unless $url =~ m!/$!;
-        $url .= $dir_name ? $dir_name : MT::Util::dirify( $new_blog->name );
-        $url .= '/';
-        $new_blog->site_url($url);
-    }
+
+    my $url = $website->site_url;
+    my $website_url = $url;
+    $url .= '/' unless $url =~ m!/$!;
+    $url .= $dir_name ? $dir_name : MT::Util::dirify( $new_blog->name );
+    $url .= '/';
+    $url =~ s!^$website_url/*!!;
+    $new_blog->site_url('/::/'.$url);
+
     my $offset = MT->config('DefaultTimezone');
     if ( defined $offset ) {
         $new_blog->server_offset($offset);
     }
+
     $new_blog->save
         or MT->log(
         {   message => MT->translate(
@@ -1040,7 +1094,13 @@ sub _cb_user_provisioning {
 
     require MT::Role;
     require MT::Association;
-    my $role = MT::Role->load_by_permission('administer_blog');
+    my @roles = MT::Role->load_by_permission("administer_blog");
+    my $role;
+    foreach my $r ( @roles ) {
+        next if $r->permissions =~ m/\'administer_website\'/;
+        $role = $r;
+        last;
+    }
     if ($role) {
         MT::Association->link( $user => $role => $new_blog );
     }
@@ -1057,6 +1117,10 @@ sub _cb_user_provisioning {
             }
         );
     }
+
+    # Apply permission to website administrator if (s)he has manage_member_blogs permission.
+    $website->add_blog( $new_blog );
+
     1;
 }
 
@@ -1104,6 +1168,31 @@ sub permissions {
     my $app = shift;
     $app->{perms} = shift if @_;
     return $app->{perms};
+}
+
+sub can_do {
+    my $app = shift;
+    my ( $action, $perms ) = @_;
+    my $user = $app->user
+        or die $app->error(
+            $app->translate('Internal Error: Login user is not initialized.')
+        );
+
+    ##TODO: is this always good behavior?
+    return 1 if $user->is_superuser;
+
+    if ( $perms ||= $app->permissions ) {
+        my $blog_result = $perms->can_do($action);
+        return $blog_result if defined $blog_result;
+    }
+    ## if there were no result from blog permission,
+    ## look for system level permission.
+    my $sys_perms = MT::Permission->load({
+        author_id => $user->id,
+        blog_id   => 0,
+    });
+
+    return $sys_perms ? $sys_perms->can_do($action) : undef;
 }
 
 sub session_state {
@@ -1384,7 +1473,6 @@ sub make_commenter_session {
         );
 
     my $enc = $app->charset;
-    $nick = encode_text( $nick, $enc, 'utf-8' );
     my $nick_escaped = MT::Util::escape_unicode($nick);
 
     my $timeout;
@@ -1471,7 +1559,7 @@ sub start_session {
     my $session = make_session( $author, $remember );
     my %arg = (
         -name  => $app->user_cookie,
-        -value => join( '::', $author->name, $session->id, $remember ),
+        -value => Encode::encode( $app->charset, join( '::', $author->name, $session->id, $remember ) ),
         -path => $app->config->CookiePath || $app->mt_path
     );
     $arg{-expires} = '+10y' if $remember;
@@ -1563,7 +1651,10 @@ sub external_authenticators {
     my @auths = split ',', $blog->commenter_authenticators;
     my %otherauths;
     foreach my $key (@auths) {
+        my $id = lc $key;
+        $id =~ s/[^a-z0-9-]//;
         if ( $key eq 'MovableType' ) {
+            $param->{default_id} = $id;
             $param->{enabled_MovableType} = 1;
             $param->{default_signin}      = 'MovableType';
             my $cfg = $app->config;
@@ -1587,6 +1678,7 @@ sub external_authenticators {
         {
             push @external_authenticators,
                 {
+                id         => $id,
                 name       => $auth->{label},
                 key        => $auth->{key},
                 login_form => $app->_get_options_html($key),
@@ -1595,6 +1687,7 @@ sub external_authenticators {
         }
         else {
             $otherauths{$key} = {
+                id         => $id,
                 name       => $auth->{label},
                 key        => $auth->{key},
                 login_form => $app->_get_options_html($key),
@@ -1652,7 +1745,7 @@ sub _is_commenter {
         }
         return $app->error(
             $app->translate(
-                'Our apologies, but you do not have permission to access any blogs within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
+                'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.'
             )
         ) unless $has_system_permission;
         return -1;
@@ -1902,19 +1995,6 @@ sub login {
 
         # $author->last_login();
         # $author->save;
-
-        ## update session so the user will be counted as active
-        require MT::Session;
-        my $sess_active
-            = MT::Session->load( { kind => 'UA', name => $author->id } );
-        if ( !$sess_active ) {
-            $sess_active = MT::Session->new;
-            $sess_active->id( make_magic_token() );
-            $sess_active->kind('UA');    # UA == User Activation
-            $sess_active->name( $author->id );
-        }
-        $sess_active->start(time);
-        $sess_active->save;
 
         return ( $author, $new_login );
     }
@@ -2830,7 +2910,7 @@ sub run {
             # up front and leading whitespace makes a feed invalid.
             $body =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
 
-            $app->print($body);
+            $app->print_encode( $body );
         }
     }
 
@@ -2938,17 +3018,19 @@ sub l10n_filter { $_[0]->translate_templatized( $_[1] ) }
 
 sub load_widgets {
     my $app = shift;
-    my ( $page, $param, $default_widgets ) = @_;
+    my ( $page, $scope_type, $param, $default_widgets ) = @_;
 
     my $user           = $app->user;
     my $blog           = $app->blog;
     my $blog_id        = $blog->id if $blog;
-    my $scope          = $blog_id ? 'blog:' . $blog_id : 'system';
+    my $scope          =
+        $scope_type eq 'blog' || $scope_type eq 'website'
+            ? 'blog:' . $blog_id
+            : $scope_type eq 'user'
+                ? 'user:' . $user->id
+                : 'system';
     my $resave_widgets = 0;
     my $widget_set     = $page . ':' . $scope;
-
-    # TBD: Fetch list of widgets from user object, or
-    # use a default list
 
     my $widget_store = $user->widgets;
     my $widgets = $widget_store->{$widget_set} if $widget_store;
@@ -2962,7 +3044,7 @@ sub load_widgets {
 
             # Special case for the MT CMS dashboard and initial
             # widgets used there.
-            if ( $page eq 'dashboard' ) {
+            if ( $page eq 'dashboard' && $scope_type eq 'user') {
                 if ( $user->id == 1 ) {
 
                     # first user! good enough guess at this.
@@ -2972,16 +3054,21 @@ sub load_widgets {
                     $widgets->{new_user} = { order => -2, set => 'main' };
                 }
 
-           # Do not show new_version widget for users without specific widgets
-           #$widgets->{new_version} = { order => -1, set => 'main' }
-           #    unless $app->param('installed');
-            }
+                # Do not show new_version widget for users without specific widgets
+                #$widgets->{new_version} = { order => -1, set => 'main' }
+                #    unless $app->param('installed');
+           }
         }
     }
 
-    my $all_widgets = $app->registry("widgets");
-    $all_widgets
-        = $app->filter_conditional_list( $all_widgets, $page, $scope );
+    my $reg_widgets = $app->registry("widgets");
+    $reg_widgets
+        = $app->filter_conditional_list( $reg_widgets, $page, $scope );
+    my $all_widgets;
+    foreach my $widget ( keys %$reg_widgets ) {
+        $all_widgets->{$widget} = $reg_widgets->{$widget}
+            if ( !defined $reg_widgets->{$widget}->{view} ) || ( $reg_widgets->{$widget}->{view} eq $scope_type );
+    }
 
     my @loop;
     my @ordered_list;
@@ -3075,6 +3162,9 @@ sub build_widgets {
         local $widget_param->{widget_scope}    = $widget_set;
         local $widget_param->{widget_singular} = $widget->{singular} || 0;
         local $widget_param->{magic_token}     = $app->current_magic;
+        local $widget_param->{build_menus}     = 0;
+        local $widget_param->{build_blog_selector} = 0;
+        local $widget_param->{build_compose_menus} = 0;
         if ( my $h = $widget->{code} || $widget->{handler} ) {
             $h = $app->handler_to_coderef($h);
             $h->( $app, $tmpl, $widget_param );
@@ -3137,6 +3227,7 @@ sub update_widget_prefs {
             $resave_widgets = 1;
         }
     }
+
     if ( $action eq 'add' ) {
         my $set = $app->param('widget_set') || 'main';
         my $all_widgets = $app->registry("widgets");
@@ -3150,9 +3241,12 @@ sub update_widget_prefs {
                 }
             }
             $these_widgets->{$widget_inst} = { set => $set };
+            $these_widgets->{$widget_inst} = { param => $widget->{param} }
+                if exists $widget->{param};
         }
         $resave_widgets = 1;
     }
+
     if ( ( $action eq 'save' ) && $these_widgets ) {
         my %all_params = $app->param_hash;
         my $refresh = $all_params{widget_refresh} ? 1 : 0;
@@ -3183,11 +3277,18 @@ sub update_widget_prefs {
 
 sub load_widget_list {
     my $app = shift;
-    my ( $page, $param, $default_set ) = @_;
+    my ( $page, $scope_type, $param, $default_set ) = @_;
 
     my $blog    = $app->blog;
     my $blog_id = $blog->id if $blog;
-    my $scope   = $page . ':' . ( $blog_id ? 'blog:' . $blog_id : 'system' );
+    my $user    = $app->user;
+    my $scope          =
+        $scope_type eq 'blog' || $scope_type eq 'website'
+            ? 'blog:' . $blog_id
+            : $scope_type eq 'user'
+                ? 'user:' . $user->id
+                : 'system';
+    $scope = $page . ':' . $scope;
 
     my $user_widgets = $app->user->widgets || {};
     $user_widgets = $user_widgets->{$scope} || $default_set || {};
@@ -3209,6 +3310,8 @@ sub load_widget_list {
             # don't allow multiple widgets
             next if exists $in_use{$id};
         }
+        next unless ( (!defined $w->{view}) || ($w->{view} eq $scope_type) );
+
         $w->{id} = $id;
         push @$widgets, $w;
     }
@@ -3230,6 +3333,7 @@ sub load_widget_list {
             widget_id => $w->{id},
             ( $w->{set} ? ( widget_set => $w->{set} ) : () ),
             widget_label => $label,
+            ( $w->{param} ? ( param => $w->{param} ) : () ),
             };
     }
     @widget_loop
@@ -3426,6 +3530,7 @@ sub app_path {
         $path =~ s!/[^/]*$!!;
     }
     elsif ( $app->{query} ) {
+        local $ENV{PATH_INFO} = q() if ( exists( $ENV{PERLXS} ) && $ENV{PERLXS} eq "PerlIS" );
         $path = $app->{query}->url;
         $path =~ s!/[^/]*$!!;
 
@@ -3555,7 +3660,9 @@ sub blog {
     return undef unless $app->{query};
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
-        $app->{_blog} = MT::Blog->load($blog_id);
+        require MT::Blog;
+        my $blog = MT::Blog->load($blog_id);
+        $app->{_blog} = $blog;
     }
     return $app->{_blog};
 }

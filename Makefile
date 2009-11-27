@@ -7,11 +7,6 @@ BUILD_PACKAGE ?= MTOS
 
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
 
-latin1_modules = lib/MT/L10N/es-iso-8859-1.pm \
-		 lib/MT/L10N/fr-iso-8859-1.pm \
-		 lib/MT/L10N/de-iso-8859-1.pm \
-		 lib/MT/L10N/nl-iso-8859-1.pm
-
 local_js = mt-static/mt_de.js \
         mt-static/mt_fr.js \
         mt-static/mt_nl.js \
@@ -60,14 +55,14 @@ mt-static/css/simple.css: $(simple_css)
 
 .PHONY: code-common code code-en_US code-de code-fr code-nl \
 	code-es code-ja
-code_common = lib/MT.pm php/mt.php \
+code_common = lib/MT.pm php/mt.php mt-check.cgi \
         mt-static/js/mt_core_compact.js \
         mt-static/css/main.css \
         mt-static/css/simple.css
 
 code: check code-$(BUILD_LANGUAGE)
 code-en_US code-de code-fr code-nl code-es: check $(code_common) \
-	$(latin1_modules) $(local_js)
+	$(local_js)
 code-ja: check $(code_common) mt-static/mt_ja.js
 
 build-language-stamp:
@@ -99,11 +94,15 @@ php/mt.php: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	php/mt.php.pre > php/mt.php
 	rm php/mt.php.pre
 
+mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
+	mv mt-check.cgi mt-check.cgi.pre
+	sed -e 's!__PRODUCT_VERSION_ID__!$(BUILD_VERSION_ID)!g' \
+	mt-check.cgi.pre > mt-check.cgi
+	rm mt-check.cgi.pre
+	chmod +x mt-check.cgi
+
 $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 	perl build/mt-dists/make-js
-
-$(latin1_modules): %-iso-8859-1.pm: %.pm
-	iconv -f utf-8 -t iso-8859-1 $< > $@
 
 ##### Other useful targets
 
@@ -148,9 +147,9 @@ me:
 	perl build/exportmt.pl --make
 
 clean:
-	-rm -rf $(latin1_modules) $(local_js)
+	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
-
+	-svn revert lib/MT.pm php/mt.php

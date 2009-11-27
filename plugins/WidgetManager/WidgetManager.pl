@@ -16,7 +16,6 @@ use base qw( MT::Plugin );
 use constant DEBUG => 0;
 use MT::Template;
 use MT::Util qw( escape_unicode );
-use MT::I18N qw( encode_text );
 
 our $VERSION = '1.1';
 
@@ -61,7 +60,6 @@ sub _disable_widgetmanager {
 sub _translate_escape { 
     my $trans = $plugin->translate(@_); 
     return $trans if $MT::Upgrade::CLI; 
-    $trans = MT::I18N::encode_text($trans, undef, 'utf-8'); 
     return MT::Util::escape_unicode($trans); 
 } 
 
@@ -81,7 +79,7 @@ sub upgrade_widgetmanagers {
         my $modulesets = $config->{modulesets};
         next unless $modulesets;
         foreach my $mod_key ( keys %$modulesets ) {
-            $upg->progress(_translate_escape('Moving storage of Widget Manager [_1]...', $mod_key));
+            $upg->progress(_translate_escape('Moving storage of Widget Manager [_2]...', $mod_key));
             my $tmpl_ids = $modulesets->{$mod_key};
             my $tmpl = MT::Template->new;
             $tmpl->blog_id($blog_id);

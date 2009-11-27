@@ -9,6 +9,7 @@ package MT::Builder;
 use strict;
 use base qw( MT::ErrorHandler );
 use MT::Template::Node;
+use MT::Template::Handler;
 
 sub NODE () { 'MT::Template::Node' }
 
@@ -40,15 +41,18 @@ sub compile {
         $ids = $build->{__state}{ids} || {};
         $classes = $build->{__state}{classes} || {};
         $tmpl = $build->{__state}{tmpl};
-        $errors = $build->{__state}{errors} = [];
+        $errors = $build->{__state}{errors} ||= [];
     }
 
     return [ ] unless defined $text;
+    if ( $depth <= 0 && $text && Encode::is_utf8($text) ) {
+        Encode::_utf8_off($text);
+    }
 
     my $mods;
 
     # Translate any HTML::Template markup into native MT syntax.
-    if ($text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
+    if ($depth <= 0 && $text =~ m/<(?:MT_TRANS\b|MT_ACTION\b|(?:tmpl_(?:if|loop|unless|else|var|include)))/i) {
         translate_html_tmpl($text);
     }
 
@@ -133,7 +137,11 @@ sub compile {
                 }
             }
         }
-        my($h, $is_container) = $ctx->handler_for($tag);
+        my $hdlr = $ctx->handler_for($tag);
+        my ($h, $is_container);
+        if ($hdlr) {
+            ($h, $is_container) = $hdlr->values;
+        }
         if (!$h) {
             # determine line #
             my $pre_error = substr($text, 0, $tag_start);
@@ -141,7 +149,7 @@ sub compile {
             my $line = scalar @m;
             if ($depth) {
                 $opt->{error_line} = $line;
-                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, "#"), line => $line };
+                push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, "#"), line => $line + 1 };
             } else {
                 push @$errors, { message => MT->translate("<[_1]> at line [_2] is unrecognized.", $prefix . $tag, $line + 1), line => $line };
             }
@@ -166,7 +174,7 @@ sub compile {
                             foreach (@$errors) {
                                 $line += $_->{line};
                                 $_->{line} = $line;
-                                $_->{message} =~ s/#/$line/;
+                                $_->{message} =~ s/#/$line/ unless $depth;
                             }
                         }
                         # unless (defined $rec->[2]) {
@@ -227,6 +235,14 @@ sub compile {
             return $build->error( $errors->[0]->{message} );
         }
     }
+
+    if ( $depth <= 0 ) {
+        for my $t ( @{ $state->{tokens} } ) {
+            $t->upgrade;
+        }
+        Encode::_utf8_on($text)
+            if !Encode::is_utf8($text);
+    }
     return $state->{tokens};
 }
 
@@ -240,8 +256,9 @@ sub _consume_up_to {
     my($text, $start, $stoptag) = @_;
     my $pos;
     (pos $$text) = $start;
-    while ($$text =~ m!(<([\$/]?)MT:?($stoptag)\b(?:[^>]*?)[\$/]?>)!gi) {
+    while ($$text =~ m!(<([\$/]?)MT:?([^\s\$>]+)(?:[^>]*?)[\$/]?>)!gi) {
         my($whole_tag, $prefix, $tag) = ($1, $2, $3);
+        next if lc $tag ne lc $stoptag;
         my $end = pos $$text;
         if ($prefix && ($prefix eq '/')) {
             return ($end - length($whole_tag), $end);
@@ -344,7 +361,8 @@ sub build {
                 }
                 $uncompiled = $t->nodeValue;
             }
-            my($h, $type) = $ctx->handler_for($t->tag);
+            my $hdlr = $ctx->handler_for($t->tag);
+            my ($h, $type, $orig) = $hdlr->values;
             my $conditional = defined $type && $type == 2;
 
             if ($h) {
@@ -359,11 +377,13 @@ sub build {
                 # process variables
                 foreach my $v (keys %args) {
                     if (ref $args{$v} eq 'ARRAY') {
-                        foreach (@{$args{$v}}) {
+                        my @array = @{$args{$v}};
+                        foreach (@array) {
                             if (m/^\$([A-Za-z_](\w|\.)*)$/) {
-                                local $_ = $ctx->var($1);
+                                $_ = $ctx->var($1);
                             }
                         }
+                        $args{$v} = \@array;
                     } else {
                         if ($args{$v} =~ m/^\$([A-Za-z_](\w|\.)*)$/) {
                             $args{$v} = $ctx->var($1);
@@ -397,7 +417,7 @@ sub build {
                 local $vars->{__cond_name__}  = $vars->{__cond_name__}
                     if $conditional;
 
-                my $out = $h->($ctx, \%args, $cond);
+                my $out = $hdlr->invoke($ctx, \%args, $cond);
 
                 unless (defined $out) {
                     my $err = $ctx->errstr;

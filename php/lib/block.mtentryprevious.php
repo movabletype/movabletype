@@ -11,12 +11,13 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
         $ctx->localize(array('entry', 'conditional', 'else_content'));
         $entry = $ctx->stash('entry');
         if ($entry) {
-            $entry_id = $entry['entry_id'];
+            $entry_id = $entry->entry_id;
             if (isset($_prev_cache[$entry_id])) {
                 $prev_entry = $_prev_cache[$entry_id];
             } else {
-                $ts = $entry['entry_authored_on'];
-                $blog_id = $entry['entry_blog_id'];
+                $mt = MT::get_instance();
+                $ts = $mt->db()->db2ts($entry->entry_authored_on);
+                $blog_id = $entry->entry_blog_id;
                 if (isset($args['class'])) {
                     $class = $args['class'];
                 } else {
@@ -27,7 +28,7 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'class' => $class);
-                list($prev_entry) = $ctx->mt->db->fetch_entries($args);
+                list($prev_entry) = $ctx->mt->db()->fetch_entries($args);
                 if ($prev_entry) $_prev_cache[$entry_id] = $prev_entry;
             }
             $ctx->stash('entry', $prev_entry);

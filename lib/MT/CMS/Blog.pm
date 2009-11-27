@@ -1,6 +1,12 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::Blog;
 
 use strict;
+use MT::Util qw( dirify );
 
 sub edit {
     my $cb = shift;
@@ -105,10 +111,66 @@ sub edit {
                 $param->{cc_license_url} =
                   MT::Util::cc_url( $obj->cc_license );
             }
+            if (   $obj->column('archive_path')
+                || $obj->column('archive_url') )
+            {
+                $param->{enable_archive_paths} = 1;
+                $param->{archive_url} = $obj->archive_url;
+                my @raw_archive_url = $obj->raw_archive_url; 
+                if ( 2 == @raw_archive_url ) {
+                    my $subdomain = $raw_archive_url[0];
+                    $subdomain =~ s/\.$//;
+                    $param->{archive_url_subdomain} = $subdomain;
+                    $param->{archive_url_path} = $raw_archive_url[1];
+                }
+                $param->{archive_path} = $obj->column('archive_path');
+                $param->{archive_path_absolute} = $obj->is_archive_path_absolute;
+            }
+            else {
+                $param->{archive_path} = '';
+                $param->{archive_url}  = '';
+            }
+            $param->{ 'archive_type_preferred_'
+                  . $blog->archive_type_preferred } = 1
+              if $blog->archive_type_preferred;
+            my $at = $blog->archive_type;
+            if ( $at && $at ne 'None' ) {
+                my @at = split /,/, $at;
+                for my $at (@at) {
+                    $param->{ 'archive_type_' . $at } = 1;
+                }
+            }
+            require MT::PublishOption;
+            if ( $app->model('template')->exist(
+                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
+              || $app->model('templatemap')->exist(
+                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
+            {
+                $param->{dynamic_enabled} = 1;
+                $param->{warning_include} = 1 unless $blog->include_system eq 'php' || $blog->include_system eq '' ;
+            }
+            eval "require List::Util; require Scalar::Util;";
+            unless ($@) {
+                $param->{can_use_publish_queue} = 1;
+            }
+            if ( $blog->publish_queue ) {
+                $param->{publish_queue} = 1;
+            }
+            if ( $blog->include_cache ) {
+                $param->{include_cache} = 1;
+            }
+            $param->{'master_revision_switch'} = $app->config->TrackRevisions;
+            $param->{'use_revision'} = ( $obj->use_revision || 0 );
+            $param->{'max_revisions_entry'} =
+              ( $obj->max_revisions_entry || $MT::Revisable::MAX_REVISIONS );
+            $param->{'max_revisions_template'} =
+              ( $obj->max_revisions_template || $MT::Revisable::MAX_REVISIONS );
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
-            my $pref_param = $app->load_entry_prefs;
+            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
+            %$param = ( %$param, %$pref_param );
+            $pref_param = $app->load_entry_prefs( { type => 'page' } );
             %$param = ( %$param, %$pref_param );
             $param->{ 'sort_order_posts_'
                   . ( $obj->sort_order_posts || 0 ) } = 1;
@@ -146,7 +208,7 @@ sub edit {
               } foreach keys %$pings;
             $param->{pings_loop} = \@pings;
         }
-        elsif ( $output eq 'cfg_comments.tmpl' ) {
+        elsif ( $output eq 'cfg_feedback.tmpl' ) {
             $param->{email_new_comments_1} =
               ( $obj->email_new_comments || 0 ) == 1;
             $param->{email_new_comments_2} =
@@ -177,8 +239,7 @@ sub edit {
                 }
             }
             $param->{captcha_loop} = \@cps;
-        }
-        elsif ( $output eq 'cfg_trackbacks.tmpl' ) {
+
             $param->{email_new_pings_1} = ( $obj->email_new_pings || 0 ) == 1;
             $param->{email_new_pings_2} = ( $obj->email_new_pings || 0 ) == 2;
             $param->{nofollow_urls}     = $obj->nofollow_urls;
@@ -189,6 +250,11 @@ sub edit {
             $param->{system_allow_local_pings} =
                  ( $cfg->OutboundTrackbackLimit eq 'local' )
               || ( $cfg->OutboundTrackbackLimit eq 'any' );
+            my $threshold = $obj->junk_score_threshold || 0;
+            $threshold = '+' . $threshold if $threshold > 0;
+            $param->{junk_score_threshold} = $threshold;
+            $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
+            $param->{auto_delete_junk}     = $obj->junk_folder_expiry;
         }
         elsif ( $output eq 'cfg_registration.tmpl' ) {
             $param->{commenter_authenticators} =
@@ -204,56 +270,6 @@ sub edit {
             $param->{allow_reg_comments} = $blog->allow_reg_comments;
             $param->{allow_unreg_comments} = $blog->allow_unreg_comments;
             $param->{require_typekey_emails} = $obj->require_typekey_emails;
-        }
-        elsif ( $output eq 'cfg_spam.tmpl' ) {
-            my $threshold = $obj->junk_score_threshold || 0;
-            $threshold = '+' . $threshold if $threshold > 0;
-            $param->{junk_score_threshold} = $threshold;
-            $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
-            $param->{auto_delete_junk}     = $obj->junk_folder_expiry;
-        }
-        elsif ( $output eq 'cfg_archives.tmpl' ) {
-            $app->add_breadcrumb( $app->translate('Publishing Settings') );
-            if (   $obj->column('archive_path')
-                || $obj->column('archive_url') )
-            {
-                $param->{enable_archive_paths} = 1;
-                $param->{archive_path}         = $obj->column('archive_path');
-                $param->{archive_url}          = $obj->column('archive_url');
-            }
-            else {
-                $param->{archive_path} = '';
-                $param->{archive_url}  = '';
-            }
-            $param->{ 'archive_type_preferred_'
-                  . $blog->archive_type_preferred } = 1
-              if $blog->archive_type_preferred;
-            my $at = $blog->archive_type;
-            if ( $at && $at ne 'None' ) {
-                my @at = split /,/, $at;
-                for my $at (@at) {
-                    $param->{ 'archive_type_' . $at } = 1;
-                }
-            }
-            require MT::PublishOption;
-            if ( $app->model('template')->exist(
-                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
-              || $app->model('templatemap')->exist(
-                    { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() }) )
-            {
-                $param->{dynamic_enabled} = 1;
-                $param->{warning_include} = 1 unless $blog->include_system eq 'php' || $blog->include_system eq '' ;
-            }
-            eval "require List::Util; require Scalar::Util;";
-            unless ($@) {
-                $param->{can_use_publish_queue} = 1;
-            }
-            if ( $blog->publish_queue ) {
-                $param->{publish_queue} = 1;
-            }
-            if ( $blog->include_cache ) {
-                $param->{include_cache} = 1;
-            }
         }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
@@ -271,7 +287,7 @@ sub edit {
         ( my $offset = $obj->server_offset ) =~ s![-\.]!_!g;
         $offset =~ s!_0+$!!; # fix syntax highlight ->!
         $param->{ 'server_offset_' . $offset } = 1;
-        if ( $output eq 'cfg_comments.tmpl' ) {
+        if ( $output eq 'cfg_feedback.tmpl' ) {
             ## Load text filters.
             $param->{text_filters_comments} =
               $app->load_text_filters( $obj->convert_paras_comments,
@@ -285,81 +301,86 @@ sub edit {
         $param->{nav_config} = 1;
         $param->{error} = $app->errstr if $app->errstr;
     } else {
+        return $app->return_to_dashboard( redirect => 1 )
+            if !$blog || ($blog && $blog->is_blog());
+
         $app->add_breadcrumb( $app->translate('New Blog') );
         ( my $tz = $cfg->DefaultTimezone ) =~ s![-\.]!_!g;
         $tz =~ s!_00$!!; # fix syntax highlight ->!
         $param->{ 'server_offset_' . $tz } = 1;
-        $param->{'can_edit_config'}        = $app->user->can_create_blog;
-        $param->{'can_set_publish_paths'}  = $app->user->can_create_blog;
+        $param->{'can_edit_config'}        = $app->can_do('edit_new_blog_config');
+        $param->{'can_set_publish_paths'}  = $app->can_do('set_new_blog_publish_paths');
 
-        my $sets = $app->registry("template_sets");
-        $sets->{$_}{key} = $_ for keys %$sets;
-        $sets->{'mt_blog'}{selected} = 1;
-        $sets = $app->filter_conditional_list([ values %$sets ]);
-        no warnings;
-        @$sets = sort { $a->{order} <=> $b->{order} } @$sets;
-        $param->{'template_set_loop'} = $sets;
-        $param->{'template_set_index'} = $#$sets;
-
-        require MT::I18N;
-        $param->{languages} = MT::I18N::languages_list( $app, $app->current_language );
+        $param->{languages} = MT::I18N::languages_list( $app, MT->config->DefaultLanguage );
     }
 
-    if (   !$param->{site_path}
-        && !( $param->{site_path} = $app->config('DefaultSiteRoot') ) )
+    if ( !$param->{site_path} )
     {
-        my $cwd = $app->document_root;
-        $cwd = File::Spec->catdir($cwd, 'BLOG-NAME'); # for including the end of directory separator
-        $cwd =~ s!BLOG-NAME\z!!;                      # canonpath() remove it
-        $cwd =~ s!([\\/])cgi(?:-bin)?([\\/].*)?$!$1!;
-        $cwd =~ s!([\\/])mt[\\/]?$!$1!i;
-        $param->{suggested_site_path} = $cwd;
-    }
-    if ( !$param->{id} ) {
-        if ( $param->{site_path} ) {
-            $param->{site_path} =
-              File::Spec->catdir( $param->{site_path}, 'BLOG-NAME' );
-        }
-        else {
-            $param->{suggested_site_path} =
-              File::Spec->catdir( $param->{suggested_site_path},
-                'BLOG-NAME' );
-        }
+        $param->{suggested_site_path} = 'BLOG-NAME';
     }
 
-    # If not yet defined, set the site_url to the config default, if one exists.
-    $param->{site_url} ||= $app->config('DefaultSiteURL');
     if ( !$param->{site_url} ) {
-        $param->{suggested_site_url} = $app->base . '/';
-        $param->{suggested_site_url} =~ s!/cgi(?:-bin)?(/.*)?$!/!;
-        $param->{suggested_site_url} =~ s!/mt/?$!/!i;
+        $param->{suggested_site_url} = 'BLOG-NAME';
     }
     if ( !$param->{id} ) {
         if ( $param->{site_url} ) {
             $param->{site_url} .= '/'
               unless $param->{site_url} =~ /\/$/;
-            $param->{site_url} .= 'BLOG-NAME/';
         }
         else {
             $param->{suggested_site_url} .= '/'
               unless $param->{suggested_site_url} =~ /\/$/;
-            $param->{suggested_site_url} .= 'BLOG-NAME/';
         }
+        $param->{screen_class} = "settings-screen";
+    } else {
+        my @raw_site_url = $obj->raw_site_url; 
+        if ( 2 == @raw_site_url ) {
+            my $subdomain = $raw_site_url[0];
+            $subdomain =~ s/\.$//;
+            $param->{site_url} = $obj->site_url;
+            $param->{site_url_subdomain} = $subdomain;
+            $param->{site_url_path} = $raw_site_url[1];
+        }
+        else {
+            $param->{site_url} = $raw_site_url[0];
+        }
+        $param->{site_path} = $obj->column('site_path');
+        $param->{site_path_absolute} = $obj->is_site_path_absolute;
     }
+
+    if (!$blog->is_blog()) {
+        $param->{website_path} = File::Spec->catfile($blog->column('site_path'), '') if $blog->column('site_path');
+        $param->{website_url} = $blog->column('site_url');
+    } elsif (my $website = $blog->website()){
+        $param->{website_path} = File::Spec->catfile($website->column('site_path'), '') if $website->column('site_path');
+        $param->{website_url} = $website->site_url;
+    }
+    if ( exists $param->{website_url} ) {
+        my $website_url = $param->{website_url};
+        my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!;
+        $domain .= '/' if $domain !~ m!/$!;
+        $param->{website_scheme} = $scheme;
+        $param->{website_domain} = $domain;
+    }
+
     1;
 }
 
 sub list {
     my $app = shift;
-
-    $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
+    if ($app->param('blog_id')) {
+        my $website = $app->blog;
+        $app->return_to_dashboard( redirect => 1 ) if !$website || $website->is_blog();
+    } else {
+        my $type = $app->param('type');
+        $app->return_to_dashboard( redirect => 1 ) if !$type || $type eq 'blog';
+    }
 
     my $author    = $app->user;
     my $list_pref = $app->list_pref('blog');
-
-    my $limit  = $list_pref->{rows};
-    my $offset = $app->param('offset') || 0;
-    my $args   = { offset => $offset, sort => 'name' };
+    my $limit     = $list_pref->{rows};
+    my $offset    = $app->param('offset') || 0;
+    my $args      = { offset => $offset, sort => 'name' };
     $args->{limit} = $limit + 1;
     unless ( $author->is_superuser ) {
         $args->{join} = MT::Permission->join_on(
@@ -368,11 +389,18 @@ sub list {
             { unique    => 1 }
         );
     }
-    my $blog_class       = $app->model('blog');
+
+    my $blog_id = $app->param('blog_id');
+    my $terms;
+    $terms->{parent_id} = $blog_id
+        if $blog_id && !($app->blog->is_blog());
+
+    my $type             = $app->param('type') || MT::Blog->class_type;
+    my $pkg              = $app->model($type);
     my %param            = %$list_pref;
-    my @blogs            = $blog_class->load( undef, $args );
-    my $can_edit_authors = $author->is_superuser;
-    my $blog_loop        = make_blog_list( $app, \@blogs );
+    my @blogs            = $pkg->load( $terms, $args );
+    my $can_edit_authors = $app->can_do('edit_authors');
+    my $blog_loop        = make_blog_list( $app, \@blogs ) if @blogs;
 
     if ($blog_loop) {
         ## We tried to load $limit + 1 entries above; if we actually got
@@ -388,38 +416,45 @@ sub list {
             $param{next_offset}     = 1;
             $param{next_offset_val} = $offset + $limit;
         }
+
     }
     $param{offset}      = $offset;
-    $param{object_type} = 'blog';
+    $param{object_type} = $type;
     $param{list_start}  = $offset + 1;
     delete $args->{limit};
     delete $args->{offset};
-    $param{list_total} = $blog_class->count( undef, $args );
-    $param{list_end}        = $offset + ( $blog_loop ? scalar @$blog_loop : 0 );
-    $param{next_max}        = $param{list_total} - $limit;
-    $param{next_max}        = 0 if ( $param{next_max} || 0 ) < $offset + 1;
-    $param{can_create_blog} = $author->can_create_blog;
-    $param{saved_deleted}   = $app->param('saved_deleted');
-    $param{refreshed}       = $app->param('refreshed');
-    $param{nav_blogs}       = 1;
-    $param{list_noncron}    = 1;
-    $param{search_label}    = $app->translate('Blogs');
+    $param{list_total} = scalar @blogs;
+    $param{list_end} = $offset + ( $blog_loop ? scalar @$blog_loop : 0 );
+    $param{next_max} = $param{list_total} - $limit;
+    $param{next_max} = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{can_create_blog}    = $app->can_do('create_new_blog');
+    $param{can_create_website} = $app->can_do('create_new_website');
+    $param{saved_deleted}      = $app->param('saved_deleted');
+    $param{not_deleted}        = $app->param('not_deleted');
+    $param{refreshed}          = $app->param('refreshed');
+    $param{nav_blogs}          = 1;
+    $param{list_noncron}       = 1;
+    $param{search_label}       = $pkg->class_label_plural;
 
     if ($blog_loop) {
         $param{object_loop} = $param{blog_table}[0]{object_loop} = $blog_loop;
-        $app->load_list_actions( 'blog', \%param );
+        $app->load_list_actions( $type, \%param );
     }
 
+    $param{moved} = 1 if $app->param('moved');
+
     $param{page_actions} = $app->page_actions('list_blog');
-    $param{feed_name}    = $app->translate("Blog Activity Feed");
-    $param{feed_url}     = $app->make_feed_link('blog');
-    $app->add_breadcrumb( $app->translate("Blogs") );
-    $param{nav_weblogs} = 1;
-    $param{object_label} = $blog_class->class_label;
-    $param{object_label_plural} = $blog_class->class_label_plural;
-    $param{screen_class} = "list-blog";
-    $param{screen_id} = "list-blog";
-    $param{listing_screen} = 1;
+    $param{feed_name}
+        = $app->translate( "[_1] Activity Feed", $pkg->class_label );
+    $param{feed_url} = $app->make_feed_link($type);
+    $app->add_breadcrumb( $pkg->class_label_plural );
+
+    $param{nav_weblogs}         = 1;
+    $param{object_label}        = $pkg->class_label;
+    $param{object_label_plural} = $pkg->class_label_plural;
+    $param{screen_class}        = "list-$type";
+    $param{screen_id}           = "list-$type";
+    $param{listing_screen}      = 1;
     if ( my @blog_ids = split ',', $app->param('error_id') ) {
         $param{error} = 1;
         my @names;
@@ -432,36 +467,45 @@ sub list {
     return $app->load_tmpl( 'list_blog.tmpl', \%param );
 }
 
-sub cfg_archives {
+sub cfg_prefs {
     my $app = shift;
     my %param;
     %param = %{ $_[0] } if $_[0];
-    my $q = $app->param;
-
+    my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
-
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
+    my $blog_prefs = $app->user_blog_prefs;
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+        unless $app->can_do('access_to_blog_config_screen');
+
     my $blog = $app->model('blog')->load($blog_id)
-        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
-    my @data;
-    for my $at ( split /\s*,\s*/, $blog->archive_type ) {
-        my $archiver = $app->publisher->archiver($at);
-        next unless $archiver;
-        next if 'entry' ne $archiver->entry_class;
-        my $archive_label = $archiver->archive_label;
-        $archive_label = $at unless $archive_label;
-        $archive_label = $archive_label->() if ( ref $archive_label ) eq 'CODE';
-        push @data,
-          {
-            archive_type_translated => $archive_label,
-            archive_type            => $at,
-            archive_type_is_preferred =>
-              ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
-          };
+        or return $app->error(
+        $app->translate( 'Can\'t load blog #[_1].', $blog_id ) );
+
+    if ($blog->is_blog()) {
+        my @data;
+        for my $at ( split /\s*,\s*/, $blog->archive_type ) {
+            my $archiver = $app->publisher->archiver($at);
+            next unless $archiver;
+            next if 'entry' ne $archiver->entry_class;
+            my $archive_label = $archiver->archive_label;
+            $archive_label = $at unless $archive_label;
+            $archive_label = $archive_label->()
+                if ( ref $archive_label ) eq 'CODE';
+            push @data,
+                {
+                archive_type_translated => $archive_label,
+                archive_type            => $at,
+                archive_type_is_preferred =>
+                    ( $blog->archive_type_preferred eq $at ? 1 : 0 ),
+                };
+        }
+        @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
+        $param{entry_archive_types} = \@data;
     }
-    @data = sort { MT::App::CMS::archive_type_sorter( $a, $b ) } @data;
-    $param{entry_archive_types} = \@data;
+
     $param{saved_deleted}       = 1 if $q->param('saved_deleted');
     $param{saved_added}         = 1 if $q->param('saved_added');
     $param{archives_changed}    = 1 if $q->param('archives_changed');
@@ -476,44 +520,46 @@ sub cfg_archives {
         open my ($fh), $mtview_path;
         while ( my $line = <$fh> ) {
             $param{dynamic_caching} = 1
-              if $line =~ m/^\s*\$mt->caching\s*=\s*true;/i;
+                if $line =~ m/^\s*\$mt->caching\(true\);/i;
             $param{dynamic_conditional} = 1
-              if $line =~ /^\s*\$mt->conditional\s*=\s*true;/i;
+                if $line =~ /^\s*\$mt->conditional\(true\);/i;
         }
         close $fh;
     }
-    $param{output} = 'cfg_archives.tmpl';
-    $q->param( '_type', 'blog' );
+    $param{output} = 'cfg_prefs.tmpl';
+    $q->param( '_type', $blog->class );
     $q->param( 'id',    $blog_id );
-    $param{screen_class} = "settings-screen archive-settings";
+    $param{screen_class} = 'settings-screen general-screen';
     $param{object_type}  = 'author';
     $param{search_label} = $app->translate('Users');
+
+    my @raw_site_url = $blog->raw_site_url; 
+    if ( 2 == @raw_site_url ) {
+        $param{site_url} = $blog->site_url;
+        $param{site_url_subdomain} = $raw_site_url[0];
+        $param{site_url_path} = $raw_site_url[1];
+    }
+    else {
+        $param{site_url} = $raw_site_url[0];
+    }
+    $param{site_path} = $blog->column('site_path');
+    $param{site_path_absolute} = $blog->is_site_path_absolute;
+
     $app->forward( "view", \%param );
 }
 
-sub cfg_prefs {
+sub cfg_feedback {
     my $app     = shift;
     my $q       = $app->param;
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
     $q->param( '_type', 'blog' );
-    $q->param( 'id',    $blog_id );
-    my $blog_prefs = $app->user_blog_prefs;
-    my $perms      = $app->permissions;
-    return $app->error( $app->translate('Permission denied.') )
-      unless $app->user->is_superuser()
-      || (
-        $perms
-        && (   $perms->can_edit_config
-            || $perms->can_administer_blog
-            || $perms->can_set_publish_paths )
-      );
-    my $output = 'cfg_prefs.tmpl';
-    $app->forward("view",
+    $q->param( 'id',    scalar $q->param('blog_id') );
+    $app->forward( "view",
         {
-            output       => $output,
-            screen_class => 'settings-screen general-screen'
+            output       => 'cfg_feedback.tmpl',
+            screen_class => 'settings-screen'
         }
     );
 }
@@ -624,7 +670,7 @@ sub rebuild_pages {
 
     if ( $type eq 'all' ) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_rebuild;
+          unless $perms->can_do('rebuild');
 
         # FIXME: Rebuild the entire blog????
         $app->rebuild( BlogID => $blog_id )
@@ -632,13 +678,13 @@ sub rebuild_pages {
     }
     elsif ( $type eq 'index' ) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_rebuild;
+          unless $perms->can_do('rebuild');
         $app->rebuild_indexes( BlogID => $blog_id )
             or return $app->publish_error();
     }
     elsif ( $type =~ /^index-(\d+)$/ ) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_rebuild;
+          unless $perms->can_do('rebuild');
         my $tmpl_id = $1;
         require MT::Template;
         $tmpl_saved = MT::Template->load($tmpl_id);
@@ -665,7 +711,7 @@ sub rebuild_pages {
     }
     elsif ( $archiver && $archiver->category_based ) {
         return $app->error( $app->translate("Permission denied.") )
-          unless $perms->can_rebuild;
+          unless $perms->can_do('rebuild');
         $offset = $q->param('offset') || 0;
         my $start = time;
         my $count = 0;
@@ -717,7 +763,7 @@ sub rebuild_pages {
         }
         if ( !$special ) {
             return $app->error( $app->translate("Permission denied.") )
-              unless $perms->can_rebuild;
+                unless $perms->can_do('rebuild');
             $offset = $q->param('offset') || 0;
             if ( $offset < $total ) {
                 my $start = time;
@@ -1103,7 +1149,13 @@ sub save_favorite_blogs {
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
-    $app->add_to_favorite_blogs($fav);
+    my $blog = $app->model('blog')->load($fav);
+    if ( $blog && $blog->is_blog) {
+        $app->add_to_favorite_blogs($fav);
+        $app->add_to_favorite_websites($blog->parent_id);
+    } elsif ( $blog && !$blog->is_blog ) {
+        $app->add_to_favorite_websites($fav);
+    }
     $app->send_http_header("text/javascript+json");
     return 'true';
 }
@@ -1113,6 +1165,9 @@ sub cc_return {
     my $code  = $app->param('license_code');
     my $url   = $app->param('license_url');
     my $image = $app->param('license_button');
+    if ( $code eq '[license_code]' && $url ) {
+        ( $code ) = $url =~ m!^http://creativecommons\.org/licenses/([a-z\-]+)/!ig;
+    }
     my %param = ( license_name => MT::Util::cc_name($code) );
     if ($url) {
         $param{license_code} = "$code $url $image";
@@ -1139,7 +1194,7 @@ sub update_welcome_message {
 
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-      unless $perms && $perms->can_edit_config;
+      unless $perms && $perms->can_do('update_welcome_message');
 
     my $blog_id    = $app->param('blog_id');
     my $message    = $app->param('welcome-message-text');
@@ -1163,22 +1218,24 @@ sub dialog_select_weblog {
     my $auth = $app->user or return; 
 
     if ($favorites) {
-        my @favs = @{ $auth->favorite_blogs };
+        my @favs = @{ $auth->favorite_blogs || [] };
         if ( @favs ) {
+            @favs = @favs[ 0..4 ] if scalar @favs > 5;
             $terms->{id} = { not => \@favs };
         }
         $confirm_js = 'saveFavorite';
     }
-    unless ( $auth->is_superuser ) {
+    if ( !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates') ) {
         use MT::Permission;
         $args->{join} = MT::Permission->join_on( 'blog_id',
             { author_id => $auth->id } );
     }
+    $terms->{class} = 'blog';
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
         $row->{label} = $row->{name};
-        $row->{'link'} = $row->{site_url};
+        $row->{'link'} = $obj->site_url;
     };
 
     $app->listing(
@@ -1203,11 +1260,12 @@ sub dialog_select_weblog {
                 panel_first      => 1,
                 panel_last       => 1,
                 list_noncron     => 1,
-                return_url       => $app->uri . '?'
+                return_url       => $app->base . $app->uri . '?'
                   . ( $app->param('return_args') || '' ),
                 confirm_js => $confirm_js,
                 idfield    => ( $app->param('idfield') || '' ),
                 namefield  => ( $app->param('namefield') || '' ),
+                search_type => 'blog',
             },
         }
     );
@@ -1215,35 +1273,25 @@ sub dialog_select_weblog {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    if ( $id
-        && ( $perms->can_set_publish_paths && !$perms->can_administer_blog ) )
-    {
-        return 1 if 'view' eq $app->mode;
+    if ( $id ) {
+        return $app->can_do('open_blog_config_screen');
     }
-    if (
-        (
-            $id && !(
-                   $perms->can_edit_config
-                || $perms->can_set_publish_paths
-                || $perms->can_manage_feedback
-            )
-        )
-        || ( !$id && !$app->user->can_create_blog )
-      )
-    {
-        return 0;
+    else {
+        return $app->can_do('open_new_blog_screen');
     }
-    1;
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
-    return ( $id
-          && (( $perms->can_edit_config || $perms->can_set_publish_paths )
-          || ( $app->param('cfg_screen') && $app->param('cfg_screen') eq 'cfg_publish_profile' )))
-      || ( !$id && $app->user->can_create_blog );
+    if ($id) {
+        return $app->can_do('edit_blog_config') 
+               || ( $app->param('cfg_screen')
+                    && $app->param('cfg_screen') eq 'cfg_publish_profile');
+    }
+    else {
+        return $app->can_do('create_blog');
+    }
 }
 
 sub can_delete {
@@ -1252,7 +1300,7 @@ sub can_delete {
     return 1 if $author->is_superuser();
     require MT::Permission;
     my $perms = $author->permissions( $obj->id );
-    return $perms && $perms->can_administer_blog;
+    return $perms && $perms->can_do('delete_blog');
 }
 
 sub pre_save {
@@ -1267,13 +1315,12 @@ sub pre_save {
         my @fields;
         if ( $screen eq 'cfg_web_services' ) {
         }
-        elsif ( $screen eq 'cfg_archives' ) {
-        }
         elsif ( $screen eq 'cfg_templatemaps' ) {
         }
-        elsif ( $screen eq 'cfg_comments' ) {
+        elsif ( $screen eq 'cfg_feedback' ) {
             @fields = qw( allow_comment_html autolink_urls
-              use_comment_confirmation );
+              use_comment_confirmation allow_pings moderate_pings
+              autodiscover_links internal_autodiscovery );
         }
         elsif ( $screen eq 'cfg_registration' ) {
             @fields = qw( allow_commenter_regist
@@ -1284,11 +1331,10 @@ sub pre_save {
             @fields = qw( allow_comments_default
               allow_pings_default );
         }
-        elsif ( $screen eq 'cfg_trackbacks' ) {
-            @fields = qw( allow_pings moderate_pings
-              autodiscover_links internal_autodiscovery );
-        }
         elsif ( $screen eq 'cfg_plugins' ) {
+        }
+        elsif ( $screen eq 'cfg_prefs' ) {
+            @fields = qw( use_revision );
         }
         for my $cb (@fields) {
             unless ( defined $app->param($cb) ) {
@@ -1296,15 +1342,7 @@ sub pre_save {
       # two possibilities: user unchecked the option, or user was not allowed to
       # set the value (and therefore there was no field to submit).
                 my $perms = $app->permissions;
-                if (
-                    $app->user->is_superuser
-                    || (
-                        $perms
-                        && (   $perms->can_administer_blog
-                            || $perms->can_edit_config )
-                    )
-                  )
-                {
+                if ( $app->can_do('edit_blog_config') ){
                     $obj->$cb(0);
                 }
                 else {
@@ -1313,7 +1351,7 @@ sub pre_save {
                 }
             }
         }
-        if ( $screen eq 'cfg_comments' ) {
+        if ( $screen eq 'cfg_feedback' ) {
 
             # value for comments:  1 == Accept from anyone
             #                      2 == Accept authenticated only
@@ -1332,6 +1370,35 @@ sub pre_save {
             $obj->captcha_provider( $app->param('captcha_provider') );
             my $rebuild = $cp_old ne $obj->captcha_provider ? 1 : 0;
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
+
+            if ( my $pings = $app->param('allow_pings') ) {
+                if ($pings) {
+                    $obj->moderate_pings( $app->param('moderate_pings') );
+                    $obj->nofollow_urls( $app->param('nofollow_urls') ? 1 : 0 );
+                }
+                else {
+                    $obj->moderate_pings(1);
+                    $obj->email_new_pings(1);
+                }
+            }
+
+            my $threshold = $app->param('junk_score_threshold');
+            $threshold =~ s/\+//;
+            $threshold ||= 0;
+            $obj->junk_score_threshold($threshold);
+            if ( my $expiry = $app->param('junk_folder_expiry') ) {
+                $obj->junk_folder_expiry($expiry);
+            }
+            my $perms = $app->permissions;
+            unless ( defined $app->param('auto_delete_junk') ) {
+                if ( $app->can_do('edit_junk_auto_delete') ) {
+                    $obj->junk_folder_expiry(0);
+                }
+                else {
+                    delete $obj->{column_values}{junk_folder_expiry};
+                    delete $obj->{changed_cols}{junk_folder_expiry};
+                }
+            }
         }
         if ( $screen eq 'cfg_web_services' ) {
             my $tok = '';
@@ -1346,18 +1413,6 @@ sub pre_save {
               }
               keys %$ping_servers;
             $obj->update_pings( join( ',', @pings_list ) );
-        }
-        if ( $screen eq 'cfg_trackbacks' ) {
-            if ( my $pings = $app->param('allow_pings') ) {
-                if ($pings) {
-                    $obj->moderate_pings( $app->param('moderate_pings') );
-                    $obj->nofollow_urls( $app->param('nofollow_urls') ? 1 : 0 );
-                }
-                else {
-                    $obj->moderate_pings(1);
-                    $obj->email_new_pings(1);
-                }
-            }
         }
         if ( $screen eq 'cfg_registration' ) {
             $obj->allow_commenter_regist(
@@ -1397,36 +1452,11 @@ sub pre_save {
 
             $app->add_return_arg( need_full_rebuild => 1 ) if $rebuild;
         }
-        if ( $screen eq 'cfg_spam' ) {
-            my $threshold = $app->param('junk_score_threshold');
-            $threshold =~ s/\+//;
-            $threshold ||= 0;
-            $obj->junk_score_threshold($threshold);
-            if ( my $expiry = $app->param('junk_folder_expiry') ) {
-                $obj->junk_folder_expiry($expiry);
-            }
-            my $perms = $app->permissions;
-            unless ( defined $app->param('auto_delete_junk') ) {
-                if (
-                    $app->user->is_superuser
-                    || (
-                        $perms
-                        && (   $perms->can_administer_blog
-                            || $perms->can_edit_config )
-                    )
-                  )
-                {
-                    $obj->junk_folder_expiry(0);
-                }
-                else {
-                    delete $obj->{column_values}{junk_folder_expiry};
-                    delete $obj->{changed_cols}{junk_folder_expiry};
-                }
-            }
-        }
         if ( $screen eq 'cfg_entry' ) {
             my %param = $_[0] ? %{ $_[0] } : ();
-            my $pref_param = $app->load_entry_prefs;
+            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
+            %param = ( %param, %$pref_param );
+            $pref_param = $app->load_entry_prefs( { type => 'page' } );
             %param = ( %param, %$pref_param );
             $param{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) } = 1;
             $param{words_in_excerpt} = 40
@@ -1445,7 +1475,7 @@ sub pre_save {
             $obj->basename_limit(250)
               if $obj->basename_limit > 250;    # 15 is the *maximum*
         }
-        if ( $screen eq 'cfg_archives' ) {
+        if ( $screen eq 'cfg_prefs' ) {
             $obj->include_system( $app->param('include_system') || '' );
             if ( !$app->param('enable_archive_paths') ) {
                 $obj->archive_url('');
@@ -1515,19 +1545,23 @@ sub post_save {
 
     # check to see what changed and add a flag to meta_messages
     my @meta_messages = ();
-    for my $blog_field (qw( name description archive_path archive_type_preferred site_path site_url days_on_index entries_on_index 
-                            file_extension email_new_comments allow_comment_html autolink_urls sort_order_posts sort_order_comments 
-                            allow_comments_default server_offset convert_paras convert_paras_comments allow_pings_default status_default
-                            allow_anon_comments words_in_excerpt moderate_unreg_comments moderate_pings allow_unreg_comments
-                            allow_reg_comments allow_pings manual_approve_commenters require_comment_emails junk_folder_expiry ping_weblogs
-                            mt_update_key language welcome_msg google_api_key email_new_pings ping_blogs ping_technorati ping_google
-                            ping_others autodiscover_links sanitize_spec cc_license is_dynamic remote_auth_token custom_dynamic_templates 
-                            junk_score_threshold internal_autodiscovery basename_limit use_comment_confirmation
-                            allow_commenter_regist archive_url archive_path old_style_archive_links archive_tmpl_daily archive_tmpl_weekly
-                            archive_tmpl_monthly archive_tmpl_category archive_tmpl_individual image_default_wrap_text image_default_align
-                            image_default_thumb image_default_width image_default_wunits image_default_constrain image_default_popup 
-                            commenter_authenticators require_typekey_emails nofollow_urls follow_auth_links update_pings captcha_provider
-                            publish_queue nwc_smart_replace nwc_replace_field template_set page_layout include_system include_cache )) {
+    for my $blog_field (
+        qw( name description archive_path archive_type_preferred site_path site_url days_on_index entries_on_index
+        file_extension email_new_comments allow_comment_html autolink_urls sort_order_posts sort_order_comments
+        allow_comments_default server_offset convert_paras convert_paras_comments allow_pings_default status_default
+        allow_anon_comments words_in_excerpt moderate_unreg_comments moderate_pings allow_unreg_comments
+        allow_reg_comments allow_pings manual_approve_commenters require_comment_emails junk_folder_expiry ping_weblogs
+        mt_update_key language welcome_msg google_api_key email_new_pings ping_blogs ping_technorati ping_google
+        ping_others autodiscover_links sanitize_spec cc_license is_dynamic remote_auth_token custom_dynamic_templates
+        junk_score_threshold internal_autodiscovery basename_limit use_comment_confirmation
+        allow_commenter_regist archive_url archive_path old_style_archive_links archive_tmpl_daily archive_tmpl_weekly
+        archive_tmpl_monthly archive_tmpl_category archive_tmpl_individual image_default_wrap_text image_default_align
+        image_default_thumb image_default_width image_default_wunits image_default_constrain image_default_popup
+        commenter_authenticators require_typekey_emails nofollow_urls follow_auth_links update_pings captcha_provider
+        publish_queue nwc_smart_replace nwc_replace_field template_set page_layout include_system include_cache
+        use_revision )
+      )
+    {
         if ( $obj->$blog_field() ne $original->$blog_field() ) {
                 my $old = $original->$blog_field() ? $original->$blog_field() : "none";
                 my $new = $obj->$blog_field() ? $obj->$blog_field() : "none";
@@ -1536,16 +1570,18 @@ sub post_save {
     }
 
     # log all of the changes we can possible log
+    my $blog_type = $obj->is_blog ? 'Blog' : 'Website';
     if (scalar(@meta_messages) > 0) {
         my $meta_message = join(", ", @meta_messages);
         $app->log({
-            message => $app->translate("Saved Blog Changes"),
+            message  => $app->translate("Saved [_1] Changes", $obj->class_label),
             metadata => $meta_message,
             level    => MT::Log::INFO(),
-            blog_id => $obj->id,
+            class    => $obj->class,
+            blog_id  => $obj->id,
         });
     }
-    
+
     my $screen = $app->param('cfg_screen') || '';
     if ( $screen eq 'cfg_publish_profile' ) {
         if ( my $dcty = $app->param('dynamicity') ) {
@@ -1578,7 +1614,18 @@ sub post_save {
 
         cfg_publish_profile_save($app, $obj) or return;
     }
-    if ( $screen eq 'cfg_archives' ) {
+    if ( $screen eq 'cfg_prefs' ) {
+        my $blog_id = $obj->id;
+
+        # FIXME: Needs to exclude MT::Permission records for groups
+        $app->model('permission')
+          ->load( { blog_id => $blog_id, author_id => 0 } );
+        if ( !$perms ) {
+            $perms = $app->model('permission')->new;
+            $perms->blog_id($blog_id);
+            $perms->author_id(0);
+        }
+
         # If either of the publishing paths changed, rebuild the fileinfos.
         my $path_changed = 0;
         for my $path_field (qw( site_path archive_path site_url archive_url )) {
@@ -1594,19 +1641,7 @@ sub post_save {
                 or $app->publish_error();
         }
 
-        cfg_archives_save($app, $obj) or return;
-    }
-    if ( $screen eq 'cfg_prefs' ) {
-        my $blog_id = $obj->id;
-
-        # FIXME: Needs to exclude MT::Permission records for groups
-        $app->model('permission')
-          ->load( { blog_id => $blog_id, author_id => 0 } );
-        if ( !$perms ) {
-            $perms = $app->model('permission')->new;
-            $perms->blog_id($blog_id);
-            $perms->author_id(0);
-        }
+        cfg_prefs_save($app, $obj) or return;
     }
     if ( $screen eq 'cfg_entry' ) {
         my $blog_id = $obj->id;
@@ -1620,30 +1655,51 @@ sub post_save {
             $perms->blog_id($blog_id);
             $perms->author_id(0);
         }
-        my $prefs = $app->_entry_prefs_from_params;
-        if ($prefs) {
-            $perms->entry_prefs($prefs);
-            $perms->save
-              or return $app->errtrans( "Saving permissions failed: [_1]",
-                $perms->errstr );
+        foreach my $type (qw(entry page)) {
+            my $prefs = $app->_entry_prefs_from_params( $type . '_' );
+            if ($prefs) {
+                my $prefs_type = $type . '_prefs';
+                $perms->$prefs_type($prefs);
+                $perms->save
+                  or return $app->errtrans( "Saving permissions failed: [_1]",
+                    $perms->errstr );
+            }
         }
     }
 
     if ( !$original->id ) {    # If the object is new, the "orignal" was blank
         ## If this is a new blog, we need to set up a permissions
         ## record for the existing user.
-        $obj->create_default_templates( $obj->template_set );
+        #$obj->create_default_templates( $obj->template_set );
 
         # Add this blog to the user's "favorite blogs", pushing any 10th
         # blog off the list
         my $auth = $app->user;
 
-        # FIXME: Should we still be doing this?
-        my $perms = $app->model('permission')->new;
-        $perms->author_id( $auth->id );
-        $perms->blog_id( $obj->id );
-        $perms->set_full_permissions;
-        $perms->save;
+        # Grant permission
+        my $assoc_class = $app->model('association');
+        my $role_class = $app->model('role');
+        my $role;
+        if ( $obj->is_blog ) {
+            my @roles = $role_class->load_by_permission("administer_blog");
+            foreach my $r ( @roles ) {
+                next if $r->permissions =~ m/\'administer_website\'/;
+                $role = $r;
+                last;
+            }
+        } else {
+            my @roles = $role_class->load_by_permission("administer_website");
+            foreach my $r ( @roles ) {
+                $role = $r;
+                last;
+            }
+        }
+        $assoc_class->link( $auth => $role => $obj );
+
+        if ( $obj->is_blog ) {
+            my $website = $app->blog;
+            $website->add_blog($obj);
+        }
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
@@ -1662,21 +1718,28 @@ sub post_save {
                            -path => '/',
                            ($timeout ? (-expires => $timeout) : ()));
         $app->bake_cookie(%id_kookee);
+        $app->make_commenter_session($auth);
 
         require MT::Log;
         $app->log(
             {
                 message => $app->translate(
-                    "Blog '[_1]' (ID:[_2]) created by '[_3]'",
-                    $obj->name, $obj->id, $auth->name
+                    "[_1] '[_2]' (ID:[_3]) created by '[_4]'",
+                    $obj->class_label, $obj->name, $obj->id, $auth->name
                 ),
                 level    => MT::Log::INFO(),
-                class    => 'blog',
+                class    => $obj->class,
                 category => 'new',
             }
         );
-
         $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
+        if ( $obj->is_blog ) {
+            $app->run_callbacks( 'blog_theme_change', { blog => $obj } );
+        } else {
+            $app->run_callbacks( 'website_theme_change', { website => $obj } );
+        }
+        $obj->apply_theme();
+
     }
     else {
 
@@ -1703,9 +1766,24 @@ sub post_save {
             $app->add_return_arg( need_full_rebuild => 1 );
         }
 
-        if ( ($original->template_set || '') ne ($obj->template_set || '') ) {
+        my $original_set = $original->template_set;
+        $original_set = $original->theme_id if ref $original_set;
+        my $obj_set = $obj->template_set;
+        $obj_set = $obj->theme_id if ref $obj_set;
+        if ( ( $original_set || '' ) ne ( $obj_set || '' ) ) {
             $app->run_callbacks( 'blog_template_set_change', { blog => $obj } );
             $app->add_return_arg( need_full_rebuild => 1 );
+        }
+
+        ## THINK: should the theme be changed by normal save method?
+        if ( ($original->theme_id || '') ne ($obj->theme_id || '' ) ) {
+            if ( $obj->is_blog ) {
+                $app->run_callbacks( 'blog_theme_change', { blog => $obj } );
+            } else {
+                $app->run_callbacks( 'website_theme_change', { website => $obj } );
+            }
+
+            $obj->apply_theme();
         }
     }
     1;
@@ -1722,21 +1800,28 @@ sub save_filter {
     my $perms = $app->permissions;
     my $screen = $app->param('cfg_screen') || '';
     return $eh->error( MT->translate("You did not specify a blog name.") )
-      if ( !( $screen && $perms->can_edit_config )
+      if ( !( $screen && $app->can_do('edit_blog_config') )
         && ( defined $app->param('name') && ( $app->param('name') eq '' ) ) );
-    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
-      if ( $screen eq 'cfg_archives' )
-      && $perms->can_set_publish_paths
-      && $app->param('site_url') !~ m.^https?://.;
-    return $eh->error( MT->translate("Archive URL must be an absolute URL.") )
-      if ( $screen eq 'cfg_archives' )
-      && $perms->can_set_publish_paths
-      && $app->param('archive_url') !~ m.^https?://.
-      && $app->param('enable_archive_paths');
-    return $eh->error( MT->translate("You did not specify an Archive Root.") )
-      if ( $screen eq 'cfg_archives' )
-      && $app->param('archive_path') =~ m/^\s*$/
-      && $app->param('enable_archive_paths');
+#TBD
+#    return $eh->error( MT->translate("Site URL must be an absolute URL.") )
+#      if ( $screen eq 'cfg_prefs' )
+#      && $app->can_do('set_publish_paths')
+#      && $app->param('site_url') !~ m.^https?://.;
+#    return $eh->error( MT->translate("Archive URL must be an absolute URL.") )
+#      if ( $screen eq 'cfg_prefs' )
+#      && $app->can_do('set_publish_paths')
+#      && $app->param('archive_url') !~ m.^https?://.
+#      && $app->param('enable_archive_paths');
+#    return $eh->error( MT->translate("You did not specify an Archive Root.") )
+#      if ( $screen eq 'cfg_prefs' )
+#      && $app->param('archive_path') =~ m/^\s*$/
+#      && $app->param('enable_archive_paths');
+    if ( $screen eq 'cfg_prefs' ) {
+        return $eh->error( MT->translate("The number of revisions to store must be a positive integer.") )
+            unless 0 < sprintf('%d', $app->param('max_revisions_entry'));
+        return $eh->error( MT->translate("The number of revisions to store must be a positive integer.") )
+            unless 0 < sprintf('%d', $app->param('max_revisions_template'));
+    }
     return 1;
 }
 
@@ -1764,7 +1849,7 @@ sub make_blog_list {
 
     my $author = $app->user;
     my $data;
-    my $can_edit_authors = 1 if $author->is_superuser;
+    my $can_edit_authors = 1 if $app->can_do('edit_authors');
     my @blog_ids = map { $_->id } @$blogs; 
     my %counts;
     my $e_iter = $app->model('entry')->count_group_by(
@@ -1773,6 +1858,13 @@ sub make_blog_list {
     );
     while ( my ($e_count, $e_blog_id) = $e_iter->() ) {
         $counts{$e_blog_id}{'entry'} = $e_count;
+    }
+    my $pg_iter = $app->model('page')->count_group_by(
+        { blog_id => \@blog_ids },
+        { group => [ 'blog_id' ] }
+    );
+    while ( my ($p_count, $p_blog_id) = $pg_iter->() ) {
+        $counts{$p_blog_id}{'page'} = $p_count;
     }
     my $c_iter = $app->model('comment')->count_group_by(
         { blog_id => \@blog_ids },
@@ -1789,6 +1881,17 @@ sub make_blog_list {
         $counts{$p_blog_id}{'ping'} = $p_count;
     }
 
+    my $type = $app->param('type');
+    if ( $type && $type eq 'website' ) {
+        my $b_iter = $app->model('blog')->count_group_by(
+            { parent_id => \@blog_ids },
+            { group => [ 'parent_id' ] },
+        );
+        while ( my ($b_count, $b_website_id ) = $b_iter->() ) {
+            $counts{ $b_website_id }{ 'blog' } = $b_count;
+        }
+    }
+
     for my $blog (@$blogs) {
         my $blog_id = $blog->id;
         my $perms   = $author->permissions($blog_id);
@@ -1798,21 +1901,20 @@ sub make_blog_list {
             description => $blog->description,
             site_url    => $blog->site_url
         };
+        $row->{num_blogs}    = $counts{$blog_id}{'blog'} unless $blog->is_blog();
         $row->{num_entries}  = $counts{$blog_id}{'entry'};
+        $row->{num_pages}    = $counts{$blog_id}{'page'};
         $row->{num_comments} = $counts{$blog_id}{'comment'};
         $row->{num_pings}    = $counts{$blog_id}{'ping'};
-        $row->{can_create_post}  = $perms->can_create_post;
-        $row->{can_edit_entries} = $perms->can_create_post
-          || $perms->can_edit_all_posts
-          || $perms->can_publish_post;
-        $row->{can_edit_templates} = $perms->can_edit_templates;
-        $row->{can_edit_config}    = $perms->can_edit_config
-          || $perms->can_administer_blog;
-        $row->{can_set_publish_paths} = $perms->can_set_publish_paths
-          || $perms->can_administer_blog;
-        $row->{can_manage_feedback} = $perms->can_manage_feedback;
-        $row->{can_edit_assets}     = $perms->can_edit_assets;
-        $row->{can_administer_blog} = $perms->can_administer_blog;
+        $row->{can_create_post}       = $perms->can_do('create_new_entry');
+        $row->{can_edit_entries}      = $perms->can_do('create_new_entry');
+        $row->{can_edit_pages}        = $perms->can_do('manage_pages');
+        $row->{can_edit_templates}    = $perms->can_do('edit_templates');
+        $row->{can_edit_config}       = $perms->can_do('edit_config');
+        $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
+        $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
+        $row->{can_edit_assets}       = $perms->can_do('edit_assets');
+        $row->{can_administer_blog}   = $perms->can_do('administer_blog');
         push @$data, $row;
     }
     $data;
@@ -1842,7 +1944,7 @@ sub build_blog_table {
     my $param = $args{param};
 
     my $author           = $app->user;
-    my $can_edit_authors = $author->is_superuser;
+    my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
     my $i;
     my ( $entry_count, $ping_count, $comment_count );
@@ -1854,48 +1956,46 @@ sub build_blog_table {
             description => $blog->description,
             site_url    => $blog->site_url
         };
+
         if ($app->mode ne 'dialog_select_weblog') {
-			# we should use count by group here...
-			$row->{num_entries} =
-			  ( $entry_count ? $entry_count->{$blog_id} : $entry_count->{$blog_id} =
-				  MT::Entry->count( { blog_id => $blog_id } ) )
-			  || 0;
-			$row->{num_comments} = (
-				  $comment_count
-				? $comment_count->{$blog_id}
-				: $comment_count->{$blog_id} = MT::Comment->count(
-					{ blog_id => $blog_id, junk_status => MT::Comment::NOT_JUNK() }
-				)
-			  )
-			  || 0;
-			$row->{num_pings} = (
-				$ping_count ? $ping_count->{$blog_id} : $ping_count->{$blog_id} =
-				  MT::TBPing->count(
-					{ blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() }
-				  )
-			) || 0;
-			if ( $author->is_superuser ) {
-				$row->{can_create_post}       = 1;
-				$row->{can_edit_entries}      = 1;
-				$row->{can_edit_templates}    = 1;
-				$row->{can_edit_config}       = 1;
-				$row->{can_set_publish_paths} = 1;
-				$row->{can_administer_blog}   = 1;
-			}
-			else {
-				my $perms = $author->permissions($blog_id);
-				$row->{can_create_post}  = $perms->can_create_post;
-				$row->{can_edit_entries} = $perms->can_create_post
-				  || $perms->can_edit_all_posts
-				  || $perms->can_publish_post;
-				$row->{can_edit_templates} = $perms->can_edit_templates;
-				$row->{can_edit_config}    = $perms->can_edit_config
-				  || $perms->can_administer_blog;
-				$row->{can_set_publish_paths} = $perms->can_set_publish_paths
-				  || $perms->can_administer_blog;
-				$row->{can_administer_blog} = $perms->can_administer_blog;
-			}
-		}
+            # we should use count by group here...
+            $row->{num_entries} =
+              ( $entry_count ? $entry_count->{$blog_id} : $entry_count->{$blog_id} =
+                  MT::Entry->count( { blog_id => $blog_id } ) )
+              || 0;
+            $row->{num_comments} = (
+                  $comment_count
+                ? $comment_count->{$blog_id}
+                : $comment_count->{$blog_id} = MT::Comment->count(
+                    { blog_id => $blog_id, junk_status => MT::Comment::NOT_JUNK() }
+                )
+              )
+              || 0;
+            $row->{num_pings} = (
+                $ping_count ? $ping_count->{$blog_id} : $ping_count->{$blog_id} =
+                  MT::TBPing->count(
+                    { blog_id => $blog_id, junk_status => MT::TBPing::NOT_JUNK() }
+                  )
+            ) || 0;
+            $row->{num_authors} = 0;
+            if ( $author->is_superuser ) {
+                $row->{can_create_post}       = 1;
+                $row->{can_edit_entries}      = 1;
+                $row->{can_edit_templates}    = 1;
+                $row->{can_edit_config}       = 1;
+                $row->{can_set_publish_paths} = 1;
+                $row->{can_administer_blog}   = 1;
+            }
+            else {
+                my $perms = $author->permissions($blog_id);
+                $row->{can_create_post}       = $perms->can_do('create_post');
+                $row->{can_edit_entries}      = $perms->can_do('create_post');
+                $row->{can_edit_templates}    = $perms->can_do('edit_templates');
+                $row->{can_edit_config}       = $perms->can_do('edit_config');
+                $row->{can_set_publish_paths} = $perms->can_do('set_publish_paths');
+                $row->{can_administer_blog}   = $perms->can_do('administer_blog');
+            }
+        }
         $row->{object} = $blog;
         push @data, $row;
     }
@@ -1916,7 +2016,7 @@ sub cfg_blog {
     $_[0]->forward( "view", { output => 'cfg_prefs.tmpl' } );
 }
 
-sub cfg_archives_save {
+sub cfg_prefs_save {
     my $app = shift;
     my ($blog) = @_;
 
@@ -1939,6 +2039,30 @@ sub cfg_archives_save {
             _create_dynamiccache_dir( $blog, $blog->archive_path ) if $cache;
         }
     }
+    $blog->use_revision( $app->param('use_revision') ? 1 : 0 );
+    if ( $app->param('use_revision') ) {
+        $blog->max_revisions_entry( $app->param('max_revisions_entry') )
+          if $app->param('max_revisions_entry');
+        $blog->max_revisions_template( $app->param('max_revisions_template') )
+          if $app->param('max_revisions_template');
+    }
+    my $subdomain = $app->param('site_url_subdomain');
+    $subdomain = '' if !$app->param('use_subdomain');
+    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    $subdomain =~ s/\.{2,}/\./g;
+    my $path = $app->param('site_url_path');
+    if ( $subdomain || $path ) {
+        $blog->site_url("$subdomain/::/$path");
+    }
+    $subdomain = $app->param('archive_url_subdomain');
+    $subdomain = '' if !$app->param('use_archive_subdomain');
+    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+    $subdomain =~ s/\.{2,}/\./g;
+    $path = $app->param('archive_url_path');
+    if ( $app->param('enable_archive_paths') && ( $subdomain || $path ) ) {
+        $blog->archive_url("$subdomain/::/$path");
+    }
+
     $blog->save
       or return $app->error(
         $app->translate( "Saving blog failed: [_1]", $blog->errstr ) );
@@ -2084,8 +2208,22 @@ sub update_dynamicity {
     my $app = shift;
     my ( $blog ) = @_;
 
-    my $cache       = $app->param('dynamic_cache')       ? 1 : 0;
-    my $conditional = $app->param('dynamic_conditional') ? 1 : 0;
+    my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
+    my $cache       = 0;
+    my $conditional = 0;
+    if ( -f $mtview_path ) {
+        open my ($fh), $mtview_path;
+        while ( my $line = <$fh> ) {
+            $cache = 1
+                if $line =~ m/^\s*\$mt->caching\(true\);/i;
+            $conditional = 1
+                if $line =~ /^\s*\$mt->conditional\(true\);/i;
+        }
+        close $fh;
+    }
+
+    $cache       = 1 if $app->param('dynamic_cache');
+    $conditional = 1 if $app->param('dynamic_conditional');
 
     require MT::PublishOption;
     if ( $app->model('template')->exist(
@@ -2142,13 +2280,13 @@ sub _create_mtview {
         my $mtphp_path = File::Spec->canonpath("$cgi_path/php/mt.php");
         my $blog_id    = $blog->id;
         my $config     = MT->instance->{cfg_file};
-        my $cache_code = $cache ? "\n    \$mt->caching = true;" : '';
+        my $cache_code = $cache ? "\n    \$mt->caching(true);" : '';
         my $conditional_code =
-          $conditional ? "\n    \$mt->conditional = true;" : '';
+          $conditional ? "\n    \$mt->conditional(true);" : '';
         my $new_mtview = <<NEW_MTVIEW;
 
     include('$mtphp_path');
-    \$mt = new MT($blog_id, '$config');$cache_code$conditional_code
+    \$mt = MT::get_instance($blog_id, '$config');$cache_code$conditional_code
     \$mt->view();
 NEW_MTVIEW
 
@@ -2321,6 +2459,340 @@ HTACCESS
     if ($cache) {
         _create_dynamiccache_dir( $blog, $site_path );
     }
+}
+
+sub clone {
+    my $app     = shift;
+    my ($param) = {};
+    my $user    = $app->user;
+
+    return $app->error( $app->translate("Permission denied.") )
+        if !$user->is_superuser && !$user->can('clone_blog');
+
+    my @id = $app->param('id');
+
+    if ( !@id ) {
+        return $app->error( $app->translate("No blog was selected to clone.") );
+    }
+
+    if ( scalar @id > 1 ) {
+        return $app->error(
+            $app->translate(
+                "This action can only be run on a single blog at a time.")
+        );
+    }
+
+    # Get blog_id from params and validate
+    require MT::Blog;
+    my $blog_id    = shift @id;
+    my $blog_class = $app->model('blog');
+    my $blog       = $blog_class->load($blog_id)
+      or return $app->error( $app->translate("Invalid blog_id") );
+    return $app->error( $app->translate("This action cannot clone website."))
+        unless $blog->is_blog;
+
+    my ( $base_url, $base_url_subdomain, $base_url_path );
+    my @raw_site_url = $blog->raw_site_url; 
+    if ( 2 == @raw_site_url ) {
+        my $subdomain = $raw_site_url[0];
+        $subdomain =~ s/\.$//;
+        $base_url = $blog->site_url;
+        $base_url_subdomain = $subdomain;
+        $base_url_path = $raw_site_url[1];
+    }
+    else {
+        $base_url = $raw_site_url[0];
+    }
+    $base_url ||= dirify( $blog->name );
+    $base_url =~ s/\/$//;
+    my $base_path = defined $app->param('site_path')
+        ? $app->param('site_path')
+        : $blog->column('site_path') || dirify( $blog->name );
+    $base_path =~ s/\/$//;
+    $param->{site_path} = $base_path;
+
+    $param->{'id'} = $blog->id;
+    $param->{'new_blog_name'} = $app->param('new_blog_name')
+      || $app->translate('Clone of [_1]', $blog->name );
+
+    my $website = $blog->website;
+    my ( $website_scheme, $website_domain ) =
+        $website->site_url =~ m!(https?)://(.+/)$!;
+    $param->{website_scheme} = $website_scheme;
+    $param->{website_domain} = $website_domain;
+
+    if ( defined $app->param('site_url') ) {
+        $param->{'site_url'} = $app->param('site_url');
+    }
+    elsif ( defined( $app->param('site_url_subdomain') )
+        ||  defined( $app->param('site_url_path') ) )
+    {
+        $param->{'site_url_subdomain'} = $app->param('site_url_subdomain');
+        $param->{'site_url_path'} = $app->param('site_url_path');
+    }
+    else {
+        my @raw_site_url = $blog->raw_site_url; 
+        if ( 2 == @raw_site_url ) {
+            my $subdomain = $raw_site_url[0];
+            $subdomain =~ s/\.$//;
+            $base_url = $blog->site_url;
+            $param->{site_url_subdomain} = $subdomain;
+            $param->{site_url_path} = $raw_site_url[1];
+        }
+        else {
+            $base_url = $raw_site_url[0];
+        }
+    }
+    $param->{site_url} = $base_url;
+    $param->{'use_subdomain'} = $app->param('use_subdomain');
+
+    require File::Spec;
+    $param->{parent_id} = $website->id;
+    unless ( MT::Blog->is_site_path_absolute( $param->{site_path} ) ) {
+        $param->{parent_path} = File::Spec->catfile($website->site_path, '')
+            if $website->site_path;
+    }
+    $param->{blog_id} = $app->param('blog_id');
+
+    if ( $app->param('clone_prefs_entries_pages') ) {
+        $param->{'clone_prefs_entries_pages'} =
+          $app->param('clone_prefs_entries_pages');
+    }
+
+    if ( $app->param('clone_prefs_comments') ) {
+        $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
+    }
+
+    if ( $app->param('clone_prefs_trackbacks') ) {
+        $param->{'clone_prefs_trackbacks'} =
+          $app->param('clone_prefs_trackbacks');
+    }
+
+    if ( $app->param('clone_prefs_categories') ) {
+        $param->{'clone_prefs_categories'} =
+          $app->param('clone_prefs_categories');
+    }
+
+    $param = _has_valid_form( $app, $blog, $param );
+
+    if ( $blog_id && $app->param('clone') && $param->{'isValidForm'} ) {
+        print_status_page( $app, $blog, $param );
+        return;
+    }
+    elsif ( $app->param('verify') ) {
+
+        # build form
+        $param->{'verify'}     = 1;
+        $param->{'system_msg'} = 1;
+    }
+
+    my $tmpl = $app->load_tmpl( "dialog/clone_blog.tmpl", $param );
+
+    return $tmpl;
+}
+
+sub _has_valid_form {
+    my $app = shift;
+    my ($blog, $param) = @_;
+
+    if (
+        (
+               !$param->{'clone_prefs_comments'}
+            || !$param->{'clone_prefs_trackbacks'}
+        )
+        && $param->{'clone_prefs_entries_pages'}
+      )
+    {
+        if (   !$param->{'clone_prefs_comments'}
+            && !$param->{'clone_prefs_trackbacks'} )
+        {
+            push(
+                @{ $param->{'errors'} },
+                $app->translate(
+"Entries must be cloned if comments and trackbacks are cloned"
+                )
+            );
+        }
+        elsif ( $param->{'clone_prefs_comments'} ) {
+            push(
+                @{ $param->{'errors'} },
+                $app->translate(
+                    "Entries must be cloned if comments are cloned")
+            );
+        }
+        elsif ( $param->{'clone_prefs_trackbacks'} ) {
+            push(
+                @{ $param->{'errors'} },
+                $app->translate(
+                    "Entries must be cloned if trackbacks are cloned")
+            );
+        }
+    }
+
+    $param->{'isValidForm'} = $param->{'errors'} ? 0 : 1;
+
+    return $param;
+}
+
+sub print_status_page {
+    my $app = shift;
+    my ($blog, $param) = @_;
+    my ($cloning_prefs) = {};
+    $| = 1;
+
+    if ( $app->param('clone_prefs_comments') ) {
+        $cloning_prefs->{'MT::Comment'} = 0;
+    }
+
+    if ( $app->param('clone_prefs_trackbacks') ) {
+
+        # need to exclude both Trackbacks and Pings
+        $cloning_prefs->{'MT::Trackback'} = 0;
+        $cloning_prefs->{'MT::TBPing'}    = 0;
+    }
+
+    if ( $app->param('clone_prefs_categories') ) {
+        $cloning_prefs->{'MT::Category'} = 0;
+    }
+
+    if ( $app->param('clone_prefs_entries_pages') ) {
+        $cloning_prefs->{'MT::Entry'} = 0;
+    }
+
+    my $blog_name = $param->{'new_blog_name'};
+
+    # Set up and commence app output
+    $app->{no_print_body} = 1;
+    $app->send_http_header;
+    my $html_head = <<'SCRIPT';
+<script type="text/javascript">
+function progress(str, id) {
+    var el = getByID(id);
+    if (el) el.innerHTML = str;
+}
+</script>
+SCRIPT
+
+    $app->print(
+        $app->build_page(
+            'dialog/header.tmpl',
+            {
+                page_title => $app->translate("Clone Blog"),
+                html_head  => $html_head
+            }
+        )
+    );
+    $app->print( $app->translate_templatized(<<"HTML") );
+<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
+
+<div class="modal_width" id="dialog-clone-weblog">
+
+<div id="clone-process" class="process-msg">
+<ul>
+HTML
+
+    my $new_blog;
+    eval {
+        $new_blog = $blog->clone(
+            {
+                BlogName => ($blog_name),
+                Children => 1,
+                Except   => ( { site_path => 1, site_url => 1 } ),
+                Callback => sub { _progress( $app, @_ ) },
+                Classes  => ($cloning_prefs)
+            }
+        );
+
+        $new_blog->site_path( $param->{'site_path'} );
+        my $subdomain = $app->param('site_url_subdomain');
+        $subdomain = '' if !$app->param('use_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        my $path = $app->param('site_url_path');
+        if ( $subdomain || $path ) {
+            $new_blog->site_url("$subdomain/::/$path");
+        }
+        else {
+            $new_blog->site_url( $param->{'site_url'} );
+        }
+        $new_blog->save();
+
+        my $website = $app->model( 'website' )->load( $param->{'parent_id'} );
+        $website->add_blog( $new_blog );
+    };
+    if ( my $err = $@ ) {
+        $app->print(
+            $app->translate_templatized(
+                qq{<p class="error-message"><__trans phrase="Error">: $err</p>}
+            )
+        );
+    }
+    else {
+        my $return_url   = $app->base . $app->uri(
+            mode => 'list_blog',
+            args => { blog_id => $app->param('blog_id') }
+        );
+        my $setting_url = $app->uri(
+            mode => 'view',
+            args => {
+                blog_id => $new_blog->id,
+                _type   => 'blog',
+                id      => $new_blog->id
+            }
+        );
+
+        $app->print( $app->translate_templatized(<<"HTML") );
+</ul>
+</div>
+
+<p><strong><__trans phrase="Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">return to the blog listing</a>." params="$return_url"></strong></p>
+
+<form method="GET">
+    <div class="actions-bar">
+        <button
+            type="submit"
+            accesskey="x"
+            class="close action mt-close-dialog-url"
+            ><__trans phrase="Close"></button>
+    </div>
+</form>
+
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery('button.mt-close-dialog-url').click(function() {
+        parent.jQuery.fn.mtDialog.close('$return_url');
+    });
+});
+/* ]]> */
+</script>
+
+
+HTML
+    }
+
+    $app->print( $app->build_page('dialog/footer.tmpl') );
+}
+
+sub _progress {
+    my $app = shift;
+    my $ids = $app->request('progress_ids') || {};
+
+    my ($str, $id) = @_;
+    if ($id && $ids->{$id}) {
+        require MT::Util;
+        my $str_js = MT::Util::encode_js($str);
+        $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
+    } elsif ($id) {
+        $ids->{$id} = 1;
+        $app->print(qq{<li id="$id">$str</li>\n});
+    } else {
+        $app->print("<li>$str</li>");
+    }
+
+    $app->request('progress_ids', $ids);
 }
 
 1;

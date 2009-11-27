@@ -6,7 +6,7 @@
 # $Id$
 
 function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
-    $localvars = array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row');
+    $localvars = array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content');
     $counter = 0;
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
@@ -20,15 +20,23 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         $tag = $ctx->this_tag();
         if (($tag == 'mtentryassets') || ($tag == 'mtpageassets')) {
             $entry = $ctx->stash('entry');
-            if ($entry) $args['entry_id'] = $entry['entry_id'];
+            if ($entry) $args['entry_id'] = $entry->entry_id;
         }
         $args['exclude_thumb'] = 1;
 
-        $assets = $ctx->mt->db->fetch_assets($args);
+        $assets = $ctx->mt->db()->fetch_assets($args);
         $ctx->stash('_assets', $assets);
     } else {
         $assets = $ctx->stash('_assets');
         $counter = $ctx->stash('_assets_counter');
+    }
+
+    $ctx->stash('conditional', empty($assets) ? 0 : 1);
+    if (empty($assets)) {
+        $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+        if (!$repeat)
+              $ctx->restore($localvars);
+        return $ret;
     }
 
     if ($counter < count($assets)) {

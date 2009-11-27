@@ -17,9 +17,9 @@ class MTCache_session extends MTCacheBase {
     }
 
     function get_multi ($keys, $ttl = null) {
-        global $mt;
+        $mt = MT::get_instance();
 
-        $results = $mt->db->fetch_unexpired_session($keys, $ttl);
+        $results = $mt->db()->fetch_unexpired_session($keys, $ttl);
         if (empty($results))
             return '';
         else {
@@ -32,9 +32,9 @@ class MTCache_session extends MTCacheBase {
     }
 
     function delete ($key) {
-        global $mt;
+        $mt = MT::get_instance();
 
-        $mt->db->remove_session($key);
+        $mt->db()->remove_session($key);
     }
 
     function add ($key, $val, $ttl = null) {
@@ -46,15 +46,15 @@ class MTCache_session extends MTCacheBase {
     }
 
     function set ($key, $val, $ttl = null) {
-        global $mt;
+        $mt = MT::get_instance();
 
-        return $mt->db->update_session($key, $val);
+        return $mt->db()->update_session($key, $val);
     }
 
     function flush_all() {
-        global $mt;
+        $mt = MT::get_instance();
 
-        return $mt->db->flush_session();
+        return $mt->db()->flush_session();
     }
 }
 ?>

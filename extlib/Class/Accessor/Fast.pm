@@ -1,7 +1,48 @@
 package Class::Accessor::Fast;
 use base 'Class::Accessor';
 use strict;
-$Class::Accessor::Fast::VERSION = '0.22';
+$Class::Accessor::Fast::VERSION = '0.34';
+
+sub make_accessor {
+    my($class, $field) = @_;
+
+    return sub {
+        return $_[0]->{$field} if scalar(@_) == 1;
+        return $_[0]->{$field}  = scalar(@_) == 2 ? $_[1] : [@_[1..$#_]];
+    };
+}
+
+
+sub make_ro_accessor {
+    my($class, $field) = @_;
+
+    return sub {
+        return $_[0]->{$field} if @_ == 1;
+        my $caller = caller;
+        $_[0]->_croak("'$caller' cannot alter the value of '$field' on objects of class '$class'");
+    };
+}
+
+
+sub make_wo_accessor {
+    my($class, $field) = @_;
+
+    return sub {
+        if (@_ == 1) {
+            my $caller = caller;
+            $_[0]->_croak("'$caller' cannot access the value of '$field' on objects of class '$class'");
+        }
+        else {
+            return $_[0]->{$field} = $_[1] if @_ == 2;
+            return (shift)->{$field} = \@_;
+        }
+    };
+}
+
+
+1;
+
+__END__
 
 =head1 NAME
 
@@ -29,55 +70,13 @@ Class::Accessor.
 
 Read the documentation for Class::Accessor for more info.
 
-=cut
-
-sub make_accessor {
-    my($class, $field) = @_;
-
-    return sub {
-        return $_[0]->{$field} unless @_ > 1;
-        my $self = shift;
-        $self->{$field} = (@_ == 1 ? $_[0] : [@_]);
-    };
-}
-
-
-sub make_ro_accessor {
-    my($class, $field) = @_;
-
-    return sub {
-        return $_[0]->{$field} unless @_ > 1;
-        my $self = shift;
-        my $caller = caller;
-        $self->_croak("'$caller' cannot alter the value of '$field' on objects of class '$class'");
-    };
-}
-
-
-sub make_wo_accessor {
-    my($class, $field) = @_;
-
-    return sub {
-        my $self = shift;
-
-        unless (@_) {
-            my $caller = caller;
-            $self->_croak("'$caller' cannot access the value of '$field' on objects of class '$class'");
-        }
-        else {
-            return $self->{$field} = (@_ == 1 ? $_[0] : [@_]);
-        }
-    };
-}
-
-
 =head1 EFFICIENCY
 
 L<Class::Accessor/EFFICIENCY> for an efficiency comparison.
 
 =head1 AUTHORS
 
-Copyright 2005 Marty Pauley <marty+perl@kasei.com>
+Copyright 2007 Marty Pauley <marty+perl@kasei.com>
 
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.  That means either (a) the GNU General Public
@@ -92,5 +91,3 @@ Michael G Schwern <schwern@pobox.com>
 L<Class::Accessor>
 
 =cut
-
-1;

@@ -17,21 +17,23 @@
             &lt;p&gt;&lt;a href="<mt:var name="help_url">"><__trans phrase="Movable Type User Manual">&lt;/a&gt;&lt;br /&gt;
             &lt;a href="<__trans phrase="http://www.sixapart.com/movabletype/support">"&gt;<__trans phrase="Movable Type Technical Support">&lt;/a&gt;&lt;br /&gt;
             &lt;a href="http://forums.sixapart.com/"&gt;<__trans phrase="Movable Type Community Forums">&lt;/a&gt;&lt;/p&gt;</mt:if></textarea>
-            <div class="actions-bar">
-                <div class="actions-bar-inner pkg actions right">
-                    <button
-                        type="submit"
-                        accesskey="s"
-                        title="<__trans phrase="Save Changes (s)">"
-                        class="primary-button"
-                        ><__trans phrase="Save Changes"></button>
-                    <button
-                        onclick="welcomeMessageToggle(); return false;"
-                        accesskey="x"
-                        title="<__trans phrase="Cancel (x)">"
-                        ><__trans phrase="Cancel"></button>
-                </div>
-            </div>
+
+            <mt:setvarblock name="action_buttons">
+                <button
+                    type="submit"
+                    accesskey="s"
+                    title="<__trans phrase="Save Changes (s)">"
+                    class="save action primary-button"
+                    ><__trans phrase="Save Changes"></button>
+                <button
+                    onclick="welcomeMessageToggle(); return false;"
+                    accesskey="x"
+                    title="<__trans phrase="Cancel (x)">"
+                    class="cancel action"
+                    ><__trans phrase="Cancel"></button>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
         </form>
     </div>
 

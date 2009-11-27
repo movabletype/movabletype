@@ -1,0 +1,62 @@
+<mt:unless name="main_index">
+<div class="widget-about-this-page widget">
+    <h3 class="widget-header">
+    <mt:If name="archive_template">
+        <__trans phrase="About this Archive">
+    </mt:If>
+    </h3>
+    <div class="widget-content">
+<mt:If name="entry_template">
+        <p class="first"><__trans phrase="This page contains a single entry by [_1] published on <em>[_2]</em>." params="<$mt:EntryAuthorLink$>%%<$mt:EntryDate format="%x %X"$>"></p>
+    <mt:EntryPrevious>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> was the previous entry in this blog." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
+    </mt:EntryPrevious>
+    <mt:EntryNext>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next entry in this blog." params="<$mt:EntryPermalink$>%%<$mt:EntryTitle remove_html="1"$>"></p>
+    </mt:EntryNext>
+</mt:If>
+<mt:If name="category_archive">
+    <mt:If name="datebased_archive">
+        <p class="first"><__trans phrase="This page is an archive of entries in the <strong>[_1]</strong> category from <strong>[_2]</strong>." params="<$mt:CategoryLabel$>%%<$mt:ArchiveDate format="%B %Y"$>"></p>
+        <mt:ArchivePrevious>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+        </mt:ArchivePrevious>
+        <mt:ArchiveNext>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+        </mt:ArchiveNext>
+    <mt:Else>
+        <p class="first"><__trans phrase="This page is an archive of recent entries in the <strong>[_1]</strong> category." params="<$mt:CategoryLabel$>"></p>
+        <mt:CategoryPrevious>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the previous category." params="<$mt:CategoryArchiveLink$>%%<$mt:CategoryLabel$>"></p>
+        </mt:CategoryPrevious>
+        <mt:CategoryNext>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next category." params="<$mt:CategoryArchiveLink$>%%<$mt:CategoryLabel$>"></p>
+        </mt:CategoryNext>
+    </mt:If>
+</mt:If>
+<mt:If name="author_archive">
+    <mt:If name="datebased_archive">
+        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong> in <strong>[_2]</strong>." params="<$mt:AuthorDisplayName encode_html="1"$>%%<$mt:ArchiveDate format="%B %Y"$>"></p>
+        <mt:ArchivePrevious>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+        </mt:ArchivePrevious>
+        <mt:ArchiveNext>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+        </mt:ArchiveNext>
+    <mt:Else>
+        <p class="first"><__trans phrase="This page is an archive of recent entries written by <strong>[_1]</strong>." params="<$mt:AuthorDisplayName encode_html="1"$>"></p>
+    </mt:If>
+</mt:If>
+<mt:If name="datebased_only_archive">
+        <p class="first"><__trans phrase="This page is an archive of entries from <strong>[_2]</strong> listed from newest to oldest." params="<$mt:BlogName$>%%<$mt:ArchiveDate format="%B %Y"$>"></p>
+    <mt:ArchivePrevious>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the previous archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+    </mt:ArchivePrevious>
+    <mt:ArchiveNext>
+        <p><__trans phrase="<a href="[_1]">[_2]</a> is the next archive." params="<$mt:ArchiveLink$>%%<$mt:ArchiveTitle$>"></p>
+    </mt:ArchiveNext>
+</mt:If>
+        <p><__trans phrase="Find recent content on the <a href="[_1]">main index</a>." params="<$mt:BlogURL$>"></p>
+    </div>
+</div>
+</mt:unless>

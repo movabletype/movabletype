@@ -1,3 +1,8 @@
+# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
+# $Id$
 package MT::CMS::AddressBook;
 
 use strict;
@@ -9,7 +14,7 @@ sub entry_notify {
     my $user  = $app->user;
     my $perms = $app->permissions;
     return $app->error( $app->translate("No permissions.") )
-      unless $perms->can_send_notifications;
+      unless $perms->can_do('open_entry_notification_screen');
 
     my $q        = $app->param;
     my $entry_id = $q->param('entry_id')
@@ -42,7 +47,7 @@ sub send_notify {
     $app->blog($blog);
     my $perms = $user->permissions($blog);
     return $app->error( $app->translate("No permissions.") )
-      unless $perms->can_send_notifications;
+      unless $perms->can_do('send_entry_notification');
 
     my $author = $entry->author;
     return $app->error(
@@ -189,7 +194,7 @@ sub export {
       or return $app->error( $app->translate("Please select a blog.") );
     return $app->error( $app->translate("Permission denied.") )
       unless $user->is_superuser
-      || ( $perms && $perms->can_edit_notifications );
+      || ( $perms && $perms->can_do('export_addressbook') );
     $app->validate_magic() or return;
 
     $| = 1;
@@ -199,7 +204,7 @@ sub export {
 
     my $not_class = $app->model('notification');
     my $iter = $not_class->load_iter( { blog_id => $blog->id },
-        { 'sort' => 'created_on', 'direction' => 'ascend' } );
+        { 'sort' => 'created_on', 'direction' => 'descend' } );
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
@@ -214,14 +219,14 @@ sub export {
     );
 
     while ( my $note = $iter->() ) {
-        $app->print( $note->email . "\n" );
+        $app->print( Encode::encode( $enc, $note->email . "\n" ) );
     }
 }
 
 sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
-    return $perms->can_edit_notifications;
+    return $perms->can_do('save_addressbook');
 }
 
 sub save_filter {
