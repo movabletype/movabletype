@@ -429,8 +429,12 @@ sub text {
         $text = $tmpl->reflow();
     }
     $text = $tmpl->SUPER::text(@_);
-
-    $tmpl->{needs_db_sync} = 0;
+    
+    #
+    # Change the initialization code for the $tmpl->{needs_db_sync} flag
+    # so that it is initialized only if it does not already exist.
+    #
+    $tmpl->{needs_db_sync} = 0 unless exists $tmpl->{needs_db_sync};
     unless (@_) {
         if ($tmpl->linked_file) {
             if (my $res = $tmpl->_sync_from_disk) {
@@ -439,9 +443,12 @@ sub text {
                 ## We used to save the template here; now we don't, because
                 ## it causes deadlock (the DB is locked from loading the
                 ## template, so saving would try to write-lock it).
+                #
+                # Fixing the name of the callback (used to be 'takedown').
+                #
                 if (!defined $resync_to_db) {
                     $resync_to_db = {};
-                    MT->add_callback('takedown', 9, undef, \&_resync_to_db);
+                    MT->add_callback('take_down', 9, undef, \&_resync_to_db);
                 }
                 $resync_to_db->{$tmpl->id} = $tmpl;
                 $tmpl->{needs_db_sync} = 1;

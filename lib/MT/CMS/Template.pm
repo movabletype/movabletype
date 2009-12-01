@@ -1320,7 +1320,13 @@ sub pre_save {
     my ( $app, $obj ) = @_;
 
     ## Strip linefeed characters.
-    ( my $text = $obj->text ) =~ tr/\r//d;
+    #
+    # Modify the $obj->text call in the pre_save.template callback so that it
+    # reads the text directly from the underlying hash element, rather than
+    # potentially triggering a read of the template text from the linked file
+    # (as $tmpl->text is able to do):
+    #
+    ( my $text = $obj->column('text')) =~ tr/\r//d;
 
     if ($text =~ m/<(MT|_)_trans/i) {
         $text = $app->translate_templatized($text);
