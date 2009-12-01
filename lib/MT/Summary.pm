@@ -121,6 +121,14 @@ sub lookup_summary_objs {
     my $obj = shift;
     my ( $terms, $class ) = @_;
     my $summary = $obj->get_summary($terms);
+    #
+    # The lookup_summary_objs() sub routine has code that is very similar to the
+    # get_summary_objs() code, and although it is not called by the MTEntryAssets
+    # tag handler code, we believe that the fix should also be applied to here to
+    # prevent potential future database errors in MTE installations using an
+    # Oracle database.
+    #
+    return undef unless ( ref $summary eq 'ARRAY' ?  $summary->[0] : $summary  );
     eval("require $class;");
     my $objs = $class->lookup_multi(ref $summary eq 'ARRAY' ? $summary : [split /,\s*/, $summary || '']);
     return @$objs;
@@ -130,6 +138,12 @@ sub get_summary_objs {
     my $obj = shift;
     my ( $terms, $class, $args ) = @_;
     my $summary = $obj->get_summary($terms);
+    #
+    # The get_summary_objs() sub in lib/MT/Summary.pm needs to check that it has
+    # a non-empty list of asset IDs before calling MT::Asset->load(), and simply
+    # return if the list of asset IDs is empty.
+    #
+    return undef unless ( ref $summary eq 'ARRAY' ?  $summary->[0] : $summary  );
     eval("require $class;");
     return $class->load( { id => ref $summary eq 'ARRAY' ? $summary : [split /,\s*/, $summary || ''] }, ref $args ? $args : () );
 }
@@ -138,6 +152,14 @@ sub get_summary_iter {
     my $obj = shift;
     my ( $terms, $class, $args ) = @_;
     my $summary = $obj->get_summary($terms);
+    #
+    # The get_summary_iter() sub routine has code that is very similar to the
+    # get_summary_objs() code, and although it is not called by the MTEntryAssets
+    # tag handler code, we believe that the fix should also be applied to here to
+    # prevent potential future database errors in MTE installations using an
+    # Oracle database.
+    #
+    return undef unless ( ref $summary eq 'ARRAY' ?  $summary->[0] : $summary  );
     eval("require $class;");
     return $class->load_iter( { id => ref $summary eq 'ARRAY' ? $summary : [split /,\s*/, $summary || ''] }, ref $args ? $args : () );
 }
