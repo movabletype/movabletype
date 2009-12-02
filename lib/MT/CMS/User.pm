@@ -1008,7 +1008,8 @@ sub cfg_system_users {
         require MT::Theme;
         my $theme = MT::Theme->load($id);
         if ($theme) {
-            $param{new_user_theme_name} = $theme->label;
+            $param{new_user_theme_name}
+                = ( $app->translate( $theme->label ) );
             my ( $thumb, $t_w, $t_h ) = $theme->thumbnail(size => 'small');
             $param{new_user_theme_thumbnail} = $thumb;
             $param{new_user_theme_thumbnail_w} = $t_w;
