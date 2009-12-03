@@ -1507,7 +1507,6 @@ sub core_menus {
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
-            dialog     => 1,
         },
         'asset:tag' => {
             label             => "Tags",
