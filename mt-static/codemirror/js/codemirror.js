@@ -321,7 +321,8 @@ var CodeMirror = (function(){
         var pending = null;
         function update() {
           if (pending) clearTimeout(pending);
-          start();
+          if (self.editor.allClean()) start();
+          else pending = setTimeout(update, 200);
         }
         self.updateNumbers = update;
         var onScroll = win.addEventHandler(win, "scroll", doScroll, true),

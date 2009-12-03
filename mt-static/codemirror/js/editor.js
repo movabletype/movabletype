@@ -4,6 +4,10 @@
  * plain sequences of <span> and <br> elements
  */
 
+var internetExplorer = document.selection && window.ActiveXObject && /MSIE/.test(navigator.userAgent);
+var webkit = /AppleWebKit/.test(navigator.userAgent);
+var safari = /Apple Computers, Inc/.test(navigator.vendor);
+
 // Make sure a string does not contain two consecutive 'collapseable'
 // whitespace characters.
 function makeWhiteSpace(n) {
@@ -398,6 +402,10 @@ var Editor = (function(){
         else
           document.designMode = "on";
 
+        // this hack for FF weird bug(?)
+        if (!internetExplorer && !webkit && !safari)
+          if (document.body.innerHTML == "<br>") document.body.innerHTML = "<br />";
+
         document.documentElement.style.borderWidth = "0";
         if (!options.textWrapping)
           container.style.whiteSpace = "nowrap";
@@ -448,7 +456,7 @@ var Editor = (function(){
   }
 
   function isSafeKey(code) {
-    return (code >= 16 && code <= 18) || (code == 13) || // shift, control, alt
+    return (code >= 16 && code <= 18) || // shift, control, alt
            (code >= 33 && code <= 40); // arrows, home, end
   }
 
@@ -687,6 +695,8 @@ var Editor = (function(){
       }
 
       var code = event.keyCode;
+      this.keyCode = code;
+      this.keyPressed = false;
       // Don't scan when the user is typing.
       this.delayScanning();
       // Schedule a paren-highlight event, if configured.
@@ -759,6 +769,7 @@ var Editor = (function(){
     // and prevent Opera from handling enter and tab anyway.
     keyPress: function(event) {
       var electric = Editor.Parser.electricChars, self = this;
+      this.keyPressed = true;
       // Hack for Opera, and Firefox on OS X, in which stopping a
       // keydown event does not prevent the associated keypress event
       // from happening, so we have to cancel enter and tab again
@@ -777,9 +788,9 @@ var Editor = (function(){
     // Mark the node at the cursor dirty when a non-safe key is
     // released.
     keyUp: function(event) {
+      if (this.keyCode == 229) return; // IM hack for IE
+      if (webkit && !this.keyPressed) return; // IM hack for webkit
       this.cursorActivity(isSafeKey(event.keyCode));
-      if (event.keyCode == 13)
-        this.scheduleHighlight();
     },
 
     // Indent the line following a given <br>, or null for the first
@@ -1032,6 +1043,7 @@ var Editor = (function(){
     indentRegion: function(start, end, direction) {
       var current = (start = startOfLine(start)), before = start && startOfLine(start.previousSibling);
       if (!isBR(end)) end = endOfLine(end, this.container);
+      this.addDirtyNode(start);
 
       do {
         var next = endOfLine(current, this.container);
@@ -1058,6 +1070,7 @@ var Editor = (function(){
         cursor = cursor || this.container.firstChild;
         if (activity) activity(cursor);
         if (!safe) {
+          this.scheduleHighlight();
           this.addDirtyNode(cursor);
         }
       }
@@ -1081,6 +1094,10 @@ var Editor = (function(){
       if (node.nodeType != 3)
         node.dirty = true;
       this.dirty.push(node);
+    },
+
+    allClean: function() {
+      return !this.dirty.length;
     },
 
     // Cause a highlight pass to happen in options.passDelay
