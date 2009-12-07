@@ -4866,7 +4866,7 @@ que la dirección provista es correcta y le pertenece.',
 	'Static web path' => 'Ruta estática del web',
 	'Static file path' => 'Ruta estática de los ficheros',
 	'Begin' => 'Comenzar',
-	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Una configuración del archivo (mt-config,cgi) existe, <a href="[_1]>identificarse</a> a Movable Type.',
+	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => 'Una configuración del archivo (mt-config,cgi) existe, <a href="[_1]">identificarse</a> a Movable Type.',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página',
 
 ## addons/Commercial.pack/config.yaml
