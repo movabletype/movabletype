@@ -37,7 +37,7 @@
             id="site-url"
             class="url-field"
             content_class="field-content-text"
-            label="<__trans phrase="Site URL">">
+            label="<__trans phrase="Blog URL">">
         <mt:if name="site_url_subdomain">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path">
         <mt:elseif name="site_url_path">
@@ -58,7 +58,7 @@
         <mtapp:setting
             id="site-path"
             content_class="field-content-text"
-            label="<__trans phrase="Site Root">">
+            label="<__trans phrase="Blog Root">">
             <span id="site-path"><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></span>
     <mt:if name="site_path_warning">
             <p>
@@ -140,7 +140,7 @@
             id="site_url"
             class="url-field"
             required="1"
-            label="<__trans phrase="Site URL">"
+            label="<__trans phrase="Blog URL">"
             content_class="field-content-input"
             hint="<__trans phrase="Enter the new URL of your public website. Example: http://www.example.com/weblog/">"
             show_hint="1">
@@ -172,7 +172,7 @@
             id="site_path"
             class="site-path-field"
             required="1"
-            label="<__trans phrase="Site Root">"
+            label="<__trans phrase="Blog Root">"
             content_class="field-content-input"
             hint="<__trans phrase="Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog">"
             show_hint="1">
