@@ -2906,8 +2906,8 @@ use vars qw( @ISA %Lexicon );
 	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'Le chemin de publication de vos fichiers d\'index. Ne pas terminer par \'/\'. Exemple: /home/mt/public_html/blog ou C:\www\public_html\blog',
 	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'Le chemin de publication de vos fichiers index. Un chemin absolu (commençant par \'/\' pour Linux ou \'C:\' pour Windows) est conseillé, mais vous pouvez également utiliser un chemin relatif vers l\'installation Movable Type. Exemple: /home/mt/public_html ou C:\www\public_html', # Translate - New
 	'Advanced Archive Publishing' => 'Publication avancée des archives',
-	'Select this option only if you need to publish your archives outside of your Site Root.' => 'Sélectionnez cette option si vous avez besoin de publier vos archives en dehors de la racine du Site.',
-	'Publish archives outside of Site Root' => 'Publier les archives en dehors de la racine du site',
+	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'Sélectionnez cette option si vous avez besoin de publier vos archives en dehors de la racine du Site.',
+	'Publish archives outside of Blog Root' => 'Publier les archives en dehors de la racine du site',
 	'Archive URL' => 'URL d\'archive',
 	'Enter the URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Entrez l\'URL des archives de votre blog. Exemple : http://www.exemple.com/blog/archives/',
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Attention : Si vous modifiez l\'URL d\'archive vous pouvez casser tous les liens dans votre blog.',

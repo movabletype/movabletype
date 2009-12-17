@@ -260,10 +260,10 @@ function setLicense() {
             label="<__trans phrase="Advanced Archive Publishing">"
             content_class="field-content-text"
             show_label="0"
-            hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Site Root.">"
+            hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Blog Root.">"
             help_page="blog_settings_publishing"
             help_section="advanced_archive_publishing">
-            <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Site Root"></label>
+            <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Blog Root"></label>
         </mtapp:setting>
 
     <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>

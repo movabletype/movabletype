@@ -2906,8 +2906,8 @@ use vars qw( @ISA %Lexicon );
 	'The path where your index files will be published. Do not end with \'/\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog' => 'Het pad waar uw indexbestanden gepubliceerd zullen worden.  Niet afsluiten met \'/\'.  Voorbeeld: /home/mt/public_html/blog of C\:www\public_html\blog',
 	'The path where your index files will be published. An absolute path (starting with \'/\' for Linux or \'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html' => 'Het pad waar uw indexbestanden gepubliceerd zullen worden.  Een absoluut pad (beginnend met \'/\' voor Linux of \'C:\' voor Windows) verdient de voorkeur, maar u kunt ook een pad gebruiken relatief aan de map van Movable Type.  Voorbeeld: /home/mt/public_html of C:\www\public_html', # Translate - New
 	'Advanced Archive Publishing' => 'Geavanceerde archiefpublicatie',
-	'Select this option only if you need to publish your archives outside of your Site Root.' => 'Selecteer deze optie alleen als u uw archieven buiten de root van uw site wenst te publiceren.',
-	'Publish archives outside of Site Root' => 'Archieven buiten de siteroot publiceren',
+	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'Selecteer deze optie alleen als u uw archieven buiten de root van uw site wenst te publiceren.',
+	'Publish archives outside of Blog Root' => 'Archieven buiten de siteroot publiceren',
 	'Archive URL' => 'Archief-URL',
 	'Enter the URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Vul de URL in van de archiefsectie van uw blog.  Voorbeeld: http://www.voorbeeld.com/blog/archieven',
 	'Warning: Changing the archive URL can result in breaking all the links in your blog.' => 'Waarschuwing: het aanpassen van de archief-URL kan ervoor zorgen dat alle links in uw weblog niet meer werken.',
