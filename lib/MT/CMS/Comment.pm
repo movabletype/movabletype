@@ -119,33 +119,30 @@ sub edit {
 
 sub edit_commenter {
     my $cb = shift;
-    my ($app, $id, $obj, $param) = @_;
+    my ( $app, $id, $obj, $param ) = @_;
 
-    # We never create commenters through the UI, so this
-    # is really the only valid condition
-    if ($id) {
-        my $q = $app->param;
-        my $blog_id = $q->param('blog_id');
-        my $perms = $app->permissions;
-        my $type = $q->param('_type');
+    return $app->errtrans("Invalid request.") if !$id;
 
-        $param->{is_email_hidden} = $obj->is_email_hidden;
-        $param->{status}          = {
-            MT::Author::PENDING()  => "pending",
-            MT::Author::APPROVED() => "approved",
-            MT::Author::BANNED()   => "banned"
-        }->{ $obj->commenter_status($blog_id) };
-        $param->{"commenter_" . $param->{status}} = 1;
-        $param->{commenter_url} = $obj->url if $obj->url;
-        if ( $app->can_do('search_authors') ) {
-            $param->{search_type}   = 'author';
-            $param->{search_label}  = $app->translate('Users');
-        }
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    my $perms   = $app->permissions;
+    my $type    = $q->param('_type');
 
-        $param->{is_me} = 1 if $obj->id == $app->user->id;
-        $param->{type_author} = 1
-          if MT::Author::AUTHOR() == $obj->type;
+    $param->{is_email_hidden} = $obj->is_email_hidden;
+    $param->{status}          = {
+        MT::Author::PENDING()  => "pending",
+        MT::Author::APPROVED() => "approved",
+        MT::Author::BANNED()   => "banned"
+    }->{ $obj->commenter_status($blog_id) };
+    $param->{ "commenter_" . $param->{status} } = 1;
+    $param->{commenter_url} = $obj->url if $obj->url;
+    if ( $app->can_do('search_authors') ) {
+        $param->{search_type}  = 'author';
+        $param->{search_label} = $app->translate('Users');
     }
+    $param->{is_me} = 1 if $obj->id == $app->user->id;
+    $param->{type_author} = 1
+        if MT::Author::AUTHOR() == $obj->type;
 
     1;
 }
