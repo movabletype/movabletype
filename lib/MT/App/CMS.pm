@@ -95,7 +95,6 @@ sub core_methods {
         'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
         'cfg_plugins'      => "${pkg}Plugin::cfg_plugins",
         'cfg_registration' => "${pkg}Comment::cfg_registration",
-        'cfg_spam'         => "${pkg}Comment::cfg_spam",
         'cfg_entry'        => "${pkg}Entry::cfg_entry",
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 
