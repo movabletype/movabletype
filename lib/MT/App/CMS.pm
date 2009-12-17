@@ -69,7 +69,6 @@ sub core_methods {
         'list_member'      => "${pkg}User::list_member",
         'list_user'        => "${pkg}User::list",
         'list_author'      => "${pkg}User::list",
-        'list_commenter'   => "${pkg}Comment::list_commenter",
         'list_asset'       => "${pkg}Asset::list",
         'list_blog'        => "${pkg}Blog::list",
         'list_website'     => "${pkg}Website::list",
