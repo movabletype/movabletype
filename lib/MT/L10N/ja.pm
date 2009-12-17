@@ -810,7 +810,6 @@ use vars qw( @ISA %Lexicon );
 	'Could not authenticate using the credentials provided: [_1].' => '提供されている手段による認証ができません: [_1]',
 	'Both passwords must match.' => 'パスワードが一致しません。',
 	'You must supply a password.' => 'パスワードを設定してください。',
-	'An e-mail address is required.' => 'メールアドレスは必須です。',
 	'The \'Publishing Path\' provided below is not writable by the web server.  Change the ownership or permissions on this directory, then click \'Finish Install\' again.' => '\'公開パス\'にウェブサーバーから書き込めません。公開パスの書き込み権限を、正しく設定してから再度、インストールボタンをクリックしてください。',
 	'Invalid session.' => 'セッションが不正です。',
 	'No permissions. Please contact your administrator for upgrading Movable Type.' => '権限がありません。Movable Typeのアップグレードを管理者に依頼してください。',
@@ -1579,7 +1578,7 @@ use vars qw( @ISA %Lexicon );
 	'weblogs.com' => 'weblogs.com',
 	'technorati.com' => 'technorati.com',
 	'google.com' => 'google.com',
-	'Classic Blog' => 'クラッシックブログ',
+	'Classic Blog' => 'クラシックブログ',
 	'Publishes content.' => 'コンテンツを公開します。',
 	'Synchronizes content to other server(s).' => 'コンテンツを他のサーバーに同期します。',
 	'Refreshes object summaries.' => 'オブジェクトサマリーの初期化',
@@ -2483,7 +2482,7 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
-	'Classic Website' => 'クラッシックウェブサイト',
+	'Classic Website' => 'クラシックウェブサイト',
 
 ## themes/pico/templates/about_this_page.mtml
 
@@ -3089,7 +3088,6 @@ use vars qw( @ISA %Lexicon );
 	'Asset Name' => 'アイテム名',
 	'Size' => 'サイズ',
 	'Pending' => '保留中',
-	'View Asset' => 'アイテムを表示',
 	'Next (s)' => '次へ (s)',
 	'Insert (s)' => '挿入 (s)',
 	'Insert' => '挿入',
@@ -3125,6 +3123,7 @@ use vars qw( @ISA %Lexicon );
 	'Verify Clone Blog Settings' => '複製したブログ設定の確認',
 	'Blog Details' => 'ブログの詳細',
 	'This is set to the same URL as the original blog.' => '複製元のブログと同じURLを設定します。',
+	'Blog Root' => 'ブログパス',
 	'This will overwrite the original blog.' => '複製元のブログ設定を上書きします。',
 	'Exclusions' => '除外',
 	'Exclude Entries/Pages' => '記事/ページの除外',
@@ -3333,7 +3332,6 @@ use vars qw( @ISA %Lexicon );
 	'Select the theme you wish to use for this blog.' => 'このブログで利用するテーマを選択してください。',
 	'Name your blog. The blog name can be changed at any time.' => 'ブログ名を付けてください。この名前はいつでも変更できます。',
 	'Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/' => 'ウェブサイトを公開するURLを入力してください。ファイル名(index.htmlなど)は含めないでください。例: http://www.example.com/',
-	'Blog Root' => 'ブログパス',
 	'Enter the path where your main index file will be located. An absolute path (starting with \'/\') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog' => 'インデックスファイルを配置するパスです。絶対パス(/で始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。例: /home/melody/public_html/',
 	'Select your timezone from the pulldown menu.' => 'プルダウンメニューからタイムゾーンを選択してください。',
 	'Blog language.' => 'ブログの言語',
