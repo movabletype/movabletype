@@ -2709,7 +2709,7 @@ use vars qw( @ISA %Lexicon );
 	'Swedish' => 'スウェーデン語',
 	'Basename Length' => 'ファイル名の文字数',
 	'Specifies the default length of an auto-generated basename. The range for this setting is 15 to 250.' => '自動作成される出力ファイル名のデフォルトの文字数を決めます。15文字から250文字の範囲で設定してください。',
-	'Compose Defaults' => '記事作成の既定値',
+	'Compose Defaults' => '作成の既定値',
 	'Specifies the default Post Status when creating a new entry.' => '新規ブログ記事を作成時の公開状態の規定値を指定します。',
 	'Unpublished' => '下書き',
 	'Published' => '公開',
