@@ -2924,7 +2924,7 @@ use vars qw( @ISA %Lexicon );
 	'File Extension' => 'Bestandsextensie',
 	'Enter the archive file extension. This can take the form of \'html\', \'shtml\', \'php\', etc. Note: Do not enter the leading period (\'.\').' => 'Voer de bestandsextensie voor het archief in. Dit kan zijn in de vorm van \'html\', \'shtml\', \'php\', enz. Opmerking: voer het eerste punt niet in (\'.\').',
 	'Preferred Archive' => 'Voorkeursarchief',
-	'Used to generate URLs (permalinks) for this blog\'s archived entries. Choose one of the archives type used in this blog\'s archive templates.' => 'Gebruikt om URL\'s (permalinks) te genereren voor de gearchiveerde berichten van deze blog.  Kies één van de archieftypes gebruikt in de archiefsjablonen van deze blog. ',
+	'Used to generate URLs (permalinks) for this blog\'s archived entries. Choose one of the archive type used in this blog\'s archive templates.' => 'Gebruikt om URL\'s (permalinks) te genereren voor de gearchiveerde berichten van deze blog.  Kies één van de archieftypes gebruikt in de archiefsjablonen van deze blog. ',
 	'No archives are active' => 'Geen archieven actief',
 	'Module Settings' => 'Instellingen module',
 	'Server Side Includes' => 'Server Side Includes',
