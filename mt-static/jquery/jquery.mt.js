@@ -705,6 +705,12 @@ $.fn.mtEditInput = function(options) {
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
+        if (!$input.val() && $input.hasClass('hide-input')) {
+            $input
+                .before('<span class="'+id+'-text"></span>')
+                .after('<button id="mt-set-'+id+'" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .hide();
+        }
         $('button#mt-set-'+id).click(function() {
             $(this).hide();
             $('span.'+id+'-text').hide();

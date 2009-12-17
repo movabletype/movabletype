@@ -245,7 +245,7 @@ function setLicense() {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> blog-path-text extra-path<mt:else> website-path-field</mt:if>" />
+        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> blog-path-text extra-path<mt:else> website-path-field</mt:if> hide-input" />
         <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete publish of your site."></p>
     <mt:if name="is_blog">
         <div class="hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
