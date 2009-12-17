@@ -216,6 +216,7 @@ sub list {
                 can_delete_files => $app->can_do('delete_asset_file'),
                 nav_assets       => 1,
                 panel_searchable => 1,
+                saved_deleted    => $app->param('saved_deleted') ? 1 : 0,
                 object_type      => 'asset',
                 (
                     ( $ext_from && $ext_to )
