@@ -23,6 +23,8 @@ sub apply {
             die "fatal error!";
         }
     }
+    $blog->save
+        or return $element->errtrans('Failed to save blog object: [_1]', $blog->errstr);
     return 1;
 }
 
