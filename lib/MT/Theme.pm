@@ -186,14 +186,14 @@ sub _load_from_themes_directory {
         %trans = (
             l10n_class   => $y->{l10n_class},
             l10n_lexicon => $y->{l10n_lexicon},
-            label        => sub { $class->translate( $y->{label} ) },
         );
     }
     $class->registry({
-        id          => $theme_id,
-        label          => $y->{label},
-        name           => $y->{name},
+        id           => $theme_id,
+        label        => $y->{label},
+        name         => $y->{name},
         description  => $y->{description},
+        label        => sub { $class->translate( $y->{label} ) },
         %trans,
     });
     return $class;
