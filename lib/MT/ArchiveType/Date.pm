@@ -66,7 +66,7 @@ sub dated_category_entries {
             authored_on => [ $start, $end ]
         },
         {
-            range => { authored_on => 1 },
+            range_incl => { authored_on => 1 },
             'join' =>
               [ 'MT::Placement', 'entry_id', { category_id => $cat->id } ],
             'sort' => 'authored_on',
@@ -98,7 +98,7 @@ sub dated_author_entries {
             authored_on => [ $start, $end ]
         },
         {
-            range => { authored_on => 1 },
+            range_incl => { authored_on => 1 },
             'sort' => 'authored_on',
             'direction' => 'descend',
         }
