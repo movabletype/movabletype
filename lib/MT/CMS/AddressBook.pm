@@ -10,11 +10,10 @@ use MT::Util qw( is_valid_email is_url dirify );
 use MT::I18N qw( wrap_text );
 
 sub entry_notify {
-    my $app   = shift;
-    my $user  = $app->user;
-    my $perms = $app->permissions;
-    return $app->error( $app->translate("No permissions.") )
-      unless $perms->can_do('open_entry_notification_screen');
+    my $app  = shift;
+    my $user = $app->user;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('open_entry_notification_screen');
 
     my $q        = $app->param;
     my $entry_id = $q->param('entry_id')
