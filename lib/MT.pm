@@ -2202,11 +2202,74 @@ sub load_tmpl {
     $tmpl;
 }
 
+sub _svn_revision {
+    my $mt = shift;
+    ## Ugly, but it works: find the revision number and branch name
+    ## that we're running off of.
+    my($rev, $branch);
+    my $wc_base = $mt->{mt_dir};
+    return unless -d File::Spec->catdir( $wc_base, '.svn' );
+    if (-e $wc_base && open my $fh, '-|', "LC_ALL=en_US;export LC_ALL;/opt/local/bin/svn info $wc_base") {
+        my $content = do { local $/ = undef; <$fh> };
+        if ($content =~ /URL:.*\/branches\/([^\/"\n]*)/) {
+            $branch = $1;
+        } elsif ($content =~ /URL:.*\/trunk/) {
+            $branch = "trunk";
+        }
+        if ($content =~ /Last Changed Rev: (\d+)/) {
+            $rev = $1;
+        }
+        close $fh;
+    }
+    return { revision => $rev, branch => $branch };
+}
+
 sub set_default_tmpl_params {
     my $mt = shift;
     my ($tmpl) = @_;
     my $param = {};
     $param->{mt_debug} = $MT::DebugMode;
+    if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
+        $param->{mt_svn_revision} = $mt->_svn_revision();
+        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
+            $param->{mt_headers} = $mt->{apache}->headers_in();
+        }
+        else {
+            $param->{mt_headers} = \%ENV;
+        }
+        unless ( $mt->{cookies} ) {
+            my $class = $ENV{MOD_PERL} ? 'Apache::Cookie' : 'CGI::Cookie';
+            eval "use $class;";
+            $mt->{cookies} = $class->fetch;
+        }
+        if ( $mt->{cookies} ) {
+            $param->{mt_cookies} = $mt->{cookies};
+        }
+        my %params = $mt->param_hash;
+        $param->{mt_queries} = \%params;
+        if ( $param->{mt_debug} && 4 ) {
+            if ( my $profiler = Data::ObjectDriver->profiler ) {
+                my $stats = $profiler->statistics;
+                $param->{mt_sql_profile}{statistics} = $stats;
+                $param->{mt_sql_profile}{total_queries} = $stats->{'DBI:total_queries'};
+
+                my $freq = $profiler->query_frequency;
+                my @cache_types;
+                foreach ( keys %$freq ) {
+                    my ( $cache_type, $memcache, $method ) = $_ =~ /^(.+)CACHE(D?)_(.+)\s\?/;
+                    next unless $cache_type;
+                    push @cache_types,
+                        $cache_type . ':query_' . lc($method),
+                        delete $freq->{$_};
+                }
+                $param->{mt_sql_profile}{query_frequency} = $freq;
+                $param->{mt_cache_profile} = [];
+                while ( my $k = shift(@cache_types) ) {
+                    push @{ $param->{mt_cache_profile} }, $k, shift(@cache_types);
+                }
+            }
+        }
+    }
     $param->{mt_beta} = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
     $param->{static_uri} = $mt->static_path;
     $param->{mt_version} = MT->version_number;

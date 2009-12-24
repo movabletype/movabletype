@@ -1,0 +1,156 @@
+<mt:If name="mt_debug">
+<mt:SetHashVar name="version_panel">
+    <mt:SetVar name="name" value="Version">
+    <mt:SetVar name="title" value="Movable Type Version">
+    <mt:SetVar name="nav_title" value="Movable Type Version">
+    <mt:SetVar name="subtitle" value="$mt_version_id">
+    <mt:SetVar name="no_content" value="1">
+</mt:SetHashVar>
+<mt:SetHashVar name="subversion_panel">
+    <mt:SetVar name="name" value="Subversion">
+    <mt:SetVar name="title" value="Version Control">
+    <mt:SetVar name="nav_title" value="Version Control">
+    <mt:SetVarBlock name="subtitle"><mt:Var name="mt_svn_revision{branch}"> at rev <mt:Var name="mt_svn_revision{revision}"></mt:SetVarBlock>
+    <mt:SetVar name="no_content" value="1">
+</mt:SetHashVar>
+<mt:SetHashVar name="sql_panel">
+    <mt:SetVar name="name" value="SQL">
+    <mt:SetVar name="title" value="SQL Queries">
+    <mt:SetVar name="nav_title" value="SQL">
+    <mt:SetVarBlock name="subtitle"><mt:Var name="mt_sql_profile{total_queries}"> queries</mt:SetVarBlock>
+</mt:SetHashVar>
+<mt:SetHashVar name="cache_panel">
+    <mt:SetVar name="name" value="Cache">
+    <mt:SetVar name="title" value="Cache Hits">
+    <mt:SetVar name="nav_title" value="Cache">
+</mt:SetHashVar>
+<mt:SetHashVar name="requestvars_panel">
+    <mt:SetVar name="name" value="RequestVars">
+    <mt:SetVar name="title" value="Request Vars">
+    <mt:SetVar name="nav_title" value="Request Vars">
+</mt:SetHashVar>
+<mt:SetHashVar name="headers_panel">
+    <mt:SetVar name="name" value="Headers">
+    <mt:SetVar name="title" value="HTTP Headers">
+    <mt:SetVar name="nav_title" value="HTTP Headers">
+</mt:SetHashVar>
+<mt:Var name="debug_panels" function="push" value="$version_panel">
+<mt:Var name="debug_panels" function="push" value="$subversion_panel">
+<mt:Var name="debug_panels" function="push" value="$sql_panel">
+<mt:Var name="debug_panels" function="push" value="$cache_panel">
+<mt:Var name="debug_panels" function="push" value="$requestvars_panel">
+<mt:Var name="debug_panels" function="push" value="$headers_panel">
+<mt:Ignore>
+    [%-
+        debug_panels = [
+            {
+                name => 'Version',
+                title => lh.loc( 'TypePad Version' ),
+                nav_title => lh.loc( 'TypePad Version' ),
+                subtitle => tc.app_version,
+                no_content => 1,
+            },
+            {
+                name => 'Subversion',
+                title => lh.loc( 'Version Control' ),
+                nav_title => lh.loc( 'Version Control' ),
+                subtitle => lh.loc( '[_1] at rev [_2]', archetype.svn_branch, archetype.svn_revision ),
+                no_content => 1,
+            },
+        ];
+
+        IF reqtimer;
+            USE elapsed = String( reqtimer.total_elapsed );
+            debug_panels.push( {
+                name => 'Timer',
+                title => lh.loc( 'Time' ),
+                nav_title => lh.loc( 'Time' ),
+                subtitle => lh.loc( 'render time: [_1]', elapsed.format( "%.04fs" ) ),
+            } );
+        END;
+
+        IF tc.query_profiler;
+            queries_db = tc.query_profiler.queries_matching( "^(?!MEMCACHE)" );
+            queries_mc = tc.query_profiler.queries_matching( "^MEMCACHE" );
+            debug_panels.push( {
+                name => 'SQL',
+                title => lh.loc( 'SQL Queries' ),
+                nav_title => lh.loc( 'SQL' ),
+                subtitle => lh.loc( '[quant,_1,query,queries]', queries_db.size ),
+            },
+            {
+                name => 'Cache',
+                title => lh.loc( 'Memcache Queries' ),
+                nav_title => lh.loc( 'Memcache' ),
+                subtitle => lh.loc( '[quant,_1,query,queries]', queries_mc.size ),
+            } );
+        END;
+
+        debug_panels.push( {
+            name => 'Settings',
+            title => lh.loc( 'Application Settings' ),
+            nav_title => lh.loc( 'Application Settings' ),
+        },
+        {
+            name => 'RequestVars',
+            title => lh.loc( 'Request Vars' ),
+            nav_title => lh.loc( 'Request Vars' ),
+        },
+        {
+            name => 'Headers',
+            title => lh.loc( 'HTTP Headers' ),
+            nav_title => lh.loc( 'HTTP Headers' ),
+        } );
+    -%]
+</mt:Ignore>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/jquery.cookie.js"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>debug_toolbar/toolbar.js"></script>
+<style type="text/css">
+    @import url(<$mt:var name="static_uri"$>debug_toolbar/toolbar.css);
+</style>
+<div id="djDebug">
+    <div style="display:none;" id="djDebugToolbar">
+        <ul id="djDebugPanelList">
+            <li><a id="djHideToolBarButton" href="#" title="<__trans phrase="Hide Toolbar">"><__trans phrase="Hide &raquo;"></a></li>
+    <mt:Loop name="debug_panels">
+            <li>
+        <mt:If name="no_content">
+                <div class="contentless">
+        <mt:Else>
+                <a href="#" title="<mt:Var name="title" escape="html">" class="djDebug<mt:Var name="name" escape="html">Panel">
+        </mt:If>
+                <mt:Var name="nav_title" escape="html">
+        <mt:If name="subtitle">
+                <br /><small><mt:Var name="subtitle" escape="html"></small>
+        </mt:If>
+        <mt:If name="no_content">
+                </div>
+        <mt:Else>
+                </a>
+        </mt:If>
+            </li>
+    </mt:Loop>
+        </ul>
+    </div>
+    <div style="display:none;" id="djDebugToolbarHandle">
+        <a title="Show Toolbar" id="djShowToolBarButton" href="#">&laquo;</a>
+    </div>
+    <mt:Loop name="debug_panels">
+        <mt:Unless name="no_content">
+    <div id="djDebug<mt:Var name="name">Panel" class="panelContent">
+        <div class="djDebugPanelTitle">
+            <a href="" class="close"><__trans phrase="Close"></a>
+            <h3><mt:Var name="title"></h3>
+        </div>
+        <div class="djDebugPanelContent">
+            <div class="scroll">
+<mt:SetVarBlock name="debug_module">include/debug_toolbar/<mt:Var name="name" lower_case="1">.tmpl</mt:SetVarBlock>
+<mt:Include name="$debug_module">
+            </div>
+        </div>
+    </div>
+        </mt:Unless>
+    </mt:Loop>
+    <div id="djDebugWindow" class="panelContent"></div>
+</div>
+</mt:If>

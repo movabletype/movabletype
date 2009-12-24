@@ -1,0 +1,45 @@
+<table>
+    <thead>
+        <tr>
+            <th>Time&nbsp;(ms)</th>
+[%- IF tc.config.QueryProfiler.stacktrace %]
+            <th>[% |loc_html %]Stacktrace[% END %]</th>
+[%- END %]
+            <th>[% |loc_html %]Query[% END %]</th>
+        </tr>
+    </thead>
+    <tbody>
+[%- FOR query_data IN queries_db %]
+            <tr class="[% IF loop.index % 2 == 0 %]even[% ELSE %]odd[% END %]">
+                <td>[%- USE elapsed = String( query_data.1 ) -%][% elapsed.format( "%.05fs" ) | html %]</td>
+    [%- IF tc.config.QueryProfiler.stacktrace %]
+                <td>
+                    <div class="djSQLShowStacktraceDiv"><a class="djSQLShowStacktrace" href="#">Toggle Stacktrace</a></div>
+                    <div class="djSQLHideStacktraceDiv" style="display:none;">
+                        <table>
+                            <tr>
+                                <th>[% |loc_html %]Line[% END %]</th>
+                                <th>[% |loc_html %]Method[% END %]</th>
+                                <th>[% |loc_html %]File[% END %]</th>
+                            </tr>
+        [%- trace = query_data.2 -%]
+        [%- WHILE ( frame = trace.next_frame ) %]
+                            <tr>
+                                <td>[% frame.line | html %]</td>
+                                <td>[% frame.subroutine | html %]</td>
+                                <td>[% frame.filename | html %]</td>
+                            </tr>
+        [%- END %]
+                        </table>
+                    </div>
+                </td>
+    [%- END %]
+                <td class="syntax">
+                    <div class="djDebugSqlWrap">
+                        <div class="djDebugSql">[% query_data.0 | html %]</div>
+                    </div>
+                </td>
+            </tr>
+[% END %]
+    </tbody>
+</table>

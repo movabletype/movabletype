@@ -2644,6 +2644,12 @@ sub pre_run {
     }
 
     $app->{breadcrumbs} = [];
+
+    if ( $MT::DebugMode && 4 ) {
+        $Data::ObjectDriver::PROFILE = 1;
+        Data::ObjectDriver->profiler->reset;
+    }
+
     MT->run_callbacks( ( ref $app ) . '::pre_run', $app );
     1;
 }
