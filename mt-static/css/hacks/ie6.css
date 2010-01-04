@@ -104,6 +104,20 @@ textarea {
     border-top: 1px solid #9EA1A3;
 }
 
+.selector li ul.last-child { 
+    border: 0;
+}
+
+.selector ul li { 
+    line-height: 0;
+}
+
+.selector ul, 
+.selector li a,
+.selector li span { 
+    line-height: normal;
+}
+
 /* - Navigation Menu */
 ul.menu-nav li { 
     margin-top: 0;
@@ -237,8 +251,6 @@ html#dialog {
 .plugin, 
 .theme, 
 .field-content ul, 
-#selector-nav .selector ul, 
-#selector-nav .selector ul li, 
 .fav-actions li a, 
 ul.menu-nav li,
 ul.menu-nav li a,
