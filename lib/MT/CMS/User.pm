@@ -1376,28 +1376,28 @@ sub dialog_select_author {
             },
             code     => $hasher,
             template => 'dialog/select_users.tmpl',
-            params   => {
-                ( $entry_type eq 'entry'
-                    ? ( dialog_title => $app->translate("Select a entry author") )
-                    : ( dialog_title => $app->translate("Select a page author") ) ),
-                items_prompt =>
-                  $app->translate("Selected author"),
-                search_prompt => $app->translate(
+            params => {
+                (   $entry_type eq 'entry'
+                    ? ( dialog_title =>
+                            $app->translate("Select a entry author") )
+                    : ( dialog_title =>
+                            $app->translate("Select a page author") )
+                    ),
+                    items_prompt  => $app->translate("Selected author"),
+                    search_prompt => $app->translate(
                     "Type a username to filter the choices below."),
-                ( $entry_type eq 'entry'
-                    ? ( panel_label       => $app->translate("Entry author") )
-                    : ( panel_label       => $app->translate("Page author") ) ),
-                panel_description => $app->translate("Name"),
-                panel_type        => 'author',
-                panel_multi       => defined $app->param('multi')
-                ? $app->param('multi')
-                : 0,
-                panel_searchable => 1,
-                panel_first      => 1,
-                panel_last       => 1,
-                list_noncron     => 1,
-                idfield          => $app->param('idfield'),
-                namefield        => $app->param('namefield'),
+                    panel_label       => $app->translate("Username"),
+                    panel_description => $app->translate("Display Name"),
+                    panel_type        => 'author',
+                    panel_multi       => defined $app->param('multi')
+                    ? $app->param('multi')
+                    : 0,
+                    panel_searchable => 1,
+                    panel_first      => 1,
+                    panel_last       => 1,
+                    list_noncron     => 1,
+                    idfield          => $app->param('idfield'),
+                    namefield        => $app->param('namefield'),
             },
         }
     );
