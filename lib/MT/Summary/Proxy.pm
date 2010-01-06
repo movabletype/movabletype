@@ -26,32 +26,32 @@ sub set {
     
     $proxy->{__loaded}->{$terms->{type}} = 1;
     if (%{$proxy->{__loaded}}) {
-		$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
-	} else {
-		delete $proxy->{__pkeys}->{type};
-	}
-	$proxy->{__objects}->{$terms->{type}}->expired(0);
-	$proxy->save_one($terms);
-	$proxy->get($terms);
+        $proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+    } else {
+        delete $proxy->{__pkeys}->{type};
+    }
+    $proxy->{__objects}->{$terms->{type}}->expired(0);
+    $proxy->save_one($terms);
+    $proxy->get($terms);
 }
 
 sub get {
     my $proxy = shift;
     my ($terms) = @_;
 
-	require MT::Summary;
-	$terms = MT::Summarizable::_set_terms($terms);
+    require MT::Summary;
+    $terms = MT::Summarizable::_set_terms($terms);
 
-	my ($col, $class) = ($terms->{type}, $terms->{class});
+    my ($col, $class) = ($terms->{type}, $terms->{class});
     $proxy->lazier_load_objects;
     my $pkg  = $proxy->{pkg};
     if (my $field = $proxy->META_CLASS()->metadata_by_name($pkg, $class)) {
-    	if (!exists $proxy->{__objects}->{$col}) {
-    		$proxy->{__objects}->{$col} = $proxy->meta_pkg->new;
-    	}
-    	if (!$proxy->{__loaded}->{$col}) {
-    		$proxy->load_objects($col);
-    	}
+        if (!exists $proxy->{__objects}->{$col}) {
+            $proxy->{__objects}->{$col} = $proxy->meta_pkg->new;
+        }
+        if (!$proxy->{__loaded}->{$col}) {
+            $proxy->load_objects($col);
+        }
         my $meta = $proxy->{__objects}->{$col};
 
         my $type = $field->{type}
@@ -62,16 +62,16 @@ sub get {
         }
         return $meta->$type;
     } else {
-		Carp::croak("Summary $class on $pkg not found.");
-	}
+        Carp::croak("Summary $class on $pkg not found.");
+    }
 }
 
 sub create_meta_object {
     my $proxy = shift;
     my($terms, $value) = @_;
     
-	require MT::Summary;
-	$terms = MT::Summarizable::_set_terms($terms);
+    require MT::Summary;
+    $terms = MT::Summarizable::_set_terms($terms);
 
     my $pkg = $proxy->{pkg};
     my $meta = $proxy->meta_pkg->new;
@@ -91,51 +91,51 @@ sub create_meta_object {
 }
 
 sub save_one {
-	my $proxy = shift;
-	my ($terms) = @_;
-	
-	my $field = $terms->{type};
-	
-	my $meta_obj = $proxy->{__objects}->{$field};
-	## primary key from core object
-	foreach my $pkey (keys %{ $proxy->{__pkeys} } ) {
-		next if ($pkey eq 'type');
-		my $pval = $proxy->{__pkeys}->{$pkey};
-		$meta_obj->$pkey($pval);
-	}
+    my $proxy = shift;
+    my ($terms) = @_;
+    
+    my $field = $terms->{type};
+    
+    my $meta_obj = $proxy->{__objects}->{$field};
+    ## primary key from core object
+    foreach my $pkey (keys %{ $proxy->{__pkeys} } ) {
+        next if ($pkey eq 'type');
+        my $pval = $proxy->{__pkeys}->{$pkey};
+        $meta_obj->$pkey($pval);
+    }
 
-	my $pkg = $proxy->{pkg};
+    my $pkg = $proxy->{pkg};
 
-	my $meta = $proxy->META_CLASS()->metadata_by_name($pkg, $terms->{class})
-		or Carp::croak("Metadata $terms->{class} on $pkg not found.");
-	my $type = $meta->{type};
+    my $meta = $proxy->META_CLASS()->metadata_by_name($pkg, $terms->{class})
+        or Carp::croak("Metadata $terms->{class} on $pkg not found.");
+    my $type = $meta->{type};
 
-	my $meta_col_def = $meta_obj->column_def($type);
-	my $meta_is_blob = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
+    my $meta_col_def = $meta_obj->column_def($type);
+    my $meta_is_blob = $meta_col_def ? $meta_col_def->{type} eq 'blob' : 0;
 
-	## xxx can be a hook?
-	if ( ! defined $meta_obj->$type() ) {
-		$meta_obj->remove;
-	}
-	else {
-		MT::Meta::Proxy::serialize_blob($field, $meta_obj) if $meta_is_blob;
-		$meta_obj->save || die $meta_obj->errstr;
-		MT::Meta::Proxy::unserialize_blob($meta_obj) if $meta_is_blob;
-	}
+    ## xxx can be a hook?
+    if ( ! defined $meta_obj->$type() ) {
+        $meta_obj->remove;
+    }
+    else {
+        MT::Meta::Proxy::serialize_blob($field, $meta_obj) if $meta_is_blob;
+        $meta_obj->save || die $meta_obj->errstr;
+        MT::Meta::Proxy::unserialize_blob($meta_obj) if $meta_is_blob;
+    }
 }
 
 sub load_objects {
     my $proxy = shift;
 
     return unless $proxy->{__pkeys};
-	my ($col) = @_;
+    my ($col) = @_;
     my $pkg = $proxy->{pkg};
     my $meta_pkg = $proxy->meta_pkg;
 
     my @objs  = $meta_pkg->search({
-		%{$proxy->{__pkeys}},
-		$col ? ( type => $col ) : ()
-	});
+        %{$proxy->{__pkeys}},
+        $col ? ( type => $col ) : ()
+    });
 
     foreach my $meta_obj (@objs) {
         my $type_id = $meta_obj->class;
@@ -158,11 +158,41 @@ sub load_objects {
         $proxy->{__objects}->{$name} = $meta_obj;
         $proxy->{__loaded} ||= {};
         if (!$proxy->{__loaded}->{$name}) {
-        	$proxy->{__loaded}->{$name} = 1;
-        	$proxy->{__is_expired}->{$name} = $meta_obj->expired if $meta_obj->expired;
-        	$proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
+            $proxy->{__loaded}->{$name} = 1;
+            $proxy->{__is_expired}->{$name} = $meta_obj->expired if $meta_obj->expired;
+            $proxy->{__pkeys}->{type} = { not => [ keys %{$proxy->{__loaded}} ] };
         }
     }
 }
+
+__END__
+
+=head1 NAME
+
+MT::Summary::Proxy - interface to a MT::Object's summary objects
+
+=head1 DESCRIPTION
+
+I<MT::Summary::Proxy> provides the low-level interface between a summarizable 
+I<MT::Object> and its summary class generated by I<MT::Summary>.
+
+=head1 USAGE
+
+I<MT::Summary::Proxy> inherits most of its functionality from 
+I<MT::Meta::Proxy>, with the following significant differences.
+
+=head2 $terms
+
+Instead of a scalar value specifying a metadata field, the I<$terms> argument 
+passed to the I<get>, I<set>, and I<create_meta_object> methods can optionally 
+be a hashref containing I<class> and/or I<type> elements. Refer to the 
+documentation for I<MT::Summarizable> for an explanation of how these are used 
+to specify simple or parameterized summaries.
+
+=head2 $proxy->set($terms, $value)
+
+Unlike I<MT::Meta::Proxy->set()>, this method not only sets a summary's value 
+but saves it to the database immediately; there is no need to save the parent 
+object.
 
 1;
