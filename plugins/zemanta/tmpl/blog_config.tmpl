@@ -1,15 +1,14 @@
-<mt:unless name="default_api_key">
-	<mt:unless name="api_key">
-	<div class="msg msg-alert">
-	Error registering a new Zemanta API key.
-	</div>
-	</mt:unless>
-</mt:unless>
-
 <input type="hidden" name="default_api_key" id="default_api_key" value="<mt:var name="default_api_key" escape="html">"/>
 
 <mtapp:setting id="preferences" label="Preferences">
-	<p class="hint">You can customize your Zemanta preferences on <strong><a href="<mt:var name="config_url" escape="html">?platform=mtplugin">Zemanta preferences page</a></strong>.</p>
+	<mt:if name="config_url">
+		<p class="hint">You can customize your Zemanta preferences on <strong><a href="<mt:var name="config_url" escape="html">">Zemanta preferences page</a></strong>.</p>
+	<mt:else>
+		<div class="msg msg-alert">
+		Zemanta preferences page appears to be inaccessible at the moment. Please try waiting a few moments and refreshing the page.
+		</div>
+	</mt:if>
+
 
 	<p class="hint">You can add your Flickr account if you would like to use your own images more conveniently through Zemanta. You may also connect Zemanta with your Twitter and Facebook accounts or add your own RSS feeds (full article feeds) so that your own posts come up as related content. Make your writing and editing experience better, easier, and faster!</p>
 
@@ -17,21 +16,29 @@
 </mtapp:setting>
 
 <mtapp:setting id="api_key" label="API key" hint="This is your API key for the Zemanta service.">
-<input name="api_key" id="api_key" size="24" value="<mt:var name="api_key" escape="html">"/>
-<mt:if name="default_api_key">
-	<p class="hint">
-	API key is an authentication token that allows Zemanta service to know who you are. We automatically assigned you one when you first used this plugin (reset settings to defaults to restore it).
-	</p>
+	<mt:unless name="default_api_key">
+		<mt:unless name="api_key">
+		<div class="msg msg-alert">
+		Error registering a new Zemanta API key.
+		</div>
+		</mt:unless>
+	</mt:unless>
 
-	<p class="hint">
-	If you would like to use a different API key you can enter it here.
-	</p>
-<mt:else>
-	<p class="hint">
-	API key is an authentication token that allows Zemanta service to know who you are. We tried to assign you one, but an error occurred during communication with our server. Don't worry, we will automatically retry until we get through.</p>
+	<input name="api_key" id="api_key" size="24" value="<mt:var name="api_key" escape="html">"/>
+	<mt:if name="default_api_key">
+		<p class="hint">
+		API key is an authentication token that allows Zemanta service to know who you are. We automatically assigned you one when you first used this plugin (reset settings to defaults to restore it).
+		</p>
 	
-	<p class="hint">
-	Alternatively, if you already have Zemanta API key you want to use, you can enter it here and we will use that one.
-	</p>
-</mt:if>
+		<p class="hint">
+		If you would like to use a different API key you can enter it here.
+		</p>
+	<mt:else>
+		<p class="hint">
+		API key is an authentication token that allows Zemanta service to know who you are. We tried to assign you one, but an error occurred during communication with our server. Don't worry, we will automatically retry until we get through.</p>
+	
+		<p class="hint">
+		Alternatively, if you already have Zemanta API key you want to use, you can enter it here and we will use that one.
+		</p>
+	</mt:if>
 </mtapp:setting>

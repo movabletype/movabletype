@@ -8,12 +8,23 @@ sub cfg_plugins {
     my $q   = $app->param;
     my %param;
     $param{screen_class} = 'settings-screen';
+    #
+    # Permission to view the plugin configuration screen must be validated.
+    #
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    
     if ( $q->param('blog_id') ) {
         $q->param( '_type', 'blog' );
         $q->param( 'id',    scalar $q->param('blog_id') );
         $param{screen_id} = "list-plugins";
         $param{screen_class} .= " plugin-settings";
         $param{output} = 'cfg_plugin.tmpl';
+        #
+        # At the blog level, the user must have can_manage_plugins for this
+        # blog.
+        #
+        return $app->errtrans("Permission denied.")
+            unless ($perms && $perms->can_manage_plugins);
         $app->forward("view", \%param);
     }
     else {
@@ -31,7 +42,12 @@ sub cfg_plugins {
         $app->add_breadcrumb( $app->translate("Plugin Settings") );
         $param{screen_id} = "list-plugins";
         $param{screen_class} = "plugin-settings";
-
+        #
+        # At the global level, the user must have can_manage_plugins which is
+        # System Permissions: Manage Plugins or System Administrator
+        #
+        return $app->errtrans("Permission denied.")
+            unless ($app->user->can_manage_plugins);
         $app->load_tmpl( 'cfg_plugin.tmpl', \%param );
     }
 }

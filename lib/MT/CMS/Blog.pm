@@ -442,7 +442,21 @@ sub cfg_archives {
     return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
     my $blog = $app->model('blog')->load($blog_id)
-        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));    
+    #
+    # User must have can_edit_config, can_administer_blog, or can_set_publish_paths
+    # in order to see the Publishing Settings page.
+    #   
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog
+            || $perms->can_set_publish_paths )
+      );
+      
     my @data;
     for my $at ( split /\s*,\s*/, $blog->archive_type ) {
         my $archiver = $app->publisher->archiver($at);
@@ -525,6 +539,19 @@ sub cfg_web_services {
       unless $blog_id;
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
+    #
+    # User must have can_edit_config, can_administer_blog, or can_set_publish_paths
+    # in order to see the Web Services page.
+    #
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog
+            || $perms->can_set_publish_paths )
+      );    
     $app->forward( "view",
         {
             output       => 'cfg_web_services.tmpl',

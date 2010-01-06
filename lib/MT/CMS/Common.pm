@@ -667,11 +667,17 @@ sub list {
     my $perms = $app->permissions;
     return $app->return_to_dashboard( redirect => 1 )
       unless $perms;
+      
+    #
+    #   In order for a user to see the IP Address banlist, they must have
+    #   can_manage_feedback on the current blog.
+    #
     if (
         $perms
         && (   ( $type eq 'blog' && !$perms->can_edit_config )
             || ( $type eq 'template'     && !$perms->can_edit_templates )
-            || ( $type eq 'notification' && !$perms->can_edit_notifications ) )
+            || ( $type eq 'notification' && !$perms->can_edit_notifications )
+            || ( $type eq 'banlist' && !$perms->can_manage_feedback ) )
       )
     {
         return $app->return_to_dashboard( permission => 1 );

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -797,7 +797,7 @@ sub delete_post {
     $app->rebuild_archives(
         Blog             => $blog,
         Recip            => \%recip,
-    ) or die _fault($app->errstr);
+    ) or die $app->error($app->errstr);
 
     # Remove object
     $entry->remove
@@ -831,11 +831,50 @@ sub _upload_to_asset {
     $fname = basename($fname);
     return $app->error(400, "Invalid or empty filename")
         if $fname =~ m!/|\.\.|\0|\|!;
+        
+    # Copy the filename and extract the extension.
+        
+    my $ext = $fname;
+    $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
+    $ext = $1;                  ## Those characters are the file extension    
+        
+    ###
+    #
+    # Look at new Movable Type configuration parameter AssetFileExtensions to
+    # see if the file that is being uploaded has a filename extension that is
+    # explicitly permitted.
+    #
+    # This code is very similar to the AssetFileExtensions check in XMLRPCServer.pm.
+    #
+    ###
+    
+    if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
+        
+        # Split the parameters of the AssetFileExtensions configuration directive into items in an array
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        
+        # Find the extension in the array
+        my @found = grep(/\b$ext\b/, @allowed);
 
+        # If there is no extension or the extension wasn't found in the array
+        if ((length($ext) == 0) || ( !@found )) {
+            return $app->error(500, $app->translate('The file ([_1]) you uploaded is not allowed.', $fname));
+        }
+    }
+    
     my $local_relative = File::Spec->catfile('%r', $fname);
     my $local = File::Spec->catfile($blog->site_path, $fname);
     my $fmgr = $blog->file_mgr;
-    my($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
+    
+    ###
+    #
+    # Had to extract the declaration of $base and $path from the succeeding line
+    # because $ext is now declared in the code section above this comment.
+    #
+    ###
+    
+    my ($base, $path);
+    ($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
     $ext = $MIME2EXT{$type} unless $ext;
     my $base_copy = $base;
     my $ext_copy = $ext;
@@ -844,11 +883,36 @@ sub _upload_to_asset {
     while ($fmgr->exists($path . $base . $ext)) {
         $base = $base_copy . '_' . $i++;
     }
+        
     $local = $path . $base . $ext;
+    my $local_basename = $base . $ext;
     my $data = $content->body;
+    
+    ### 
+    # 
+    # Function to evaluate the first 1k of content in an image file to see if it contains HTML or JavaScript 
+    # content in the body.  Image files that contain embedded HTML or JavaScript are 
+    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability. 
+    # 
+    # This code based on the ImageValidate plugin written by Six Apart. 
+    # 
+    ###
+    
+    ## Make a copy of the body that only contains the first 1k bytes.
+    my $html_test_string = substr($data, 0, 1024);
+    
+    ## Using an error message format that already exists in all localizations of Movable Type 4.
+    return $app->error(500, MT->translate("Saving [_1] failed: [_2]", $local_basename, "Invalid image file format.")) if 
+        ( $html_test_string =~ m/^\s*<[!?]/ ) ||
+        ( $html_test_string =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
+        ( $html_test_string =~ m/text\/html/i ) ||
+        ( $html_test_string =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
+        ( $html_test_string =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+        ;    
+            
     defined(my $bytes = $fmgr->put_data($data, $local, 'upload'))
         or return $app->error(500, "Error writing uploaded file");
-
+        
     eval { require Image::Size; };
     return $app->error(500, MT->translate("Perl module Image::Size is required to determine width and height of uploaded images.")) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($local);

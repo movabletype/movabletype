@@ -14,31 +14,34 @@
 # You should have received a copy of the GNU General Public License along
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-#
+
 # CGI script to proxy GET & POST requests to the backend server.
 # Optionally the requests are signed with a shared secret.
-#
-# Tomaz Solc, 11. 2. 2009
-#
-# Debian packages required: libwww-perl
 
 use strict;
 
+BEGIN {
+	use FindBin qw($Bin);
+
+	my $MT_HOME = $ENV{MT_HOME} ? $ENV{MT_HOME} : "$Bin/../..";
+	unshift @INC, "$Bin/lib", "$MT_HOME/lib", "$MT_HOME/extlib";
+}
+
 use CGI;
 
-use LWP::UserAgent;
 use HTTP::Request::Common qw(POST);
 use Digest::MD5 qw(md5_hex);
 
-use FindBin qw($Bin);
-use lib "$Bin/lib";
-
+use MT;
 use Zemanta::Utils;
 
 my $backend_url = "http://api.zemanta.com/services/rest/0.0/";
 
 my $q = new CGI;
-my $ua = LWP::UserAgent->new(agent => "Zemanta JSON-Proxy/2.00");
+
+# Note: max_size is set by MT. This sends a "Range:" HTTP header which
+# isn't properly supported by Zemanta API.
+my $ua = MT->new_ua({max_size => undef, agent => "Zemanta JSON-Proxy/2.10"});
 
 # Return a simple, JSON-formatted error message
 sub error {

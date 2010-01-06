@@ -19,12 +19,11 @@ package Zemanta::Basic;
 use warnings;
 use strict;
 
+use HTTP::Request::Common qw(POST);
+use MT;
+
 use Zemanta::Product;
 our @ISA = qw(Zemanta::Product);
-
-use HTTP::Request::Common;
-require LWP::UserAgent;
-use Digest::MD5 qw(md5_hex);
 
 sub new {
 	my $class = shift;
@@ -63,11 +62,13 @@ sub api_call {
 	my ($plugin, $method, @args) = @_;
 
 	my $version = $plugin->{'version'};
-	my $user_agent = "Zemanta Movable Type/$version (Perl/$])";
 	my $service_url = "http://api.zemanta.com/services/rest/0.0/";
 
-	my $ua = LWP::UserAgent->new;
-	$ua->agent($user_agent);
+	# Note: max_size is set by MT. This sends a "Range:" HTTP header which
+	# isn't properly supported by Zemanta API.
+	my $ua = MT->new_ua({	max_size => undef, 
+				agent => "Zemanta Movable Type/$version (Perl/$])",
+				timeout => 10});
 
 	my $response = $ua->request(POST $service_url, [ method => $method,
 							@args ]);
@@ -156,22 +157,19 @@ sub load_config {
 	my $product = shift;
 	my ($plugin, $param, $scope) = @_;
 
+	return unless $param->{'api_key'};
+
 	my $method = "zemanta.preferences";
 	my $xml = $product->api_call($plugin,	$method,
 						api_key => $param->{'api_key'},
 						format => 'xml' );
 
 	if($xml and $xml =~ /<config_url>([^<>]+)<\/config_url>/) {
-		$param->{'config_url'} = $1;
+		$param->{'config_url'} = $1 . "?platform=mtplugin";
 	} else {
 		$product->log_error(
 				"Zemanta API method $method returned an " .
 				"invalid response: " . $xml) if $xml;
-
-		my $apikey_md5 = md5_hex($param->{'api_key'});
-
-		$param->{'config_url'} = "http://prefs.zemanta.com/user2/" .
-					$apikey_md5 . "/";
 	}
 }
 

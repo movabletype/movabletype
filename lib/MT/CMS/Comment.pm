@@ -858,6 +858,18 @@ sub cfg_comments {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
+    #
+    # User must have can_edit_config or can_administer_blog
+    # in order to see the Comment Settings page.
+    #   
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog )
+      );
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward( "view",
@@ -875,6 +887,18 @@ sub cfg_registration {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
+    #
+    # User must have can_edit_config, or can_administer_blog
+    # in order to see the Registration Settings page.
+    #   
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog )
+      );      
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     eval { require Digest::SHA1; };
@@ -959,7 +983,18 @@ sub cfg_spam {
           ;
     }
     @$loop = sort { $a->{name} cmp $b->{name} } @$loop;
-
+    #
+    # User must have can_edit_config or can_administer_blog
+    # in order to see the Spam Settings page.
+    #   
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog )
+      );     
     $app->forward( "view",
         {
             plugin_config_html => $plugin_config_html,

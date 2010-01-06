@@ -1191,6 +1191,19 @@ sub cfg_entry {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
+    #
+    # User must have can_edit_config, can_administer_blog, or can_set_publish_paths
+    # in order to see the Entry Settings page.
+    #   
+    my $perms      = $app->permissions;
+    return $app->error( $app->translate('Permission denied.') )
+      unless $app->user->is_superuser()
+      || (
+        $perms
+        && (   $perms->can_edit_config
+            || $perms->can_administer_blog
+            || $perms->can_set_publish_paths )
+      );      
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward("view",

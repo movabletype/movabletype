@@ -111,6 +111,20 @@ sub list {
                 || $perms->can_edit_all_posts
                 || $perms->can_create_post )
           );
+    } else {
+        #
+        # In the global context, the Manage Assets page shouldn't be displayed unless the current user has
+        # the can_edit_assets or superuser privileges.
+        #
+        require MT::Permission;
+        
+        my @blogs = map { $_->blog_id }
+            grep { $_->can_edit_assets }
+            MT::Permission->load( { author_id => $app->user->id } );
+
+        return $app->errtrans("Permission denied.")
+          unless ($app->user->is_superuser || @blogs);
+
     }
 
     my $asset_class = $app->model('asset') or return;
@@ -1019,6 +1033,73 @@ sub _upload_file {
         ## issues above, and we have to assume that we can trust the user's
         ## Local Archive Path setting. So we should be safe.
         ($local_file) = $local_file =~ /(.+)/s;
+        
+        ###
+        #
+        # Look at new Movable Type configuration parameter AssetFileExtensions to
+        # see if the file that is being uploaded has a filename extension that is
+        # explicitly permitted.
+        #
+        ###
+        
+        my ($local_base) = $local_file;
+        $local_base =~ s!\\!/!g;    ## Change backslashes to forward slashes
+        $local_base =~ s!^.*/!!;    ## Get rid of full directory paths
+        
+        my $filename = $local_base; ## Save the filename so we can use it in the error message later
+        my $ext = $local_base;
+        $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
+        $ext = $1;                  ## Those characters are the file extension
+        
+        ###
+        #
+        # If AssetFileExtensions configuration directive is defined.
+        #
+        ###
+        
+        if (my $allow_exts = $app->config('AssetFileExtensions')) {
+            
+            # Split the parameters of the AssetFileExtensions configuration directive into items in an array
+            my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+            # Find the extension in the array
+            my @found = grep(/\b$ext\b/, @allowed);
+            
+            # If there is no extension or the extension wasn't found in the array
+            if ((length($ext) == 0) || ( !@found )) {
+                return $app->error($app->translate('The file ([_1]) you uploaded is not allowed.', $filename));
+            }
+            
+        }
+        
+    ###
+    #
+    # Function to evaluate content of an image file to see if it contains HTML or JavaScript
+    # content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are
+    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability.
+    #
+    # This code based on the ImageValidate plugin written by Six Apart.
+    #
+    ###
+    
+    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) {
+    
+        my $data = '';
+    
+        ## Read first 1k of image file
+        binmode($fh);
+        seek($fh, 0, 0);
+        read $fh, $data, 1024;
+        seek($fh, 0, 0);
+    
+        ## Using an error message format that already exists in all localizations of Movable Type 4.
+        return $app->error($app->translate("Saving [_1] failed: [_2]", $local_base, "Invalid image file format.")) if 
+            ( $data =~ m/^\s*<[!?]/ ) ||
+            ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
+            ( $data =~ m/text\/html/i ) ||
+            ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
+            ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+            ;
+    }        
 
         my $real_fh;
         unless ($has_overwrite) {
@@ -1028,19 +1109,44 @@ sub _upload_file {
                 MaxDim => $upload_param{max_image_dimension}
             );
             if ($w_temp && $h_temp && $ext_temp) {
-                my $ext_old = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
-                if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )) {
+                
+                ###
+                #
+                # The case where there was no file extension wasn't handled properly.
+                # We need the ability to append a valid file extension as we bring
+                # the file in.
+                #
+                ###
+                
+                if (length($ext) > 0) {
+                
+                    my $ext_old = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+                    if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )) {
+                        $ext_temp = lc($ext_temp);
+                        my $target_file = $local_file;
+                        $target_file =~ s/$ext_old/$ext_temp/;
+                        $relative_path =~ s/$ext_old/$ext_temp/;
+                        $relative_url =~ s/$ext_old/$ext_temp/;
+                        $asset_file =~ s/$ext_old/$ext_temp/;
+                        $basename =~ s/$ext_old/$ext_temp/;
+                        rename($local_file, $target_file);
+                        $local_file =~ s/$ext_old/$ext_temp/;
+                        $real_fh =~ s/$ext_old/$ext_temp/;
+                        $app->param("changed_file_ext", "$ext_old,$ext_temp");
+                    }
+                } else {
+                    
                     $ext_temp = lc($ext_temp);
                     my $target_file = $local_file;
-                    $target_file =~ s/$ext_old/$ext_temp/;
-                    $relative_path =~ s/$ext_old/$ext_temp/;
-                    $relative_url =~ s/$ext_old/$ext_temp/;
-                    $asset_file =~ s/$ext_old/$ext_temp/;
-                    $basename =~ s/$ext_old/$ext_temp/;
+                    $target_file .= "." . $ext_temp;
+                    $relative_path .= "." . $ext_temp;
+                    $relative_url .= "." . $ext_temp;
+                    $asset_file .= "." . $ext_temp;
+                    $basename .= "." . $ext_temp;
                     rename($local_file, $target_file);
-                    $local_file =~ s/$ext_old/$ext_temp/;
-                    $real_fh =~ s/$ext_old/$ext_temp/;
-                    $app->param("changed_file_ext", "$ext_old,$ext_temp");
+                    $local_file .= "." . $ext_temp;
+                    $real_fh .= "." . $ext_temp;
+                    $app->param("changed_file_ext", "'',$ext_temp");
                 }
             }
         }

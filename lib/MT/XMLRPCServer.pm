@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1134,6 +1134,38 @@ sub newMediaObject {
     if ($fname =~ m!\.\.|\0|\|!) {
         die _fault(MT->translate("Invalid filename '[_1]'", $fname));
     }
+        
+    ###
+    #
+    # Look at new Movable Type configuration parameter AssetFileExtensions to
+    # see if the file that is being uploaded has a filename extension that is
+    # explicitly permitted.
+    #
+    # This code is very similar to the AssetFileExtensions check in AtomServer.pm.
+    #
+    ###
+    
+    # Copy the filename and extract the extension.
+    
+    my $ext = $fname;
+    $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
+    $ext = $1;                  ## Those characters are the file extension 
+
+    
+    if ( my $allow_exts = $mt->config('AssetFileExtensions') ) {
+        
+        # Split the parameters of the AssetFileExtensions configuration directive into items in an array
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        
+        # Find the extension in the array
+        my @found = grep(/\b$ext\b/, @allowed);
+
+        # If there is no extension or the extension wasn't found in the array
+        if ((length($ext) == 0) || ( !@found )) {
+            die _fault(MT->translate('The file ([_1]) you uploaded is not allowed.', $fname));
+        }
+    }
+    
     my $local_file = File::Spec->catfile($blog->site_path, $file->{name});
     my $fmgr = $blog->file_mgr;
     my($vol, $path, $name) = File::Spec->splitpath($local_file);
@@ -1148,8 +1180,42 @@ sub newMediaObject {
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
-    my $ext =
+    $ext =
         ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    
+    ###
+    #
+    # Function to evaluate content of an image file to see if it contains HTML or JavaScript
+    # content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are
+    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability.
+    #
+    # This code based on the ImageValidate plugin written by Six Apart.
+    #
+    ###
+    
+    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) {
+    
+        require FileHandle;
+        my $Fh = FileHandle->new($local_file, "r");
+    
+        my $data = '';
+    
+        ## Read first 1k of image file
+        binmode($Fh);
+        seek($Fh, 0, 0);
+        read $Fh, $data, 1024;
+        seek($Fh, 0, 0);
+    
+        ## Using an error message format that already exists in all localizations of Movable Type 4.
+        die _fault(MT->translate("Saving [_1] failed: [_2]", $local_basename, "Invalid image file format.")) if 
+            ( $data =~ m/^\s*<[!?]/ ) ||
+            ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
+            ( $data =~ m/text\/html/i ) ||
+            ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
+            ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+            ;
+    }
+
     eval { require Image::Size; };
     die _fault(MT->translate("Perl module Image::Size is required to determine width and height of uploaded images.")) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($local_file);

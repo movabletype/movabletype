@@ -11,12 +11,22 @@ sub list {
     $param{TagObjectType} = $type;
     $param{Package}       = $app->model($type);
 
+    #
+    # Tell the user "Permission denied." if he is trying to access the Tag List
+    # and is not a System Administrator.
+    #
     if ( !$app->blog && !$app->user->is_superuser ) {
         return $app->errtrans("Permission denied.");
     }
 
+
+    #
+    # Return the user to the dashboard and display the permission error message
+    # if he does not have the appropriate blog level permissions and isn't a
+    # System Administrator.
+    #
     my $perms = $app->permissions;
-    if ( $app->blog && ( ( !$perms ) || ( $perms && $perms->is_empty ) ) ) {
+    if ( $app->blog && ( !$perms || ( !$perms->can_edit_tags && !$app->user->is_superuser )) ) {
         $app->delete_param('blog_id');
         return $app->return_to_dashboard( permission => 1 );
     }

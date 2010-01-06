@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -47,6 +47,15 @@ sub view {
 
     my $blog = MT::Blog->load($blog_id);
     return $app->errtrans("Invalid request") unless $blog;
+    
+    #
+    # Tell the user "Permission denied." if he does not have the appropriate blog
+    # level permissions and isn't a System Administrator.
+    #
+    my $perms = $app->permissions;
+    if ( $app->blog && ( !$perms || ( !$perms->can_edit_templates && !$app->user->is_superuser ) ) ) {
+        return $app->errtrans("Permission denied.");
+    }
 
     my $static_path = $app->static_file_path;
     if (! -d $static_path ) {
@@ -248,6 +257,15 @@ sub download_theme {
 # does the work after user selects a particular theme to apply to a blog
 sub apply {
     my $app = shift;
+    
+    #
+    # Tell the user "Permission denied." if he does not have the appropriate blog
+    # level permissions and isn't a System Administrator.
+    #
+    my $perms = $app->permissions;
+    if ( $app->blog && ( !$perms || ( !$perms->can_edit_templates && !$app->user->is_superuser ) ) ) {
+    return $app->errtrans("Permission denied.");
+    }
 
     my ($blog_id, $url, $layout, $name, $template_set)
         = map { $app->param($_) || q{} } (qw( blog_id url layout name template_set ));
