@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -640,6 +640,7 @@ use vars qw( @ISA %Lexicon );
 	'Batch Edit Pages' => 'ウェブページの一括編集',
 	'Tags to add to selected assets' => '追加するタグを入力',
 	'Tags to remove from selected assets' => '削除するタグを入力',
+	'Unpublish TrackBack(s)' => 'トラックバックの公開取り消し',
 	'Unpublish Comment(s)' => 'コメントの公開取り消し',
 	'Trust Commenter(s)' => 'コメント投稿者を承認',
 	'Untrust Commenter(s)' => 'コメント投稿者の承認を解除',
@@ -980,6 +981,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => '[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。',
+	'The file([_1]) you uploaded is not allowed.' => 'ファイル([_1])のアップロードは許可されていません。',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
 
 ## lib/MT/Auth.pm
@@ -1579,7 +1581,7 @@ use vars qw( @ISA %Lexicon );
 	'weblogs.com' => 'weblogs.com',
 	'technorati.com' => 'technorati.com',
 	'google.com' => 'google.com',
-	'Classic Blog' => 'クラッシックブログ',
+	'Classic Blog' => 'クラシックブログ',
 	'Publishes content.' => 'コンテンツを公開します。',
 	'Synchronizes content to other server(s).' => 'コンテンツを他のサーバーに同期します。',
 	'Refreshes object summaries.' => 'オブジェクトサマリーの初期化',
@@ -2483,7 +2485,7 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
-	'Classic Website' => 'クラッシックウェブサイト',
+	'Classic Website' => 'クラシックウェブサイト',
 
 ## themes/pico/templates/about_this_page.mtml
 
@@ -3089,7 +3091,6 @@ use vars qw( @ISA %Lexicon );
 	'Asset Name' => 'アイテム名',
 	'Size' => 'サイズ',
 	'Pending' => '保留中',
-	'View Asset' => 'アイテムを表示',
 	'Next (s)' => '次へ (s)',
 	'Insert (s)' => '挿入 (s)',
 	'Insert' => '挿入',

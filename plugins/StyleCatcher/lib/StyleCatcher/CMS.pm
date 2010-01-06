@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -54,7 +54,9 @@ sub listify {
 sub view {
     my $app     = shift;
     my $blog_id = $app->param('blog_id');
-    $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_templates');
+    return $app->return_to_dashboard( redirect => 1 ) unless $blog_id;
 
     my $blog = MT::Blog->load($blog_id);
     return $app->errtrans("Invalid request") unless $blog;
@@ -167,6 +169,8 @@ sub js {
     # format of 'key: value' in comment-space
     # The remixer only uses name, author, description at the moment.
     my $app = shift;
+    return $app->json_error( 'Permission Denied.' )
+        unless $app->can_do('edit_templates');
     return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
     my $data = fetch_themes($app->param('url'))
@@ -279,6 +283,8 @@ sub download_theme {
 # does the work after user selects a particular theme to apply to a blog
 sub apply {
     my $app = shift;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_templates');
 
     my ($blog_id, $url, $layout, $name, $template_set)
         = map { $app->param($_) || q{} } (qw( blog_id url layout name template_set ));

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -461,6 +461,7 @@ BEGIN {
             'DefaultBlogTheme' => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
             'AssetFileTypes' => { type    => 'HASH' },
+            'AssetFileExtensions' => { default => undef },
 
             'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
             'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
@@ -917,6 +918,7 @@ sub load_core_permissions {
                 'create_new_entry'                        => 1,
                 'create_new_entry_via_xmlrpc_server'      => 1,
                 'create_post'                             => 1,
+                'edit_own_entry'                          => 1,
                 'delete_own_entry_unpublished_trackback'  => 1,
                 'edit_own_entry_comment_without_status'   => 1,
                 'edit_own_entry_trackback_without_status' => 1,
@@ -1102,6 +1104,7 @@ sub load_core_permissions {
                 'unapprove_trackbacks_via_list'         => 1,
                 'unban_commenters_via_list'             => 1,
                 'untrust_commenters_via_list'           => 1,
+                'view_commenter'                        => 1,
                 'view_feedback'                         => 1,
                 'access_to_banlist'                     => 1,
                 'use_tools:search'                      => 1,

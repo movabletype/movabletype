@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -29,10 +29,10 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '5.0', '5.0016' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '5.01', '5.0016' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
         '__PRODUCT_NAME__', 'MT',
-        '5.0', '5.0',
+        '5.01', '5.01',
         '__PORTAL_URL__'
     );
 
@@ -3915,7 +3915,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2009 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2010 Six Apart.
 All rights reserved.
 
 =cut

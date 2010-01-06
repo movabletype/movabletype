@@ -1,9 +1,9 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
 #
-# $Id:$
+# $Id$
 
 package MT::L10N::nl;
 use strict;
@@ -558,6 +558,7 @@ use vars qw( @ISA %Lexicon );
 	'Batch Edit Pages' => 'Pagina\'s bewerken in bulk',
 	'Tags to add to selected assets' => 'Tags om toe te voegen aan de geselecteerde mediabestanden',
 	'Tags to remove from selected assets' => 'Tags om te verwijderen van de geselecteerde mediabestanden',
+	'Unpublish TrackBack(s)' => 'Publicatie ongedaan maken',
 	'Unpublish Comment(s)' => 'Publicatie ongedaan maken',
 	'Trust Commenter(s)' => 'Reageerder(s) vertrouwen',
 	'Untrust Commenter(s)' => 'Reageerder(s) niet meer vertrouwen',
@@ -6771,6 +6772,11 @@ Zoekbasis: [_2]",
 	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
 	'Download WP attachments via HTTP.' => 'WP attachments downloaden via HTTP.',
 
+	'The file([_1]) you uploaded is not allowed.' => 'Het bestand dat u heeft geupload ([_1]) is niet toegelaten.', 
+        'Migrating CustomFields type...' => 'Bezig CustomFields type te migreren...', 
+        'Can\'t locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.' => 'Kan Net:LDAP niet vinden. Net::LDAP is vereist om LDAP authenticatie te kunnen gebruiken.', 
+	
+	
 );
 
 ## New words: 71

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -46,7 +46,7 @@ sub ping_update {
     my $ua = MT->new_ua( { timeout => MT->config->PingTimeout } );
     my $req = HTTP::Request->new('POST', $url);
     $req->header('Content-Type' => 'text/xml');
-    my $blog_name = encode_xml($blog->name);
+    my $blog_name = encode_xml(Encode::encode_utf8($blog->name));
     my $blog_url = encode_xml($blog->site_url);
     my $text = <<XML;
 <?xml version="1.0"?>

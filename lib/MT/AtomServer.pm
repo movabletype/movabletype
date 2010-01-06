@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -527,7 +527,7 @@ sub new_post {
     my $body = $content->body; 
     my $asset;
     if ($type && $type !~ m!^application/.*xml$!) {
-        if ($type !~ m!^text/!) {
+        if ($type !~ m!^[text/|html]!) {
             $asset = $app->_upload_to_asset or return;
         }
         elsif ($type && $type eq 'text/plain') {
@@ -858,11 +858,36 @@ sub _upload_to_asset {
     return $app->error(400, "Invalid or empty filename")
         if $fname =~ m!/|\.\.|\0|\|!;
 
+    if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($fname, @allowed);
+        return $app->error(500, MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
+            unless $ret[2];
+    }
+
     my $local_relative = File::Spec->catfile('%r', $fname);
     my $local = File::Spec->catfile($blog->site_path, $fname);
     my $fmgr = $blog->file_mgr;
     my($base, $path, $ext) = File::Basename::fileparse($local, '\.[^\.]*');
     $ext = $MIME2EXT{$type} unless $ext;
+
+    require MT::Asset::Image;
+    if ( MT::Asset::Image->can_handle($ext) ) {
+        require MT::Image;
+        my $fh;
+        my $data = $content->body;
+        open( $fh, "+<", \$data );
+        close($fh), return $app->error(
+            500,
+            MT->translate(
+                "Saving [_1] failed: [_2]",
+                $base,
+                "Invalid image file format."
+            )
+        ) unless MT::Image::is_valid_image($fh);
+        close($fh);
+    }
+
     my $base_copy = $base;
     my $ext_copy = $ext;
     $ext_copy =~ s/\.//;

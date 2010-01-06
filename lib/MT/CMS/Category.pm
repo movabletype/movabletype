@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -83,12 +83,12 @@ sub list {
     my $entry_type;
     if ( $type eq 'category' ) {
         $entry_type = 'entry';
-        return $app->return_to_dashboard( redirect => 1 )
+        return $app->return_to_dashboard( permission => 1 )
             unless $app->can_do('access_to_category_list');
     }
     elsif ( $type eq 'folder' ) {
         $entry_type = 'page';
-        return $app->return_to_dashboard( redirect => 1 )
+        return $app->return_to_dashboard( permission => 1 )
             unless $app->can_do('access_to_folder_list');
     }
     $entry_class = $app->model($entry_type);

@@ -1,6 +1,7 @@
-#############################################################################
-# Copyright å© 2008-2009 Six Apart Ltd.
-# $Id: Test.pm 3886 2009-06-19 04:11:07Z fumiakiy $
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
+# This program is distributed under the terms of the
+# GNU General Public License, version 2.
+#
 
 package MT::Test;
 use base qw( Exporter );

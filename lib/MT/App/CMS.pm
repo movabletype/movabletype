@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -575,6 +575,15 @@ sub core_list_actions {
                 input       => 1,
                 input_label => 'Tags to remove from selected assets',
                 permit_action => 'remove_tags_from_assets_via_list',
+            },
+        },
+        'ping' => {
+            'unapprove_ping' => {
+                label         => "Unpublish TrackBack(s)",
+                order         => 100,
+                code          => "${pkg}Comment::unapprove_item",
+                permit_action => 'edit_all_posts,manage',
+                permit_action => 'unapprove_trackbacks_via_list',
             },
         },
         'comment' => {

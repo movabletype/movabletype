@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -293,7 +293,7 @@ sub format_ts {
         $f{b} = substr_wref $L->[1][$f{'m'}-1] || '', 0, 3;
         $f{B} = $L->[1][$f{'m'}-1];
         if ($lang eq 'ja') {
-            $f{a} = substr $L->[0][$f{w}] || '', 0, 8;
+            $f{a} = substr $L->[0][$f{w}] || '', 0, 1;
         } else {
             $f{a} = substr_wref $L->[0][$f{w}] || '', 0, 3;
         }
@@ -463,7 +463,11 @@ sub offset_time {
             require MT::Blog;
             $blog = MT::Blog->load($blog);
         }
-        $offset = $blog && $blog->server_offset ? $blog->server_offset : 0;
+        if ( UNIVERSAL::isa($blog, 'MT::Blog') ) {
+            $offset = $blog && $blog->server_offset ? $blog->server_offset : 0;
+        } else {
+            $offset = MT->config->TimeOffset;
+        }
     } else {
         $offset = MT->config->TimeOffset;
     }

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1108,7 +1108,7 @@ sub _upload_file {
             );
             if ($w_temp && $h_temp && $ext_temp) {
                 my $ext_old = ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
-                if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )) {
+                if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )  && ! ( lc($ext_old) eq 'swf' && lc($ext_temp) eq 'cws' )) {
                     $ext_temp = lc($ext_temp);
                     my $target_file = $local_file;
                     $target_file =~ s/$ext_old/$ext_temp/;
@@ -1260,6 +1260,14 @@ sub _upload_file {
         $relative_url   = encode_url($unique_basename);
         $asset_file     = File::Spec->catfile( '%s', 'uploads',
           $unique_basename );
+    }
+
+    if ( my $allow_exts = $app->config('AssetFileExtensions') ) {
+        my @allow_exts = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse( $local_file, @allow_exts );
+        unless ( $ret[2] ) {
+            return $app->error($app->translate('The file([_1]) you uploaded is not allowed.', $basename));
+        }
     }
 
     my ($w, $h, $id, $write_file) = MT::Image->check_upload(

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -20,7 +20,7 @@ __PACKAGE__->install_properties( {
 # List of supported file extensions (to aid the stock 'can_handle' method.)
 sub extensions {
     my $pkg = shift;
-    return $pkg->SUPER::extensions( [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, ] );
+    return $pkg->SUPER::extensions( [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
 }
 
 sub class_label {

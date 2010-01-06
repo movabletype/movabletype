@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -29,6 +29,8 @@ sub list {
         $app->delete_param('blog_id');
         return $app->return_to_dashboard( permission => 1 );
     }
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_tags');
 
     if ( $param{Package}->can('class_label_plural') ) {
         $plural = $param{Package}->class_label_plural();

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -834,6 +834,8 @@ sub cfg_registration {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     eval { require Digest::SHA1; };
@@ -1427,15 +1429,8 @@ sub post_delete {
 }
 
 sub can_view_commenter {
-    my $eh = shift;
-    my ( $app, $id ) = @_;
-    my $auth = MT::Author->load(
-        {
-            id   => $id,
-            type => MT::Author::COMMENTER()
-        }
-    );
-    $auth ? 1 : 0;
+    my ( $eh, $app, $id ) = @_;
+    $app->can_do('view_commenter');
 }
 
 sub can_delete_commenter {

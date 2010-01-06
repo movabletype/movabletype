@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -13,15 +13,26 @@ sub cfg_plugins {
     my $q   = $app->param;
     my %param;
     $param{screen_class} = 'settings-screen';
-    if ( $q->param('blog_id') ) {
+    if ( my $blog_id = $q->param('blog_id') ) {
+        my $blog = $app->model('blog')->load($blog_id);
+        return $app->return_to_dashboard( permission => 1 )
+            if $blog
+                && ($blog->is_blog
+                    ? !$app->can_do('administer_blog')
+                    : !$app->can_do('administer_website')
+                );
+
         $q->param( '_type', 'blog' );
-        $q->param( 'id',    scalar $q->param('blog_id') );
+        $q->param( 'id',    $blog_id );
         $param{screen_id} = "list-plugins";
         $param{screen_class} .= " plugin-settings";
         $param{output} = 'cfg_plugin.tmpl';
         $app->forward("view", \%param);
     }
     else {
+        return $app->return_to_dashboard( permission => 1 )
+            if !$app->can_do('manage_plugins');
+
         my $cfg = $app->config;
         $param{can_config}  = $app->can_do('config_plugins');
         $param{use_plugins} = $cfg->UsePlugins;

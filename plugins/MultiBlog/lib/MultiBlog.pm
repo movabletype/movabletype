@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2006-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2006-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -429,6 +429,7 @@ sub post_restore {
         next unless $key =~ /^MT::PluginData#\d+$/;
         my $pd = $objects->{$key};
         my $data = $pd->data;
+        next unless ref $data eq 'HASH';
         if ( my $rebuild_triggers = $data->{rebuild_triggers} ) {
             my @restored;
             foreach my $trg_str ( split ( '\|', $rebuild_triggers ) ) {

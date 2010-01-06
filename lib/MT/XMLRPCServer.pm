@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1113,6 +1113,7 @@ sub newMediaObject {
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to upload files"))
         unless $perms && $perms->can_do('upload_asset_via_xmlrpc_server');
+
     require MT::Blog;
     require File::Spec;
     my $blog = MT::Blog->load($blog_id)
@@ -1122,7 +1123,33 @@ sub newMediaObject {
     if ($fname =~ m!\.\.|\0|\|!) {
         die _fault(MT->translate("Invalid filename '[_1]'", $fname));
     }
+
+    if ( my $allow_exts = MT->config('AssetFileExtensions') ) {
+        my @allowed = map { if ( $_ =~ m/^\./ ) { qr/$_/i } else { qr/\.$_/i } } split '\s?,\s?', $allow_exts;
+        my @ret = File::Basename::fileparse($fname, @allowed);
+        die _fault(MT->translate('The file([_1]) you uploaded is not allowed.', $fname))
+            unless $ret[2];
+    }
+
     my $local_file = File::Spec->catfile($blog->site_path, $file->{name});
+    my $ext =
+        ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
+    require MT::Asset::Image;
+    if ( MT::Asset::Image->can_handle($ext) ) {
+        require MT::Image;
+        my $fh;
+        my $data = $file->{bits};
+        open( $fh, "+<", \$data );
+        close($fh), die _fault(
+            MT->translate(
+                "Saving [_1] failed: [_2]",
+                $file->{name},
+                "Invalid image file format."
+            )
+        ) unless MT::Image::is_valid_image($fh);
+        close($fh);
+    }
+
     my $fmgr = $blog->file_mgr;
     my($vol, $path, $name) = File::Spec->splitpath($local_file);
     $path =~ s!/$!! unless $path eq '/';  ## OS X doesn't like / at the end in mkdir().
@@ -1136,8 +1163,6 @@ sub newMediaObject {
 
     require File::Basename;
     my $local_basename = File::Basename::basename($local_file);
-    my $ext =
-        ( File::Basename::fileparse( $local_file, qr/[A-Za-z0-9]+$/ ) )[2];
     eval { require Image::Size; };
     die _fault(MT->translate("Perl module Image::Size is required to determine width and height of uploaded images.")) if $@;
     my ( $w, $h, $id ) = Image::Size::imgsize($local_file);
@@ -1153,6 +1178,7 @@ sub newMediaObject {
         # rebless to file type
         $asset_pkg = 'MT::Asset';
     }
+
     my $asset;
     if (!($asset = $asset_pkg->load(
                 { file_path => $local_file, blog_id => $blog_id })))

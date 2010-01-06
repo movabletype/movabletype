@@ -1,9 +1,8 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
-#
-# $Id:$
+# $Id$
 
 package MT::L10N::fr;
 use strict;
@@ -558,6 +557,7 @@ use vars qw( @ISA %Lexicon );
 	'Batch Edit Pages' => 'Modifier les pages en masse',
 	'Tags to add to selected assets' => 'Tags à ajouter aux éléments sélectionnés',
 	'Tags to remove from selected assets' => 'Tags à supprimer les éléments sélectionnés',
+	'Unpublish TrackBack(s)' => 'Annuler la publication de ce (ou ces) trackbacks(s)',
 	'Unpublish Comment(s)' => 'Annuler la publication de ce (ou ces) commentaire(s)',
 	'Trust Commenter(s)' => 'Donner le statut fiable à cet auteur de commentaires',
 	'Untrust Commenter(s)' => 'Retirer le statut fiable à cet auteur de commentaires',
@@ -6744,6 +6744,10 @@ Base de recherche : [_2]",
 	'Import WordPress exported RSS into MT.' => 'Importer depuis WordPress exported RSS vers MT',
 	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
 	'Download WP attachments via HTTP.' => 'Télécharger tous les fichiers attachés à un blog WordPress par HTTP',
+	
+	'The file([_1]) you uploaded is not allowed.' => 'Le fichier ([_1]) envoyé n\'est pas autorisé.', # Translate - New
+        'Migrating CustomFields type...' => 'Migration du type de Champ Personnalisé en cours', # Translate - New
+        'Can\'t locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.' => 'Net::LDAP impossible à localiser. Le module Net::LDAP est requis pour l\'authentification LDAP.', # Translate - New 
 
 );
 

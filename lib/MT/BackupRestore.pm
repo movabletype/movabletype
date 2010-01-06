@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1354,11 +1354,12 @@ sub restore_parent_ids {
     my $result = 0;
     my $blog_class = MT->model('blog');
     my $new_blog = $objects->{$blog_class . '#' . $data->{blog_id}};
-    if ($new_blog) {
-        $data->{blog_id} = $new_blog->id;
-    } else {
-        return 0;
+    if ( !$new_blog ) {
+        $blog_class = MT->model('website');
+        $new_blog   = $objects->{ $blog_class . '#' . $data->{blog_id} };
     }
+    return 0 if !$new_blog;
+    $data->{blog_id} = $new_blog->id;
     if (my $cid = $data->{category_id}) {
         my $cat_class = MT->model('category');
         my $new_obj = $objects->{$cat_class . '#' . $cid};

@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -122,7 +122,10 @@ sub _hdlr_assets {
             @$assets = MT::Asset->load({ class => '*' }, { join => MT::ObjectAsset->join_on(undef, {
                 asset_id => \'= asset_id', object_ds => 'entry', object_id => $e->id })});
         }
-        return '' unless @$assets;
+        # Call _hdlr_pass_tokens_else if there are no assets, so that MTElse
+        # is properly executed if it's present.
+        #
+        return $ctx->_hdlr_pass_tokens_else(@_) unless @$assets[0];
     } else {
         $assets = $ctx->stash('assets');
     }
@@ -130,7 +133,7 @@ sub _hdlr_assets {
     local $ctx->{__stash}{assets};
     my (@filters, %blog_terms, %blog_args, %terms, %args);
     my $blog_id = $ctx->stash('blog_id');
-    
+
     $ctx->set_blog_load_context($args, \%blog_terms, \%blog_args)
         or return $ctx->error($ctx->errstr);
     %terms = %blog_terms;

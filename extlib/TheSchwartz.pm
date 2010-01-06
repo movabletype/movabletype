@@ -977,7 +977,7 @@ Given an open driver I<$driver> to a database, gets the current server time from
 
 =head1 COPYRIGHT, LICENSE & WARRANTY
 
-This software is Copyright 2007, Six Apart Ltd, cpan@sixapart.com. All
+This software is Copyright 2007-2010, Six Apart Ltd, cpan@sixapart.com. All
 rights reserved.
 
 TheSchwartz is free software; you may redistribute it and/or modify it

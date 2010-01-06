@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1414,7 +1414,7 @@ sub add_map {
 sub can_view {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
+    return ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
 }
 
 sub can_save {
@@ -1435,7 +1435,7 @@ sub pre_save {
     my ( $app, $obj ) = @_;
 
     ## Strip linefeed characters.
-    ( my $text = $obj->text ) =~ tr/\r//d;
+    ( my $text = $obj->column('text') ) =~ tr/\r//d;
 
     if ($text =~ m/<(MT|_)_trans/i) {
         $text = $app->translate_templatized($text);
@@ -1542,7 +1542,7 @@ sub post_save {
         my %static_maps;
         for my $p (@p) {
             my $map;
-            if ( $p =~ /^archive_tmpl_preferred_(\w+)_(\d+)$/ ) {
+            if ( $p =~ /^archive_tmpl_preferred_([\w-]+)_(\d+)$/ ) {
                 my $at     = $1;
                 my $map_id = $2;
                 $map    = MT::TemplateMap->load($map_id)

@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -151,6 +151,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, &$ctx2) {
                 ($mttag == 'mtcomments') ||
                 ($mttag == 'mtpages') ||
                 ($mttag == 'mtassets') ||
+                ($mttag == 'mtentryassets') ||
+                ($mttag == 'mtpageassets') ||
                 ($mttag == 'mtcommentreplies')) {
                 $conditional = 1;
             } else {
