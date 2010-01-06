@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -271,7 +271,6 @@ sub build {
                     "Load of blog '[_1]' failed: [_2]", $blog_id, MT::Blog->errstr ));
             $ctx->stash('blog', $blog);
         } else {
-            $blog = MT->model('blog')->load($blog_id) if $blog->id != $blog_id;
             $ctx->stash('blog_id', $blog->id);
             $ctx->stash('local_blog_id', $blog->id)
                 unless $ctx->stash('local_blog_id');
@@ -464,7 +463,8 @@ sub text {
     }
     $text = $tmpl->SUPER::text(@_);
 
-    $tmpl->{needs_db_sync} = 0;
+    $tmpl->{needs_db_sync} = 0
+        unless exists $tmpl->{needs_db_sync};
     unless (@_) {
         if ($tmpl->linked_file) {
             if (my $res = $tmpl->_sync_from_disk) {
@@ -475,7 +475,7 @@ sub text {
                 ## template, so saving would try to write-lock it).
                 if (!defined $resync_to_db) {
                     $resync_to_db = {};
-                    MT->add_callback('takedown', 9, undef, \&_resync_to_db);
+                    MT->add_callback('take_down', 9, undef, \&_resync_to_db);
                 }
                 $resync_to_db->{$tmpl->id} = $tmpl;
                 $tmpl->{needs_db_sync} = 1;

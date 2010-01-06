@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -980,6 +980,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) added [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を追加しました。',
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => '[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。',
+	'The file([_1]) you uploaded is not allowed.' => 'ファイル([_1])のアップロードは許可されていません。',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
 
 ## lib/MT/Auth.pm

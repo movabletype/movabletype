@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -55,7 +55,7 @@ use CGI;
 my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
-$version ||= '5.0';
+$version ||= '5.01';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");

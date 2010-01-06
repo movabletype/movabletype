@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -553,7 +553,9 @@ sub cfg_feedback {
     my $q       = $app->param;
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
+        unless $blog_id;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward( "view",
@@ -569,7 +571,9 @@ sub cfg_web_services {
     my $q       = $app->param;
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
+        unless $blog_id;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward( "view",

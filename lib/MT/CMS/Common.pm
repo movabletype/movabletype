@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -550,8 +550,7 @@ sub edit {
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_view_permission_filter.' . $type,
             $app, $id, $obj_promise )
-          || return $app->error(
-            $app->translate( "Permission denied: [_1]", $app->errstr() ) );
+          || return $app->return_to_dashboard( permission => 1 );
     }
     my $obj;
     my $blog;
@@ -1261,10 +1260,20 @@ sub list_revision {
     my $class = $app->model($type);
     my $id = $q->param('id');
     my $rn = $q->param('r');
+
     $id =~ s/\D//g;
     my $obj = $class->load( $id )
         or return $app->error($app->translate('Can\'t load [_1] #[_1].', $class->class_label, $id));
     my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
+    my $author = $app->user;
+    return $app->return_to_dashboard( permission => 1 )
+        if $type eq 'entry'
+        ? ( $obj->author_id == $author->id
+                ? !$app->can_do('edit_own_entry')
+                : !$app->can_do('edit_all_entries') )
+        : $type eq 'page'     ? !$app->can_do('edit_all_pages')
+        : $type eq 'template' ? !$app->can_do('edit_templates')
+        : 0;
 
     my $js = "parent.location.href='"
       . $app->uri

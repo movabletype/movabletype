@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -61,6 +61,7 @@ sub _hdlr_websites {
     local $ctx->{__stash}{inside_blogs} = 1;
 
     require MT::Website;
+    $terms{class} = 'website' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
     my $iter = MT::Website->load_iter(\%terms, \%args);

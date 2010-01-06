@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2008 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -348,7 +348,11 @@ sub _v5_generate_websites_place_blogs {
 
     my %site_urls;
     while ( my $blog = $iter->() ) {
-        $site_urls{ $blog->site_url } = $blog;
+        my $blogs;
+        $blogs = $site_urls{ $blog->site_url }
+            if defined $site_urls{ $blog->site_url };
+        push @$blogs, $blog;
+        $site_urls{ $blog->site_url } = $blogs;
     }
 
     return unless %site_urls;
@@ -387,6 +391,9 @@ sub _v5_generate_websites_place_blogs {
     # 4. go to step 1 until everything is either a child or a website
 
     my $website_class= MT->model('website');
+    return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
+        unless $website_class;
+
     my %websites;
     while ( my @site_urls = keys %site_urls ) {
         @site_urls = sort { length( $a ) <=> length ( $b ) } @site_urls;
@@ -398,55 +405,33 @@ sub _v5_generate_websites_place_blogs {
             $domain =~ s!^(?:.*?)([^\.]+?)(\.\w+)$!$1$2!;
         }
         my ( $subdomain, $path ) = $shortest =~ m!^https?://(.*)\.?$domain/(.*)$!;
-        my $blog = delete $site_urls{ $shortest };
+        my $blogs = delete $site_urls{ $shortest };
+        foreach my $blog (@$blogs) {
+            my $site_url = "http$ssl://$domain/";
+            my $website  = $website_class->load( { site_url => $site_url } );
+            unless ( $website ) {
+                $website = $website_class->create_default_website(
+                    MT->translate('New WebSite [_1]', "http$ssl://$domain/"),
+                    MT->config->DefaultWebsiteTheme
+                );
+                $website->site_path($blog->site_path);
+                $website->site_url("http$ssl://$domain/");
+                $website->save
+                    or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
 
-        return $self->error($self->translate_escape("Error loading class: [_1].", 'Website'))
-            unless $website_class;
-
-        my $site_url = "http$ssl://$domain/";
-        my $website = $website_class->load( { site_url => $site_url } );
-        unless ( $website ) {
-            $website = $website_class->create_default_website(
-                MT->translate('New WebSite [_1]', "http$ssl://$domain/"),
-                MT->config->DefaultWebsiteTheme
-            );
-            $website->site_path($blog->site_path);
-            $website->site_url("http$ssl://$domain/");
-            $website->save
-                or return $self->error($self->translate_escape("An error occured during generating a website upon upgrade: [_1]", $website->errstr));
-
-            foreach ( @sysadmins ) {
-                $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+                foreach ( @sysadmins ) {
+                    $assoc_class->link( $_ => $role => $website ) or die $role->name . $website->name;
+                }
+                $self->progress($self->translate_escape('Generated a website [_1]', "http$ssl://$domain/"));
             }
-            $self->progress($self->translate_escape('Generated a website [_1]', "http$ssl://$domain/"));
-        }
-        $path = $path . '/' if $path && $path !~ m!/$!;
-        my $old_site_url = $blog->site_url;
-        $blog->site_url("$subdomain/::/$path");
-        $blog->parent_id($website->id);
-
-        # if archive_url is "under" the website url (i.e. either subdomain or path)
-        # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
-        # and everything should handle both relative and absolute url correctly.
-        if ( my $archive_url = $blog->column('archive_url') ) {
-            if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
-                $blog->archive_url("$1/::/$2");
-            }
-        }
-        $blog->save
-            or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
-        $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
-
-        my @children = grep { $_ =~ m!https?://.+$domain/! } @site_urls;
-        foreach my $child_url ( @children )  {
-            my ( $subdomain, $path ) = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
-            my $blog = delete $site_urls{ $child_url };
             $path = $path . '/' if $path && $path !~ m!/$!;
             my $old_site_url = $blog->site_url;
             $blog->site_url("$subdomain/::/$path");
             $blog->parent_id($website->id);
-    
-            # same here for archive_urls as is described above.
+
+            # if archive_url is "under" the website url (i.e. either subdomain or path)
+            # use the new data syntax (/::/).  otherwise leave it as-is.  config screens
+            # and everything should handle both relative and absolute url correctly.
             if ( my $archive_url = $blog->column('archive_url') ) {
                 if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
                     $blog->archive_url("$1/::/$2");
@@ -455,6 +440,28 @@ sub _v5_generate_websites_place_blogs {
             $blog->save
                 or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
             $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $blog->name, $old_site_url, $domain));
+
+            my @children = grep { $_ =~ m!https?://.+$domain/! } @site_urls;
+            foreach my $child_url ( @children )  {
+                my ( $subdomain, $path ) = $child_url =~ m!^https?://(.*)\.?$domain/(.*)$!;
+                my $child_blogs = delete $site_urls{ $child_url };
+                foreach my $child (@$child_blogs) {
+                    $path = $path . '/' if $path && $path !~ m!/$!;
+                    my $old_site_url = $child->site_url;
+                    $child->site_url("$subdomain/::/$path");
+                    $child->parent_id($website->id);
+
+                    # same here for archive_urls as is described above.
+                    if ( my $archive_url = $child->column('archive_url') ) {
+                        if ( $archive_url =~ m!https?://(.+\.)?$domain/?(.*/?)$! ) {
+                            $child->archive_url("$1/::/$2");
+                        }
+                    }
+                    $child->save
+                        or return $self->error($self->translate_escape("An error occured during migrating a blog's site_url: [_1]", $website->errstr));
+                    $self->progress($self->translate_escape('Moved blog [_1] ([_2]) under website [_3]', $child->name, $old_site_url, $domain));
+                }
+            }
         }
     }
     1;

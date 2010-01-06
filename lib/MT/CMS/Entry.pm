@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -747,7 +747,14 @@ sub list {
                     $terms{$filter_col} = $filter_val;
                 }
             }
-            $param{filter_args} = "&filter=" . encode_url($filter_col) . "&filter_val=" . encode_url($filter_val);
+            $param{filter_args} = "&filter=" . encode_url($filter_col);
+            if ( ref($filter_val) eq 'ARRAY' ) {
+                foreach my $_v ( @$filter_val ) {
+                    $param{filter_args} .= "&filter_val=" . encode_url($_v);
+                }
+            } else {
+                $param{filter_args} .= "&filter_val=" . encode_url($filter_val);
+            }
 
             if (   ( $filter_col eq 'normalizedtag' )
                 || ( $filter_col eq 'exacttag' ) )
@@ -1305,6 +1312,8 @@ sub cfg_entry {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
     $app->forward("view",
@@ -1969,6 +1978,14 @@ sub pinged_urls {
     require MT::Entry;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
+    my $author = $app->user;
+    return $app->return_to_dashboard( permission => 1 )
+        if $entry->class eq 'entry'
+        ? (     $entry->author_id == $author->id
+                ? !$app->can_do('edit_own_entry')
+                : !$app->can_do('edit_all_entries')
+            )
+        : !$app->can_do('edit_all_pages');
     $param{url_loop} = [ map { { url => $_ } } @{ $entry->pinged_url_list } ];
     $param{failed_url_loop} =
       [ map { { url => $_ } }

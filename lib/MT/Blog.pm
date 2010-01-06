@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1260,7 +1260,15 @@ sub template_set {
     if (@_ ) {
         return $blog->SUPER::template_set( @_ );
     }
-    if ( my $theme = $blog->theme ) {
+
+    my $theme = $blog->theme;
+    unless ( $theme ) {
+        # Try to load template set as theme.
+        require MT::Theme;
+        $theme = MT::Theme->load($blog->SUPER::template_set);
+    }
+
+    if ( $theme ) {
         my @elements = $theme->elements;
         my ( $elem ) = grep { $_->{importer} eq 'template_set' } @elements;
         if ( $elem ) {
@@ -1270,6 +1278,7 @@ sub template_set {
             return $set;
         }
     }
+
     $blog->SUPER::template_set;
 }
 

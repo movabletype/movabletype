@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) Open Source (C) 2004-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2004-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -10,9 +10,9 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '5.0');
-define('VERSION_ID', '5.0');
-define('PRODUCT_VERSION', '5.0');
+define('VERSION', '5.01');
+define('VERSION_ID', '5.01');
+define('PRODUCT_VERSION', '5.01');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
 if($PRODUCT_NAME == '__PRODUCT' . '_NAME__')
@@ -138,6 +138,9 @@ class MT {
         $ctx =& $this->context();
 
         foreach ($plugin_paths as $path) {
+            if ( !is_dir($path) )
+                $path = $this->config('MTDir') . DIRECTORY_SEPARATOR . $path;
+
             if ($dh = @opendir($path)) {
                  while (($file = readdir($dh)) !== false) {
                      if ($file == "." || $file == "..")

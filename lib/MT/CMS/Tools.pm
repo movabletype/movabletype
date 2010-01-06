@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -644,10 +644,8 @@ sub start_backup {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
 
-    unless ( $user->is_superuser ) {
-        return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_do('start_backup');
-    }
+    return $app->errtrans("Permission denied.")
+        unless $app->can_do('start_backup');
 
     my %param = ();
     if ( defined($blog_id) ) {
@@ -694,10 +692,8 @@ sub start_restore {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
 
-    unless ( $user->is_superuser ) {
-        return $app->errtrans("Permission denied.")
-          unless defined($blog_id) && $perms->can_do('start_restore');
-    }
+    return $app->errtrans("Permission denied.")
+        unless $app->can_do('start_restore');
 
     return $app->return_to_dashboard( redirect => 1 )
         if $blog_id;

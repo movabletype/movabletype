@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2005-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2005-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -6771,6 +6771,11 @@ Zoekbasis: [_2]",
 	'WordPress eXtended RSS (WXR)' => 'WordPress eXtended RSS (WXR)',
 	'Download WP attachments via HTTP.' => 'WP attachments downloaden via HTTP.',
 
+	'The file([_1]) you uploaded is not allowed.' => 'Het bestand dat u heeft geupload ([_1]) is niet toegelaten.', 
+        'Migrating CustomFields type...' => 'Bezig CustomFields type te migreren...', 
+        'Can\'t locate Net::LDAP. Net::LDAP module is required to use LDAP authentication.' => 'Kan Net:LDAP niet vinden. Net::LDAP is vereist om LDAP authenticatie te kunnen gebruiken.', 
+	
+	
 );
 
 ## New words: 71

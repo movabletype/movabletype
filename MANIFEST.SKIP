@@ -89,6 +89,8 @@ themes/broken_blog_theme
 #?package=MTE ^COPYING
 #?package=MTE ^COPYRIGHT
 
+#?language=ja ^plugins/zemanta
+
 # MT::App::Viewer
 lib/MT/App/Viewer.pm
 mt-view.cgi

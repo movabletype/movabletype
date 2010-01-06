@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -74,6 +74,28 @@ sub make_square {
     $image->crop(%square);
 }
 
+sub is_valid_image {
+    my ( $fh ) = @_;
+    return unless $fh;
+
+    ## Read first 1k of image file
+    my $data = '';
+    binmode($fh);
+    seek($fh, 0, 0);
+    read $fh, $data, 1024;
+    seek($fh, 0, 0);
+
+    return 0 if
+        ( $data =~ m/^\s*<[!?]/ ) ||
+        ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
+        ( $data =~ m/text\/html/i ) ||
+        ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
+        ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+        ;
+
+    return 1;
+}
+
 sub check_upload {
     my $class = shift;
     my %params = @_;
@@ -104,6 +126,17 @@ sub check_upload {
         seek $fh, 0, 2;  # wind to end
         $file_size = tell $fh;
         seek $fh, 0, 0;
+    }
+
+    ## Check file content
+    my $filepath = $params{Local};
+    my ( $filename, $path, $ext ) =
+      ( File::Basename::fileparse( $filepath, qr/[A-Za-z0-9]+$/ ) );
+
+    # Check for Content Sniffing bug (IE)
+    require MT::Asset::Image;
+    if ( MT::Asset::Image->can_handle($ext) ) {
+        return $class->error(MT->translate("Saving [_1] failed: [_2]", $filename.$ext, "Invalid image file format.")) unless is_valid_image( $params{Fh} );
     }
 
     ## If the image exceeds the dimension limit, resize it before writing.
