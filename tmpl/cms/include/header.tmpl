@@ -166,7 +166,7 @@
     <mt:loop name="fav_website_loop">
         <mt:if name="__first__">
                         <ul id="fav-website-list">
-                            <li><span class="scope-lebel"><__trans phrase="Website"></span>
+                            <li><span class="scope-lebel"><__trans phrase="Websites"></span>
                                 <ul>
         </mt:if>
                                     <li><mt:if name="fav_website_can_link"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"></mt:if><mt:var name="fav_website_name" escape="html"><mt:if name="fav_website_can_link"></a></mt:if></li>
@@ -182,7 +182,7 @@
     <mt:else>
         <mt:unless name="selector_hide_website_chooser">
                         <ul id="fav-website-list">
-                            <li><span class="scope-lebel"><__trans phrase="Website"></span>
+                            <li><span class="scope-lebel"><__trans phrase="Websites"></span>
                                 <ul>
                                     <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
                                 </ul>
@@ -195,7 +195,7 @@
     <mt:loop name="fav_blog_loop">
         <mt:if name="__first__">
                         <ul id="fav-blog-list">
-                            <li><span class="scope-lebel"><__trans phrase="Blog"></span>
+                            <li><span class="scope-lebel"><__trans phrase="Blogs"></span>
                                 <ul>
         </mt:if>
                                     <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_blog_name" escape="html"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">"></span></a></li>
@@ -211,7 +211,7 @@
     <mt:else>
         <mt:unless name="selector_hide_blog_chooser">
                         <ul id="fav-blog-list">
-                            <li><span class="scope-lebel"><__trans phrase="Blog"></span>
+                            <li><span class="scope-lebel"><__trans phrase="Blogs"></span>
                                 <ul>
                                     <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
                                 </ul>
