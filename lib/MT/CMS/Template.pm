@@ -1,4 +1,4 @@
-# Movable Type (r) Open Source (C) 2001-2009 Six Apart, Ltd.
+# Movable Type (r) Open Source (C) 2001-2010 Six Apart, Ltd.
 # This program is distributed under the terms of the
 # GNU General Public License, version 2.
 #
@@ -1298,8 +1298,23 @@ sub add_map {
 
 sub can_view {
     my ( $eh, $app, $id ) = @_;
-    my $perms = $app->permissions;
-    return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
+    my $perms = $app->blog ? $app->permissions : $app->user->permissions;
+    #
+    # Permission to view a template in the global context should only be granted if the user has System Administrator
+    # or Manage Templates rights.  The previous construct that populated the return value:
+    #
+    #    return !$id || ($perms && $perms->can_edit_templates) || (!$app->blog && $app->user->can_edit_templates);
+    #
+    # ... permitted some unauthorized users to get to the Create Widget Set and Create Widget template editor if the
+    # URL for these pages was requested.  The construct shown below apparently produces correct resuls.
+    #
+    if ($app->blog) {
+        return  ($perms && $perms->can_edit_templates);
+    }
+    else {
+        return $app->user->can_edit_templates;
+    }
+
 }
 
 sub can_save {

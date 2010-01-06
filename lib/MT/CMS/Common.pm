@@ -654,7 +654,8 @@ sub list {
         $perms
         && (   ( $type eq 'blog' && !$perms->can_edit_config )
             || ( $type eq 'template'     && !$perms->can_edit_templates )
-            || ( $type eq 'notification' && !$perms->can_edit_notifications ) )
+            || ( $type eq 'notification' && !$perms->can_edit_notifications )
+            || ( $type eq 'banlist' && !$perms->can_manage_feedback ) )
       )
     {
         return $app->return_to_dashboard( permission => 1 );

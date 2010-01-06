@@ -112,6 +112,21 @@ sub list {
                 || $perms->can_create_post )
           );
     }
+    else {
+        #
+        # In the global context, the Manage Assets page shouldn't be displayed unless the current user has
+        # the can_edit_assets or superuser privileges.
+        #
+        require MT::Permission;
+
+        my @blogs = map { $_->blog_id }
+            grep { $_->can_edit_assets }
+            MT::Permission->load( { author_id => $app->user->id } );
+
+        return $app->errtrans("Permission denied.")
+            unless ($app->user->is_superuser || @blogs);
+
+    }
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
