@@ -1909,6 +1909,7 @@ sub init_core_callbacks {
             $pkg . 'post_save.website'   => "${pfx}Website::post_save",
             $pkg . 'edit.website'        => "${pfx}Website::edit",
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
+            $pkg . 'save_permission_filter.website' => "${pfx}Website::can_save",
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",

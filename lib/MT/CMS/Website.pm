@@ -345,6 +345,19 @@ sub post_delete {
     MT::CMS::User::_delete_pseudo_association($app, undef, $obj->id);
 }
 
+sub can_save {
+    my ( $eh, $app, $id ) = @_;
+    my $perms = $app->permissions;
+    if ($id) {
+        return $app->can_do('edit_website_config')
+               || ( $app->param('cfg_screen')
+                    && $app->param('cfg_screen') eq 'cfg_publish_profile');
+    }
+    else {
+        return $app->can_do('create_new_website');
+    }
+}
+
 sub dialog_select_website {
     my $app = shift;
     my $user = $app->user;

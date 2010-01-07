@@ -1289,7 +1289,7 @@ sub can_save {
     my ( $eh, $app, $id ) = @_;
     my $perms = $app->permissions;
     if ($id) {
-        return $app->can_do('edit_blog_config') 
+        return $app->can_do('edit_blog_config')
                || ( $app->param('cfg_screen')
                     && $app->param('cfg_screen') eq 'cfg_publish_profile');
     }
@@ -1544,7 +1544,7 @@ sub post_save {
     my $perms = $app->permissions;
     return 1
       unless $app->user->is_superuser
-      || $app->user->can_create_blog
+      || ( $obj->is_blog ? $app->user->can_create_blog : $app->user->can_create_website )
       || ( $perms && $perms->can_edit_config );
 
     # check to see what changed and add a flag to meta_messages
