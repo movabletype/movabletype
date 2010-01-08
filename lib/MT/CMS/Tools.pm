@@ -1519,7 +1519,7 @@ sub adjust_sitepath {
     }
 
     my $param = {};
-    if ( scalar $q->param('redirect') && $q->param('files') ) {
+    if ( scalar $q->param('redirect') && $q->param('current_file') ) {
         $param->{restore_end} = 0;  # redirect=1 means we are from multi-uploads
         $param->{blogs_meta} = MT::Util::to_json( \%blogs_meta );
         $param->{next_mode}  = 'dialog_restore_upload';
