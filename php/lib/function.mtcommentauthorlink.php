@@ -44,7 +44,9 @@ function smarty_function_mtcommentauthorlink($args, &$ctx) {
         $comment_script = $ctx->mt->config('CommentScript');
         $name = strip_tags($name);
         $url = encode_html( strip_tags($url) );
-        if ($comment->comment_id && !isset($args['no_redirect']) && !isset($args['nofollowfy']))
+        if ($comment->comment_id &&
+            (!isset($args['no_redirect']) || (isset($args['no_redirect']) && !$args['no_redirect'])) &&
+            (!isset($args['nofollowfy']) || (isset($args['nofollowfy']) && !$args['nofollowfy'])))
             return sprintf('<a title="%s" href="%s%s?__mode=red;id=%d"%s>%s</a>', $url, $cgi_path, $comment_script, $comment->comment_id, $target, $name);
         else
             return sprintf('<a title="%s" href="%s"%s>%s</a>', $url, $url, $target, $name);
@@ -66,6 +68,7 @@ function _comment_follow (&$args, $ctx) {
         return;
 
     $blog = $ctx->stash('blog');
+    $nofollow = false;
     if (!empty($blog) && $blog->blog_nofollow_urls) {
         if ($blog->blog_follow_auth_links) {
             $cmntr = $ctx->stash('commenter');
@@ -75,10 +78,17 @@ function _comment_follow (&$args, $ctx) {
                     $ctx->stash('commenter', $cmntr);
             }
             if (empty($cmntr) || (!empty($cmntr) && !is_trusted($cmntr, $ctx, $blog->blog_id)))
-                $args['nofollowfy'] = 1;
+                $nofollow = true;
         } else {
-            $args['nofollowfy'] = 1;
+            $nofollow = true;
         }
+    }
+    if ($nofollow) {
+        $curr_tag = $ctx->_tag_stack[count($ctx->_tag_stack) - 1];
+        if ( isset($curr_tag[1]['nofollowfy']) )
+            $args['nofollowfy'] = $curr_tag[1]['nofollowfy'];
+        else
+            $args['nofollowfy'] = "1";
     }
 }
 

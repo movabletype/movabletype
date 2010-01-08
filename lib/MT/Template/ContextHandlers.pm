@@ -657,9 +657,9 @@ sub sanitize_on {
 
 ## used in Ping.pm
 sub nofollowfy_on {
-    my ($ctx) = @_;
-    unless ( exists $ctx->{'nofollowfy'} ) {
-        $ctx->{'nofollowfy'} = 1;
+    my ($ctx, $args) = @_;
+    unless ( exists$args->{'nofollowfy'} ) {
+        $args->{'nofollowfy'} = 1;
     }
 }
 
