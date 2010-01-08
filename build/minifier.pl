@@ -4,8 +4,7 @@ use strict;
 use warnings;
 
 my $copyright;
-#my $year = (localtime(time))[5] + 1900;
-my $year = 2010;
+my $year = (localtime(time))[5] + 1900;
 
 if (($ENV{BUILD_PACKAGE} || 'MTOS') ne 'MTOS') {
     $copyright = "Movable Type (r) (C) 2001-$year Six Apart, Ltd. All Rights Reserved";
