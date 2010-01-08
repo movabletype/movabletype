@@ -17,8 +17,9 @@ sub start_import {
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_start_import_screen');
 
+    my $blog = $app->model('blog')->load($blog_id);
     return $app->return_to_dashboard( redirect => 1 )
-        if $app->blog && !$app->blog->is_blog;
+        if !$blog || ( $blog && !$blog->is_blog );
 
     my %param;
 
