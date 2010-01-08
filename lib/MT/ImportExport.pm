@@ -497,7 +497,7 @@ CONVERT BREAKS: <$MTEntryFlag flag="convert_breaks"$>
 ALLOW PINGS: <$MTEntryFlag flag="allow_pings"$><MTIfNonEmpty tag="MTEntryCategory">
 PRIMARY CATEGORY: <$MTEntryCategory$></MTIfNonEmpty><MTEntryCategories>
 CATEGORY: <$MTCategoryLabel$></MTEntryCategories>
-DATE: <$MTEntryDate format="%m/%d/%Y %I:%M:%S %p"$><MTEntryIfTagged>
+DATE: <$MTEntryDate format="%m/%d/%Y %I:%M:%S %p"$><MTEntryIfTagged include_private="1">
 TAGS: <MTEntryTags include_private="1" glue=","><$MTTagName quote="1"$></MTEntryTags></MTEntryIfTagged>
 -----
 BODY:

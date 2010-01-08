@@ -550,6 +550,13 @@ B<Attributes:>
 If either 'name' or 'tag' are specified, tests the entry in context
 for whether it has a tag association by that name.
 
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
+
 =back
 
 =for tags tags, entries
@@ -565,7 +572,8 @@ sub _hdlr_entry_if_tagged {
         $entry->has_tag($tag);
     } else {
         my @tags = $entry->tags;
-        @tags = grep /^[^@]/, @tags;
+        @tags = grep /^[^@]/, @tags
+            if !$args->{include_private};
         return @tags ? 1 : 0;
     }
 }
@@ -586,6 +594,13 @@ B<Attributes:>
 
 If present, the template tag will evaluate if the specified tag is
 assigned to the current page.
+
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
 
 =back
 
@@ -624,12 +639,19 @@ B<Attributes:>
 If either 'name' or 'tag' are specified, tests the asset in context
 for whether it has a tag association by that name.
 
+=item * include_private
+
+A boolean value which controls whether private tags (i.e. tags which start
+with @) should be output by the block. The default is 0 which suppresses the
+output of private tags. If set to 1, the tags will be displayed. See
+L<EntryTags> for an example of its usage.
+
 =back
 
 =for tags assets, tags
 
 =cut
- 
+
 sub _hdlr_asset_if_tagged {
     my ($ctx, $args) = @_;
     my $a = $ctx->stash('asset')
@@ -640,7 +662,8 @@ sub _hdlr_asset_if_tagged {
         $a->has_tag($tag);
     } else {
         my @tags = $a->tags;
-        @tags = grep /^[^@]/, @tags;
+        @tags = grep /^[^@]/, @tags
+            if !$args->{include_private};
         return @tags ? 1 : 0;
     }
 }
