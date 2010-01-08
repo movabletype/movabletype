@@ -242,6 +242,7 @@ var CodeMirror = (function(){
       var barWidth = null;
 
       function sizeBar() {
+        if (frame.offsetWidth == 0) return;
         for (var root = frame; root.parentNode; root = root.parentNode);
         if (!nums.parentNode || root != document || !win.Editor) {
           // Clear event handlers (their nodes might already be collected, so try/catch)
@@ -261,7 +262,7 @@ var CodeMirror = (function(){
       // Cleanup function, registered by nonWrapping and wrapping.
       var clear = function(){};
       sizeBar();
-      sizeInterval = setInterval(sizeBar, 500);
+      var sizeInterval = setInterval(sizeBar, 500);
 
       function nonWrapping() {
         var nextNum = 1;

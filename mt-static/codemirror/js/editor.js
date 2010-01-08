@@ -384,8 +384,7 @@ var Editor = (function(){
       select.setCursorPos(container, {node: null, offset: 0});
 
     this.dirty = [];
-    if (options.content)
-      this.importCode(options.content);
+    this.importCode(options.content || "");
     this.history.onChange = options.onChange;
 
     if (!options.readOnly) {
@@ -404,7 +403,7 @@ var Editor = (function(){
 
         // this hack for FF weird bug(?)
         if (!internetExplorer && !webkit && !safari)
-          if (document.body.innerHTML == "<br>") document.body.innerHTML = "<br />";
+          if (document.body.innerHTML == "<span></span>") document.body.innerHTML = "<br />";
 
         document.documentElement.style.borderWidth = "0";
         if (!options.textWrapping)
@@ -712,7 +711,6 @@ var Editor = (function(){
         }
         else {
           select.insertNewlineAtCursor(this.win);
-          this.indentAtCursor();
           select.scrollToCursor(this.container);
         }
         event.stop();
@@ -781,8 +779,10 @@ var Editor = (function(){
       else if (electric && electric.indexOf(event.character) != -1)
         this.parent.setTimeout(function(){self.indentAtCursor(null);}, 0);
       else if ((event.character == "v" || event.character == "V")
-               && (event.ctrlKey || event.metaKey) && !event.altKey) // ctrl-V
+               && (event.ctrlKey || event.metaKey) && !event.altKey) { // ctrl-V
+        this.highlightParens();
         this.reroutePasteEvent();
+      }
     },
 
     // Mark the node at the cursor dirty when a non-safe key is
@@ -1019,7 +1019,6 @@ var Editor = (function(){
     // Adjust the amount of whitespace at the start of the line that
     // the cursor is on so that it is indented properly.
     indentAtCursor: function(direction) {
-      return;
       if (!this.container.firstChild) return;
       // The line has to have up-to-date lexical information, so we
       // highlight it first.

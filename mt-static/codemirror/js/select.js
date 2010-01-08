@@ -562,13 +562,17 @@ var select = {};
           range = win.document.createRange();
 
       function setPoint(node, offset, side) {
+        if (offset == 0 && node && !node.nextSibling) {
+          range["set" + side + "After"](node);
+          return true;
+        }
+
         if (!node)
           node = container.firstChild;
         else
           node = node.nextSibling;
 
-        if (!node)
-          return;
+        if (!node) return;
 
         if (offset == 0) {
           range["set" + side + "Before"](node);
