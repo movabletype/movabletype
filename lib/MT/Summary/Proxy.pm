@@ -166,6 +166,8 @@ sub load_objects {
     }
 }
 
+1;
+
 __END__
 
 =head1 NAME
@@ -195,5 +197,3 @@ to specify simple or parameterized summaries.
 Unlike I<MT::Meta::Proxy->set()>, this method not only sets a summary's value 
 but saves it to the database immediately; there is no need to save the parent 
 object.
-
-1;
