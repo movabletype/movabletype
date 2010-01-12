@@ -388,7 +388,7 @@ sub core_search_apis {
 
 sub search_replace {
     my $app = shift;
-    $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( redirect => 1 )
         if !$app->can_do('use_tools:search') && $app->param('blog_id');
 
     my $param = do_search_replace($app, @_) or return;

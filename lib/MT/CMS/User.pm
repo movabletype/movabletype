@@ -139,7 +139,7 @@ sub edit {
 sub edit_role {
     my $app = shift;
 
-    $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
     my %param  = $_[0] ? %{ $_[0] } : ();
     my $q      = $app->param;
@@ -268,7 +268,7 @@ sub list {
     my $app = shift;
     my (%param) = @_;
 
-    $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( redirect => 1 )
       if $app->param('blog_id');
 
     my $this_author = $app->user;
@@ -405,7 +405,7 @@ sub list_member {
     my $app = shift;
 
     my $blog_id = $app->param('blog_id');
-    $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
 
     my $blog  = $app->blog;
@@ -532,7 +532,7 @@ sub list_association {
     my $app = shift;
 
     my $blog_id   = $app->param('blog_id');
-    $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( redirect => 1 )
       if $blog_id;
 
     my $author_id = $app->param('author_id');
@@ -750,7 +750,7 @@ sub list_association {
 sub list_role {
     my $app = shift;
 
-    $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
     my $pref = $app->list_pref('role');
 

@@ -14,7 +14,7 @@ sub list {
     my $app = shift;
     my $q   = $app->param;
     my %param;
-    $app->return_to_dashboard( permission => 1 )
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_theme_listing_screen');
     $param{screen_class} = 'settings-screen';
     my $cfg = $app->config;
@@ -109,7 +109,7 @@ sub dialog_select_theme {
     $param{idfield} = $app->param('idfield');
     $param{namefield} = $app->param('namefield');
     $param{imagefield} = $app->param('imagefield');
-    $app->return_to_dashboard( permission => 1 )
+    return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('manage_themes');
 
     my $cfg = $app->config;

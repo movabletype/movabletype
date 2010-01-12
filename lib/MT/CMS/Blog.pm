@@ -370,10 +370,10 @@ sub list {
     my $app = shift;
     if ($app->param('blog_id')) {
         my $website = $app->blog;
-        $app->return_to_dashboard( redirect => 1 ) if !$website || $website->is_blog();
+        return $app->return_to_dashboard( redirect => 1 ) if !$website || $website->is_blog();
     } else {
         my $type = $app->param('type');
-        $app->return_to_dashboard( redirect => 1 ) if !$type || $type eq 'blog';
+        return $app->return_to_dashboard( redirect => 1 ) if !$type || $type eq 'blog';
     }
 
     my $author    = $app->user;

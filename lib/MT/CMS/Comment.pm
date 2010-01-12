@@ -347,7 +347,7 @@ sub list_member {
     my $app = shift;
 
     my $blog_id = $app->param('blog_id');
-    $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
 
     my $blog  = $app->blog;
