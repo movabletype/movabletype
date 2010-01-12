@@ -826,7 +826,7 @@ sub reply {
     my $magic_token = encode_html( $q->param('magic_token') );
     my $blog_id     = encode_html( $q->param('blog_id') );
     my $return_url  = encode_html( $q->param('return_url') );
-    my $text        = encode_html( $q->param('comment-reply') );
+    my $text        = encode_html( $q->param('comment-reply'), 1 );
     my $indicator   = $app->static_path . 'images/indicator.gif';
     my $url         = $app->uri;
     <<SPINNER;
