@@ -219,18 +219,20 @@
                         </ul>
         </mt:unless>
     </mt:if>
-                        <ul>
     <mt:if name="can_create_website">
+                        <ul id="create-website-action">
                             <li id="create-website" class="website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create Website"></a></li>
+                        </ul>
     </mt:if>
     <mt:if name="can_create_blog">
+                        <ul id="create-blog-action">
         <mt:if name="scope_type" eq="website">
                             <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
         <mt:elseif name="scope_type" eq="blog">
                             <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
         </mt:if>
-    </mt:if>
                         </ul>
+    </mt:if>
                     </div>
                 </div>
 

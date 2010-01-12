@@ -518,7 +518,9 @@ ul.tabs li a {
 #selector-nav .user-dashboard, 
 #selector-nav .system-overview, 
 #selector-nav #fav-website-list, 
-#selector-nav #fav-blog-list { 
+#selector-nav #fav-blog-list,
+#selector-nav #create-website-action, 
+#selector-nav #create-blog-action { 
     border-top: 1px solid #9EA1A3;
 }
 
@@ -1933,18 +1935,21 @@ thead th.last-child {
     border-top-right-radius: 5px;
 }
 tfoot th.first-child, 
-tfoot th.move-col { 
+tfoot th.move-col, 
+.dialog tbody tr.last-child td.first-child { 
     -moz-border-radius: 0 0 0 5px;
     -webkit-border-bottom-left-radius: 5px;
     -khtml-border-bottom-left-radius: 5px;
     border-bottom-left-radius: 5px;
 }
-tfoot th.last-child { 
+tfoot th.last-child, 
+.dialog tbody tr.last-child td.last-child { 
     -moz-border-radius: 0 0 5px 0;
     -webkit-border-bottom-right-radius: 5px;
     -khtml-border-bottom-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
+
 
 /* -- Checkboxes, Status Icons */
 .listing .cb, 
