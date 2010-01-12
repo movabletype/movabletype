@@ -241,7 +241,7 @@ class MT {
         if ($fp = file($file)) {
             foreach ($fp as $line) {
                 // search through the file
-                if (!ereg('^\s*\#',$line)) {
+                if (!preg_match('/^\s*\#/i',$line)) {
                     // ignore lines starting with the hash symbol
                     if (preg_match('/^\s*(\S+)\s+(.*)$/', $line, $regs)) {
                         $key = strtolower(trim($regs[1]));
