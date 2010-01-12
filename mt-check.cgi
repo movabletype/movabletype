@@ -27,10 +27,24 @@ sub BEGIN {
 my $cfg_exist;
 my $mt_static_path = q();
 my $mt_cgi_path;
-if ((-f File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi')) ||
-    (-f File::Spec->catfile($ENV{MT_HOME}, 'mt.cfg'))) {
+my @cfg_candidates = (
+    File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi'),
+    File::Spec->catfile($ENV{MT_HOME}, 'mt.cfg'),
+);
+unshift( @cfg_candidates, File::Spec->catfile($ENV{MT_HOME}, $ENV{MT_CONFIG} ) )
+    if $ENV{MT_CONFIG};
+
+my $cfg_path;
+for my $cfg_candidate ( @cfg_candidates ) {
+    if ( -f $cfg_candidate ) {
+        $cfg_path = $cfg_candidate;
+        last;
+    }
+}
+
+if ( $cfg_path ) {
     $cfg_exist = 1;
-    my $file_handle = open(CFG, $ENV{MT_HOME}.'/mt.cfg') || open(CFG, $ENV{MT_HOME}.'/mt-config.cgi');
+    my $file_handle = open(CFG, $cfg_path );
     my $line;
     while ($line = <CFG>) {
         next if $line !~ /\S/ || $line =~ /^#/;
@@ -49,12 +63,21 @@ if ((-f File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi')) ||
     }
 }
 
+use File::Basename;
+my $script_name = basename($0);
+my $unsafe = ( $script_name =~ /^mt-check-unsafe.*$/) ? 1 : 0;
+if ( $unsafe ) {
+    my @stats = stat($0);
+    $unsafe = 0 if 60 * 10 < time() - $stats[10]; # ctime
+}
+
 local $| = 1;
 
 use CGI;
 my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
+my $sess_id = $cgi->param('session_id');
 $version ||= '5.01';
 
 my ($mt, $LH);
@@ -63,7 +86,7 @@ my $lang = $cgi->param("language") || $cgi->param("__lang");
 eval {
     require MT::App::Wizard;
     $mt = MT::App::Wizard->new();
-    
+
     require MT::Util;
     $lang ||= MT::Util::browser_language();
     my $cfg = $mt->config;
@@ -138,6 +161,37 @@ sub print_encode {
     else {
         print Encode::encode_utf8( $text );
     }
+}
+
+sub print_http_header {
+    if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
+        print_encode( "HTTP/1.0 200 OK\n" );
+        print_encode( "Connection: close\n" );
+    }
+    print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
+}
+
+sub invalid_request {
+    print_http_header();
+    print "Invalid Request";
+    exit;
+}
+
+if ( $view ) {
+    require MT::Author;
+    require MT::Session;
+    require MT::Serialize;
+    my $mt = MT->new;
+    my $sess = MT->model('session')->load({ id => $sess_id })
+        or invalid_request();
+    my $data_ref = MT::Serialize->unserialize($sess->data)
+        or invalid_request();
+    my $data = $$data_ref
+        or invalid_request();
+    my $author = MT->model('author')->load({ id => $data->{author_id} })
+        or invalid_request();
+    $author->can_do('open_system_check_screen')
+        or invalid_request();
 }
 
 if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
@@ -271,6 +325,15 @@ HTML
     } else {
         print_encode( "<body>\n" );
     }
+
+    if ( $cfg_path && !$unsafe ) {
+        print <<"HTML";
+<p>Movable Type is running.</p>
+</body></html>
+HTML
+        exit;
+    }
+
     print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 

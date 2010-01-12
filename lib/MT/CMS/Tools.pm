@@ -52,9 +52,15 @@ sub system_check {
 
 sub get_syscheck_content {
     my $app = shift;
-
-    my $syscheck_url = $app->base . $app->mt_path . $app->config('CheckScript') .
-        '?view=tools&version=' . MT->version_id . '&language=' . MT->current_language;
+    my $sess_id = $app->session->id;
+    my $syscheck_url
+        = $app->base
+        . $app->mt_path
+        . $app->config('CheckScript')
+        . '?view=tools&version=' . MT->version_id
+        . '&session_id=' . $sess_id
+        . '&language=' . MT->current_language
+        ;
     if ( $syscheck_url && $syscheck_url ne 'disable' ) {
         my $SYSCHECKCACHE_TIMEOUT = 60 * 60 * 24;
         my $sess_class        = $app->model('session');
