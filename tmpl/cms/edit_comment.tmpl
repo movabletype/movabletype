@@ -165,17 +165,17 @@
 
         <mt:if name="commenter_approved">
             <mt:if name="commenter_url">
-        <a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a>
+        <a href="<mt:var name="commenter_url">" class="commenter-link"><mt:var name="author" escape="html"></a>
             <mt:else>
         <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
             </mt:if>
 
             <mt:if name="can_edit_commenters">
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" title="<__trans phrase="View this commenter detail">">
-            <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Banned">" />
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">">
+            <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
         </a>
             <mt:else>
-        <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Banned">" />
+        <img src="<mt:var name="static_uri">images/status_icons/trusted.gif" alt="<__trans phrase="Trusted">" />
             </mt:if>
         <span class="hint"><__trans phrase="(Trusted)"></span>
 
@@ -190,13 +190,13 @@
 
         <mt:else name="commenter_banned">
             <mt:if name="commenter_url">
-        <a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a>
+        <a href="<mt:var name="commenter_url">" class="commenter-link"><mt:var name="author" escape="html"></a>
             <mt:else>
         <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
             </mt:if>
 
             <mt:if name="can_edit_commenters">
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" title="<__trans phrase="View this commenter detail">">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link"  title="<__trans phrase="View this commenter detail">">
             <img src="<mt:var name="static_uri">images/status_icons/banned.gif" alt="<__trans phrase="Banned">" />
         </a>
             <mt:else>
@@ -215,17 +215,17 @@
 
         <mt:else>
             <mt:if name="commenter_url">
-        <a href="<mt:var name="commenter_url">"><mt:var name="author" escape="html"></a>
+        <a href="<mt:var name="commenter_url">" class="commenter-link"><mt:var name="author" escape="html"></a>
             <mt:else>
         <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
             </mt:if>
 
             <mt:if name="can_edit_commenters">
-        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" title="<__trans phrase="View this commenter detail">">
-            <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Banned">" />
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link" title="<__trans phrase="View this commenter detail">">
+            <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
         </a>
             <mt:else>
-        <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Banned">" />
+        <img src="<mt:var name="static_uri">images/status_icons/authenticated.gif" alt="<__trans phrase="Pending">" />
             </mt:if>
         <span class="hint"><__trans phrase="(Pending)"></span>
 

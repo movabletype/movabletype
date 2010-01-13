@@ -3352,6 +3352,10 @@ body.preview-screen {
     white-space: nowrap;
 }
 
+.edit-comment .commenter-detail-link { 
+    text-decoration: none;
+}
+
 .edit-comment .commenter-trust,
 .edit-comment .commenter-ban,
 .edit-comment .commenter-neutral {
