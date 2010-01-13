@@ -676,7 +676,7 @@ sub run_callback {
         my $plugin = $cb->{plugin};
         my $name;
         if ( $cb->{internal} ) {
-            $name = "Internal callback";
+            $name = MT->translate("Internal callback");
         }
         elsif ( UNIVERSAL::isa( $plugin, 'MT::Plugin' ) ) {
             $name = $plugin->name() || MT->translate("Unnamed plugin");

@@ -499,6 +499,7 @@ use vars qw( @ISA %Lexicon );
 	'4th argument to add_callback must be a CODE reference.' => 'add_callbackの第4引数はCODEへの参照でなければなりません。',
 	'Two plugins are in conflict' => 'プラグイン同士が競合しています。',
 	'Invalid priority level [_1] at add_callback' => 'add_callbackの優先度レベル[_1]が不正です。',
+	'Internal callback' => '内部コールバック',
 	'Unnamed plugin' => '(名前なし)',
 	'[_1] died with: [_2]' => '[_1]でエラーが発生しました: [_2]',
 	'Bad ObjectDriver config' => 'ObjectDriverの設定が不正です。',
@@ -981,6 +982,7 @@ use vars qw( @ISA %Lexicon );
 	'User \'[_1]\' (user #[_2]) edited [lc,_4] #[_3]' => '[_1] (ID: [_2])が[_4] (ID: [_3])を編集しました。',
 	'Entry \'[_1]\' ([lc,_5] #[_2]) deleted by \'[_3]\' (user #[_4]) from atom api' => '[_1]記事([lc,_5]#[_2])は[_3](ID: [_4])によって削除されました。',
 	'The file([_1]) you uploaded is not allowed.' => 'ファイル([_1])のアップロードは許可されていません。',
+	'Saving [_1] failed: [_2]' => '[_1]を保存できませんでした: [_2]',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'Image::Sizeをインストールしないと、画像の幅と高さを検出できません。',
 
 ## lib/MT/Auth.pm
@@ -1111,7 +1113,6 @@ use vars qw( @ISA %Lexicon );
 	'File \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '\'[_3]\'がファイル\'[_1]\'(ID:[_2])を削除しました。',
 	'All Assets' => 'すべてのアイテム',
 	'Untitled' => 'タイトルなし',
-	'Saving [_1] failed: [_2]' => '[_1]を保存できませんでした: [_2]',
 	'Archive Root' => 'アーカイブパス',
 	'Site Root' => 'サイトパス',
 	'Please select a file to upload.' => 'アップロードするファイルを選択してください。',
@@ -1501,8 +1502,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a page author' => 'ページの投稿者を選択',
 	'Selected author' => '選択された投稿者',
 	'Type a username to filter the choices below.' => 'ユーザー名を入力して絞り込み',
-	'Entry author' => 'ブログ記事の投稿者',
-	'Page author' => 'ページの投稿者',
 	'Select a System Administrator' => 'システム管理者を選択',
 	'Selected System Administrator' => '選択されたシステム管理者',
 	'System Administrator' => 'システム管理者',
@@ -2024,6 +2023,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Theme/Pref.pm
 	'this element cannot apply for non blog object.' => 'この要素はブログオブジェクト以外には適用できません。',
+	'Failed to save blog object: [_1]' => 'ブログオブジェクトの保存に失敗しました。: [_1]',
 	'default settings for [_1]' => '[_1]の既定の設定',
 	'default settings' => '既定の設定',
 
@@ -3382,10 +3382,11 @@ use vars qw( @ISA %Lexicon );
 	'Results' => '結果',
 	'The name of the person who posted the comment' => 'このコメント投稿者の名前',
 	'View this commenter detail' => 'コメント投稿者の詳細を見る',
-	'Banned' => '禁止',
+	'Trusted' => '承認済み',
 	'(Trusted)' => '(承認済)',
 	'Untrust Commenter' => 'コメント投稿者の承認を取り消し',
 	'Ban Commenter' => 'コメント投稿者を禁止',
+	'Banned' => '禁止',
 	'(Banned)' => '(禁止済)',
 	'Trust Commenter' => 'コメント投稿者を承認',
 	'Unban Commenter' => 'コメント投稿者の禁止を解除',
@@ -3435,7 +3436,6 @@ use vars qw( @ISA %Lexicon );
 	'Withheld' => '公開しない',
 	'The URL of the commenter' => 'コメント投稿者のURL',
 	'The trusted status of the commenter' => 'コメント投稿者の承認状況',
-	'Trusted' => '承認済み',
 	'Authenticated' => '認証済み',
 	'View all commenters' => 'コメント投稿者の一覧',
 
@@ -3878,6 +3878,25 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001-[_1] Six Apart. All Rights Reserved.',
+
+## tmpl/cms/include/debug_hover.tmpl
+	'Hide Toolbar' => 'Hide Toolbar',
+	'Hide &raquo;' => 'Hide &raquo;',
+
+## tmpl/cms/include/debug_toolbar/cache.tmpl
+	'Key' => 'Key',
+	'Value' => 'Value',
+
+## tmpl/cms/include/debug_toolbar/headers.tmpl
+
+## tmpl/cms/include/debug_toolbar/requestvars.tmpl
+	'Cookies' => 'Cookies',
+	'Variable' => 'Variable',
+	'No COOKIE data' => 'No COOKIE data',
+	'Input Parameters' => 'Input Parameters',
+	'No Input Parameters' => 'No Input Parameters',
+
+## tmpl/cms/include/debug_toolbar/sql.tmpl
 
 ## tmpl/cms/include/display_options.tmpl
 	'_DISPLAY_OPTIONS_SHOW' => '表示数',
