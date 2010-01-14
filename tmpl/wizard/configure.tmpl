@@ -103,8 +103,8 @@
         label="<__trans phrase="ODBC Driver">"
         label_class="top-label">
         <select id="odbcdriver" name="odbcdriver">
-            <option value="SQL Native Client" selected="selected">SQL Native Client</option>
-            <option value="SQL Server Native Client"><mt:var name="label">SQL Server Native Client</option>
+            <option value="sqlnativeclient" selected="selected">SQL Native Client</option>
+            <option value="sqlservernativeclient"><mt:var name="label">SQL Server Native Client</option>
         </select>
         <input type="text" name="odbcdriverversion" value="" />
         <__trans phrase="help messeage">
@@ -303,12 +303,15 @@ function db_select(sel) {
         showByID("use_setnames");
         if (db == "mssqlserver") {
             showByID("charset");
+            showByID("driver");
         } else {
             hideByID("charset");
+            hideByID("driver");
         }
         if (db == "oracle") {
             hideByID("dbserver-field");
         } else {
+            showByID("dbserver-field");
         }
         document.forms[0].dbname.focus();
     } else if ((db == "sqlite") || (db == "sqlite2")) {
@@ -351,4 +354,15 @@ window.onload = function() {
 </mt:unless>
 /* ]]> */
 </script>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#driver input').hide();
+    jQuery('#odbcdriver').change(function() {
+        var selected = $("#odbcdriver option:selected").val();
+        if (selected == 'sqlservernativeclient') {
+            jQuery('#driver input').show();
+        } else {
+            jQuery('#driver input').hide();
+        }
+    });
+</mt:setvarblock>
 <mt:include name="include/chromeless_footer.tmpl">

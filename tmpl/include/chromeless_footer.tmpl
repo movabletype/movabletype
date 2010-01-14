@@ -2,7 +2,6 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 if (window.jQuery) {
-<mt:var name="jq_js_include">
     function showByID(id) {
         jQuery('#'+id).show();
     }
@@ -11,6 +10,9 @@ if (window.jQuery) {
     }
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
+    });
+    jQuery(function() {
+    <mt:var name="jq_js_include">
     });
 }
 /* ]]> */
