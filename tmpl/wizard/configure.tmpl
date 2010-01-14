@@ -6,7 +6,7 @@
 <input type="hidden" name="__mode" value="" />
 <input type="hidden" name="step" value="configure" />
 <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
-<input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
+<input type="hidden" name="default_language" value="<mt:var name="default_language">" />
 <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 
 <mt:if name="connect_error">
@@ -18,11 +18,11 @@
     <div id="error_more" style="display:none"><mt:var name="error_more"></div>
 <mt:else>
     <mt:if name="error">
-        <mtapp:statusmsg
-            id="error"
-            class="error">
-            <mt:var name="error">
-        </mtapp:statusmsg>
+    <mtapp:statusmsg
+        id="error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
     </mt:if>
 </mt:if>
 
@@ -74,7 +74,6 @@
         <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
         <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
     </div>
-    
 </mt:unless>
 
 <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
@@ -96,6 +95,22 @@
 <!-- server configuration parameters -->
 
 <div id="server"<mt:if name="path_required"> style="display: none"</mt:if>>
+
+<div id="driver"<mt:if name="odbc_driver_required"> style="dissplay: none;"</mt:if>>
+
+    <mtapp:setting
+        id="odbcdriver"
+        label="<__trans phrase="ODBC Driver">"
+        label_class="top-label">
+        <select id="odbcdriver" name="odbcdriver">
+            <option value="SQL Native Client" selected="selected">SQL Native Client</option>
+            <option value="SQL Server Native Client"><mt:var name="label">SQL Server Native Client</option>
+        </select>
+        <input type="text" name="odbcdriverversion" value="" />
+        <__trans phrase="help messeage">
+    </mtapp:setting>
+
+</div>
 
     <mtapp:setting
         id="dbserver"
