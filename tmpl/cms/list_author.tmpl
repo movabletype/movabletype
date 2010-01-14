@@ -46,13 +46,6 @@
         </mtapp:statusmsg>
     </mt:if>
 </mt:setvarblock>
-<mt:setvarblock name="add_new_button">
-    <mt:unless name="external_user_management">
-        <mt:if name="can_create_user">
-            <a class="add-new button" href="<mt:var name="script_url">?__mode=view&amp;_type=author" class="icon-left icon-create"><__trans phrase="Create New"></a></li>
-        </mt:if>
-    </mt:unless>
-</mt:setvarblock>
 
 <mt:setvarblock name="related_content">
 <mt:if name="user_view">
