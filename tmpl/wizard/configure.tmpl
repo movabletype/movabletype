@@ -303,9 +303,12 @@ function db_select(sel) {
         showByID("use_setnames");
         if (db == "mssqlserver") {
             showByID("charset");
-            showByID("driver");
         } else {
             hideByID("charset");
+        }
+        if ((db == "mssqlserver") || (db == "umssqlserver")) {
+            showByID("driver");
+        } else {
             hideByID("driver");
         }
         if (db == "oracle") {
@@ -357,7 +360,7 @@ window.onload = function() {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('#driver input').hide();
     jQuery('#odbcdriver').change(function() {
-        var selected = $("#odbcdriver option:selected").val();
+        var selected = jQuery(this).val();
         if (selected == 'sqlservernativeclient') {
             jQuery('#driver input').show();
         } else {
