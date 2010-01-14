@@ -4567,8 +4567,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/widget/mt_news.tmpl
 	'News' => 'Actualité',
-	'MT News' => 'Actualité Movable Type',
-	'Learning MT' => 'Apprendre Movable Type',
+	'MT News' => 'Actualité MT',
+	'Learning MT' => 'Apprendre MT',
 	'Hacking MT' => 'Coder pour Movable Type',
 	'Pronet' => 'Pronet',
 	'No Movable Type news available.' => 'Aucune actualité Movable Type n\'est disponible.',
