@@ -124,11 +124,11 @@
         <mtapp:setting
             id="nofollow_urls"
             class="has-option"
-            label="<__trans phrase="Include 'nofollow' in URLs">"
+            label="<__trans phrase="Apply 'nofollow' to URLs">"
             content_class="field-content-text"
             help_page="blog_settings_feedback"
             help_section="nofollow_urls">
-            <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" onclick="toggleSubPrefs(this)" /> <label for="nofollow_urls"><__trans phrase="Include the 'nofollow' attribute in URLs submitted in feedback."></label>
+            <input type="checkbox" value="1" name="nofollow_urls" id="nofollow_urls"<mt:if name="nofollow_urls"> checked="checked"</mt:if> class="cb" onclick="toggleSubPrefs(this)" /> <label for="nofollow_urls"><__trans phrase="If enabled, all URLs in comments and TrackBacks will be assigned a 'nofollow' link relation."></label>
         </mtapp:setting>
         <div id="nofollow_urls-option">
             <mtapp:setting
