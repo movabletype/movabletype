@@ -70,6 +70,9 @@ select {
     padding: 2px;
     font-size: 11px;    
 }
+select#odbcdrivername { 
+    width: 20em;
+}
 input[type="text"], 
 input[type="password"], 
 textarea { 
@@ -84,6 +87,9 @@ textarea {
     -webkit-border-radius: 3px;
     border-radius: 3px;
 }
+input#odbcdriverversion { 
+    width: 5em;
+}
 input[type="password"] { 
     width: 15em;
 }
@@ -95,7 +101,6 @@ input.extra-path {
     width: 12em;
     margin-left: 5px;
 }
-
 input.smaller-text { 
     width: 3.5em;
 }

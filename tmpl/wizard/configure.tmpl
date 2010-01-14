@@ -102,12 +102,18 @@
         id="odbcdriver"
         label="<__trans phrase="ODBC Driver">"
         label_class="top-label">
-        <select id="odbcdriver" name="odbcdriver">
+        <select id="odbcdrivername" name="odbcdrivername">
             <option value="sqlnativeclient" selected="selected">SQL Native Client</option>
             <option value="sqlservernativeclient"><mt:var name="label">SQL Server Native Client</option>
         </select>
-        <input type="text" name="odbcdriverversion" value="" />
-        <__trans phrase="help messeage">
+        
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="odbcdriverversion"
+        label="<__trans phrase="ODBC Driver Version">"
+        label_class="top-label">
+        <input type="text" id="odbcdriverversion" name="odbcdriverversion" value="" />
     </mtapp:setting>
 
 </div>
@@ -358,13 +364,13 @@ window.onload = function() {
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('#driver input').hide();
-    jQuery('#odbcdriver').change(function() {
+    jQuery('#driver #odbcdriverversion-field').hide();
+    jQuery('#odbcdrivername').change(function() {
         var selected = jQuery(this).val();
         if (selected == 'sqlservernativeclient') {
-            jQuery('#driver input').show();
+            jQuery('#driver #odbcdriverversion-field').show();
         } else {
-            jQuery('#driver input').hide();
+            jQuery('#driver #odbcdriverversion-field').hide();
         }
     });
 </mt:setvarblock>
