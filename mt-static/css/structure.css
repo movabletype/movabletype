@@ -1240,6 +1240,7 @@ fieldset {
 
 .listing-screen .actions-bar { 
     padding: 8px 0;
+    height: 25px;
 }
 .listing-screen .actions-bar-bottom { 
     margin-top: 0;
