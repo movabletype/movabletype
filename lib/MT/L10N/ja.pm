@@ -4443,8 +4443,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Your First Website' => '最初のウェブサイトを作成',
 	'In order to properly publish your website, you must provide Movable Type with your website\'s URL and the filesystem path where its files should be published.' => 'ウェブサイトを構築するには、ウェブサイトURLとファイルパスが正しく設定しなければなりません。',
 	'My First Website' => 'First Website',
-	'Publishing Path' => '公開パス',
-	'The \'Publishing Path\' is the directory in your web server\'s filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.' => '\'公開パス\'はウェブサーバーがウェブサイトの構築時に使うディレクトリです。ディレクトリにはウェブサーバーの書き込み権限が必要です。',
+	'The \'Website Root\' is the directory in your web server\'s filesystem where Movable Type will publish the files for your website. The web server must have write access to this directory.' => '\'ウェブサイトパス\'はウェブサーバーがウェブサイトの構築時に使うディレクトリです。ディレクトリにはウェブサーバーの書き込み権限が必要です。',
 	'Theme' => 'テーマ',
 	'Select the theme you wish to use for this new website.' => '新しいウェブサイトで利用するテーマを選んでください。',
 	'Finish install (s)' => 'インストール (s)',
@@ -4746,6 +4745,7 @@ use vars qw( @ISA %Lexicon );
 	'Setup Your First Blog' => 'First Blogのセットアップ',
 	'In order to properly publish your blog, you must provide Movable Type with your blog\'s URL and the path on the filesystem where its files should be published.' => 'ブログを公開するためのURLと、公開されるファイルのパスを設定する必要があります。',
 	'My First Blog' => 'My First Blog',
+	'Publishing Path' => '公開パス',
 	'Your \'Publishing Path\' is the path on your web server\'s file system where Movable Type will publish all the files for your blog. Your web server must have write access to this directory.' => 'Movable Typeは、出力するすべてのファイルを「公開パス」以下に配置します。このディレクトリにはWebサーバーから書き込みできなければなりません。',
 
 ## tmpl/wizard/cfg_dir.tmpl
