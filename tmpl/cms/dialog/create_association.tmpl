@@ -89,28 +89,32 @@ TC.attachLoadEvent(init);
     <mt:if name="missing_role">
         <mtapp:statusmsg
             id="generic-info"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=role");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_group">
         <mtapp:statusmsg
             id="generic-info"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=group");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_author">
         <mtapp:statusmsg
             id="generic-info"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=author");'>">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="missing_blog">
         <mtapp:statusmsg
             id="generic-info"
-            class="info">
+            class="info"
+            can_close="0">
             <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtDialog.close("<mt:var name="script_url">?__mode=view&amp;_type=blog");'>">
         </mtapp:statusmsg>
     </mt:if>
