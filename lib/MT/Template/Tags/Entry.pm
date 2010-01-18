@@ -1955,6 +1955,7 @@ sub _hdlr_entry_author_link {
         require MT::Author;
         if ($a->type == MT::Author::AUTHOR()) {
             local $ctx->{__stash}{author} = $a;
+            local $ctx->{current_archive_type} = undef;
             if (my $link = $ctx->invoke_handler('archivelink', { type => 'Author' }, $cond)) {
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target, $displayname;
             }
