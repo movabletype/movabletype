@@ -380,7 +380,7 @@ function activatePlugin(flag, plugin_sig) {
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('.plugin-name').click(function() {
-        jQuery('.plugin').not($(this).parents('.plugin')).removeClass('plugin-expanded');
+        jQuery('.plugin').not(jQuery(this).parents('.plugin')).removeClass('plugin-expanded');
         jQuery(this).parents('.plugin').toggleClass('plugin-expanded');
         return false;
     });

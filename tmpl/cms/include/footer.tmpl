@@ -53,7 +53,7 @@ App.bootstrapInline( false );
 jQuery(function() {
 <mt:var name="jq_js_include">
     if (typeof document.body.style.maxHeight == "undefined") {
-        if ($.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
+        if (jQuery.fn.pngfix) jQuery('#brand a span, .nav-link a, .search-submit img, .welcome-widget img').pngfix();
     }
     jQuery.mtAddEdgeClass();
     jQuery.mtMenu();
