@@ -1118,6 +1118,9 @@ sub rebuild_confirm {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
 
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('rebuild');
+
     my %param     = (
         build_next        => 0,
     );
