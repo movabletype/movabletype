@@ -440,18 +440,12 @@ if ($] < 5.008001) {  # our minimal requirement for support
 <p class="msg warning"><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2]." params="$ver%%5.8.1"></p>
 EOT
 }
-my $config_check = '';
-if (!$cfg_exist) {
-    $config_check = <<CONFIG;
-<p class="msg warning"><__trans phrase="Movable Type configuration file was not found."></p>
-CONFIG
-}
+
 my $server = $ENV{SERVER_SOFTWARE};
 my $inc_path = join "<br />\n", @INC;
 print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
-$config_check
 INFO
 if ($version) {
     # sanitize down to letters numbers dashes and period
@@ -602,7 +596,7 @@ MSG
     print_encode( "\n\t</div>\n\n" );
 }
 
-if ($is_good && $cfg_exist) {
+if ($is_good) {
     if (!$view) {
     print_encode( trans_templ(<<HTML) );
     <div class="msg msg-success">
