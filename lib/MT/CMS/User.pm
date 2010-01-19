@@ -141,6 +141,9 @@ sub edit_role {
 
     return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('create_role');
+
     my %param  = $_[0] ? %{ $_[0] } : ();
     my $q      = $app->param;
     my $author = $app->user;
@@ -751,6 +754,9 @@ sub list_role {
     my $app = shift;
 
     return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
+
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('create_role');
 
     my $pref = $app->list_pref('role');
 
