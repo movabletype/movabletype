@@ -66,6 +66,9 @@ jQuery(function($j) {
             } else {
                 $j.djDebug.show_toolbar(false);
             }
+            if (!$j.support.style && !$j.support.objectAll) {
+                if ($j.fn.bgiframe) $j('#djDebug .panelContent').bgiframe();
+            }
         },
         open: function() {
             // TODO: Decide if we should remove this

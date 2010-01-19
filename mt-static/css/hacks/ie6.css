@@ -243,6 +243,50 @@ html#dialog {
     height: 200px;
 }
 
+/* - Debug Toolbar */
+#djDebug #djDebugToolbar, 
+#djDebug #djDebugToolbarHandle, 
+#djDebug .panelContent {
+    position:absolute ! important;
+}
+
+#djDebug #djDebugToolbar { 
+    width: 20% ! important;
+    height: 100% ! important;
+}
+
+#djDebug #djDebugToolbar li a,
+#djDebug #djDebugToolbar li div.contentless  {
+    font-weight:normal;
+    font-style:normal;
+    text-decoration:none;
+    display:block;
+    font-size:16px;
+    padding:10px 10px 5px 25px;
+    color:#fff;
+    width: 100%;
+}
+
+#djDebug .panelContent {
+    height: 100% ! important;
+    width: 100% ! important;
+    background-color:#eee ! important;
+    z-index:10000000 ! important;
+}
+
+#djDebug .djDebugPanelTitle, 
+#djDebug .djDebugPanelContent { 
+    width: 74% ! important;
+}
+
+#djDebug .djDebugPanelTitle { 
+    border-bottom:1px solid #ddd;
+}
+
+#djDebug .panelContent table { 
+    table-layout: fixed;
+}
+
 /* - haslayout */
 #main-content-inner, 
 #content-header, 
