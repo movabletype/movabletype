@@ -53,6 +53,8 @@ sub db_column_name {
 
 sub configure {}
 
+sub need_encode { 1; }
+
 1;
 __END__
 

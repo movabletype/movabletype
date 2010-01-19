@@ -181,6 +181,9 @@ sub import {
                 $charset = $app->{cfg}->PublishCharset;
             };
             if ($app && UNIVERSAL::isa($app, 'MT::App') && !UNIVERSAL::isa($app, 'MT::App::Wizard')) {
+                require MT::I18N;
+                my $enc = MT::I18N::guess_encoding( $err );
+                $err = Encode::decode( $enc, $err );
                 eval {
                     # line __LINE__ __FILE__
                     if (!$MT::DebugMode && ($err =~ m/^(.+?)( at .+? line \d+)(.*)$/s)) {
@@ -197,7 +200,7 @@ sub import {
                     my $page = $app->build_page('error.tmpl', \%param)
                         or die $app->errstr;
                     print "Content-Type: text/html; charset=$charset\n\n";
-                    print $page;
+                    $app->print_encode( $page );
                     exit;
                 };
                 $err = $@;

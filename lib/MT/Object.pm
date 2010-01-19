@@ -269,6 +269,9 @@ sub install_properties {
     $class->add_trigger( '__core_final_pre_save',
         sub {
             my ($obj, $original) = @_;
+            my $dbd = $obj->driver->dbd;
+            return unless $dbd->need_encode;
+
             my $data = $obj->get_values;
             foreach ( keys %$data ) {
                 $data->{$_} = Encode::encode($enc, $data->{$_})
@@ -281,6 +284,9 @@ sub install_properties {
     $class->add_trigger( '__core_final_pre_search',
         sub {
             my ($class, $terms, $args) = @_;
+            my $dbd = $class->driver->dbd;
+            return unless $dbd->need_encode;
+
             if ( 'HASH' eq ref($terms) ) {
                 while ( my ( $k, $v ) = each %$terms ) {
                     $terms->{$k} = _encode_terms( $v );

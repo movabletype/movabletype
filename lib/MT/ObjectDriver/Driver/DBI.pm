@@ -29,6 +29,27 @@ sub init {
     $driver;
 }
 
+sub init_db {
+    my $driver = shift;
+    my $dbh;
+    eval {
+        $dbh = $driver->SUPER::init_db(@_);
+    };
+
+    if ( my $err = $@ ) {
+        require MT;
+        my $mt = MT->instance;
+        my $cfg = $mt->config;
+
+        require MT::I18N;
+        my $from = MT::I18N::guess_encoding( $err ) || 'utf-8';
+        my $to = $cfg->PublishCharset || 'utf-8';
+        Encode::from_to( $err, $from, $to );
+        Carp::croak( $err );
+    }
+    return $dbh;
+}
+
 sub start_query {
     my $driver = shift;
     my ($sql, $bind) = @_;
