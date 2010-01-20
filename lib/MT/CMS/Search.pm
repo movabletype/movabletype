@@ -301,6 +301,7 @@ sub core_search_apis {
                     $args->{'join'} =
                       MT::Permission->join_on( 'author_id',
                         { blog_id => $blog_id } );
+                    delete $terms->{blog_id} if exists $terms->{blog_id};
                 }
                 else {
                     $terms->{'type'} = MT::Author::AUTHOR();
@@ -575,7 +576,7 @@ sub do_search_replace {
         if (exists $api->{setup_terms_args}) {
             my $code = $app->handler_to_coderef($api->{setup_terms_args});
             $code->(\%terms, \%args, $blog_id);
-            if ( !exists $terms{blog_id} ) {
+            if ( !exists $terms{blog_id} && $type ne 'author' ) {
                 if ( $blog_id ) {
                     require MT::Blog;
                     my $blog = MT::Blog->load($blog_id) if $blog_id;
@@ -685,7 +686,12 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
+                use Data::Dumper;
+print STDERR Dumper(\@terms);
+print STDERR Dumper(\%args);
+                local $Data::ObjectDriver::DEBUG = 1;
                 $iter = $class->load_iter( @terms ? \@terms : \%terms, \%args ) or die $class->errstr;
+                local $Data::ObjectDriver::DEBUG = 0;
             }
             else {
 
