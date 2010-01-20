@@ -88,6 +88,7 @@ for my $lang (@languages) {
 
     print "---------------- Building $lang ----------------\n";
     verbose_command("$make clean");  # to clean MT.pm
+    verbose_command("$make mt-config.cgi-original");  # to clean MT.pm
     verbose_command($make);
 
     make_manifest_skip($skip_rules, $skip);
