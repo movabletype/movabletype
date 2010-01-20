@@ -1752,7 +1752,7 @@ sub core_menus {
             permit_action => 'use_tools:themeexport_menu',
             view       => [ 'blog', 'website' ],
         },
-        'tools:backup' => {
+        'tools:start_backup' => {
             label      => "Backup",
             order      => 600,
             mode       => "start_backup",
@@ -1796,6 +1796,12 @@ sub core_menus {
             order      => 10000,
             mode       => 'do_export_theme',
             view       => [ 'blog', 'website' ],
+            display    => 0,
+        },
+        'tools:backup' => {
+            order      => 10000,
+            mode       => 'backup',
+            view       => [ "blog", 'website', 'system' ],
             display    => 0,
         },
     };

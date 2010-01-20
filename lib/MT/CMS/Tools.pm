@@ -1069,8 +1069,9 @@ sub backup_download {
     if ( open( my $fh, "<", MT::FileMgr::Local::_local($fname) ) ) {
         binmode $fh;
         $app->{no_print_body} = 1;
-        $app->set_header(
-            "Content-Disposition" => "attachment; filename=$newfilename" );
+        $app->set_header( "Content-Disposition" => 'attachment; filename="'
+                . $newfilename
+                . '"' );
         $app->send_http_header($contenttype);
         my $data;
         while ( read $fh, my ($chunk), 8192 ) {
