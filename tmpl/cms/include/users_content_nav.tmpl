@@ -6,7 +6,11 @@
     <mt:else>
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Profile"></a></li>
         <mt:unless name="profile_inactive">
+            <mt:if name="list_group">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></li>
+            <mt:else>
     <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></em></li>
+            </mt:if>
         <mt:else>
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></li>
         </mt:unless>
@@ -24,20 +28,20 @@
     </mt:unless>
 </mt:if>
 
-<mt:if name="ROLE_VIEW">
+<mt:if name="role_view">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=role&amp;id=<mt:var name="ROLE_ID" escape="html">"><__trans phrase="Details"></a></li>
     <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;role_id=<mt:var name="ROLE_ID" escape="html">"><__trans phrase="Users"></a></em></li>
+</mt:if>
+
+<mt:if name="usergroup_view">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_role"><__trans phrase="Roles"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><__trans phrase="Permissions"></a></li>
 </mt:if>
 
 <mt:if name="edit_role">
     <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=role&amp;id=<mt:var name="ID" escape="html">"><__trans phrase="Details"></a></em></li>
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;role_id=<mt:var name="ID" escape="html">"><__trans phrase="Users"></a></li>
-</mt:if>
-
-<mt:if name="USERGROUP_VIEW">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></li>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_role"><__trans phrase="Roles"></a></li>
-    <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;blog_id=<mt:var name="BLOG_ID" escape="html">"><__trans phrase="Permissions"></a></em></li>
 </mt:if>
 
 <mt:if name="list_users">
