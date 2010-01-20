@@ -809,9 +809,7 @@ sub _hdlr_entries {
                     }
                     $no_resort = 1;
                 } else{
-                    if ( $col =~ m/^field:(.*)/ig ) {
-                        $col = "field.$1";
-                    }
+                    $col =~ s/(^field):(.*)/$1.$2/ig;
                     if ($class->is_meta_column($col)) {
                         my $type = MT::Meta->metadata_by_name($class, $col);
                         no warnings;
@@ -932,6 +930,21 @@ sub _hdlr_entries {
                 }
             }
             @entries = @tmp;
+        } elsif ( $col =~ m/^field.(.*)/ig ) {
+            my $so = $args->{sort_order} || 'descend';
+            if ($class->is_meta_column($col)) {
+                my $type = MT::Meta->metadata_by_name($class, $col);
+                no warnings;
+                if ($type->{type} =~ m/integer|float/) {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() <=> $b->$col() } @entries :
+                        sort { $b->$col() <=> $a->$col() } @entries;
+                } else {
+                    @entries = $so eq 'ascend' ?
+                        sort { $a->$col() cmp $b->$col() } @entries :
+                        sort { $b->$col() cmp $a->$col() } @entries;
+                }
+            }
         } else {
             my $so = $args->{sort_order} || ($blog ? $blog->sort_order_posts : 'descend') || '';
             if (my $def = $class->column_def($col)) {
