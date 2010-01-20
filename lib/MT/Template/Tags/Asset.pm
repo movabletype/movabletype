@@ -190,8 +190,11 @@ sub _hdlr_assets {
             $tag_arg = join " or ", @tags;
         }
         my $tags = [ MT::Tag->load($terms, {
-                    binary => { name => 1 },
-                    join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id, object_datasource => MT::Asset->datasource }]
+            ( $terms ? ( binary => { name => 1 } ) : () ),
+            join => MT::ObjectTag->join_on('tag_id', {
+                object_datasource => MT::Asset->datasource,
+                %blog_terms,
+            }, { %blog_args, unique => 1 } ),
         }) ];
         my $cexpr = $ctx->compile_tag_filter($tag_arg, $tags);
         if ($cexpr) {
