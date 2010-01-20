@@ -171,10 +171,10 @@ sub print_http_header {
     print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
 }
 
+my $invalid = 0;
 sub invalid_request {
-    print_http_header();
-    print "Invalid Request";
-    exit;
+    $invalid = 1;
+    $view = 0;
 }
 
 if ( $view ) {
@@ -182,23 +182,21 @@ if ( $view ) {
     require MT::Session;
     require MT::Serialize;
     my $mt = MT->new;
-    my $sess = MT->model('session')->load({ id => $sess_id })
-        or invalid_request();
-    my $data_ref = MT::Serialize->unserialize($sess->data)
-        or invalid_request();
-    my $data = $$data_ref
-        or invalid_request();
-    my $author = MT->model('author')->load({ id => $data->{author_id} })
-        or invalid_request();
-    $author->can_do('open_system_check_screen')
-        or invalid_request();
+ PERMCHECK: {
+        my $sess = MT->model('session')->load({ id => $sess_id })
+            or invalid_request(), last PERMCHECK;
+        my $data_ref = MT::Serialize->unserialize($sess->data)
+            or invalid_request(), last PERMCHECK;
+        my $data = $$data_ref
+            or invalid_request(), last PERMCHECK;
+        my $author = MT->model('author')->load({ id => $data->{author_id} })
+            or invalid_request(), last PERMCHECK;
+        $author->can_do('open_system_check_screen')
+            or invalid_request(), last PERMCHECK;
+    }
 }
 
-if ( exists( $ENV{PERLXS} ) && ( $ENV{PERLXS} eq 'PerlIS' ) ) {
-    print_encode( "HTTP/1.0 200 OK\n" );
-    print_encode( "Connection: close\n" );
-}
-print_encode( "Content-Type: text/html; charset=utf-8\r\n\r\n" );
+print_http_header();
 if (!$view) {
     $lang = $cgi->escapeHTML($lang);
     print_encode( trans_templ(<<HTML) );
@@ -326,9 +324,23 @@ HTML
         print_encode( "<body>\n" );
     }
 
+    if ( $invalid ) {
+        print_encode( trans_templ(<<HTML) );
+<div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
+<div id="content">
+<p class="msg msg-info"><MT_TRANS phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
+</div>
+</body></html>
+HTML
+        exit;
+    }
+
     if ( $cfg_path && !$unsafe ) {
-        print <<"HTML";
-<p>Movable Type is running.</p>
+        print_encode( trans_templ(<<HTML) );
+<div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
+<div id="content">
+<p class="msg msg-info"><MT_TRANS phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
+</div>
 </body></html>
 HTML
         exit;

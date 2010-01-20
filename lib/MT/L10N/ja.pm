@@ -110,6 +110,7 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-check.cgi
 	'Movable Type System Check' => 'Movable Type システムチェック',
+        "The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)" => "構成ファイル(mt-config.cgi)がすでに存在するため、'mt-check.cgi' スクリプトは無効になっています。",
 	'The mt-check.cgi script provides you with information on your system\'s configuration and determines whether you have all of the components you need to run Movable Type.' => 'mt-check.cgiはシステムの構成を確認し、Movable Typeを実行するために必要なコンポーネントがそろっていることを確認するためのスクリプトです。',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされている Perl [_1] は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlをアップグレードしてください。',
 	'Movable Type configuration file was not found.' => 'Movable Typeの構成ファイルが見つかりませんでした。',
