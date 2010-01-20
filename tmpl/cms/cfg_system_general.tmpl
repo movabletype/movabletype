@@ -64,25 +64,29 @@ function validate (f) {
     <mtapp:setting
         id="system_performance_logging"
         label="<__trans phrase="Performance Logging">"
+        content_class="field-content-text"
         hint="<__trans phrase="Turn on performance logging, which will report any system event that takes the number of seconds specified by Logging Threshold.">"
         show_hint="1">
         <input type="checkbox" id="system_performance_logging" name="system_performance_logging" <mt:if name="system_performance_logging" eq="1">checked="checked"</mt:if> />
     </mt:app:setting>
-    <mtapp:setting
-        id="system_performance_logging_path"
-        label="<__trans phrase="Log Path">"
-        hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
-        show_hint="1">
-        <input type="text" id="system_performance_logging_path" name="system_performance_logging_path"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> class="full-width" />
-    </mt:app:setting>
-    <mtapp:setting
-        id="system_performance_logging_threshold"
-        label="<__trans phrase="Logging Threshold">"
-        hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
-        show_hint="1">
-        <input type="text" size="3" maxlength="3" id="system_performance_logging_threshold" name="system_performance_logging_threshold" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
-    </mt:app:setting>
-    
+
+    <div id="system_performance_logging_prefs"<mt:unless name="system_performance_logging">class=" hidden"</mt:unless>>
+        <mtapp:setting
+            id="system_performance_logging_path"
+            label="<__trans phrase="Log Path">"
+            hint="<__trans phrase="The filesystem directory where performance logs are written.  The web server must have write permission in this directory.">"
+            show_hint="1">
+            <input type="text" id="system_performance_logging_path" name="system_performance_logging_path"<mt:if name="system_performance_logging_path"> value="<mt:var name="system_performance_logging_path" escape="html">"</mt:if> class="full-width" />
+        </mt:app:setting>
+        <mtapp:setting
+            id="system_performance_logging_threshold"
+            label="<__trans phrase="Logging Threshold">"
+            hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
+            show_hint="1">
+            <input type="text" size="3" maxlength="3" id="system_performance_logging_threshold" name="system_performance_logging_threshold" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+        </mt:app:setting>
+    </div>
+
     <mtapp:setting
         id="track_revisions"
         label="<__trans phrase="Revision History">"
@@ -200,9 +204,7 @@ function validate (f) {
     </form>
 </div>
 
-<script type="text/javascript">
-/* <![CDATA[ */
-jQuery(function() {
+<mt:setvarblock name="jq_js_include" append="1">
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
         autoOpen: false,
@@ -211,9 +213,9 @@ jQuery(function() {
     jQuery('#send-test-email').click(function() {
         jQuery('#test-email-dialog').dialog('open');
         return false;
-    }
-);
-});
-/* ]]> */
-</script>
+    });
+    jQuery('input#system_performance_logging').click(function() {
+        jQuery('div#system_performance_logging_prefs').toggleClass('hidden');
+    });
+</mt:setvarblock>
 <mt:include name="include/footer.tmpl">
