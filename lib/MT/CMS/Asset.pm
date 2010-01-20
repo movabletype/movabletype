@@ -1112,14 +1112,14 @@ sub _upload_file {
                 if (lc($ext_temp) ne lc($ext_old) && ! ( lc($ext_old) eq 'jpeg' && lc($ext_temp) eq 'jpg' )  && ! ( lc($ext_old) eq 'swf' && lc($ext_temp) eq 'cws' )) {
                     $ext_temp = lc($ext_temp);
                     my $target_file = $local_file;
-                    $target_file =~ s/$ext_old/$ext_temp/;
-                    $relative_path =~ s/$ext_old/$ext_temp/;
-                    $relative_url =~ s/$ext_old/$ext_temp/;
-                    $asset_file =~ s/$ext_old/$ext_temp/;
-                    $basename =~ s/$ext_old/$ext_temp/;
+                    $target_file =~ s/$ext_old$/$ext_temp/;
+                    $relative_path =~ s/$ext_old$/$ext_temp/;
+                    $relative_url =~ s/$ext_old$/$ext_temp/;
+                    $asset_file =~ s/$ext_old$/$ext_temp/;
+                    $basename =~ s/$ext_old$/$ext_temp/;
                     rename($local_file, $target_file);
-                    $local_file =~ s/$ext_old/$ext_temp/;
-                    $real_fh =~ s/$ext_old/$ext_temp/;
+                    $local_file =~ s/$ext_old$/$ext_temp/;
+                    $real_fh =~ s/$ext_old$/$ext_temp/;
                     $app->param("changed_file_ext", "$ext_old,$ext_temp");
                 }
             }
