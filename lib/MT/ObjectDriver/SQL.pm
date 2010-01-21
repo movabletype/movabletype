@@ -141,12 +141,7 @@ sub _mk_term {
         $col = $m->($col);
     }
 
-    if (ref $val eq 'ARRAY') {
-		if ( !(ref $val->[0] or (($val->[0] || '') eq '-and')) ) {
-			push @$val, 0 if( scalar @$val < 1 );
-		}
-	} 
-	elsif (ref $val eq 'HASH') {
+    if (ref $val eq 'HASH') {
         if (!exists $val->{op}) {
             # hash-style value, containing hints on operation
             if (exists $val->{like}) {
@@ -161,11 +156,9 @@ sub _mk_term {
             elsif (exists $val->{not}) {
                 my $v = $val->{not};
                 if ('ARRAY' eq ref($v)) {
-
                     if(my $transformed_column = $stmt->transform->{$col}) {
                         $col = $transformed_column;
                     }
-					push @$v, 0 if( scalar @$v < 1 );
                     my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$v ) . ')';
                     return ($term, $v, $col);
                 } elsif (ref $v) {
@@ -270,12 +263,9 @@ sub _mk_term {
 
         if ($stmt->not->{$col}) {
             if ('ARRAY' eq ref($val)) {
-
                 if(my $transformed_column = $stmt->transform->{$col}) {
                     $col = $transformed_column;
                 }
-				
-				push @$val, 0 if( scalar @$val < 1 );
                 my $term = $col . ' NOT IN (' . join (',', ('?') x scalar @$val ) . ')';
                 return ($term, $val, $col);
             }
