@@ -76,7 +76,7 @@ sub _fault {
     my $enc = $mt->config('PublishCharset');
     SOAP::Fault->faultcode(1)->faultstring(
         SOAP::Data->type(
-            string => $_[0]));
+            string => $_[0] || ''));
 }
 
 ## This is sort of a hack. XML::Parser automatically makes everything
@@ -564,9 +564,9 @@ sub getUsersBlogs {
         next unless $perms->can_do('get_blog_info_via_xmlrpc_server');
         my $blog = MT::Blog->load($perms->blog_id);
         next unless $blog;
-        push @res, { url => SOAP::Data->type(string => $blog->site_url),
+        push @res, { url => SOAP::Data->type(string => $blog->site_url || ''),
                      blogid => SOAP::Data->type(string => $blog->id),
-                     blogName => SOAP::Data->type(string => $blog->name) };
+                     blogName => SOAP::Data->type(string => $blog->name || '') };
     }
     \@res;
 }
@@ -585,11 +585,11 @@ sub getUserInfo {
     my($fname, $lname) = split /\s+/, $author->name;
     $lname ||= '';
     { userid => SOAP::Data->type(string => $author->id),
-      firstname => SOAP::Data->type(string => $fname),
-      lastname => SOAP::Data->type(string => $lname),
-      nickname => SOAP::Data->type(string => $author->nickname),
-      email => SOAP::Data->type(string => $author->email),
-      url => SOAP::Data->type(string => $author->url) };
+      firstname => SOAP::Data->type(string => $fname || ''),
+      lastname => SOAP::Data->type(string => $lname || ''),
+      nickname => SOAP::Data->type(string => $author->nickname || ''),
+      email => SOAP::Data->type(string => $author->email || ''),
+      url => SOAP::Data->type(string => $author->url || '') };
 }
 
 sub _get_entries {
@@ -615,25 +615,25 @@ sub _get_entries {
         $row->{ $param{page} ? 'page_id' : 'postid' } =
             SOAP::Data->type(string => $entry->id);
         if ($class eq 'blogger') {
-            $row->{content} = SOAP::Data->type(string => $entry->text);
+            $row->{content} = SOAP::Data->type(string => $entry->text || '');
         } else {
-            $row->{title} = SOAP::Data->type(string => $entry->title);
+            $row->{title} = SOAP::Data->type(string => $entry->title || '');
             unless ($titles_only) {
                 require MT::Tag;
                 my $tag_delim = chr($author->entry_prefs->{tag_delim});
                 my $tags = MT::Tag->join($tag_delim, $entry->tags);
                 $row->{description} = SOAP::Data->type(string => $entry->text);
                 my $link = $entry->permalink;
-                $row->{link} = SOAP::Data->type(string => $link);
-                $row->{permaLink} = SOAP::Data->type(string => $link),
-                $row->{mt_basename} = SOAP::Data->type(string => $entry->basename);
-                $row->{mt_allow_comments} = SOAP::Data->type(int => $entry->allow_comments);
-                $row->{mt_allow_pings} = SOAP::Data->type(int => $entry->allow_pings);
-                $row->{mt_convert_breaks} = SOAP::Data->type(string => $entry->convert_breaks);
-                $row->{mt_text_more} = SOAP::Data->type(string => $entry->text_more);
-                $row->{mt_excerpt} = SOAP::Data->type(string => $entry->excerpt);
-                $row->{mt_keywords} = SOAP::Data->type(string => $entry->keywords);
-                $row->{mt_tags} = SOAP::Data->type(string => $tags);
+                $row->{link} = SOAP::Data->type(string => $link || '');
+                $row->{permaLink} = SOAP::Data->type(string => $link || ''),
+                $row->{mt_basename} = SOAP::Data->type(string => $entry->basename || '');
+                $row->{mt_allow_comments} = SOAP::Data->type(int => $entry->allow_comments + 0);
+                $row->{mt_allow_pings} = SOAP::Data->type(int => $entry->allow_pings + 0);
+                $row->{mt_convert_breaks} = SOAP::Data->type(string => $entry->convert_breaks || '');
+                $row->{mt_text_more} = SOAP::Data->type(string => $entry->text_more || '');
+                $row->{mt_excerpt} = SOAP::Data->type(string => $entry->excerpt || '');
+                $row->{mt_keywords} = SOAP::Data->type(string => $entry->keywords || '');
+                $row->{mt_tags} = SOAP::Data->type(string => $tags || '');
             }
         }
         push @res, $row;
@@ -767,25 +767,25 @@ sub _get_entry {
             [ map { $_->[0] } @cat_ids ]);
     }
 
-    my $basename = SOAP::Data->type(string => $entry->basename);
+    my $basename = SOAP::Data->type(string => $entry->basename || '');
     {
         dateCreated => SOAP::Data->type(dateTime => $co),
         userid => SOAP::Data->type(string => $entry->author_id),
         ($param{page} ? 'page_id' : 'postid') => SOAP::Data->type(string => $entry->id),
-        description => SOAP::Data->type(string => $entry->text),
-        title => SOAP::Data->type(string => $entry->title),
+        description => SOAP::Data->type(string => $entry->text || ''),
+        title => SOAP::Data->type(string => $entry->title || ''),
         mt_basename => $basename,
         wp_slug => $basename,
-        link => SOAP::Data->type(string => $link),
-        permaLink => SOAP::Data->type(string => $link),
-        categories => [ map { SOAP::Data->type(string => $_->label) } @$cats ],
-        mt_allow_comments => SOAP::Data->type(int => $entry->allow_comments),
-        mt_allow_pings => SOAP::Data->type(int => $entry->allow_pings),
-        mt_convert_breaks => SOAP::Data->type(string => $entry->convert_breaks),
-        mt_text_more => SOAP::Data->type(string => $entry->text_more),
-        mt_excerpt => SOAP::Data->type(string => $entry->excerpt),
-        mt_keywords => SOAP::Data->type(string => $entry->keywords),
-        mt_tags => SOAP::Data->type(string => $tags),
+        link => SOAP::Data->type(string => $link || ''),
+        permaLink => SOAP::Data->type(string => $link || ''),
+        categories => [ map { SOAP::Data->type(string => $_->label || '') } @$cats ],
+        mt_allow_comments => SOAP::Data->type(int => $entry->allow_comments + 0),
+        mt_allow_pings => SOAP::Data->type(int => $entry->allow_pings + 0),
+        mt_convert_breaks => SOAP::Data->type(string => $entry->convert_breaks || ''),
+        mt_text_more => SOAP::Data->type(string => $entry->text_more || ''),
+        mt_excerpt => SOAP::Data->type(string => $entry->excerpt || ''),
+        mt_keywords => SOAP::Data->type(string => $entry->keywords || ''),
+        mt_tags => SOAP::Data->type(string => $tags || ''),
     }
 }
 
@@ -827,8 +827,8 @@ sub supportedTextFilters {
             $label = $label->();
         }
         push @res, {
-            key => SOAP::Data->type(string => $filter),
-            label => SOAP::Data->type(string => $label)
+            key => SOAP::Data->type(string => $filter || ''),
+            label => SOAP::Data->type(string => $label || '')
         };
     }
     \@res;
@@ -851,7 +851,7 @@ sub getCategoryList {
     my @data;
     while (my $cat = $iter->()) {
         push @data, {
-            categoryName => SOAP::Data->type(string => $cat->label),
+            categoryName => SOAP::Data->type(string => $cat->label || ''),
             categoryId => SOAP::Data->type(string => $cat->id)
         };
     }
@@ -876,10 +876,10 @@ sub getCategories {
         push @data, {
             categoryId => SOAP::Data->type(string => $cat->id),
             parentId => ($cat->parent_category ? SOAP::Data->type(string => $cat->parent_category->id) : undef),
-            categoryName => SOAP::Data->type(string => $cat->label),
-            title => SOAP::Data->type(string => $cat->label),
-            description => SOAP::Data->type(string => $cat->description),
-            htmlUrl => SOAP::Data->type(string => $url),
+            categoryName => SOAP::Data->type(string => $cat->label || ''),
+            title => SOAP::Data->type(string => $cat->label || ''),
+            description => SOAP::Data->type(string => $cat->description || ''),
+            htmlUrl => SOAP::Data->type(string => $url || ''),
         };
     }
     \@data;
@@ -899,7 +899,7 @@ sub getTagList {
     my @data;
     while (my $tag = $iter->()) {
         push @data, {
-            tagName => SOAP::Data->type(string => $tag->name),
+            tagName => SOAP::Data->type(string => $tag->name || ''),
             tagId => SOAP::Data->type(string => $tag->id)
         };
     }
@@ -922,7 +922,7 @@ sub getPostCategories {
     for my $cat (@$cats) {
         my $is_primary = $prim && $cat->id == $prim->id ? 1 : 0;
         push @data, {
-            categoryName => SOAP::Data->type(string => $cat->label),
+            categoryName => SOAP::Data->type(string => $cat->label || ''),
             categoryId => SOAP::Data->type(string => $cat->id),
             isPrimary => SOAP::Data->type(boolean => $is_primary),
         };
@@ -982,9 +982,9 @@ sub getTrackbackPings {
     my @data;
     while (my $ping = $iter->()) {
         push @data, {
-            pingTitle => SOAP::Data->type(string => $ping->title),
-            pingURL => SOAP::Data->type(string => $ping->source_url),
-            pingIP => SOAP::Data->type(string => $ping->ip),
+            pingTitle => SOAP::Data->type(string => $ping->title || ''),
+            pingURL => SOAP::Data->type(string => $ping->source_url || ''),
+            pingIP => SOAP::Data->type(string => $ping->ip || ''),
         };
     }
     \@data;
@@ -1227,7 +1227,7 @@ sub newMediaObject {
             Blog => $blog, blog => $blog);
     }
 
-    { url => SOAP::Data->type(string => $url) };
+    { url => SOAP::Data->type(string => $url || '') };
 }
 
 ## getTemplate and setTemplate are not applicable in MT's template
