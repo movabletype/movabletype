@@ -799,7 +799,7 @@ sub column_func {
             if (! exists $obj->{__meta}->{__objects}->{$col}) {
               my $proxy = $obj->{__meta};
               $proxy->set_primary_keys($obj) if $obj->has_primary_key;
-              $proxy->load_objects($col);
+              $proxy->load_objects();
             }
             $obj->{__meta}->get($col);
         }
