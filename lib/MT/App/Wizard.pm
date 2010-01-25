@@ -1228,6 +1228,7 @@ sub set_form_fields {
         $field->{default}   = $data->{default};
         $field->{show_hint} = $data->{show_hint};
         $field->{hint}      = $data->{hint};
+        $field->{class}     = $data->{class};
         my @options;
 
         if ( $data->{element} eq 'select' ) {
