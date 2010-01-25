@@ -1224,13 +1224,13 @@ sub set_form_fields {
         $field->{id}        = $name;
         $field->{label}     = $data->{label};
         $field->{order}     = $data->{order};
-        $field->{type}      = $data->{form_type};
+        $field->{element}   = $data->{element};
         $field->{default}   = $data->{default};
         $field->{show_hint} = $data->{show_hint};
         $field->{hint}      = $data->{hint};
         my @options;
 
-        if ( $data->{form_type} eq 'select' ) {
+        if ( $data->{element} eq 'select' ) {
             my $option = $data->{option};
             foreach my $key ( keys %$option ) {
                 my $select = {};
@@ -1238,6 +1238,9 @@ sub set_form_fields {
                 $select->{label} = $option->{$key};
                 push @options, $select;
             }
+        }
+        else {
+            $field->{type} = $data->{type};
         }
         $field->{option_loop} = \@options;
         if ( $data->{advanced} ) {
