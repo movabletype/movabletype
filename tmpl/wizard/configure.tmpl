@@ -3,11 +3,11 @@
 <mt:include name="include/chromeless_header.tmpl">
 
 <form id="configure_form" method="post">
-<input type="hidden" name="__mode" value="" />
-<input type="hidden" name="step" value="configure" />
-<input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
-<input type="hidden" name="default_language" value="<mt:var name="default_language">" />
-<input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+    <input type="hidden" name="__mode" value="" />
+    <input type="hidden" name="step" value="configure" />
+    <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
+    <input type="hidden" name="default_language" value="<mt:var name="default_language">" />
+    <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 
 <mt:if name="connect_error">
     <mtapp:statusmsg
@@ -51,237 +51,133 @@
     <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); db_select(document.forms[0].dbtype); return false;"><__trans phrase="Show Current Settings"></a></p>
 </mt:if>
 
-<fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
 
-    <mtapp:setting
-        id="dbtype"
-        label="<__trans phrase="Database Type">"
-        label_class="top-label">
-<select id="dbtype" name="dbtype" onchange="db_select(this); hideByID('db_hint');">
-<mt:unless one_db>
-<option value=""><__trans phrase="Select One..."></option>
-</mt:unless>
-<mt:loop name="db_loop">
-<option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
-</mt:loop>
-</select>
-    </mtapp:setting>
-
-<mt:unless name="success">
-<mt:setvarblock name="db_setup_url"><__trans phrase="http://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
-    <div id="db_hint">
-        <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
-        <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
-        <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
-    </div>
-</mt:unless>
-
-<div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
-
-<!-- database file path -->
-
-<div id="path"<mt:unless name="path_required"> style="display: none"</mt:unless>>
-
-    <mtapp:setting
-        id="dbpath"
-        label="<__trans phrase="Database Path">"
-        label_class="top-label">
-<input type="text" id="dbpath" class="ti" name="dbpath" value="<mt:if name="dbpath"><mt:var name="dbpath" escape="html"><mt:else>./db/mt.db</mt:if>" /><br />
-<__trans phrase="The physical file path for your SQLite database. "><mt:unless name="dbpath"><__trans phrase="A default location of './db/mt.db' will store the database file underneath your Movable Type directory."></p></mt:unless>
-    </mtapp:setting>
-
-</div>
-
-<!-- server configuration parameters -->
-
-<div id="server"<mt:if name="path_required"> style="display: none"</mt:if>>
-
-<div id="driver"<mt:if name="odbc_driver_required"> style="dissplay: none;"</mt:if>>
-
-    <mtapp:setting
-        id="odbcdriver"
-        label="<__trans phrase="ODBC Driver">"
-        label_class="top-label">
-        <select id="odbcdrivername" name="odbcdrivername">
-            <option value="sqlnativeclient" selected="selected">SQL Native Client</option>
-            <option value="sqlservernativeclient"><mt:var name="label">SQL Server Native Client</option>
-        </select>
-        
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="odbcdriverversion"
-        label="<__trans phrase="ODBC Driver Version">"
-        label_class="top-label">
-        <input type="text" id="odbcdriverversion" name="odbcdriverversion" value="" />
-    </mtapp:setting>
-
-</div>
-
-    <mtapp:setting
-        id="dbserver"
-        label="<__trans phrase="Database Server">"
-        label_class="top-label"
-        hint="<__trans phrase="This is usually 'localhost'.">"
-        show_hint="1">
-<input type="text" name="dbserver" class="ti" value="<mt:if name="dbserver"><mt:var name="dbserver" escape="html"><mt:else><mt:unless name="dbserver_null">localhost</mt:unless></mt:if>" />
-    </mtapp:setting>
-
-    <mt:If name="database_list">
-    <mtapp:setting
-        id="dbname"
-        label="<__trans phrase="Database Name">"
-        label_class="top-label">
-<select id="dbname" name="dbname">
-<mt:unless one_database>
-<option value=""><__trans phrase="Select One..."></option>
-</mt:unless>
-<mt:loop name="database_list">
-<option value="<mt:var name="name">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
-</mt:loop>
-</select>
-    </mtapp:setting>
-    <mt:Else>
-    <mtapp:setting
-        id="dbname"
-        label="<__trans phrase="Database Name">"
-        label_class="top-label"
-        hint="<__trans phrase="The name of your SQL database (this database must already exist).">">
-<input type="text" id="dbname" class="ti" name="dbname" value="<mt:var name="dbname" escape="html">" /><br />
-    </mtapp:setting>
-    </mt:If>
-
-<!-- database login parameters -->
-
-<div id="login"<mt:unless name="login_required"> style="display: none"</mt:unless>>
-
-    <mtapp:setting
-        id="dbuser"
-        label="<__trans phrase="Username">"
-        label_class="top-label"
-        hint="<__trans phrase="The username to login to your SQL database.">">
-    <input type="text" name="dbuser" class="ti" value="<mt:var name="dbuser" escape="html">" /><br />
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="dbpass"
-        label="<__trans phrase="Password">"
-        label_class="top-label"
-        hint="<__trans phrase="The password to login to your SQL database.">">
-    <input type="password" name="dbpass" class="pw" value="<mt:var name="dbpass" escape="html">" /><br />
-    </mtapp:setting>
-
-</div>
-
-    <p id="more"><a href="javascript:void(0)" onclick="showByID('db_port_socket'); hideByID('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
-    <div id="db_port_socket" style="display: none;">
-    <mtapp:setting
-        id="dbport"
-        label="<__trans phrase="Database Port">"
-        label_class="top-label"
-        hint="<__trans phrase="This can usually be left blank.">">
-    <input type="text" name="dbport" class="ti" value="<mt:var name="dbport" escape="html">" /><br />
-    </mtapp:setting>
-
-    <mtapp:setting
-        id="dbsocket"
-        label="<__trans phrase="Database Socket">"
-        label_class="top-label"
-        hint="<__trans phrase="This can usually be left blank.">">
-    <input type="text" name="dbsocket" class="ti" value="<mt:var name="dbsocket" escape="html">" /><br />
-    </mtapp:setting>
-    </div>
-
-</div>
-
-<div id="charset" <mt:unless name="publish_charset">style="display: none"</mt:unless>>
-
-    <mtapp:setting
-        id="publish_charset"
-        label="<__trans phrase="Publish Charset">"
-        label_class="top-label"
-        hint="<__trans phrase="MS SQL Server driver must use either Shift_JIS or ISO-8859-1.  MS SQL Server driver does not support UTF-8 or any other character set.">">
-        <input type="text" name="publish_charset" class="ti" value="<mt:var name="publish_charset" escape="html">" />
-    </mtapp:setting>
-
-</div>
-</div>
-
+    <fieldset id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
+        <mtapp:setting
+            id="dbtype"
+            label="<__trans phrase="Database Type">"
+            label_class="top-label">
+            <select id="dbtype" name="dbtype" onchange="db_select(this); hideByID('db_hint');">
+            <mt:unless one_db>
+                <option value=""><__trans phrase="Select One..."></option>
+            </mt:unless>
+            <mt:loop name="db_loop">
+                <option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
+            </mt:loop>
+            </select>
+        </mtapp:setting>
 
 <mt:unless name="success">
-<div id="submit" class="actions-bar" <mt:unless name="dbtype">style="display: none"</mt:unless>>
-    <button
-       name="test"
-       type="submit"
-       value="1"
-       onclick="go('test');"
-       class="action primary-button"
-       ><__trans phrase="Test Connection"></button>
+        <mt:setvarblock name="db_setup_url"><__trans phrase="http://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
+        <div id="db_hint">
+            <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
+            <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
+            <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
+        </div>
+</mt:unless>
 
-    <button
-       name="back"
-       type="submit"
-       onclick="needValidate = false; this.form.reset(); go('previous_step');"
-       class="goback action"
-       ><__trans phrase="Back"></button>
-</div>
 
-<div id="goback" class="actions-bar" <mt:if name="dbtype">style="display: none"</mt:if>>
-    <button
-       name="back"
-       type="submit"
-       onclick="needValidate = false; this.form.reset(); go('previous_step');"
-       class="goback action"
-       ><__trans phrase="Back"></button>
-</div>
+        <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+
+        <mt:loop name="field_loop">
+            <mtapp:setting
+                id="<mt:var name="id">"
+                label="<mt:var name="label">"
+                hint="<mt:var name="hint">"
+                show_hint="<mt:var name="show_hint" default="0">">
+                <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:var name="default">" />
+            </mtapp:setting>
+        </mt:loop>
+
+<mt:if name="advanced_loop">
+            <p id="more"><a href="javascript:void(0)" onclick="showByID('db_port_socket'); hideByID('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
+            <div id="db_port_socket" style="display: none;">
+            <mt:loop name="advanced_loop">
+                <mtapp:setting
+                    id="<mt:var name="id">"
+                    label="<mt:var name="label">">
+                    <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:var name="default">" />
+                </mtapp:setting>
+            </mt:loop>
+            </div>
+</mt:if>
+        </div>
+
+<mt:unless name="success">
+        <div id="submit" class="actions-bar" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+            <button
+                name="test"
+                type="submit"
+                value="1"
+                onclick="go('test');"
+                class="action primary-button"
+                ><__trans phrase="Test Connection"></button>
+
+            <button
+                name="back"
+                type="submit"
+                onclick="needValidate = false; this.form.reset(); go('previous_step');"
+                class="goback action"
+                ><__trans phrase="Back"></button>
+        </div>
+
+        <div id="goback" class="actions-bar" <mt:if name="dbtype">style="display: none"</mt:if>>
+            <button
+                name="back"
+                type="submit"
+                onclick="needValidate = false; this.form.reset(); go('previous_step');"
+                class="goback action"
+                ><__trans phrase="Back"></button>
+        </div>
 </mt:unless>
 
 <mt:if name="success">
-<div id="continue" class="actions-bar">
-    <button 
-       name="continue"
-       type="submit"
-       onclick="go('next_step');"
-       class="continue action primary-button"
-       ><__trans phrase="Continue"></button>
+        <div id="continue" class="actions-bar">
+            <button
+                name="continue"
+                type="submit"
+                onclick="go('next_step');"
+                class="continue action primary-button"
+                ><__trans phrase="Continue"></button>
 
-    <button
-       name="test"
-       type="submit"
-       value="1"
-       onclick="go('test');"
-       class="action primary-button"
-       ><__trans phrase="Test Connection"></button>
+            <button
+                name="test"
+                type="submit"
+                value="1"
+                onclick="go('test');"
+                class="action primary-button"
+                ><__trans phrase="Test Connection"></button>
 
-    <button
-       name="back"
-       type="submit"
-       onclick="needValidate = false; this.form.reset(); go('previous_step');"
-       class="goback action"
-       ><__trans phrase="Back"></button>
-</div>
+            <button
+                name="back"
+                type="submit"
+                onclick="needValidate = false; this.form.reset(); go('previous_step');"
+                class="goback action"
+                ><__trans phrase="Back"></button>
+        </div>
 </mt:if>
+    </fieldset>
 
-</fieldset>
-
-<script type="text/javascript">
-/* <![CDATA[ */
-var db = new Array();
-<mt:loop name="db_loop">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+        var db = new Array();
+    <mt:loop name="db_loop">
 <mt:if name="display">
-db['<mt:var name="id">'] = new Array(<mt:var name="display">);
+        db['<mt:var name="id">'] = new Array(<mt:var name="display">);
 </mt:if>
-</mt:loop>
-/* ]]> */
-</script>
+    </mt:loop>
+    /* ]]> */
+    </script>
+
 <mt:loop name="field_loop">
-<mt:var name="id"> : <mt:var name="label"> : <mt:var name="default"><br />
+<mt:var name="id"> : <mt:var name="element"> : <mt:var name="type"> : <mt:var name="label"> : <mt:var name="default"> : <mt:var name="hint"> : <mt:var name="show_hint"><br />
 <mt:if name="type" eq="select">
   <mt:loop name="option_loop">
   <mt:var name="value"> : <mt:var name="label"><br />
   </mt:loop name>
 </mt:if>
 </mt:loop>
+
 <mt:loop name="advanced_loop">
 <mt:var name="id"> : <mt:var name="label"><br />
 <mt:if name="type" eq="select">
@@ -290,6 +186,7 @@ db['<mt:var name="id">'] = new Array(<mt:var name="display">);
   </mt:loop name>
 </mt:if>
 </mt:loop>
+
 
 </form>
 <script type="text/javascript">

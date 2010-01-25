@@ -1221,14 +1221,16 @@ sub set_form_fields {
     foreach my $name ( keys %$form_data ) {
         my $data  = $form_data->{$name};
         my $field = {};
-        $field->{id}        = $name;
-        $field->{label}     = $data->{label};
-        $field->{order}     = $data->{order};
-        $field->{element}   = $data->{element};
-        $field->{default}   = $data->{default};
-        $field->{show_hint} = $data->{show_hint};
-        $field->{hint}      = $data->{hint};
-        $field->{class}     = $data->{class};
+        $field->{id}            = $name;
+        $field->{label}         = $data->{label};
+        $field->{order}         = $data->{order};
+        $field->{element}       = $data->{element};
+        $field->{default}       = $data->{default};
+        $field->{show_hint}     = $data->{show_hint};
+        $field->{hint}          = $data->{hint};
+        $field->{class}         = $data->{class};
+        $field->{label_class}   = $data->{label_class};
+        $field->{content_class} = $data->{content_class};
         my @options;
 
         if ( $data->{element} eq 'select' ) {
