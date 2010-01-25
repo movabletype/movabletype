@@ -263,6 +263,34 @@
 </mt:if>
 
 </fieldset>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var db = new Array();
+<mt:loop name="db_loop">
+<mt:if name="display">
+db['<mt:var name="id">'] = new Array(<mt:var name="display">);
+</mt:if>
+</mt:loop>
+/* ]]> */
+</script>
+<mt:loop name="field_loop">
+<mt:var name="id"> : <mt:var name="label"> : <mt:var name="default"><br />
+<mt:if name="type" eq="select">
+  <mt:loop name="option_loop">
+  <mt:var name="value"> : <mt:var name="label"><br />
+  </mt:loop name>
+</mt:if>
+</mt:loop>
+<mt:loop name="advanced_loop">
+<mt:var name="id"> : <mt:var name="label"><br />
+<mt:if name="type" eq="select">
+  <mt:loop name="option_loop">
+  <mt:var name="value"> : <mt:var name="label"><br />
+  </mt:loop name>
+</mt:if>
+</mt:loop>
+
 </form>
 <script type="text/javascript">
 /* <![CDATA[ */

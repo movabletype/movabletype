@@ -570,23 +570,36 @@ sub configure {
     my $db_options = $app->registry('database_options');
     if ( my $dbtype = $param{dbtype} ) {
         $param{"dbtype_$dbtype"} = 1;
-        foreach (keys %{$db_options->{$dbtype}->{options}}) {
+        foreach ( keys %{ $db_options->{$dbtype}->{options} } ) {
             $param{$_} = $db_options->{$dbtype}->{options}->{$_};
         }
         if ( $dbtype eq 'mssqlserver' ) {
             $param{publish_charset} = $app->param('publish_charset')
-                || ( $app->{cfg}->DefaultLanguage eq 'ja'
+                || (
+                $app->{cfg}->DefaultLanguage eq 'ja'
                 ? 'Shift_JIS'
-                : 'ISO-8859-1' );
+                : 'ISO-8859-1'
+                );
         }
     }
 
+    my $form_data = $app->registry('db_form_data');
+    my @fields;
+    my @advanced;
+    $app->set_form_fields( $form_data, \@fields, \@advanced );
+
     my @DATA;
+    my @show;
     my $drivers = $app->object_drivers;
     foreach my $key ( keys %$drivers ) {
-        my $driver = $drivers->{$key};
-        my $label  = $driver->{label};
-        my $link   = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
+        my $driver  = $drivers->{$key};
+        my $label   = $driver->{label};
+        my $display = $driver->{display};
+        my @ids;
+        foreach my $id (@$display) {
+            push @ids, "'" . $id . "'";
+        }
+        my $link = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
         $link =~ s/::/-/g;
         push @DATA,
             [
@@ -597,8 +610,11 @@ sub configure {
                 "The [_1] driver is required to use [_2].",
                 $driver->{dbd_package}, $label
             ),
-            $label, $link
+            $label, $link,
+            join( ',', @ids ),
             ];
+        my $form_data = $driver->{db_form_data};
+        $app->set_form_fields( $form_data, \@fields, \@advanced );
     }
     my ( $missing, $dbmod ) = $app->module_check( \@DATA );
     if ( scalar(@$dbmod) == 0 ) {
@@ -633,6 +649,11 @@ sub configure {
             $_->{selected} = 1;
         }
     }
+    @fields = sort { $a->{order} <=> $b->{order} } @fields;
+    $param{field_loop} = \@fields;
+    @advanced = sort { $a->{order} <=> $b->{order} } @advanced;
+    $param{advanced_loop} = \@advanced;
+
     $param{db_loop} = $dbmod;
     $param{one_db}  = $#$dbmod == 0;    # db module is only one or not
     $param{config} = $app->serialize_config(%param);
@@ -654,12 +675,15 @@ sub configure {
 
             my $exec_show_db = '';
             if ( !$param{dbname} ) {
+
                 # set default database
-                if ($db_options->{$dbtype}->{default_database}) {
-                    $cfg->Database( $db_options->{$dbtype}->{default_database} );
+                if ( $db_options->{$dbtype}->{default_database} ) {
+                    $cfg->Database(
+                        $db_options->{$dbtype}->{default_database} );
                     $exec_show_db = $db_options->{$dbtype}->{list_sql};
                 }
-            } else {
+            }
+            else {
                 $cfg->Database( $param{dbname} );
             }
             $cfg->DBUser( $param{dbuser} )     if $param{dbuser};
@@ -689,7 +713,7 @@ sub configure {
             # test loading of object driver with these parameters...
             require MT::ObjectDriverFactory;
             my $od = MT::ObjectDriverFactory->new($driver);
-            $cfg->PublishCharset( $current_charset );
+            $cfg->PublishCharset($current_charset);
 
             # to test connection
             my @dbs;
@@ -700,7 +724,7 @@ sub configure {
                         or die $handle->errstr;
                     $sth->execute
                         or die $handle->errstr;
-                    while (my @row = $sth->fetchrow) {
+                    while ( my @row = $sth->fetchrow ) {
                         push @dbs, { name => @row };
                     }
                 }
@@ -711,9 +735,9 @@ sub configure {
                     = $app->translate(
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
-                if ( exists( $param{publish_charset} )
-                  && $param{publish_charset}
-                  && ( $param{publish_charset} ne $current_charset ) )
+                if (   exists( $param{publish_charset} )
+                    && $param{publish_charset}
+                    && ( $param{publish_charset} ne $current_charset ) )
                 {
                     require Encode;
                     $err = Encode::decode( $param{publish_charset}, $err );
@@ -724,8 +748,12 @@ sub configure {
                 if (@dbs) {
                     $param{database_list} = \@dbs;
                     $param{one_database}  = @dbs == 0;
-                    $err_msg = $app->translate('Please select database from the list of database and try again.');
-                } else {
+                    $err_msg
+                        = $app->translate(
+                        'Please select database from the list of database and try again.'
+                        );
+                }
+                else {
                     $ok = 1;
                 }
             }
@@ -1088,7 +1116,7 @@ sub module_check {
     my $modules = shift;
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
-        my ( $mod, $ver, $req, $desc, $name, $link ) = @$ref;
+        my ( $mod, $ver, $req, $desc, $name, $link, $display ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
@@ -1105,8 +1133,9 @@ sub module_check {
                 required    => $req,
                 description => $desc,
                 label       => $name,
-                link        => $link
-                };
+                link        => $link,
+                display     => $display,
+            };
         }
         else {
             push @ok,
@@ -1116,8 +1145,9 @@ sub module_check {
                 required    => $req,
                 description => $desc,
                 label       => $name,
-                link        => $link
-                };
+                link        => $link,
+                display     => $display,
+            };
         }
     }
     ( \@missing, \@ok );
@@ -1182,6 +1212,41 @@ sub is_config_exists {
         $cfg_exists |= 1 if -f $cfg;
     }
     return $cfg_exists;
+}
+
+sub set_form_fields {
+    my $app = shift;
+    my ( $form_data, $fields, $advanced ) = @_;
+
+    foreach my $name ( keys %$form_data ) {
+        my $data  = $form_data->{$name};
+        my $field = {};
+        $field->{id}        = $name;
+        $field->{label}     = $data->{label};
+        $field->{order}     = $data->{order};
+        $field->{type}      = $data->{form_type};
+        $field->{default}   = $data->{default};
+        $field->{show_hint} = $data->{show_hint};
+        $field->{hint}      = $data->{hint};
+        my @options;
+
+        if ( $data->{form_type} eq 'select' ) {
+            my $option = $data->{option};
+            foreach my $key ( keys %$option ) {
+                my $select = {};
+                $select->{value} = $key;
+                $select->{label} = $option->{$key};
+                push @options, $select;
+            }
+        }
+        $field->{option_loop} = \@options;
+        if ( $data->{advanced} ) {
+            push @$advanced, $field;
+        }
+        else {
+            push @$fields, $field;
+        }
+    }
 }
 
 1;

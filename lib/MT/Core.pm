@@ -27,25 +27,65 @@ BEGIN {
         schema_version => MT->schema_version,
         object_drivers => {
             'mysql' => {
-                label => 'MySQL Database (Recommended)',
-                dbd_package => 'DBD::mysql',
+                label          => 'MySQL Database (Recommended)',
+                dbd_package    => 'DBD::mysql',
                 config_package => 'DBI::mysql',
+                display =>
+                    [ 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
             },
             'postgres' => {
-                label => 'PostgreSQL Database',
-                dbd_package => 'DBD::Pg',
-                dbd_version => '1.32',
+                label          => 'PostgreSQL Database',
+                dbd_package    => 'DBD::Pg',
+                dbd_version    => '1.32',
                 config_package => 'DBI::postgres',
+                display =>
+                    [ 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
             },
             'sqlite' => {
-                label => 'SQLite Database',
-                dbd_package => 'DBD::SQLite',
+                label          => 'SQLite Database',
+                dbd_package    => 'DBD::SQLite',
                 config_package => 'DBI::sqlite',
+                display        => ['dbpath'],
             },
             'sqlite2' => {
-                label => 'SQLite Database (v2)',
-                dbd_package => 'DBD::SQLite2',
+                label          => 'SQLite Database (v2)',
+                dbd_package    => 'DBD::SQLite2',
                 config_package => 'DBI::sqlite',
+                display        => ['dbpath'],
+            },
+        },
+        db_form_data => {
+            dbname => {
+                form_type => 'text',
+                label     => 'Database Name',
+                order     => 10,
+            },
+            dbuser => {
+                form_type => 'text',
+                label     => 'Username',
+                order     => 20,
+            },
+            dbpass => {
+                form_type => 'text',
+                label     => 'Password',
+                order     => 30,
+            },
+            dbpath => {
+                form_type => 'text',
+                label     => 'Database Path',
+                order     => 40,
+            },
+            dbport => {
+                advanced  => 1,
+                form_type => 'text',
+                label     => 'Database Port',
+                order     => 10,
+            },
+            dbsocket => {
+                advanced  => 1,
+                form_type => 'text',
+                label     => 'Database Socket',
+                order     => 20,
             },
         },
         object_types   => {
