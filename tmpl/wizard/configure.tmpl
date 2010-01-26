@@ -48,7 +48,7 @@
 </mt:if>
 
 <mt:if name="success">
-    <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); db_select(document.forms[0].dbtype); return false;"><__trans phrase="Show Current Settings"></a></p>
+    <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
 </mt:if>
 
 
@@ -57,7 +57,7 @@
             id="dbtype"
             label="<__trans phrase="Database Type">"
             label_class="top-label">
-            <select id="dbtype" name="dbtype" onchange="db_select(this); hideByID('db_hint');">
+            <select id="dbtype" name="dbtype">
             <mt:unless one_db>
                 <option value=""><__trans phrase="Select One..."></option>
             </mt:unless>
@@ -77,7 +77,7 @@
 </mt:unless>
 
 
-        <div id="params" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+        <div id="params">
 
         <mt:loop name="field_loop">
             <mtapp:setting
@@ -85,7 +85,7 @@
                 label="<mt:var name="label">"
                 hint="<mt:var name="hint">"
                 show_hint="<mt:var name="show_hint" default="0">">
-                <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:var name="default">" />
+                <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:if name="$id"><mt:var name="$id"><mt:else><mt:var name="default"></mt:if>" />
             </mtapp:setting>
         </mt:loop>
 
@@ -157,37 +157,6 @@
         </div>
 </mt:if>
     </fieldset>
-
-    <script type="text/javascript">
-    /* <![CDATA[ */
-        var db = new Array();
-    <mt:loop name="db_loop">
-<mt:if name="display">
-        db['<mt:var name="id">'] = new Array(<mt:var name="display">);
-</mt:if>
-    </mt:loop>
-    /* ]]> */
-    </script>
-
-<mt:loop name="field_loop">
-<mt:var name="id"> : <mt:var name="element"> : <mt:var name="type"> : <mt:var name="label"> : <mt:var name="default"> : <mt:var name="hint"> : <mt:var name="show_hint"><br />
-<mt:if name="type" eq="select">
-  <mt:loop name="option_loop">
-  <mt:var name="value"> : <mt:var name="label"><br />
-  </mt:loop name>
-</mt:if>
-</mt:loop>
-
-<mt:loop name="advanced_loop">
-<mt:var name="id"> : <mt:var name="label"><br />
-<mt:if name="type" eq="select">
-  <mt:loop name="option_loop">
-  <mt:var name="value"> : <mt:var name="label"><br />
-  </mt:loop name>
-</mt:if>
-</mt:loop>
-
-
 </form>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -222,46 +191,6 @@ function go(mode) {
     f['__mode'].value = mode;
 }
 
-function db_select(sel) {
-    var db = sel.options[sel.selectedIndex].value;
-    if ((db == "mysql") || (db == "postgres") || (db == "oracle") || (db == "mssqlserver") || (db == "umssqlserver")) {
-        showByID("login");
-        hideByID("goback");
-        showByID("server");
-        hideByID("path");
-        showByID("submit");
-        showByID("params");
-        showByID("use_setnames");
-        if (db == "mssqlserver") {
-            showByID("charset");
-        } else {
-            hideByID("charset");
-        }
-        if ((db == "mssqlserver") || (db == "umssqlserver")) {
-            showByID("driver");
-        } else {
-            hideByID("driver");
-        }
-        if (db == "oracle") {
-            hideByID("dbserver-field");
-        } else {
-            showByID("dbserver-field");
-        }
-        document.forms[0].dbname.focus();
-    } else if ((db == "sqlite") || (db == "sqlite2")) {
-        hideByID("login"); hideByID("server"); hideByID("goback"); hideByID("use_setnames");
-        showByID("path");
-        showByID("submit");
-        showByID("params");
-        document.forms[0].dbpath.focus();
-    } else {
-        showByID("goback");
-        hideByID("submit");
-        hideByID("params");
-    }
-    return true;
-}
-
 function toggleMore() {
     var more = getByID('error_more');
     if (more) {
@@ -278,25 +207,40 @@ function reTest() {
   document.forms[0].submit();
 }
 
-<mt:unless name="success">
-<mt:if name="one_db">
-window.onload = function() {
-    document.forms[0].dbtype.selectedIndex = 0;
-    db_select(document.forms[0].dbtype);
-}
+var database = new Array();
+<mt:loop name="db_loop">
+<mt:if name="display">
+    database['<mt:var name="id">'] = new Array(<mt:var name="display">);
 </mt:if>
-</mt:unless>
+</mt:loop>
 /* ]]> */
 </script>
+
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('#driver #odbcdriverversion-field').hide();
-    jQuery('#odbcdrivername').change(function() {
-        var selected = jQuery(this).val();
-        if (selected == 'sqlservernativeclient') {
-            jQuery('#driver #odbcdriverversion-field').show();
+<mt:unless name="success">
+<mt:if name="one_db">
+    jQuery('#dbtype').val(1);
+</mt:if>
+</mt:unless>
+    function show_fields() {
+        jQuery('#params .field').hide();
+        var dbtype = jQuery('#dbtype').val();
+        jQuery.each(database[dbtype], function() {
+           jQuery('#'+this+'-field').show();
+        });
+        if (database[dbtype]) {
+            jQuery('#db_hint').hide();
+            jQuery('#goback').hide();
+            jQuery('#submit').show();
         } else {
-            jQuery('#driver #odbcdriverversion-field').hide();
+            jQuery('#goback').show();
+            jQuery('#submit').hide();
         }
+    }
+
+    jQuery('#dbtype').change(function() {
+        show_fields();
     });
+    show_fields();
 </mt:setvarblock>
 <mt:include name="include/chromeless_footer.tmpl">
