@@ -82,7 +82,7 @@ function multiblog_MTInclude($args, &$ctx) {
         # Explicitly set blog_id attribute to local blog.
         # so MTInclude is never affected by multiblog context
         $args['blog_id'] = $ctx->stash('local_blog_id');            
-        $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog['blog_id'];
+        $args['blog_id'] or $args['blog_id'] = $ctx->mt->blog->id;
     }
     global $multiblog_orig_handlers;
     $fn = $multiblog_orig_handlers['mtinclude'];

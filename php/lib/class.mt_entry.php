@@ -73,6 +73,9 @@ class Entry extends BaseObject
     }
 
     public function trackback() {
+        if (empty($this->entry_id))
+            return null;
+
         require_once('class.mt_trackback.php');
         $trackback = new Trackback();
         $loaded = $trackback->Load("trackback_entry_id = " . $this->entry_id);

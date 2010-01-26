@@ -1,7 +1,7 @@
 <?php
 /*
 
-  version V5.06 16 Oct 2008  (c) 2000-2008 John Lim. All rights reserved.
+  version V5.06 16 Oct 2008  (c) 2000-2009 John Lim. All rights reserved.
 
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
@@ -58,7 +58,7 @@ class ADODB_oci8 extends ADOConnection {
 	var $replaceQuote = "''"; // string to use to replace quotes
 	var $concat_operator='||';
 	var $sysDate = "TRUNC(SYSDATE)";
-	var $sysTimeStamp = 'SYSDATE';
+	var $sysTimeStamp = 'SYSDATE'; // requires oracle 9 or later, otherwise use SYSDATE
 	var $metaDatabasesSQL = "SELECT USERNAME FROM ALL_USERS WHERE USERNAME NOT IN ('SYS','SYSTEM','DBSNMP','OUTLN') ORDER BY 1";
 	var $_stmt;
 	var $_commit = OCI_COMMIT_ON_SUCCESS;
@@ -81,7 +81,7 @@ class ADODB_oci8 extends ADOConnection {
 	var $leftOuter = '';  // oracle wierdness, $col = $value (+) for LEFT OUTER, $col (+)= $value for RIGHT OUTER
 	var $session_sharing_force_blob = false; // alter session on updateblob if set to true 
 	var $firstrows = true; // enable first rows optimization on SelectLimit()
-	var $selectOffsetAlg1 = 100; // when to use 1st algorithm of selectlimit.
+	var $selectOffsetAlg1 = 1000; // when to use 1st algorithm of selectlimit.
 	var $NLS_DATE_FORMAT = 'YYYY-MM-DD';  // To include time, use 'RRRR-MM-DD HH24:MI:SS'
 	var $dateformat = 'YYYY-MM-DD'; // DBDate format
  	var $useDBDateFormatForTextInput=false;
@@ -96,8 +96,8 @@ class ADODB_oci8 extends ADOConnection {
 		if (defined('ADODB_EXTENSION')) $this->rsPrefix .= 'ext_';
 	}
 	
-	/*  function MetaColumns($table) added by smondino@users.sourceforge.net*/
-	function MetaColumns($table) 
+	/*  function MetaColumns($table, $normalize=true) added by smondino@users.sourceforge.net*/
+	function MetaColumns($table, $normalize=true) 
 	{
 	global $ADODB_FETCH_MODE;
 	
@@ -184,7 +184,7 @@ NATSOFT.DOMAIN =
 	function _connect($argHostname, $argUsername, $argPassword, $argDatabasename,$mode=0)
 	{
 		if (!function_exists('OCIPLogon')) return null;
-		
+		#adodb_backtrace(); 
 		
         $this->_errorMsg = false;
 		$this->_errorCode = false;
@@ -200,7 +200,7 @@ NATSOFT.DOMAIN =
 					$argHostport = empty($this->port)?  "1521" : $this->port;
 	   			}
 				
-				if (strncmp($argDatabasename,'SID=',4) == 0) {
+				if (strncasecmp($argDatabasename,'SID=',4) == 0) {
 					$argDatabasename = substr($argDatabasename,4);
 					$this->connectSID = true;
 				}
@@ -281,8 +281,13 @@ NATSOFT.DOMAIN =
 	{
 		if (empty($d) && $d !== 0) return 'null';
 		if ($isfld) return 'TO_DATE('.$d.",'".$this->dateformat."')";
+		
 		if (is_string($d)) $d = ADORecordSet::UnixDate($d);
-		return "TO_DATE(".adodb_date($this->fmtDate,$d).",'".$this->dateformat."')";
+		
+		if (is_object($d)) $ds = $d->format($this->fmtDate);
+		else $ds = adodb_date($this->fmtDate,$d);
+		
+		return "TO_DATE(".$ds.",'".$this->dateformat."')";
 	}
 
 	function BindDate($d)
@@ -293,12 +298,15 @@ NATSOFT.DOMAIN =
 		return substr($d,1,strlen($d)-2);
 	}
 	
-	function BindTimeStamp($d)
+	function BindTimeStamp($ts)
 	{
-		$d = ADOConnection::DBTimeStamp($d);
-		if (strncmp($d,"'",1)) return $d;
+		if (empty($ts) && $ts !== 0) return 'null';
+		if (is_string($ts)) $ts = ADORecordSet::UnixTimeStamp($ts);
 		
-		return substr($d,1,strlen($d)-2);
+		if (is_object($ts)) $tss = $ts->format("'Y-m-d H:i:s'");
+		else $tss = adodb_date("'Y-m-d H:i:s'",$ts);
+		
+		return $tss;
 	}
 	
 	// format and return date string in database timestamp format
@@ -307,13 +315,17 @@ NATSOFT.DOMAIN =
 		if (empty($ts) && $ts !== 0) return 'null';
 		if ($isfld) return 'TO_DATE(substr('.$ts.",1,19),'RRRR-MM-DD, HH24:MI:SS')";
 		if (is_string($ts)) $ts = ADORecordSet::UnixTimeStamp($ts);
-		return 'TO_DATE('.adodb_date("'Y-m-d H:i:s'",$ts).",'RRRR-MM-DD, HH24:MI:SS')";
+		
+		if (is_object($ts)) $tss = $ts->format("'Y-m-d H:i:s'");
+		else $tss = adodb_date("'Y-m-d H:i:s'",$ts);
+		
+		return 'TO_DATE('.$tss.",'RRRR-MM-DD, HH24:MI:SS')";
 	}
 	
-	function RowLock($tables,$where,$flds='1 as ignore') 
+	function RowLock($tables,$where,$col='1 as ignore') 
 	{
 		if ($this->autoCommit) $this->BeginTrans();
-		return $this->GetOne("select $flds from $tables where $where for update");
+		return $this->GetOne("select $col from $tables where $where for update");
 	}
 	
 	function MetaTables($ttype=false,$showSchema=false,$mask=false) 
@@ -648,12 +660,12 @@ NATSOFT.DOMAIN =
 			 $offset += 1; // in Oracle rownum starts at 1
 			
 			if ($this->databaseType == 'oci8po') {
-					 $sql = "SELECT $fields FROM".
+					 $sql = "SELECT /*+ FIRST_ROWS */ $fields FROM".
 					  "(SELECT rownum as adodb_rownum, $fields FROM".
 					  " ($sql) WHERE rownum <= ?".
 					  ") WHERE adodb_rownum >= ?";
 				} else {
-					 $sql = "SELECT $fields FROM".
+					 $sql = "SELECT /*+ FIRST_ROWS */ $fields FROM".
 					  "(SELECT rownum as adodb_rownum, $fields FROM".
 					  " ($sql) WHERE rownum <= :adodb_nrows".
 					  ") WHERE adodb_rownum >= :adodb_offset";
@@ -1020,7 +1032,7 @@ NATSOFT.DOMAIN =
 		  $db->bind($stmt,1); $db->bind($stmt,2); $db->bind($stmt,3); 
 		  $db->execute($stmt);
 	*/ 
-	function _query($sql,$inputarr)
+	function _query($sql,$inputarr=false)
 	{
 		if (is_array($sql)) { // is prepared sql
 			$stmt = $sql[1];
@@ -1128,6 +1140,32 @@ NATSOFT.DOMAIN =
 					// ociclose -- no because it could be used in a LOB?
                     return true;
             }
+		}
+		return false;
+	}
+	
+	// From Oracle Whitepaper: PHP Scalability and High Availability
+	function IsConnectionError($err)
+	{
+		switch($err) {
+			case 378: /* buffer pool param incorrect */
+			case 602: /* core dump */
+			case 603: /* fatal error */
+			case 609: /* attach failed */
+			case 1012: /* not logged in */
+			case 1033: /* init or shutdown in progress */
+			case 1043: /* Oracle not available */
+			case 1089: /* immediate shutdown in progress */
+			case 1090: /* shutdown in progress */
+			case 1092: /* instance terminated */
+			case 3113: /* disconnect */
+			case 3114: /* not connected */
+			case 3122: /* closing window */
+			case 3135: /* lost contact */
+			case 12153: /* TNS: not connected */
+			case 27146: /* fatal or instance terminated */
+			case 28511: /* Lost RPC */
+			return true;
 		}
 		return false;
 	}
@@ -1257,12 +1295,14 @@ SELECT /*+ RULE */ distinct b.column_name
 			return  "'".str_replace("'",$this->replaceQuote,$s)."'";
 		}
 		
-		// undo magic quotes for "
-		$s = str_replace('\\"','"',$s);
-		
-		$s = str_replace('\\\\','\\',$s);
-		return "'".str_replace("\\'",$this->replaceQuote,$s)."'";
-		
+		// undo magic quotes for " unless sybase is on
+		if (!ini_get('magic_quotes_sybase')) {
+			$s = str_replace('\\"','"',$s);
+			$s = str_replace('\\\\','\\',$s);
+			return "'".str_replace("\\'",$this->replaceQuote,$s)."'";
+		} else {
+			return "'".$s."'";
+		}
 	}
 	
 }
@@ -1520,7 +1560,7 @@ class ADORecordset_oci8 extends ADORecordSet {
 		case 'NCHAR':
 		case 'NVARCHAR':
 		case 'NVARCHAR2':
-				 if (isset($this) && $len <= $this->blobSize) return 'C';
+				 if ($len <= $this->blobSize) return 'C';
 		
 		case 'NCLOB':
 		case 'LONG':

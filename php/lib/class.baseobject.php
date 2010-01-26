@@ -249,7 +249,6 @@ abstract class BaseObject extends ADOdb_Active_Record
         $blog = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $blog_id = $this->$col_name;
-            
             $blog = $this->load_cache($this->_prefix . ":" . $this->id . ":blog:" . $blog_id);
             if (empty($blog)) {
                 require_once('class.mt_blog.php');
@@ -263,7 +262,6 @@ abstract class BaseObject extends ADOdb_Active_Record
             $blog = new Website;
             $blog->Load("blog_id = $blog_id");
         }
-
         if (!empty($blog))
             $this->cache($this->_prefix . ":" . $this->id . ":blog:" . $blog->id, $blog);
 

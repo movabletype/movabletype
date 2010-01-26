@@ -42,7 +42,7 @@ abstract class MTDatabase {
         $this->id = md5(uniqid('MTDatabase',true));
         $this->connect($user, $password, $dbname, $host, $port, $sock);
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
-#$this->conn->debug = true;
+        #$this->conn->debug = true;
     }
 
     // Abstract method
@@ -2165,7 +2165,9 @@ abstract class MTDatabase {
         if (empty($ids))
             return;
         $id_list = implode(",", $ids);
-        
+        if (empty($id_list))
+            return;
+
         $query = "
             select fileinfo_entry_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url
             from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
@@ -2220,6 +2222,8 @@ abstract class MTDatabase {
         if (empty($ids))
             return;
         $id_list = implode(",", $ids);
+        if (empty($id_list))
+            return;
 
         $query = "
             select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url
@@ -2273,6 +2277,8 @@ abstract class MTDatabase {
         if (empty($ids))
             return;
         $id_list = implode(",", $ids);
+        if (empty($id_list))
+            return;
 
         require_once('class.mt_entry.php');
         $entry = new Entry;
@@ -2799,6 +2805,8 @@ abstract class MTDatabase {
         if (empty($ids))
             return;
         $id_list = implode(",", $ids);
+        if (empty($id_list))
+            return;
 
         $where = "entry_id in ($id_list)";
 
@@ -2902,6 +2910,8 @@ abstract class MTDatabase {
         if (empty($ids))
             return;
         $id_list = implode(",", $ids);
+        if (empty($id_list))
+            return;
 
         $where = "placement_entry_id in ($id_list)
                and placement_is_primary = 1";

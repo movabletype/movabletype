@@ -196,8 +196,11 @@ class MT {
             require_once("mtdb.".$this->config('DBDriver').".php");
             $mtdbclass = 'MTDatabase'.$this->config('DBDriver');
             $this->db = new $mtdbclass($this->config('DBUser'),
-                $this->config('DBPassword'), $this->config('Database'),
-                $this->config('DBHost'), $this->config('DBPort'), $this->config('DBSocket'));
+                $this->config('DBPassword'),
+                $this->config('Database'),
+                $this->config('DBHost'),
+                $this->config('DBPort'),
+                $this->config('DBSocket'));
         }
         return $this->db;
     }
@@ -275,9 +278,8 @@ class MT {
         $driver = preg_replace('/^DB[ID]::/', '', $driver);
         $driver or $driver = 'mysql';
         $cfg['dbdriver'] = strtolower($driver);
-    
         if ((strlen($cfg['database'])<1 || strlen($cfg['dbuser'])<1)) {
-            if (($cfg['dbdriver'] != 'sqlite') && ($cfg['dbdriver'] != 'mssqlserver')) {
+            if (($cfg['dbdriver'] != 'sqlite') && ($cfg['dbdriver'] != 'mssqlserver') && ($cfg['dbdriver'] != 'umssqlserver')) {
                 die("Unable to read database or username");
             }
         }

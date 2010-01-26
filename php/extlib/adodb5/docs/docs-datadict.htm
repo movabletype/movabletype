@@ -20,7 +20,7 @@
 </head>
 <body style="background-color: rgb(255, 255, 255);">
 <h2>ADOdb Data Dictionary Library for PHP</h2>
-<p>V5.06 16 Oct 2008  (c) 2000-2008 John Lim (<a
+<p>V5.06 16 Oct 2008  (c) 2000-2009 John Lim (<a
  href="mailto:jlim#natsoft.com">jlim#natsoft.com</a>).<br>
 AXMLS (c) 2004 ars Cognita, Inc</p>
 <p><font size="1">This software is dual licensed using BSD-Style and
@@ -38,7 +38,7 @@ system for defining databases. You can contact them at
 dcech#phpwerx.net and richtl#arscognita.com.</p>
 <p>Currently the following databases are supported:</p>
 <p> <b>Well-tested:</b> PostgreSQL, MySQL, Oracle, MSSQL.<br>
-<b>Beta-quality:</b> DB2, Informix, Sybase, Interbase, Firebird.<br>
+<b>Beta-quality:</b> DB2, Informix, Sybase, Interbase, Firebird, SQLite.<br>
 <b>Alpha-quality:</b> MS Access (does not support DEFAULT values) and
 generic ODBC.
 </p>
@@ -93,7 +93,8 @@ field. Each row has this format:</p>
 field type can be a portable type codes or the actual type for that
 database.</p>
 <p>Legal portable type codes include:</p>
-<pre>  C:  Varchar, capped to 255 characters.<br>  X:  Larger varchar, capped to 4000 characters (to be compatible with Oracle). <br>  XL: For Oracle, returns CLOB, otherwise the largest varchar size.<br><br>  C2: Multibyte varchar<br>  X2: Multibyte varchar (largest size)<br><br>  B:  BLOB (binary large object)<br><br>  D:  Date (some databases do not support this, and we return a datetime type)<br>  T:  Datetime or Timestamp<br>  L:  Integer field suitable for storing booleans (0 or 1)<br>  I:  Integer (mapped to I4)<br>  I1: 1-byte integer<br>  I2: 2-byte integer<br>  I4: 4-byte integer<br>  I8: 8-byte integer<br>  F:  Floating point number<br>  N:  Numeric or decimal number<br></pre>
+<pre>  C:  Varchar, capped to 255 characters.<br>  X:  Larger varchar, capped to 4000 characters (to be compatible with Oracle). <br>  XL: For Oracle, returns CLOB, otherwise the largest varchar size.<br><br>  C2: Multibyte varchar<br>  X2: Multibyte varchar (largest size)<br><br>  B:  BLOB (binary large object)<br><br>  D:  Date (some databases do not support this, and we return a datetime type)<br>  T:  Datetime or Timestamp accurate to the second.<br>  TS: Datetime or Timestamp supporting Sub-second accuracy.<br>       Supported by Oracle, PostgreSQL and SQL Server currently. <br>       Otherwise equivalent to T.<br>
+  L:  Integer field suitable for storing booleans (0 or 1)<br>  I:  Integer (mapped to I4)<br>  I1: 1-byte integer<br>  I2: 2-byte integer<br>  I4: 4-byte integer<br>  I8: 8-byte integer<br>  F:  Floating point number<br>  N:  Numeric or decimal number<br></pre>
 <p>The $colsize field represents the size of the field. If a decimal
 number is used, then it is assumed that the number following the dot is
 the precision, so 6.2 means a number of size 6 digits and 2 decimal
@@ -136,7 +137,7 @@ for postgresql:
 <pre>  $taboptarray = array('constraints' =gt; ', FOREIGN KEY (col1) REFERENCES reftable (refcol)');</pre>
 <h4>function DropTableSQL($tabname)</h4>
 <p>Returns the SQL to drop the specified table.</p>
-<h4>function ChangeTableSQL($tabname, $flds)</h4>
+<h4>function ChangeTableSQL($tabname, $flds, $tableOptions=false, $dropOldFlds=false)</h4>
 <p>Checks to see if table exists, if table does not exist, behaves like
 CreateTableSQL. If table exists, generates appropriate ALTER TABLE
 MODIFY COLUMN commands if field already exists, or ALTER TABLE ADD
@@ -144,6 +145,7 @@ $column if field does not exist.</p>
 <p>The class must be connected to the database for ChangeTableSQL to
 detect the existence of the table. Idea and code contributed by Florian
 Buzin.</p>
+<p>Old fields not defined in $flds are not dropped by default. To drop old fields, set $dropOldFlds to true.
 <h4>function RenameTableSQL($tabname,$newname)</h4>
 <p>Rename a table.  Returns the an array of strings, which is the SQL required to rename a table. Since ADOdb 4.53. Contributed by Ralf Becker.</p>
 <h4> function RenameColumnSQL($tabname,$oldcolumn,$newcolumn,$flds='')</h4>

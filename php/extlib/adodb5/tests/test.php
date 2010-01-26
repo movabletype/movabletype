@@ -1,6 +1,6 @@
 <?php
 /* 
-V4.80 8 Mar 2006  (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -10,7 +10,7 @@ V4.80 8 Mar 2006  (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved
 */
 
 
-if (!defined('E_STRICT')) define('E_STRICT',0);
+//if (!defined('E_STRICT')) define('E_STRICT',0);
 error_reporting(E_ALL|E_STRICT);
 
 $ADODB_FLUSH = true;
@@ -483,7 +483,7 @@ GO
 		/*
 		CREATE TABLE PHOTOS
 		(
-		  ID           NUMBER(16),
+		  ID           NUMBER(16) primary key,
 		  PHOTO        BLOB,
 		  DESCRIPTION  VARCHAR2(4000 BYTE),
 		  DESCCLOB     CLOB
@@ -596,7 +596,7 @@ END Adodb;
 		} else {
 			print "<b>Error in using Cursor Variables 1</b><p>";
 		}
-		$rs->Close();
+		if ($rs) $rs->Close();
 		
 		print "<h4>Testing Stored Procedures for oci8</h4>";
 		
@@ -1440,7 +1440,7 @@ END Adodb;
 	if ($rs) rs2html($rs);
 	else Err("Pivot sql error");
 	
-	$pear = true; //true;
+	$pear = false; //true;
 	$db->debug=false;
 	
 	if ($pear) {
@@ -1743,6 +1743,6 @@ echo "<br>vers=",ADOConnection::Version();
 
 
 ?>
-<p><i>ADODB Database Library  (c) 2000-2008 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
+<p><i>ADODB Database Library  (c) 2000-2009 John Lim. All rights reserved. Released under BSD and LGPL, PHP <?php echo PHP_VERSION ?>.</i></p>
 </body>
 </html>

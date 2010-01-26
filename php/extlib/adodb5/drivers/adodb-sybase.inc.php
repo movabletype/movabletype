@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.07 18 Dec 2008   (c) 2000-2008 John Lim. All rights reserved.
+V5.10 10 Nov 2009   (c) 2000-2009 John Lim. All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -86,11 +86,11 @@ class ADODB_sybase extends ADOConnection {
 	}
 	
 	// http://www.isug.com/Sybase_FAQ/ASE/section6.1.html#6.1.4
-	function RowLock($tables,$where,$flds='top 1 null as ignore') 
+	function RowLock($tables,$where,$col='top 1 null as ignore') 
 	{
 		if (!$this->_hastrans) $this->BeginTrans();
 		$tables = str_replace(',',' HOLDLOCK,',$tables);
-		return $this->GetOne("select $flds from $tables HOLDLOCK where $where");
+		return $this->GetOne("select $col from $tables HOLDLOCK where $where");
 		
 	}	
 		
@@ -123,6 +123,12 @@ class ADODB_sybase extends ADOConnection {
 	{
 		if (!function_exists('sybase_connect')) return null;
 		
+		if ($this->charSet) {
+ 			$this->_connectionID = sybase_connect($argHostname,$argUsername,$argPassword, $this->charSet);
+       	} else {
+       		$this->_connectionID = sybase_connect($argHostname,$argUsername,$argPassword);
+       	}
+
 		$this->_connectionID = sybase_connect($argHostname,$argUsername,$argPassword);
 		if ($this->_connectionID === false) return false;
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
@@ -133,14 +139,18 @@ class ADODB_sybase extends ADOConnection {
 	{
 		if (!function_exists('sybase_connect')) return null;
 		
-		$this->_connectionID = sybase_pconnect($argHostname,$argUsername,$argPassword);
+		if ($this->charSet) {
+ 			$this->_connectionID = sybase_pconnect($argHostname,$argUsername,$argPassword, $this->charSet);
+       	} else {
+       		$this->_connectionID = sybase_pconnect($argHostname,$argUsername,$argPassword);
+       	}
 		if ($this->_connectionID === false) return false;
 		if ($argDatabasename) return $this->SelectDB($argDatabasename);
 		return true;	
 	}
 	
 	// returns query ID if successful, otherwise false
-	function _query($sql,$inputarr)
+	function _query($sql,$inputarr=false)
 	{
 	global $ADODB_COUNTRECS;
 	

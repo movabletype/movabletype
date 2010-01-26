@@ -1,7 +1,7 @@
 <?php
 /*
 
-@version V5.07 18 Dec 2008   (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved.
+@version V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Latest version is available at http://adodb.sourceforge.net
  
   Released under both BSD license and Lesser GPL library license. 
@@ -26,6 +26,7 @@ global $ADODB_ACTIVE_DEFVALS; // use default values of table definition when cre
 $_ADODB_ACTIVE_DBS = array();
 $ACTIVE_RECORD_SAFETY = true;
 $ADODB_ACTIVE_DEFVALS = false;
+$ADODB_ACTIVE_CACHESECS = 0;
 
 class ADODB_Active_DB {
 	var $db; // ADOConnection
@@ -41,8 +42,11 @@ class ADODB_Active_Table {
 	var $_hasMany = array();
 }
 
+// $db = database connection
+// $index = name of index - can be associative, for an example see
+//    http://phplens.com/lens/lensforum/msgs.php?id=17790 
 // returns index into $_ADODB_ACTIVE_DBS
-function ADODB_SetDatabaseAdapter(&$db)
+function ADODB_SetDatabaseAdapter(&$db, $index=false)
 {
 	global $_ADODB_ACTIVE_DBS;
 	
@@ -59,7 +63,10 @@ function ADODB_SetDatabaseAdapter(&$db)
 		$obj->db = $db;
 		$obj->tables = array();
 		
-		$_ADODB_ACTIVE_DBS[] = $obj;
+		if ($index == false) $index = sizeof($_ADODB_ACTIVE_DBS);
+
+		
+		$_ADODB_ACTIVE_DBS[$index] = $obj;
 		
 		return sizeof($_ADODB_ACTIVE_DBS)-1;
 }
@@ -67,6 +74,8 @@ function ADODB_SetDatabaseAdapter(&$db)
 
 class ADODB_Active_Record {
 	static $_changeNames = true; // dynamically pluralize table names
+	static $_quoteNames = false;
+	
 	static $_foreignSuffix = '_id'; // 
 	var $_dbat; // associative index pointing to ADODB_Active_DB eg. $ADODB_Active_DBS[_dbat]
 	var $_table; // tablename, if set in class definition then use it as table name
@@ -86,9 +95,9 @@ class ADODB_Active_Record {
 	}
 
 	// should be static
-	static function SetDatabaseAdapter(&$db) 
+	static function SetDatabaseAdapter(&$db, $index=false) 
 	{
-		return ADODB_SetDatabaseAdapter($db);
+		return ADODB_SetDatabaseAdapter($db, $index);
 	}
 	
 	
@@ -115,12 +124,12 @@ class ADODB_Active_Record {
 		$this->foreignName = strtolower(get_class($this)); // CFR: default foreign name
 		if ($db) {
 			$this->_dbat = ADODB_Active_Record::SetDatabaseAdapter($db);
-		} else
-			$this->_dbat = sizeof($_ADODB_ACTIVE_DBS)-1;
-		
-		
-		if ($this->_dbat < 0) $this->Error("No database connection set; use ADOdb_Active_Record::SetDatabaseAdapter(\$db)",'ADODB_Active_Record::__constructor');
-		
+		} else if (!isset($this->_dbat)) {
+			if (sizeof($_ADODB_ACTIVE_DBS) == 0) $this->Error("No database connection set; use ADOdb_Active_Record::SetDatabaseAdapter(\$db)",'ADODB_Active_Record::__constructor');
+			end($_ADODB_ACTIVE_DBS);
+			$this->_dbat = key($_ADODB_ACTIVE_DBS);
+		}
+
 		$this->_table = $table;
 		$this->_tableat = $table; # reserved for setting the assoc value to a non-table name, eg. the sql string in future
 
@@ -622,7 +631,8 @@ class ADODB_Active_Record {
 		case 'X':
 			if (is_null($val)) return 'null';
 			
-			if (strncmp($val,"'",1) != 0 && substr($val,strlen($val)-1,1) != "'") { 
+			if (strlen($val)>1 && 
+				(strncmp($val,"'",1) != 0 || substr($val,strlen($val)-1,1) != "'")) { 
 				return $db->qstr($val);
 				break;
 			}
@@ -647,6 +657,13 @@ class ADODB_Active_Record {
 		return implode(' and ', $parr);
 	}
 	
+	
+	function _QName($n,$db=false)
+	{
+		if (!ADODB_Active_Record::$_quoteNames) return $n;
+		if (!$db) $db = $this->DB(); if (!$db) return false;
+		return $db->nameQuote.$n.$db->nameQuote;
+	}
 	
 	//------------------------------------------------------------ Public functions below
 	
@@ -674,6 +691,24 @@ class ADODB_Active_Record {
 		return $this->Set($row);
 	}
 	
+	# useful for multiple record inserts
+	# see http://phplens.com/lens/lensforum/msgs.php?id=17795
+	function Reset()
+	{
+        $this->_where=null;
+        $this->_saved = false; 
+        $this->_lasterr = false; 
+        $this->_original = false;
+        $vars=get_object_vars($this);
+        foreach($vars as $k=>$v){
+        	if(substr($k,0,1)!=='_'){
+        		$this->{$k}=null;
+        	}
+        }
+        $this->foreignName=strtolower(get_class($this));
+        return true;
+    }
+	
 	// false on error
 	function Save()
 	{
@@ -682,6 +717,7 @@ class ADODB_Active_Record {
 		
 		return $ok;
 	}
+	
 	
 	// false on error
 	function Insert()
@@ -696,9 +732,9 @@ class ADODB_Active_Record {
 
 		foreach($table->flds as $name=>$fld) {
 			$val = $this->$name;
-			if(!is_null($val) || !array_key_exists($name, $table->keys)) {
+			if(!is_array($val) || !is_null($val) || !array_key_exists($name, $table->keys)) {
 				$valarr[] = $val;
-				$names[] = $name;
+				$names[] = $this->_QName($name,$db);
 				$valstr[] = $db->Param($cnt);
 				$cnt += 1;
 			}
@@ -779,6 +815,9 @@ class ADODB_Active_Record {
 			if (is_null($val) && !empty($fld->auto_increment)) {
             	continue;
             }
+			
+			if (is_array($val)) continue;
+			
 			$t = $db->MetaType($fld->type);
 			$arr[$name] = $this->doquote($db,$val,$t);
 			$valarr[] = $val;
@@ -838,9 +877,8 @@ class ADODB_Active_Record {
 			$val = $this->$name;
 			$neworig[] = $val;
 			
-			if (isset($table->keys[$name])) {
+			if (isset($table->keys[$name]) || is_array($val)) 
 				continue;
-			}
 			
 			if (is_null($val)) {
 				if (isset($fld->not_null) && $fld->not_null) {
@@ -856,7 +894,7 @@ class ADODB_Active_Record {
 				continue;
 			}			
 			$valarr[] = $val;
-			$pairs[] = $name.'='.$db->Param($cnt);
+			$pairs[] = $this->_QName($name,$db).'='.$db->Param($cnt);
 			$cnt += 1;
 		}
 		
@@ -881,25 +919,25 @@ class ADODB_Active_Record {
 };
 
 function adodb_GetActiveRecordsClass(&$db, $class, $table,$whereOrderBy,$bindarr, $primkeyArr,
-                                     $extra)
+			$extra)
 {
 global $_ADODB_ACTIVE_DBS;
 
 	
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
 
-    // Separate table name if table name was already joined other table.
-    if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
-        $matches = preg_split('/\s/i', $table);
-        $tblname = trim($matches[0]);
-        $qry = "$tblname.* from ".$table;
-        $table = $tblname;
-    } else
-        $qry = "* from ".$table;
-
-    if (isset($extra['distinct']))
-        $qry = "distinct " . $qry;
-    $qry = "select " . $qry;
+	// Separate table name if table name was already joined other table. 
+	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
+		$matches = preg_split('/\s/i', $table);
+		$tblname = trim($matches[0]);
+		$qry = "$tblname.* from ".$table; 
+		$table = $tblname; 
+	} else 
+		$qry = "* from ".$table;
+	
+        if (isset($extra['distinct']))
+            $qry = "distinct " . $qry;
+        $qry = "select " . $qry;
 
 	if (!empty($whereOrderBy))
 		$qry .= ' WHERE '.$whereOrderBy;
@@ -907,9 +945,9 @@ global $_ADODB_ACTIVE_DBS;
 	{
 		$rows = false;
 		if(isset($extra['offset'])) {
-			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset']);
+			$rs = $db->SelectLimit($qry, $extra['limit'], $extra['offset'],$bindarr);
 		} else {
-			$rs = $db->SelectLimit($qry, $extra['limit']);
+			$rs = $db->SelectLimit($qry, $extra['limit'],-1,$bindarr);
 		}
 		if ($rs) {
 			while (!$rs->EOF) {
@@ -919,7 +957,6 @@ global $_ADODB_ACTIVE_DBS;
 		}
 	} else
 		$rows = $db->GetAll($qry,$bindarr);
-
 	$db->SetFetchMode($save);
 	
 	$false = false;
@@ -928,7 +965,6 @@ global $_ADODB_ACTIVE_DBS;
 		return $false;
 	}
 	
-
 	if (!class_exists($class)) {
 		$db->outp_throw("Unknown class $class in GetActiveRecordsClass()",'GetActiveRecordsClass');
 		return $false;
@@ -941,8 +977,8 @@ global $_ADODB_ACTIVE_DBS;
 	$arrRef = array();
 	$bTos = array(); // Will store belongTo's indices if any
 	foreach($rows as $row) {
+	
 		$obj = new $class($table,$primkeyArr,$db);
-
 		if ($obj->ErrorNo()){
 			$db->_errorMsg = $obj->ErrorMsg();
 			return $false;
@@ -950,6 +986,7 @@ global $_ADODB_ACTIVE_DBS;
 		$obj->Set($row);
 		$arr[] = $obj;
 	} // foreach($rows as $row) 
+
 	return $arr;
 }
 ?>

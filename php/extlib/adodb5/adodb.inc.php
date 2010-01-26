@@ -14,7 +14,7 @@
 /**
 	\mainpage
 	
-	 @version V5.07 18 Dec 2008   (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved.
+	 @version V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
 
 	Released under both BSD license and Lesser GPL library license. You can choose which license
 	you prefer.
@@ -156,7 +156,7 @@
 		$ADODB_GETONE_EOF,
 		$ADODB_QUOTE_FIELDNAMES;
 		
-		$ADODB_CACHE_CLASS = 'ADODB_Cache_File';
+		if (empty($ADODB_CACHE_CLASS)) $ADODB_CACHE_CLASS =  'ADODB_Cache_File' ;
 		$ADODB_FETCH_MODE = ADODB_FETCH_DEFAULT;
 		$ADODB_FORCE_TYPE = ADODB_FORCE_VALUE;
 		$ADODB_GETONE_EOF = null;
@@ -177,7 +177,7 @@
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'V5.06 16 Oct 2008  (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved. Released BSD & LGPL.';
+		$ADODB_vers = 'V5.10 10 Nov 2009  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved. Released BSD & LGPL.';
 	
 		/**
 		 * Determines whether recordset->RecordCount() is used. 
@@ -237,7 +237,7 @@
 		function ADODB_Cache_File()
 		{
 		global $ADODB_INCLUDED_CSV;
-			if (empty($ADODB_INCLUDED_CSV)) include(ADODB_DIR.'/adodb-csvlib.inc.php');
+			if (empty($ADODB_INCLUDED_CSV)) include_once(ADODB_DIR.'/adodb-csvlib.inc.php');
 		}
 		
 		// write serialised recordset to cache item/file
@@ -262,7 +262,7 @@
 		
 			if (strlen($ADODB_CACHE_DIR) > 1) {
 				$rez = $this->_dirFlush($ADODB_CACHE_DIR);
-	         	if ($debug) DOConnection::outp( "flushall: $dir<br><pre>\n". $rez."</pre>");
+	         	if ($debug) ADOConnection::outp( "flushall: $dir<br><pre>\n". $rez."</pre>");
 	   		}
 			return $rez;
 		}
@@ -377,6 +377,7 @@
 
 	var $sysDate = false; /// name of function that returns the current date
 	var $sysTimeStamp = false; /// name of function that returns the current timestamp
+	var $sysUTimeStamp = false; // name of function that returns the current timestamp accurate to the microsecond or nearest fraction
 	var $arrayClass = 'ADORecordSet_array'; /// name of class used to generate array recordsets, which are pre-downloaded recordsets
 	
 	var $noNullStrings = false; /// oracle specific stuff - if true ensures that '' is converted to ' '
@@ -515,9 +516,6 @@
 		
 		$this->_isPersistentConnection = false;	
 			
-		global $ADODB_CACHE;
-		if (empty($ADODB_CACHE)) $this->_CreateCache();
-		
 		if ($forceNew) {
 			if ($rez=$this->_nconnect($this->host, $this->user, $this->password, $this->database)) return true;
 		} else {
@@ -583,9 +581,6 @@
 		if ($argDatabaseName != "") $this->database = $argDatabaseName;		
 			
 		$this->_isPersistentConnection = true;	
-		
-		global $ADODB_CACHE;
-		if (empty($ADODB_CACHE)) $this->_CreateCache();
 		
 		if ($rez = $this->_pconnect($this->host, $this->user, $this->password, $this->database)) return true;
 		if (isset($rez)) {
@@ -721,7 +716,7 @@
 	*  @param $table	name of table to lock
 	*  @param $where	where clause to use, eg: "WHERE row=12". If left empty, will escalate to table lock
 	*/
-	function RowLock($table,$where)
+	function RowLock($table,$where,$col='1 as ignore')
 	{
 		return false;
 	}
@@ -1710,6 +1705,8 @@
 	{
 	global $ADODB_CACHE_DIR, $ADODB_CACHE;
 		
+		if (empty($ADODB_CACHE)) return false;
+		
 		if (!$sql) {
 			 $ADODB_CACHE->flushall($this->debug);
 	         return;
@@ -1766,6 +1763,8 @@
 	{
 	global $ADODB_CACHE;
 	
+		if (empty($ADODB_CACHE)) $this->_CreateCache();
+		
 		if (!is_numeric($secs2cache)) {
 			$inputarr = $sql;
 			$sql = $secs2cache;
@@ -1783,7 +1782,7 @@
 		$err = '';
 		
 		if ($secs2cache > 0){
-			$rs = &$ADODB_CACHE->readcache($md5file,$err,$secs2cache,$this->arrayClass);
+			$rs = $ADODB_CACHE->readcache($md5file,$err,$secs2cache,$this->arrayClass);
 			$this->numCacheHits += 1;
 		} else {
 			$err='Timeout 1';
@@ -1878,6 +1877,7 @@
 		$rs = $this->SelectLimit($sql,1);
 		if (!$rs) return $false; // table does not exist
 		$rs->tableName = $table;
+		$rs->sql = $sql;
 		
 		switch((string) $mode) {
 		case 'UPDATE':
@@ -2439,6 +2439,9 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		if (empty($d) && $d !== 0) return 'null';
 		if ($isfld) return $d;
 		
+		if (is_object($d)) return $d->format($this->fmtDate);
+		
+		
 		if (is_string($d) && !is_numeric($d)) {
 			if ($d === 'null' || strncmp($d,"'",1) === 0) return $d;
 			if ($this->isoDates) return "'$d'";
@@ -2476,6 +2479,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 	{
 		if (empty($ts) && $ts !== 0) return 'null';
 		if ($isfld) return $ts;
+		if (is_object($ts)) return $ts->format($this->fmtTimeStamp);
 		
 		# strlen(14) allows YYYYMMDDHHMMSS format
 		if (!is_string($ts) || (is_numeric($ts) && strlen($ts)<14)) 
@@ -2604,7 +2608,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		// undo magic quotes for "
 		$s = str_replace('\\"','"',$s);
 		
-		if ($this->replaceQuote == "\\'")  // ' already quoted, no need to change anything
+		if ($this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase'))  // ' already quoted, no need to change anything
 			return $s;
 		else {// change \' to '' for sybase/mssql
 			$s = str_replace('\\\\','\\',$s);
@@ -2638,7 +2642,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		// undo magic quotes for "
 		$s = str_replace('\\"','"',$s);
 		
-		if ($this->replaceQuote == "\\'")  // ' already quoted, no need to change anything
+		if ($this->replaceQuote == "\\'" || ini_get('magic_quotes_sybase'))  // ' already quoted, no need to change anything
 			return "'$s'";
 		else {// change \' to '' for sybase/mssql
 			$s = str_replace('\\\\','\\',$s);
@@ -4157,13 +4161,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			if (strncmp($origdsn,'pdo',3) == 0) {
 				$sch = explode('_',$dsna['scheme']);
 				if (sizeof($sch)>1) {
-                    if ($sch[1] == 'sqlite') {
-                        $dsna['host'] = $sch[1].':'.urldecode($dsna['host']);
-                    } else {
-                        $dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';
-                        $dsna['host'] = rawurlencode($sch[1].':host='.rawurldecode($dsna['host']));
-                    }
-                    $dsna['scheme'] = 'pdo';
+				
+					$dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';
+					if ($sch[1] == 'sqlite')
+						$dsna['host'] = rawurlencode($sch[1].':'.rawurldecode($dsna['host']));
+					else
+						$dsna['host'] = rawurlencode($sch[1].':host='.rawurldecode($dsna['host']));
+					$dsna['scheme'] = 'pdo';
 				}
 			}
 			
@@ -4254,6 +4258,18 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 					case 'socket': $obj->socket = $v; break;
 					#oci8
 					case 'nls_date_format': $obj->NLS_DATE_FORMAT = $v; break;
+					case 'cachesecs': $obj->cacheSecs = $v; break;
+					case 'memcache': 
+						$varr = explode(':',$v);
+						$vlen = sizeof($varr);
+						if ($vlen == 0) break;	
+						$obj->memCache = true;
+						$obj->memCacheHost = explode(',',$varr[0]);
+						if ($vlen == 1) break;	
+						$obj->memCachePort = $varr[1];
+						if ($vlen == 2) break;	
+						$obj->memCacheCompress = $varr[2] ?  true : false;
+						break;
 					}
 				}
 				if (empty($persist))

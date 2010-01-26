@@ -336,8 +336,8 @@ class MTViewer extends Smarty {
                 $tz = 'Z';
                 if (!$args['utc']) {
                     $blog = $ctx->stash('blog');
-                    if (!is_array($blog)) {
-                        $blog = $ctx->mt->db()->fetch_blog($blog->id);
+                    if (!is_object($blog)) {
+                        $blog = $ctx->mt->db()->fetch_blog($blog);
                     }
                     $so = $blog->blog_server_offset;
                     $partial_hour_offset = 60 * abs($so - intval($so));

@@ -1,7 +1,7 @@
 <?php
 
 /* 
-V4.80 8 Mar 2006  (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved.
+V4.80 8 Mar 2006  (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -23,22 +23,24 @@ error_reporting(E_ALL);
 ob_start();
 include('../session/adodb-cryptsession2.php');
 
-$options['debug'] = 99;
-$db = 'postgres';
+$options['debug'] = 1;
+$db = 'oci8';
 
 #### CONNECTION
 switch($db) {
 case 'oci8': 
 	$options['table'] = 'adodb_sessions2';
-	ADOdb_Session::config('oci8', '', 'jcollect', 'natsoft', '',$options);
+	ADOdb_Session::config('oci8', '', 'jcollect_bkrm', 'natsoft', '',$options);
 	break;
 
 case 'postgres':
+	$options['table'] = 'sessions2';
 	ADOdb_Session::config('postgres', 'localhost', 'tester', 'test', 'test',$options);
 	break;
 	
 case 'mysql':
 default:
+	$options['table'] = 'sessions2';
 	ADOdb_Session::config('mysql', 'localhost', 'root', '', 'xphplens_2',$options);
 	break;
 
@@ -83,8 +85,14 @@ default:
 		adodb_sess_gc(10);
 		
 		if (rand() % 2 == 0) {
-			print "<p>Random session destroy</p>";
+			print "<p>Random own session destroy</p>";
 			session_destroy();
 		}
+	} else {
+		$DB = ADODB_Session::_conn();
+		$sessk = $DB->qstr('%AZ'.rand().time());
+		$olddate = $DB->DBTimeStamp(time()-30*24*3600);
+		$rr = $DB->qstr(rand());
+		$DB->Execute("insert into {$options['table']} (sesskey,expiry,expireref,sessdata,created,modified) values ($sessk,$olddate, $rr,'',$olddate,$olddate)");
 	}
 ?>

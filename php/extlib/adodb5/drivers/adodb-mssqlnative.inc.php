@@ -1,6 +1,6 @@
 <?php
 /* 
-V5.07 18 Dec 2008   (c) 2000-2008 John Lim (jlim#natsoft.com). All rights reserved.
+V5.10 10 Nov 2009   (c) 2000-2009 John Lim (jlim#natsoft.com). All rights reserved.
   Released under both BSD license and Lesser GPL library license. 
   Whenever there is any discrepancy between the two licenses, 
   the BSD license will take precedence. 
@@ -20,6 +20,26 @@ Set tabs to 4 for best viewing.
 
 // security - hide paths
 if (!defined('ADODB_DIR')) die();
+
+if (!function_exists('sqlsrv_configure')) {
+	die("mssqlnative extension not installed");
+}
+
+if (!function_exists('sqlsrv_set_error_handling')) {
+	function sqlsrv_set_error_handling($constant) {
+		sqlsrv_configure("WarningsReturnAsErrors", $constant);
+	}
+}
+if (!function_exists('sqlsrv_log_set_severity')) {
+	function sqlsrv_log_set_severity($constant) {
+		sqlsrv_configure("LogSeverity", $constant);
+	}
+}
+if (!function_exists('sqlsrv_log_set_subsystems')) {
+	function sqlsrv_log_set_subsystems($constant) {
+		sqlsrv_configure("LogSubsystems", $constant);
+	}
+}
 
 
 //----------------------------------------------------------------
@@ -310,10 +330,10 @@ class ADODB_mssqlnative extends ADOConnection {
 		
 		See http://www.swynk.com/friends/achigrik/SQL70Locks.asp
 	*/
-	function RowLock($tables,$where,$flds='top 1 null as ignore') 
+	function RowLock($tables,$where,$col='top 1 null as ignore') 
 	{
 		if (!$this->transCnt) $this->BeginTrans();
-		return $this->GetOne("select $flds from $tables with (ROWLOCK,HOLDLOCK) where $where");
+		return $this->GetOne("select $col from $tables with (ROWLOCK,HOLDLOCK) where $where");
 	}
 	 
 	function SelectDB($dbName) 
@@ -348,15 +368,20 @@ class ADODB_mssqlnative extends ADOConnection {
 	{
 		if ($this->_logsql && $this->_errorCode !== false) return $this->_errorCode;
 		$err = sqlsrv_errors(SQLSRV_ERR_ALL);
-        if($err[0]) return $err[0]['code'];
-        else return -1;
+                if (empty($err)) return 0;
+	        if($err[0]) return $err[0]['code'];
+        	else return -1;
 	}
 	
 	// returns true or false
 	function _connect($argHostname, $argUsername, $argPassword, $argDatabasename)
 	{
 		if (!function_exists('sqlsrv_connect')) return null;
-        $connectionInfo = array("Database"=>$argDatabasename,'UID'=>$argUsername,'PWD'=>$argPassword);
+        $connectionInfo = array("Database"=>$argDatabasename);
+        if (!empty($argUsername))
+            $connectionInfo['UID'] = $argUsername;
+        if (!empty($argPassword))
+            $connectionInfo['PWD'] = $argPassword;
         if ($this->debug) error_log("<hr>connecting... hostname: $argHostname params: ".var_export($connectionInfo,true));
         //if ($this->debug) error_log("<hr>_connectionID before: ".serialize($this->_connectionID));
         if(!($this->_connectionID = sqlsrv_connect($argHostname,$connectionInfo))) { 
@@ -430,7 +455,7 @@ class ADODB_mssqlnative extends ADOConnection {
 	}
 	
 	// returns query ID if successful, otherwise false
-	function _query($sql,$inputarr)
+	function _query($sql,$inputarr=false)
 	{
 		$this->_errorMsg = false;
 		if (is_array($inputarr)) {
@@ -463,12 +488,12 @@ class ADODB_mssqlnative extends ADOConnection {
 	}
 	
 	// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 		return ADORecordSet_array_mssql::UnixDate($v);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 		return ADORecordSet_array_mssql::UnixTimeStamp($v);
 	}	
@@ -783,12 +808,12 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 	}
 
 	// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 		return ADORecordSet_array_mssqlnative::UnixDate($v);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 		return ADORecordSet_array_mssqlnative::UnixTimeStamp($v);
 	}
@@ -802,7 +827,7 @@ class ADORecordSet_array_mssqlnative extends ADORecordSet_array {
 	}
 	
 		// mssql uses a default date like Dec 30 2000 12:00AM
-	function UnixDate($v)
+	static function UnixDate($v)
 	{
 	
 		if (is_numeric(substr($v,0,1)) && ADODB_PHPVER >= 0x4200) return parent::UnixDate($v);
@@ -833,7 +858,7 @@ class ADORecordSet_array_mssqlnative extends ADORecordSet_array {
 		return  mktime(0,0,0,$themth,$theday,$rr[3]);
 	}
 	
-	function UnixTimeStamp($v)
+	static function UnixTimeStamp($v)
 	{
 	
 		if (is_numeric(substr($v,0,1)) && ADODB_PHPVER >= 0x4200) return parent::UnixTimeStamp($v);
