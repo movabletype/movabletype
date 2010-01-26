@@ -31,7 +31,7 @@ BEGIN {
                 dbd_package    => 'DBD::mysql',
                 config_package => 'DBI::mysql',
                 display =>
-                    [ 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
             },
             'postgres' => {
                 label          => 'PostgreSQL Database',
@@ -39,7 +39,7 @@ BEGIN {
                 dbd_version    => '1.32',
                 config_package => 'DBI::postgres',
                 display =>
-                    [ 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
             },
             'sqlite' => {
                 label          => 'SQLite Database',
@@ -64,7 +64,7 @@ BEGIN {
                     MT->translate("This is usually 'localhost'.");
                 },
                 show_hint => 1,
-                order => 10,
+                order     => 10,
             },
             dbname => {
                 element => 'input',
@@ -88,6 +88,7 @@ BEGIN {
                 element => 'input',
                 type    => 'text',
                 label   => 'Database Path',
+                default => './db/mt.db',
                 order   => 50,
             },
             dbport => {
