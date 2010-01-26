@@ -63,7 +63,7 @@ BEGIN {
                 hint    => sub {
                     MT->translate("This is usually 'localhost'.");
                 },
-                show_hint = 1,
+                show_hint => 1,
                 order => 10,
             },
             dbname => {
