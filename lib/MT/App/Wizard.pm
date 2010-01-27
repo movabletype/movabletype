@@ -746,8 +746,23 @@ sub configure {
             }
             else {
                 if (@dbs) {
-                    $param{database_list} = \@dbs;
-                    $param{one_database}  = @dbs == 0;
+                    my @f;
+                    foreach my $field ( @{ $param{field_loop} } ) {
+                        if ( $field->{id} eq 'dbname' ) {
+                            $field->{element} = 'select';
+                            my @options;
+                            foreach my $db (@dbs) {
+                                my $select = {};
+                                $select->{value} = $db->{name};
+                                $select->{label} = $db->{name};
+                                push @options, $select;
+                            }
+                            $field->{option_loop} = \@options;
+                        }
+                        push @f, $field;
+                    }
+                    $param{field_loop}   = \@f;
+                    $param{one_database} = @dbs == 0;
                     $err_msg
                         = $app->translate(
                         'Please select database from the list of database and try again.'
@@ -1231,9 +1246,9 @@ sub set_form_fields {
         $field->{class}         = $data->{class};
         $field->{label_class}   = $data->{label_class};
         $field->{content_class} = $data->{content_class};
-        my @options;
 
         if ( $data->{element} eq 'select' ) {
+            my @options;
             my $option = $data->{option};
             foreach my $key ( keys %$option ) {
                 my $select = {};
@@ -1241,11 +1256,11 @@ sub set_form_fields {
                 $select->{label} = $option->{$key};
                 push @options, $select;
             }
+            $field->{option_loop} = \@options;
         }
         else {
             $field->{type} = $data->{type};
         }
-        $field->{option_loop} = \@options;
         if ( $data->{advanced} ) {
             push @$advanced, $field;
         }
