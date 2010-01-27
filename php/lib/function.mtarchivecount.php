@@ -42,3 +42,4 @@ function smarty_function_mtarchivecount($args, &$ctx) {
     }
     return $ctx->count_format($count, $args);
 }
+?>

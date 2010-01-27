@@ -330,4 +330,4 @@ abstract class BaseObject extends ADOdb_Active_Record
         return self::$_cache_driver;
     }
 }
-
+?>

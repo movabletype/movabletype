@@ -55,3 +55,4 @@ class MTDatabasesqlite extends MTDatabase {
         return "strftime($part, $column)";
     }
 }
+?>

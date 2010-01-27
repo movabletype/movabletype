@@ -37,4 +37,4 @@ class ObjectTag extends BaseObject
         return $tag;
     }
 }
-
+?>

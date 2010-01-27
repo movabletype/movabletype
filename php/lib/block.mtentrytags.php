@@ -54,3 +54,4 @@ function smarty_block_mtentrytags($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

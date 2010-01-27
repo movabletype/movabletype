@@ -38,3 +38,4 @@ class Website extends Blog
 
 // Relations
 ADODB_Active_Record::ClassHasMany('Website', 'mt_blog_meta','blog_meta_blog_id');	
+?>

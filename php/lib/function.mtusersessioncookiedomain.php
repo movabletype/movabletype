@@ -38,3 +38,4 @@ function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
         $domain = '.' . $domain;
     return $domain;
 }
+?>

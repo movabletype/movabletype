@@ -174,3 +174,4 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

@@ -36,3 +36,4 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $link .= '&amp;limit=' . $ctx->mt->config('MaxResults');
     return $link;
 }
+?>

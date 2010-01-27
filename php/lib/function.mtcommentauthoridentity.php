@@ -35,3 +35,4 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
     }
     return $result;
 }
+?>

@@ -18,3 +18,4 @@ function smarty_function_mtauthorbasename($args, &$ctx) {
     }
     return $basename;
 }
+?>

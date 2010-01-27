@@ -119,3 +119,4 @@ function is_trusted ($cmntr, $ctx, $blog_id) {
     else
         return false;
 }
+?>

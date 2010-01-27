@@ -20,3 +20,4 @@ function smarty_function_mtsigninlink($args, &$ctx) {
         $return .= '&entry_id=' . $entry->entry_id;
     return $return;
 }
+?>

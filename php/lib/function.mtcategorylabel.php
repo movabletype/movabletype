@@ -15,3 +15,4 @@ function smarty_function_mtcategorylabel($args, &$ctx) {
     if (!$cat) return '';
     return $cat->category_label;
 }
+?>

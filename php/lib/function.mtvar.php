@@ -188,3 +188,4 @@ function smarty_function_mtvar($args, &$ctx) {
     }
     return $return_val;
 }
+?>

@@ -20,3 +20,4 @@ function smarty_function_mtusersessioncookiename($args, &$ctx) {
     }
     return $name;
 }
+?>

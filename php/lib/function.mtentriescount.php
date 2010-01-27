@@ -32,3 +32,4 @@ function smarty_function_mtentriescount($args, &$ctx) {
     }
     return $ctx->count_format($count, $args);
 }
+?>

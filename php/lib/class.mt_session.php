@@ -22,4 +22,4 @@ class Session extends BaseObject
         return $this->_data;
     }
 }
-
+?>

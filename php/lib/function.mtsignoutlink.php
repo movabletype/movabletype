@@ -33,3 +33,4 @@ function smarty_function_mtsignoutlink($args, &$ctx) {
     }
     return $path;
 }
+?>

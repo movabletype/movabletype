@@ -16,3 +16,4 @@ function smarty_modifier_setvar($text, $name) {
     $vars[$name] = $text;
     return '';
 }
+?>

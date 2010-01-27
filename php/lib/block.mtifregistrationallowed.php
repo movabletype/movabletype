@@ -17,3 +17,4 @@ function smarty_block_mtifregistrationallowed($args, $content, &$ctx, &$repeat) 
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
+?>

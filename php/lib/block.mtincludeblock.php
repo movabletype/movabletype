@@ -24,3 +24,4 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

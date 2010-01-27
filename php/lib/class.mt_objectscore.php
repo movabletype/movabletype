@@ -24,4 +24,4 @@ class ObjectScore extends BaseObject
     }
 
 }
-
+?>

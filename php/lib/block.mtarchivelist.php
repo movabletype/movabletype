@@ -103,3 +103,4 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

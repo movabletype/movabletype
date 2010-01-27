@@ -43,3 +43,4 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
     }
     return '';
 }
+?>

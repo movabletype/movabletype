@@ -13,3 +13,4 @@ function smarty_function_mttypepadantispamcounter($args, &$ctx) {
     $count or $count = 0;
     return $ctx->count_format($count, $args);
 }
+?>

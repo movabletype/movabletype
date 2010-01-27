@@ -31,3 +31,4 @@ class Comment extends BaseObject
 
 // Relations
 ADODB_Active_Record::ClassHasMany('Comment', 'mt_comment_meta','comment_meta_comment_id');	
+?>

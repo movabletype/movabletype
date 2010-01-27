@@ -101,3 +101,4 @@ class CacheMemcached extends BaseCache {
         return self::$_server->flush();
     }
 }
+?>

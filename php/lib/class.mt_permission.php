@@ -15,4 +15,4 @@ class Permission extends BaseObject
     public $_table = 'mt_permission';
     protected $_prefix = "permission_";
 }
-
+?>

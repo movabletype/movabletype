@@ -15,4 +15,4 @@ class Tag extends BaseObject
     public $_table = 'mt_tag';
     protected $_prefix = "tag_";
 }
-
+?>

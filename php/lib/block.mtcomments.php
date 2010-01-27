@@ -80,3 +80,4 @@ function smarty_block_mtcomments($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

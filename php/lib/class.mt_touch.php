@@ -15,4 +15,4 @@ class Touch extends BaseObject
     public $_table = 'mt_touch';
     protected $_prefix = "touch_";
 }
-
+?>

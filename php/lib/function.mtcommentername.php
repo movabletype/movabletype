@@ -13,3 +13,4 @@ function smarty_function_mtcommentername($args, &$ctx) {
     }
     return $name;
 }
+?>

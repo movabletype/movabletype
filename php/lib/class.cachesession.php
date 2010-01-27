@@ -54,3 +54,4 @@ class CacheSession extends BaseCache {
         return $mt->db()->flush_session();
     }
 }
+?>

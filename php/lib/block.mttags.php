@@ -127,3 +127,4 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
+?>

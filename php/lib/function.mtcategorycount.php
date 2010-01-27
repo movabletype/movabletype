@@ -10,3 +10,4 @@ function smarty_function_mtcategorycount($args, &$ctx) {
     $count = $category->category_count;
     return $ctx->count_format($count, $args);
 }
+?>

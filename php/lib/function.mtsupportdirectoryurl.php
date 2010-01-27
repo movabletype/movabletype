@@ -10,3 +10,4 @@ function smarty_function_mtsupportdirectoryurl($args, &$ctx) {
     $url = support_directory_url();
     return $url;
 }
+?>

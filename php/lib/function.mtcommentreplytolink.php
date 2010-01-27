@@ -25,3 +25,4 @@ function smarty_function_mtcommentreplytolink($args, &$ctx) {
     return sprintf("<a title=\"%s\" href=\"javascript:void(0);\" onclick=\"$onclick\">%s</a>",
         $label, $label);
 }
+?>

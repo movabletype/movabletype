@@ -10,3 +10,4 @@ function smarty_function_mtentrytrackbackcount($args, &$ctx) {
     $count = $entry->entry_ping_count;
     return $ctx->count_format($count, $args);
 }
+?>

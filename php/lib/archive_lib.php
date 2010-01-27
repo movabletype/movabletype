@@ -2111,3 +2111,4 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         return $args;
     }
 }
+?>

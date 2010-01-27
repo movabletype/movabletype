@@ -59,3 +59,4 @@ class CacheMemory extends BaseCache {
         unset(CacheMemory::$_buffer[$key]);
     }
 }
+?>

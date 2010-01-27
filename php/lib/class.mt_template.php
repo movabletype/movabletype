@@ -26,4 +26,4 @@ class Template extends BaseObject
 
 // Relations
 ADODB_Active_Record::ClassHasMany('Template', 'mt_template_meta','template_meta_template_id');	
-
+?>

@@ -139,3 +139,4 @@ function smarty_block_mtsetvarblock($args, $content, &$ctx, &$repeat) {
     }
     return '';
 }
+?>

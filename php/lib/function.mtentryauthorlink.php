@@ -50,3 +50,4 @@ function smarty_function_mtentryauthorlink($args, &$ctx) {
     }
     return $displayname;
 }
+?>

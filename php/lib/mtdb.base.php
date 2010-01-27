@@ -3450,3 +3450,4 @@ abstract class MTDatabase {
         return $tmpl;
     }
 }
+?>

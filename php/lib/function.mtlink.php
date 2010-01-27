@@ -45,3 +45,4 @@ function smarty_function_mtlink($args, &$ctx) {
     }
     return '';
 }
+?>

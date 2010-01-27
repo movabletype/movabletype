@@ -143,3 +143,4 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
+?>

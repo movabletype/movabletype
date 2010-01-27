@@ -10,3 +10,4 @@ function smarty_function_mtassetcount($args, &$ctx) {
     $count = $ctx->mt->db()->asset_count($args);
     return $ctx->count_format($count, $args);
 }
+?>

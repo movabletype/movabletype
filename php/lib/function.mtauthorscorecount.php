@@ -11,3 +11,4 @@ function smarty_function_mtauthorscorecount($args, &$ctx) {
     $count = hdlr_score_count($ctx, 'author', $args['namespace']);
     return $ctx->count_format($count, $args);
 }
+?>

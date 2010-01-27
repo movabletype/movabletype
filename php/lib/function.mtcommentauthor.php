@@ -24,3 +24,4 @@ function smarty_function_mtcommentauthor($args, &$ctx) {
     $a or $a = '';
     return strip_tags($a);
 }
+?>

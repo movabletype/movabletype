@@ -18,3 +18,4 @@ function smarty_function_mtentrybasename($args, &$ctx) {
     }
     return $basename;
 }
+?>

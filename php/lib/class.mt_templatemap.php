@@ -29,4 +29,4 @@ class TemplateMap extends BaseObject
         return $template;
     }
 }
-
+?>

@@ -24,3 +24,4 @@ function smarty_function_mtbloghost($args, &$ctx) {
         return '';
     }
 }
+?>

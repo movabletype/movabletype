@@ -11,3 +11,4 @@ function smarty_function_mtwebsitehost($args, &$ctx) {
     require_once('function.mtbloghost.php');
     return smarty_function_mtbloghost($args, $ctx);
 }
+?>

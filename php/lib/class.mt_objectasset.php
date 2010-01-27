@@ -37,4 +37,4 @@ class ObjectAsset extends BaseObject
         return $obj;
     }
 }
-
+?>

@@ -10,3 +10,4 @@ function smarty_function_mtblogcommentcount($args, &$ctx) {
     $count = $ctx->mt->db()->blog_comment_count($args);
     return $ctx->count_format($count, $args);
 }
+?>

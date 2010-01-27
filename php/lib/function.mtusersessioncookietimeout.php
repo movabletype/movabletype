@@ -8,3 +8,4 @@
 function smarty_function_mtusersessioncookietimeout($args, &$ctx) {
     return $ctx->mt->config('UserSessionCookieTimeout');
 }
+?>

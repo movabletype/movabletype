@@ -22,3 +22,4 @@ function smarty_function_mtassettype($args, &$ctx) {
  * translate('video')
  * translate('Video')
  */
+?>

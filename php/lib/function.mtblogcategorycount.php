@@ -12,3 +12,4 @@ function smarty_function_mtblogcategorycount($args, &$ctx) {
     $count = $ctx->mt->db()->blog_category_count($args);
     return $ctx->count_format($count, $args);
 }
+?>

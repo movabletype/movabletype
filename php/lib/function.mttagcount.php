@@ -12,3 +12,4 @@ function smarty_function_mttagcount($args, &$ctx) {
         $count = $tag->tag_count;
     return $ctx->count_format($count, $args);
 }
+?>

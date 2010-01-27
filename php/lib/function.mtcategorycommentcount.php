@@ -16,3 +16,4 @@ function smarty_function_mtcategorycommentcount($args, &$ctx) {
     }
     return $ctx->count_format($count, $args);
 }
+?>

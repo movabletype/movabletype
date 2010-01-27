@@ -9,3 +9,4 @@ function smarty_function_mtwebsitecommentcount($args, &$ctx) {
     require_once('function.mtblogcommentcount.php');
     return smarty_function_mtblogcommentcount($args, &$ctx);
 }
+?>

@@ -41,4 +41,4 @@ class Placement extends BaseObject
         return $category;
     }
 }
-
+?>

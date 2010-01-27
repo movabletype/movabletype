@@ -26,3 +26,4 @@ function smarty_function_mtcommentlink($args, &$ctx) {
 
     return $entry_link;
 }
+?>

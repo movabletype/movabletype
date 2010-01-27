@@ -46,4 +46,4 @@ class Config extends BaseObject
             return $this->_data;
     }
 }
-
+?>

@@ -147,3 +147,4 @@ function smarty_function_mtsetvar($args, &$ctx) {
     }
     return '';
 }
+?>

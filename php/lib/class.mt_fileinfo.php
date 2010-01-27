@@ -57,4 +57,4 @@ class FileInfo extends BaseObject
         return $templatemap;
     }
 }
-
+?>
