@@ -100,8 +100,8 @@
         </mt:loop>
 
 <mt:if name="advanced_loop">
-            <p id="more"><a href="javascript:void(0)" onclick="showByID('db_port_socket'); hideByID('more'); return false;"><__trans phrase="Show Advanced Configuration Options"></a></p>
-            <div id="db_port_socket" style="display: none;">
+            <p id="more"><a href="#"><__trans phrase="Show Advanced Configuration Options"></a></p>
+            <div id="advanced_fields" style="display: none;">
             <mt:loop name="advanced_loop">
                 <mtapp:setting
                     id="<mt:var name="id">"
@@ -235,16 +235,23 @@ var database = new Array();
     function show_fields() {
         jQuery('#params .field').hide();
         var dbtype = jQuery('#dbtype').val();
-        jQuery.each(database[dbtype], function() {
-           jQuery('#'+this+'-field').show();
-        });
-        if (database[dbtype]) {
-            jQuery('#db_hint').hide();
-            jQuery('#goback').hide();
-            jQuery('#submit').show();
-        } else {
-            jQuery('#goback').show();
-            jQuery('#submit').hide();
+        jQuery('#more').hide();
+        if (dbtype) {
+            jQuery.each(database[dbtype], function() {
+               var id = '#'+this+'-field';
+               jQuery(id).show();
+               if (jQuery('#advanced_fields').find(id)) {
+                   jQuery('#more').show();
+               }
+            });
+            if (database[dbtype]) {
+                jQuery('#db_hint').hide();
+                jQuery('#goback').hide();
+                jQuery('#submit').show();
+            } else {
+                jQuery('#goback').show();
+                jQuery('#submit').hide();
+            }
         }
     }
 
@@ -252,5 +259,10 @@ var database = new Array();
         show_fields();
     });
     show_fields();
+
+    jQuery('#more').click(function(event) {
+        jQuery('#advanced_fields').show();
+        jQuery(this).remove();
+    });
 </mt:setvarblock>
 <mt:include name="include/chromeless_footer.tmpl">
