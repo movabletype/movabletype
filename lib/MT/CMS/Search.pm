@@ -686,12 +686,7 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
-                use Data::Dumper;
-print STDERR Dumper(\@terms);
-print STDERR Dumper(\%args);
-                local $Data::ObjectDriver::DEBUG = 1;
                 $iter = $class->load_iter( @terms ? \@terms : \%terms, \%args ) or die $class->errstr;
-                local $Data::ObjectDriver::DEBUG = 0;
             }
             else {
 
