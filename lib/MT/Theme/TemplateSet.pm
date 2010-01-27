@@ -330,7 +330,7 @@ sub finalize {
     for my $t (@$templates) {
         my $tmpl_id = $t->identifier || 'template_' . $t->id;
         my $path = File::Spec->catfile( $outdir, $tmpl_id . '.mtml' );
-        $fmgr->put_data( $t->text, $path )
+        defined $fmgr->put_data( $t->text, $path )
             or return $app->error(
                 $app->translate(
                     'Failed to publish template file: [_1]',
