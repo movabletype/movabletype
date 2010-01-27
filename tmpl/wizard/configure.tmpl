@@ -15,7 +15,9 @@
         class="error">
         <mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()"><__trans phrase="Details"></a>.</mt:if>
     </mtapp:statusmsg>
-    <div id="error_more" style="display:none"><mt:var name="error_more"></div>
+    <p id="error_more" style="display:none">
+       <mt:var name="error_more">
+    </p>
 <mt:else>
     <mt:if name="error">
     <mtapp:statusmsg

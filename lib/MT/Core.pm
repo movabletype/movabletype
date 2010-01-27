@@ -89,7 +89,12 @@ BEGIN {
                 type    => 'text',
                 label   => 'Database Path',
                 default => './db/mt.db',
-                order   => 50,
+                hint    => sub {
+                    MT->translate(
+                        "The physical file path for your SQLite database. ");
+                },
+                show_hint => 1,
+                order     => 50,
             },
             dbport => {
                 advanced => 1,
