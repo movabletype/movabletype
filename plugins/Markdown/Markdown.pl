@@ -237,6 +237,12 @@ sub _StripLinkDefinitions {
     return $text;
 }
 
+sub _save_to_hash {
+    my $str = Encode::is_utf8($_[0]) ? Encode::encode_utf8($_[0]) : $_[0];
+    my $key = md5_hex($str);
+    $g_html_blocks{$key} = $str;
+    return "\n\n$key\n\n";
+}
 
 sub _HashHTMLBlocks {
     my $text = shift;
@@ -293,9 +299,7 @@ sub _HashHTMLBlocks {
                     (?=\n+|\Z)  # followed by a newline or end of document
                 )
             }{
-                my $key = md5_hex($1);
-                $g_html_blocks{$key} = $1;
-                "\n\n" . $key . "\n\n";
+                _save_to_hash($1);
             }egmx;
     # Special case just for <hr />. It was easier to make a special case than
     # to make the other regex more complicated. 
@@ -315,9 +319,7 @@ sub _HashHTMLBlocks {
                     (?=\n{2,}|\Z)       # followed by a blank line or end of document
                 )
             }{
-                my $key = md5_hex($1);
-                $g_html_blocks{$key} = $1;
-                "\n\n" . $key . "\n\n";
+                _save_to_hash($1);
             }egx;
 
     # Special case for standalone HTML comments:
@@ -338,9 +340,7 @@ sub _HashHTMLBlocks {
                     (?=\n{2,}|\Z)       # followed by a blank line or end of document
                 )
             }{
-                my $key = md5_hex($1);
-                $g_html_blocks{$key} = $1;
-                "\n\n" . $key . "\n\n";
+                _save_to_hash($1);
             }egx;
 
 
