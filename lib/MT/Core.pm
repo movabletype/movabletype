@@ -39,7 +39,7 @@ BEGIN {
                 dbd_version    => '1.32',
                 config_package => 'DBI::postgres',
                 display =>
-                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
+                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport' ],
             },
             'sqlite' => {
                 label          => 'SQLite Database',
