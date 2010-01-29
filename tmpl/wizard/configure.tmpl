@@ -12,12 +12,15 @@
 <mt:if name="connect_error">
     <mtapp:statusmsg
         id="connect_error"
-        class="error">
-        <mt:var name="error"><mt:if name="error_more">&nbsp;&nbsp;<a href="javascript:void(0)" onclick="return toggleMore()"><__trans phrase="Details"></a>.</mt:if>
+        class="error"
+        can_close="0">
+        <div class="title"><mt:var name="error"><mt:if name="error_more"> <a href="#" class="detail-link"><__trans phrase="Details"></a></mt:if></div>
+    <mt:if name="error_more">
+        <div class="detail">
+            <p><mt:var name="error_more"></p>
+        </div>
+    </mt:if>
     </mtapp:statusmsg>
-    <p id="error_more" style="display:none">
-       <mt:var name="error_more">
-    </p>
 <mt:else>
     <mt:if name="error">
     <mtapp:statusmsg
@@ -197,16 +200,6 @@ function go(mode) {
     f['__mode'].value = mode;
 }
 
-function toggleMore() {
-    var more = getByID('error_more');
-    if (more) {
-        if (more.style.display == 'none')
-            more.style.display = 'block';
-        else
-            more.style.display = 'none';
-    }
-}
-
 function reTest() {
   needValidate = false; 
   go('retry'); 
@@ -260,5 +253,7 @@ var database = new Array();
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });
+
+    jQuery('.msg').mtToggleNext();
 </mt:setvarblock>
 <mt:include name="include/chromeless_footer.tmpl">

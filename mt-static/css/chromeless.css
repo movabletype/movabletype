@@ -425,14 +425,6 @@ ul#profile-data li {
     margin-left: 0;
 }
 
-/* - Wizerd */
-#error_more {
-    margin: 10px 0 15px;
-    font-weight: normal;
-    overflow: auto;
-    padding: 5px 0 10px 0;
-}
-
 /* -- Start */
 .mt-config-file-path {
     overflow: auto;

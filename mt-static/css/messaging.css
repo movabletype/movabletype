@@ -32,6 +32,10 @@
     margin: 0 45px 0 0;
 }
 
+.msg .detail p { 
+    margin: 0;
+}
+
 .msg img.mt-close-msg { 
     position: absolute;
     top: 50%;
