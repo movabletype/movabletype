@@ -236,7 +236,7 @@ var database = new Array();
             jQuery.each(database[dbtype], function() {
                var id = '#'+this+'-field';
                jQuery(id).show();
-               if (jQuery('#advanced_fields').find(id)) {
+               if (jQuery('#advanced_fields '+id).length) {
                    jQuery('#more').show();
                }
             });
