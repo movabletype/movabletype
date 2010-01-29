@@ -1103,8 +1103,10 @@ abstract class MTDatabase {
         $_total_count = 0;
         while (!$result->EOF) {
             $e = new Entry;
-            foreach($field_names as $key)
+            foreach($field_names as $key) {
+  	        $key = strtolower($key);
                 $e->$key = $result->fields($key);
+	    }
             $result->MoveNext();
 
             if (empty($e)) break;
@@ -2227,7 +2229,7 @@ abstract class MTDatabase {
 
         $query = "
             select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url
-              from mt_fileinfo, mt_templatemap, mt_blog as A, mt_blog as B
+              from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
              where fileinfo_category_id in ($id_list)
                and fileinfo_archive_type = 'Category'
               and A.blog_id = fileinfo_blog_id
@@ -3297,7 +3299,7 @@ abstract class MTDatabase {
             select distinct
                 subs.*
             from
-                ($subsql) as subs
+                ($subsql) subs
                 inner join mt_comment on comment_entry_id = entry_id and comment_visible = 1
             order by
                 comment_created_on desc

@@ -558,7 +558,6 @@ class MonthlyArchiver extends DateBasedArchiver {
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
         $offset = isset($args['offset']) ? $args['offset'] : -1;
         $results = $mt->db()->SelectLimit($sql, $limit, $offset);
-
         return empty($results) ? null : $results->GetArray();
     }
 }

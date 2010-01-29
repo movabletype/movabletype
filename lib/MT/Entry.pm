@@ -879,17 +879,19 @@ sub gather_changed_cols {
     $tag_changed = 1 if scalar( @tag_names ) != scalar( @objecttags );
 
     unless ( $tag_changed ) {
-        my @tags = MT::Tag->load({ name => \@tag_names },
-            { binary => { name => 1 } } );
-        # XXX: just in case...
-        $tag_changed = 1 if scalar( @tags ) != scalar( @objecttags );
+	if ( @tag_names ) {
+            my @tags = MT::Tag->load({ name => \@tag_names },
+                { binary => { name => 1 } } );
+            # XXX: just in case...
+            $tag_changed = 1 if scalar( @tags ) != scalar( @objecttags );
 
-        my %tags = map { $_->id => 1 } @tags;
-        foreach my $objecttag ( @objecttags ) {
-            delete $tags{ $objecttag->tag_id };
-        }
-        # there are changes in the list of tags
-        $tag_changed = 1 if keys( %tags );
+            my %tags = map { $_->id => 1 } @tags;
+            foreach my $objecttag ( @objecttags ) {
+                delete $tags{ $objecttag->tag_id };
+            }
+            # there are changes in the list of tags
+            $tag_changed = 1 if keys( %tags );
+	}
     }
 
     push @$changed_cols, 'tags' if $tag_changed;

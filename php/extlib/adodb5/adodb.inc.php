@@ -3004,7 +3004,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		$results = array();
 		$cnt = 0;
 		while (!$this->EOF && $nRows != $cnt) {
-			$results[] = $this->fields;
+//		        $results[] = $this->fields;
+ 		        $rs = $this->fields;
+                        $keys = array_keys($rs);
+                        $new_rs = null;
+                        foreach( $keys as $key )
+    			        $new_rs[strtolower($key)] = $rs[$key];
+                        $results[] = $new_rs;
 			$this->MoveNext();
 			$cnt++;
 		}

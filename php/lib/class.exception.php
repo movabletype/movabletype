@@ -64,10 +64,10 @@ class MTUnsupportedImageTypeException extends MTException {
 #/***
 # * Default exception handler
 # */
-#function default_exception_handler ($e) {
-#    echo "<b>Error:</b> ". $e->getMessage() ."<br>\n";
-#    echo "<pre>".$e->getTraceAsString()."</pre>";
-#}
+function default_exception_handler ($e) {
+    echo "<b>Error:</b> ". $e->getMessage() ."<br>\n";
+    echo "<pre>".$e->getTraceAsString()."</pre>";
+}
 #
 #/***
 # * Convert runtime error to exception
@@ -79,6 +79,6 @@ class MTUnsupportedImageTypeException extends MTException {
 #/***
 # * Set up default exception handler
 # */
-#@set_exception_handler("default_exception_handler");
+@set_exception_handler("default_exception_handler");
 #@set_error_handler("exception_error_handler");
 ?>
