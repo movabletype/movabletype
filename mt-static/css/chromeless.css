@@ -131,9 +131,8 @@ input.smaller-text {
 }
 
 .hint {
-    line-height: 1.1;
-    font-size: 11px;
-    padding-top: 2px;
+    margin-top: 3px;
+    color: #7b7c7d;
 }
 .input-hint {
     color:#999;
@@ -432,9 +431,6 @@ ul#profile-data li {
     font-weight: normal;
     overflow: auto;
     padding: 5px 0 10px 0;
-}
-#continue {
-    margin-bottom: 20px;
 }
 
 /* -- Start */
