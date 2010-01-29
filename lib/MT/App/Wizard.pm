@@ -118,7 +118,7 @@ sub init_core_registry {
                 handler => \&configure,
                 params  => [
                     qw(dbpath dbname dbport dbserver dbsocket
-                        dbtype dbuser dbpass publish_charset)
+                        dbtype dbuser dbpass odbcdriver publish_charset)
                 ]
             },
             optional => {
@@ -686,10 +686,11 @@ sub configure {
             else {
                 $cfg->Database( $param{dbname} );
             }
-            $cfg->DBUser( $param{dbuser} )     if $param{dbuser};
-            $cfg->DBPassword( $param{dbpass} ) if $param{dbpass};
-            $cfg->DBPort( $param{dbport} )     if $param{dbport};
-            $cfg->DBSocket( $param{dbsocket} ) if $param{dbsocket};
+            $cfg->DBUser( $param{dbuser} )         if $param{dbuser};
+            $cfg->DBPassword( $param{dbpass} )     if $param{dbpass};
+            $cfg->DBPort( $param{dbport} )         if $param{dbport};
+            $cfg->DBSocket( $param{dbsocket} )     if $param{dbsocket};
+            $cfg->ODBCDriver( $param{odbcdriver} ) if $param{odbcdriver};
             $cfg->DBHost( $param{dbserver} )
                 if $param{dbserver} && ( $param{dbtype} ne 'oracle' );
             my $current_charset = $cfg->PublishCharset;
@@ -1016,7 +1017,8 @@ sub seed {
                 if ( $dbtype ne 'oracle' ) && $param{dbserver};
             $param{database_port}   = $param{dbport}   if $param{dbport};
             $param{database_socket} = $param{dbsocket} if $param{dbsocket};
-            $param{use_setnames}    = $param{setnames} if $param{setnames};
+            $param{odbcdriver}   = $param{odbcdriver} if $param{odbcdriver};
+            $param{use_setnames} = $param{setnames}   if $param{setnames};
             $param{publish_charset} = $param{publish_charset}
                 if $param{publish_charset};
         }
