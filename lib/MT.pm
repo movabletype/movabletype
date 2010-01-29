@@ -763,11 +763,14 @@ sub run_callbacks {
                     my $result = $class->run_callback( $cb, @args );
                     $filter_value &&= $result;
                     if ( !$result ) {
+                        if ( $cb->errstr() ) {
+                            push @errors, $cb->errstr();
+                        }
                         if ( $class->errstr() ) {
                             push @errors, $class->errstr();
                         }
                         if ( !defined($first_error) ) {
-                            $first_error = $class->errstr();
+                            $first_error = $cb->errstr() || $class->errstr();
                         }
                     }
                 }
