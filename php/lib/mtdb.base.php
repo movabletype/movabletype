@@ -605,7 +605,7 @@ abstract class MTDatabase {
             return $entries[0];
     }
 
-    public function fetch_entries($args, $total_count = NULL) {
+    public function fetch_entries($args, &$total_count = NULL) {
         require_once('class.mt_entry.php');
         $extras = array();
 
@@ -1019,7 +1019,7 @@ abstract class MTDatabase {
             $no_resort = 0;
         }
 
-        if (count($filters)) {
+        if (count($filters) || !is_null($total_count)) {
             $post_select_limit = $limit;
             $post_select_offset = $offset;
             $limit = 0; $offset = 0;
