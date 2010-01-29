@@ -576,7 +576,7 @@ sub configure {
         if ( $dbtype eq 'mssqlserver' ) {
             $param{publish_charset} = $app->param('publish_charset')
                 || (
-                $app->{cfg}->DefaultLanguage eq 'ja'
+                $app->param('default_language') eq 'ja'
                 ? 'Shift_JIS'
                 : 'ISO-8859-1'
                 );
