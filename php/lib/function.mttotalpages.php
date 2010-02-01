@@ -9,7 +9,8 @@ function smarty_function_mttotalpages($args, &$ctx) {
     $limit = $ctx->stash('__pager_limit');
     if (!$limit) return 1;
     $offset = $ctx->stash('__pager_offset');
-    ceil( $count / $limit );
+    $count = $ctx->stash('__pager_total_count');
+    return ceil( $count / $limit );
 }
 ?>
 
