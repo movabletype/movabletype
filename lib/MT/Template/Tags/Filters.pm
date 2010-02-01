@@ -19,7 +19,6 @@ use Time::Local qw( timegm timelocal );
 use MT::Promise qw( delay );
 use MT::Category;
 use MT::Entry;
-use MT::I18N qw( first_n_text const wrap_text );
 use MT::Asset;
 
 ###########################################################################
@@ -917,7 +916,8 @@ a text e-mail message):
 
 sub _fltr_wrap_text {
     my ($str, $val, $ctx) = @_;
-    my $ret = wrap_text($str, $val);
+    require MT::I18N::default;
+    my $ret = MT::I18N::default->wrap_text($str, $val);
     return $ret;
 }
 

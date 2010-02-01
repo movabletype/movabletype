@@ -178,9 +178,9 @@ sub encode_text_encode {
         #Encode::_utf8_off($text);
         eval {
             if ( ( ( 'iso-2022-jp' eq lc($to) ) || ( 'shift_jis' eq lc($to) ) )
-                && ( 'utf-8' eq lc($from)) )
+                && ( $from =~ m/^utf?8/ig ) )
             {
-                $text = Encode::encode_utf8( $text ) if Encode::is_utf8( $text );
+                $text = Encode::decode_utf8( $text ) unless Encode::is_utf8( $text );
                 #FULLWIDTH TILDE to WAVE DASH 
                 $text =~ s/\x{ff5e}/\x{301c}/g;  
                 #PARALLEL TO to DOUBLE VERTICAL LINE 
@@ -193,7 +193,7 @@ sub encode_text_encode {
                 $text =~ s/\x{ffe1}/\x{00a3}/g; 
                 #FULLWIDTH NOT SIGN to NOT SIGN 
                 $text =~ s/\x{ffe2}/\x{00ac}/g; 
-                Encode::from_to($text, $from, $to);
+                $text = Encode::encode( $to, $text );
             } else {
                 Encode::from_to($text, $from, $to);
             }

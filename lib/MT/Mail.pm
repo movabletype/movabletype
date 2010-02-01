@@ -34,7 +34,8 @@ sub send {
     my $mail_enc = uc ($mgr->MailEncoding || $mgr->PublishCharset);
     $mail_enc = lc $mail_enc;
 
-    $body = Encode::encode($mail_enc, $body);
+    require MT::I18N::default;
+    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 
     eval "require MIME::EncWords;";
     unless ($@) {
@@ -47,11 +48,11 @@ sub send {
                         if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = MIME::EncWords::encode_mimeword(
-                                    Encode::encode($mail_enc, $1), 'b', $mail_enc) . ' ' . $2;
+                                    MT::I18N::default->encode_text_encode($1, undef, $mail_enc), 'b', $mail_enc) . ' ' . $2;
                             }
                         } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
                             $_ = MIME::EncWords::encode_mimeword(
-                                    Encode::encode($mail_enc, $_), 'b', $mail_enc);
+                                    MT::I18N::default->encode_text_encode($_, undef, $mail_enc), 'b', $mail_enc);
                         }
                     }
                 }
@@ -60,18 +61,18 @@ sub send {
                     if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                         if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                             $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                                    Encode::encode($mail_enc, $1), 'b', $mail_enc) . ' ' . $2;
+                                    MT::I18N::default->encode_text_encode($1, undef, $mail_enc), 'b', $mail_enc) . ' ' . $2;
                         }
                     } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
                         $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                            Encode::encode($mail_enc, $val), 'b', $mail_enc);
+                            MT::I18N::default->encode_text_encode($val, undef, $mail_enc), 'b', $mail_enc);
                     }
                 }
             }
         }
     } else {
-        $hdrs{Subject} = Encode::encode($mail_enc, $hdrs{Subject});
-        $hdrs{From} = Encode::encode($mail_enc, $hdrs{From});
+        $hdrs{Subject} = MT::I18N::default->encode_text_encode($hdrs{Subject}, undef, $mail_enc);
+        $hdrs{From} = MT::I18N::default->encode_text_encode($hdrs{From}, undef, $mail_enc);
     }
     $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
     $hdrs{'Content-Transfer-Encoding'} = (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
