@@ -426,8 +426,8 @@ TC.attachLoadEvent(init);
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:unless name="new_object">
     jQuery('#change-password-link').click(function(event) {
-        $(this).parents('#show_password-field').next('#password-fields').toggle();
-        $(this).parents('#show_password-field').hide();
+        jQuery(this).parents('#show_password-field').next('#password-fields').toggle();
+        jQuery(this).parents('#show_password-field').hide();
         event.preventDefault();
     });
 </mt:unless>
