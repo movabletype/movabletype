@@ -48,8 +48,10 @@
     </mt:if>
     <mt:if name="role_view">
         <mt:if name="can_create_association">
-        <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=website&amp;role_id=<mt:var name="role_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Assign Website Role to User"></a></li>
+            <mt:if name="can_assign_website">
+        <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=website&amp;role_id=<mt:var name="role_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Assign Website Role to User"></a></li></mt:if><mt:if name="can_assign_blog">
         <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=blog&amp;role_id=<mt:var name="role_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">%26role_id=<mt:var name="role_id" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Assign Blog Role to User"></a></li>
+            </mt:if>
         </mt:if>
     </mt:if>
     <mt:if name="usergroup_view">
