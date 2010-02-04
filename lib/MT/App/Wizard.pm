@@ -1008,19 +1008,29 @@ sub seed {
             $param{database_name} = $param{dbpath};
         }
         else {
+            my %param_name = (
+                dbname => 'database_name',
+                dbuser => 'database_user',
+                dbpass => 'database_password',
+                dbserver => 'database_host',
+                dbport => 'database_port',
+                dbsocket => 'database_socket',
+                odbcdriver => 'database_odbcdriver',
+                setnames => 'use_setnames',
+                publish_charset => 'publish_charset',
+            );
+
             $param{use_dbms}          = 1;
             $param{object_driver}     = $drivers->{$dbtype}{config_package};
-            $param{database_name}     = $param{dbname};
-            $param{database_username} = $param{dbuser};
-            $param{database_password} = $param{dbpass} if $param{dbpass};
-            $param{database_host}     = $param{dbserver}
-                if ( $dbtype ne 'oracle' ) && $param{dbserver};
-            $param{database_port}   = $param{dbport}   if $param{dbport};
-            $param{database_socket} = $param{dbsocket} if $param{dbsocket};
-            $param{odbcdriver}   = $param{odbcdriver} if $param{odbcdriver};
-            $param{use_setnames} = $param{setnames}   if $param{setnames};
-            $param{publish_charset} = $param{publish_charset}
-                if $param{publish_charset};
+            my $disp = $drivers->{$dbtype}->{display};
+            foreach my $id ( @$disp ) {
+                next unless exists $param{$id};
+                next unless exists $param_name{$id};
+
+                my $key = $param_name{$id};
+                $param{$key} = $param{$id}
+                    if $param{$id};
+            }
         }
     }
 
