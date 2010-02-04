@@ -576,6 +576,7 @@ sub list_association {
         }
         $app->add_breadcrumb( $app->translate('User Associations') );
     }
+    my ( $can_assign_website, $can_assign_blog );
     if ($role_id) {
         my $role_class = $app->model('role') or return;
         $role = $role_class->load($role_id);
@@ -589,6 +590,9 @@ sub list_association {
             )
         );
         $app->add_breadcrumb( $app->translate("Role Users & Groups") );
+
+        $can_assign_website = !$role->has('administer_blog') ? 1 : 0;
+        $can_assign_blog = !$role->has('administer_website') ? 1 : 0;
     }
     if ( !$role_id  && !$author_id ) {
         if ($blog_id) {
@@ -720,6 +724,8 @@ sub list_association {
                     return_args => '__mode=list_association&role_id=' . $role_id,
                     role_id   => $role_id,
                     role_name => $role->name,
+                    can_assign_website => $can_assign_website,
+                    can_assign_blog => $can_assign_blog,
                   )
                 : (),
                 $author_id
