@@ -1010,7 +1010,7 @@ sub seed {
         else {
             my %param_name = (
                 dbname => 'database_name',
-                dbuser => 'database_user',
+                dbuser => 'database_username',
                 dbpass => 'database_password',
                 dbserver => 'database_host',
                 dbport => 'database_port',
