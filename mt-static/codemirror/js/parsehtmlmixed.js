@@ -13,6 +13,10 @@ var HTMLMixedParser = Editor.Parser = (function() {
         inTag = true;
       else if (token.style == "xml-tagname" && inTag === true)
         inTag = token.content.toLowerCase();
+      else if (token.style == "mt-tag" && inTag === true)
+        inTag = token.content.toLowerCase();
+      else if (token.style == "xml-text" && inTag === false)
+        iter.next = local(JSParser, "\n");
       else if (token.content == ">") {
         if (inTag == "script")
           iter.next = local(JSParser, "</script");
