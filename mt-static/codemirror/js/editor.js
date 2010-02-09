@@ -7,6 +7,7 @@
 var internetExplorer = document.selection && window.ActiveXObject && /MSIE/.test(navigator.userAgent);
 var webkit = /AppleWebKit/.test(navigator.userAgent);
 var safari = /Apple Computers, Inc/.test(navigator.vendor);
+var gecko = /gecko\/(\d{8})/i.test(navigator.userAgent);
 
 // Make sure a string does not contain two consecutive 'collapseable'
 // whitespace characters.
@@ -431,6 +432,11 @@ var Editor = (function(){
       addEventHandler(document.body, "mouseup", cursorActivity);
       addEventHandler(document.body, "cut", cursorActivity);
 
+      // workaround for a gecko bug [?] where going forward and then
+      // back again breaks designmode (no more cursor)
+      if (gecko)
+        addEventHandler(this.win, "pagehide", function(){self.unloaded = true;});
+
       addEventHandler(document.body, "paste", function(event) {
         cursorActivity();
         var text = null;
@@ -442,7 +448,7 @@ var Editor = (function(){
         if (text !== null) {
           event.stop();
           self.replaceSelection(text);
-          select.scrollToCursor(this.container);
+          select.scrollToCursor(self.container);
         }
       });
 
@@ -524,7 +530,6 @@ var Editor = (function(){
     },
 
     lineContent: function(line) {
-      this.checkLine(line);
       var accum = [];
       for (line = line ? line.nextSibling : this.container.firstChild;
            line && !isBR(line); line = line.nextSibling)
@@ -537,6 +542,18 @@ var Editor = (function(){
       this.replaceRange({node: line, offset: 0},
                         {node: line, offset: this.history.textAfter(line).length},
                         content);
+      this.addDirtyNode(line);
+      this.scheduleHighlight();
+    },
+
+    removeLine: function(line) {
+      var node = line ? line.nextSibling : this.container.firstChild;
+      while (node) {
+        var next = node.nextSibling;
+        removeElement(node);
+        if (isBR(node)) break;
+        node = next;
+      }
       this.addDirtyNode(line);
       this.scheduleHighlight();
     },
@@ -695,7 +712,6 @@ var Editor = (function(){
 
       var code = event.keyCode;
       this.keyCode = code;
-      this.keyPressed = false;
       // Don't scan when the user is typing.
       this.delayScanning();
       // Schedule a paren-highlight event, if configured.
@@ -767,7 +783,6 @@ var Editor = (function(){
     // and prevent Opera from handling enter and tab anyway.
     keyPress: function(event) {
       var electric = Editor.Parser.electricChars, self = this;
-      this.keyPressed = true;
       // Hack for Opera, and Firefox on OS X, in which stopping a
       // keydown event does not prevent the associated keypress event
       // from happening, so we have to cancel enter and tab again
@@ -789,7 +804,6 @@ var Editor = (function(){
     // released.
     keyUp: function(event) {
       if (this.keyCode == 229) return; // IM hack for IE
-      if (webkit && !this.keyPressed) return; // IM hack for webkit
       this.cursorActivity(isSafeKey(event.keyCode));
     },
 
@@ -1057,6 +1071,13 @@ var Editor = (function(){
     // Find the node that the cursor is in, mark it as dirty, and make
     // sure a highlight pass is scheduled.
     cursorActivity: function(safe) {
+      // pagehide event hack above
+      if (this.unloaded) {
+        this.win.document.designMode = "off";
+        this.win.document.designMode = "on";
+        this.unloaded = false;
+      }
+
       if (internetExplorer) {
         this.container.createTextRange().execCommand("unlink");
         this.selectionSnapshot = select.getBookmark(this.container);
@@ -1407,6 +1428,6 @@ var Editor = (function(){
 
 addEventHandler(window, "load", function() {
   var CodeMirror = window.frameElement.CodeMirror;
-  CodeMirror.editor = new Editor(CodeMirror.options);
+  var e = CodeMirror.editor = new Editor(CodeMirror.options);
   this.parent.setTimeout(method(CodeMirror, "init"), 0);
 });
