@@ -65,7 +65,7 @@ sub get {
     my $proxy = shift;
     my ($col) = @_;
 
-    $proxy->lazier_load_objects;
+    $proxy->lazier_load_objects( $col );
     if (exists $proxy->{__objects}->{$col}) {
         if (!$proxy->{__loaded}->{$col}) {
             $proxy->load_objects($col);
@@ -163,7 +163,7 @@ sub set {
     # xxx When you update the metadata, you have to preserve the
     # original data as well. This should be eliminated by adding the
     # update optimization for metadata columns
-    $proxy->lazier_load_objects;
+    $proxy->lazier_load_objects( $col );
 
     $proxy->{__objects}->{$col} = $proxy->create_meta_object($col, $value);
     
@@ -276,13 +276,20 @@ sub set_primary_keys {
 
 sub lazy_load_objects {
     my $proxy = shift;
-    $proxy->load_objects if ! exists $proxy->{__objects} && $proxy->{__pkeys};
+    my ( $col ) = @_;
+    $proxy->load_objects
+        if !exists $proxy->{__objects}
+            && $proxy->{__pkeys}
+            && ( ($col) ? ( !exists $proxy->{__objects}->{$col} ) : (1) );
 }
 
 sub lazier_load_objects {
     my $proxy = shift;
+    my ($col) = @_;
+
     require MT::Memcached;
-    return $proxy->lazy_load_objects if MT::Memcached->is_available;
+    return $proxy->lazy_load_objects( $col ) if MT::Memcached->is_available;
+
     if (! exists $proxy->{__objects} && $proxy->{__pkeys}) {
         my $meta_pkg = $proxy->meta_pkg;
         my @objs = $meta_pkg->search(

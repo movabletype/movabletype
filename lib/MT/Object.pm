@@ -795,12 +795,6 @@ sub column_func {
             $obj->{__meta}->set($col, @_);
         }
         else {
-            # Repopulate meta fields if they are missing; this fixes an issue with memcached caching an incomplete object
-            if (! exists $obj->{__meta}->{__objects}->{$col}) {
-              my $proxy = $obj->{__meta};
-              $proxy->set_primary_keys($obj) if $obj->has_primary_key;
-              $proxy->load_objects();
-            }
             $obj->{__meta}->get($col);
         }
     };
