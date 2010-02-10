@@ -4019,7 +4019,11 @@ name, identifier, or outfile.
 
 =item * entry_id
 
-The numeric system ID of the entry.
+The numeric system ID of the entry. This attribute can not use with blog_id.
+
+=item * blog_id
+
+The numeric system ID of the blog/website. This attribute can not use with entry_id.
 
 =item * with_index (optional; default "0")
 
@@ -4041,9 +4045,12 @@ B<Examples:>
 
 sub _hdlr_link {
     my($ctx, $arg, $cond) = @_;
-    my $blog = $ctx->stash('blog');
-    my $blog_id = $blog->id;
+    my $curr_blog = $ctx->stash('blog');
     if (my $tmpl_name = $arg->{template}) {
+        my $blog = $arg->{blog_id}
+            ? MT->model('blog')->load( $arg->{blog_id} )
+            : $curr_blog;
+        my $blog_id = $blog->id;
         require MT::Template;
         my $tmpl = MT::Template->load({ identifier => $tmpl_name,
                 type => 'index', blog_id => $blog_id })
@@ -4058,14 +4065,14 @@ sub _hdlr_link {
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
         my $link = $site_url . $tmpl->outfile;
-        $link = MT::Util::strip_index($link, $blog) unless $arg->{with_index};
+        $link = MT::Util::strip_index($link, $curr_blog) unless $arg->{with_index};
         $link;
     } elsif (my $entry_id = $arg->{entry_id}) {
         my $entry = MT::Entry->load($entry_id)
             or return $ctx->error(MT->translate(
                 "Can't find entry '[_1]'", $entry_id ));
         my $link = $entry->permalink;
-        $link = MT::Util::strip_index($link, $blog) unless $arg->{with_index};
+        $link = MT::Util::strip_index($link, $curr_blog) unless $arg->{with_index};
         $link;
     }
 }
