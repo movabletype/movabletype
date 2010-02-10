@@ -90,3 +90,10 @@
         plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
     });
 </mt:setvarblock>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>
