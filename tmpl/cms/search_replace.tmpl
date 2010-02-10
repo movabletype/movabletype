@@ -58,7 +58,7 @@ function doReplace() {
     var $checked = jQuery('#<$mt:var name="object_type"$>-listing tbody input:checked');
     if ($checked.length) {
         $checked.each(function() {
-            ids.push($(this).val());
+            ids.push(jQuery(this).val());
         });
         jQuery('#search_form input[name=replace_ids]').val(ids.join(','));
         jQuery('#search_form input[name=do_replace]').val(1);
