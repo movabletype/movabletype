@@ -319,6 +319,7 @@ BEGIN {
             'HTTPInterface'         => undef,
             'PingProxy'             => undef,
             'HTTPProxy'             => undef,
+            'HTTPSProxy'             => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
             'ImageDriver'           => { default => 'ImageMagick', },
