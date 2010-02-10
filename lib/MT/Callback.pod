@@ -205,14 +205,6 @@ through the C<$obj> parameter.
 
     callback($cb, $obj)
 
-=item * <package>::pre_remove_all
-
-    callback($cb, $class)
-
-=item * <package>::post_remove_all
-
-    callback($cb, $class)
-
 =item * <package>::pre_direct_remove
 
     callback($cb, $class, $terms, $args)

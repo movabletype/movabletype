@@ -169,11 +169,6 @@ operations. The callback routine is called as follows:
 
 The signature for the post_remove operation is the same.
 
-E<lt>classE<gt>::pre_remove_all and
-E<lt>classE<gt>::post_remove_all are called at the very beginning and
-very end of the respective operations, with no arguments except the
-MT::Callback object.
-
 =back
 
 =head1 ERROR HANDLING
