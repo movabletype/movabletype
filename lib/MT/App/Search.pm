@@ -94,28 +94,31 @@ sub init_request {
 
     my $q = $app->param;
 
-    my $cfg = $app->config;
+    my $cfg     = $app->config;
     my $blog_id = $q->param('blog_id') || $app->first_blog_id();
-    my $blog = $app->model('blog')->load($blog_id);
-    my $page = $q->param('page') ? $q->param('page') : 1;
-    my $limit = $q->param('limit') ? $q->param('limit') : ($blog->entries_on_index ? $blog->entries_on_index : $cfg->SearchMaxResults );
-    my $offset = ($page - 1) * $limit if ($page && $limit);
-    $q->param('limit', $limit) if $limit;
-    $q->param('offset', $offset) if $offset;
+    my $blog    = $app->model('blog')->load($blog_id);
+    my $page    = $q->param('page') ? $q->param('page') : 1;
+    my $limit
+        = $q->param('limit') ? $q->param('limit')
+        : ( $blog->entries_on_index ? $blog->entries_on_index
+        : $cfg->SearchMaxResults );
+    my $offset = ( $page - 1 ) * $limit if ( $page && $limit );
+    $q->param( 'limit',  $limit )  if $limit;
+    $q->param( 'offset', $offset ) if $offset;
 
     # These parameters are strictly numeric; invalid request if they
     # are given and are not
-    foreach my $param ( qw( blog_id limit offset SearchMaxResults ) ) {
+    foreach my $param (qw( blog_id limit offset SearchMaxResults )) {
         my $val = $q->param($param);
-        next unless defined $val && ($val ne '');
+        next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if $val !~ m/^\d+$/;
     }
-    foreach my $param ( qw( IncludeBlogs ExcludeBlogs ) ) {
+    foreach my $param (qw( IncludeBlogs ExcludeBlogs )) {
         my $val = $q->param($param);
-        next unless defined $val && ($val ne '');
+        next unless defined $val && ( $val ne '' );
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
-            if ($val !~ m/^(\d+,?)+$/ && $val ne 'all');
+            if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
     }
 
     my $params = $app->registry( $app->mode, 'params' );
@@ -154,13 +157,14 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
-	if ( my $blog_id = $q->param('blog_id') ) {
-	    $q->param('IncludeBlogs', $blog_id);
+    if ( my $blog_id = $q->param('blog_id') ) {
+        $q->param( 'IncludeBlogs', $blog_id );
     }
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
-            $app->{searchparam}{IncludeBlogs} = keys %$list if ($list && %$list);
+            $app->{searchparam}{IncludeBlogs} = keys %$list
+                if ( $list && %$list );
         }
         else {
             my $blog_list = $app->create_blog_list(%no_override);
@@ -170,7 +174,9 @@ sub init_request {
                     && $blog_list->{IncludeBlogs}
                     && @{ $blog_list->{IncludeBlogs} };
             return $app->error( $app->translate('Invalid request.') )
-                if ! $processed && ( !exists $app->{searchparam}{IncludeBlogs} || !@{$app->{searchparam}{IncludeBlogs}} );
+                if !$processed
+                    && (   !exists $app->{searchparam}{IncludeBlogs}
+                        || !@{ $app->{searchparam}{IncludeBlogs} } );
         }
     }
     else {
