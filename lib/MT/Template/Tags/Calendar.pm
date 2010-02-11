@@ -97,9 +97,9 @@ sub _hdlr_calendar {
     unless ($calendar_cache) {
         $r->cache('calendar', $calendar_cache = { });
     }
-    if (exists $calendar_cache->{$prefix . $cat_name} &&
-        $calendar_cache->{$prefix . $cat_name}{'uc'} eq $uncompiled) {
-        return $calendar_cache->{$prefix . $cat_name}{output};
+    if (exists $calendar_cache->{$blog_id.":" . $prefix . $cat_name} &&
+        $calendar_cache->{$blog_id.":" . $prefix . $cat_name}{'uc'} eq $uncompiled) {
+        return $calendar_cache->{$blog_id.":" . $prefix . $cat_name}{output};
     }
     $today .= sprintf "%02d", $ts[3];
     my($start, $end) = start_end_month($prefix);
@@ -163,7 +163,7 @@ sub _hdlr_calendar {
             return $ctx->error( $builder->errstr );
         $res .= $out;
     }
-    $calendar_cache->{$prefix . $cat_name} =
+    $calendar_cache->{$blog_id.":" . $prefix . $cat_name} =
         { output => $res, 'uc' => $uncompiled };
     return $res;
 }
