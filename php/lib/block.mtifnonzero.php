@@ -18,6 +18,8 @@ function smarty_block_mtifnonzero($args, $content, &$ctx, &$repeat) {
             $output = $ctx->tag($tag, $largs);
         } elseif (isset($args['var'])) {
             $output = $ctx->__stash['vars'][$args['var']];
+        } elseif (isset($args['name'])) {
+            $output = $ctx->__stash['vars'][$args['name']];
         }
         $ctx->stash('conditional', ($output != '0' && $output != ''));
         $ctx->stash('else_content', null);
