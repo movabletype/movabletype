@@ -60,7 +60,6 @@
 
     <mtapp:setting
        id="theme-author-name-field"
-       required="1"
        label="<__trans phrase="_THEME_AUTHOR">"
        hint="<__trans phrase="The author of this theme.">">
        <input type="text" name="theme_author_name" id="theme_author_name" value="<mt:var name="theme_author_name" escape="html">" />
@@ -164,7 +163,6 @@ jQuery(function() {
                 basename: true,
                 duplicate: true
             },
-            theme_author_name: 'required',
             theme_version: {
                 version: true
             },

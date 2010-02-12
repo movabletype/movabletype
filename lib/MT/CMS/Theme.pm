@@ -458,7 +458,7 @@ sub do_export {
         id          => $theme_id,
         name        => $theme_name,
         label       => $theme_name,
-        author_name => $q->param('theme_author_name') || '',
+        ( $q->param('theme_author_name') ? ( author_name => $q->param('theme_author_name') ) : () ),
         author_link => $q->param('theme_author_link') || '',
         version     => $theme_version,
         class       => ($blog->is_blog ? 'blog' : 'website'),
