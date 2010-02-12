@@ -326,8 +326,13 @@ MT.App.Editor.Iframe = new Class( Editor.Iframe, {
     
     
     eventKeyDown: function( event ) {
+        var code = event.keyCode;
+        // shift, control, alt, esc, arrows, home, end
+        if (!(code >= 16 && code <= 18) && !(code == 27) && !(code >= 33 && code <= 40)) {
+            this.editor.setChanged();
+        }
         /* safari forward delete */
-        if ( this.isWebKit && event.keyCode == 46 ) {
+        if ( this.isWebKit && code == 46 ) {
             this.document.execCommand( "forwardDelete", false, true );
             return false;
         }
