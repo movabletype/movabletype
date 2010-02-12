@@ -2356,6 +2356,32 @@ sub prepare_dynamic_publishing {
     my $htaccess_path = File::Spec->catfile( $site_path, ".htaccess" );
     my $mtview_path   = File::Spec->catfile( $site_path, "mtview.php" );
 
+    ## First, make template_c dir
+    my $compiled_template_path =
+      File::Spec->catfile( $site_path, 'templates_c' );
+    unless ( -d $compiled_template_path ) {
+        my $fmgr        = $blog->file_mgr;
+        my $cfg         = MT->config;
+        my $saved_umask = $cfg->DirUmask;
+        $cfg->DirUmask('0000');
+        $fmgr->mkpath($compiled_template_path);
+        $cfg->DirUmask($saved_umask);
+        my $message = q();
+
+        if ( -d $compiled_template_path ) {
+            $message = MT->translate(
+    'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
+                'templates_c'
+            ) unless ( -w $compiled_template_path );
+        }
+        else {
+            $message = MT->translate(
+    'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
+                'templates_c'
+            ) unless ( -d $compiled_template_path );
+        }
+    }
+
     ## Don't re-create when files are there in callback.
     return 1
       if !defined($cache)
@@ -2439,29 +2465,6 @@ HTACCESS
     }
 
     _create_mtview( $blog, $site_path, $cache, $conditional );
-
-    my $compiled_template_path =
-      File::Spec->catfile( $site_path, 'templates_c' );
-    my $fmgr        = $blog->file_mgr;
-    my $cfg         = MT->config;
-    my $saved_umask = $cfg->DirUmask;
-    $cfg->DirUmask('0000');
-    $fmgr->mkpath($compiled_template_path);
-    $cfg->DirUmask($saved_umask);
-    my $message = q();
-
-    if ( -d $compiled_template_path ) {
-        $message = MT->translate(
-'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.',
-            'templates_c'
-        ) unless ( -w $compiled_template_path );
-    }
-    else {
-        $message = MT->translate(
-'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.',
-            'templates_c'
-        ) unless ( -d $compiled_template_path );
-    }
 
     if ($cache) {
         _create_dynamiccache_dir( $blog, $site_path );
