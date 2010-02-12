@@ -1498,7 +1498,7 @@ use vars qw( @ISA %Lexicon );
 	'You cannot define a role without permissions.' => '権限のないロールは作成できません。',
 	'Invalid ID given for personal blog theme.' => '個人用ブログテーマのIDが不正です。',
 	'Invalid ID given for personal blog clone location ID.' => '個人用ブログの複製先のIDが不正です。',
-	'If personal blog is set, the personal blog location are required.' => '個人用ブログの設定にはブログロケーションが必要です。',
+	'If personal blog is set, the personal blog location are required.' => '個人用ブログの設定にはウェブサイトの選択が必要です。',
 	'Select a entry author' => 'ブログ記事の投稿者を選択',
 	'Select a page author' => 'ページの投稿者を選択',
 	'Selected author' => '選択された投稿者',
