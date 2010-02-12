@@ -1075,7 +1075,7 @@ sub _build_entry_preview {
     $entry->authored_on($ts);
 
     my $preview_basename = $app->preview_object_basename;
-    $entry->basename($preview_basename);
+    $entry->basename( $q->param('basename') || $preview_basename );
 
     require MT::TemplateMap;
     require MT::Template;
