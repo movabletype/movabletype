@@ -499,7 +499,7 @@ function toggleCache(id) {
 <input type="hidden" name="action_input" value="" />
 <mt:if name="use_revision">
 <input type="hidden" name="save_revision" id="save_revision" value="1" />
-<input type="hidden" name="current_revision" id="current_revision" value="<mt:var name="current_revision">" />
+<input type="hidden" name="current_revision" id="current_revision" value="<mt:ifNonEmpty name="current_revision"><mt:var name="current_revision"><mt:else>0</mt:IfNonEmpty>" />
 </mt:if>
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
