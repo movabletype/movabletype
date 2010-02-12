@@ -355,6 +355,10 @@ sub edit {
         $param->{website_path} = File::Spec->catfile($website->column('site_path'), '') if $website->column('site_path');
         $param->{website_url} = $website->site_url;
     }
+    if ( exists $param->{website_path} ) {
+        my $sep = MT::Util::dir_separator;
+        $param->{website_path} = $param->{website_path} . $sep if $param->{website_path} !~ m/$sep$/;
+    }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
         my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!;

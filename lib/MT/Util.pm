@@ -27,7 +27,7 @@ our @EXPORT_OK = qw( start_end_day start_end_week start_end_month start_end_year
                  epoch2ts ts2epoch escape_unicode unescape_unicode
                  sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
                  weaken log_time make_string_csv browser_language sanitize_embed
-                 extract_url_path break_up_text );
+                 extract_url_path break_up_text dir_separator );
 
 {
 my $Has_Weaken;
@@ -2222,6 +2222,13 @@ sub break_up_text {
     return $text;
 }
 
+sub dir_separator {
+    require File::Spec;
+    my $sep = File::Spec->catdir( 'MT', 'MT' );
+    $sep =~ s/MT//g;
+    return $sep;
+}
+
 1;
 
 __END__
@@ -2411,6 +2418,10 @@ Wrapper method to JSON::to_json which decodes any string value
 in I<reference> to UTF-8 strings as JSON::to_json requires.
 It then encodes back to the charset specified in PublishCharset
 for MT to render json strings properly.
+
+=head2 dir_separator
+
+Returns the character of directory separator.
 
 =head1 AUTHOR & COPYRIGHTS
 
