@@ -118,8 +118,7 @@ sub save {
     my $original = $obj->clone();
     my $names    = $obj->column_names;
     my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
-
-    if ( $type eq 'blog' ) {
+    if ( $type eq 'blog' && ( ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' ) ) {
         my $subdomain = $q->param('site_url_subdomain');
         $subdomain = '' if !$q->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
