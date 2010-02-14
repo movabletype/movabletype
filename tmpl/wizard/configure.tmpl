@@ -104,7 +104,7 @@
                     <mtapp:setting
                         id="<mt:var name="id">"
                         label="<mt:var name="label">">
-                        <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:var name="default">" />
+                        <input type="<mt:var name="type">" name="<mt:var name="id">" value="<mt:if name="$id"><mt:var name="$id"><mt:else><mt:var name="default" escape="html"></mt:if>" />
                     </mtapp:setting>
             </mt:loop>
                 </div>
