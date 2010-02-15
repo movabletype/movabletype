@@ -722,35 +722,15 @@ sub list {
     my $scope;
     my $set;
     if ( $blog ) {
-        if ( my $theme = $blog->theme ) {
-            my @elements = $theme->elements;
-            my ($theme_set) = grep { $_->{id} eq 'template_set' } @elements;
-            if ( $theme_set ) {
-                my $data = $theme_set->{data};
-                $set = ref $data ? $data->{templates}
-                     :             MT->registry( template_sets => $data => 'templates')
-                     ;
-            }
+        my $ts = $blog->template_set;
+        if ( ref $ts ) {
+            $set = $ts->{templates};
         }
-        if (!$set) {
-            $set = $blog->template_set && $blog->template_set ne 'mt_blog'
-                     ? MT->registry(template_sets => $blog->template_set => 'templates')
-                     : MT->registry('default_templates')
-                     ;
+        elsif ( $ts ne 'mt_blog' ) {
+            $set = MT->registry(template_sets => $blog->template_set => 'templates');
         }
-        if (!$set) {
-            require MT::Theme;
-            ## try to load same named theme for backward compatibility.
-            if ( my $theme = MT::Theme->load( $blog->template_set ) ) {
-                my @elements = $theme->elements;
-                my ($theme_set) = grep { $_->{id} eq 'template_set' } @elements;
-                if ( $theme_set ) {
-                    my $data = $theme_set->{data};
-                    $set = ref $data ? $data->{templates}
-                         :             MT->registry( template_sets => $data => 'templates')
-                         ;
-                }
-            }
+        else {
+            MT->registry('default_templates');
         }
         $scope = 'system';
     }
