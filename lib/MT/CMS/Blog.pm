@@ -386,7 +386,9 @@ sub list {
     my $offset    = $app->param('offset') || 0;
     my $args      = { offset => $offset, sort => 'name' };
     $args->{limit} = $limit + 1;
-    unless ( $author->is_superuser ) {
+    unless ( $author->is_superuser
+        || $author->permissions(0)->can_do('edit_templates') )
+    {
         $args->{join} = MT::Permission->join_on(
             'blog_id',
             { author_id => $author->id },
