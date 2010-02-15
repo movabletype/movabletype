@@ -119,18 +119,21 @@ sub save {
     my $names    = $obj->column_names;
     my %values   = map { $_ => ( scalar $q->param($_) ) } @$names;
     if ($type eq 'blog'
+        && $obj->class eq 'blog'
         && (!$app->param('cfg_screen')
             || ( $app->param('cfg_screen')
                 && ( $app->param('cfg_screen') || '' ) eq 'cfg_prefs' )
         )
         )
     {
-        my $subdomain = $q->param('site_url_subdomain');
-        $subdomain = '' if !$q->param('use_subdomain');
-        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-        $subdomain =~ s/\.{2,}/\./g;
-        my $path = $q->param('site_url_path');
-        $values{site_url} = "$subdomain/::/$path";
+        unless ( $obj->id ) {
+            my $subdomain = $q->param('site_url_subdomain');
+            $subdomain = '' if !$q->param('use_subdomain');
+            $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+            $subdomain =~ s/\.{2,}/\./g;
+            my $path = $q->param('site_url_path');
+            $values{site_url} = "$subdomain/::/$path";
+        }
 
         unless ( $author->is_superuser
             || ( $perms && $perms->can_do('save_all_settings_for_blog') ) )
@@ -152,7 +155,7 @@ sub save {
         }
     }
 
-    if ( $type eq 'website' ) {
+    if ( $type eq 'website' || ( $type eq 'blog' && $obj->class eq 'website' ) ) {
         unless ( $author->is_superuser
             || ( $perms && $perms->can_do('save_all_settings_for_website') ) )
         {

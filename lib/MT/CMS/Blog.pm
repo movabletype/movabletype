@@ -2059,20 +2059,19 @@ sub cfg_prefs_save {
         $blog->max_revisions_template( $app->param('max_revisions_template') )
           if $app->param('max_revisions_template');
     }
-    my $subdomain = $app->param('site_url_subdomain');
-    $subdomain = '' if !$app->param('use_subdomain');
-    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-    $subdomain =~ s/\.{2,}/\./g;
-    my $path = $app->param('site_url_path');
-    if ( $subdomain || $path ) {
+    if ( $blog->class eq 'blog' ) {
+        my $subdomain = $app->param('site_url_subdomain');
+        $subdomain = '' if !$app->param('use_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        my $path = $app->param('site_url_path');
         $blog->site_url("$subdomain/::/$path");
-    }
-    $subdomain = $app->param('archive_url_subdomain');
-    $subdomain = '' if !$app->param('use_archive_subdomain');
-    $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-    $subdomain =~ s/\.{2,}/\./g;
-    $path = $app->param('archive_url_path');
-    if ( $app->param('enable_archive_paths') && ( $subdomain || $path ) ) {
+
+        $subdomain = $app->param('archive_url_subdomain');
+        $subdomain = '' if !$app->param('use_archive_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        $path = $app->param('archive_url_path');
         $blog->archive_url("$subdomain/::/$path");
     }
 
