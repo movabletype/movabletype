@@ -327,22 +327,43 @@ sub template_paths {
     push @paths, $dir if -d $dir;
     $dir = $c->path;
     push @paths, $dir if -d $dir;
+    if ( $mt->{plugin_template_path} ) {
+        if (File::Spec->file_name_is_absolute( $mt->{plugin_template_path} ) )
+        {
+            push @paths, $mt->{plugin_template_path}
+                if -d $mt->{plugin_template_path};
+        }
+        else {
+            my $dir = File::Spec->catdir( $mt->app_dir,
+                $mt->{plugin_template_path} );
+            if ( -d $dir ) {
+                push @paths, $dir;
+            }
+            else {
+                $dir = File::Spec->catdir( $mt->mt_dir,
+                    $mt->{plugin_template_path} );
+                push @paths, $dir if -d $dir;
+            }
+        }
+    }
     if ( my $alt_path = $mt->config('AltTemplatePath') ) {
         if ( -d $alt_path ) {    # AltTemplatePath is absolute
             push @paths, File::Spec->catdir( $alt_path, $mt->{template_dir} )
-              if $mt->{template_dir};
+                if $mt->{template_dir};
             push @paths, $alt_path;
         }
     }
     if ( UNIVERSAL::isa( $c, 'MT::Plugin' ) ) {
         for my $addon ( @{ $mt->find_addons('pack') } ) {
-            push @paths, File::Spec->catdir($addon->{path}, 'tmpl', $mt->{template_dir})
+            push @paths,
+                File::Spec->catdir( $addon->{path}, 'tmpl',
+                $mt->{template_dir} )
                 if $mt->{template_dir};
-            push @paths, File::Spec->catdir($addon->{path}, 'tmpl');
+            push @paths, File::Spec->catdir( $addon->{path}, 'tmpl' );
         }
     }
     push @paths, File::Spec->catdir( $path, $mt->{template_dir} )
-      if $mt->{template_dir};
+        if $mt->{template_dir};
     push @paths, $path;
     return @paths;
 }
