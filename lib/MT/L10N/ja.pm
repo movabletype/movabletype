@@ -1363,6 +1363,7 @@ use vars qw( @ISA %Lexicon );
 	'Email Templates' => 'メールテンプレート',
 	'Template Backups' => 'バックアップされたテンプレート',
 	'Can\'t locate host template to preview module/widget.' => 'モジュール/ウィジェットをプレビューするための親テンプレートが見つかりませんでした。',
+	'Cannot preview without a template map!' => 'テンプレートマップがない状態でプレビューはできません。',
 	'Lorem ipsum' => 'いろはにほへと',
 	'LOREM_IPSUM_TEXT' => 'いろはにほへと ちりぬるを わかよたれそ つねならむ うゐのおくやま けふこえて あさきゆめみし ゑひもせす',
 	'LORE_IPSUM_TEXT_MORE' => '色は匂へど 散りぬるを 我が世誰ぞ 常ならむ 有為の奥山 今日越えて 浅き夢見し 酔ひもせず',

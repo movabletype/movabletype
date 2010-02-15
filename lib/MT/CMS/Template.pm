@@ -962,9 +962,10 @@ sub preview {
         # some variety of archive template
         my $ctx = $preview_tmpl->context;
         require MT::TemplateMap;
-        my $map = MT::TemplateMap->load( { template_id => $id, is_preferred => 1 });
-        if (! $map) {
-            return $app->error("Cannot preview without a template map!");
+        my $map = MT::TemplateMap->load( { template_id => $id } );
+        if ( !$map ) {
+            return $app->error(
+                $app->translate("Cannot preview without a template map!") );
         }
         $ctx->{current_archive_type} = $map->archive_type;
         my $archiver = MT->publisher->archiver( $map->archive_type );
