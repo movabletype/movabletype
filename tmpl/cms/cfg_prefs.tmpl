@@ -90,7 +90,7 @@ function setLicense() {
 <form name="cfg_form" id="cfg_form" method="post" action="<mt:var name="script_url">">
 <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 <input type="hidden" name="__mode" value="save" />
-<input type="hidden" name="_type" value="blog" />
+<input type="hidden" name="_type" value="<mt:if name="is_blog">blog<mt:else>website</mt:if>" />
 <input type="hidden" name="cfg_screen" value="cfg_prefs" />
 <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
 <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
