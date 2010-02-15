@@ -189,9 +189,10 @@ sub uninstall {
         or return $app->error(
             MT->translate('Failed to uninstall theme: [_1]', $!)
         );
+    my $label = $theme->label;
     my %redirect_args = (
         theme_uninstalled => 1,
-        uninstalled_theme_name => $theme->label,
+        uninstalled_theme_name => ref($label) ? $label->() : $label,
     );
     $redirect_args{blog_id} = $app->blog->id if $app->blog;
     $app->redirect(
