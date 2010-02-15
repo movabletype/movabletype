@@ -220,7 +220,7 @@
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('a.theme-detail-link').click(function(event) {
-        jQuery('.theme').not($(this).parents('.theme')).removeClass('theme-expanded')
+        jQuery('.theme').not(jQuery(this).parents('.theme')).removeClass('theme-expanded')
         jQuery(this).parents('.theme').toggleClass('theme-expanded');
         event.preventDefault();
     });
