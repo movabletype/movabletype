@@ -678,7 +678,6 @@ sub _hdlr_archive_title {
     my($ctx, $args) = @_;
 
     my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
-    return $ctx->invoke_handler('categorylabel', $args) if $at eq 'Category';
 
     my $archiver = MT->publisher->archiver($at);
     my @entries;
@@ -700,7 +699,7 @@ sub _hdlr_archive_title {
                 ## process, there won't be any entries in $entries. So, we
                 ## build a stub MT::Entry object and set the created_on date
                 ## to the current timestamp (start of day/week/month).
-            
+
                 ## But, it's not generally true that draft-izing an entry
                 ## erases all of its manifestations. The individual 
                 ## archive lingers, for example. --ez
