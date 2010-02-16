@@ -933,10 +933,12 @@ sub backup {
                   . "' asset_id='"
                   . $id
                   . "' />\n";
-                my $url =
-                    $app->uri
-                  . "?__mode=backup_download&assetname=$name&magic_token="
-                  . $app->current_magic;
+                my $url
+                    = $app->uri
+                    . "?__mode=backup_download&assetname="
+                    . MT::Util::encode_url($name)
+                    . "&magic_token="
+                    . $app->current_magic;
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                   {
