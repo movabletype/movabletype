@@ -126,22 +126,49 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
+        if (isset($extra['distinct'])) {
+            $mt = MT::get_instance();
+            $mtdb = $mt->db();
+            if ( !$mtdb->has_distinct_support ) {
+                $unique_myself = true;
+                $extra['distinct'] = null;
+            }
+        }
+
         $objs = $db->GetActiveRecordsClass(get_class($this),
                                           $this->_table . $join,
                                           $whereOrderBy,
                                           $bindarr,
                                           $pkeysArr,
                                           $extra);
+        $ret_objs;
+        $unique_arr = array();
         if ($objs) {
-            if ($this->has_meta()) {
-                $count = count($objs);
-                for($i = 0; $i < $count; $i++) {
+            if ( $unique_myself ) {
+                $pkeys = empty($pkeysArr)
+                    ? $db->MetaPrimaryKeys( $this->_table )
+                    : $pKeysArr;
+            }
+            $count = count($objs);
+            for($i = 0; $i < $count; $i++) {
+                if ( $unique_myself ) {
+                    $key = "";
+                    foreach ( $pkeys as $p ) {
+                        $key .= $objs[$i]->$p.":";
+                    }
+                    if (array_key_exists($key, $unique_arr))
+                        continue;
+                    else
+                        $unique_arr[$key] = 1;
+                }
+                if ($this->has_meta()) {
                     $objs[$i] = $this->load_meta($objs[$i]);
                 }
+                $ret_objs[] = $objs[$i];
             }
         }
 
-        return $objs;
+        return $ret_objs;
     }
 
     // Member functions
@@ -186,7 +213,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 if (!is_null($value))
                     break;
                 if (preg_match("/^BIN:SERG/", $value)) {
-                    $mt = MT::get_insrance();
+                    $mt = MT::get_instance();
                     $value = preg_replace("/^BIN:/", "", $value);
                     $value = $mt->db()->unserialize($value);
                 }

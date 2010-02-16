@@ -18,7 +18,7 @@ abstract class MTDatabase {
     protected $conn;
     protected $serializer;
     protected $pdo_enabled = false;
-
+    protected $has_distinct = true;
 
     // Cache variables
     protected $_entry_id_cache = array();
@@ -51,6 +51,10 @@ abstract class MTDatabase {
     abstract public function set_names($mt);
 
     // Utility method
+    public function has_distinct_support () {
+        return $this->has_distinct;
+    }
+
     public function db() {
         return $this->conn;
     }
