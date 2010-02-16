@@ -1135,6 +1135,7 @@ sub rebuild_file {
     }
 
     my $tmpl = MT::Template->load($tmpl_id);
+    return 1 if $tmpl->type eq 'backup';
     $tmpl->context($ctx);
 
     # From Here
