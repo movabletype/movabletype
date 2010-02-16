@@ -32,6 +32,23 @@ sub class_label {
     MT->translate("Plugin Data");
 }
 
+sub load {
+    my $pd = shift;
+    return $pd->SUPER::load( @_ ) if ref( $pd );
+
+    my ( $terms, $args ) = @_;
+    $pd->SUPER::remove( @_ ) unless $terms && exists( $terms->{blog_id} );
+
+    my $blog_ids = delete $terms->{blog_id};
+    if ( 'ARRAY' ne ref( $blog_ids ) ) {
+       $blog_ids = [ $blog_ids ];
+    }
+
+    my @keys = map { "configuration:blog:$_" } @$blog_ids;
+    $terms->{key} = \@keys;
+    $pd->SUPER::load( $terms, $args );
+}
+
 sub remove {
     my $pd = shift;
     return $pd->SUPER::remove(@_) if ref($pd);

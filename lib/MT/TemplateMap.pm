@@ -100,7 +100,13 @@ sub remove {
     else {
         my $blog_id;
         if ( $_[0] && $_[0]->{template_id} ) {
-            my $tmpl = MT::Template->load( $_[0]->{template_id} );
+           my $tmpl_id;
+           if ( ref $_[0]->{template_id} eq 'ARRAY' ) {
+               $tmpl_id = $_[0]->{template_id}->[0];
+           } else {
+               $tmpl_id = $_[0]->{template_id};
+           }
+            my $tmpl = MT::Template->load( $tmpl_id );
             if ( $tmpl ) {
                 return $result unless $tmpl->blog_id; # global template does not have maps
                 $blog_id = $tmpl->blog_id;
