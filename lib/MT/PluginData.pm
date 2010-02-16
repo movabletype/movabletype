@@ -37,7 +37,7 @@ sub load {
     return $pd->SUPER::load( @_ ) if ref( $pd );
 
     my ( $terms, $args ) = @_;
-    $pd->SUPER::load(@_) unless $terms && exists($terms->{blog_id});
+    return $pd->SUPER::load(@_) unless $terms && exists($terms->{blog_id});
 
     my $blog_ids = delete $terms->{blog_id};
     if ( 'ARRAY' ne ref( $blog_ids ) ) {
@@ -55,7 +55,7 @@ sub remove {
 
     # class method call - might have blog_id parameter
     my ($terms, $args) = @_;
-    $pd->SUPER::remove(@_) unless $terms && exists($terms->{blog_id});
+    return $pd->SUPER::remove(@_) unless $terms && exists($terms->{blog_id});
 
     my $blog_ids = delete $terms->{blog_id};
     if ( 'ARRAY' ne ref($blog_ids) ) {
