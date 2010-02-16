@@ -328,7 +328,7 @@ sub thumbnail_url {
                     $path = MT::Util::caturl($path, $p);
                 }
             }
-            $file =~ s/%([A-F0-9]{2})/chr(hex($1))/gei;
+            $file = MT::Util::encode_url($file);
             $site_url = MT::Util::caturl($site_url, $path, $file);
             return ($site_url, $w, $h);
         }
