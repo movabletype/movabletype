@@ -75,11 +75,15 @@ textarea {
     background: transparent url(../../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
 }
 
-.website #brand a span {
+.website #brand span {
     background-image: url(../../images/logo/movable-type-brand-logo-website.png);
 }
-.system #brand a span {
+.system #brand span {
     background-image: url(../../images/logo/movable-type-brand-logo-system.png);
+}
+
+#brand span.tips { 
+    background-image: none;
 }
 
 /* -- Menu bar, Content Nav */

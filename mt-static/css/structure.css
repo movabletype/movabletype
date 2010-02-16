@@ -334,10 +334,12 @@ ul.tabs li a {
     background: #2b2b2b url(../images/logo/movable-type-brand-logo.png) center 3px no-repeat;
     outline: 0;
 }
-.website #brand a {
+.website #brand a,
+.website.preview-screen #brand {
     background-image: url(../images/logo/movable-type-brand-logo-website.png);
 }
-.system #brand a {
+.system #brand a, 
+.system.preview-screen #brand {
     background-image: url(../images/logo/movable-type-brand-logo-system.png);
 }
 #brand a:hover { 
