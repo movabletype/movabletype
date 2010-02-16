@@ -53,6 +53,9 @@ sub handle_sign_in {
     my $session;
 
     my %param = $app->param_hash;
+    my $nickname = $param{'openid.sreg.nickname'};
+    $param{'openid.sreg.nickname'} = Encode::encode_utf8($nickname)
+        if Encode::is_utf8($nickname);
     my $csr = $class->get_csr(\%param, $blog) or return 0;
 
     if(my $setup_url = $csr->user_setup_url( post_grant => 'return' )) {
