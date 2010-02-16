@@ -251,8 +251,11 @@ abstract class BaseObject extends ADOdb_Active_Record
             $sql = $sql . " where $where";
 
         $db = $this->db();
+        $saved = $db->SetFetchMode(ADODB_FETCH_NUM);
         $result = $db->Execute($sql);
-        return $result->fields[0];
+        $cnt = $result->fields[0];
+        $db->SetFetchMode($saved);
+        return $cnt;
     }
 
     public function set_values($args) {
