@@ -71,7 +71,7 @@ sub edit {
     if ($id) {
         if ( $blog && $blog->use_revision ) {
             my $rn = $q->param('r') || 0;
-            if ( $rn != $obj->current_revision ) {
+            if ( $obj->current_revision > 0 || $rn != $obj->current_revision ) {
                 my $rev = $obj->load_revision( { rev_number => $rn } );
                 if ( $rev && @$rev ) {
                     $obj = $rev->[0];
