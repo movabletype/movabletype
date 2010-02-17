@@ -695,7 +695,7 @@ sub build_asset_hasher {
             $row->{has_thumbnail} = 1;
             my $height = $thumb_height || $default_thumb_height || 75;
             my $width  = $thumb_width  || $default_thumb_width  || 75;
-            my $square = $height == $width;
+            my $square = $height == 75 && $width == 75;
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
               = $obj->thumbnail_url( Height => $height, Width => $width , Square => $square );
 
