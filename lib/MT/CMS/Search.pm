@@ -93,6 +93,11 @@ sub core_search_apis {
             'replace_cols'       => [qw(text)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'ascend';
+            }
         },
         'ping' => {
             'order' => 300,
