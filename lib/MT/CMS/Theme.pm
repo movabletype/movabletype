@@ -248,8 +248,8 @@ sub export {
     my %param_default = (
         theme_name        => MT->translate( 'Theme from [_1]', $blog->name ),
         theme_id          => $default_basename ? 'theme_from_' . $default_basename : 'new_theme',
-        theme_author_name => $app->user->nickname,
-        theme_author_link => $app->user->url,
+        theme_author_name => '',
+        theme_author_link => '',
         theme_version     => '1.0',
     );
     for my $param ( @save_params ) {
