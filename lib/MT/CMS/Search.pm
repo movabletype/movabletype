@@ -138,6 +138,11 @@ sub core_search_apis {
             'replace_cols'       => [qw(title excerpt)],
             'can_replace'        => 1,
             'can_search_by_date' => 1,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'ascend';
+            }
         },
         'page' => {
             'order' => 400,
@@ -205,6 +210,11 @@ sub core_search_apis {
             'replace_cols'       => [qw(name text linked_file outfile)],
             'can_replace'        => 1,
             'can_search_by_date' => 0,
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'ascend';
+            }
         },
         'asset' => {
             'order' => 600,
@@ -243,7 +253,7 @@ sub core_search_apis {
                     $args->{not}{blog_id} = 1;
                 }
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
+                $args->{direction} = 'ascend';
             }
         },
         'log' => {
@@ -275,7 +285,7 @@ sub core_search_apis {
                 $terms->{class} = '*';
                 $terms->{blog_id} = $blog_id if $blog_id;
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
+                $args->{direction} = 'ascend';
             }
         },
         'author' => {
@@ -318,7 +328,7 @@ sub core_search_apis {
                     $terms->{'type'} = MT::Author::AUTHOR();
                 }
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'descend';
+                $args->{direction} = 'ascend';
             },
             'results_table_template' => '
 <mt:if name="blog_id">
