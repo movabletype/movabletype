@@ -2,16 +2,16 @@
     <mt:unless name="filter_spam">
         <mt:if name="state_editable">
 <button
-    onclick="doForMarkedInThisWindow(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">', 'id', 'approve_item', {}, '<__trans phrase="to publish" escape="js">'); return false;"
     accesskey="a"
     title="<__trans phrase="Publish selected comments (a)">"
+    class="mt-publish-items"
     ><__trans phrase="Publish"></button>
         </mt:if>
     </mt:unless>
 <button
-    onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="comment" escape="js">', '<__trans phrase="comments" escape="js">'); return false;"
     accesskey="x"
     title="<__trans phrase="Delete selected comments (x)">"
+    class="mt-delete-items"
     ><__trans phrase="Delete"></button>
     <mt:unless name="filter_spam">
         <mt:if name="state_editable">
@@ -212,7 +212,7 @@
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
         plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
         mode: 'approve_item',
-        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if>},
+        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'<mt:if name="search">, 'search': '<mt:var name="search" escape="js">'</mt:if></mt:if>},
         phrase: '<__trans phrase="to republish" escape="js">'
     });
     jQuery('button.mt-delete-items').mtDeleteItems({
