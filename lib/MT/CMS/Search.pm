@@ -59,6 +59,8 @@ sub core_search_apis {
                 if ($app->param('filter') && $app->param('filter_val')) {
                     $terms->{$app->param('filter')} = $app->param('filter_val');
                 }
+                $args->{sort}      = 'authored_on';
+                $args->{direction} = 'descend';
             }
         },
         'comment' => {
@@ -235,6 +237,8 @@ sub core_search_apis {
                     $terms->{blog_id} = '0';
                     $args->{not}{blog_id} = 1;
                 }
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'descend';
             }
         },
         'log' => {
@@ -265,6 +269,8 @@ sub core_search_apis {
                 my ($terms, $args, $blog_id) = @_;
                 $terms->{class} = '*';
                 $terms->{blog_id} = $blog_id if $blog_id;
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'descend';
             }
         },
         'author' => {
@@ -306,6 +312,8 @@ sub core_search_apis {
                 else {
                     $terms->{'type'} = MT::Author::AUTHOR();
                 }
+                $args->{sort}      = 'created_on';
+                $args->{direction} = 'descend';
             },
             'results_table_template' => '
 <mt:if name="blog_id">
