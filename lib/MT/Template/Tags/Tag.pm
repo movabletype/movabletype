@@ -191,10 +191,10 @@ sub _hdlr_tags {
         if ($app->isa('MT::App::Search')) {
             my $exclude_blogs = $app->{searchparam}{ExcludeBlogs};
             my $include_blogs = $app->{searchparam}{IncludeBlogs};
-            if (my $excl = ($exclude_blogs && (0 < scalar(keys %$exclude_blogs))) ? $exclude_blogs : undef) {
-                $args->{exclude_blogs} ||= join ',', keys %$excl;
-            } elsif (my $incl = ($include_blogs && (0 < scalar(keys %$include_blogs))) ? $include_blogs : undef) {
-                $args->{include_blogs} = join ',', keys %$incl;
+            if (my $excl = ($exclude_blogs && (0 < scalar(@$exclude_blogs))) ? $exclude_blogs : undef) {
+                $args->{exclude_blogs} ||= join ',', @$excl;
+            } elsif (my $incl = ($include_blogs && (0 < scalar(@$include_blogs))) ? $include_blogs : undef) {
+                $args->{include_blogs} = join ',', @$incl;
             } 
             if (($args->{include_blogs} || $args->{exclude_blogs}) && $args->{blog_id}) {
                 delete $args->{blog_id};
