@@ -789,7 +789,7 @@ sub clone_with_children {
     #    Notification records???
 
     my $new_blog_id;
-    my (%entry_map, %cat_map, %tb_map, %tmpl_map, $counter, $iter);
+    my ( %entry_map, %cat_map, %tb_map, %tmpl_map, %comment_map, $counter, $iter );
 
     # Cloning blog
     my $new_blog = $blog->clone($params);
@@ -942,21 +942,35 @@ sub clone_with_children {
             require MT::Comment;
             $iter = MT::Comment->load_iter({ blog_id => $old_blog_id });
             $counter = 0;
+            my %comment_parents;
             while (my $comment = $iter->()) {
                 $callback->($state . " " . MT->translate("[_1] records processed...", $counter), 'comments')
                     if $counter && ($counter % 100 == 0);
                 $counter++;
-                
+
                 my $new_comment = $comment->clone();
                 delete $new_comment->{column_values}->{id};
                 delete $new_comment->{changed_cols}->{id};
-                $new_comment->entry_id($entry_map{$comment->entry_id});
+                $new_comment->entry_id( $entry_map{ $comment->entry_id } );
                 $new_comment->blog_id($new_blog_id);
                 $new_comment->save or die $new_comment->errstr;
+                $comment_map{ $comment->id } = $new_comment->id;
+                if ( $comment->parent_id ) {
+                    $comment_parents{ $new_comment->id }
+                        = $comment->parent_id;
+                }
+            }
+            foreach ( keys %comment_parents ) {
+                my $comment = MT::Comment->load($_);
+                if ($comment) {
+                    $comment->parent_id(
+                        $comment_map{ $comment_parents{ $comment->id } } );
+                    $comment->save or die $comment->errstr;
+                }
             }
             $callback->($state . " " . MT->translate("[_1] records processed.", $counter), 'comments');
         }
-        
+
         if ((!exists $classes->{'MT::ObjectTag'}) || $classes->{'MT::ObjectTag'}) {
             # conditionally do MT::ObjectTag since it is only
             # available with MT 3.3.
