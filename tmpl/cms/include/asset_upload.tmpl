@@ -33,7 +33,11 @@ function is_valid_path(path_){
 
 <mt:if name="missing_paths">
     <mt:if name="have_permissions">
+         <mt:if name="dialog">
 <p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
+         <mt:else>
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">%%</a>"></p>
+         </mt:if>
     <mt:else>
 <p><__trans phrase="Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator." params="<mt:var name="scope_label">"></p>
     </mt:if>
