@@ -657,13 +657,12 @@ sub decode_url {
 sub remove_html {
     my($text) = @_;
     return '' if !defined $text;  # suppress warnings
-    {
-        use bytes;
-        $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
-            defined $1 ? $1 : ''
-            /geisx;
-        $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
-    }
+    $text = Encode::encode_utf8($text);
+    $text =~ s/(<\!\[CDATA\[(.*?)\]\]>)|(<[^>]+>)/
+        defined $1 ? $1 : ''
+        /geisx;
+    $text =~ s/<(?!\!\[CDATA\[)/&lt;/gis;
+    $text = Encode::decode_utf8( $text );
     return $text;
 }
 
