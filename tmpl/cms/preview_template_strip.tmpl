@@ -55,7 +55,7 @@
 </mt:if>
 <$mt:var name="js_include"$>
 </head>
-<body class="main-screen preview-screen">
+<body class="<mt:if name="scope_type" eq="user">user system <mt:else><mt:var name="scope_type"> </mt:if>main-screen preview-screen">
 <div id="brand">
     <span><img alt="<$mt:var name="mt_product_name"$>" src="<$mt:var name="static_uri"$>images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span>
 </div>
