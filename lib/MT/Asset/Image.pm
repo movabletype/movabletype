@@ -576,6 +576,8 @@ sub on_upload {
               File::Spec->catfile( $root_path, $rel_path . $ext );
 
             my ( $i, $rel_path_ext ) = ( 0, $rel_path . $ext );
+            my $pseudo_url = File::Spec->catfile( $pseudo_path,
+                MT::Util::encode_url($rel_path_ext) );
             $pseudo_path = File::Spec->catfile( $pseudo_path, $rel_path_ext );
             my ( $vol, $dirs, $basename ) =
               File::Spec->splitpath($rel_path_ext);
@@ -600,7 +602,6 @@ sub on_upload {
                 $asset_html = new $html_pkg;
                 $original   = $asset_html->clone;
                 $asset_html->blog_id($blog_id);
-                my $pseudo_url = $pseudo_path;
                 $pseudo_url  =~ s!\\!/!g;
                 $asset_html->url($pseudo_url);
                 $asset_html->label($app->translate("Popup Page for [_1]", $asset->label || $asset->file_name));
