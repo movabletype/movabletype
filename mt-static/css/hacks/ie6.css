@@ -251,7 +251,7 @@ html#dialog {
 #djDebug #djDebugToolbar, 
 #djDebug #djDebugToolbarHandle, 
 #djDebug .panelContent {
-    position:absolute ! important;
+    position: absolute ! important;
 }
 
 #djDebug #djDebugToolbar { 
@@ -261,21 +261,21 @@ html#dialog {
 
 #djDebug #djDebugToolbar li a,
 #djDebug #djDebugToolbar li div.contentless  {
-    font-weight:normal;
-    font-style:normal;
-    text-decoration:none;
-    display:block;
-    font-size:16px;
-    padding:10px 10px 5px 25px;
-    color:#fff;
+    font-weight: normal;
+    font-style: normal;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    padding: 10px 10px 5px 25px;
+    color: #fff;
     width: 100%;
 }
 
 #djDebug .panelContent {
     height: 100% ! important;
     width: 100% ! important;
-    background-color:#eee ! important;
-    z-index:10000000 ! important;
+    background-color: #eee ! important;
+    z-index: 10000000 ! important;
 }
 
 #djDebug .djDebugPanelTitle, 
@@ -284,7 +284,7 @@ html#dialog {
 }
 
 #djDebug .djDebugPanelTitle { 
-    border-bottom:1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 #djDebug .panelContent table { 
@@ -311,6 +311,9 @@ ul#asset-list li,
 .dialog #selector, 
 .dialog .selector, 
 .user-status-disabled, 
+.group-status-disabled, 
+.comment-status-spam, 
+.ping-status-spam, 
 #template-options-header, 
 .widget-content .field-content, 
 #asset_container .widget-content { 
