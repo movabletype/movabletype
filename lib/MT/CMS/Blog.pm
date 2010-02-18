@@ -2570,23 +2570,12 @@ sub clone {
     }
     $param->{blog_id} = $app->param('blog_id');
 
-    if ( $app->param('clone_prefs_entries_pages') ) {
-        $param->{'clone_prefs_entries_pages'} =
-          $app->param('clone_prefs_entries_pages');
-    }
-
-    if ( $app->param('clone_prefs_comments') ) {
-        $param->{'clone_prefs_comments'} = $app->param('clone_prefs_comments');
-    }
-
-    if ( $app->param('clone_prefs_trackbacks') ) {
-        $param->{'clone_prefs_trackbacks'} =
-          $app->param('clone_prefs_trackbacks');
-    }
-
-    if ( $app->param('clone_prefs_categories') ) {
-        $param->{'clone_prefs_categories'} =
-          $app->param('clone_prefs_categories');
+    for my $key ( $app->param ) {
+        if ( $key =~ /^clone_prefs/ ) {
+            if ( $app->param($key) ) {
+                $param->{$key} = $app->param($key);
+            }
+        }
     }
 
     $param = _has_valid_form( $app, $blog, $param );

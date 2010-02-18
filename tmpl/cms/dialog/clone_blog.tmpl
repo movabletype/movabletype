@@ -24,6 +24,7 @@
         <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments">" />
         <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks">" />
         <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories">" />
+<mt:unless name="clone_prefs_input"></mt:unless>
         <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
 
         <mtapp:setting
@@ -91,6 +92,7 @@
     <mt:if name="clone_prefs_categories" eq="on">
                 <li><__trans phrase="Exclude Categories/Folders"></li>
     </mt:if>
+<mt:unless name="clone_prefs_exclude"></mt:unless>
             </ul>
         </mtapp:setting>
     </fieldset>
@@ -205,6 +207,7 @@
                     <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="cb" />
                     <label for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
                 </li>
+<mt:unless name="clone_prefs_checkbox"></mt:unless>
             </ul>
         </mtapp:setting>
     </fieldset>
