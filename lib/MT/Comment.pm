@@ -35,9 +35,10 @@ __PACKAGE__->install_properties({
         entry_visible => {
             columns => [ 'entry_id', 'visible', 'created_on' ],
         },
-		author => 1,
+	author => 1,
         email => 1,
         commenter_id => 1,
+	parent_id => 1,
         last_moved_on => 1, # used for junk expiration
 
         # For URL lookups to aid spam filtering

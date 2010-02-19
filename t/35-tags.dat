@@ -76,7 +76,7 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignInLink></MTEntries>", "e" : "https://www.typekey.com/t/typekey/login?&amp;lang=en_US&amp;t=token&amp;v=1.1&amp;_return=http://narnia.na/cgi-bin/mt-comments.cgi%3f__mode=handle_sign_in%26key=TypeKey%26static=0%26entry_id=1"}, #75
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTRemoteSignOutLink></MTEntries>", "e" : "http://narnia.na/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;logout=1&amp;entry_id=1"}, #76
 { "r" : "0", "t" : "<MTEntries lastn=\"1\"></MTEntries>", "e" : ""}, #77 TBD -- CommentFields
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthor></MTComments>", "e" : "John Doe"}, #78
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentAuthor></MTComments>", "e" : "John Doe"}, #78
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackCount></MTEntries>", "e" : "1"}, #79
 { "r" : "1", "t" : "<MTEntries lastn=\"1\" offset=\"1\"><MTEntryNext><MTEntryTitle></MTEntryNext></MTEntries>", "e" : "A Rainy Day"}, #80
 { "r" : "1", "t" : "<MTEntries offset=\"1\" lastn=\"1\"><MTEntryPrevious><MTEntryTitle></MTEntryPrevious></MTEntries>", "e" : "Verse 4"}, #81
@@ -108,17 +108,17 @@
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackID></MTEntries>", "e" : "1"}, #106
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBasename></MTEntries>", "e" : "a_rainy_day"}, #107
 { "r" : "0", "t" : "<MTCGIServerPath>", "e" : "CURRENT_WORKING_DIRECTORY"}, #108 TBD
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentBody></MTComments>", "e" : "<p>Comment for entry 5, visible</p>"}, #109
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentDate></MTComments>", "e" : "September 12, 2004  6:28 PM"}, #110
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "2"}, #111
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntryID></MTComments>", "e" : "5"}, #112
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
-{ "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentBody></MTComments>", "e" : "<p>Comment for entry 5, visible</p>"}, #109
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentDate></MTComments>", "e" : "September 12, 2004  6:28 PM"}, #110
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentID></MTComments>", "e" : "2"}, #111
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentEntryID></MTComments>", "e" : "5"}, #112
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
+{ "r" : "1", "t" : "<MTComments lastn=\"3\" sort_order=\"descend\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
 { "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingDate></MTPings>", "e" : "April  5, 2005 12:00 AM"}, #120
 { "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingID></MTPings>", "e" : "1"}, #121
 { "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingTitle></MTPings>", "e" : "Foo"}, #122
@@ -152,8 +152,8 @@
 { "r" : "1", "t" : "Next: <MTArchiveList archive_type=\"Monthly\"><MTArchiveNext><MTArchiveTitle>-<MTArchiveLink>;</MTArchiveNext> </MTArchiveList>", "e" : "Next:  January 1978-http://narnia.na/nana/archives/1978/01/; January 1965-http://narnia.na/nana/archives/1965/01/; January 1964-http://narnia.na/nana/archives/1964/01/; January 1963-http://narnia.na/nana/archives/1963/01/; January 1962-http://narnia.na/nana/archives/1962/01/; "}, #149
 { "r" : "1", "t" : "<MTArchiveList archive_type=\"Monthly\"><MTArchiveTitle>-<MTArchiveCount>; </MTArchiveList>", "e" : "January 1978-1; January 1965-1; January 1964-1; January 1963-1; January 1962-1; January 1961-1; "}, #150
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryCommentCount></MTEntries>", "e" : "3"}, #151
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentBody sanitize=\" \"></MTComments>", "e" : "Comment for entry 5, visible"}, #152
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "2"}, #153
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentBody sanitize=\" \"></MTComments>", "e" : "Comment for entry 5, visible"}, #152
+{ "r" : "1", "t" : "<MTComments lastn=\"1\" sort_order=\"descend\"><MTCommentID></MTComments>", "e" : "2"}, #153
 { "r" : "1", "t" : "<MTBlogLanguage locale=\"1\">", "e" : "en_US"}, #154
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>", "e" : "active"}, #155
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>", "e" : "accepted"}, #156
@@ -223,8 +223,8 @@
 { "r" : "1", "t" : "<MTArchiveList archive_type='Monthly'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #220
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
-{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "1.5,0,0,"}, #223
-{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted,Comment 3: untrusted,Chucky Dee: trusted"}, #224
+{ "r" : "1", "t" : "<MTComments lastn='3' sort_order=\"descend\"><MTFeedbackScore>,</MTComments>", "e" : "1.5,0,0,"}, #223
+{ "r" : "1", "t" : "<MTComments lastn='3' glue=',' sort_order=\"descend\"><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted,Comment 3: untrusted,Chucky Dee: trusted"}, #224
 { "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
 { "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227

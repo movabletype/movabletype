@@ -32,7 +32,7 @@ use_ok('Archive::Zip');
 use_ok('Storable');
 use_ok('SOAP::Lite', 0.5);
 use_ok('List::Util');
-use_ok('HTML::Entries');
+use_ok('HTML::Entities');
 use_ok('Digest::MD5');
 use_ok('Text::Balanced');
 use_ok('Crypt::SSLeay');

@@ -82,7 +82,6 @@ ok (exists $plugins->{"SpamLookup - Link"}, "SpamLookup - Link exists");
 ok (exists $plugins->{"SpamLookup - Lookups"}, "SpamLookup - Lookups exists");
 ok (exists $plugins->{"mixiComment"}, "mixiComment exists");
 ok (exists $plugins->{"Textile"}, "Textile exists");
-ok (exists $plugins->{"Blog Cloner"}, "Blog Cloner exists");
 ok (exists $plugins->{"Community Action Streams"}, "Community Action Streams exists");
 ok (exists $plugins->{"Action Streams"}, "Action Streams exists");
 ok (exists $plugins->{"Feeds.App Lite"}, "Feeds.App Lite exists");
@@ -94,6 +93,7 @@ ok (exists $plugins->{"WXR Importer"}, "WXR Importer exists");
 ok (exists $plugins->{"StyleCatcher"}, "StyleCatcher exists");
 ok (exists $plugins->{"Widget Manager Upgrade Assistant"}, "Widget Manager Upgrade Assistant exists");
 ok (exists $plugins->{"Facebook Commenters"}, "Facebook Commenters exists");
+ok (exists $plugins->{"Zemanta"}, "Zemanta exists");
 
 # test plugins created by MT::Test
 ok (exists $plugins->{"Awesome"}, "Awesome exists");

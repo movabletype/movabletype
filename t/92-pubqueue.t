@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 67;
+use Test::More tests => 68;
 
 use MT;
 use MT::Blog;
@@ -113,6 +113,7 @@ foreach my $blog (@blogs) {
 	ok (@errors, "Error should have been found");
 	@jobs = MT::TheSchwartz::Job->load();
 	ok (! @jobs, "Jobs were not found, everything went through");
+	$entry = MT::Entry->load($entry->id);
 	is ($entry->status, MT::Entry::RELEASE(), "Running publish_future_post publishes future post; status is now RELEASE");
 
 	for (my $i = 0; $i < scalar(@tmpls); $i++) {

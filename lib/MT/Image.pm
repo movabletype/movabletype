@@ -79,6 +79,38 @@ sub check_upload {
     my %params = @_;
 
     my $fh = $params{Fh};
+    my $ext = $params{ext};
+    my $local_base = $params{LocalBase};
+    
+    ### 
+    # 
+    # Function to evaluate content of an image file to see if it contains HTML or JavaScript 
+    # content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are 
+    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability. 
+    # 
+    # This code based on the ImageValidate plugin written by Six Apart. 
+    # 
+    ### 
+	     
+    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) { 
+
+        my $data = ''; 
+
+        ## Read first 1k of image file 
+        binmode($fh); 
+        seek($fh, 0, 0); 
+        read $fh, $data, 1024; 
+        seek($fh, 0, 0); 
+
+        ## Using an error message format that already exists in all localizations of Movable Type 4. 
+        if (( $data =~ m/^\s*<[!?]/ ) || 
+            ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) || 
+            ( $data =~ m/text\/html/i ) || 
+            ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) || 
+            ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )) {
+            return $class->error(MT->translate("Saving [_1] failed: [_2]", $local_base, "Invalid image file format."));
+        }
+    }    
 
     ## Use Image::Size to check if the uploaded file is an image, and if so,
     ## record additional image info (width, height). We first rewind the

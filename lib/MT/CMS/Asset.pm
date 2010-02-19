@@ -98,23 +98,33 @@ sub list {
 
     my $blog_id = $app->param('blog_id');
     my $blog;
+    
     if ($blog_id) {
         my $blog_class = $app->model('blog');
         $blog = $blog_class->load($blog_id)
           or return $app->errtrans("Invalid request.");
         my $perms = $app->permissions;
+        
+        #
+        # In the blog context, the Manage Assets page shouldn't be displayed unless the current user has
+        # can_edit_assets or superuser privileges.
+        #
+        
         return $app->errtrans("Permission denied.")
           unless $app->user->is_superuser
-          || (
-            $perms
-            && (   $perms->can_edit_assets
-                || $perms->can_edit_all_posts
-                || $perms->can_create_post )
-          );
+            || (
+                $perms
+                && $perms->can_edit_assets
+                );
     } else {
         #
         # In the global context, the Manage Assets page shouldn't be displayed unless the current user has
-        # the can_edit_assets or superuser privileges.
+        # superuser or can_edit_assets privileges on one or more blogs.
+        #
+        # In order to allow a non-privileged user to upload a userpic within the CMS, we have to make one
+        # exception to the rules discussed above.  What we're doing is requiring three parameters that
+        # are passed to the Upload Asset dialog when a userpic needs to be uploaded.  These parameters
+        # limit the usefulness of other pages that the non-privileged user might also be able to access.
         #
         require MT::Permission;
         
@@ -123,7 +133,10 @@ sub list {
             MT::Permission->load( { author_id => $app->user->id } );
 
         return $app->errtrans("Permission denied.")
-          unless ($app->user->is_superuser || @blogs);
+          unless ($app->user->is_superuser || @blogs
+                  || (($app->param('dialog_view') == 1)
+                      && ($app->param('filter') eq 'userpic')
+                  && ($app->param('filter_val') eq $app->user->id)));
 
     }
 
@@ -1070,43 +1083,15 @@ sub _upload_file {
             }
             
         }
-        
-    ###
-    #
-    # Function to evaluate content of an image file to see if it contains HTML or JavaScript
-    # content in the first 1K bytes.  Image files that contain embedded HTML or JavaScript are
-    # prohibited in order to prevent a known IE 6 and 7 content-sniffing vulnerability.
-    #
-    # This code based on the ImageValidate plugin written by Six Apart.
-    #
-    ###
-    
-    if ( $ext =~ m/(jpe?g|png|gif|bmp|tiff?|ico)/i ) {
-    
-        my $data = '';
-    
-        ## Read first 1k of image file
-        binmode($fh);
-        seek($fh, 0, 0);
-        read $fh, $data, 1024;
-        seek($fh, 0, 0);
-    
-        ## Using an error message format that already exists in all localizations of Movable Type 4.
-        return $app->error($app->translate("Saving [_1] failed: [_2]", $local_base, "Invalid image file format.")) if 
-            ( $data =~ m/^\s*<[!?]/ ) ||
-            ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
-            ( $data =~ m/text\/html/i ) ||
-            ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
-            ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
-            ;
-    }        
 
         my $real_fh;
         unless ($has_overwrite) {
             my ($w_temp, $h_temp, $ext_temp, $write_file_temp) = MT::Image->check_upload(
                 Fh => $fh, Fmgr => $fmgr, Local => $local_file,
                 Max => $upload_param{max_size},
-                MaxDim => $upload_param{max_image_dimension}
+                MaxDim => $upload_param{max_image_dimension},
+                ext => $ext,
+                LocalBase => $local_base
             );
             if ($w_temp && $h_temp && $ext_temp) {
                 
@@ -1280,18 +1265,29 @@ sub _upload_file {
             $local_file = File::Spec->catfile( $param{support_path},
                 $unique_stem . $type );
         }
-
+        
         my $unique_basename = $unique_stem . $type;
         $relative_path  = $unique_basename;
         $relative_url   = encode_url($unique_basename);
         $asset_file     = File::Spec->catfile( '%s', 'support', 'uploads',
           $unique_basename );
     }
+    
+    my ($local_base) = $local_file;
+    $local_base =~ s!\\!/!g;    ## Change backslashes to forward slashes
+    $local_base =~ s!^.*/!!;    ## Get rid of full directory paths
+        
+    my $filename = $local_base; ## Save the filename so we can use it in the error message later
+    my $ext = $local_base;
+    $ext =~ m!.*\.(.*)$!;       ## Extract the characters to the right of the last dot delimiter / period
+    $ext = $1;                  ## Those characters are the file extension
 
     my ($w, $h, $id, $write_file) = MT::Image->check_upload(
         Fh => $fh, Fmgr => $fmgr, Local => $local_file,
         Max => $upload_param{max_size},
-        MaxDim => $upload_param{max_image_dimension}
+        MaxDim => $upload_param{max_image_dimension},
+        ext => $ext,
+        LocalBase => $local_base
     );
 
     return $app->error(MT::Image->errstr)

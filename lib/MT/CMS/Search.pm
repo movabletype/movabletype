@@ -412,15 +412,17 @@ sub do_search_replace {
     my $api   = $search_api->{$type};
     my $class = $app->model($api->{object_type} || $type);
     my %param = %$list_pref;
-    my $limit;
-    # type-specific directives override global CMSSearchLimit
-    my $directive = 'CMSSearchLimit' . ucfirst($type);
+    my $limit = $q->param('limit');
+    if ($limit ne 'all') {
+        # type-specific directives override global CMSSearchLimit
+        my $directive = 'CMSSearchLimit' . ucfirst($type);
 	$limit = MT->config->$directive || MT->config->CMSSearchLimit || 125;
 	# don't allow passed limit to be higher than config limit
 	if ($q->param('limit') && ($q->param('limit') < $limit)) {
 		$limit = $q->param('limit');
 	}
-    $limit =~ s/\D//g;
+        $limit =~ s/\D//g;
+    }
     my $matches;
     $date_col = $api->{date_column} || 'created_on';
     if ( ( $do_search && $search ne '' ) || $show_all || $do_replace ) {
@@ -467,21 +469,23 @@ sub do_search_replace {
             }
         }
         my @terms;
-        # MT::Object doesn't like multi-term hashes within arrays
-        if (%terms) {
-        	for my $key (keys %terms) {
-        		push(@terms, { $key => $terms{$key} });
-        	}
-        	push(@terms, '-and');
+        if ( !$is_regex ) { 
+            # MT::Object doesn't like multi-term hashes within arrays 
+            if (%terms) { 
+                for my $key (keys %terms) { 
+                        push(@terms, { $key => $terms{$key} }); 
+                } 
+                push(@terms, '-and'); 
+            } 
+            my @col_terms; 
+            my $query_string = "%$plain_search%"; 
+            for my $col (@cols) { 
+                push(@col_terms, { $col => { like => $query_string } }, '-or' ); 
+            } 
+            delete $col_terms[$#col_terms]; 
+            push(@terms, \@col_terms); 
         }
-        my @col_terms;
-        my $query_string = "%$plain_search%";
-        for my $col (@cols) {
-			push(@col_terms, { $col => { like => $query_string } }, '-or' );
-        }
-        delete $col_terms[$#col_terms];
-        push(@terms, \@col_terms);
-        $args{limit} = $limit + 1;
+        $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
         if ($do_replace) {
             $iter = sub {
@@ -494,13 +498,13 @@ sub do_search_replace {
               || ( $type eq 'blog' )
               || ( $app->mode eq 'dialog_grant_role' ) )
             {
-                $iter = $class->load_iter( \@terms, \%args ) or die $class->errstr;
+                $iter = $class->load_iter( @terms ? \@terms : \%terms, \%args ) or die $class->errstr; 
             }
             else {
 
                 my @streams;
                 if ( $author->is_superuser ) {
-                    @streams = ( { iter => $class->load_iter( \@terms, \%args ) } );
+                    @streams = ( { iter => $class->load_iter( @terms ? \@terms : \%terms, \%args ) } ); 
                 } 
                 else {
                     # Get an iter for each accessible blog
@@ -809,3 +813,4 @@ sub _load_template {
 }
 
 1;
+__END__
