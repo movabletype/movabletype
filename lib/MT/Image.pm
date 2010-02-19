@@ -87,10 +87,10 @@ sub is_valid_image {
 
     return 0 if
         ( $data =~ m/^\s*<[!?]/ ) ||
-        ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG|PRE|A)/i ) ||
+        ( $data =~ m/<(HTML|SCRIPT|TITLE|BODY|HEAD|PLAINTEXT|TABLE|IMG |PRE|A )/i ) ||
         ( $data =~ m/text\/html/i ) ||
-        ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|P|FONT|APPLET)/i ) ||
-        ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|B|BR)/i )
+        ( $data =~ m/^\s*<(FRAMESET|IFRAME|LINK|BASE|STYLE|DIV|FONT|APPLET)/i ) ||
+        ( $data =~ m/^\s*<(APPLET|META|CENTER|FORM|ISINDEX|H[123456]|BR)/i )
         ;
 
     return 1;
