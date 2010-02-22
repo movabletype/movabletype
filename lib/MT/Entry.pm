@@ -902,6 +902,8 @@ sub gather_changed_cols {
     eval {
         @category_ids = split /\s*,\s*/,
           ( $app->param('category_ids') || '' );
+        # page has root folder (id:-1) for default and should be removed from ids
+        @category_ids = grep { $_ != -1 } @category_ids;
     };
     unless ( $@ ) {
         my @placements = MT->model('placement')->load( { entry_id => $obj->id } );
