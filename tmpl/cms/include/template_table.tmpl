@@ -185,7 +185,8 @@
     jQuery('button.mt-delete-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtDeleteItems({
         id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
-        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
     });
     jQuery('button.mt-publish-<mt:var name="template_type" default="template" escape="js" remove_html="1">-templates').mtPublishItems({
         id: '<$mt:var name="template_type" default="template" escape="js"$>-listing-form',
@@ -198,6 +199,7 @@
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
         id: '<mt:var name="form_id">',
         plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to act upon" escape="js">'
     });
 </mt:setvarblock>

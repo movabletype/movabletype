@@ -307,7 +307,7 @@ function submitForm(f, mode) {
     f.submit();
 }
 
-function doPluginAction(f, plural, phrase) {
+function doPluginAction(f, plural, args, phrase) {
     if (!f) {
         var forms = document.getElementsByTagName( "form" );  
         for ( var i = 0; i < forms.length; i++ ) {  
@@ -332,7 +332,8 @@ function doPluginAction(f, plural, phrase) {
             return eval(itemset_options[action]['js'] + '(f,action);');
         }
     }
-    return doForMarkedInThisWindow(f, '', plural, 'id', 'itemset_action', {'action_name': action}, phrase);
+    args['action_name'] = action;
+    return doForMarkedInThisWindow(f, '', plural, 'id', 'itemset_action', args, phrase);
 }
 
 function updatePluginAction(s) {

@@ -582,11 +582,13 @@ $.fn.mtSubmitItems = function(options) {
  *
  */
 $.fn.mtDeleteItems = function(options) {
-    var defaults = {};
+    var defaults = {
+        args: {}
+    };
     var opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
-            doRemoveItems($('#'+opts.id)[0], opts.singular, opts.plural);
+            doRemoveItems($('#'+opts.id)[0], opts.singular, opts.plural, '', opts.args);
             return false;
         });
     });
@@ -633,11 +635,30 @@ $.fn.mtDisableUsers = function(options) {
  *
  */
 $.fn.mtDoPluginAction = function(options) {
-    var defaults = {};
+    var defaults = {
+        args: {}
+    };
     var opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
-            doPluginAction($('#'+opts.id)[0], opts.plural, opts.phrase);
+            doPluginAction($('#'+opts.id)[0], opts.plural, opts.args, opts.phrase);
+            return false;
+        });
+    });
+};
+
+/*
+ * mtSetObjectStatus
+ *
+ */
+$.fn.mtSetObjectStatus = function(options) {
+    var defaults = {
+        args: {}
+    };
+    var opts = $.extend(defaults, options);
+    return this.each(function() {
+        $(this).click(function() {
+            setObjectStatus($('#'+opts.id)[0], opts.singular, opts.plural, opts.status, '', opts.args);
             return false;
         });
     });

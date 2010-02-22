@@ -225,17 +225,19 @@
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
         plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
         mode: 'rebuild_new_phase',
-        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'<mt:if name="search">, 'search': '<mt:var name="search" escape="js">'</mt:if></mt:if>},
+        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if><mt:if name="search"><mt:if name="blog_id">, </mt:if>'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to republish" escape="js">'
     });
     jQuery('button.mt-delete-items').mtDeleteItems({
         id: '<$mt:var name="object_type"$>-listing-form',
         singular: '<mt:var name="object_label" lower_case="1" escape="js">',
-        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">'
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
     });
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
         id: '<mt:var name="form_id">',
         plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="to act upon" escape="js">'
     });
     jQuery('button.mt-submit-items').mtSubmitItems({
