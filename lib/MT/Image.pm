@@ -136,7 +136,12 @@ sub check_upload {
     # Check for Content Sniffing bug (IE)
     require MT::Asset::Image;
     if ( MT::Asset::Image->can_handle($ext) ) {
-        return $class->error(MT->translate("Saving [_1] failed: [_2]", $filename.$ext, "Invalid image file format.")) unless is_valid_image( $params{Fh} );
+        return $class->error(
+            MT->translate(
+                "Saving [_1] failed: Invalid image file format.",
+                $filename . $ext
+            )
+        ) unless is_valid_image( $params{Fh} );
     }
 
     ## If the image exceeds the dimension limit, resize it before writing.

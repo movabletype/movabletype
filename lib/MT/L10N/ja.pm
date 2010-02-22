@@ -110,10 +110,10 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-check.cgi
 	'Movable Type System Check' => 'Movable Type システムチェック',
-        "The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)" => "構成ファイル(mt-config.cgi)がすでに存在するため、'mt-check.cgi' スクリプトは無効になっています。",
+	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
+	'The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)' => '構成ファイル(mt-config.cgi)がすでに存在するため、\'mt-check.cgi\' スクリプトは無効になっています。',
 	'The mt-check.cgi script provides you with information on your system\'s configuration and determines whether you have all of the components you need to run Movable Type.' => 'mt-check.cgiはシステムの構成を確認し、Movable Typeを実行するために必要なコンポーネントがそろっていることを確認するためのスクリプトです。',
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされている Perl [_1] は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlをアップグレードしてください。',
-	'Movable Type configuration file was not found.' => 'Movable Typeの構成ファイルが見つかりませんでした。',
 	'System Information' => 'システム情報',
 	'Movable Type version:' => 'Movable Type バージョン',
 	'Current working directory:' => '現在のディレクトリ',
@@ -1567,6 +1567,8 @@ use vars qw( @ISA %Lexicon );
 	'No such config variable \'[_1]\'' => '\'[_1]\'は正しい設定項目ではありません。',
 
 ## lib/MT/Core.pm
+	'This is usually \'localhost\'.' => '通常「localhost」のままで構いません。',
+	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
 	'Error creating performance logs directory, [_1]. Please either change the permissions to make it writable or specify an alternate using the PerformanceLoggingPath configuration directive: [_2]' => 'パフォーマンスログを出力するディレクトリ「[_1]」を作成できませんでした。ディレクトリを書き込み可能に設定するか、または書き込みできる場所をPerformanceLoggingPathディレクティブで指定してください。: [_2]',
 	'Error creating performance logs: PerformanceLoggingPath setting must be a directory path, not a file: [_1]' => 'パフォーマンスログを出力できませんでした。PerformanceLoggingPathにはファイルではなくディレクトリへのパスを指定してください。',
 	'Error creating performance logs: PerformanceLoggingPath directory exists but is not writeable: [_1]' => 'パフォーマンスをログを出力できませんでした。PerformanceLoggingPathにディレクトリがありますが、書き込みできません。',
@@ -1574,6 +1576,12 @@ use vars qw( @ISA %Lexicon );
 	'PostgreSQL Database' => 'PostgreSQLデータベース',
 	'SQLite Database' => 'SQLiteデータベース',
 	'SQLite Database (v2)' => 'SQLite(v2)データベース',
+	'Database Server' => 'データベースサーバ',
+	'Database Name' => 'データベース名',
+	'Password' => 'パスワード',
+	'Database Path' => 'データベースのパス',
+	'Database Port' => 'データベースポート',
+	'Database Socket' => 'データベースソケット',
 	'Convert Line Breaks' => '改行を変換',
 	'Rich Text' => 'リッチテキスト',
 	'Movable Type Default' => 'Movable Type 既定',
@@ -1714,6 +1722,7 @@ use vars qw( @ISA %Lexicon );
 	'IP Bans' => '禁止IPリスト',
 
 ## lib/MT/Image.pm
+	'Saving [_1] failed: Invalid image file format.' => '[_1]を保存できませんでした: 画像ファイルフォーマットが不正です。',
 	'File size exceeds maximum allowed: [_1] > [_2]' => 'ファイルのサイズ制限を超えています。([_1] > [_2])',
 	'Can\'t load Image::Magick: [_1]' => 'Image::Magickをロードできません: [_1]',
 	'Reading file \'[_1]\' failed: [_2]' => 'ファイル \'[_1]\' を読み取れませんでした: [_1]',
@@ -3061,7 +3070,6 @@ use vars qw( @ISA %Lexicon );
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'Add' => '追加',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
-	'You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Support directory is not writable.' => 'supportディレクトリに書き込めません。',
 	'Detail' => '詳細',
 	'Movable Type was unable to write to its \'support\' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.' => 'supportディレクトリに書き込みできません。[_1]にディレクトリを作成して、ウェブサーバーから書き込みできるパーミッションを与えてください。',
@@ -3298,7 +3306,6 @@ use vars qw( @ISA %Lexicon );
 	'The image associated with this user.' => 'ユーザーのプロフィール画像です。',
 	'Select Userpic' => 'プロフィール画像の選択',
 	'Remove Userpic' => 'プロフィール画像を削除',
-	'Password' => 'パスワード',
 	'Current Password' => '現在のパスワード',
 	'Existing password required to create a new password.' => 'パスワード変更には現在のパスワードが必要です。',
 	'Initial Password' => '初期パスワード',
@@ -3848,7 +3855,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/comment_detail.tmpl
 
 ## tmpl/cms/include/comment_table.tmpl
-	'to publish' => '公開',
 	'Publish selected comments (a)' => '選択されたコメントを再構築 (a)',
 	'Delete selected comments (x)' => '選択されたコメントを削除 (x)',
 	'Report selected comments as Spam (j)' => '選択されたコメントをスパムとして報告 (j)',
@@ -3869,6 +3875,7 @@ use vars qw( @ISA %Lexicon );
 	'View this entry' => 'ブログ記事を表示',
 	'View this page' => 'ウェブページを表示',
 	'Search for all comments from this IP address' => 'このIPアドレスからのすべてのコメントを検索',
+	'to republish' => '再構築',
 
 ## tmpl/cms/include/commenter_table.tmpl
 	'Last Commented' => '最近のコメント',
@@ -3929,7 +3936,6 @@ use vars qw( @ISA %Lexicon );
 	'No entries could be found.' => '記事がありません。',
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">記事を作成</a>する。',
 	'No page could be found. <a href="[_1]">Create a page</a> now.' => 'ウェブページが見つかりませんでした。<a href="[_1]">ウェブページの作成</a>',
-	'to republish' => '再構築',
 
 ## tmpl/cms/include/feed_link.tmpl
 	'Activity Feed' => 'ログフィード',
@@ -4056,6 +4062,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Queue' => '公開キュー',
 	'Static' => 'スタティック',
 	'templates' => 'テンプレート',
+	'to publish' => '公開',
 
 ## tmpl/cms/include/theme_exporters/category.tmpl
 	'Category Name' => 'カテゴリ名',
@@ -4776,31 +4783,15 @@ use vars qw( @ISA %Lexicon );
 	'Database Configuration' => 'データベース設定',
 	'Your database configuration is complete.' => 'データベースの設定を完了しました。',
 	'You may proceed to the next step.' => '次のステップへ進みます。',
-	'Please enter the parameters necessary for connecting to your database.' => 'データベース接続に必要な情報を入力してください。',
 	'Show Current Settings' => '現在の設定を表示',
+	'Please enter the parameters necessary for connecting to your database.' => 'データベース接続に必要な情報を入力してください。',
 	'Database Type' => 'データベースの種類',
 	'Select One...' => '選択してください',
 	'http://www.movabletype.org/documentation/[_1]' => 'http://www.movabletype.jp/documentation/[_1]',
 	'Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary.' => '<a href="[_1]" target="_blank">Movable Type システムチェック</a>を実行して、必要なモジュールを確認してください。',
 	'Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>.' => 'モジュールをインストールしたら<a href="javascript:void(0)" onclick="[_1]">ここをクリック</a>して表示を更新してください。',
 	'Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>' => '詳しくは<a href="[_1]" target="_blank">こちら</a>を参照してください。',
-	'Database Path' => 'データベースのパス',
-	'The physical file path for your SQLite database. ' => 'SQLiteのデータベースファイルのパス',
-	'A default location of \'./db/mt.db\' will store the database file underneath your Movable Type directory.' => '既定のデータベースファイルへのパスは「./db/mt.db」です。',
-	'ODBC Driver' => 'ODBCドライバ',
-	'help messeage' => 'ヘルプメッセージ',
-	'Database Server' => 'データベースサーバ',
-	'This is usually \'localhost\'.' => '通常「localhost」のままで構いません。',
-	'Database Name' => 'データベース名',
-	'The name of your SQL database (this database must already exist).' => 'データベース名(あらかじめ作成しておく必要があります)。',
-	'The username to login to your SQL database.' => 'データベースのユーザー名を入力します。',
-	'The password to login to your SQL database.' => 'データベースのパスワードを入力します。',
 	'Show Advanced Configuration Options' => '高度な設定',
-	'Database Port' => 'データベースポート',
-	'This can usually be left blank.' => '通常、空白のままで構いません。',
-	'Database Socket' => 'データベースソケット',
-	'Publish Charset' => '文字コード',
-	'MS SQL Server driver must use either Shift_JIS or ISO-8859-1.  MS SQL Server driver does not support UTF-8 or any other character set.' => 'MS SQL ServerドライバはShift_JISかISO-8859-1のいずれかを使用します。MS SQL ServerドライバはUTF-8やその他の文字コードをサポートしていません。',
 	'Test Connection' => '接続テスト',
 	'You must set your Database Path.' => 'データベースのパスを設定します。',
 	'You must set your Username.' => 'データベースのユーザー名を設定します。',
