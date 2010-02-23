@@ -191,6 +191,30 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $this->_has_meta;
     }
 
+    public function has_column($col_name) {
+        if ( empty($col_name)) return false;
+
+        // Retrieve from MetaInfo
+        $col = $col_name;
+        if ( preg_match('/^field[:\.](.+)$/', $col, $match) ) {
+            $col = $match[1];
+        }
+        $cls = strtolower(get_class($this));
+        $meta_info = BaseObject::get_meta_info($cls);
+        if ( !empty($meta_info) ) {
+            if ( array_key_exists($col, $meta_info) )
+                return true;
+        }
+
+        // Retrieve from column
+        $pattern = '/^' . $this->_prefix . "/i";
+        if (!preg_match($pattern, $col))
+            $col = $this->_prefix . $col;
+
+        $flds = $this->GetAttributeNames();
+        return in_array( strtolower($col), $flds );
+    }
+
     public function load_meta($obj) {
         if (!$obj->id)
             return null;

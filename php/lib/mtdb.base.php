@@ -1254,7 +1254,7 @@ abstract class MTDatabase {
                     $sorter = create_function(
                         $order == 'asc' ? '$a,$b' : '$b,$a',
                         $sort_fn);
-                    usort($entries, $sorter);
+                    uasort($entries, $sorter);
                 }
             }
         }
@@ -2705,7 +2705,7 @@ abstract class MTDatabase {
             } else {
                 $resorting = create_function('$a,$b', 'return strcmp($b->comment_created_on, $a->comment_created_on);');
             }
-            usort($comments, $resorting);
+            uasort($comments, $resorting);
         }
 
         return $comments;
@@ -2794,7 +2794,7 @@ abstract class MTDatabase {
 
         if ($reorder) {  // lastn and ascending sort
             $asc_created_on = create_function('$a,$b', 'return strcmp($a->comment_created_on, $b->comment_created_on);');
-            usort($comments, $asc_created_on);
+            uasort($comments, $asc_created_on);
         }
   
         return $comments;
