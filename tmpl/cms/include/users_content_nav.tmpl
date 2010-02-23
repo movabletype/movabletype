@@ -1,10 +1,10 @@
 <mt:setvartemplate name="line_items" function="unshift">
 <mt:if name="user_view">
     <mt:unless name="edit_author_id">
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id" escape="html">"><__trans phrase="Profile"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="author_id" escape="url">&amp;author_id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a></li>
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="author_id" escape="html">"><__trans phrase="Permissions"></a></li>
     <mt:else>
-    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Profile"></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="edit_author_id" escape="html">&amp;author_id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a></li>
         <mt:unless name="profile_inactive">
             <mt:if name="list_group">
     <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_association&amp;author_id=<mt:var name="edit_author_id" escape="html">"><__trans phrase="Permissions"></a></li>
@@ -52,7 +52,7 @@
 
 <mt:if name="list_role">
     <mt:if name="EDIT_AUTHOR_ID">
-        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Profile"></a></li>
+        <li><a href="<mt:var name="SCRIPT_URL">?__mode=view&amp;_type=author&amp;id=<mt:var name="EDIT_AUTHOR_ID" escape="html">&amp;author_id=<mt:var name="author_id" escape="url">"><__trans phrase="Profile"></a></li>
         <li class="active"><em><a href="<mt:var name="SCRIPT_URL">?__mode=list_role&amp;author_id=<mt:var name="EDIT_AUTHOR_ID" escape="html">"><__trans phrase="Roles"></a></em></li>
     <mt:else>
         <li><a href="<mt:var name="SCRIPT_URL">?__mode=list_author"><__trans phrase="Users"></a></li>
