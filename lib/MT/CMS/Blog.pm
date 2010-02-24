@@ -6,7 +6,7 @@
 package MT::CMS::Blog;
 
 use strict;
-use MT::Util qw( dirify );
+use MT::Util qw( dirify dir_separator );
 
 sub edit {
     my $cb = shift;
@@ -2565,7 +2565,7 @@ sub clone {
     require File::Spec;
     $param->{parent_id} = $website->id;
     unless ( MT::Blog->is_site_path_absolute( $param->{site_path} ) ) {
-        $param->{parent_path} = File::Spec->catfile($website->site_path, '')
+        $param->{parent_path} = File::Spec->catfile($website->site_path) . MT::Util->dir_separator
             if $website->site_path;
     }
     $param->{blog_id} = $app->param('blog_id');
