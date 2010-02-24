@@ -822,7 +822,7 @@ sub backup {
               File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
             ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
             $printer =
-              sub { my ($data) = @_; print $fh Encode::encode( $enc, $data ); return length($data); };
+              sub { my ($data) = @_; print $fh $data; return length($data); };
             $finisher = sub {
                 my ($asset_files) = @_;
                 close $fh;
@@ -831,7 +831,7 @@ sub backup {
         }
         else {  # archive/compress files
             $printer =
-              sub { my ($data) = @_; $arc_buf .= Encode::encode( $enc, $data ); return length($data); };
+              sub { my ($data) = @_; $arc_buf .= $data; return length($data); };
             $finisher = sub {
                 require MT::Util::Archive;
                 my ($asset_files) = @_;
@@ -868,7 +868,7 @@ sub backup {
             filename => $file . "-1.xml"
           };
         $printer =
-          sub { require bytes; my ($data) = @_; print $fh Encode::encode( $enc, $data ); return bytes::length($data); };
+          sub { require bytes; my ($data) = @_; print $fh $data; return bytes::length($data); };
         $splitter = sub {
             my ($findex, $header) = @_;
 

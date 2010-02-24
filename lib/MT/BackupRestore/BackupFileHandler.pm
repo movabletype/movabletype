@@ -249,7 +249,7 @@ sub end_element {
                 if ('blob' eq $defs->{$column_name}->{type}) {
                     $obj->column($column_name, MIME::Base64::decode_base64($text));
                 } else {
-                    $obj->column($column_name, $text);
+                    $obj->column($column_name, _decode($text));
                 }
             }
             elsif ( my $metacolumns = $self->{metacolumns}{ref($obj)} ) {
@@ -260,7 +260,7 @@ sub end_element {
                         $obj->$column_name( $$text );
                     }
                     else {
-                        $obj->$column_name( $text );
+                        $obj->$column_name( _decode($text) );
                     }
                 }
             }
