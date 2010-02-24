@@ -17,17 +17,35 @@ use constant SCORE_CACHE_TIME => 7 * 24 * 60 * 60;    ## 1 week
 sub install_properties {
     my $pkg = shift;
     my ($class) = @_;
-    $class->add_trigger( post_remove => \&post_remove_score );
-}
+    my (@namespaces, @owner_expires);
+    my $namespaces = MT->registry( 'score_expire', $class->datasource );
+    @namespaces = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$namespaces;
 
-sub post_remove_score {
-    my $class = shift;
-    my ($obj) = @_;
-    require MT::ObjectScore;
-    MT::ObjectScore->remove({
-        object_ds => $obj->datasource,
-        object_id => $obj->id,
-    });
+    if ( $class->isa( 'MT::Author' ) ) {
+        my $owner_expires = MT->registry( 'score_expire_with_owner' );
+        @owner_expires = map { ref $_ eq 'ARRAY' ? @$_ : $_ } @$owner_expires;
+    }
+
+    if ( scalar @namespaces || scalar @owner_expires ) {
+        $class->add_trigger( post_remove => sub {
+            my $class = shift;
+            my ($obj) = @_;
+            require MT::ObjectScore;
+            if ( scalar @namespaces ) {
+                MT::ObjectScore->remove({
+                    namespace => \@namespaces,
+                    object_ds => $obj->datasource,
+                    object_id => $obj->id,
+                });
+            }
+            if ( scalar @owner_expires ) {
+                MT::ObjectScore->remove({
+                    namespace => \@owner_expires,
+                    author_id => $obj->id,
+                });
+            }
+        });
+    }
 }
 
 sub get_score {
