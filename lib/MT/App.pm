@@ -4530,7 +4530,7 @@ A product code defined by Six Apart to identify the edition of Movable Type.
 Currently, the valid values include:
 
     MT  - Movable Type Personal or Movable Type Commercial editions
-    MTE - Movable Type Enterprise
+    MTE - Movable Type Advanced
 
 =item * MT_PRODUCT_NAME
 

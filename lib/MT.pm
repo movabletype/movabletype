@@ -3590,13 +3590,13 @@ with it:
 =head2 MT->product_code
 
 The product code identifying the Movable Type product that is installed.
-This is either 'MTE' for Movable Type Enterprise or 'MT' for the
+This is either 'MTE' for Movable Type Advanced or 'MT' for the
 non-Enterprise product.
 
 =head2 MT->product_name
 
 The name of the Movable Type product that is installed. This is either
-'Movable Type Enterprise' or 'Movable Type Publishing Platform'.
+'Movable Type Advanced' or 'Movable Type Publishing Platform'.
 
 =head2 MT->product_version
 

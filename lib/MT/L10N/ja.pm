@@ -4145,7 +4145,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully disabled the selected user(s).' => '選択したユーザーを無効にしました。',
 	'You have successfully enabled the selected user(s).' => '選択したユーザーを有効にしました。',
 	'You have successfully deleted the user(s) from the Movable Type system.' => 'システムからユーザーを削除しました。',
-	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Enterprise.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度ログインできてしまいます。',
+	'The deleted user(s) still exist in the external directory. As such, they will still be able to login to Movable Type Advanced.' => '削除されたユーザーが外部ディレクトリ上にまだ存在するので、このままではユーザーは再度ログインできてしまいます。',
 	'You have successfully synchronized users\' information with the external directory.' => '外部のディレクトリとユーザーの情報を同期しました。',
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	'An error occured during synchronization.  See the <a href=\'[_1]\'>activity log</a> for detailed information.' => '同期中にエラーが発生しました。エラーの詳細を<a href=\'[_1]\'>ログ</a>で確認して>ください。',
