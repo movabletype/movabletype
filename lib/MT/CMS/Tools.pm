@@ -9,7 +9,7 @@ use strict;
 use Symbol;
 
 use MT::I18N qw( wrap_text );
-use MT::Util qw( encode_url encode_html decode_html encode_js trim );
+use MT::Util qw( encode_url encode_html decode_html encode_js trim dir_separator );
 
 sub system_check {
     my $app = shift;
@@ -1871,6 +1871,7 @@ sub dialog_adjust_sitepath {
     $param->{asset_ids}      = $asset_ids if $asset_ids;
     $param->{website_loop}   = \@website_loop if @website_loop;
     $param->{all_websites}   = \@all_websites if @all_websites;
+    $param->{path_separator} = MT::Util->dir_separator;
 
     for my $key (
         qw(files assets last redirect is_dirty is_asset objects_json deferred_json)

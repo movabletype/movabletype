@@ -22,7 +22,7 @@ function changeParent (ws) {
     var new_url = '';
 
     if (selected != 0) {
-        new_path = websites_path['site_path_'+selected] + "/";
+        new_path = websites_path['site_path_'+selected] + "<mt:var name="path_separator" escape="js">";
         new_url = websites_url['site_url_'+selected];
     }
 
