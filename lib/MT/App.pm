@@ -1022,49 +1022,15 @@ sub _cb_user_provisioning {
         $new_blog = MT::Blog->create_default_blog($blog_name, undef, $website_id);
     }
 
-    my $dir_name;
-    my $website_root = $website->site_path;
-    my $fmgr = $new_blog->file_mgr;
-    if ( -d $website_root ) {
-        my $path;
-        $dir_name = MT::Util::dirify( $new_blog->name );
-        $dir_name = 'blog-' if ( $dir_name =~ /^_*$/ );
-        my $sfx = 0;
-        while (1) {
-            $path = File::Spec->catdir( $website_root,
-                $dir_name . ( $sfx ? $sfx : '' ) );
-            $path =~ s/(.+)\-$/$1/;
-            if ( !-d $path ) {
-                $fmgr->mkpath($path);
-                if ( !-d $path ) {
-                    MT->log(
-                        {   message => MT->translate(
-                            "Error creating directory [_1] for blog #[_2].",
-                            $path,
-                            $new_blog->id
-                        ),
-                            level => MT::Log::ERROR(),
-                        }
-                    );
-                }
-                last;
-            }
-            $sfx++;
-        }
-        $dir_name .= $sfx ? $sfx : '';
-        $dir_name =~ s/(.+)\-$/$1/;
+    my $path = $user->basename;
+    $new_blog->site_path($path);
 
-        $path =~ s!^$website_root/*!!;
-        $new_blog->site_path($path);
-    }
-
-    my $url = $website->site_url;
+    my $url         = $website->site_url;
     my $website_url = $url;
     $url .= '/' unless $url =~ m!/$!;
-    $url .= $dir_name ? $dir_name : MT::Util::dirify( $new_blog->name );
-    $url .= '/';
+    $url .= "$path/";
     $url =~ s!^$website_url/*!!;
-    $new_blog->site_url('/::/'.$url);
+    $new_blog->site_url( '/::/' . $url );
 
     my $offset = MT->config('DefaultTimezone');
     if ( defined $offset ) {
