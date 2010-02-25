@@ -88,8 +88,9 @@ for my $lang (@languages) {
 
     print "---------------- Building $lang ----------------\n";
     verbose_command("$make clean");  # to clean MT.pm
-    verbose_command("$make mt-config.cgi-original");  # to clean MT.pm
     verbose_command($make);
+
+    update_default_lang( $lang );
 
     make_manifest_skip($skip_rules, $skip);
 
@@ -217,3 +218,21 @@ sub verbose_command {
     }
     return $command;
 }
+
+sub update_default_lang {
+    my $lang = shift;
+    my $config;
+
+    open FH, "<mt-config.cgi-original";
+    {
+        local $/;
+        $config = <FH>;
+    }
+    close FH;
+
+    $config =~ s/(DefaultLanguage ).*/$1$lang/;
+    open FH, ">mt-config.cgi-original";
+    print FH $config;
+    close FH;
+}
+

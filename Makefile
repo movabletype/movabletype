@@ -101,12 +101,6 @@ mt-check.cgi: build-language-stamp build/mt-dists/$(BUILD_PACKAGE).mk
 	rm mt-check.cgi.pre
 	chmod +x mt-check.cgi
 
-mt-config.cgi-original: build-language-stamp
-	mv mt-config.cgi-original mt-config.cgi-original.pre
-	sed -e '$$s/$$/DefaultLanguage $(BUILD_LANGUAGE)/' \
-	mt-config.cgi-original.pre > mt-config.cgi-original
-	rm mt-config.cgi-original.pre
-
 $(local_js): mt-static/mt_%.js: mt-static/mt.js lib/MT/L10N/%.pm
 	perl build/mt-dists/make-js
 
@@ -158,4 +152,5 @@ clean:
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
+	-svn revert lib/MT.pm php/mt.php
 	-svn revert mt-config.cgi-original lib/MT.pm php/mt.php
