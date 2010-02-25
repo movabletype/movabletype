@@ -249,21 +249,22 @@ sub _hdlr_authors {
                     }
                     return 0;
                 };
-
-                push @filters, sub {
-                    my $perm_iter = MT::Permission->load_iter({
-                        author_id => $_[0]->id,
-                        ( defined $blog_terms{blog_id} ? ( blog_id => [ $blog_terms{blog_id} , 0 ] ) : () ),
-                    }, \%blog_args );
-                    while ( my $perm = $perm_iter->() ) {
-                        $perm_iter->end(), return 1
-                            if $perm->can_do('create_post');
-                    }
-                    return 0;
-                };
             } else {
                 push @filters, sub {
-                    $_[0]->permissions($blog_id)->permissions ? 1 : 0;
+                    my $blog_id;
+                    if ( $blog_terms{blog_id} ) {
+                        $blog_id
+                            = ref $blog_terms{blog_id} eq 'ARRAY'
+                            ? [ 0, @{ $blog_terms{blog_id} } ]
+                            : [ 0, $blog_terms{blog_id} ];
+                    }
+                    my $count = MT::Permission->count(
+                        {   author_id => $_[0]->id,
+                            $blog_id ? ( blog_id => $blog_id ) : (),
+                        },
+                        \%blog_args
+                    );
+                    return $count > 0;
                 };
             }
         }
