@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '5.02');
-define('VERSION_ID', '5.02');
+define('VERSION_ID', '5.02b1');
 define('PRODUCT_VERSION', '5.02');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';

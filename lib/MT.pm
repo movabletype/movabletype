@@ -32,7 +32,7 @@ BEGIN {
     ( $VERSION, $SCHEMA_VERSION ) = ( '5.02', '5.0016' );
     ( $PRODUCT_NAME, $PRODUCT_CODE, $PRODUCT_VERSION, $VERSION_ID, $PORTAL_URL ) = (
         '__PRODUCT_NAME__', 'MT',
-        '5.02', '5.02',
+        '5.02', '5.02b1',
         '__PORTAL_URL__'
     );
 
