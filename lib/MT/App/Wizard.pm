@@ -736,12 +736,19 @@ sub configure {
                     = $app->translate(
                     'An error occurred while attempting to connect to the database.  Check the settings and try again.'
                     );
-                if (   exists( $param{publish_charset} )
+                my $enc;
+                if ( exists( $param{publish_charset} )
                     && $param{publish_charset}
                     && ( $param{publish_charset} ne $current_charset ) )
                 {
+                    $enc = $param{publish_charset};
+                }
+                if ( $dbtype =~ m/u?mssqlserver/i ) {
+                    $enc = 'utf8';
+                }
+                if ( $enc ) {
                     require Encode;
-                    $err = Encode::decode( $param{publish_charset}, $err );
+                    $err = Encode::decode( $enc, $err );
                 }
                 $err_more = $err;
             }
