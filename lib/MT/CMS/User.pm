@@ -703,10 +703,14 @@ sub list_association {
             code  => $hasher,
             terms => {
                 type => $types,
-                $author_id ? ( author_id => $author_id ) : (),
-                $blog_id   ? ( blog_id   => $blog_id )   : (),
-                $role_id   ? ( role_id   => $role_id )   : (),
-            },
+                $author_id
+                    ? $author_id eq 'PSEUDO'
+                        ? ( author_id => 0 )
+                        : ( author_id => $author_id )
+                    : (),
+                $blog_id ? ( blog_id => $blog_id ) : (),
+                $role_id ? ( role_id => $role_id ) : (),
+                },
             pre_build => $pre_build,
             params => {
                 can_create_association => $app->user->is_superuser || ( $blog_id
