@@ -3216,7 +3216,7 @@ sub _hdlr_app_list_filters {
         <mt:if name="__first__">
     <ul>
         </mt:if>
-        <mt:if name="key" eq="\$filter_key"><li class="current-filter"><strong><mt:else><li></mt:if><a href="<mt:var name="script_url">?__mode=$mode$type_param<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></strong></mt:if></li>
+        <mt:if name="key" eq="\$filter_key"><li class="current-filter"><em><mt:else><li></mt:if><a href="<mt:var name="script_url">?__mode=$mode$type_param<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter_key=<mt:var name="key" escape="url">"><mt:var name="label"></a><mt:if name="key" eq="\$filter_key"></em></mt:if></li>
     <mt:if name="__last__">
     </ul>
     </mt:if>

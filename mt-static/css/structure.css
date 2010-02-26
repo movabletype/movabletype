@@ -1142,7 +1142,7 @@ ul.menu-nav > li.last-child.top-menu-open .toggle-button {
 
 /* -- Content Nav */
 .widget-content li.active em, 
-.widget-content li.current-filter { 
+.widget-content li.current-filter em { 
     font-style: normal;
     font-weight: bold;
 }
