@@ -4661,6 +4661,7 @@ use vars qw( @ISA %Lexicon );
 	'OpenID URL' => 'あなたのOpenID URL',
 	'Sign in using your OpenID identity.' => 'あなたのOpenID',
 	'Sign in with one of your existing third party OpenID accounts.' => 'すでに登録済みの、OpenIDに対応した別サービスのアカウントでサインインします。',
+	'http://www.openid.net/' => 'http://www.sixapart.jp/about/openid/',
 	'Learn more about OpenID.' => 'OpenIDについて詳しくはこちら',
 
 ## tmpl/comment/auth_typepad.tmpl

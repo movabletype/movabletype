@@ -4639,6 +4639,7 @@ use vars qw( @ISA %Lexicon );
 	'OpenID URL' => 'OpenID URL',
 	'Sign in using your OpenID identity.' => 'Aanmelden met uw OpenID identiteit.',
 	'Sign in with one of your existing third party OpenID accounts.' => 'Aanmelden met een bestaande OpenID account.',
+	'http://www.openid.net/' => 'http://www.openid.net/',
 	'Learn more about OpenID.' => 'Meer weten over OpenID.',
 
 ## tmpl/comment/auth_typepad.tmpl

@@ -1,4 +1,4 @@
-<form method="post" action="<mt:var name="script_url">">
+2<form method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="login_external" />
     <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
     <input type="hidden" name="entry_id" value="<mt:var name="entry_id">" />
@@ -20,6 +20,6 @@
                 class="sign-in action primary-button"
                 ><__trans phrase="Sign in"></button>
         </div>
-        <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="http://www.openid.net/"><__trans phrase="Learn more about OpenID."></a></p>
+        <p><img src="<mt:var name="static_uri">images/comment/blue_moreinfo.png"> <a href="<__trans phrase="http://www.openid.net/">"><__trans phrase="Learn more about OpenID."></a></p>
     </fieldset>
 </form>

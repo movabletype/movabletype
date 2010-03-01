@@ -4670,6 +4670,7 @@ que la dirección provista es correcta y le pertenece.',
 	'OpenID URL' => 'URL de OpenID',
 	'Sign in using your OpenID identity.' => 'Identifíquese usando OpenID.',
 	'Sign in with one of your existing third party OpenID accounts.' => 'Identifíquese usando una de sus cuentas externas de OpenID.',
+	'http://www.openid.net/' => 'http://www.openid.net/',
 	'Learn more about OpenID.' => 'Más información sobre OpenID.',
 
 ## tmpl/comment/auth_typepad.tmpl
