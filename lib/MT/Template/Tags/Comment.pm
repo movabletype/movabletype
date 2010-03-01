@@ -1232,7 +1232,7 @@ sub _hdlr_comment_author_identity {
             $logo = $blog_domain . $logo;
         }
     }
-    my $result = qq{<img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" />};
+    my $result = qq{<img alt=\"\" src=\"$logo\" width=\"16\" height=\"16\" />};
     if ($link) {
         $result = qq{<a class="commenter-profile" href=\"$link\">$result</a>};
     }
