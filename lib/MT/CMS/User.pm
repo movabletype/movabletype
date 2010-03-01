@@ -59,6 +59,9 @@ sub edit {
         eval { require MT::Image; MT::Image->new or die; };
         $param->{can_use_userpic} = $@ ? 0 : 1;
     } else {
+        if ( $app->config->ExternalUserManagement ) {
+            return $app->error( MT->translate('Invalid request') );
+        }
         $param->{create_personal_weblog} =
           $app->config->NewUserAutoProvisioning ? 1 : 0
           unless exists $param->{create_personal_weblog};
