@@ -658,7 +658,7 @@ sub empty_junk {
     my $perms   = $app->permissions;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
-    if ( $blog_id ) {
+    if ($blog_id) {
         $app->can_do('delete_junk_comments')
             or return $app->errtrans('Permission denied');
     }
@@ -667,12 +667,15 @@ sub empty_junk {
             or return $app->errtrans('Permission denied');
     }
 
+    my $blog_ids = $app->_load_child_blog_ids($blog_id);
+    push @$blog_ids, $blog_id if $blog_id;
+
     my $type  = $app->param('_type');
     my $class = $app->model($type);
     my $arg   = {};
     require MT::Comment;
     $arg->{junk_status} = MT::Comment::JUNK();
-    $arg->{blog_id} = $blog_id if $blog_id;
+    $arg->{blog_id} = $blog_ids if $blog_id;
     $class->remove($arg);
     $app->add_return_arg( 'emptied' => 1 );
     $app->call_return;
