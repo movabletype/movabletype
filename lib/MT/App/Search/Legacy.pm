@@ -148,7 +148,7 @@ sub init_request{
     if ( ( $app->{searchparam}{Type} eq 'straight' )
         || ( $app->{searchparam}{Type} eq 'tag' ) ) {
         if ($q->param('search')) {
-            $app->{search_string} = $q->param('search');
+            $app->{search_string} = Encode::decode( $cfg->PublishCharset, $q->param('search') );
             $app->{search_string_decoded} = $app->{search_string};
         } else {
             $app->{search_string} = $app->{search_string_decoded} = q();
