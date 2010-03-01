@@ -2678,7 +2678,7 @@ function progress(str, id) {
 </script>
 SCRIPT
 
-    $app->print(
+    $app->print_encode(
         $app->build_page(
             'dialog/header.tmpl',
             {
@@ -2687,7 +2687,7 @@ SCRIPT
             }
         )
     );
-    $app->print( $app->translate_templatized(<<"HTML") );
+    $app->print_encode( $app->translate_templatized(<<"HTML") );
 <h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
 
 <div class="modal_width" id="dialog-clone-weblog">
@@ -2726,7 +2726,7 @@ HTML
         $website->add_blog( $new_blog );
     };
     if ( my $err = $@ ) {
-        $app->print(
+        $app->print_encode(
             $app->translate_templatized(
                 qq{<p class="error-message"><__trans phrase="Error">: $err</p>}
             )
@@ -2746,7 +2746,7 @@ HTML
             }
         );
 
-        $app->print( $app->translate_templatized(<<"HTML") );
+        $app->print_encode( $app->translate_templatized(<<"HTML") );
 </ul>
 </div>
 
@@ -2778,7 +2778,7 @@ jQuery(function() {
 HTML
     }
 
-    $app->print( $app->build_page('dialog/footer.tmpl') );
+    $app->print_encode( $app->build_page('dialog/footer.tmpl') );
 }
 
 sub _progress {
@@ -2789,12 +2789,12 @@ sub _progress {
     if ($id && $ids->{$id}) {
         require MT::Util;
         my $str_js = MT::Util::encode_js($str);
-        $app->print(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
+        $app->print_encode(qq{<script type="text/javascript">progress('$str_js', '$id');</script>\n});
     } elsif ($id) {
         $ids->{$id} = 1;
-        $app->print(qq{<li id="$id">$str</li>\n});
+        $app->print_encode(qq{<li id="$id">$str</li>\n});
     } else {
-        $app->print("<li>$str</li>");
+        $app->print_encode("<li>$str</li>");
     }
 
     $app->request('progress_ids', $ids);
