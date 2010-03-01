@@ -48,9 +48,9 @@ sub template_params {
 }
 
 sub archive_title {
-    my $obj = shift;
+    my $obj   = shift;
     my ($ctx) = @_;
-    my $c = $ctx->stash('category');
+    my $c     = $ctx->stash('category') || $ctx->stash('archive_category');
     encode_html( remove_html( $c ? $c->label : '' ) );
 }
 
