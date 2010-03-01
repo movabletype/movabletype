@@ -955,7 +955,9 @@ sub load_core_permissions {
             'inherit_from'     => ['blog.administer_website'],
             'order'            => 100,
             'permitted_action' => {
-                'manage_member_blogs' => 1,
+                'manage_member_blogs'          => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
             },
         },
         'blog.comment' => {
@@ -1199,6 +1201,7 @@ sub load_core_permissions {
                 'save_page'                       => 1,
                 'set_page_draft_via_list'         => 1,
                 'use_tools:search'                => 1,
+                'open_blog_listing_screen'        => 1,
             }
         },
         'blog.manage_users' => {
@@ -1389,8 +1392,10 @@ sub load_core_permissions {
             'label'            => 'Manage Templates',
             'order'            => 250,
             'permitted_action' => {
-                'access_to_system_dashboard' => 1,
-                'use_tools:search'           => 1,
+                'access_to_system_dashboard'   => 1,
+                'use_tools:search'             => 1,
+                'open_blog_listing_screen'     => 1,
+                'open_all_blog_listing_screen' => 1,
             },
         },
         'system.manage_plugins' => {

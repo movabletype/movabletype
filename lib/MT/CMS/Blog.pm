@@ -379,7 +379,8 @@ sub list {
         my $type = $app->param('type');
         return $app->return_to_dashboard( redirect => 1 ) if !$type || $type eq 'blog';
     }
-
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('open_blog_listing_screen');
     my $author    = $app->user;
     my $list_pref = $app->list_pref('blog');
     my $limit     = $list_pref->{rows};
@@ -387,7 +388,7 @@ sub list {
     my $args      = { offset => $offset, sort => 'name' };
     $args->{limit} = $limit + 1;
     unless ( $author->is_superuser
-        || $author->permissions(0)->can_do('edit_templates') )
+        || $app->can_do('open_all_blog_listing_screen') )
     {
         $args->{join} = MT::Permission->join_on(
             'blog_id',
