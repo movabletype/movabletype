@@ -342,7 +342,7 @@ sub _v5_generate_websites_place_blogs {
         { class => 'blog' },
         '-and',
         [
-            { parent_id => \'IS NULL' }, '-or', { parent_id => '' }
+            { parent_id => \'IS NULL' }, '-or', { parent_id => 0 }
         ]
     ] );
 
