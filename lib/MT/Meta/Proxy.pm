@@ -207,7 +207,9 @@ sub save {
         my ( $data, $utf8_data );
         $data = $utf8_data = $meta_obj->$type;
         unless ( ref $data ) {
-            $data = Encode::encode($enc, $data) if Encode::is_utf8( $data );
+            my $dbd = $meta_obj->driver->dbd;
+            $data = Encode::encode($enc, $data)
+                if Encode::is_utf8( $data ) && $dbd->need_encode;
         }
         $meta_obj->$type( $data, { no_changed_flag => 1 } );
 
