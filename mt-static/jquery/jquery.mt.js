@@ -599,11 +599,13 @@ $.fn.mtDeleteItems = function(options) {
  *
  */
 $.fn.mtEnableUsers = function(options) {
-    var defaults = {};
+    var defaults = {
+        args: {}
+    };
     var opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
-            setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 1);
+            setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 1, '', opts.args);
             return false;
         });
     });
@@ -614,7 +616,9 @@ $.fn.mtEnableUsers = function(options) {
  *
  */
 $.fn.mtDisableUsers = function(options) {
-    var defaults = {};
+    var defaults = {
+        args: {}
+    };
     var opts = $.extend(defaults, options);
     return this.each(function() {
         $(this).click(function() {
@@ -624,7 +628,7 @@ $.fn.mtDisableUsers = function(options) {
                 sysadmin.click();
                 return false;
             }
-            setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 0);
+            setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 0, '', opts.args);
             return false;
         });
     });

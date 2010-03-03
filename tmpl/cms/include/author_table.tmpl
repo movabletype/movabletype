@@ -61,12 +61,14 @@
     jQuery('button.mt-enable-users').mtEnableUsers({
         id: '<$mt:var name="object_type"$>-listing-form',
         plural: '<__trans phrase="user" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="users" escape="js">'
     });
     jQuery('button.mt-disable-users').mtDisableUsers({
         message: '<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">',
         id: '<$mt:var name="object_type"$>-listing-form',
         plural: '<__trans phrase="user" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
         phrase: '<__trans phrase="users" escape="js">'
     });
     jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
