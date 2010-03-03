@@ -5,6 +5,22 @@
     <$mt:setvar name="type_label" value="<__trans phrase="Entries">"$>
     <$mt:setvar name="mode" value="list_entry"$>
 </mt:if>
+
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <button
+        accesskey="e"
+        title="<__trans phrase="Enable selected users (e)">"
+        class="mt-enable-users"
+        ><__trans phrase="_USER_ENABLE" escape="js"></button>
+    <button
+        accesskey="d"
+        title="<__trans phrase="Disable selected users (d)">"
+        class="mt-disable-users"
+        ><__trans phrase="_USER_DISABLE" escape="js"></button>
+    </mt:if>
+</mt:setvarblock>
+
 <mtapp:listing>
     <mt:if name="__first__">
         <mt:setvarblock name="table_header">
@@ -41,4 +57,22 @@
         </tbody>
     </mt:if>
 </mtapp:listing>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-enable-users').mtEnableUsers({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-disable-users').mtDisableUsers({
+        message: '<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">',
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>
 
