@@ -412,11 +412,18 @@ sub init_plugins {
 sub init_request {
     my $app = shift;
     $app->SUPER::init_request(@_);
-    $app->set_no_cache;
     $app->{requires_login} = 1
         unless exists $app->{requires_login};   # by default, we require login
 
     my $mode = $app->mode;
+
+    $app->set_no_cache
+        if $mode ne 'export_notification'
+            && $mode ne 'backup_download'
+            && $mode ne 'export'
+            && $mode ne 'do_export_theme'
+            && $mode ne 'export_log'
+            && $mode ne 'export_authors';
 
     # Global 'blog_id' parameter check; if we get something
     # other than an integer, die
