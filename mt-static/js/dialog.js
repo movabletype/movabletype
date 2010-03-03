@@ -312,6 +312,7 @@ ListingPanel = new Class(Panel, {
             this.searchReset = search_reset[0];
             this.searchReset.onclick = function() {
                 self.datasource.navigate(0);
+                self.searchField.value = "";
                 TC.addClassName(self.searchReset, "hidden");
                 return false;
             };
