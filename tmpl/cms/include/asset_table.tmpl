@@ -16,7 +16,9 @@
                 <th class="file-status si">&nbsp;</th>
                 <th class="file-name primary-col"><__trans phrase="Label"></th>
     <mt:unless name="blog_view">
+        <mt:unless name="scope_type" eq="blog">
                 <th class="blog"><__trans phrase="Website/Blog"></th>
+        </mt:unless>
     </mt:unless>
                 <th class="file-size"><__trans phrase="Size"></th>
                 <th class="created-by"><__trans phrase="Created By"></th>
@@ -64,7 +66,9 @@
                     </div>
                 </td>
     <mt:unless name="blog_view">
+        <mt:unless name="scope_type" eq="blog">
                 <td class="blog"><a href="<mt:var name="script_url">?__mode=list_asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+        </mt:unless>
     </mt:unless>
                 <td class="file-size" title="<mt:var name="file_size">">
     <mt:if name="asset_type" eq="image">
