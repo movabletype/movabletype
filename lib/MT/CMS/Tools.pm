@@ -1066,6 +1066,9 @@ sub backup_download {
     }
     else {
         $contenttype = 'application/octet-stream';
+        if ( $app->param->user_agent =~ /MSIE/ ) {
+            $newfilename = Encode::encode( 'Shift_JIS', $newfilename );
+        }
     }
 
     if ( open( my $fh, "<", MT::FileMgr::Local::_local($fname) ) ) {
