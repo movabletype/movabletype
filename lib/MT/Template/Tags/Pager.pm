@@ -139,6 +139,7 @@ sub _hdlr_pager_link {
     my $limit = $ctx->stash('limit');
     my $offset = $ctx->stash('offset');
     $offset = ( $page - 1 ) * $limit;
+    my $template = $ctx->stash('template_id');
 
     my $link = $ctx->context_script($args);
 
@@ -152,6 +153,7 @@ sub _hdlr_pager_link {
     }
     $link .= "limit=$limit";
     $link .= "&page=$page" if $page;
+    $link .= "&Template=$template" if $template;
 
     return $link;
 }

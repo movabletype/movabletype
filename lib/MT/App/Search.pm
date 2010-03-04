@@ -350,11 +350,11 @@ sub process {
             if $format !~ /\w+/;
     }
     my $method = "render";
-    if ( $format ) {
-        $method .= $format if $app->can( $method . $format );
-    }
-    elsif ( my $tmpl_name = $app->param('Template') ) {
+    if ( my $tmpl_name = $app->param('Template') ) {
         $method .= $tmpl_name if $app->can( $method . $tmpl_name );
+    }
+    elsif ( $format ) {
+        $method .= $format if $app->can( $method . $format );
     }
 
     $out = $app->$method( $count, $iter );
