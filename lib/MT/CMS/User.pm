@@ -1560,6 +1560,7 @@ sub dialog_grant_role {
                 type     => $type,
                 code     => $hasher,
                 params   => $params,
+                no_limit => 1,
                 template => 'include/listing_panel.tmpl',
                 $app->param('search') ? () : (
                     pre_build => sub {
