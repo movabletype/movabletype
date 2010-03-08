@@ -11,9 +11,10 @@ function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
         if ($entry) {
             $entry_id = $entry->entry_id;
             $blog_id = $entry->entry_blog_id;
+            $class = $args['class'];
             $tag = $args['name'];
             $tag or $tag = $args['tag'];
-            $targs = array('entry_id' => $entry_id, 'blog_id' => $blog_id);
+            $targs = array('entry_id' => $entry_id, 'blog_id' => $blog_id, 'class' => $class);
             if ($tag && (substr($tag,0,1) == '@')) {
                 $targs['include_private'] = 1;
             }
