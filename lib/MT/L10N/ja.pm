@@ -302,8 +302,8 @@ use vars qw( @ISA %Lexicon );
 	'1 Comment' => 'コメント(1)',
 	'# Comments' => 'コメント(#)',
 	'No Comments' => 'コメント(0)',
-	'Older Comments' => '古いコメント',
-	'Newer Comments' => '新しいコメント',
+	'Previous' => '前',
+	'Next' => '次',
 	'The data is modified by the paginate script' => 'ページネーションスクリプトによって変更されています。',
 	'Remember personal info?' => 'ログイン情報を記憶',
 
@@ -441,8 +441,6 @@ use vars qw( @ISA %Lexicon );
 	'Search Results' => '検索結果',
 	'Results matching &ldquo;[_1]&rdquo;' => '「[_1]」と一致するもの',
 	'Results tagged &ldquo;[_1]&rdquo;' => 'タグ「[_1]」が付けられているもの',
-	'Previous' => '前',
-	'Next' => '次',
 	'No results found for &ldquo;[_1]&rdquo;.' => '「[_1]」と一致する結果は見つかりませんでした。',
 	'Instructions' => '例',
 	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
@@ -531,7 +529,6 @@ use vars qw( @ISA %Lexicon );
 	'First Weblog' => 'First Weblog',
 	'Error loading blog #[_1] for user provisioning. Check your NewUserTemplateBlogId setting.' => '新規ユーザー用のブログ(ID:[_1])をロードできませんでした。NewUserTemplateBlogIdの設定を確認してください。',
 	'Error provisioning blog for new user \'[_1]\' using template blog #[_2].' => '新規ユーザー\'[_1]\'用のブログを複製元のブログ(ID:[_2])から作成できませんでした。',
-	'Error creating directory [_1] for blog #[_2].' => 'ブログ(ID:[_2])のディレクトリ[_1]を作成できませんでした。',
 	'Error provisioning blog for new user \'[_1] (ID: [_2])\'.' => '新規ユーザー\'[_1]\'用のブログを作成できませんでした。',
 	'Blog \'[_1] (ID: [_2])\' for user \'[_3] (ID: [_4])\' has been created.' => '\'[_3]\'(ID:[_4])のブログ\'[_1]\'(ID:[_2])を作成しました。',
 	'Error assigning blog administration rights to user \'[_1] (ID: [_2])\' for blog \'[_3] (ID: [_4])\'. No suitable blog administrator role was found.' => '\'[_1]\'(ID:[_2])をブログ\'[_3]\'(ID:[_4])の管理者にできませんでした。ブログの管理権限を持つロールが見つかりませんでした。',
@@ -3804,6 +3801,13 @@ use vars qw( @ISA %Lexicon );
 	'Upload' => 'アップロード',
 
 ## tmpl/cms/include/author_table.tmpl
+	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
+	'_USER_ENABLE' => '有効',
+	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
+	'_USER_DISABLE' => '無効',
+	'user' => 'ユーザー',
+	'users' => 'ユーザー',
+	'_NO_SUPERUSER_DISABLE' => 'Movable Typeのシステム管理者は自分自身を無効にはできません。',
 
 ## tmpl/cms/include/backup_end.tmpl
 	'All of the data has been backed up successfully!' => 'すべてのデータは正常にバックアップされました。',
@@ -4009,8 +4013,6 @@ use vars qw( @ISA %Lexicon );
 	'Remember me?' => 'ログイン情報を記憶する',
 
 ## tmpl/cms/include/member_table.tmpl
-	'user' => 'ユーザー',
-	'users' => 'ユーザー',
 	'Are you sure you want to remove the selected user from this blog?' => 'ブログからユーザーを削除してよろしいですか?',
 	'Are you sure you want to remove the [_1] selected users from this blog?' => 'ブログから[_1]人のユーザーを削除してよろしいですか?',
 	'Remove selected user(s) (r)' => 'ユーザーを削除 (r)',
@@ -4149,12 +4151,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully synchronized users\' information with the external directory.' => '外部のディレクトリとユーザーの情報を同期しました。',
 	'Some ([_1]) of the selected user(s) could not be re-enabled because they were no longer found in the external directory.' => '選択されたユーザーのうち[_1]人は外部ディレクトリ上に存在しないので有効にできませんでした。',
 	'An error occured during synchronization.  See the <a href=\'[_1]\'>activity log</a> for detailed information.' => '同期中にエラーが発生しました。エラーの詳細を<a href=\'[_1]\'>ログ</a>で確認して>ください。',
-	'Enable selected users (e)' => '選択したユーザーを有効化 (e)',
-	'_USER_ENABLE' => '有効',
-	'Disable selected users (d)' => '選択したユーザーを無効化 (d)',
-	'_USER_DISABLE' => '無効',
 	'Showing All Users' => 'すべてのユーザーを表示',
-	'_NO_SUPERUSER_DISABLE' => 'Movable Typeのシステム管理者は自分自身を無効にはできません。',
 
 ## tmpl/cms/list_banlist.tmpl
 	'IP Banning Settings' => '禁止IPアドレスの設定',
