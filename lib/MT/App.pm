@@ -976,14 +976,7 @@ sub _cb_user_provisioning {
     my $theme_id = MT->config('NewUserBlogTheme');
     my $blog_id = MT->config('NewUserTemplateBlogId');
     if ( $theme_id ) {
-        require MT::Theme;
-        my $theme = MT::Theme->load($theme_id);
-        if ( $theme ) {
-            $new_blog = MT::Blog->create_default_blog($blog_name, undef, $website_id);
-            $new_blog->theme_id($theme_id);
-            $new_blog->save;
-            $new_blog->apply_theme;
-        }
+        $new_blog = MT::Blog->create_default_blog($blog_name, undef, $website_id);
     }
     elsif ( $blog_id ) {
         my $blog = MT::Blog->load($blog_id);
@@ -1057,6 +1050,16 @@ sub _cb_user_provisioning {
             category => 'new'
         }
     );
+
+    if ( $theme_id ) {
+        require MT::Theme;
+        my $theme = MT::Theme->load($theme_id);
+        if ( $theme ) {
+            $new_blog->theme_id($theme_id);
+            $new_blog->apply_theme;
+            $new_blog->save;
+        }
+    }
 
     require MT::Role;
     require MT::Association;
