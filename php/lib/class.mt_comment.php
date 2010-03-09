@@ -24,8 +24,10 @@ class Comment extends BaseObject
 
         require_once('class.mt_author.php');
         $author = new Author;
-        $author->Load("author_id = $commenter_id");
-        return $author;
+        if ( $author->Load("author_id = $commenter_id") )
+            return $author;
+
+        return null;
     }
 }
 

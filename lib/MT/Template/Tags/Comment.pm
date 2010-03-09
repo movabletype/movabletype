@@ -1212,7 +1212,7 @@ sub _hdlr_comment_author_identity {
     unless ($cmntr) {
         if ($cmt->commenter_id) {
             $cmntr = MT::Author->load($cmt->commenter_id) 
-                or return "?";
+                or return "";
         } else {
             return q();
         }
