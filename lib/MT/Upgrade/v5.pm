@@ -78,6 +78,11 @@ sub upgrade_functions {
                 code      => sub { $_[0]->rebuild; },
             },
         },
+        'v5_remove_technorati' => {
+            version_limit => 5.0017,
+            priority      => 3.0,
+            code          => \&_v5_remove_technorati,
+        },
     };
 }
 
@@ -465,6 +470,37 @@ sub _v5_generate_websites_place_blogs {
         }
     }
     1;
+}
+
+sub _v5_remove_technorati {
+    my $self = shift;
+
+    my $class = MT->model('blog');
+    return $self->error(
+        $self->translate_escape(
+            "Error loading class: [_1].",
+            $class->class_label
+        )
+    ) unless $class;
+
+    my $iter = $class->load_iter( { class => '*' } );
+    while ( my $blog = $iter->() ) {
+        next unless $blog->update_pings =~ m/technorati/i;
+
+        my @pings = split ',', $blog->update_pings;
+        @pings = grep { $_ ne 'technorati' } @pings;
+        my $pings;
+        $pings = join ',', @pings if @pings;
+        $blog->update_pings($pings);
+        $blog->save;
+        $self->progress(
+            $self->translate_escape(
+                "Removing technorati update-ping service from [_1] (ID:[_2]).",
+                $blog->name,
+                $blog->id,
+            )
+        )
+    }
 }
 
 1;

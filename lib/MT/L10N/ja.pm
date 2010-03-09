@@ -2172,6 +2172,7 @@ use vars qw( @ISA %Lexicon );
 	'Merging dashboard settings...' => 'ダッシュボート設定を移行しています...',
 	'Classifying blogs...' => 'ブログを分類しています...',
 	'Rebuilding permissions...' => '権限を再構築しています...',
+ 'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
