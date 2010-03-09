@@ -1640,6 +1640,8 @@ sub post_save {
             $perms->author_id(0);
         }
 
+        cfg_prefs_save($app, $obj) or return;
+
         # If either of the publishing paths changed, rebuild the fileinfos.
         my $path_changed = 0;
         for my $path_field (qw( site_path archive_path site_url archive_url )) {
@@ -1651,11 +1653,9 @@ sub post_save {
 
         if ($path_changed) {
             update_dynamicity( $app, $obj );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
+            $app->rebuild( BlogID => $obj->id, NoStatic => 1, NoIndexes => 1 )
                 or $app->publish_error();
         }
-
-        cfg_prefs_save($app, $obj) or return;
     }
     if ( $screen eq 'cfg_entry' ) {
         my $blog_id = $obj->id;
