@@ -4170,8 +4170,8 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully refreshed your templates.' => 'テンプレートの初期化を完了しました。',
 	'You have successfully moved selected blogs to another website.' => '他のウェブサイトへのブログの移動が完了しました。',
 	'Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.' => '警告: アップロード済みのファイルは、新しいウェブサイトのパスに手動でコピーする必要があります。また、リンク切れを防止するために、旧パスのファイルも残すことを検討してください。',
-	'You can not refresh templates: [_1]' => 'テンプレートを初期化できません: [_1]',
-	'The website was not deleted. You need to delete blogs under the website.' => 'ウェブサイトは削除されませんでした。ウェブサイト内のブログを、先に削除する必要があります。',
+	'Some templates were not refreshed.' => '初期化できないテンプレートがありました。',
+	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
 
 ## tmpl/cms/list_category.tmpl
 	'Your category changes and additions have been made.' => 'カテゴリの変更と追加を行いました。',
