@@ -106,7 +106,7 @@ SLUG
 }
 
 sub build_id {
-    my $build_id = '5.0-ja-greyhound-r4160-20090903';
+    my $build_id = '__BUILD_ID__';
     $build_id = '' if $build_id eq '__BUILD_' . 'ID__';
     return $build_id;
 }
