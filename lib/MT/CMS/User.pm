@@ -1560,9 +1560,8 @@ sub dialog_grant_role {
                 type     => $type,
                 code     => $hasher,
                 params   => $params,
-                no_limit => 1,
                 template => 'include/listing_panel.tmpl',
-                $app->param('search') ? () : (
+                $app->param('search') ? ( no_limit => 1 ) : (
                     pre_build => sub {
                         my ($param) = @_;
                         if ( $type && $type eq 'author' ) {
