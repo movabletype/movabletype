@@ -35,7 +35,7 @@
     <tbody>
     </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select" /></td>
+            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select"<mt:if checked> checked="checked"</mt:if> /></td>
             <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
         <mt:if name="object_type" eq="website">
             <td class="blog"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>

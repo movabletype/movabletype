@@ -34,11 +34,11 @@
             <__trans phrase="Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.">
         </mtapp:statusmsg>
     </mt:if>
-    <mt:if name="error">
+    <mt:if name="not_refreshed">
         <mtapp:statusmsg
-            id="error"
+            id="not-refreshed"
             class="error">
-            <__trans phrase="You can not refresh templates: [_1]" params="<mt:var name="blog_name" escape="html">">
+            <__trans phrase="Some templates were not refreshed.">
         </mtapp:statusmsg>
     </mt:if>
     <mt:if name="not_deleted">
@@ -46,7 +46,7 @@
             <mtapp:statusmsg
                 id="not-deleted"
                 class="error">
-                <__trans phrase="The website was not deleted. You need to delete blogs under the website.">
+                <__trans phrase="Some websites were not deleted. You need to delete blogs under the website first.">
             </mtapp:statusmsg>
         </mt:if>
     </mt:if>

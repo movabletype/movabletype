@@ -957,7 +957,7 @@ sub delete {
     my %rebuild_entries;
     my @rebuild_cats;
     my $required_items = 0;
-    my $not_deleted = 0;
+    my @not_deleted;
     for my $id ( $q->param('id') ) {
         next unless $id;    # avoid 'empty' ids
         if ( ( $type eq 'association' ) && ( $id =~ /PSEUDO-/ ) ) {
@@ -1117,7 +1117,7 @@ sub delete {
                 parent_id => $obj->id,
             });
             if ( $count > 0 ) {
-                $not_deleted++;
+                push @not_deleted, $obj->id;
                 next;
             }
         }
@@ -1158,8 +1158,9 @@ sub delete {
     }
     $app->run_callbacks( 'rebuild', MT::Blog->load($blog_id) );
 
-    if ( $not_deleted > 0 ) {
+    if ( $#not_deleted >= 0 ) {
         $app->add_return_arg( 'not_deleted' => 1 );
+        $app->add_return_arg( 'error_id' => join ',', @not_deleted );
     }
     else {
         $app->add_return_arg(

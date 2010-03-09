@@ -438,6 +438,7 @@ sub list {
     $param{can_create_website} = $app->can_do('create_new_website');
     $param{saved_deleted}      = $app->param('saved_deleted');
     $param{not_deleted}        = $app->param('not_deleted');
+    $param{not_refreshed}      = $app->param('not_refreshed');
     $param{refreshed}          = $app->param('refreshed');
     $param{nav_blogs}          = 1;
     $param{list_noncron}       = 1;
@@ -462,15 +463,6 @@ sub list {
     $param{screen_class}        = "list-$type";
     $param{screen_id}           = "list-$type";
     $param{listing_screen}      = 1;
-    if ( my @blog_ids = split ',', $app->param('error_id') ) {
-        $param{error} = 1;
-        my @names;
-        foreach my $blog_id (@blog_ids) {
-            my ($blog) = grep { $_->{id} eq $blog_id } @$blog_loop;
-            push @names, $blog->{name} if $blog;
-        }
-        $param{blog_name} = join ',', @names;
-    }
     return $app->load_tmpl( 'list_blog.tmpl', \%param );
 }
 
@@ -1906,6 +1898,7 @@ sub make_blog_list {
         }
     }
 
+    my @ids = split ',', $app->param('error_id');
     for my $blog (@$blogs) {
         my $blog_id = $blog->id;
         my $perms   = $author->permissions($blog_id);
@@ -1929,6 +1922,7 @@ sub make_blog_list {
         $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
         $row->{can_edit_assets}       = $perms->can_do('edit_assets');
         $row->{can_administer_blog}   = $perms->can_do('administer_blog');
+        $row->{checked}               = grep { $_ == $blog->id } @ids;
         push @$data, $row;
     }
     $data;

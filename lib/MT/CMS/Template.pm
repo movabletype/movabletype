@@ -2028,6 +2028,7 @@ sub refresh_all_templates {
         $refreshed = 1;
     }
     if (@blogs_not_refreshed) {
+        $app->add_return_arg( 'not_refreshed' => 1 );
         $app->add_return_arg( 'error_id' => join( ',', @blogs_not_refreshed ) );
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
