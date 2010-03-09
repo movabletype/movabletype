@@ -256,7 +256,8 @@ sub rebuild {
         }
     }
     unless ( $param{NoIndexes} ) {
-        $mt->rebuild_indexes( Blog => $blog ) or return;
+        $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
+            or return;
     }
     1;
 }
@@ -1537,6 +1538,7 @@ sub rebuild_indexes {
 
         next if ( $tmpl->build_dynamic );
         next unless ( $tmpl->build_type );
+        next if $param{NoStatic};
 
         ## We're not building dynamically, so if the FileInfo is currently
         ## set as dynamic (virtual), change it to static.

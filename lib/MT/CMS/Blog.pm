@@ -1645,7 +1645,7 @@ sub post_save {
 
         if ($path_changed) {
             update_dynamicity( $app, $obj );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1, NoIndexes => 1 )
+            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
                 or $app->publish_error();
         }
     }
