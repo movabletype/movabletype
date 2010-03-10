@@ -4482,8 +4482,6 @@ background-image: url(../images/status_icons/view.gif);
 
 .icon-user { background-image: url('../images/nav_icons/color/user.gif'); }
 .icon-group { background-image: url('../images/nav_icons/color/group.gif'); }
-.selected .icon-user { background-image: url('../images/nav_icons/gray/user.gif'); }
-.selected .icon-group { background-image: url('../images/nav_icons/gray/group.gif'); }
 
 .icon-align { background-position: left top; }
 .icon-align-none { background-image: url('../images/align_none.gif'); }
