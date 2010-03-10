@@ -620,10 +620,6 @@ BEGIN {
                 label => 'weblogs.com',
                 url   => 'http://rpc.weblogs.com/RPC2',
             },
-            'technorati' => {
-                label => 'technorati.com',
-                url   => 'http://rpc.technorati.com/rpc/ping',
-            },
             'google' => {
                 label => 'google.com',
                 url   => 'http://blogsearch.google.com/ping/RPC2',
