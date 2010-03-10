@@ -93,7 +93,7 @@ sub core_methods {
         'cfg_prefs'        => "${pkg}Blog::cfg_prefs",
         'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
         'cfg_plugins'      => "${pkg}Plugin::cfg_plugins",
-        'cfg_registration' => "${pkg}Comment::cfg_registration",
+        'cfg_registration' => "${pkg}Blog::cfg_registration",
         'cfg_entry'        => "${pkg}Entry::cfg_entry",
         'cfg_web_services' => "${pkg}Blog::cfg_web_services",
 

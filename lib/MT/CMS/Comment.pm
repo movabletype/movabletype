@@ -632,27 +632,6 @@ sub unapprove_item {
     set_item_visible($app);
 }
 
-sub cfg_registration {
-    my $app     = shift;
-    my $q       = $app->param;
-    my $blog_id = scalar $q->param('blog_id');
-    return $app->return_to_dashboard( redirect => 1 )
-      unless $blog_id;
-    return $app->return_to_dashboard( permission => 1 )
-        unless $app->can_do('edit_config');
-    $q->param( '_type', 'blog' );
-    $q->param( 'id',    scalar $q->param('blog_id') );
-    eval { require Digest::SHA1; };
-    my $openid_available = $@ ? 0 : 1;
-    $app->forward( "view",
-        {
-            output       => 'cfg_registration.tmpl',
-            screen_class => 'settings-screen registration-screen',
-            openid_enabled => $openid_available
-        }
-    );
-}
-
 sub empty_junk {
     my $app     = shift;
     my $perms   = $app->permissions;

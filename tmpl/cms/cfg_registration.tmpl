@@ -71,7 +71,7 @@
           <a href="javascript:void(0)" onclick="return openManual('blog_settings_feedback', 'require_email_address')" class="help-link">?</a></p>
         </div>
         <mt:else>
-        <p><input type="checkbox" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label><mt:if name="disabled"> (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)</mt:if></p>
+        <p><input type="<mt:if name="label">checkbox<mt:else>hidden</mt:if>" id="enabled_<mt:var name="key" escape="html">" name="enabled_<mt:var name="key" escape="html">" value="1"<mt:if name="enabled"> checked="checked"</mt:if><mt:if name="disabled"> disabled="disabled"</mt:if> /> <label for="enabled_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label><mt:if name="disabled"> (<mt:var name="disabled_reason" default="<__trans phrase="One or more Perl modules may be missing to use this authentication method.">">)</mt:if></p>
         </mt:if>
         </mt:loop>
         </mt:if>

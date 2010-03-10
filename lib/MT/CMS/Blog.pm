@@ -256,21 +256,6 @@ sub edit {
             $param->{junk_folder_expiry}   = $obj->junk_folder_expiry || 60;
             $param->{auto_delete_junk}     = $obj->junk_folder_expiry;
         }
-        elsif ( $output eq 'cfg_registration.tmpl' ) {
-            $param->{commenter_authenticators} =
-              $obj->commenter_authenticators;
-            my $registration = $cfg->CommenterRegistration;
-            if ( $registration->{Allow} ) {
-                $param->{registration} =
-                  $blog->allow_commenter_regist ? 1 : 0;
-            }
-            else {
-                $param->{system_disallow_registration} = 1;
-            }
-            $param->{allow_reg_comments} = $blog->allow_reg_comments;
-            $param->{allow_unreg_comments} = $blog->allow_unreg_comments;
-            $param->{require_typekey_emails} = $obj->require_typekey_emails;
-        }
         elsif ( $output eq 'cfg_plugin.tmpl' ) {
             $app->add_breadcrumb( $app->translate('Plugin Settings') );
             $param->{blog_view} = 1;
@@ -563,6 +548,77 @@ sub cfg_feedback {
             screen_class => 'settings-screen'
         }
     );
+}
+
+sub cfg_registration {
+    my $app  = shift;
+    my $blog = $app->blog;
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog;
+    return $app->return_to_dashboard( permission => 1 )
+        unless $app->can_do('edit_config');
+
+    eval { require Digest::SHA1; };
+    my $openid_available = $@ ? 0 : 1;
+
+    my %param = ();
+    $param{id}                       = $blog->id;
+    $param{openid_enabled}           = $openid_available;
+    $param{screen_class}             = 'settings-screen registration-screen';
+    $param{commenter_authenticators} = $blog->commenter_authenticators;
+    my $registration = $app->config->CommenterRegistration;
+    if ( $registration->{Allow} ) {
+        $param{registration} = $blog->allow_commenter_regist ? 1 : 0;
+    }
+    else {
+        $param{system_disallow_registration} = 1;
+    }
+    $param{allow_reg_comments}     = $blog->allow_reg_comments;
+    $param{allow_unreg_comments}   = $blog->allow_unreg_comments;
+    $param{require_typekey_emails} = $blog->require_typekey_emails;
+
+    my $cmtauth_reg = $app->registry('commenter_authenticators');
+    my %cmtauth;
+    foreach my $auth ( keys %$cmtauth_reg ) {
+        my %auth = %{ $cmtauth_reg->{$auth} };
+        $cmtauth{$auth} = \%auth;
+        if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
+            $c = $app->handler_to_coderef($c);
+            if ($c) {
+                my $reason;
+                $cmtauth{$auth}->{disabled} = 1
+                    unless $c->( $blog, \$reason );
+                $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
+                delete $cmtauth{TypeKey}
+                    if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
+            }
+        }
+    }
+    if ( my $auths = $blog->commenter_authenticators ) {
+        foreach ( split ',', $auths ) {
+            if ( 'MovableType' eq $_ ) {
+                $param{enabled_MovableType} = 1;
+            }
+            else {
+                $cmtauth{$_}->{enabled} = 1;
+            }
+        }
+    }
+    my @cmtauth_loop;
+    foreach ( keys %cmtauth ) {
+        $cmtauth{$_}->{key} = $_;
+        if ( UNIVERSAL::isa( $cmtauth{$_}->{plugin}, 'MT::Plugin' ) ) {
+
+            # force plugin auth schemes to show after native auth schemes
+            $cmtauth{$_}{order} = ( $cmtauth{$_}{order} || 0 ) + 100;
+        }
+        push @cmtauth_loop, $cmtauth{$_};
+    }
+    @cmtauth_loop = sort { $a->{order} <=> $b->{order} } @cmtauth_loop;
+
+    $param{cmtauth_loop} = \@cmtauth_loop;
+
+    $app->load_tmpl( 'cfg_registration.tmpl', \%param );
 }
 
 sub cfg_web_services {
@@ -1432,15 +1488,11 @@ sub pre_save {
                 $obj->require_comment_emails(0);
             }
             my @authenticators;
-
-            my $c = $app->registry('commenter_authenticators');
-            foreach ( keys %$c ) {
-                if ( $app->param( 'enabled_' . $_ ) ) {
-                    push @authenticators, $_;
+            for my $param ( $app->param->param ) {
+                if ( $param =~ /^enabled_(.*)$/ ) {
+                    push @authenticators, $1;
                 }
             }
-            push @authenticators, 'MovableType'
-              if $app->param('enabled_MovableType');
             my $c_old = $obj->commenter_authenticators;
             $obj->commenter_authenticators( join( ',', @authenticators ) );
             my $rebuild = $obj->commenter_authenticators ne $c_old ? 1 : 0;

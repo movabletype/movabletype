@@ -45,50 +45,6 @@ sub edit {
               . ( $obj->moderate_unreg_comments || 0 ) } = 1;
         $param->{ "moderate_pings_" . ( $obj->moderate_pings || 0 ) } = 1;
 
-        my $cmtauth_reg = $app->registry('commenter_authenticators');
-        my %cmtauth;
-        foreach my $auth ( keys %$cmtauth_reg ) {
-            my %auth = %{$cmtauth_reg->{$auth}};
-            $cmtauth{$auth} = \%auth;
-            if ( my $c = $cmtauth_reg->{$auth}->{condition} ) {
-                $c = $app->handler_to_coderef($c);
-                if ( $c ) {
-                    my $reason;
-                    $cmtauth{$auth}->{disabled} = 1 unless $c->( $blog, \$reason );
-                    $cmtauth{$auth}->{disabled_reason} = $reason if $reason;
-                    delete $cmtauth{TypeKey}
-                        if $auth eq 'TypeKey' && $cmtauth{TypeKey}{disabled};
-                }
-            }
-        }
-        if ( my $auths = $obj->commenter_authenticators ) {
-            foreach ( split ',', $auths ) {
-                if ( 'MovableType' eq $_ ) {
-                    $param->{enabled_MovableType} = 1;
-                }
-                else {
-                    $cmtauth{$_}->{enabled} = 1;
-                }
-            }
-        }
-        my @cmtauth_loop;
-        foreach ( keys %cmtauth ) {
-            $cmtauth{$_}->{key} = $_;
-            if (
-                UNIVERSAL::isa(
-                    $cmtauth{$_}->{plugin}, 'MT::Plugin'
-                )
-              )
-            {
-                # force plugin auth schemes to show after native auth schemes
-                $cmtauth{$_}{order} = ($cmtauth{$_}{order} || 0) + 100;
-            }
-            push @cmtauth_loop, $cmtauth{$_};
-        }
-        @cmtauth_loop = sort { $a->{order} <=> $b->{order} } @cmtauth_loop;
-
-        $param->{cmtauth_loop} = \@cmtauth_loop;
-
         if ( $output eq 'cfg_prefs.tmpl' ) {
             $app->add_breadcrumb( $app->translate('General Settings') );
 
