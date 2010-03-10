@@ -17,7 +17,9 @@ function smarty_function_mtarchivefile($args, &$ctx) {
         if (!$e) return $ctx->error("Could not determine entry");
         $f = $e->entry_basename;
     } else {
-        $f = $ctx->mt->config('IndexBasename');
+        $f = isset($ctx->stash('_basename'))
+            ? $ctx->stash('_basename') 
+            : $ctx->mt->config('IndexBasename');
     }
     if (isset($args['extension']) && !$args['extension']) {
     } else {

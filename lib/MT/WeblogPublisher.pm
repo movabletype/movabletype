@@ -1269,6 +1269,8 @@ sub rebuild_file {
         my $html = undef;
         $ctx->stash( 'blog', $blog );
         $ctx->stash( 'entry', $entry ) if $entry;
+        $ctx->stash( '_basename',
+            fileparse( $map->{__saved_output_file}, qr/\.[^.]*/ ) );
 
         require MT::Request;
         MT::Request->instance->cache('build_template', $tmpl);

@@ -941,7 +941,7 @@ sub _hdlr_archive_file {
         return $ctx->error(MT->translate("Could not determine entry")) if !$e;
         $f = $e->basename;
     } else {
-        $f = $ctx->{config}->IndexBasename;
+        $f = $ctx->stash('_basename') || $ctx->{config}->IndexBasename;
     }
     if (exists $args->{extension} && !$args->{extension}) {
     } else {

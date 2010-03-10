@@ -464,6 +464,9 @@ class MT {
         // now set the path so it may be queried
         $this->request = $path;
 
+        $pathinfo = pathinfo($path);
+        $ctx->stash('_basename', $pathinfo['filename']);
+
         // When we are invoked as an ErrorDocument, the parameters are
         // in the environment variables REDIRECT_*
         if (isset($_SERVER['REDIRECT_QUERY_STRING'])) {
