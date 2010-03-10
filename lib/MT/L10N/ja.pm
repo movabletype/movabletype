@@ -374,8 +374,12 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_entry_listing.mtml
 
 ## default_templates/new-comment.mtml
-	'An unapproved comment has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがブログ[_1]のブログ記事\'[_3]\'(ID:[_2])に投稿されました。公開するまでこのコメントはブログに表示されません。',
-	'A new comment has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'ブログ[_1]のブログ記事\'[_3]\'(ID:[_2])に新しいコメントが投稿されました。',
+	'An unapproved comment has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはウェブサイトに表示されません。',
+	'An unapproved comment has been posted on your blog \'[_1]\', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。',
+	'An unapproved comment has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。',
+	'A new comment has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
+	'A new comment has been posted on your blog \'[_1]\', on entry #[_2] ([_3]).' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
+	'A new comment has been posted on your blog \'[_1]\', on page #[_2] ([_3]).' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
 	'Commenter name: [_1]' => 'コメント投稿者: [_1]',
 	'Commenter email address: [_1]' => 'メールアドレス: [_1]',
 	'Commenter URL: [_1]' => 'URL: [_1]',
