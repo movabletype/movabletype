@@ -3585,7 +3585,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'ロールの編集',
 	'List Roles' => 'ロールの一覧',
-	'[quant,_1,User,Users] with this role' => '現在のユーザー数: [quant,_1,人,人]',
+	'[quant,_1,Association,Associations] with this role' => '[quant,_1,件,件]の関連付け',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーの権限も変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
 	'Role Details' => 'ロールの詳細',
 	'Created by' => '作成者',

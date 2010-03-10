@@ -53,7 +53,7 @@
             <th class="status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="_USER_STATUS_CAPTION">" title="<__trans phrase="_USER_STATUS_CAPTION">" width="9"height="9" /></th>
             <th class="name"><__trans phrase="Role"></th>
             <th class="description primary-col"><__trans phrase="Description"></th>
-            <th class="members"><__trans phrase="Members"></th>
+            <th class="members"><__trans phrase="Association"></th>
             <th class="created-by"><__trans phrase="Created By"></th>
         </tr>
     </mt:setvarblock>
@@ -72,7 +72,7 @@
             </td>
             <td><a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="html">"><mt:var name="name" escape="html"><mt:if name="has_edit_access"></a></mt:if></td>
             <td><mt:var name="description" escape="html"></td>
-            <td><mt:var name="members"></td>
+            <td><a href="<mt:var name="script_url">?__mode=list_association&amp;role_id=<mt:var name="id" escape="url">"><mt:var name="members"></a></td>
             <td><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
         </tr>
     <mt:if name="view_expanded">
