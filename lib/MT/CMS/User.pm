@@ -202,8 +202,16 @@ sub edit_role {
                 $perms->{'blog.'.$perm}->{can_do} = 1;
             }
         }
-        require MT::Association;
-        $param{members} = MT::Author->count( undef, { join  => MT::Association->join_on( 'author_id', { role_id => $id }, { unique => 1 } ) } );
+        my $assoc_class = $app->model('association');
+        my $user_count  = $assoc_class->count(
+            {   role_id   => $role->id,
+                author_id => [ 1, undef ],
+            },
+            {   unique     => 'author_id',
+                range_incl => { author_id => 1 },
+            }
+        );
+        $param{members} = $user_count;
     }
     else {
         for my $p ( values %$perms ) {
