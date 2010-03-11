@@ -576,6 +576,7 @@ sub cfg_registration {
     $param{allow_reg_comments}     = $blog->allow_reg_comments;
     $param{allow_unreg_comments}   = $blog->allow_unreg_comments;
     $param{require_typekey_emails} = $blog->require_typekey_emails;
+    $param{require_comment_emails} = $blog->require_comment_emails;
 
     my $cmtauth_reg = $app->registry('commenter_authenticators');
     my %cmtauth;
