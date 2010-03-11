@@ -390,10 +390,14 @@ use vars qw( @ISA %Lexicon );
 	'Report comment as spam:' => 'コメントをスパムとして報告する:',
 
 ## default_templates/new-ping.mtml
-	'An unapproved TrackBack has been posted on your blog [_1], for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ[_1]のブログ記事[_3] (ID:[_2])に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
-	'An unapproved TrackBack has been posted on your blog [_1], for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ[_1]のカテゴリ[_3](ID:[_2])に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
-	'A new TrackBack has been posted on your blog [_1], on entry #[_2] ([_3]).' => 'ブログ[_1]のブログ記事[_3](ID:[_2])に新しいトラックバックがあります。',
-	'A new TrackBack has been posted on your blog [_1], on category #[_2] ([_3]).' => 'ブログ[_1]のカテゴリ[_3](ID:[_2])に新しいトラックバックがあります。',
+	'An unapproved TrackBack has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。',
+	'An unapproved TrackBack has been posted on your blog \'[_1]\', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'An unapproved TrackBack has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'An unapproved TrackBack has been posted on your blog \'[_1]\', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のカテゴリ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'A new TrackBack has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
+	'A new TrackBack has been posted on your blog \'[_1]\', on entry #[_2] ([_3]).' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
+	'A new TrackBack has been posted on your blog \'[_1]\', on page #[_2] ([_3]).' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
+	'A new TrackBack has been posted on your blog \'[_1]\', on category #[_2] ([_3]).' => 'ブログ \'[_1]\' のカテゴリ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
 	'Excerpt' => '概要',
 	'Title' => 'タイトル',
 	'Blog' => 'ブログ',
