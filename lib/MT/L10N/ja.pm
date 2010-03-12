@@ -568,7 +568,7 @@ use vars qw( @ISA %Lexicon );
 	'A user with the same name already exists.' => '同名のユーザーがすでに存在します。',
 	'Text entered was wrong.  Try again.' => '入力された文字列が正しくありません。',
 	'Something wrong happened when trying to process signup: [_1]' => '登録に失敗しました: [_1]',
-	'New Comment Added to \'[_1]\'' => '\'[_1]\'にコメントがありました。',
+	'New Comment Added to \'[_1]\'' => '\'[_1]\'にコメントがありました',
 	'System Email Address is not configured.' => 'システムで利用するメールアドレスが設定されていません。',
 	'Close' => '閉じる',
 	'Go Back' => '戻る',
