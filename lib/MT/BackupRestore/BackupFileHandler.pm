@@ -136,6 +136,8 @@ sub start_element {
                                 } @{ $obj->column_names };
                                 $obj->set_values(\%realcolumns);
                                 $obj->$_($column_data{$_}) foreach keys( %column_data );
+                                $obj->column('external_id', $realcolumns{external_id})
+                                    if defined $realcolumns{external_id};
                                 $self->{current} = $obj;
                             } else {
                                 $deferred->{$class . '#' . $column_data{id}} = 1;
@@ -191,6 +193,8 @@ sub start_element {
                         }
 
                         $obj->set_values(\%realcolumn_data);
+                        $obj->column('external_id', $realcolumn_data{external_id})
+                            if $name eq 'author' && defined $realcolumn_data{external_id};
                         foreach my $metacol ( keys %metacolumns ) {
                             next if ( 'vclob' eq $metacolumns{$metacol} )
                                 || ( 'vblob' eq $metacolumns{$metacol} );
