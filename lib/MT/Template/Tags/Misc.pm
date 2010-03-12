@@ -193,9 +193,9 @@ sub _hdlr_widget_manager {
                 },
                 $cond,
             );
-            return $ctx->error(
-                MT->translate('', $ctx->errstr )
-            ) unless defined $out;
+            # if error is occured, pass the include's errstr
+            return unless defined $out;
+
             push @res, $out;
         }
     }

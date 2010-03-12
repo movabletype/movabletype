@@ -3717,7 +3717,8 @@ sub _include_module {
     my $ret = $tmpl->build( $ctx, $cond );
     if (!defined $ret) {
         $req->cache('build_template', $tmpl) if $tmpl;
-        return $ctx->error("error in $name $tmpl_name: " . $tmpl->errstr);
+        return $ctx->error(
+            MT->translate("Error in [_1] [_2]: [_3]", MT->translate($name), $tmpl_name, $tmpl->errstr) );
     }
 
     if ($cache_enabled) {
