@@ -305,7 +305,8 @@ sub _new_entry {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_do('create_new_entry_via_xmlrpc_server');
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('create_new_entry_via_xmlrpc_server') );
     my $entry = MT->model($obj_type)->new;
     my $orig_entry = $entry->clone;
     $entry->blog_id($blog_id);
@@ -317,9 +318,11 @@ sub _new_entry {
     ## *unless* the user has set "NoPublishMeansDraft 1" in mt.cfg, which
     ## enables the old behavior.
     if ($mt->{cfg}->NoPublishMeansDraft) {
-        $entry->status($publish && $perms->can_do('publish_new_post_via_xmlrpc_server') ? MT::Entry::RELEASE() : MT::Entry::HOLD());
+        $entry->status(
+            $publish && ( $author->is_superuser || $perms->can_do('publish_new_post_via_xmlrpc_server') ) ? MT::Entry::RELEASE() : MT::Entry::HOLD());
     } else {
-        $entry->status($perms->can_do('publish_new_post_via_xmlrpc_server') ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
+        $entry->status(
+            ( $author->is_superuser || $perms->can_do('publish_new_post_via_xmlrpc_server')) ? MT::Entry::RELEASE() : MT::Entry::HOLD() );
     }
     $entry->allow_comments($blog->allow_comments_default);
     $entry->allow_pings($blog->allow_pings_default);
@@ -447,9 +450,10 @@ sub _edit_entry {
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to edit entry"))
-        unless $perms && $perms->can_edit_entry($entry, $author);
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_edit_entry($entry, $author) );
     my $orig_entry = $entry->clone;
-    $entry->status(MT::Entry::RELEASE()) if $publish && $perms->can_do('publish_entry_via_xmlrpc_server');
+    $entry->status(MT::Entry::RELEASE()) if $publish && ( $author->is_superuser || $perms->can_do('publish_entry_via_xmlrpc_server') );
     $entry->title($item->{title}) if $item->{title};
 
     $class->_apply_basename($entry, $item, \%param);
@@ -556,14 +560,34 @@ sub getUsersBlogs {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author) = $class->_login($user, $pass);
     die _fault(MT->translate("Invalid login")) unless $author;
+
     require MT::Permission;
     require MT::Blog;
-    my $iter = MT::Permission->load_iter({ author_id => $author->id });
+        local $Data::ObjectDriver::DEBUG = 1;
+    my $iter;
+    if ( $author->is_superuser ) {
+        $iter = MT::Blog->load_iter();
+    } else {
+        $iter = MT::Blog->load_iter(
+            {},
+            {
+                join => MT::Permission->join_on(
+                    'blog_id',
+                    {
+                        author_id => $author->id,
+                    },
+                    {}
+                )
+            }
+        );
+    }
+
     my @res;
-    while (my $perms = $iter->()) {
-        next unless $perms->can_do('get_blog_info_via_xmlrpc_server');
-        my $blog = MT::Blog->load($perms->blog_id);
-        next unless $blog;
+    while ( my $blog = $iter->() ) {
+        if ( !$author->is_superuser ) {
+            my $perm = $author->permissions( $blog->id );
+            next unless $perm && $perm->can_do('get_blog_info_via_xmlrpc_server');
+        }
         push @res, { url => SOAP::Data->type(string => $blog->site_url || ''),
                      blogid => SOAP::Data->type(string => $blog->id),
                      blogName => SOAP::Data->type(string => $blog->name || '') };
@@ -601,7 +625,9 @@ sub _get_entries {
     my $mt = MT::XMLRPCServer::Util::mt_new();   ## Will die if MT->new fails.
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_do('get_entries_via_xmlrpc_server');
+    die _fault(MT->translate("Permission denied."))
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('get_entries_via_xmlrpc_server') );
     my $iter = MT->model($obj_type)->load_iter({ blog_id => $blog_id },
         { 'sort' => 'authored_on',
           direction => 'descend',
@@ -680,7 +706,8 @@ sub _delete_entry {
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_edit_entry($entry, $author);
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_edit_entry($entry, $author) );
 
     # Delete archive file
     my $blog = MT::Blog->load($entry->blog_id);
@@ -749,7 +776,8 @@ sub _get_entry {
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to get entry"))
-        unless $perms && $perms->can_edit_entry($entry, $author);
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_edit_entry($entry, $author) );
     my $co = sprintf "%04d%02d%02dT%02d:%02d:%02d",
         unpack 'A4A2A2A2A2A2', $entry->authored_on;
     my $link = $entry->permalink;
@@ -845,7 +873,8 @@ sub getCategoryList {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_do('get_category_list_via_xmlrpc_server');
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('get_category_list_via_xmlrpc_server') );
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
@@ -865,7 +894,8 @@ sub getCategories {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_do('get_categories_via_xmlrpc_server');
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('get_categories_via_xmlrpc_server') );
     require MT::Category;
     my $iter = MT::Category->load_iter({ blog_id => $blog_id });
     my @data;
@@ -892,7 +922,8 @@ sub getTagList {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Permission denied."))
-        unless $perms && $perms->can_do('get_tag_list_via_xmlrpc_server');
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('get_tag_list_via_xmlrpc_server') );
     require MT::Tag;
     require MT::ObjectTag;
     my $iter = MT::Tag->load_iter(undef, { join => ['MT::ObjectTag', 'tag_id', { blog_id => $blog_id }, { unique => 1 } ] } );
@@ -915,7 +946,9 @@ sub getPostCategories {
         or die _fault(MT->translate("Invalid entry ID '[_1]'", $entry_id));
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
-    die _fault(MT->translate("Permission denied.")) unless $perms && $perms->can_do('get_post_categories_via_xmlrpc_server');
+    die _fault(MT->translate("Permission denied."))
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('get_post_categories_via_xmlrpc_server') );
     my @data;
     my $prim = $entry->category;
     my $cats = $entry->categories;
@@ -941,7 +974,8 @@ sub setPostCategories {
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to set entry categories"))
-        unless $perms && $perms->can_edit_entry($entry, $author);
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_edit_entry($entry, $author) );
     my @place = MT::Placement->load({ entry_id => $entry_id });
     for my $place (@place) {
          $place->remove;
@@ -1000,7 +1034,8 @@ sub publishPost {
     my($author, $perms) = $class->_login($user, $pass, $entry->blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to edit entry"))
-        unless $perms && $perms->can_edit_entry($entry, $author);
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_edit_entry($entry, $author) );
     $mt->rebuild_entry( Entry => $entry, BuildDependencies => 1 )
         or die _fault(MT->translate("Publish failed: [_1]", $mt->errstr));
     SOAP::Data->type(boolean => 1);
@@ -1112,7 +1147,8 @@ sub newMediaObject {
     my($author, $perms) = $class->_login($user, $pass, $blog_id);
     die _fault(MT->translate("Invalid login")) unless $author;
     die _fault(MT->translate("Not privileged to upload files"))
-        unless $perms && $perms->can_do('upload_asset_via_xmlrpc_server');
+        if !$author->is_superuser
+           && ( !$perms || !$perms->can_do('upload_asset_via_xmlrpc_server') );
 
     require MT::Blog;
     require File::Spec;
