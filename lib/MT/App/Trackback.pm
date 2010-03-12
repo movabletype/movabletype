@@ -450,14 +450,14 @@ sub _send_ping_notification {
     if ( $author && $author->email ) {
         if ($entry) {
             $subj
-                = $app->translate( 'New TrackBack Ping to Entry [_1] ([_2])',
-                $entry->id, $entry->title );
+                = $app->translate( 'New TrackBack Ping to \'[_1]\'',
+                $entry->title );
         }
         elsif ($cat) {
             $subj
                 = $app->translate(
-                'New TrackBack Ping to Category [_1] ([_2])',
-                $cat->id, $cat->label );
+                'New TrackBack Ping to Category \'[_1]\'',
+                $cat->label );
         }
         my %head = (
             id   => 'new_ping',

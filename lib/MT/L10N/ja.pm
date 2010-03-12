@@ -811,8 +811,8 @@ use vars qw( @ISA %Lexicon );
 	'TrackBack on "[_1]" from "[_2]".' => '[_2]から\'[_1]\'にトラックバックがありました。',
 	'TrackBack on category \'[_1]\' (ID:[_2]).' => 'カテゴリ\'[_1]\'にトラックバックがありました。',
 	'Can\'t create RSS feed \'[_1]\': ' => 'フィード([_1])を作成できません: ',
-	'New TrackBack Ping to Entry [_1] ([_2])' => 'ブログ記事\'[_2]\'(ID: [_1])への新しいトラックバック',
-	'New TrackBack Ping to Category [_1] ([_2])' => 'カテゴリ\'[_2]\'(ID: [_1])への新しいトラックバック',
+	'New TrackBack Ping to \'[_1]\'' => '\'[_1]\'に新しいトラックバックがありました',
+	'New TrackBack Ping to Category \'[_1]\'' => 'カテゴリ\'[_1]\'にの新しいトラックバックがありました',
 
 ## lib/MT/App/Upgrader.pm
 	'Could not authenticate using the credentials provided: [_1].' => '提供されている手段による認証ができません: [_1]',
