@@ -563,7 +563,7 @@ sub getUsersBlogs {
 
     require MT::Permission;
     require MT::Blog;
-        local $Data::ObjectDriver::DEBUG = 1;
+
     my $iter;
     if ( $author->is_superuser ) {
         $iter = MT::Blog->load_iter();
