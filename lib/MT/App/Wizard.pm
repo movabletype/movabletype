@@ -799,13 +799,8 @@ my @Sendmail
 sub cfg_dir_conditions {
     my $app = shift;
     my ($param) = @_;
-    if ( $^O eq 'MSWin32' ) {
-        my $tmp = $ENV{TEMP} || "C:\Windows\Temp";
-        # Default temporary directory on Windows
-        if ( -w $tmp ) {
-            return 0;
-        }
-    } else {
+    if ( $^O ne 'MSWin32' ) { 
+
         # check for writable temp directory
         if ( -w "/tmp" ) {
             return 0;
@@ -1048,8 +1043,6 @@ sub seed {
 
     if ( $param{temp_dir} eq $app->config->TempDir ) {
         $param{temp_dir} = '';
-    } elsif ( !$param{temp_dir} && $^O eq 'MSWin32' ) {
-        $param{temp_dir} = $ENV{TEMP} || "C:\Windows\Temp";
     }
 
     # authentication configuration
