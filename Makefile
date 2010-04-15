@@ -124,8 +124,7 @@ tags:
 	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*tags*.t
 
 test: code
-#	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
-	prove -m -Q --formatter=TAP::Formatter::HTML t/*.t
+	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t
 
 testall: code
 	perl -Ilib -Iextlib -It/lib -MTest::Harness -e 'runtests @ARGV' t/*.t addons/*/t/*.t plugins/*/t/*.t
