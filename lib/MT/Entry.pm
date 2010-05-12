@@ -815,7 +815,7 @@ sub remove {
 
         # Remove MT::ObjectAsset records
         my $class = MT->model('objectasset');
-        $class->remove({ object_id => $entry->id, object_ds => $entry->class_type });
+        $class->remove({ object_id => $entry->id, object_ds => $entry->datasource });
     }
 
     $entry->SUPER::remove(@_);

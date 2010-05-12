@@ -15,8 +15,6 @@ use MT::Util qw( weaken );
 use MT::Template::Node;
 sub NODE () { 'MT::Template::Node' }
 
-my $resync_to_db;
-
 __PACKAGE__->install_properties({
     column_defs => {
         'id' => 'integer not null auto_increment',
@@ -407,7 +405,7 @@ sub save {
     if ($tmpl->linked_file) {
         $tmpl->_sync_to_disk($tmpl->SUPER::text) or return;
     }
-    $tmpl->{needs_db_sync} = 0;
+    $tmpl->needs_db_sync(0);
 
     $tmpl->SUPER::save;
 }
@@ -464,22 +462,13 @@ sub text {
     }
     $text = $tmpl->SUPER::text(@_);
 
-    $tmpl->{needs_db_sync} = 0
-        unless exists $tmpl->{needs_db_sync};
+    $tmpl->needs_db_sync(0);
     unless (@_) {
         if ($tmpl->linked_file) {
             if (my $res = $tmpl->_sync_from_disk) {
                 $text = $res;
                 $tmpl->SUPER::text($text);
-                ## We used to save the template here; now we don't, because
-                ## it causes deadlock (the DB is locked from loading the
-                ## template, so saving would try to write-lock it).
-                if (!defined $resync_to_db) {
-                    $resync_to_db = {};
-                    MT->add_callback('take_down', 9, undef, \&_resync_to_db);
-                }
-                $resync_to_db->{$tmpl->id} = $tmpl;
-                $tmpl->{needs_db_sync} = 1;
+                $tmpl->needs_db_sync(1);
             }
         }
         $tmpl->reset_tokens;
@@ -488,15 +477,37 @@ sub text {
     return $text;
 }
 
+{
+my $resync_to_db;
+
+sub needs_db_sync {
+    my $tmpl = shift;
+    if ( scalar @_ > 0 && $tmpl->id ) {
+        ## We used to save the template here; now we don't, because
+        ## it causes deadlock (the DB is locked from loading the
+        ## template, so saving would try to write-lock it).
+        if (!defined $resync_to_db) {
+            $resync_to_db = {};
+            MT->add_callback('take_down', 9, undef, \&_resync_to_db);
+        }
+        $resync_to_db->{$tmpl->id} = $_[0] ? $tmpl : undef;
+    }
+    else {
+        my $id = $tmpl->id or return 0;
+        return $resync_to_db && exists $resync_to_db->{$id} && defined $resync_to_db->{$id} ? 1 : 0;
+    }
+}
+
 sub _resync_to_db {
     return unless defined $resync_to_db;
     return unless %$resync_to_db;
     foreach my $tmpl_id (keys %$resync_to_db) {
         my $tmpl = $resync_to_db->{$tmpl_id};
-        next unless $tmpl->{needs_db_sync};
+        next unless $tmpl;
         $tmpl->save;
     }
     $resync_to_db = {};
+}
 }
 
 sub _sync_from_disk {

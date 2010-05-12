@@ -24,10 +24,10 @@
         class="stats-widget"
         label="<__trans phrase="Stats">">
         <ul class="object-stats">
-            <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
-    <mt:if name="modified_by">
-            <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
-    </mt:if>
+            <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted" format="%b %e %Y"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
+        <mt:if name="modified_by">
+            <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
+        </mt:if>
         </ul>
     </mtapp:widget>
 
@@ -84,6 +84,62 @@
     <$MTApp:PageActions$>
 </mt:setvarblock>
 
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+// array of tag names
+var tagList;
+
+function tagSplit(str) {
+    var delim = RegExp.escape(tag_delim);
+    var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+    str = str.replace(/(^\s+|\s+$)/g, '');
+    var tags = [];
+    while (str.length && str.match(delim_scan)) {
+        str = str.substr(RegExp.$1.length);
+        var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+        tag = tag.replace(/(^\s+|\s+$)/g, '');
+        tag = tag.replace(/\s+/g, ' ');
+        if (tag != '') tags.push(tag);
+    }
+    return tags;
+}
+
+var autoTag;
+<mt:if name="tags_js">
+tagList = <mt:var name="tags_js">;
+</mt:if>
+
+function init()
+{
+    <mt:if name="tags_js">initTags();</mt:if>
+}
+
+var tagPos = 0;
+function initTags() {
+    var t = getByID('tags-cache');
+    if ( t ) {
+        log('tag cache:'+t.value);
+        var v = getByID('tags');
+        if ( t.value )
+            v.value = t.value;
+        DOM.addEventListener( v, "change", function() { log('caching tags'); t.value = v.value; } );
+    }
+    if (!tagList || tagList.length == 0) return;
+
+    autoTag = new TC.TagComplete("tags", tagList);
+    autoTag.delimiter = tag_delim;
+}
+
+TC.attachLoadEvent( init );
+/* ]]> */
+</script>
+</mt:setvarblock>
 <mt:include name="include/header.tmpl">
 
 <div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
@@ -144,6 +200,10 @@
                 label_class="text-top"
                 label="<__trans phrase="Tags">">
                 <input type="text" name="tags" id="tags" class="full-width" value="<$mt:var name="tags" escape="html"$>" autocomplete="off" />
+                <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+                <div id="tags-suggestion">
+                    <div id="tags_completion"></div>
+                </div>
             </mtapp:setting>
 
         <mt:unless name="file_is_missing">

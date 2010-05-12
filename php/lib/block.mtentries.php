@@ -70,7 +70,10 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
     if (!isset($entries)) {
         require_once('archive_lib.php');
         $at = $ctx->stash('current_archive_type');
-        $archiver = ArchiverFactory::get_archiver($at);
+        try {
+            $archiver = ArchiverFactory::get_archiver($at);
+        } catch (Exception $e ) {
+        }
         $args['blog_id'] = $ctx->stash('blog_id');
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];

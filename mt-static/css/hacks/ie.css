@@ -152,13 +152,18 @@ ul#asset-list li a.remove-asset {
     padding-top: 8px;
 }
 
-/* -Fields */
+/* - Fields */
 .field-header { 
     word-break: normal; 
 }
 
 #template-options #template-options-header h3 { 
     float: left;
+}
+
+/* - dialog */
+#tags-field {
+    z-index: 100;
 }
 
 /* - fake display: inline-block; */
@@ -186,6 +191,7 @@ ul.tabs li,
 /* - haslayout */
 ul.menu-nav, 
 .welcome-widget, 
+#content-body, 
 .favorite-blogs-widget .blog-content { 
     zoom: 1;
 }

@@ -839,6 +839,9 @@ sub do_reply {
     return $app->error( $app->translate("Invalid request") )
       if $app->request_method() ne 'POST';
 
+    $app->validate_magic
+        or return $app->error( $app->translate("Invalid request") );
+
     my $q   = $app->param;
 
     my $param = {
@@ -853,6 +856,16 @@ sub do_reply {
     my $blog = $parent->blog
             || $app->model('blog')->load($q->param('blog_id'));
     return $app->error($app->translate('Can\'t load blog #[_1].', $q->param('blog_id'))) unless $blog;
+
+    unless ( $app->can_do('reply_comment_from_cms') ) {
+        my $user  = $app->user;
+        my $perms = $app->{perms};
+        return unless $perms;
+
+        return $app->errtrans("Permission denied.")
+          unless $perms->can_edit_entry( $entry, $user, 1 )
+          ;    # check for publish_post
+    }
 
     require MT::Sanitize;
     my $spec = $blog->sanitize_spec
@@ -901,6 +914,7 @@ sub reply_preview {
         reply_to    => $q->param('reply_to'),
         magic_token => $app->current_magic,
         blog_id     => $q->param('blog_id'),
+        return_url  => $q->param('return_url'),
     };
     my ( $comment, $parent, $entry ) = _prepare_reply($app);
     return unless $comment;
@@ -986,8 +1000,12 @@ sub dialog_post_comment {
         comment_script_url => $app->config('CGIPath')
           . $app->config('CommentScript'),
         return_url => $app->base
-          . $app->mt_uri . '?'
-          . $app->param('return_args'),
+          . $app->mt_uri
+          . $app->uri_params(
+              mode => 'list_comment',
+              args => {
+                  blog_id => $blog->id,
+              }),
     };
 
     $app->load_tmpl( 'dialog/comment_reply.tmpl', $param );

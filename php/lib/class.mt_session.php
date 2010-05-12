@@ -15,11 +15,24 @@ class Session extends BaseObject
     public $_table = 'mt_session';
     protected $_prefix = "session_";
 
-    public function data() {
+    public function data( $val = null ) {
         $mt = MT::get_instance();
-        $this->_data = $mt->db()->unserialize($this->data);
+        if ( is_null( $val ) ) {
+           $this->_data = $mt->db()->unserialize($this->data);
+            return $this->_data;
+       } else {
+           $this->data = $mt->db()->serialize($val);
+       }
+    }
 
-        return $this->_data;
+    public function Save() {
+        $val = $this->data;
+        $this->data = null;
+        $ret = parent::Save();
+        if ( $ret ) {
+            $mt = MT::get_instance();
+            $mt->db()->db()->UpdateBlob( 'mt_session', 'session_data', $val, "session_id='".$this->id."'", 'BLOB' );
+        }
     }
 }
 ?>

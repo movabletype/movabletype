@@ -4,7 +4,7 @@
 # GNU General Public License, version 2.
 #
 # $Id$
-
+require_once('archive_lib.php');
 function smarty_function_mtarchivelink($args, &$ctx) {
     $blog = $ctx->stash('blog');
     $at = $args['type'];

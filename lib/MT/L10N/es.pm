@@ -823,28 +823,18 @@ que la dirección provista es correcta y le pertenece.',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'por día y autor',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'autor/nombre-público-autor/aaaa/mm/dd/index.html',
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'autor/nombre-público-autor/aaaa/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'por mes y autor',
-	'author/author-display-name/yyyy/mm/index.html' => 'autor/nombre-público-autor/aaaa/mm/index.html',
-	'author/author_display_name/yyyy/mm/index.html' => 'autor/nombre_público_autor/aaaa/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'por autor',
-	'author/author-display-name/index.html' => 'autor/nombre-público-autor/index.html',
-	'author/author_display_name/index.html' => 'autor/nombre-público-autor/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
 	'AUTHOR-WEEKLY_ADV' => 'por semana y autor',
-	'author/author-display-name/yyyy/mm/day-week/index.html' => 'autor/nombre-público-autor/aaaa/mm/día-semana/index.html',
-	'author/author_display_name/yyyy/mm/day-week/index.html' => 'autor/nombre-público-autor/aaaa/mm/día-semana/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
 	'AUTHOR-YEARLY_ADV' => 'por año y autor',
-	'author/author-display-name/yyyy/index.html' => 'autor/nombre-público-autor/aaaa/index.html',
-	'author/author_display_name/yyyy/index.html' => 'author/nombre_público_autor/aaaa/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
 	'CATEGORY-DAILY_ADV' => 'por día y categoría',
@@ -1118,7 +1108,7 @@ que la dirección provista es correcta y le pertenece.',
 ## lib/MT/CMS/Blog.pm
 	'Cloning blog \'[_1]\'...' => 'Clonando un blog',
 	'Error' => 'Error',
-	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a>.' => '¡Finalizó! Puede <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">regresar a la lista de blogs</a>.',
+	'Finished!' => '¡Finalizó!',
 	'General Settings' => 'Configuración general',
 	'Plugin Settings' => 'Configuración de extensiones',
 	'New Blog' => 'Nuevo blog',
@@ -3775,7 +3765,7 @@ que la dirección provista es correcta y le pertenece.',
 
 ## tmpl/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => 'Permitir comentarios de usuarios anónimos o no autentificados.',
-	'Require E-mail Address for Anonymous Comments' => 'Requerir dirección de correo en los comentarios anónimos',
+	'Require name and E-mail Address for Anonymous Comments' => 'Requerir dirección de correo en los comentarios anónimos',
 	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'Si está activo, los visitantes deberán introducir una dirección válida de correo electrónico para comentar.',
 
 ## tmpl/cms/include/archetype_editor.tmpl

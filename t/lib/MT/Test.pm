@@ -191,19 +191,19 @@ sub init_testdb {
 
     # Replace the standard seed_database/install_template functions
     # with stubs since we're not creating a full schema.
-    MT::Upgrade->register_upgrade_function(
-        {
-            core_seed_database => {
-                code => sub { 1 }
-            },
-            core_upgrade_templates => {
-                code => sub { 1 }
-            },
-            core_finish => {
-                code => sub { 1 }
-            },
-        }
-    );
+    my $fns = MT->component('core')->registry( 'upgrade_functions' );
+    MT->component('core')->registry( 'upgrade_functions', {
+        %$fns,
+        core_seed_database => {
+            code => sub { 1 }
+        },
+        core_upgrade_templates => {
+            code => sub { 1 }
+        },
+        core_finish => {
+            code => sub { 1 }
+        },
+    });
     $pkg->init_db();
 }
 
@@ -374,14 +374,6 @@ sub init_upgrade {
         User    => {},
         Blog    => {}
     );
-
-    MT->config->PluginSchemaVersion( {} );
-    MT::Upgrade->do_upgrade(
-        App  => __PACKAGE__,
-        User => {},
-        Blog => {}
-    );
-
     eval {
 
         # line __LINE__ __FILE__
@@ -413,12 +405,16 @@ sub init_data {
     # nix the old site just in case
     `rm -fR t/site` if ( -d 't/site' );
 
+    my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
+    MT->config->ThemesDirectory($themedir);
+    require MT::Theme;
+
     require MT::Website;
     my $website = MT::Website->new();
     $website->set_values({
         name => 'Test site',
         site_url => 'http://narnia.na/',
-        site_path => 't/',
+        site_path => 't',
         description => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
         convert_paras => 1,
@@ -434,22 +430,28 @@ sub init_data {
         children_modified_on => '20000101000000',
         language => 'en_us',
         file_extension => 'html',
+        theme_id => 'classic_website',
     });
     $website->id(2);
     $website->class('website');
     $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website 2: ". $website->errstr;
+    my $classic_website = MT::Theme->load('classic_website')
+        or die MT::Theme->errstr;
+    $classic_website->apply($website);
+    $website->save() or die "Couldn't save blog 1: " . $website->errstr;
+
+
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
-    diag "Saved Website";
 
     require MT::Blog;
     my $blog = MT::Blog->new();
     $blog->set_values({
         name => 'none',
-        site_url => '/:://nana/',
-        archive_url => '/:://nana/archives/',
+        site_url => '/::/nana/',
+        archive_url => '/::/nana/archives/',
         site_path => 'site/',
-        archive_path => '/::/site/archives/',
+        archive_path => 'site/archives/',
         archive_type=>'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred => 'Individual',
         description => "Narnia None Test Blog",
@@ -468,13 +470,20 @@ sub init_data {
         children_modified_on => '20000101000000',
         language => 'en_us',
         file_extension => 'html',
+        theme_id => 'classic_blog',
     });
     $blog->id(1);
     $blog->class('blog');
     $blog->parent_id(2);
     $blog->commenter_authenticators('enabled_TypeKey');
     $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
-    $blog->create_default_templates('mt_blog');
+
+    my $classic_blog = MT::Theme->load('classic_blog')
+        or die MT::Theme->errstr;
+    $classic_blog->apply($blog);
+    $blog->save() or die "Couldn't save blog 1: " . $blog->errstr;
+
+#    $blog->create_default_templates('mt_blog');
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
     require MT::Entry;

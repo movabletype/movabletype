@@ -478,6 +478,7 @@ sub build_website_table {
     my $tbp_class     = $app->model('ping');
     my $blog_class   = $app->model('blog');
     my $comment_class = $app->model('comment');
+    my $page_class = $app->model('page');
 
     my $iter;
     if ( $args{load_args} ) {
@@ -497,7 +498,7 @@ sub build_website_table {
     my $can_edit_authors = $app->can_do('edit_authors');
     my @data;
     my $i;
-    my ( $blog_count, $ping_count, $comment_count );
+    my ( $blog_count, $ping_count, $comment_count, $page_count );
     while ( my $blog = $iter->() ) {
         my $blog_id = $blog->id;
         my $row     = {
@@ -521,7 +522,7 @@ sub build_website_table {
             $row->{num_comments} = (
                   $comment_count
                 ? $comment_count->{$blog_id}
-                : $comment_count->{$blog_id} = MT::Comment->count(
+                : $comment_count->{$blog_id} = $comment_class->count(
                     { blog_id => $blog_id, junk_status => MT::Comment::NOT_JUNK() }
                 )
               )
@@ -534,21 +535,31 @@ sub build_website_table {
             ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
-                $row->{can_create_post}       = 1;
-                $row->{can_edit_entries}      = 1;
-                $row->{can_edit_templates}    = 1;
-                $row->{can_edit_config}       = 1;
-                $row->{can_set_publish_paths} = 1;
-                $row->{can_administer_blog}   = 1;
+                $row->{can_edit_entries}       = 1;
+                $row->{can_edit_pages}         = 1;
+                $row->{can_edit_templates}     = 1;
+                $row->{can_edit_config}        = 1;
+                $row->{can_set_publish_paths}  = 1;
+                $row->{can_list_blogs}         = 1;
             }
             else {
                 my $perms = $author->permissions($blog_id);
                 $row->{can_edit_entries}       = $perms->can_do('create_post');
+                $row->{can_edit_pages}         = $perms->can_do('manage_pages');
                 $row->{can_edit_templates}     = $perms->can_do('edit_templates');
                 $row->{can_edit_config}        = $perms->can_do('edit_config');
                 $row->{can_set_publish_paths}  = $perms->can_do('set_publish_paths');
-                $row->{can_administer_website} = $perms->can_do('administer_website');
+                $row->{can_list_blogs}         = $perms->can_do('open_blog_listing_screen');
             }
+
+            $row->{num_pages} = (
+                  $page_count
+                ? $page_count->{$blog_id}
+                : $page_count->{$blog_id} = $page_class->count(
+                    { blog_id => $blog_id }
+                )
+              )
+              || 0;
         }
         $row->{object} = $blog;
         push @data, $row;

@@ -28,7 +28,7 @@ $app = _run_app(
 );
 $out = delete $app->{__test_output};
 ok ($out, "Global template search results are present");
-ok ($out =~ /Publish selected templates/i, "Publish templates button is present");
+ok ($out !~ /Publish selected templates/i, "Publish templates button isn't present for global template search");
 ok ($out =~ /Delete selected templates/i, "Delete templates button is present");
 ok ($out =~ /Refresh template\(s\)/i, "Refresh templates dropdown is present");
 ok ($out =~ /Clone template\(s\)/i, "Clone templates dropdown is present");

@@ -109,6 +109,7 @@ sub cleanup {
     if ( my $driver = $MT::Object::DRIVER ) {
         if ( my $dbh = $driver->dbh ) {
             $dbh->disconnect;
+            $driver->dbh->{private_set_names} = undef;
             $driver->dbh(undef);
         }
         $MT::Object::DRIVER = undef;
@@ -117,6 +118,7 @@ sub cleanup {
     foreach my $driver (@drivers) {
         if ( my $dbh = $driver->dbh ) {
             $dbh->disconnect;
+            $driver->dbh->{private_set_names} = undef;
             $driver->dbh(undef);
         }
     }

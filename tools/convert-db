@@ -12,72 +12,69 @@ use Getopt::Long;
 GetOptions( "old:s" => \my($old_config),
             "new:s" => \my($new_config));
 
-use lib 'extlib';
-use lib 'lib';
+use lib qw( lib extlib );
+use File::Spec;
+use MT;
 
 unless ($new_config) {
-    print "Need configuration file location. cf: convert-db --new==mt-config.cgi.new";
+    print "Need configuration file location. cf: convert-db --new==mt-config.cgi.new\n";
     exit;
 }
 
 $old_config ||= '.';
 
-my @CLASSES = qw( MT::Author MT::Blog MT::Category MT::Comment MT::Entry
-                  MT::IPBanList MT::Log MT::Notification MT::Permission
-                  MT::Placement MT::Template MT::TemplateMap MT::Trackback
-                  MT::TBPing MT::Session MT::PluginData MT::Config MT::FileInfo
-                  MT::Tag MT::ObjectTag MT::Group MT::Role MT::Association
-                  MT::Asset
-                  );
-
-use File::Spec;
+my @TYPES;
 
 eval {
     local $SIG{__WARN__} = sub { print "**** WARNING: $_[0]\n" };
 
     require MT;
-    my $mt = MT->new(Config => $old_config) or die MT->errstr;
+    my $mt = MT->new(Config => $new_config) or die MT->errstr;
     my $cfg = $mt->{cfg};
 
-    my $cfg_file_orig = $mt->{cfg_file};
-    my $cfg_file_new = $mt->find_config({Config=>$new_config});
-
-    $cfg->read_config($cfg_file_new);
-
-    warn $cfg_file_orig;
-    warn $cfg_file_new;
-
+    my $cfg_file_new = $mt->{cfg_file};
+    my $cfg_file_orig = $mt->find_config({Config=>$old_config});
+    print "convert source: $cfg_file_orig\n";
+    print "   destination: $cfg_file_new\n";
+    if ( $cfg_file_orig eq $cfg_file_new ) {
+        print "Error: old config file and new config file is same.\n";
+        print "       or, specified new-config file isn't exists.\n";
+        exit;
+    }
     require MT::Object;
-    MT::Object->set_driver($cfg->ObjectDriver)
+    MT::Object->driver($cfg->ObjectDriver)
         or die MT::ObjectDriver->errstr;
 
     use MT::Upgrade;
-    my @stmts;
-    foreach (@CLASSES) {
-        push @stmts, MT::Upgrade->check_class($_);
-    }
-
     print "Loading database schema...\n\n";
-    MT::Upgrade->do_upgrade(Install => 1);
+    MT::Upgrade->do_upgrade(Install => 1) or die MT::Upgrade->errstr;
 
     ## %ids will hold the highest IDs of each class.
     my %ids;
-
+    @TYPES = keys %{MT->registry('object_types')};
     print "Loading data...\n";
-    for my $class (@CLASSES ) {
+    require MT::ObjectDriverFactory;
+    for my $type ( @TYPES ) {
+        my $class = MT->model($type);
         print $class, "\n";
+
+        undef $MT::Object::DRIVER;
+        undef $MT::ObjectDriverFactory::DRIVER;
         $cfg->read_config($cfg_file_orig);
-        MT::Object->set_driver($cfg->ObjectDriver);
-        eval "use $class";
+        MT::Object->driver($cfg->ObjectDriver);
+
         my $iter = $class->load_iter;
 
         my %names;
         my %cat_parent;
 
+        undef $MT::Object::DRIVER;
+        undef $MT::ObjectDriverFactory::DRIVER;
         $cfg->read_config($cfg_file_new);
-        MT::Object->set_driver($cfg->ObjectDriver);
+        MT::Object->driver($cfg->ObjectDriver);
+
         while (my $obj = $iter->()) {
-            print "    ", $obj->id, "\n";
+            printf "  %s\n", ( $obj->has_column('id') ? $obj->id : '.');
             $obj = clean_object($obj);
             # Update IDs only auto_increment.
             $ids{$class} = $obj->id
@@ -133,7 +130,7 @@ eval {
                     if defined $obj->allow_comments && $obj->allow_comments eq '';
             }
             $obj->save
-                or die $obj->errstr;
+                or die "Fatal Error: Failed to save record for class $class: " . $obj->errstr;
         }
 
         # fix up the category parents
@@ -143,7 +140,7 @@ eval {
             $cat->save;
         }
 
-        print "\n";
+        print "\n\n";
     }
 
     if ($cfg->ObjectDriver =~ /postgres/) {

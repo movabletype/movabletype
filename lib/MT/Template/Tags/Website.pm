@@ -170,7 +170,7 @@ sub _hdlr_website_description {
     my %real_lang = (cz => 'cs', dk => 'da', jp => 'ja', si => 'sl');
     ###########################################################################
 
-=head2 Language
+=head2 WebsiteLanguage
 
 The website's specified language for date display. This setting can be changed
 on the website's Entry settings screen.

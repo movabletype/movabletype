@@ -19,7 +19,7 @@ function smarty_function_mtremotesigninlink($args, &$ctx) {
     if (isset($_typekeytoken_cache[$blog_id])) {
         $token = $_typekeytoken_cache[$blog_id];
     } else {
-        $token = $blog['blog_remote_auth_token'];
+        $token = $blog->blog_remote_auth_token;
         if ($token) {
             $_typekeytoken_cache[$blog_id] = $token;
         }

@@ -135,8 +135,10 @@ sub view {
     $param{offset}          = $offset;
     $param{next_offset_val} = $offset + ( scalar @$log );
     $param{next_offset} = $param{next_offset_val} < $param{list_total} ? 1 : 0;
-    $param{next_max}    = $param{list_total} - $limit;
-    $param{next_max}    = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
 
     if ( $offset > 0 ) {
         $param{prev_offset}     = 1;
@@ -220,7 +222,7 @@ sub build_log_table {
         if ( my $uid = $log->author_id ) {
             my $user_class = $app->model('author');
             my $user       = $user_class->load($uid);
-            $row->{username} = $user->name if defined $user;
+            $row->{username} = defined $user ? $user->name : $app->translate('(user deleted)');
         }
         $row->{object} = $log;
         push @log, $row;

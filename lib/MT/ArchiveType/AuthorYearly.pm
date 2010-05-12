@@ -21,12 +21,12 @@ sub archive_label {
 sub default_archive_templates {
     return [
         {
-            label    => 'author/author-display-name/yyyy/index.html',
+            label    => 'author/author-basename/yyyy/index.html',
             template => 'author/%-a/%y/%f',
             default  => 1
         },
         {
-            label    => 'author/author_display_name/yyyy/index.html',
+            label    => 'author/author_basename/yyyy/index.html',
             template => 'author/%a/%y/%f'
         },
     ];
@@ -71,14 +71,13 @@ sub archive_file {
     my $file;
     my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
     return "" unless $this_author;
-    my $name = dirify( $this_author->nickname );
 
-    if ( $name eq '' || !$file_tmpl ) {
+    if ( !$file_tmpl ) {
         return "" unless $this_author;
-        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $name = $this_author->basename;
         my $start = start_end_year($timestamp);
         my ($year) = unpack 'A4', $start;
-        $file = sprintf( "%s/%04d/index", $name, $year );
+        $file = sprintf( "author/%s/%04d/index", $name, $year );
     }
     else {
         ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =

@@ -44,7 +44,7 @@ foreach my $class ( @keys ) {
     eval "require $pkg;" or next;
     $packages{$pkg} = 1;
 
-    _verbose_print( "Migrationg $class ..." );
+    _verbose_print( "Migrating $class ..." );
     my $iter = $pkg->load_iter();
     while ( my $obj = $iter->() ) {
         my $data = $obj->{column_values};

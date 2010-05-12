@@ -40,8 +40,8 @@ function _score_top(&$ctx, $obj_id, $datasource, $namespace, $block) {
     }
     $sorter = create_function('$a,$b', $block);
     usort($scores, $sorter);
-    
-    return $scores[0]['objectscore_score'];
+
+    return $scores[0]->objectscore_score;
 }
 
 function score_high(&$ctx, $obj_id, $datasource, $namespace) {
@@ -50,7 +50,7 @@ function score_high(&$ctx, $obj_id, $datasource, $namespace) {
         return $high;
     } else {
         $high = _score_top($ctx, $obj_id, $datasource, $namespace,
-            'return $b["objectscore_score"] - $a["objectscore_score"];');
+            'return $b->objectscore_score - $a->objectscore_score;');
         $ctx->stash($datasource . '_score_high_' . $obj_id . '_' . $namespace, $high);
         return $high;
     }
@@ -62,7 +62,7 @@ function score_low(&$ctx, $obj_id, $datasource, $namespace) {
         return $low;
     } else {
         $low = _score_top($ctx, $obj_id, $datasource, $namespace,
-            'return $a["objectscore_score"] - $b["objectscore_score"];');
+            'return $a->objectscore_score - $b->objectscore_score;');
         $ctx->stash($datasource . '_score_low_' . $obj_id . '_' . $namespace, $low);
         return $low;
     }
@@ -172,7 +172,7 @@ function hdlr_score_high($ctx, $datasource, $namespace, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    return score_high($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    return score_high($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
 }
 
 function hdlr_score_low($ctx, $datasource, $namespace, $args = null) {
@@ -188,7 +188,7 @@ function hdlr_score_low($ctx, $datasource, $namespace, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    return score_low($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    return score_low($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
 }
 
 function hdlr_score_avg($ctx, $datasource, $namespace, $args = null) {
@@ -204,7 +204,7 @@ function hdlr_score_avg($ctx, $datasource, $namespace, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    $avg = score_avg($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $avg = score_avg($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
     if ( isset($avg) && ( $avg != '') ) 
         return $ctx->count_format($avg, $args);
     return $avg;
@@ -223,7 +223,7 @@ function hdlr_score_count($ctx, $datasource, $namespace, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    $count = score_count($ctx, $object[$datasource . '_id'], $datasource, $namespace);
+    $count = score_count($ctx, $object->{$datasource . '_id'}, $datasource, $namespace);
     if ( isset($count) && ( $count != '') ) 
         return $ctx->count_format($count, $args);
     return $count;
@@ -242,6 +242,6 @@ function hdlr_rank($ctx, $datasource, $namespace, $max, $filter, $args = null) {
     if (!isset($object)) {
         return '';
     }
-    return rank_for($ctx, $object[$datasource . '_id'], $datasource, $namespace, $max, $filter);
+    return rank_for($ctx, $object->{$datasource . '_id'}, $datasource, $namespace, $max, $filter);
 }
 ?>

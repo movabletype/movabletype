@@ -386,8 +386,10 @@ sub list {
     $param{list_end}        = $offset + ( scalar @data );
     $param{next_offset_val} = $offset + ( scalar @data );
     $param{next_offset} = $param{next_offset_val} < $param{list_total} ? 1 : 0;
-    $param{next_max}    = $param{list_total} - $limit;
-    $param{next_max}    = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
     if ( $offset > 0 ) {
         $param{prev_offset}     = 1;
         $param{prev_offset_val} = $offset - $limit;
@@ -520,7 +522,8 @@ sub list_member {
         $row->{role_loop} = \@role_loop;
         $row->{auth_icon_url} = $obj->auth_icon_url;
     };
-    $param->{screen_id} = "list-member";
+    $param->{screen_id}   = "list-member";
+    $param->{scope_label} = $blog->class_label;
 
     return $app->listing(
         {
@@ -534,8 +537,13 @@ sub list_member {
               || $app->param('filter_key') eq 'author' )
               ? ( pre_build => sub {
                     my ($param) = @_;
-                    my $data = $param->{object_loop} || [];
-                    _merge_default_assignments( $app, $data, undef, 'blog', $blog_id );
+                    my $offset = $app->param('offset') || 0;
+                    my $limit  = $param->{limit}       || 25;
+                    my $data   = $param->{object_loop} || [];
+                    my $count
+                        = _merge_default_assignments( $app, $data, undef,
+                        $offset, $limit, 'blog', $blog_id );
+                    return $count;
                 } )
               : (),
         }
@@ -685,7 +693,10 @@ sub list_association {
 
     my $pre_build = sub {
         my ($param) = @_;
-        my $data = $param->{object_loop} || [];
+        my $offset = $app->param('offset') || 0;
+        my $limit  = $param->{limit}       || 25;
+        my $data   = $param->{object_loop} || [];
+        my $count;
 
         #TODO: handle group_view
         if ( $param->{user_view}
@@ -695,16 +706,21 @@ sub list_association {
             # don't merge
         }
         elsif ( $param->{role_view} ) {
-            _merge_default_assignments( $app, $data, $hasher, 'role',
-                $param->{role_id} );
+            $count
+                = _merge_default_assignments( $app, $data, $hasher, $offset,
+                $limit, 'role', $param->{role_id} );
         }
         elsif ( $param->{blog_view} ) {
-            _merge_default_assignments( $app, $data, $hasher, 'blog',
-                $param->{blog_id} );
+            $count
+                = _merge_default_assignments( $app, $data, $hasher, $offset,
+                $limit, 'blog', $param->{blog_id} );
         }
         else {
-            _merge_default_assignments( $app, $data, $hasher, 'all' );
+            $count
+                = _merge_default_assignments( $app, $data, $hasher, $offset,
+                $limit, 'all' );
         }
+        return $count;
     };
 
     return $app->listing(
@@ -1344,10 +1360,16 @@ sub grant_role {
     }
 
     if ( $add_pseudo_new_user && @default_assignments ) {
-        my $da = $app->config('DefaultAssignments');
-        $da .= ',' if $da;
-        $app->config( 'DefaultAssignments',
-            $da . join( ',', @default_assignments ), 1 );
+        my @data;
+        my @def = split ',', $app->config('DefaultAssignments');
+        while ( my $role_id = shift @def ) {
+            my $blog_id = shift @def;
+            push @data, join( ',', $role_id, $blog_id );
+        }
+        foreach my $da (@default_assignments) {
+            push @data, $da if !grep { $_ eq $da } @data;
+        }
+        $app->config( 'DefaultAssignments', join( ',', @data ), 1 );
         $app->config->save_config;
     }
 
@@ -1701,14 +1723,23 @@ sub dialog_grant_role {
                     params  => $panel_params,
                     terms   => $terms,
                     args    => $args,
+                    pre_build => sub {
+                        my ($param) = @_;
+                        my $limit = $param->{limit} || 25;
+                        my $count = 0;
+                        if ( $source && ( $source eq 'author' ) ) {
+                            if ( !$app->param('offset') ) {
+                                my $data = $panel_params->{object_loop}
+                                    ||= [];
+                                unshift @$data, $pseudo_user_row;
+                                splice( @$data, $limit );
+                                $count = 1;
+                            }
+                        }
+                        return $count;
+                    },
                 }
             );
-            if ( $source && ( $source eq 'author' ) ) {
-                if ( !$app->param('offset') ) {
-                    my $data = $panel_params->{object_loop} ||= [];
-                    unshift @$data, $pseudo_user_row;
-                }
-            }
             if (
                 !$panel_params->{object_loop}
                 || ( $panel_params->{object_loop}
@@ -1991,8 +2022,9 @@ sub post_delete {
 
 sub _merge_default_assignments {
     my $app = shift;
-    my ( $data, $hasher, $type, $id ) = @_;
+    my ( $data, $hasher, $offset, $limit, $type, $id ) = @_;
 
+    my $count      = 0;
     my $role_class = $app->model('role');
     if ( my $def = MT->config->DefaultAssignments ) {
         my @def = split ',', $def;
@@ -2011,15 +2043,19 @@ sub _merge_default_assignments {
             $row->{user_name} = MT->translate('(newly created user)');
             $row->{user_nickname} = $app->translate('represents a user who will be created afterwards'),
             my $role = $role_class->load( $role_id );
+            next if !$role;
+            $count++;
             my @role_loop = ( {
                 role_name    => $role->name,
                 role_id      => $role->id,
                 is_removable => 0,
             } );
             $row->{role_loop} = \@role_loop if @role_loop;
-            push @$data, $row;
+            unshift @$data, $row if $count > $offset;
         }
+        splice( @$data, $limit );
     }
+    return $count;
 }
 
 sub build_author_table {

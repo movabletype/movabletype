@@ -948,8 +948,8 @@ sub _rebuild_entry_archive_type {
         }
     }
     return 1 unless @map;
-    my @map_build;
 
+    my @map_build;
     my $done = MT->instance->request('__published:'.$blog->id)
       || MT->instance->request( '__published:'.$blog->id, {} );
     for my $map (@map) {
@@ -1000,8 +1000,13 @@ sub _rebuild_entry_archive_type {
     ## file template.
     require MT::Template;
     require MT::Template::Context;
+    require MT::PublishOption;
+
+    my $force = $param{Force};
     for my $map (@map) {
         next unless $map->build_type; # ignore disabled template maps
+        next if $map->build_type == MT::PublishOption::MANUALLY() && !$force;
+        next if $map->build_type == MT::PublishOption::ASYNC() && !$force;
 
         my $ctx = MT::Template::Context->new;
         $ctx->{current_archive_type} = $at;
@@ -1207,8 +1212,32 @@ sub rebuild_file {
     # we move the file that might be there so that the custom
     # 404 will be triggered.
     require MT::PublishOption;
-    if ( $map->build_type == MT::PublishOption::DYNAMIC() ) 
+    if ( $map->build_type == MT::PublishOption::DYNAMIC() )
     {
+        MT->run_callbacks(
+            'build_dynamic',
+            Context      => $ctx,
+            context      => $ctx,
+            ArchiveType  => $at,
+            archive_type => $at,
+            TemplateMap  => $map,
+            template_map => $map,
+            Blog         => $blog,
+            blog         => $blog,
+            Entry        => $entry,
+            entry        => $entry,
+            FileInfo     => $finfo,
+            file_info    => $finfo,
+            File         => $file,
+            file         => $file,
+            Template     => $tmpl,
+            template     => $tmpl,
+            PeriodStart  => $start,
+            period_start => $start,
+            Category     => $category,
+            category     => $category,
+        );
+
         rename(
             $finfo->file_path,    # is this just $file ?
             $finfo->file_path . '.static'
@@ -1528,7 +1557,24 @@ sub rebuild_indexes {
                   || die "Couldn't create FileInfo because " . MT::FileInfo->errstr;
             }
         }
+        my $ctx = MT::Template::Context->new;
         if ( $tmpl->build_dynamic ) {
+            MT->run_callbacks(
+                'build_dynamic',
+                Context      => $ctx,
+                context      => $ctx,
+                ArchiveType  => 'index',
+                archive_type => 'index',
+                Blog         => $blog,
+                blog         => $blog,
+                FileInfo     => $finfo,
+                file_info    => $finfo,
+                File         => $file,
+                file         => $file,
+                Template     => $tmpl,
+                template     => $tmpl,
+            );
+
             rename( $file, $file . ".static" );
 
             ## If the FileInfo is set to static, flip it to virtual.
@@ -1555,7 +1601,6 @@ sub rebuild_indexes {
         }
         local $timer->{elapsed} = 0 if $timer;
 
-        my $ctx = MT::Template::Context->new;
         next
           unless (
             MT->run_callbacks(

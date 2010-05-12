@@ -701,12 +701,16 @@ function toggleCache(id) {
                 </li>
                 <li><input type="radio" value="2" name="cache_expire_type" id="expire-event" onclick="toggleCache('expire-event');"<mt:if name="cache_expire_type" eq="2"> checked="checked"</mt:if>> <label for="expire-event"><__trans phrase="Expire upon creation or modification of:"></label>
                     <ul id="cache-events">
+                    <mt:If name="scope_type" eq="blog">
                         <li><input type="checkbox" value="entry" name="cache_expire_event" id="cache-event-entry" onclick=""<mt:if name="cache_expire_event_entry"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-entry"><__trans phrase="Entry"></label></li>
+                    </mt:If>
                         <li><input type="checkbox" value="comment" name="cache_expire_event" id="cache-event-comment" onclick=""<mt:if name="cache_expire_event_comment"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-comment"><__trans phrase="Comment"></label></li>
                         <li><input type="checkbox" value="tbping" name="cache_expire_event" id="cache-event-trackback" onclick=""<mt:if name="cache_expire_event_tbping"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-trackback"><__trans phrase="TrackBack"></label></li>
                         <li><input type="checkbox" value="page" name="cache_expire_event" id="cache-event-page" onclick=""<mt:if name="cache_expire_event_page"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-page"><__trans phrase="Page"></label></li>
                         <li><input type="checkbox" value="author" name="cache_expire_event" id="cache-event-author" onclick=""<mt:if name="cache_expire_event_author"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-author"><__trans phrase="User"></label></li>
+                    <mt:If name="scope_type" eq="blog">
                         <li><input type="checkbox" value="category" name="cache_expire_event" id="cache-event-category" onclick=""<mt:if name="cache_expire_event_category"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-category"><__trans phrase="Category"></label></li>
+                    </mt:If>
                         <li><input type="checkbox" value="folder" name="cache_expire_event" id="cache-event-folder" onclick=""<mt:if name="cache_expire_event_folder"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-folder"><__trans phrase="Folder"></label></li>
                         <li><input type="checkbox" value="asset" name="cache_expire_event" id="cache-event-asset" onclick=""<mt:if name="cache_expire_event_asset"> checked="checked"</mt:if><mt:unless name="cache_expire_type" eq="2"> disabled="disabled"</mt:unless>> <label for="cache-event-asset"><__trans phrase="Asset"></label></li>
                     </ul>

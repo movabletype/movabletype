@@ -4,8 +4,11 @@ use strict;
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT;
 use Test::More;
+BEGIN {
+    $ENV{MT_CONFIG} = 'ldap-test.cfg';
+}
 
-my $number = 25;
+my $number = 26;
 
 use vars qw( $DB_DIR $T_CFG );
 use MT::Test;
@@ -33,6 +36,11 @@ MT::Test->import( qw(:db :data) );
 require MT::Author;
 require MT::Auth;
 require MT::Auth::LDAP;
+
+&ldapdelete( name => 'Bob D' );
+&ldapdelete( name => 'Axl Rose' );
+&ldapdelete( name => 'Chuck D' );
+&ldapdelete( name => 'Melody' );
 
 if (!MT::ConfigMgr->instance->LDAPUserIdAttribute) {
     print "Set LDAPUserIdAttribute directive or this test will fail.\n";
@@ -62,13 +70,13 @@ $author->save;
     members => [ 'Bob D' ],
 );
 my ($entry) = &ldapsearch(
+                    base   => MT->config->LDAPGroupSearchBase,
                     filter => '(cn=Group 1)',
-                    attrs => [MT::ConfigMgr->instance->LDAPGroupIdAttribute]
+                    attrs  => [MT::ConfigMgr->instance->LDAPGroupIdAttribute]
                 );
 
 ok(MT::Auth->synchronize_group);
-
-my $group = MT::Group->load({ name => 'Group 1' }, {cached_ok=>0});
+ok(my $group = MT::Group->load({ name => 'Group 1' }));
 is($group->name, 'Group 1');
 ok($group->is_active);
 is($group->user_count, 1);
@@ -90,15 +98,17 @@ my ($entry2) = &ldapsearch(
 
 my $authorC = MT::Author->load({ name => 'Chuck D' });
 ok($authorC);
-ok($authorC->is_active);
+ok($authorC->is_active);    # 11
+
 $authorC->external_id($entry2->get_value(MT::ConfigMgr->instance->LDAPUserIdAttribute));
 $authorC->save;
 
 &ldapmodify(
-    name => 'Group 1',
+    name    => 'Group 1',
     newname => 'New Group',
     newnick => 'Group name modified',
     members => [ 'Bob D', 'Chuck D' ],
+    base    => MT->config->LDAPGroupSearchBase,
 );
 
 ok(MT::Auth->synchronize_group);
@@ -116,10 +126,12 @@ my $user3 = $iter2->();
 is($user3->name, 'Chuck D');
 
 &ldapmodify(
-    name => 'New Group',
+    name    => 'New Group',
     newname => 'New Group',
     newnick => 'Group name modified',
     members => [ 'Chuck D' ],
+    base    => MT->config->LDAPGroupSearchBase,
+
 );
 
 ok(MT::Auth->synchronize_group);
@@ -128,9 +140,9 @@ my $group3 = MT::Group->load({ name => 'New Group' }, {cached_ok=>0});
 is($group3->user_count, 1);
 my $iter3 = $group3->user_iter({}, { sort => 'name' });
 my $user3 = $iter3->();
-is($user3->name, 'Chuck D');
+is($user3->name, 'Chuck D');   # 21
 
-&ldapdelete( name => 'New Group' );
+&ldapdelete( name => 'New Group', base => MT->config->LDAPGroupSearchBase );
 
 ok(MT::Auth->synchronize_group);
 
@@ -151,7 +163,7 @@ ok($group5);
 ok(!$group5->is_active);  ## make sure newly created group with the same name does not re-activate an group.
 }
 
-&ldapdelete( name => 'New Group' );
+&ldapdelete( name => 'New Group', base => MT->config->LDAPGroupSearchBase );
 &ldapdelete( name => 'Bob D' );
 &ldapdelete( name => 'Chuck D' );
 } # end of SKIP block
@@ -197,7 +209,7 @@ sub ldapadd_user {
                         attr => [
                          $auth->{uid_attr_name} => [$opt{name}],
                          'cn'   => [$opt{name}],
-                         'sn'   => $opt{name},                         
+                         'sn'   => $opt{name},
                          MT::ConfigMgr->instance->LDAPUserFullNameAttribute => $opt{displayName},
                          MT::ConfigMgr->instance->LDAPUserEmailAttribute => $opt{email},
                          'objectclass' => ['top', 'person',
@@ -212,12 +224,12 @@ sub ldapadd_user {
 
 sub ldapadd_group {
     my (%opt) = @_;
+    my $cfg = MT::ConfigMgr->instance;
     my $auth = MT::LDAP->new;
     my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
-    my $base = $auth->{base};
+    my $base = $cfg->LDAPGroupSearchBase || $auth->{base};
     my $dn = "cn=$opt{name},$base";
-    my $cfg = MT::ConfigMgr->instance;
     my $result = $ldap->add( $dn,
                         attr => [
                          $cfg->LDAPGroupNameAttribute => [$opt{name}],
@@ -237,9 +249,11 @@ sub ldapmodify {
     my $ldap = $auth->ldap;
     my $cfg = MT::ConfigMgr->instance;
     _ldapbind($auth, $ldap);
-    my $base = $auth->{base};
+    my $base = $opt{base} || $auth->{base};
     my $dn = "cn=$opt{name},$base";
-    my $mesg = $ldap->moddn( $dn, newrdn => "cn=$opt{newname}" );
+    my $newdn = "cn=$opt{newname}";
+    my $mesg = $ldap->moddn( $dn, newrdn => $newdn );
+
     $dn = "cn=$opt{newname},$base";
     my $result = $ldap->modify( $dn,
                         changes => [replace => [
@@ -258,7 +272,7 @@ sub ldapdelete {
     my $auth = MT::LDAP->new;
     my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
-    my $base = $auth->{base};
+    my $base = $opt{base} || $auth->{base};
     my $dn = "cn=$opt{name},$base";
     my $result = $ldap->delete($dn);
     $result->code && warn "failed to delete entry: ", $result->error ;
@@ -271,8 +285,8 @@ sub ldapsearch {
     my $auth = MT::LDAP->new;
     my $ldap = $auth->ldap;
     _ldapbind($auth, $ldap);
-    my $base = $auth->{base};
-    my $res = $ldap->search( 
+    my $base = $opt{base} || $auth->{base};
+    my $res = $ldap->search(
         base => $base,
         filter => $opt{filter},
         attrs => $opt{attrs},

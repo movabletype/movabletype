@@ -175,10 +175,9 @@ sub encode_text_encode {
     $to = 'euc-jp' if $to eq 'euc';
 
     if ($from ne $to) {
-        #Encode::_utf8_off($text);
         eval {
             if ( ( ( 'iso-2022-jp' eq lc($to) ) || ( 'shift_jis' eq lc($to) ) )
-                && ( $from =~ m/^utf?8/ig ) )
+                && ( $from =~ m/^utf-?8/ig ) )
             {
                 $text = Encode::decode_utf8( $text ) unless Encode::is_utf8( $text );
                 #FULLWIDTH TILDE to WAVE DASH 

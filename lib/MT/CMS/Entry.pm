@@ -98,6 +98,8 @@ sub edit {
         $blog_id = $obj->blog_id;
         my $blog = $app->model('blog')->load($blog_id);
         my $status = $q->param('status') || $obj->status;
+        $status =~ s/\D//g;
+        $param->{status} = $status;
         $param->{ "status_" . MT::Entry::status_text($status) } = 1;
         if ( ($obj->status == MT::Entry::JUNK() || $obj->status == MT::Entry::REVIEW()) && $obj->junk_log ) {
             build_junk_table( $app, param => $param, object => $obj );
@@ -193,25 +195,26 @@ sub edit {
             $blog_timezone = $blog->server_offset();
 
             # new entry defaults used for new entries AND new pages.
-            my $def_status = $q->param('status')
-              || $blog->status_default;
-            if ($def_status) {
-                $param->{ "status_"
-                      . MT::Entry::status_text($def_status) } = 1;
-            }
+            my $def_status;
             if ( $param->{status} ) {
-                $param->{ 'allow_comments_'
-                      . $q->param('allow_comments') } = 1;
+                $def_status = $param->{status};
+                $def_status =~ s/\D//g;
+                $param->{status} = $def_status;
+                $param->{ 'allow_comments_' . $q->param('allow_comments') }
+                    = 1;
                 $param->{allow_comments} = $q->param('allow_comments');
                 $param->{allow_pings}    = $q->param('allow_pings');
             }
             else {
+
                 # new edit
-                $param->{ 'allow_comments_'
-                      . $blog->allow_comments_default } = 1;
+                $def_status = $blog->status_default;
+                $param->{ 'allow_comments_' . $blog->allow_comments_default }
+                    = 1;
                 $param->{allow_comments} = $blog->allow_comments_default;
                 $param->{allow_pings}    = $blog->allow_pings_default;
             }
+            $param->{ "status_" . MT::Entry::status_text($def_status) } = 1;
         }
 
         require POSIX;
@@ -351,12 +354,17 @@ sub edit {
             $param->{'auth_pref_tag_delim'} = $delim;
         }
 
+        require MT::ObjectTag;
         my $tags_js = MT::Util::to_json(
-            MT::Tag->cache(
-                blog_id => $blog_id,
-                class   => 'MT::Entry',
-                private => 1
-            )
+            [   map { $_->name } MT::Tag->load(
+                    undef,
+                    {   join => [
+                            'MT::ObjectTag', 'tag_id',
+                            { blog_id => $blog_id }, { unique => 1 }
+                        ]
+                    }
+                )
+            ]
         );
         $tags_js =~ s!/!\\/!g;
         $param->{tags_js} = $tags_js;
@@ -812,12 +820,6 @@ sub list {
         delete $arg{limit};
         $offset = 0;
     }
-    elsif ( $total && $offset > $total - 1 ) {
-        $arg{offset} = $offset = $total - $limit;
-    }
-    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = $total - $limit;
-    }
     else {
         $arg{offset} = $offset if $offset;
     }
@@ -887,41 +889,6 @@ sub list {
     }
     $param{entry_author_loop} = \@authors;
 
-    # $iter = $app->model('asset')->load_iter(
-    #     { class => '*', blog_id => $blog_id },
-    #     {
-    #         'join' => MT->model('objectasset')->join_on(
-    #             'asset_id',
-    #             {},
-    #             { unique => 1 }
-    #         ),
-    #         'sort'    => 'created_on',
-    #         direction => 'descend',
-    #     }
-    # );
-    # %seen = ();
-    # my @assets;
-    # while ( my $asset = $iter->() ) {
-    #     next if $seen{ $asset->id };
-    #     $seen{ $asset->id } = 1;
-    #     my $row = {
-    #         asset_label => $asset->label,
-    #         asset_id    => $asset->id,
-    #     };
-    #     push @assets, $row;
-    #     if ( @assets == 50 ) {
-    #         $iter->end;
-    #         last;
-    #     }
-    # }
-    # if ($filter_col eq 'asset_id' && !$seen{$filter_val}) {
-    #     push @assets, {
-    #         asset_label => $param{asset_label},
-    #         asset_id    => $filter_val,
-    #     };
-    # }
-    # $param{entry_asset_loop} = \@assets;
-
     $param{page_actions}        = $app->page_actions( $app->mode );
     $param{list_filters}        = $app->list_filters('entry');
     $param{can_power_edit}      = $blog_id && !$is_power_edit;
@@ -942,8 +909,10 @@ sub list {
     $param{list_start}  = $offset + 1;
     $param{list_end}    = $offset + scalar @$data;
     $param{list_total}  = $total;
-    $param{next_max}    = $param{list_total} - $limit;
-    $param{next_max}    = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
     $param{nav_entries} = 1;
     $param{feed_label}  = $app->translate( "[_1] Feed", $pkg->class_label );
     $param{feed_url} =
@@ -968,7 +937,6 @@ sub list {
     $param->{return_args} ||= $app->make_return_args;
     my @return_args = grep { $_ !~ /offset=\d/ } split /&/, $param->{return_args};
     $param{return_args} = join '&', @return_args;
-    $param{return_args} .= "&offset=$offset" if $offset;
     $param{screen_id} = "list-entry";
     $param{screen_id} = "list-page"
       if $param{object_type} eq "page";

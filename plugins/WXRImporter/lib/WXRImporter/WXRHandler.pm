@@ -37,7 +37,9 @@ sub start_document {
 
 sub _decoder {
     my ( $text ) = @_;
-    $text = eval { Encode::decode_utf8($text); };
+    # Fix the broken string passed by XML::SAX::PurePerl.
+    utf8::downgrade($text, 1);
+    $text = Encode::decode_utf8($text) if !Encode::is_utf8($text);
     return $text;
 }
 

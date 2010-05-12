@@ -26,6 +26,31 @@ sub edit {
         my $tags = MT::Tag->join( $tag_delim, $obj->tags );
         $param->{tags} = $tags;
 
+        if ($tag_delim) {
+            if ( $tag_delim eq ',' ) {
+                $param->{'auth_pref_tag_delim_comma'} = 1;
+            }
+            elsif ( $tag_delim eq ' ' ) {
+                $param->{'auth_pref_tag_delim_space'} = 1;
+            }
+            else {
+                $param->{'auth_pref_tag_delim_other'} = 1;
+            }
+            $param->{'auth_pref_tag_delim'} = $tag_delim;
+        }
+        require MT::ObjectTag;
+        $param->{tags_js} = MT::Util::to_json(
+            [   map { $_->name } MT::Tag->load(
+                    undef,
+                    {   join => [
+                            'MT::ObjectTag', 'tag_id',
+                            { blog_id => $obj->blog_id }, { unique => 1 }
+                        ]
+                    }
+                )
+            ]
+        );
+
         my @related;
         if ($obj->parent) {
             my $parent = $asset_class->load($obj->parent);
@@ -94,6 +119,31 @@ sub edit {
         );
         $param->{previous_entry_id} = $prev_asset->id if $prev_asset;
         $param->{next_entry_id}     = $next_asset->id if $next_asset;
+
+        my $user = MT::Author->load(
+            {
+                id   => $obj->created_by(),
+                type => MT::Author::AUTHOR()
+            }
+        );
+        if ($user) {
+            $param->{created_by} = $user->name;
+        } else {
+            $param->{created_by} = $app->translate('(user deleted)');
+        }
+        if ( $obj->modified_by() ) {
+            $user = MT::Author->load(
+                {
+                    id   => $obj->modified_by(),
+                    type => MT::Author::AUTHOR()
+                }
+            );
+            if ($user) {
+                $param->{modified_by} = $user->name;
+            } else {
+                $param->{modified_by} = $app->translate('(user deleted)');
+            }
+        }
     }
     1;
 }
@@ -309,9 +359,10 @@ sub asset_userpic {
 
 sub start_upload {
     my $app = shift;
-
+    my $dialog = $app->param('dialog');
+    $dialog =~ s/\D//g;
     return $app->return_to_dashboard( redirect => 1 )
-        if !$app->blog && !$app->param('dialog');
+        if !$app->blog && !$dialog;
 
     $app->add_breadcrumb( $app->translate('Upload File') );
     my %param;
@@ -332,8 +383,8 @@ sub start_upload {
     $param{search_label} = $app->translate('Assets');
     $param{search_type}  = 'asset';
 
-    $param{dialog} = $app->param('dialog');
-    my $tmpl_file = $app->param('dialog') ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
+    $param{dialog} = $dialog;
+    my $tmpl_file = $dialog ? 'dialog/asset_upload.tmpl' : 'asset_upload.tmpl';
     $app->load_tmpl( $tmpl_file, \%param );
 }
 
@@ -437,9 +488,17 @@ sub complete_insert {
         require MT::ObjectTag;
         my $q       = $app->param;
         my $blog_id = $q->param('blog_id');
-        $param->{tags_js} =
-          MT::Util::to_json(
-            MT::Tag->cache( blog_id => $blog_id, class => 'MT::Asset', private => 1 ) );
+        $param->{tags_js} = MT::Util::to_json(
+            [   map { $_->name } MT::Tag->load(
+                    undef,
+                    {   join => [
+                            'MT::ObjectTag', 'tag_id',
+                            { blog_id => $blog_id }, { unique => 1 }
+                        ]
+                    }
+                )
+            ]
+        );
     }
 
     $param->{'no_insert'} = $app->param('no_insert');
@@ -719,7 +778,7 @@ sub build_asset_hasher {
         my $ts = $obj->created_on;
         if ( my $by = $obj->created_by ) {
             my $user = MT::Author->load($by);
-            $row->{created_by} = $user ? $user->name : '';
+            $row->{created_by} = $user ? $user->name : $app->translate('(user deleted)');
         }
         if ($ts) {
             $row->{created_on_formatted} =
@@ -788,6 +847,7 @@ sub asset_insert_text {
     require MT::Asset;
     my $asset = MT::Asset->load($id)
       or return $app->errtrans( "Can't load file #[_1].", $id );
+    $param->{enclose} = $app->param('edit_field') =~ /^customfield/ ? 1 : 0;
     return $asset->as_html($param);
 }
 
@@ -957,6 +1017,9 @@ sub _set_start_upload_params {
         $param->{local_site_path}      = '';
         $param->{local_archive_path}   = '';
     }
+    my $require_type = $param->{require_type};
+    $require_type =~ s/\W//g;
+    $param->{require_type} = $require_type;
 
     $param;
 }

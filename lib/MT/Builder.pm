@@ -26,6 +26,8 @@ sub compile {
     my $ids;
     my $classes;
     my $errors;
+    $build->{__state}{errors} = [] unless $depth;
+    $errors = $build->{__state}{errors};
 
     # handle $builder->compile($template) signature
     if (UNIVERSAL::isa($ctx, 'MT::Template')) {
@@ -35,13 +37,11 @@ sub compile {
         $tmpl->reset_tokens();
         $ids = $build->{__state}{ids} = {};
         $classes = $build->{__state}{classes} = {};
-        $errors = $build->{__state}{errors} = [];
         $build->{__state}{tmpl} = $tmpl;
     } else {
         $ids = $build->{__state}{ids} || {};
         $classes = $build->{__state}{classes} || {};
         $tmpl = $build->{__state}{tmpl};
-        $errors = $build->{__state}{errors} ||= [];
     }
 
     return [ ] unless defined $text;

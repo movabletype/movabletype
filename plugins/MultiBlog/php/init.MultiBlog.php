@@ -288,6 +288,8 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
             if ( !empty($blog) ) {
                 $website = $blog->class == 'blog' ? $blog->website() : $blog;
                 $blogs = $website->blogs();
+                if ( empty( $blogs ) )
+                    $blogs = array();
                 $allow = array();
                 foreach($blogs as $b) {
                     if ($b->id == $this_blog || (!isset($access_overrides[$b->id])) || ($access_overrides[$b->id] == MULTIBLOG_ACCESS_ALLOWED))

@@ -53,9 +53,9 @@ class Thumbnail {
 
     # destruct
     public function __destruct () {
-        if (!empty($this->src_img))
+        if (is_resource($this->src_img))
             @imagedestroy($this->src_img);
-        if (!empty($this->dest_img))
+        if (is_resource($this->dest_img))
             @imagedestroy($this->dest_img);
     }
 
@@ -339,9 +339,9 @@ class Thumbnail {
                 imagepng($this->dest_img, $dest_file);
                 break;
             }
-            imagedestroy($this->dest_img);
+            @imagedestroy($this->dest_img);
         }
-        imagedestroy($this->src_img);
+        @imagedestroy($this->src_img);
 
         return true;
     }

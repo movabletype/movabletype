@@ -761,7 +761,7 @@ sub run_statements {
                 if (ref $stmt eq 'CODE') {
                     $stmt->() if !$DryRun;
                 } else {
-                    if ($dbh && !$DryRun) {
+                    if ($dbh && !$DryRun && $stmt) {
                         my $err;
                         $dbh->do($stmt) or $err = $dbh->errstr;
                         if ($err) {

@@ -15,24 +15,30 @@ sub NS_OPENID_SREG { "http://openid.net/extensions/sreg/1.1" }
 sub password_exists { 0 }
 
 sub login {
-    my $class = shift;
-    my ($app) = @_;
-    my $q = $app->param;
-    my $blog = $app->model('blog')->load(scalar $q->param('blog_id'));
+    my $class    = shift;
+    my ($app)    = @_;
+    my $q        = $app->param;
+    my $blog     = $app->model('blog')->load( scalar $q->param('blog_id') );
     my $identity = $q->param('openid_url');
-    if (!$identity &&
-        (my $u = $q->param('openid_userid')) && $class->can('url_for_userid')) {
+    if (   !$identity
+        && ( my $u = $q->param('openid_userid') )
+        && $class->can('url_for_userid') )
+    {
         $identity = $class->url_for_userid($u);
     }
-    my $claimed_identity = $class->check_openid($app, $blog, $identity)
-        or return $app->error($app->errstr);
+    my $claimed_identity = $class->check_openid( $app, $blog, $identity )
+        or return $app->error( $app->errstr );
 
     my %params = $class->check_url_params( $app, $blog );
 
-    $class->set_extension_args( $claimed_identity );
+    $class->set_extension_args($claimed_identity);
 
     my $check_url = $claimed_identity->check_url(
-        %params
+        %params,
+        (   2 == $claimed_identity->protocol_version
+            ? ( delayed_return => 1 )
+            : ()
+        ),
     );
 
     return $app->redirect($check_url);
@@ -190,17 +196,33 @@ sub _get_ua {
 }
 
 sub _get_csr {
-    my ($params, $blog, $ua) = @_;
+    my ( $params, $blog, $ua ) = @_;
     my $secret = MT->config->SecretToken;
     $ua ||= _get_ua();
     return unless $ua;
     require Net::OpenID::Consumer;
+
+    my $can_cache;
+    my $tmp_dir = MT->config('TempDir');
+    if ($tmp_dir) {
+        $tmp_dir = File::Spec->catdir( $tmp_dir, 'openid' );
+        eval { require Cache::File; };
+        $can_cache = 1 if !$@ && $tmp_dir;
+    }
+
     Net::OpenID::Consumer->new(
-        ua => $ua,
-        args => $params,
+        ua              => $ua,
+        args            => $params,
         consumer_secret => $secret,
-        # debug => sub {
-        # }
+        (   $can_cache
+            ? ( cache => Cache::File->new(
+                    cache_root      => $tmp_dir,
+                    default_expires => '6000 sec'
+                )
+                )
+            : ()
+        ),
+#        debug => 1,
     );
 }
 

@@ -821,28 +821,18 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/getoonde-auteursnaam/jjjj/mm/dd/index.html',
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/getoonde_auteursnaam/jjjj/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
-	'author/author-display-name/yyyy/mm/index.html' => 'auteur/getoonde-naam-auteur/jjjj/mm/index.html',
-	'author/author_display_name/yyyy/mm/index.html' => 'auteur/getoonde_naam_auteur/jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'per auteur',
-	'author/author-display-name/index.html' => 'auteur/auteur-getoonde-naam/index.html',
-	'author/author_display_name/index.html' => 'auteur/auteur_getoonde_naam/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
 	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
-	'author/author-display-name/yyyy/mm/day-week/index.html' => 'auteur/auteur-getoonde-naam/jjjj/mm/dag-week/index.html',
-	'author/author_display_name/yyyy/mm/day-week/index.html' => 'auteur/auteur_getoonde_naam/jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
 	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
-	'author/author-display-name/yyyy/index.html' => 'auteur/auteur-getoonde-naam/jjjj/index.html',
-	'author/author_display_name/yyyy/index.html' => 'auteur/auteur_getoonde_naam/jjjj/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
 	'CATEGORY-DAILY_ADV' => 'per categorie per dag',
@@ -1116,7 +1106,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Blog.pm
 	'Cloning blog \'[_1]\'...' => 'Bezit blog \'[_1]\' te klonen...',
 	'Error' => 'Fout',
-	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a>.' => 'Klaar! U kan nu <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">terugkeren naar het overzicht van de blogs</a>.',
+	'Finished!' => 'Klaar!',
 	'General Settings' => 'Algemene instellingen',
 	'Plugin Settings' => 'Instellingen plugins',
 	'New Blog' => 'Nieuwe blog',
@@ -3745,7 +3735,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => 'Reacties toestaan van anonieme of niet aangemelde gebruikers.',
-	'Require E-mail Address for Anonymous Comments' => 'E-mail adres vereisen voor anonieme reacties',
+	'Require name and E-mail Address for Anonymous Comments' => 'E-mail adres vereisen voor anonieme reacties',
 	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'Indien ingeschakeld moeten bezoekers een geldig e-mail adres opgeven wanneer ze reageren.',
 
 ## tmpl/cms/include/archetype_editor.tmpl

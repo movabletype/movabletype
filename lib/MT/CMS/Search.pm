@@ -6,7 +6,7 @@
 package MT::CMS::Search;
 
 use strict;
-use MT::Util qw( is_valid_date );
+use MT::Util qw( is_valid_date encode_html );
 
 sub core_search_apis {
     my $app = shift;
@@ -96,7 +96,7 @@ sub core_search_apis {
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'ascend';
+                $args->{direction} = 'descend';
             }
         },
         'ping' => {
@@ -141,7 +141,7 @@ sub core_search_apis {
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'ascend';
+                $args->{direction} = 'descend';
             }
         },
         'page' => {
@@ -172,6 +172,14 @@ sub core_search_apis {
             'can_search_by_date' => 1,
             'date_column'        => 'authored_on',
             'results_table_template' => '<mt:include name="include/entry_table.tmpl">',
+            'setup_terms_args'   => sub {
+                my ($terms, $args, $blog_id) = @_;
+                if ($app->param('filter') && $app->param('filter_val')) {
+                    $terms->{$app->param('filter')} = $app->param('filter_val');
+                }
+                $args->{sort}      = 'authored_on';
+                $args->{direction} = 'descend';
+            }
         },
         'template' => {
             'order'             => 500,
@@ -253,7 +261,7 @@ sub core_search_apis {
                     $args->{not}{blog_id} = 1;
                 }
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'ascend';
+                $args->{direction} = 'descend';
             }
         },
         'log' => {
@@ -283,9 +291,8 @@ sub core_search_apis {
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
                 $terms->{class} = '*';
-                $terms->{blog_id} = $blog_id if $blog_id;
                 $args->{sort}      = 'created_on';
-                $args->{direction} = 'ascend';
+                $args->{direction} = 'descend';
             }
         },
         'author' => {
@@ -342,7 +349,8 @@ sub core_search_apis {
             'label' => 'Blogs',
             'condition' => sub {
                 my $author = MT->app->user;
-                return 0 if $blog_id;
+                my $blog = MT->app->blog;
+                return 0 if $blog && $blog->is_blog;
                 return 1 if $author->is_superuser;
                 return 1 if $author->permissions(0)->can_do('administer');
                 return 1 if $author->permissions(0)->can_do('edit_template');
@@ -367,6 +375,7 @@ sub core_search_apis {
             'can_search_by_date' => 0,
             'setup_terms_args'   => sub {
                 my ($terms, $args, $blog_id) = @_;
+                $terms->{parent_id} = $blog_id if $blog_id;
                 $args->{sort}      = 'name';
                 $args->{direction} = 'ascend';
             }
@@ -454,17 +463,16 @@ sub do_search_replace {
 
     my $search_api = $app->registry("search_apis");
 
-    my (
-        $search,        $replace,     $do_replace,     $case,
+    my ($search,        $replace,     $do_replace,     $case,
         $is_regex,      $is_limited,  $type,           $is_junk,
         $is_dateranged, $ids,         $datefrom_year,  $datefrom_month,
         $datefrom_day,  $dateto_year, $dateto_month,   $dateto_day,
         $from,          $to,          $show_all,       $do_search,
         $orig_search,   $quicksearch, $publish_status, $my_posts,
         $search_type,   $filter,      $filter_val
-      )
-      = map scalar $q->param($_),
-      qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
+        )
+        = map scalar $q->param($_),
+        qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
     $search =~ s/(^\s+|\s+$)//g;
@@ -518,8 +526,9 @@ sub do_search_replace {
             @cols = split /,/, $cols[0];
         }
         @cols = grep { $search_api_cols{$_} } @cols;
+        $is_limited = 0 unless scalar @cols;
     }
-    else {
+    if ( !$is_limited ) {
         @cols = keys %{ $search_api->{$type}->{search_cols} };
     }
     my $quicksearch_id;
@@ -596,20 +605,29 @@ sub do_search_replace {
             }
             $blog_id = 0;
         }
-        if (exists $api->{setup_terms_args}) {
-            my $code = $app->handler_to_coderef($api->{setup_terms_args});
-            $code->(\%terms, \%args, $blog_id);
-            if ( !exists $terms{blog_id} && $type ne 'author' ) {
-                if ( $blog_id ) {
+        if ( exists $api->{setup_terms_args} ) {
+            my $code = $app->handler_to_coderef( $api->{setup_terms_args} );
+            $code->( \%terms, \%args, $blog_id );
+            if (   !exists $terms{blog_id}
+                && $type ne 'author'
+                && $type ne 'blog' )
+            {
+                if ($blog_id) {
                     require MT::Blog;
                     my $blog = MT::Blog->load($blog_id) if $blog_id;
-                    if ($blog && !$blog->is_blog &&
-                        $author->permissions($blog_id)->has('manage_member_blogs')) {
-                        my @blogs = MT::Blog->load({ parent_id => $blog->id });;
+                    if (   $blog
+                        && !$blog->is_blog
+                        && ( $author->permissions($blog_id)->has('manage_member_blogs')
+                            || $author->is_superuser )
+                        )
+                    {
+                        my @blogs
+                            = MT::Blog->load( { parent_id => $blog->id } );
                         my @blog_ids = map { $_->id } @blogs;
                         push @blog_ids, $blog_id;
                         $terms{blog_id} = \@blog_ids;
-                    } else {
+                    }
+                    else {
                         $terms{blog_id} = $blog_id;
                     }
                 }
@@ -681,15 +699,17 @@ sub do_search_replace {
             	for my $key (keys %terms) {
             		push(@terms, { $key => $terms{$key} });
             	}
+            }
+            if ( scalar @cols ) {
             	push(@terms, '-and');
+                my @col_terms;
+                my $query_string = "%$plain_search%";
+                for my $col (@cols) {
+                    push(@col_terms, { $col => { like => $query_string } }, '-or' );
+                }
+                delete $col_terms[$#col_terms];
+                push(@terms, \@col_terms);
             }
-            my @col_terms;
-            my $query_string = "%$plain_search%";
-            for my $col (@cols) {
-                push(@col_terms, { $col => { like => $query_string } }, '-or' );
-            }
-            delete $col_terms[$#col_terms];
-            push(@terms, \@col_terms);
         }
         $args{limit} = $limit + 1 if $limit ne 'all';
         my $iter;
@@ -845,6 +865,11 @@ sub do_search_replace {
             $app->translate( "Saving object failed: [_2]", $obj->errstr ) );
     }
     if (@data) {
+
+        if ( $type eq 'comment' || $type eq 'ping' || $type eq 'asset' || $type eq 'log' ) {
+            @data = reverse @data;
+        }
+
         if ($quicksearch) {
             my $obj;
             if (1 == scalar @data) {
@@ -914,6 +939,7 @@ sub do_search_replace {
         ( $dateto_year, $dateto_month, $dateto_day ) =
           $dateto =~ m/^(\d\d\d\d)(\d\d)(\d\d)/;
     }
+
     my %res = (
         error => $q->param('error') || '',
         limit => $limit,
@@ -971,6 +997,29 @@ sub do_search_replace {
         push @search_cols, \%search_field;
     }
     $res{'search_cols'} = \@search_cols;
+
+    my $search_options;
+    $search_options .= '&amp;case=' . encode_html( $case ) if defined $case;
+    $search_options .= '&amp;is_regex=' . encode_html( $is_regex ) if defined $is_regex;
+    $search_options .= '&amp;is_limited=' . encode_html( $is_limited ) if defined $is_limited;
+    $search_options .= '&amp;is_junk=' . encode_html( $is_junk ) if defined $is_junk;
+    $search_options .= '&amp;is_dateranged=' . encode_html( $is_dateranged ) if defined $is_dateranged;
+    if ( $is_dateranged ) {
+        $search_options .= '&amp;datefrom_year=' . encode_html( $datefrom_year ) if defined $datefrom_year;
+        $search_options .= '&amp;datefrom_month=' . encode_html( $datefrom_month ) if defined $datefrom_month;
+        $search_options .= '&amp;datefrom_day=' . encode_html( $datefrom_day ) if defined $datefrom_day;
+        $search_options .= '&amp;dateto_year=' . encode_html( $dateto_year ) if defined $dateto_year;
+        $search_options .= '&amp;dateto_month=' . encode_html( $dateto_month ) if defined $dateto_month;
+        $search_options .= '&amp;dateto_day=' . encode_html( $dateto_day ) if defined $dateto_day;
+    }
+    if ( $is_limited ) {
+        foreach ( @cols ) {
+            $search_options .= '&amp;search_cols=' . encode_html( $_ );
+        }
+    }
+
+    $res{search_options} = $search_options;
+
     \%res;
 }
 

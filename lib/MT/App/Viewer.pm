@@ -194,7 +194,7 @@ sub _view_entry {
     my ( $entry_id, $template ) = @_;
     my $entry = MT::Entry->load($entry_id)
         or return $app->error(
-        $app->translate( "Invalid entry ID [_1]", $entry_id ) );
+        $app->translate( "Invalid entry ID '[_1]'", $entry_id ) );
     return $app->error(
         $app->translate( "Entry [_1] is not published", $entry_id ) )
         unless $entry->status == MT::Entry::RELEASE();

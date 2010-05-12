@@ -11,7 +11,7 @@
 require_once('lib/class.exception.php');
 
 define('VERSION', '5.02');
-define('VERSION_ID', '5.02b1');
+define('VERSION_ID', '5.02');
 define('PRODUCT_VERSION', '5.02');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -333,6 +333,8 @@ class MT {
     function config_defaults() {
         $cfg =& $this->config;
         // assign defaults:
+        isset($cfg['cgipath']) or
+            $cfg['cgipath'] = '/cgi-bin/';
         if (substr($cfg['cgipath'], strlen($cfg['cgipath']) - 1, 1) != '/')
             $cfg['cgipath'] .= '/'; 
         isset($cfg['staticwebpath']) or
@@ -388,7 +390,7 @@ class MT {
         isset($cfg['maxresults']) or
             $cfg['maxresults'] = $cfg['searchmaxresults'];
         isset($cfg['singlecommunity']) or
-            $cfg['singlecommunity'] = '0';
+            $cfg['singlecommunity'] = '1';
         isset($cfg['usersessioncookiename']) or
             $cfg['usersessioncookiename'] = 'DEFAULT';
         isset($cfg['usersessioncookiedomain']) or
@@ -424,6 +426,9 @@ class MT {
      * Mainline handler function.
      */
     function view($blog_id = null) {
+
+        set_error_handler(array(&$this, 'error_handler'));
+
         require_once("MTUtil.php");
 
         $blog_id or $blog_id = $this->blog_id;
@@ -633,7 +638,7 @@ class MT {
 #            }
 #            $this->log_dump();
 #        }
-#        restore_error_handler();
+        restore_error_handler();
     }
 
     function resolve_url($path) {

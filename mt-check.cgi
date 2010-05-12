@@ -78,7 +78,7 @@ my $cgi = new CGI;
 my $view = $cgi->param("view");
 my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
-$version ||= '5.01';
+$version ||= '5.02';
 
 my ($mt, $LH);
 my $lang = $cgi->param("language") || $cgi->param("__lang");
@@ -407,6 +407,8 @@ my @CORE_OPT = (
 
     [ 'Crypt::SSLeay', 0, 0, translate('This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.')],
 
+    [ 'Cache::File', 0, 0, translate('Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.')],
+
     [ 'MIME::Base64', 0, 0, translate('MIME::Base64 is required in order to enable comment registration.')],
 
     [ 'XML::Atom', 0, 0, translate('XML::Atom is required in order to use the Atom API.')],
@@ -429,6 +431,7 @@ my @CORE_OPT = (
     [ 'Digest::MD5', 0, 0, translate('This module is used by the Markdown text filter.')],
     [ 'Text::Balanced', 0, 0, translate('This module is required in mt-search.cgi if you are running Movable Type on Perl older than Perl 5.8.') ],
     [ 'XML::Parser', 0, 0, translate('This module required for action streams.')],
+
 );
 
 use Cwd;

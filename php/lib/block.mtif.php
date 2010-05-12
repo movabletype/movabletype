@@ -63,7 +63,11 @@ function smarty_block_mtif($args, $content, &$ctx, &$repeat) {
             $tag = preg_replace('/^mt:?/i', '', $tag);
             $largs = $args; // local arguments without 'tag' element
             unset($largs['tag']);
-            $val = $ctx->tag($tag, $largs);
+            try {
+                $val = $ctx->tag($tag, $largs);
+            } catch (exception $e) {
+                $val = '';
+            }
         }
         if ( !is_array($value)
           && preg_match('/^smarty_fun_[a-f0-9]+$/', $value) ) {

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use lib 't/lib', 'extlib', 'lib';
+use lib qw( t/lib extlib lib ../lib ../extlib );
 
 use Data::Dumper;
 use Test::More tests => 26;
@@ -10,6 +10,9 @@ use MT;
 use MT::Object;
 
 use vars qw( $DB_DIR $T_CFG );
+BEGIN {
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+}
 use MT::Test qw(:db);
 
 my $mt = MT->instance;  # plugins are go!

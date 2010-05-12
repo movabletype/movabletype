@@ -482,9 +482,7 @@ sub edit {
           && $param->{type} ne 'custom'
           && $param->{type} ne 'widget'
           && !$param->{is_special};
-
-        $param->{name}       = MT::Util::decode_url( $app->param('name') )
-          if $app->param('name');
+        $param->{name} = $app->param('name') if $app->param('name');
     }
     $param->{publish_queue_available} = eval 'require List::Util; require Scalar::Util; 1;';
 
@@ -730,7 +728,7 @@ sub list {
             $set = MT->registry(template_sets => $blog->template_set => 'templates');
         }
         else {
-            MT->registry('default_templates');
+            $set = MT->registry('default_templates');
         }
         $scope = 'system';
     }
@@ -1351,7 +1349,9 @@ sub delete_map {
     my $id = $q->param('id');
 
     require MT::TemplateMap;
-    MT::TemplateMap->remove( { id => $id } );
+    my $map = MT::TemplateMap->load( { id => $id } )
+      or return $app->error( $app->translate('Can\'t load templatemap') );
+    $map->remove;
     my $html =
       _generate_map_table( $app, $q->param('blog_id'),
         $q->param('template_id') );

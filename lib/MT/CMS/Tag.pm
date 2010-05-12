@@ -370,7 +370,7 @@ sub list_tag_for {
     my $offset = $app->param('offset') || 0;
 
     my $blog_ids = $app->_load_child_blog_ids($blog_id);
-    push @$blog_ids, $blog_id;
+    push @$blog_ids, $blog_id if $blog_id;
 
     my ( %terms, %arg );
 
@@ -384,12 +384,6 @@ sub list_tag_for {
     if ( $total <= $limit ) {
         delete $arg{limit};
         $offset = 0;
-    }
-    elsif ( $total && $offset > $total - 1 ) {
-        $arg{offset} = $offset = $total - $limit;
-    }
-    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = $total - $limit;
     }
     else {
         $arg{offset} = $offset if $offset;
@@ -459,11 +453,13 @@ sub list_tag_for {
         $param{search_label} = $app->translate("Entries");
     }
 
-    $param{list_start}              = $offset + 1;
-    $param{list_end}                = $offset + scalar @$data;
-    $param{list_total}              = $total;
-    $param{next_max}                = $param{list_total} - $limit;
-    $param{next_max}     = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{list_start}   = $offset + 1;
+    $param{list_end}     = $offset + scalar @$data;
+    $param{list_total}   = $total;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
     $param{list_noncron} = 1;
     $param{list_filters} = $app->list_filters('tag');
     $param{filter_key}   = $filter_key;

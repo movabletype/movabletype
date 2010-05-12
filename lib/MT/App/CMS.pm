@@ -587,8 +587,11 @@ sub core_list_actions {
                 label         => "Unpublish TrackBack(s)",
                 order         => 100,
                 code          => "${pkg}Comment::unapprove_item",
-                permit_action => 'edit_all_posts,manage',
-                permit_action => 'unapprove_trackbacks_via_list',
+                condition => sub {
+                    return 0 if $app->mode eq 'view';
+                    $app->param('blog_id')
+                        && $app->can_do('unapprove_trackbacks_via_list');
+                },
             },
         },
         'comment' => {
@@ -1074,6 +1077,8 @@ sub core_list_filters {
                 handler => sub {
                     my ( $terms, $args ) = @_;
                     $terms->{blog_id} = $app->blog->id;
+                    require MT::Comment;
+                    $terms->{junk_status} = MT::Comment::NOT_JUNK();
                 },
                 condition => sub {
                     my $app = MT->instance;

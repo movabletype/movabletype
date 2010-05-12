@@ -2245,7 +2245,7 @@ sub restore_upload_manifest {
     {    # 2083 is Maximum URL length in IE
         $param->{error} = $app->translate(
 "Manifest file '[_1]' is too large. Please use import direcotry for restore.",
-            $app->param('file')
+            $param->{filename}
         );
         $param->{open_dialog} = 0;
         $app->mode('start_restore');

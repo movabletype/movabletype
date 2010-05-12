@@ -12,7 +12,7 @@
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate format_name=\"\"></MTEntries>", "e" : "January 31, 1978  7:45 AM"}, #11
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate format=\"%Y-%m-%dT%H:%M:%S\"></MTEntries>", "e" : "1978-01-31T07:45:00"}, #12
 { "r" : "1", "t" : "<MTEntries lastn='1'><MTEntryDate language=\"pl\"></MTEntries>", "e" : "31 stycznia 1978  7:45"}, #13
-{ "r" : "1", "t" : "<MTPublishCharset>", "e" : "utf-8"}, #14
+{ "r" : "1", "t" : "<MTPublishCharset lower_case='1'>", "e" : "utf-8"}, #14
 { "r" : "1", "t" : "<MTIfNonEmpty tag=\"MTDate\">nonempty</MTIfNonEmpty>", "e" : "nonempty"}, #15
 { "r" : "1", "t" : "", "e" : ""}, #16
 { "r" : "1", "t" : "<MTIfNonZero tag=\"MTBlogEntryCount\">nonzero</MTIfNonZero>", "e" : "nonzero"}, #17
@@ -103,7 +103,6 @@
 { "r" : "1", "t" : "<MTCategories><MTCategoryLabel></MTCategories>", "e" : "foosubfoo"}, #102
 { "r" : "1", "t" : "<MTCategories><MTCategoryID></MTCategories>", "e" : "13"}, #103
 { "r" : "1", "t" : "<MTCategories><MTCategoryDescription></MTCategories>", "e" : "barsubcat"}, #104
-# { "r" : "1", "t" : "<MTCalendar><MTCalendarWeekHeader month="197801""><tr></MTCalendarWeekHeader><td><MTCalendarCellNumber>,<MTCalendarIfEntries><MTEntries lastn="1"><a href="<$MTEntryPermalink$>"><$MTCalendarDay$></a></MTEntries></MTCalendarIfEntries><MTCalendarIfNoEntries><$MTCalendarDay$></MTCalendarIfNoEntries><MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td><MTCalendarWeekFooter></tr></MTCalendarWeekFooter></MTCalendar>", "e" : "<tr><td>1,&nbsp;</td><td>2,&nbsp;</td><td>3,&nbsp;</td><td>4,&nbsp;</td><td>5,&nbsp;</td><td>6,1</td><td>7,2</td></tr><tr><td>8,3</td><td>9,4</td><td>10,5</td><td>11,6</td><td>12,7</td><td>13,8</td><td>14,9</td></tr><tr><td>15,10</td><td>16,11</td><td>17,12</td><td>18,13</td><td>19,14</td><td>20,15</td><td>21,16</td></tr><tr><td>22,17</td><td>23,18</td><td>24,19</td><td>25,20</td><td>26,21</td><td>27,22</td><td>28,23</td></tr><tr><td>29,24</td><td>30,25</td><td>31,26</td><td>32,27</td><td>33,28</td><td>34,29</td><td>35,30</td></tr>"}, #105
 { "r" : "0", "t" : "", "e" : ""}, #105 TBD
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryTrackbackID></MTEntries>", "e" : "1"}, #106
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBasename></MTEntries>", "e" : "a_rainy_day"}, #107
@@ -113,9 +112,9 @@
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentID></MTComments>", "e" : "2"}, #111
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntryID></MTComments>", "e" : "5"}, #112
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentIP></MTComments>", "e" : "127.0.0.1"}, #113
-{ "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "John Doe,Comment 3,<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,"}, #114
+{ "r" : "1", "t" : "<MTComments lastn=\"3\"><MTCommentAuthorLink>,</MTComments>", "e" : "<a title=\"http://chuckd.com/\" href=\"http://chuckd.com/\">Chucky Dee</a>,Comment 3,John Doe,"}, #114
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEmail></MTComments>", "e" : "johnd@doe.com"}, #115
-{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"Author Profile Page\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
+{ "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentAuthorIdentity></MTComments>", "e" : "<img alt=\"\" src=\"http://narnia.na/cgi-bin/mt-static/images/comment/typepad_logo.png\" width=\"16\" height=\"16\" />"}, #116
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentURL></MTComments>", "e" : "http://john.doe.com/"}, #117
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentOrderNumber></MTComments>", "e" : "1"}, #118
 { "r" : "1", "t" : "<MTComments lastn=\"1\"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>", "e" : "Verse 2"}, #119
@@ -141,7 +140,6 @@
 { "r" : "1", "t" : "<MTEntriesWithSubCategories category=\"foo/subfoo\"><MTEntryTitle>;</MTEntriesWithSubCategories>", "e" : "Verse 4;"}, #139
 { "r" : "1", "t" : "<MTPings lastn=\"1\"><MTPingDate></MTPings>", "e" : "April  5, 2005 12:00 AM"}, #140
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTPingsSent><MTPingsSentURL>; </MTPingsSent></MTEntries>", "e" : "http://technorati.com/; "}, #141
-#{ "r" : "1", "t" : "<MTGoogleSearch query="six apart" results="1"><MTGoogleSearchResult property="URL"></MTGoogleSearch>", "e" : "http://www.sixapart.com/"}, #142
 { "r" : "1", "t" : "disabled", "e" : "disabled"}, #142
 { "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTIfIsAncestor child=\"subfoo\"><MTCategoryLabel> is an ancestor to subfoo</MTIfIsAncestor></MTCategories>", "e" : "foo is an ancestor to subfoosubfoo is an ancestor to subfoo"}, #143
 { "r" : "1", "t" : "<MTCategories show_empty=\"1\"><MTIfIsDescendant parent=\"foo\"><MTCategoryLabel> is a descendant of foo</MTIfIsDescendant></MTCategories>", "e" : "foo is a descendant of foosubfoo is a descendant of foo"}, #144
@@ -223,14 +221,14 @@
 { "r" : "1", "t" : "<MTArchiveList archive_type='Monthly'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #220
 { "r" : "1", "t" : "<MTArchiveList archive_type='Daily'><MTArchiveDateEnd></MTArchiveList>", "e" : "January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanuary 31, 1963 11:59 PMJanuary 31, 1962 11:59 PMJanuary 31, 1961 11:59 PM"}, #221
 { "r" : "1", "t" : "<MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>", "e" : "February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM"}, #222
-{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "1.5,0,0,"}, #223
-{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "John Doe: trusted,Comment 3: untrusted,Chucky Dee: trusted"}, #224
+{ "r" : "1", "t" : "<MTComments lastn='3'><MTFeedbackScore>,</MTComments>", "e" : "0,0,1.5,"}, #223
+{ "r" : "1", "t" : "<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>", "e" : "Chucky Dee: trusted,Comment 3: untrusted,John Doe: untrusted"}, #224
 { "r" : "1", "t" : "<MTTags glue=','><MTTagName> <MTTagRank></MTTags>", "e" : "anemones 4,grandpa 6,rain 2,strolling 6,verse 1"}, #225
 { "r" : "1", "t" : "<MTEntries tag='grandpa' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "6,2,6"}, #226
 { "r" : "1", "t" : "<MTEntries tag='verse' lastn='1'><MTEntryTags glue=','><MTTagRank></MTEntryTags></MTEntries>", "e" : "2,1"}, #227
 { "r" : "1", "t" : "<MTEntries tags='grandpa' lastn='1'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #228
 { "r" : "1", "t" : "<MTEntries category='subfoo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 4"}, #229
-#{ "r" : "1", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
+{ "r" : "0", "t" : "<MTEntries tags='verse' category='foo' lastn='1'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #230
 { "r" : "1", "t" : "<MTEntries author='Bob D' category='foo'><MTEntryTitle></MTEntries>", "e" : "Verse 3"}, #231
 { "r" : "1", "t" : "<MTEntries author='Chuck D' tags='strolling'><MTEntryTitle></MTEntries>", "e" : "A Rainy Day"}, #232
 { "r" : "1", "t" : "<MTSetVar name='x' value='0'><MTIfNonZero tag='GetVar' name='x'><MTElse>0</MTElse></MTIfNonZero>", "e" : "0"}, #233
@@ -245,8 +243,8 @@
 { "r" : "1", "t" : "<MTAssets days='1'><$MTAssetID$>;</MTAssets>", "e" : "1;"}, #242
 { "r" : "1", "t" : "<MTAssets author='Chuck D'><$MTAssetID$></MTAssets>", "e" : ""}, #243
 { "r" : "1", "t" : "<MTAssets author='Melody'><$MTAssetID$>;</MTAssets>", "e" : "1;2;"}, #244
-{ "r" : "1", "t" : "<MTAssets offset='1'><$MTAssetID$></MTAssets>", "e" : "2"}, #245
-{ "r" : "1", "t" : "<MTAssets offset='2'><$MTAssetID$></MTAssets>", "e" : ""}, #246
+{ "r" : "1", "t" : "<MTAssets limit='1' offset='1'><$MTAssetID$></MTAssets>", "e" : "2"}, #245
+{ "r" : "1", "t" : "<MTAssets limit='1' offset='2'><$MTAssetID$></MTAssets>", "e" : ""}, #246
 { "r" : "1", "t" : "<MTAssets tag='alpha'><$MTAssetID$></MTAssets>", "e" : "1"}, #247
 { "r" : "1", "t" : "<MTAssets sort_by='file_name'><$MTAssetID$>;</MTAssets>", "e" : "2;1;"}, #248
 { "r" : "1", "t" : "<MTAssets sort_order='ascend'><$MTAssetID$>;</MTAssets>", "e" : "2;1;"}, #249
@@ -448,6 +446,8 @@
 { "r" : "1", "t" : "<MTBlogRelativeURL id='1'>", "e" : "/nana/"}, #445
 { "r" : "1", "t" : "<MTBlogSitePath is='1'>", "e" : "t/site/"}, #446
 { "r" : "1", "t" : "<MTBlogArchiveURL id='1'>", "e" : "http://narnia.na/nana/archives/"}, #447
-{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:Websites>", "e" : "true"}, #448
-{ "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"} #449
+{ "r" : "1", "t" : "<mt:Websites><mt:WebsiteHasBlog>true</mt:WebsiteHasBlog></mt:Websites>", "e" : "true"}, #448
+{ "r" : "1", "t" : "<mt:BlogParentWebsite><mt:WebsiteID></mt:BlogParentWebsite>", "e" : "2"}, #449
+{ "r" : "0", "t" : "<MTCalendar><MTCalendarWeekHeader month='197801'><tr></MTCalendarWeekHeader><td><MTCalendarCellNumber>,<MTCalendarIfEntries><MTEntries lastn='1'><a href='<$MTEntryPermalink$>'><$MTCalendarDay$></a></MTEntries></MTCalendarIfEntries><MTCalendarIfNoEntries><$MTCalendarDay$></MTCalendarIfNoEntries><MTCalendarIfBlank>&nbsp;</MTCalendarIfBlank></td><MTCalendarWeekFooter></tr></MTCalendarWeekFooter></MTCalendar>', 'e' : '<tr><td>1,&nbsp;</td><td>2,&nbsp;</td><td>3,&nbsp;</td><td>4,&nbsp;</td><td>5,&nbsp;</td><td>6,1</td><td>7,2</td></tr><tr><td>8,3</td><td>9,4</td><td>10,5</td><td>11,6</td><td>12,7</td><td>13,8</td><td>14,9</td></tr><tr><td>15,10</td><td>16,11</td><td>17,12</td><td>18,13</td><td>19,14</td><td>20,15</td><td>21,16</td></tr><tr><td>22,17</td><td>23,18</td><td>24,19</td><td>25,20</td><td>26,21</td><td>27,22</td><td>28,23</td></tr><tr><td>29,24</td><td>30,25</td><td>31,26</td><td>32,27</td><td>33,28</td><td>34,29</td><td>35,30</td></tr>"}, #450
+{ "r" : "0", "t" : "<MTGoogleSearch query='six apart' results='1'><MTGoogleSearchResult property='URL'></MTGoogleSearch>", "e" : "http://www.sixapart.com/"} #451
 ]

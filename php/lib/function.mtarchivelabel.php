@@ -17,7 +17,8 @@ function smarty_function_mtarchivelabel($args, &$ctx) {
     if (isset($ar)) {
         return $ar->get_label($args);
     } else {
-      return $at;
+        $mt = MT::get_instance();
+        return $mt->translate($at);
     }
 }
 ?>

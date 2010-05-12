@@ -242,12 +242,6 @@ sub list {
         delete $arg{limit};
         $offset = 0;
     }
-    elsif ( $total && $offset > $total - 1 ) {
-        $arg{offset} = $offset = $total - $limit;
-    }
-    elsif ( $offset && ( ( $offset < 0 ) || ( $total - $offset < $limit ) ) ) {
-        $arg{offset} = $offset = $total - $limit;
-    }
     else {
         $arg{offset} = $offset if $offset;
     }
@@ -291,8 +285,10 @@ sub list {
     $param{list_start}          = $offset + 1;
     $param{list_end}            = $offset + scalar @$data;
     $param{list_total}          = $total;
-    $param{next_max}     = $param{list_total} - $limit if $param{list_total};
-    $param{next_max}     = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
     $param{page_actions} = $app->page_actions('list_pings')
       || $app->page_actions('list_ping');
     $param{nav_trackbacks}    = 1;

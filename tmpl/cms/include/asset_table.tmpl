@@ -46,7 +46,7 @@
     <mt:else>
                             <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>">
         <mt:if name="has_thumbnail">
-                                <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+                                <img src="<mt:var name="thumbnail_url" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
         <mt:else>
                             <span><__trans phrase="No thumbnail image"></span>
         </mt:if>
@@ -80,7 +80,7 @@
                     <mt:var name="file_size">
     </mt:if>
                 </td>
-                <td class="created-by"><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></td>
+                <td class="created-by"><mt:var name="created_by" escape="html"></td>
                 <td class="created-on"><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
             </tr>
     <mt:if __last__>

@@ -25,11 +25,6 @@ sub upgrade_functions {
             priority      => 3.1,
             code          => \&_v5_migrate_system_privilege,
         },
-        'v5_migrate_theme_privilege' => {
-            version_limit => 5.0014,
-            priority      => 3.1,
-            code          => \&_v5_migrate_theme_privilege,
-        },
         'v5_migrate_mtview' => {
             version_limit => 5.0004,
             priority      => 3.1,
@@ -46,9 +41,14 @@ sub upgrade_functions {
             updater => {
                 type => 'author',
                 label => "Merging dashboard settings...",
-                condition => sub { $_[0]->status(1) && $_[0]->type(1) },
+                condition => sub { $_[0]->status == 1 && $_[0]->type == 1 },
                 code          => \&_v5_migrate_dashboard,
             },
+        },
+        'v5_migrate_theme_privilege' => {
+            version_limit => 5.0014,
+            priority      => 3.1,
+            code          => \&_v5_migrate_theme_privilege,
         },
         'v5_migrate_blog_only' => {
             version_limit => 5.0015,
@@ -82,6 +82,31 @@ sub upgrade_functions {
             version_limit => 5.0017,
             priority      => 3.0,
             code          => \&_v5_remove_technorati,
+        },
+        'v5_remove_news_widget_cache' => {
+            version_limit => 5.0,
+            priority      => 3.0,
+            code          => \&_v5_remove_news_widget_cache,
+        },
+        'v5_assign_entry_ceated_by' => {
+            version_limit => 5.0019,
+            priority      => 3.1,
+            updater       => {
+                type      => 'entry',
+                label     => 'Assigning ID of author for entries...',
+                code      => sub {
+                    $_[0]->created_by( $_[0]->author_id )
+                        if !defined $_[0]->created_by;
+                },
+                sql       =>
+                    'update mt_entry set entry_created_by = entry_author_id
+                         where entry_created_by is null',
+            },
+        },
+        'v5_recover_auth_type' => {
+            version_limit => 5.0019,
+            priority      => 3.1,
+            code          => \&_v5_recover_auth_type,
         },
     };
 }
@@ -147,10 +172,12 @@ sub _v5_create_new_role {
         unless $role_class;
 
     $self->progress($self->translate_escape('Updating existing role name...'));
+
     my $role = $role_class->load({
         name => MT->translate('_WEBMASTER_MT4'),
     });
     if ( $role ) {
+        return if $role->has('administer_website');
         $role->name( MT->translate('Webmaster (MT4)') );
         $role->save
             or return $self->error($self->translate_escape("Error saving record: [_1].", $role->errstr));
@@ -191,6 +218,7 @@ sub _v5_migrate_theme_privilege {
         name => MT->translate('Designer'),
     });
     if ( $role ) {
+        return if $role->has('manage_themes');
         $role->name( MT->translate('Designer (MT4)') );
         $role->save
             or return $self->error($self->translate_escape("Error saving record: [_1].", $role->errstr));
@@ -500,6 +528,51 @@ sub _v5_remove_technorati {
                 $blog->id,
             )
         )
+    }
+}
+
+sub _v5_remove_news_widget_cache {
+    my $self = shift;
+    $self->progress(
+        $self->translate_escape(
+            'Expiring cached MT News widget...',
+        )
+    );
+    my $class = MT->model('session')
+        or return $self->error(
+            $self->translate_escape(
+                "Error loading class: [_1].",
+                'session'
+            ));
+    $class->remove({kind => [qw( NW LW )]});
+}
+
+sub _v5_recover_auth_type {
+    my $self = shift;
+    $self->progress(
+        $self->translate_escape(
+            'Recovering type of author...',
+        )
+    );
+
+    my $authenticators = MT->registry('commenter_authenticators');
+    my @keys = keys %$authenticators;
+    return unless @keys;
+
+    my $author_class = MT->model('author')
+        or return $self->error(
+            $self->translate_escape(
+                "Error loading class: [_1].",
+                'author'
+            ));
+
+    my $auth_iter = $author_class->load_iter({
+        type => MT::Author::AUTHOR(),
+        auth_type => \@keys,
+    });
+    while ( my $author = $auth_iter->() ) {
+        $author->type( MT::Author::COMMENTER() );
+        $author->save;
     }
 }
 

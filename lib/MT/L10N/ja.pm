@@ -157,6 +157,7 @@ use vars qw( @ISA %Lexicon );
 	'Storable is optional; it is required by certain MT plugins available from third parties.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; if it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
 	'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証するために必要となります。',
+ 'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.' => 'Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
 	'MIME::Base64 is required in order to enable comment registration.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'Cache::Memcached and memcached server/daemon is required in order to use memcached as caching mechanism used by Movable Type.' => 'Cache::Memcachedのインストールは必須ではありません。Movable Type のキャッシング機能として memcached サーバーを利用する場合に必要となります。',
@@ -374,12 +375,12 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/monthly_entry_listing.mtml
 
 ## default_templates/new-comment.mtml
-	'An unapproved comment has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはウェブサイトに表示されません。',
 	'An unapproved comment has been posted on your blog \'[_1]\', for entry #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。',
 	'An unapproved comment has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはブログに表示されません。',
-	'A new comment has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
+	'An unapproved comment has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this comment before it will appear on your site.' => '未公開のコメントがウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に投稿されました。公開するまでこのコメントはウェブサイトに表示されません。',
 	'A new comment has been posted on your blog \'[_1]\', on entry #[_2] ([_3]).' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
 	'A new comment has been posted on your blog \'[_1]\', on page #[_2] ([_3]).' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
+	'A new comment has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいコメントが投稿されました。',
 	'Commenter name: [_1]' => 'コメント投稿者: [_1]',
 	'Commenter email address: [_1]' => 'メールアドレス: [_1]',
 	'Commenter URL: [_1]' => 'URL: [_1]',
@@ -390,13 +391,13 @@ use vars qw( @ISA %Lexicon );
 	'Report comment as spam:' => 'コメントをスパムとして報告する:',
 
 ## default_templates/new-ping.mtml
-	'An unapproved TrackBack has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。',
 	'An unapproved TrackBack has been posted on your blog \'[_1]\', for entry #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
 	'An unapproved TrackBack has been posted on your blog \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
+	'An unapproved TrackBack has been posted on your website \'[_1]\', for page #[_2] ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはウェブサイトに表示されません。',
 	'An unapproved TrackBack has been posted on your blog \'[_1]\', for category #[_2], ([_3]). You need to approve this TrackBack before it will appear on your site.' => 'ブログ \'[_1]\' のカテゴリ \'[_3]\' (ID:[_2]) に未公開のトラックバックがあります。公開するまでこのトラックバックはブログに表示されません。',
-	'A new TrackBack has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
 	'A new TrackBack has been posted on your blog \'[_1]\', on entry #[_2] ([_3]).' => 'ブログ \'[_1]\' のブログ記事 \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
 	'A new TrackBack has been posted on your blog \'[_1]\', on page #[_2] ([_3]).' => 'ブログ \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
+	'A new TrackBack has been posted on your website \'[_1]\', on page #[_2] ([_3]).' => 'ウェブサイト \'[_1]\' のウェブページ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
 	'A new TrackBack has been posted on your blog \'[_1]\', on category #[_2] ([_3]).' => 'ブログ \'[_1]\' のカテゴリ \'[_3]\' (ID:[_2]) に新しいトラックバックがあります。',
 	'Excerpt' => '概要',
 	'Title' => 'タイトル',
@@ -736,7 +737,7 @@ use vars qw( @ISA %Lexicon );
 	'Comments are not allowed on this entry.' => 'このブログ記事にはコメントできません。',
 	'Comment text is required.' => 'コメントを入力していません。',
 	'Registration is required.' => '登録しなければなりません。',
-	'Name and email address are required.' => '名前とメールアドレスは必須です。',
+	'Name and E-mail address are required.' => '名前とメールアドレスは必須です。',
 	'Invalid email address \'[_1]\'' => 'メールアドレス([_1])は不正です。',
 	'Invalid URL \'[_1]\'' => 'URL([_1])は不正です。',
 	'Comment save failed with [_1]' => 'コメントを保存できませんでした: [_1]',
@@ -824,15 +825,14 @@ use vars qw( @ISA %Lexicon );
 	'Movable Type has been upgraded to version [_1].' => 'Movable Typeをバージョン[_1]にアップグレードしました。',
 
 ## lib/MT/App/Viewer.pm
-	'Loading blog with ID [_1] failed' => 'Loading blog with ID [_1] failed',
-	'Template publishing failed: [_1]' => 'Template publishing failed: [_1]',
-	'Invalid date spec' => 'Invalid date spec',
-	'Can\'t load templatemap' => 'Can\'t load templatemap',
-	'Can\'t load template [_1]' => 'Can\'t load template [_1]',
-	'Archive publishing failed: [_1]' => 'Archive publishing failed: [_1]',
-	'Invalid entry ID [_1]' => 'Invalid entry ID [_1]',
-	'Entry [_1] is not published' => 'Entry [_1] is not published',
-	'Invalid category ID \'[_1]\'' => 'Invalid category ID \'[_1]\'',
+	'Loading blog with ID [_1] failed' => 'ブログ (ID：[_1]) の読み込みに失敗しました',
+	'Template publishing failed: [_1]' => 'テンプレートの出力に失敗しました: [_1]',
+	'Invalid date spec' => '日付の指定が不正です',
+	'Can\'t load templatemap' => 'テンプレートマップを読み込めませんでした',
+	'Can\'t load template [_1]' => 'テンプレートを読み込めませんでした [_1]',
+	'Archive publishing failed: [_1]' => 'アーカイブの公開に失敗しました: [_1]',
+	'Entry [_1] is not published' => 'ブログ記事 [_1] は公開されていません',
+	'Invalid category ID \'[_1]\'' => 'カテゴリのIDが不正です: [_1]',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => '[_2]を使うには[_1]のドライバが必要です。',
@@ -860,29 +860,29 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'ユーザー別',
-	'author/author-display-name/index.html' => 'author/author-display-name/index.html',
-	'author/author_display_name/index.html' => 'author/author_display_name/index.html',
+	'AUTHOR_ADV' => 'ユーザー',
+	'author/author-basename/index.html' => 'author/author-basename/index.html',
+	'author/author_basename/index.html' => 'author/author_basename/index.html',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'ユーザー-日別',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'author/author-display-name/yyyy/mm/dd/index.html',
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'author/author_display_name/yyyy/mm/dd/index.html',
+	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
+	'author/author-basename/yyyy/mm/dd/index.html' => 'author/author-basename/yyyy/mm/dd/index.html',
+	'author/author_basename/yyyy/mm/dd/index.html' => 'author/author_basename/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'ユーザー-月別',
-	'author/author-display-name/yyyy/mm/index.html' => 'author/author-display-name/yyyy/mm/index.html',
-	'author/author_display_name/yyyy/mm/index.html' => 'author/author_display_name/yyyy/mm/index.html',
+	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
+	'author/author-basename/yyyy/mm/index.html' => 'author/author-basename/yyyy/mm/index.html',
+	'author/author_basename/yyyy/mm/index.html' => 'author/author_basename/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'ユーザー-週別',
-	'author/author-display-name/yyyy/mm/day-week/index.html' => 'author/author-display-name/yyyy/mm/day-week/index.html',
-	'author/author_display_name/yyyy/mm/day-week/index.html' => 'author/author_display_name/yyyy/mm/day-week/index.html',
+	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
+	'author/author-basename/yyyy/mm/day-week/index.html' => 'author/author-basename/yyyy/mm/day-week/index.html',
+	'author/author_basename/yyyy/mm/day-week/index.html' => 'author/author_basename/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'ユーザー-年別',
-	'author/author-display-name/yyyy/index.html' => 'author/author-display-name/yyyy/index.html',
-	'author/author_display_name/yyyy/index.html' => 'author/author_display_name/yyyy/index.html',
+	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
+	'author/author-basename/yyyy/index.html' => 'author/author-basename/yyyy/index.html',
+	'author/author_basename/yyyy/index.html' => 'author/author_basename/yyyy/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
 	'CATEGORY_ADV' => 'カテゴリ',
@@ -890,22 +890,22 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/index.html' => 'category/sub_category/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'カテゴリ-日別',
+	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'category/sub-category/yyyy/mm/dd/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'category/sub_category/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'カテゴリ-月別',
+	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
 	'category/sub-category/yyyy/mm/index.html' => 'category/sub-category/yyyy/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'category/sub_category/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'カテゴリ-週別',
+	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'category/sub-category/yyyy/mm/day-week/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'category/sub_category/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'カテゴリ-年別',
+	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
 	'category/sub-category/yyyy/index.html' => 'category/sub-category/yyyy/index.html',
 	'category/sub_category/yyyy/index.html' => 'category/sub_category/yyyy/index.html',
 
@@ -1149,7 +1149,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Blog.pm
 	'Cloning blog \'[_1]\'...' => 'ブログ「[_1]」を複製しています...',
 	'Error' => 'エラー',
-	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a>.' => '完了しました。<a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">ブログの一覧</a>に戻る。',
+	'Finished!' => '完了しました。',
 	'General Settings' => '全般設定',
 	'Plugin Settings' => 'プラグイン設定',
 	'New Blog' => '新しいブログ',
@@ -1591,7 +1591,6 @@ use vars qw( @ISA %Lexicon );
 	'Rich Text' => 'リッチテキスト',
 	'Movable Type Default' => 'Movable Type 既定',
 	'weblogs.com' => 'weblogs.com',
-	'technorati.com' => 'technorati.com',
 	'google.com' => 'google.com',
 	'Classic Blog' => 'クラシックブログ',
 	'Publishes content.' => 'コンテンツを公開します。',
@@ -1730,7 +1729,7 @@ use vars qw( @ISA %Lexicon );
 	'Saving [_1] failed: Invalid image file format.' => '[_1]を保存できませんでした: 画像ファイルフォーマットが不正です。',
 	'File size exceeds maximum allowed: [_1] > [_2]' => 'ファイルのサイズ制限を超えています。([_1] > [_2])',
 	'Can\'t load Image::Magick: [_1]' => 'Image::Magickをロードできません: [_1]',
-	'Reading file \'[_1]\' failed: [_2]' => 'ファイル \'[_1]\' を読み取れませんでした: [_1]',
+	'Reading file \'[_1]\' failed: [_2]' => 'ファイル \'[_1]\' を読み取れませんでした: [_2]',
 	'Reading image failed: [_1]' => '画像を読み取れませんでした。',
 	'Scaling to [_1]x[_2] failed: [_3]' => 'サイズを[_1]x[_2]に変更できませんでした。',
 	'Cropping a [_1]x[_1] square at [_2],[_3] failed: [_4]' => '[_2],[_3]の位置から[_1]x[_1]をトリミングできませんでした: [_4]',
@@ -1933,6 +1932,7 @@ use vars qw( @ISA %Lexicon );
 	'No template to include specified' => 'インクルードするテンプレートが見つかりませんでした。',
 	'Recursion attempt on [_1]: [_2]' => '[_1]でお互いがお互いを参照している状態になっています: [_2]',
 	'Can\'t find included template [_1] \'[_2]\'' => '「[_2]」という[_1]テンプレートが見つかりませんでした。',
+	'Error in [_1] [_2]: [_3]' => '[_1]「[_2]」でエラーが発生しました: [_3]',
 	'Writing to \'[_1]\' failed: [_2]' => '\'[_1]\'に書き込めませんでした: [_2]',
 	'Can\'t find blog for id \'[_1]' => 'ID;[_1]のブログが見つかりませんでした。',
 	'Can\'t find included file \'[_1]\'' => '[_1]というファイルが見つかりませんでした。',
@@ -1943,7 +1943,6 @@ use vars qw( @ISA %Lexicon );
 	'Can\'t find entry \'[_1]\'' => '\'[_1]\'というブログ記事が見つかりませんでした。',
 	'Unspecified archive template' => 'アーカイブテンプレートが指定されていません。',
 	'Error in file template: [_1]' => 'ファイルテンプレートでエラーが発生しました: [_1]',
-        'Error in [_1] [_2]: [_3]' => '[_1]「[_2]」でエラーが発生しました: [_3]',
 
 ## lib/MT/Template/Tags/Archive.pm
 	'Group iterator failed.' => 'アーカイブのロードでエラーが発生しました。',
@@ -2178,10 +2177,13 @@ use vars qw( @ISA %Lexicon );
 	'Generated a website [_1]' => '作成されたウェブサイト: [_1]',
 	'An error occured during migrating a blog\'s site_url: [_1]' => 'ブログのサイトURLの移行中にエラーが発生しました: [_1]',
 	'Moved blog [_1] ([_2]) under website [_3]' => '[_1]ブログ([_2])を[_3]ウェブサイト下に移動しました',
+	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
 	'Merging dashboard settings...' => 'ダッシュボート設定を移行しています...',
 	'Classifying blogs...' => 'ブログを分類しています...',
 	'Rebuilding permissions...' => '権限を再構築しています...',
- 'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
+ 'Assigning ID of author for entries...' => '記事に作成者のIDを設定しています...',
+ 'Expiring cached MT News widget...' => 'MTニュースのキャッシュを破棄しています...',
+ 'Recovering type of author...' => 'コメンターの権限を再設定しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
@@ -2339,12 +2341,6 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_blog/templates/comment_response.mtml
 
-## themes/classic_blog/templates/comment_throttle.mtml
-
-## themes/classic_blog/templates/commenter_confirm.mtml
-
-## themes/classic_blog/templates/commenter_notify.mtml
-
 ## themes/classic_blog/templates/comments.mtml
 
 ## themes/classic_blog/templates/creative_commons.mtml
@@ -2363,8 +2359,6 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_blog/templates/entry_summary.mtml
 
-## themes/classic_blog/templates/footer-email.mtml
-
 ## themes/classic_blog/templates/javascript.mtml
 
 ## themes/classic_blog/templates/main_index.mtml
@@ -2376,12 +2370,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/monthly_archive_list.mtml
 
 ## themes/classic_blog/templates/monthly_entry_listing.mtml
-
-## themes/classic_blog/templates/new-comment.mtml
-
-## themes/classic_blog/templates/new-ping.mtml
-
-## themes/classic_blog/templates/notify-entry.mtml
 
 ## themes/classic_blog/templates/openid.mtml
 
@@ -2396,8 +2384,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/recent_comments.mtml
 
 ## themes/classic_blog/templates/recent_entries.mtml
-
-## themes/classic_blog/templates/recover-password.mtml
 
 ## themes/classic_blog/templates/search.mtml
 
@@ -2414,8 +2400,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_blog/templates/technorati_search.mtml
 
 ## themes/classic_blog/templates/trackbacks.mtml
-
-## themes/classic_blog/templates/verify-subscribe.mtml
 
 ## themes/classic_blog/theme.yaml
 	'Typical and authentic blogging design comes with plenty of styles and the selection of 2 column / 3 column layout. Best for all the bloggers.' => 'たくさんの2カラムや3カラムレイアウトをもつ一般的なブログ用デザインです。全ブログユーザーに最適です。',
@@ -2434,12 +2418,6 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_website/templates/comment_response.mtml
 
-## themes/classic_website/templates/comment_throttle.mtml
-
-## themes/classic_website/templates/commenter_confirm.mtml
-
-## themes/classic_website/templates/commenter_notify.mtml
-
 ## themes/classic_website/templates/comments.mtml
 
 ## themes/classic_website/templates/creative_commons.mtml
@@ -2450,19 +2428,11 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/classic_website/templates/entry_summary.mtml
 
-## themes/classic_website/templates/footer-email.mtml
-
 ## themes/classic_website/templates/javascript.mtml
 
 ## themes/classic_website/templates/main_index.mtml
 
 ## themes/classic_website/templates/main_index_widgets_group.mtml
-
-## themes/classic_website/templates/new-comment.mtml
-
-## themes/classic_website/templates/new-ping.mtml
-
-## themes/classic_website/templates/notify-entry.mtml
 
 ## themes/classic_website/templates/openid.mtml
 
@@ -2477,8 +2447,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/recent_comments.mtml
 
 ## themes/classic_website/templates/recent_entries.mtml
-
-## themes/classic_website/templates/recover-password.mtml
 
 ## themes/classic_website/templates/search.mtml
 
@@ -2496,8 +2464,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/templates/technorati_search.mtml
 
 ## themes/classic_website/templates/trackbacks.mtml
-
-## themes/classic_website/templates/verify-subscribe.mtml
 
 ## themes/classic_website/theme.yaml
 	'Create a blog portal that aggregates contents from blogs under the website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
@@ -2530,12 +2496,6 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/pico/templates/comment_response.mtml
 
-## themes/pico/templates/comment_throttle.mtml
-
-## themes/pico/templates/commenter_confirm.mtml
-
-## themes/pico/templates/commenter_notify.mtml
-
 ## themes/pico/templates/comments.mtml
 
 ## themes/pico/templates/creative_commons.mtml
@@ -2555,8 +2515,6 @@ use vars qw( @ISA %Lexicon );
 
 ## themes/pico/templates/entry_summary.mtml
 
-## themes/pico/templates/footer-email.mtml
-
 ## themes/pico/templates/javascript.mtml
 
 ## themes/pico/templates/main_index.mtml
@@ -2572,12 +2530,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/navigation.mtml
 	'Subscribe' => '購読',
 
-## themes/pico/templates/new-comment.mtml
-
-## themes/pico/templates/new-ping.mtml
-
-## themes/pico/templates/notify-entry.mtml
-
 ## themes/pico/templates/openid.mtml
 
 ## themes/pico/templates/page.mtml
@@ -2589,8 +2541,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/recent_comments.mtml
 
 ## themes/pico/templates/recent_entries.mtml
-
-## themes/pico/templates/recover-password.mtml
 
 ## themes/pico/templates/search.mtml
 
@@ -2605,8 +2555,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/pico/templates/technorati_search.mtml
 
 ## themes/pico/templates/trackbacks.mtml
-
-## themes/pico/templates/verify-subscribe.mtml
 
 ## themes/pico/theme.yaml
 	'Pico is the microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we\'ve moved the sidebars below the list of posts.' => 'Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。',
@@ -2758,7 +2706,7 @@ use vars qw( @ISA %Lexicon );
 	'Automatically delete spam feedback after the time period shown below.' => 'スパムと判断したものを指定の日数経過後に削除する',
 	'Delete Spam After' => 'スパムを削除する',
 	'When an item has been reported as spam for this many days, it is automatically deleted.' => 'スパムと判断したものを、指定した日数の後に削除します。',
-	'days' => '日数',
+	'days' => '日',
 	'Spam Score Threshold' => 'スパム判断基準',
 	'Comments and TrackBacks receive a spam score between -10 (complete spam) and +10 (not spam). Feedback with a score which is lower than the threshold shown above will be reported as spam.' => '受信したコメントとトラックバックは、-10 (迷惑度: 最大)から +10 (迷惑度: ゼロ)までの範囲で評価されます。指定した判断基準より低い値のコメントとトラックバックはスパムと見なされます。',
 	'Less Aggressive' => 'より緩やかに',
@@ -3273,8 +3221,8 @@ use vars qw( @ISA %Lexicon );
 	'Edit Asset' => 'アイテムの編集',
 	'Your asset changes have been made.' => 'アイテムの変更を保存しました。',
 	'Stats' => '情報',
-	'[_1] - Created by [_2]' => '作成([_2] - [_1])',
-	'[_1] - Modified by [_2]' => '更新([_2] - ([_1])',
+	'[_1] - Created by [_2]' => '作成: [_2] - [_1]',
+	'[_1] - Modified by [_2]' => '更新: [_2] - [_1]',
 	'Appears in...' => '利用状況',
 	'Show all entries' => 'すべてのブログ記事を表示',
 	'Show all pages' => 'すべてのウェブページを表示',
@@ -3500,8 +3448,8 @@ use vars qw( @ISA %Lexicon );
 	'View revisions of this [_1]' => '[_1]のリビジョン表示',
 	'View revisions' => 'リビジョン表示',
 	'No revision(s) associated with this [_1]' => '[_1]のリビジョンが見つかりません',
-	'[_1] - Published by [_2]' => '公開([_2] - [_1])',
-	'[_1] - Edited by [_2]' => '編集([_2] - [_1])',
+	'[_1] - Published by [_2]' => '公開: [_2] - [_1]',
+	'[_1] - Edited by [_2]' => '編集: [_2] - [_1]',
 	'Save' => '保存',
 	'Save Draft' => '下書き保存',
 	'Draft this [_1]' => '[_1]の下書き',
@@ -3593,7 +3541,6 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'ロールの編集',
-	'List Roles' => 'ロールの一覧',
 	'[quant,_1,Association,Associations] with this role' => '[quant,_1,件,件]の関連付け',
 	'You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.' => 'このロールの権限を変更しました。これによって、このロールに関連付けられているユーザーの権限も変化します。このロールに異なる名前を付けて保存したほうがいいかもしれません。このロールに関連付けられているユーザーの権限が変更されていることに注意してください。',
 	'Role Details' => 'ロールの詳細',
@@ -3656,7 +3603,7 @@ use vars qw( @ISA %Lexicon );
 	'On a schedule' => 'スケジュール',
 	': every ' => '毎',
 	'minutes' => '分',
-	'hours' => '時',
+	'hours' => '時間',
 	'Dynamically' => 'ダイナミック',
 	'Manually' => '手動',
 	'Do Not Publish' => '公開しない',
@@ -3665,7 +3612,7 @@ use vars qw( @ISA %Lexicon );
 	'Include cache path' => 'キャッシュのパス',
 	'Disabled (<a href="[_1]">change publishing settings</a>)' => '無効(<a href="[_1]">変更する</a>)',
 	'No caching' => 'キャッシュしない',
-	'Expire after' => 'キャッシュを消すタイミング',
+	'Expire after' => 'キャッシュの有効期限: ',
 	'Expire upon creation or modification of:' => '作成または更新後に無効にする:',
 
 ## tmpl/cms/edit_website.tmpl
@@ -3755,9 +3702,9 @@ use vars qw( @ISA %Lexicon );
 	'Select an entry status' => '公開状態',
 
 ## tmpl/cms/include/anonymous_comment.tmpl
-	'Allow comments from anonymous or unauthenticated users.' => '認証なしコメントを受け付ける',
-	'Require E-mail Address for Anonymous Comments' => 'メールアドレスを要求',
-	'If enabled, visitors must provide a valid e-mail address when commenting.' => '認証サービスを利用しないコメント投稿に対してメールアドレスを必須項目にします。',
+	'Allow comments from anonymous or unauthenticated users.' => '認証なしユーザーまたは匿名ユーザーからコメントを受け付ける',
+	'Require name and E-mail Address for Anonymous Comments' => '名前とメールアドレスを要求する',
+	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'コメント投稿に対して名前とメールアドレスを必須項目にします。',
 
 ## tmpl/cms/include/archetype_editor.tmpl
 	'Decrease Text Size' => 'テキストサイズを小さくする',
@@ -4023,8 +3970,8 @@ use vars qw( @ISA %Lexicon );
 	'Remember me?' => 'ログイン情報を記憶する',
 
 ## tmpl/cms/include/member_table.tmpl
-	'Are you sure you want to remove the selected user from this blog?' => 'ブログからユーザーを削除してよろしいですか?',
-	'Are you sure you want to remove the [_1] selected users from this blog?' => 'ブログから[_1]人のユーザーを削除してよろしいですか?',
+	'Are you sure you want to remove the selected user from this [_1]?' => '[_1]からユーザーを削除してよろしいですか?',
+	'Are you sure you want to remove the [_1] selected users from this [_2]?' => '[_2]から[_1]人のユーザーを削除してよろしいですか?',
 	'Remove selected user(s) (r)' => 'ユーザーを削除 (r)',
 	'Trusted commenter' => '承認されたコメント投稿者',
 	'Remove this role' => 'ロールを削除する',
@@ -4081,6 +4028,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/theme_exporters/folder.tmpl
 	'Folder Name' => 'フォルダ名',
+	'<mt:if name="is_blog">Blog URL<mt:else>Site URL</mt:if>' => '<mt:if name="is_blog">ブログURL<mt:else>サイトURL</mt:if>',
 
 ## tmpl/cms/include/theme_exporters/static_files.tmpl
 	'In the specified directories, files of the following types will be included in the theme: [_1]. Other file types will be ignored.' => '指定したディレクトリ内の、以下の種類のファイルがテーマにエクスポートされます: [_1]。その他のファイルは無視されます。',
@@ -4341,6 +4289,7 @@ use vars qw( @ISA %Lexicon );
 	'You have successfully deleted the selected widget set(s) from your blog.' => '選択されたウィジェットセットを削除しました。',
 	'No Widget Sets could be found.' => 'ウィジェットセットが見つかりませんでした。',
 	'Create widget template' => 'ウィジェットテンプレートの作成',
+	'Manage Global Widgets' => 'グローバルウィジェットの管理',
 
 ## tmpl/cms/login.tmpl
 	'Sign in' => 'サインイン',

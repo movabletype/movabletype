@@ -20,7 +20,7 @@
 <li><input type="checkbox" name="urlcount_junk_mode" id="urlcount_junk_mode" value="1" <TMPL_IF NAME=URLCOUNT_JUNK_MODE>checked="checked"</TMPL_IF> onclick="toggleAdvancedPrefs(event,this)" /> <MT_TRANS phrase="Junk when more than"> <input type="text" size="2" name="urlcount_junk_limit" value="<TMPL_VAR NAME=URLCOUNT_JUNK_LIMIT ESCAPE=HTML>"  class="smaller-text" /> <MT_TRANS phrase="link(s) are given"> (<a href="javascript:void(0)" onclick="return toggleAdvancedPrefs(event,'urlcount_junk_mode')"><MT_TRANS phrase="Adjust scoring"></a>)<span id="urlcount_junk_mode-advanced" class="setting-advanced"><MT_TRANS phrase="Score weight:">
 
 <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(-1, 'sl_urlcount_junk_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/decrease.gif" alt="<MT_TRANS phrase="Decrease">" width="12" height="8" /></a>
-<input Type="Text" Size="3" Name="Urlcount_Junk_Weight" Id="Sl_Urlcount_Junk_Weight" Value="<Tmpl_Var Name=Urlcount_Junk_Weight ESCAPE=HTML>" class="smaller-text" />
+<input Type="Text" Size="3" Name="urlcount_junk_weight" Id="sl_urlcount_junk_weight" Value="<TMPL_VAR NAME=URLCOUNT_JUNK_WEIGHT ESCAPE=HTML>" class="smaller-text" />
 <a href="javascript:void(0)" class="spinner" onclick="return junkScoreNudge(1,'sl_urlcount_junk_weight')"><img src="<TMPL_VAR NAME=STATIC_URI>images/increase.gif" alt="<MT_TRANS phrase="Increase">" width="12" height="8" /></a>
 
 

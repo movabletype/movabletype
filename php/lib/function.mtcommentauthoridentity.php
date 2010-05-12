@@ -29,7 +29,7 @@ function smarty_function_mtcommentauthoridentity($args, &$ctx) {
         }
         $logo = $root_url . "nav-commenters.gif";
     }
-    $result = "<img alt=\"Author Profile Page\" src=\"$logo\" width=\"16\" height=\"16\" />";
+    $result = "<img alt=\"\" src=\"$logo\" width=\"16\" height=\"16\" />";
     if ($link) {
         $result = "<a class=\"commenter-profile\" href=\"$link\">$result</a>";
     }

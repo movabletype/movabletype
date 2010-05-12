@@ -10,8 +10,10 @@ use MT;
 sub apply {
     my ( $element, $theme, $obj_to_apply ) = @_;
     my $data = $element->{data};
-    if ( ref $obj_to_apply ne MT->model('blog') ) {
-        return $element->errtrans('this element cannot apply for non blog object.');
+    if (   ref $obj_to_apply ne MT->model('blog')
+        && ref $obj_to_apply ne MT->model('website') ) {
+        return $element->errtrans(
+            'this element cannot apply for non blog object.');
     }
     my $blog = $obj_to_apply;
     for my $conf ( keys %$data ) {

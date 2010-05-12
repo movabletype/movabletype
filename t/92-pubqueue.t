@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 67;
+use Test::More tests => 68;
 
 use MT;
 use MT::Blog;
@@ -103,8 +103,8 @@ foreach my $blog (@blogs) {
 		status => MT::Entry::FUTURE(),
 	});
 	$entry->save;
-	
-	ok ($entry->id, "Future post saves correctly" );
+	my $entry_id = $entry->id;
+	ok ($entry_id, "Future post saves correctly" );
 	is ($entry->status, MT::Entry::FUTURE(), "Future post has status FUTURE");
 	
 	_run_rpt();
@@ -113,7 +113,12 @@ foreach my $blog (@blogs) {
 	ok (@errors, "Error should have been found");
 	@jobs = MT::TheSchwartz::Job->load();
 	ok (! @jobs, "Jobs were not found, everything went through");
-	is ($entry->status, MT::Entry::RELEASE(), "Running publish_future_post publishes future post; status is now RELEASE");
+
+        ## need reload for getting latest status, since rpt run as other process.
+        require MT::ObjectDriver::Driver::Cache::RAM;
+        MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
+        my $current_entry = MT::Entry->load($entry_id);
+        is ($current_entry->status, MT::Entry::RELEASE(), "Running publish_future_post publishes future post; status is now RELEASE");
 
 	for (my $i = 0; $i < scalar(@tmpls); $i++) {
 		my $tmpl = $tmpls[$i];

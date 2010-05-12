@@ -1,7 +1,6 @@
 id: other_theme
 name: Other theme
 label: Other Theme
-#thumbnail: my_thumbnail.png
 elements:
     template_set:
         component: core

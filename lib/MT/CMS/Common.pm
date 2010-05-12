@@ -601,6 +601,8 @@ sub edit {
             );
             if ($creator) {
                 $param{created_by} = $creator->name;
+            } else {
+                $param{created_by} = $app->translate("(user deleted)");
             }
             if ( my $mod_by = $obj->modified_by() ) {
                 my $modified = MT::Author->load(
@@ -616,16 +618,16 @@ sub edit {
                     $param{modified_by} = $app->translate("(user deleted)");
                 }
 
-                # Since legacy MT installs will still have a
-                # timestamp type for their modified_on fields,
-                # we cannot reliably disaply a modified on date
-                # by default; we must only show the modification
-                # date IF there is also a modified_by value.
-                if ( my $ts = $obj->modified_on ) {
-                    $param{modified_on_ts} = $ts;
-                    $param{modified_on_formatted} =
-                      format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, undef, $app->user ? $app->user->preferred_language : undef );
-                }
+            }
+            # Since legacy MT installs will still have a
+            # timestamp type for their modified_on fields,
+            # we cannot reliably disaply a modified on date
+            # by default; we must only show the modification
+            # date IF there is also a modified_by value.
+            if ( my $ts = $obj->modified_on ) {
+                $param{modified_on_ts} = $ts;
+                $param{modified_on_formatted} =
+                  format_ts( MT::App::CMS::LISTING_DATETIME_FORMAT(), $ts, undef, $app->user ? $app->user->preferred_language : undef );
             }
             if ( my $ts = $obj->created_on ) {
                 $param{created_on_ts} = $ts;
@@ -903,10 +905,10 @@ sub list {
         $param{list_total} = $class->count( \%terms, \%args );
         $param{list_end}        = $offset + ( scalar @data );
         $param{next_offset_val} = $offset + ( scalar @data );
-
-    #$param{next_offset} = $param{next_offset_val} < $param{list_total} ? 1 : 0;
-        $param{next_max} = $param{list_total} - $limit;
-        $param{next_max} = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+        $param{next_max}
+            = $param{next_offset}
+            ? int( $param{list_total} / $limit ) * $limit
+            : 0;
         if ( $offset > 0 ) {
             $param{prev_offset}     = 1;
             $param{prev_offset_val} = $offset - $limit;

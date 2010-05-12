@@ -347,7 +347,7 @@ sub as_html {
         MT::Util::encode_html($asset->url),
         MT::Util::encode_html($fname);
     my $app = MT->instance;
-    return $app->param('edit_field') =~ /^customfield/ ? $asset->enclose($text) : $text;
+    return $param->{enclose} ? $asset->enclose($text) : $text;
 }
 
 sub enclose {

@@ -52,9 +52,8 @@
     <div class="theme-status">
     <mt:unless name="current">
         <mt:if name="errors">
-            <span class="alert-erroricon-left icon-error"><__trans phrase="Failed"></span>
+            <span class="alert-error icon-left icon-error"><__trans phrase="Failed"></span>
         </mt:if>
-    
         <mt:if name="warnings">
             <span class="alert-warning icon-left icon-warning"><a href="#" class="theme-detail-link"><__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">"></a></span>
         </mt:if>
@@ -146,7 +145,7 @@
                 </mtapp:statusmsg>
                 <ul>
                 <mt:loop name="errors">
-                   <li><mt:var name="__value__"></li>
+                   <li><mt:var name="__value__" escape="html"></li>
                 </mt:loop>
                 </ul>
             </div>

@@ -207,6 +207,10 @@ sub init_core_registry {
                 label =>
                     'This module and its dependencies are required in order to allow commenters to be authenticated by OpenID providers such as AOL and Yahoo! which require SSL support.',
             },
+            'Cache::File' => {
+                link => 'http://search.cpan.org/dist/Cache/lib/Cache/File.pm',
+                label => 'Cache::File is required if you would like to be able to allow commenters to be authenticated by Yahoo! Japan as OpenID.',
+            },
             'MIME::Base64' => {
                 link => 'http://search.cpan.org/dist/MIME-Base64',
                 label =>

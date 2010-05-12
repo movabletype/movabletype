@@ -14,9 +14,8 @@ use File::Spec;
 use FindBin qw( $Bin );
 use MT;
 
-use YAML;
 my $mt = MT->new();
-
+$mt->config->ThemesDirectory('t/themes');
 use_ok('MT::Theme', 'use MT::Theme');
 
 ## building test themes.
@@ -30,7 +29,6 @@ $mt->component('core')->registry->{themes} = $data;
 ## create theme instance.
 my $theme;
 ok($theme = MT::Theme->load('MyTheme'), 'Load theme instance');
-
 my $blog;
 ok($blog = MT->model('blog')->load(1));
 
@@ -49,7 +47,10 @@ is( $blog->allow_comment_html, 0 );
 is( $blog->allow_pings,        0 );
 
 ## only applied template set has this.
-ok(MT->model('template')->load({ blog_id => $blog->id, identifier => 'Other Utilities' }));
+my $main_index;
+ok($main_index = MT->model('template')->load({ blog_id => $blog->id, identifier => 'main_index' }));
+is($main_index->text, "I am MT", 'loaded template');
+
 ## and backuped templates exists.
 ok( MT->model('template')->load({ blog_id => $blog->id, type => 'backup'}) );
 
@@ -57,9 +58,7 @@ ok( MT->model('template')->load({ blog_id => $blog->id, type => 'backup'}) );
 ## create second theme instance.
 my $theme2;
 ok($theme2 = MT::Theme->_load_from_themes_directory('other_theme'), 'Load from themes directory');
-
-is( $theme2->envelope, File::Spec->catdir( $Bin, 'themes/other_theme'));
-#ok( $blog->apply_theme($theme2) );
+is( File::Spec->rel2abs($theme2->path), File::Spec->catdir( $Bin, 'themes/other_theme'));
 $theme2->apply($blog);
 my $atom = MT->model('template')->load({
     blog_id => $blog->id,
@@ -74,14 +73,21 @@ MyTheme:
     name: my_theme
     label: My Theme
     thumbnail: my_thumbnail.png
-    template_set: my_existing_template_set
     elements:
         template_set:
             component: core
             importer: template_set
             label: Template set
             require: 1
-            data: mtVicuna
+            data:
+                label: MyTheme
+                base_path: t/theme_templates
+                templates:
+                    index:
+                        main_index:
+                            label: Main Index
+                            outfile: index.html
+                            rebuild_me: 1
         core_configs:
             component: core
             importer: default_prefs

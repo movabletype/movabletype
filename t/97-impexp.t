@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 6;
+use Test::More tests => 7;
 
 BEGIN {
         $ENV{MT_APP} = 'MT::App::CMS';
@@ -29,9 +29,12 @@ my $good_out = delete $app->{__test_output};
 ok ($good_out, "Export data is present");
 
 # export entries for an invalid blog
-$app = _run_app( 'MT::App::CMS', { __test_user => $user, __mode => 'export', blog_id => 1000 } );
-my $bad_out = delete $app->{__test_output};
-ok ($bad_out =~ /Load of blog '1000' failed/, "Failed as expected");
+eval {
+    $app = _run_app( 'MT::App::CMS', { __test_user => $user, __mode => 'export', blog_id => 1000 } );
+};
+my $eval_error = $@;
+ok ( $eval_error );
+like ($eval_error, qr/Invalid request/i, "Failed as expected");
 
 # write the file and make sure no funny characters are there
 open OUT, ">test_import.txt";

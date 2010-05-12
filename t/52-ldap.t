@@ -4,8 +4,10 @@ use strict;
 my $number = 15;
 
 use Test::More;
-
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+BEGIN {
+    $ENV{MT_CONFIG} = 'ldap-test.cfg';
+}
 use MT;
 use vars qw( $DB_DIR $T_CFG );
 use MT::Test;
@@ -33,7 +35,9 @@ MT::Test->import( qw(:db :data) );
 ok($mt);
 
 # @test create MT::LDAP object
-my $ldap = MT::LDAP->new;
+my $ldap = MT::LDAP->new
+    or die MT::LDAP->errstr;
+
 ok($ldap);
 
 $ldap->bind_ldap;
@@ -42,7 +46,7 @@ my $filter = '(uid=Bob)';
 my $attrs = [
                'cn',
                'mail',
-               'displayName',
+               MT->config->LDAPUserFullNameAttribute,
                MT->config->LDAPUserIdAttribute
             ];
 
@@ -93,9 +97,9 @@ my $entry = $ldap->get_entry_by_name('Bob', $attrs);
 ok($entry);
 is($entry->get_value('cn'), 'Bob D');
 is($entry->get_value('mail'), 'bobd@example.com');
-is($entry->get_value('displayName'), 'Dylan');
+is($entry->get_value( MT->config->LDAPUserFullNameAttribute ), 'Dylan');
 
-my $uuid = $entry->get_value(MT->config->LDAPUserIdAttribute);
+my $uuid = $entry->get_value(MT->config->LDAPUserIdAttribute );
 
 # @test user attribute validation
 $entry = $ldap->get_entry_by_uuid($uuid, $attrs);
@@ -103,7 +107,7 @@ $entry = $ldap->get_entry_by_uuid($uuid, $attrs);
 ok($entry);
 is($entry->get_value('cn'), 'Bob D');
 is($entry->get_value('mail'), 'bobd@example.com');
-is($entry->get_value('displayName'), 'Dylan');
+is($entry->get_value( MT->config->LDAPUserFullNameAttribute ), 'Dylan');
 
 
 $ldap->unbind_ldap;

@@ -18,11 +18,13 @@
 #     const
 
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use Test::More tests => 35;
+#use Test::More tests => 35;
+use Test::More skip_all => 'MT::I18N functions were deprecated.';
 
 use Encode;
 use MT;
 use MT::Test;
+
 my $mt = new MT;
 
 my ($utf8_str, $sjis_str, $euc_str, $utf8_substr, $euc_substr, $sjis_substr, $iso2022_str, $iso2022_substr);

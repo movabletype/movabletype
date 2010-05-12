@@ -36,26 +36,6 @@ elements:
                         mappings:
                             monthly:
                                 archive_type: Monthly
-                global:email:
-                    comment_throttle:
-                        label: Comment throttle
-                    commenter_confirm:
-                        label: Commenter Confirm
-                    commenter_notify:
-                        label: Commenter Notify
-                    new-comment:
-                        label: New Comment
-                    new-ping:
-                        label: New Ping
-                    notify-entry:
-                        label: Entry Notify
-                    recover-password:
-                        label: Password Recovery
-                    verify-subscribe:
-                        label: Subscribe Verify
-                global:module:
-                    footer-email:
-                        label: Mail Footer
                 index:
                     archive_index:
                         label: Archive Index

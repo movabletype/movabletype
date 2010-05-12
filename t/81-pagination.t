@@ -3,11 +3,12 @@
 use strict;
 use warnings;
 
-use lib 't/lib', 'lib', 'extlib';
+use lib qw( t/lib lib extlib ../lib ../extlib );
 use Test::More tests => 20;
 
 BEGIN {
-        $ENV{MT_APP} = 'MT::App::Comments';
+    $ENV{MT_APP} = 'MT::App::Comments';
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 }
 
 use MT;
@@ -20,13 +21,13 @@ use MT::Test qw( :app :db :data );
 my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
     my $tmpl = MT::Template->load(
-        {   
+        {
             name    => 'Comment Listing',
             blog_id => $blog->id,
         }
     );
     unless ($tmpl) {
-        my $text = 
+        my $text =
 <<TEXT;
 {
 	"direction": "<mt:Var name="commentDirection">",
@@ -51,6 +52,11 @@ foreach my $entry (@entries) {
     next unless (@comments);
     foreach my $comment (@comments) {
         my $id = $comment->id;
-        ok ($output =~ /comment-$id/, "Comment was found: $output");
+        if ( $comment->visible() ) {
+            ok ($output =~ /comment-$id/, "Comment was found: $output");
+        }
+        else {
+            ok ($output !~ /comment-$id/, "Invisible comment was hidden: $output");
+        }
     }
 }

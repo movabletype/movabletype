@@ -23,21 +23,6 @@
                     rebuild="all">
                     <__trans phrase="Your preferences have been saved.">
                 </mtapp:statusmsg>
-            <mt:else>
-                <mt:if name="need_index_rebuild">
-                    <mtapp:statusmsg
-                        id="saved-index-rebuild"
-                        class="success"
-                        rebuild="index">
-                        <__trans phrase="Your preferences have been saved.">
-                    </mtapp:statusmsg>
-                <mtelse>
-                    <mtapp:statusmsg
-                        id="saved"
-                        class="success">
-                        <__trans phrase="Your preferences have been saved.">
-                    </mtapp:statusmsg>
-                </mt:if>
             <mtelse>
                 <mtapp:statusmsg
                     id="saved"

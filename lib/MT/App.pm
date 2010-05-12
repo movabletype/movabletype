@@ -314,7 +314,13 @@ sub listing {
     $limit =~ s/\D//g;
     my $offset = $app->param('offset') || 0;
     $offset =~ s/\D//g;
-    $args->{offset} = $offset if $offset && !$no_limit;
+    my $d = $app->param('d') || 0;
+    $d =~ s/\D//g;
+    $args->{offset}
+        = $d
+        ? ( $d < $offset ? $offset - $d : 0 )
+        : $offset
+        if $offset && !$no_limit;
     $args->{limit} = $limit + 1 unless $no_limit;
     $param->{limit_none} = 1 if $no_limit;
 
@@ -464,7 +470,8 @@ sub listing {
             offset        => $offset,
             limit         => $limit,
             rows          => scalar @data,
-            listTotal     => $class->count( $terms, $args ) || 0,
+            d             => $d,
+            listTotal     => $class->count( $terms, $args ) + $d || 0,
             chronological => $param->{list_noncron} ? 0 : 1,
             return_args   => encode_html( $app->make_return_args ),
             method        => $app->request_method,
@@ -492,6 +499,7 @@ sub listing {
         $param->{is_superuser} = 1;
     }
 
+    $param->{limit} = $limit;
     if ($json) {
         $pre_build->($param) if $pre_build;
         my $html = $app->build_page( $tmpl, $param );
@@ -505,7 +513,21 @@ sub listing {
     }
     else {
         $app->load_list_actions( $type, $param );
-        $pre_build->($param) if $pre_build;
+        my $count = $pre_build->($param) if $pre_build;
+        if ($count) {
+            my $rows  = scalar @{ $param->{object_loop} };
+            my $pager = {
+                offset        => $offset,
+                limit         => $limit,
+                rows          => $rows,
+                d             => $count,
+                listTotal     => $class->count( $terms, $args ) + $count || 0,
+                chronological => $param->{list_noncron} ? 0 : 1,
+                return_args   => encode_html( $app->make_return_args ),
+                method        => $app->request_method,
+            };
+            $param->{pager_json} = MT::Util::to_json($pager);
+        }
         if ($no_html) {
             return $param;
         }
@@ -924,7 +946,7 @@ sub _cb_mark_blog {
 
     # Issue MT::Touch touches for specific types we track
     my $type = $obj->datasource;
-    if ( $obj->properties->{class_column} ) {
+    if ( $obj->properties->{class_column} && $type ne 'asset' ) {
         $type = $obj->class_type;
     }
     if ( $type

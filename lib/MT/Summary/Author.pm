@@ -164,6 +164,17 @@ sub expire_entry_count {
 
 # ============= tags ===============
 
+###########################################################################
+
+=head2 AuthorCommentCount
+
+Returns number of comments written by the author specified by current context.
+
+=for tags authors comment
+
+=cut
+
+
 sub _hdlr_author_comment_count {
     my ($ctx, $args, $cond) = @_;
     my $author = $ctx->stash('author')
@@ -171,6 +182,16 @@ sub _hdlr_author_comment_count {
 
     return $ctx->count_format($author->summarize('comment_count'), $args);
 }
+
+###########################################################################
+
+=head2 AuthorEntriesCount
+
+Returns number of entries written by the author who specified by current context.
+
+=for tags authors entries
+
+=cut
 
 sub _hdlr_author_entries_count {
     my ($ctx, $args, $cond) = @_;

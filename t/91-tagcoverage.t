@@ -9,10 +9,31 @@ use Data::Dumper;
 
 my $components = {
     'core' => {
-        paths => [
-            'MT/Template/ContextHandlers.pm',
-            'MT/Template/Context/Search.pm',
-        ],
+        paths => [qw(
+            MT/Template/ContextHandlers.pm
+            MT/Template/Context/Search.pm
+            MT/Template/Tags/Archive.pm
+            MT/Template/Tags/Asset.pm
+            MT/Template/Tags/Author.pm
+            MT/Template/Tags/Blog.pm
+            MT/Template/Tags/Calendar.pm
+            MT/Template/Tags/Category.pm
+            MT/Template/Tags/Comment.pm
+            MT/Template/Tags/Commenter.pm
+            MT/Template/Tags/Entry.pm
+            MT/Template/Tags/Filters.pm
+            MT/Template/Tags/Folder.pm
+            MT/Template/Tags/Misc.pm
+            MT/Template/Tags/Page.pm
+            MT/Template/Tags/Pager.pm
+            MT/Template/Tags/Ping.pm
+            MT/Template/Tags/Score.pm
+            MT/Template/Tags/Search.pm
+            MT/Template/Tags/Tag.pm
+            MT/Template/Tags/Userpic.pm
+            MT/Template/Tags/Website.pm
+            MT/Summary/Author.pm
+        )],
     },
     'commercial' => {
         paths => [

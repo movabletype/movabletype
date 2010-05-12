@@ -559,10 +559,9 @@ sub encode_url {
 sub decode_url {
     my($str, $enc) = @_;
     $enc ||= MT->config->PublishCharset;
+    $str = Encode::encode('Latin-1', $str);
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
-    my $decoded = Encode::is_utf8($str) ? $str
-                :                         Encode::decode($enc, $str);
-    $decoded;
+    Encode::decode($enc, $str);
 }
 
 {

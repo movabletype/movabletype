@@ -6,7 +6,7 @@
 package MT::CMS::Theme;
 
 use strict;
-use MT::Util qw( remove_html dirify );
+use MT::Util qw( remove_html dirify is_valid_url );
 use MT::Theme;
 use File::Spec;
 
@@ -69,6 +69,7 @@ sub _build_theme_table {
         my @keys = qw( id author_name author_link version );
         my %theme;
         map { $theme{$_} = $theme->{$_} } @keys;
+        delete $theme{author_link} if !is_valid_url($theme{author_link});
         $theme{theme_id} = $theme->id;
         $theme{current}  = $theme->id eq ( $current || '' ) ? 1 : 0;
         $theme{label} = ref $theme->label ? $theme->label->() : $theme->label;

@@ -278,7 +278,9 @@ sub _do_group_by {
     $sth->execute(@{ $stmt->bind });
 
     my @bindvars;
-    for (@{ $args->{group} }) {
+    my $col_count = scalar @{ $stmt->select };
+    $col_count--; 
+    for ( 1 .. $col_count ) {
         push @bindvars, \my($var);
     }
     $sth->bind_columns(undef, \my($count), @bindvars);

@@ -821,28 +821,18 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
 	'AUTHOR-DAILY_ADV' => 'par auteurs et jours',
-	'author/author-display-name/yyyy/mm/dd/index.html' => 'auteur/afficher-nom-auteur/aaaa/mm/jj/index.html',
-	'author/author_display_name/yyyy/mm/dd/index.html' => 'auteur/afficher_nom_auteur/aaaa/mm/jj/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
 	'AUTHOR-MONTHLY_ADV' => 'par auteurs et semaines',
-	'author/author-display-name/yyyy/mm/index.html' => 'auteur/auteur-nom-affichage/aaaa/mm/index.html',
-	'author/author_display_name/yyyy/mm/index.html' => 'auteur/auteur_nom_affichage/aaaa/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
 	'AUTHOR_ADV' => 'par auteurs',
-	'author/author-display-name/index.html' => 'auteur/auteur-nom-affichage/index.html',
-	'author/author_display_name/index.html' => 'auteur/auteur_nom_affichage/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
 	'AUTHOR-WEEKLY_ADV' => 'par auteurs et années',
-	'author/author-display-name/yyyy/mm/day-week/index.html' => 'auteur/auteur-nom-affichage/aaaa/mm/jour-semaine/index.html',
-	'author/author_display_name/yyyy/mm/day-week/index.html' => 'auteur/auteur_nom_affichage/aaaa/mm/jour-semaine/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
 	'AUTHOR-YEARLY_ADV' => 'par auteurs et années',
-	'author/author-display-name/yyyy/index.html' => 'auteur/auteur-nom-affichage/aaaa/index.html',
-	'author/author_display_name/yyyy/index.html' => 'auteur/auteur_nom_affichage/aaaa/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
 	'CATEGORY-DAILY_ADV' => 'par catégories et jours',
@@ -1116,7 +1106,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/CMS/Blog.pm
 	'Cloning blog \'[_1]\'...' => 'Duplication du blog...',
 	'Error' => 'Erreur',
-	'Finished! You can <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">return to the blog listing</a>.' => 'Terminé ! Vous pouvez <a href="javascript:void(0);" onclick="closeDialog(\'[_1]\');">retourner à la liste des blogs</a>.',
+	'Finished!' => 'Terminé !',
 	'General Settings' => 'Paramètres généraux',
 	'Plugin Settings' => 'Paramètres des plugins',
 	'New Blog' => 'Nouveau Blog',
@@ -3745,7 +3735,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => 'Permettre les commentaires anonymes pour les utilisateurs non identifiés.',
-	'Require E-mail Address for Anonymous Comments' => 'Nécessite une adresse email pour les commentaires anonymes',
+	'Require name and E-mail Address for Anonymous Comments' => 'Nécessite une adresse email pour les commentaires anonymes',
 	'If enabled, visitors must provide a valid e-mail address when commenting.' => 'Si activé, le visiteur doit donner une adresse email valide pour commenter.',
 
 ## tmpl/cms/include/archetype_editor.tmpl

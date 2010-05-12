@@ -913,7 +913,7 @@ sub post {
         )
     {
         return $app->handle_error(
-            $app->translate("Name and email address are required.") );
+            $app->translate("Name and E-mail address are required.") );
     }
     if ( $blog->allow_unreg_comments() ) {
         $comment->email( $q->param('email') ) unless $comment->email();

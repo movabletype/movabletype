@@ -137,23 +137,41 @@ sub add_trigger {
             list_noncron => 1,
             trigger_caption => $plugin->translate('When this'),
         },
-    });
-    if (!$app->param('search')) {
-        if (my $loop = $tmpl->param('object_loop')) {
-            if ( $app->blog && !$app->blog->is_blog ) {
-                unshift @$loop, {
-                    id => '_blogs_in_website',
-                    label => $plugin->translate('* All blogs in this website'),
-                    description => $plugin->translate('Select to apply this trigger to all blogs in this website.'),
-                };
+        pre_build => sub {
+            my ($param) = @_;
+            my $offset = $app->param('offset') || 0;
+            my $limit  = $param->{limit};
+            my $count  = 0;
+            if ( !$app->param('search') ) {
+                if ( ( my $loop = $param->{object_loop} ) && !$offset ) {
+                    if ( $app->blog && !$app->blog->is_blog ) {
+                        $count++;
+                        unshift @$loop,
+                            {
+                            id    => '_blogs_in_website',
+                            label => $plugin->translate(
+                                '* All blogs in this website'),
+                            description => $plugin->translate(
+                                'Select to apply this trigger to all blogs in this website.'
+                            ),
+                            };
+                    }
+                    $count++;
+                    unshift @$loop,
+                        {
+                        id    => '_all',
+                        label => $plugin->translate(
+                            '* All websites and blogs in this system'),
+                        description => $plugin->translate(
+                            'Select to apply this trigger to all websites and blogs in this system.'
+                        ),
+                        };
+                    splice( @$loop, $limit );
+                }
             }
-            unshift @$loop, {
-                id => '_all',
-                label => $plugin->translate('* All websites and blogs in this system'),
-                description => $plugin->translate('Select to apply this trigger to all websites and blogs in this system.'),
-            };
-        }
-    }
+            return $count;
+        },
+    });
     return $app->build_page($tmpl);
 }
 

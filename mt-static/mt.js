@@ -1108,6 +1108,10 @@ Datasource = new Class(Object, {
             args = args.replace(/&_type=\w+/, '');
             args = args + '&_type=' + this.type;
         }
+        if (this.pager.state.d) {
+            args = args.replace(/&d=\d+/, '');
+            args = args + '&d=' + this.pager.state.d;
+        }
 
         this.navigating = true;
         if (this.pager)
@@ -1183,6 +1187,10 @@ Pager = new Class(Object, {
         this.render();
     },
     setState: function(state) {
+        state.limit -= 0;
+        state.offset -= 0;
+        state.rows -= 0;
+        state.d -= 0;
         this.state = state;
         this.render();
     },
@@ -1202,6 +1210,10 @@ Pager = new Class(Object, {
         }
         new_loc = new_loc.replace(/&?offset=\d+/, '');
         new_loc += '&offset=' + offset;
+        if (this.state.d) {
+            new_loc = new_loc.replace(/&d=\d+/, '');
+            new_loc += '&d=' + this.state.d;
+        }
         window.location = new_loc;
         return false;
     },
@@ -1230,12 +1242,10 @@ Pager = new Class(Object, {
         if (this.state.listTotal) {
             var listStart = (this.state.offset ? this.state.offset : 0) + 1;
             var listEnd = (this.state.offset ? this.state.offset : 0) + this.state.rows;
-            if (listEnd >= this.state.listTotal) {
+            if (this.nextOffset() == null) {
                 offset = null;
             } else {
-                offset = this.state.listTotal - this.state.rows;
-                if (offset < listStart)
-                    offset = null;
+                offset = Math.floor((this.state.listTotal - 1) / this.state.rows) *  this.state.rows;
             }
             return offset;
         }

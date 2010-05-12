@@ -181,7 +181,7 @@
         <mt:if name="no_entry">
             [<__trans phrase="Entry no longer exists">]
         <mt:else>
-            <a href="<mt:var name="script_url">?__mode=view&amp;_type=entry&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
+            <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="target_type">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:if name="entry_title"><mt:var name="entry_title" escape="html"><mt:else>[<__trans phrase="No title">]</mt:if></a>
         </mt:if>
         <a href="<$mt:var name="script_url"$>?__mode=list_pings&amp;filter=entry_id&amp;filter_val=<$mt:var name="entry_id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<__trans phrase="View all TrackBacks on this entry">"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
     </mtapp:setting>

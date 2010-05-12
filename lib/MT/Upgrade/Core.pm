@@ -264,15 +264,19 @@ sub upgrade_templates {
         }
 
         my $p = $val->{plugin} || $mt;
-        $val->{name} = $p->translate($val->{name});
-        $val->{text} = $p->translate_templatized($val->{text});
-
         if ($val->{global}) {
+            $val->{name} = $p->translate($val->{name});
+            $val->{text} = $p->translate_templatized($val->{text});
             $installer->($val, 0) or return;
         }
         else {
             my $iter = MT::Blog->load_iter();
             while (my $blog = $iter->()) {
+                my $current_language = MT->current_language;
+                MT->set_language($blog->language);
+                $val->{name} = $p->translate($val->{name});
+                $val->{text} = $p->translate_templatized($val->{text});
+                MT->set_language($current_language);
                 $installer->($val, $blog->id);
             }
         }

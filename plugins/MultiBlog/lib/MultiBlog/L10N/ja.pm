@@ -32,7 +32,7 @@ use vars qw( %Lexicon );
 	'publishes a comment' => 'コメントの公開時',
 	'publishes a TrackBack' => 'トラックバックの公開時',
 	'rebuild indexes.' => 'インデックスを再構築する',
-	'rebuild indexes and send pings.' => 'インデックスを再構築して更新情報を送信する',
+	'rebuild indexes and send pings.' => 'インデックスを再構築して更新pingを送信する',
 
 ## plugins/MultiBlog/lib/MultiBlog.pm
 	'The include_blogs, exclude_blogs, blog_ids and blog_id attributes cannot be used together.' => 'include_blogs、exclude_blogs、blog_ids、そしてblog_id属性は一緒に使えません。',

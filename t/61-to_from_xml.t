@@ -22,7 +22,7 @@ use vars qw( $DB_DIR $T_CFG );
 use MT::BackupRestore;
 use Data::Dumper;
 
-system("rm t/db/* 2>null");
+unlink(<t/db/*>);
 
 my @emails = ( 'fumiakiy@sixapart.jp', 'fyoshimatsu@sixapart.com' );
 my $chuck = MT::Author->load({ name => 'Chuck D' });
@@ -181,7 +181,7 @@ sub checkthemout {
                         }
                     }
                     if ('HASH' eq ref($old->$col)) {
-                        is(Dumper($old->$col), Dumper($old->$col), $col);
+                        is(Dumper($old->$col), Dumper($obj->$col), $col);
                     } elsif ('blob' eq $obj->column_defs->{$col}->{type}) {
                         is(
                             MIME::Base64::encode_base64($old->$col, ''),

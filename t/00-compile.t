@@ -103,7 +103,7 @@ use_ok('MT::TBPing');
 use_ok('MT::Blocklist');
 use_ok('MT::Object::BaseCache');
 use_ok('MT::Touch');
-use_ok('MT::WebSite');
+use_ok('MT::Website');
 
 # Utility modules
 use_ok('MT::Builder');

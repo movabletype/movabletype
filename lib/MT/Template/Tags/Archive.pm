@@ -781,9 +781,19 @@ sub _hdlr_archive_label {
     $at = 'Category' if $ctx->{inside_mt_categories};
     return q() unless defined $at;
     my $archiver = MT->publisher->archiver($at);
+
+    my $blog = $ctx->stash('blog');
+    my $current_lang;
+    if ( $blog ) {
+        $current_lang = MT->current_language;
+        MT->set_language($blog->language);
+    }
     my $al = $archiver->archive_label;
     if ( 'CODE' eq ref($al) ) {
         $al = $al->();
+    }
+    if ( $blog ) {
+        MT->set_language($current_lang);
     }
     return $al;
 }

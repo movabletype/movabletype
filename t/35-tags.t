@@ -123,10 +123,10 @@ $const = array(
 
 $output_results = 0;
 
-$mt = new MT(1, $cfg_file);
+$mt = MT::get_instance(1, $cfg_file);
 $ctx =& $mt->context();
 
-$path = $mt->config['mtdir'];
+$path = $mt->config('mtdir');
 if (substr($path, strlen($path) - 1, 1) == '/')
     $path = substr($path, 1, strlen($path)-1);
 if (substr($path, strlen($path) - 2, 2) == '/t')
@@ -134,7 +134,6 @@ if (substr($path, strlen($path) - 2, 2) == '/t')
 $const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
-$ctx->mt->db = &$db;
 $ctx->stash('blog_id', 1);
 $blog = $db->fetch_blog(1);
 $ctx->stash('blog', $blog);
@@ -152,7 +151,7 @@ function run(&$ctx, $suite) {
     global $mt;
     global $tmpl;
     foreach ($suite as $test_item) {
-        $mt->db->savedqueries = array();
+        $mt->db()->savedqueries = array();
         if ( preg_match('/MT(Entry|Link)/', $test_item->t) 
           && !preg_match('/MT(Comments|Pings)/', $test_item->t) )
         {

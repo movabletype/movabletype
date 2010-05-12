@@ -14,7 +14,10 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
         require_once("block.mtcategorynext.php");
         return smarty_block_mtcategorynext($args, $content, $ctx, $repeat);
     }
-    $archiver = ArchiverFactory::get_archiver($at);
+    try {
+        $archiver = ArchiverFactory::get_archiver($at);
+    } catch (Exception $e) {
+    }
     if (!isset($archiver)) {
         $repeat = false;
         return '';
@@ -62,8 +65,10 @@ class ArchiverFactory {
     private function __construct() { }
 
     public static function get_archiver($at) {
-        if (empty($at))
-            return null;
+        if (empty($at)) {
+            require_once('class.exception.php');
+            throw new MTException('Illegal archive type');
+        }
         if (!array_key_exists($at, ArchiverFactory::$_archive_types)) {
             require_once('class.exception.php');
             throw new MTException('Undefined archive type. (' . $at . ')');

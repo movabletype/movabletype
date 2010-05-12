@@ -21,12 +21,12 @@ sub archive_label {
 sub default_archive_templates {
     return [
         {
-            label => 'author/author-display-name/yyyy/mm/day-week/index.html',
+            label => 'author/author-basename/yyyy/mm/day-week/index.html',
             template => 'author/%-a/%y/%m/%d-week/%f',
             default  => 1
         },
         {
-            label => 'author/author_display_name/yyyy/mm/day-week/index.html',
+            label => 'author/author_basename/yyyy/mm/day-week/index.html',
             template => 'author/%a/%y/%m/%d-week/%f'
         },
     ];
@@ -72,15 +72,14 @@ sub archive_file {
     my $file;
     my $this_author = $author ? $author : ( $entry ? $entry->author : undef );
     return "" unless $this_author;
-    my $name = dirify( $this_author->nickname );
 
-    if ( $name eq '' || !$file_tmpl ) {
+    if ( !$file_tmpl ) {
         return "" unless $this_author;
-        $name = "author" . $this_author->id if $name !~ /\w/;
+        my $name = $this_author->basename;
         my $start = start_end_week($timestamp);
         my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
         $file =
-          sprintf( "%s/%04d/%02d/%02d-week/index", $name, $year, $month, $day );
+          sprintf( "author/%s/%04d/%02d/%02d-week/index", $name, $year, $month, $day );
     }
     else {
         ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} ) =

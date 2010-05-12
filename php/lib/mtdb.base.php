@@ -42,7 +42,7 @@ abstract class MTDatabase {
         $this->id = md5(uniqid('MTDatabase',true));
         $this->connect($user, $password, $dbname, $host, $port, $sock);
         ADOdb_Active_Record::SetDatabaseAdapter($this->conn);
-        #$this->conn->debug = true;
+#        $this->conn->debug = true;
     }
 
     // Abstract method
@@ -73,6 +73,14 @@ abstract class MTDatabase {
             $this->serializer = new MTSerialize();
         }
         return $this->serializer->unserialize($data);
+    }
+
+    public function serialize($data) {
+        if (!$this->serializer) {
+            require_once("MTSerialize.php");
+            $this->serializer = new MTSerialize();
+        }
+        return $this->serializer->serialize($data);
     }
 
     protected function include_exclude_blogs(&$args) {
@@ -3348,7 +3356,7 @@ abstract class MTDatabase {
             $session->session_id = $id;
             $session->session_kind = 'CO';
         }
-        $session->session_data = $val;
+        $session->data( $val );
         $session->session_start = $now;
         $session->save();
         return true;

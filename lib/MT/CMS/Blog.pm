@@ -20,7 +20,6 @@ sub edit {
     if ($id) {
         my $output = $param->{output} ||= 'cfg_prefs.tmpl';
         $param->{need_full_rebuild}  = 1 if $q->param('need_full_rebuild');
-        $param->{need_index_rebuild} = 1 if $q->param('need_index_rebuild');
         $param->{show_ip_info} = $cfg->ShowIPInformation;
         $param->{use_plugins} = $cfg->UsePlugins;
 
@@ -367,7 +366,8 @@ sub list {
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_blog_listing_screen');
     my $author    = $app->user;
-    my $list_pref = $app->list_pref('blog');
+    my $type      = $app->param('type') || MT::Blog->class_type;
+    my $list_pref = $app->list_pref($type);
     my $limit     = $list_pref->{rows};
     my $offset    = $app->param('offset') || 0;
     my $args      = { offset => $offset, sort => 'name' };
@@ -387,7 +387,6 @@ sub list {
     $terms->{parent_id} = $blog_id
         if $blog_id && !($app->blog->is_blog());
 
-    my $type             = $app->param('type') || MT::Blog->class_type;
     my $pkg              = $app->model($type);
     my %param            = %$list_pref;
     my @blogs            = $pkg->load( $terms, $args );
@@ -415,10 +414,12 @@ sub list {
     $param{list_start}  = $offset + 1;
     delete $args->{limit};
     delete $args->{offset};
-    $param{list_total} = scalar @blogs;
+    $param{list_total} = $pkg->count( $terms, $args );
     $param{list_end} = $offset + ( $blog_loop ? scalar @$blog_loop : 0 );
-    $param{next_max} = $param{list_total} - $limit;
-    $param{next_max} = 0 if ( $param{next_max} || 0 ) < $offset + 1;
+    $param{next_max}
+        = $param{next_offset}
+        ? int( $param{list_total} / $limit ) * $limit
+        : 0;
     $param{can_create_blog}    = $app->can_do('create_new_blog');
     $param{can_create_website} = $app->can_do('create_new_website');
     $param{saved_deleted}      = $app->param('saved_deleted');
@@ -577,6 +578,7 @@ sub cfg_registration {
     $param{allow_unreg_comments}   = $blog->allow_unreg_comments;
     $param{require_typekey_emails} = $blog->require_typekey_emails;
     $param{require_comment_emails} = $blog->require_comment_emails;
+    $param{allow_commenter_regist} = $blog->allow_commenter_regist;
 
     my $cmtauth_reg = $app->registry('commenter_authenticators');
     my %cmtauth;
@@ -618,6 +620,7 @@ sub cfg_registration {
     @cmtauth_loop = sort { $a->{order} <=> $b->{order} } @cmtauth_loop;
 
     $param{cmtauth_loop} = \@cmtauth_loop;
+    $param{saved}        = $app->param('saved');
 
     $app->load_tmpl( 'cfg_registration.tmpl', \%param );
 }
@@ -788,6 +791,7 @@ sub rebuild_pages {
                 Offset         => $offset,
                 Limit          => $app->config->EntriesPerRebuild,
                 FilterCallback => $cb,
+                ( $template_id || $map_id ? ( Force => 1 ) : () ),
             ) or return $app->publish_error();
             $offset += $count;
         }
@@ -1802,26 +1806,11 @@ sub post_save {
     }
     else {
 
-        # if you've changed the comment configuration
-        if (
-            (
-                grep { $original->column($_) ne $obj->column($_) }
-                qw(allow_unreg_comments allow_reg_comments remote_auth_token)
-            )
-          )
-        {
-            if ( RegistrationAffectsArchives( $obj->id, 'Individual' ) ) {
-                $app->add_return_arg( need_full_rebuild => 1 );
-            }
-            else {
-                $app->add_return_arg( need_index_rebuild => 1 );
-            }
-        }
 
-        # if other settings were changed that would affect published pages:
+        # if settings were changed that would affect published pages:
         if ( grep { $original->column($_) ne $obj->column($_) }
-            qw(allow_pings allow_comment_html) )
-        {
+            qw(allow_unreg_comments allow_reg_comments remote_auth_token
+               allow_pings          allow_comment_html ) ) {
             $app->add_return_arg( need_full_rebuild => 1 );
         }
 
@@ -1975,6 +1964,7 @@ sub make_blog_list {
         $row->{can_manage_feedback}   = $perms->can_do('manage_feedback');
         $row->{can_edit_assets}       = $perms->can_do('edit_assets');
         $row->{can_administer_blog}   = $perms->can_do('administer_blog');
+        $row->{can_list_blogs}        = $perms->can_do('open_blog_listing_screen');
         $row->{checked}               = grep { $_ == $blog->id } @ids;
         push @$data, $row;
     }
@@ -2017,6 +2007,13 @@ sub build_blog_table {
             description => $blog->description,
             site_url    => $blog->site_url
         };
+
+        if ( my $website = $blog->website ) {
+            $row->{website_name} = $website->name;
+            $row->{website_id} = $website->id;
+            $row->{can_access_to_website} = 1
+                if $website && ( $author->is_superuser || $author->permissions( $website->id ) );
+        }
 
         if ($app->mode ne 'dialog_select_weblog') {
             # we should use count by group here...
@@ -2152,6 +2149,7 @@ sub cfg_publish_profile_save {
     1;
 }
 
+# Unused function. To be removed.
 # FIXME: Faulty, since it doesn't take into account module includes
 sub RegistrationAffectsArchives {
     my ( $blog_id, $archive_type ) = @_;
@@ -2783,7 +2781,7 @@ HTML
     else {
         my $return_url   = $app->base . $app->uri(
             mode => 'list_blog',
-            args => { blog_id => $app->param('blog_id') }
+            args => { blog_id => $new_blog->website->id }
         );
         my $setting_url = $app->uri(
             mode => 'view',
@@ -2798,7 +2796,7 @@ HTML
 </ul>
 </div>
 
-<p><strong><__trans phrase="Finished! You can <a href=\"javascript:void(0);\" onclick=\"closeDialog('[_1]');\">return to the blog listing</a>." params="$return_url"></strong></p>
+<p><strong><__trans phrase="Finished!"></strong></p>
 
 <form method="GET">
     <div class="actions-bar">

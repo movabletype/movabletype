@@ -38,6 +38,14 @@
 
     var tagPos = 0;
     function initTags() {
+        var t = getByID('tags-cache');
+        if ( t ) {
+            log('tag cache:'+t.value);
+            var v = getByID('tags');
+            if ( t.value )
+                v.value = t.value;
+            DOM.addEventListener( v, "change", function() { log('caching tags'); t.value = v.value; } );
+        }
         if (!tagList || tagList.length == 0) return;
         autoTag = new TC.TagComplete("tags", tagList);
         autoTag.delimiter = tag_delim;
@@ -113,7 +121,11 @@
         id="tags"
         label_class="top-label"
         label="<__trans phrase="Tags">">
-        <input type="text" name="tags" id="tags" class="larger-text" value="" mt:watch-change="1" autocomplete="0" />
+        <input type="text" name="tags" id="tags" class="larger-text" value="" mt:watch-change="1" autocomplete="off" />
+        <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+        <div id="tags-suggestion">
+            <div id="tags_completion"></div>
+        </div>
     </mtapp:setting>
         </div>
     <mt:unless name="asset_select">

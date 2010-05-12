@@ -16,7 +16,7 @@ function smarty_block_mtpingentry($args, $content, &$ctx, &$repeat) {
         $entry = $tb->entry();
         if ($entry->class != 'entry') {
             $method = 'fetch_entry';
-            $entry_class = $ping['entry_class'];
+            $entry_class = $entry->entry_class;
             if (isset($entry_class)) {
                 $method = 'fetch_' . $entry_class;
             }

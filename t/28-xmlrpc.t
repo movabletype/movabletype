@@ -1,20 +1,20 @@
 use strict;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use warnings;
 
 BEGIN {
-    $ENV{MT_HOME} = './';
+    $ENV{MT_CONFIG} = 'mysql-test.cfg';
 };
 
-use MT;
-
+use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use MT::Test qw(:db :data);
 use Test::More qw( no_plan );
 use MIME::Base64;
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
 
-use MT::Test qw(:db :data);
 my $mt = MT->new() or die MT->errstr;
+
 isa_ok($mt, 'MT');
 
 # Adjust authored_on because result of load_iter is undetermined.
@@ -152,7 +152,7 @@ my @apis = (
                 defined $entry->excerpt ? $entry->excerpt : '' );
             is($result->[1]->{mt_text_more}, $entry->text_more);
             is($result->[1]->{mt_allow_comments}, $entry->allow_comments);
-            is($result->[1]->{mt_allow_pings}, $entry->allow_pings || '');
+            is($result->[1]->{mt_allow_pings}, $entry->allow_pings || '0');
             is($result->[1]->{mt_convert_breaks}, $entry->convert_breaks || '');
             is($result->[1]->{mt_keywords}, $entry->keywords || '');
         },
@@ -183,9 +183,12 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            my $d = MT::Entry->driver;
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             is($entry->text, 'Foo Bar');
         },
     },
@@ -206,9 +209,11 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             is($entry->title, 'Title');
             is($entry->text, 'Description');
             is($entry->convert_breaks, 'wiki');
@@ -266,9 +271,11 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $cat1 = MT::Category->load(1);
             my $cats = $entry->categories;
             is(scalar @$cats, 1);
@@ -289,9 +296,11 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $cat1 = MT::Category->load(1);
             my $cats = $entry->categories;
             is(scalar @$cats, 2);
@@ -311,9 +320,11 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $cat2 = MT::Category->load(2);
             my $cats = $entry->categories;
             is(scalar @$cats, 2);
@@ -331,9 +342,11 @@ my @apis = (
         result => sub {
             my ( $som ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load(3);
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $cats = $entry->categories;
             is(scalar @$cats, 0);
             ok(!$entry->category);
@@ -383,10 +396,12 @@ my @apis = (
         result => sub {
             my ( $som, $data ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load($data->id);
             is( $entry, undef );
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
         },
     },
     {
@@ -422,10 +437,12 @@ my @apis = (
         result => sub {
             my ( $som, $data ) = @_;
             my $result = $som->result;
-            MT::Entry->driver->Disabled(1);
+            MT::Entry->driver->Disabled(1)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
             my $entry = MT::Entry->load($data->id);
             is( $entry, undef );
-            MT::Entry->driver->Disabled(0);
+            MT::Entry->driver->Disabled(0)
+                if MT::Entry->driver->isa('Data::ObjectDriver::Driver::BaseCache');
         },
     },
     {

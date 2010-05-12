@@ -494,8 +494,11 @@ sub _process_masks {
                 push @perms, 'create_post', 'publish_post';
             } elsif (64 eq $key) { #edit_config
                 push @perms, 'edit_config', 'set_publish_paths', 'manage_feedback';
+            } elsif (128 eq $key || 16 eq $key) { #designer
+                push @perms, 'manage_themes', 'edit_templates','rebuild'
+                    unless grep '/^manage_themes/', @perms;
             } elsif (4096 eq $key) { #adminsiter_blog
-                push @perms, 'administer_blog', 'manage_pages';
+                push @perms, 'administer_blog';
             } elsif (2048 eq $key) { #not_comment
                 $perm->restrictions("'comment'");
             } else {
@@ -765,6 +768,8 @@ EOT
 EOT
 
     my $mt = MT->instance;
+    my $current_language = MT->current_language;
+    MT->set_language($blog->language);
     $tmpl->name($mt->translate("Comment Response"));
     $tmpl->text($mt->translate_templatized(<<"EOT"));
 <MTSetVar name="system_template" value="1">
@@ -788,6 +793,7 @@ $message_template
 
 $footer_template
 EOT
+    MT->set_language($current_language);
     $tmpl->save;
 }
 
@@ -1169,7 +1175,10 @@ sub core_update_entry_counts {
     my $continue = 0;
     my $driver = $class->driver;
 
-    my $iter = $class->load_iter({ class => '*' }, { offset => $offset, limit => $self->max_rows + 1 });
+    my $iter = $class->load_iter(
+        { class => '*' },
+        { sort => 'id', offset => $offset, limit => $self->max_rows + 1 }
+    );
     my $start = time;
     my ( %touched, %c, %tb );
     my $rows = 0;

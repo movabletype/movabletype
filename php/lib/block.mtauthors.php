@@ -10,9 +10,15 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['blog_id'] = $ctx->stash('blog_id');
-        if (isset($args['display_name'])) {
+
+        if ( isset( $args['id'] ) ) {
+            $args['author_id'] = $args['id'];
+        } elseif ( isset( $args['username'] ) ) {
+            $args['author_name'] = $args['username'];
+        } elseif (isset($args['display_name'])) {
             $args['author_nickname'] = $args['display_name'];
         }
+
         if (isset($args['sort_by'])) {
             if ($args['sort_by'] == 'display_name') {
                 $args['sort_by'] = 'nickname';

@@ -25,6 +25,7 @@ $Lexicon_ja = array(
 	'Author Daily' => 'ユーザー 日別',
 	'Author Weekly' => 'ユーザー 週別',
 	'Category Yearly' => 'カテゴリ 年別',
+	'Category' => 'カテゴリ',
 	'Category Monthly' => 'カテゴリ 月別',
 	'Category Daily' => 'カテゴリ 日別',
 	'Category Weekly' => 'カテゴリ 週別',

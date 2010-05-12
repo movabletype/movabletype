@@ -56,6 +56,9 @@ __PACKAGE__->install_properties({
         visible_date => {
             columns => [ 'visible', 'created_on' ],
         },
+        blog_ip_date => {
+            columns => [ 'blog_id', 'ip', 'created_on'],
+        },
     },
     meta => 1,
     defaults => {
