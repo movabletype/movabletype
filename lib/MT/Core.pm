@@ -30,8 +30,10 @@ BEGIN {
                 label          => 'MySQL Database (Recommended)',
                 dbd_package    => 'DBD::mysql',
                 config_package => 'DBI::mysql',
-                display =>
-                    [ 'dbserver', 'dbname', 'dbuser', 'dbpass', 'dbport', 'dbsocket' ],
+                display        => [
+                    'dbserver', 'dbname', 'dbuser', 'dbpass',
+                    'dbport',   'dbsocket'
+                ],
             },
             'postgres' => {
                 label          => 'PostgreSQL Database',
@@ -111,7 +113,7 @@ BEGIN {
                 order    => 20,
             },
         },
-        object_types   => {
+        object_types => {
             'entry'           => 'MT::Entry',
             'author'          => 'MT::Author',
             'asset'           => 'MT::Asset',
@@ -169,72 +171,76 @@ BEGIN {
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
         },
         summaries => {
-        	'author' => {
-        		entry_count => {
-        			type => 'integer',
-        			code => '$Core::MT::Summary::Author::summarize_entry_count',
+            'author' => {
+                entry_count => {
+                    type => 'integer',
+                    code =>
+                        '$Core::MT::Summary::Author::summarize_entry_count',
                     expires => {
                         'MT::Entry' => {
                             id_column => 'author_id',
-                            code => '$Core::MT::Summary::Author::expire_entry_count',
+                            code =>
+                                '$Core::MT::Summary::Author::expire_entry_count',
                         },
                     },
-        		},
-        		comment_count => {
-        			type => 'integer',
-        			code => '$Core::MT::Summary::Author::summarize_comment_count',
+                },
+                comment_count => {
+                    type => 'integer',
+                    code =>
+                        '$Core::MT::Summary::Author::summarize_comment_count',
                     expires => {
                         'MT::Comment' => {
                             id_column => 'commenter_id',
-                            code => '$Core::MT::Summary::Author::expire_comment_count',
+                            code =>
+                                '$Core::MT::Summary::Author::expire_comment_count',
                         },
                         'MT::Entry' => {
                             id_column => 'author_id',
-                            code => '$Core::MT::Summary::Author::expire_comment_count_entry',
+                            code =>
+                                '$Core::MT::Summary::Author::expire_comment_count_entry',
                         },
                     },
-        		},
-        	},
-			'entry' => {
-				all_assets => {
-					type => 'string',
-					code => '$Core::MT::Summary::Entry::summarize_all_assets',
-					expires => {
-						'MT::ObjectAsset' => {
-							 id_column => 'object_id',
-							 code => '$Core::MT::Summary::expire_all',
-						}
-					}
-				}
-			},
+                },
+            },
+            'entry' => {
+                all_assets => {
+                    type => 'string',
+                    code => '$Core::MT::Summary::Entry::summarize_all_assets',
+                    expires => {
+                        'MT::ObjectAsset' => {
+                            id_column => 'object_id',
+                            code      => '$Core::MT::Summary::expire_all',
+                        }
+                    }
+                }
+            },
         },
         backup_instructions => \&load_backup_instructions,
-        permissions => \&load_core_permissions,
-        config_settings => {
+        permissions         => \&load_core_permissions,
+        config_settings     => {
             'AtomApp' => {
                 type    => 'HASH',
                 default => {
-                    weblog => 'MT::AtomServer::Weblog::Legacy',
-                    '1.0'  => 'MT::AtomServer::Weblog',
+                    weblog   => 'MT::AtomServer::Weblog::Legacy',
+                    '1.0'    => 'MT::AtomServer::Weblog',
                     comments => 'MT::AtomServer::Comments',
                 },
             },
-            'SchemaVersion'   => undef,
-            'MTVersion'       => undef,
+            'SchemaVersion'         => undef,
+            'MTVersion'             => undef,
             'RequiredCompatibility' => { default => 0 },
-            'NotifyUpgrade'   => { default => 1 },
-            'Database'        => undef,
-            'DBHost'          => undef,
-            'DBSocket'        => undef,
-            'DBPort'          => undef,
-            'DBUser'          => undef,
-            'DBPassword'      => undef,
-            'DefaultLanguage' => {
-                default => 'en_US',
-            },
-            'LocalPreviews'   => { default => 0 },
-            'DefaultCommenterAuth' => { default => 'MovableType,LiveJournal,Vox' },
-            'TemplatePath'    => {
+            'NotifyUpgrade'         => { default => 1 },
+            'Database'              => undef,
+            'DBHost'                => undef,
+            'DBSocket'              => undef,
+            'DBPort'                => undef,
+            'DBUser'                => undef,
+            'DBPassword'            => undef,
+            'DefaultLanguage'       => { default => 'en_US', },
+            'LocalPreviews'         => { default => 0 },
+            'DefaultCommenterAuth' =>
+                { default => 'MovableType,LiveJournal,Vox' },
+            'TemplatePath' => {
                 default => 'tmpl',
                 path    => 1,
             },
@@ -265,36 +271,31 @@ BEGIN {
                 default => 'themes',
                 path    => 1,
             },
-            'SupportDirectoryPath' => {
-                default => '',
-            },
-            'SupportDirectoryURL' => {
-                default => ''
-            },
-            'ObjectDriver'  => undef,
-            'ObjectCacheLimit' => { default => 1000 },
+            'SupportDirectoryPath' => { default => '', },
+            'SupportDirectoryURL'  => { default => '' },
+            'ObjectDriver'         => undef,
+            'ObjectCacheLimit'     => { default => 1000 },
             'ObjectCacheDisabled'  => undef,
-            'DisableObjectCache' => { default => 0, },
-            'AllowedTextFilters' => undef,
-            'Serializer'    => { default => 'MT', },
-            'SendMailPath'  => { default => '/usr/lib/sendmail', },
-            'RsyncPath'     => undef,
-            'TimeOffset'    => { default => 0, },
-            'WSSETimeout'   => { default => 120, },
-            'StaticWebPath' => { default => '', },
-            'StaticFilePath' => undef,
-            'CGIPath'       => { default => '/cgi-bin/', },
-            'AdminCGIPath'  => undef,
-            'CookieDomain'  => undef,
-            'CookiePath'    => undef,
-            'MailEncoding'  => {
-                default => 'ISO-8859-1',
-            },
-            'MailTransfer'      => { default => 'sendmail' },
-            'SMTPServer'        => { default => 'localhost', },
-            'DebugEmailAddress' => undef,
+            'DisableObjectCache'   => { default => 0, },
+            'AllowedTextFilters'   => undef,
+            'Serializer'           => { default => 'MT', },
+            'SendMailPath'         => { default => '/usr/lib/sendmail', },
+            'RsyncPath'            => undef,
+            'TimeOffset'           => { default => 0, },
+            'WSSETimeout'          => { default => 120, },
+            'StaticWebPath'        => { default => '', },
+            'StaticFilePath'       => undef,
+            'CGIPath'              => { default => '/cgi-bin/', },
+            'AdminCGIPath'         => undef,
+            'CookieDomain'         => undef,
+            'CookiePath'           => undef,
+            'MailEncoding'         => { default => 'ISO-8859-1', },
+            'MailTransfer'         => { default => 'sendmail' },
+            'SMTPServer'           => { default => 'localhost', },
+            'DebugEmailAddress'    => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
-            'MTPingURL' => { default => 'http://www.movabletype.org/update/', },
+            'MTPingURL' =>
+                { default => 'http://www.movabletype.org/update/', },
             'CGIMaxUpload'          => { default => 20_480_000 },
             'DBUmask'               => { default => '0111', },
             'HTMLUmask'             => { default => '0111', },
@@ -319,7 +320,7 @@ BEGIN {
             'HTTPInterface'         => undef,
             'PingProxy'             => undef,
             'HTTPProxy'             => undef,
-            'HTTPSProxy'             => undef,
+            'HTTPSProxy'            => undef,
             'PingNoProxy'           => { default => 'localhost', },
             'HTTPNoProxy'           => { default => 'localhost', },
             'ImageDriver'           => { default => 'ImageMagick', },
@@ -336,17 +337,16 @@ BEGIN {
             'UpgradeScript'         => { default => 'mt-upgrade.cgi', },
             'CheckScript'           => { default => 'mt-check.cgi', },
             'NotifyScript'          => { default => 'mt-add-notify.cgi', },
-            'PublishCharset'        => {
-                default => 'utf-8',
+            'PublishCharset'        => { default => 'utf-8', },
+            'SafeMode'              => { default => 1, },
+            'GlobalSanitizeSpec'    => {
+                default =>
+                    'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
             },
-            'SafeMode'           => { default => 1, },
-            'GlobalSanitizeSpec' => {
-                default => 'a href,b,i,br/,p,strong,em,ul,ol,li,blockquote,pre',
-            },
-            'GenerateTrackBackRSS' => { default => 0, },
-            'DBIRaiseError'        => { default => 0, },
+            'GenerateTrackBackRSS'        => { default => 0, },
+            'DBIRaiseError'               => { default => 0, },
             'SearchAlwaysAllowTemplateID' => { default => 0, },
-            
+
             ## Search settings, copied from Jay's mt-search and integrated
             ## into default config.
             'NoOverride'          => { default => '', },
@@ -366,8 +366,8 @@ BEGIN {
                 type    => 'ARRAY',
                 default => 'feed results_feed.tmpl',
             },
-            'SearchSortBy'    => undef,
-            'SearchSortOrder' => { default => 'ascend', },
+            'SearchSortBy'          => undef,
+            'SearchSortOrder'       => { default => 'ascend', },
             'SearchNoOverride'      => { default => 'SearchMaxResults', },
             'SearchResultDisplay'   => { alias => 'ResultDisplay', },
             'SearchExcerptWords'    => { alias => 'ExcerptWords', },
@@ -376,37 +376,39 @@ BEGIN {
             'SearchAltTemplate'     => { alias => 'AltTemplate' },
             'SearchPrivateTags'     => { default => 0 },
             'RegKeyURL' =>
-              { default => 'http://www.typekey.com/extras/regkeys.txt', },
+                { default => 'http://www.typekey.com/extras/regkeys.txt', },
             'IdentitySystem' =>
-              { default => 'http://www.typekey.com/t/typekey', },
+                { default => 'http://www.typekey.com/t/typekey', },
             'SignOnURL' =>
-              { default => 'https://www.typekey.com/t/typekey/login?', },
+                { default => 'https://www.typekey.com/t/typekey/login?', },
             'SignOffURL' =>
-              { default => 'https://www.typekey.com/t/typekey/logout?', },
-            'IdentityURL'     => { default => "http://profile.typekey.com/", },
-            'DynamicComments' => { default => 0, },
-            'SignOnPublicKey' => { default => '', },
-            'ThrottleSeconds' => { default => 20, },
-            'SearchCacheTTL'        => { default => 20, },
-            'SearchThrottleSeconds' => { default => 5 },
+                { default => 'https://www.typekey.com/t/typekey/logout?', },
+            'IdentityURL' => { default => "http://profile.typekey.com/", },
+            'DynamicComments'           => { default => 0, },
+            'SignOnPublicKey'           => { default => '', },
+            'ThrottleSeconds'           => { default => 20, },
+            'SearchCacheTTL'            => { default => 20, },
+            'SearchThrottleSeconds'     => { default => 5 },
             'SearchThrottleIPWhitelist' => undef,
             'OneHourMaxPings'           => { default => 10, },
             'OneDayMaxPings'            => { default => 50, },
             'SupportURL'                => {
                 default => 'http://www.sixapart.com/movabletype/support/',
             },
-            'NewsURL' => {
-                default => 'http://www.sixapart.com/movabletype/news/',
-            },
+            'NewsURL' =>
+                { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
-                default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+                default =>
+                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
-            # 'MTNewsURL' => {
-            #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-            # },
+
+# 'MTNewsURL' => {
+#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+# },
             'LearningNewsURL' => {
                 default => 'http://learning.movabletype.org/newsbox.html',
             },
+
             # 'HackingNewsURL' => {
             #     default => 'http://hacking.movabletype.org/newsbox.html',
             # },
@@ -416,17 +418,19 @@ BEGIN {
             'CommentSessionTimeout' => { default => 60 * 60 * 24 * 3, },
             'UserSessionTimeout'    => { default => 60 * 60 * 4, },
             'UserSessionCookieName' => { handler => \&UserSessionCookieName },
-            'UserSessionCookieDomain' => { default => '<$MTBlogHost exclude_port="1"$>' },
+            'UserSessionCookieDomain' =>
+                { default => '<$MTBlogHost exclude_port="1"$>' },
             'UserSessionCookiePath' => { handler => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
-            'LaunchBackgroundTasks' => { default => 0 },
-            'TypeKeyVersion'        => { default => '1.1' },
-            'TransparentProxyIPs'   => { default => 0, },
-            'DebugMode'             => { default => 0, },
-            'ShowIPInformation'     => { default => 0, },
-            'AllowComments'         => { default => 1, },
-            'AllowPings'            => { default => 1, },
-            'HelpURL'               => undef,
+            'LaunchBackgroundTasks'    => { default => 0 },
+            'TypeKeyVersion'           => { default => '1.1' },
+            'TransparentProxyIPs'      => { default => 0, },
+            'DebugMode'                => { default => 0, },
+            'ShowIPInformation'        => { default => 0, },
+            'AllowComments'            => { default => 1, },
+            'AllowPings'               => { default => 1, },
+            'HelpURL'                  => undef,
+
             #'HelpURL'               => {
             #    default => 'http://www.sixapart.com/movabletype/docs/4.0/',
             #},
@@ -436,110 +440,102 @@ BEGIN {
             'OutboundTrackbackLimit'   => { default => 'any', },
             'OutboundTrackbackDomains' => { type    => 'ARRAY', },
             'IndexBasename'            => { default => 'index', },
-            'LogExportEncoding'        => {
-                default => 'utf-8',
-            },
-            'ActivityFeedsRunTasks' => { default => 1, },
-            'ExportEncoding'        => {
-                default => 'utf-8',
-            },
-            'SQLSetNames'     => undef,
-            'UseSQLite2'      => { default => 0, },
+            'LogExportEncoding'        => { default => 'utf-8', },
+            'ActivityFeedsRunTasks'    => { default => 1, },
+            'ExportEncoding'           => { default => 'utf-8', },
+            'SQLSetNames'              => undef,
+            'UseSQLite2'               => { default => 0, },
+
             #'UseJcodeModule'  => { default => 0, },
-            'DefaultTimezone' => {
-                default => '0',
-            },
-            'CategoryNameNodash' => {
-                default => '0',
-            },
-            'DefaultListPrefs' => {
-                type    => 'HASH',
-            },
-            'DefaultEntryPrefs' => {
+            'DefaultTimezone'    => { default => '0', },
+            'CategoryNameNodash' => { default => '0', },
+            'DefaultListPrefs'   => { type    => 'HASH', },
+            'DefaultEntryPrefs'  => {
                 type    => 'HASH',
                 default => {
-                    type   => 'Default',         # Default|All|Custom
-                    button => 'Below',           # Above|Below|Both
-                    height => 162,               # textarea height
+                    type   => 'Default',    # Default|All|Custom
+                    button => 'Below',      # Above|Below|Both
+                    height => 162,          # textarea height
                 },
             },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, },
             'NewUserAutoProvisioning' =>
-              { handler => \&NewUserAutoProvisioning, },
+                { handler => \&NewUserAutoProvisioning, },
             'NewUserBlogTheme'        => { default => 'classic_blog' },
             'NewUserDefaultWebsiteId' => undef,
-            'DefaultSiteURL'          => undef, ## DEPRECATED
-            'DefaultSiteRoot'         => undef, ## DEPRECATED
+            'DefaultSiteURL'          => undef,    ## DEPRECATED
+            'DefaultSiteRoot'         => undef,    ## DEPRECATED
             'DefaultUserLanguage'     => undef,
             'DefaultUserTagDelimiter' => {
                 handler => \&DefaultUserTagDelimiter,
                 default => 'comma',
             },
-            'AuthenticationModule' => { default => 'MT', },
-            'AuthLoginURL'         => undef,
-            'AuthLogoutURL'        => undef,
-            'DefaultAssignments'   => undef,
-            'AutoSaveFrequency'         => { default => 5 },
-            'FuturePostFrequency'       => { default => 1 },
-            'AssetCacheDir'             => { default => 'assets_c', },
-            'IncludesDir'               => { default => 'includes_c', },
-            'MemcachedServers'          => { type    => 'ARRAY', },
-            'MemcachedNamespace'        => undef,
-            'MemcachedDriver'           => { default => 'Cache::Memcached' },
-            'CommenterRegistration'     => {
+            'AuthenticationModule'  => { default => 'MT', },
+            'AuthLoginURL'          => undef,
+            'AuthLogoutURL'         => undef,
+            'DefaultAssignments'    => undef,
+            'AutoSaveFrequency'     => { default => 5 },
+            'FuturePostFrequency'   => { default => 1 },
+            'AssetCacheDir'         => { default => 'assets_c', },
+            'IncludesDir'           => { default => 'includes_c', },
+            'MemcachedServers'      => { type    => 'ARRAY', },
+            'MemcachedNamespace'    => undef,
+            'MemcachedDriver'       => { default => 'Cache::Memcached' },
+            'CommenterRegistration' => {
                 type    => 'HASH',
                 default => {
                     Allow  => '1',
                     Notify => q(),
                 },
             },
-            'CaptchaSourceImageBase'     => undef,
-            'SecretToken'                => { handler => \&SecretToken, },
+            'CaptchaSourceImageBase' => undef,
+            'SecretToken'            => { handler => \&SecretToken, },
             ## NaughtyWordChars settings
             'NwcSmartReplace' => { default => 0, },
             'NwcReplaceField' =>
-              { default => 'title,text,text_more,keywords,excerpt,tags', },
-            'DisableNotificationPings'   => { default => 0 },
-            'SyncTarget' => { type => 'ARRAY' },
-            'RsyncOptions' => undef,
-            'UserpicAllowRect' => { default => 0 },
-            'UserpicMaxUpload' => { default => 0 },
-            'UserpicThumbnailSize' => { default => 100 },
-            
+                { default => 'title,text,text_more,keywords,excerpt,tags', },
+            'DisableNotificationPings' => { default => 0 },
+            'SyncTarget'               => { type    => 'ARRAY' },
+            'RsyncOptions'             => undef,
+            'UserpicAllowRect'         => { default => 0 },
+            'UserpicMaxUpload'         => { default => 0 },
+            'UserpicThumbnailSize'     => { default => 100 },
+
             ## Stats settings
-            'StatsCacheTTL' => { default => 15 }, # in minutes
-            'StatsCachePublishing' => { default => 'OnLoad' }, # Off|OnLoad
+            'StatsCacheTTL'        => { default => 15 },          # in minutes
+            'StatsCachePublishing' => { default => 'OnLoad' },    # Off|OnLoad
 
             # Basename settings
             'AuthorBasenameLimit' => { default => 30 },
-            'PerformanceLogging' => { default => 0 },
-            'PerformanceLoggingPath' =>  { handler => \&PerformanceLoggingPath },
+            'PerformanceLogging'  => { default => 0 },
+            'PerformanceLoggingPath' =>
+                { handler => \&PerformanceLoggingPath },
             'PerformanceLoggingThreshold' => { default => 0.1 },
             'ProcessMemoryCommand' => { handler => \&ProcessMemoryCommand },
-            'EnableAddressBook' => { default => 0 },
-            'SingleCommunity' => { default => 1 },
-            'DefaultTemplateSet' => { default => 'mt_blog' },
-            'DefaultWebsiteTheme' => { default => 'classic_website' },
-            'DefaultBlogTheme' => { default => 'classic_blog' },
+            'EnableAddressBook'    => { default => 0 },
+            'SingleCommunity'      => { default => 1 },
+            'DefaultTemplateSet'   => { default => 'mt_blog' },
+            'DefaultWebsiteTheme'  => { default => 'classic_website' },
+            'DefaultBlogTheme'     => { default => 'classic_blog' },
             'ThemeStaticFileExtensions' => undef,
-            'AssetFileTypes' => { type    => 'HASH' },
-            'AssetFileExtensions' => { default => undef },
+            'AssetFileTypes'            => { type => 'HASH' },
+            'AssetFileExtensions'       => { default => undef },
 
-            'FastCGIMaxTime'  => { default => 60 * 60 }, # 1 hour
-            'FastCGIMaxRequests' => { default => 1000 }, # 1000 requests
+            'FastCGIMaxTime'     => { default => 60 * 60 },    # 1 hour
+            'FastCGIMaxRequests' => { default => 1000 },       # 1000 requests
 
-            'RPTFreeMemoryLimit' => undef,
-            'RPTProcessCap' => undef,
-            'RPTSwapMemoryLimit' => undef,
-            'SchwartzClientDeadline' => undef,
+            'RPTFreeMemoryLimit'      => undef,
+            'RPTProcessCap'           => undef,
+            'RPTSwapMemoryLimit'      => undef,
+            'SchwartzClientDeadline'  => undef,
             'SchwartzFreeMemoryLimit' => undef,
             'SchwartzSwapMemoryLimit' => undef,
 
             # Revision History
-            'TrackRevisions'     => { default => 1 },
-            'RevisioningDriver'  => { default => 'Local' },
+            'TrackRevisions'    => { default => 1 },
+            'RevisioningDriver' => { default => 'Local' },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -553,30 +549,30 @@ BEGIN {
             'wizard'   => { handler => 'MT::App::Wizard', },
             'comments' => {
                 handler => 'MT::App::Comments',
-                tags => sub { MT->app->load_core_tags },
+                tags    => sub { MT->app->load_core_tags },
             },
-            'search'   => {
-                handler => 'MT::App::Search::Legacy', 
-                tags => sub { MT->app->load_core_tags },
+            'search' => {
+                handler => 'MT::App::Search::Legacy',
+                tags    => sub { MT->app->load_core_tags },
             },
-            'new_search'   => {
-                handler => 'MT::App::Search', 
-                tags    => sub { 
+            'new_search' => {
+                handler => 'MT::App::Search',
+                tags    => sub {
                     require MT::Template::Context::Search;
                     return MT::Template::Context::Search->load_core_tags();
                 },
                 methods => sub { MT->app->core_methods() },
                 default => sub { MT->app->core_parameters() },
             },
-            'cms'      => {
-                handler         => 'MT::App::CMS',
-                cgi_base        => 'mt',
-                page_actions    => sub { MT->app->core_page_actions(@_) },
-                list_actions    => sub { MT->app->core_list_actions(@_) },
-                list_filters    => sub { MT->app->core_list_filters(@_) },
-                search_apis     => sub {
+            'cms' => {
+                handler      => 'MT::App::CMS',
+                cgi_base     => 'mt',
+                page_actions => sub { MT->app->core_page_actions(@_) },
+                list_actions => sub { MT->app->core_list_actions(@_) },
+                list_filters => sub { MT->app->core_list_filters(@_) },
+                search_apis  => sub {
                     require MT::CMS::Search;
-                    return MT::CMS::Search::core_search_apis(MT->app, @_);
+                    return MT::CMS::Search::core_search_apis( MT->app, @_ );
                 },
                 menus           => sub { MT->app->core_menus() },
                 methods         => sub { MT->app->core_methods() },
@@ -586,11 +582,11 @@ BEGIN {
                     require MT::Import;
                     return MT::Import->core_import_formats();
                 },
-                compose_menus   =>sub { MT->app->core_compose_menus() },
+                compose_menus => sub { MT->app->core_compose_menus() },
             },
             upgrade => {
-                handler         => 'MT::App::Upgrader',
-                methods         => '$Core::MT::App::Upgrader::core_methods',
+                handler => 'MT::App::Upgrader',
+                methods => '$Core::MT::App::Upgrader::core_methods',
             },
         },
         archive_types => \&load_archive_types,
@@ -601,21 +597,21 @@ BEGIN {
                 handler => 'MT::Util::html_text_transform',
             },
             'richtext' => {
-                label   => 'Rich Text',
-                handler => 'MT::Util::rich_text_transform',
+                label     => 'Rich Text',
+                handler   => 'MT::Util::rich_text_transform',
                 condition => sub {
                     my ($type) = @_;
-                    return 1 if $type && ($type ne 'comment');
+                    return 1 if $type && ( $type ne 'comment' );
                 },
             },
         },
         richtext_editors => {
             'archetype' => {
-                label => 'Movable Type Default',
+                label    => 'Movable Type Default',
                 template => 'archetype_editor.tmpl',
             },
         },
-        ping_servers  => {
+        ping_servers => {
             'weblogs' => {
                 label => 'weblogs.com',
                 url   => 'http://rpc.weblogs.com/RPC2',
@@ -629,19 +625,21 @@ BEGIN {
         captcha_providers        => \&load_captcha_providers,
         tasks                    => \&load_core_tasks,
         default_templates        => \&load_default_templates,
-        template_sets => {
+        template_sets            => {
             mt_blog => {
                 label => "Classic Blog",
                 order => 100,
+
                 # means, load from 'default_templates' registry
                 # which we've established for core templates with
                 # the MT 4.0 registry
                 templates => '*',
             },
         },
-        theme_element_handlers   => '$Core::MT::Theme::core_theme_element_handlers',
-        junk_filters             => \&load_junk_filters,
-        task_workers             => {
+        theme_element_handlers =>
+            '$Core::MT::Theme::core_theme_element_handlers',
+        junk_filters => \&load_junk_filters,
+        task_workers => {
             'mt_rebuild' => {
                 label => "Publishes content.",
                 class => 'MT::Worker::Publish',
@@ -673,90 +671,93 @@ BEGIN {
                 mimetype  => 'application/x-tar-gz',
             },
         },
-        template_snippets        => {
+        template_snippets => {
             'insert_entries' => {
                 trigger => 'entries',
                 label   => 'Entries List',
-                content => qq{<mt:Entries lastn="10">\n    \$0\n</mt:Entries>\n},
+                content =>
+                    qq{<mt:Entries lastn="10">\n    \$0\n</mt:Entries>\n},
             },
             'blog_url' => {
                 trigger => 'blogurl',
-                label => 'Blog URL',
+                label   => 'Blog URL',
                 content => '<$mt:BlogURL$>$0',
             },
             'blog_id' => {
                 trigger => 'blogid',
-                label => 'Blog ID',
+                label   => 'Blog ID',
                 content => '<$mt:BlogID$>$0',
             },
             'blog_name' => {
                 trigger => 'blogname',
-                label => 'Blog Name',
+                label   => 'Blog Name',
                 content => '<$mt:BlogName$>$0',
             },
             'entry_body' => {
                 trigger => 'entrybody',
-                label => 'Entry Body',
+                label   => 'Entry Body',
                 content => '<$mt:EntryBody$>$0',
             },
             'entry_excerpt' => {
                 trigger => 'entryexcerpt',
-                label => 'Entry Excerpt',
+                label   => 'Entry Excerpt',
                 content => '<$mt:EntryExcerpt$>$0',
             },
             'entry_link' => {
                 trigger => 'entrylink',
-                label => 'Entry Link',
+                label   => 'Entry Link',
                 content => '<$mt:EntryLink$>$0',
             },
             'entry_more' => {
                 trigger => 'entrymore',
-                label => 'Entry Extended Text',
+                label   => 'Entry Extended Text',
                 content => '<$mt:EntryMore$>$0',
             },
             'entry_title' => {
                 trigger => 'entrytitle',
-                label => 'Entry Title',
+                label   => 'Entry Title',
                 content => '<$mt:EntryTitle$>$0',
             },
             'if' => {
                 trigger => 'mtif',
-                label => 'If Block',
+                label   => 'If Block',
                 content => qq{<mt:if name="variable">\n    \$0\n</mt:if>\n},
             },
             'if_else' => {
                 trigger => 'mtife',
-                label => 'If/Else Block',
-                content => qq{<mt:if name="variable">\n    \$0\n<mt:else>\n\n</mt:if>\n},
+                label   => 'If/Else Block',
+                content =>
+                    qq{<mt:if name="variable">\n    \$0\n<mt:else>\n\n</mt:if>\n},
             },
             'include_module' => {
                 trigger => 'module',
-                label => 'Include Template Module',
+                label   => 'Include Template Module',
                 content => '<$mt:Include module="$0"$>',
             },
             'include_file' => {
                 trigger => 'file',
-                label => 'Include Template File',
+                label   => 'Include Template File',
                 content => '<$mt:Include file="$0"$>',
             },
             'getvar' => {
                 trigger => 'get',
-                label => 'Get Variable',
+                label   => 'Get Variable',
                 content => '<$mt:var name="$0"$>',
             },
             'setvar' => {
                 trigger => 'set',
-                label => 'Set Variable',
+                label   => 'Set Variable',
                 content => '<$mt:var name="$0" value="value"$>',
             },
             'setvarblock' => {
                 trigger => 'setb',
-                label => 'Set Variable Block',
-                content => qq{<mt:SetVarBlock name="variable">\n    \$0\n</mt:SetVarBlock>\n},
+                label   => 'Set Variable Block',
+                content =>
+                    qq{<mt:SetVarBlock name="variable">\n    \$0\n</mt:SetVarBlock>\n},
             },
             'widget_manager' => {
                 trigger => 'widget',
-                label => 'Widget Set',
+                label   => 'Widget Set',
                 content => '<$mt:WidgetSet name="$0"$>',
             },
         },
