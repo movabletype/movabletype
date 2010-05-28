@@ -346,7 +346,7 @@ sub _hdlr_top_level_folder {
 
     require MT::Folder;
     $args->{class_type} = MT::Folder->properties->{class_type};
-    $ctx->invoke_handler('toplevelcategory', $args, $cond);
+    $ctx->invoke_handler('toplevelparent', $args, $cond);
 }
 
 ###########################################################################
