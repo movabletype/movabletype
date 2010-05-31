@@ -21,11 +21,11 @@ BEGIN {
     $TESTS_FOR_EACH = 25;
 
     @Img = (
-        [ 'test.gif', 233, 68 ],
+        [ 'test.gif', 400, 300 ],
         [ 'test.jpg', 640, 480 ],
         [ 'test.png', 150, 150 ],
     );
-    @drivers = qw( ImageMagick NetPBM GD );
+    @drivers = qw( ImageMagick NetPBM GD Imager );
     plan tests => scalar @Img                                        # file exists
                 + (scalar @Img * scalar @drivers * $TESTS_FOR_EACH)  # each image by each driver
                 + 1                                                  # no driver test
@@ -44,13 +44,14 @@ for my $rec (@Img) {
     ok(-B $img_file, "$img_file looks like a binary file");
 
     for my $driver (@drivers) {
+        note( "----Test $driver for file $img_file" );
         $cfg->ImageDriver($driver);
         my $img = MT::Image->new( Filename => $img_file );
 SKIP : {
         skip("no $driver for image $img_file", $TESTS_FOR_EACH) unless $img;
         $tested++;
         isa_ok($img, 'MT::Image::' . $driver, "driver for $img_file");
-#        diag( MT::Image->errstr ) if MT::Image->errstr;
+        note( MT::Image->errstr ) if MT::Image->errstr;
         is($img->{width},  $img_width,  "$driver says $img_filename is $img_width px wide");
         is($img->{height}, $img_height, "$driver says $img_filename is $img_height px high");
         my($w, $h) = $img->get_dimensions();
@@ -81,7 +82,8 @@ SKIP : {
         is($h, $y, "result of scaling $img_filename to 50\% with $driver is $y px high");
 
         undef $blob;
-        ($blob, $w, $h) = $img->crop( Size => 50, X => 10, Y => 10 );
+        ($blob, $w, $h) = $img->crop( Size => 50, X => 10, Y => 10 ) or die $img->errstr;
+
         ok($blob, "do crop");
 
         ($x, $y) = (50, 50);
@@ -89,10 +91,9 @@ SKIP : {
         is($h, $y, "result of cropping $img_filename to 50x50 with $driver is $y px high");
 
         (my $type = $img_file) =~ s/.*\.//;
-        local $TODO = "working...";
         for my $to ( qw( JPG PNG GIF ) ) {
             next if lc $to eq lc $type;
-            my $blob = $img->convert($to);
+            my $blob = $img->convert( Type => $to);
             ok($blob, "convert $img_filename to $to with $driver");
         }
 
@@ -103,7 +104,7 @@ SKIP : {
         $img = MT::Image->new( Data => $data, Type => $type );
 
         isa_ok($img, 'MT::Image::' . $driver);
-#            diag( MT::Image->errstr ) if MT::Image->errstr;
+        note( MT::Image->errstr ) if MT::Image->errstr;
         is($img->{width},  $img_width,  "$driver says $img_filename from blob is $img_width px wide");
         is($img->{height}, $img_height, "$driver says $img_filename from blob is $img_height px high");
         ($w, $h) = $img->get_dimensions;
