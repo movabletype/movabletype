@@ -1103,7 +1103,7 @@ function create_cat_expr_function($expr, &$cats, $param) {
 
 function category_label_path($cat) {
     $mt = MT::get_instance();
-    $mtdb =& $mt->db;
+    $mtdb =& $mt->db();
     if (isset($cat->__label_path))
         return $cat->__label_path;
     $result = preg_match('/\//', $cat->category_label) ? '[' . $cat->category_label . ']' : $cat->category_label;
