@@ -490,8 +490,6 @@ sub args_to_string {
             } else {
                 next if exists $args->{$a->[0]}
                     && ($args->{$a->[0]} eq $a->[1]);
-                next unless defined $args->[1];
-                next if $args->[1] eq '';
                 $str .= ';' . $a->[0] . ':';
                 $str .= $a->[1];
             }
