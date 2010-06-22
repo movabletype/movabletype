@@ -101,11 +101,12 @@ eval {
         MT::L10N->get_handle($lang);
     }
 };
+$lang ||= 'en_US';
 
 sub trans_templ {
     my($text) = @_;
     return $mt->translate_templatized($text) if $mt;
-    $text =~ s!(<MT_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)+?\3))+?\s*/?>)!
+    $text =~ s!(<__trans(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)+?\3))+?\s*/?>)!
         my($msg, %args) = ($1);
         #print $msg;
         while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)\2/g) {  #"
@@ -207,7 +208,7 @@ if (!$view) {
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="content-language" content="$lang" />
-    <title><MT_TRANS phrase="Movable Type System Check"> [mt-check.cgi]</title>
+    <title><__trans phrase="Movable Type System Check"> [mt-check.cgi]</title>
     <style type=\"text/css\">
         <!--
             body {
@@ -328,7 +329,7 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<p class="msg msg-info"><MT_TRANS phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
+<p class="msg msg-info"><__trans phrase="You have attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator."></p>
 </div>
 </body></html>
 HTML
@@ -339,7 +340,7 @@ HTML
         print_encode( trans_templ(<<HTML) );
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 <div id="content">
-<p class="msg msg-info"><MT_TRANS phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
+<p class="msg msg-info"><__trans phrase="The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)"></p>
 </div>
 </body></html>
 HTML
@@ -350,7 +351,7 @@ HTML
 <div id="header"><h1 id="brand"><span><__trans phrase="Movable Type System Check"> [mt-check.cgi]</span></h1></div>
 
 <div id="content">
-<p class="msg msg-info"><MT_TRANS phrase="The mt-check.cgi script provides you with information on your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
+<p class="msg msg-info"><__trans phrase="The mt-check.cgi script provides you with information on your system's configuration and determines whether you have all of the components you need to run Movable Type."></p>
 HTML
 }
 
@@ -574,7 +575,7 @@ MSG
             $desc = $desc->();
         }
         else {
-            $desc = $mt->translate($desc);
+            $desc = translate($desc);
         }
         print_encode( "<div class=\"dependence-module\">\n" ) if $mod =~ m/^DBD::/;
         print_encode(  "    <h3>$mod" .
