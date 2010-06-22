@@ -20,7 +20,7 @@ $build->usage() unless @ARGV;
 # Get the command-line options.
 $build->get_options();
 my $orig_stamp = $build->{'stamp=s'};
-my $orig_verid = $ENV{BUILD_VERSION_ID};
+my $orig_verid = $ENV{BUILD_VERSION_ID} || '';
 
 # Show the usage if requested.
 $build->usage() if $build->help();
