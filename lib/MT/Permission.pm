@@ -411,6 +411,8 @@ sub global_perms {
 
 sub can_do {
     my $self = shift;
+    return unless $self->permissions;
+
     my $action = shift;
     my @perms = split /,/, $self->permissions;
     for my $perm ( @perms ) {
