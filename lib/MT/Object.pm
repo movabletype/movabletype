@@ -239,7 +239,7 @@ sub install_properties {
             $class->add_trigger( post_save => \&_translate_audited_fields );
         }
 
-        $class->add_trigger( pre_save  => _get_date_translator(\&_ts2db, 1) );
+        $class->add_trigger( pre_save  => _get_date_translator(\&_ts2db, 0) );
         $class->add_trigger( post_load => _get_date_translator(\&_db2ts, 0) );
     }
 
@@ -552,6 +552,7 @@ sub install_meta {
     if (!$pkg->SUPER::properties->{$installed}) {
         $pkg->add_trigger( post_save => \&_post_save_save_metadata );
         $pkg->add_trigger( post_load => \&_post_load_initialize_metadata );
+        $pkg->add_trigger( post_inflate => \&_post_load_initialize_metadata );
     }
 
     my $props = $class->properties;
@@ -821,11 +822,10 @@ sub _get_date_translator {
     my $change = shift;
     return sub {
         my $obj = shift;
-        my $dbd = $obj->driver->dbd;
         FIELD: for my $field (@{$obj->columns_of_type('datetime', 'timestamp')}) {
             my $value = $obj->column($field);
             next FIELD if !defined $value;
-            my $new_val = $translator->($value); 
+            my $new_val = $translator->($value);
             if((defined $new_val) && ($new_val ne $value)) {
                 $obj->column($field, $new_val, { no_changed_flag => !$change });
             }
@@ -1337,33 +1337,6 @@ sub set_by_key {
     }
     $obj->set_values($value) if $value;
     $obj->save or return $class->error($obj->errstr);
-    return $obj;
-}
-
-sub deflate {
-    my $obj = shift;
-    my $data = $obj->SUPER::deflate();
-    for my $which (qw( meta summary )) {
-        my $meth = "has_$which";
-        if ($obj->$meth()) {
-            $data->{$which} = $obj->{"__$which"}->deflate_meta();
-        }
-    }
-    return $data;
-}
-
-sub inflate {
-    my $class = shift;
-    my ($data) = @_;
-    my $obj = $class->SUPER::inflate(@_);
-    for my $which (qw( meta )) {
-        # only inflate meta; don't inflate summary as this create zombie objects in the cache
-        # that prevent real MT::*::Summary objects from being used
-        my $meth = "has_$which";
-        if ($class->$meth()) {
-            $obj->{"__$which"}->inflate_meta($data->{$which});
-        }
-    }
     return $obj;
 }
 
