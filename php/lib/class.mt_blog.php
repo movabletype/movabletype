@@ -22,6 +22,10 @@ class Blog extends BaseObject
         return parent::Save();
     }
 
+    function is_blog() {
+        return $this->class == 'blog' ? true : false;
+    }
+
     function website() {
         $website_id = $this->parent_id;
         if (empty($website_id))

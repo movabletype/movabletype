@@ -52,9 +52,18 @@ function smarty_function_mtinclude($args, &$ctx) {
         $load_name = $args['identifier'];
     }
 
-    $tmpl_meta = array();
+    $tmpl_meta = null;
     if (!empty($load_type)) {
         $is_global = isset($args['global']) && $args['global'] ? 1 : 0;
+        if ( isset( $args['parent'] ) && $args['parent'] ) {
+            $local_blog = $ctx->mt->db()->fetch_blog($ctx->stash('local_blog_id'));
+            if ( $local_blog->is_blog() ) {
+                $website = $local_blog->website();
+                $blog_id = $website->id;
+            } else {
+                $blog_id = $local_blog->id;
+            }
+        }
         $tmpl_meta = $ctx->mt->db()->fetch_template_meta($load_type, $load_name, $blog_id, $is_global);
     }
 

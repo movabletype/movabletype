@@ -3463,6 +3463,10 @@ Forces an Include of a globally defined template even if the
 template is also available in the blog currently in context.
 (For module, widget and identifier includes.)
 
+=item * parent (optional; default "0")
+Forces an include of a template from the parent website or
+current website if current context is 'Website'.
+
 =item * ssi (optional; default "0")
 
 If specified, causes the include to be handled as a server-side
@@ -3575,6 +3579,12 @@ sub _include_module {
                 ? $_stash_blog->id
                 : 0;
     $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
+
+    if ( $arg->{parent} ) {
+        my $local_blog = MT->model('blog')->load($ctx->stash('local_blog_id'));
+        $blog_id = $local_blog->website->id;
+    }
+
     ## Don't know why but hash key has to be encoded
     my $stash_id = Encode::encode_utf8('template_' . $type . '::' . $blog_id . '::' . $tmpl_name);
     return $ctx->error(MT->translate("Recursion attempt on [_1]: [_2]", MT->translate($name), $tmpl_name))
@@ -3591,10 +3601,13 @@ sub _include_module {
                   :                      ( name => $tmpl_name,
                                            type => $type )
                   ;
-        $terms{blog_id} = !exists $arg->{global} ? [ $blog_id, 0 ]
-                        : $arg->{global}         ? 0
-                        :                          $blog_id
-                        ;
+        $terms{blog_id} = ( exists $arg->{global} && $arg->{global} )
+                              ? 0
+                              : ( exists $arg->{parent} && $arg->{parent} )
+                                  ? $blog_id
+                                  : [ $blog_id, 0 ];
+                          ;
+
         ($tmpl) = MT->model('template')->load(\%terms, {
             sort      => 'blog_id',
             direction => 'descend',
