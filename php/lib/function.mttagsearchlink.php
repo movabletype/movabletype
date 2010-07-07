@@ -25,7 +25,19 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
         $param = 'IncludeBlogs=' . $blog_ids;
     } else {
         $blog_id = $ctx->stash('blog_id');
-        $param = 'blog_id=' . $blog_id;
+        $param = 'IncludeBlogs=' . $blog_id;
+    }
+
+    $tmpl_blog_id = null;
+    if ( isset( $args['tmpl_blog_id'] ) ) {
+        $tmpl_blog_id = $args['tmpl_blog_id'];
+        if ( 'parent' == strtolower( $tmpl_blog_id ) ) {
+            $blog = $ctx->stash('blog');
+            if ( $blog->is_blog ) {
+                $blog = $blog->website();
+            }
+            $tmpl_blog_id = $blog->id;
+        }
     }
 
     require_once "function.mtcgipath.php";
@@ -34,6 +46,8 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $link = $search . '?' . $param . ($param ? '&amp;' : '')
         . 'tag=' . urlencode($name);
     $link .= '&amp;limit=' . $ctx->mt->config('MaxResults');
+    if ( $tmpl_blog_id )
+        $link .= '&amp;blog_id=' . $tmpl_blog_id;
     return $link;
 }
 ?>

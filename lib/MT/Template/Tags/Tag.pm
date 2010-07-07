@@ -728,6 +728,14 @@ sub _hdlr_tag_search_link {
     my $param = '';
     my $blogs = $blog_terms{blog_id};
 
+    my $template_blog_id = $args->{tmpl_blog_id} || 0;
+    if ( 'parent' eq lc $template_blog_id ) {
+        my $blog = $ctx->stash('blog');
+        $template_blog_id = $blog->is_blog
+            ? $blog->website->id
+            : $blog->id;
+    }
+
     if ($blogs) {
         if (ref $blogs eq 'ARRAY') {
             if ( my $blog = $ctx->stash('blog') ) {
@@ -741,12 +749,13 @@ sub _hdlr_tag_search_link {
                 $param .= 'IncludeBlogs=' . join(',', @$blogs);
             }
         } else {
-            $param .= 'blog_id=' . $blogs;
+            $param .= 'IncludeBlogs=' . $blogs;
         }
         $param .= '&amp;';
     }
     $param .= 'tag=' . encode_url($tag->name);
     $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
+    $param .= '&amp;blog_id='.$template_blog_id if $template_blog_id;
     my $path = $ctx->cgi_path;
     $path . $ctx->{config}->SearchScript . '?' . $param;
 }

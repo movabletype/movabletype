@@ -576,12 +576,13 @@ sub core_tags {
 
             ## Search
             # stubs for mt-search tags used in template includes
-            SearchString       => sub { '' },
-            SearchResultCount  => sub { 0 }, 
-            MaxResults         => sub { '' },
-            SearchMaxResults   => '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
-            SearchIncludeBlogs => sub { '' },
-            SearchTemplateID   => sub { 0 },
+            SearchString         => sub { '' },
+            SearchResultCount    => sub { 0 }, 
+            MaxResults           => sub { '' },
+            SearchMaxResults     => '$Core::MT::Template::Tags::Search::_hdlr_search_max_results',
+            SearchIncludeBlogs   => sub { '' },
+            SearchTemplateID     => sub { 0 },
+            SearchTemplateBlogID => sub { 0 },
 
             ## Misc
             FeedbackScore => '$Core::MT::Template::Tags::Misc::_hdlr_feedback_score',

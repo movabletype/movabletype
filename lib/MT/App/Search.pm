@@ -158,7 +158,8 @@ sub init_request {
     my $processed = 0;
     my $list      = {};
     if ( my $blog_id = $q->param('blog_id') ) {
-        $q->param( 'IncludeBlogs', $blog_id );
+        $q->param( 'IncludeBlogs', $blog_id )
+            unless $q->param( 'IncludeBlogs');
     }
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {

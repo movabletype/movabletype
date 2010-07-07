@@ -19,6 +19,7 @@ sub load_core_tags {
             MaxResults => \&_hdlr_max_results,
             SearchIncludeBlogs => \&_hdlr_include_blogs,
             SearchTemplateID => \&_hdlr_template_id,
+            SearchTemplateBlogID => \&_hdlr_template_blog_id,
         },
         block => {
             SearchResults => \&_hdlr_results,
@@ -240,6 +241,23 @@ B<Example:>
 =cut
 
 sub _hdlr_template_id { $_[0]->stash('template_id') || '' }
+
+###########################################################################
+
+=head2 SearchTemplateBlogID
+
+Returns the ID of the blog that loaded the template.
+
+B<Example:>
+
+    <$mt:SearchTemplateBlogID$>
+
+=for tags search
+
+=cut
+
+sub _hdlr_template_blog_id { $_[0]->stash('blog_id') || '' }
+
 sub _hdlr_max_results { $_[0]->stash('maxresults') || '' }
 
 ###########################################################################
