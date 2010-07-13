@@ -197,13 +197,13 @@ sub edit {
                 my $attr = $tag->attributes;
                 my $mod = $include->{include_module} = $attr->{module} || $attr->{widget};
                 next unless $mod;
+                next if $mod =~ /^\$.*/;
                 my $type = $attr->{widget} ? 'widget' : 'custom';
                 my $inc_blog_id = $tag->[1]->{global}  ? 0
-                                : $tag->[1]->{blog_id} ? $tag->[1]->{blog_id}
+                                : $tag->[1]->{blog_id} ? [ $tag->[1]->{blog_id}, 0]
+                                : $tag->[1]->{parent} ? $obj->blog ? $obj->blog->website->id : 0
                                 :                        [ $obj->blog_id, 0 ]
                                 ;
-                $inc_blog_id = [ $obj->blog_id, 0 ]
-                    if $inc_blog_id && $inc_blog_id =~ /\D/;
                 my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $obj->blog_id : $inc_blog_id );
                 next if exists $seen{$type}{$mod_id};
                 $seen{$type}{$mod_id} = 1;
