@@ -3571,6 +3571,7 @@ sub _include_module {
         $type = 'widget';
         $tmpl_name =~ s/^Widget: ?//;
     }
+
     my $_stash_blog = $ctx->stash('blog');
     my $blog_id = $arg->{global}
         ? 0
@@ -3582,6 +3583,11 @@ sub _include_module {
     $blog_id = $ctx->stash('local_blog_id') if $arg->{local};
 
     if ( $arg->{parent} ) {
+        return $ctx->error(MT->translate("'parent' modifier cannot be used with '[_1]'", 'global'))
+            if $arg->{global};
+        return $ctx->error(MT->translate("'parent' modifier cannot be used with '[_1]'", 'local'))
+            if $arg->{local};
+
         my $local_blog = MT->model('blog')->load($ctx->stash('local_blog_id'));
         $blog_id = $local_blog->website->id;
     }

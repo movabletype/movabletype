@@ -56,6 +56,11 @@ function smarty_function_mtinclude($args, &$ctx) {
     if (!empty($load_type)) {
         $is_global = isset($args['global']) && $args['global'] ? 1 : 0;
         if ( isset( $args['parent'] ) && $args['parent'] ) {
+            if ( isset( $args['global'] ) && $args['global'] )
+                return $ctx->error($ctx->mt->translate("'parent' modifier cannot be used with '[_1]'", 'global'));
+            if ( isset( $args['local'] ) && $args['local'] )
+                return $ctx->error($ctx->mt->translate("'parent' modifier cannot be used with '[_1]'", 'global'));
+
             $local_blog = $ctx->mt->db()->fetch_blog($ctx->stash('local_blog_id'));
             if ( $local_blog->is_blog() ) {
                 $website = $local_blog->website();
