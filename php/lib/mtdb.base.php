@@ -83,84 +83,128 @@ abstract class MTDatabase {
         return $this->serializer->serialize($data);
     }
 
-    protected function include_exclude_blogs(&$args) {
-        if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
-            // The following are aliased
-            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
-            $args['include_websites'] and $args['include_blogs'] = $args['include_websites'];
-            $attr = $args['include_blogs'];
-            unset($args['blog_ids']);
-            unset($args['include_websites']);
-            $is_excluded = 0;
-        } elseif (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
-            $attr = $args['exclude_blogs'];
-            $attr or $attr = $args['exclude_websites'];
-            $is_excluded = 1;
-        } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
-            return " = " . $args['blog_id'];
-        } else {
-            return;
-        }
+    protected function parse_blog_ids( $blog_ids ) {
+        $ret = array();
 
-        if (preg_match('/-/', $attr)) {
+        if ( empty($blog_ids) || $blog_ids == 'all')
+            return $ret;
+
+        if (preg_match('/-/', $blog_ids)) {
             # parse range blog ids out
-            $list = preg_split('/\s*,\s*/', $attr);
-            $attr = '';
+            $list = preg_split('/\s*,\s*/', $blog_ids);
             foreach ($list as $item) {
                 if (preg_match('/(\d+)-(\d+)/', $item, $matches)) {
                     for ($i = $matches[1]; $i <= $matches[2]; $i++) {
-                        if ($attr != '') $attr .= ',';
-                        $attr .= $i;
+                        array_push( $ret, $i );
                     }
                 } else {
-                    if ($attr != '') $attr .= ',';
-                    $attr .= $item;
+                    array_push( $ret, $i );
                 }
             }
-        }
-
-        $blog_ids = preg_split('/\s*,\s*/', 
-                                $attr, 
-                                -1, PREG_SPLIT_NO_EMPTY);
-        $sql = '';
-        if ($is_excluded) {
-            $sql = 'not in ( ' . implode(',', $blog_ids) . ' )';            
-        } elseif ($args[include_blogs] == 'all') {
-            $sql = '> 0';
+        } elseif ( preg_match( '/\s*,\s*/', $blog_ids ) ) {
+            $ret = preg_split( '/\s*,\s*/',
+                               $blog_ids,
+                               -1, PREG_SPLIT_NO_EMPTY);
         } elseif (
-             ($args[include_blogs] == 'site')
-          || ($args[include_blogs] == 'children')
-          || ($args[include_blogs] == 'siblings')
+             ($blog_ids == 'site')
+          || ($blog_ids == 'children')
+          || ($blog_ids == 'siblings')
         ) {
             $mt = MT::get_instance();
             $ctx = $mt->context();
             $blog = $ctx->stash('blog');
-            if (!empty($blog) && $blog->class == 'blog') {
+            if (!empty($blog)) {
                 require_once('class.mt_blog.php');
                 $blog_class = new Blog();
-                $blogs = $blog_class->Find("blog_parent_id = " . $blog->parent_id);
-                $blog_ids = array();
+                $blogs = $blog_class->Find("blog_parent_id = " . ( $blog->is_blog() ? $blog->parent_id : $blog->id) );
+                $ids = array();
                 foreach($blogs as $b) {
-                    array_push($ids, $b->id);
+                    array_push($ret, $b->id);
                 }
-                if ( $args[include_with_website] )
-                    array_push($blog_ids, $blog->parent_id);
-                if (count($blog_ids)) {
-                    $sql = 'in ( ' . implode(',', $blog_ids) . ' )';
-                } else {
-                    $sql = '> 0';
-                }
-            } else {
-                    $sql = '> 0';
             }
-        } else {
-            if (count($blog_ids)) {
-                $sql = 'in ( ' . implode(',', $blog_ids) . ' )';
+        } elseif (preg_match('/^\d$/', $blog_ids)) {
+            array_push( $ret, $blog_ids);
+        }
+        return $ret;
+    }
+
+    protected function include_exclude_blogs(&$args) {
+        $incl = null;
+        $excl = null;
+        if (isset($args['blog_ids']) || isset($args['include_blogs']) || isset($args['include_websites'])) {
+            // The following are aliased
+            $args['blog_ids'] and $args['include_blogs'] = $args['blog_ids'];
+            $args['include_websites'] and $args['include_blogs'] = $args['include_websites'];
+            $incl = $args['include_blogs'];
+            unset($args['blog_ids']);
+            unset($args['include_websites']);
+        }
+
+
+        if (isset($args['exclude_blogs']) || isset($args['exclude_websites'])) {
+            $excl = $args['exclude_blogs'];
+            $excl or $excl = $args['exclude_websites'];
+        }
+
+
+        // Compute include_blogs
+        if ( !empty($incl) )
+            $incl = $this->parse_blog_ids( $incl );
+        if ( isset( $args['allows'] ) ) {
+            if ( empty( $incl ) ) {
+                $incl = $args['allows'];
             } else {
-                $sql = '> 0';
+                $pattern = implode( '|', $args['allows'] );
+                $incl = preg_grep( "/$pattern/", $incl );
             }
         }
-        return $sql;
+
+        // Compute exclude_blogs
+        if ( !empty($excl) )
+            $excl = $this->parse_blog_ids( $excl );
+
+        if ( isset( $args['denies'] ) ) {
+            foreach ( $args['denies'] as $val )
+                $denies[$val] = 1;
+            if ( !empty($excl) ) {
+                foreach ( $excl as $e ) {
+                    if ( !array_key_exists( $e, $denies ) )
+                        $denies[$e] = 1;
+                }
+            }
+            $excl = array_keys( $denies );
+        }
+
+        if ( !empty($incl) && !empty($excl) ) {
+            $pattern = implode( '|', $excl );
+            $incl = preg_grep( "/$pattern/", $incl, PREG_GREP_INVERT );
+            if ( !empty($incl) )
+                $incl = array_values( $incl );
+            $excl = null; // remove all exclude pattern.
+        }
+
+        if ( !empty($incl) ) {
+            if ( count($incl) > 1 )
+                return " in (" . implode(',', $incl) . ' )';
+            else
+                return " = " . $incl[0];
+        } elseif ( !empty($excl) ) {
+            return " not in (" . implode(',', $excl) . ' )';
+        } else {
+            if ( isset($args['include_blogs']) && strtolower($args['include_blogs']) == 'all') {
+                return " > 0";
+            } elseif (isset($args['blog_id']) && is_numeric($args['blog_id'])) {
+                return " = " . $args['blog_id'];
+            } else {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                if ( !empty( $blog ) )
+                    return " = " . $blog->id;
+                else
+                    return " > 0";
+            }
+        }
     }
 
     public function db2ts($dbts) {

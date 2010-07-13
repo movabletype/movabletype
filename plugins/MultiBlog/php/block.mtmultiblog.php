@@ -49,20 +49,6 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
                 $mode = 'context';  # Override 'loop' mode
             }
         }
-
-        # Filter MultiBlog args through access controls
-        if ( ! multiblog_filter_blogs_from_args($ctx, $args) ) {
-            if ($mode == 'loop') {
-                $repeat = false;
-                return '';
-            }            
-        } else {
-            if (($mode != 'loop') && ($mode != 'context')) {
-                # Throw error if mode is unknown
-                $repeat = false;
-                return '';
-            }
-        }
     }
 
     # Run MultiBlog in specified mode
@@ -83,11 +69,12 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         # Assuming multiblog context, set it.
-        if ($args['include_blogs'] or $args['exclude_blogs']) {
-            $mode = $args['include_blogs'] ? 'include_blogs' 
-                                           : 'exclude_blogs';
-            $ctx->stash('multiblog_context', $mode);
-            $ctx->stash('multiblog_blog_ids', $args[$mode]);
+        if (isset($args['include_blogs']) or isset($args['exclude_blogs'])) {
+            $ctx->stash('multiblog_context', true);
+            if (isset($args['include_blogs']))
+                $ctx->stash('multiblog_include_blog_ids', $args['include_blogs']);
+            if (isset($args['exclude_blogs']))
+                $ctx->stash('multiblog_exclude_blog_ids', $args['exclude_blogs']);
         } 
         $ctx->stash('local_blog_id', $ctx->stash('blog_id'));
     } else {
@@ -111,6 +98,13 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $ctx->stash('category', null);
             $ctx->stash('archive_category', null);
         }
+
+        # Load multiblog access control list
+        $acl = multiblog_load_acl($ctx);
+        if ( !empty($acl) && !empty($acl['allow']) )
+            $args['allows'] = $acl['allow'];
+        elseif ( !empty($acl) && !empty($acl['deny']) )
+            $args['denies'] = $acl['deny'];
 
         $args['class'] = '*';
         $blogs = $ctx->mt->db()->fetch_blogs($args);

@@ -21,6 +21,7 @@ sub MultiBlog {
     # Set default mode for backwards compatibility
     $args->{mode} ||= 'loop';
 
+
     if ($args->{blog_id}) {
         $args->{blog_ids} = $args->{blog_id};
         delete $args->{blog_id};
@@ -52,9 +53,9 @@ sub MultiBlog {
 
     # Filter MultiBlog args through access controls
     require MultiBlog;
-    if ( ! MultiBlog::filter_blogs_from_args($plugin, $ctx, $args) ) {
-        return $ctx->errstr ? $ctx->error($ctx->errstr) : '';
-    }
+    # Load multiblog access control list
+    my %acl = MultiBlog::load_multiblog_acl( $plugin, $ctx );
+    $args->{$acl{mode}} = $acl{acl};
 
     # Run MultiBlog in specified mode
     my $res;
@@ -74,7 +75,8 @@ sub MultiBlog {
     }
     # Remove multiblog_context and blog_ids
     $ctx->stash('multiblog_context', '');
-    $ctx->stash('multiblog_blog_ids', '');
+    $ctx->stash('multiblog_include_blog_ids', '');
+    $ctx->stash('multiblog_exclude_blog_ids', '');
     return defined($res) ? $res : $ctx->error($ctx->errstr);
 }
 
@@ -125,11 +127,12 @@ sub context {
 
     # Assuming multiblog context, set it.
     if ($args->{include_blogs} || $args->{exclude_blogs}) {
-        my $mode = $args->{include_blogs} ? 'include_blogs' 
-                                          : 'exclude_blogs';
-        $ctx->stash('multiblog_context', $mode);
-        $ctx->stash('multiblog_blog_ids', join ( ',', $args->{$mode} ));
-    } 
+        $ctx->stash('multiblog_context', 1);
+        $ctx->stash('multiblog_include_blog_ids', join ( ',', $args->{include_blogs} ))
+            if $args->{include_blogs};
+        $ctx->stash('multiblog_exclude_blog_ids', join ( ',', $args->{exclude_blogs} ))
+            if $args->{exclude_blogs};
+    }
 
     # Evaluate container contents and return output
     my $builder = $ctx->stash('builder');
@@ -149,8 +152,9 @@ sub loop {
     # Set the context for blog loading
     $ctx->set_blog_load_context($args, \%terms, \%args, 'id')
         or return $ctx->error($ctx->errstr);
-    $terms{'class'} = '*'
+    $args{'no_class'} = 1
         if ( $args->{include_blogs} && lc $args->{include_blogs} eq 'all' ) ||
+           ( $args->{include_website} && lc $args->{include_website} eq 'all' ) ||
            ( $args->{blog_ids} && lc $args->{blog_ids} eq 'all' ) ||
            ( $args->{site_ids} && lc $args->{site_ids} eq 'all' );
 
@@ -171,6 +175,7 @@ sub loop {
     require MT::Blog;
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
+
     my $iter    = MT::Blog->load_iter(\%terms, \%args);
     my $res     = '';
     while (my $blog = $iter->()) {

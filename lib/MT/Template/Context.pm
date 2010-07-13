@@ -330,10 +330,8 @@ sub set_blog_load_context {
     # Grab specified blog IDs
     my $blog_ids = $attr->{blog_ids}
                 || $attr->{include_blogs}
-                || $attr->{exclude_blogs}
                 || $attr->{site_ids}
-                || $attr->{include_websites}
-                || $attr->{exclude_websites};
+                || $attr->{include_websites};
 
     if (defined($blog_ids) && ($blog_ids =~ m/-/)) {
         my @list = split /\s*,\s*/, $blog_ids;
@@ -349,7 +347,7 @@ sub set_blog_load_context {
     }
 
     # Find blog_id which belongs to the specified websites
-    if ($col eq 'blog_id' && ($attr->{site_ids} || $attr->{include_websites} || $attr->{exclude_websites})) {
+    if ($col eq 'blog_id' && ($attr->{site_ids} || $attr->{include_websites})) {
         my @blogs = MT::Blog->load({
             'id' => \@$blog_ids,
         });
@@ -361,22 +359,6 @@ sub set_blog_load_context {
         if (my $blog = $ctx->stash('blog')) {
             $terms->{$col} = $blog_id if $blog_id && $col eq 'blog_id';
         }
-    }
-    # If exclude blogs, set the terms and the NOT arg for load
-    # 'All' is not a valid value for exclude_blogs
-    elsif ( $attr->{exclude_blogs} || $attr->{exclude_websites} ) {
-        return $ctx->error(MT->translate(
-                "The attribute exclude_blogs cannot take '[_1]' for a value.",
-                $args->{exclude_blogs}
-            ))
-            if lc( $args->{exclude_blogs} ) eq 'all'
-            || lc( $args->{exclude_blogs} ) eq 'site'
-            || lc( $args->{exclude_blogs} ) eq 'children'
-            || lc( $args->{exclude_blogs} ) eq 'siblings';
-
-        my @excluded_blogs = split /\s*,\s*/, $blog_ids;
-        $terms->{$col} = [ @excluded_blogs ];
-        $args->{not}{$col} = 1;
     # include_blogs="all" removes the blog_id/id constraint
     } elsif (lc $blog_ids eq 'all') {
         delete $terms->{$col} if exists $terms->{$col};
@@ -397,11 +379,88 @@ sub set_blog_load_context {
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
         push @$blog_ids, $website->id if $attr->{include_with_website};
         $terms->{$col} = $blog_ids;
+
     # Blogs are specified in include_blogs so set the terms
     } else {
         my $blogs = { map { $_ => 1 } split /\s*,\s*/, $blog_ids };
         $terms->{$col} = [ keys %{$blogs} ];
     }
+
+
+    # Filtered by acl;
+    my $allow = delete $attr->{allow_blogs} if $attr->{allow_blogs};
+    if ( $allow ) {
+        if ( !$terms->{$col} ) {
+            $terms->{$col} = $allow;
+        } else {
+            my $term_ids = $terms->{$col};
+            $term_ids = [ $term_ids ] unless ref $term_ids eq 'ARRAY';
+            my %seen = map { $_ => 1 } @$allow;
+            my @allows = grep { $seen{$_} } @$term_ids;
+            if ( @allows ) {
+                $terms->{$col} = \@allows;
+            } else {
+                $terms->{$col} = $blog_id;
+            }
+        }
+    }
+
+    # If exclude blogs, set the terms and the NOT arg for load
+    # 'All' is not a valid value for exclude_blogs
+    if ( $attr->{exclude_blogs} || $attr->{exclude_websites} || $attr->{deny_blogs} ) {
+        my $exclude_ids = $attr->{exclude_blogs}
+            || $attr->{exclude_websites};
+        return $ctx->error(
+            MT->translate(
+                "The attribute exclude_blogs cannot take '[_1]' for a value.",
+                $exclude_ids
+            )
+        ) if lc $exclude_ids eq 'all';
+
+        my @blog_ids;
+        if ( ( lc($exclude_ids) eq 'site' )
+             || ( lc($exclude_ids) eq 'children' )
+             || ( lc($exclude_ids) eq 'siblings' )
+            )
+        {
+            my ( $ex_args, %terms, %args );
+            $ex_args->{include_blogs} = $exclude_ids;
+            $ctx->set_blog_load_context( $ex_args, \%terms, \%args, $col );
+            @blog_ids = @{ $terms{$col} };
+        }
+        else {
+            @blog_ids = split /\s*,\s*/, $exclude_ids;
+        }
+
+        # Merge deny list
+        push @blog_ids, @{$attr->{deny_blogs}} if $attr->{deny_blogs};
+        my %seen;
+        @seen{@blog_ids} = ();
+        @blog_ids = keys %seen;
+
+        return $ctx->error(
+            MT->translate(
+                "The attribute exclude_blogs denies all incllude_blogs."
+            )
+        ) unless @blog_ids;
+
+        if ( !$blog_ids || lc $blog_ids eq 'all' || !$terms->{$col} ) {
+            $terms->{$col} = \@blog_ids;
+            $args->{not}{$col} = 1;
+        }
+        else {
+            my $term_ids = $terms->{$col};
+            $term_ids = [ $term_ids ] unless ref $term_ids eq 'ARRAY';
+            my %exc_ids = map { $_ => 1 } @blog_ids;
+            @blog_ids = grep { !$exc_ids{$_} } @$term_ids;
+            if ( @blog_ids ) {
+                $terms->{$col} = \@blog_ids;
+            } else {
+                $terms->{$col} = $blog_id;
+            }
+        }
+    }
+
     1;
 }
 

@@ -5,7 +5,7 @@
 #
 # $Id$
 
-global $mt;
+$mt = MT::get_instance();
 $ctx = &$mt->context();
 
 # Check to see if MultiBlog is disabled...
@@ -76,8 +76,12 @@ function multiblog_MTTagSearchLink($args, &$ctx) {
 # Special handler for MTInclude
 function multiblog_MTInclude($args, &$ctx) {
     if (isset($args['blog_id'])) {
-        if (!multiblog_filter_blogs_from_args($ctx, $args))
-            return '';
+    # Load multiblog access control list
+        $acl = multiblog_load_acl($ctx);
+        if ( !empty($acl) && !empty($acl['allow']) )
+            $args['allows'] = $acl['allow'];
+        elseif ( !empty($acl) && !empty($acl['deny']) )
+            $args['denies'] = $acl['deny'];
     } else {
         # Explicitly set blog_id attribute to local blog.
         # so MTInclude is never affected by multiblog context
@@ -95,12 +99,22 @@ function multiblog_function_wrapper($tag, $args, &$ctx) {
     $localvars = array('local_blog_id');
     $ctx->localize($localvars);
     
-    # Filter blogs from multiblog tag attributes if any
-    if (!multiblog_filter_blogs_from_args($ctx, $args)) {
-        $result = 0;
+    # Load multiblog access control list
+    $acl = multiblog_load_acl($ctx);
+    if ( !empty($acl) && !empty($acl['allow']) )
+        $args['allows'] = $acl['allow'];
+    elseif ( !empty($acl) && !empty($acl['deny']) )
+        $args['denies'] = $acl['deny'];
+
     # Set multiblog tag context if applicable
-    } elseif ($mode = $ctx->stash('multiblog_context')) {
-        $args[$mode] = $ctx->stash('multiblog_blog_ids');
+    if ($ctx->stash('multiblog_context')) {
+        $incl = $ctx->stash('multiblog_include_blog_ids');
+        if (isset($incl))
+            $args['include_blogs'] = $incl;
+        
+        $excl = $ctx->stash('multiblog_exclude_blog_ids');
+        if (isset($excl))
+            $args['exclude_blogs'] = $excl;
     }
 
     # Call original tag handler with new multiblog args
@@ -119,16 +133,26 @@ function multiblog_block_wrapper($args, $content, &$ctx, &$repeat) {
     $localvars = array('local_blog_id');
     if (!isset($content)) {
         $ctx->localize($localvars);
-        # Filter blogs from multiblog tag attributes if any
-        if (!multiblog_filter_blogs_from_args($ctx, $args)) {
-            $repeat = false;
-            $ctx->restore($localvars);
-            return '';
+
         # Set multiblog tag context if applicable
-        } elseif ($mode = $ctx->stash('multiblog_context')) {
-            $args[$mode] = $ctx->stash('multiblog_blog_ids');
+        if ($ctx->stash('multiblog_context')) {
+            $incl = $ctx->stash('multiblog_include_blog_ids');
+            if (isset($incl))
+                $args['include_blogs'] = $incl;
+
+            $excl = $ctx->stash('multiblog_exclude_blog_ids');
+            if (isset($excl))
+                $args['exclude_blogs'] = $excl;
         }
     }
+
+    # Load multiblog access control list
+    $acl = multiblog_load_acl($ctx);
+    if ( !empty($acl) && !empty($acl['allow']) )
+        $args['allows'] = $acl['allow'];
+    elseif ( !empty($acl) && !empty($acl['deny']) )
+        $args['denies'] = $acl['deny'];
+
     # Fix for MTMultiBlogIfLocalBlog which should never return
     # true with MTTags block because tags are cross-blog
     if ($ctx->this_tag() == 'mttags')
@@ -145,98 +169,40 @@ function multiblog_block_wrapper($args, $content, &$ctx, &$repeat) {
     return $result;
 }
 
-function multiblog_filter_blogs_from_args(&$ctx, &$args) { 
+function multiblog_load_acl($ctx) {
+    # Set local blog
+    $mt = MT::get_instance();
+    $this_blog = $ctx->stash('blog_id');
 
-    # SANITY CHECK ON ARGUMENTS
 
-    # Set and clean up working variables
-    $incl = $args['include_blogs'];
-    $incl or $incl = $args['blog_ids'];
-    $incl or $incl = $args['blog_id'];
-    $excl = $args['exclude_blogs'];
-    # Remove spaces
-    $incl = preg_replace('/\s+/', '', $incl);
-    $excl = preg_replace('/\s+/', '', $excl);
+    # Get the MultiBlog system config for default access and overrides
+    $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
 
-    # If there are no multiblog arguments to filter, we don't need to be here
-    if (! ($incl or $excl))
-        return true;
-    # Only one multiblog argument can be used
-    $tagcount = 0;
-    $possible_args = array( $args['include_blogs'],
-                            $args['blog_ids'],
-                            $args['blog_id'],
-                            $args['exclude_blogs']);
-    foreach ($possible_args as $arg)
-        $arg != '' and $tagcount++;
-    if ($tagcount > 1)
-        return false;
+    $default_access_allowed = 1;
+    if (isset($multiblog_system_config['default_access_allowed']))
+        $default_access_allowed = $multiblog_system_config['default_access_allowed'];
 
-    # exclude_blogs="all" is not allowed
-    if ($excl and (
-        $excl == 'all'
-     or $excl == 'site'
-     or $excl == 'children'
-     or $excl == 'siblings'
-    ))
-        return false; 
+    $access_overrides = $multiblog_system_config['access_overrides'];
+    if (empty($access_overrides))
+        $access_overrides = array();
 
-    # blog_id attribute only accepts a single blog ID
-    if ($args['blog_id'] and !preg_match('/^\d+$/', $args['blog_id']))
-        return false;
-
-    $attr = $incl ? 'include_blogs' : 'exclude_blogs';
-    $val = $incl ? $incl : $excl;
-
-    # Make sure include_blogs/exclude_blogs is valid
-    if (  ( $val != 'all' )
-      and ( $val != 'site' )
-      and ( $val != 'children' )
-      and ( $val != 'siblings' )
-      and !preg_match('/^\d+([,-]\d+)*$/', $val)
-    )
-        return false;
-
-    # Prepare for filter_blogs
-    $blogs = array();
-    if (preg_match('/-/', $val)) {
-        # parse range blog ids out
-        $list = preg_split('/\s*,\s*/', $val);
-        foreach ($list as $item) {
-            if (preg_match('/(\d+)-(\d+)/', $item, $matches)) {
-                for ($i = $matches[1]; $i <= $matches[2]; $i++)
-                    $blogs[] = $i;
-            } else {
-                $blogs[] = $item;
-            }
+    $allow = array();
+    $deny = array();
+    if ($default_access_allowed) {
+        foreach (array_keys($access_overrides) as $o) {
+            if (($o != $this_blog) && (isset($access_overrides[$o]) && ($access_overrides[$o] == MULTIBLOG_ACCESS_DENIED)))
+                $deny[] = $o;
         }
     } else {
-        $blogs = preg_split('/\s*,\s*/', $val);
+        foreach (array_keys($access_overrides) as $o) {
+            if (($o == $this_blog) || (isset($access_overrides[$o]) && ($access_overrides[$o] == MULTIBLOG_ACCESS_ALLOWED)))
+                $allow[] = $o;
+        }
+        if (!isset($access_overrides[$this_blog]))
+            $allow[] = $this_blog;
     }
 
-    # Filter the blogs using the MultiBlog access controls
-    list($attr, $blogs) = multiblog_filter_blogs($ctx, $attr, $blogs);
-    if (!($attr && count($blogs)))
-        return false;
-
-    if ( ( $attr == 'include_blogs' ) && $args['include_with_website'] ) {
-        $blog = $ctx->stash('blog');
-        $website = $blog->class == 'blog' ? $blog->website() : $blog;
-        array_push($blogs, $website->blog_id);
-        $args['class'] = '*';
-    }
-
-    # Rewrite the args to the modifed value
-    if ($args['blog_ids'])
-        unset($args['blog_ids']);  // Deprecated
-    if ($args['blog_id']) {
-        $args['blog_id'] = $blogs[0];
-    } else {
-        unset($args['include_blogs']);
-        unset($args['exclude_blogs']);
-        $args[$attr] = implode(',', $blogs);
-    }
-    return true;
+    return array( 'allow' => $allow, 'deny' => $deny );
 }
 
 ## Get a mode (include/exclude) and list of blogs
@@ -252,7 +218,7 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
     $this_blog = $ctx->stash('blog_id');
 
     global $multiblog_system_config;
-    global $mt;
+    $mt = MT::get_instance();
     if (!$multiblog_system_config)
         $multiblog_system_config = $mt->db()->fetch_plugin_config('MultiBlog', 'system');
 
