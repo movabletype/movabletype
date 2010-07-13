@@ -438,12 +438,6 @@ sub set_blog_load_context {
         @seen{@blog_ids} = ();
         @blog_ids = keys %seen;
 
-        return $ctx->error(
-            MT->translate(
-                "The attribute exclude_blogs denies all incllude_blogs."
-            )
-        ) unless @blog_ids;
-
         if ( !$blog_ids || lc $blog_ids eq 'all' || !$terms->{$col} ) {
             $terms->{$col} = \@blog_ids;
             $args->{not}{$col} = 1;
@@ -453,6 +447,12 @@ sub set_blog_load_context {
             $term_ids = [ $term_ids ] unless ref $term_ids eq 'ARRAY';
             my %exc_ids = map { $_ => 1 } @blog_ids;
             @blog_ids = grep { !$exc_ids{$_} } @$term_ids;
+            return $ctx->error(
+                MT->translate(
+                    "The attribute exclude_blogs denies all incllude_blogs."
+                )
+            ) unless @blog_ids;
+
             if ( @blog_ids ) {
                 $terms->{$col} = \@blog_ids;
             } else {
