@@ -707,6 +707,16 @@ A URL like this would have to be built like this:
 And of course, you would have to create the .htaccess rules to translate
 this into a request to mt-search.cgi.
 
+B<Attributes:>
+
+=over 4
+
+=item * tmpl_blog_id
+
+If present, the template tag will add 'blog_id' parameter for a link.
+
+=back
+
 =for tags tags, multiblog
 
 =cut
@@ -728,12 +738,18 @@ sub _hdlr_tag_search_link {
     my $param = '';
     my $blogs = $blog_terms{blog_id};
 
-    my $template_blog_id = $args->{tmpl_blog_id} || 0;
-    if ( 'parent' eq lc $template_blog_id ) {
-        my $blog = $ctx->stash('blog');
-        $template_blog_id = $blog->is_blog
-            ? $blog->website->id
-            : $blog->id;
+    my $template_blog_id;
+    if ( defined $args->{tmpl_blog_id} ) {
+        $template_blog_id = $args->{tmpl_blog_id};
+        return $ctx->error( MT->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) )
+            if ( $template_blog_id !~ m/^\d+$/ ) || !$template_blog_id;
+
+        if ( 'parent' eq lc $template_blog_id ) {
+            my $blog = $ctx->stash('blog');
+            $template_blog_id = $blog->is_blog
+                ? $blog->website->id
+                    : $blog->id;
+        }
     }
 
     if ($blogs) {

@@ -31,6 +31,11 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $tmpl_blog_id = null;
     if ( isset( $args['tmpl_blog_id'] ) ) {
         $tmpl_blog_id = $args['tmpl_blog_id'];
+        if ( !preg_match( '/^\d+$/', $tmpl_blog_id ) || $tmpl_blog_id < 1 ) {
+            $mt = MT::get_instance();
+            $ctx->error( $mt->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) );
+        }
+
         if ( 'parent' == strtolower( $tmpl_blog_id ) ) {
             $blog = $ctx->stash('blog');
             if ( $blog->is_blog ) {
