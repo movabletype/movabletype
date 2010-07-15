@@ -178,9 +178,15 @@ abstract class MTDatabase {
         if ( !empty($incl) && !empty($excl) ) {
             $pattern = implode( '|', $excl );
             $incl = preg_grep( "/$pattern/", $incl, PREG_GREP_INVERT );
-            if ( !empty($incl) )
+            if ( empty( $incl ) ) {
+                $mt = MT::get_instance();
+                trigger_error( $mt->translate(
+                        "The attribute exclude_blogs denies all incllude_blogs."
+                ) );
+            } else {
                 $incl = array_values( $incl );
-            $excl = null; // remove all exclude pattern.
+                $excl = null; // remove all exclude pattern.
+            }
         }
 
         if ( !empty($incl) ) {
