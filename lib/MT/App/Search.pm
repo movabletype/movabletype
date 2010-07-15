@@ -95,7 +95,7 @@ sub init_request {
     my $q = $app->param;
 
     my $cfg     = $app->config;
-    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
+    my $blog_id = defined $q->param('blog_id') ? $q->param('blog_id') : $app->first_blog_id();
     my $blog    = $app->model('blog')->load($blog_id);
     my $page    = $q->param('page') ? $q->param('page') : 1;
     my $limit
@@ -120,6 +120,10 @@ sub init_request {
         return $app->errtrans( 'Invalid [_1] parameter.', $param )
             if ( $val !~ m/^(\d+,?)+$/ && $val ne 'all' );
     }
+
+    # invalid request if they are given Zero as blog_id
+    return $app->errtrans( 'Invalid [_1] parameter.', 'blog_id' )
+        unless ( $blog_id > 0 );
 
     my $params = $app->registry( $app->mode, 'params' );
     foreach (@$params) {
@@ -157,10 +161,8 @@ sub init_request {
 
     my $processed = 0;
     my $list      = {};
-    if ( my $blog_id = $q->param('blog_id') ) {
-        $q->param( 'IncludeBlogs', $blog_id )
-            unless $q->param( 'IncludeBlogs');
-    }
+    $q->param( 'IncludeBlogs', $blog_id )
+        unless $q->param( 'IncludeBlogs');
     if ( $app->run_callbacks( 'search_blog_list', $app, $list, \$processed ) )
     {
         if ($processed) {
@@ -662,7 +664,7 @@ sub prepare_context {
     $ctx->stash( 'limit', $q->param('count') || $q->param('limit') );
     $ctx->stash( 'format', $q->param('format') ) if $q->param('format');
 
-    my $blog_id = $q->param('blog_id') || $app->first_blog_id();
+    my $blog_id = defined $q->param('blog_id') ? $q->param('blog_id') : $app->first_blog_id();
     if ($blog_id) {
         my $blog = $app->model('blog')->load($blog_id);
         $app->blog($blog);
