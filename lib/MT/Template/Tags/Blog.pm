@@ -61,7 +61,7 @@ sub _hdlr_blogs {
     local $ctx->{__stash}{inside_blogs} = 1;
 
     require MT::Blog;
-#    $terms{class} = 'blog' unless $terms{class};
+    $terms{class} = 'blog' unless $terms{class};
     $args{'sort'} = 'name';
     $args{direction} = 'ascend';
     my $iter = MT::Blog->load_iter(\%terms, \%args);
