@@ -122,30 +122,6 @@ sub dashboard {
     return $app->load_tmpl( "dashboard.tmpl", $param );
 }
 
-sub new_version_widget {
-    my $app = shift;
-    my ( $tmpl, $param ) = @_;
-
-    push @{ $param->{feature_loop} ||= [] },
-      {
-        feature_label => MT->translate('Design with Themes'),
-        feature_description => MT->translate('Create and apply a theme to change templates, categories, folders and custom fields.'),
-      },
-      {
-        feature_label => MT->translate('Website Management'),
-        feature_description => MT->translate('Manage multiple blogs for each website. Now, it\'s much easier to create a portal with MultiBlog.'),
-      },
-      {
-        feature_label => MT->translate('Revision History'),
-        feature_description => MT->translate('The revision history for entries and templates protects users from unexpected modification.'),
-      },
-      {
-        feature_label => MT->translate('Movable Type Online Manual'),
-        feature_url  => MT->translate('http://www.movabletype.org/documentation/'),
-        feature_description => MT->translate('Whether you\'re new to Movable Type or using it for the first time, learn more about what this tool can do for you.'),
-      };
-}
-
 sub this_is_you_widget {
     my $app = shift;
     my ( $tmpl, $param ) = @_;

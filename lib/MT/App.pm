@@ -3035,27 +3035,6 @@ sub load_widgets {
     unless ($widgets) {
         $resave_widgets = 1;
         $widgets        = $default_widgets;
-
-        # add the 'new_user' / 'new_install' widget...
-        unless ($widget_store) {
-
-            # Special case for the MT CMS dashboard and initial
-            # widgets used there.
-            if ( $page eq 'dashboard' && $scope_type eq 'user') {
-                if ( $user->id == 1 ) {
-
-                    # first user! good enough guess at this.
-                    $widgets->{new_install} = { order => -2, set => 'main' };
-                }
-                else {
-                    $widgets->{new_user} = { order => -2, set => 'main' };
-                }
-
-                # Do not show new_version widget for users without specific widgets
-                #$widgets->{new_version} = { order => -1, set => 'main' }
-                #    unless $app->param('installed');
-           }
-        }
     }
 
     my $reg_widgets = $app->registry("widgets");

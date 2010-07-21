@@ -264,25 +264,6 @@ sub core_widgets {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
     return {
-        new_install => {
-            template => 'widget/new_install.tmpl',
-            set      => 'main',    # forces this widget to the main group
-            singular => 1,
-            view     => 'user',
-        },
-        new_user => {
-            template => 'widget/new_user.tmpl',
-            set      => 'main',    # forces this widget to the main group
-            singular => 1,
-            view     => 'user',
-        },
-        new_version => {
-            template => 'widget/new_version.tmpl',
-            set      => 'main',
-            singular => 1,
-            handler  => "${pkg}Dashboard::new_version_widget",
-            view     => 'user',
-        },
         this_is_you => {
             label    => 'This is You',
             template => 'widget/this_is_you.tmpl',

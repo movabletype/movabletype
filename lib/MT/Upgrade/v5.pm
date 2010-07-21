@@ -108,6 +108,37 @@ sub upgrade_functions {
             priority      => 3.1,
             code          => \&_v5_recover_auth_type,
         },
+        'v5_remove_dashboard_widget' => {
+            version_limit => 5.0020,
+            priority      => 3.1,
+            updater => {
+                type => 'author',
+                label => 'Removing widget from dashboard...',
+                condition => sub {
+                    my $App = $MT::Upgrade::App;
+                    my ($user) = @_;
+                    if ( $user->type == MT::Author::AUTHOR() ) {
+                        return 1
+                            if $App && UNIVERSAL::isa( $App, 'MT::App' )
+                            && ( $user->id == $App->user->id );
+                    }
+                    return 0;
+                },
+                code => sub {
+                    my ($user) = @_;
+                    my $widgets = $user->widgets();
+                    if ( $widgets && %$widgets ) {
+                        my @keys = qw( mt_shortcuts new_version new_user new_install );
+                        for my $set ( keys %$widgets ) {
+                            for my $key ( @keys ) {
+                                delete $widgets->{$set}->{$key} if $widgets->{$set}->{$key};
+                            }
+                        }
+                        $user->widgets($widgets);
+                    }
+                },
+            },
+        },
     };
 }
 
