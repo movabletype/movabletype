@@ -204,7 +204,7 @@ sub edit {
                                 : $tag->[1]->{parent} ? $obj->blog ? $obj->blog->website->id : 0
                                 :                        [ $obj->blog_id, 0 ]
                                 ;
-                my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $obj->blog_id : $inc_blog_id );
+                my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $inc_blog_id->[0] : $inc_blog_id );
                 next if exists $seen{$type}{$mod_id};
                 $seen{$type}{$mod_id} = 1;
                 my $other = MT::Template->load(
@@ -246,7 +246,7 @@ sub edit {
                     $include->{create_link} = $app->mt_uri(
                         mode => 'view',
                         args => {
-                            blog_id => ref $inc_blog_id ? $obj->blog_id : $inc_blog_id,
+                            blog_id => ref $inc_blog_id ? $inc_blog_id->[0]  : $inc_blog_id,
                             '_type' => 'template',
                             type    => $type,
                             name    => $mod,
