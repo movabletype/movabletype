@@ -245,13 +245,14 @@ function setLicense() {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> blog-path-text extra-path<mt:else> website-path-field</mt:if> hide-input" />
+        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="mt-edit-field<mt:if name="is_blog"> blog-path-text extra-path<mt:else> website-path-field</mt:if> hide-input" /></div>
+        <mt:if name="is_blog"><div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="blog-path-text hide-input" /></div>
+        <div class="use-absolute">
+            <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
+        </div></mt:if>
         <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete publish of your site."></p>
-    <mt:if name="is_blog">
-        <div class="hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-    <mt:else>
-        <div class="hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div>
-    </mt:if>
+        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+        <mt:if name="is_blog"><div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div></mt:if>
     </mtapp:setting>
 
     <mt:if name="is_blog">
@@ -314,12 +315,17 @@ function setLicense() {
             class="site-path-field"
             required="1"
             label="<__trans phrase="Archive Root">"
-            hint="<__trans phrase="Enter the path where your archive files will be published. Example: /home/mt/public_html/blog/archives or C:\www\public_html\blog\archives">"
             show_hint="1"
             help_page="blog_settings_publishing"
             help_section="archive_path">
-            <span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="blog-path-text mt-edit-field blog-path-text extra-path" />
+            <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="blog-path-text mt-edit-field blog-path-text extra-path" /></div>
+            <div class="absolute-site_path"><input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text" /></div>
+            <div class="use-absolute">
+                <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+            </div>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
+            <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+            <div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
     </mt:if>
     </div>
@@ -557,6 +563,7 @@ function setLicense() {
 <mt:if name="is_blog">
     jQuery.mtUseSubdomain();
     jQuery.mtEditSitePath();
+    jQuery.mtUseAbsolute();
 </mt:if>
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

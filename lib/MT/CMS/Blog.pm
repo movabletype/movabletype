@@ -2081,6 +2081,31 @@ sub cfg_prefs_save {
     my $at = $app->param('preferred_archive_type');
     $blog->archive_type_preferred($at);
     $blog->include_cache( $app->param('include_cache') ? 1 : 0 );
+
+    if ( $blog->class eq 'blog' ) {
+        my $subdomain = $app->param('site_url_subdomain');
+        $subdomain = '' if !$app->param('use_subdomain');
+        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+        $subdomain =~ s/\.{2,}/\./g;
+        my $path = $app->param('site_url_path');
+        $blog->site_url("$subdomain/::/$path");
+        if ( $app->param('enable_archive_paths') ) {
+            $subdomain = $app->param('archive_url_subdomain');
+            $subdomain = '' if !$app->param('use_archive_subdomain');
+            $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+            $subdomain =~ s/\.{2,}/\./g;
+            $path = $app->param('archive_url_path');
+            $blog->archive_url("$subdomain/::/$path");
+        }
+
+        $blog->site_path( $app->param( 'site_path_absolute' ) )
+            if $app->param( 'use_absolute' ) && $app->param( 'site_path_absolute' );
+        $blog->archive_path( $app->param( 'archive_path_absolute' ) )
+            if $app->param('enable_archive_paths') &&
+               $app->param( 'use_absolute_archive' ) &&
+               $app->param( 'archive_path_absolute' );
+    }
+
     require MT::PublishOption;
     if ( ( $app->model('template')->exist(
             { blog_id => $blog->id, build_type => MT::PublishOption::DYNAMIC() })
@@ -2103,22 +2128,6 @@ sub cfg_prefs_save {
           if $app->param('max_revisions_entry');
         $blog->max_revisions_template( $app->param('max_revisions_template') )
           if $app->param('max_revisions_template');
-    }
-    if ( $blog->class eq 'blog' ) {
-        my $subdomain = $app->param('site_url_subdomain');
-        $subdomain = '' if !$app->param('use_subdomain');
-        $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-        $subdomain =~ s/\.{2,}/\./g;
-        my $path = $app->param('site_url_path');
-        $blog->site_url("$subdomain/::/$path");
-        if ( $app->param('enable_archive_paths') ) {
-            $subdomain = $app->param('archive_url_subdomain');
-            $subdomain = '' if !$app->param('use_archive_subdomain');
-            $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
-            $subdomain =~ s/\.{2,}/\./g;
-            $path = $app->param('archive_url_path');
-            $blog->archive_url("$subdomain/::/$path");
-        }
     }
 
     $blog->save
