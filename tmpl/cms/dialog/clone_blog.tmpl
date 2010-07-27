@@ -19,6 +19,8 @@
         <input type="hidden" name="site_url" value="<mt:var name="site_url">" />
         </mt:if>
         <input type="hidden" name="site_path" value="<mt:var name="site_path">" />
+        <input type="hidden" name="site_path_absolute" value="<mt:var name="site_path_absolute">" />
+        <input type="hidden" name="use_absolute" value="<mt:var name="use_absolute">" />
         <input type="hidden" name="overwrite" value="<mt:var name="overwrite">" />
         <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages">" />
         <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments">" />
@@ -60,7 +62,7 @@
             id="site-path"
             content_class="field-content-text"
             label="<__trans phrase="Blog Root">">
-            <span id="site-path"><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></span>
+            <span id="site-path"><mt:if name="use_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></mt:if></span>
     <mt:if name="site_path_warning">
             <p>
               <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
@@ -178,7 +180,11 @@
             content_class="field-content-input"
             hint="<__trans phrase="Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog">"
             show_hint="1">
-            <span class="website-path"><mt:var name="parent_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" escape="html">" />
+            <div class="relative-site_path"><span class="website-path"><mt:var name="parent_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" escape="html">" /></div>
+            <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:var name="parent_path" escape="html"></mt:if>" size="50" class="blog-path-text" /></div>
+            <div class="use-absolute">
+                <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
+            </div>
         </mtapp:setting>
     </fieldset>
 
@@ -574,7 +580,7 @@
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery.mtUseSubdomain();
-    jQuery.mtEditSitePath();
+    jQuery.mtUseAbsolute();
     jQuery('button.goback').click(function() {
         jQuery('form#clone-verification-form > fieldset > input[name=clone]').val(0);
     });

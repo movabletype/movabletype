@@ -2582,6 +2582,11 @@ sub clone {
     $base_path =~ s/\/$//;
     $param->{site_path} = $base_path;
 
+    $param->{site_path_absolute} = $app->param('site_path_absolute')
+        if $app->param('site_path_absolute');
+    $param->{use_absolute} = $app->param('use_absolute')
+        if $app->param('use_absolute');
+
     $param->{'id'} = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
       || $app->translate('Clone of [_1]', $blog->name );
@@ -2763,7 +2768,9 @@ HTML
             }
         );
 
-        $new_blog->site_path( $param->{'site_path'} );
+        $new_blog->site_path(
+            $param->{'use_absolute'} ? $param->{'site_path_absolute'} : $param->{'site_path'}
+        );
         my $subdomain = $app->param('site_url_subdomain');
         $subdomain = '' if !$app->param('use_subdomain');
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
