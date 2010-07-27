@@ -121,7 +121,11 @@ function init() {
         hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" />
+        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" /></div>
+        <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="blog-path-text hide-input" /></div>
+        <div class="use-absolute">
+            <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
+        </div>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_edit_config">
@@ -195,7 +199,7 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
     jQuery.mtUseSubdomain();
-    jQuery.mtEditSitePath();    
+    jQuery.mtUseAbsolute();
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">

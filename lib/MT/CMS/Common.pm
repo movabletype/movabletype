@@ -133,6 +133,9 @@ sub save {
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $q->param('site_url_path');
             $values{site_url} = "$subdomain/::/$path";
+
+            $values{site_path} = $app->param( 'site_path_absolute' )
+                if $app->param( 'use_absolute' ) && $app->param( 'site_path_absolute' );
         }
 
         unless ( $author->is_superuser
@@ -143,6 +146,8 @@ sub save {
                 delete $values{site_path};
                 delete $values{archive_url};
                 delete $values{archive_path};
+                delete $values{site_path_absolute}
+                    if $values{site_path_absolute};
             }
             if ( $id && !( $perms->can_do('save_blog_config') ) ) {
                 delete $values{$_} foreach grep {
