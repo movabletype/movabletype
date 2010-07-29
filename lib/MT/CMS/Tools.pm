@@ -1389,7 +1389,14 @@ sub adjust_sitepath {
         my $site_url_subdomain = scalar $q->param("site_url_subdomain_$id") || q();
         $site_url_subdomain .= '.' if $site_url_subdomain && $site_url_subdomain !~ /\.$/;
         my $parent_id     = scalar $q->param("parent_id_$id") || undef;
+        my $site_path_absolute = scalar $q->param("site_path_absolute_$id") || q();
+        my $use_absolute  = scalar $q->param("use_absolute_$id") || q();
+
+        if ( $use_absolute ) {
+            $site_path = scalar $q->param("site_path_absolute_$id") || q();
+        }
         $blog->site_path($site_path);
+
         $blog->parent_id($parent_id)
             if $blog->is_blog() && $parent_id;
         if ( $site_url_path ) {
@@ -1420,7 +1427,14 @@ sub adjust_sitepath {
         my $archive_url_path = scalar $q->param("archive_url_path_$id") || q();
         my $archive_url_subdomain = scalar $q->param("archive_url_subdomain_$id") || q();
         $archive_url_subdomain .= '.' if $archive_url_subdomain && $archive_url_subdomain !~ /\.$/;
+        my $archive_path_absolute = scalar $q->param("archive_path_absolute_$id") || q();
+        my $use_absolute_archive  = scalar $q->param("use_absolute_archive_$id") || q();
+
+        if ( $use_absolute_archive ) {
+            $archive_url_path = $$archive_path_absolute;
+        }
         $blog->archive_path($archive_path);
+
         if ( $archive_url_path ) {
             $blog->archive_url("$archive_url_subdomain/::/$archive_url_path");
         }

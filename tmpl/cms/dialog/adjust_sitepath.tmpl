@@ -27,6 +27,16 @@ function changeParent (ws) {
     }
 
     jQuery('.parent_site_path_'+blog_id).text(new_path);
+
+    var ids = [ 'site', 'archive' ];
+    $.each(ids,  function () {
+        var obj = jQuery('#'+this+'_path'+blog_id+'-field');
+        obj.find('.absolute-site_path :input').attr('value', new_path);
+        obj.find('.use-absolute :checkbox').removeAttr('checked');
+        obj.find('.relative-site_path').show();
+        obj.find('.absolute-site_path').hide();
+    });
+
     var matches = new_url.match(/(https?):\/\/(.+\/)$/);
     if ( matches && matches.length ) {
         jQuery('.parent_site_url_scheme_'+blog_id).text(matches[1] + '://');
@@ -157,7 +167,11 @@ function init() {
             <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
             </mt:if>
-                <span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<$mt:var name="old_site_path" escape="html"$>" />
+                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<$mt:var name="old_site_path" escape="html"$>" /></div>
+                <div class="absolute-site_path"><input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="" size="50" class="blog-path-text" /></div>
+                <div class="use-absolute">
+                    <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+                </div>
             </mtapp:setting>
 
             <mt:if name="old_archive_url">
@@ -199,7 +213,11 @@ function init() {
                 class="site-path-field hidden"
                 label="<__trans phrase="Archive Path">">
                 <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
-                <span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:var name="old_archive_path" escape="html">" />
+                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:var name="old_archive_path" escape="html">" /></div>
+                <div class="absolute-site_path"><input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="" size="50" class="blog-path-text" /></div>
+                <div class="use-absolute">
+                    <input type="checkbox" name="use_absolute_archive<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+                </div>
             </mtapp:setting>
             </mt:if>
 
@@ -300,6 +318,18 @@ function init() {
 <mt:loop name="blogs_loop">
             site_url_<mt:var name="id" escape="html">: 'url',
             site_path_<mt:var name="id" escape="html">: 'path',
+            site_path_absolute_<mt:var name="id" escape="html">: {
+                required: '#use_absolute_<mt:var name="id" escape="html">:checked',
+                path: true
+            },
+            archive_path_absolute_<mt:var name="id" escape="html">: {
+                required: function(element) {
+                    if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
+                        return is_valid_path(element.value);
+                    }
+                    return false;
+                }
+            },
             parent_id_<mt:var name="id">: {
                 min: 1
             }<mt:unless name="__last__">,</mt:unless>
@@ -322,6 +352,13 @@ function init() {
             },
             site_path_<mt:var name="id" escape="html">: {
                 path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
+            site_path_absolute_<mt:var name="id" escape="html">: {
+                required: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
+            archive_path_absolute_<mt:var name="id" escape="html">: {
+                required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             },
             parent_id_<mt:var name="id">: {
                 min: '<__trans phrase="You must select a parent website." escape="singlequotes">'
@@ -365,6 +402,6 @@ function init() {
     });
 
     jQuery.mtUseSubdomain();
-    jQuery.mtEditSitePath();
+    jQuery.mtUseAbsolute();
 </mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

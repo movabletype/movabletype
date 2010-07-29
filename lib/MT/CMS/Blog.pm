@@ -2097,13 +2097,13 @@ sub cfg_prefs_save {
             $path = $app->param('archive_url_path');
             $blog->archive_url("$subdomain/::/$path");
         }
-
         $blog->site_path( $app->param( 'site_path_absolute' ) )
-            if $app->param( 'use_absolute' ) && $app->param( 'site_path_absolute' );
+            if $app->param( 'use_absolute' )
+                && $app->param( 'site_path_absolute' );
         $blog->archive_path( $app->param( 'archive_path_absolute' ) )
-            if $app->param('enable_archive_paths') &&
-               $app->param( 'use_absolute_archive' ) &&
-               $app->param( 'archive_path_absolute' );
+            if $app->param('enable_archive_paths')
+                && $app->param( 'use_absolute_archive' )
+                && $app->param( 'archive_path_absolute' );
     }
 
     require MT::PublishOption;

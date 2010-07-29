@@ -321,7 +321,7 @@ function setLicense() {
             <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="blog-path-text mt-edit-field blog-path-text extra-path" /></div>
             <div class="absolute-site_path"><input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text" /></div>
             <div class="use-absolute">
-                <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+                <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
             </div>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
             <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
@@ -524,6 +524,10 @@ function setLicense() {
                 <mt:unless name="is_blog">required: true,</mt:unless>
                 path: true
             },
+            <mt:if name="is_blog">site_path_absolute: {
+                required: '#use_absolute:checked',
+                path: true
+            },</mt:if>
             archive_url: {
                 required: function(element) {
                     if (jQuery('#enable_archive_paths:checked').length) {
@@ -533,8 +537,20 @@ function setLicense() {
                 }
             },
             archive_path: {
-                required: '#enable_archive_paths:checked',
-                path: true
+                required: function(element) {
+                    if ( jQuery('#enable_archive_paths:checked').length ) {
+                        return is_valid_path(element.value);
+                    }
+                    return false;
+                }
+            },
+            archive_path_absolute: {
+                required: function(element) {
+                    if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
+                        return is_valid_path(element.value);
+                    }
+                    return false;
+                }
             }
         },
         messages: {
@@ -545,8 +561,16 @@ function setLicense() {
                 required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
+            site_path_absolute: {
+                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
             archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
             archive_path: {
+                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+            },
+            archive_path_absolute: {
                 required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             }
