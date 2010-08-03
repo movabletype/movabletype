@@ -245,7 +245,7 @@ function setLicense() {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" escape="html" default="$suggested_site_path">" size="50" class="<mt:if name="is_blog"> blog-path-text extra-path<mt:else> mt-edit-field website-path-field</mt:if> hide-input" /></div>
+        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless>" size="50" class="<mt:if name="is_blog"> blog-path-text extra-path<mt:else> mt-edit-field website-path-field</mt:if> hide-input" /></div>
         <mt:if name="is_blog"><div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="blog-path-text hide-input" /></div>
         <div class="use-absolute">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>

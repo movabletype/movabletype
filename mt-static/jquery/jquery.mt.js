@@ -167,11 +167,6 @@ $.mtEditSiteUrl = function(options) {
                 .parent('.subdomain')
                 .before('<span class="'+this+'_url_subdomain-text"></span>');
             $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
-            $subdomain.parents('.field-content').find('.subdomain').hide();
-            $subdomain.parents('.field-content').find('.use-subdomain').hide();
-        } else {
-            $subdomain.parents('.field-content').find('.subdomain').show();
-            $subdomain.parents('.field-content').find('.use-subdomain').show();
         }
         if (!$path.hasClass('show-input')) {
             $path
@@ -179,6 +174,11 @@ $.mtEditSiteUrl = function(options) {
                 .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
+            $subdomain.parents('.field-content').find('.subdomain').hide();
+            $subdomain.parents('.field-content').find('.use-subdomain').hide();
+        } else {
+            $subdomain.parents('.field-content').find('.subdomain').show();
+            $subdomain.parents('.field-content').find('.use-subdomain').show();
         }
         if (subdomain && subdomain.match(/^http/)) {
             $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
@@ -270,7 +270,7 @@ $.mtEditSitePath = function(options) {
         var id = this;
 
         var $absolute_path = $('input#'+id+'_path_absolute');
-        if ( $absolute_path.val() && !$absolute_path.hasClass('show-input') ) {
+        if ( !$absolute_path.hasClass('show-input') ) {
             $absolute_path
                 .before('<span class="'+id+'_path_absolute-text"></span>')
                 .after('<button id="mt-set-'+id+'_path_absolute" class="mt-edit-field-button">'+opts.edit+'</button>')
@@ -279,7 +279,7 @@ $.mtEditSitePath = function(options) {
         }
 
         var $path = $('input#'+id+'_path');
-        if ( $path.val() && !$path.hasClass('show-input') ) {
+        if ( !$path.hasClass('show-input') ) {
             $path
                 .before('<span class="'+id+'_path-text"></span>')
                 .after('<button id="mt-set-'+id+'_path" class="mt-edit-field-button">'+opts.edit+'</button>')
