@@ -47,8 +47,16 @@ sub preprocess_native_tags {
     }
 
     # Load multiblog access control list
-    my %acl = load_multiblog_acl( $plugin, $ctx );
-    $args->{$acl{mode}} = $acl{acl};
+    my $incl = $args->{include_blogs} || $args->{include_websites} || $args->{blog_id} || $args->{blog_ids};
+    my $excl = $args->{exclude_blogs} || $args->{exclude_websites};
+    for ($incl,$excl) {
+        next unless $_;
+        s{\s+}{}g ; # Remove spaces
+    }
+    if ( $incl or $excl ) {
+        my %acl = load_multiblog_acl( $plugin, $ctx );
+        $args->{$acl{mode}} = $acl{acl};
+    }
 
     # Explicity set blog_id for MTInclude if not specified
     # so that it never gets a multiblog context from MTMultiBlog
