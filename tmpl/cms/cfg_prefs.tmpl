@@ -506,11 +506,20 @@ function setLicense() {
         }
         return true;
     }
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
     jQuery.validator.addMethod('url', function(value, element) {
         return is_valid_url('<mt:var name="website_url">'+value);
     });
     jQuery.validator.addMethod('path', function(value, element) {
         return is_valid_path(value);
+    });
+    jQuery.validator.addMethod('absolute_path', function(value, element) {
+        return is_valid_absolute_path(value);
     });
     jQuery('#cfg_form').validate({
         rules: {
@@ -526,7 +535,7 @@ function setLicense() {
             },
             <mt:if name="is_blog">site_path_absolute: {
                 required: '#use_absolute:checked',
-                path: true
+                absolute_path: true
             },</mt:if>
             archive_url: {
                 required: function(element) {
@@ -547,9 +556,15 @@ function setLicense() {
             archive_path_absolute: {
                 required: function(element) {
                     if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
-                        return is_valid_path(element.value);
+                        return true;
                     }
                     return false;
+                },
+                absolute_path: function(element) {
+                    if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
+                        return is_valid_absolute_path(element.value);
+                    }
+                    return true;
                 }
             }
         },
@@ -563,7 +578,7 @@ function setLicense() {
             },
             site_path_absolute: {
                 required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
             archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
             archive_path: {
@@ -572,7 +587,7 @@ function setLicense() {
             },
             archive_path_absolute: {
                 required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+                absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             }
         },
         errorClass: "msg-error",
