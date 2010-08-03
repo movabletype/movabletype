@@ -167,9 +167,12 @@ $.mtEditSiteUrl = function(options) {
                 .parent('.subdomain')
                 .before('<span class="'+this+'_url_subdomain-text"></span>');
             $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
+            $subdomain.parents('.field-content').find('.subdomain').hide();
+            $subdomain.parents('.field-content').find('.use-subdomain').hide();
+        } else {
+            $subdomain.parents('.field-content').find('.subdomain').show();
+            $subdomain.parents('.field-content').find('.use-subdomain').show();
         }
-        $subdomain.parents('.field-content').find('.subdomain').hide();
-        $subdomain.parents('.field-content').find('.use-subdomain').hide();
         if (!$path.hasClass('show-input')) {
             $path
                 .before('<span class="'+this+'_url_path-text"></span>')
@@ -260,21 +263,55 @@ $.mtEditSitePath = function(options) {
     var defaults = {
         edit: 'Edit'
     };
+
     var opts = $.extend(defaults, options);
     var ids = ['site', 'archive'];
     $.each(ids, function() {
         var id = this;
-        var $path = $('input#'+id+'_path_absolute');
-        $path
-            .before('<span class="'+id+'_path_absolute-text"></span>')
-            .after('<button id="mt-set-'+id+'_path_absolute" class="mt-edit-field-button">'+opts.edit+'</button>')
-            .hide();
-        $('span.'+id+'_path_absolute-text').text($path.val());
+
+        var $absolute_path = $('input#'+id+'_path_absolute');
+        if ( $absolute_path.val() && !$absolute_path.hasClass('show-input') ) {
+            $absolute_path
+                .before('<span class="'+id+'_path_absolute-text"></span>')
+                .after('<button id="mt-set-'+id+'_path_absolute" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .hide();
+            $('span.'+id+'_path_absolute-text').text($absolute_path.val());
+        }
+
+        var $path = $('input#'+id+'_path');
+        if ( $path.val() && !$path.hasClass('show-input') ) {
+            $path
+                .before('<span class="'+id+'_path-text"></span>')
+                .after('<button id="mt-set-'+id+'_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .hide();
+            $('span.'+id+'_path-text').text($path.val());
+
+            $path.parents('.field-content').find('.use-absolute').hide();
+        }
+
+
         $('button#mt-set-'+id+'_path_absolute').click(function() {
             $('span.'+id+'_path_absolute-text').hide();
-            $path.show();
+            $absolute_path.addClass('show-input').show();
             $('p#'+id+'_path-warning').show();
             $(this).hide();
+            $path.parents('.field-content').find('.use-absolute').show();
+
+            if ( !$path.hasClass('show-input') ) {
+                $('button#mt-set-'+id+'_path').click();
+            }
+            return false;
+        });
+        $('button#mt-set-'+id+'_path').click(function() {
+            $('span.'+id+'_path-text').hide();
+            $path.addClass('show-input').show();
+            $('p#'+id+'_path-warning').show();
+            $(this).hide();
+            $path.parents('.field-content').find('.use-absolute').show();
+
+            if ( !$absolute_path.hasClass('show-input') ) {
+                $('button#mt-set-'+id+'_path_absolute').click();
+            }
             return false;
         });
     });
