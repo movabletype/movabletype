@@ -2562,31 +2562,6 @@ sub clone {
     return $app->error( $app->translate("This action cannot clone website."))
         unless $blog->is_blog;
 
-    my ( $base_url, $base_url_subdomain, $base_url_path );
-    my @raw_site_url = $blog->raw_site_url; 
-    if ( 2 == @raw_site_url ) {
-        my $subdomain = $raw_site_url[0];
-        $subdomain =~ s/\.$//;
-        $base_url = $blog->site_url;
-        $base_url_subdomain = $subdomain;
-        $base_url_path = $raw_site_url[1];
-    }
-    else {
-        $base_url = $raw_site_url[0];
-    }
-    $base_url ||= dirify( $blog->name );
-    $base_url =~ s/\/$//;
-    my $base_path = defined $app->param('site_path')
-        ? $app->param('site_path')
-        : $blog->column('site_path') || dirify( $blog->name );
-    $base_path =~ s/\/$//;
-    $param->{site_path} = $base_path;
-
-    $param->{site_path_absolute} = $app->param('site_path_absolute')
-        if $app->param('site_path_absolute');
-    $param->{use_absolute} = $app->param('use_absolute')
-        if $app->param('use_absolute');
-
     $param->{'id'} = $blog->id;
     $param->{'new_blog_name'} = $app->param('new_blog_name')
       || $app->translate('Clone of [_1]', $blog->name );
@@ -2597,6 +2572,46 @@ sub clone {
     $param->{website_scheme} = $website_scheme;
     $param->{website_domain} = $website_domain;
 
+
+    $param->{enable_archive_paths} = defined $app->param('enable_archive_paths')
+        ? $app->param('enable_archive_paths')
+        : ( $blog->column('archive_path') || $blog->column('archive_url') )
+            ? 1
+            : 0;
+
+    my $base_path = defined $app->param('site_path')
+        ? $app->param('site_path')
+        : $blog->column('site_path') || dirify( $blog->name );
+    $base_path =~ s/\/$//;
+    $param->{site_path} = $base_path;
+
+    $param->{use_absolute} = defined $app->param('use_absolute')
+        ? $app->param('use_absolute')
+        : $blog->is_site_path_absolute;
+
+    $param->{site_path_absolute} = defined $app->param('site_path_absolute')
+        ? $app->param('site_path_absolute')
+        : $blog->is_site_path_absolute
+            ? $blog->column('site_path')
+            : $website->site_path;
+
+    $base_path = defined $app->param('archive_path')
+        ? $app->param('archive_path')
+        : $blog->column('archive_path') || '';
+    $base_path =~ s/\/$//;
+    $param->{archive_path} = $base_path;
+
+    $param->{use_absolute_archive} = defined $app->param('use_absolute_archive')
+        ? $app->param('use_absolute_archive')
+        : $blog->is_archive_path_absolute;
+
+    $param->{archive_path_absolute} = defined $app->param('archive_path_absolute')
+        ? $app->param('archive_path_absolute')
+        : $blog->is_archive_path_absolute
+            ? $blog->column('archive_path')
+            : $website->site_url;
+
+    my $base_url;
     if ( defined $app->param('site_url') ) {
         $param->{'site_url'} = $app->param('site_url');
     }
@@ -2622,12 +2637,38 @@ sub clone {
     $param->{site_url} = $base_url;
     $param->{'use_subdomain'} = $app->param('use_subdomain');
 
+    if ( $param->{enable_archive_paths} ) {
+        my $base_archive_url;
+        if ( defined $app->param('archive_url') ) {
+            $param->{'archive_url'} = $app->param('archive_url');
+        }
+        elsif ( defined( $app->param('archive_url_subdomain') )
+            ||  defined( $app->param('archive_url_path') ) )
+        {
+            $param->{'archive_url_subdomain'} = $app->param('archive_url_subdomain');
+            $param->{'archive_url_path'} = $app->param('archive_url_path');
+        }
+        else {
+            my @raw_archive_url = $blog->raw_archive_url; 
+            if ( 2 == @raw_archive_url ) {
+                my $subdomain = $raw_archive_url[0];
+                $subdomain =~ s/\.$//;
+                $base_archive_url = $blog->archive_url;
+                $param->{archive_url_subdomain} = $subdomain;
+                $param->{archive_url_path} = $raw_archive_url[1];
+            }
+            else {
+                $base_archive_url = $raw_archive_url[0];
+            }
+        }
+        $param->{archive_url} = $base_archive_url;
+        $param->{'use_archive_subdomain'} = $app->param('use_archive_subdomain');
+    }
+
     require File::Spec;
     $param->{parent_id} = $website->id;
-    unless ( MT::Blog->is_site_path_absolute( $param->{site_path} ) ) {
-        $param->{parent_path} = File::Spec->catfile($website->site_path) . MT::Util->dir_separator
-            if $website->site_path;
-    }
+    $param->{parent_path} = File::Spec->catfile($website->site_path) . MT::Util->dir_separator
+        if $website->site_path;
     $param->{blog_id} = $app->param('blog_id');
 
     for my $key ( $app->param ) {
@@ -2725,6 +2766,7 @@ sub print_status_page {
     }
 
     my $blog_name = $param->{'new_blog_name'};
+    my $blog_name_encode = MT::Util::encode_html($blog_name);
 
     # Set up and commence app output
     $app->{no_print_body} = 1;
@@ -2748,7 +2790,7 @@ SCRIPT
         )
     );
     $app->print_encode( $app->translate_templatized(<<"HTML") );
-<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name"></h2>
+<h2><__trans phrase="Cloning blog '[_1]'..." params="$blog_name_encode"></h2>
 
 <div class="modal_width" id="dialog-clone-weblog">
 
@@ -2782,6 +2824,24 @@ HTML
         else {
             $new_blog->site_url( $param->{'site_url'} );
         }
+
+        if ( $param->{enable_archive_paths} ) {
+            $new_blog->archive_path(
+                $param->{'use_absolute_archive'} ? $param->{'archive_path_absolute'} : $param->{'archive_path'}
+            );
+            my $subdomain = $app->param('archive_url_subdomain');
+            $subdomain = '' if !$app->param('use_archive_subdomain');
+            $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
+            $subdomain =~ s/\.{2,}/\./g;
+            my $path = $app->param('archive_url_path');
+            if ( $subdomain || $path ) {
+                $new_blog->archive_url("$subdomain/::/$path");
+            }
+            else {
+                $new_blog->archive_url( $param->{'site_url'} );
+            }
+        }
+
         $new_blog->save();
 
         my $website = $app->model( 'website' )->load( $param->{'parent_id'} );

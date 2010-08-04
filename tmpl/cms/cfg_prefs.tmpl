@@ -318,7 +318,7 @@ function setLicense() {
             show_hint="1"
             help_page="blog_settings_publishing"
             help_section="archive_path">
-            <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:var name="archive_path" escape="html">" class="blog-path-text blog-path-text extra-path<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
+            <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text extra-path<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
             <div class="absolute-site_path"><input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
             <div class="use-absolute">
                 <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
