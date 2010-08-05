@@ -1843,7 +1843,7 @@ sub dialog_adjust_sitepath {
                 if exists( $params->{old_archive_path} )
                 && $blog_class->is_site_path_absolute($blog->column('archive_path'));
             $params->{old_site_url} = $blog->site_url;
-            my @raw_site_url = $blog->raw_site_url; 
+            my @raw_site_url = $blog->raw_site_url;
             if ( 2 == @raw_site_url ) {
                 my $subdomain = $raw_site_url[0];
                 $subdomain =~ s/\.$//;

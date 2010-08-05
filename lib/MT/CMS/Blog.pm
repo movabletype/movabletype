@@ -2572,57 +2572,104 @@ sub clone {
     $param->{website_scheme} = $website_scheme;
     $param->{website_domain} = $website_domain;
 
+    if ( $app->param('verify') || defined $app->param('clone') ) {
+        $param->{enable_archive_paths} = defined $app->param('enable_archive_paths')
+            ? $app->param('enable_archive_paths')
+            : 0;
 
-    $param->{enable_archive_paths} = defined $app->param('enable_archive_paths')
-        ? $app->param('enable_archive_paths')
-        : ( $blog->column('archive_path') || $blog->column('archive_url') )
+        my $base_path = defined $app->param('site_path')
+            ? $app->param('site_path')
+            : '';
+        $base_path =~ s/\/$//;
+        $param->{site_path} = $base_path;
+        $param->{use_absolute} = defined $app->param('use_absolute')
+            ? $app->param('use_absolute')
+            : 0;
+        $param->{site_path_absolute} = defined $app->param('site_path_absolute')
+            ? $app->param('site_path_absolute')
+            : '';
+
+        $base_path = defined $app->param('archive_path')
+            ? $app->param('archive_path')
+            : '';
+        $base_path =~ s/\/$//;
+        $param->{archive_path} = $base_path;
+        $param->{use_absolute_archive} = defined $app->param('use_absolute_archive')
+            ? $app->param('use_absolute_archive')
+            : 0;
+
+        $param->{archive_path_absolute} = defined $app->param('archive_path_absolute')
+            ? $app->param('archive_path_absolute')
+            : '';
+
+        my $base_url;
+        if ( defined $app->param('site_url') ) {
+            $param->{'site_url'} = $app->param('site_url');
+        }
+        elsif ( defined( $app->param('site_url_subdomain') )
+                ||  defined( $app->param('site_url_path') ) )
+        {
+            $param->{'site_url_subdomain'} = $app->param('site_url_subdomain');
+            $param->{'site_url_path'} = $app->param('site_url_path');
+        }
+        else {
+            $param->{'site_url'} = '';
+            delete $param->{'site_url_subdomain'} if defined $param->{'site_url_subdomain'};
+            delete $param->{'site_url_path'} if defined $param->{'site_url_path'};
+        }
+        $param->{'use_subdomain'} = defined $app->param('use_subdomain')
+            ? $app->param('use_subdomain')
+            : 0;
+        if ( !$param->{'use_subdomain'} ) {
+            delete $param->{'site_url_subdomain'} if defined $param->{'site_url_subdomain'};
+        }
+
+        if ( $param->{enable_archive_paths} ) {
+            my $base_archive_url;
+            if ( defined $app->param('archive_url') ) {
+                $param->{'archive_url'} = $app->param('archive_url');
+            }
+            elsif ( defined( $app->param('archive_url_subdomain') )
+                ||  defined( $app->param('archive_url_path') ) )
+            {
+                $param->{'archive_url_subdomain'} = $app->param('archive_url_subdomain');
+                $param->{'archive_url_path'} = $app->param('archive_url_path');
+            }
+            else {
+                $param->{'archive_url'} = '';
+                delete $param->{'archive_url_subdomain'} if defined $param->{'archive_url_subdomain'};
+                delete $param->{'archive_url_path'} if defined $param->{'archive_url_path'};
+            }
+            $param->{'use_archive_subdomain'} = defined $app->param('use_archive_subdomain')
+                ? $app->param('use_archive_subdomain')
+                : 0;
+            if ( !$param->{'use_archive_subdomain'} ) {
+                delete $param->{'archive_url_subdomain'} if defined $param->{'archive_url_subdomain'};
+            }
+        }
+    } else {
+        $param->{enable_archive_paths} = ( $blog->column('archive_path') || $blog->column('archive_url') )
             ? 1
             : 0;
 
-    my $base_path = defined $app->param('site_path')
-        ? $app->param('site_path')
-        : $blog->column('site_path') || dirify( $blog->name );
-    $base_path =~ s/\/$//;
-    $param->{site_path} = $base_path;
-
-    $param->{use_absolute} = defined $app->param('use_absolute')
-        ? $app->param('use_absolute')
-        : $blog->is_site_path_absolute;
-
-    $param->{site_path_absolute} = defined $app->param('site_path_absolute')
-        ? $app->param('site_path_absolute')
-        : $blog->is_site_path_absolute
+        my $base_path = $blog->column('site_path') || dirify( $blog->name );
+        $base_path =~ s/\/$//;
+        $param->{site_path} = $base_path;
+        $param->{use_absolute} = $blog->is_site_path_absolute;
+        $param->{site_path_absolute} = $blog->is_site_path_absolute
             ? $blog->column('site_path')
             : $website->site_path;
 
-    $base_path = defined $app->param('archive_path')
-        ? $app->param('archive_path')
-        : $blog->column('archive_path') || '';
-    $base_path =~ s/\/$//;
-    $param->{archive_path} = $base_path;
-
-    $param->{use_absolute_archive} = defined $app->param('use_absolute_archive')
-        ? $app->param('use_absolute_archive')
-        : $blog->is_archive_path_absolute;
-
-    $param->{archive_path_absolute} = defined $app->param('archive_path_absolute')
-        ? $app->param('archive_path_absolute')
-        : $blog->is_archive_path_absolute
+        $base_path = $blog->column('archive_path') || '';
+        $base_path =~ s/\/$//;
+        $param->{archive_path} = $base_path;
+        $param->{use_absolute_archive} = $blog->is_archive_path_absolute;
+        $param->{archive_path_absolute} = $blog->is_archive_path_absolute
             ? $blog->column('archive_path')
             : $website->site_url;
 
-    my $base_url;
-    if ( defined $app->param('site_url') ) {
-        $param->{'site_url'} = $app->param('site_url');
-    }
-    elsif ( defined( $app->param('site_url_subdomain') )
-        ||  defined( $app->param('site_url_path') ) )
-    {
-        $param->{'site_url_subdomain'} = $app->param('site_url_subdomain');
-        $param->{'site_url_path'} = $app->param('site_url_path');
-    }
-    else {
-        my @raw_site_url = $blog->raw_site_url; 
+        my $base_url;
+        my @raw_site_url = $blog->raw_site_url;
         if ( 2 == @raw_site_url ) {
             my $subdomain = $raw_site_url[0];
             $subdomain =~ s/\.$//;
@@ -2633,22 +2680,11 @@ sub clone {
         else {
             $base_url = $raw_site_url[0];
         }
-    }
-    $param->{site_url} = $base_url;
-    $param->{'use_subdomain'} = $app->param('use_subdomain');
+        $param->{site_url} = $base_url;
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
 
-    if ( $param->{enable_archive_paths} ) {
-        my $base_archive_url;
-        if ( defined $app->param('archive_url') ) {
-            $param->{'archive_url'} = $app->param('archive_url');
-        }
-        elsif ( defined( $app->param('archive_url_subdomain') )
-            ||  defined( $app->param('archive_url_path') ) )
-        {
-            $param->{'archive_url_subdomain'} = $app->param('archive_url_subdomain');
-            $param->{'archive_url_path'} = $app->param('archive_url_path');
-        }
-        else {
+        if ( $param->{enable_archive_paths} ) {
+            my $base_archive_url;
             my @raw_archive_url = $blog->raw_archive_url; 
             if ( 2 == @raw_archive_url ) {
                 my $subdomain = $raw_archive_url[0];
@@ -2660,9 +2696,10 @@ sub clone {
             else {
                 $base_archive_url = $raw_archive_url[0];
             }
+
+            $param->{archive_url} = $base_archive_url;
+            $param->{'use_archive_subdomain'} = defined $param->{archive_url_subdomain};
         }
-        $param->{archive_url} = $base_archive_url;
-        $param->{'use_archive_subdomain'} = $app->param('use_archive_subdomain');
     }
 
     require File::Spec;

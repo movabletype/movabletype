@@ -57,7 +57,7 @@
         <mt:elseif name="site_url_path">
             <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html"><mt:var name="website_domain"><mt:var name="site_url_path" escape="html">
         <mt:else>
-            <span id="site-url"><mt:var name="site_url" escape="html"></span>
+            <span id="site-url"><mt:var name="website_scheme">://<mt:var name="website_domain" escape="html"></span>
         </mt:if>
         <mt:if name="site_url_warning">
             <p>
@@ -512,7 +512,102 @@
    */
   </mt:Ignore>
   function _verifyForm(form) {
+      var $form = jQuery(form);
+
+      // Clear errors
+      $form.find('label.msg-error').each( function () {
+          $(this).parents('div.field').removeClass('error-field');
+          $(this).remove();
+      });
+
+      var $element = $form.find('#blog-name');
+      if ( !$element.val().length ) {
+          var error = '<__trans phrase="You must set your Blog Name." escape="singlequotes">';
+          show_error(error, '#blog-name', $element);
+          return false;
+      }
+
+      $element = $form.find('#use_absolute:checked');
+      if ( $element.length ) {
+          // Absolute Path
+          $element = $form.find('#site_path_absolute');
+          if ( !$element.val().length ) {
+              var error = '<__trans phrase="You must set your Local Site Path." escape="singlequotes">';
+              show_error(error, '#site_path_absolute', $element);
+              return false;
+          }
+          if ( !is_valid_absolute_path( $element.val() ) ) {
+              var error = '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">';
+              show_error(error, '#site_path_absolute', $element);
+              return false;
+          }
+      } else {
+         // Relative Path
+          $element = $form.find('#site_path');
+          if ( !is_valid_path( $element.val() ) ) {
+              var error = '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">';
+              show_error(error, '#site_path', $element);
+              return false;
+          }
+      }
+
+      if ( $form.find('#enable_archive_paths:checked').length ) {
+          $element = $form.find('#use_absolute_archive:checked');
+          if ( $element.length ) {
+              // Absolute Path
+              $element = $form.find('#archive_path_absolute');
+              if ( !$element.val().length ) {
+                  var error = '<__trans phrase="You must set your Local Archive Path." escape="singlequotes">';
+                  show_error(error, '#archive_path_absolute', $element);
+                  return false;
+              }
+              if ( !is_valid_absolute_path( $element.val() ) ) {
+                  var error = '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">';
+                  show_error(error, '#archive_path_absolute', $element);
+                  return false;
+              }
+          } else {
+             // Relative Path
+              $element = $form.find('#archive_path');
+              if ( !is_valid_path( $element.val() ) ) {
+                  var error = '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">';
+                  show_error(error, '#archive_path', $element);
+                  return false;
+              }
+          }
+      }
+
     return true;
+  }
+
+  function is_valid_url(url_){
+      return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+  }
+  function is_valid_path(path_){
+      var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+      str = encodeURI(str);
+      if (str.indexOf('%') != -1) {
+          return false;
+      }
+      if (str.match(/\.\./)) {
+          return false;
+      }
+      return true;
+  }
+  function is_valid_absolute_path(path_) {
+      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+          return true;
+      }
+      return false;
+  }
+
+  function show_error(error, field_id, $element) {
+      var label = $("<label />")
+          .attr({"for": field_id})
+          .addClass('msg-error')
+          .html(error);
+      $element.parents('div.field').addClass('error-field');
+      label.insertAfter($element);
   }
 
   <mt:Ignore>
@@ -557,6 +652,9 @@
    */
   </mt:Ignore>
   function _enforceCloningConstraints(input,prefFields) {
+    if ( input == null ) {
+        return;
+    }
     switch(input.id) {
       case 'clone-prefs-entries-pages':
         var inputEls = prefFields.getElementsByTagName('input'),
@@ -712,5 +810,28 @@
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
+
+    <mt:unless name="verify">
+    function is_valid_url(url_){
+        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+    }
+    function is_valid_path(path_){
+        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+        return true;
+    }
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
+</mt:unless>
 </mt:setvarblock>
 <mt:include name="dialog/footer.tmpl">

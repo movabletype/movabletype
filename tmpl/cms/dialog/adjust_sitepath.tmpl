@@ -31,10 +31,16 @@ function changeParent (ws) {
     var ids = [ 'site', 'archive' ];
     $.each(ids,  function () {
         var obj = jQuery('#'+this+'_path'+blog_id+'-field');
-        obj.find('.absolute-site_path :input').attr('value', new_path);
-        obj.find('.use-absolute :checkbox').removeAttr('checked');
-        obj.find('.relative-site_path').show();
-        obj.find('.absolute-site_path').hide();
+        if ( obj.find('.use-absolute').hasClass('default-absolute') ) {
+            obj.find('.use-absolute :checkbox').attr('checked', 'checked');
+            obj.find('.relative-site_path').hide();
+            obj.find('.absolute-site_path').show();
+        } else {
+            obj.find('.absolute-site_path :input').attr('value', new_path);
+            obj.find('.use-absolute :checkbox').removeAttr('checked');
+            obj.find('.relative-site_path').show();
+            obj.find('.absolute-site_path').hide();
+        }
     });
 
     var matches = new_url.match(/(https?):\/\/(.+\/)$/);
@@ -167,9 +173,9 @@ function init() {
             <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
             </mt:if>
-                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<$mt:var name="old_site_path" escape="html"$>" /></div>
-                <div class="absolute-site_path"><input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="" size="50" class="blog-path-text" /></div>
-                <div class="use-absolute">
+                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:unless name="site_path_absolute"><$mt:var name="old_site_path" escape="html"$></mt:unless>" /></div>
+                <div class="absolute-site_path"><input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" size="50" class="blog-path-text" /></div>
+                <div class="use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
                     <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
                 </div>
             </mtapp:setting>
@@ -213,10 +219,10 @@ function init() {
                 class="site-path-field hidden"
                 label="<__trans phrase="Archive Path">">
                 <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
-                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id"><mt:if name="site_path_absolute"> hidden</mt:if>">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:var name="old_archive_path" escape="html">" /></div>
-                <div class="absolute-site_path"><input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="" size="50" class="blog-path-text" /></div>
-                <div class="use-absolute">
-                    <input type="checkbox" name="use_absolute_archive<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+                <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" /></div>
+                <div class="absolute-site_path"><input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" size="50" class="blog-path-text" /></div>
+                <div class="use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
+                    <input type="checkbox" name="use_absolute_archive<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
                 </div>
             </mtapp:setting>
             </mt:if>
@@ -272,6 +278,12 @@ function init() {
         }
         return true;
     }
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
@@ -302,6 +314,9 @@ function init() {
 
         return is_valid_path(parent_path + value);
     });
+    jQuery.validator.addMethod('absolute_path', function(value, element) {
+        return is_valid_absolute_path(value);
+    });
 
     jQuery('#adjust_sitepath').validate({
         rules: {
@@ -320,14 +335,20 @@ function init() {
             site_path_<mt:var name="id" escape="html">: 'path',
             site_path_absolute_<mt:var name="id" escape="html">: {
                 required: '#use_absolute_<mt:var name="id" escape="html">:checked',
-                path: true
+                absolute_path: true
             },
             archive_path_absolute_<mt:var name="id" escape="html">: {
                 required: function(element) {
                     if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
-                        return is_valid_path(element.value);
+                        true;
                     }
                     return false;
+                },
+                absolute_path: function(element) {
+                    if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
+                        return is_valid_absolute_path(element.value);
+                    }
+                    return true;
                 }
             },
             parent_id_<mt:var name="id">: {
@@ -355,10 +376,11 @@ function init() {
             },
             site_path_absolute_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
             archive_path_absolute_<mt:var name="id" escape="html">: {
-                required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+                required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+                absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             },
             parent_id_<mt:var name="id">: {
                 min: '<__trans phrase="You must select a parent website." escape="singlequotes">'

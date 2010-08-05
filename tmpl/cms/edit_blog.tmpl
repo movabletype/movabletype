@@ -34,18 +34,6 @@ function dirify_blog_name(fld) {
     url.value = dir_blog_name + '/';
     path.value = dir_blog_name;
 }
-function validate (f) {
-<mt:if name="can_edit_config">
-    if (!f.name.value) {
-        alert('<__trans phrase="You must set your Blog Name." escape="singlequotes">');
-        return false;
-    } else if (f.server_offset.value == '') {
-        alert('<__trans phrase="You did not select a timezone." escape="singlequotes">');
-        return false;
-    }
-</mt:if>
-    return true;
-}
 function init() {
 <mt:if name="new_object">
     getByID("name").focus();
@@ -64,7 +52,7 @@ function init() {
 
 <mt:include name="include/header.tmpl">
 
-<form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+<form method="post" id="cfg_form" action="<mt:var name="script_url">">
 <mt:unless name="new_object">
     <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
 </mt:unless>
@@ -200,6 +188,70 @@ function init() {
     init();
     jQuery.mtUseSubdomain();
     jQuery.mtUseAbsolute();
+
+    function is_valid_url(url_){
+        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+    }
+    function is_valid_path(path_){
+        var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
+        str = encodeURI(str);
+        if (str.indexOf('%') != -1) {
+            return false;
+        }
+        if (str.match(/\.\./)) {
+            return false;
+        }
+        return true;
+    }
+    function is_valid_absolute_path(path_) {
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return true;
+        }
+        return false;
+    }
+    jQuery.validator.addMethod('url', function(value, element) {
+        return is_valid_url('<mt:var name="website_domain">'+value);
+    });
+    jQuery.validator.addMethod('path', function(value, element) {
+        return is_valid_path(value);
+    });
+    jQuery.validator.addMethod('absolute_path', function(value, element) {
+        return is_valid_absolute_path(value);
+    });
+    jQuery('#cfg_form').validate({
+        rules: {
+            name: 'required',
+            server_offset: 'required',
+            site_url: {
+                'url': true
+            },
+            site_path: {
+                path: true
+            },
+            site_path_absolute: {
+                required: '#use_absolute:checked',
+                absolute_path: true
+            }
+        },
+        messages: {
+            name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
+            server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+            site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+            site_path: {
+                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            },
+            site_path_absolute: {
+                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+            }
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
 </mt:setvarblock>
 
 <mt:include name="include/footer.tmpl">
