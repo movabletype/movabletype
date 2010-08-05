@@ -347,7 +347,7 @@ sub set_blog_load_context {
     }
 
     # Find blog_id which belongs to the specified websites
-    if ($col eq 'blog_id' && ($attr->{site_ids} || $attr->{include_websites})) {
+    if ($col eq 'blog_id' && ($attr->{site_ids} || $attr->{include_websites}) && 'all' ne lc $blog_ids) {
         my @blogs = MT::Blog->load({
             'id' => \@$blog_ids,
         });
