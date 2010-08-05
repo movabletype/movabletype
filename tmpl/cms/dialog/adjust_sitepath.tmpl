@@ -222,7 +222,7 @@ function init() {
                 <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" /></div>
                 <div class="absolute-site_path"><input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" size="50" class="blog-path-text" /></div>
                 <div class="use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
-                    <input type="checkbox" name="use_absolute_archive<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+                    <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
                 </div>
             </mtapp:setting>
             </mt:if>

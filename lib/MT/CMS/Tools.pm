@@ -1431,7 +1431,7 @@ sub adjust_sitepath {
         my $use_absolute_archive  = scalar $q->param("use_absolute_archive_$id") || q();
 
         if ( $use_absolute_archive ) {
-            $archive_url_path = $$archive_path_absolute;
+            $archive_path = $archive_path_absolute;
         }
         $blog->archive_path($archive_path);
 
