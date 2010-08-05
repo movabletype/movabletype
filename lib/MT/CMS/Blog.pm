@@ -2666,7 +2666,7 @@ sub clone {
         $param->{use_absolute_archive} = $blog->is_archive_path_absolute;
         $param->{archive_path_absolute} = $blog->is_archive_path_absolute
             ? $blog->column('archive_path')
-            : $website->site_url;
+            : $website->site_path;
 
         my $base_url;
         my @raw_site_url = $blog->raw_site_url;
