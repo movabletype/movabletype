@@ -1858,6 +1858,11 @@ sub dialog_adjust_sitepath {
                 $params->{old_archive_url_subdomain} = $subdomain;
                 $params->{old_archive_url_path}      = $raw_archive_url[1];
             }
+            $params->{enabled_archives} = 1
+                if $params->{old_archive_url}
+                    || $params->{old_archive_url_subdomain}
+                    || $params->{old_archive_url_path}
+                    || $params->{old_archive_path};
             push @blogs_loop, $params;
         } else {
             push @website_loop,

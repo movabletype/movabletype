@@ -319,6 +319,7 @@ function init() {
     });
 
     jQuery('#adjust_sitepath').validate({
+        ignore: '.ignore-validate',
         rules: {
 <mt:loop name="website_loop">
             site_url_<mt:var name="id" escape="html">: {
@@ -332,18 +333,25 @@ function init() {
 </mt:loop>
 <mt:loop name="blogs_loop">
             site_url_<mt:var name="id" escape="html">: 'url',
-            site_path_<mt:var name="id" escape="html">: 'path',
             site_path_absolute_<mt:var name="id" escape="html">: {
-                required: '#use_absolute_<mt:var name="id" escape="html">:checked',
-                absolute_path: true
+                absolute_path: function(element) {
+                    if ( jQuery('#use_absolute_<mt:var name="id" escape="html">:checked').length &&
+                         !jQuery('#site_path_absolute_<mt:var name="id" escape="html">:hidden').length  ) {
+                        return is_valid_absolute_path(element.value);
+                    }
+                    return true;
+                }
             },
-            archive_path_absolute_<mt:var name="id" escape="html">: {
-                required: function(element) {
-                    if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
-                        true;
+    <mt:if name="enabled_archives">
+            archive_path_<mt:var name="id" escape="html">: {
+                required: "function(element) {
+                    if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
+                        return is_valid_path(element.value);
                     }
                     return false;
-                },
+                }
+            },
+            archive_path_absolute_<mt:var name="id" escape="html">: {
                 absolute_path: function(element) {
                     if ( jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
                         return is_valid_absolute_path(element.value);
@@ -351,6 +359,7 @@ function init() {
                     return true;
                 }
             },
+    </mt:if>
             parent_id_<mt:var name="id">: {
                 min: 1
             }<mt:unless name="__last__">,</mt:unless>
@@ -378,10 +387,16 @@ function init() {
                 required: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
                 absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
+    <mt:if name="enabled_archives">
+            archive_path_<mt:var name="id" escape="html">: {
+                required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+            },
             archive_path_absolute_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
                 absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             },
+    </mt:if>
             parent_id_<mt:var name="id">: {
                 min: '<__trans phrase="You must select a parent website." escape="singlequotes">'
             }<mt:unless name="__last__">,</mt:unless>

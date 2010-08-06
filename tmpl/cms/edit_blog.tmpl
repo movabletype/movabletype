@@ -219,6 +219,7 @@ function init() {
         return is_valid_absolute_path(value);
     });
     jQuery('#cfg_form').validate({
+        ignore: '.ignore-validate',
         rules: {
             name: 'required',
             server_offset: 'required',
