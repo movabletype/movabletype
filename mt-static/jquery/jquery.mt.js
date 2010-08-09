@@ -243,12 +243,14 @@ $.mtUseAbsolute = function() {
             $obj.find('.relative-site_path-hint').hide();
             $obj.find('.absolute-site_path-hint').show();
             $obj.find('.absolute-site_path').find(':input').removeClass('ignore-validate');
+            $obj.find('.relative-site_path').find(':input').addClass('ignore-validate');
         } else {
             var $obj = $(this).removeAttr('checked').parents('.field-content');
             $obj.find('.relative-site_path').show();
             $obj.find('.absolute-site_path').hide();
             $obj.find('.relative-site_path-hint').show();
             $obj.find('.absolute-site_path-hint').hide();
+            $obj.find('.relative-site_path').find(':input').removeClass('ignore-validate');
             $obj.find('.absolute-site_path').find(':input').addClass('ignore-validate');
         }
     });

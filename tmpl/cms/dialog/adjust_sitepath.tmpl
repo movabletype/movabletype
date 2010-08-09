@@ -297,12 +297,21 @@ function init() {
 <mt:setvarblock name="jq_js_include" append="1">
     init();
 
-    jQuery.validator.addMethod('url', function(value, element) {
-        rex = RegExp("site_url_([0-9]+)");
+    jQuery.validator.addMethod('site_url', function(value, element) {
+        rex = RegExp("site_url_path_([0-9]+)");
         parent_url = '';
         if (element.name.match(rex)) {
             b_id = RegExp.$1;
-            parent_url = jQuery('.parent_site_url_'+b_id).text();
+
+            if ( jQuery('#use_subdomain_'+b_id+':checked').length ) {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('input#site_url_subdomain_'+b_id).val();
+                parent_url += '.';
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            } else {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            }
         }
         if (parent_url == '' && value == '')
             return false;
@@ -310,7 +319,7 @@ function init() {
         return is_valid_url(parent_url + value);
     });
 
-        jQuery.validator.addMethod('path', function(value, element) {
+    jQuery.validator.addMethod('path', function(value, element) {
         rex = RegExp("site_path_([0-9]+)");
         parent_path = '';
         if (element.name.match(rex)) {
@@ -322,8 +331,35 @@ function init() {
 
         return is_valid_path(parent_path + value);
     });
+    jQuery.validator.addMethod('url', function(value, element) {
+        return is_valid_url(value);
+    });
     jQuery.validator.addMethod('absolute_path', function(value, element) {
         return is_valid_absolute_path(value);
+    });
+    jQuery.validator.addMethod('not_absolute_path', function(value, element) {
+        return !is_valid_absolute_path(value);
+    });
+    jQuery.validator.addMethod('archive_url', function(value, element) {
+        rex = RegExp("archive_url_path_([0-9]+)");
+        parent_url = '';
+        if (element.name.match(rex)) {
+            b_id = RegExp.$1;
+
+            if ( jQuery('#use_archive_subdomain_'+b_id+':checked').length ) {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('input#archive_url_subdomain_'+b_id).val();
+                parent_url += '.';
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            } else {
+                parent_url = jQuery('.parent_site_url_scheme_'+b_id+':first').text();
+                parent_url += jQuery('.parent_site_url_domain_'+b_id+':first').text();
+            }
+        }
+        if (parent_url == '' && value == '')
+            return false;
+
+        return is_valid_url(parent_url + value);
     });
 
     jQuery('#adjust_sitepath').validate({
@@ -340,7 +376,10 @@ function init() {
             }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
-            site_url_<mt:var name="id" escape="html">: 'url',
+            site_path_<mt:var name="id" escape="html">: {
+                not_absolute_path: true
+            },
+            site_url_path_<mt:var name="id" escape="html">: 'site_url',
             site_path_absolute_<mt:var name="id" escape="html">: {
                 absolute_path: function(element) {
                     if ( jQuery('#use_absolute_<mt:var name="id" escape="html">:checked').length &&
@@ -351,10 +390,20 @@ function init() {
                 }
             },
     <mt:if name="enabled_archives">
+            archive_url_path_<mt:var name="id" escape="html">: {
+                required: true,
+                archive_url: true
+            },
             archive_path_<mt:var name="id" escape="html">: {
-                required: function(element) {
+                path: function(element) {
                     if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
                         return is_valid_path(element.value);
+                    }
+                    return false;
+                },
+                not_absolute_path: function(element) {
+                    if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
+                        return !is_valid_absolute_path(element.value);
                     }
                     return false;
                 }
@@ -385,20 +434,25 @@ function init() {
             }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
-            site_url_<mt:var name="id" escape="html">: {
-                url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
+            site_url_path_<mt:var name="id" escape="html">: {
+                site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">'
             },
             site_path_<mt:var name="id" escape="html">: {
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                not_absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
             site_path_absolute_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">',
                 absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             },
     <mt:if name="enabled_archives">
+            archive_url_path_<mt:var name="id" escape="html">: {
+                required: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+                archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">'
+            },
             archive_path_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
+                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+                not_absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             },
             archive_path_absolute_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',

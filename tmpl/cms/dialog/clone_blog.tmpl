@@ -552,6 +552,21 @@
           }
       }
 
+      var base = '<mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html"><mt:var name="website_domain">';
+      $element = $form.find('#use_subdomain:checked');
+      if ( $element.length ) {
+          $element = $form.find('#site-url-subdomain');
+          if ( $element.val().length ) {
+              base = '<mt:var name="website_scheme">://'+$element.val()+'.<mt:var name="website_domain">';
+          }
+      }
+      $element = $form.find('#site_url_path');
+      if ( !is_valid_url(base + $element.val()) ) {
+         var error = '<__trans phrase="You must set a valid URL." escape="singlequotes">';
+         show_error(error, '#site_url_path', $element);
+         return false;
+      }
+
       if ( $form.find('#enable_archive_paths:checked').length ) {
           $element = $form.find('#use_absolute_archive:checked');
           if ( $element.length ) {
@@ -570,15 +585,30 @@
           } else {
              // Relative Path
               $element = $form.find('#archive_path');
-              if ( !is_valid_path( $element.val() ) ) {
+              if ( !$element.val().length || !is_valid_path( $element.val() ) ) {
                   var error = '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">';
                   show_error(error, '#archive_path', $element);
                   return false;
               }
           }
+
+          base = '<mt:var name="website_scheme">://<mt:var name="archive_url_subdomain" escape="html"><mt:var name="website_domain">';
+          $element = $form.find('#use_archive_subdomain:checked');
+          if ( $element.length ) {
+              $element = $form.find('#archive_url_subdomain');
+              if ( $element.val().length ) {
+                  base = '<mt:var name="website_scheme">://'+$element.val()+'.<mt:var name="archive_url_subdomain" escape="html"><mt:var name="website_domain">';
+              }
+          }
+          $element = $form.find('#archive_url_path');
+          if ( !$element.val().length || !is_valid_url(base + $element.val()) ) {
+             var error = '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">';
+             show_error(error, '#archive_url_path', $element);
+             return false;
+          }
       }
 
-    return true;
+      return true;
   }
 
   function is_valid_url(url_){

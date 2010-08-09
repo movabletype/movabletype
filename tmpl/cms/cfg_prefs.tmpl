@@ -490,10 +490,20 @@ function setLicense() {
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('input#enable_archive_paths').click(function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
+
+        if ( $(this).checked ) {
+            jQuery('div#enable_archive_paths_prefs').find(':input').each(function() {
+                jQuery(this).removeClass('ignore-validate');
+            });
+        } else {
+            jQuery('div#enable_archive_paths_prefs').find(':input').each(function() {
+                jQuery(this).addClass('ignore-validate');
+            });
+        }
     });
 
     function is_valid_url(url_){
-        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ );
+        return url_.match( /^https?:\/\/[A-Za-z0-9!$%()=_.:,;@~-]+/ ) ? true : false;
     }
     function is_valid_path(path_){
         var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~]/g, "");
@@ -504,6 +514,11 @@ function setLicense() {
         if (str.match(/\.\./)) {
             return false;
         }
+        <mt:if name="is_blog">
+        if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) {
+            return false;
+        }
+        </mt:if>
         return true;
     }
     function is_valid_absolute_path(path_) {
@@ -514,6 +529,15 @@ function setLicense() {
     }
     jQuery.validator.addMethod('url', function(value, element) {
         return is_valid_url('<mt:var name="website_url">'+value);
+    });
+    jQuery.validator.addMethod('site_url', function(value, element) {
+        var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
+        var chk = jQuery(element).parents().find('.url-field:first').find(':checkbox:checked');
+        var subdomain = jQuery(element).parents().find('.url-field:first').find('.blog-subdomain-text');
+        if ( chk.length && subdomain.val().length) {
+            base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
+        }
+        return is_valid_url(base + element.value);
     });
     jQuery.validator.addMethod('path', function(value, element) {
         return is_valid_path(value);
@@ -526,8 +550,11 @@ function setLicense() {
         rules: {
             name: 'required',
             server_offset: 'required',
+            <mt:if name="is_blog">
+            site_url_path: 'site_url',
+            </mt:if>
             site_url: {
-                <mt:unless name="is_blog">required: true,</mt:unless>
+                required: true,
                 'url': true
             },
             site_path: {
@@ -538,28 +565,35 @@ function setLicense() {
                 required: '#use_absolute:checked',
                 absolute_path: true
             },</mt:if>
-            archive_url: {
+            archive_url_path: {
                 required: function(element) {
                     if (jQuery('#enable_archive_paths:checked').length) {
-                        return is_valid_url(element.value);
+                        return element.value.length;
                     }
-                    return false;
-                }
+                    return true;
+                },
+                site_url: true
             },
             archive_path: {
                 required: function(element) {
                     if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
+                        return element.value.length;
+                    }
+                    return true;
+                },
+                path: function(element) {
+                    if ( jQuery('#enable_archive_paths:checked').length && !jQuery('#use_absolute_archive:checked').length ) {
                         return is_valid_path(element.value);
                     }
-                    return false;
+                    return true;
                 }
             },
             archive_path_absolute: {
                 required: function(element) {
                     if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
-                        return true;
+                        return is_valid_absolute_path(element.value);
                     }
-                    return false;
+                    return true;
                 },
                 absolute_path: function(element) {
                     if ( jQuery('#enable_archive_paths:checked').length && jQuery('#use_absolute_archive:checked').length ) {
@@ -573,6 +607,7 @@ function setLicense() {
             name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
             server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
             site_url: '<__trans phrase="You must set a valid URL." escape="singlequotes">',
+            site_url_path: '<__trans phrase="You must set a valid URL." escape="singlequotes">',
             site_path: {
                 required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">'
@@ -581,7 +616,10 @@ function setLicense() {
                 required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
                 absolute_path: '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">'
             },
-            archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+            archive_url_path: {
+                required:  '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+                site_path: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">'
+            },
             archive_path: {
                 required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
@@ -604,6 +642,16 @@ function setLicense() {
     jQuery.mtUseSubdomain();
     jQuery.mtEditSitePath();
     jQuery.mtUseAbsolute();
+
+    if ( jQuery('input#enable_archive_paths:checked').length ) {
+        jQuery('#archive_url_path').removeClass('ignore-validate');
+        jQuery('#archive_path').removeClass('ignore-validate');
+        jQuery('#archive_path_absolute').removeClass('ignore-validate');
+    } else {
+        jQuery('#archive_url_path').addClass('ignore-validate');
+        jQuery('#archive_path').addClass('ignore-validate');
+        jQuery('#archive_path_absolute').addClass('ignore-validate');
+    }
 </mt:if>
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

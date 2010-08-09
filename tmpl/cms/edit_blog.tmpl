@@ -223,14 +223,21 @@ function init() {
     jQuery.validator.addMethod('absolute_path', function(value, element) {
         return is_valid_absolute_path(value);
     });
+    jQuery.validator.addMethod('site_url', function(value, element) {
+        var base = '<mt:var name="website_scheme">://<mt:var name="website_domain">';
+        var chk = jQuery(element).parents().find('.url-field:first').find(':checkbox:checked');
+        var subdomain = jQuery(element).parents().find('.url-field:first').find('.blog-subdomain-text');
+        if ( chk.length && subdomain.val().length) {
+            base = '<mt:var name="website_scheme">://'+subdomain.val()+'.<mt:var name="website_domain">';
+        }
+        return is_valid_url(base + element.value);
+    });
     jQuery('#cfg_form').validate({
         ignore: '.ignore-validate',
         rules: {
             name: 'required',
             server_offset: 'required',
-            site_url: {
-                'url': true
-            },
+            site_url_path: 'site_url',
             site_path: {
                 path: true
             },
@@ -242,7 +249,7 @@ function init() {
         messages: {
             name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
             server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
-            site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+            site_url_path: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
             site_path: {
                 required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
                 path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
