@@ -196,7 +196,7 @@
             required="1"
             label="<__trans phrase="Blog URL">"
             content_class="field-content-input"
-            hint="<__trans phrase="Enter the new URL of your public website. Example: http://www.example.com/weblog/">"
+            hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/">"
             show_hint="1">
         <mt:if name="site_url_subdomain">
             <div class="site-url">
@@ -228,13 +228,14 @@
             required="1"
             label="<__trans phrase="Blog Root">"
             content_class="field-content-input"
-            hint="<__trans phrase="Enter a new path where your main index file will be located. Example: /home/melody/public_html/weblog">"
             show_hint="1">
             <div class="relative-site_path"><span class="website-path"><mt:var name="parent_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" /></div>
             <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" size="50" class="blog-path-text" /></div>
             <div class="use-absolute">
                 <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="use_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
             </div>
+            <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+            <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
 
         <mtapp:setting
@@ -255,7 +256,7 @@
             class="url-field"
             required="1"
             label="<__trans phrase="Archive URL">"
-            hint="<__trans phrase="Enter the URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+            hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
             show_hint="1"
             help_page="blog_settings_publishing"
             help_section="archive_url">
@@ -305,8 +306,8 @@
                 <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="use_absolute_archive"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
             </div>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
-            <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-            <div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div>
+            <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+            <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
     </div>
 

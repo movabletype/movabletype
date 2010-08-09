@@ -68,6 +68,7 @@ function init() {
         id="blog_theme"
         label="<__trans phrase="Blog Theme">"
         hint="<__trans phrase="Select the theme you wish to use for this blog.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_theme">
         <select name="blog_theme">
@@ -81,6 +82,7 @@ function init() {
         id="name"
         label="<__trans phrase="Blog Name">"
         hint="<__trans phrase="Name your blog. The blog name can be changed at any time.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_name">
         <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)"/>
@@ -91,7 +93,8 @@ function init() {
         id="site_url"
         class="url-field"
         label="<__trans phrase="Blog URL">"
-        hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
+        hint="<__trans phrase="Enter the URL of your Blog. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
+        show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_url">
         <div class="site-url">
@@ -106,7 +109,6 @@ function init() {
         id="site_path"
         class="site-path-field"
         label="<__trans phrase="Blog Root">"
-        hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
         help_page="blog_settings_publishing"
         help_section="site_root">
         <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" /></div>
@@ -114,6 +116,8 @@ function init() {
         <div class="use-absolute">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
         </div>
+        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+        <div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
     </mtapp:setting>
 </mt:if>
 <mt:if name="can_edit_config">
@@ -121,6 +125,7 @@ function init() {
         id="server_offset"
         label="<__trans phrase="Time Zone">"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_timezone">
             <select name="server_offset" id="server_offset">
@@ -162,14 +167,14 @@ function init() {
 <mtapp:setting
     id="blog_language"
     label="<__trans phrase="Language">"
-    hint="<__trans phrase="Blog language.">"
+    hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
+    show_hint="1"
     show_warning="1">
     <select name="blog_language" id="blog_language" class="se">
     <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>
     </select>
-    <p class="hint"><__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules."></p>
 </mtapp:setting>
 
 <mt:setvarblock name="action_buttons">

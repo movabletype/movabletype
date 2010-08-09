@@ -70,6 +70,7 @@ function dirify_blog_name(fld) {
         id="website_theme"
         label="<__trans phrase="Website Theme">"
         hint="<__trans phrase="Select the theme you wish to use for this website.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="website_theme">
         <select name="website_theme">
@@ -82,6 +83,7 @@ function dirify_blog_name(fld) {
         id="name"
         label="<__trans phrase="Website Name">"
         hint="<__trans phrase="Name your website. The website name can be changed at any time.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="website_name">
         <input type="text" name="name" id="name" value="<mt:var name="name" escape="html">" size="50" onkeyup="dirify_blog_name(this)" />
@@ -90,6 +92,7 @@ function dirify_blog_name(fld) {
         id="website_url"
         label="<__trans phrase="Website URL">"
         hint="<__trans phrase="Enter the URL of your website. Exclude the filename (i.e. index.html). Example: http://www.example.com/weblog/">"
+        show_hint="1"
         help_page="blog_settings_publishing"
         help_section="website_url">
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" size="50" />
@@ -98,7 +101,8 @@ function dirify_blog_name(fld) {
     <mtapp:setting
         id="website_path"
         label="<__trans phrase="Website Root">"
-        hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/') is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog">"
+        hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/weblog or C:\www\public_html">"
+        show_hint="1"
         help_page="blog_settings_publishing"
         help_section="website_root">
         <input type="text" name="site_path" id="site_path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" size="50" />
@@ -107,6 +111,7 @@ function dirify_blog_name(fld) {
         id="server_offset"
         label="<__trans phrase="Time Zone">"
         hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+        show_hint="1"
         help_page="blog_settings_general"
         help_section="blog_timezone">
             <select name="server_offset" id="server_offset">
@@ -147,14 +152,14 @@ function dirify_blog_name(fld) {
 <mtapp:setting
     id="blog_language"
     label="<__trans phrase="Language">"
-    hint="<__trans phrase="Blog language.">"
+    hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
+    show_hint="1"
     show_warning="1">
     <select name="blog_language" id="blog_language" class="se">
     <mt:loop name="languages">
         <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
     </mt:loop>
     </select>
-    <p class="hint"><__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules."></p>
 </mtapp:setting>
 
 <mt:setvarblock name="action_buttons">

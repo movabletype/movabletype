@@ -230,7 +230,7 @@ function setLicense() {
             <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="website-url-field mt-edit-field" />
         </div>
     </mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the site URL can result in breaking all the links in your blog."></p>
+        <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your blog." params="<mt:var name="object_label" capitalize="1">"></p>
 <mt:if name="is_blog">
         <div class="hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
 <mt:else>
@@ -250,9 +250,9 @@ function setLicense() {
         <div class="use-absolute">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
         </div></mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your site root requires a complete publish of your site."></p>
-        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-        <mt:if name="is_blog"><div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div></mt:if>
+        <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Note: Changing your [_1] root requires a complete publish of your site." params="<mt:var name="object_label" capitalize="1">"></p>
+        <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+        <mt:if name="is_blog"><div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div></mt:if>
     </mtapp:setting>
 
     <mt:if name="is_blog">
@@ -274,7 +274,7 @@ function setLicense() {
             class="url-field"
             required="1"
             label="<__trans phrase="Archive URL">"
-            hint="<__trans phrase="Enter the URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+            hint="<__trans phrase="The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
             show_hint="1"
             help_page="blog_settings_publishing"
             help_section="archive_url">
@@ -324,8 +324,8 @@ function setLicense() {
                 <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
             </div>
             <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
-            <div class="hint relative-site_path-hint"><__trans phrase="The path where your index files will be published. Do not end with '/'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-            <div class="hint absolute-site_path-hint"><__trans phrase="The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/mt/public_html or C:\www\public_html"></div>
+            <div class="hint relative-site_path-hint"><__trans phrase="The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+            <div class="hint absolute-site_path-hint"><__trans phrase="The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
         </mtapp:setting>
     </mt:if>
     </div>
@@ -572,14 +572,14 @@ function setLicense() {
         messages: {
             name: '<__trans phrase="You must set your Blog Name." escape="singlequotes">',
             server_offset: '<__trans phrase="You did not select a time zone." escape="singlequotes">',
-            site_url: '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+            site_url: '<__trans phrase="You must set a valid URL." escape="singlequotes">',
             site_path: {
-                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
+                path: '<__trans phrase="You must set a valid Local file Path." escape="singlequotes">'
             },
             site_path_absolute: {
-                required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                absolute_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                required: '<__trans phrase="You must set your Local file Path." escape="singlequotes">',
+                absolute_path: '<__trans phrase="You must set a valid Loca file Path." escape="singlequotes">'
             },
             archive_url: '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
             archive_path: {

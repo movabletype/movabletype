@@ -140,7 +140,9 @@ function init() {
             <mtapp:setting
                 id="$site_url_id"
                 class="url-field hidden"
-                label="<__trans phrase="Site URL">">
+                label="<__trans phrase="Blog URL">"
+                hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/">"
+                show_hint="1">
             <mt:if name="old_site_url_subdomain">
                 <div class="site-url">
                     <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span><span class="subdomain"><input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="blog-subdomain-text extra-path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="blog-url-text extra-path" value="<mt:var name="old_site_url_path" escape="html">" /></span>
@@ -169,7 +171,7 @@ function init() {
             <mtapp:setting
                 id="$site_path_id"
                 class="site-path-field hidden"
-                label="<__trans phrase="Site Path">">
+                label="<__trans phrase="Blog Root">">
             <mt:if name="old_site_path">
                 <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
             </mt:if>
@@ -178,6 +180,8 @@ function init() {
                 <div class="use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
                     <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
                 </div>
+                <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+                <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
             </mtapp:setting>
 
             <mt:if name="old_archive_url">
@@ -185,7 +189,9 @@ function init() {
             <mtapp:setting
                 id="$archive_url_id"
                 class="url-field hidden"
-                label="<__trans phrase="Archive URL">">
+                label="<__trans phrase="Archive URL">"
+                hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+                show_hint="1">
                 <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
             <mt:if name="old_archive_url_subdomain">
                 <div class="archive-url">
@@ -217,12 +223,14 @@ function init() {
             <mtapp:setting
                 id="$archive_path_id"
                 class="site-path-field hidden"
-                label="<__trans phrase="Archive Path">">
+                label="<__trans phrase="Archive Root">">
                 <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
                 <div class="relative-site_path"><span class="website-path"><span class="parent_site_path_<mt:var name="id">">&nbsp;</span></span><input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="blog-path-text extra-path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" /></div>
                 <div class="absolute-site_path"><input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" size="50" class="blog-path-text" /></div>
                 <div class="use-absolute<mt:if name="archive_path_absolute"> default-absolute</mt:if>">
                     <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> /> <label for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+                <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+                <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
                 </div>
             </mtapp:setting>
             </mt:if>
@@ -302,7 +310,7 @@ function init() {
         return is_valid_url(parent_url + value);
     });
 
-    jQuery.validator.addMethod('path', function(value, element) {
+        jQuery.validator.addMethod('path', function(value, element) {
         rex = RegExp("site_path_([0-9]+)");
         parent_path = '';
         if (element.name.match(rex)) {
@@ -344,7 +352,7 @@ function init() {
             },
     <mt:if name="enabled_archives">
             archive_path_<mt:var name="id" escape="html">: {
-                required: "function(element) {
+                required: function(element) {
                     if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
                         return is_valid_path(element.value);
                     }
