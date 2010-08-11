@@ -623,6 +623,10 @@
       if (str.match(/\.\./)) {
           return false;
       }
+      if ( path_.match(/^\//) || path_.match(/^[a-zA-Z]:\\/)  || path_.match(/^\\\\[a-zA-Z0-9\.]+/ ) ) { 
+          return false;
+      }
+
       return true;
   }
   function is_valid_absolute_path(path_) {
