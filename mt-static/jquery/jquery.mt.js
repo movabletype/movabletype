@@ -35,7 +35,7 @@ $.mtMenu = function(options) {
     var opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
     $('.top-menu .toggle-button').click(function(event) {
-        $(this).parents('li.top-menu').toggleClass('top-menu-open');
+        $(this).parents('li.top-menu').toggleClass('top-menu-open active');
         $(this).parents('li.top-menu').find('.sub-menu').toggle();
         event.preventDefault();
     });
@@ -51,7 +51,7 @@ $.mtMenu = function(options) {
  */
 $.mtSelector = function(options) {
     var defaults = {
-        arrow_image: StaticURI+'images/arrow-down-gray.gif'
+        arrow_image: StaticURI+'images/menu-arrow-down.gif'
     };
     var opts = $.extend(defaults, options);
     $('#system-overview > em').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
@@ -59,12 +59,12 @@ $.mtSelector = function(options) {
     $('#current-website > em').prepend('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
     $('#selector-nav-list li .toggle-button ').click(function(event) {
-        $(this).parent('em').parents('#selector-nav').toggleClass('show-selector');
+        $(this).parent('em').parents('#selector-nav').toggleClass('show-selector active');
         event.preventDefault();
     });
     $(document).click(function(event) {
         if ($(event.target).parents('#selector-nav').length == 0) {
-            $('#selector-nav').removeClass('show-selector');
+            $('#selector-nav').removeClass('show-selector active');
         }
     });
     if (!$.support.style && !$.support.objectAll) {
@@ -854,25 +854,35 @@ $.fn.mtCheckboxOption = function() {
 };
 
 /*
- * mtToggleNext
+ * mtToggleField
  *
  * Usage:
- *   jQuery('.msg').mtToggleNext();
+ *   jQuery('.msg').mtToggleField();
+ *   jQuery('.msg').mtToggleField({hide_clicked: true});
  *
  */
-$.fn.mtToggleNext = function(options) {
+$.fn.mtToggleField = function(options) {
     var defaults = {
         click_class: 'detail-link',
-        detail_class: 'detail'
+        detail_class: 'detail',
+        hide_clicked: false
     };
     var opts = $.extend(defaults, options);
     return this.each(function() {
-        var $parent = $(this);
+        var $field = $(this);
         $('.'+opts.detail_class).hide();
-        $parent.find('.'+opts.click_class).click(function(event) {
-            $parent.toggleClass('active').find('.'+opts.detail_class).toggle();
+        $field.find('.'+opts.click_class).click(function(event) {
+            $field.toggleClass('active').find('.'+opts.detail_class).toggle();
             event.preventDefault();
         });
+
+        if (opts.hide_clicked) {
+            $(document).click(function(event) {
+                if ($(event.target).parents('.active').length == 0) {
+                    $field.removeClass('active').find('.'+opts.detail_class).hide();
+                }
+            });
+        }
     });
 };
 

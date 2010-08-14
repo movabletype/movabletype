@@ -49,6 +49,7 @@ __PACKAGE__->install_properties({
         'password_reset' => 'string meta',
         'password_reset_expires' => 'string meta',
         'password_reset_return_to' => 'string meta',
+        'list_prefs' => 'hash meta',
     },
     defaults => {
         type => 1,
@@ -102,6 +103,261 @@ use Exporter;
 use vars qw(@EXPORT_OK %EXPORT_TAGS);
 @EXPORT_OK = qw(AUTHOR COMMENTER ACTIVE INACTIVE APPROVED BANNED PENDING);
 %EXPORT_TAGS = (constants => [qw(AUTHOR COMMENTER ACTIVE INACTIVE APPROVED BANNED PENDING)]);
+
+sub list_props {
+    return {
+        email => 'Email',
+        name => {
+            auto => 1,
+            label => 'Name',
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
+                        id => $obj->id,
+                        blog_id => 0,
+                    },
+                );
+            },
+        },
+        nickname => 'Nickname',
+        ## TBD
+        #status => {
+        #    base => '__common.single_select',
+        #    label => 'Status',
+        #    col   => 'status',
+        #    html => sub {
+        #        my ( $prop, $obj ) = @_;
+        #        my $status = $obj->status;
+        #        my $img;
+        #        if ( $obj->type == MT::Author::AUTHOR() ) {
+        #            $img = $obj->is_active    ? 'user-enabled.gif'
+        #                 : $obj->is_banned    ? 'user-disabled.gif'
+        #                 :                      'user-pending.gif'
+        #                 ;
+        #        }
+        #        else {
+        #            $img = $obj->is_trusted   ? 'trusted.gif'
+        #                 : $obj->is_banned    ? 'banned.gif'
+        #                 :                      'authenticated.gif'
+        #                 ;
+        #        }
+        #
+        #        return sprintf '<img src="%s" />',
+        #            MT->static_path . 'images/status_icons/' . $img;
+        #    },
+        #    terms => sub {
+        #        my ( $prop, $args, $db_terms, $db_args ) = @_;
+        #        my $filter = $args->{value};
+        #        my ( $join_terms, $join_args ) = ({},{});
+        #        if ( $filter eq 'trusted' ) {
+        #            $join_terms = { permissions => { like => '%comment%' } };
+        #        }
+        #        elsif ( $filter eq 'active' ) {
+        #            $join_terms = [
+        #                { permissions =>  { not_like => '%comment%' } },
+        #                '-and',
+        #                { restrictions => { not_like => '%comment%' } },
+        #            ];
+        #        }
+        #        elsif ( $filter eq 'banned' ) {
+        #            $join_terms->{restrictions} = { like => '%comment%' };
+        #        }
+        #
+        #
+        #        my $orig_join = $db_args->{join};
+        #        $join_args->{join} = $orig_join if $orig_join;
+        #        my $id_term = $db_terms->{id};
+        #        $db_terms->{id} = $id_term && 'ARRAY' eq ref $id_term
+        #                        ? [ @$id_term, \" = permission_author_id" ]
+        #                        : $id_term
+        #                        ? [ '-and', $id_term, \" = permission_author_id" ]
+        #                        : \" = permission_author_id";
+        #        $db_args->{join} = MT->model('permission')->join_on(
+        #            undef, $join_terms, $join_args,
+        #        );
+        #        use YAML;
+        #        print STDERR YAML::Dump $db_terms;
+        #        print STDERR YAML::Dump $db_args;
+        #        return;
+        #    },
+        #    single_select_options => [
+        #        { label => 'Trusted',  value => 'trusted', },
+        #        { label => 'Active',   value => 'active',  },
+        #        { label => 'Banned',   value => 'banned',  },
+        #        { label => 'Pending',  value => 'pending', },
+        #    ],
+        #},
+        author_name => {
+            base => '__common.author_name',
+            label => 'Created by',
+        },
+        type => {
+            base => '__common.single_select',
+            label => 'Type',
+            col => 'type',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                $obj->type == 1 ? 'Author' : 'Commenter';
+            },
+            single_select_options => [
+                { label => 'Author',    value => 1, },
+                { label => 'Commenter', value => 2, },
+            ],
+        },
+        url => {
+            auto => 1,
+            label => 'URL',
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $obj->url;
+            },
+        },
+        entry_count => {
+            label => 'Entries',
+            count_class => 'entry',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                MT->model( $prop->count_class )->count({ author_id => $obj->id });
+            },
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => $prop->count_class,
+                        blog_id    => 0,
+                        filter     => 'author_id',
+                        filter_val => $obj->id,
+                    },
+                );
+            },
+        },
+        comment_count => {
+            base => 'author.entry_count',
+            label => 'Comments',
+            count_class => 'comment',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                MT->model( $prop->count_class )->count({ commenter_id => $obj->id });
+            },
+        },
+        userpic => {
+            label => 'Userpic',
+            html => sub {
+                my $prop = shift;
+                my ( $obj ) = @_;
+                return $obj->userpic_html;
+            }
+        },
+        auth_type => {
+            label => 'Auth',
+            auto => 1,
+            html => sub {
+                my ( $prop, $obj ) = @_;
+                my $img;
+                if ( $obj->auth_type eq 'MT' ) {
+                    $img = 'images/comment/mt_logo.png';
+                }
+                else {
+                    my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
+                    $img = $auth->{logo_small};
+                }
+                return sprintf '<img src="%s" />',
+                    MT->static_path . $img;
+            },
+        },
+        privilege => {
+            base => '__common.single_select',
+            label => 'Privilege',
+            display => 'none',
+            single_select_options => sub {
+                my $prop = shift;
+                my $perms = MT->registry('permissions');
+                my @perms =
+                    map {{ label => $perms->{$_}{label}, value => $_ }}
+                    sort { $perms->{$a}{order} <=> $perms->{$b}{order} }
+                    grep { $_ =~ /^system/ }
+                    keys %$perms;
+                \@perms;
+            },
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $priv = $args->{value};
+                $priv =~ s/^system\.//;
+                $db_args->{join} = MT->model('permission')->join_on(
+                    author_id => {
+                        blog_id => 0,
+                        permissions => { like => "%'$priv'%" },
+                });
+                return;
+            },
+        },
+    };
+}
+
+sub member_list_props {
+    return {
+        email         => 'Email',
+        nickname      => 'Nickname',
+        name          => { base => 'author.name' },
+        status        => { base => 'author.status' },
+        author_name   => { base => 'author.author_name' },
+        type          => { base => 'author.type' },
+        url           => { base => 'author.url' },
+        entry_count   => { base => 'author.entry_count' },
+        comment_count => { base => 'author.comment_count' },
+        userpic       => { base => 'author.userpic' },
+        auth_type     => { base => 'author.auth_type' },
+        permission    => {
+            display => 'none',
+
+            ## FIXME
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $join_terms = {};
+                my $join_args  = {};
+                $join_terms->{blog_id} = $args->{blog_id} if $args->{blog_id};
+                my $orig_join = $db_args->{join};
+                $join_args->{join} = $orig_join if $orig_join;
+                my $id_term = $db_terms->{id};
+                $db_terms->{id} = $id_term && 'ARRAY' eq ref $id_term
+                                ? [ @$id_term, \" = permission_author_id" ]
+                                : $id_term
+                                ? [ '-and', $id_term, \" = permission_author_id" ]
+                                : \" = permission_author_id";
+                $db_args->{join} = MT->model('permission')->join_on(
+                    undef, $join_terms, $join_args,
+                );
+                return;
+            },
+        },
+        role          => {
+            base => '__common.single_select',
+            label => 'Role',
+            display => 'none',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $terms = {};
+                my $blog_id = MT->app->param('blog_id');
+                $terms->{blog_id} = $blog_id;
+                $terms->{role_id}    = $args->{value}   if $args->{value};
+                $db_terms->{id} = \" = association_author_id";
+                $db_args->{join} = MT->model('association')->join_on(
+                    undef, $terms,
+                );
+                return;
+            },
+            single_select_options => sub {
+                my $prop = shift;
+                my @roles = MT->model('role')->load;
+                return [ map {{ label => $_->name, value => $_->id }} @roles ];
+            },
+        },
+    };
+}
 
 sub set_defaults {
     my $auth = shift;

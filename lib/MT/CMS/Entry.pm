@@ -1990,16 +1990,84 @@ sub draft_entries {
 }
 
 sub open_batch_editor {
-    my $app  = shift;
-    my @ids  = $app->param('id');
-    my $type = $app->param('_type');
+    my $app = shift;
+    my ($param) = @_;
+    $param ||= {};
+    my @ids = $app->param('id')
+        or return "Invalid request.";
 
-    $app->param( 'is_power_edit', 1 );
-    $app->param( 'filter',        'power_edit' );
-    $app->param( 'filter_val',    \@ids );
-    $app->param( 'type',          $type );
-    $app->mode( 'list_' . $type );
-    $app->forward( "list_entry", { type => $type } );
+    require MT::Entry;
+    my $type = $app->param('_type') || MT::Entry->class_type;
+    my $pkg = $app->model($type) or return "Invalid request.";
+
+    my $q       = $app->param;
+    my $blog_id = $q->param('blog_id');
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog_id;
+    my $blog = $app->model('blog')->load($blog_id);
+    return $app->return_to_dashboard( redirect => 1 )
+        unless $blog;
+
+    PERMCHECK: {
+        my $action
+            = $type eq 'page'
+            ? 'open_batch_page_editor_via_list'
+            : 'open_batch_entry_editor_via_list';
+        if ($blog_id) {
+            last PERMCHECK if $app->can_do($action);
+        }
+        else {
+            last PERMCHECK
+                if $app->user->can_do( $action, at_least_one => 1 );
+        }
+        return $app->errtrans('Permission denied.');
+    }
+
+    # Loading objects
+    my $iter = $pkg->load_iter( { id => \@ids }, {} );
+
+    my $list_pref = $app->list_pref($type);
+    my %param     = %$list_pref;
+    $param{has_expanded_mode} = 0;
+    delete $param{view_expanded};
+
+    my $data = build_entry_table(
+        $app,
+        iter          => $iter,
+        is_power_edit => 1,
+        param         => \%param,
+        type          => $type
+    );
+    delete $_->{object} foreach @$data;
+    delete $param{entry_table} unless @$data;
+
+    $param{saved}               = $q->param('saved');
+    $param{object_type}         = $type;
+    $param{object_label}        = $pkg->class_label;
+    $param{object_label_plural} = $param{search_label}
+        = $pkg->class_label_plural;
+    $param{list_start}            = 1;
+    $param{list_end}              = scalar @$data;
+    $param{listing_screen}        = 1;
+    $param{blog_view}             = 1;
+    $param{container_label}       = $pkg->container_label;
+    $param{mode}                  = $app->mode;
+    $param{sitepath_unconfigured} = $blog->site_path ? 0 : 1;
+
+    $param->{return_args} ||= $app->make_return_args;
+    my @return_args
+        = grep { $_ !~ /offset=\d/ && $_ !~ /__mode=.*/ } split /&/,
+        $param->{return_args};
+    push @return_args, '__mode=open_batch_editor';
+    push @return_args, "id=$_" foreach (@ids);
+
+    $param{return_args} = join '&', @return_args;
+    $param{screen_id}   = "batch-edit-entry";
+    $param{screen_id}   = "batch-edit-page"
+        if $param{object_type} eq "page";
+    $param{screen_class} .= " batch-edit";
+
+    $app->load_tmpl( "edit_entry_batch.tmpl", \%param );
 }
 
 sub build_entry_table {
@@ -2087,7 +2155,9 @@ sub build_entry_table {
         my $row = $obj->get_values;
         $row->{text} ||= '';
         if ( my $ts =
-            ( $type eq 'page' ) ? $obj->modified_on : $obj->authored_on )
+            ( $type eq 'page' )
+            ? ( $is_power_edit ? $obj->created_on : $obj->modified_on )
+            : $obj->authored_on )
         {
             $row->{created_on_formatted} =
               format_ts( $date_format, $ts, $obj->blog, $app->user ? $app->user->preferred_language : undef );

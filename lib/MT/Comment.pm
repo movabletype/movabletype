@@ -88,6 +88,151 @@ sub is_not_junk {
     $_[0]->junk_status != JUNK;
 }
 
+sub list_props {
+    return {
+        junk_status => {
+            label => 'Junk status',
+            base => '__common.single_select',
+            col => 'junk_status',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $status = $obj->junk_status;
+                $status == JUNK() ? 'Junk' : 'Not Junk';
+            },
+            single_select_options => [
+                { label => 'Approved', value => NOT_JUNK(), },
+                { label => 'Reported as spam', value => JUNK(), }
+            ],
+        },
+        comment_is_visible => {
+            label => 'Visible',
+            base => '__common.single_select',
+            col => 'visible',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $status = $obj->visible;
+                $status ? 'Visible' : 'Not visible';
+            },
+            single_select_options => [
+                { label => 'Visible', value => 1, },
+                { label => 'Not visible', value => 0, }
+            ],
+        },
+        status => {
+            label => 'Status',
+            base => '__common.single_select',
+            col => 'visible',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $visible     = $obj->visible;
+                my $junk_status = $obj->junk_status;
+                return $junk_status == JUNK() ? 'Spam'
+                     : $visible               ? 'Approved'
+                     :                          'Unapproved';
+            },
+            terms => sub {
+                my ( $prop, $args ) = @_;
+                return $args->{value} eq 'approved'  ? { visible => 1, junk_status => NOT_JUNK() }
+                     : $args->{value} eq 'moderated' ? { visible => 0, junk_status => NOT_JUNK() }
+                     :                                 { junk_status => JUNK() }
+                     ;
+            },
+            single_select_options => [
+                { label => 'Approved',         value => 'approved', },
+                { label => 'Unapproved',       value => 'moderated', },
+                { label => 'Reported as spam', value => 'junk', },
+            ],
+        },
+        ## Hide default author_name.
+        author_name => {
+            condition => sub {0},
+        },
+        author => {
+            label => 'Commenter',
+            auto  => 1,
+            html  => sub {
+                my ( $prop, $obj ) = @_;
+                my $raw = $prop->{raw}->( $prop, $obj );
+                my $id  = $obj->commenter_id;
+                if ( $id ) {
+                    return qq{<a href="<mt:var name="script_url">?__mode=view&_type=commenter&id=$id&blog_id=<mt:blogid>">$raw</a>};
+                }
+                else {
+                    my $author = MT::Util::remove_html( $obj->author );
+                    return qq{<a href="<mt:var name="script_url">?__mode=search_replace&_type=comment&search_cols=author&is_limited=1&do_search=1&search=$author&blog_id=<mt:blogid>">$author</a>};
+                }
+            }
+        },
+        auth_type => {
+            base      => '__common.string',
+            label     => 'Auth',
+            bulk_html => sub {
+                my ( $prop, $objs ) = @_;
+                my %author_ids = map { $_->commenter_id => 1 } @$objs;
+                my @authors = MT->model('author')->load({ id => [ keys %author_ids ] });
+                my %author_auth_type = map { $_->id => $_->auth_type } @authors;
+                return map { $_->commenter_id ? $author_auth_type{$_->commenter_id} : '-' } @$objs;
+            },
+        },
+        entry => {
+            label => 'Entry',
+            base => '__common.string',
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                my %entry_ids  = map { $_->entry_id => 1 } @$objs;
+                my @entries = MT->model('entry')->load({
+                    id => [ keys %entry_ids ], },{
+                    fetchonly => {
+                        id   => 1,
+                        title => 1,
+                }});
+                my %names = map { $_->id => $_->title } @entries;
+                my @result;
+                for my $obj ( @$objs ) {
+                    my $id   = $obj->entry_id;
+                    my $name = $names{$id};
+                    push @result, qq{<a href="<mt:var name="script_url">?__mode=view&_type=entry&id=$id&blog_id=<mt:blogid>">$name</a>};
+
+                }
+                return @result;
+            },
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $entry_id = $obj->entry_id;
+                return $entry_id ? MT->model('entry')->load($entry_id)->title : '';
+            },
+        },
+        text => {
+            label => 'Text',
+            auto => 1,
+            html  => sub {
+                my ( $prop, $obj ) = @_;
+                my $text = MT::Util::remove_html($obj->text);
+                ## FIXME: Hard coded...
+                my $len  = 20;
+                if ( $len < length($text) ) {
+                    $text = substr($text, 0, $len);
+                    $text .= '...';
+                }
+                elsif ( !$text ) {
+                    $text = '...';
+                }
+                my $id  = $obj->id;
+                return qq{<a href="<mt:var name="script_url">?__mode=view&_type=comment&id=$id&blog_id=<mt:blogid>">$text</a>};
+            },
+        },
+        junk_score => {
+            auto  => 1,
+            label => 'Junk score',
+        },
+        ip => {
+            auto  => 1,
+            label => 'IP',
+        },
+    };
+}
+
 sub is_not_blocked { 
     my ($eh, $cmt) = @_;
     

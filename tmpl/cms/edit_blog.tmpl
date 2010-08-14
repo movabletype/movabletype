@@ -98,7 +98,7 @@ function init() {
         help_page="blog_settings_publishing"
         help_section="site_url">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" class="blog-url-text extra-path" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain"  class="blog-subdomain-text path" value="<mt:var name="site_url_subdomain">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" class="blog-url-text path" value="<mt:var name="site_url" _default="$suggested_site_url" escape="html">" /></span>
         </div>
         <div class="use-subdomain">
             <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
@@ -111,8 +111,8 @@ function init() {
         label="<__trans phrase="Blog Root">"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" /></div>
-        <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="blog-path-text hide-input" /></div>
+        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" /></div>
+        <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text hide-input" /></div>
         <div class="use-absolute">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
         </div>

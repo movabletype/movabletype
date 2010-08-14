@@ -107,7 +107,7 @@ function setLicense() {
         hint="<__trans phrase="Name your blog. The name can be changed at any time.">"
         help_page="blog_settings_general"
         help_section="blog_name">
-        <input type="text" name="name" id="name" class="full-width" value="<mt:var name="name" escape="html">" size="30" />
+        <input type="text" name="name" id="name" class="" value="<mt:var name="name" escape="html">" />
     </mtapp:setting>
 
     <mtapp:setting
@@ -116,7 +116,7 @@ function setLicense() {
         hint="<__trans phrase="Enter a description for your blog.">"
         help_page="blog_settings_general"
         help_section="blog_description">
-        <textarea name="description" id="description" class="full-width short" cols="" rows=""><mt:var name="description" escape="html"></textarea>
+        <textarea name="description" id="description" class="text low" cols="" rows=""><mt:var name="description" escape="html"></textarea>
     </mtapp:setting>
 
     <mt:ignore id="placeholder1"></mt:ignore>
@@ -177,18 +177,18 @@ function setLicense() {
     </mt:if>
             <p><__trans phrase="Your blog is currently licensed under:"> <strong id="cc-license-name"><mt:var name="cc_license_name"></strong></p>
             <span class="actions-link"><a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Change license"></a> | <a href="javascript:void(0);" onclick="return doRemoveLicense();"><__trans phrase="Remove license"></a></span>
-</div>
-<div id="no-license" style="display: none;">
-<__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
-<a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
-</div>
-<script type="text/javascript">
-    /* <![CDATA[ */
-    var e = getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
-    if (e) e.style.display = 'block';
-    /* ]]> */
-</script>
-<input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
+        </div>
+        <div id="no-license" style="display: none;">
+          <__trans phrase="Your blog does not have an explicit Creative Commons license."><br />
+          <a href="javascript:void(0);" onclick="return setLicense();"><__trans phrase="Select a license"></a>
+        </div>
+        <script type="text/javascript">
+            /* <![CDATA[ */
+                var e = getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
+                if (e) e.style.display = 'block';
+            /* ]]> */
+        </script>
+        <input type="hidden" name="cc_license" value="<mt:var name="cc_license" escape="html">" />
     </mtapp:setting>
 
 </fieldset>
@@ -202,25 +202,25 @@ function setLicense() {
         class="url-field"
         label='<__trans phrase="[_1] URL" params="<mt:var name="object_label" capitalize="1">">'
         show_hint="1"
-        help_page="blog_settings_publishing"
+       help_page="blog_settings_publishing"
         help_section="site_url">
     <mt:if name="site_url_subdomain">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text extra-path" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text path" /></span>
         </div>
         <div class="use-subdomain">
             <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
     <mt:elseif name="site_url_path">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text extra-path" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text path" /></span>
         </div>
         <div class="use-subdomain">
             <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
         </div>
     <mt:elseif name="is_blog">
         <div class="site-url">
-            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text extra-path" /></span>
+            <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site_url_subdomain" value="<mt:var name="site_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path">" class="blog-url-text path" /></span>
         </div>
         <div class="use-subdomain">
             <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1"<mt:if name="use_subdomain"> checked="checked"</mt:if> class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
@@ -245,7 +245,7 @@ function setLicense() {
         show_hint="1"
         help_page="blog_settings_publishing"
         help_section="site_root">
-        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" size="50" class="<mt:if name="is_blog"> blog-path-text extra-path<mt:else> mt-edit-field website-path-field</mt:if> hide-input" /></div>
+        <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="site_path" id="site_path" value="<mt:if name="is_blog"><mt:unless name="site_path_absolute"><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:unless><mt:else><mt:var name="site_path" escape="html" default="$suggested_site_path"></mt:if>" class="<mt:if name="is_blog"> blog-path-text path<mt:else> mt-edit-field website-path-field</mt:if> hide-input" /></div>
         <mt:if name="is_blog"><div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" size="50" class="blog-path-text hide-input" /></div>
         <div class="use-absolute">
             <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
@@ -280,28 +280,28 @@ function setLicense() {
             help_section="archive_url">
         <mt:if name="archive_url_subdomain">
             <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text path" /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         <mt:elseif name="archive_url_path">
             <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text path" /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         <mt:elseif name="archive_url" eq="">
             <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text extra-path" /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text path" /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
             </div>
         <mt:else>
             <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
+                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text path" /></span>
             </div>
             <div class="use-subdomain">
                 <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
@@ -318,7 +318,7 @@ function setLicense() {
             show_hint="1"
             help_page="blog_settings_publishing"
             help_section="archive_path">
-            <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text extra-path<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
+            <div class="relative-site_path"><span class="website-path"><mt:var name="website_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="archive_path_absolute"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text path<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
             <div class="absolute-site_path"><input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="blog-path-text<mt:unless name="enable_archive_paths"> show-input</mt:unless>" /></div>
             <div class="use-absolute">
                 <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
@@ -387,7 +387,7 @@ function setLicense() {
     hint="<__trans phrase="Enter the archive file extension. This can take the form of 'html', 'shtml', 'php', etc. Note: Do not enter the leading period ('.').">"
     help_page="blog_setting_publishing"
     help_section="archive_file_extension">
-    <input type="text" name="file_extension" id="file_extension" size="5" value="<mt:var name="file_extension" escape="html">" />
+    <input type="text" name="file_extension" id="file_extension" class="min" value="<mt:var name="file_extension" escape="html">" />
 </mtapp:setting>
 
 <mt:if name="is_blog">
@@ -464,12 +464,12 @@ function setLicense() {
         <mtapp:setting
             id="max_revisions_entry"
             label="<mt:var name="revisions_entry_label">">
-           <input type="text" name="max_revisions_entry" id="max_revisions_entry" size="2" value="<mt:var name="max_revisions_entry" escape="html">" />
+           <input type="text" name="max_revisions_entry" id="max_revisions_entry" class="num" value="<mt:var name="max_revisions_entry" escape="html">" />
         </mtapp:setting>
         <mtapp:setting
             id="max_revisions_template"
             label="<__trans phrase="Number of revisions per template">">
-            <input type="text" name="max_revisions_template" id="max_revisions_template" size="2" value="<mt:var name="max_revisions_template" escape="html">" />
+            <input type="text" name="max_revisions_template" id="max_revisions_template" class="num"  value="<mt:var name="max_revisions_template" escape="html">" />
         </mtapp:setting>
     </div>
 </fieldset>
@@ -480,7 +480,7 @@ function setLicense() {
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
-        class="save action primary-button"
+        class="save action primary"
         ><__trans phrase="Save Changes"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">

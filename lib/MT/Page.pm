@@ -29,6 +29,53 @@ MT->add_callback( 'cms_post_save.' . 'page', 9, undef, \&MT::Revisable::mt_posts
 
 __PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisable::mt_postremove_obj );
 
+sub list_props {
+    return {
+        text => {
+            base => 'entry.text',
+        },
+        text_more => {
+            base => 'entry.text_more',
+        },
+        title => {
+            base => 'entry.title',
+            html => sub {
+                my ( $prop, $obj ) = @_;
+                ## FIXME
+                return $obj->title;
+                #my $id    = $obj->id;
+                #return qq{<a href="<mt:var name="script_url">?__mode=view&_type=page&blog_id=<mt:pageblogid>&id=<mt:pageid>"><mt:pageTitle></a> [<a href="<mt:pagePermalink>">>></a>]};
+            },
+        },
+        authored_on => {
+            base      => 'entry.authored_on',
+        },
+        status => {
+            base => 'entry.status',
+        },
+        author_name => {
+            base => 'entry.author_name',
+        },
+        basename => {
+            base => 'entry.basename',
+        },
+        comment_count => {
+            base => 'entry.comment_count',
+        },
+        ping_count => {
+            base => 'entry.ping_count',
+        },
+        folder => {
+            base => 'entry.primary_category',
+            label => 'Folder',
+            category_class => 'folder',
+        },
+        tag => {
+            base => 'entry.tag',
+        },
+    };
+}
+
 sub class_label {
     return MT->translate("Page");
 }

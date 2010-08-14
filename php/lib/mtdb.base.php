@@ -1611,6 +1611,19 @@ abstract class MTDatabase {
         } else {
             $sort_order = '';
         }
+        $sort_by = 'category_label';
+        if ( isset($args['sort_by']) ) {
+            $sort_by = strtolower($args['sort_by']);
+            if ( 'user_custom' != $sort_by ) {
+                require_once('class.mt_category.php');
+                $category_class = new Category();
+                if ( $category_class->has_column('category_'.$sort_by) ) {
+                    $sort_by  = 'category_'.$sort_by;
+                } else {
+                    $sort_by = 'category_label';
+                }
+            }
+        }
 
         $count_column = 'placement_id';
         if ($args['show_empty']) {
@@ -1667,12 +1680,40 @@ abstract class MTDatabase {
             }
             $list = implode(",", $ids);
 
-            $where = "category_id in ($list)
-                      order by category_label $sort_order";
-
             require_once('class.mt_category.php');
             $category = new Category;
+            $base_sort = 'user_custom' == $sort_by ? 'category_label' : $sort_by;
+            $where = "category_id in ($list)
+                      order by $base_sort $sort_order";
             $categories = $category->Find($where);
+            if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                $meta = $class.'_order';
+                try {
+                    $custom_order = $blog->$meta;
+                    if ( !empty($custom_order) ) {
+                        $order_list = preg_split('/\s*,\s*/', $custom_order);
+                        $cats = array();
+                        foreach ( $categories as $c ) {
+                            if ( in_array( $c->id, $order_list ) ) {
+                                $key = array_search( $c->id, $order_list );
+                                $cats[ $key ] = $c;
+                            } else {
+                                array_push( $cats, $c );
+                            }
+                        }
+                        if ( 'desc' == $sort_order ) {
+                            krsort( $cats );
+                        } else {
+                            ksort( $cats );
+                        }
+                        $categories = array_values($cats);
+                    }
+                } catch (Exception $e) {
+                }
+            }
 
             $id_list = array();
             $top_cats = array();

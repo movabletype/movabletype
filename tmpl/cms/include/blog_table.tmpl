@@ -1,60 +1,65 @@
 <mt:setvarblock name="action_buttons">
-    <mt:if name="is_administrator">
-    <button
-        accesskey="x"
-        title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_type_plural" lower_case="1">">"
-        class="mt-delete-items"
-        ><__trans phrase="Delete"></button>
-    </mt:if>
+<mt:if name="is_administrator">
+  <button
+     type="button"
+     accesskey="x"
+     title="<__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_type_plural" lower_case="1">">"
+     class="button mt-delete-items"
+     ><__trans phrase="Delete"></button>
+</mt:if>
 </mt:setvarblock>
+
 <mtapp:listing>
-    <mt:if name="__first__">
-        <mt:setvarblock name="table_header">
-        <tr>
-            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-            <th class="name primary-col"><__trans phrase="[_1] Name" params="<mt:var name="object_label" capitalize="1">"></th>
-        <mt:if name="object_type" eq="website">
-            <th class="blog"><__trans phrase="Blogs"></th>
-            <th class="entry"><__trans phrase="Pages"></th>
-        <mt:else>
-            <mt:if name="scope_type" eq="system">
-            <th class="website"><__trans phrase="Website"></th>
-            </mt:if>
-            <th class="entry"><__trans phrase="Entries"></th>
-        </mt:if>
-            <th class="comment"><__trans phrase="Comments"></th>
-            <th class="setting"><__trans phrase="Settings"></th>
-        </tr>
-        </mt:setvarblock>
-    <thead>
-        <mt:var name="table_header">
-    </thead>
-    <tfoot>
-        <mt:var name="table_header">
-    </tfoot>
-    <tbody>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+  <tr>
+    <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+    <th class="col head name primary"><__trans phrase="[_1] Name" params="<mt:var name="object_label" capitalize="1">"></th>
+  <mt:if name="object_type" eq="website">
+    <th class="col head blog"><__trans phrase="Blogs"></th>
+    <th class="col head entry"><__trans phrase="Pages"></th>
+  <mt:else>
+    <mt:if name="scope_type" eq="system">
+    <th class="col head website"><__trans phrase="Website"></th>
     </mt:if>
-        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select"<mt:if checked> checked="checked"</mt:if> /></td>
-            <td class="name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
-        <mt:if name="object_type" eq="website">
-            <td class="blog"><mt:if name="can_list_blogs"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>
-            <td class="entry"><mt:if name="can_edit_pages"><a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="id">&amp;filter_key=this_website"><mt:var name="num_pages"></a><mt:else><mt:var name="num_pages"></mt:if></td>
-        <mt:else>
-            <mt:if name="scope_type" eq="system">
-            <td class="website">
-                <mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html"></mt:if>
-            </td>
-            </mt:if>
-            <td class="entry"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
+    <th class="col head entry"><__trans phrase="Entries"></th>
+  </mt:if>
+    <th class="col head comment"><__trans phrase="Comments"></th>
+    <th class="col head setting"><__trans phrase="Settings"></th>
+  </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tfoot>
+    <mt:var name="table_header">
+  </tfoot>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="col cb"><input type="checkbox" name="id" value="<mt:var name="id">" class="select"<mt:if checked> checked="checked"</mt:if> /></td>
+      <td class="col name"><a href="?__mode=dashboard&amp;blog_id=<mt:var name="id">"><mt:var name="name" escape="html"></a></td>
+    <mt:if name="object_type" eq="website">
+      <td class="col blog"><mt:if name="can_list_blogs"><a href="<mt:var name="script_url">?__mode=list_blog&amp;blog_id=<mt:var name="id">"><mt:var name="num_blogs"></a><mt:else><mt:var name="num_blogs"></mt:if></td>
+      <td class="col entry"><mt:if name="can_edit_pages"><a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="id">&amp;filter_key=this_website"><mt:var name="num_pages"></a><mt:else><mt:var name="num_pages"></mt:if></td>
+    <mt:else>
+      <mt:if name="scope_type" eq="system">
+      <td class="col website">
+        <mt:if name="can_access_to_website">
+        <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html">
         </mt:if>
-            <td class="comment"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=this_website</mt:if>"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
-            <td class="setting"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
-        </tr>
-    <mt:if name="__last__">
-    </tbody>
+      </td>
+      </mt:if>
+      <td class="col entry"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="id">"><mt:var name="num_entries"></a><mt:else><mt:var name="num_entries"></mt:if></td>
     </mt:if>
+      <td class="col comment"><mt:if name="can_edit_entries"><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="id"><mt:if name="object_type" eq="website">&amp;filter_key=this_website</mt:if>"><mt:var name="num_comments"></a><mt:else><mt:var name="num_comments"></mt:if></td>
+      <td class="col setting"><mt:if name="can_edit_config"><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="id">"><__trans phrase="Settings"></a><mt:else>&nbsp;</mt:if></td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
 </mtapp:listing>
+
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.mt-delete-items').mtDeleteItems({
         id: '<$mt:var name="object_type"$>-listing-form',

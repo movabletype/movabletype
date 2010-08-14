@@ -44,6 +44,38 @@ sub class_label_plural {
     return MT->translate('Tags');
 }
 
+sub list_props {
+    return {
+        name => 'Name',
+        entries => {
+            label => 'Entries',
+            count_class => 'entry',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                my $blog_id = MT->app->param('blog_id') || 0;
+                MT->model( 'objecttag' )->count({
+                    blog_id => $blog_id,
+                    tag_id => $obj->id,
+                    object_datasource => $prop->count_class,
+                });
+            },
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => $prop->count_class,
+                        blog_id    => $app->param('blog_id') || 0,
+                        filter     => 'tag',
+                        filter_val => $obj->name,
+                    },
+                );
+            },
+
+        },
+    };
+}
+
 sub save {
     my $tag = shift;
     my $name = $tag->name;

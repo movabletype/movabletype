@@ -5,10 +5,8 @@
     padding: 0.8em;
     background-repeat: no-repeat;
     background-position: 8px center;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
     border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .msg-success { 
     background-color: #cee4ae;
@@ -22,40 +20,12 @@
 .msg-info { 
     background-color: #e6eae3;
 }
-
 .msg-publishing { 
     padding-left: 40px;
     background-image: url(../images/ani-rebuild.gif);
 }
 
-.msg p { 
-    margin: 0 45px 0 0;
-}
-
-.msg .detail p { 
-    margin: 0;
-}
-
-.msg img.mt-close-msg { 
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    margin-top: -5px;
-    cursor: pointer;
-}
-
-#sign-in .msg p, 
-#system-allow-pings p, 
-#system-allow-comments p,
-.msg-error p, 
-.rebuilding-screen .msg p, 
-.restore-publishing-config .msg p, 
-.insert-asset-dialog .msg p, 
-.edit-template .msg-info p, 
-.rebuilding-screen .msg-info p, 
-.pinging-screen .msg-info p, 
-.list-notification .msg-info p, 
-.zero-state p { 
+.msg-text { 
     margin: 0;
 }
 
@@ -110,6 +80,7 @@ p.zero-state {
     padding: 0 20px;
     font-size: 95%;
 }
+
 
 /* - Debug Panel Messages */
 .debug-panel { 

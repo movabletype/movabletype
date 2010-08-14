@@ -40,6 +40,63 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub list_default_terms {{
+    class => '*',
+}}
+
+sub list_props {
+    return {
+        description => {
+
+        },
+        file_extension => {
+
+
+        },
+        class => {
+            label => 'Class',
+            col   => 'class',
+            base  => '__common.single_select',
+            terms => sub {
+                my $prop   = shift;
+                my ($args, $db_terms, $db_args) = @_;
+                my $col    = $prop->{col} or die;
+                my $value  = $args->{value};
+                $db_args->{no_class} = 1;
+                return { $col => $value };
+            },
+            single_select_options => [
+                { label => 'Image', value => 'image', },
+                { label => 'Audio', value => 'audio', },
+                { label => 'Video', value => 'video', },
+                { label => 'File',  value => 'file', },
+            ],
+        },
+        thumbnail => {
+            label => 'Thumbnail',
+            raw => sub { 'bar' },
+            html => sub {
+                my $prop = shift;
+                my ( $obj ) = @_;
+                if ($obj->has_thumbnail) {
+                    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
+                      = $obj->thumbnail_url( Height => 75, Width => 75 , Square => 1 );
+                    my $thumbnail_width_offset = int((75 - $thumbnail_width)  / 2);
+                    my $thumbnail_height_offset = int((75 - $thumbnail_height)  / 2);
+                    return qq(<img src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />);
+                }
+                else {
+                    return '-';
+                }
+            },
+        },
+        description => {
+            auto => 1,
+            label => 'Description',
+        },
+    };
+}
+
 require MT::Asset::Image;
 require MT::Asset::Audio;
 require MT::Asset::Video;

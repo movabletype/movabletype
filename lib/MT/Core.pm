@@ -162,6 +162,7 @@ BEGIN {
             'objecttag'       => 'MT::ObjectTag',
             'objectscore'     => 'MT::ObjectScore',
             'objectasset'     => 'MT::ObjectAsset',
+            'filter'          => 'MT::Filter',
             'touch'           => 'MT::Touch',
 
             # TheSchwartz tables
@@ -169,6 +170,579 @@ BEGIN {
             'ts_error'      => 'MT::TheSchwartz::Error',
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
+        },
+        list_properties => {
+            __common => {
+                __virtual => {
+                    condition => sub {0},
+                    raw       => sub {
+                        my $prop  = shift;
+                        my ($obj) = @_;
+                        my $col   = $prop->col;
+                        return $obj->$col;
+                    },
+                    sort => sub {
+                        my $prop = shift;
+                        my ( $terms, $args ) = @_;
+                        $args->{sort} = $prop->col;
+                    },
+                },
+                __legacy => {
+                    label => 'Legacy Quick Filter',
+                    priority => 1,
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+                        my $ds         = $args->{ds};
+                        my $filter_key = $args->{filter_key};
+                        my $filter_val = $args->{filter_val};
+                        if ( $filter_val ) {
+                            MT->app->param('filter_val', $filter_val);
+                        }
+                        my $filter = MT->registry( applications => cms => list_filters => $ds => $filter_key )
+                            or die "No regacy filter";
+                        if ( my $code = $filter->{code}
+                            || MT->handler_to_coderef( $filter->{handler} ) )
+                        {
+                            $code->( $db_terms, $db_args );
+                        }
+                        return undef;
+                    },
+                    filter_tmpl => '<mt:var name="filter_form_legacy">',
+                },
+                pack => {
+                    view  => [],
+                    terms => \&MT::Filter::pack_terms,
+                    grep  => \&MT::Filter::pack_grep,
+                },
+                string => {
+                    base        => '__common.__virtual',
+                    condition   => sub {0},
+                    #sort_method => sub {
+                    #    my $prop = shift;
+                    #    my ( $obj_a, $obj_b ) = @_;
+                    #    my $col = $prop->{col};
+                    #    return $obj_a->$col cmp $obj_b->$col;
+                    #},
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $col    = $prop->col or die;
+                        my $option = $args->{option};
+                        my $query  = $args->{string};
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query = { not_like => "%$query%" };
+                        }
+                        elsif ( 'beginning' eq $option ) {
+                            $query = { like => "$query%" };
+                        }
+                        elsif ( 'end' eq $option ) {
+                            $query = { like => "%$query" };
+                        }
+                        return { $col => $query };
+                    },
+                    filter_tmpl => '<mt:var name="filter_form_string">',
+                    args_via_param => sub {
+                        my $prop  = shift;
+                        my ($app) = @_;
+                        return { option => 'equal', string => $app->param('filter_val') };
+                    },
+                    label_via_param => sub {
+                        my $prop = shift;
+                        my ( $app ) = @_;
+                        return MT->translate(
+                            '[_1] in [_2] is [_3]',
+                            $prop->datasource->class_label_plural,
+                            $prop->label,
+                            $app->param('filter_val'),
+                        );
+                    },
+                    priority => 7,
+                },
+                integer => {
+                    base        => '__common.__virtual',
+                    condition   => sub {0},
+                    #sort_method => sub {
+                    #    my $prop = shift;
+                    #    my ( $obj_a, $obj_b ) = @_;
+                    #    my $col = $prop->{col};
+                    #    return $obj_a->$col <=> $obj_b->$col;
+                    #},
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $col    = $prop->col or die;
+                        my $option = $args->{option};
+                        my $value  = $args->{value};
+                        my $query;
+                        if ( 'equal' eq $option ) {
+                            $query = { $col => $value };
+                        }
+                        elsif ('not_equal' eq $option) {
+                            $query = { $col => { not => $value } };
+                        }
+                        elsif ('greater_than' eq $option) {
+                            $query = { $col => { '>' => $value } };
+                        }
+                        elsif ('greater_equal' eq $option) {
+                            $query = { $col => { '>=' => $value } };
+                        }
+                        elsif ('less_than' eq $option) {
+                            $query = { $col => { '<' => $value } };
+                        }
+                        elsif ('less_equal' eq $option) {
+                            $query = { $col => { '<=' => $value } };
+                        }
+                        return $query;
+                    },
+                    args_via_param => sub {
+                        my $prop  = shift;
+                        my ($app) = @_;
+                        return { option => 'equal', value => $app->param('filter_val') };
+                    },
+                    filter_tmpl => '<mt:Var name="filter_form_integer">',
+                    priority => 4,
+                },
+                float => {
+                    base => '__common.integer',
+                    condition   => sub {0},
+                    html => sub {
+                        my ( $prop, $obj ) = @_;
+                        my $col = $prop->col;
+                        return sprintf "%0.1f", $obj->$col;
+                    },
+                },
+                date => {
+                    base        => '__common.__virtual',
+                    condition   => sub {0},
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $col    = $prop->col;
+                        my $option = $args->{option};
+                        my $query;
+                        my $blog = MT->app ? MT->app->blog : undef;
+                        require MT::Util;
+                        my $now = MT::Util::epoch2ts( $blog, time() );
+                        if ( 'range' eq $option ) {
+                            $query = [
+                                '-and',
+                                { op => '>', value => $args->{from} },
+                                { op => '<', value => $args->{to}   },
+                            ];
+                        }
+                        elsif ('days' eq $option ) {
+                            my $days   = $args->{days};
+                            my $origin = MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
+                            $query = [
+                                '-and',
+                                { op => '>', value => $origin },
+                                { op => '<', value => $now    },
+                            ];
+                        }
+                        elsif ('before' eq $option ) {
+                            $query = { op => '<', value => $args->{origin} };
+                        }
+                        elsif ('after' eq $option ) {
+                            $query = { op => '>', value => $args->{origin} };
+                        }
+                        elsif ('future' eq $option ) {
+                            $query = { op => '>', value => $now };
+                        }
+                        elsif ('past' eq $option ) {
+                            $query = { op => '<', value => $now };
+                        }
+                        return { $col => $query };
+                    },
+                    args_via_param => sub {
+                        my $prop  = shift;
+                        my ($app) = @_;
+                        my $val = $app->param('filter_val');
+                        my $param;
+                        if ( $val =~ m/\-/ ) {
+                            my ( $from, $to ) = split /-/, $val;
+                            $from = undef unless $from =~ m/^\d{8}$/;
+                            $to = undef unless $to =~ m/^\d{8}$/;
+                            $param = $from && $to ? { option => 'range',  from => $from, to => $to }
+                                   : $from        ? { option => 'after',  origin => $from }
+                                   :                { option => 'before', origin => $to };
+                        }
+                        elsif ( $val =~ m/(\d+)days/i ) {
+                            $param = { option => 'days', days => $1 };
+                        }
+                        elsif ( $val eq 'future' ) {
+                            $param = { option => 'future' };
+                        }
+                        elsif ( $val eq 'past' ) {
+                            $param = { option => 'past' };
+                        }
+                        return $param;
+                    },
+                    label_via_param => sub {
+                        my $prop = shift;
+                        my ( $app ) = @_;
+                        my $val = $app->param('filter_val');
+                        my ($mode, $from, $to);
+                        if ( $val =~ m/\-/ ) {
+                            my ( $from, $to ) = split /-/, $val;
+                            $from = undef unless $from =~ m/^\d{8}$/;
+                            $to = undef unless $to =~ m/^\d{8}$/;
+                            if ( $from && $to ) {
+                                return MT->translate(
+                                    '[_1] [_2] from [_3] to [_4]',
+                                    $prop->datasource->class_label_plural,
+                                    $prop->label,
+                                    $from,
+                                    $to,
+                                );
+                            }
+                            elsif ( $from ) {
+                                return MT->translate(
+                                    '[_1] [_2] after [_3]',
+                                    $prop->datasource->class_label_plural,
+                                    $prop->label,
+                                    $from,
+                                );
+                            }
+                            else {
+                                return MT->translate(
+                                    '[_1] [_2] before [_3]',
+                                    $prop->datasource->class_label_plural,
+                                    $prop->label,
+                                    $to,
+                                );
+                            }
+                        }
+                        elsif ( $val =~ m/(\d+)days/i ) {
+                            return MT->translate(
+                                '[_1] [_2] in [_3] days',
+                                $prop->datasource->class_label_plural,
+                                $prop->label,
+                                $1,
+                            );
+                        }
+                        elsif ( $val eq 'future' ) {
+                            return MT->translate(
+                                '[_1] [_2] in futere',
+                                $prop->datasource->class_label_plural,
+                                $prop->label,
+                            );
+                        }
+                        elsif ( $val eq 'past' ) {
+                            return MT->translate(
+                                '[_1] [_2] in past',
+                                $prop->datasource->class_label_plural,
+                                $prop->label,
+                            );
+                        }
+                    },
+
+                    filter_tmpl => '<mt:Var name="filter_form_date">',
+                    html => sub {
+                        my ( $prop, $obj ) = @_;
+                        my $ts = $prop->raw($obj) or return '';
+                        my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                        my $app = MT->app;
+                        my $blog = $app ? $app->blog : undef;
+                        my $is_relative = 1;
+                        ## TBD: should do like this...
+                        ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
+                        return $is_relative ? MT::Util::relative_date( $ts, time, $blog )
+                                            : MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+                    },
+                    priority => 5,
+                    default_sort_order => 'descend',
+                },
+                single_select => {
+                    base      => '__common.__virtual',
+                    condition => sub {0},
+                    sort      => 0,
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args) = @_;
+                        my $col    = $prop->col or die;
+                        my $value  = $args->{value};
+                        return { $col => $value };
+                    },
+                    args_via_param => sub {
+                        my $prop  = shift;
+                        my ($app) = @_;
+                        return { value => $app->param('filter_val') };
+                    },
+                    filter_tmpl => '<mt:Var name="filter_form_single_select">',
+                    priority => 2,
+                },
+                blog_name => {
+                    label => 'Blog Name',
+                    display => 'default',
+                    bulk_html => sub {
+                        my $prop = shift;
+                        my ( $objs ) = @_;
+                        my %blog_ids  = map { $_->blog_id => 1 } @$objs;
+                        my @blogs = MT->model('blog')->load({
+                            id => [ keys %blog_ids ], },{
+                            fetchonly => {
+                                id   => 1,
+                                name => 1,
+                        }});
+                        my %names = map { $_->id => $_->name } @blogs;
+                        map { $names{$_->blog_id} } @$objs;
+                    },
+                    raw => sub {
+                        my ( $prop, $obj ) = @_;
+                        my $blog_id = $obj->blog_id;
+                        return $blog_id ? MT->model('blog')->load($blog_id)->name
+                                        : MT->translate('System');
+                    },
+                    condition => sub {
+                        my $prop = shift;
+                        $prop->datasource->has_column('blog_id') or return;
+                        my $app = MT->app or return;
+                        return $app->blog && !$app->blog->is_blog;
+                    },
+                },
+                id => {
+                    auto      => 1,
+                    label     => 'ID',
+                    display   => 'optional',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( $prop->id );
+                    },
+                },
+                label => {
+                    auto      => 1,
+                    label     => 'Label',
+                    display   => 'force',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( $prop->id );
+                    },
+                    html => sub {
+                        my $prop = shift;
+                        my ( $obj ) = @_;
+                        my $id      = $obj->id;
+                        my $label   = $obj->label;
+                        my $blog_id = $obj->blog_id;
+                        my $type    = $prop->object_type;
+                        return qq{<a href="<mt:var name="script_url">?__mode=view&amp;_type=$type&amp;blog_id=$blog_id&amp;id=$id">$label</a>};
+                    },
+                },
+                current_user => {
+                    label => 'My Items',
+                    display => 'none',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( 'author_id' );
+                    },
+                    terms => sub {
+                        my $app = MT->app or return;
+                        return { author_id => $app->user->id };
+                    },
+                    singleton => 1,
+
+                },
+                current_context => {
+                    label => 'This Context Only',
+                    display => 'none',
+                    condition => sub {
+                        my $prop = shift;
+                        $prop->datasource->has_column('blog_id') or return;
+                        my $app = MT->app or return;
+                        return !$app->blog         ? 1
+                             : $app->blog->is_blog ? 0
+                             :                       1
+                             ;
+                    },
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args, $load_terms, $load_args) = @_;
+                        my $app = MT->app or return;
+                        $load_terms->{blog_id} = $app->param('blog_id');
+                        return;
+                    },
+                    singleton => 1,
+                },
+                created_on => {
+                    auto      => 1,
+                    label     => 'Created on',
+                    display   => 'optional',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( $prop->id );
+                    },
+                },
+                modified_on => {
+                    auto      => 1,
+                    label     => 'Modified on',
+                    display   => 'optional',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( $prop->id );
+                    },
+                },
+                author_name => {
+                    label => 'Author name',
+                    order => 500,
+                    display   => 'default',
+                    base  => '__common.string',
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column('author_id')
+                            || $prop->datasource->has_column('created_by');
+                    },
+                    raw   => sub {
+                        my ( $prop, $obj ) = @_;
+                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my $author = MT->model('author')->load( $obj->$col );
+                        return $author ? $author->nickname : MT->translate('*User deleted*');
+                    },
+                    terms => sub {
+                        my ( $prop, $args ) = @_;
+                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my $option = $args->{option};
+                        my $query  = $args->{string};
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                        }
+                        elsif ( 'begining' eq $option ) {
+                            $query = { like => "$query%" };
+                        }
+                        elsif ( 'end' eq $option ) {
+                            $query = { like => "%$query" };
+                        }
+                        ## FIXME: use join...
+                        my @authors = MT->model('author')->load({ nickname => $query }, { fetch_only => { id => 1 } });
+                        return { $col => [ map { $_->id } @authors ] };
+                    },
+                    sort_method => sub {
+                        my ( $prop, $obj_a, $obj_b ) = @_;
+                        my $name_method;
+                        if ( $obj_a->has_column('author_id') ) {
+                            $name_method = sub {
+                                my $author = $_[0]->author;
+                                return $author ? $author->nickname : '';
+                            }
+                        }
+                        else {
+                            $name_method = sub {
+                                my $author = MT->model('author')->load( $_[0]->created_by );
+                                $author ? $author->nickname : '';
+                            }
+                        }
+                        return ( $name_method->($obj_a) cmp $name_method->($obj_b) );
+                    },
+                },
+                author_id => {
+                    label => 'Author',
+                    order => 500,
+                    display   => 'none',
+                    base  => '__common.single_select',
+                    condition => sub {
+                        my $prop = shift;
+                        my $col
+                            = $prop->datasource->has_column('author_id')
+                            ? 'author_id'
+                            : 'created_by';
+                        return unless $col;
+                        $prop->{col} = $col;
+                        1;
+                    },
+                    single_select_options => sub {
+                        my $prop = shift;
+                        my @authors = MT->model('author')->load;
+                        return [
+                            map {{
+                                value => $_->id,
+                                label => $_->nickname || $_->name,
+                            }} @authors
+                        ];
+                    },
+                },
+            },
+            website  => '$Core::MT::Website::list_props',
+            blog     => '$Core::MT::Blog::list_props',
+            entry    => '$Core::MT::Entry::list_props',
+            page     => '$Core::MT::Page::list_props',
+            asset    => '$Core::MT::Asset::list_props',
+            category => '$Core::MT::Category::list_props',
+            folder   => '$Core::MT::Folder::list_props',
+            comment  => '$Core::MT::Comment::list_props',
+            ping     => '$Core::MT::TBPing::list_props',
+            author   => '$Core::MT::Author::list_props',
+            member   => '$Core::MT::Author::member_list_props',
+            tag      => '$Core::MT::Tag::list_props',
+        },
+        system_filters => {
+            entry => '$Core::MT::Entry::system_filters',
+        },
+        listing_screens => {
+            website => {
+                object_label => 'Website',
+                columns
+                    => [qw( theme_thumbnail name blog_count page_count comment_count )],
+                default_sort_key => 'created_on',
+            },
+            blog => {
+                object_label => 'Blog',
+                columns
+                    => [qw( theme_thumbnail name parent_website entry_count page_count comment_count )],
+                default_sort_key => 'created_on',
+            },
+            entry => {
+                object_label => 'Entry',
+                columns => [qw( id title created_on )],
+                default_sort_key => 'authored_on',
+            },
+            page => {
+                object_label => 'Page',
+                columns => [qw( id title created_on )],
+            },
+            asset => {
+                object_label => 'Asset',
+                columns => [qw( id created_on )],
+            },
+            log => {
+                object_label => 'Log',
+                columns => [qw( id created_on )],
+            },
+            category => {
+                object_label => 'Category',
+                columns      => [qw( id parent label entry_count )],
+                template     => 'category.tmpl',
+                contents_label        => 'Entry',
+                contents_label_plural => 'Entries',
+            },
+            folder => {
+                object_label => 'Folder',
+                columns      => [qw( id parent label entry_count )],
+                template     => 'category.tmpl',
+                contents_label        => 'Page',
+                contents_label_plural => 'Pages',
+            },
+            comment => {
+                object_label => 'Comment',
+                columns => [qw( commenter junk_status text created_on entry auth_type  )],
+            },
+            ping => {
+                object_label => 'Trackback',
+                columns => [qw( commenter junk_status text created_on entry auth_type  )],
+            },
+            author => {
+                object_label => 'Author',
+                columns => [qw( status auth_type name nickname created_by entry_count comment_count )],
+            },
+            member => {
+                object_label => 'Member',
+                object_type => 'author',
+                columns => [qw( status auth_type name nickname created_by entry_count comment_count )],
+            },
+            tag => {
+                object_label => 'Tag',
+            },
         },
         summaries => {
             'author' => {

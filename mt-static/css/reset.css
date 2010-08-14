@@ -110,15 +110,11 @@ fieldset {
     border: 0;
 }
 
-legend { 
-    display: none;
-}
-
 input, 
 label, 
 select, 
 button { 
-    vertical-align: baseline;
+    vertical-align: middle;
     margin: 0;
 }
 

@@ -1,4 +1,51 @@
 <mt:ignore><!-- FIXME: proper handling of show/hide this widget below --></mt:ignore>
+<mt:setvar name="edit_screen" value="1">
+<$mt:setvar name="show_display_options_link" value="1"$>
+
+<mt:setvarblock name="display_options">
+<div id="display-options-detail" class="unit size1of1 display-options-detail detail">
+        <form id="display-options-form" method="post" action="<mt:var name="script_url">">
+            <input type="hidden" id="entry_prefs" name="entry_prefs" value="<mt:if name="disp_prefs_default">Default<mt:else>Custom</mt:if>">
+                <mtapp:setting
+                    id="entry_fields"
+                    label="<__trans phrase="Fields">"
+                    label_class="display-options">
+                    <ul id="entry-pref-field-list">
+                        <mt:loop name="field_loop">
+                        <mt:unless name="system_field"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li<mt:if name="use_field"> class="dbx-box"</mt:if>><label<mt:if name="use_field"> class="dbx-handle"</mt:if>><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+                        </mt:loop>
+                    </ul>
+                </mtapp:setting>
+                <mtapp:setting
+                    id="metadata_fields"
+                    label="<__trans phrase="Metadata">"
+                    label_class="display-options">
+                    <ul>
+                        <mt:if name="object_type" ne="page">
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Categories"></label></li>
+                        </mt:if>
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></label></li>
+                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
+                    </ul>
+                </mtapp:setting>
+                <mtapp:setting
+                    id="reset_display_options"
+                    label="<__trans phrase="Reset display options">"
+                    label_class="display-options"
+                    show_label="0">
+                    <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
+                </mtapp:setting>
+            <div class="actions-bar display-options-actions-bar buttons">
+                <button
+                    onclick="saveEntryFieldOptions();"
+                    title="<__trans phrase="Save display options">"
+                    class="close-display-options"
+                    ><__trans phrase="OK"></button>
+            </div>
+        </form>
+</div>
+</mt:setvarblock>
+
 <$mt:setvar name="disp_prefs_show_revision" value="1"$>
 <mt:if name="object_type" eq="page">
     <mt:if name="can_manage_pages">
@@ -565,7 +612,7 @@
         id="asset_container"
         label="$widget_label">
         <div class="asset-list-header">
-            <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&edit_field=&blog_id=<mt:var name="blog_id">&dialog_view=1&no_insert=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
+            <a href="<mt:var name="script_url">?__mode=dialog_list_asset&edit_field=&blog_id=<mt:var name="blog_id">&no_insert=1" class="add-new-asset-link mt-open-dialog"><__trans phrase="Add"></a>
         </div>
         <ul id="asset-list" name="asset-list">
     <mt:if name="asset_loop">
@@ -1008,53 +1055,6 @@ function listPreviousPings () {
     </mt:if>
 </mt:setvarblock>
 
-<mt:setvarblock name="html_body_footer">
-    <$mt:setvar name="show_display_options_link" value="1"$>
-    <mtapp:widget
-        id="display-options-widget"
-        class="display-options-widget"
-        label="<__trans phrase="Display Options">">
-        <form id="display-options-form" method="post" action="<mt:var name="script_url">">
-            <input type="hidden" id="entry_prefs" name="entry_prefs" value="<mt:if name="disp_prefs_default">Default<mt:else>Custom</mt:if>">
-                <mtapp:setting
-                    id="entry_fields"
-                    label="<__trans phrase="Fields">"
-                    label_class="display-options">
-                    <ul id="entry-pref-field-list">
-                        <mt:loop name="field_loop">
-                        <mt:unless name="system_field"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li<mt:if name="use_field"> class="dbx-box"</mt:if>><label<mt:if name="use_field"> class="dbx-handle"</mt:if>><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
-                        </mt:loop>
-                    </ul>
-                </mtapp:setting>
-                <mtapp:setting
-                    id="metadata_fields"
-                    label="<__trans phrase="Metadata">"
-                    label_class="display-options">
-                    <ul>
-                        <mt:if name="object_type" ne="page">
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Categories"></label></li>
-                        </mt:if>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></label></li>
-                        <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
-                    </ul>
-                </mtapp:setting>
-                <mtapp:setting
-                    id="reset_display_options"
-                    label="<__trans phrase="Reset display options">"
-                    label_class="display-options"
-                    show_label="0">
-                    <a href="javascript:void(0)" onclick="return setDefaultFieldGroup();" title="<__trans phrase="Reset display options to blog defaults">" ><__trans phrase="Reset defaults"></a>
-                </mtapp:setting>
-            <div class="actions-bar display-options-actions-bar buttons">
-                <button
-                    onclick="saveEntryFieldOptions();"
-                    title="<__trans phrase="Save display options">"
-                    class="close-display-options"
-                    ><__trans phrase="OK"></button>
-            </div>
-        </form>
-    </mtapp:widget>
-</mt:setvarblock>
 
 <mt:unless name="new_object">
     <mt:setvarblock name="object_nav">

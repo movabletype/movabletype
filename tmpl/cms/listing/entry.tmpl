@@ -1,0 +1,11 @@
+<mt:setvarblock name="button_actions">
+  <a href="#rebuild_new_phase" class="button">Publish</a>
+  <a href="#delete" class="button">Delete</a>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+var messages = {};
+messages['rebuild_new_phase'] = '<__trans phrase="publish" escape="js">';
+messages['delete'] = '<__trans phrase="remove" escape="js">';
+</mt:setvarblock>
+

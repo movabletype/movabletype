@@ -234,7 +234,7 @@ TC.attachLoadEvent(init);
             <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
             <br />
         </span>
-        <a href="<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;dialog_view=1&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog"><__trans phrase="Select Userpic"></a>
+        <a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog"><__trans phrase="Select Userpic"></a>
         <input name="userpic_asset_id" id="userpic_asset_id" type="hidden" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
         <span id="remove-userpic"<mt:unless name="userpic"> class="hidden"</mt:unless>>
             <br />

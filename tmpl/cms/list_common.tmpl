@@ -1,0 +1,903 @@
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
+
+<mt:setvar name="show_display_options_link" value="1">
+<mt:setvarblock name="display_options">
+<div id="display-options-detail" class="unit size1of1 display-options-detail detail">
+<mtapp:setting
+   id="per_page"
+   label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
+   label_class="top-label mod"
+   >Show
+  <select id="row" name="limit">
+    <option value="2"<mt:if name="limit_2"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="2"></option>
+    <option value="10"<mt:if name="limit_10"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="10"></option>
+    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="25"></option>
+    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="50"></option>
+    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="100"></option>
+    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="200"></option>
+  </select>raws per page
+</mtapp:setting>
+<mtapp:setting
+   id="display_columns"
+   label="<__trans phrase="Column">"
+   label_class="top-label mod"
+   >
+  <ul class="mod" id="disp_cols">
+  <mt:loop name="list_columns">
+    <li class="<mt:if name="force_display"> hidden</mt:if>">
+      <input
+	 type="checkbox"
+	 value="<mt:var name="id" escape="html">"
+	 name="custom_prefs"
+	 id="custom-prefs-<$mt:var name="id" escape="html"$>"
+	 class="cb"
+	 <mt:if name="display">checked="checked"</mt:if>
+	 >
+      <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
+  </mt:loop>
+  </ul>
+</mtapp:setting>
+</div>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+<mt:include name="include/basic_filter_forms.tmpl">
+<mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
+<mt:include name="$object_listing">
+
+<div id="msg-block"></div>
+
+<div class="line">
+  <div class="unit size1of1">
+    <form id="<mt:var name="object_type">-listing-form" method="POST">
+      <input type="hidden" name="__mode" value="" />
+      <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+      <input type="hidden" name="action_name" value="" />
+      <input type="hidden" name="itemset_action_input" value="" />
+      <input type="hidden" name="items" value="" />
+      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+      <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
+      <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
+      
+      <div class="line actions-bar">
+        <div class="unit size1of2">
+          <mt:var name="button_actions">
+          <mt:include name="include/itemset_action_widget.tmpl">
+        </div>
+        <div class="unit size1of2 pagenav">
+        </div>
+      </div>
+
+      <div id="filter" class="line filter-block">
+        <div id="filter-header" class="unit size1of1">
+          <input type="hidden" id="filter_name" value="" />
+          <input type="hidden" id="filter_id" value="" />
+          <div class="mod filter-header">
+            Filter: <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
+            <a hre="#" class="toggle-button detail-link">
+              <img src="<$mt:var name="static_uri"$>images/menu-arrow-down.gif" />
+            </a>
+          </div>
+        </div>
+        <div id="filter-detail" class="detail unit size1of1">
+          <div id="filter-panel" class="mod selectfilter">
+            <select id="item_list">
+	          <option value=""><__trans phrase="Select Filter Item..."></option>
+            <mt:loop name="filter_types">
+	          <option value="<mt:var name="type">"><mt:var name="label"></option>
+            </mt:loop>
+            </select>
+            <button type="button" id="additem" class="button">Add</button>
+          </div>
+          <div id="filter-action" class="mod">
+            <button type="button" id="apply" class="button action">Apply</button>
+            <button type="button" id="save" class="button action">Save</button>
+            <button type="button" id="saveas" class="button action">Save As</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="line">
+        <table class="unit size1of1 listing <mt:var name="object_type">">
+          <thead></thead>
+          <tfoot></tfoot>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="line actions-bar">
+        <div class="unit size1of2">
+          <mt:var name="button_actions">
+          <mt:include name="include/itemset_action_widget.tmpl">
+        </div>
+        <div class="unit size1of2 pagenav">
+        </div>
+      </div>
+
+    </form>
+  </div>
+  <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
+</div>
+
+<div id="dialog_filter" title="Select Filter">
+<div class="edit-filter">Edit</div>
+</div>
+
+
+
+<div id="dialog_save_filter">
+  <div id="filter_label" title="Filter Label">
+    <div class="label">Label: </div>
+    <div><input type="text" class="text" name="filter_name" value="" /></div>
+    <div><input type="hidden" name="filter_id" value="" /></div>
+  </div>
+  <div id="dialog-msg-block"></div>
+</div>
+
+
+
+<mt:if name="config.debugmode">
+<pre id="debug-block" style="border: 1px solid #000; background-color: #eee;"></pre>
+</mt:if>
+
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('p#indicator')
+  .hide()
+  .bind('ajaxStart', function() {
+    jQuery('.msg-error').remove();
+    jQuery(this).show();
+  })
+  .bind('ajaxStop', function() {
+    jQuery(this).hide();
+  });
+
+var line = '<th class="col head cb"><input type="checkbox" /></th>';
+var table = jQuery('table.listing')[0];
+<mt:loop name="list_columns">
+line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if>"><a href="#<mt:var name="id">"><mt:var name="label"></a></th>';
+<mt:if name="default_sort_order">
+jQuery.data(table, '<mt:var name="id">', 'desc')
+<mt:else>
+jQuery.data(table, '<mt:var name="id">', 'asc')
+</mt:if>
+</mt:loop>
+jQuery('thead, tfoot').append('<tr>');
+jQuery(line).appendTo('thead tr, tfoot tr');
+
+var filter_types = {};
+<mt:loop name="filter_types">
+filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type">"><div class="label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="plus clickable">[+]</span><span class="minus clickable">[-]</span></div></div>';
+</mt:loop>
+
+jQuery('#filter_types').hide();
+jQuery('#filter-detail').hide();
+
+var cols = [];
+var vals = [];
+var checked = [];
+var total = 0;
+
+var filters = <mt:var name="filters">;
+var initial_filter = <mt:var name="initial_filter">;
+
+function renderFilterList() {
+  jQuery('#filter_list').empty();
+  jQuery('<ul id="filter_list" />').appendTo('#dialog_filter');
+
+  var line = '<span class="filter-label"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></span>';
+  jQuery('<li class="filter" />').append(line).appendTo('#filter_list');
+  for (var i = 0, length = filters.length; i < length; i++) {
+    var filter = filters[i];
+    line = '<span class="filter-label"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
+    if (filter.id) {
+      line += '<span class="handle-filter"><a href="#'+i+'" class="rename-link"><__trans phrase="rename"></a><a href="#'+i+'" class="delete-link"><__trans phrase="delete"></a></span>';
+    }
+    jQuery('<li class="filter" />').append(line).appendTo('#filter_list');
+  }
+  jQuery('#new_filter').click(function() {
+    jQuery('#saveas').hide();
+    jQuery('#filter-detail').show().parent('#filter').addClass('active');
+    jQuery('#item_list').attr('selectedIndex', 0);
+    jQuery('.filteritem').remove();
+    jQuery('#opener').text('<__trans phrase="New Filter">');
+    jQuery('#filter_id').val('');
+    jQuery('#dialog_filter').dialog('close');
+  });
+  jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
+    jQuery(this).attr('href').match(/#(.*)/);
+    var index = RegExp.$1;
+    applyFilter(index);
+    jQuery('#saveas').show();
+    return false;
+  });
+  jQuery('#dialog_filter .delete-link').click(function() {
+    removeFilter(this);
+    return false;
+  });
+  jQuery('#dialog_filter .rename-link').click(function() {
+    var $this = jQuery(this);
+    $this.attr('href').match(/#(.*)/);
+    var index = RegExp.$1;
+    var fid = filters[index].id;
+    var $label = $this.parents('.filter').children('.filter-label');
+    var $handle = $this.parents('.filter').children('.handle-filter');
+    var text = $label.find('.apply-link').hide().text();
+    jQuery('<input id="filter_'+fid+'" type="text full" />')
+      .val(text)
+      .appendTo($label);
+    $this.hide().next('.delete-link').hide();
+    jQuery('<a href=#'+fid+' class="save-link"><__trans phrase="Save"></a>').bind('click', function() {
+       var name = jQuery('#filter_'+fid).val();
+       renameFilter(index, fid, name);
+       return false;
+    }).appendTo($handle);
+    jQuery('<a href=#'+fid+' class="cancel-link"><__trans phrase="Cancel"></a>').bind('click', function() {
+       $label
+         .find('.apply-link').show().end()
+         .find('input').remove();
+       $handle
+         .find('a:visible').remove().end()
+         .find('a:hidden').show();
+       return false;
+    }).appendTo($handle);
+    return false;
+  });
+}
+
+function renameFilter(index, fid, name) {
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'save_filter',
+      datasource: '<mt:var name="list_type">',
+      blog_id: <mt:var name="blog_id">,
+      id: fid,
+      label: name,
+      items: jQuery.toJSON(filters[index].items),
+      list: 0
+    },
+    success: function(data) {
+      if (data.error) {
+        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
+        return;
+      }
+      filters = data.result.filters;
+    },
+    complete: function() {
+      renderFilterList();
+    },
+    error: function(xhr, status) {
+      alert('Ajax error: ' + status);
+    }
+  });
+}
+
+function removeFilter(element) {
+  var $node = jQuery(element).parents('li');
+  jQuery(element).attr('href').match(/#(.*)/);
+  var index = RegExp.$1;
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'delete_filter',
+      id: filters[index].id
+    },
+    success: function(data) {
+      if (data.error) {
+        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
+        return;
+      }
+      jQuery('.filteritem').remove();
+      $node.remove();
+      addItems(filters[0].items);
+      jQuery('#opener').text('<__trans phrase="New Filter">');
+      jQuery('#filter_id').val('');
+      itemValues()
+      renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+    },
+    error: function(xhr, status) {
+      alert('Ajax error: ' + status);
+    }
+  });
+}
+
+function renderColumns() {
+  cols = [];
+  jQuery('thead th, tfoot th').hide().filter('.cb').show();
+  jQuery('ul#disp_cols input:checked').each(function() {
+    var id = jQuery(this).val();
+    cols.push(id)
+    jQuery('th.'+id).show();
+  });
+}
+
+function saveChecked(page) {
+  checked[page] = [];
+  jQuery('tbody tr input:checked').each(function() {
+    var id = jQuery(this).parents('tr').attr('id');
+    checked[page][id] = 1;
+  });
+}
+
+function renderPagination(count, limit, page, last, total) {
+  var $e = jQuery('.pagenav').empty();
+  if (count == 0) {
+    return;
+  }
+  var usefirst = false;
+  var uselast = false;
+  var start;
+  if (page > 1) {
+    usefirst = true;
+    start = (page-1)*limit+1;
+  } else {
+    start = 1;
+  }
+  if (total / limit > 1) {
+    if (page + 1 <= last) {
+      uselast = true;
+    }
+  }
+  if (usefirst) {
+    $e.append('<span class="start"><a href="#" class="first">&lt;&lt;First</a></span> ')
+      .append('<span class="to-start"><a href="#" class="prev">&lt;Prev</a></span> ');
+  } else {
+    $e.append('<span class="start disabled">&lt;&lt;First</span> ')
+      .append('<span class="to-start disabled">&lt;Prev</span> ');
+  }
+  var end = (page == last) ? total : start+limit-1;
+  var page_status = trans('[_1]-[_2] of [_3]', start, end, total);
+
+  $e.append('<span class="current-row">'+page_status+'</span>')
+  if (uselast) {
+    $e.append(' <span class="to-last"><a href="#" class="next">Next&gt;</a></span>')
+      .append(' <span class="last"><a href="#" class="last">Last&gt;&gt;</a></span>');
+  } else {
+    $e.append(' <span class="to-last disabled">Next&gt;</span>')
+      .append(' <span class="last disabled">Last&gt;&gt;</span>');
+  }
+  jQuery('a.first').click(function() {
+    saveChecked(page);
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+    return false;
+  });
+  jQuery('a.prev').click(function() {
+    saveChecked(page);
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), page-1);
+    return false;
+  });
+  jQuery('a.next').click(function() {
+    saveChecked(page);
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), page+1);
+    return false;
+  });
+  jQuery('a.last').click(function() {
+    saveChecked(page);
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), last);
+    return false;
+  });
+}
+
+function renderList(mode, columns, values, limit, page) {
+  limit = parseInt(limit);
+  var params = {
+    __mode: mode,
+    datasource: '<mt:var name="list_type">',
+    blog_id: <mt:var name="blog_id">,
+    columns: columns.join(','),
+    limit: limit,
+    page: page
+  };
+  if (values.length) {
+    params['items'] = jQuery.toJSON(values);
+  }
+  if (jQuery('th.sorted').length) {
+    jQuery('th.sorted').children('a').attr('href').match(/#(.*)/);
+    params['sort_by'] = RegExp.$1;
+    params['sort_order'] = jQuery('th.sorted').hasClass('desc') ? 'descend' : 'ascend';
+  }
+  if (jQuery('input[name=filter_id]').val()) {
+    params['id'] = jQuery('input[name=filter_id]').val();
+  }
+  if (jQuery('input[name=filter_name]').val()) {
+    params['label'] = jQuery('input[name=filter_name]').val();
+  }
+
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: params,
+    success: function(data) {
+      if (data.error) {
+        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
+        return;
+      }
+<mt:if name="config.debugmode">
+      if (data.result.debug) {
+        jQuery('#debug-block').text(data.result.debug);
+      }
+</mt:if>
+      jQuery('tbody').empty();
+      jQuery('th :checkbox').removeAttr('checked');
+      var objs = data.result.objects;
+      var count = objs.length;
+      var last = data.result.page_max;
+      total = parseInt(data.result.count);
+      for (var row = 0; row < count; row++) {
+        var id = objs[row][0];
+        var line;
+        if (checked[page] && checked[page][id]) {
+          line = '<td class="cb col"><input type="checkbox" checked="checked" name="id" value="'+id+'" /></td>';
+        } else {
+          line = '<td class="cb col"><input type="checkbox" name="id" value="'+id+'" /></td>';
+        }
+        for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
+          line += '<td class="col '+columns[col]+'">' + objs[row][col] + '</td>';
+        }
+        jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
+      }
+      jQuery('#resultstats').remove();
+      var n = cols.length + 1;
+      if (count == 0) {
+        var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+        jQuery('<td class="col" colspan="'+n+'">'+message+'</tr>').appendTo('tbody');
+      }
+      renderPagination(count, limit, page, last, total);
+      filters = data.result.filters;
+    },
+    complete: function() {
+      jQuery('tbody tr:even').addClass('even');
+      jQuery('tbody tr:odd').addClass('odd');
+      var $checkboxes = jQuery('td :checkbox');
+      var $checked = jQuery('td :checked');
+      $checked.parents('tr').addClass('selected');
+      if ($checkboxes.length && $checkboxes.length == $checked.length) {
+        jQuery('th :checkbox').attr('checked', 'checked');
+        addSelectAll($checkboxes);
+      }
+      if (mode == 'save_filter') {
+        renderFilterList();
+      }
+      if (!jQuery('.msg-error').length) {
+        if (jQuery('input[name=filter_name]').val()) {
+          jQuery('#opener').text(jQuery('input[name=filter_name]').val());
+        }
+        jQuery('#dialog_save_filter').dialog('close');
+      } else {
+        if (jQuery('#dialog_save_filter:visible').length) {
+          jQuery('.msg-error').clone().appendTo('#dialog-msg-block');
+          jQuery('#msg-block').hide();
+        }
+      }
+    },
+    error: function(xhr, status) {
+      alert('Ajax error: ' + status);
+    }
+  });
+}
+
+function itemValues() {
+  var $items = jQuery('#filter-detail .filteritem');
+  vals = [];
+  $items.each(function() {
+    var data = {};
+    var fields = [];
+    var $types = jQuery(this).find('.filtertype');
+    $types.each(function() {
+      jQuery(this).attr('class').match(/type-(\w+)/);
+      var type = RegExp.$1;
+      jQuery(this).find('.fields').each(function() {
+        var args = {};
+        jQuery(this).find(':input').each(function() {
+          var re = new RegExp(type+'-(\\w+)');
+          jQuery(this).attr('class').match(re);
+          var key = RegExp.$1;
+          args[key] = jQuery(this).val();
+        });
+        fields.push({'type': type, 'args': args});
+      });
+    });
+    if (fields.length > 1 ) {
+      data['type'] = 'pack';
+      data['op'] = 'and';
+      data['items'] = fields;
+    } else {
+      data = fields.pop();
+    }
+    vals.push(data);
+  });
+}
+
+jQuery('ul#disp_cols :checkbox').click(function() {
+  jQuery('tbody').empty();
+  renderColumns();
+  renderList('filtered_list', cols, vals, jQuery('#row').val(), parseInt(jQuery('#current_page').val()));
+});
+
+jQuery('#row').change(function() {
+  jQuery('tbody').empty();
+  checked = [];
+  renderColumns();
+  renderList('filtered_list', cols, vals, jQuery(this).val(), 1);
+});
+
+function addSelectAll($node) {
+  var n = cols.length + 1;
+  $node
+    .parents('tbody')
+    .prepend('<tr class="select-all"><td class="col" colspan="'+n+'"><input type="hidden" name="all_selected" /></td></tr>');
+  var select_text = 'Select all '+total+' items';
+  var cancel_text = 'All '+total+' items are selected';
+  jQuery('<a href="#"></a>')
+    .appendTo('.select-all td')
+    .text(select_text)
+    .bind('click', function() {
+      var $input = jQuery('input[name=all_selected]');
+      if ($input.val()) {
+        $input.val('');
+        jQuery('.select-all td').find('a').text(select_text);
+      } else {
+        $input.val('1');
+        jQuery('.select-all td').append(cancel_text).find('a').remove();
+      }
+      return false;
+    });
+}
+
+function removeSelectAll($node) {
+  $node
+    .parents('tbody')
+    .find('.select-all')
+    .remove();
+  jQuery('input[name=all_selected]').val('');
+}
+
+jQuery('tbody').selectable({
+  filter: 'tr',
+  cancel: 'a',
+  selected: function(event, ui) {
+    var $checkboxes = jQuery(ui.selected).find(':checkbox');
+    if ($checkboxes.attr('checked')) {
+      jQuery(ui.selected).removeClass('selected');
+      $checkboxes.removeAttr('checked');
+    } else {
+      jQuery(ui.selected).addClass('selected');
+      $checkboxes.attr('checked', 'checked');
+    }
+    if (jQuery('td :checkbox').length == jQuery('td :checked').length) {
+      jQuery('th :checkbox').attr('checked', 'checked');
+      if (!jQuery('tr.select-all').length) {
+        addSelectAll($checkboxes);
+      }
+    } else {
+      jQuery('th :checkbox').removeAttr('checked');
+      removeSelectAll($checkboxes);
+    }
+  }
+});
+
+jQuery('th :checkbox').click(function() {
+  var $checkboxes = jQuery('tr :checkbox');
+  if (this.checked) {
+    $checkboxes.attr('checked', 'checked');
+    addSelectAll($checkboxes);
+    $checkboxes.parents('tr').addClass('selected');
+  } else {
+    $checkboxes.removeAttr('checked');
+    removeSelectAll($checkboxes);
+    $checkboxes.parents('tr').removeClass('selected');
+  }
+});
+
+jQuery('thead a, tfoot a').click(function() {
+  var url = jQuery(this).attr('href');
+  var $th = jQuery('a[href=\''+url+'\']').parent('th');
+  if ($th.hasClass('sorted')) {
+    if ($th.hasClass('desc')) {
+      $th.removeClass('desc').addClass('asc');
+    } else {
+      $th.removeClass('asc').addClass('desc');
+    }
+  } else {
+    jQuery('thead th, tfoot th').removeClass('sorted asc desc');
+    url.match(/#(.*)/);
+    $th.addClass('sorted').addClass(jQuery.data(table, RegExp.$1));
+  }
+  checked = [];
+  renderColumns();
+  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+  return false;
+});
+
+function dateOption($node) {
+  var val = $node.val();
+  var type;
+  switch (val) {
+  case 'days':
+    type = 'days';
+    break;
+  case 'before':
+  case 'after':
+    type = 'date';
+    break;
+  case 'future':
+  case 'past':
+    type = 'none';
+    break;
+  default:
+    type = 'range';
+  }
+  $node.parent('.fields').find('.date-option label').hide();
+  $node.parent('.fields').find('.date-option .'+type).show();
+}
+
+function filterItem(type) {
+  var $item = jQuery(filter_types[type]);
+  $item
+    .find('.plus').bind('click', function() {
+      var op = 'and';
+      jQuery(this).parents('.filteritem').addClass(op);
+      var $filtertype = jQuery(this).parents('.filtertype');
+      var $node = filterItem(type);
+      $node.clone(true)
+        .insertAfter($filtertype)
+        .find('.minus').bind('click', function() {
+          jQuery(this).parents('.filtertype').remove();
+        }).end()
+        .find('.label').addClass('invisible');
+    }).end()
+    .find('.filter-date').each(function() {
+        dateOption(jQuery(this));
+    }).bind('change', function() {
+        dateOption(jQuery(this));
+    }).end()
+    .find('.datetime').datepicker({
+      dateFormat: 'yy-mm-dd',
+      dayNamesMin: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+      monthNames: ['-01','-02','-03','-04','-05','-06','-07','-08','-09','-10','-11','-12'],
+      showMonthAfterYear: true,
+      prevText: '&lt;',
+      nextText: '&gt;'
+    });
+  return $item;
+}
+
+jQuery('#additem').click(function() {
+  var type = jQuery('#item_list').val();
+  var $item = filterItem(type);
+  $item
+    .insertAfter('.selectfilter')
+    .wrap('<div class="mod filteritem" />')
+    .find('.minus').hide();
+  jQuery('<span class="close clickable">[x]</span>')
+    .insertAfter($item)
+    .bind('click', function() {
+      jQuery(this).parent('.filteritem').remove();
+    });
+  //jQuery('#item_list option:selected').hide();
+});
+
+jQuery('#apply').click(function() {
+  jQuery('input[name=filter_id]').val('');
+  itemValues()
+  renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+  return false;
+});
+
+jQuery('#save').click(function() {
+  jQuery('.msg-error').remove();
+  if (jQuery('#filter_id').val()) {
+    jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
+    jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
+    itemValues()
+    renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
+  } else {
+    jQuery('input[name=filter_name]').val('');
+    jQuery('input[name=filter_id]').val('');
+    jQuery('#dialog_save_filter').dialog('option', 'title', 'Save Filter')
+      .dialog('open');
+  }
+  return false;
+});
+
+jQuery('#saveas').click(function() {
+  jQuery('.msg-error').remove();
+  jQuery('input[name=filter_name]').val('');
+  jQuery('input[name=filter_id]').val('');
+  jQuery('#dialog_save_filter')
+    .dialog('option', 'title', 'Save As Filter').dialog('open');
+  return false;
+});
+
+jQuery('#dialog_filter').dialog({
+  autoOpen: false
+});
+
+jQuery('#opener').click(function() {
+  jQuery('#dialog_filter')
+    .find('.edit-filter')
+    .removeClass('editing')
+    .text('Edit').end()
+    .find('.filter').show().end()
+    .find('.rename-field').remove().end()
+    .find('.rename-link').hide().end()
+    .find('.delete-link').hide().end()
+    .dialog('open');
+  return false;
+});
+
+jQuery('#dialog_save_filter').dialog({
+  autoOpen: false,
+  buttons: {
+    '<__trans phrase="Save">': function() {
+      var status;
+      itemValues()
+      renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
+    },
+    '<__trans phrase="Cancel">': function() {
+      jQuery(this).dialog('close');
+    }
+  }
+});
+
+function addItems(items, op) {
+  var type;
+  var args;
+  for (var i = 0, length = items.length; i < length; i++) {
+    type = items[i].type;
+    if (type == 'pack') {
+      addItems(items[i].items, items[i].op);
+    }
+    var $filteritem = jQuery('.filteritem:first');
+    var $filtertype;
+    var prev_type;
+    if ($filteritem.length) {
+      $filtertype = $filteritem.children('.filtertype:last');
+      $filtertype.attr('class').match(/type-(\w+)/);
+      prev_type = RegExp.$1;
+    }
+    var $item = filterItem(type);
+    if (op && type == prev_type) {
+      $item
+        .insertAfter($filtertype)
+        .find('.label').hide();
+    } else {
+      $item
+        .insertAfter('.selectfilter')
+        .wrap('<div class="mod filteritem" />')
+        .find('.minus').hide();
+      jQuery('<span class="close clickable">[x]</span>')
+        .insertAfter($item)
+        .bind('click', function() {
+          jQuery(this).parent('.filteritem').remove();
+        });
+    }
+    args = items[i].args;
+    for (var key in args) {
+      $item.find('.'+type+'-'+key).val(args[key]);
+    }
+    var $node = $item.find('.filter-date');
+    if ($node) {
+      dateOption($node);
+    }
+  }
+}
+
+jQuery('#dialog_filter .edit-filter').click(function() {
+    var text;
+    jQuery(this).toggleClass('editing');
+    jQuery('.filter').show();
+    if (jQuery(this).hasClass('editing')) {
+      jQuery(this).text('Done');
+      jQuery('.rename-link').show();
+      jQuery('.delete-link').show();
+    } else {
+      jQuery(this).text('Edit');
+      jQuery('.rename-field').remove();
+      jQuery('.rename-link').hide();
+      jQuery('.delete-link').hide();
+    }
+    return false;
+});
+
+function applyFilter(index) {
+  jQuery('#filter_name').val('');
+  jQuery('#filter_id').val('');
+  jQuery('.filteritem').remove();
+  if (index >= 0 && filters[index].items) {
+    var name = filters[index].label;
+    addItems(filters[index].items);
+    jQuery('#opener').text(name);
+    jQuery('#filter_name').val(name);
+    jQuery('#filter_id').val(filters[index].id);
+    jQuery('input[name=filter_id]').val(filters[index].id);
+    itemValues()
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+  }
+  jQuery('#dialog_filter').dialog('close');
+}
+
+jQuery('.action_selector').change(function() {
+  var selected = jQuery(this).val();
+  jQuery('.action_selector').val(selected);
+});
+
+function doForMarked(formid, mode, singlar, plural, phrase) {
+    var $form = jQuery('#'+formid);
+    if (!$form.length) {
+      return;
+    }
+
+    var $selected = $form.find('option:selected');
+    var action = $selected.val();
+    if (action == '') {
+      alert(trans('You must select an action.'));
+      return;
+    }
+    if (action) {
+      $form.find('input[name=action_name]').val(action);
+    } else {
+      $form.find('input[name=action_name]').val('');
+    }
+
+    var count = $form.find('input[name=id]').filter(':checked').length;
+    if (!count) {
+      alert(trans('You did not select any [_1] to [_2].', plural, phrase));
+      return;
+    }
+    if ($form.find('input[name=itemset_action_imput]').val()) {
+      $form.find('input[name=itemset_action_imput]').val('');
+    }
+    if (vals.length) {
+      $form.find('input[name=items]').val(jQuery.toJSON(vals));
+    }
+
+    if (phrase) {
+      var message = ( count == 1 )
+        ? trans('Are you sure you want to [_2] this [_1]?', singlar, phrase)
+        : trans('Are you sure you want to [_3] the [_1] selected [_2]?', count, plural, phrase);
+      if (!confirm(message)) {
+          return;
+      }
+    }
+
+    $form.find('input[name=__mode]').val(mode);
+    $form.submit();
+}
+
+jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
+  var id = '<mt:var name="object_type">-listing-form';
+  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var phrase = '<__trans phrase="act upon" escape="js">';
+  doForMarked(id, 'itemset_action', singlar, plural, phrase);
+  return false;
+});
+
+jQuery('.actions-bar a.button').click(function() {
+  jQuery(this).attr('href').match(/#(.*)/);
+  var mode = RegExp.$1;
+  var id = '<mt:var name="object_type">-listing-form';
+  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var phrase = messages[mode];
+  doForMarked(id, mode, singlar, plural, phrase);
+  return false;
+});
+
+addItems(initial_filter.items);
+jQuery('#opener').text(initial_filter.label);
+jQuery('#filter_name').val(initial_filter.label);
+
+itemValues()
+renderColumns();
+renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+renderFilterList();
+</mt:setvarblock>
+<mt:include name="include/footer.tmpl">

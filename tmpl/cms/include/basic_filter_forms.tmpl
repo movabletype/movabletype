@@ -1,0 +1,54 @@
+<mt:SetVarTemplate name="filter_form_legacy">
+    <input type="text" disabled="disabled" class="prop-legacy <mt:var name="type">-label text med" value="" />
+    <input type="hidden" class="prop-legacy <mt:var name="type">-filter_key text med" value="" />
+    <input type="hidden" class="prop-legacy <mt:var name="type">-filter_val text med" value="" />
+    <input type="hidden" class="prop-legacy <mt:var name="type">-ds text med" value="" />
+</mt:SetVarTemplate>
+
+<mt:SetVarTemplate name="filter_form_string">
+    <input type="text" class="prop-string <mt:var name="type">-string text med" value="" />
+    <select class="<mt:var name="type">-option">
+        <option value="contains">Contains</option>
+        <option value="not_contains">Not contains</option>
+        <option value="equal">equals</option>
+        <option value="beginning">begin with</option>
+        <option value="end">end with</option>
+    </select>
+</mt:SetVarTemplate>
+
+<mt:SetVarTemplate name="filter_form_integer">
+    <input type="text" class="prop-integer <mt:var name="type">-value text num" value="" />
+    <select class="<mt:var name="type">-option">
+        <option value="equal">Equal</option>
+        <option value="not_equal">Not equal</option>
+        <option value="greater_than">Greater than</option>
+        <option value="greater_equal">Greater equal</option>
+        <option value="less_than">Less than</option>
+        <option value="less_equal">Less equal</option>
+    </select>
+</mt:SetVarTemplate>
+
+<mt:SetVarTemplate name="filter_form_date">
+    <select class="<mt:var name="type">-option filter-date">
+        <option value="range">Range</option>
+        <option value="days">Days</option>
+        <option value="before">Before</option>
+        <option value="after">After</option>
+        <option value="future">Future</option>
+        <option value="past">Past</option>
+    </select>
+    <span class="date-option">
+    <label class="date">Origin <input type="text" class="<mt:var name="type">-origin text datetime" /></label>
+    <label class="range">From <input type="text" class="<mt:var name="type">-from text datetime" /></label>
+    <label class="range">To <input type="text" class="<mt:var name="type">-to text datetime" /></label>
+    <label class="days">Days <input type="text" class="<mt:var name="type">-days text days" /></label>
+    </span>
+</mt:SetVarTemplate>
+
+<mt:SetVarTemplate name="filter_form_single_select">
+    <select class="<mt:var name="type">-value">
+        <mt:loop name="single_select_options">
+        <option value="<mt:var name="value">"><mt:var name="label"></option>
+        </mt:loop>
+    </select>
+</mt:SetVarTemplate>

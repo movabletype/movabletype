@@ -48,6 +48,10 @@ sub core_methods {
         'edit'           => "${pkg}Common::edit",
         'view'           => "${pkg}Common::edit",
         'list'           => "${pkg}Common::list",
+        'filtered_list'  => {
+            code => "${pkg}Common::filtered_list",
+            app_mode => 'JSON',
+        },
         'delete'         => "${pkg}Common::delete",
         'search_replace' => "${pkg}Search::search_replace",
         'list_revision'  => "${pkg}Common::list_revision",
@@ -60,21 +64,26 @@ sub core_methods {
         'view_widget' => "${pkg}Template::edit_widget",
 
         ## Listing methods
-        'list_ping'     => "${pkg}TrackBack::list",
-        'list_entry'    => "${pkg}Entry::list",
+        #'list_ping'     => "${pkg}TrackBack::list",
         'list_template' => "${pkg}Template::list",
         'list_widget'   => "${pkg}Template::list_widget",
-        'list_page'     => "${pkg}Page::list",
-        'list_comment'  => "${pkg}Comment::list",
-        'list_member'      => "${pkg}User::list_member",
-        'list_user'        => "${pkg}User::list",
-        'list_author'      => "${pkg}User::list",
-        'list_asset'       => "${pkg}Asset::list",
-        'list_blog'        => "${pkg}Blog::list",
-        'list_website'     => "${pkg}Website::list",
-        'list_category'    => "${pkg}Category::list",
-        'list_folder'      => "${pkg}Folder::list",
-        'list_tag'         => "${pkg}Tag::list",
+        #'list_page'     => "${pkg}Page::list",
+        #'list_comment'  => "${pkg}Comment::list",
+        #'list_member'      => "${pkg}User::list_member",
+        #'list_user'        => "${pkg}User::list",
+        #'list_author'      => "${pkg}User::list",
+        'list_asset'       => {
+            code => "${pkg}Asset::dialog_list_asset",
+            condition => sub {
+                my $app = shift;
+                return 0 unless $app->param('dialog_view');
+                return 1;
+            }
+        },
+        #'list_blog'        => "${pkg}Blog::list",
+        #'list_website'     => "${pkg}Website::list",
+        #'list_folder'      => "${pkg}Folder::list",
+        #'list_tag'         => "${pkg}Tag::list",
         'list_association' => "${pkg}User::list_association",
         'list_role'        => "${pkg}User::list_role",
         'list_theme'       => "${pkg}Theme::list",
@@ -89,6 +98,10 @@ sub core_methods {
         'preview_entry'       => "${pkg}Entry::preview",
         'apply_theme'         => "${pkg}Theme::apply",
         'uninstall_theme'     => "${pkg}Theme::uninstall",
+        'bulk_update_category' => {
+            code => "${pkg}Category::bulk_update",
+            app_mode => 'JSON',
+        },
         ## Blog configuration screens
         'cfg_prefs'        => "${pkg}Blog::cfg_prefs",
         'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
@@ -104,18 +117,21 @@ sub core_methods {
         'save_entry'   => "${pkg}Entry::save",
         'save_role'    => "${pkg}User::save_role",
         'save_widget'  => "${pkg}Template::save_widget",
+        'save_filter'  => "${pkg}Filter::save",
 
         ## Delete
         'delete_entry'  => "${pkg}Entry::delete",
         'delete_widget' => "${pkg}Template::delete_widget",
+        'delete_filter' => "${pkg}Filter::delete",
 
         ## List actions
-        'enable_object'  => "${pkg}User::enable",
-        'disable_object' => "${pkg}User::disable",
-        'list_action'    => "${pkg}Tools::do_list_action",
-        'empty_junk'     => "${pkg}Comment::empty_junk",
-        'handle_junk'    => "${pkg}Comment::handle_junk",
-        'not_junk'       => "${pkg}Comment::not_junk",
+        'enable_object'      => "${pkg}User::enable",
+        'disable_object'     => "${pkg}User::disable",
+        'list_action'        => "${pkg}Tools::do_list_action",
+        'empty_junk'         => "${pkg}Comment::empty_junk",
+        'handle_junk'        => "${pkg}Comment::handle_junk",
+        'not_junk'           => "${pkg}Comment::not_junk",
+        'open_batch_editor'  => "${pkg}Entry::open_batch_editor",
 
         'ping'               => "${pkg}Entry::send_pings",
         'rebuild_phase'      => "${pkg}Blog::rebuild_phase",
@@ -151,7 +167,7 @@ sub core_methods {
         'start_move_blogs'     => "${pkg}Website::move_blogs",
         'view_rpt_log'         => "${pkg}RptLog::view",
         'view_log'             => "${pkg}Log::view",
-        'list_log'             => "${pkg}Log::view",
+#        'list_log'             => "${pkg}Log::view",
         'reset_rpt_log'        => "${pkg}RptLog::reset",
         'reset_log'            => "${pkg}Log::reset",
         'export_log'           => "${pkg}Log::export",
@@ -229,6 +245,7 @@ sub core_methods {
         'dialog_select_sysadmin' => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'      => "${pkg}User::dialog_grant_role",
         'dialog_select_author'   => "${pkg}User::dialog_select_author",
+        'dialog_list_asset'      => "${pkg}Asset::dialog_list_asset",
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",
@@ -1355,7 +1372,8 @@ sub core_menus {
         'website:manage' => {
             label      => "Manage",
             order      => 100,
-            mode       => "list_website",
+            mode       => "list",
+            args       => { _type => "website" },
             view       => "system",
         },
         'website:create' => {
@@ -1370,7 +1388,8 @@ sub core_menus {
         'blog:manage' => {
             label => "Manage",
             order => 100,
-            mode  => "list_blog",
+            mode  => "list",
+            args  => { _type => "blog" },
             view  => "website",
         },
         'blog:create' => {
@@ -1385,7 +1404,8 @@ sub core_menus {
         'user:member' => {
             label      => "Manage",
             order      => 100,
-            mode       => 'list_member',
+            mode       => 'list',
+            args       => { _type => 'member' },
             view       => [ "blog", "website" ],
             permission => 'administer_blog,manage_users,administer_website',
             system_permission => 'administer',
@@ -1393,7 +1413,8 @@ sub core_menus {
         'user:manage' => {
             label      => "Manage",
             order      => 100,
-            mode       => "list_author",
+            mode       => "list",
+            args       => { _type => "author" },
             permission => "administer",
             view       => "system",
         },
@@ -1416,11 +1437,12 @@ sub core_menus {
         },
 
         'entry:manage' => {
-            label     => "Manage",
-            order     => 100,
-            mode      => 'list_entry',
+            label         => "Manage",
+            order         => 100,
+            mode          => 'list',
+            args          => { _type => 'entry' },
             permit_action => 'use_entry:manage_menu',
-            view => [ "blog", "website" ],
+            view          => [ "blog", "website" ],
         },
         'entry:create' => {
             label      => "New",
@@ -1433,15 +1455,16 @@ sub core_menus {
         'entry:category' => {
             label      => "Categories",
             order      => 300,
-            mode       => 'list_category',
+            mode       => 'list',
+            args       => { _type => 'category' },
             permission => 'edit_categories',
             view       => "blog",
         },
         'entry:tag' => {
             label             => "Tags",
             order             => 400,
-            mode              => 'list_tag',
-            args              => { filter_key => 'entry' },
+            mode              => 'list',
+            args              => { _type => 'tag', filter_key => 'entry' },
             permission        => 'edit_tags',
             system_permission => 'administer',
             view              => [ "blog", "website"] ,
@@ -1457,7 +1480,8 @@ sub core_menus {
         'page:manage' => {
             label      => "Manage",
             order      => 100,
-            mode       => 'list_page',
+            mode       => 'list',
+            args       => { _type => 'page' },
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
         },
@@ -1472,7 +1496,8 @@ sub core_menus {
         'page:folder' => {
             label      => "Folders",
             order      => 300,
-            mode       => 'list_folder',
+            mode       => 'list',
+            args       => { _type => 'folder' },
             args       => { filter_key => 'page' },
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
@@ -1480,8 +1505,8 @@ sub core_menus {
         'page:tag' => {
             label             => "Tags",
             order             => 400,
-            mode              => 'list_tag',
-            args              => { filter_key => 'page' },
+            mode              => 'list',
+            args              => { _type => 'tag', filter_key => 'page' },
             permission        => 'edit_tags',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
@@ -1497,7 +1522,8 @@ sub core_menus {
         'asset:manage' => {
             label      => "Manage",
             order      => 100,
-            mode       => 'list_asset',
+            mode       => 'list',
+            args       => { _type => 'asset' },
             permission => 'edit_assets',
             view       => [ "blog", 'website' ],
         },
@@ -1511,8 +1537,8 @@ sub core_menus {
         'asset:tag' => {
             label             => "Tags",
             order             => 400,
-            mode              => 'list_tag',
-            args              => { filter_key => 'asset' },
+            mode              => 'list',
+            args              => { _type => 'tag', filter_key => 'asset' },
             permission        => 'edit_tags',
             system_permission => 'administer',
             view              => [ "blog", 'website' ],
@@ -1534,7 +1560,8 @@ sub core_menus {
         'feedback:comment' => {
             label     => "Comments",
             order     => 100,
-            mode      => 'list_comment',
+            mode      => 'list',
+            args      => { _type => 'comment' },
             condition => sub {
                 return 1 if $app->user->is_superuser;
                 if ( $app->param('blog_id') ) {
@@ -1557,7 +1584,8 @@ sub core_menus {
         'feedback:ping' => {
             label      => "TrackBacks",
             order      => 200,
-            mode       => 'list_pings',
+            mode       => 'list',
+            args       => { _type => 'ping' },
             permission => 'create_post,edit_all_posts,manage_feedback',
             view       => [ "blog", 'website' ],
         },
@@ -1903,6 +1931,18 @@ sub init_core_callbacks {
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
+            $pkg . 'pre_load_filtered_list.member' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                $filter->append_item({
+                    type => 'permission',
+                    args => {
+                        blog_id => $opts->{blog_id},
+                    },
+                });
+                if ( exists $opts->{blog_id} ) {
+                    delete $opts->{blog_id};
+                }
+            },
 
             # website callbacks
             $pkg . 'post_save.website'   => "${pfx}Website::post_save",
@@ -1920,6 +1960,12 @@ sub init_core_callbacks {
             $pkg . 'post_save.blog'   => "${pfx}Blog::post_save",
             $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
+            $pkg . 'pre_load_filtered_list.blog' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                if ( exists $opts->{blog_id} ) {
+                    $opts->{parent_id} = delete $opts->{blog_id};
+                }
+            },
 
             # folder callbacks
             $pkg . 'edit.folder' => "${pfx}Folder::edit",
@@ -1950,6 +1996,14 @@ sub init_core_callbacks {
             $pkg . 'post_save.category'   => "${pfx}Category::post_save",
             $pkg . 'save_filter.category' => "${pfx}Category::save_filter",
             $pkg . 'post_delete.category' => "${pfx}Category::post_delete",
+            $pkg . 'pre_load_filtered_list.category'
+                => "${pfx}Category::pre_load_filtered_list",
+            $pkg . 'filtered_list_param.category'
+                => "${pfx}Category::filtered_list_param",
+            $pkg . 'pre_load_filtered_list.folder'
+                => "${pfx}Category::pre_load_filtered_list",
+            $pkg . 'filtered_list_param.folder'
+                => "${pfx}Category::filtered_list_param",
 
             # comment callbacks
             $pkg . 'edit.comment' => "${pfx}Comment::edit",
@@ -2028,6 +2082,18 @@ sub init_core_callbacks {
             # tags
             $pkg . 'delete_permission_filter.tag' => "${pfx}Tag::can_delete",
             $pkg . 'post_delete.tag'              => "${pfx}Tag::post_delete",
+            $pkg . 'pre_load_filtered_list.tag' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                if ( exists $opts->{blog_id} ) {
+                    #$filter->append_item({
+                    #    type => 'blog',
+                    #    args => {
+                    #        blog_id => $opts->{blog_id},
+                    #    },
+                    #});
+                    delete $opts->{blog_id};
+                }
+            },
 
             # junk-related callbacks
             #'HandleJunk' => \&_builtin_spam_handler,
@@ -2886,9 +2952,12 @@ sub show_error {
 
     # handle legacy scalar error string signature
     $param = { error => $param } unless ref($param) eq 'HASH';
-
+    my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $mode eq 'rebuild' ) {
+    if ( $method_info->{app_mode} eq 'JSON' ) {
+        return $app->json_error( $param->{error}, $param->{status} );
+    }
+    elsif ( $mode eq 'rebuild' ) {
 
         my $r = MT::Request->instance;
         if ( my $tmpl = $r->cache('build_template') ) {
@@ -2943,6 +3012,16 @@ sub show_error {
     }
 
     return $app->SUPER::show_error($param);
+}
+
+sub show_login {
+    my $app   = shift;
+    my $method_info = MT->request('method_info') || {};
+    if ( $method_info->{app_mode} eq 'JSON' ) {
+        $app->{login_again} = 1;
+        return $app->show_error({ error => 'Unauthorized', status => 401 });
+    }
+    return $app->SUPER::show_login;
 }
 
 sub load_default_entry_prefs {

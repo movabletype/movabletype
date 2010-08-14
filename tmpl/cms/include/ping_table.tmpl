@@ -1,61 +1,76 @@
 <mt:setvarblock name="action_buttons">
-    <mt:unless name="filter_spam">
-        <mt:if name="state_editable">
-        <button
-            accesskey="p"
-            title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
-            class="mt-pubish-trachbacks"
-            ><__trans phrase="Publish"></button>
-        </mt:if>
-    </mt:unless>
-        <button
-            accesskey="x"
-            title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
-            class="mt-delete-trachbacks"
-            ><__trans phrase="Delete"></button>
-    <mt:unless name="filter_spam">
-        <mt:if name="state_editable"><button
-            onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
-            accesskey="j"
-            title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Spam"></button></mt:if>
-    <mt:else>
-        <mt:if name="state_editable"><button
-            onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
-            accesskey="j"
-            title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Not Spam"></button></mt:if>
-        <mt:if name="can_empty_junk"><button mt:command="submit" mt:mode="empty_junk"
-            mt:confirm-msg="<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">"
-            title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
-            ><__trans phrase="Empty"></button></mt:if>
-    </mt:unless>
-    <mt:if name="is_ip_filter">
-        <button
-            onclick="doBanIP('<mt:var name="filter_val" escape="js">'); return false;"
-            ><__trans phrase="Ban This IP"></button>
-    </mt:if>
+<mt:unless name="filter_spam">
+  <mt:if name="state_editable">
+  <button
+     type="button"
+     accesskey="p"
+     title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
+     class="button mt-pubish-trachbacks"
+     ><__trans phrase="Publish"></button>
+  </mt:if>
+</mt:unless>
+  <button
+     type="button" 
+     accesskey="x"
+     title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+     class="button mt-delete-trachbacks"
+     ><__trans phrase="Delete"></button>
+<mt:unless name="filter_spam">
+  <mt:if name="state_editable">
+  <button
+     type="button"
+     onclick="doItemsAreJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
+     accesskey="j"
+     title="<__trans phrase="Report selected [_1] as Spam (j)" params="<$mt:var name="object_label_plural"$>">"
+     class="button"
+     ><__trans phrase="Spam"></button>
+  </mt:if>
+<mt:else>
+  <mt:if name="state_editable">
+  <button
+     type="button"
+     onclick="doItemsAreNotJunk(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="TrackBack" escape="js">', '<__trans phrase="TrackBacks" escape="js">'); return false;"
+     accesskey="j"
+     title="<__trans phrase="Report selected [_1] as Not Spam and Publish (j)" params="<$mt:var name="object_label_plural"$>">"
+     class="button"
+     ><__trans phrase="Not Spam"></button>
+  </mt:if>
+  <mt:if name="can_empty_junk">
+  <button
+     type="button"
+     mt:command="submit" mt:mode="empty_junk"
+     mt:confirm-msg="<__trans phrase="Are you sure you want to remove all TrackBacks reported as spam?">"
+     title="<__trans phrase="Deletes all [_1] reported as Spam" params="<$mt:var name="object_label_plural"$>">"
+     class="button"
+     ><__trans phrase="Empty"></button>
+  </mt:if>
+</mt:unless>
+<mt:if name="is_ip_filter">
+  <button
+     type="button"
+     onclick="doBanIP('<mt:var name="filter_val" escape="js">'); return false;"
+     class="button"
+     ><__trans phrase="Ban This IP"></button>
+</mt:if>
 </mt:setvarblock>
 
 <mtapp:listing>
 <mt:if __first__>
     <mt:setvarblock name="table_header">
         <tr>
-            <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+            <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
     <mt:unless name="tab_junk">
-            <th class="status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
+            <th class="col head status si"><img src="<mt:var name="static_uri">images/status_icons/invert-flag.gif" alt="<__trans phrase="Status">" title="<__trans phrase="Status">" width="9" height="9" /></th>
     </mt:unless>
-    <mt:unless name="view_expanded">
-            <th class="excerpt primary-col"><__trans phrase="Excerpt"></th>
-    </mt:unless>
-            <th class="from<mt:if name="view_expanded"> primary-col</mt:if>"><__trans phrase="From"></th>
+            <th class="col head excerpt primary"><__trans phrase="Excerpt"></th>
+            <th class="col head from"><__trans phrase="From"></th>
     <mt:unless name="is_blog">
-            <th class="blog"><__trans phrase="Website/Blog"></th>
+            <th class="col head blog"><__trans phrase="Website/Blog"></th>
     </mt:unless>
-            <th class="target"><__trans phrase="Target"></th>
-            <th class="datetime"><__trans phrase="Date"></th>
+            <th class="col head target"><__trans phrase="Target"></th>
+            <th class="col head datetime"><__trans phrase="Date"></th>
     <mt:if name="show_ip_info">
-            <th class="ip"><__trans phrase="IP"></th>
+            <th class="col head ip"><__trans phrase="IP"></th>
     </mt:if>
         </tr>
     </mt:setvarblock>
@@ -68,7 +83,7 @@
     <tbody>
 </mt:if>
         <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-            <td class="cb">
+            <td class="col cb">
 <mt:if name="has_edit_access">
                 <input type="checkbox" name="id" value="<mt:var name="id">" class="select" />
 <mt:else>
@@ -76,7 +91,7 @@
 </mt:if>
             </td>
 <mt:unless name="tab_junk">
-            <td class="si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
+            <td class="col si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
     <mt:if name="visible">
                 <a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show published TrackBacks">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Published">" width="9" height="9" /></a>
     <mt:elseif name="junk_status" eq="-1">
@@ -86,7 +101,7 @@
     </mt:if>
             </td>
 </mt:unless>
-            <td class="excerpt" <mt:if name="view_expanded"> colspan="<mt:unless name="is_blog"><mt:if name="show_ip_info">5<mt:else>4</mt:if><mt:else><mt:if name="show_ip_info">4<mt:else>3</mt:if></mt:unless>"</mt:if>>
+            <td class="col excerpt">
 <mt:if name="excerpt">
                 <mt:var name="excerpt" escape="html">
     <mt:if name="has_edit_access">
@@ -98,22 +113,14 @@
         &nbsp;
 </mt:if>
             </td>
-<mt:if name="view_expanded">
-        </tr>
-        <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> slave">
-            <td>&nbsp;</td>
-    <mt:unless name="tab_junk">
-            <td>&nbsp;</td>
-    </mt:unless>
-</mt:if>
-            <td class="from"><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
+            <td class="col from"><mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;</td>
 <mt:unless name="is_blog">
-            <td class="blog"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
+            <td class="col blog"><a href="<mt:var name="script_url">?__mode=list_pings&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
 </mt:unless>
-            <td class="target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
-            <td class="datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+            <td class="col target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
+            <td class="col datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
 <mt:if name="show_ip_info">
-            <td class="ip">
+            <td class="col ip">
                 <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a>
             </td>
 </mt:if>

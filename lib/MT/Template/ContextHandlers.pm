@@ -2566,7 +2566,7 @@ sub _hdlr_app_setting {
     $class = ($class eq '') ? 'hidden' : $class . ' hidden' unless $shown;
 
     return $ctx->build(<<"EOT");
-<div id="$id-field" class="field$req_class $label_class $class"$indent_css>
+<div id="$id-field" class="mod field$req_class $label_class $class"$indent_css>
     <div class="field-header">
       <label id="$id-label" for="$id">$label$req</label>
     </div>
@@ -2755,12 +2755,12 @@ sub _hdlr_app_statusmsg {
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
     my $close = '';
     if ($id && ($args->{can_close} || (!exists $args->{can_close}))) {
-        $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg" />};
+        $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close" />};
     }
     $id = defined $id ? qq{ id="$id"} : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";
     return $ctx->build(<<"EOT");
-    <div$id class="$class"><p>$msg $rebuild</p>$close</div>
+    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
 EOT
 }
 
@@ -2943,7 +2943,7 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="$id-table$view" cellspacing="0">
+        <table id="$id-table" class="unit size1of1 listing $listing_class $id-table$view" cellspacing="0">
 $insides
         </table>
 TABLE
@@ -2951,7 +2951,7 @@ TABLE
     if ($show_actions) {
         local $ctx->{__stash}{vars}{__contents__} = $table;
         return $ctx->build(<<EOT);
-<div id="$id" class="listing $listing_class">
+<div id="$id" class="$listing_class line">
     <div class="listing-header">
         $listing_header
     </div>

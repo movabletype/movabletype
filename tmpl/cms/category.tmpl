@@ -1,0 +1,535 @@
+<mt:setvarblock name="page_title">
+  <__trans phrase="Manage [_1]" params="<mt:var name="object_label">">
+</mt:setvarblock>
+<mt:include name="include/header.tmpl">
+<mt:include name="include/basic_filter_forms.tmpl">
+<mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
+<mt:include name="$object_listing">
+
+<style type="text/css">
+.sortable-item,
+.add-form {
+clear: right;
+position: relative;
+background-color: #fff;
+border: 1px solid #adadad;
+border-top-color: #cfd0d0;
+border-left-color: #cfd0d0;
+
+}
+
+.hover { 
+background-color: #f8f4e6;
+}
+
+#root {
+padding: 15px;
+background-color: #dcdddd;
+}
+
+.sort-tab {
+display: block;
+position: absolute;
+top: 0;
+left: 0px;
+width: 20px;
+height: 100%;
+background-color: #f3f3f3;
+cursor: move ! important;
+}
+
+.sortable-header {
+background-color: #adadad;
+}
+
+.label {
+margin-left: 20px;
+}
+
+.label a {
+display: inline-block;
+max-width: 15em;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+
+}
+
+.ui-state-highlight {
+position: relative;
+z-index: 100;
+height: 35px;
+margin: 5px -10px;
+border-top: 2px solid #adadad;
+}
+
+.target {
+position: relative;
+display: inline-block;
+height: 100%;
+}
+
+.marker {
+position: absolute;
+top: -7px;
+right: -20px;
+width: 20px;
+height: 10px;
+background: transparent url(<$mt:var name="static_uri"$>images/arrow-target-mark.png) center bottom no-repeat;
+}
+
+.add-form {
+padding-left: 30px;
+}
+
+.highlight {
+background-color: #f2f2b0;
+}
+
+.from {
+width: auto;
+height: 35px;
+    background-color: #c0c6c9;
+border: 1px solid #f3f3f3;
+border-top-color: #adadad;
+border-left-color: #adadad;
+}
+
+.ui-state-highlight + .from {
+position: relative;
+margin-top: -43px;
+margin-bottom: 5px;
+}
+
+
+
+</style>
+
+
+<div id="msg-block"></div>
+
+<div class="line">
+  <div class="unit size1of1">
+    <form id="<mt:var name="object_type">-listing-form" method="POST">
+      <input type="hidden" name="__mode" value="" />
+      <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+      <input type="hidden" name="action_name" value="" />
+      <input type="hidden" name="itemset_action_input" value="" />
+      <input type="hidden" name="items" value="" />
+      <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+      <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
+      <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
+
+      <div class="actions-bar">
+        <button type="button" class="save action button">Save Changes</button>
+      </div>
+
+      <div id="area-action" class="mod sortable-header">
+        <select id="itemlist" name="itemlist">
+          <option id="opt-0" value="0"><__trans phrase="Top Level"></option>
+        </select>
+        <input type="text" class="text short" placeholder="Category Label"><button type="button" class="add button">Add</button>
+      </div>
+
+      <div id="root" class="sortable">
+
+      </div>
+
+      <div class="actions-bar">
+        <button type="button" class="save action button">Save Changes</button>
+      </div>
+
+    </form>
+  </div>
+  <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
+</div>
+
+<mt:if name="config.debugmode">
+<pre id="debug-block" style="border: 1px solid #000; background-color: #eee;"></pre>
+</mt:if>
+
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('p#indicator')
+  .hide()
+  .bind('ajaxStart', function() {
+    jQuery(this).show();
+  })
+  .bind('ajaxStop', function() {
+    jQuery(this).hide();
+  });
+
+var checked = [];
+var total = 0;
+var dummy = 1;
+var itemlist = [];
+var checksum = '';
+var isdirty = false;
+var indent = 20;
+var root_pos = jQuery('#root').position();
+
+function createItem(id, parent, label, number) {
+  var line = '<span class="sort-tab"></span>';
+  line += '<span class="label">'+label+'</span>';
+  line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
+  var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
+  return $item;
+}
+
+function initItem($item) {
+  var id = $item.attr('id');
+  $item.attr('class').match(/^(\w+)/);
+  var parent = RegExp.$1;
+  var nest = countNested(parent, []);
+  $item.css('margin-left', nest.length*indent)
+    .addClass(nest.join(' '))
+    .addClass('lv-'+nest.length)
+    .addClass('mod sortable-item');
+  $item.find('.plus, .delete').remove();
+  jQuery('<span class="plus">[+]</span>')
+    .insertBefore($item.find('.count'))
+    .bind('click', function() {
+      jQuery('.add-form').remove();
+      jQuery('.sort-tab').hide();
+      var $element = jQuery(this).parent('div');
+      var parent = $element.attr('id');
+      var $form = jQuery('<div class="mod add-form"><input type="text" class="text short" placeholder="Category Label" /></div>');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element);
+      jQuery('<button type="button" class="add button"><__trans phrase="Add"></button>')
+        .bind('click', function() {
+          var label = jQuery(this).parent('.add-form').find('input').val();
+          addItem(parent, label);
+          if (!jQuery('.msg-error').length) {
+            jQuery(this).parent('.add-form').remove();
+            jQuery('.sort-tab').show();
+          }
+        })
+        .appendTo($form);
+      jQuery('<button type="button" class="cancel button"><__trans phrase="Cancel"></button>')
+        .bind('click', function() {
+            jQuery('#msg-block').empty();
+            jQuery(this).parent('.add-form').remove();
+            jQuery('.sort-tab').show();
+        })
+        .appendTo($form);
+      jQuery('.button').button();
+    });
+  jQuery('<span class="delete">[-]</span>')
+    .insertBefore($item.find('.count'))
+    .bind('click', function() {
+      var id = jQuery(this).parent('.sortable-item').attr('id');
+      removeItems(id);
+    });
+}
+
+function addItem(parent, label) {
+  jQuery('#msg-block').empty();
+  if (label == '') {
+    jQuery('#msg-block').append('<div class="msg msg-error">'+trans('label is empty.', label)+'</div>');
+    return;
+  }
+  for (var i = 0, length = itemlist.length; i < length; i++) {
+    if (itemlist[i] == label) {
+      jQuery('#msg-block').append('<div class="msg msg-error">'+trans('[_1] is exists.', label)+'</div>');
+      return;
+    }
+  }
+  var id = 'x'+dummy;
+  var $item = createItem(id, parent, label, 0);
+  initItem($item);
+  $item.insertAfter(jQuery('#'+parent));
+
+  jQuery('#opt-'+parent).after('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+  itemlist.push(label);
+  dummy++;
+  isdirty = true;
+}
+
+function removeItems(id) {
+  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
+  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+  var $items = jQuery('.'+id);
+  var count = $items.length + 1;
+  var message = (count == 1)
+    ? trans('Are you sure you want to remove this [_1]?', singlar)
+    : trans('Are you sure you want to remove the [_1] selected [_2]?', count, plural);
+  if (!confirm(message)) {
+      return;
+  }
+  $items.remove();
+  jQuery('#'+id).next('.add-form').remove().end().remove();
+  jQuery('.sort-tab').show();
+  setItemList();
+  isdirty = true;
+}
+
+function setItemList() {
+  itemlist = [];
+  jQuery('#itemlist option').not(':first').remove();
+  jQuery('.sortable-item:visible').each(function() {
+    var $item = jQuery(this);
+    var id = $item.attr('id');
+    var label = $item.find('.label').text();
+    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+    itemlist.push(label);
+  });
+}
+
+function countNested(id, nest) {
+  if (id == 0) {
+    return nest;
+  }
+  jQuery('#'+id).attr('class').match(/^(\w+)/);
+  var parent = RegExp.$1;
+  nest.push(parent);
+  return countNested(parent, nest);
+}
+
+function initMoving() {
+  var place;
+  jQuery('.sortable').sortable({
+    distance: 8,
+    opacity: 0.8,
+    placeholder: 'ui-state-highlight',
+    handle: 'span.sort-tab',
+    start: function(event, ui) {
+      var $item = jQuery(ui.item);
+      var id = $item.attr('id');
+      var count = jQuery('.'+id).hide().length;
+      if (count) {
+        var label = (count == 1)
+          ? '<mt:var name="object_label" lower_case="1" escape="js">'
+          : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
+        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.label'));
+      }
+      $item.find('.plus, .delete').hide();
+    },
+    stop: function(event, ui) {
+      var $item = jQuery(ui.item);
+      var id = $item.attr('id');
+      $item.find('.with').remove();
+      $item.find('.plus, .delete').show();
+      if (!place) place = 0;
+      if (id == place) {
+        jQuery('.'+id).show();
+        return;
+      }
+      $item.attr('class', place);
+      initItem($item);
+      jQuery('.'+id).each(function() {
+        var $this = jQuery(this).clone();
+        jQuery(this).remove();
+        $this.attr('class').match(/^(\w+).*/);
+        var parent = RegExp.$1;
+        $this.attr('class', parent);
+        initItem($this);
+        $this.insertAfter($item).show();
+        $item = $this;
+      });
+      setHoverAction(jQuery('.'+id));
+      setItemList();
+      isdirty = true;
+    },
+    sort: function(event, ui) {
+      var $item = jQuery(ui.item);
+      $item.attr('class').match(/^(\w+)/);
+      var parent = RegExp.$1;
+      $item.attr('class').match(/lv-(\w+)/);
+      var level = parseInt(RegExp.$1);
+
+      var $place = jQuery(ui.placeholder);
+      var $prev = $place.prevAll().not($item).not(':hidden').filter(':first');
+      var prev_id = 0;
+      var prev_parent = 0;
+      var prev_level = 0;
+      if ($prev.length) {
+        var prev_id = $prev.attr('id');
+        $prev.attr('class').match(/^(\w+)/);
+        prev_parent = RegExp.$1;
+        $prev.attr('class').match(/lv-(\w+)/);
+        prev_level = parseInt(RegExp.$1);
+      }
+      var nest = countNested(prev_parent, []);
+      nest.pop();
+      nest.unshift(prev_parent);
+
+      var $next = $place.nextAll().not($item).not(':hidden').filter(':first');
+      var next_parent = 0;
+      var next_level = 0;
+      if ($next.length) {
+        $next.attr('class').match(/^(\w+)/);
+        next_parent = RegExp.$1;
+        $next.attr('class').match(/lv-(\w+)/);
+        next_level = parseInt(RegExp.$1);
+      }
+
+      var left = ui.offset.left - root_pos.left;
+      var idx = parseInt(Math.abs(left)/indent);
+      var d = prev_level < level ? 0 : prev_level - level + 1;
+      var pos = 0;
+
+      if (prev_level < next_level) {
+        place = prev_id;
+        pos = prev_level + 1;
+      } else if (prev_level == next_level) {
+        if (left > 0) {
+          place = prev_id;
+          pos = prev_level + 1;
+        } else {
+          place = prev_parent;
+          pos = prev_level;
+        }
+        if (prev_id == 0) {
+          place = prev_parent;
+          pos = prev_level;
+        }
+      } else {
+        if (left > 0) {
+          if (idx < d) {
+            place = nest[d - idx - 1];
+            pos = nest.length - (d - idx -1);
+          } else {
+            place = prev_id;
+            pos = nest.length + 1;
+          }
+        } else if (left < 0) {
+          if (idx + d < nest.length) {
+            place = nest[idx + d];
+            pos = nest.length - (idx + d);
+          } else {
+            place = next_parent;
+            pos = next_level;
+          }
+        } else {
+          place = parent;
+          pos = level;
+        }
+      }
+      jQuery('<div class="target"><span class="marker"></span></div>').css('width', pos*indent).appendTo($place.empty());
+    }
+  });
+}
+
+function setHoverAction($elements) {
+  $elements.hover(function() {
+    var parent = jQuery(this).addClass('hover on').attr('id');
+    jQuery('.'+parent).addClass('hover');
+  }, function() {
+    var parent = jQuery(this).removeClass('hover on').attr('id');
+    jQuery('.'+parent).removeClass('hover');
+  });
+}
+
+function renderItems(data) {
+  jQuery('#root').empty();
+  jQuery('#itemlist option').not(':first').remove();
+  jQuery('<div id="0" class="0 mod sortable-item" />').hide().appendTo('#root');
+  total = parseInt(data.result.count);
+  var objs = data.result.objects;
+  var count = objs.length;
+  for (var i = 0; i < count; i++) {
+    var id = parseInt(objs[i][0]);
+    var parent = parseInt(objs[i][1]);
+    var label = objs[i][2];
+    var number = objs[i][3]
+    var $item = createItem(id, parent, label, number);
+    initItem($item);
+    $item.appendTo('#root');
+
+    jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
+    itemlist.push(jQuery(label).text());
+  }
+  if (count == 0) {
+    var message = trans('No [_1] could be found.', '<mt:var name="object_label" lower_case="1" escape="js">');
+    jQuery('<p>'+message+'</p>').appendTo('#root');
+  }
+  checksum = data.result.checksum;
+  setHoverAction(jQuery('.sortable-item'));
+}
+
+function renderNestedList() {
+  var params = {
+    __mode: 'filtered_list',
+    datasource: '<mt:var name="list_type">',
+    blog_id: <mt:var name="blog_id">
+  };
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: params,
+    success: function(data) {
+<mt:if name="config.debugmode">
+      if (data.result.debug) {
+        jQuery('#debug-block').text(data.result.debug);
+      }
+</mt:if>
+      if (data.error) {
+        jQuery('#msg-block').append('<div id="ajax_error" class="msg msg-error">'+data.error+'</div>');
+      }
+      renderItems(data);
+    },
+    complete: function() {
+      initMoving();
+    },
+    error: function(xhr, status) {
+      alert('Ajax error: ' + status);
+    }
+  });
+}
+
+jQuery('.add').click(function() {
+  var parent = jQuery(this).parent('#area-action').find('select').val();
+  var label = jQuery(this).parent('#area-action').find('input').val();
+  addItem(parent, label);
+  return false;
+});
+
+jQuery('.save').click(function() {
+  var items = [];
+  jQuery('.sortable-item:visible').each(function() {
+    var $item = jQuery(this);
+    var myid = $item.attr('id');
+    $item.attr('class').match(/^(\w+).*/);
+    var parentid = RegExp.$1;
+    items.push({id: myid, parent: parentid, label: $item.find('.label').text()});
+  });
+  jQuery.ajax({
+    type: 'POST',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'bulk_update_<mt:var name="object_type">',
+      datasource: '<mt:var name="list_type">',
+      blog_id: <mt:var name="blog_id">,
+      checksum: checksum,
+      objects: jQuery.toJSON(items)
+    },
+    success: function(data) {
+      jQuery('#msg-block').empty();
+      if (data.error) {
+        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
+        return;
+      }
+      renderItems(data);
+      isdirty = false;
+    },
+    complete: function() {
+      initMoving();
+    },
+    error: function(xhr, status) {
+      alert('Ajax error: ' + status);
+    }
+  });
+  return false;
+});
+
+jQuery(window).bind('beforeunload', function() {
+  if (isdirty) {
+    return trans('You have unsaved changes to this page that will be lost.');
+  }
+});
+
+renderNestedList();
+</mt:setvarblock>
+<mt:include name="include/footer.tmpl">

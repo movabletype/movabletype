@@ -19,12 +19,12 @@ sub init {
     $param{prefix} ||= 'mt_';
     $driver->SUPER::init(%param);
     my $opts = $driver->connect_options || {};
-    
+
     require MT;
     my $mt = MT->instance;
     my $cfg = $mt->config;
     $opts->{RaiseError} = $cfg->DBIRaiseError;
-    
+
     $driver->connect_options($opts);
     $driver;
 }
@@ -175,7 +175,7 @@ sub count_group_by {
     my $driver = shift;
     my ($class, $terms, $args) = @_;
 
-    $driver->_do_group_by('COUNT(*)', @_);
+    $driver->_do_group_by('COUNT(*) AS cnt', @_);
 }
 
 sub sum_group_by {

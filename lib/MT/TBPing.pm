@@ -70,6 +70,79 @@ sub class_label_plural {
     return MT->translate('TrackBacks');
 }
 
+sub list_props {
+    return {
+        author_name => {
+            condition => sub {0},
+        },
+        excerpt => {
+            label => 'Excerpt',
+            auto  => 1,
+        },
+        ip => {
+            label => 'IP',
+            auto  => 1,
+        },
+        source_blog_name => {
+            label => 'Blog name',
+            col   => 'blog_name',
+            base  => '__common.string',
+        },
+        status => {
+            base  => 'comment.status',
+        },
+        title => {
+            label => 'Title',
+            auto  => 1,
+            html  => sub {
+                my ( $prop, $obj ) = @_;
+                my $url   = $obj->source_url;
+                my $title = $obj->title;
+                return qq{<a href="$url">$title</a>};
+            },
+        },
+        entry_and_category_label => {
+            label => 'Entry/Category',
+            base  => '__common.string',
+            bulk_html  => sub {
+                my ( $prop, $objs ) = @_;
+                my %tbs = map { $_->tb_id => 1 } @$objs;
+                my @tbs = MT->model('trackback')->load({ id => [ keys %tbs ] });
+                my %tb_map  = map { $_->id => $_ } @tbs;
+                my %entries = map { $_->entry_id => 1 } grep { $_->entry_id } @tbs;
+                my @entries = MT->model('entry')->load({ id => [ keys %entries ]})
+                    if scalar keys %entries;
+                my %entry_map  = map { $_->id => $_ } @entries;
+                my %categories = map { $_->category_id => 1 } grep { $_->category_id } @tbs;
+                my @categories = MT->model('category')->load({ id => [ keys %categories ]})
+                    if scalar keys %categories;
+                my %category_map  = map { $_->id => $_ } @categories;
+                my @res;
+                for my $obj ( @$objs ) {
+                    my $tb = $tb_map{$obj->tb_id};
+                    my ( $label, $id, $type, $blog_id );
+                    if ( $tb->entry_id ) {
+                        my $entry = $entry_map{$tb->entry_id};
+                        $id      = $entry->id;
+                        $label   = $entry->title;
+                        $type    = $entry->class;
+                        $blog_id = $entry->blog_id;
+                    }
+                    elsif ( $tb->category_id ) {
+                        my $cat = $category_map{$tb->category_id};
+                        $id      = $cat->id;
+                        $label   = $cat->label;
+                        $type    = $cat->class;
+                        $blog_id = $cat->blog_id;
+                    }
+                    push @res, qq{<a href="<mt:var name="script_url>">?__mode=view&type=$type&id=$id&blog_id=$blog_id">$label</a>};
+                }
+                @res;
+            },
+        },
+    };
+}
+
 sub is_junk {
     $_[0]->junk_status == JUNK;
 }

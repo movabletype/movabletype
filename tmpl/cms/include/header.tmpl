@@ -1,371 +1,285 @@
 <mt:setvarblock name="related_content"><$mt:var name="related_content" trim="1"$></mt:setvarblock>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="<$mt:var name="language_tag"$>" xmlns="http://www.w3.org/1999/xhtml" xmlns:mt="http://www.sixapart.com/ns/mt">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=<$mt:var name="language_encoding"$>" />
-        <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
+<!DOCTYPE html>
+<html lang="<$mt:var name="language_tag"$>">
+<head>
+  <meta charset="<$mt:var name="language_encoding"$>" />
+  <title><mt:if name="html_title"><$mt:var name="html_title"$><mt:else><$mt:var name="page_title"$></mt:if><mt:if name="blog_name"> - <$mt:var name="blog_name" escape="html"$></mt:if> | <$mt:var name="mt_product_name"$></title>
 
 <mt:setvarblock name="html_head" prepend="1">
-        <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
+  <link rel="icon" href="<$mt:var name="static_uri"$>images/favicon.ico" type="image/ico" />
 <mt:if name="feed_url">
-        <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
+  <link type="application/atom+xml" rel="alternate" <mt:if name="feed_name">title="<mt:var name="feed_name" escape="html">" </mt:if>href="<mt:var name="feed_url" escape="html">" />
 </mt:if>
 <mt:unless name="optimize_ui">
-        <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 <mt:else>
-        <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/main.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
 </mt:unless>
-    <!--[if lte IE 7]>
-        <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-    <![endif]-->
-    <!--[if lte IE 6]>
-        <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
-    <![endif]-->
+  <!--[if lte IE 7]>
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <![endif]-->
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>css/hacks/ie6.css?v=<mt:var name="mt_version_id" escape="url">" type="text/css" />
+  <![endif]-->
 <mt:if name="local_lang_id" ne="en-us">
-        <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
+  <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
 </mt:if>
-        <script type="text/javascript">
-        /* <![CDATA[ */
-             __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
-             CMSScriptURI = '<$mt:var name="mt_url"$>';
-             ScriptURI = '<$mt:var name="script_url"$>';
-             ScriptBaseURI = '<$mt:var name="script_base_url"$>';
-             StaticURI = '<$mt:var name="static_uri"$>';
-             HelpBaseURI = '<$mt:var name="help_url"$>';
-        /* ]]> */
-        </script>
+  <script type="text/javascript">
+  /* <![CDATA[ */
+       __blankURI__ = '<$mt:var name="static_uri">html/blank.html';
+       CMSScriptURI = '<$mt:var name="mt_url"$>';
+       ScriptURI = '<$mt:var name="script_url"$>';
+       ScriptBaseURI = '<$mt:var name="script_base_url"$>';
+       StaticURI = '<$mt:var name="static_uri"$>';
+       HelpBaseURI = '<$mt:var name="help_url"$>';
+  /* ]]> */
+</script>
 <mt:unless name="optimize_ui">
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/List.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <!--[if lte IE 6]>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <![endif]-->
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/ui.core.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/ui.tabs.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/ui.datepicker.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/ui.dialog.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/JSON.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Timer.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cookie.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/DOM.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Devel.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Observable.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Autolayout.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Component.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/List.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/App.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Cache.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Template.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <!--[if lte IE 6]>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <![endif]-->
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <mt:else>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <!--[if lte IE 6]>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-    <![endif]-->
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery.ui.custom.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <!--[if lte IE 6]>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <![endif]-->
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:unless>
 </mt:setvarblock>
 
-<mt:var name="html_head">
+  <mt:var name="html_head">
 
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 <mt:if name="local_lang_id" ne="en-us">
-        <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>mt_<$mt:var name="local_lang_id"$>.js?v=<mt:var name="mt_version_id" escape="URL">" charset="utf-8"></script>
 </mt:if>
-        <mt:var name="js_include">
-    </head>
-    <body id="<$mt:var name="screen_id"$>" class="<mt:if name="scope_type" eq="user">user system<mt:else><mt:var name="scope_type"></mt:if> <mt:var name="screen_type" default="main-screen"> <mt:if name="screen_class"> <mt:var name="screen_class"></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if><mt:if name="related_content"> has-related-content</mt:if><mt:if name="top_nav_loop"> has-menu-nav</mt:if><mt:if name="loaded_revision"> loaded-revision</mt:if>">
+  <mt:var name="js_include">
 
-    <mt:var name="html_body">
+</head>
+<body id="<$mt:var name="screen_id"$>" class="<mt:if name="scope_type" eq="user">user system<mt:else><mt:var name="scope_type"></mt:if> <mt:var name="screen_type" default="main-screen"> <mt:if name="screen_class"> <mt:var name="screen_class"></mt:if><mt:if name="new_object"> create-new</mt:if><mt:if name="mt_beta"> mt-beta</mt:if><mt:if name="related_content"> has-related-content</mt:if><mt:if name="top_nav_loop"> has-menu-nav</mt:if><mt:if name="loaded_revision"> loaded-revision</mt:if><mt:if name="edit_screen"> edit-screen</mt:if>">
 
-        <div id="header">
-          <div id="brand">
-                <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><span><img alt="<mt:var name="mt_product_name">" src="<mt:var name="static_uri">images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span></a>
-            </div>
+<div id="container" class="<$mt:var name="screen_type" default="main-screen"$><mt:if name="listing_screen"> listing-screen</mt:if>">
 
-<mt:if name="author_name">
-            <!-- Utility Nav -->
-            <div id="utility-nav">
-                <ul id="utility-nav-list">
-                    <li id="user"><__trans phrase="Signed in as [_1]" params="<a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="16" height="16" class="userpic" /> <span class="username"><mt:var name="author_name" escape="html" escape="html"></span></a>">
-                    </li>
-                    <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
+  <mt:var name="html_body">
+
+  <div id="header">
+    <div id="brand">
+      <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><span><img alt="<mt:var name="mt_product_name">" src="<mt:var name="static_uri">images/logo/movable-type-logo<mt:if name="blog_id"><mt:if name="is_blog"><mt:else>-website</mt:if><mt:else>-system</mt:if>.png" /></span></a>
+    </div>
+
+  <mt:if name="author_name">
+
+    <div id="utility-nav">
+      <ul id="utility-nav-list">
+        <li id="user"><__trans phrase="Signed in as [_1]" params="<a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>"><img alt="<mt:var name="author_display_name" escape="html">" src="<mt:if name="author_userpic_url"><mt:var name="author_userpic_url" escape="html"><mt:else><mt:var name="static_uri">images/default-userpic-36.jpg</mt:if>" width="16" height="16" class="userpic" /> <span class="username"><mt:var name="author_name" escape="html" escape="html"></span></a>"></li>
+        <li id="help" class="help"><a href="javascript:void(0)" onclick="openManual('<mt:var name="template_filename" escape="js">')"><__trans phrase="Help"></a></li>
     <mt:if name="can_logout">
-                    <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Sign out"></a></li>
+        <li id="logout"><a href="<$mt:var name="mt_url"$>?__mode=logout"><__trans phrase="Sign out"></a></li>
     </mt:if>
-                </ul>
-            </div>
+      </ul>
+    <!-- /Utility Nav --></div>
 
+    <div id="menu-bar" class="line">
 
-            <div id="menu-bar">
+      <$mt:Include name="include/scope_selector.tmpl"$>
 
-            <!-- Scope Selector -->
-                <div id="selector-nav">
-                    <ul id="selector-nav-list">
-    <mt:if name="scope_type" eq="user">
-                        <li id="user-dashboard" class="current user"><em><__trans phrase="User Dashboard"></em></li>
-    <mt:elseif name="scope_type" eq="system">
-                        <li id="system-overview" class="current system">
-        <mt:if name="can_access_overview">
-                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=0"><__trans phrase="System Overview"></a></em>
-        <mt:else>
-                            <em><__trans phrase="System Overview"></em>
-        </mt:if>
-                        </li>
-    <mt:elseif name="scope_type" eq="website">
-                        <li id="current-website" class="current">
-        <mt:if name="curr_website_can_link">
-                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
-        <mt:else>
-                            <em><mt:var name="curr_website_name" escape="html"></em>
-        </mt:if>
-                        </li>
-    <mt:elseif name="scope_type" eq="blog">
-                        <li id="current-website" class="current">
-        <mt:if name="curr_website_can_link">
-                            <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_website_id"$>"><mt:var name="curr_website_name" escape="html"></a></em>
-        <mt:else>
-                            <em><mt:var name="curr_website_name" escape="html"></em>
-        </mt:if>
-                            <ul>
-                                <li id="current-blog" class="current">
-                                    <em><a href="<$mt:var name="mt_url"$>?__mode=dashboard&amp;blog_id=<$mt:var name="curr_blog_id"$>"><mt:var name="curr_blog_name" escape="html"></a></em>
-                                </li>
-                            </ul>
-                        </li>
-    </mt:if>
-                    </ul>
+      <div id="menu-bar-nav" class="unit size1of3">
 
-                    <div class="selector">
-                        <ul>
-    <mt:unless name="scope_type" eq="user">
-                            <li class="user-dashboard">
-                                <a href="<$mt:var name="mt_url"$>?__mode=dashboard"><__trans phrase="User Dashboard"></a>
-                            </li>
-    </mt:unless>
-    <mt:unless name="scope_type" eq="system">
-        <mt:if name="can_access_overview">
-                            <li class="system-overview">
-                                <a href="<$mt:var name="mt_url">?blog_id=0&amp;<$mt:var name="return_args" escape="html"$>"><__trans phrase="System Overview"></a>
-                            </li>
-        </mt:if>
-    </mt:unless>
-                        </ul>
-    <mt:if name="fav_website_loop">
-    <mt:loop name="fav_website_loop">
-        <mt:if name="__first__">
-                        <ul id="fav-website-list">
-                            <li><span class="scope-lebel"><__trans phrase="Websites"></span>
-                                <ul>
-        </mt:if>
-                                    <li><mt:if name="fav_website_can_link"><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_website_id"$>&amp;<$mt:var name="return_args" escape="html"$>"></mt:if><mt:var name="fav_website_name" escape="html"><mt:if name="fav_website_can_link"></a></mt:if></li>
-        <mt:if name="__last__">
-            <mt:unless name="selector_hide_website_chooser">
-                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
-            </mt:unless>
-                                </ul>
-                            </li>
-                        </ul>
-        </mt:if>
-    </mt:loop>
-    <mt:else>
-        <mt:unless name="selector_hide_website_chooser">
-                        <ul id="fav-website-list">
-                            <li><span class="scope-lebel"><__trans phrase="Websites"></span>
-                                <ul>
-                                    <li id="select-website" class="select-website"><a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another website..."></a></li>
-                                </ul>
-                            </li>
-                        </ul>
-        </mt:unless>
-    </mt:if>
-
-    <mt:if name="fav_blog_loop">
-    <mt:loop name="fav_blog_loop">
-        <mt:if name="__first__">
-                        <ul id="fav-blog-list">
-                            <li><span class="scope-lebel"><__trans phrase="Blogs"></span>
-                                <ul>
-        </mt:if>
-                                    <li><a href="<$mt:var name="mt_url"$>?blog_id=<$mt:var name="fav_blog_id"$>&amp;<$mt:var name="return_args" escape="html"$>"><mt:var name="fav_blog_name" escape="html"> <span class="parent"><__trans phrase="(on [_1])" params="<mt:var name="fav_parent_name" escape="html" escape="html">"></span></a></li>
-        <mt:if name="__last__">
-            <mt:unless name="selector_hide_blog_chooser">
-                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
-            </mt:unless>
-                                </ul>
-                            </li>
-                        </ul>
-        </mt:if>
-    </mt:loop>
-    <mt:else>
-        <mt:unless name="selector_hide_blog_chooser">
-                        <ul id="fav-blog-list">
-                            <li><span class="scope-lebel"><__trans phrase="Blogs"></span>
-                                <ul>
-                                    <li id="select-blog" class="select-blog"><a href="<mt:var name="script_url">?__mode=dialog_select_weblog&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Select another blog..."></a></li>
-                                </ul>
-                            </li>
-                        </ul>
-        </mt:unless>
-    </mt:if>
-    <mt:if name="can_create_website">
-                        <ul id="create-website-action">
-                            <li id="create-website" class="website"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=website&amp;blog_id=0"><__trans phrase="Create Website"></a></li>
-                        </ul>
-    </mt:if>
-    <mt:if name="can_create_blog">
-                        <ul id="create-blog-action">
-        <mt:if name="scope_type" eq="website">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
-        <mt:elseif name="scope_type" eq="blog">
-                            <li id="create-blog" class="blog"><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=blog&amp;blog_id=<$mt:var name="curr_website_id"$>"><__trans phrase="Create Blog (on [_1])" params="<mt:var name="curr_website_name" escape="html" escape="html">"></a></li>
-        </mt:if>
-                        </ul>
-    </mt:if>
-                    </div>
-                </div>
-
-                <div id="menu-bar-nav">
-                    <ul id="menu-bar-icons">
-    <mt:if name="blog_id">
+        <ul id="menu-bar-icons">
+      <mt:if name="blog_id">
         <mt:if name="can_rebuild">
-            <mt:unless name="dynamic_all">
-                        <!-- Publish Link -->
-                        <li id="rebuild-site" class="nav-link"><a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild" title="<__trans phrase="Publish Site">"><span><__trans phrase="Publish"></span></a></li>
-            </mt:unless>
+          <mt:unless name="dynamic_all">
+          <li id="rebuild-site" class="nav-link">
+            <a href="<$mt:var name="mt_url"$>?__mode=rebuild_confirm&blog_id=<$mt:var name="blog_id"$>" class="mt-rebuild" title="<__trans phrase="Publish Site">"><span><__trans phrase="Publish"></span></a>
+          <!-- /Publish Link --></li>
+          </mt:unless>
         </mt:if>
-                        <!-- View Link -->
-                        <li id="view-site" class="nav-link"><a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a></li>
-    </mt:if>
-                        <!-- Serarch  -->
-                        <li id="cms-search" class="nav-link">
-                            <a href="#search-form"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
-                            <div id="search-form" class="search-form hidden">
-                                <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
-                                    <input type="hidden" name="__mode" value="search_replace" />
-                                    <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
-                        <mt:if name="blog_id">
-                                    <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
-                        </mt:if>
-                                    <input type="hidden" name="do_search" value="1" />
-                                    <input type="hidden" name="quicksearch" value="1" />
-                                    <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
-                                    <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
-                                    <button onclick="document.quicksearch.submit(); return false;"><__trans phrase="Search"></button>
-                                </form>
-                            </div>
-                        </li>
-                    </ul>
-    <mt:if name="blog_id">
+          <li id="view-site" class="nav-link">
+            <a href="<$mt:var name="blog_url" escape="html"$>" title="<__trans phrase="View Site">" target="<__trans phrase="_external_link_target">"><span><__trans phrase="View [_1]" params="<mt:var name="scope_type" capitalize="1">"></span></a>
+          <!-- /View Link --></li>
+      </mt:if>
+          <li id="cms-search" class="nav-link">
+            <a href="#search-form"><span><__trans phrase="Search"><mt:if name="search_label"> <mt:var name="search_label"><mt:else> <__trans phrase="Entries"></mt:if></span></a>
+            <div id="search-form" class="search-form hidden">
+              <form id="basic-search" class="basic-search" name="quicksearch" method="get" action="<$mt:var name="mt_url"$>">
+                <input type="hidden" name="__mode" value="search_replace" />
+                <input type="hidden" name="_type" value="<mt:if name="search_type"><mt:var name="search_type"><mt:else><mt:if name="object_type"><$mt:var name="object_type"$><mt:else>entry</mt:if></mt:if>" />
+              <mt:if name="blog_id">
+                <input type="hidden" name="blog_id" value="<$mt:var name="blog_id"$>" />
+              </mt:if>
+                <input type="hidden" name="do_search" value="1" />
+                <input type="hidden" name="quicksearch" value="1" />
+                <input type="hidden" name="magic_token" value="<$mt:var name="magic_token"$>" />
+                <input accesskey="q" type="text" name="search" autocomplete="off" class="search-query input-hint" value="<__trans phrase="Search"><mt:if name="search_label"> <$mt:var name="search_label"$><mt:else> <__trans phrase="Entries"></mt:if>" title="<__trans phrase="Search (q)">" size="15" onblur="if(this.value==''){this.style.color=''; this.form.reset()}" onfocus="this.value = ''; this.style.color = '#000';" />
+                <button type="button" onclick="document.quicksearch.submit(); return false;"><__trans phrase="Search"></button>
+              </form>
+            </div>
+          <!-- Serarch --></li>
+        </ul>
+
+      <mt:if name="blog_id">
         <mt:if name="compose_menus">
-                    <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav">
-                        <ul>
-                        <mt:loop name="compose_menus">
-                            <mt:loop name="menus">
-            <mt:if name="__first__">
-                            <li>
-                                <em>
-                                    <a href="<mt:var name="link">" class="fav-actions-root-link">
-                                        <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
-                                    </a>
-                                </em>
-                                <div id="fav-actions" class="fav-actions hidden">
-                                <ul>
-            </mt:if>
-                                    <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
-            <mt:if name="__last__">
-                                </ul>
-                                </div>
-                            </li>
-            </mt:if>
-                            </mt:loop>
-                        </mt:loop>
-                        </ul>
-                    </div>
-        </mt:if>
-    </mt:if>
-                </div>
-            </div><!-- /menu-bar -->
-</mt:if>
-        </div><!-- /header -->
-
-<mt:if name="is_generic_website">
-        <div id="is-generic-website" class="msg msg-warning">
-            <p><__trans phrase="This website was created during the version-up from the previous version of Movable Type. 'Site Root' and 'Site URL' are left blank to retain 'Publishing Paths' compatibility for blogs those were created at the previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank 'Site Root' and 'Site URL'."></p>
+        <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav split">
+        <mt:loop name="compose_menus">
+          <mt:loop name="menus">
+          <mt:if name="__first__">
+          <a href="<mt:var name="link">" class="button"><mt:var name="root_label"></a>
+          <a hre="#" class="toggle-button button detail-link">
+            <img src="<$mt:var name="static_uri"$>images/menu-arrow-down.gif" />
+          </a>
+          <div id="fav-actions" class="fav-actions detail">
+            <ul id="fav-actions-list">
+          </mt:if>
+              <li id="fav-action-<mt:var name="label">" class="fav-action">
+                <a href="<mt:var name="link">" class="fav-action-link"><mt:var name="label"></a>
+              </li>
+          <mt:if name="__last__">
+            </ul>
+          </div>
+          </mt:if>
+          </mt:loop>
+        </mt:loop>
         </div>
-</mt:if>
-
-    <!-- Container -->
-        <div id="container" class="<$mt:var name="screen_type" default="main-screen"$><mt:if name="listing_screen"> listing-screen</mt:if>">
-
-<mt:if name="author_name">
-    <mt:unless name="is_full_screen">
-        <mt:if name="top_nav_loop">
-        <!-- <mt:Var name="view"> Wide Menu  -->
-            <div id="menu">
-                <ul id="<mt:var name="scope_type">-wide-menu" class="menu-nav">
-                <mt:loop name="top_nav_loop">
-            <mt:if name="allowed">
-                    <li id="menu-<mt:var name="id" lower_case="1">" class="top-menu<mt:if name="screen_group" eq="$id"> current-menu top-menu-open</mt:if>">
-                        <div>
-                            <a href="<mt:var name="link" escape="html">" class="top-menu-link"><span class="menu-label"><mt:var name="label"></span></a>
-                        </div>
-                        <ul class="sub-menu">
-                        <mt:loop name="sub_nav_loop">
-                <mt:if name="allowed">
-                    <mt:if name="current">
-                            <li><a href="<mt:var name="link" escape="html">" class="current sub-menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
-                    <mt:else>
-                            <li><a href="<mt:var name="link" escape="html">" class="sub-menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label"></span></a></li>
-                    </mt:if>
-                </mt:if>
-                        </mt:loop>
-                        </ul>
-                    </li>
-            </mt:if>
-                </mt:loop>
-                </ul>
-            </div><!-- /<mt:Var name="view"> Wide Menu -->
         </mt:if>
-    </mt:unless>
-</mt:if>
+      </mt:if>
+      <!-- /Menu Bar Nav--></div>
 
-        <!-- Content  -->
-            <div id="content">
-            <!-- Content Header -->
-                <div id="content-header">
-<mt:if name="show_display_options_link">
-                    <a href="#display-options-widget" class="display-options-link"><__trans phrase="Display Options"></a>
-</mt:if>
-<mt:if name="object_nav">
-                    <mt:var name="object_nav">
-</mt:if>
-                    <h2 id="page-title"><mt:var name="page_title"><mt:if name="loaded_revision">: <em><__trans phrase="from Revision History"></em></mt:if></h2>
-<mt:if name="system_msg">
-                    <mt:var name="system_msg">
-</mt:if>
-<mt:if name="content_header">
-                    <mt:var name="content_header">
-</mt:if>
-                </div><!-- /Content Header -->
+<mt:Ignore>
+      <mt:if name="blog_id">
+        <mt:if name="compose_menus">
+        <div id="<mt:var name="scope_type">-fav-actions-nav" class="fav-actions-nav">
 
-            <!-- Content Body -->
-                <div id="content-body">
-                    <mt:var name="form_header">
+          <ul>
+          <mt:loop name="compose_menus">
+            <mt:loop name="menus">
+              <mt:if name="__first__">
+              <li>
+                <em>
+                  <a href="<mt:var name="link">" class="fav-actions-root-link">
+                    <span class="<mt:var name="root_class">"><mt:var name="root_label"></span>
+                  </a>
+                </em>
+                <div id="fav-actions" class="fav-actions hidden">
+                  <ul>
+              </mt:if>
+                    <li><a href="<mt:var name="link">"><span class="action-label"><mt:var name="label"></span></a></li>
+              <mt:if name="__last__">
+                  </ul>
+                </div>
+              </li>
+              </mt:if>
+            </mt:loop>
+          </mt:loop>
+          </ul>
 
-                <!-- Main COntent -->
-                    <div id="main-content">
+        </div>
+        </mt:if>
+      </mt:if>
+      <!-- /Fav Actions--></div>
+</mt:Ignore>
 
-                    <!-- Main Content Inner  -->
-                        <div id="main-content-inner">
+    <!-- /Menu Bar --></div>
+  </mt:if>
+  <!-- /Header --></div>
+
+  <mt:if name="is_generic_website">
+  <div id="is-generic-website" class="msg msg-warning">
+    <p><__trans phrase="This website was created during the version-up from the previous version of Movable Type. 'Site Root' and 'Site URL' are left blank to retain 'Publishing Paths' compatibility for blogs those were created at the previous version. You can post and publish on existing blogs, but you cannot publish this website itself because of the blank 'Site Root' and 'Site URL'."></p>
+  </div>
+  </mt:if>
+
+  <div id="content">
+
+    <mt:var name="form_header">
+
+  <mt:if name="author_name">
+    <mt:unless name="is_full_screen">
+      <mt:if name="top_nav_loop">
+      <div id="menu">
+        <ul id="<mt:var name="scope_type">-wide-menu" class="menu-nav">
+        <mt:loop name="top_nav_loop">
+        <mt:if name="allowed">
+          <li id="menu-<mt:var name="id" lower_case="1">" class="item top-menu<mt:if name="screen_group" eq="$id"> current top-menu-open active</mt:if>">
+            <div>
+              <a href="<mt:var name="link" escape="html">" class="top-menu-link menu-link"><span class="menu-label"><mt:var name="label"></span></a>
+            </div>
+            <ul class="sub-menu">
+            <mt:loop name="sub_nav_loop">
+            <mt:if name="allowed">
+              <mt:if name="current">
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="current sub-menu-link menu-link"><em><span class="menu-label"><mt:var name="label"></span></em></a></li>
+              <mt:else>
+              <li class="item"><a href="<mt:var name="link" escape="html">" class="sub-menu-link menu-link<mt:if name="dialog"> mt-open-dialog</mt:if>"><span class="menu-label"><mt:var name="label"></span></a></li>
+              </mt:if>
+            </mt:if>
+            </mt:loop>
+            </ul>
+          </li>
+          </mt:if>
+        </mt:loop>
+        </ul>
+      <!-- /<mt:Var name="view"> Wide Menu --></div>
+        </mt:if>
+      </mt:unless>
+    </mt:if>
+
+    <div id="main">
+
+      <div class="line" id="content-header">
+      <mt:if name="object_nav">
+        <mt:var name="object_nav">
+      </mt:if>
+        <h1 id="page-title" class="title page">
+          <mt:var name="page_title"><mt:if name="loaded_revision">: <em><__trans phrase="from Revision History"></em></mt:if>
+        </h1>
+
+      <mt:if name="show_display_options_link">
+        <div id="display-options" class="unit size1of1 display-options">
+          <a href="#" class="toggle-link detail-link fr"><__trans phrase="Display Options"></a>
+          <mt:var name="display_options">
+        </div>
+      </mt:if>
+
+      <!-- /Content Header --></div>
+  
+      <mt:if name="system_msg">
+        <mt:var name="system_msg">
+      </mt:if>
+  
+      <mt:if name="content_header">
+        <mt:var name="content_header">
+      </mt:if>
+  
+      <div class="line" id="content-body">
+        <div class="unit size1of1" id="main-content">
+
+

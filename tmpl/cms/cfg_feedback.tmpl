@@ -87,7 +87,7 @@
                 hint="<__trans phrase="When an item has been reported as spam for this many days, it is automatically deleted.">"
                 help_page="blog_settings_feedback"
                 help_section="delete_junk_after">
-                <input type="text" id="junk_folder_expiry" name="junk_folder_expiry" value="<mt:var name="junk_folder_expiry" escape="html">" size="5" /> <__trans phrase="days">
+                <input type="text" name="junk_folder_expiry" id="junk_folder_expiry" class="days" value="<mt:var name="junk_folder_expiry" escape="html">" /> <__trans phrase="days">
             </mtapp:setting>
         </div>
 
@@ -100,7 +100,7 @@
             <a href="javascript:void(0)" id="decrease-threshold" onclick="return scoreNudge(-1)">
                 <__trans phrase="Less Aggressive"> <img src="<mt:var name="static_uri">images/decrease.gif" alt="<__trans phrase="Decrease">" width="12" height="8" />
             </a>
-            <input type="text" id="junk_score_threshold" name="junk_score_threshold" value="<mt:var name="junk_score_threshold" escape="html">" size="3" />
+            <input type="text" name="junk_score_threshold" id="junk_score_threshold" class="num" value="<mt:var name="junk_score_threshold" escape="html">" />
             <a href="javascript:void(0)" id="increase-threshold" onclick="return scoreNudge(1)">
                 <img src="<mt:var name="static_uri">images/increase.gif" alt="<__trans phrase="Increase">" width="12" height="8" /> <__trans phrase="More Aggressive">
             </a>
@@ -194,7 +194,7 @@
                         help_section="limit_html_tags">
                         <ul>
                             <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_0" value="0"<mt:if name="sanitize_spec_0"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use defaults">:</label> <span class="hint"><__trans phrase="([_1])" params="<mt:var name="global_sanitize_spec" escape="html">"></span></li>
-                            <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use my settings">:</label> <input type="text" name="sanitize_spec_manual" id="sanitize_spec_manual" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" /></li>
+                            <li><label><input type="radio" name="sanitize_spec" id="sanitize_spec_1" value="1"<mt:if name="sanitize_spec_1"> checked="checked"</mt:if> class="rb" /> <__trans phrase="Use my settings">:</label> <input type="text" name="sanitize_spec_manual" id="sanitize_spec_manual" class="text med" value="<mt:if name="sanitize_spec_1"><mt:var name="sanitize_spec" escape="html"></mt:if>" /></li>
                         </ul>
                     </mtapp:setting>
                 </div>

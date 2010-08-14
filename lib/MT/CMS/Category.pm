@@ -210,6 +210,118 @@ sub save {
     $app->call_return( 'saved' => 1, new_cat_id => $cat->id, );
 }
 
+sub bulk_update {
+    my $app = shift;
+    $app->can_do('manage_categories')
+        or return $app->json_error(
+            $app->translate( "Permission denied." ));
+
+    my $blog_id = $app->param('blog_id');
+    my $blog    = $app->blog;
+    my $model   = $app->param('object_ds') || 'category';
+    my $class   = MT->model($model);
+
+    my $objects;
+    if ( my $json = $app->param('objects') ) {
+        if ( $json =~ /^".*"$/ ) {
+            $json =~ s/^"//;
+            $json =~ s/"$//;
+            $json =~ s/\\"/"/g;
+        }
+        require JSON;
+        my $decode = JSON->new->utf8(0);
+        $objects = $decode->decode($json);
+    }
+    else {
+        $objects = [];
+    }
+    my @old_objects = $class->load({ blog_id => $blog_id });
+
+    # Test CheckSum
+    my $meta = $model . '_order';
+    my $text = join(
+        ':',
+        $app->blog->$meta,
+        map {
+            join(
+                ':',
+                $_->id,
+                ( $_->parent || '0' ),
+                Encode::encode_utf8($_->label),
+            )
+        }
+        sort { $a->id <=> $b->id } @old_objects
+    );
+    require Digest::MD5;
+    if ( $app->param('checksum') ne Digest::MD5::md5_hex( $text ) ) {
+        return $app->json_error( $app->translate(
+            'Saving category failed: some category was changed after you opened this screen.'))
+    }
+
+    my %old_objects = map { $_->id => $_ } @old_objects;
+    my @objects;
+    my @creates;
+    my @updated;
+    for my $obj ( @$objects ) {
+        next unless $obj->{id};
+        #return $app->json_error(MT->translate('Invalid request')) unless $obj->{id};
+        if ( $obj->{id} =~ /^x(\d+)/ ) {
+            my $tmp_id = $1;
+            my $new_obj = $class->new;
+            delete $obj->{id};
+            $new_obj->set_values($obj);
+            $new_obj->blog_id($blog_id);
+            push @objects, $new_obj;
+            push @creates, $new_obj;
+            $new_obj->{tmp_id} = $tmp_id;
+        }
+        else {
+            my $diff = 0;
+            exists $old_objects{$obj->{id}}
+                or return $app->json_error(
+                    $app->translate(
+                        'Tried to update [_1]([_2]), but the object not found.',
+                        $model,
+                        $obj->{id},
+                    ));
+            my $exist = delete $old_objects{$obj->{id}};
+            for my $key ( keys %$obj ) {
+                if ( $exist->$key ne $obj->{$key} ) {
+                    $diff++;
+                    $exist->$key($obj->{$key});
+                }
+            }
+            push @objects, $exist;
+            push @updated, $exist if $diff;
+        }
+    }
+    my %TEMP_MAP;
+    for my $create ( @creates ) {
+        if ( $create->parent =~ /^x(\d+)/ ) {
+            my $tmp_id = $1;
+            $create->parent( $TEMP_MAP{$tmp_id} );
+        }
+        $create->save;
+        $TEMP_MAP{ $create->{tmp_id} } = $create->id;
+    }
+    for my $updated ( @updated ) {
+        if ( $updated->parent =~ /^x(\d+)/ ) {
+            my $tmp_id = $1;
+            $updated->parent( $TEMP_MAP{$tmp_id} );
+        }
+        $updated->save;
+    }
+
+    $class->remove({ id => [ keys %old_objects ] });
+
+    my @ordered_ids = map { $_->id } @objects;
+    my $order = join ',', @ordered_ids;
+    my $meta = $model . '_order';
+    $blog->$meta($order);
+    $blog->save;
+    $app->forward( 'filtered_list' );
+}
+
 sub category_add {
     my $app  = shift;
     my $q    = $app->param;
@@ -489,6 +601,36 @@ sub move_category {
     $cat->save
       or return $app->error(
         $app->translate( "Saving [_1] failed: [_2]", $class->class_label, $cat->errstr ) );
+}
+
+sub pre_load_filtered_list {
+    my ( $cb, $app, $filter, $opts, $cols ) = @_;
+    delete $opts->{limit};
+    delete $opts->{offset};
+    delete $opts->{sort_order};
+    $opts->{sort_by} = 'custom_sort';
+    @$cols = qw( id parent label entry_count );
+}
+
+sub filtered_list_param {
+    my ( $cb, $app, $param, $objs ) = @_;
+    my $type = $app->param('datasource');
+    my $meta = $type . '_order';
+    my $text = join(
+        ':',
+        $app->blog->$meta,
+        map {
+            join(
+                ':',
+                $_->id,
+                $_->parent,
+                Encode::encode_utf8($_->label),
+            )
+        }
+        sort { $a->id <=> $b->id } @$objs
+    );
+    require Digest::MD5;
+    $param->{checksum} = Digest::MD5::md5_hex( $text );
 }
 
 1;

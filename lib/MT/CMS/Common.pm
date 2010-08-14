@@ -544,8 +544,7 @@ sub edit {
         if ( ( !$perms || !$blog_id )
             && ( $type eq 'entry' || $type eq 'page'
                  || $type eq 'category' || $type eq 'folder'
-                 || $type eq 'comment'  || $type eq 'commenter'
-                 || $type eq 'ping' ) ) {
+                 || $type eq 'comment'  || $type eq 'ping' ) ) {
             return $app->return_to_dashboard( redirect => 1 );
         }
     }
@@ -703,6 +702,396 @@ sub edit {
 }
 
 sub list {
+    my $app  = shift;
+    my $q    = $app->param;
+    my $type = $q->param('_type');
+    my $scope = $app->blog                     ? ( $app->blog->is_blog ? 'blog' : 'website' )
+              : defined $app->param('blog_id') ? 'system'
+              :                                  'user'
+              ;
+    my $blog_id = $app->blog ? $app->blog->id
+                :              0
+                ;
+    my $list_mode = 'list_' . $type;
+    if ( my $hdlrs = $app->handlers_for_mode($list_mode) ) {
+        return $app->forward($list_mode);
+    }
+    my %param;
+    $param{list_type} = $type;
+
+    my $screen_settings = MT->registry('listing_screens' => $type );
+    my $initial_filter;
+
+    my $list_prefs = $app->user->list_prefs || {};
+    my $list_pref = $list_prefs->{$type}{$blog_id} || {};
+    ## FIXME: Hardcoded
+    my $rows = $list_pref->{rows} || 50;
+    my $cols = $list_pref->{cols};
+    $cols ||= { map { $_ => 1 } @{ $screen_settings->{columns} || [] } };
+    my $last_filter = $list_pref->{last_filter} || '';
+    my $initial_sys_filter = $q->param('filter_key');
+    if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
+        $initial_sys_filter = $last_filter;
+    }
+    $param{'limit_' . $rows} = 1;
+
+    require MT::ListProperty;
+    my $obj_type = $screen_settings->{object_type} || $type;
+    my $obj_class = MT->model($obj_type);
+    my $list_props = MT::ListProperty->list_properties($type);
+
+    if ( $app->param('no_filter') ) {
+        # Nothing to do.
+    }
+    elsif ( my $col = $app->param('filter') ) {
+        if ( my $prop = $list_props->{$col} ) {
+            $initial_filter = {
+                label => $prop->has('label_via_param') ? $prop->label_via_param($app) : $prop->label,
+                items => [{
+                    type => $col,
+                    args => $prop->args_via_param($app),
+                }],
+            };
+        }
+    }
+    elsif ( $initial_sys_filter ) {
+        require MT::CMS::Filter;
+        $initial_filter = MT::CMS::Filter::filter($app, $type, $initial_sys_filter);
+    }
+    elsif ( $last_filter ) {
+        my $filter = MT->model('filter')->load($last_filter);
+        $initial_filter = $filter->to_hash if $filter;
+    }
+
+    my @list_columns
+        =
+        sort {
+              !$a->order ? 1
+            : !$b->order ? -1
+            : $a->order <=> $b->order
+        }
+        grep {
+            $_->can_display( $scope )
+        }
+        values %$list_props;
+
+    for my $col (@list_columns) {
+        my $display = $col->display || 'optional';
+        if ( $display eq 'force' ) {
+            $col->{force_display} = 1;
+            $col->{display}       = 1;
+        }
+        elsif ( $cols ) {
+            $col->{force_display} = 0;
+            $col->{display} = $cols->{$col->id};
+        }
+        else {
+            if ( $display eq 'default' ) {
+                $col->{force_display} = 0;
+                $col->{display} = 1;
+            }
+            else {
+                $col->{force_display} = 0;
+                $col->{display} = 0;
+            }
+        }
+        $col->{sortable} = $col->can_sort( $scope );
+    }
+
+    @list_columns = map {{
+        id                 => $_->id,
+        type               => $_->type,
+        label              => $_->label,
+        sortable           => $_->sortable,
+        display            => $_->display,
+        force_display      => $_->force_display,
+        default_sort_order => $_->default_sort_order,
+    }} @list_columns;
+
+    my @filter_types =
+        map {{
+           prop                  => $_,
+           id                    => $_->id,
+           type                  => $_->type,
+           label                 => $_->label,
+           field                 => $_->filter_tmpl,
+           single_select_options => $_->single_select_options( $app ),
+           singleton             => $_->singleton,
+
+        }}
+        sort {
+              !$a->{order} ? 1
+            : !$b->{order} ? -1
+            : $a->{order} <=> $b->{order}
+        }
+        grep {
+            $_->can_filter( $scope )
+        }
+        values %$list_props;
+
+    #for my $filter_type ( @filter_types ) {
+    #    if ( my $options = $filter_type->{single_select_options} ) {
+    #        require MT::Util;
+    #        if ( 'ARRAY' ne ref $options ) {
+    #            $options = MT->handler_to_coderef($options)
+    #                unless ref $options;
+    #            $filter_type->{single_select_options} = $options->( $filter_type->{prop} );
+    #        }
+    #        for my $option ( @{$filter_type->{single_select_options}} ) {
+    #            $option->{label} = MT::Util::encode_js($option->{label});
+    #        }
+    #    }
+    #}
+
+    require MT::CMS::Filter;
+    my @filters = MT::CMS::Filter::filters( $app, $type );
+    my $allpath_filter = {
+        label => MT->translate('(none)'),
+        items => [],
+    };
+    unshift @filters, $allpath_filter;
+    $initial_filter = $allpath_filter
+        unless $initial_filter;
+
+    require JSON;
+    my $json = JSON->new->utf8(0);
+    $param{blog_id} = $blog_id || '0';
+    $param{filters}        = $json->encode( \@filters );
+    $param{initial_filter} = $json->encode($initial_filter);
+    $param{filters_raw}    = \@filters;
+    $param{list_columns}   = \@list_columns;
+    $param{filter_types}   = \@filter_types;
+    $param{object_type}    = $type;
+
+    $param{object_label}
+        = $screen_settings->{object_label}
+        || $obj_class->class_label;
+    $param{object_label_plural}
+        = $screen_settings->{object_label_plural}
+        || $obj_class->class_label_plural;
+    $param{contents_label}
+        = $screen_settings->{contents_label}
+        || $obj_class->contents_label;
+    $param{contents_label_plural}
+        = $screen_settings->{contents_label_plural}
+        || $obj_class->contents_label_plural;
+    $param{container_label}
+        = $screen_settings->{container_label}
+        || $obj_class->container_label;
+    $param{container_label_plural}
+        = $screen_settings->{container_label_plural}
+        || $obj_class->container_label_plural;
+
+    my $template = $screen_settings->{template} || 'list_common.tmpl';
+
+    $app->load_list_actions( $type, \%param );
+    $app->load_tmpl( $template, \%param );
+}
+
+sub filtered_list {
+    my $app  = shift;
+    my ( %forward_params ) = @_;
+    my $q    = $app->param;
+    my $blog_id = $q->param('blog_id') || 0;
+    my $filter_id = $q->param('id') || $forward_params{saved_id};
+    my $blog = $blog_id ? $app->blog : undef;
+    my $blog_ids = !$blog         ? undef
+                 : $blog->is_blog ? $blog_id
+                 :                  [ $blog->id, map { $_->id } @{$blog->blogs} ];
+    my $debug = {};
+
+    if ( $MT::DebugMode ) {
+        require Time::HiRes;
+        $debug->{original_prof} = $Data::ObjectDriver::PROFILE;
+        $Data::ObjectDriver::PROFILE = 1;
+        $debug->{sections} = [];
+        $debug->{out}      = '';
+        $debug->{section} = sub {
+            my ($section) = @_;
+            push @{ $debug->{sections} }, [
+                $section,
+                Time::HiRes::tv_interval($debug->{timer}),
+                Data::ObjectDriver->profiler->report_query_frequency(),
+            ];
+            $debug->{timer} = [ Time::HiRes::gettimeofday() ];
+            Data::ObjectDriver->profiler->reset;
+        };
+        $debug->{print} = sub {
+            $debug->{out} .= $_[0] . "\n";
+        };
+        $debug->{timer} = $debug->{total} = [ Time::HiRes::gettimeofday() ];
+        Data::ObjectDriver->profiler->reset;
+    }
+    else {
+        $debug->{section} = sub {};
+    }
+
+    my $filteritems;
+    ## TBD: use decode_js or something for decode js_string generated by jQuery.json.
+    if ( my $items = $q->param('items') ) {
+        if ( $items =~ /^".*"$/ ) {
+            $items =~ s/^"//;
+            $items =~ s/"$//;
+            $items =~ s/\\"/"/g;
+        }
+        $MT::DebugMode && $debug->{print}->($items);
+        require JSON;
+        my $json = JSON->new->utf8(0);
+        $filteritems = $json->decode($items);
+    }
+    else {
+        $filteritems = [];
+    }
+    my $ds = $q->param('datasource');
+    my $setting = MT->registry( listing_screens => $ds ) || {};
+    my $class = $setting->{datasource} || MT->model($ds);
+
+    my $filter = MT->model('filter')->new;
+    $filter->set_values({
+        object_ds => $ds,
+        items     => $filteritems,
+        author_id => $app->user->id,
+        blog_id   => $blog_id || 0,
+    });
+    my $limit  = $q->param('limit') || 50; # FIXME: hard coded.
+    my $page   = $q->param('page');
+    $page = 1 if !$page || $page =~ /\D/;
+    my $offset = ( $page - 1 ) * $limit;
+
+    $MT::DebugMode && $debug->{print}->("LIMIT: $limit PAGE: $page OFFSET: $offset");
+    $MT::DebugMode && $debug->{section}->('initialize');
+
+    ## FIXME: take identifical column from column defs.
+    my $cols = $q->param('columns');
+    my @cols = ( 'id', split( ',', $cols ) );
+    $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
+    my %load_options = (
+        blog_id    => $blog_ids,
+        sort_by    => $q->param('sort_by') || '',
+        sort_order => $q->param('sort_order') || '',
+        limit      => $limit,
+        offset     => $offset,
+    );
+
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
+    my $count = $filter->count_objects(%load_options);
+    $MT::DebugMode && $debug->{section}->('count objects');
+
+    my @objs = $filter->load_objects(%load_options);
+    $MT::DebugMode && $debug->{section}->('load objects');
+
+    my %cols = map { $_ => 1 } @cols;
+    require MT::ListProperty;
+    my $props = MT::ListProperty->list_properties($ds);
+    my %col_maker;
+    my @results;
+    my $tmpl  = MT::Template->new;
+    $tmpl->blog_id($blog_id);
+    $app->set_default_tmpl_params($tmpl);
+    $tmpl->context->{__stash}{blog} = $blog;
+    $tmpl->context->{__stash}{blog_id} = $blog_id;
+
+    $MT::DebugMode && $debug->{section}->('prepare load cols');
+
+    for my $col ( @cols ) {
+        my $prop = $props->{$col};
+        my @result;
+        if ( $prop->has('bulk_html') ) {
+            my @vals = $prop->bulk_html(\@objs, $app);
+            for my $obj ( @objs ) {
+                $tmpl->context->{__stash}{$ds} = $obj;
+                $tmpl->text(shift @vals);
+                $tmpl->reset_tokens;
+                my $out = $tmpl->output;
+                push @result, $out;
+            }
+        }
+        elsif ( $prop->has('html') ) {
+            for my $obj ( @objs ) {
+                $tmpl->context->{__stash}{$ds} = $obj;
+                my $out = $prop->html($obj, $app);
+                $tmpl->text($out);
+                $tmpl->reset_tokens;
+                $out = $tmpl->output;
+                push @result, $out;
+            }
+        }
+        elsif ( $prop->has('html_link') ) {
+            for my $obj ( @objs ) {
+                $tmpl->context->{__stash}{$ds} = $obj;
+                my $out = $prop->html_link($obj, $app);
+                $tmpl->text($out);
+                $tmpl->reset_tokens;
+                my $link = $tmpl->output;
+                my $raw  = $prop->raw($obj);
+                push @result, "<a href=\"$link\">$raw</a>";
+            }
+        }
+        elsif ( $prop->has('raw') ) {
+            for my $obj ( @objs ) {
+                my $out = $prop->raw($obj);
+                push @result, $out;
+            }
+        }
+
+        push @results, \@result;
+        $MT::DebugMode && $debug->{section}->("prepare col $col");
+    }
+
+    my @data;
+    for my $i ( 0.. scalar @objs - 1 ) {
+        push @data, [ map { $_->[$i] } @results ];
+    }
+
+    ## Save user list prefs.
+    my $list_prefs = $app->user->list_prefs || {};
+    my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
+    $list_pref->{rows} = $limit;
+    $list_pref->{cols} = \%cols;
+    $list_pref->{last_filter} = $filter_id if $filter_id;
+    $app->user->list_prefs($list_prefs);
+    ## FIXME: should handle errors..
+    $app->user->save;
+
+    require MT::CMS::Filter;
+    my @filters = MT::CMS::Filter::filters( $app, $ds );
+    my $allpath_filter = {
+        label => MT->translate('(none)'),
+        items => [],
+    };
+    unshift @filters, $allpath_filter;
+
+    require POSIX;
+    my %res;
+    $res{objects}  = \@data;
+    $res{count}    = $count;
+    $res{page}     = $page;
+    $res{page_max} = POSIX::ceil( $count / $limit );
+    $res{id}       = $filter_id;
+    $res{filters}  = \@filters;
+    $MT::DebugMode && $debug->{section}->('finalize');
+    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, \@objs );
+    if ( $MT::DebugMode ) {
+        my $total = Time::HiRes::tv_interval($debug->{total});
+        my $out   = $debug->{out};
+        for my $section ( @{ $debug->{sections} } ) {
+            $out .= sprintf(
+                "%s  : %0.2f ms ( %0.2f \% )\n%s\n",
+                $section->[0],
+                $section->[1] * 1000,
+                $section->[1] / $total * 100,
+                $section->[2],
+            );
+        }
+        $out .= sprintf "TOTAL: %0.2f ms\n", $total * 1000;
+        $out .= sprintf "Matched %i Objects\n", $count;
+        $res{debug} = $out;
+        $Data::ObjectDriver::PROFILE = $debug->{original_prof};
+    }
+    return $app->json_result(\%res);
+}
+
+sub _list {
     my $app  = shift;
     my $q    = $app->param;
     my $type = $q->param('_type');

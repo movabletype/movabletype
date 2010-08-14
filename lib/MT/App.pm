@@ -552,7 +552,9 @@ sub json_result {
 
 sub json_error {
     my $app = shift;
-    my ($error) = @_;
+    my ($error, $status) = @_;
+    $app->response_code($status)
+        if defined $status;
     $app->send_http_header("text/javascript+json");
     $app->{no_print_body} = 1;
     $app->print_encode( MT::Util::to_json( { error => $error } ) );
@@ -2051,15 +2053,9 @@ sub logout {
     }
 
     # Displaying the login box
-    $app->load_tmpl(
-        'login.tmpl',
-        {   logged_out           => 1,
-            no_breadcrumbs       => 1,
-            login_fields         => MT::Auth->login_form($app) || '',
-            can_recover_password => MT::Auth->can_recover_password,
-            delegate_auth        => $delegate || 0,
-        }
-    );
+    $app->show_login({
+        logged_out => 1,
+    });
 }
 
 sub create_user_pending {
@@ -2547,6 +2543,9 @@ sub show_error {
     my $mode    = $app->mode;
     my $url     = $app->uri;
     my $blog_id = $app->param('blog_id');
+    my $status  = $param->{status};
+    $app->response_code($status)
+        if defined $status;
 
     if ( ref $param ne 'HASH' ) {
         # old scalar signature
@@ -2611,6 +2610,21 @@ sub show_error {
     return $app->l10n_filter($out);
 }
 
+sub show_login {
+    my $app = shift;
+    my ( $param ) = @_;
+    $param ||= {};
+    require MT::Auth;
+    $app->build_page('login.tmpl', {
+        error                => $app->errstr,
+        no_breadcrumbs       => 1,
+        login_fields         => MT::Auth->login_form($app),
+        can_recover_password => MT::Auth->can_recover_password,
+        delegate_auth        => MT::Auth->delegate_auth,
+        %$param,
+    });
+}
+
 sub pre_run {
     my $app = shift;
     if ( my $auth = $app->user ) {
@@ -2669,7 +2683,6 @@ sub run {
         $mode = $app->mode || 'default';
 
         $requires_login = $app->{requires_login};
-
         $get_method_info = sub {
             $code = $app->handlers_for_mode($mode);
 
@@ -2677,9 +2690,11 @@ sub run {
                 if defined $code;
 
             $meth_info = {};
+            $app->request( method_info => {} );
             foreach my $code (@handlers) {
                 if ( ref $code eq 'HASH' ) {
                     $meth_info = $code;
+                    $app->request( method_info => $meth_info );
                     $requires_login
                         = $requires_login & $meth_info->{requires_login}
                         if exists $meth_info->{requires_login};
@@ -2720,17 +2735,7 @@ sub run {
                     $body
                         = ref($author) eq $app->user_class
                         ? $app->show_error( { error => $app->errstr } )
-                        : $app->build_page(
-                        'login.tmpl',
-                        {   error          => $app->errstr,
-                            no_breadcrumbs => 1,
-                            login_fields =>
-                                sub { MT::Auth->login_form($app) },
-                            can_recover_password =>
-                                sub { MT::Auth->can_recover_password },
-                            delegate_auth => sub { MT::Auth->delegate_auth },
-                        }
-                        );
+                        : $app->show_login();
                     last REQUEST;
                 }
             }
@@ -2832,18 +2837,14 @@ sub run {
     if ( ( !defined $body ) && $app->{login_again} ) {
 
         # login again!
-        require MT::Auth;
-        $body = $app->build_page(
-            'login.tmpl',
-            {   error                => $app->errstr,
-                no_breadcrumbs       => 1,
-                login_fields         => MT::Auth->login_form($app),
-                can_recover_password => MT::Auth->can_recover_password,
-                delegate_auth        => MT::Auth->delegate_auth,
-            }
-        ) or $body = $app->show_error( { error => $app->errstr } );
+        $body = $app->show_login
+            or $body = $app->show_error( { error => $app->errstr } );
     }
-    elsif ( !defined $body ) {
+    elsif ( !defined $body 
+        && !$app->{redirect}
+        && !$app->{login_again}
+        && !$app->{no_print_body} )
+    {
         my $err = $app->errstr || $@;
         $body = $app->show_error( { error => $err } );
     }
@@ -2939,6 +2940,14 @@ sub handlers_for_mode {
     }
 
     $code ||= $app->{vtbl}{$mode};
+
+    if ( $code && ref $code eq 'HASH' && $code->{condition} ) {
+        my $cond = $code->{condition};
+        if ( !ref($cond) ) {
+            $cond = $code->{condition} = $app->handler_to_coderef($cond);
+        }
+        return undef unless $cond->( $app );
+    }
 
     return $code;
 }
@@ -4087,6 +4096,10 @@ user ID doesn't match the $user_obj-E<gt>id.
 =head2 $app->show_error($error)
 
 Handles the display of an application error.
+
+=head2 $app->show_login(\%param)
+
+Builds the log-in screen.
 
 =head2 $app->envelope
 

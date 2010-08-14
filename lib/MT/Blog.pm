@@ -104,6 +104,9 @@ __PACKAGE__->install_properties({
         'max_revisions_entry' => 'integer meta',
         'max_revisions_template' => 'integer meta',
         'theme_export_settings' => 'hash meta',
+        'category_order' => 'text meta',
+        'folder_order' => 'text meta',
+
     },
     meta => 1,
     audit => 1,
@@ -134,6 +137,112 @@ sub class_label {
 
 sub class_label_plural {
     MT->translate("Blogs");
+}
+
+sub list_props {
+    return {
+        name => {
+            auto => 1,
+            label => 'Name',
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'dashboard',
+                    args => {
+                        blog_id => $obj->id,
+                    },
+                );
+            },
+        },
+        description => 'Description',
+        entry_count => {
+            label => 'Entries',
+            count_class => 'entry',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                MT->model( $prop->count_class )->count({ blog_id => $obj->id });
+            },
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type     => $prop->count_class,
+                        blog_id   => $obj->id,
+                        no_filter => 1,
+                    },
+                );
+            },
+        },
+        page_count => {
+            base  => 'blog.entry_count',
+            label => 'Pages',
+            count_class => 'page',
+        },
+        comment_count => {
+            base  => 'blog.entry_count',
+            label => 'Comments',
+            count_class => 'comment',
+        },
+        member_count => {
+            ## FIXME : bad link
+            base  => 'blog.entry_count',
+            label => 'Members',
+            count_class => 'permission',
+        },
+        asset_count => {
+            base  => 'blog.entry_count',
+            label => 'Assets',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                MT->model( $prop->count_class )->count({ blog_id => $obj->id, class => '*' });
+            },
+            count_class => 'asset',
+        },
+        site_url => {
+            auto  => 1,
+            label => 'Blog URL',
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $obj->site_url;
+            },
+        },
+        site_path => 'Site Path',
+        theme_id => {
+            label => 'Theme',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $theme = $obj->theme
+                    or return '-';
+                return ref $theme->label ? $theme->label->() : $theme->label;
+            },
+        },
+        theme_thumbnail => {
+            label => 'Theme Thumbnail',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                my $theme = $obj->theme
+                    or return '-';
+                my ( $url ) = $theme->thumbnail( size => 'small' );
+                return $url;
+            },
+            html => sub {
+                my ( $prop, $obj ) = @_;
+                my $theme = $obj->theme
+                    or return '-';
+                my ( $url ) = $theme->thumbnail( size => 'small' );
+                return sprintf '<img src="%s" />', $url;
+            },
+        },
+        parent_website => {
+            view => [ 'system' ],
+            label => 'Website',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                return $obj->website->name;
+            },
+        },
+    };
 }
 
 {

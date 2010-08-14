@@ -25,7 +25,8 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if (isset($args['class'])) {
             $class = $args['class'];
         }
-        $cats = _catx_load_categories($ctx, $cat, $class);
+
+        $cats = _catx_load_categories($ctx, $cat, $class, $args);
         if ($cats == null) {
             $repeat = false;
             return $content;
@@ -62,14 +63,44 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 
-function _catx_load_categories(&$ctx, $cat, $class) {
+function _catx_load_categories(&$ctx, $cat, $class, $args) {
     $blog_id = $cat->category_blog_id;
     $parent = $cat->category_parent;
     $parent or $parent = 0;
-    $cats = $ctx->stash('__cat_cache_'.$blog_id . '_' . $parent);
+
+    $sort_method = null;
+    $ctx_sort_method = $ctx->stash('subCatsSortMethod');
+    if ( isset($args['sort_method']) ) {
+        $sort_method = $args['sort_method'];
+    } elseif ( !empty($ctx_sort_method) ) {
+        $sort_method = $ctx_sort_method;
+    }
+
+    $sort_order = 'ascend';
+    $ctx_sort_order = $ctx->stash('subCatsSortOrder');
+    if ( isset($args['sort_order']) ) {
+        $sort_order = $args['sort_order'];
+    } elseif ( !empty($ctx_sort_order) ) {
+        $sort_order = $ctx_sort_order;
+    }
+
+    $sort_by = "label";
+    $ctx_sort_by = $ctx->stash('subCatsSortBy');
+    if ( isset($args['sort_by']) ) {
+        $sort_by = $args['sort_by'];
+    } elseif ( !empty($ctx_sort_by) ) {
+        $sort_by = $ctx_sort_by;
+    }
+    $cats = $ctx->stash('__cat_cache_'.$blog_id . '_' . $parent . ":".$sort_by);
     if (!$cats) {
-        $cats = $ctx->mt->db()->fetch_categories(array('blog_id' => $blog_id, 'parent' => $parent, 'show_empty' => 1, 'class' => $class));
-        $ctx->stash('__cat_cache_'.$blog_id. '_' . $parent, $cats);
+        $cats = $ctx->mt->db()->fetch_categories(array(
+            'blog_id' => $blog_id,
+            'parent' => $parent,
+            'show_empty' => 1,
+            'class' => $class,
+            'sort_order' => $sort_order,
+            'sort_by' => $sort_by));
+        $ctx->stash('__cat_cache_'.$blog_id. '_' . $parent . ":".$sort_by, $cats);
     }
     return $cats;
 }

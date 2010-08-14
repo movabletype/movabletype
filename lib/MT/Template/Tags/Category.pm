@@ -365,6 +365,7 @@ counted and displayed.
 sub _hdlr_category_prevnext {
     my ($ctx, $args, $cond) = @_;
     my $class_type = $args->{class_type} || 'category';
+    my $class = MT->model($class_type);
     my $e = $ctx->stash('entry');
     my $tag = $ctx->stash('tag');
     my $step = $tag =~ m/Next/i ? 1 : -1;
@@ -384,6 +385,32 @@ sub _hdlr_category_prevnext {
         (($uncompiled =~ /<MT:?Pages/i) ? 1 : 0);
     my $blog_id = $cat->blog_id;
     my $cats = _load_sibling_categories($ctx, $cat, $class_type);
+
+    # Get the sorting info
+    my $sort_method  = $args->{sort_method} || $ctx->stash('subCatsSortMethod');
+    my $sort_order   = $args->{sort_order}  || $ctx->stash('subCatsSortOrder') || 'ascend';
+    my $sort_by      = $args->{sort_by}     || $ctx->stash('subCatsSortBy')    || 'label';
+    my $custom_order;
+    if ( $sort_by eq 'user_custom' ) {
+        undef $sort_by;
+        $custom_order = 1;
+    }
+    $sort_by = 'label' unless $class->has_column($sort_by);
+    $sort_by ||= 'label';
+    if ( $sort_method ) {
+        $cats = _sort_cats($ctx, $sort_method, $sort_order, $cats)
+            or return $ctx->error($ctx->errstr);
+    }
+    elsif ( $custom_order ) {
+        my $blog = $ctx->stash('blog');
+        my $meta = $class_type . '_order';
+        my $text = $blog->$meta || '';
+        $cats = [ MT::Category::_sort_by_id_list( $text, $cats ) ];
+    }
+    else {
+        $cats = [ sort { $a->$sort_by cmp $b->$sort_by } @$cats ];
+    }
+
     my ($pos, $idx);
     $idx = 0;
     foreach (@$cats) {
@@ -414,6 +441,9 @@ sub _hdlr_category_prevnext {
         local $ctx->{__stash}{category} = $cats->[$pos];
         local $ctx->{__stash}{entries} = $cats->[$pos]->{_entries} if $needs_entries;
         local $ctx->{__stash}{category_count} = $cats->[$pos]->{_placement_count};
+        local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
+        local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
+        local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
         return $ctx->slurp($args, $cond);
     }
     return '';
@@ -476,7 +506,7 @@ sub _hdlr_sub_categories {
     my $class = MT->model($class_type);
     my $entry_class = MT->model(
         $class_type eq 'category' ? 'entry' : 'page');
-    
+
     my $builder = $ctx->stash('builder');
     my $tokens  = $ctx->stash('tokens');
 
@@ -488,18 +518,36 @@ sub _hdlr_sub_categories {
     #   sort_method ::= method name (e.g. package::method)
     #
     # sort_method takes precedence
-    my $sort_order = $args->{sort_order} || 'ascend';
+    my $sort_order  = $args->{sort_order} || 'ascend';
+    my $sort_by     = $args->{sort_by};
     my $sort_method = $args->{sort_method};
+
+    return $ctx->error( MT->translate(
+        'Can\'t use sort_by and sort_method together in [_1]',
+        $ctx->stash('tag'),
+    )) if ( $sort_method && $sort_by );
+    my $custom_order;
+    if ( $sort_by eq 'user_custom' ) {
+        undef $sort_by;
+        $custom_order = 1;
+    }
+    $sort_by = 'label' unless $class->has_column($sort_by);
+    $sort_by ||= 'label';
 
     # Store the tokens for recursion
     $ctx->stash('subCatTokens', $tokens);
-  
     my $current_cat;
     my @cats;
-  
     if ($args->{top}) {
-        @cats = $class->top_level_categories($ctx->stash('blog_id'));
-    } else {
+        @cats = $class->load({
+            blog_id => $ctx->stash('blog_id'),
+            parent  => '0'
+        }, {
+            'sort'    => $sort_by,
+            direction => $sort_order,
+        });
+    }
+    else {
         # Use explicit category or category context
         if ($args->{category}) {
             # user specified category; list from this category down
@@ -518,19 +566,31 @@ sub _hdlr_sub_categories {
         }
     }
     return '' unless @cats;
-  
-    my $cats = _sort_cats($ctx, $sort_method, $sort_order, \@cats)
-        or return $ctx->error($ctx->errstr);
- 
+
+    my $cats;
+    if ( $sort_method ) {
+        $cats = _sort_cats($ctx, $sort_method, $sort_order, \@cats)
+            or return $ctx->error($ctx->errstr);
+    }
+    elsif ( $custom_order ) {
+        my $blog = $ctx->stash('blog');
+        my $meta = $class_type . '_order';
+        my $text = $blog->$meta || '';
+        @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
+    }
+    else {
+        $cats = \@cats;
+    }
+
     # Init variables
     my $count = 0;
     my $res = '';
 
     # Be sure the regular MT tags know we're in a category context
     local $ctx->{inside_mt_categories} = 1;
-
-    local $ctx->{__stash}{'subCatsSortOrder'} = $sort_order;
-    local $ctx->{__stash}{'subCatsSortMethod'} = $sort_method;
+    local $ctx->{__stash}{'subCatsSortOrder'}   = $sort_order;
+    local $ctx->{__stash}{'subCatsSortMethod'}  = $sort_method;
+    local $ctx->{__stash}{'subCatsSortBy'}      = $custom_order ? 'user_custom' : $sort_by;
 
     # Loop through the immediate children (or the current cat,
     # depending on the arguments
@@ -1451,14 +1511,35 @@ sub _hdlr_sub_cats_recurse {
     my $depth = $ctx->stash('subCatsDepth') || 0;
 
     # Get the sorting info
-    my $sort_method = $ctx->stash('subCatsSortMethod');
-    my $sort_order  = $ctx->stash('subCatsSortOrder');
+    my $sort_method  = $ctx->stash('subCatsSortMethod');
+    my $sort_order   = $ctx->stash('subCatsSortOrder');
+    my $sort_by      = $ctx->stash('subCatsSortBy');
+    my $custom_order;
+    if ( $sort_by eq 'user_custom' ) {
+        undef $sort_by;
+        $custom_order = 1;
+    }
+    $sort_by = 'label' unless $class->has_column($sort_by);
+    $sort_by ||= 'label';
 
     # If we're too deep, return an emtry string because we're done
     return '' if ($max_depth && $depth >= $max_depth);
- 
-    my $cats = _sort_cats($ctx, $sort_method, $sort_order, [ $cat->children_categories ])
-        or return $ctx->error($ctx->errstr);
+
+    my @cats = $cat->children_categories;
+    my $cats;
+    if ( $sort_method ) {
+        $cats = _sort_cats($ctx, $sort_method, $sort_order, \@cats)
+            or return $ctx->error($ctx->errstr);
+    }
+    elsif ( $custom_order ) {
+        my $blog = $ctx->stash('blog');
+        my $meta = $class_type . '_order';
+        my $text = $blog->$meta || '';
+        @$cats = MT::Category::_sort_by_id_list( $text, \@cats );
+    }
+    else {
+        $cats = [ sort { $a->$sort_by cmp $b->$sort_by } @cats ];
+    }
 
     # Init variables
     my $count = 0;

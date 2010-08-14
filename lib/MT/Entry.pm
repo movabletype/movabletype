@@ -202,6 +202,286 @@ sub container_label {
     MT->translate("Category");
 }
 
+sub list_props {
+    return {
+        text => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Body',
+        },
+        text_more => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Extended',
+        },
+        title => {
+            auto  => 1,
+            label => 'Title',
+            display => 'force',
+            order => 100,
+            sub_fields => [
+                {
+                    id    => 'status',
+                    label => 'Status',
+                },
+                {
+                    id    => 'link',
+                    label => 'Link',
+                },
+                {
+                    id    => 'excerpt',
+                    label => 'Excerpt',
+                },
+            ],
+            html => sub {
+                my ( $prop, $obj ) = @_;
+                my $title = $obj->title;
+                my $id    = $obj->id;
+                # FIXME: mt:entryPermalink dies in system context.
+                # return qq{<a href="<mt:var name="script_url">?__mode=view&_type=entry&blog_id=<mt:entryblogid>&id=<mt:entryid>"><mt:entryTitle></a> [<a href="<mt:entryPermalink>">>></a>]};
+                return $obj->title;
+            },
+        },
+        authored_on => {
+            auto      => 1,
+            label     => 'Authored on',
+        },
+        status => {
+            label => 'Status',
+            col  => 'status',
+            display => 'none',
+            base => '__common.single_select',
+            single_select_options => [
+                { label => 'Draft',     value => 1, },
+                { label => 'Published', value => 2, },
+                { label => 'Reviewing', value => 3, },
+                { label => 'Future',    value => 4, },
+                { label => 'Junk',      value => 5, },
+            ],
+        },
+        created_on => {
+            base => '__common.created_on',
+            display   => 'default',
+            order => 600,
+        },
+        basename => {
+            label => 'Basename',
+            auto  => 1,
+        },
+        comment_count => {
+            base  => '__common.single_select',
+            col   => 'comment_count',
+            label => 'Comments',
+            default_sort_order => 'descend',
+            terms => sub {
+                my ( $prop, $args ) = @_;
+                my $col = $prop->col;
+                if ( $args->{value} ) {
+                    return { $col => { '>' => 0 }};
+                }
+                else {
+                    return { $col => 0 };
+                }
+            },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = $prop->col;
+            },
+            single_select_options => [
+                { label => 'Has comments', value => 1 },
+                { label => 'No comments', value => 0 },
+            ],
+        },
+        ping_count => {
+            base  => 'entry.comment_count',
+            col   => 'ping_count',
+            label => 'Trackbacks',
+        },
+        commented_on => {
+            base          => '__common.date',
+            label         => 'Commented on',
+            comment_class => 'comment',
+            display       => 'none',
+            terms => sub {
+                my $prop   = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $option = $args->{option};
+                my $query;
+                my $blog = MT->app ? MT->app->blog : undef;
+                require MT::Util;
+                my $now = MT::Util::epoch2ts( $blog, time() );
+                if ( 'range' eq $option ) {
+                    $query = [
+                        '-and',
+                        { op => '>', value => $args->{from} },
+                        { op => '<', value => $args->{to}   },
+                    ];
+                }
+                elsif ('days' eq $option ) {
+                    my $days   = $args->{days};
+                    my $origin = MT::Util::epoch2ts( $blog, time - $days * 60 * 60 * 24 );
+                    $query = [
+                        '-and',
+                        { op => '>', value => $origin },
+                        { op => '<', value => $now    },
+                    ];
+                }
+                elsif ('before' eq $option ) {
+                    $query = { op => '<', value => $args->{origin} };
+                }
+                elsif ('after' eq $option ) {
+                    $query = { op => '>', value => $args->{origin} };
+                }
+                elsif ('future' eq $option ) {
+                    $query = { op => '>', value => $now };
+                }
+                elsif ('past' eq $option ) {
+                    $query = { op => '<', value => $now };
+                }
+                my $orig_join = $db_args->{join};
+                $db_args->{join} = MT->model( $prop->comment_class )->join_on(
+                    undef,
+                    { entry_id => \'= entry_id', created_on => $query },
+                    ( $orig_join ? { join => $orig_join } : () ),
+                );
+                return;
+            },
+            sort => 0,
+        },
+        tag => {
+            base => '__common.string',
+            label => 'Tag',
+            display => 'none',
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $base_terms, $base_args ) = @_;
+                my $option = $args->{option};
+                my $query  = $args->{string};
+                if ( 'contains' eq $option ) {
+                    $query = { like => "%$query%" };
+                }
+                elsif ( 'not_contains' eq $option ) {
+                    $query = { not_like => "%$query%" };
+                }
+                elsif ( 'beginning' eq $option ) {
+                    $query = { like => "$query%" };
+                }
+                elsif ( 'end' eq $option ) {
+                    $query = { like => "%$query" };
+                }
+
+                ## FIXME: use join...
+                my $ds       = $prop->object_type;
+                my @tags     = MT->model('tag')->load({ name => $query }, { fetchonly => { id => 1 } });
+                my @object_tags = MT->model('objecttag')->load({
+                    object_datasource => $ds,
+                    tag_id            => [ map { $_->id } @tags ],
+                    }, {
+                    fetchonly => { object_id => 1 },
+                });
+                return { id => [ map { $_->object_id } @object_tags ] };
+            },
+
+        },
+        primary_category => {
+            label => 'Primary Category',
+            order => 400,
+            display   => 'default',
+            base  => '__common.single_select',
+            view_filter => 'blog',
+            category_class => 'category',
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                my @entry_ids  = map { $_->id } @$objs;
+                my @placements = MT->model('placement')->load({
+                    entry_id   => \@entry_ids,
+                    is_primary => 1, }, {
+                    fetchonly => {
+                        entry_id    => 1,
+                        category_id => 1,
+                }});
+                my %placements = map { $_->entry_id => $_->category_id } @placements;
+                my @cat_ids    = map { $_->category_id } @placements;
+                my @categories = MT->model($prop->category_class)->load({ id => \@cat_ids }, {
+                    fetchonly => {
+                        id    => 1,
+                        label => 1,
+                }});
+                my %categories = map { $_->id => $_->label } @categories;
+                return map { $categories{  $placements{$_->id} } } @$objs;
+            },
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                my $cat = $obj->category;
+                return $cat ? $cat->label : '';
+            },
+            condition => sub {
+                                        my $app = MT->app or return;
+                        return !$app->blog         ? 0
+                             : $app->blog->is_blog ? 1
+                             :                       0
+                             ;
+
+            },
+            single_select_options => sub {
+                my ( $prop ) = shift;
+                my $blog = MT->app->blog;
+                my @categories = MT->model($prop->category_class)->load({
+                    blog_id => $blog->id,
+                });
+                return [ map {{
+                    label => $_->label,
+                    value => $_->id,
+                }} @categories ];
+            },
+            terms => sub {
+                my ( $prop, $args ) = @_;
+                my $cat_id = $args->{value};
+                ## FIXME: use join...
+                my @placements = MT->model('placement')->load({ category_id => $cat_id, is_primary => 1 });
+                return { id => [ map { $_->entry_id } @placements ] };
+            },
+        },
+    };
+}
+
+sub system_filters {
+    return {
+        published => {
+            label => 'Published Entries',
+            items => [
+                { type => 'status', args => { value => '2' }, },
+            ],
+        },
+        draft => {
+            label => 'Unpublished Entries',
+            items => [
+                { type => 'status', args => { value => '1' }, },
+            ],
+        },
+        future => {
+            label => 'Scheduled Entries',
+            items => [
+                { type => 'status', args => { value => '4' }, },
+            ],
+        },
+        my_posts_on_this_context => {
+            label => 'My blog posts on this blog',
+            items => sub {
+                [ { type => 'current_user' }, { type => 'current_context' } ],
+            },
+        },
+        commented_in_last_7_days => {
+            label => 'Entries with comments in the last 7 days',
+            items => [
+                { type => 'commented_on', args => { option => 'days', days => 7 } }
+            ],
+        },
+    };
+}
+
 sub cache_key {
     my ( $entry_id, $key );
     if ( @_ == 3 ) {

@@ -31,12 +31,16 @@ core_js = mt-static/js/common/Core.js \
 
 main_css = mt-static/css/reset.css \
 	mt-static/css/structure.css \
+	mt-static/css/form.css \
+	mt-static/css/listing.css \
 	mt-static/css/messaging.css \
-	mt-static/css/utilities.css
+	mt-static/css/utilities.css \
+	mt-static/css/icons.css
 
 simple_css = mt-static/css/reset.css \
 	mt-static/css/messaging.css \
 	mt-static/css/chromeless.css \
+	mt-static/css/form.css \
 	mt-static/css/utilities.css
 
 all: code

@@ -1,0 +1,11 @@
+<mt:setvarblock name="button_actions">
+  <a href="#approve_item" class="button"><__trans phrase="Publish"></a>
+  <a href="#delete" class="button"><__trans phrase="Delete"></a>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+var messages = {};
+messages['approve_item'] = '<__trans phrase="publish" escape="js">';
+messages['delete'] = '<__trans phrase="remove" escape="js">';
+</mt:setvarblock>
+

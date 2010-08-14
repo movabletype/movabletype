@@ -1,0 +1,180 @@
+/* - Icon */
+/* Icon Links ---------------------------------------------------------------------------------- */
+
+.icon-left {
+    padding-left: 11px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.icon-right {
+    padding-right: 11px;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.icon-left-wide {
+    padding-left: 15px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+.icon-right-wide {
+    padding-right: 15px;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.icon-left-xwide {
+    padding-left: 20px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+.icon-right-xwide {
+    padding-right: 20px;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.addnew { 
+    background-image: url(../images/status_icons/create.gif);
+}
+
+.icon-batch { background-image: url('../images/status_icons/batch.gif'); }
+.icon-feed { background-image: url('../images/status_icons/feed.gif'); }
+.icon-download { background-image: url('../images/status_icons/download.gif'); }
+.icon-feed-disabled { background-image: url('../images/status_icons/feed-disabled.gif'); }
+.icon-move { background-image: url('../images/status_icons/move.gif'); }
+.icon-create { background-image: url('../images/status_icons/create.gif'); }
+.icon-create-disabled { background-image: url('../images/status_icons/create-disabled.gif'); }
+.icon-error { background-image: url('../images/status_icons/error.gif'); }
+.icon-success { background-image: url('../images/status_icons/success.gif'); }
+.icon-neutral { background-image: url('../images/status_icons/neutral.gif'); }
+.icon-warning { background-image: url('../images/status_icons/warning.gif'); }
+.icon-trusted { background-image: url('../images/status_icons/trusted.gif'); }
+.icon-banned { background-image: url('../images/status_icons/banned.gif'); }
+.icon-authenticated { background-image: url('../images/status_icons/authenticated.gif'); }
+.icon-related { background-image: url('../images/status_icons/related.gif'); }
+.icon-publish { background-image: url('../images/status_icons/success.gif'); }
+.icon-draft { background-image: url('../images/status_icons/draft.gif'); }
+.icon-future { background-image: url('../images/status_icons/future.gif'); }
+.icon-pending { background-image: url('../images/status_icons/warning.gif'); }
+.icon-share { background-image: url('../images/status_icons/share.gif');}
+.icon-spam { background-image: url('../images/status_icons/warning.gif'); }
+
+.edit-entry .stats-widget .icon-success { background-image: url('../images/status_icons/success-k.gif'); }
+.edit-entry .stats-widget .icon-view { background-image: url('../images/status_icons/view-k.gif'); }
+.edit-entry .stats-widget .icon-draft { background-image: url('../images/status_icons/draft-k.gif'); }
+.edit-entry .stats-widget .icon-future { background-image: url('../images/status_icons/future-k.gif'); }
+.edit-entry .stats-widget .icon-pending { background-image: url('../images/status_icons/warning-k.gif'); }
+.edit-entry .stats-widget .icon-spam { background-image: url('../images/status_icons/warning-k.gif'); }
+
+.icon-plugins { background-image: url('../images/nav_icons/color/plugins.gif'); }
+.icon-search { background-image: url('../images/nav_icons/color/search.gif'); }
+.icon-trackbacks { background-image: url('../images/nav_icons/color/trackbacks.gif'); }
+.icon-comments { background-image: url('../images/nav_icons/color/comments.gif'); }
+.icon-log { background-image: url('../images/nav_icons/color/log.gif'); }
+.icon-import { background-image: url('../images/nav_icons/color/import.gif'); }
+.icon-settings { background-image: url('../images/nav_icons/color/settings.gif'); }
+.icon-entry { background-image: url('../images/nav_icons/color/entry.gif'); }
+.icon-page { background-image: url('../images/nav_icons/color/page.gif'); }
+
+.icon-user { background-image: url('../images/nav_icons/color/user.gif'); }
+.icon-group { background-image: url('../images/nav_icons/color/group.gif'); }
+
+.icon-align { background-position: left top; }
+.icon-align-none { background-image: url('../images/align_none.gif'); }
+.icon-align-left { background-image: url('../images/align_left.gif'); }
+.icon-align-center { background-image: url('../images/align_center.gif'); }
+.icon-align-right { background-image: url('../images/align_right.gif'); }
+
+.icon-plugin-action {
+    background-image: url('../images/plugin-bullet.gif');
+    padding-left: 20px;
+    background-position: 0 .2em;
+}
+
+.icon-action {
+    background-image: url('../images/action-bullet.gif');
+    padding-left: 20px;
+    background-position: 0 .2em;
+}
+
+.icon-mini-left {
+    padding-left: 13px;
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.icon-mini-right {
+    padding-right: 13px;
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.icon-mini-view-site    { background-image: url('../images/nav_icons/mini/view-site.gif'); }
+.icon-mini-settings     { background-image: url('../images/nav_icons/mini/settings.gif'); }
+.icon-mini-delete       { background-image: url('../images/nav_icons/mini/delete.gif'); }
+.icon-mini-rebuild      { background-image: url('../images/nav_icons/mini/rebuild.gif'); }
+.icon-mini-dashboard    { background-image: url('../images/nav_icons/mini/dashboard.gif'); }
+
+.icon-mini-templates    { background-image: url('../images/nav_icons/mini/templates.gif'); }
+.icon-mini-comments     { background-image: url('../images/nav_icons/mini/comments.gif'); }
+.icon-mini-docs         { background-image: url('../images/nav_icons/mini/docs.gif'); }
+.icon-mini-trackbacks   { background-image: url('../images/nav_icons/mini/trackbacks.gif'); }
+
+.icon-mini-entries      { background-image: url('../images/nav_icons/mini/entries.gif'); }
+.icon-mini-new-entry    { background-image: url('../images/nav_icons/mini/entry-new.gif'); }
+
+.icon-mini-pages        { background-image: url('../images/nav_icons/mini/pages.gif'); }
+.icon-mini-new-page     { background-image: url('../images/nav_icons/mini/page-new.gif'); }
+
+.icon-mini-assets       { background-image: url('../images/nav_icons/mini/assets.png'); }
+.icon-mini-new-asset    { background-image: url('../images/nav_icons/mini/asset-new.gif'); }
+
+.icon-mini-delete span { display: none; }
+
+.listing .status-publish img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-draft img { background-image: url(../images/status_icons/draft.gif); }
+.listing .status-future img { background-image: url(../images/status_icons/future.gif); }
+.listing .status-pending img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-spam img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-review img { background-image: url(../images/status_icons/warning.gif); }
+.listing .status-trusted img { background-image: url(../images/status_icons/trusted.gif); }
+.listing .status-banned img { background-image: url(../images/status_icons/banned.gif); }
+.listing .status-authenticated img { background-image: url(../images/status_icons/authenticated.gif); }
+.listing .user-status-enabled img { background-image: url(../images/status_icons/user-enabled.gif); }
+.listing .user-status-disabled img { background-image: url(../images/status_icons/user-disabled.gif); }
+.listing .user-status-pending img { background-image: url(../images/status_icons/user-pending.gif); }
+.listing .group-status-enabled img { background-image: url(../images/status_icons/group-enabled.gif); }
+.listing .group-status-disabled img { background-image: url(../images/status_icons/group-disabled.gif); }
+.listing .role-status-active img { background-image: url(../images/status_icons/role-active.gif); }
+.listing .role-status-inactive img { background-image: url(../images/status_icons/role-inactive.gif); }
+.listing .status-email img { background-image: url(../images/status_icons/email.gif); }
+.listing .status-link img { background-image: url(../images/status_icons/link.gif); }
+.listing .status-view img { background-image: url(../images/status_icons/view.gif); }
+.listing .status-unlinked img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-linked img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-uncached img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-cached img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-dynamic img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-static img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-rebuild img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-norebuild img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-enabled img { background-image: url(../images/status_icons/success.gif); }
+.listing .status-disabled img { background-image: url(../images/status_icons/neutral.gif); }
+.listing .status-missing img { background-image: url(../images/status_icons/warning.gif); }
+
+.asset-icon-doc { background-image: url(../images/filetype_icons/doc_lg.gif); }
+.asset-icon-eps { background-image: url(../images/filetype_icons/eps_lg.gif); }
+.asset-icon-fla { background-image: url(../images/filetype_icons/fla_lg.gif); }
+.asset-icon-gif { background-image: url(../images/filetype_icons/gif_lg.gif); }
+.asset-icon-jpg { background-image: url(../images/filetype_icons/jpg_lg.gif); }
+.asset-icon-mp3 { background-image: url(../images/filetype_icons/mp3_lg.gif); }
+.asset-icon-mpg { background-image: url(../images/filetype_icons/mpeg_lg.gif); }
+.asset-icon-pdf { background-image: url(../images/filetype_icons/pdf_lg.gif); }
+.asset-icon-png { background-image: url(../images/filetype_icons/gif_lg.gif); }
+.asset-icon-ppt { background-image: url(../images/filetype_icons/ppt_lg.gif); }
+.asset-icon-psd { background-image: url(../images/filetype_icons/psd_lg.gif); }
+.asset-icon-txt { background-image: url(../images/filetype_icons/txt_lg.gif); }
+.asset-icon-xls { background-image: url(../images/filetype_icons/xls_lg.gif); }
+.asset-icon-zip { background-image: url(../images/filetype_icons/zip_lg.gif); }

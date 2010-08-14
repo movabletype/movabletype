@@ -23,6 +23,29 @@ sub class_label_plural {
     MT->translate("Folders");
 }
 
+sub contents_label {
+    MT->translate("Page");
+}
+
+sub contents_label_plural {
+    MT->translate("Pages");
+}
+
+sub list_props {
+    return {
+        parent => {
+            base => 'category.parent',
+        },
+        entry_count => {
+            base => 'category.entry_count',
+        },
+        custom_sort => {
+            class => 'folder',
+            base => 'category.custom_sort',
+        },
+    };
+}
+
 sub basename_prefix {
     "folder";
 }

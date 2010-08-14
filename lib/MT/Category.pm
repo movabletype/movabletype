@@ -50,12 +50,52 @@ __PACKAGE__->install_properties({
     primary_key => 'id',
 });
 
+sub list_props {
+    return {
+        parent => {
+            auto  => 1,
+            label => 'Parent',
+        },
+        entry_count => {
+            base    => '__common.integer',
+            label => 'Entry count',
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                return MT->model('placement')->count({ category_id => $obj->id });
+            },
+        },
+        custom_sort => {
+            class => 'category',
+            bulk_sort => sub {
+                my ( $prop, $objs ) = @_;
+                require MT::Category;
+                require MT::Blog;
+                my $rep  = $objs->[0] or return;
+                my $blog = MT::Blog->load({ id => $rep->blog_id }, { no_class => 1 });
+                my $meta = $prop->class . '_order';
+                my $text = $blog->$meta || '';
+                my @cats = _sort_by_id_list( $text, $objs );
+                @cats = grep { ref $_ } MT::Category::_flattened_category_hierarchy( \@cats );
+                return @cats;
+            },
+        },
+    };
+}
+
 sub class_label {
     MT->translate("Category");
 }
 
 sub class_label_plural {
     MT->translate("Categories");
+}
+
+sub contents_label {
+    MT->translate("Entry");
+}
+
+sub contents_label_plural {
+    MT->translate("Entries");
 }
 
 sub basename_prefix {
@@ -262,71 +302,91 @@ sub _flattened_category_hierarchy {
     my @cats = ();
     my @flattened_cats = ();
 
-    if (!ref ($cat)) {
-        # If it is the class name (i.e. called "statically")
-        # Grab the blog_id from the parameters list and get the top level categories
-        my $blog_id = shift or return ();
+    # the starting point is the category instance
+    if ( ref $cat && UNIVERSAL::isa($cat, 'MT::Category') ) {
+        @cats = ($cat);
 
-        my @cats = $class->load({ blog_id => $blog_id }, { 'sort' => 'label' });
-        my $children = {};
-        foreach my $cat (@cats) {
-            if ($cat->parent) {
-                my $list = $children->{$cat->parent} ||= [];
-                push @$list, $cat;
-            }
-        }
-        sub __pusher {
-            my ($children, $id) = @_;
-            my $list = $children->{$id};
-            return () unless $list && @$list;
-            my @flat;
-            push @flat, 'BEGIN_SUBCATS';
-            foreach (@$list) {
-                push @flat, $_;
-                if ($children->{$_->id}) {
-                    push @flat, __pusher($children, $_->id);
+        # Depth-first search time
+        foreach my $c (@cats) {
+            # Push the current category onto the list
+            push @flattened_cats, $c;
+
+            # If it has any children
+            my @children = $c->children_categories;
+            if (scalar @children) {
+
+                # Indicate the start of the children
+
+                push @flattened_cats, "BEGIN_SUBCATS";
+
+                # Add all the kids (and their associated subcategories)
+                foreach my $kid (@children) {
+                    push @flattened_cats, ($kid->_flattened_category_hierarchy);
                 }
-            }
-            push @flat, 'END_SUBCATS';
-            @flat;
-        }
-        foreach my $cat (@cats) {
-            if (!$cat->parent) {
-                push @flattened_cats, $cat;
-                push @flattened_cats, __pusher($children, $cat->id)
-                        if $children->{$cat->id};
+
+                # Indicate the end of the children
+                push @flattened_cats, "END_SUBCATS";
             }
         }
         return @flattened_cats;
     }
 
-    # Otherwise, the starting point is the category itself
-    @cats = ($cat);
 
-    # Depth-first search time
-    foreach my $c (@cats) {
-        # Push the current category onto the list
-        push @flattened_cats, $c;
+    if (!ref ($cat)) {
+        # If it is the class name (i.e. called "statically")
+        # Grab the blog_id from the parameters list and get the top level categories
+        my $blog_id = shift or return ();
 
-        # If it has any children
-        my @children = $c->children_categories;
-        if (scalar @children) {
-
-            # Indicate the start of the children
-      
-            push @flattened_cats, "BEGIN_SUBCATS";
-
-            # Add all the kids (and their associated subcategories)
-            foreach my $kid (@children) {
-                push @flattened_cats, ($kid->_flattened_category_hierarchy);
-            }
-
-            # Indicate the end of the children
-            push @flattened_cats, "END_SUBCATS";
-        }
+        @cats = $class->load({ blog_id => $blog_id }, { 'sort' => 'label' });
+    }
+    else {
+        @cats = @$cat;
     }
 
-    @flattened_cats;
+    my $children = {};
+    foreach my $cat (@cats) {
+        if ($cat->parent) {
+            my $list = $children->{$cat->parent} ||= [];
+            push @$list, $cat;
+        }
+    }
+    sub __pusher {
+        my ($children, $id) = @_;
+        my $list = $children->{$id};
+        return () unless $list && @$list;
+        my @flat;
+        push @flat, 'BEGIN_SUBCATS';
+        foreach (@$list) {
+            push @flat, $_;
+            if ($children->{$_->id}) {
+                push @flat, __pusher($children, $_->id);
+            }
+        }
+        push @flat, 'END_SUBCATS';
+        @flat;
+    }
+    foreach my $cat (@cats) {
+        if (!$cat->parent) {
+            push @flattened_cats, $cat;
+            push @flattened_cats, __pusher($children, $cat->id)
+                    if $children->{$cat->id};
+        }
+    }
+    return @flattened_cats;
+}
+
+sub _sort_by_id_list {
+    my ( $text, $objs ) = @_;
+    my @ids = split ',', $text;
+    my %id_map = map { $_->id => $_ } @$objs;
+    my @objs;
+    for my $id ( @ids ) {
+        push @objs, delete $id_map{$id} if $id_map{$id};
+    }
+    if ( scalar %id_map ) {
+        push @objs, sort { $a->label cmp $b->label } values %id_map;
+    }
+    @objs;
 }
 
 # Deprecated routine -- also assumes MT::Category class, so it won't

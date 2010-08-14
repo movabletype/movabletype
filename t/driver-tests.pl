@@ -95,7 +95,7 @@ sub reset_db : Test(setup) {
     }
 }
 
-sub count_group_by : Tests(26) {
+sub count_group_by : Tests(34) {
     # legacy way of specifying sort direction
     my $cgb_iter = Bar->count_group_by({
             status => '0',
@@ -153,6 +153,20 @@ sub count_group_by : Tests(26) {
     is(int($month), int(strftime("%m", localtime)), 'month');
     is($count, 3, 'count6');
     ok(!$cgb_iter4->(), 'no $iter');
+
+    # Sort by count
+    my $cgb_iter5 = Bar->count_group_by(undef, {
+        group => [ 'foo_id' ],
+        sort  => 'cnt',
+    });
+    isa_ok($cgb_iter5, 'CODE');
+    ok(($count, $bfid) = $cgb_iter5->(), 'set');
+    is($bfid, 1, 'id-7');
+    is($count, 1, 'count-7');
+    ok(($count, $bfid) = $cgb_iter5->(), 'set');
+    is($bfid, 2, 'id-8');
+    is($count, 2, 'count-8');
+    ok(!$cgb_iter2->(), 'no $iter');
 }
 
 sub sum_group_by : Tests(7) {
@@ -479,7 +493,7 @@ sub alias : Tests(2) {
     is_deeply(\@a_foos, [], 'No Foo has Bars with status=2 and status=0 (alias)');
 }
 
-sub conjunctions : Tests(4) {
+sub conjunctions : Tests(5) {
     my $self = shift;
     $self->make_pc_data();
     my @foos = map { Foo->load($_) } (1..5);  # not a search
@@ -514,6 +528,23 @@ sub conjunctions : Tests(4) {
     # where (foo_status = 10) or (foo_name = 'Apple') or (foo_name like '%nux')
     # (selects Apple+MacBook, Apple+iBook, Microsoft+XP, Linux+Ubuntu)
     are_objects(\@res, [ @foos[0,1,3,4] ], 'big -or results');
+
+    @res = Foo->load(
+        [
+            [
+                { status => 10 },
+                -or  => { status => 12 },
+            ],
+            -and => [
+                { name => { like => '%nux' } },
+                -or => { name => 'Apple' },
+            ],
+        ]
+    );
+    @res = sort { $a->id <=> $b->id } @res;
+    # where ((foo_status = 10) or (foo_status = 12)) and ((foo_name like '%nux') or (foo_name = 'Apple'))
+    # (selects Apple+iBook, Linux+Ubuntu)
+    are_objects(\@res, [ @foos[1,4] ], 'grouping -or, -and');
 }
 
 sub early_ending_iterators: Tests(4) {
@@ -600,6 +631,177 @@ sub sock_monkey_fish : Tests(8) {
     @socks = sort { ref($a) cmp ref($b) } @socks;
     is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
     is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_combined_terms : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load({
+        class => '*',
+        text => 'ABC',
+    });
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_no_class : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load({
+        text => 'ABC',
+    }, {
+        no_class => 1,
+    });
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_array_combined_terms : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load(
+        [
+            {
+                class => '*',
+            },
+            '-and',
+            {
+                text => 'ABC',
+            },
+        ]
+    );
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_array_no_class_terms : Tests(12) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    $fish = Sock::Fish->new();
+    $fish->text('GHI');
+    ok($fish->save(), 'A sock fish could be saved (2)');
+    is($fish->class, 'fish', q{A sock fish's class is fish (2)});
+
+    my @socks = Sock->load(
+        [
+            {
+                text => 'DEF',
+            },
+            '-or',
+            {
+                text => 'ABC',
+            },
+        ], {
+            no_class => 1,
+        },
+    );
+    is(scalar @socks, 3, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+    is(ref $socks[2], 'Sock::Monkey', 'The other discovered Sock is a monkey (2)');
+}
+
+sub sock_array_class_terms : Tests(12) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    $fish = Sock::Fish->new();
+    $fish->text('GHI');
+    ok($fish->save(), 'A sock fish could be saved (2)');
+    is($fish->class, 'fish', q{A sock fish's class is fish (2)});
+
+    my @socks = Sock->load(
+        [
+            {
+                class => [ [ qw( monkey fish ) ] ],
+            },
+            [
+                {
+                    text => 'DEF',
+                },
+                '-or',
+                {
+                    text => 'ABC',
+                },
+            ],
+        ]
+    );
+    is(scalar @socks, 3, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+    is(ref $socks[2], 'Sock::Monkey', 'The other discovered Sock is a monkey (2)');
 }
 
 sub clean_db : Test(teardown) {
