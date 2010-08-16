@@ -675,6 +675,7 @@ BEGIN {
             author   => '$Core::MT::Author::list_props',
             member   => '$Core::MT::Author::member_list_props',
             tag      => '$Core::MT::Tag::list_props',
+            banlist  => '$Core::MT::IPBanList::list_props',
         },
         system_filters => {
             entry => '$Core::MT::Entry::system_filters',
@@ -742,6 +743,14 @@ BEGIN {
             },
             tag => {
                 object_label => 'Tag',
+            },
+            banlist => {
+                object_label => 'IP Ban',
+                condition => sub {
+                    my $app = shift;
+                    return 1 if MT->config('ShowIPInformation');
+                    $app->errtrans('IP Banlist is disabled by system configuration.');
+                },
             },
         },
         summaries => {

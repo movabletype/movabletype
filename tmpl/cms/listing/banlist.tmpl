@@ -1,0 +1,96 @@
+<mt:setvar name="ip_info" value="1">
+
+<script type="text/javascript">
+/* <![CDATA[ */
+function setCreateMode () {
+    jQuery('#create-ip').hide();
+    jQuery('#create-inline-ipban').show();
+    jQuery('#actions-bar-top').hide();
+    jQuery('#ip-address').val('').focus();
+}
+
+function cancelCreateMode () {
+    jQuery('#create-ip').show();
+    jQuery('#create-inline-ipban').hide();
+    jQuery('#actions-bar-top').show();
+}
+/* ]]> */
+</script>
+
+<mt:setvarblock name="button_actions">
+  <a href="#delete" class="button">Delete</a>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+    <mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="error">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success">
+            <__trans phrase="You have added [_1] to your list of banned IP addresses." params="<mt:var name="saved" escape="html" escape="html">">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success">
+            <__trans phrase="You have successfully deleted the selected IP addresses from the list.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+
+
+<mt:if name="show_ip_info">
+<ul id="create-ip" class="action-link-list">
+    <li><a href="javascript:void(0)" onclick="setCreateMode()" class="icon-left icon-create"><__trans phrase="Ban IP Address"></a></li>
+</ul>
+
+<div id="create-inline-ipban" class="create-inline" style="display: none;">
+    <form id="create-inline-ipban-form" method="post" action="<mt:var name="script_url">">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="__mode" value="save" />
+        <input type="hidden" name="_type" value="banlist" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <mtapp:setting
+            id="ip-address"
+            label="<__trans phrase="IP Address">"
+            label_class="inline"
+            hint=""
+            show_hint="0">
+            <input type="text" name="ip" id="ip-address" value="<mt:var name="ip" escape="html">" maxlength="15" />
+            <button
+                type="submit"
+                class="small-button"
+                ><__trans phrase="Save"></button> 
+            <button
+                type="button"
+                class="small-button mt-cancel-action"
+               ><__trans phrase="Cancel"></button> 
+        </mtapp:setting>
+    </form>
+</div>
+</mt:if>
+
+<mt:setvarblock name="jq_js_include" append="1">
+
+jQuery('#create-inline-ipban-form button.mt-do-action').click(function() {
+    jQuery('#create-inline-ipban-form').submit();
+});
+
+jQuery('#create-inline-ipban-form button.mt-cancel-action').click(function() {
+    cancelCreateMode();
+    return false;
+});
+
+var messages = {};
+messages['delete'] = '<__trans phrase="remove" escape="js">';
+</mt:setvarblock>

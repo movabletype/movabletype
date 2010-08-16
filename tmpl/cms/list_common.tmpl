@@ -834,8 +834,14 @@ function doForMarked(formid, mode, singlar, plural, phrase) {
       return;
     }
 
-    var $selected = $form.find('option:selected');
-    var action = $selected.val();
+    var action;
+    if ( mode == 'itemset_action' ) {
+        var $selected = $form.find('option:selected');
+        action = $selected.val();
+    }
+    else {
+        action = mode;
+    }
     if (action == '') {
       alert(trans('You must select an action.'));
       return;

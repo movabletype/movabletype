@@ -38,6 +38,12 @@ sub ban_ip {
     $class->set_by_key({ip => $ip, blog_id => $blog_id});
 }
 
+sub list_props {
+    return {
+        ip => 'IP Address',
+    };
+}
+
 1;
 __END__
 
