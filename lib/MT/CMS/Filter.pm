@@ -124,6 +124,12 @@ sub system_filter {
     my ( $app, $type, $sys_id ) = @_;
     my $sys_filter = MT->registry( system_filters => $type => $sys_id )
         or return;
+
+    if ( my $cond = $sys_filter->{condition} ) {
+        $cond = MT->handler_to_coderef($cond);
+        return unless $cond->();
+    }
+
     my $hash = {
         id         => $sys_id,
         label      => $sys_filter->{label},
@@ -144,6 +150,10 @@ sub legacy_filter {
         = MT->registry(
         applications => cms => list_filters => $type => $legacy_id )
         or return;
+    if ( my $cond = $legacy_filter->{condition} ) {
+        $cond = MT->handler_to_coderef($cond);
+        return unless $cond->();
+    }
     my $label = $legacy_filter->{label};
     $label = $label->() if 'CODE' eq ref $label;
     my $hash = {
@@ -180,7 +190,10 @@ sub filters {
     my @sys_filters;
     my $sys_filters = MT->registry( system_filters => $type );
     for my $sys_id ( keys %$sys_filters ) {
-        push @sys_filters, system_filter( $app, $type, $sys_id );
+        next if $sys_id =~ /^_/;
+        my $sys_filter = system_filter( $app, $type, $sys_id )
+            or next;
+        push @sys_filters, $sys_filter;
     }
 
     #FIXME: Is this always right path to get it?
@@ -189,7 +202,9 @@ sub filters {
         = MT->registry( applications => cms => list_filters => $type );
     for my $legacy_id ( keys %$legacy_filters ) {
         next if $legacy_id =~ /^_/;
-        push @legacy_filters, legacy_filter( $app, $type, $legacy_id );
+        my $legacy_filter = legacy_filter( $app, $type, $legacy_id )
+            or next;
+        push @legacy_filters, $legacy_filter;
     }
 
     my @filters = ( @user_filters, @sys_filters, @legacy_filters );

@@ -384,15 +384,25 @@ BEGIN {
                     label_via_param => sub {
                         my $prop = shift;
                         my ( $app ) = @_;
+                        require MT::Util;
                         my $val = $app->param('filter_val');
                         my ($mode, $from, $to);
                         if ( $val =~ m/\-/ ) {
                             my ( $from, $to ) = split /-/, $val;
                             $from = undef unless $from =~ m/^\d{8}$/;
                             $to = undef unless $to =~ m/^\d{8}$/;
+                            my $format = '%x';
+                            $from = MT::Util::format_ts(
+                                $format, $from . '000000',
+                                undef,   MT->current_language
+                            ) if $from;
+                            $to = MT::Util::format_ts(
+                                $format, $to . '000000',
+                                undef,   MT->current_language
+                            ) if $to;
                             if ( $from && $to ) {
                                 return MT->translate(
-                                    '[_1] [_2] from [_3] to [_4]',
+                                    '[_1] [_2] between [_3] and [_4]',
                                     $prop->datasource->class_label_plural,
                                     $prop->label,
                                     $from,
@@ -401,7 +411,7 @@ BEGIN {
                             }
                             elsif ( $from ) {
                                 return MT->translate(
-                                    '[_1] [_2] after [_3]',
+                                    '[_1] [_2] since [_3]',
                                     $prop->datasource->class_label_plural,
                                     $prop->label,
                                     $from,
@@ -409,7 +419,7 @@ BEGIN {
                             }
                             else {
                                 return MT->translate(
-                                    '[_1] [_2] before [_3]',
+                                    '[_1] [_2] or before [_3]',
                                     $prop->datasource->class_label_plural,
                                     $prop->label,
                                     $to,
@@ -418,7 +428,7 @@ BEGIN {
                         }
                         elsif ( $val =~ m/(\d+)days/i ) {
                             return MT->translate(
-                                '[_1] [_2] in [_3] days',
+                                '[_1] [_2] these [_3] days',
                                 $prop->datasource->class_label_plural,
                                 $prop->label,
                                 $1,
@@ -426,14 +436,14 @@ BEGIN {
                         }
                         elsif ( $val eq 'future' ) {
                             return MT->translate(
-                                '[_1] [_2] in futere',
+                                '[_1] [_2] futere',
                                 $prop->datasource->class_label_plural,
                                 $prop->label,
                             );
                         }
                         elsif ( $val eq 'past' ) {
                             return MT->translate(
-                                '[_1] [_2] in past',
+                                '[_1] [_2] past',
                                 $prop->datasource->class_label_plural,
                                 $prop->label,
                             );
