@@ -745,6 +745,7 @@ sub list {
     my $cols = $list_pref->{cols};
     $cols ||= { map { $_ => 1 } @{ $screen_settings->{columns} || [] } };
     my $last_filter = $list_pref->{last_filter} || '';
+    $last_filter = '' if $last_filter eq '_allpass';
     my $initial_sys_filter = $q->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
@@ -861,12 +862,12 @@ sub list {
 
     require MT::CMS::Filter;
     my @filters = MT::CMS::Filter::filters( $app, $type );
-    my $allpath_filter = {
+    my $allpass_filter = {
         label => MT->translate('(none)'),
         items => [],
     };
-    unshift @filters, $allpath_filter;
-    $initial_filter = $allpath_filter
+    unshift @filters, $allpass_filter;
+    $initial_filter = $allpass_filter
         unless $initial_filter;
 
     require JSON;
@@ -979,6 +980,7 @@ sub filtered_list {
     else {
         $filteritems = [];
     }
+    my $allpass = scalar @$filteritems ? 1 : 0;
 
     my $filter = MT->model('filter')->new;
     $filter->set_values({
@@ -1082,18 +1084,18 @@ sub filtered_list {
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
     $list_pref->{rows} = $limit;
     $list_pref->{cols} = \%cols;
-    $list_pref->{last_filter} = $filter_id if $filter_id;
+    $list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
     $app->user->list_prefs($list_prefs);
     ## FIXME: should handle errors..
     $app->user->save;
 
     require MT::CMS::Filter;
     my @filters = MT::CMS::Filter::filters( $app, $ds );
-    my $allpath_filter = {
+    my $allpass_filter = {
         label => MT->translate('(none)'),
         items => [],
     };
-    unshift @filters, $allpath_filter;
+    unshift @filters, $allpass_filter;
 
     require POSIX;
     my %res;
