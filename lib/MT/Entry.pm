@@ -250,6 +250,7 @@ sub list_props {
             label => 'Status',
             col  => 'status',
             display => 'none',
+            col_class => 'icon',
             base => '__common.single_select',
             single_select_options => [
                 { label => 'Draft',     value => 1, },
@@ -271,6 +272,7 @@ sub list_props {
         comment_count => {
             base  => '__common.single_select',
             col   => 'comment_count',
+            col_class => 'num',
             label => 'Comments',
             default_sort_order => 'descend',
             terms => sub {
@@ -354,6 +356,7 @@ sub list_props {
             order => 400,
             display   => 'default',
             base  => '__common.single_select',
+            col_class => 'string',
             view_filter => 'blog',
             category_class => 'category',
             bulk_html => sub {

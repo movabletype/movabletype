@@ -218,7 +218,7 @@ BEGIN {
                 string => {
                     base      => '__common.__virtual',
                     condition => sub {0},
-                    class     => 'string',
+                    col_class     => 'string',
                     #sort_method => sub {
                     #    my $prop = shift;
                     #    my ( $obj_a, $obj_b ) = @_;
@@ -266,7 +266,7 @@ BEGIN {
                 integer => {
                     base        => '__common.__virtual',
                     condition   => sub {0},
-                    class       => 'num',
+                    col_class       => 'num',
                     #sort_method => sub {
                     #    my $prop = shift;
                     #    my ( $obj_a, $obj_b ) = @_;
@@ -311,7 +311,7 @@ BEGIN {
                 float => {
                     base      => '__common.integer',
                     condition => sub {0},
-                    class     => 'num',
+                    col_class     => 'num',
                     html => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
@@ -321,7 +321,7 @@ BEGIN {
                 date => {
                     base        => '__common.__virtual',
                     condition   => sub {0},
-                    class       => 'date',
+                    col_class       => 'date',
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;

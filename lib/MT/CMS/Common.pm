@@ -819,6 +819,7 @@ sub list {
         id                 => $_->id,
         type               => $_->type,
         label              => $_->label,
+        col_class          => $_->col_class,
         sortable           => $_->sortable,
         display            => $_->display,
         force_display      => $_->force_display,

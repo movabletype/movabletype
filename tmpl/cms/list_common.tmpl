@@ -58,7 +58,7 @@
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
-      
+
       <div class="line actions-bar">
         <div class="unit size1of2">
           <mt:var name="button_actions">
@@ -155,7 +155,7 @@ jQuery('p#indicator')
 var line = '<th class="col head cb"><input type="checkbox" /></th>';
 var table = jQuery('table.listing')[0];
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if>"><a href="#<mt:var name="id">"><mt:var name="label"></a></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><a href="#<mt:var name="id">"><mt:var name="label"></a></th>';
 <mt:if name="default_sort_order">
 jQuery.data(table, '<mt:var name="id">', 'desc')
 <mt:else>
