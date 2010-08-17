@@ -349,41 +349,6 @@ sub list_props {
             },
             sort => 0,
         },
-        tag => {
-            base => '__common.string',
-            label => 'Tag',
-            display => 'none',
-            terms => sub {
-                my $prop = shift;
-                my ( $args, $base_terms, $base_args ) = @_;
-                my $option = $args->{option};
-                my $query  = $args->{string};
-                if ( 'contains' eq $option ) {
-                    $query = { like => "%$query%" };
-                }
-                elsif ( 'not_contains' eq $option ) {
-                    $query = { not_like => "%$query%" };
-                }
-                elsif ( 'beginning' eq $option ) {
-                    $query = { like => "$query%" };
-                }
-                elsif ( 'end' eq $option ) {
-                    $query = { like => "%$query" };
-                }
-
-                ## FIXME: use join...
-                my $ds       = $prop->object_type;
-                my @tags     = MT->model('tag')->load({ name => $query }, { fetchonly => { id => 1 } });
-                my @object_tags = MT->model('objecttag')->load({
-                    object_datasource => $ds,
-                    tag_id            => [ map { $_->id } @tags ],
-                    }, {
-                    fetchonly => { object_id => 1 },
-                });
-                return { id => [ map { $_->object_id } @object_tags ] };
-            },
-
-        },
         primary_category => {
             label => 'Primary Category',
             order => 400,

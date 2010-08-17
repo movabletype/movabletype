@@ -47,9 +47,11 @@ sub class_label_plural {
 sub list_props {
     return {
         name => 'Name',
-        entries => {
+        entry_count => {
             label => 'Entries',
+            base => '__common.integer',
             count_class => 'entry',
+            col => 'id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
@@ -58,6 +60,55 @@ sub list_props {
                     tag_id => $obj->id,
                     object_datasource => $prop->count_class,
                 });
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $option = $args->{option};
+                my $value  = $args->{value};
+                my $blog_id = MT->app->param('blog_id');
+                my $iter = MT->model('objecttag')->count_group_by({
+                    object_datasource => $prop->count_class,
+                    blog_id           => $blog_id,
+                }, {
+                    group => [ 'tag_id' ],
+                });
+                my @ids;
+                if ( $option eq 'equal' && $value == 0 ) {
+                    $option = 'equal_zero';
+                }
+                if ( $option eq 'not_equal' && $value == 0 ) {
+                    $option = 'not_equal_zero';
+                }
+                while ( my ( $count, $id ) = $iter->() ) {
+                    if ( 'equal' eq $option ) {
+                        push @ids, $id if $value == $count;
+                    }
+                    elsif ('not_equal' eq $option) {
+                        push @ids, $id if $value == $count;
+                    }
+                    elsif ('greater_than' eq $option) {
+                        push @ids, $id if $value < $count;
+                    }
+                    elsif ('greater_equal' eq $option) {
+                        push @ids, $id if $value <= $count;
+                    }
+                    elsif ('less_than' eq $option) {
+                        push @ids, $id if $value <= $count;
+                    }
+                    elsif ('less_equal' eq $option) {
+                        push @ids, $id if $value < $count;
+                    }
+                    else {
+                        push @ids, $id;
+                    }
+                }
+                if ( $option eq 'equal' || $option eq 'greater_than' || $option eq 'greater_equal' || $option eq 'not_equal_zero' ) {
+                    return { id => \@ids };
+                }
+                else {
+                    return { id => { "not" => \@ids } };
+                };
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -72,6 +123,16 @@ sub list_props {
                 );
             },
 
+        },
+        page_count => {
+            base => 'tag.entry_count',
+            label => 'Pages',
+            count_class => 'page',
+        },
+        asset_count => {
+            base => 'tag.entry_count',
+            label => 'Assets',
+            count_class => 'asset',
         },
     };
 }

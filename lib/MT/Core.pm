@@ -216,8 +216,9 @@ BEGIN {
                     grep  => \&MT::Filter::pack_grep,
                 },
                 string => {
-                    base        => '__common.__virtual',
-                    condition   => sub {0},
+                    base      => '__common.__virtual',
+                    condition => sub {0},
+                    class     => 'string',
                     #sort_method => sub {
                     #    my $prop = shift;
                     #    my ( $obj_a, $obj_b ) = @_;
@@ -265,6 +266,7 @@ BEGIN {
                 integer => {
                     base        => '__common.__virtual',
                     condition   => sub {0},
+                    class       => 'num',
                     #sort_method => sub {
                     #    my $prop = shift;
                     #    my ( $obj_a, $obj_b ) = @_;
@@ -307,8 +309,9 @@ BEGIN {
                     priority => 4,
                 },
                 float => {
-                    base => '__common.integer',
-                    condition   => sub {0},
+                    base      => '__common.integer',
+                    condition => sub {0},
+                    class     => 'num',
                     html => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->col;
@@ -318,6 +321,7 @@ BEGIN {
                 date => {
                     base        => '__common.__virtual',
                     condition   => sub {0},
+                    class       => 'date',
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
@@ -670,6 +674,44 @@ BEGIN {
                                 label => $_->nickname || $_->name,
                             }} @authors
                         ];
+                    },
+                },
+                tag => {
+                    base => '__common.string',
+                    label => 'Tag',
+                    display => 'none',
+                    condition => sub {
+                        my $prop = shift;
+                        my $ds   = $prop->datasource;
+                        return UNIVERSAL::isa( $ds, 'MT::Taggable' );
+                    },
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $base_terms, $base_args ) = @_;
+                        my $option = $args->{option};
+                        my $query  = $args->{string};
+                        if ( 'contains' eq $option ) {
+                            $query = { like => "%$query%" };
+                        }
+                        elsif ( 'not_contains' eq $option ) {
+                            $query = { not_like => "%$query%" };
+                        }
+                        elsif ( 'beginning' eq $option ) {
+                            $query = { like => "$query%" };
+                        }
+                        elsif ( 'end' eq $option ) {
+                            $query = { like => "%$query" };
+                        }
+                        ## FIXME: use join...
+                        my $ds       = $prop->object_type;
+                        my @tags     = MT->model('tag')->load({ name => $query }, { fetchonly => { id => 1 } });
+                        my @object_tags = MT->model('objecttag')->load({
+                            object_datasource => $ds,
+                            tag_id            => [ map { $_->id } @tags ],
+                            }, {
+                            fetchonly => { object_id => 1 },
+                        });
+                        return { id => [ map { $_->object_id } @object_tags ] };
                     },
                 },
             },
