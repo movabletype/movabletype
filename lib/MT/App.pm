@@ -2766,7 +2766,11 @@ sub run {
                     my $meth_info = $code;
                     $code = $meth_info->{code} || $meth_info->{handler};
 
-                    if ( my $set = $meth_info->{permission} ) {
+                    my $set = $meth_info->{permission} ||
+                        $meth_info->{permit_action} ||
+                        undef;
+
+                    if ( $set ) {
                         my $user    = $app->user;
                         my $perms   = $app->permissions;
                         my $blog    = $app->blog;
@@ -2775,15 +2779,12 @@ sub run {
                             my $admin = $user->is_superuser()
                                 || ( $blog
                                 && $perms
-                                && $perms->can_administer_blog() );
+                                && $perms->can_administer_blog());
                             my @p = split /,/, $set;
                             foreach my $p (@p) {
-                                my $perm = 'can_' . $p;
                                 $allowed = 1, last
                                     if $admin
-                                        || $perms
-                                        && (   $perms->can($perm)
-                                            && $perms->$perm() );
+                                        || ( $perms && $perms->can_do($p) );
                             }
                         }
                         unless ($allowed) {
