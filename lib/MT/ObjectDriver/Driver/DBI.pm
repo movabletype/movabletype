@@ -374,10 +374,37 @@ sub _decorate_column_name {
     return $driver->dbd->db_column_name($class->datasource, $col);
 }
 
+sub _create_join_arg {
+    my ( $args, $joins ) = @_;
+    if ( my $args_join = delete $args->{join} ) {
+        push @$joins, $args_join if $args_join;
+    }
+
+    my $join = shift @$joins;
+    return unless $join && @$join;
+    my $next = $join->[3];
+    if ( defined $next ) {
+        if ( exists $next->{'join'} ) {
+            $next = $next->{'join'}->[3];
+        }
+    }
+    else {
+        $next = {};
+        $join->[3] = $next;
+    }
+    _create_join_arg( $next, $joins );
+    $args->{'join'} = $join;
+}
+
 sub prepare_statement {
     my $driver = shift;
     my($class, $terms, $orig_args) = @_;
     my $args = defined $orig_args ? { %$orig_args } : {};
+
+    my $joins = delete $args->{joins} if $args->{joins};
+    if ( $joins ) {
+        _create_join_arg( $args, $joins );
+    }
 
     my %stmt_args;
 
@@ -561,6 +588,12 @@ sub prepare_statement {
         for my $field (qw( from where bind )) {
             push @{ $stmt->$field() }, @{ $join_stmt->$field() };
         }
+
+        ## Remove dupulicated from table.
+        my %count;
+        my @from = grep {!$count{$_}++} @{ $stmt->from };
+        $stmt->from( @from );
+
         $stmt->from_stmt($join_stmt->from_stmt);
         $stmt->limit($j_args->{limit}) if exists $j_args->{limit};
         $stmt->offset($j_args->{offset}) if exists $j_args->{offset};

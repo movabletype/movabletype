@@ -586,6 +586,24 @@ SKIP: {
     is($@, q(), 'Iterator can be ended #2');
 }
 
+sub joins : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $vista = Foo->load(3);  # not a search
+    my @data = Foo->load(
+        undef,
+        {
+            joins => [
+                [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 }, { alias => 'bar1' } ],
+                [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 3 }, { alias => 'bar2' } ]
+            ],
+          sort => 'created_on', direction => 'descend',
+        }
+    );
+    are_objects(\@data, [ $vista ], 'Joins / Has Bars with status=2 and status=3 (alias)');
+}
+
 sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar ));
 }
