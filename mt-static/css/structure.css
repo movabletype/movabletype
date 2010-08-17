@@ -10,11 +10,11 @@ body {
     font-size: 13px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
-body.system { 
-     background-color: #f3f3f3;
+body.system {
+    background-color: #f3f3f;
 }
 body.user { 
-     background-color: #fff;
+    background-color: #fff;
 }
 
 a { 
@@ -482,7 +482,7 @@ ul.tabs li a {
 }
 
 /* --- Scope Selector */
-.selector { 
+.scope-selector { 
     display: none;
     position: absolute;
     top: 35px;
@@ -495,7 +495,7 @@ ul.tabs li a {
     -moz-border-radius: 0 0 5px 5px;
 }
 
-.show-selector .selector { 
+.show-selector .scope-selector { 
     display: block;
 }
 
@@ -504,13 +504,13 @@ ul.tabs li a {
     border-top: 1px solid #9EA1A3;
 }
 
-.selector li { 
+.scope-selector li { 
     margin: 0;
     font-weight: normal;
 }
 
-.selector a,
-.scope-level { 
+.scope-selector a,
+.scope-scope-level { 
     display: block;
     padding: 5px 15px;
     color: #fff;
@@ -519,7 +519,7 @@ ul.tabs li a {
     overflow: hidden;
     text-overflow: ellipsis;
 }
-.selector a:hover { 
+.scope-selector a:hover { 
     text-decoration: none;
     background-color: #383c3c;
     color: #fff;
@@ -545,7 +545,7 @@ ul.tabs li a {
     text-align: right;
 }
 
-.selector div.last-child li.last-child a { 
+.scope-selector div.last-child li.last-child a { 
     -moz-border-radius: 0 0 5px 5px;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
