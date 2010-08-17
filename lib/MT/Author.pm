@@ -303,7 +303,7 @@ sub member_list_props {
         email         => 'Email',
         nickname      => 'Nickname',
         name          => { base => 'author.name' },
-        status        => { base => 'author.status' },
+        #status        => { base => 'author.status' },
         author_name   => { base => 'author.author_name' },
         type          => { base => 'author.type' },
         url           => { base => 'author.url' },
@@ -312,24 +312,18 @@ sub member_list_props {
         userpic       => { base => 'author.userpic' },
         auth_type     => { base => 'author.auth_type' },
         permission    => {
+            label   => 'Permission',
             display => 'none',
 
             ## FIXME
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $join_terms = {};
-                my $join_args  = {};
-                $join_terms->{blog_id} = $args->{blog_id} if $args->{blog_id};
-                my $orig_join = $db_args->{join};
-                $join_args->{join} = $orig_join if $orig_join;
-                my $id_term = $db_terms->{id};
-                $db_terms->{id} = $id_term && 'ARRAY' eq ref $id_term
-                                ? [ @$id_term, \" = permission_author_id" ]
-                                : $id_term
-                                ? [ '-and', $id_term, \" = permission_author_id" ]
-                                : \" = permission_author_id";
-                $db_args->{join} = MT->model('permission')->join_on(
-                    undef, $join_terms, $join_args,
+                $db_args->{joins} ||= [];
+                my $terms = {
+                    author_id => \'= author_id',
+                };
+                push @{$db_args->{joins}}, MT->model('permission')->join_on(
+                    undef, $terms, { unique => 1 },
                 );
                 return;
             },
@@ -337,16 +331,21 @@ sub member_list_props {
         role          => {
             base => '__common.single_select',
             label => 'Role',
-            display => 'none',
+            display => 'optional',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                my @roles = MT->model('role')->load({
+                    
+                });
+            },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $terms = {};
-                my $blog_id = MT->app->param('blog_id');
-                $terms->{blog_id} = $blog_id;
-                $terms->{role_id}    = $args->{value}   if $args->{value};
-                $db_terms->{id} = \" = association_author_id";
-                $db_args->{join} = MT->model('association')->join_on(
-                    undef, $terms,
+                $terms->{blog_id}   = MT->app->param('blog_id');
+                $terms->{role_id}   = $args->{value} if $args->{value};
+                $terms->{author_id} = \"= author_id";
+                push @{ $db_args->{joins} }, MT->model('association')->join_on(
+                    undef, $terms, { unique => 1 }
                 );
                 return;
             },

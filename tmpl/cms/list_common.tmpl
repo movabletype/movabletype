@@ -192,7 +192,7 @@ var initial_filter = <mt:var name="initial_filter">;
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
     line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
-    if (filter.id) {
+    if (filter.can_save) {
       line += '<span class="handle-filter unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
     }
     jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
