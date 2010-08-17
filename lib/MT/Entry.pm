@@ -341,11 +341,12 @@ sub list_props {
                 elsif ('past' eq $option ) {
                     $query = { op => '<', value => $now };
                 }
-                my $orig_join = $db_args->{join};
-                $db_args->{join} = MT->model( $prop->comment_class )->join_on(
-                    undef,
-                    { entry_id => \'= entry_id', created_on => $query },
-                    ( $orig_join ? { join => $orig_join } : () ),
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model( $prop->comment_class )->join_on(
+                        undef,
+                        { entry_id => \'= entry_id', created_on => $query },
+                        { unique => 1, },
                 );
                 return;
             },
@@ -386,11 +387,11 @@ sub list_props {
                 return $cat ? $cat->label : '';
             },
             condition => sub {
-                                        my $app = MT->app or return;
-                        return !$app->blog         ? 0
-                             : $app->blog->is_blog ? 1
-                             :                       0
-                             ;
+                my $app = MT->app or return;
+                return !$app->blog         ? 0
+                     : $app->blog->is_blog ? 1
+                     :                       0
+                     ;
 
             },
             single_select_options => sub {
@@ -405,11 +406,22 @@ sub list_props {
                 }} @categories ];
             },
             terms => sub {
-                my ( $prop, $args ) = @_;
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
                 my $cat_id = $args->{value};
-                ## FIXME: use join...
-                my @placements = MT->model('placement')->load({ category_id => $cat_id, is_primary => 1 });
-                return { id => [ map { $_->entry_id } @placements ] };
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} },
+                    MT->model( 'placement' )->join_on(
+                        undef,
+                        {
+                            category_id => $cat_id,
+                            entry_id    => \'= entry_id',
+                            is_primary  => 1,
+                        },
+                        {
+                            unique => 1,
+                        },
+                );
+                return;
             },
         },
     };
