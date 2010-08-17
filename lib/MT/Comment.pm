@@ -150,16 +150,30 @@ sub list_props {
         author => {
             label => 'Commenter',
             auto  => 1,
-            html  => sub {
-                my ( $prop, $obj ) = @_;
-                my $raw = $prop->{raw}->( $prop, $obj );
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
                 my $id  = $obj->commenter_id;
                 if ( $id ) {
-                    return qq{<a href="<mt:var name="script_url">?__mode=view&_type=commenter&id=$id&blog_id=<mt:blogid>">$raw</a>};
+                    return $app->uri(
+                        mode => 'view',
+                        args => {
+                            _type   => 'commenter',
+                            id      => $id,
+                            blog_id => $app->blog->id,
+                    });
                 }
                 else {
                     my $author = MT::Util::remove_html( $obj->author );
-                    return qq{<a href="<mt:var name="script_url">?__mode=search_replace&_type=comment&search_cols=author&is_limited=1&do_search=1&search=$author&blog_id=<mt:blogid>">$author</a>};
+                    return $app->uri(
+                        mode => 'search_replace',
+                        args => {
+                            _type       => 'comment',
+                            search_cols => 'author',
+                            is_limited  => 1,
+                            do_search   => 1,
+                            search      => $author,
+                            blog_id     => $app->blog->id,
+                    });
                 }
             }
         },
