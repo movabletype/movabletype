@@ -731,6 +731,7 @@ BEGIN {
         },
         system_filters => {
             entry => '$Core::MT::Entry::system_filters',
+            tag   => '$Core::MT::Tag::system_filters',
         },
         listing_screens => {
             website => {

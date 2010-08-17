@@ -1943,14 +1943,15 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.tag' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 if ( exists $opts->{blog_id} ) {
-                    #$filter->append_item({
-                    #    type => 'blog',
-                    #    args => {
-                    #        blog_id => $opts->{blog_id},
-                    #    },
-                    #});
+                    $filter->append_item({
+                        type => '_blog',
+                        args => {
+                            blog_id => $opts->{blog_id},
+                        },
+                    });
                     delete $opts->{blog_id};
                 }
+                return;
             },
 
             # junk-related callbacks

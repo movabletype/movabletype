@@ -46,7 +46,28 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        name => 'Name',
+        name => {
+            auto  => 1,
+            label => 'Name',
+            display => 'force',
+        },
+        _blog => {
+            view  => [],
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $blog_id = $args->{blog_id};
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
+                    undef,
+                    {
+                        blog_id => $blog_id,
+                        tag_id  => \'= tag_id',
+                    },
+                    { unique => 1, },
+                );
+                return;
+            },
+        },
         entry_count => {
             label => 'Entries',
             base => '__common.integer',
@@ -135,6 +156,23 @@ sub list_props {
             count_class => 'asset',
         },
     };
+}
+
+sub system_filters {
+    return {
+        entry => {
+            label => 'Tags for Entry',
+            items => [{ type => 'entry_count', args => { option => 'greater_than', value => 0, }}],
+        },
+        page => {
+            label => 'Tags for Page',
+            items => [{ type => 'page_count', args => { option => 'greater_than', value => 0, }}],
+        },
+        asset => {
+            label => 'Tags for Asset',
+            items => [{ type => 'asset_count', args => { option => 'greater_than', value => 0, }}],
+        },
+    },
 }
 
 sub save {
