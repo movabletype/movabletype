@@ -154,6 +154,7 @@ jQuery('p#indicator')
 
 var line = '<th class="col head cb"><input type="checkbox" /></th>';
 var table = jQuery('table.listing')[0];
+var col_classes = {};
 <mt:loop name="list_columns">
 line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><a href="#<mt:var name="id">"><mt:var name="label"></a></th>';
 <mt:if name="default_sort_order">
@@ -161,6 +162,7 @@ jQuery.data(table, '<mt:var name="id">', 'desc')
 <mt:else>
 jQuery.data(table, '<mt:var name="id">', 'asc')
 </mt:if>
+col_classes["<mt:var name="id">"] = "<mt:var name="col_class">";
 </mt:loop>
 jQuery('thead, tfoot').append('<tr>');
 jQuery(line).appendTo('thead tr, tfoot tr');
@@ -438,7 +440,7 @@ function renderList(mode, columns, values, limit, page) {
           line = '<td class="cb col"><input type="checkbox" name="id" value="'+id+'" /></td>';
         }
         for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
-          line += '<td class="col '+columns[col]+'">' + objs[row][col] + '</td>';
+          line += '<td class="col '+columns[col-1]+' '+col_classes[columns[col-1]]+'">' + objs[row][col] + '</td>';
         }
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
