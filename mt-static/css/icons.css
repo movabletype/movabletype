@@ -1,6 +1,18 @@
 /* - Icon */
 /* Icon Links ---------------------------------------------------------------------------------- */
 
+.icon16 {
+    dsiplay: inline-block;
+    width: 0px;
+    height: 17px;
+    padding-left: 17px;
+    overflow: hidden;
+}
+
+.icon-delete {
+    background: transparent url(../images/delete.gif) center top no-repeat;
+}
+
 .icon-left {
     padding-left: 11px;
     background-repeat: no-repeat;

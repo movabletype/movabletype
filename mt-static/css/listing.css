@@ -16,7 +16,8 @@
 }
 
 .head { 
-    width: 10%;
+    width: auto;
+    min-width: 10%;
     border-width: 0 0 1px 1px;
     background-color: rgb(219,219,219);
     background: -webkit-gradient(linear, left top, left bottom, from(rgb(235,235,235)), to(rgb(219,219,219)));
@@ -24,17 +25,27 @@
     font-size: 11px;
     font-weight: bold;
     text-shadow: rgb(248,251,248) 0 1px 0;
+    white-space: nowrap;
     vertical-align: middle;
     position: relative;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .head.first-child {
     border-left: 0;
 }
 
-.head.primary {
-    width: auto;
+.col.primary {
+    min-width: 15%;
+}
+
+.col.date {
     min-width: 10%;
+}
+
+.col.num {
+    min-width: 8%;
 }
 
 .sorted { 
@@ -113,3 +124,24 @@ dialog
 dialog-header
 */
 
+.filter {
+    font-size: 90%;
+}
+.handle-filter {
+    text-align: right;
+}
+.tool-link {
+    margin: 0 0 0 0.5em;
+}
+.rename-link, 
+.rename-link:hover {
+    color: #c53d43;
+}
+.ui-dialog-content {
+    position: relative;
+}
+.edit-filter {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+}

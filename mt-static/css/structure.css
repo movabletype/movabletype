@@ -19,10 +19,12 @@ body.user {
 
 a { 
     color: #5C909B;
+
 }
 a:hover, 
 a:active { 
     color: #839B5C;
+    text-decoration: none;
 }
 
 /*
@@ -2071,7 +2073,6 @@ td.sub-label label {
     padding-left: 17px;
     background: transparent url(../images/delete.gif) left bottom no-repeat;
     color: #7b7c7d;
-    /*font-size: 95%;*/
 }
 #entry-publishing-widget a.delete:hover { 
     background-position: left top;

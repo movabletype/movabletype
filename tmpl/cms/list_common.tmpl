@@ -120,7 +120,7 @@
 </div>
 
 <div id="dialog_filter" title="Select Filter">
-<div class="edit-filter">Edit</div>
+<div class="edit-filter button">Edit</div>
 </div>
 
 
@@ -183,19 +183,19 @@ var total = 0;
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 
-function renderFilterList() {
+    function renderFilterList() {
   jQuery('#filter_list').empty();
   jQuery('<ul id="filter_list" />').appendTo('#dialog_filter');
 
-  var line = '<span class="filter-label"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></span>';
-  jQuery('<li class="filter" />').append(line).appendTo('#filter_list');
+  var line = '<span class="filter-label unit size3of5"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></span>';
+  jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
-    line = '<span class="filter-label"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
+    line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link">'+filter.label+'</a></span>';
     if (filter.id) {
-      line += '<span class="handle-filter"><a href="#'+i+'" class="rename-link"><__trans phrase="rename"></a><a href="#'+i+'" class="delete-link"><__trans phrase="delete"></a></span>';
+      line += '<span class="handle-filter unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename"></a><a href="#'+i+'" class="delete-link tool-link icon16 icon-delete"><__trans phrase="Delete"></a></span>';
     }
-    jQuery('<li class="filter" />').append(line).appendTo('#filter_list');
+    jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
   }
   jQuery('#new_filter').click(function() {
     jQuery('#saveas').hide();
@@ -225,22 +225,22 @@ function renderFilterList() {
     var $label = $this.parents('.filter').children('.filter-label');
     var $handle = $this.parents('.filter').children('.handle-filter');
     var text = $label.find('.apply-link').hide().text();
-    jQuery('<input id="filter_'+fid+'" type="text full" />')
+    jQuery('<input type="text" id="filter_'+fid+'" class="text full" />')
       .val(text)
       .appendTo($label);
     $this.hide().next('.delete-link').hide();
-    jQuery('<a href=#'+fid+' class="save-link"><__trans phrase="Save"></a>').bind('click', function() {
+    jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
        var name = jQuery('#filter_'+fid).val();
        renameFilter(index, fid, name);
        return false;
     }).appendTo($handle);
-    jQuery('<a href=#'+fid+' class="cancel-link"><__trans phrase="Cancel"></a>').bind('click', function() {
+    jQuery('<a href=#'+fid+' class="tool-link cancel button"><__trans phrase="Cancel"></a>').bind('click', function() {
        $label
          .find('.apply-link').show().end()
          .find('input').remove();
        $handle
          .find('a:visible').remove().end()
-         .find('a:hidden').show();
+         .find('a:hidden').show().css('display','inline-block');
        return false;
     }).appendTo($handle);
     return false;
@@ -796,9 +796,9 @@ jQuery('#dialog_filter .edit-filter').click(function() {
     jQuery(this).toggleClass('editing');
     jQuery('.filter').show();
     if (jQuery(this).hasClass('editing')) {
-      jQuery(this).text('Done');
+      jQuery(this).text('Done Editing');
       jQuery('.rename-link').show();
-      jQuery('.delete-link').show();
+      jQuery('.delete-link').show().css('display','inline-block');
     } else {
       jQuery(this).text('Edit');
       jQuery('.rename-field').remove();
