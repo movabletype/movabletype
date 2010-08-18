@@ -877,6 +877,8 @@ sub list {
     $param{filters}        = $json->encode( \@filters );
     $param{initial_filter} = $json->encode($initial_filter);
     $param{filters_raw}    = \@filters;
+    $param{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+
     $param{list_columns}   = \@list_columns;
     $param{filter_types}   = \@filter_types;
     $param{object_type}    = $type;
@@ -1092,6 +1094,7 @@ sub filtered_list {
 
     require MT::CMS::Filter;
     my @filters = MT::CMS::Filter::filters( $app, $ds );
+    my $editable_filter_count = scalar grep { $_->{can_edit} } @filters;
     my $allpass_filter = {
         label => MT->translate('(none)'),
         items => [],
@@ -1106,6 +1109,7 @@ sub filtered_list {
     $res{page_max} = POSIX::ceil( $count / $limit );
     $res{id}       = $filter_id;
     $res{filters}  = \@filters;
+    $res{editable_filter_count} = $editable_filter_count;
     $MT::DebugMode && $debug->{section}->('finalize');
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, \@objs );
     if ( $MT::DebugMode ) {

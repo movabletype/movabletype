@@ -179,11 +179,17 @@ var cols = [];
 var vals = [];
 var checked = [];
 var total = 0;
+var editable_filter_count = <mt:var name="editable_filter_count">;
 
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 
-    function renderFilterList() {
+function renderFilterList() {
+  if ( editable_filter_count > 0 )
+    jQuery('#dialog_filter .edit-filter').show();
+  else
+    jQuery('#dialog_filter .edit-filter').hide();
+
   jQuery('#filter_list').empty();
   jQuery('<ul id="filter_list" />').appendTo('#dialog_filter');
 
@@ -266,6 +272,7 @@ function renameFilter(index, fid, name) {
         jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
         return;
       }
+      editable_filter_count = data.result.editable_filter_count;
       filters = data.result.filters;
     },
     complete: function() {
@@ -287,20 +294,26 @@ function removeFilter(element) {
     dataType: 'json',
     data: {
       __mode: 'delete_filter',
-      id: filters[index].id
+      id: filters[index].id,
+      datasource: '<mt:var name="list_type">',
+      blog_id: <mt:var name="blog_id">
     },
     success: function(data) {
       if (data.error) {
         jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
         return;
       }
-      jQuery('.filteritem').remove();
-      $node.remove();
+      editable_filter_count = data.result.editable_filter_count;
+      filters = data.result.filters;
+
       addItems(filters[0].items);
       jQuery('#opener').text('<__trans phrase="New Filter">');
       jQuery('#filter_id').val('');
       itemValues()
       renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+    },
+    complete: function() {
+      renderFilterList();
     },
     error: function(xhr, status) {
       alert('Ajax error: ' + status);
@@ -452,6 +465,7 @@ function renderList(mode, columns, values, limit, page) {
       }
       renderPagination(count, limit, page, last, total);
       filters = data.result.filters;
+      editable_filter_count = data.result.editable_filter_count;
     },
     complete: function() {
       jQuery('tbody tr:even').addClass('even');

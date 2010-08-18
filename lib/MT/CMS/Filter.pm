@@ -21,16 +21,20 @@ sub save {
         return $app->json_error(
             $app->translate('Failed to save filter: label is required.') );
     }
-    my $items = $q->param('items');
-    if ( $items =~ /^".*"$/ ) {
-        $items =~ s/^"//;
-        $items =~ s/"$//;
-        $items =~ s/\\"/"/g;
+    my $items;
+    if ( my $items_json = $q->param('items') ) {
+        if ( $items_json =~ /^".*"$/ ) {
+            $items_json =~ s/^"//;
+            $items_json =~ s/"$//;
+            $items_json =~ s/\\"/"/g;
+        }
+        require JSON;
+        my $json = JSON->new->utf8(0);
+        $items = $json->decode($items_json);
     }
-    require JSON;
-    my $json = JSON->new->utf8(0);
-    $items = $json->decode($items);
-
+    else {
+        $items = [];
+    }
     my $filter;
     my $filter_class = MT->model('filter');
 
@@ -75,8 +79,15 @@ sub save {
     my $list = $q->param('list');
     if ( defined $list && !$list ) {
         my %res;
+        my @filters = filters( $app, $ds );
+        my $allpass_filter = {
+            label => MT->translate('(none)'),
+            items => [],
+        };
+        unshift @filters, $allpass_filter;
         $res{id} = $filter->id;
-        $res{filters} = [ filters( $app, $ds ) ];
+        $res{filters} = \@filters;
+        $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
         return $app->json_result( \%res );
     }
     else {
@@ -97,14 +108,26 @@ sub delete {
     my $filter_class = MT->model('filter');
     my $filter       = $filter_class->load($id)
         or return $app->json_error( $app->translate('No such filter') );
+    my $blog_id   = $q->param('blog_id') || 0;
+    my $ds        = $q->param('datasource');
     my $user = $app->user;
     if ( $filter->author_id != $user->id && !$user->is_superuser ) {
         return $app->json_error( $app->translate('Permission denied') );
     }
     $filter->remove
         or return $app->json_error(
-        $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
-    return $app->json_result(1);
+    $app->translate( 'Failed to delete filter: [_1]', $filter->errstr ) );
+    my %res;
+    my @filters = filters( $app, $ds );
+    my $allpass_filter = {
+        label => MT->translate('(none)'),
+        items => [],
+    };
+    unshift @filters, $allpass_filter;
+    $res{id} = $filter->id;
+    $res{filters} = \@filters;
+    $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
+    return $app->json_result( \%res );
 }
 
 ## Note that these filter loading methods below NOT return instances of MT::Filter class.
