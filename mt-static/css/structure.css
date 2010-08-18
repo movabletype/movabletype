@@ -3638,44 +3638,6 @@ background-image: url(../images/status_icons/view.gif);
     display: inline;
 }
 
-/* -- ui Dialog */
-.ui-dialog { 
-    position: relative;
-    background-color: #fffffc;
-}
-.ui-dialog .ui-dialog-titlebar-close {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    width: 16px;
-    height: 16px;
-    padding: 1px;
-    background-image: url(../images/widget/widget-icons.png);
-    background-position: -32px 0;
-    background-repeat: no-repeat;
-}
-.ui-dialog .ui-dialog-titlebar-close span {
-    display: none;
-}
-.ui-dialog .ui-dialog-content {
-    border: 0;
-    padding: 15px;
-    background: none;
-    overflow: auto;
-}
-
-#test-email-dialog #to_email_address-field { 
-    margin-top: 0;
-}
-
-#test-email-dialog input[type="text"] { 
-    width: 100%;
-}
-
-#test-email-dialog .actions-bar button { 
-    float: right;
-    margin-right: 0;
-}
 
 
 /* - Footer */

@@ -1,9 +1,9 @@
 /*  $Id$  */
 
-/* codebase */
+/* Codebase */
 @import url("css/reset.css");
 
-/* layout */
+/* Layout */
 @import url("css/structure.css");
 
 /* Form */
@@ -12,11 +12,14 @@
 /* Listing */
 @import url("css/listing.css");
 
-/* messaging */
+/* Dialog */
+@import url("css/dialog.css");
+
+/* Messaging */
 @import url("css/messaging.css");
 
-/* utilities */
+/* Utilities */
 @import url("css/utilities.css");
 
-/* icons */
+/* Icons */
 @import url("css/icons.css");

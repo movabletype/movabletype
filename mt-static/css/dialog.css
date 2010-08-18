@@ -1,0 +1,61 @@
+.ui-dialog {
+    position: relative;
+    border: 1px solid #adadad;
+    background-color: #f3f3f3;
+    box-shadow: #2b2b2b 0 3px 10px;
+    -webkit-box-shadow: #2b2b2b 0 3px 10px;
+    -moz-box-shadow: #2b2b2b 0 3px 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.ui-dialog-titlebar {
+    padding: 10px;
+}
+
+.ui-widget-overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #9ea1a3;
+    -moz-opacity: 0.5;
+    opacity: 0.5;
+    filter: alpha(opacity=30);
+
+}
+.ui-dialog-buttonpane {
+    padding: 1px 10px;
+}
+
+.ui-dialog-title {
+    font-size: 125%;
+}
+
+.ui-dialog-titlebar-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 16px;
+    height: 16px;
+    padding: 1px;
+    background-image: url(../images/widget/widget-icons.png);
+    background-position: -32px 0;
+    background-repeat: no-repeat;
+}
+
+.save .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.ui-dialog-titlebar-close span {
+    display: none;
+}
+
+.ui-dialog-content {
+    padding: 1px 10px 10px;
+    overflow: auto;
+}
+
+.dialog.actions-bar {
+    margin: 20px 0 0;
+}

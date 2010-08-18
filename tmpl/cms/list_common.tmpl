@@ -128,10 +128,22 @@
 <div id="dialog_save_filter">
   <div id="filter_label" title="Filter Label">
     <div class="label">Label: </div>
-    <div><input type="text" class="text" name="filter_name" value="" /></div>
+    <div><input type="text" class="text full" name="filter_name" value="" /></div>
     <div><input type="hidden" name="filter_id" value="" /></div>
   </div>
   <div id="dialog-msg-block"></div>
+  <div class="dialog actions-bar">
+    <button
+       type="button"
+       id="save-filter"
+       class="action button primary"
+       ><__trans phrase="Save"></button>
+    <button
+       type="button"
+       id="cancel-save-filter"
+       class="action button"
+       ><__trans phrase="Cancel"></button>
+  </div>
 </div>
 
 
@@ -718,6 +730,7 @@ jQuery('#save').click(function() {
     jQuery('input[name=filter_id]').val('');
     jQuery('#dialog_save_filter').dialog({
       title: 'Save Filter',
+      dialogClass: 'save',
       modal: true
     })
       .dialog('open');
@@ -732,6 +745,8 @@ jQuery('#saveas').click(function() {
   jQuery('#dialog_save_filter')
     .dialog({
       title: 'Save As Filter',
+      dialogClass: 'save',
+      width: 450,
       modal: true
     })
       .dialog('open');
@@ -757,17 +772,21 @@ jQuery('#opener').click(function() {
 
 jQuery('#dialog_save_filter').dialog({
   autoOpen: false,
-  buttons: {
-    '<__trans phrase="Save">': function() {
-      var status;
-      itemValues()
-      renderList('save_filter', cols, vals, jQuery('#row').val(), 1);
-    },
-    '<__trans phrase="Cancel">': function() {
-      jQuery(this).dialog('close');
-    }
-  }
+  dialogClass: 'save',
+  width: 450,
+  minHeight: 100
 });
+
+jQuery('#save-filter').click(function() {
+  var status;
+  itemValues()
+  renderList('save_filter', cols, vals, jQuery('#row').val(), 1);    
+});
+
+jQuery('#cancel-save-filter').click(function() {
+  jQuery(this).parents().dialog('close');
+});
+
 
 function addItems(items, op) {
   var type;
