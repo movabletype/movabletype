@@ -145,3 +145,13 @@ dialog-header
     right: 5px;
     top: 5px;
 }
+.ui-widget-overlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    background-color: #9ea1a3;
+    -moz-opacity: 0.5;
+    opacity: 0.5;
+    filter: alpha(opacity=30);
+
+}

@@ -240,7 +240,7 @@ var initial_filter = <mt:var name="initial_filter">;
          .find('input').remove();
        $handle
          .find('a:visible').remove().end()
-         .find('a:hidden').show().css('display','inline-block');
+         .find('a:hidden').css('display','inline-block');
        return false;
     }).appendTo($handle);
     return false;
@@ -694,7 +694,7 @@ jQuery('#apply').click(function() {
 
 jQuery('#save').click(function() {
   jQuery('.msg-error').remove();
-  if (jQuery('#filter_id').val()) {
+m  if (jQuery('#filter_id').val()) {
     jQuery('input[name=filter_name]').val(jQuery('#filter_name').val());
     jQuery('input[name=filter_id]').val(jQuery('#filter_id').val());
     itemValues()
@@ -702,7 +702,10 @@ jQuery('#save').click(function() {
   } else {
     jQuery('input[name=filter_name]').val('');
     jQuery('input[name=filter_id]').val('');
-    jQuery('#dialog_save_filter').dialog('option', 'title', 'Save Filter')
+    jQuery('#dialog_save_filter').dialog({
+      title: 'Save Filter',
+      modal: true
+    })
       .dialog('open');
   }
   return false;
@@ -713,7 +716,11 @@ jQuery('#saveas').click(function() {
   jQuery('input[name=filter_name]').val('');
   jQuery('input[name=filter_id]').val('');
   jQuery('#dialog_save_filter')
-    .dialog('option', 'title', 'Save As Filter').dialog('open');
+    .dialog({
+      title: 'Save As Filter',
+      modal: true
+    })
+      .dialog('open');
   return false;
 });
 
@@ -798,7 +805,7 @@ jQuery('#dialog_filter .edit-filter').click(function() {
     if (jQuery(this).hasClass('editing')) {
       jQuery(this).text('Done Editing');
       jQuery('.rename-link').show();
-      jQuery('.delete-link').show().css('display','inline-block');
+      jQuery('.delete-link').css('display','inline-block');
     } else {
       jQuery(this).text('Edit');
       jQuery('.rename-field').remove();
@@ -907,5 +914,6 @@ itemValues()
 renderColumns();
 renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 renderFilterList();
+
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">
