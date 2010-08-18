@@ -157,7 +157,7 @@ sub system_filter {
         id         => $sys_id,
         label      => $sys_filter->{label},
         items      => $sys_filter->{items},
-        can_edit   => 1,
+        can_edit   => 0,
         can_save   => 0,
         can_delete => 0,
     };
