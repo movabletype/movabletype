@@ -195,7 +195,7 @@ var editable_filter_count = <mt:var name="editable_filter_count">;
 
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
-
+var current_id = initial_filter.id;
 function renderFilterList() {
   if ( editable_filter_count > 0 )
     jQuery('#dialog_filter .edit-filter').show();
@@ -220,6 +220,7 @@ function renderFilterList() {
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
     jQuery('.filteritem').remove();
+    jQuery('input[name=filter_name]').val('<__trans phrase="New Filter">');
     jQuery('#opener').text('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
     jQuery('#dialog_filter').dialog('close');
@@ -288,6 +289,9 @@ function renameFilter(index, fid, name) {
       filters = data.result.filters;
     },
     complete: function() {
+      if ( fid == current_id ) {
+          jQuery('#opener').text(name);
+      }
       renderFilterList();
     },
     error: function(xhr, status) {
@@ -300,6 +304,7 @@ function removeFilter(element) {
   var $node = jQuery(element).parents('li');
   jQuery(element).attr('href').match(/#(.*)/);
   var index = RegExp.$1;
+  var remove_current = filters[index].id == current_id;
   jQuery.ajax({
     type: 'POST',
     url: '<mt:var name="script_url">',
@@ -317,12 +322,10 @@ function removeFilter(element) {
       }
       editable_filter_count = data.result.editable_filter_count;
       filters = data.result.filters;
-
-      addItems(filters[0].items);
-      jQuery('#opener').text('<__trans phrase="New Filter">');
-      jQuery('#filter_id').val('');
-      itemValues()
-      renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+      if ( remove_current ) {
+        jQuery('#filter_id').val('');
+        applyFilter(0);
+      }
     },
     complete: function() {
       renderFilterList();
@@ -493,9 +496,6 @@ function renderList(mode, columns, values, limit, page) {
         renderFilterList();
       }
       if (!jQuery('.msg-error').length) {
-        if (jQuery('input[name=filter_name]').val()) {
-          jQuery('#opener').text(jQuery('input[name=filter_name]').val());
-        }
         jQuery('#dialog_save_filter').dialog('close');
       } else {
         if (jQuery('#dialog_save_filter:visible').length) {
@@ -858,6 +858,7 @@ function applyFilter(index) {
     jQuery('#opener').text(name);
     jQuery('#filter_name').val(name);
     jQuery('#filter_id').val(filters[index].id);
+    current_id = filters[index].id;
     jQuery('input[name=filter_id]').val(filters[index].id);
     itemValues()
     renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
