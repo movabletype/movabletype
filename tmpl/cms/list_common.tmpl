@@ -853,12 +853,17 @@ function applyFilter(index) {
   jQuery('#filter_id').val('');
   jQuery('.filteritem').remove();
   if (index >= 0 && filters[index].items) {
-    var name = filters[index].label;
-    addItems(filters[index].items);
+    var filter = filters[index];
+    var name = filter.label;
+    addItems(filter.items);
     jQuery('#opener').text(name);
     jQuery('#filter_name').val(name);
-    jQuery('#filter_id').val(filters[index].id);
-    current_id = filters[index].id;
+    jQuery('#filter_id').val(filter.id);
+    current_id = filter.id;
+    if ( filter.can_save )
+      jQuery('#save').show();
+    else
+      jQuery('#save').hide();
     jQuery('input[name=filter_id]').val(filters[index].id);
     itemValues()
     renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
