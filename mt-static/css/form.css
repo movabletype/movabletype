@@ -48,6 +48,7 @@
 }
 .text.path {
     width: 12em;
+    margin: 0 0.2em;
 }
 .low {
     height: 5em;
@@ -200,6 +201,11 @@ select {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+
+/* -- Edit Field Button */
+.mt-edit-field-button {
+    margin-left: 0.5em;
 }
 
 /* -- Split Button */

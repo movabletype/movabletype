@@ -48,7 +48,7 @@ a:active {
 
 .hint { 
     max-width: 75%;
-    color: #7b7c7d;
+    color: #a3a3a2;
     font-size: 95%;
     font-style: Italic;
 }
@@ -166,6 +166,9 @@ a:active {
 .rbottom {
 }
 
+.option {
+    margin: 10px 0;
+}
 
 /* -- Tabs */
 .ui-tabs .ui-tabs-hide {
@@ -963,7 +966,7 @@ ul.tabs li a {
 
 /* - Fields */
 fieldset { 
-    margin-bottom: 2.5em;
+    margin-bottom: 3em;
 }
 
 .field {
@@ -975,18 +978,18 @@ fieldset {
 }
 
 .field-header {
-    color: #7b7c7d;
+    color: #2b2b2b;
     font-weight: bold;
 }
 
 .field-left-label .field-header {
     float: left;
-    width: 12em;
+    width: 13em;
     margin-right: 10px;
     text-align: right;
 }
 .field-left-label .field-content {
-    margin-left: 13em;
+    margin-left: 15em;
 }
 
 .field-top-label .field-header {
@@ -2769,23 +2772,13 @@ body.preview-screen {
     margin-top: 5px;
 }
 
-#site_url-field .field-header, 
-#archive_url-field .field-header { 
-    margin-top: 8px;
+.content-path {
+    margin-bottom: 10px;
+    font-size: 110%;
+    font-weight: bold;
 }
 
-div.site-url, 
-div.archive-url { 
-    line-height: 2.5;
-    margin: 0 0 5px;
-}
-
-.blog span.site_path-text, 
-span.site_url_subdomain-text, 
-span.site_url_path-text, 
-span.archive_url_subdomain-text, 
-span.archive_url_path-text,
-span.archive_path-text { 
+.path-text {
     color: #7b7c7d;
 }
 

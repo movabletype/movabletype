@@ -165,13 +165,13 @@ $.mtEditSiteUrl = function(options) {
         if (subdomain) {
             $subdomain
                 .parent('.subdomain')
-                .before('<span class="'+this+'_url_subdomain-text"></span>');
+                .before('<span class="'+this+'_url_subdomain-text path-text"></span>');
             $('span.'+this+'_url_subdomain-text').text($subdomain.val()+'.');
         }
         if (!$path.hasClass('show-input')) {
             $path
-                .before('<span class="'+this+'_url_path-text"></span>')
-                .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .before('<span class="'+this+'_url_path-text path-text"></span>')
+                .after('<button id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+this+'_url_path-text').text($path.val());
             $subdomain.parents('.field-content').find('.subdomain').hide();
@@ -183,10 +183,10 @@ $.mtEditSiteUrl = function(options) {
         if (subdomain && subdomain.match(/^http/)) {
             $subdomain.parents('.field-content').find('.use-subdomain').hide().end()
                 .find('span.archive-url-domain').hide()
-                .before('<span class="'+this+'_url_path-text">'+$subdomain.val()+'</span>');
+                .before('<span class="'+this+'_url_path-text path-text">'+$subdomain.val()+'</span>');
             if ($('button#mt-set-'+this+'_url_path').length == 0) {
                 $path
-                    .after('<button id="mt-set-'+this+'_url_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                    .after('<button id="mt-set-'+this+'_url_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
                     .hide();
             }
         }
@@ -277,8 +277,8 @@ $.mtEditSitePath = function(options) {
         var $absolute_path = $('input#'+id+'_path_absolute');
         if ( !$absolute_path.hasClass('show-input') ) {
             $absolute_path
-                .before('<span class="'+id+'_path_absolute-text"></span>')
-                .after('<button id="mt-set-'+id+'_path_absolute" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .before('<span class="'+id+'_path_absolute-text path-text"></span>')
+                .after('<button id="mt-set-'+id+'_path_absolute" class="button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path_absolute-text').text($absolute_path.val());
         }
@@ -286,8 +286,8 @@ $.mtEditSitePath = function(options) {
         var $path = $('input#'+id+'_path');
         if ( !$path.hasClass('show-input') ) {
             $path
-                .before('<span class="'+id+'_path-text"></span>')
-                .after('<button id="mt-set-'+id+'_path" class="mt-edit-field-button">'+opts.edit+'</button>')
+                .before('<span class="'+id+'_path-text path-text"></span>')
+                .after('<button id="mt-set-'+id+'_path" class="button mt-edit-field-button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'_path-text').text($path.val());
 
