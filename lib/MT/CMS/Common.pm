@@ -835,7 +835,7 @@ sub list {
            field                 => $_->filter_tmpl,
            single_select_options => $_->single_select_options( $app ),
            singleton             => $_->singleton,
-
+           editable              => $_->has('filter_editable') ? $_->filter_editable : 1,
         }}
         sort {
               !$a->{order} ? 1

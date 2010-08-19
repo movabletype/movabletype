@@ -31,47 +31,72 @@ __PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisa
 
 sub list_props {
     return {
-        text => {
-            base => 'entry.text',
-        },
-        text_more => {
-            base => 'entry.text_more',
-        },
-        title => {
-            base => 'entry.title',
-            html => sub {
-                my ( $prop, $obj ) = @_;
-                ## FIXME
-                return $obj->title;
-                #my $id    = $obj->id;
-                #return qq{<a href="<mt:var name="script_url">?__mode=view&_type=page&blog_id=<mt:pageblogid>&id=<mt:pageid>"><mt:pageTitle></a> [<a href="<mt:pagePermalink>">>></a>]};
-            },
-        },
-        authored_on => {
-            base      => 'entry.authored_on',
-        },
-        status => {
-            base => 'entry.status',
-        },
-        author_name => {
-            base => 'entry.author_name',
-        },
-        basename => {
-            base => 'entry.basename',
-        },
-        comment_count => {
-            base => 'entry.comment_count',
-        },
-        ping_count => {
-            base => 'entry.ping_count',
-        },
+        text          => { base => 'entry.text' },
+        text_more     => { base => 'entry.text_more' },
+        title         => { base => 'entry.title' },
+        excerpt       => { base => 'entry.excerpt' },
+        authored_on   => { base => 'entry.authored_on' },
+        status        => { base => 'entry.status' },
+        created_on    => { base => 'entry.created_on' },
+        modified_on   => { base => 'entry.modified_on' },
+        basename      => { base => 'entry.basename' },
+        comment_count => { base => 'entry.comment_count' },
+        ping_count    => { base => 'entry.ping_count' },
+        commented_on  => { base => 'entry.commented_on' },
         folder => {
             base => 'entry.primary_category',
             label => 'Folder',
             category_class => 'folder',
         },
-        tag => {
-            base => 'entry.tag',
+    };
+}
+
+sub system_filters {
+    return {
+        published => {
+            label => 'Published Pages',
+            items => [
+                { type => 'status', args => { value => '2' }, },
+            ],
+        },
+        draft => {
+            label => 'Unpublished Pages',
+            items => [
+                { type => 'status', args => { value => '1' }, },
+            ],
+        },
+        future => {
+            label => 'Scheduled Pages',
+            items => [
+                { type => 'status', args => { value => '4' }, },
+            ],
+        },
+        my_posts_on_this_context => {
+            label => 'My Pages',
+            items => sub {
+                [ { type => 'current_user' }, { type => 'current_context' } ],
+            },
+        },
+        commented_in_last_7_days => {
+            label => 'Pages with comments in the last 7 days',
+            items => [
+                { type => 'commented_on', args => { option => 'days', days => 7 } }
+            ],
+        },
+        _by_date => {
+            label => sub {
+                require MT::ListProperty;
+                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
+                return $prop->label_via_param( MT->app );
+            },
+            items => sub {
+                require MT::ListProperty;
+                my $prop = MT::ListProperty->instance( 'entry', 'authored_on');
+                items => [{
+                    type => 'authored_on',
+                    args => $prop->args_via_param(MT->app),
+                }],
+            },
         },
     };
 }

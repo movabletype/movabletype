@@ -84,7 +84,7 @@
             <select id="item_list">
 	          <option value=""><__trans phrase="Select Filter Item..."></option>
             <mt:loop name="filter_types">
-	          <option value="<mt:var name="type">"><mt:var name="label"></option>
+	          <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
             </mt:loop>
             </select>
             <button type="button" id="additem" class="button">Add</button>

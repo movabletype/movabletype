@@ -190,6 +190,7 @@ BEGIN {
                 __legacy => {
                     label => 'Legacy Quick Filter',
                     priority => 1,
+                    filter_editable => 0,
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
@@ -522,6 +523,7 @@ BEGIN {
                     auto      => 1,
                     label     => 'ID',
                     display   => 'optional',
+                    view_filter => [],
                     condition => sub {
                         my $prop = shift;
                         return $prop->datasource->has_column( $prop->id );
@@ -731,6 +733,7 @@ BEGIN {
         },
         system_filters => {
             entry => '$Core::MT::Entry::system_filters',
+            page  => '$Core::MT::Page::system_filters',
             tag   => '$Core::MT::Tag::system_filters',
         },
         listing_screens => {

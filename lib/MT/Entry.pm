@@ -264,6 +264,7 @@ sub list_props {
                 return $out;
             },
         },
+        excerpt => 'Excerpt',
         authored_on => {
             auto      => 1,
             label     => 'Authored on',
@@ -284,19 +285,21 @@ sub list_props {
         },
         created_on => {
             base => '__common.created_on',
-            display   => 'default',
-            order => 600,
+            display   => 'none',
+        },
+        modified_on => {
+            base => '__common.modified_on',
+            display   => 'none',
         },
         basename => {
             label => 'Basename',
             auto  => 1,
         },
         comment_count => {
-            base  => '__common.single_select',
-            col   => 'comment_count',
-            col_class => 'num',
-            label => 'Comments',
-            default_sort_order => 'descend',
+            base    => '__common.single_select',
+            col     => 'comment_count',
+            display => 'none',
+            label   => 'Comments',
             terms => sub {
                 my ( $prop, $args ) = @_;
                 my $col = $prop->col;
@@ -312,10 +315,13 @@ sub list_props {
                 my ( $terms, $args ) = @_;
                 $args->{sort} = $prop->col;
             },
-            single_select_options => [
-                { label => 'Has comments', value => 1 },
-                { label => 'No comments', value => 0 },
-            ],
+            single_select_options => sub {
+                my $prop = shift;
+                return [
+                    { label => 'Has ' . $prop->label, value => 1 },
+                    { label => 'No ' . $prop->label, value => 0 },
+                ];
+            },
         },
         ping_count => {
             base  => 'entry.comment_count',
@@ -422,21 +428,43 @@ sub list_props {
                 my @categories = MT->model($prop->category_class)->load({
                     blog_id => $blog->id,
                 });
-                return [ map {{
-                    label => $_->label,
-                    value => $_->id,
-                }} @categories ];
+                return [
+                    {
+                        label => MT->translate('NONE'),
+                        value => 0,
+                    },
+                    map {{
+                        label => $_->label,
+                        value => $_->id,
+                    }} @categories ];
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $blog_id = MT->app->blog->id;
                 my $cat_id = $args->{value};
                 $db_args->{joins} ||= [];
+                if ( $cat_id == 0 ) {
+                    push @{ $db_args->{joins} },
+                        MT->model( 'placement' )->join_on(
+                            undef,
+                            {
+                                entry_id    => \'!= entry_id',
+                                blog_id     => $blog_id,
+                                is_primary  => 1,
+                            },
+                            {
+                                unique => 1,
+                            },
+                    );
+                    return;
+                }
                 push @{ $db_args->{joins} },
                     MT->model( 'placement' )->join_on(
                         undef,
                         {
                             category_id => $cat_id,
                             entry_id    => \'= entry_id',
+                            blog_id     => $blog_id,
                             is_primary  => 1,
                         },
                         {
