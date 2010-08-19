@@ -324,6 +324,7 @@ function removeFilter(element) {
       filters = data.result.filters;
       if ( remove_current ) {
         jQuery('#filter_id').val('');
+        current_id = 0;
         applyFilter(0);
       }
     },
@@ -480,6 +481,12 @@ function renderList(mode, columns, values, limit, page) {
       }
       renderPagination(count, limit, page, last, total);
       filters = data.result.filters;
+      if ( data.result.label ) {
+        jQuery('#opener').text(data.result.label);
+      }
+      if ( data.result.id ) {
+        current_id = data.result.id;
+      }
       editable_filter_count = data.result.editable_filter_count;
     },
     complete: function() {
@@ -778,8 +785,7 @@ jQuery('#dialog_save_filter').dialog({
 });
 
 jQuery('#save-filter').click(function() {
-  var status;
-  itemValues()
+  itemValues();
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);    
 });
 

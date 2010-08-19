@@ -1108,6 +1108,7 @@ sub filtered_list {
     $res{page}     = $page;
     $res{page_max} = POSIX::ceil( $count / $limit );
     $res{id}       = $filter_id;
+    $res{label}    = $forward_params{saved_label} if $forward_params{saved_label};
     $res{filters}  = \@filters;
     $res{editable_filter_count} = $editable_filter_count;
     $MT::DebugMode && $debug->{section}->('finalize');

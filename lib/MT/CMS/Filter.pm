@@ -95,8 +95,9 @@ sub save {
         # Forward to MT::Common::filterd_list
         $app->forward(
             'filtered_list',
-            saved    => 1,
-            saved_id => $filter->id,
+            saved       => 1,
+            saved_id    => $filter->id,
+            saved_label => $filter->label,
         );
     }
 }
