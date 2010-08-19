@@ -1608,7 +1608,7 @@ sub load_core_permissions {
             'label'            => 'Create Entries',
             'order'            => 100,
             'permitted_action' => {
-                'access_to_asset_list'                    => 1,
+                'access_to_insert_asset_list'             => 1,
                 'access_to_atom_server'                   => 1,
                 'access_to_entry_list'                    => 1,
                 'access_to_new_entry_editor'              => 1,
@@ -1814,6 +1814,7 @@ sub load_core_permissions {
             'label'            => 'Manage Pages',
             'order'            => 500,
             'permitted_action' => {
+                'access_to_insert_asset_list'     => 1,
                 'access_to_folder_list'           => 1,
                 'access_to_page_list'             => 1,
                 'add_tags_to_pages_via_list'      => 1,

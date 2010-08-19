@@ -160,7 +160,7 @@ sub dialog_list_asset {
     my $blog = $blog_class->load($blog_id) if $blog_id;
     my $perms = $app->permissions;
     return $app->errtrans("Permission denied.")
-        if $mode_userpic ne 'upload_userpic' && !$app->can_do('access_to_asset_list');
+        if $mode_userpic ne 'upload_userpic' && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
