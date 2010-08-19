@@ -150,31 +150,63 @@ sub list_props {
         author => {
             label => 'Commenter',
             auto  => 1,
-            html_link => sub {
+            html => sub {
                 my ( $prop, $obj, $app ) = @_;
+                my $name = $obj->author;
+                my ( $link, $status_img, $auth_img );
                 my $id  = $obj->commenter_id;
                 if ( $id ) {
-                    return $app->uri(
+                    $link = $app->uri(
                         mode => 'view',
                         args => {
                             _type   => 'commenter',
                             id      => $id,
                             blog_id => $app->blog->id,
                     });
+                    my $commenter = MT->model('author')->load($id);
+                    my $status = $commenter->status;
+                    if ( $commenter->type == MT::Author::AUTHOR() ) {
+                        $status_img = $commenter->is_active    ? 'user-enabled.gif'
+                                    : $commenter->is_banned    ? 'user-disabled.gif'
+                                    :                            'user-pending.gif'
+                                    ;
+                    }
+                    else {
+                        $status_img = $commenter->is_trusted   ? 'trusted.gif'
+                                    : $commenter->is_banned    ? 'banned.gif'
+                                    :                            'authenticated.gif'
+                                    ;
+                    }
+
+                    if ( $commenter->auth_type eq 'MT' ) {
+                        $auth_img = 'images/comment/mt_logo.png';
+                    }
+                    else {
+                        my $auth = MT->registry( commenter_authenticators => $commenter->auth_type );
+                        $auth_img = $auth->{logo_small};
+                    }
                 }
                 else {
-                    my $author = MT::Util::remove_html( $obj->author );
-                    return $app->uri(
+                    my $commenter_name = MT::Util::remove_html( $obj->author );
+                    $link = $app->uri(
                         mode => 'search_replace',
                         args => {
                             _type       => 'comment',
                             search_cols => 'author',
                             is_limited  => 1,
                             do_search   => 1,
-                            search      => $author,
+                            search      => $commenter_name,
                             blog_id     => $app->blog->id,
                     });
                 }
+                my $static = MT->static_path;
+                my $out = '';
+                $out .= '<img src="' . $static . $auth_img . '" />'
+                    if $auth_img;
+                $out .= '<a href="' . $link . '">' . $name . '</a>';
+                $out .= '<img src="' . $static . 'images/status_icons/' . $status_img . '" />'
+                    if $status_img;
+                $out;
             }
         },
         auth_type => {
@@ -221,7 +253,7 @@ sub list_props {
             label => 'Text',
             auto => 1,
             html  => sub {
-                my ( $prop, $obj ) = @_;
+                my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html($obj->text);
                 ## FIXME: Hard coded...
                 my $len  = 20;
@@ -233,7 +265,18 @@ sub list_props {
                     $text = '...';
                 }
                 my $id  = $obj->id;
-                return qq{<a href="<mt:var name="script_url">?__mode=view&_type=comment&id=$id&blog_id=<mt:blogid>">$text</a>};
+                my $link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'comment',
+                        id      => $id,
+                        blog_id => $app->blog->id,
+                });
+                my $status_img = MT->static_path . 'images/status_icons/';
+                $status_img .= $obj->is_junk      ? 'warning.gif'
+                             : $obj->is_published ? 'success.gif'
+                             :                      'draft.gif';
+                return qq{<img src="$status_img" /><a href="$link">$text</a>};
             },
         },
         junk_score => {
