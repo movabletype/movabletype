@@ -237,9 +237,31 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 my $title = $obj->title;
                 my $id    = $obj->id;
-                # FIXME: mt:entryPermalink dies in system context.
-                # return qq{<a href="<mt:var name="script_url">?__mode=view&_type=entry&blog_id=<mt:entryblogid>&id=<mt:entryid>"><mt:entryTitle></a> [<a href="<mt:entryPermalink>">>></a>]};
-                return $obj->title;
+                my $permalink = $obj->permalink;
+                my $edit_url = MT->app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'entry',
+                        id      => $obj->id,
+                        blog_id => $obj->blog_id,
+                });
+                my $status = $obj->status;
+                require MT::Entry;
+                my $status_icon
+                    = $status == MT::Entry::HOLD()     ? 'draft.gif'
+                    : $status == MT::Entry::RELEASE()  ? 'success.gif'
+                    : $status == MT::Entry::REVIEW()   ? 'warning.gif'
+                    : $status == MT::Entry::FUTURE()   ? 'future.gif'
+                    : $status == MT::Entry::JUNK()     ? 'warning.gif'
+                    :                                    '';
+                my $static = MT->static_path . 'images/status_icons/';
+                my $out = '';
+                $out .= '<img src="' . $static .  $status_icon . '" />';
+                $out .= '<a href="' . $edit_url . '">';
+                $out .= $obj->title;
+                $out .= '</a>';
+                $out .= '<a href="' . $permalink . '"><img src="' . $static . 'view.gif" /></a>' if $permalink;
+                return $out;
             },
         },
         authored_on => {
