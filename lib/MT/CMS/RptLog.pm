@@ -26,7 +26,8 @@ sub view {
     my ( $filter_col, $val );
 
     # can this user really view this shit?
-    return $app->error( $app->translate("Permission denied.") ) unless $user->can_view_log;
+    return $app->permission_denied()
+        unless $user->can_view_log;
 
     # all classes of log objects
     unless ( exists $terms->{class} ) {
@@ -148,7 +149,8 @@ sub reset {
     $app->validate_magic() or return;
     my $author = $app->user;
     my $log_class = $app->model('log');
-    return $app->error( $app->translate("Permission denied.") ) unless $author->can_view_log;
+    return $app->permission_denied()
+        unless $author->can_view_log;
     my $args = { 'reset' => 1 };
     $log_class->remove( { class => '*' } );
     my $log_url = $app->uri( mode => 'view_rpt_log' );

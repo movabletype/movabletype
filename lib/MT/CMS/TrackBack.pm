@@ -115,7 +115,7 @@ sub list {
       || ( $perms && $perms->can_administer_blog );
     if ($perms) {
         $app->can_do('access_to_trackback_list')
-            or return $app->error( $app->translate("Permission denied.") );
+            or return $app->permission_denied();
         $can_empty_junk = $admin
           || $app->can_do('delete_junk_trackbacks')
           ? 1 : 0;

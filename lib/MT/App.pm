@@ -2788,7 +2788,7 @@ sub run {
                             }
                         }
                         unless ($allowed) {
-                            $app->errtrans("Permission denied.");
+                            $app->permission_denied();
                             last REQUEST;
                         }
                     }
@@ -3784,6 +3784,13 @@ sub document_root {
 sub errtrans {
     my $app = shift;
     return $app->error( $app->translate(@_) );
+}
+
+sub permission_denied {
+    my $app = shift;
+    return $app->error(
+        $app->translate('You did not have permission for this action.')
+    );
 }
 
 sub DESTROY {

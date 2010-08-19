@@ -363,7 +363,7 @@ sub list {
         my $type = $app->param('type');
         return $app->return_to_dashboard( redirect => 1 ) if !$type || $type eq 'blog';
     }
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('open_blog_listing_screen');
     my $author    = $app->user;
     my $type      = $app->param('type') || MT::Blog->class_type;
@@ -462,7 +462,7 @@ sub cfg_prefs {
 
     my $blog_prefs = $app->user_blog_prefs;
     my $perms      = $app->permissions;
-    return $app->error( $app->translate('Permission denied.') )
+    return $app->permission_denied()
         unless $app->can_do('access_to_blog_config_screen');
 
     my $blog = $app->model('blog')->load($blog_id)
@@ -539,7 +539,7 @@ sub cfg_feedback {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
@@ -556,7 +556,7 @@ sub cfg_registration {
     my $blog = $app->blog;
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('edit_config');
 
     eval { require Digest::SHA1; };
@@ -631,7 +631,7 @@ sub cfg_web_services {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
@@ -732,7 +732,7 @@ sub rebuild_pages {
     }
 
     if ( $type eq 'all' ) {
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
           unless $perms->can_do('rebuild');
 
         # FIXME: Rebuild the entire blog????
@@ -740,13 +740,13 @@ sub rebuild_pages {
           or return $app->publish_error();
     }
     elsif ( $type eq 'index' ) {
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
           unless $perms->can_do('rebuild');
         $app->rebuild_indexes( BlogID => $blog_id )
             or return $app->publish_error();
     }
     elsif ( $type =~ /^index-(\d+)$/ ) {
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
           unless $perms->can_do('rebuild');
         my $tmpl_id = $1;
         require MT::Template;
@@ -762,7 +762,7 @@ sub rebuild_pages {
         my $entry_id = $1;
         require MT::Entry;
         my $entry = MT::Entry->load($entry_id);
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_error()
           unless $perms->can_edit_entry( $entry, $app->user );
         $app->rebuild_entry(
             Entry             => $entry,
@@ -773,7 +773,7 @@ sub rebuild_pages {
         $order = "entry '" . $entry->title . "'";
     }
     elsif ( $archiver && $archiver->category_based ) {
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
           unless $perms->can_do('rebuild');
         $offset = $q->param('offset') || 0;
         my $start = time;
@@ -826,7 +826,7 @@ sub rebuild_pages {
             }
         }
         if ( !$special ) {
-            return $app->error( $app->translate("Permission denied.") )
+            return $app->permission_denied()
                 unless $perms->can_do('rebuild');
             $offset = $q->param('offset') || 0;
             if ( $offset < $total ) {
@@ -1178,7 +1178,7 @@ sub rebuild_confirm {
     my $blog = MT::Blog->load($blog_id)
         or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
 
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('rebuild');
 
     my %param     = (
@@ -1260,7 +1260,7 @@ sub update_welcome_message {
     $app->validate_magic or return;
 
     my $perms = $app->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $perms && $perms->can_do('update_welcome_message');
 
     my $blog_id    = $app->param('blog_id');
@@ -2537,7 +2537,7 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
-    return $app->error( $app->translate("Permission denied.") )
+    return $app->permission_denied()
         if !$user->is_superuser && !$user->can('clone_blog');
 
     my @id = $app->param('id');

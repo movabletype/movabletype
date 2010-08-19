@@ -12,7 +12,7 @@ use MT::I18N qw( wrap_text );
 sub entry_notify {
     my $app  = shift;
     my $user = $app->user;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('open_entry_notification_screen');
 
     my $q        = $app->param;
@@ -191,7 +191,7 @@ sub export {
     my $perms = $app->permissions;
     my $blog  = $app->blog
       or return $app->error( $app->translate("Please select a blog.") );
-    return $app->error( $app->translate("Permission denied.") )
+    return $app->permission_denied()
       unless $user->is_superuser
       || ( $perms && $perms->can_do('export_addressbook') );
     $app->validate_magic() or return;

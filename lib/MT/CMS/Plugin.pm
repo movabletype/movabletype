@@ -15,7 +15,7 @@ sub cfg_plugins {
     $param{screen_class} = 'settings-screen';
     if ( my $blog_id = $q->param('blog_id') ) {
         my $blog = $app->model('blog')->load($blog_id);
-        return $app->return_to_dashboard( permission => 1 )
+        return $app->permission_denied()
             if $blog
                 && ($blog->is_blog
                     ? !$app->can_do('administer_blog')
@@ -30,7 +30,7 @@ sub cfg_plugins {
         $app->forward("view", \%param);
     }
     else {
-        return $app->return_to_dashboard( permission => 1 )
+        return $app->permission_denied()
             if !$app->can_do('manage_plugins');
 
         my $cfg = $app->config;
@@ -61,7 +61,7 @@ sub save_config {
     my $blog_id    = $q->param('blog_id');
 
     $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('save_plugin_setting');
 
     my %param;
@@ -93,7 +93,7 @@ sub reset_config {
     my $blog_id    = $q->param('blog_id');
 
     $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('reset_plugin_setting');
 
     my %param;

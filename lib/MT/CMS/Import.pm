@@ -14,7 +14,7 @@ sub start_import {
     my $blog_id = $app->param('blog_id');
 
     my $perms = $app->permissions;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('open_start_import_screen');
 
     my $blog = $app->model('blog')->load($blog_id);

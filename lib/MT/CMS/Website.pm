@@ -318,9 +318,6 @@ sub dialog_select_website {
     my $app = shift;
     my $user = $app->user;
 
-    #return $app->errtrans("Permission denied.")
-    #    unless $app->user->is_superuser;
-
     my $favorites = $app->param('select_favorites');
     my %favorite;
     my $confirm_js;
@@ -383,9 +380,6 @@ sub dialog_select_website {
 
 sub dialog_move_blogs {
     my $app = shift;
-
-    #return $app->errtrans("Permission denied.")
-    #    unless $app->user->is_superuser;
 
     my $blog_id = $app->param('blog_id');
 

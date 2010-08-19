@@ -17,7 +17,7 @@ sub list {
     $param{Package}       = $app->model($type);
 
     if ( !$app->blog && !$app->user->is_superuser ) {
-        return $app->errtrans("Permission denied.");
+        return $app->permission_denied();
     }
 
     my $blog = $app->blog;
@@ -27,9 +27,9 @@ sub list {
     my $perms = $app->permissions;
     if ( $app->blog && ( ( !$perms ) || ( $perms && $perms->is_empty ) ) ) {
         $app->delete_param('blog_id');
-        return $app->return_to_dashboard( permission => 1 );
+        return $app->permission_denied();
     }
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('edit_tags');
 
     if ( $param{Package}->can('class_label_plural') ) {
@@ -59,7 +59,7 @@ sub rename_tag {
     my $perms   = $app->permissions;
     my $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
-      or return $app->errtrans("Permission denied.");
+      or return $app->permission_denied();
     my $id        = $app->param('__id');
     my $name      = $app->param('tag_name')
       or return $app->error( $app->translate("New name of the tag must be specified.") );

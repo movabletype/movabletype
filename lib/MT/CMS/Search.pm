@@ -601,7 +601,7 @@ sub do_search_replace {
         if ( $app->param('__mode') eq 'dialog_grant_role' ) {
             if ($blog_id) {
                 my $perm = $author->permissions($blog_id);
-                return $app->errtrans('Permission denied.')
+                return $app->permission_denied()
                     unless $perm->can_do('search_members');
             }
             $blog_id = 0;

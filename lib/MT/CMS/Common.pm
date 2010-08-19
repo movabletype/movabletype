@@ -560,7 +560,7 @@ sub edit {
     if ( !$author->is_superuser ) {
         $app->run_callbacks( 'cms_view_permission_filter.' . $type,
             $app, $id, $obj_promise )
-          || return $app->return_to_dashboard( permission => 1 );
+          || return $app->permission_denied();
     }
     my $obj;
     my $blog;
@@ -1169,7 +1169,7 @@ sub _list {
         elsif ( $type eq 'banlist' ) {
             last PERMCHECK if $perms->can_do('access_to_banlist');
         }
-        return $app->return_to_dashboard( permission => 1 );
+        return $app->permision_denied();
     }
 
     my $id        = $q->param('id');
@@ -1711,7 +1711,7 @@ sub list_revision {
         or return $app->error($app->translate('Can\'t load [_1] #[_1].', $class->class_label, $id));
     my $blog = $obj->blog || MT::Blog->load( $q->param('blog_id') ) || undef;
     my $author = $app->user;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         if $type eq 'entry'
         ? ( $obj->author_id == $author->id
                 ? !$app->can_do('edit_own_entry')

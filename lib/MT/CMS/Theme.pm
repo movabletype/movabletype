@@ -14,7 +14,7 @@ sub list {
     my $app = shift;
     my $q   = $app->param;
     my %param;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('open_theme_listing_screen');
     $param{screen_class} = 'settings-screen';
     my $cfg = $app->config;
@@ -110,7 +110,7 @@ sub dialog_select_theme {
     $param{idfield} = $app->param('idfield');
     $param{namefield} = $app->param('namefield');
     $param{imagefield} = $app->param('imagefield');
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('manage_themes');
 
     my $cfg = $app->config;
@@ -133,7 +133,7 @@ sub dialog_select_theme {
 
 sub apply {
     my $app = shift;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('apply_theme');
     my $blog = $app->blog
         or return $app->error(
@@ -168,7 +168,7 @@ sub apply {
 sub uninstall {
     my $app = shift;
     $app->can_do('uninstall_theme_package')
-        or return $app->return_to_dashboard( permission => 1 );
+        or return $app->permission_denied();
     my $q = $app->param;
     my $theme_id = $q->param('theme_id');
     my $theme = MT::Theme->load($theme_id);
@@ -207,9 +207,7 @@ sub uninstall {
 sub export {
     my $app = shift;
     $app->can_do('open_theme_export_screen')
-        or return $app->error(
-            MT->translate('Permission denied.')
-        );
+        or return $app->permission_denied();
     my %param;
     my $q = $app->param;
     my $blog = $app->blog || MT->model('blog')->load( $q->param('blog_id') )
@@ -289,9 +287,7 @@ sub export {
 sub element_dialog {
     my $app = shift;
     $app->can_do('open_theme_export_screen')
-        or return $app->error(
-            MT->translate('Permission denied.')
-        );
+        or return $app->permission_denied();
 
     my $q = $app->param;
     my $blog = $app->blog || MT->model('blog')->load( $q->param('blog_id') )
@@ -351,9 +347,7 @@ sub element_dialog {
 sub save_detail {
     my $app = shift;
     $app->can_do('do_export_theme')
-        or return $app->error(
-            MT->translate('Permission denied.')
-        );
+        or return $app->permission_denied();
     my $q    = $app->param;
     my %param;
     my $blog = $app->blog;
@@ -384,9 +378,7 @@ sub save_detail {
 sub do_export {
     my $app = shift;
     $app->can_do('do_export_theme')
-        or return $app->error(
-            MT->translate('Permission denied.')
-        );
+        or return $app->permission_denied();
     my $q    = $app->param;
     my $blog = $app->blog;
     my $theme_id = dirify($q->param('theme_id'))

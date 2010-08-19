@@ -144,7 +144,7 @@ sub edit_role {
 
     return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('create_role');
 
     my %param  = $_[0] ? %{ $_[0] } : ();
@@ -286,7 +286,7 @@ sub list {
       if $app->param('blog_id');
 
     my $this_author = $app->user;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('access_to_system_author_list');
 
     my $this_author_id = $this_author->id;
@@ -427,7 +427,7 @@ sub list_member {
     my $blog  = $app->blog;
     my $user  = $app->user;
     my $perms = $app->permissions;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('access_to_blog_member_list');
 
     my $super_user = 1 if $user->is_superuser();
@@ -568,7 +568,7 @@ sub list_association {
             if $blog_id && $this_user->permissions($blog_id)->can_do('access_to_blog_association_list');
         last PERMCHECK
             if $author_id && $author_id == $this_user->id;
-        return $app->errtrans('Permission denied');
+        return $app->permission_denied();
     }
 
     my ( $user, $role );
@@ -792,7 +792,7 @@ sub list_role {
 
     return $app->return_to_dashboard( redirect => 1 ) if $app->param('blog_id');
 
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('create_role');
 
     my $pref = $app->list_pref('role');
@@ -843,7 +843,7 @@ sub list_role {
         }
     };
     unless ( $app->user->is_superuser() ) {
-        return $app->errtrans("Permission denied.");
+        return $app->permission_denied();
     }
     $app->add_breadcrumb( $app->translate("Roles") );
     $app->listing(
@@ -922,7 +922,7 @@ sub set_object_status {
     my ($app, $new_status) = @_;
 
     $app->validate_magic() or return;
-    return $app->error( $app->translate('Permission denied.') )
+    return $app->permission_denied()
       unless $app->user->is_superuser;
     return $app->error( $app->translate("Invalid request.") )
       if $app->request_method ne 'POST';
@@ -1017,7 +1017,7 @@ sub cfg_system_users {
         return $app->return_to_dashboard( redirect => 1 );
     }
 
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
     my $cfg = $app->config;
     $app->add_breadcrumb( $app->translate('General Settings') );
@@ -1113,7 +1113,7 @@ sub cfg_system_users {
 sub save_cfg_system_users {
     my $app = shift;
     $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
 
     my $theme_id = $app->param('new_user_theme_id') || '';
@@ -1194,7 +1194,7 @@ sub remove_user_assoc {
 
     my $user = $app->user;
     my $perms = $app->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('remove_user_association');
     my $can_remove_administrator = $app->can_do('remove_administrator_association');
 
@@ -1230,7 +1230,7 @@ sub revoke_role {
 
     my $user = $app->user;
     my $perms = $app->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('revoke_role');
 
     my $blog_id = $app->param('blog_id');
@@ -1248,7 +1248,7 @@ sub revoke_role {
     my $blog = MT::Blog->load( $blog_id );
     return $app->errtrans("Invalid request.")
         unless $blog && $role && $author;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         if !$app->can_do('revoke_administer_role') && $role->has('administer_blog');
 
     MT::Association->unlink( $blog => $role => $author );
@@ -1289,7 +1289,7 @@ sub grant_role {
             || !$user->permissions( $blogs[0] )->can_do('grant_administer_role') ) {
             $can_grant_administer = 0;
             if ( !$user->permissions( $blogs[0] )->can_do('grant_role_for_blog') ) {
-                return $app->errtrans("Permission denied.");
+                return $app->permission_denied();
             }
         }
     }
@@ -1453,7 +1453,7 @@ sub dialog_select_author {
 
 sub dialog_select_sysadmin {
     my $app = shift;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser;
 
     my $hasher = sub {
@@ -1525,7 +1525,7 @@ sub dialog_grant_role {
             if $app->can_do('grant_role_for_all_blogs');
         last PERMCHECK
             if $blog_id && $this_user->permissions($blog_id)->can_do('grant_role_for_blog');
-        return $app->errtrans('Permission denied.');
+        return $app->permission_denied()
     }
 
     my $type = $app->param('_type');

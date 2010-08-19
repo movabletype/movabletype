@@ -618,7 +618,7 @@ sub list {
         else {
             last PERMCHECK if $app->user->can_do($action, at_least_one => 1 );
         }
-        return $app->errtrans('Permission denied.');
+        return $app->permission_denied();
     }
 
     my %terms;
@@ -1280,7 +1280,7 @@ sub cfg_entry {
     my $blog_id = scalar $q->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
       unless $blog_id;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('edit_config');
     $q->param( '_type', 'blog' );
     $q->param( 'id',    scalar $q->param('blog_id') );
@@ -1310,22 +1310,22 @@ sub save {
     my $cat_class = $app->model( $class->container_type );
 
     my $perms = $app->permissions
-      or return $app->errtrans("Permission denied.");
+      or return $app->permission_denied();
 
     my $id = $app->param('id');
     if ( !$id ) {
         if ( $type eq 'page' ) {
-            return $app->errtrans("Permission denied.")
+            return $app->permission_denied()
                 unless $perms->can_do('create_new_page');
         }
         elsif ( $type eq 'entry' ) {
-            return $app->errtrans("Permission denied.")
+            return $app->permission_denied()
                 unless $perms->can_do('create_new_entry');
         }
     }
     else {
         if ( $type eq 'page' ) {
-            return $app->errtrans("Permission denied.")
+            return $app->permission_denied()
                 unless $perms->can_do('edit_all_pages');
         }
     }
@@ -1352,9 +1352,9 @@ sub save {
         return $app->error( $app->translate("Invalid parameter") )
           unless $obj->blog_id == $blog_id;
         if ( $type eq 'entry' ) {
-            return $app->error( $app->translate("Permission denied.") )
+            return $app->permission_denied()
               unless $perms->can_edit_entry( $obj, $author );
-            return $app->error( $app->translate("Permission denied.") )
+            return $app->permission_denied()
               if ( $obj->status ne $app->param('status') )
               && !( $perms->can_edit_entry( $obj, $author, 1 ) );
             $archive_type = 'Individual';
@@ -1750,11 +1750,11 @@ sub save_entries {
     my $type  = $app->param('_type');
     if ( $type eq 'page' ) {
         $app->can_do('save_multiple_pages')
-            or return $app->errtrans('Permission denied.');
+            or return $app->permission_denied();
     }
     elsif ( $type eq 'entry' ) {
         $app->can_do('save_multiple_entries')
-            or return $app->errtrans('Permission denied.');
+            or return $app->permission_denied();
     }
     $app->validate_magic() or return;
 
@@ -1947,7 +1947,7 @@ sub pinged_urls {
     my $entry = MT::Entry->load($entry_id)
         or return $app->error($app->translate('Can\'t load entry #[_1].', $entry_id));
     my $author = $app->user;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         if $entry->class eq 'entry'
         ? (     $entry->author_id == $author->id
                 ? !$app->can_do('edit_own_entry')
@@ -2020,7 +2020,7 @@ sub open_batch_editor {
             last PERMCHECK
                 if $app->user->can_do( $action, at_least_one => 1 );
         }
-        return $app->errtrans('Permission denied.');
+        return $app->permission_denied();
     }
 
     # Loading objects
@@ -2406,7 +2406,7 @@ sub update_entry_status {
           or return $app->errtrans(
             "One of the entries ([_1]) did not actually exist", $id );
 
-        return $app->error( $app->translate('Permission denied.') )
+        return $app->permission_denied()
             unless $app_author->is_superuser
                 || ( ( $entry->class eq 'entry' )
                     && $perms && $perms->can_edit_entry( $entry, $app_author, 1 ) )

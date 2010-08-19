@@ -140,7 +140,7 @@ sub this_is_you_widget {
     );
 
     my $page_class = $app->model('page');
-    $param->{publish_page_count} = $page_class->count( { author_id => $user->id, status => MT::Entry::RELEASE } );
+    $param->{publish_page_count} = $page_class->count( { author_id => $user->id, status => MT::Entry::RELEASE() } );
     $param->{draft_page_count} = $page_class->count(
         {
             author_id => $user->id,

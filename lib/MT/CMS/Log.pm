@@ -22,7 +22,7 @@ sub view {
 	}
         last PERMCHECK
             if $app->can_do('open_system_log_screen');
-        return $app->error( $app->translate('Permission denied.') );
+        return $app->permission_denied();
     }
 
     my $log_class  = $app->model('log');
@@ -240,7 +240,7 @@ sub reset {
     my $args = { 'reset' => 1 };
     if ( my $blog_id = $app->param('blog_id') ) {
         my $perms = $app->permissions;
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
           unless $perms && $perms->can_do('reset_blog_log');
         my $blog_class = $app->model('blog');
         my $blog = $blog_class->load( $blog_id )
@@ -261,7 +261,7 @@ sub reset {
         $args->{ 'blog_id' } = $blog_id;
     }
     else {
-        return $app->error( $app->translate("Permission denied.") )
+        return permission_denied()
           unless $app->can_do('reset_system_log');
         if ( $log_class->remove( { class => '*' } ) ) {
             $app->log(
@@ -295,7 +295,7 @@ sub export {
 	}
         last PERMCHECK
             if $app->can_do('export_system_log');
-        return $app->error( $app->translate('Permission denied.') );
+        return $app->permission_denied();
     }
 
     $app->validate_magic() or return;

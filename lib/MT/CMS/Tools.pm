@@ -18,7 +18,7 @@ sub system_check {
         return $app->return_to_dashboard( redirect => 1 );
     }
     if ( !$app->can_do('open_system_check_screen') ) {
-        return $app->return_to_dashboard( permission => 1 );
+        return $app->permission_denied();
     }
 
     my %param;
@@ -413,7 +413,7 @@ sub cfg_system_general {
         return $app->return_to_dashboard( redirect => 1 );
     }
 
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
     my $cfg = $app->config;
     $app->add_breadcrumb( $app->translate('General Settings') );
@@ -516,7 +516,7 @@ sub cfg_system_general {
 sub save_cfg_system_general {
     my $app = shift;
     $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
     $app->validate_magic or return;
     my $cfg = $app->config;
@@ -634,7 +634,7 @@ sub upgrade {
 sub recover_profile_password {
     my $app = shift;
     $app->validate_magic or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
 
     my $q = $app->param;
@@ -682,7 +682,7 @@ sub start_backup {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
 
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('start_backup');
 
     my %param = ();
@@ -730,7 +730,7 @@ sub start_restore {
     my $blog_id = $app->param('blog_id');
     my $perms   = $app->permissions;
 
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('start_restore');
 
     return $app->return_to_dashboard( redirect => 1 )
@@ -777,7 +777,7 @@ sub backup {
     my $blog_id = $q->param('blog_id');
     my $perms   = $app->permissions;
     unless ( $user->is_superuser ) {
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
           unless defined($blog_id) && $perms->can_do('backup_blog');
     }
     $app->validate_magic() or return;
@@ -1044,7 +1044,7 @@ sub backup_download {
     my $blog_id = $app->param('blog_id');
     unless ( $user->is_superuser ) {
         my $perms = $app->permissions;
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
           unless defined($blog_id) && $perms->can_do('backup_download');
     }
     $app->validate_magic() or return;
@@ -1137,7 +1137,7 @@ sub backup_download {
 sub restore {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
 
@@ -1332,7 +1332,8 @@ sub restore {
 sub restore_premature_cancel {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->permission_denied()
+        if !$user->is_superuser;
     $app->validate_magic() or return;
 
     require JSON;
@@ -1387,7 +1388,8 @@ sub _restore_non_blog_asset {
 sub adjust_sitepath {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->permission_denied()
+        if !$user->is_superuser;
     $app->validate_magic() or return;
 
     require MT::BackupRestore;
@@ -1602,7 +1604,8 @@ sub adjust_sitepath {
 sub dialog_restore_upload {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->permission_denied()
+        if !$user->is_superuser;
     $app->validate_magic() or return;
 
     my $q = $app->param;
@@ -1842,7 +1845,8 @@ sub dialog_restore_upload {
 sub dialog_adjust_sitepath {
     my $app  = shift;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->permission_denied()
+        if !$user->is_superuser;
     $app->validate_magic() or return;
 
     my $q          = $app->param;
@@ -1962,7 +1966,7 @@ sub recover_passwords {
     my $app = shift;
     my @id  = $app->param('id');
 
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser();
 
     my $class = ref $app eq 'MT::App::Upgrader' ? 'MT::BasicAuthor' : $app->model('author');
@@ -2236,7 +2240,8 @@ sub restore_upload_manifest {
     my $app  = shift;
     my ($fh) = @_;
     my $user = $app->user;
-    return $app->errtrans("Permission denied.") if !$user->is_superuser;
+    return $app->permission_denied()
+        if !$user->is_superuser;
     $app->validate_magic() or return;
 
     my $q = $app->param;

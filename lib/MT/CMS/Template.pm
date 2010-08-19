@@ -650,7 +650,7 @@ sub list {
     return $app->return_to_dashboard( redirect => 1 )
       unless $perms || $app->user->is_superuser;
     if ( $perms && !$perms->can_edit_templates ) {
-        return $app->return_to_dashboard( permission => 1 );
+        return $app->permission_denied();
     }
     my $blog = $app->blog;
 
@@ -1150,7 +1150,7 @@ sub reset_blog_templates {
     my $q     = $app->param;
     my $perms = $app->permissions
       or return $app->error( $app->translate("No permissions") );
-    return $app->error( $app->translate("Permission denied.") )
+    return $app->permission_denied()
       unless $perms->can_do('reset_blog_templates');
     $app->validate_magic() or return;
     my $blog = MT::Blog->load( $perms->blog_id )
@@ -1716,7 +1716,7 @@ sub dialog_publishing_profile {
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
             $perms->can_edit_templates;
@@ -1736,7 +1736,7 @@ sub dialog_refresh_templates {
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->user->is_superuser()
             || $app->user->can_edit_templates()
             || ( $perms && (    $perms->can_edit_templates()
@@ -2042,10 +2042,7 @@ sub refresh_individual_templates {
 
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->error(
-        $app->translate(
-            "Permission denied.")
-      )
+    return $app->permission_denied()
       #TODO: system level-designer permission
       unless $user->is_superuser() || $user->can_edit_templates()
       || ( $perms
@@ -2181,10 +2178,7 @@ sub clone_templates {
 
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->error(
-        $app->translate(
-            "Permission denied.")
-      )
+    return $app->permission_denied()
       #TODO: system level-designer permission
       unless $user->is_superuser() || $user->can_edit_templates()
       || ( $perms
@@ -2254,7 +2248,7 @@ sub publish_index_templates {
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->user->is_superuser ||
             $perms->can_administer_blog ||
             $perms->can_rebuild;
@@ -2288,7 +2282,7 @@ sub publish_archive_templates {
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
       unless $app->user->is_superuser
       || $perms->can_administer_blog
       || $perms->can_rebuild;
@@ -2558,7 +2552,7 @@ sub list_widget {
     return $app->return_to_dashboard( redirect => 1 )
       unless $perms || $app->user->is_superuser;
     if ( $perms && !$perms->can_edit_templates ) {
-        return $app->return_to_dashboard( permission => 1 );
+        return $app->permission_denied();
     }
     my $blog_id = $q->param('blog_id') || 0;
 

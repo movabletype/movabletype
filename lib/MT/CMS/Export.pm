@@ -14,7 +14,7 @@ sub start_export {
     my $blog_id = $app->param('blog_id');
 
     my $perms = $app->permissions;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
       if !$app->can_do('open_blog_export_screen');
 
     my $blog = $app->model('blog')->load($blog_id);

@@ -159,7 +159,7 @@ sub dialog_list_asset {
     my $blog_class = $app->model('blog');
     my $blog = $blog_class->load($blog_id) if $blog_id;
     my $perms = $app->permissions;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         if $mode_userpic ne 'upload_userpic' && !$app->can_do('access_to_insert_asset_list');
 
     my $asset_class = $app->model('asset') or return;
@@ -552,7 +552,7 @@ sub complete_upload {
     $asset->on_upload( \%param );
 
     my $perms = $app->permissions;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('access_to_asset_list');
 
     return $app->redirect(
@@ -880,7 +880,7 @@ sub save {
       or return $app->errtrans("Invalid request.");
 
     $app->validate_magic() or return;
-    return $app->errtrans("Permission denied.")
+    return $app->permission_denied()
         unless $app->can_do('save_asset');
 
     my $blog_id = $q->param('blog_id');
@@ -931,7 +931,7 @@ sub _set_start_upload_params {
     my ($param) = @_;
 
     if (my $perms = $app->permissions) {
-        return $app->error( $app->translate("Permission denied.") )
+        return $app->permission_denied()
             unless $perms->can_do('upload');
 
         my $blog_id = $app->param('blog_id');
@@ -1028,7 +1028,7 @@ sub _upload_file {
     require MT::Image;
 
     if (my $perms = $app->permissions) {
-        return $app->error( $app->translate("Permission denied.") )
+        return permission_denied()
           unless $app->can_do('upload');
     }
 

@@ -83,12 +83,12 @@ sub list {
     my $entry_type;
     if ( $type eq 'category' ) {
         $entry_type = 'entry';
-        return $app->return_to_dashboard( permission => 1 )
+        return $app->permission_denied()
             unless $app->can_do('access_to_category_list');
     }
     elsif ( $type eq 'folder' ) {
         $entry_type = 'page';
-        return $app->return_to_dashboard( permission => 1 )
+        return $app->permission_denied()
             unless $app->can_do('access_to_folder_list');
     }
     $entry_class = $app->model($entry_type);
@@ -152,11 +152,11 @@ sub save {
       or return $app->errtrans("Invalid request.");
 
     if ( $type eq 'category' ) {
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
             unless $app->can_do('save_category');
     }
     elsif ( $type eq 'folder' ) {
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
             unless $app->can_do('save_folder');
     }
 

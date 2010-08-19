@@ -160,7 +160,7 @@ sub list {
         else {
             last PERMCHECK if $app->user->can_do('access_to_comment_list', at_least_one => 1 );
         }
-        return $app->errtrans('Permission denied.');
+        return $app->permission_denied();
     }
 
     my $trim_length =
@@ -353,7 +353,7 @@ sub list_member {
     my $blog  = $app->blog;
     my $user  = $app->user;
     my $perms = $app->permissions;
-    return $app->return_to_dashboard( permission => 1 )
+    return $app->permission_denied()
         unless $app->can_do('access_to_member_list');
 
     my $super_user = 1 if $user->is_superuser();
@@ -639,11 +639,11 @@ sub empty_junk {
     my $blog_id = $app->param('blog_id');
     if ($blog_id) {
         $app->can_do('delete_junk_comments')
-            or return $app->errtrans('Permission denied');
+            or return $app->permission_denied();
     }
     else {
         $app->can_do('delete_all_junk_comments')
-            or return $app->errtrans('Permission denied');
+            or return $app->permission_denied();
     }
 
     my $blog_ids = $app->_load_child_blog_ids($blog_id);
@@ -862,7 +862,7 @@ sub do_reply {
         my $perms = $app->{perms};
         return unless $perms;
 
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
           unless $perms->can_edit_entry( $entry, $user, 1 )
           ;    # check for publish_post
     }
@@ -978,7 +978,7 @@ sub dialog_post_comment {
     my $entry       = $entry_class->load( $parent->entry_id );
 
     unless ( $app->can_do('reply_comment_from_cms') ){
-        return $app->errtrans("Permission denied.")
+        return $app->permission_denied()
           unless $perms->can_edit_entry( $entry, $user, 1 )
           ;    # check for publish_post
     }
