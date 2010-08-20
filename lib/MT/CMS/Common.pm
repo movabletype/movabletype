@@ -7,7 +7,7 @@ package MT::CMS::Common;
 
 use strict;
 
-use MT::Util qw( format_ts offset_time_list relative_date );
+use MT::Util qw( format_ts offset_time_list relative_date remove_html);
 
 sub save {
     my $app  = shift;
@@ -1022,54 +1022,53 @@ sub filtered_list {
     my %cols = map { $_ => 1 } @cols;
     require MT::ListProperty;
     my $props = MT::ListProperty->list_properties($ds);
-    my %col_maker;
     my @results;
-    my $tmpl  = MT::Template->new;
-    $tmpl->blog_id($blog_id);
-    $app->set_default_tmpl_params($tmpl);
-    $tmpl->context->{__stash}{blog} = $blog;
-    $tmpl->context->{__stash}{blog_id} = $blog_id;
+
+    ## FIXME: would like to build MTML if specified, but currently
+    ## many of handlers can't run without blog_id. so commented
+    ## out for these codes until the problem would be resolved.
+    #my $tmpl;
+    #if ( scalar grep { $props->{$_}->has('mtml') } @cols ) {
+    #    $tmpl = MT::Template->new;
+    #    $tmpl->blog_id($blog_id);
+    #    $app->set_default_tmpl_params($tmpl);
+    #    $tmpl->context->{__stash}{blog} = $blog;
+    #    $tmpl->context->{__stash}{blog_id} = $blog_id;
+    #}
 
     $MT::DebugMode && $debug->{section}->('prepare load cols');
-
     for my $col ( @cols ) {
         my $prop = $props->{$col};
         my @result;
         if ( $prop->has('bulk_html') ) {
-            my @vals = $prop->bulk_html(\@objs, $app);
-            for my $obj ( @objs ) {
-                $tmpl->context->{__stash}{$ds} = $obj;
-                $tmpl->text(shift @vals);
-                $tmpl->reset_tokens;
-                my $out = $tmpl->output;
-                push @result, $out;
-            }
+            @result = $prop->bulk_html(\@objs, $app);
         }
+        #elsif ( $prop->has('mtml') ) {
+        #    for my $obj ( @objs ) {
+        #        $tmpl->context->{__stash}{$ds} = $obj;
+        #        my $out = $prop->html($obj, $app);
+        #        $tmpl->text($out);
+        #        $tmpl->reset_tokens;
+        #        $out = $tmpl->output;
+        #        push @result, $out;
+        #    }
+        #}
         elsif ( $prop->has('html') ) {
             for my $obj ( @objs ) {
-                $tmpl->context->{__stash}{$ds} = $obj;
-                my $out = $prop->html($obj, $app);
-                $tmpl->text($out);
-                $tmpl->reset_tokens;
-                $out = $tmpl->output;
-                push @result, $out;
+                push @result, $prop->html($obj, $app);
             }
         }
         elsif ( $prop->has('html_link') ) {
             for my $obj ( @objs ) {
-                $tmpl->context->{__stash}{$ds} = $obj;
-                my $out = $prop->html_link($obj, $app);
-                $tmpl->text($out);
-                $tmpl->reset_tokens;
-                my $link = $tmpl->output;
+                my $link = $prop->html_link($obj, $app);
                 my $raw  = $prop->raw($obj);
-                push @result, "<a href=\"$link\">$raw</a>";
+                push @result, qq{<a href="$link">$raw</a>};
             }
         }
         elsif ( $prop->has('raw') ) {
             for my $obj ( @objs ) {
                 my $out = $prop->raw($obj);
-                push @result, $out;
+                push @result, remove_html($out);
             }
         }
 
