@@ -274,6 +274,182 @@ sub clean_db : Test(teardown) {
 }
 
 
+package Test::Joins;
+use Test::More;
+use MT::Test;
+use base qw( Test::Class MT::Test );
+
+sub reset_db : Test(setup) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
+
+sub make_pc_data {
+    my $self = shift;
+    $self->make_objects(
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'MacBook',
+          status  => 11,        },
+        { __class => 'Foo',
+          name    => 'Linux',
+          text    => 'Ubuntu',
+          status  => 12,       },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'Vista',
+          status  => 13,          },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'XP',
+          status  => 10,          },
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'iBook',
+          status  => 10,      },
+
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Silverlight',
+          status  => 2,
+          foo_id  => 3,             },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'IronPython',
+          status  => 3,
+          foo_id  => 4,            },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'IronRuby',
+          status  => 1,
+          foo_id  => 4,          },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Visual C++',
+          status  => 4,
+          foo_id  => 3,          },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Visual Basic',
+          status  => 4,
+          foo_id  => 4,          },
+
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Home',
+          status  => 1,
+          bar_id  => 3,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Professional',
+          status  => 1,
+          bar_id  => 3,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Ultimate',
+          status  => 1,
+          bar_id  => 3,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Kubuntu',
+          status  => 1,
+          bar_id  => 2,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Edubuntu',
+          status  => 3,
+          bar_id  => 2,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'zubuntu',
+          status  => 4,
+          bar_id  => 2,             },
+        { __class => 'Baz',
+          __wait   => 1,
+          name    => 'Enterprise',
+          status  => 3,
+          bar_id  => 5,             },
+    );
+}
+
+sub joins : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $vista = Foo->load(4);  # not a search
+    my @data = Foo->load(
+        undef,
+        {
+            joins => [
+                [ 'Baz', undef, { bar_id => \'= bar1.bar_id', status => 3 }, { } ],
+                [ 'Bar', 'foo_id', { status => 3 }, { alias => 'bar1', to => 'foo' } ],
+                [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 4 }, { alias => 'bar2' } ]
+            ],
+          sort => 'created_on', direction => 'descend',
+        }
+    );
+    are_objects(\@data, [ $vista ], 'Has bar_status = 3, bar_status = 4, baz_status = 3 (only joins)');
+}
+
+sub joins_with_join : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $original = Foo->load(4);  # not a search
+    my @data = Foo->load(
+        undef,
+        {
+            join => [
+                'Bar',
+                'foo_id',
+                {
+                    status => 3
+                },
+                {
+                    alias => 'bar1',
+                    join => [ 'Baz', undef, { bar_id => \'= bar1.bar_id', status => 3 }, { } ],
+                },
+            ],
+            joins => [
+                [ 'Bar', undef, { foo_id => \'= foo_id', status => 4 }, { alias => 'bar2' } ]
+            ],
+            sort => 'created_on', direction => 'descend',
+        }
+    );
+    are_objects(\@data, [ $original ], 'Has bar_status = 3, bar_status = 4, baz_status = 3 (joins with join)');
+}
+
+sub only_join : Tests(1) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $original = Foo->load(4);  # not a search
+    my @data = Foo->load(
+        undef,
+        {
+            join => [
+                'Bar',
+                'foo_id',
+                {
+                    status => 3
+                },
+                {
+                    alias => 'bar1',
+                    join => [ 'Baz', undef, { bar_id => \'= bar1.bar_id', status => 3 }, {
+                        join => [ 'Bar', undef, { foo_id => \'= foo_id', status => 4 }, { alias => 'bar2' } ]
+                    } ]
+                },
+            ],
+            sort => 'created_on', direction => 'descend',
+        }
+    );
+    are_objects(\@data, [ $original ], 'Has bar_status = 3, bar_status = 4, baz_status = 3 (only join)');
+}
+
+sub clean_db : Test(teardown) {
+    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+}
+
+
 package Test::Search;
 use Test::More;
 use MT::Test;
@@ -586,24 +762,6 @@ SKIP: {
     is($@, q(), 'Iterator can be ended #2');
 }
 
-sub joins : Tests(1) {
-    my $self = shift;
-    $self->make_pc_data();
-
-    my $vista = Foo->load(3);  # not a search
-    my @data = Foo->load(
-        undef,
-        {
-            joins => [
-                [ 'Bar', undef, { foo_id => \'= foo_id', status => 2 }, { alias => 'bar1' } ],
-                [ 'Bar', undef, { foo_id => \'= bar1.bar_foo_id', status => 3 }, { alias => 'bar2' } ]
-            ],
-          sort => 'created_on', direction => 'descend',
-        }
-    );
-    are_objects(\@data, [ $vista ], 'Joins / Has Bars with status=2 and status=3 (alias)');
-}
-
 sub clean_db : Test(teardown) {
     MT::Test->reset_table_for(qw( Foo Bar ));
 }
@@ -830,7 +988,7 @@ sub clean_db : Test(teardown) {
 package main;
 use MT::Test;
 
-Test::Class->runtests('Test::GroupBy', 'Test::Search', 'Test::Classy', +137);
+Test::Class->runtests('Test::GroupBy', 'Test::Search', 'Test::Classy', 'Test::Joins', +137);
 
 my($foo, @foo, @bar);
 my($tmp, @tmp);

@@ -377,7 +377,7 @@ sub _decorate_column_name {
 sub _create_join_arg {
     my ( $args, $joins ) = @_;
     if ( my $args_join = delete $args->{join} ) {
-        push @$joins, $args_join if $args_join;
+        unshift @$joins, $args_join if $args_join;
     }
 
     my $join = shift @$joins;
@@ -619,14 +619,20 @@ sub prepare_statement {
 
         ## Join across the given column(s).
         $j_col = [$j_col] unless ref $j_col;
-        my $tuple = $class->primary_key_tuple;
+        my $to_class = $j_args->{to}
+            ? MT->model($j_args->{to})
+                : $class;
+        my $tuple = $to_class->primary_key_tuple;
+        my $alias = $j_args->{alias};
         COLUMN: foreach my $i (0..$#$j_col) {
             next unless defined $j_col->[$i];
             my $t = $tuple->[$i];
             my $c = $j_col->[$i];
 
-            my $where_col = $driver->_decorate_column_name($class, $t);
-            my $dec_j_col = $driver->_decorate_column_name($j_class, $c);
+            my $where_col = $driver->_decorate_column_name($to_class, $t);
+            my $dec_j_col = $alias
+                ? $alias . '.' . $driver->_decorate_column_name($j_class, $c)
+                : $driver->_decorate_column_name($j_class, $c);
             my $where_val = "= $dec_j_col";
             $stmt->add_where($where_col, \$where_val);
         }
