@@ -181,34 +181,33 @@ function validate (f) {
 </form>
 
 <div id="test-email-dialog">
-    <form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
-        <input type="hidden" name="__mode" value="cfg_system_general" />
-        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
-        <fieldset>
-        <mtapp:setting
-            id="to_email_address"
-            label="<__trans phrase="Send Email To">"
-            label_class="top-class"
-            hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
-            show_hint="1">
-            <input type="text" id="to_email_address" name="to_email_address" class="full-width" />
-        </mt:app:setting>
-        </fieldset>
-        <div class="actions-bar">
-            <button
-                type="submit"
-                class="action primary-button"
-                ><__trans phrase="Send Test Email"></button>
-        </div>
-    </form>
+  <form id="send-test-email" action="<mt:var name="script_url">" method="post" onsubmit="return validate(this);">
+    <input type="hidden" name="__mode" value="cfg_system_general" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />    
+    <mtapp:setting
+       id="to_email_address"
+       label="<__trans phrase="Send Email To">"
+       label_class="top-class"
+       hint="<__trans phrase="The email address that should receive a test email from Movable Type.">"
+       show_hint="1">
+      <input type="text" id="to_email_address" name="to_email_address" class="text full" />
+    </mt:app:setting>
+    <div class="dialog actions-bar">
+      <button
+         type="submit"
+         class="action button primary"
+         ><__trans phrase="Send"></button>
+    </div>
+  </form>
 </div>
 
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('#test-email-dialog').dialog({
         bgiframe: true,
+        title: 'Send Test Email',
         autoOpen: false,
-        width: 500
+        width: 450
     });
     jQuery('#send-test-email').click(function() {
         jQuery('#test-email-dialog').dialog('open');

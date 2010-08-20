@@ -4,361 +4,364 @@
 <h2><__trans phrase="Verify Clone Blog Settings"></h2>
 <!-- Verification Form -->
 <form name='clone-verification-form' id='clone-verification-form' method="post" action="<mt:var name="script_url">">
-    <fieldset>
-        <h3><__trans phrase="Blog Details"></h3>
-        <input type="hidden" name="clone" value="1" />
-        <input type="hidden" name="__mode" value="dialog_clone_blog" />
-        <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
-        <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
-        <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
-        <mt:if name="site_url_path">
-        <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain" escape="html">" />
-        <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path" escape="html">" />
-        <input type="hidden" name="use_subdomain" value="<mt:var name="use_subdomain" escape="html">" />
-        <mt:else>
-        <input type="hidden" name="site_url" value="<mt:var name="site_url" escape="html">" />
-        </mt:if>
-        <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
-        <input type="hidden" name="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" />
-        <input type="hidden" name="use_absolute" value="<mt:var name="use_absolute" escape="html">" />
-        <input type="hidden" name="enable_archive_paths" value="<mt:var name="enable_archive_paths" escape="html">" />
-        <mt:if name="archive_url_path">
-        <input type="hidden" name="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" />
-        <input type="hidden" name="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" />
-        <input type="hidden" name="use_archive_subdomain" value="<mt:var name="use_archive_subdomain" escape="html">" />
-        <mt:else>
-        <input type="hidden" name="archive_url" value="<mt:var name="archive_url" escape="html">" />
-        </mt:if>
-        <input type="hidden" name="archive_path" value="<mt:var name="archive_path" escape="html">" />
-        <input type="hidden" name="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" />
-        <input type="hidden" name="use_absolute_archive" value="<mt:var name="use_absolute_archive" escape="html">" />
-        <input type="hidden" name="overwrite" value="<mt:var name="overwrite" escape="html">" />
-        <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages" escape="html">" />
-        <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments" escape="html">" />
-        <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
-        <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
-<mt:unless name="clone_prefs_input"></mt:unless>
-        <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
+  <input type="hidden" name="clone" value="1" />
+  <input type="hidden" name="__mode" value="dialog_clone_blog" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="new_blog_name" value="<mt:var name="new_blog_name" escape="html">" />
+<mt:if name="site_url_path">
+  <input type="hidden" name="site_url_subdomain" value="<mt:var name="site_url_subdomain" escape="html">" />
+  <input type="hidden" name="site_url_path" value="<mt:var name="site_url_path" escape="html">" />
+  <input type="hidden" name="use_subdomain" value="<mt:var name="use_subdomain" escape="html">" />
+<mt:else>
+  <input type="hidden" name="site_url" value="<mt:var name="site_url" escape="html">" />
+</mt:if>
+  <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+  <input type="hidden" name="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" />
+  <input type="hidden" name="use_absolute" value="<mt:var name="use_absolute" escape="html">" />
+  <input type="hidden" name="enable_archive_paths" value="<mt:var name="enable_archive_paths" escape="html">" />
+<mt:if name="archive_url_path">
+  <input type="hidden" name="archive_url_subdomain" value="<mt:var name="archive_url_subdomain" escape="html">" />
+  <input type="hidden" name="archive_url_path" value="<mt:var name="archive_url_path" escape="html">" />
+  <input type="hidden" name="use_archive_subdomain" value="<mt:var name="use_archive_subdomain" escape="html">" />
+<mt:else>
+  <input type="hidden" name="archive_url" value="<mt:var name="archive_url" escape="html">" />
+</mt:if>
+  <input type="hidden" name="archive_path" value="<mt:var name="archive_path" escape="html">" />
+  <input type="hidden" name="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" />
+  <input type="hidden" name="use_absolute_archive" value="<mt:var name="use_absolute_archive" escape="html">" />
+  <input type="hidden" name="overwrite" value="<mt:var name="overwrite" escape="html">" />
+  <input type="hidden" name="clone_prefs_entries_pages" value="<mt:var name="clone_prefs_entries_pages" escape="html">" />
+  <input type="hidden" name="clone_prefs_comments" value="<mt:var name="clone_prefs_comments" escape="html">" />
+  <input type="hidden" name="clone_prefs_trackbacks" value="<mt:var name="clone_prefs_trackbacks" escape="html">" />
+  <input type="hidden" name="clone_prefs_categories" value="<mt:var name="clone_prefs_categories" escape="html">" />
+  <mt:unless name="clone_prefs_input"></mt:unless>
+  <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
 
-        <mtapp:setting
-            id="blog-name"
-            content_class="field-content-text"
-            label="<__trans phrase="Blog Name">">
-            <span id="blog-name"><mt:var name="new_blog_name" escape="html"></span>
-        </mtapp:setting>
 
-        <mtapp:setting
-            id="site-url"
-            class="url-field"
-            content_class="field-content-text"
-            label="<__trans phrase="Blog URL">">
-        <mt:if name="site_url_subdomain">
-            <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="site_url_path" escape="html">
-        <mt:elseif name="site_url_path">
-            <mt:var name="website_scheme">://<mt:var name="site_url_subdomain" escape="html"><mt:var name="website_domain"><mt:var name="site_url_path" escape="html">
-        <mt:else>
-            <span id="site-url"><mt:var name="website_scheme">://<mt:var name="website_domain" escape="html"></span>
-        </mt:if>
-        <mt:if name="site_url_warning">
-            <p>
-                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
-                <span class="alert-warning-inline">
-                    <__trans phrase="This is set to the same URL as the original blog.">
-                </span>
-            </p>
-        </mt:if>
-        </mtapp:setting>
+  <h3><__trans phrase="Publishing Paths"></h3>
 
-        <mtapp:setting
-            id="site-path"
-            content_class="field-content-text"
-            label="<__trans phrase="Blog Root">">
-            <span id="site-path"><mt:if name="use_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="site_path" escape="html"></mt:if></span>
-    <mt:if name="site_path_warning">
-            <p>
-              <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
-              <span class="alert-warning-inline">
-                  <__trans phrase="This will overwrite the original blog.">
-              </span>
-            </p>
-    </mt:if>
-        </mtapp:setting>
+   <mtapp:setting
+      id="blog-name"
+      content_class="field-content-text"
+      label="<__trans phrase="Blog Name">">
+     <span id="blog-name"><mt:var name="new_blog_name" escape="html"></span>
+   </mtapp:setting>
 
-    <mt:if name="enable_archive_paths">
-        <mtapp:setting
-            id="archive-url"
-            class="url-field"
-            content_class="field-content-text"
-            label="<__trans phrase="Archive URL">">
-        <mt:if name="archive_url_subdomain">
-            <mt:var name="website_scheme">://<mt:var name="archive_url_subdomain" escape="html">.<mt:var name="website_domain"><mt:var name="archive_url_path" escape="html">
-        <mt:elseif name="archive_url_path">
-            <mt:var name="website_scheme">://<mt:var name="archive_url_subdomain" escape="html"><mt:var name="website_domain"><mt:var name="archive_url_path" escape="html">
-        <mt:else>
-            <span id="archive-url"><mt:var name="archive_url" escape="html"></span>
-        </mt:if>
-        <mt:if name="archive_url_warning">
-            <p>
-                <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
-                <span class="alert-warning-inline">
-                    <__trans phrase="This is set to the same URL as the original blog.">
-                </span>
-            </p>
-        </mt:if>
-        </mtapp:setting>
+   <mtapp:setting
+      id="site-url"
+      class="url-field"
+      content_class="field-content-text"
+      label="<__trans phrase="Blog URL">">
+   <mt:if name="site_url_subdomain">
+       <mt:var name="website_scheme">://<span class="path-text"><mt:var name="site_url_subdomain" escape="html"></span>.<mt:var name="website_domain"><span class="path-text"><mt:var name="site_url_path" escape="html"></span>
+   <mt:elseif name="site_url_path">
+       <mt:var name="website_scheme">://<mt:var name="website_domain"><span class="path-text"><mt:var name="site_url_path" escape="html"></span>
+   <mt:else>
+       <mt:var name="website_scheme">://<mt:var name="website_domain" escape="html">
+   </mt:if>
+   <mt:if name="site_url_warning">
+     <p class="alert-warning-inline icon-left icon-warning">
+       <__trans phrase="This is set to the same URL as the original blog.">
+     </p>
+   </mt:if>
+   </mtapp:setting>
 
-        <mtapp:setting
-            id="archive-path"
-            content_class="field-content-text"
-            label="<__trans phrase="Archive Root">">
-            <span id="archive-path"><mt:if name="use_absolute_archive"><mt:var name="archive_path_absolute" escape="html"><mt:else><mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><mt:var name="archive_path" escape="html"></mt:if></span>
-    <mt:if name="archive_path_warning">
-            <p>
-              <img width="9" height="9" alt="Warning" src="<$mt:StaticWebPath$>/images/status_icons/warning.gif" />
-              <span class="alert-warning-inline">
-                  <__trans phrase="This will overwrite the original blog.">
-              </span>
-            </p>
-    </mt:if>
-        </mtapp:setting>
-    </mt:if>
-    </fieldset>
+   <mtapp:setting
+      id="site-path"
+      content_class="field-content-text"
+      label="<__trans phrase="Blog Root">">
+   <mt:if name="use_absolute">
+       <span class="path-text"><mt:var name="site_path_absolute" escape="html"></span>
+   <mt:else>
+       <mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><span class="path-text"><mt:var name="site_path" escape="html"></span>
+   </mt:if>
+   <mt:if name="site_path_warning">
+     <p class="alert-warning-inline icon-left icon-warning">
+       <__trans phrase="This will overwrite the original blog.">
+     </p>
+   </mt:if>
+   </mtapp:setting>
 
-    <fieldset>
-        <h3><__trans phrase="Exclusions"></h3>
-        <mtapp:setting
-            id="clone_prefs"
-            class="field-no-header"
-            label="<__trans phrase="Exclusions">"
-            content_class="field-content-text">
-            <ul id="clone-prefs-fields">
-    <mt:if name="clone_prefs_entries_pages" eq="on">
-                <li><__trans phrase="Exclude Entries/Pages"></li>
-    </mt:if>
-    <mt:if name="clone_prefs_comments" eq="on">
-                <li><__trans phrase="Exclude Comments"></li>
-    </mt:if>
-    <mt:if name="clone_prefs_trackbacks" eq="on">
-                <li><__trans phrase="Exclude Trackbacks"></li>
-    </mt:if>
-    <mt:if name="clone_prefs_categories" eq="on">
-                <li><__trans phrase="Exclude Categories/Folders"></li>
-    </mt:if>
-<mt:unless name="clone_prefs_exclude"></mt:unless>
-            </ul>
-        </mtapp:setting>
-    </fieldset>
+<mt:if name="enable_archive_paths">
+   <mtapp:setting
+      id="archive-url"
+      class="url-field"
+      content_class="field-content-text"
+      label="<__trans phrase="Archive URL">">
+   <mt:if name="archive_url_subdomain">
+     <mt:var name="website_scheme">://<span class="path-text"><mt:var name="archive_url_subdomain" escape="html"></span>.<mt:var name="website_domain"><span class="path-text"><mt:var name="archive_url_path" escape="html"></span>
+   <mt:elseif name="archive_url_path">
+     <mt:var name="website_scheme">://<mt:var name="website_domain"><span class="path-text"><mt:var name="archive_url_path" escape="html"></span>
+   <mt:else>
+     <mt:var name="archive_url" escape="html">
+   </mt:if>
+   <mt:if name="archive_url_warning">
+     <p class="alert-warning-inline icon-left icon-warning">
+       <__trans phrase="This is set to the same URL as the original blog.">
+     </p>
+   </mt:if>
+   </mtapp:setting>
 
-    <mt:setvarblock name="action_buttons">
-        <button
-            type="submit"
-            accesskey="s"
-            title="<__trans phrase="Clone">"
-            class="continue action primary-button"><__trans phrase="Clone"></button>
-        <button
-            type="submit"
-            accesskey="x"
-            title="<__trans phrase="Back">"
-            class="goback action"><__trans phrase="Back"></button>
-        <button
-            type="submit"
-            onclick="closeDialog(); return false"
-            accesskey="x"
-            title="<__trans phrase="Cancel">"
-            class="cancel close action mt-close-dialog"><__trans phrase="Cancel"></button>
-    </mt:setvarblock>
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+   <mtapp:setting
+      id="archive-path"
+      content_class="field-content-text"
+      label="<__trans phrase="Archive Root">">
+   <mt:if name="use_absolute_archive">
+     <mt:var name="archive_path_absolute" escape="html">
+   <mt:else>
+     <mt:if name="parent_path"><mt:var name="parent_path" escape="html"></mt:if><span class="path-text"><mt:var name="archive_path" escape="html"></span>
+   </mt:if>
+   <mt:if name="archive_path_warning">
+     <p class="alert-warning-inline icon-left icon-warning">
+       <__trans phrase="This will overwrite the original blog.">
+     </p>
+   </mt:if>
+   </mtapp:setting>
+</mt:if>
+
+<h3><__trans phrase="Exclusions"></h3>
+<mtapp:setting
+   id="clone_prefs"
+   class="field-no-header"
+   label="<__trans phrase="Exclusions">"
+   content_class="field-content-text">
+  <ul id="clone-prefs-fields">
+  <mt:if name="clone_prefs_entries_pages" eq="on">
+    <li><__trans phrase="Exclude Entries/Pages"></li>
+  </mt:if>
+  <mt:if name="clone_prefs_comments" eq="on">
+    <li><__trans phrase="Exclude Comments"></li>
+  </mt:if>
+  <mt:if name="clone_prefs_trackbacks" eq="on">
+    <li><__trans phrase="Exclude Trackbacks"></li>
+  </mt:if>
+  <mt:if name="clone_prefs_categories" eq="on">
+    <li><__trans phrase="Exclude Categories/Folders"></li>
+  </mt:if>
+    <mt:unless name="clone_prefs_exclude"></mt:unless>
+  </ul>
+</mtapp:setting>
+
+
+<mt:setvarblock name="action_buttons">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Clone">"
+     class="continue action button primary"><__trans phrase="Clone"></button>
+  <button
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Back">"
+     class="goback action button"><__trans phrase="Back"></button>
+  <button
+     type="submit"
+     onclick="closeDialog(); return false"
+     accesskey="x"
+     title="<__trans phrase="Cancel">"
+     class="cancel close action button"><__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form>
 
 <mt:else>
-
-<h2><__trans phrase="Clone Blog Settings"></h2>
 <!-- Clone Form -->
+<h2><__trans phrase="Clone Blog Settings"></h2>
 <form name='clone-settings-form' id='clone-settings-form' method="post" action="<mt:var name="script_url">">
-    <fieldset>
-        <h3><__trans phrase="Blog Details"></h3>
-        <input type="hidden" name="verify" value="1" />
-        <input type="hidden" name="__mode" value="dialog_clone_blog" />
-        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-        <input type="hidden" name="id" value="<mt:var name="id">" />
-        <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
+  <input type="hidden" name="verify" value="1" />
+  <input type="hidden" name="__mode" value="dialog_clone_blog" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="id" value="<mt:var name="id">" />
+  <input type="hidden" name="parent_id" value="<mt:var name="parent_id">" />
 
-        <mtapp:setting
-            id="blog-name"
-            required="1"
-            label="<__trans phrase="Blog Name">">
-            <input name="new_blog_name" id="blog-name" value="<mt:var name="new_blog_name" escape="html">" type="text" />
-        </mtapp:setting>
+  <fieldset>
+    <h3><__trans phrase="Blog Details"></h3>
+    <mtapp:setting
+       id="blog-name"
+       required="1"
+       label="<__trans phrase="Blog Name">">
+      <input type="text" name="new_blog_name" id="blog-name" class="text" value="<mt:var name="new_blog_name" escape="html">" />
+    </mtapp:setting>
 
-        <mtapp:setting
-            id="site_url"
-            class="url-field"
-            required="1"
-            label="<__trans phrase="Blog URL">"
-            content_class="field-content-input"
-            hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/">"
-            show_hint="1">
-        <mt:if name="site_url_subdomain">
-            <div class="site-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        <mt:elseif name="site_url_path">
-            <div class="site-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        <mt:else>
-            <div class="site-url">
-                <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        </mt:if>
-        </mtapp:setting>
+    <mtapp:setting
+       id="site_url"
+       class="url-field"
+       required="1"
+       label="<__trans phrase="Blog URL">"
+       content_class="field-content-input"
+       hint="<__trans phrase="Enter the new URL of your public blog. End with '/'. Example: http://www.example.com/weblog/">"
+       show_hint="1">
+    <mt:if name="site_url_subdomain">
+      <div class="site-url content-path">
+        <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
+      </div>
+      <div class="use-subdomain option">
+        <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" checked="checked" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+      </div>
+    <mt:elseif name="site_url_path">
+      <div class="site-url content-path">
+        <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text text path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text text path" /></span>
+      </div>
+      <div class="use-subdomain option">
+        <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+      </div>
+    <mt:else>
+      <div class="site-url content-path">
+        <mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="site_url_subdomain" id="site-url-subdomain" class="blog-subdomain-text extra-path" value="<mt:var name="site_url_subdomain" escape="html">" />.</span><span class="website-url"><mt:var name="website_domain"></span><span class="extra-path"><input type="text" name="site_url_path" id="site_url_path" value="<mt:var name="site_url_path" escape="html">" class="blog-url-text extra-path" /></span>
+      </div>
+      <div class="use-subdomain option">
+        <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="cb" /> <label for="use_subdomain"><__trans phrase="Use subdomain"></label>
+      </div>
+    </mt:if>
+    </mtapp:setting>
 
-        <mtapp:setting
-            id="site_path"
-            class="site-path-field"
-            required="1"
-            label="<__trans phrase="Blog Root">"
-            content_class="field-content-input"
-            show_hint="1">
-            <div class="relative-site_path"><span class="website-path"><mt:var name="parent_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text extra-path" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" /></div>
-            <div class="absolute-site_path"><input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" size="50" class="blog-path-text" /></div>
-            <div class="use-absolute">
-                <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="use_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
-            </div>
-            <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-            <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
-        </mtapp:setting>
+    <mtapp:setting
+       id="site_path"
+       class="site-path-field"
+       required="1"
+       label="<__trans phrase="Blog Root">"
+       content_class="field-content-input"
+       show_hint="1">
+      <div class="relative-site_path content-path">
+        <span class="website-path"><mt:var name="parent_path"></span><input type="text" name="site_path" id="site_path" class="blog-path-text text path" value="<mt:unless name="use_absolute"><mt:var name="site_path" escape="html"></mt:unless>" />
+      </div>
+      <div class="absolute-site_path content-path">
+        <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:var name="site_path_absolute" escape="html">" class="blog-path-text text" />
+      </div>
+      <div class="use-absolute option">
+        <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="use_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
+      </div>
+      <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+      <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
+    </mtapp:setting>
 
-        <mtapp:setting
-            id="enable_archive_paths"
-            label="<__trans phrase="Advanced Archive Publishing">"
-            content_class="field-content-text"
-            show_label="0"
-            hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Blog Root.">"
-            help_page="blog_settings_publishing"
-            help_section="advanced_archive_publishing">
-            <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Blog Root"></label>
-        </mtapp:setting>
+    <mtapp:setting
+       id="enable_archive_paths"
+       label="<__trans phrase="Advanced Archive Publishing">"
+       content_class="field-content-text"
+       show_label="0"
+       hint="<__trans phrase="Select this option only if you need to publish your archives outside of your Blog Root.">"
+       help_page="blog_settings_publishing"
+       help_section="advanced_archive_publishing">
+      <input type="checkbox" name="enable_archive_paths" id="enable_archive_paths" value="1"<mt:if name="enable_archive_paths"> checked="checked"</mt:if> class="cb" /> <label for="enable_archive_paths"><__trans phrase="Publish archives outside of Blog Root"></label>
+    </mtapp:setting>
+
 
     <div id="enable_archive_paths_prefs"<mt:unless name="enable_archive_paths"> class="hidden"</mt:unless>>
 
-        <mtapp:setting
-            id="archive_url"
-            class="url-field"
-            required="1"
-            label="<__trans phrase="Archive URL">"
-            hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
-            show_hint="1"
-            help_page="blog_settings_publishing"
-            help_section="archive_url">
-        <mt:if name="archive_url_subdomain">
-            <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        <mt:elseif name="archive_url_path">
-            <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        <mt:elseif name="archive_url" eq="">
-            <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        <mt:else>
-            <div class="archive-url">
-                <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text extra-path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text extra-path" /></span>
-            </div>
-            <div class="use-subdomain">
-                <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
-            </div>
-        </mt:if>
+      <mtapp:setting
+         id="archive_url"
+         class="url-field"
+         required="1"
+         label="<__trans phrase="Archive URL">"
+         hint="<__trans phrase="Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/">"
+         show_hint="1"
+         help_page="blog_settings_publishing"
+         help_section="archive_url">
+      <mt:if name="archive_url_subdomain">
+        <div class="archive-url content-path">
+          <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text text path" /></span>
+        </div>
+        <div class="use-subdomain option">
+          <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" checked="checked" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
+      <mt:elseif name="archive_url_path">
+        <div class="archive-url content-path">
+          <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text text path" /></span>
+        </div>
+        <div class="use-subdomain option">
+          <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
+      <mt:elseif name="archive_url" eq="">
+        <div class="archive-url content-path">
+          <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="<mt:unless name="enable_archive_paths">show-input </mt:unless>blog-url-text text path" /></span>
+        </div>
+        <div class="use-subdomain option">
+          <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
+      <mt:else>
+        <div class="archive-url content-path">
+          <span class="archive-url-domain"><mt:var name="website_scheme">://<span class="subdomain"><input type="text" name="archive_url_subdomain" id="archive_url_subdomain" value="<mt:var name="archive_url_subdomain">" class="blog-subdomain-text text path" />.</span><span class="website-url"><mt:var name="website_domain"></span></span><span class="extra-path"><input type="text" name="archive_url_path" id="archive_url_path" value="<mt:var name="archive_url_path">" class="blog-url-text text path" /></span>
+        </div>
+        <div class="use-subdomain option">
+          <input type="checkbox" name="use_archive_subdomain" id="use_archive_subdomain" value="1" class="cb" /> <label for="use_archive_subdomain"><__trans phrase="Use subdomain"></label>
+        </div>
+      </mt:if>
         <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all the links in your blog."></p>
-        </mtapp:setting>
+      </mtapp:setting>
 
-        <mtapp:setting
-            id="archive_path"
-            class="site-path-field"
-            required="1"
-            label="<__trans phrase="Archive Root">"
-            show_hint="1"
-            help_page="blog_settings_publishing"
-            help_section="archive_path">
-            <div class="relative-site_path"><span class="website-path"><mt:var name="parent_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text extra-path" /></div>
-            <div class="absolute-site_path"><input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" class="blog-path-text" /></div>
-            <div class="use-absolute">
-                <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="use_absolute_archive"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
-            </div>
-            <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
-            <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
-            <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
-        </mtapp:setting>
+      <mtapp:setting
+         id="archive_path"
+         class="site-path-field"
+         required="1"
+         label="<__trans phrase="Archive Root">"
+         help_page="blog_settings_publishing"
+         help_section="archive_path">
+        <div class="relative-site_path content-path">
+          <span class="website-path"><mt:var name="parent_path"></span><input type="text" name="archive_path" id="archive_path" value="<mt:unless name="use_absolute_archive"><mt:var name="archive_path" escape="html"></mt:unless>" class="blog-path-text blog-path-text text path" />
+        </div>
+        <div class="absolute-site_path content-path">
+          <input type="text" name="archive_path_absolute" id="archive_path_absolute" value="<mt:var name="archive_path_absolute" escape="html">" class="blog-path-text text" />
+        </div>
+        <div class="use-absolute option">
+          <input type="checkbox" name="use_absolute_archive" id="use_absolute_archive" value="1"<mt:if name="use_absolute_archive"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute_archive"><__trans phrase="Use absolute path"></label>
+        </div>
+        <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all the links in your blog."></p>
+        <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
+        <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
+      </mtapp:setting>
+
     </div>
 
-    </fieldset>
+  </fieldset>
 
-    <fieldset>
-        <h3><__trans phrase="Exclusions"></h3>
-        <mtapp:setting
-            id="clone_prefs"
-            class="field-no-header"
-            label="<__trans phrase="Exclusions">"
-            hint="<__trans phrase="Mark the settings that you want cloning to skip">"
-            content_class="field-content-text">
-            <ul id="clone-prefs-fields">
-                <li>
-                    <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages">"</mt:if> class="cb" />
-                    <label for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
-                </li>
-                <li>
-                    <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="cb" />
-                    <label for="clone-prefs-comments"><__trans phrase="Comments"></label>
-                </li>
-                <li>
-                    <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="cb" />
-                    <label for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
-                </li>
-                <li>
-                    <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="cb" />
-                    <label for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
-                </li>
-<mt:unless name="clone_prefs_checkbox"></mt:unless>
-            </ul>
-        </mtapp:setting>
-    </fieldset>
+  <fieldset>
+    <h3><__trans phrase="Exclusions"></h3>
+    <mtapp:setting
+       id="clone_prefs"
+       class="field-no-header"
+       label="<__trans phrase="Exclusions">"
+       hint="<__trans phrase="Mark the settings that you want cloning to skip">"
+       content_class="field-content-text">
+      <ul id="clone-prefs-fields">
+        <li>
+          <input type="checkbox" name="clone_prefs_entries_pages" id="clone-prefs-entries-pages" <mt:if name="clone_prefs_entries_pages">checked="<mt:var name="clone_prefs_entries_pages">"</mt:if> class="cb" />
+          <label for="clone-prefs-entries-pages"><__trans phrase="Entries/Pages"></label>
+        </li>
+        <li>
+          <input type="checkbox" name="clone_prefs_comments" id="clone-prefs-comments" <mt:if name="clone_prefs_comments">checked="<mt:var name="clone_prefs_comments">"</mt:if> class="cb" />
+          <label for="clone-prefs-comments"><__trans phrase="Comments"></label>
+        </li>
+        <li>
+          <input type="checkbox" name="clone_prefs_trackbacks" id="clone-prefs-trackbacks" <mt:if name="clone_prefs_trackbacks">checked="<mt:var name="clone_prefs_trackbacks">"</mt:if> class="cb" />
+          <label for="clone-prefs-trackbacks"><__trans phrase="Trackbacks"></label>
+        </li>
+        <li>
+          <input type="checkbox" name="clone_prefs_categories" id="clone-prefs-categories" <mt:if name="clone_prefs_categories">checked="<mt:var name="clone_prefs_categories">"</mt:if> class="cb" />
+          <label for="clone-prefs-categories"><__trans phrase="Categories/Folders"></label>
+        </li>
+        <mt:unless name="clone_prefs_checkbox"></mt:unless>
+      </ul>
+    </mtapp:setting>
+  </fieldset>
 
-    <mt:setvarblock name="action_buttons">
-        <button
-            type="submit"
-            accesskey="s"
-            title="<__trans phrase="Confirm">"
-            class="continue action primary-button"
-           ><__trans phrase="Confirm"></button>
-        <button
-            type="submit"
-            onclick="closeDialog(); return false"
-            accesskey="x"
-            title="<__trans phrase="Cancel">"
-            class="cancel close action mt-close-dialog"
-           ><__trans phrase="Cancel"></button>
-    </mt:setvarblock>
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Confirm">"
+       class="continue action button primary"
+       ><__trans phrase="Confirm"></button>
+    <button
+       type="submit"
+       onclick="closeDialog(); return false"
+       accesskey="x"
+       title="<__trans phrase="Cancel">"
+       class="cancel close action button mt-close-dialog"
+       ><__trans phrase="Cancel"></button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
 </form><!-- END Clone Form -->
 </mt:if>
 
