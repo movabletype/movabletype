@@ -87,6 +87,7 @@ select {
 }
 
 /* - Button */ 
+.button, 
 .ui-button { 
     line-height: 1.3;
     overflow: visible;
@@ -115,12 +116,14 @@ select {
 .ui-button-text {
     display: inline-block;
 }
+.button:hover, 
 .ui-button:hover {
     color: inherit;
     background-color: #e7e7eb;
     background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e7e7eb));
     background: -moz-linear-gradient(top, #fafafa, #e7e7eb);
 }
+.button:active, 
 .ui-button:active {
     background-color: #bbb;
     background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#dcdddd));
@@ -128,6 +131,7 @@ select {
 }
 
 /* -- Large Button */
+.button.action, 
 .ui-button.action {
     padding: 0.25em 1em 0.2em;
     border-color: #7b7c7d;
@@ -139,12 +143,14 @@ select {
     font-size: 14px;
     font-weight: bold;
 }
+.button.action:hover, 
 .ui-button.action:hover {
     border-color: #88898a;
     background-color: #88898a;
     background: -webkit-gradient(linear, left top, left bottom, from(#abaeaf), to(#88898a));
     background: -moz-linear-gradient(top, #abaeaf, #88898a);
 }
+.button.action:active, 
 .ui-button.action:active {
     border-color: #727171;
     background-color: #727171;
@@ -153,35 +159,40 @@ select {
 }
 
 /* -- Primary Button */
+.blog .button.primary, 
 .blog .ui-button.primary {
     border-color: #5c909c;
     background-color: #5c909c;
     background: -webkit-gradient(linear, left top, left bottom, from(#9abcc3), to(#5c909c));
     background: -moz-linear-gradient(top, #9abcc3, #5c909c);
 }
+.blog .button.primary:hover, 
 .blog .ui-button.primary:hover {
     background-color: #6a9ca7;
     background: -webkit-gradient(linear, left top, left bottom, from(#aac7cd), to(#6a9ca7));
     background: -moz-linear-gradient(top, #aac7cd, #6a9ca7);
 }
+.blog .button.primary:active, 
 .blog .ui-button.primary:active {
     background-color: #80989b;
     background: -webkit-gradient(linear, left top, left bottom, from(#53727d), to(#80989b));
     background: -moz-linear-gradient(top, #53727d, #80989b);
 }
-
+.website .button.primary, 
 .website .ui-button.primary {
     border-color: #839b5c;
     background-color: #839b5c;
     background: -webkit-gradient(linear, left top, left bottom, from(#b3c39a), to(#839b5c));
     background: -moz-linear-gradient(top, #b3c39a, #839b5c);
 }
+.website .button.primary:hover, 
 .website .ui-button.primary:hover {
     border-color: #8fa76a;
     background-color: #8fa76a;
     background: -webkit-gradient(linear, left top, left bottom, from(#bfcdaa), to(#8fa76a));
     background: -moz-linear-gradient(top, #bfcdaa, #8fa76a);
 }
+.website .button.primary:active, 
 .website .ui-button.primary:active {
     border-color: #a8c97f;
     background-color: #a8c97f;
@@ -190,6 +201,9 @@ select {
 }
 
 /* -- Disable Button */
+.button.disable-button, 
+.button.action.disable-button, 
+.button.primary.disable-button, 
 .ui-button.disable-button, 
 .ui-button.action.disable-button, 
 .ui-button.primary.disable-button {
