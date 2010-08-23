@@ -168,11 +168,11 @@ var line = '<th class="col head cb"><input type="checkbox" /></th>';
 var table = jQuery('table.listing')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><a href="#<mt:var name="id">"><mt:var name="label"></a></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
 <mt:if name="default_sort_order">
-jQuery.data(table, '<mt:var name="id">', 'desc')
+jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>
-jQuery.data(table, '<mt:var name="id">', 'asc')
+jQuery.data(table, '<mt:var name="id">', 'asc');
 </mt:if>
 col_classes["<mt:var name="id">"] = "<mt:var name="col_class">";
 </mt:loop>
@@ -428,9 +428,9 @@ function renderList(mode, columns, values, limit, page) {
     params['items'] = jQuery.toJSON(values);
   }
   if (jQuery('th.sorted').length) {
-    jQuery('th.sorted').children('a').attr('href').match(/#(.*)/);
+    jQuery('th.sorted').find('a').attr('href').match(/#(.*)/);
     params['sort_by'] = RegExp.$1;
-    params['sort_order'] = jQuery('th.sorted').hasClass('desc') ? 'descend' : 'ascend';
+    params['sort_order'] = jQuery('th.sorted').find('span').hasClass('desc') ? 'descend' : 'ascend';
   }
   if (jQuery('input[name=filter_id]').val()) {
     params['id'] = jQuery('input[name=filter_id]').val();
@@ -632,17 +632,19 @@ jQuery('th :checkbox').click(function() {
 
 jQuery('thead a, tfoot a').click(function() {
   var url = jQuery(this).attr('href');
-  var $th = jQuery('a[href=\''+url+'\']').parent('th');
+  var $th = jQuery('a[href=\''+url+'\']').parents('th');
   if ($th.hasClass('sorted')) {
-    if ($th.hasClass('desc')) {
-      $th.removeClass('desc').addClass('asc');
+    var $order = $th.find('span');
+    if ($order.hasClass('desc')) {
+      $order.removeClass('desc').addClass('asc');
     } else {
-      $th.removeClass('asc').addClass('desc');
+      $order.removeClass('asc').addClass('desc');
     }
   } else {
-    jQuery('thead th, tfoot th').removeClass('sorted asc desc');
+    jQuery('thead th, tfoot th').removeClass('sorted').find('span').remove();
+    $th.addClass('sorted');
     url.match(/#(.*)/);
-    $th.addClass('sorted').addClass(jQuery.data(table, RegExp.$1));
+    jQuery('<span class="sm '+jQuery.data(table, RegExp.$1)+'"></span>').appendTo($th.find('div'));
   }
   checked = [];
   renderColumns();
