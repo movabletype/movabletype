@@ -652,32 +652,6 @@ BEGIN {
                         return ( $name_method->($obj_a) cmp $name_method->($obj_b) );
                     },
                 },
-                author_id => {
-                    label => 'Author',
-                    order => 500,
-                    display   => 'none',
-                    base  => '__common.single_select',
-                    condition => sub {
-                        my $prop = shift;
-                        my $col
-                            = $prop->datasource->has_column('author_id')
-                            ? 'author_id'
-                            : 'created_by';
-                        return unless $col;
-                        $prop->{col} = $col;
-                        1;
-                    },
-                    single_select_options => sub {
-                        my $prop = shift;
-                        my @authors = MT->model('author')->load;
-                        return [
-                            map {{
-                                value => $_->id,
-                                label => $_->nickname || $_->name,
-                            }} @authors
-                        ];
-                    },
-                },
                 tag => {
                     base => '__common.string',
                     label => 'Tag',

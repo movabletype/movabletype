@@ -117,7 +117,7 @@ sub list_props {
         },
         ## Hide default author_name.
         author_name => {
-            condition => sub {0},
+            view => 'none',
         },
         commenter_id => {
             auto => 1,
@@ -202,18 +202,6 @@ sub list_props {
                     if $status_img;
                 $out;
             }
-        },
-        auth_type => {
-            base      => '__common.string',
-            label     => 'Auth',
-            display => 'none',
-            bulk_html => sub {
-                my ( $prop, $objs ) = @_;
-                my %author_ids = map { $_->commenter_id => 1 } @$objs;
-                my @authors = MT->model('author')->load({ id => [ keys %author_ids ] });
-                my %author_auth_type = map { $_->id => $_->auth_type } @authors;
-                return map { $_->commenter_id ? $author_auth_type{$_->commenter_id} : '-' } @$objs;
-            },
         },
         entry => {
             label => 'Entry',
@@ -334,11 +322,6 @@ sub list_props {
                     },
                 );
             },
-        },
-        junk_score => {
-            auto  => 1,
-            label => 'Junk score',
-            display => 'none',
         },
         ip => {
             auto  => 1,
