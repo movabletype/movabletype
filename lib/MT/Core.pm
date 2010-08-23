@@ -1016,9 +1016,9 @@ BEGIN {
                     'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
             },
 
-# 'MTNewsURL' => {
-#     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-# },
+            # 'MTNewsURL' => {
+            #     default => 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+            # },
             'LearningNewsURL' => {
                 default => 'http://learning.movabletype.org/newsbox.html',
             },
@@ -1026,6 +1026,12 @@ BEGIN {
             # 'HackingNewsURL' => {
             #     default => 'http://hacking.movabletype.org/newsbox.html',
             # },
+            'PluginDirectoryURL'    => {
+                default => 'http://plugins.movabletype.org/',
+            },
+            'ThemeDirectoryURL'    => {
+                default => '',
+            },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },

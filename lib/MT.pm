@@ -1175,7 +1175,9 @@ sub init_lang_defaults {
         'ExportEncoding'     => 'EXPORT_ENCODING',
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
-        'PublishCharset'     => 'PUBLISH_CHARSET'
+        'PublishCharset'     => 'PUBLISH_CHARSET',
+        'PluginDirectoryURL' => 'PLUGIN_DIRECTORY_URL',
+        'ThemeDirectoryURL'  => 'THEME_DIRECTORY_URL'
     );
 
     foreach my $setting (keys %lang_settings) {
