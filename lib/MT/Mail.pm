@@ -27,7 +27,7 @@ sub send {
             $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
         }
     }
-    
+
     my $mgr = MT->config;
     my $xfer = $mgr->MailTransfer;
 

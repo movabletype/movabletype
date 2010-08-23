@@ -180,27 +180,30 @@ sub encode_text_encode {
                 && ( $from =~ m/^utf-?8/ig ) )
             {
                 $text = Encode::decode_utf8( $text ) unless Encode::is_utf8( $text );
-                #FULLWIDTH TILDE to WAVE DASH 
-                $text =~ s/\x{ff5e}/\x{301c}/g;  
-                #PARALLEL TO to DOUBLE VERTICAL LINE 
-                $text =~ s/\x{2225}/\x{2016}/g; 
-                #FULLWIDTH HYPHEN-MINUS to MINUS SIGN 
-                $text =~ s/\x{ff0d}/\x{2212}/g;  
-                #FULLWIDTH CENT SIGN to CENT SIGN 
-                $text =~ s/\x{ffe0}/\x{00a2}/g; 
-                #FULLWIDTH POUND SIGN to POUND SIGN 
-                $text =~ s/\x{ffe1}/\x{00a3}/g; 
-                #FULLWIDTH NOT SIGN to NOT SIGN 
-                $text =~ s/\x{ffe2}/\x{00ac}/g; 
+                #FULLWIDTH TILDE to WAVE DASH
+                $text =~ s/\x{ff5e}/\x{301c}/g;
+                #PARALLEL TO to DOUBLE VERTICAL LINE
+                $text =~ s/\x{2225}/\x{2016}/g;
+                #FULLWIDTH HYPHEN-MINUS to MINUS SIGN
+                $text =~ s/\x{ff0d}/\x{2212}/g;
+                #FULLWIDTH CENT SIGN to CENT SIGN
+                $text =~ s/\x{ffe0}/\x{00a2}/g;
+                #FULLWIDTH POUND SIGN to POUND SIGN
+                $text =~ s/\x{ffe1}/\x{00a3}/g;
+                #FULLWIDTH NOT SIGN to NOT SIGN
+                $text =~ s/\x{ffe2}/\x{00ac}/g;
                 $text = Encode::encode( $to, $text );
             } else {
+                $text = Encode::encode_utf8( $text ) if Encode::is_utf8( $text );
                 Encode::from_to($text, $from, $to);
             }
         };
         if (my $err = $@) {
             warn $err;
         }
-    }
+    } else {
+        $text = Encode::encode_utf8( $text ) if Encode::is_utf8( $text );
+   }
 
     $text;
 }
