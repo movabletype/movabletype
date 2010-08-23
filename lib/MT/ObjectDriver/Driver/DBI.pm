@@ -528,18 +528,19 @@ sub prepare_statement {
         ## Set statement's ORDER clause if any.
         if ($args->{sort} || $args->{direction}) {
             my $order = $args->{sort} || 'id';
+            my $pfx = $orig_args->{alias} ? $orig_args->{alias} . '.' : '';
             if (! ref($order)) {
                 my $dir = $args->{direction} &&
                           $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
                 $stmt->order({
-                    column => $dbd->db_column_name($tbl, $order),
+                    column => $pfx . $dbd->db_column_name($tbl, $order),
                     desc   => $dir,
                 });
             } else {
                 my @order;
                 foreach my $ord (@$order) {
                     push @order, {
-                        column => $dbd->db_column_name($tbl, $ord->{column}),
+                        column => $pfx . $dbd->db_column_name($tbl, $ord->{column}),
                         desc => $ord->{desc},
                     };
                 }
@@ -592,7 +593,7 @@ sub prepare_statement {
         ## Remove dupulicated from table.
         my %count;
         my @from = grep {!$count{$_}++} @{ $stmt->from };
-        $stmt->from( @from );
+        $stmt->from( \@from );
 
         $stmt->from_stmt($join_stmt->from_stmt);
         $stmt->limit($j_args->{limit}) if exists $j_args->{limit};

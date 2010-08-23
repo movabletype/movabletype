@@ -516,7 +516,7 @@ BEGIN {
                         my $prop = shift;
                         $prop->datasource->has_column('blog_id') or return;
                         my $app = MT->app or return;
-                        return $app->blog && !$app->blog->is_blog;
+                        return !$app->blog || !$app->blog->is_blog;
                     },
                 },
                 id => {
@@ -732,9 +732,10 @@ BEGIN {
             banlist  => '$Core::MT::IPBanList::list_props',
         },
         system_filters => {
-            entry => '$Core::MT::Entry::system_filters',
-            page  => '$Core::MT::Page::system_filters',
-            tag   => '$Core::MT::Tag::system_filters',
+            entry   => '$Core::MT::Entry::system_filters',
+            page    => '$Core::MT::Page::system_filters',
+            comment => '$Core::MT::Comment::system_filters',
+            tag     => '$Core::MT::Tag::system_filters',
         },
         listing_screens => {
             website => {
@@ -782,7 +783,7 @@ BEGIN {
             },
             comment => {
                 object_label => 'Comment',
-                columns => [qw( commenter junk_status text created_on entry auth_type  )],
+                columns => [qw( text author blog_name entry created_on )],
             },
             ping => {
                 object_label => 'Trackback',

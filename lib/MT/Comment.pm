@@ -90,56 +90,28 @@ sub is_not_junk {
 
 sub list_props {
     return {
-        junk_status => {
-            label => 'Junk status',
-            base => '__common.single_select',
-            col => 'junk_status',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                my $status = $obj->junk_status;
-                $status == JUNK() ? 'Junk' : 'Not Junk';
-            },
-            single_select_options => [
-                { label => 'Approved', value => NOT_JUNK(), },
-                { label => 'Reported as spam', value => JUNK(), }
-            ],
-        },
-        comment_is_visible => {
-            label => 'Visible',
-            base => '__common.single_select',
-            col => 'visible',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                my $status = $obj->visible;
-                $status ? 'Visible' : 'Not visible';
-            },
-            single_select_options => [
-                { label => 'Visible', value => 1, },
-                { label => 'Not visible', value => 0, }
-            ],
-        },
+        id => { view => [] },
+        modified_on => {
+            auto    => 1,
+            label   => 'Modeified on',
+            display => 'none' },
         status => {
             label => 'Status',
             base => '__common.single_select',
             col => 'visible',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                my $visible     = $obj->visible;
-                my $junk_status = $obj->junk_status;
-                return $junk_status == JUNK() ? 'Spam'
-                     : $visible               ? 'Approved'
-                     :                          'Unapproved';
-            },
+            display => 'none',
             terms => sub {
                 my ( $prop, $args ) = @_;
                 return $args->{value} eq 'approved'  ? { visible => 1, junk_status => NOT_JUNK() }
                      : $args->{value} eq 'moderated' ? { visible => 0, junk_status => NOT_JUNK() }
+                     : $args->{value} eq 'not_junk'  ? { junk_status => NOT_JUNK() }
                      :                                 { junk_status => JUNK() }
                      ;
             },
             single_select_options => [
                 { label => 'Approved',         value => 'approved', },
                 { label => 'Unapproved',       value => 'moderated', },
+                { label => 'Not spam',         value => 'not_junk', },
                 { label => 'Reported as spam', value => 'junk', },
             ],
         },
@@ -147,9 +119,31 @@ sub list_props {
         author_name => {
             condition => sub {0},
         },
+        commenter_id => {
+            auto => 1,
+            filter_editable => 0,
+            display => 'none',
+            label => 'Commenter ID',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app ) = @_;
+                my $author_id = $app->param('filter_val');
+                my $author    = MT->model('author')->load($author_id);
+                return MT->translate(
+                    'Comments by [_1]',
+                    $author->nickname,
+                );
+            },
+            args_via_param => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
+        },
         author => {
             label => 'Commenter',
             auto  => 1,
+            display => 'force',
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $name = $obj->author;
@@ -161,7 +155,7 @@ sub list_props {
                         args => {
                             _type   => 'commenter',
                             id      => $id,
-                            blog_id => $app->blog->id,
+                            blog_id => $obj->blog_id,
                     });
                     my $commenter = MT->model('author')->load($id);
                     my $status = $commenter->status;
@@ -212,6 +206,7 @@ sub list_props {
         auth_type => {
             base      => '__common.string',
             label     => 'Auth',
+            display => 'none',
             bulk_html => sub {
                 my ( $prop, $objs ) = @_;
                 my %author_ids = map { $_->commenter_id => 1 } @$objs;
@@ -222,10 +217,36 @@ sub list_props {
         },
         entry => {
             label => 'Entry',
-            base => '__common.string',
+            base => '__common.integer',
+            filter_editable => 0,
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('entry')->join_on(
+                    undef, {
+                        id => \'= comment_entry_id',
+                    },
+                    {
+                        sort => 'title',
+                    },
+                );
+                $args->{sort} = [];
+            },
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                    undef,
+                    {
+                        id => [ '-and', $args->{value}, \'= comment_entry_id' ],
+                    },
+                );
+                return;
+            },
             bulk_html => sub {
                 my $prop = shift;
-                my ( $objs ) = @_;
+                my ( $objs, $app ) = @_;
                 my %entry_ids  = map { $_->entry_id => 1 } @$objs;
                 my @entries = MT->model('entry')->load({
                     id => [ keys %entry_ids ], },{
@@ -238,7 +259,15 @@ sub list_props {
                 for my $obj ( @$objs ) {
                     my $id   = $obj->entry_id;
                     my $name = $names{$id};
-                    push @result, qq{<a href="<mt:var name="script_url">?__mode=view&_type=entry&id=$id&blog_id=<mt:blogid>">$name</a>};
+                    my $uri = $app->uri(
+                        mode => 'view',
+                        args => {
+                            _type  => 'entry',
+                           id      => $id,
+                           blog_id => $obj->blog_id,
+                        },
+                    );
+                    push @result, qq{<a href="$uri">$name</a>};
 
                 }
                 return @result;
@@ -248,10 +277,22 @@ sub list_props {
                 my $entry_id = $obj->entry_id;
                 return $entry_id ? MT->model('entry')->load($entry_id)->title : '';
             },
+            label_via_param => sub {
+                my $prop = shift;
+                my $app = shift;
+                my $entry_id = $app->param('filter_val');
+                my $entry = MT->model('entry')->load($entry_id);
+                return MT->translate(
+                    'Comments on [_1]: [_2]',
+                    $entry->class eq 'entry' ? MT->translate('Entry') : MT->translate('Page'),
+                    $entry->title,
+                );
+            },
         },
         text => {
             label => 'Text',
             auto => 1,
+            display => 'force',
             html  => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html($obj->text);
@@ -270,7 +311,7 @@ sub list_props {
                     args => {
                         _type   => 'comment',
                         id      => $id,
-                        blog_id => $app->blog->id,
+                        blog_id => $obj->blog_id,
                 });
                 my $status_img = MT->static_path . 'images/status_icons/';
                 $status_img .= $obj->is_junk      ? 'warning.gif'
@@ -279,13 +320,95 @@ sub list_props {
                 return qq{<img src="$status_img" /><a href="$link">$text</a>};
             },
         },
+        for_current_user => {
+            label => 'For my entries',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $user = MT->app->user;
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('entry')->join_on(
+                    undef,
+                    {
+                        id        => \"= comment_entry_id",
+                        author_id => $user->id,
+                    },
+                );
+            },
+        },
         junk_score => {
             auto  => 1,
             label => 'Junk score',
+            display => 'none',
         },
         ip => {
             auto  => 1,
             label => 'IP',
+        },
+    };
+}
+
+sub system_filters {
+    return {
+        not_spam => {
+            label => 'Non spam comments',
+            items => [
+                { type => 'status', args => { value => 'not_junk' }, },
+            ],
+        },
+        not_spam_in_this_website => {
+            label => 'Non spam comments on this website',
+            view => 'website',
+            items => [
+                { type => 'current_context' },
+                { type => 'status', args => { value => 'not_junk' }, },
+            ],
+        },
+        pending => {
+            label => 'Pending comments',
+            items => [
+                { type => 'status', args => { value => 'moderated' }, },
+            ],
+        },
+        published => {
+            label => 'Published comments',
+            items => [
+                { type => 'status', args => { value => 'approved' }, },
+            ],
+        },
+        comments_on_my_entry => {
+            label => 'Comments on my entries/pages',
+            items => sub {
+                my $login_user = MT->app->user;
+                [ { type => 'for_current_user' }, { type => 'current_context' } ],
+            },
+        },
+        comments_in_last_7_days => {
+            label => 'Comments in the last 7 days',
+            items => [
+                { type => 'status', args => { value => 'not_junk' }, },
+                { type => 'created_on', args => { option => 'days', days => 7 } }
+            ],
+        },
+        spam => {
+            label => 'Spam comments',
+            items => [
+                { type => 'status', args => { value => 'junk' }, },
+            ],
+        },
+        _comments_by_entry => {
+            label => sub {
+                my $app = MT->app;
+                my $id = $app->param('filter_val');
+                my $entry = MT->model('entry')->load($id);
+                return 'Comments by entry: ' . $entry->title;
+            },
+            items => sub {
+                my $app = MT->app;
+                my $id = $app->param('filter_val');
+                return [
+                    { type => 'entry', args => { option => 'equal', value => $id } }
+                ];
+            },
         },
     };
 }

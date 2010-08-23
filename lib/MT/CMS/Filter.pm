@@ -153,6 +153,14 @@ sub system_filter {
         $cond = MT->handler_to_coderef($cond);
         return unless $cond->();
     }
+    if ( my $view = $sys_filter->{view} ) {
+        $view = [ $view ] unless ref $view;
+        my %view = map { $_ => 1 } @$view;
+        my $blog = $app->blog;
+        return if !$blog && !$view{system};
+        return if $blog->is_blog && !$view{blog};
+        return if !$view{website};
+    }
 
     my $hash = {
         id         => $sys_id,
