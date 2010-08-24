@@ -1,6 +1,12 @@
 .listing { 
-    margin: 0;
+    width: 100%;
+    margin: 0 auto;
+    border: 1px solid #c0c6c9;
     table-layout: fixed;
+    background-color: #fff;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
 }
 
 .actions-bar {
@@ -10,7 +16,7 @@
 .col { 
     width: 13%;
     padding: 7px 8px;
-    border: solid #c8c2be;
+    border: solid #c0c6c9;
     border-width: 0 0 1px;
     text-align: left;
     vertical-align: top;
@@ -22,11 +28,11 @@
     width: auto;
     min-width: 15%;
 }
+.col.author {
+    width: 13%;
+}
 .col.num {
     width: 8em;
-}
-.col.date {
-    width: 10em;
 }
 .col.id {
     width: 5.5em;
@@ -44,23 +50,25 @@
     white-space: nowrap;
     vertical-align: middle;
 }
+tfoot .head{
+    border-width: 0 0 0 1px;
+}
 .head.first-child {
     border-left: 0;
-}
-
-.head div {
-    position: relative;
 }
 .sorted { 
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
     background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
 }
+.head div {
+    position: relative;
+}
 .sort-link {
+    display: block;
     width: 100%;
     margin-right: 18px;
     padding: 7px 8px;
-    display: block;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -70,7 +78,7 @@
 .sm {
     position: absolute;
     top: 50%;
-    right: 5px;
+    right: 8px;
     width: 10px;
     height: 10px;
     margin-top: -5px;
@@ -84,9 +92,16 @@
 }
 
 
+/* -- Record Column */
+.col .description {
+    margin: 0.75em 0 0;
+    font-size: 95%;
+}
+
+
 /* -- Page Navigation */
 .pagenav {
-    text-align: right;
+    float: right;
     display: inline-block;
     vertical-align: middle;
 }
@@ -97,23 +112,32 @@
 
 /* - Filter */
 .filter-block {
-    border: solid #c8c2be;
-    border-width: 0 0 1px;
-    background-color: #f3f3f3;
+    border: solid #c0c6c9;
+    border-width: 1px 1px 0;    
+    background-color: #dcdddd;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    -moz-border-radius: 5px 5px 0 0;
 }
-.selectfilter {
-    border: solid #c8c2be;
+.filter-header .toggle-button {
+    -moz-border-radius: 0 5px 0 0;
+    border-top-right-radius: 5px;
+}
+#filter-detail {
+    border: solid #c0c6c9;
     border-width: 1px 0 0;
 }
 .filteritem {
     position: relative;
-    margin: 0 10px 5px;
-    background-color: #dcdddd;
+    margin: 0 10px 0;
+    background-color: #fff;
+    border: 1px solid #adadad;
+    border-top-color: #cfd0d0;
+    border-left-color: #cfd0d0;
 }
-
 .item-label {
   float: left;
-  margin-top: 5px;
+  margin-top: 3px;
   margin-right: 10px;
   font-weight: bold;
 }

@@ -20,19 +20,16 @@
 <mtapp:setting
    id="display_columns"
    label="<__trans phrase="Column">"
-   label_class="top-label mod"
-   >
+   label_class="top-label mod">
   <ul class="mod" id="disp_cols">
   <mt:loop name="list_columns">
     <li class="<mt:if name="force_display"> hidden</mt:if>">
       <input
-	 type="checkbox"
-	 value="<mt:var name="id" escape="html">"
-	 name="custom_prefs"
-	 id="custom-prefs-<$mt:var name="id" escape="html"$>"
-	 class="cb"
-	 <mt:if name="display">checked="checked"</mt:if>
-	 >
+	     type="checkbox"
+	     value="<mt:var name="id" escape="html">"
+	     name="custom_prefs"
+	     id="custom-prefs-<$mt:var name="id" escape="html"$>"
+	     <mt:if name="display">checked="checked"</mt:if> />
       <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
   </mt:loop>
   </ul>
@@ -58,18 +55,15 @@
       <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
-
-      <div class="line actions-bar">
-        <div class="unit size1of2">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
-        <div class="unit size1of2 pagenav">
-        </div>
+    
+      <div class="actions-bar">
+        <mt:var name="button_actions">
+        <mt:include name="include/itemset_action_widget.tmpl">
+        <div class="pagenav"></div>
       </div>
-
-      <div id="filter" class="line filter-block">
-        <div id="filter-header" class="unit size1of1">
+    
+      <div id="filter" class="filter-block">
+        <div id="filter-header">
           <input type="hidden" id="filter_name" value="" />
           <input type="hidden" id="filter_id" value="" />
           <div class="mod filter-header">
@@ -79,12 +73,12 @@
             </a>
           </div>
         </div>
-        <div id="filter-detail" class="detail unit size1of1">
+        <div id="filter-detail" class="detail">
           <div id="filter-panel" class="mod selectfilter">
             <select id="item_list">
-	          <option value=""><__trans phrase="Select Filter Item..."></option>
+              <option value=""><__trans phrase="Select Filter Item..."></option>
             <mt:loop name="filter_types">
-	          <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
+              <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
             </mt:loop>
             </select>
             <button type="button" id="additem" class="button">Add</button>
@@ -97,37 +91,36 @@
         </div>
       </div>
 
-      <div class="line">
-        <table class="unit size1of1 listing <mt:var name="object_type">">
+      <div class="listing-block">
+        <table class="listing <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
           <tbody></tbody>
         </table>
       </div>
 
-      <div class="line actions-bar">
-        <div class="unit size1of2">
-          <mt:var name="button_actions">
-          <mt:include name="include/itemset_action_widget.tmpl">
-        </div>
-        <div class="unit size1of2 pagenav">
-        </div>
+      <div class="actions-bar">
+        <mt:var name="button_actions">
+        <mt:include name="include/itemset_action_widget.tmpl">
+        <div class="pagenav"></div>
       </div>
 
     </form>
   </div>
-  <p id="indicator"><img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" /><p>
+  <p id="indicator">
+    <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
+  <p>
 </div>
+
+
 
 <div id="dialog_filter" title="Select Filter">
-<div class="edit-filter button">Edit</div>
+  <div class="edit-filter button">Edit</div>
 </div>
-
-
 
 <div id="dialog_save_filter">
   <div id="filter_label" title="Filter Label">
-    <div class="label">Label: </div>
+    <div class="item-label">Label: </div>
     <div><input type="text" class="text full" name="filter_name" value="" /></div>
     <div><input type="hidden" name="filter_id" value="" /></div>
   </div>
@@ -181,7 +174,7 @@ jQuery(line).appendTo('thead tr, tfoot tr');
 
 var filter_types = {};
 <mt:loop name="filter_types">
-filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="plus clickable">[+]</span><span class="minus clickable">[-]</span></div></div>';
+filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="item-label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="plus clickable">[+]</span><span class="minus clickable">[-]</span></div></div>';
 </mt:loop>
 
 jQuery('#filter_types').hide();
