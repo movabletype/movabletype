@@ -3,33 +3,47 @@
     table-layout: fixed;
 }
 
+.actions-bar {
+    margin: 10px 0;
+}
+
 .col { 
+    width: 13%;
     padding: 7px 8px;
     border: solid #c8c2be;
     border-width: 0 0 1px;
     text-align: left;
     vertical-align: top;
 }
-
 .col a {
     color: #036;
 }
+.col.primary {
+    width: auto;
+    min-width: 15%;
+}
+.col.num {
+    width: 8em;
+}
+.col.date {
+    width: 10em;
+}
+.col.id {
+    width: 5.5em;
+}
 
 .head { 
-    width: auto;
-    min-width: 10%;
     padding: 0;
     border-width: 0 0 1px 1px;
-    background-color: rgb(219,219,219);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(235,235,235)), to(rgb(219,219,219)));
-    background: -moz-linear-gradient(top, rgb(235,235,235), rgb(219,219,219));
+    background-color: #dcdddd;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
+    background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
     font-size: 11px;
     font-weight: bold;
     text-shadow: rgb(248,251,248) 0 1px 0;
     white-space: nowrap;
     vertical-align: middle;
 }
-
 .head.first-child {
     border-left: 0;
 }
@@ -37,39 +51,22 @@
 .head div {
     position: relative;
 }
-
-.col.primary {
-    min-width: 15%;
-}
-
-.col.date {
-    min-width: 10%;
-}
-
-.col.num {
-    max-width: 8em;
-    min-width: 8%;
-}
-
-.col.id {
-    width: 6em;
-}
-
 .sorted { 
-    background-color: rgb(235,235,235);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgb(219,219,219)), to(rgb(235,235,235)));
-    background: -moz-linear-gradient(top, rgb(219,219,219), rgb(235,235,235));
+    background-color: #f3f3f3;
+    background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
+    background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
 }
-
 .sort-link {
-    width: auto;
+    width: 100%;
     margin-right: 18px;
     padding: 7px 8px;
     display: block;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+.sorted .sort-link {
+    width: auto;
+}
 .sm {
     position: absolute;
     top: 50%;
@@ -79,23 +76,16 @@
     margin-top: -5px;
     background: transparent center no-repeat;
 }
-
-
 .sm.asc {
     background-image: url(../images/spinner-big-top.gif);
 }
-
 .sm.desc {
     background-image: url(../images/spinner-big-bottom.gif);
 }
 
-.actions-bar {
-    margin: 10px 0;
-}
 
 /* -- Page Navigation */
 .pagenav {
-  
     text-align: right;
     display: inline-block;
     vertical-align: middle;
@@ -121,12 +111,12 @@
     background-color: #dcdddd;
 }
 
-/*.label {
+.item-label {
   float: left;
   margin-top: 5px;
   margin-right: 10px;
   font-weight: bold;
-}*/
+}
 
 .filter {
     font-size: 90%;
