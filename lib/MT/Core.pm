@@ -558,12 +558,14 @@ BEGIN {
                         my $app = MT->app or return;
                         return { author_id => $app->user->id };
                     },
+                    filter_tmpl => '',
                     singleton => 1,
 
                 },
                 current_context => {
                     label => 'This Context Only',
                     display => 'none',
+                    filter_tmpl => '',
                     condition => sub {
                         my $prop = shift;
                         $prop->datasource->has_column('blog_id') or return;
@@ -709,6 +711,7 @@ BEGIN {
             entry   => '$Core::MT::Entry::system_filters',
             page    => '$Core::MT::Page::system_filters',
             comment => '$Core::MT::Comment::system_filters',
+            ping    => '$Core::MT::TBPing::system_filters',
             tag     => '$Core::MT::Tag::system_filters',
         },
         listing_screens => {
@@ -761,7 +764,7 @@ BEGIN {
             },
             ping => {
                 object_label => 'Trackback',
-                columns => [qw( commenter junk_status text created_on entry auth_type  )],
+                columns => [qw( excerpt target created_on )],
             },
             author => {
                 object_label => 'Author',

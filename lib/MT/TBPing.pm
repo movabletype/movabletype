@@ -72,40 +72,98 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => { view => [] },
+        modified_on => {
+            auto    => 1,
+            label   => 'Modeified on',
+            display => 'none' },
+        from => {
+            label => 'From',
+            view_filter => [],
+            sort  => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                my $dir = $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
+                $args->{sort} = [
+                    { column => 'blog_name', desc => $dir },
+                    { column => 'title', desc => $dir },
+                ];
+            },
+        },
         author_name => {
             condition => sub {0},
         },
         excerpt => {
             label => 'Excerpt',
-            auto  => 1,
+            auto => 1,
+            display => 'force',
+            html  => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my $text = MT::Util::remove_html($obj->excerpt);
+                ## FIXME: Hard coded...
+                my $len  = 30;
+                if ( $len < length($text) ) {
+                    $text = substr($text, 0, $len);
+                    $text .= '...';
+                }
+                elsif ( !$text ) {
+                    $text = '...';
+                }
+                my $id  = $obj->id;
+                my $link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'comment',
+                        id      => $id,
+                        blog_id => $obj->blog_id,
+                });
+                my $status = $obj->is_junk      ? 'Junk'
+                           : $obj->is_published ? 'Published'
+                           :                      'Moderated';
+                my $lc_status = lc $status;
+                my $status_img = MT->static_path . 'images/status_icons/';
+                $status_img .= $status eq 'Junk'      ? 'warning.gif'
+                             : $status eq 'Published' ? 'success.gif'
+                             :                          'draft.gif';
+
+                my $blog_name = $obj->blog_name  || '';
+                my $title     = $obj->title      || '';
+                my $url       = $obj->source_url || '';
+
+                return qq{
+                    <div class="ping-from">
+                        <span class="status $lc_status">
+                            <img als="$status" src="$status_img" />
+                        </span>
+                        $blog_name - <a href="$url">$title</a>
+                    </div>
+                    <p class="ping-excerpt description">$text</p>
+                };
+            },
         },
         ip => {
             label => 'IP',
             auto  => 1,
         },
         source_blog_name => {
-            label => 'Blog name',
+            label => 'Sender blog name',
             col   => 'blog_name',
+            display => 'none',
             base  => '__common.string',
         },
         status => {
             base  => 'comment.status',
         },
         title => {
-            label => 'Title',
+            label => 'Sender title',
             auto  => 1,
-            html  => sub {
-                my ( $prop, $obj ) = @_;
-                my $url   = $obj->source_url;
-                my $title = $obj->title;
-                return qq{<a href="$url">$title</a>};
-            },
+            display => 'none',
         },
-        entry_and_category_label => {
-            label => 'Entry/Category',
+        target => {
+            label => 'Target',
             base  => '__common.string',
             bulk_html  => sub {
-                my ( $prop, $objs ) = @_;
+                my ( $prop, $objs, $app ) = @_;
                 my %tbs = map { $_->tb_id => 1 } @$objs;
                 my @tbs = MT->model('trackback')->load({ id => [ keys %tbs ] });
                 my %tb_map  = map { $_->id => $_ } @tbs;
@@ -135,9 +193,168 @@ sub list_props {
                         $type    = $cat->class;
                         $blog_id = $cat->blog_id;
                     }
-                    push @res, qq{<a href="<mt:var name="script_url>">?__mode=view&type=$type&id=$id&blog_id=$blog_id">$label</a>};
+                    my $url = $app->uri(
+                        mode => 'view',
+                        args => {
+                            _type   => $type,
+                            id      => $id,
+                            blog_id => $blog_id,
+                        },
+                    );
+                    my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                    push @res, qq{<img src="$img" /><a href="$url">$label</a>};
                 }
                 @res;
+            },
+        },
+        entry_id => {
+            base => '__common.integer',
+            display => 'none',
+            filter_editable => 0,
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $entry_id = $args->{value};
+                $db_args->{joins} ||= [];
+                push @{$db_args->{joins}}, MT->model('trackback')->join_on(
+                    undef,
+                    {
+                        entry_id => $entry_id,
+                        id => \'= tbping_tb_id',
+                    },
+                );
+            },
+            label_via_param => sub {
+                my ( $prop, $app ) = @_;
+                my $entry_id = $app->param('filter_val');
+                my $entry = MT->model('entry')->load($entry_id);
+                my $type = $entry->class eq 'entry' ? 'Entry'
+                         : $entry->class eq 'page'  ? 'Page'
+                         :                            '';
+                return MT->translate(
+                    'Trackbacks on [_1]: [_2]',
+                    $type,
+                    $entry->title,
+                );
+            },
+        },
+        category_id => {
+            base => '__common.integer',
+            display => 'none',
+            filter_editable => 0,
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $cat_id = $args->{value};
+                $db_args->{joins} ||= [];
+                push @{$db_args->{joins}}, MT->model('trackback')->join_on(
+                    undef,
+                    {
+                        category_id => $cat_id,
+                        id => \'= tbping_tb_id',
+                    },
+                );
+            },
+            label_via_param => sub {
+                my ( $prop, $app ) = @_;
+                my $cat_id = $app->param('filter_val');
+                my $cat = MT->model('category')->load($cat_id);
+                my $type = $cat->class eq 'category' ? 'Category'
+                         : $cat->class eq 'folder'   ? 'Folder'
+                         :                             '';
+                return MT->translate(
+                    'Trackbacks on [_1]: [_2]',
+                    $type,
+                    $cat->label,
+                );
+            },
+        },
+        for_current_user => {
+            label => 'For my entries',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $user = MT->app->user;
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('trackback')->join_on(
+                    undef,
+                    {
+                        id       => \"= tbping_tb_id",
+                        entry_id => \"= entry_id",
+                    },
+                    {
+                        join => MT->model('entry')->join_on(undef, {
+                            author_id => $user->id,
+                        }),
+                    },
+                );
+            },
+            filter_tmpl => '',
+        },
+
+    };
+}
+
+sub system_filters {
+    return {
+        not_spam => {
+            label => 'Non spam trackbacks',
+            items => [
+                { type => 'status', args => { value => 'not_junk' }, },
+            ],
+        },
+        not_spam_in_this_website => {
+            label => 'Non spam trackbacks on this website',
+            view => 'website',
+            items => [
+                { type => 'current_context' },
+                { type => 'status', args => { value => 'not_junk' }, },
+            ],
+        },
+        pending => {
+            label => 'Pending trackbacks',
+            items => [
+                { type => 'status', args => { value => 'moderated' }, },
+            ],
+        },
+        published => {
+            label => 'Published trackbacks',
+            items => [
+                { type => 'status', args => { value => 'approved' }, },
+            ],
+        },
+        on_my_entry => {
+            label => 'Trackbacks on my entries/pages',
+            items => sub {
+                my $login_user = MT->app->user;
+                [ { type => 'for_current_user' } ],
+            },
+        },
+        in_last_7_days => {
+            label => 'Trackbacks in the last 7 days',
+            items => [
+                { type => 'status', args => { value => 'not_junk' }, },
+                { type => 'created_on', args => { option => 'days', days => 7 } }
+            ],
+        },
+        spam => {
+            label => 'Spam trackbacks',
+            items => [
+                { type => 'status', args => { value => 'junk' }, },
+            ],
+        },
+        _trackbacks_by_entry => {
+            label => sub {
+                my $app = MT->app;
+                my $id = $app->param('filter_val');
+                my $entry = MT->model('entry')->load($id);
+                return 'Trackbacks by entry: ' . $entry->title;
+            },
+            items => sub {
+                my $app = MT->app;
+                my $id = $app->param('filter_val');
+                return [
+                    { type => 'entry', args => { option => 'equal', value => $id } }
+                ];
             },
         },
     };

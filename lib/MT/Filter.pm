@@ -135,9 +135,9 @@ sub load_objects {
     my $sort_prop;
     $sort_prop = MT::ListProperty->instance( $ds, $sort ) if $sort;
     if ( $sort_prop && $sort_prop->has('sort') ) {
-        $sort_prop->sort( $terms, $args );
         $args->{direction}
             = ( $dir && $dir eq 'descend' ) ? 'descend' : 'ascend';
+        $sort_prop->sort( $terms, $args );
     }
 
     if (!( scalar @grep_items )
