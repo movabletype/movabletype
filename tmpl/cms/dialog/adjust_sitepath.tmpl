@@ -189,7 +189,7 @@ function init() {
             <input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" class="blog-path-text text" />
           </div>
           <div class="option use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
-            <input type="checkbox" name="use_absolute_<mt:avar name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+            <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="cb" /> <label for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
           </div>
           <div class="hint relative-site_path-hint"><__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></div>
           <div class="hint absolute-site_path-hint"><__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></div>
@@ -335,7 +335,7 @@ function init() {
         return is_valid_url(parent_url + value);
     });
 
-    jQuery.validator.addMethod('path', function(value, element) {
+    jQuery.validator.addMethod('site_path', function(value, element) {
         rex = RegExp("site_path_([0-9]+)");
         parent_path = '';
         if (element.name.match(rex)) {
@@ -388,7 +388,7 @@ function init() {
             },
             site_path_<mt:var name="id" escape="html">: {
                 required: true,
-                path: true
+                site_path: true
             }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
@@ -411,7 +411,7 @@ function init() {
                 archive_url: true
             },
             archive_path_<mt:var name="id" escape="html">: {
-                path: function(element) {
+                site_path: function(element) {
                     if ( !jQuery('#use_absolute_archive_<mt:var name="id" escape="html">:checked').length ) {
                         return is_valid_path(element.value);
                     }
@@ -446,7 +446,7 @@ function init() {
             },
             site_path_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
+                site_path: '<__trans phrase="You must set a valid Local Site Path." escape="singlequotes">'
             }<mt:unless name="__last__">,<mt:else><mt:if name="blogs_loop">,</mt:if></mt:unless>
 </mt:loop>
 <mt:loop name="blogs_loop">
@@ -467,7 +467,7 @@ function init() {
             },
             archive_path_<mt:var name="id" escape="html">: {
                 required: '<__trans phrase="You must set Local Archive Path." escape="singlequotes">',
-                path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+                site_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
                 not_absolute_path: '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">'
             },
             archive_path_absolute_<mt:var name="id" escape="html">: {
