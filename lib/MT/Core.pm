@@ -539,12 +539,22 @@ BEGIN {
                     },
                     html => sub {
                         my $prop = shift;
-                        my ( $obj ) = @_;
+                        my ( $obj, $app ) = @_;
                         my $id      = $obj->id;
-                        my $label   = $obj->label;
-                        my $blog_id = $obj->blog_id;
+                        my $label   = MT::Util::remove_html($obj->label) || '...';
+                        my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
+                                    : $app->blog                  ? $app->blog->id
+                                    :                               0;
                         my $type    = $prop->object_type;
-                        return qq{<a href="<mt:var name="script_url">?__mode=view&amp;_type=$type&amp;blog_id=$blog_id&amp;id=$id">$label</a>};
+                        my $edit_link = $app->uri(
+                            mode => 'view',
+                            args => {
+                                _type   => $type,
+                                id      => $id,
+                                blog_id => $blog_id,
+                            },
+                        );
+                        return qq{<a href="$edit_link">$label</a>};
                     },
                 },
                 current_user => {
@@ -713,6 +723,7 @@ BEGIN {
             comment => '$Core::MT::Comment::system_filters',
             ping    => '$Core::MT::TBPing::system_filters',
             tag     => '$Core::MT::Tag::system_filters',
+            asset   => '$Core::MT::Asset::system_filters',
         },
         listing_screens => {
             website => {

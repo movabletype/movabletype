@@ -658,48 +658,6 @@ sub template_param_edit {
     $asset->edit_template_param(@_);
 }
 
-sub asset_list_filters {
-    my $app = shift;
-
-    my %filters;
-    my $types = MT::Asset->class_labels;
-    foreach my $type ( keys %$types ) {
-        my $asset_type = $type;
-        $asset_type =~ s/^asset\.//;
-        $filters{$asset_type} = {
-            label   => sub { MT::Asset->class_handler($type)->class_label_plural },
-            handler => sub {
-                my ( $terms, $args ) = @_;
-                $terms->{class} = $asset_type eq 'asset' ? '*' : $asset_type;
-            },
-        };
-    }
-
-    # If current context is website, adding the website filter.
-    if ( $app->blog && !$app->blog->is_blog ) {
-        $filters{'this_website'} = {
-            label => $app->translate('[_1] of this website', MT::Asset->class_label_plural),
-            order => 100,
-            handler => sub {
-                my ( $terms, $args ) = @_;
-                $terms->{blog_id} = $app->blog->id;
-            },
-        };
-    }
-
-    my @types =
-      sort { $filters{$a}{label} cmp $filters{$b}{label} } keys %filters;
-    my $order = 200;
-    foreach (@types) {
-        $filters{$_}{order} = $order;
-        $order += 100;
-    }
-    $filters{'asset'}{order} = 0;
-    $filters{'asset'}{label} = "All Assets"; # labels are translated later
-                                             # translate("All Assets");
-    return \%filters;
-}
-
 sub build_asset_hasher {
     my $app = shift;
     my (%param) = @_;

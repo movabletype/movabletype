@@ -46,16 +46,14 @@ sub list_default_terms {{
 
 sub list_props {
     return {
-        description => {
-
-        },
-        file_extension => {
-
-
+        modified_on => {
+            base    => '__common.modified_on',
+            display => 'none',
         },
         class => {
             label => 'Class',
             col   => 'class',
+            display => 'none',
             base  => '__common.single_select',
             terms => sub {
                 my $prop   = shift;
@@ -65,6 +63,7 @@ sub list_props {
                 $db_args->{no_class} = 1;
                 return { $col => $value };
             },
+            ## FIXME: Get these values from registry or somewhere...
             single_select_options => [
                 { label => 'Image', value => 'image', },
                 { label => 'Audio', value => 'audio', },
@@ -72,29 +71,113 @@ sub list_props {
                 { label => 'File',  value => 'file', },
             ],
         },
-        thumbnail => {
-            label => 'Thumbnail',
-            raw => sub { 'bar' },
+        label => {
+            auto      => 1,
+            label     => 'Label',
+            display   => 'force',
             html => sub {
                 my $prop = shift;
-                my ( $obj ) = @_;
+                my ( $obj, $app ) = @_;
+                my $id      = $obj->id;
+                my $label   = MT::Util::remove_html($obj->label || $obj->file_name || 'Untitled' );
+                my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
+                            : $app->blog                  ? $app->blog->id
+                            :                               0;
+                my $type    = $prop->object_type;
+                my $edit_link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => $type,
+                        id      => $id,
+                        blog_id => $blog_id,
+                    },
+                );
+
                 if ($obj->has_thumbnail) {
                     my ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
                       = $obj->thumbnail_url( Height => 75, Width => 75 , Square => 1 );
                     my $thumbnail_width_offset = int((75 - $thumbnail_width)  / 2);
                     my $thumbnail_height_offset = int((75 - $thumbnail_height)  / 2);
-                    return qq(<img src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />);
-                }
-                else {
-                    return '-';
-                }
+                    return qq{
+                        <span class="title"><a href="$edit_link">$label</a></span>
+                        <div class="thumbnail">
+                            <img src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                        </div>
+                    };
+                };
+                return qq{<a href="$edit_link">$label</a>};
             },
         },
         description => {
             auto => 1,
+            display => 'none',
             label => 'Description',
         },
+        file_path => {
+            auto => 1,
+            display => 'none',
+            label => 'File path',
+        },
+        file_name => {
+            auto => 1,
+            display => 'none',
+            label => 'Filename',
+        },
+        file_ext => {
+            auto => 1,
+            display => 'none',
+            label => 'Suffix',
+        },
+        image_width => {
+            label     => 'Image width',
+            base      => '__common.integer',
+            display   => 'none',
+            meta_type => 'image_width',
+            col       => 'vinteger',
+            raw   => sub {
+                my ( $prop, $asset ) = @_;
+                my $meta = $prop->meta_type;
+                $asset->has_meta($prop->meta_type) or return;
+                return $asset->$meta;
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $super_terms = $prop->super(@_);
+                $db_args->{joins} ||= [];
+                push @{$db_args->{joins}}, MT->model('asset')->meta_pkg->join_on(
+                    undef,
+                    {
+                        type => $prop->meta_type,
+                        asset_id => \"= asset_id",
+                        %$super_terms,
+                    },
+                );
+            },
+        },
+        image_height => {
+            base      => 'asset.image_width',
+            label     => 'Image height',
+            meta_type => 'image_height',
+        },
     };
+}
+
+sub system_filters {
+    my %type_filters;
+    my $types = MT::Asset->class_labels;
+    foreach my $type ( keys %$types ) {
+        my $asset_type = $type;
+        next if $asset_type eq 'asset';
+        $asset_type =~ s/^asset\.//;
+        $type_filters{$asset_type} = {
+            label   => sub { MT::Asset->class_handler($type)->class_label_plural },
+            items => [
+                { type => 'class', args => { value => $asset_type }, },
+            ],
+        };
+    }
+    return \%type_filters;
 }
 
 require MT::Asset::Image;

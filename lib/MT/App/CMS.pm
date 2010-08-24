@@ -820,10 +820,6 @@ sub core_list_filters {
                   },
             },
         },
-        asset => sub {
-            require MT::CMS::Asset;
-            return MT::CMS::Asset::asset_list_filters( $app, @_ );
-        },
         tag => {
             entry => {
                 label => 'Tags with entries',
