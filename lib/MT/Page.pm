@@ -34,7 +34,6 @@ sub list_props {
         text          => { base => 'entry.text' },
         text_more     => { base => 'entry.text_more' },
         title         => { base => 'entry.title' },
-        excerpt       => { base => 'entry.excerpt' },
         authored_on   => { base => 'entry.authored_on' },
         status        => { base => 'entry.status' },
         created_on    => { base => 'entry.created_on' },
@@ -47,6 +46,7 @@ sub list_props {
             base => 'entry.primary_category',
             label => 'Folder',
             category_class => 'folder',
+            zero_state_label => '(root)',
         },
     };
 }

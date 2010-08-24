@@ -21,7 +21,7 @@ use MT::Placement;
 use MT::Comment;
 use MT::TBPing;
 use MT::Util qw( archive_file_for discover_tb start_end_period extract_domain
-    extract_domains weaken first_n_words );
+    extract_domains weaken first_n_words remove_html );
 use MT::I18N qw( const );
 
 sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
@@ -235,40 +235,62 @@ sub list_props {
             ],
             html => sub {
                 my ( $prop, $obj ) = @_;
-                my $title = $obj->title;
-                my $id    = $obj->id;
+                my $class       = $obj->class;
+                my $class_label = $obj->class_label;
+                my $title     = remove_html( $obj->title );
+                my $excerpt   = remove_html( $obj->excerpt ) || remove_html( $obj->text );
+                ## FIXME: Hard coded
+                my $len = 40;
+                if ( length $excerpt > $len ) {
+                    $excerpt = substr($excerpt, 0, $len);
+                    $excerpt .= '...';
+                }
+                my $id        = $obj->id;
                 my $permalink = $obj->permalink;
-                my $edit_url = MT->app->uri(
+                my $edit_url  = MT->app->uri(
                     mode => 'view',
                     args => {
-                        _type   => 'entry',
+                        _type   => $class,
                         id      => $obj->id,
                         blog_id => $obj->blog_id,
                 });
                 my $status = $obj->status;
+                my $status_class
+                    = $status == MT::Entry::HOLD()     ? 'Draft'
+                    : $status == MT::Entry::RELEASE()  ? 'Published'
+                    : $status == MT::Entry::REVIEW()   ? 'Review'
+                    : $status == MT::Entry::FUTURE()   ? 'Future'
+                    : $status == MT::Entry::JUNK()     ? 'Junk'
+                    :                                    '';
+                my $lc_status_class = lc $status_class;
                 require MT::Entry;
-                my $status_icon
+                my $status_file
                     = $status == MT::Entry::HOLD()     ? 'draft.gif'
                     : $status == MT::Entry::RELEASE()  ? 'success.gif'
                     : $status == MT::Entry::REVIEW()   ? 'warning.gif'
                     : $status == MT::Entry::FUTURE()   ? 'future.gif'
                     : $status == MT::Entry::JUNK()     ? 'warning.gif'
                     :                                    '';
-                my $static = MT->static_path . 'images/status_icons/';
-                my $out = '';
-                $out .= '<img src="' . $static .  $status_icon . '" />';
-                $out .= '<a href="' . $edit_url . '">';
-                $out .= $obj->title;
-                $out .= '</a>';
-                $out .= '<a href="' . $permalink . '"><img src="' . $static . 'view.gif" /></a>' if $permalink;
+                my $status_img = MT->static_path . 'images/status_icons/' . $status_file;
+                my $view_img   = MT->static_path . 'images/status_icons/view.gif';
+                my $out = qq{
+                    <span class="status $lc_status_class">
+                      <img alt="$status_class" src="$status_img" />
+                    </span>
+                    <span class="title">
+                      <a href="$edit_url">$title</a>
+                    </span>
+                    <span class="view-link">
+                      <a href="$permalink">
+                        <img alt="View $class_label" src="$view_img" />
+                      </a>
+                    </span>
+                    <p class="$class-excerpt description">$excerpt<p>
+                };
                 return $out;
             },
         },
-        excerpt => 'Excerpt',
-        authored_on => {
-            auto      => 1,
-            label     => 'Authored on',
-        },
+        authored_on => 'Created',
         status => {
             label => 'Status',
             col  => 'status',
@@ -287,18 +309,16 @@ sub list_props {
             base => '__common.created_on',
             display   => 'none',
         },
-        modified_on => {
-            base => '__common.modified_on',
-            display   => 'none',
-        },
         basename => {
             label => 'Basename',
+            display => 'none',
             auto  => 1,
         },
         comment_count => {
             base    => '__common.single_select',
             col     => 'comment_count',
-            display => 'none',
+            col_class => 'num',
+            display => 'optional',
             label   => 'Comments',
             terms => sub {
                 my ( $prop, $args ) = @_;
@@ -381,13 +401,14 @@ sub list_props {
             sort => 0,
         },
         primary_category => {
-            label => 'Primary Category',
+            label => 'Category',
             order => 400,
             display   => 'default',
             base  => '__common.single_select',
             col_class => 'string',
             view_filter => 'blog',
             category_class => 'category',
+            zero_state_label => '-',
             bulk_html => sub {
                 my $prop = shift;
                 my ( $objs ) = @_;
@@ -407,7 +428,7 @@ sub list_props {
                         label => 1,
                 }});
                 my %categories = map { $_->id => $_->label } @categories;
-                return map { $categories{  $placements{$_->id} } } @$objs;
+                return map { $categories{  $placements{$_->id} } || $prop->zero_state_label } @$objs;
             },
             raw   => sub {
                 my ( $prop, $obj ) = @_;

@@ -595,7 +595,7 @@ BEGIN {
                 },
                 modified_on => {
                     auto      => 1,
-                    label     => 'Modified on',
+                    label     => 'Modified',
                     display   => 'optional',
                     condition => sub {
                         my $prop = shift;
@@ -603,7 +603,7 @@ BEGIN {
                     },
                 },
                 author_name => {
-                    label => 'Author name',
+                    label => 'Author',
                     order => 500,
                     display   => 'default',
                     base  => '__common.string',
