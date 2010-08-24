@@ -43,7 +43,7 @@ sub list_props {
         ping_count    => { base => 'entry.ping_count' },
         commented_on  => { base => 'entry.commented_on' },
         folder => {
-            base => 'entry.primary_category',
+            base => 'entry.category',
             label => 'Folder',
             category_class => 'folder',
             zero_state_label => '(root)',
