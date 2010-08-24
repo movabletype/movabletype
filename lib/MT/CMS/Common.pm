@@ -742,8 +742,10 @@ sub list {
     my $list_pref = $list_prefs->{$type}{$blog_id} || {};
     ## FIXME: Hardcoded
     my $rows = $list_pref->{rows} || 50;
-    my $cols = $list_pref->{cols};
-    $cols ||= { map { $_ => 1 } @{ $screen_settings->{columns} || [] } };
+    my $columns = $list_pref->{columns} || $screen_settings->{columns} || [];
+    my %cols = map { $_ => 1 } @$columns;
+    my $i = 1;
+    my %col_order = map { $_ => $i++ } @$columns;
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $initial_sys_filter = $q->param('filter_key');
@@ -783,34 +785,30 @@ sub list {
     my @list_columns
         =
         sort {
-              !$a->order ? 1
-            : !$b->order ? -1
-            : $a->order <=> $b->order
+              !$col_order{$a->id} ? 1
+            : !$col_order{$b->id} ? -1
+            : $col_order{$a->id} <=> $col_order{$b->id}
         }
         grep {
             $_->can_display( $scope )
         }
         values %$list_props;
 
+    my $primary_col = $screen_settings->{primary} || [ @{$screen_settings->{columns}} ]->[0];
     for my $col (@list_columns) {
         my $display = $col->display || 'optional';
         if ( $display eq 'force' ) {
             $col->{force_display} = 1;
             $col->{display}       = 1;
         }
-        elsif ( $cols ) {
+        elsif ( scalar %cols ) {
             $col->{force_display} = 0;
-            $col->{display} = $cols->{$col->id};
+            $col->{display} = $cols{$col->id};
         }
         else {
-            if ( $display eq 'default' ) {
-                $col->{force_display} = 0;
-                $col->{display} = 1;
-            }
-            else {
-                $col->{force_display} = 0;
-                $col->{display} = 0;
-            }
+            $col->{force_display} = 0;
+            $col->{display} = 0;
+
         }
         $col->{sortable} = $col->can_sort( $scope );
     }
@@ -819,6 +817,7 @@ sub list {
         id                 => $_->id,
         type               => $_->type,
         label              => $_->label,
+        primary            => $_->id eq $primary_col ? 1 : 0,
         col_class          => $_->col_class,
         sortable           => $_->sortable,
         display            => $_->display,
@@ -879,10 +878,9 @@ sub list {
     $param{filters_raw}    = \@filters;
     $param{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
 
-    $param{list_columns}   = \@list_columns;
-    $param{filter_types}   = \@filter_types;
-    $param{object_type}    = $type;
-
+    $param{list_columns}    = \@list_columns;
+    $param{filter_types}    = \@filter_types;
+    $param{object_type}     = $type;
     $param{object_label}
         = $screen_settings->{object_label}
         || $obj_class->class_label;
@@ -1085,7 +1083,7 @@ sub filtered_list {
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
     $list_pref->{rows} = $limit;
-    $list_pref->{cols} = \%cols;
+    $list_pref->{columns} = [ split ',', $cols ];
     $list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
     $app->user->list_prefs($list_prefs);
     ## FIXME: should handle errors..

@@ -245,6 +245,7 @@ sub list_props {
         entry => {
             label => 'Entry/Page',
             base => '__common.integer',
+            col_class => 'string',
             filter_editable => 0,
             sort => sub {
                 my $prop = shift;

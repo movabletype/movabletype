@@ -740,16 +740,18 @@ BEGIN {
             },
             entry => {
                 object_label => 'Entry',
-                columns => [qw( id title created_on )],
+                primary      => 'title',
+                columns => [qw( title author_name blog_name category authored_on comment_count )],
                 default_sort_key => 'authored_on',
             },
             page => {
                 object_label => 'Page',
-                columns => [qw( id title created_on )],
+                columns => [qw( title created_on )],
             },
             asset => {
                 object_label => 'Asset',
-                columns => [qw( id created_on )],
+                primary => 'label',
+                columns => [qw( id label created_on )],
             },
             log => {
                 object_label => 'Log',
@@ -758,20 +760,21 @@ BEGIN {
             category => {
                 object_label => 'Category',
                 columns      => [qw( id parent label entry_count )],
+                primary      => 'label',
                 template     => 'category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
             },
             folder => {
                 object_label => 'Folder',
-                columns      => [qw( id parent label entry_count )],
+                columns      => [qw( parent label entry_count )],
                 template     => 'category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
             },
             comment => {
                 object_label => 'Comment',
-                columns => [qw( text author blog_name entry created_on )],
+                columns => [qw( comment commenter )],
             },
             ping => {
                 object_label => 'Trackback',

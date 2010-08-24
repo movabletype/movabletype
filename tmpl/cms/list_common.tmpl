@@ -161,7 +161,7 @@ var line = '<th class="col head cb"><input type="checkbox" /></th>';
 var table = jQuery('table.listing')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
-line += '<th class="col head <mt:var name="id"><mt:if name="force_display"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
+line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
 <mt:if name="default_sort_order">
 jQuery.data(table, '<mt:var name="id">', 'desc');
 <mt:else>

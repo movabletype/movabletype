@@ -400,7 +400,7 @@ sub list_props {
             },
             sort => 0,
         },
-        primary_category => {
+        category => {
             label => 'Category',
             order => 400,
             display   => 'default',
