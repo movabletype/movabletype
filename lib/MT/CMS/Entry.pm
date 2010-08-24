@@ -1814,11 +1814,7 @@ sub save_entries {
 
             # FIXME: Should be assigning the publish_date field here
             my $ts = sprintf "%04d%02d%02d%02d%02d%02d", $1, $2, $3, $4, $5, $s;
-            if ($type eq 'page' ) {
-                $entry->modified_on($ts);
-            } else {
-                $entry->authored_on($ts);
-            }
+            $entry->authored_on($ts);
         }
         $app->run_callbacks( 'cms_pre_save.' . $type, $app, $entry, $orig_obj )
           || return $app->error(
@@ -2154,10 +2150,7 @@ sub build_entry_table {
 
         my $row = $obj->get_values;
         $row->{text} ||= '';
-        if ( my $ts =
-            ( $type eq 'page' )
-            ? ( $is_power_edit ? $obj->created_on : $obj->modified_on )
-            : $obj->authored_on )
+        if ( my $ts = $obj->authored_on )
         {
             $row->{created_on_formatted} =
               format_ts( $date_format, $ts, $obj->blog, $app->user ? $app->user->preferred_language : undef );
