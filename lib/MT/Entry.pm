@@ -285,7 +285,7 @@ sub list_props {
                         <img alt="View $class_label" src="$view_img" />
                       </a>
                     </span>
-                    <p class="$class-excerpt description">$excerpt<p>
+                    <p class="$class-excerpt description">$excerpt</p>
                 };
                 return $out;
             },

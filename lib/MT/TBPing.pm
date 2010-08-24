@@ -202,7 +202,12 @@ sub list_props {
                         },
                     );
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
-                    push @res, qq{<img src="$img" /><a href="$url">$label</a>};
+                    push @res, qq{
+                        <span class="target-type $type">
+                          <img src="$img" />
+                        </span>
+                        <a href="$url">$label</a>
+                    };
                 }
                 @res;
             },

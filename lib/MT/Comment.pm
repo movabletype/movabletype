@@ -94,7 +94,13 @@ sub list_props {
         modified_on => {
             auto    => 1,
             label   => 'Modeified on',
-            display => 'none' },
+            display => 'none'
+        },
+        created_on => {
+            auto    => 1,
+            label   => 'Created on',
+            display => 'none'
+        },
         status => {
             label => 'Status',
             base => '__common.single_select',
@@ -146,42 +152,12 @@ sub list_props {
             display => 'force',
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
-                my $name = $obj->author;
-                my ( $link, $status_img, $auth_img );
+                my $name = MT::Util::remove_html( $obj->author );
+                my ( $link, $status_img, $status_class, $lc_status_class, $auth_img, $auth_label );
                 my $id  = $obj->commenter_id;
-                if ( $id ) {
-                    $link = $app->uri(
-                        mode => 'view',
-                        args => {
-                            _type   => 'commenter',
-                            id      => $id,
-                            blog_id => $obj->blog_id,
-                    });
-                    my $commenter = MT->model('author')->load($id);
-                    my $status = $commenter->status;
-                    if ( $commenter->type == MT::Author::AUTHOR() ) {
-                        $status_img = $commenter->is_active    ? 'user-enabled.gif'
-                                    : $commenter->is_banned    ? 'user-disabled.gif'
-                                    :                            'user-pending.gif'
-                                    ;
-                    }
-                    else {
-                        $status_img = $commenter->is_trusted   ? 'trusted.gif'
-                                    : $commenter->is_banned    ? 'banned.gif'
-                                    :                            'authenticated.gif'
-                                    ;
-                    }
+                my $static = MT->static_path;
 
-                    if ( $commenter->auth_type eq 'MT' ) {
-                        $auth_img = 'images/comment/mt_logo.png';
-                    }
-                    else {
-                        my $auth = MT->registry( commenter_authenticators => $commenter->auth_type );
-                        $auth_img = $auth->{logo_small};
-                    }
-                }
-                else {
-                    my $commenter_name = MT::Util::remove_html( $obj->author );
+                if ( !$id ) {
                     $link = $app->uri(
                         mode => 'search_replace',
                         args => {
@@ -189,22 +165,85 @@ sub list_props {
                             search_cols => 'author',
                             is_limited  => 1,
                             do_search   => 1,
-                            search      => $commenter_name,
+                            search      => $name,
                             blog_id     => $app->blog->id,
                     });
+                    $status_img = '';
+                    $status_class = 'Anonymous';
+                    $lc_status_class = lc $status_class;
+                    my $link_title = MT->translate('Search other comments from this anonymous commenter');
+                    return qq{
+                        <span class="commenter">
+                          <a href="$link" title="$link_title">$name</a>
+                        </span>
+                    };
                 }
-                my $static = MT->static_path;
-                my $out = '';
-                $out .= '<img src="' . $static . $auth_img . '" />'
-                    if $auth_img;
-                $out .= '<a href="' . $link . '">' . $name . '</a>';
-                $out .= '<img src="' . $static . 'images/status_icons/' . $status_img . '" />'
-                    if $status_img;
-                $out;
+
+                $link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'commenter',
+                        id      => $id,
+                        blog_id => $obj->blog_id,
+                });
+                my $commenter = MT->model('author')->load($id);
+                my $status = $commenter->status;
+                my $status_icon;
+                if ( $commenter->type == MT::Author::AUTHOR() ) {
+                    $status_icon = $commenter->is_active    ? 'user-enabled.gif'
+                                 : $commenter->is_banned    ? 'user-disabled.gif'
+                                 :                            'user-pending.gif'
+                                 ;
+                    $status_class = $commenter->is_active    ? 'Enabled'
+                                  : $commenter->is_banned    ? 'Disabled'
+                                  :                            'Pending'
+                                  ;
+                }
+                else {
+                    $status_icon = $commenter->is_trusted   ? 'trusted.gif'
+                                 : $commenter->is_banned    ? 'banned.gif'
+                                 :                            'authenticated.gif'
+                                 ;
+                    $status_class = $commenter->is_trusted   ? 'Trusted'
+                                  : $commenter->is_banned    ? 'Banned'
+                                  :                            'Authenticated'
+                                  ;
+                }
+                $lc_status_class = lc $status_class;
+                my $status_url = $static . 'images/status_icons/' . $status_icon;
+                $status_img = qq{<img src="$status_url" />};
+
+                $auth_img = $static;
+                if ( $commenter->auth_type eq 'MT' ) {
+                    $auth_img .= 'images/comment/mt_logo.png';
+                    $auth_label = 'Movable Type';
+                }
+                else {
+                    my $auth = MT->registry( commenter_authenticators => $commenter->auth_type );
+                    $auth_img .= $auth->{logo_small};
+                    $auth_label = $auth->{label};
+                    $auth_label = $auth_label->() if ref $auth_label;
+                }
+                my $link_title = MT->translate(
+                    'Edit this [_1] commenter.',
+                    MT->translate( $status_class ),
+                );
+
+                my $out = qq{
+                    <span class="auth-type">
+                      <img alt="$auth_label" src="$auth_img" class="auth-type-icon" />
+                    </span>
+                    <span class="commenter">
+                      <a href="$link" title="$link_title">$name</a>
+                    </span>
+                    <span class="status $lc_status_class">
+                      $status_img
+                    </span>
+                };
             }
         },
         entry => {
-            label => 'Entry',
+            label => 'Entry/Page',
             base => '__common.integer',
             filter_editable => 0,
             sort => sub {
@@ -239,24 +278,32 @@ sub list_props {
                 my @entries = MT->model('entry')->load({
                     id => [ keys %entry_ids ], },{
                     fetchonly => {
-                        id   => 1,
+                        id    => 1,
+                        class => 1,
                         title => 1,
                 }});
-                my %names = map { $_->id => $_->title } @entries;
+                my %names   = map { $_->id => $_->title } @entries;
+                my %classes = map { $_->id => $_->class } @entries;
                 my @result;
                 for my $obj ( @$objs ) {
                     my $id   = $obj->entry_id;
+                    my $type = $classes{$id};
                     my $name = $names{$id};
                     my $uri = $app->uri(
                         mode => 'view',
                         args => {
-                            _type  => 'entry',
+                            _type  => $type,
                            id      => $id,
                            blog_id => $obj->blog_id,
                         },
                     );
-                    push @result, qq{<a href="$uri">$name</a>};
-
+                    my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                    push @result, qq{
+                        <span class="target-type $type">
+                          <img src="$img" />
+                        </span>
+                        <a href="$uri">$name</a>
+                    };
                 }
                 return @result;
             },
@@ -277,15 +324,15 @@ sub list_props {
                 );
             },
         },
-        text => {
-            label => 'Text',
-            auto => 1,
+        comment => {
+            label => 'Comment',
+            col  => 'created_on',
             display => 'force',
             html  => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html($obj->text);
                 ## FIXME: Hard coded...
-                my $len  = 20;
+                my $len  = 40;
                 if ( $len < length($text) ) {
                     $text = substr($text, 0, $len);
                     $text .= '...';
@@ -305,8 +352,35 @@ sub list_props {
                 $status_img .= $obj->is_junk      ? 'warning.gif'
                              : $obj->is_published ? 'success.gif'
                              :                      'draft.gif';
-                return qq{<img src="$status_img" /><a href="$link">$text</a>};
+                my $status_class = $obj->is_junk      ? 'Junk'
+                                 : $obj->is_published ? 'Approved'
+                                 :                      'Unapproved';
+                my $lc_status_class = lc $status_class;
+
+                my $ts = $obj->created_on;
+                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                my $blog = $app ? $app->blog : undef;
+                my $is_relative = 1;
+                ## TBD: should do like this...
+                ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
+                my $date= $is_relative ? MT::Util::relative_date( $ts, time, $blog )
+                        :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+
+                return qq{
+                    <div class="posted">
+                    <span class="status $lc_status_class">
+                      <img alt="$status_class" src="$status_img" />
+                    </span>
+                    <a href="$link">$date</a>
+                    </div>
+                    <p class="comment-text">$text</p>
+                };
             },
+        },
+        text => {
+            auto => 1,
+            label => 'Text',
+            display => 'none',
         },
         for_current_user => {
             label => 'For my entries',
