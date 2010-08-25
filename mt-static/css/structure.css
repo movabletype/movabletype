@@ -10,12 +10,6 @@ body {
     font-size: 13px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
-body.system {
-    background-color: #f3f3f;
-}
-body.user { 
-    background-color: #fff;
-}
 
 a { 
     color: #5C909B;
@@ -44,8 +38,8 @@ a:active {
 }
 */
 
-/* - Component */
 
+/* - Component */
 .hint { 
     max-width: 75%;
     color: #a3a3a2;
@@ -53,12 +47,16 @@ a:active {
     font-style: Italic;
 }
 
-.even {
-  background-color: #f3f3f3;
+.odd {
+    background-color: #f9f9f9;
 }
 
 .selected {
-  background-color: #dcdddd;
+    background-color: #dcdddd;
+}
+
+.highlight {
+    background-color: #f2f2b0;
 }
 
 .alert-warning-inline { 
@@ -101,7 +99,7 @@ a:active {
     background-color: #dcdddd;
     background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#dcdddd));
     background: -moz-linear-gradient(top, #f3f3f3, #dcdddd);
-    border-left: 1px solid #adadad;
+    border-left: 1px solid #c0c6c9;
     text-align: center;
 }
 .toggle-button:hover {
@@ -129,8 +127,7 @@ a:active {
     background: transparent;
 }
 .toggle-link:hover, 
-.active .toggle-link, 
-.detail {
+.active .toggle-link {
     background-color: #f3f3f2;
 }
 
@@ -231,7 +228,7 @@ ul.tabs li a {
 
 #menu { 
     float: left;
-    width: 150px;
+    width: 155px;
     margin-left: -175px;
     margin-bottom: 100px;
 }
@@ -703,7 +700,7 @@ ul.tabs li a {
     background-color: #fff;
 }
 .menu-nav * { 
-    border-color: #c8c2be;
+    border-color: #c0c6c9;
 }
 
 .menu-nav em { 
@@ -716,7 +713,7 @@ ul.tabs li a {
 
 .menu-label { 
     display: inline-block;
-    padding: 5px 8px;
+    padding: 5px 7px;
 }
 .sub-menu .menu-label {
     padding: 3px 8px;
@@ -1322,7 +1319,7 @@ fieldset {
     font-weight: bold;
 }
 
-.blog-stats-widget .even {
+.blog-stats-widget .odd {
     background-color: #f3f6f9;
 }
 
@@ -3638,6 +3635,7 @@ background-image: url(../images/status_icons/view.gif);
     border-top: 1px solid #c8c2be;
     padding: 10px 0 1px;
     background-color: #dcdddd;
+    font-size: 85%;
 }
 
 #footer a { 
@@ -3647,8 +3645,6 @@ background-image: url(../images/status_icons/view.gif);
 #footer a:active { 
     color: #2b2b2b;
 }
-
-
 #footer .inline-nav { 
     margin: 0 20px 10px;
     white-space: nowrap;
@@ -3669,7 +3665,6 @@ background-image: url(../images/status_icons/view.gif);
 #version, 
 #copyright {
     margin-left: 20px;
-    /*font-size: 11px;*/
 }
 
 /* */

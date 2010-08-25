@@ -572,7 +572,7 @@ function addSelectAll($node) {
         jQuery('.select-all td').find('a').text(select_text);
       } else {
         $input.val('1');
-        jQuery('.select-all td').append(cancel_text).find('a').remove();
+        jQuery('.select-all td').append(cancel_text).addClass('highlight').find('a').remove();
       }
       return false;
     });
@@ -588,7 +588,7 @@ function removeSelectAll($node) {
 
 jQuery('tbody').selectable({
   filter: 'tr',
-  cancel: 'a',
+  cancel: 'a, .select-all',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
     if ($checkboxes.attr('checked')) {
