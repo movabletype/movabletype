@@ -673,7 +673,7 @@ function dateOption($node) {
 
 function filterItem(type) {
   var $item = jQuery(filter_types[type]);
-  if ( $item.attr('class').match(/no-edit/) ) {
+  if ( $item && $item.attr('class') && $item.attr('class').match(/no-edit/) ) {
     $item.find('input').attr('disabled', 1);
     $item.find('select').attr('disabled', 1);
   }
@@ -800,10 +800,12 @@ jQuery('#cancel-save-filter').click(function() {
 function addItems(items, op) {
   var type;
   var args;
+  if ( !items )
+      items = [];
   for (var i = 0, length = items.length; i < length; i++) {
     type = items[i].type;
     if (type == 'pack') {
-      addItems(items[i].items, items[i].op);
+      addItems(items[i].args.items, items[i].args.op);
     }
     var $filteritem = jQuery('.filteritem:first');
     var $filtertype;
