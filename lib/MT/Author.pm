@@ -1049,7 +1049,10 @@ sub can_do {
     }
     return $sys_priv if $sys_priv;
     if ( $opts{at_least_one} ) {
-        my $perm_iter = MT->model('permission')->load_iter({ author_id => $author->id });
+        my $perm_iter = MT->model('permission')->load_iter({
+            author_id => $author->id,
+            ( $opts{blog_id} ? ( blog_id => $opts{blog_id} ) : () ),
+        });
         while (my $perm = $perm_iter->() ) {
             my $blog_priv = $perm->can_do($action);
             return $blog_priv if $blog_priv;
