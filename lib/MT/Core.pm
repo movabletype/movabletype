@@ -739,14 +739,17 @@ BEGIN {
                 default_sort_key => 'created_on',
             },
             entry => {
-                object_label => 'Entry',
-                primary      => 'title',
-                columns => [qw( title author_name blog_name category authored_on comment_count )],
+                object_label  => 'Entry',
+                primary       => 'title',
+                columns       =>
+                    [qw( title author_name blog_name category authored_on comment_count )],
                 default_sort_key => 'authored_on',
+                permission    => "access_to_entry_list",
             },
             page => {
                 object_label => 'Page',
                 columns => [qw( title created_on )],
+                permission => 'access_to_page_list'
             },
             asset => {
                 object_label => 'Asset',

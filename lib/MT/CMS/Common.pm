@@ -736,6 +736,28 @@ sub list {
         }
     }
 
+    # Permission check
+    my $allowed = 0;
+    if ( $blog_id ) {
+        if ( my $action = $screen_settings->{permission} ) {
+            my @act = split /\s*,\s*/, $action;
+            foreach my $p ( @act ) {
+                $allowed = 1, last
+                    if $app->can_do($p);
+            }
+        }
+    } else {
+        if ( my $action = $screen_settings->{system_permission} ) {
+            my @act = split /\s*,\s*/, $action;
+            foreach my $p ( @act ) {
+                $allowed = 1, last
+                    if $app->user->can_do($action, at_least_one => 1 );
+            }
+        }
+    }
+    return $app->permission_denied()
+        unless $allowed;
+
     my $initial_filter;
 
     my $list_prefs = $app->user->list_prefs || {};
