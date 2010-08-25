@@ -1489,6 +1489,11 @@ sub init_core_callbacks {
             $pkg . 'pre_save.author'    => "${pfx}User::pre_save",
             $pkg . 'post_save.author'   => "${pfx}User::post_save",
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
+            $pkg . 'pre_load_filtered_list.author' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                delete $terms->{blog_id};
+            },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
