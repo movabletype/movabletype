@@ -189,6 +189,7 @@ var editable_filter_count = <mt:var name="editable_filter_count">;
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
+
 function renderFilterList() {
   if ( editable_filter_count > 0 )
     jQuery('#dialog_filter .edit-filter').show();
@@ -953,6 +954,14 @@ jQuery('.actions-bar a.button').click(function() {
 addItems(initial_filter.items);
 jQuery('#opener').text(initial_filter.label);
 jQuery('#filter_name').val(initial_filter.label);
+jQuery('#filter_id').val(initial_filter.id);
+jQuery('input[name=filter_id]').val(initial_filter.id);
+jQuery('input[name=filter_name]').val(initial_filter.label);
+if ( initial_filter.can_save )
+  jQuery('#save').show();
+else
+  jQuery('#save').hide();
+
 
 itemValues()
 renderColumns();
