@@ -211,6 +211,7 @@ function renderFilterList() {
   }
   jQuery('#new_filter').click(function() {
     jQuery('#saveas').hide();
+    jQuery('#save').show();
     jQuery('#filter-detail').show().parent('#filter').addClass('active');
     jQuery('#item_list').attr('selectedIndex', 0);
     jQuery('.filteritem').remove();
