@@ -688,7 +688,7 @@ function filterItem(type) {
         .find('.minus').bind('click', function() {
           jQuery(this).parents('.filtertype').remove();
         }).end()
-        .find('.label').addClass('invisible');
+        .find('.item-label').addClass('invisible');
     }).end()
     .find('.filter-date').each(function() {
         dateOption(jQuery(this));
@@ -711,7 +711,7 @@ jQuery('#additem').click(function() {
   var $item = filterItem(type);
   $item
     .insertAfter('.selectfilter')
-    .wrap('<div class="mod filteritem" />')
+    .wrap('<div class="filteritem" />')
     .find('.minus').hide();
   jQuery('<span class="close clickable">[x]</span>')
     .insertAfter($item)
@@ -819,11 +819,11 @@ function addItems(items, op) {
     if (op && type == prev_type) {
       $item
         .insertAfter($filtertype)
-        .find('.label').hide();
+        .find('.item-label').addClass('invisible');
     } else {
       $item
         .insertAfter('.selectfilter')
-        .wrap('<div class="mod filteritem" />')
+        .wrap('<div class="filteritem" />')
         .find('.minus').hide();
       jQuery('<span class="close clickable">[x]</span>')
         .insertAfter($item)

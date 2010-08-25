@@ -114,7 +114,7 @@ tfoot .head{
 .filter-block {
     border: solid #c0c6c9;
     border-width: 1px 1px 0;    
-    background-color: #dcdddd;
+    background-color: #f3f3f3;
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
     -moz-border-radius: 5px 5px 0 0;
@@ -130,10 +130,14 @@ tfoot .head{
 .filteritem {
     position: relative;
     margin: 0 10px 0;
+    padding: 10px 10px 0;
     background-color: #fff;
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0;
+}
+.filtertype {
+    margin-bottom: 10px;
 }
 .item-label {
   float: left;
@@ -142,9 +146,6 @@ tfoot .head{
   font-weight: bold;
 }
 
-.filter {
-    font-size: 90%;
-}
 .handle-filter {
     text-align: right;
 }
