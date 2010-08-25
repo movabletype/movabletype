@@ -241,10 +241,10 @@ sub count_objects {
 sub pack_terms {
     my $prop = shift;
     my ( $args, $load_terms, $load_args ) = @_;
-    my $op = $prop->{item}{op} || 'and';
+    my $op = $args->{op} || 'and';
     $op = '-' . $op;
-    my $items = $prop->{item}{items};
-    my $ds    = $prop->{datasource};
+    my $items = $args->{items};
+    my $ds    = $prop->{class};
     my @items;
     require MT::ListProperty;
 

@@ -535,8 +535,10 @@ function itemValues() {
     });
     if (fields.length > 1 ) {
       data['type'] = 'pack';
-      data['op'] = 'and';
-      data['items'] = fields;
+      data['args'] = {
+        "op":"and",
+        "items":fields
+      };
     } else {
       data = fields.pop();
     }
@@ -716,7 +718,7 @@ jQuery('#additem').click(function() {
     .bind('click', function() {
       jQuery(this).parent('.filteritem').remove();
     });
-  //jQuery('#item_list option:selected').hide();
+  jQuery('#item_list option:selected').hide();
 });
 
 jQuery('#apply').click(function() {
