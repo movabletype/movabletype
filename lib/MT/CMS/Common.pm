@@ -813,7 +813,7 @@ sub list {
         }
         values %$list_props;
 
-    my $primary_col = $screen_settings->{primary} || [ @{$screen_settings->{columns}} ]->[0];
+    my $primary_col = $screen_settings->{primary} || [ @{$screen_settings->{columns} || [] } ]->[0];
     for my $col (@list_columns) {
         my $display = $col->display || 'optional';
         if ( $display eq 'force' ) {
@@ -1022,7 +1022,10 @@ sub filtered_list {
     my @cols = ( 'id', split( ',', $cols ) );
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
     my %load_options = (
-        blog_id    => $blog_ids,
+        terms => {
+            blog_id    => $blog_id,
+        },
+        args       => {},
         sort_by    => $q->param('sort_by') || '',
         sort_order => $q->param('sort_order') || '',
         limit      => $limit,

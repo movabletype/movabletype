@@ -335,7 +335,6 @@ sub member_list_props {
         url           => { base => 'author.url' },
         entry_count   => { base => 'author.entry_count' },
         comment_count => { base => 'author.comment_count' },
-        userpic       => { base => 'author.userpic' },
         auth_type     => { base => 'author.auth_type' },
         permission    => {
             label   => 'Permission',

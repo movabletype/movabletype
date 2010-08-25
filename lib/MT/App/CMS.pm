@@ -1491,15 +1491,14 @@ sub init_core_callbacks {
             $pkg . 'post_delete.author' => "${pfx}User::post_delete",
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
                 $filter->append_item({
                     type => 'permission',
                     args => {
-                        blog_id => $opts->{blog_id},
+                        blog_id => $terms->{blog_id} || 0,
                     },
                 });
-                if ( exists $opts->{blog_id} ) {
-                    delete $opts->{blog_id};
-                }
+                delete $terms->{blog_id};
             },
 
             # website callbacks
@@ -1520,9 +1519,8 @@ sub init_core_callbacks {
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
             $pkg . 'pre_load_filtered_list.blog' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                if ( exists $opts->{blog_id} ) {
-                    $opts->{parent_id} = delete $opts->{blog_id};
-                }
+                my $terms = $opts->{terms};
+                $terms->{parent_id} = delete $terms->{blog_id};
             },
 
             # folder callbacks
@@ -1642,14 +1640,15 @@ sub init_core_callbacks {
             $pkg . 'post_delete.tag'              => "${pfx}Tag::post_delete",
             $pkg . 'pre_load_filtered_list.tag' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                if ( exists $opts->{blog_id} ) {
+                my $terms = $opts->{terms};
+                if ( exists $terms->{blog_id} ) {
                     $filter->append_item({
                         type => '_blog',
                         args => {
-                            blog_id => $opts->{blog_id},
+                            blog_id => $terms->{blog_id},
                         },
                     });
-                    delete $opts->{blog_id};
+                    delete $terms->{blog_id};
                 }
                 return;
             },

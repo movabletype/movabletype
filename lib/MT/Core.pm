@@ -791,10 +791,11 @@ BEGIN {
             member => {
                 object_label => 'Member',
                 object_type => 'author',
-                columns => [qw( status auth_type name nickname created_by entry_count comment_count )],
+                columns => [qw( name nickname )],
             },
             tag => {
                 object_label => 'Tag',
+                columns => [qw( name entry_count page_count asset_count )],
             },
             banlist => {
                 object_label => 'IP Ban',

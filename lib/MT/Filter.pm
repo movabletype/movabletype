@@ -84,19 +84,15 @@ sub to_hash {
 sub load_objects {
     my $self = shift;
     my (%options) = @_;
-    my ( $blog_id, $parent_id, $sort, $dir, $limit, $offset )
-        = @options{ 'blog_id', 'parent_id', 'sort_by', 'sort_order', 'limit',
+    my ( $terms, $args, $sort, $dir, $limit, $offset )
+        = @options{ 'terms', 'args', 'sort_by', 'sort_order', 'limit',
         'offset' };
     my $ds       = $self->object_ds;
     my $setting  = MT->registry( listing_screens => $ds ) || {};
     my $obj_type = $setting->{object_type} || $ds;
     my $class    = MT->model($obj_type);
     my $items    = $self->items;
-    my $terms
-        = $class->can('list_default_terms') ? $class->list_default_terms : {};
-    $terms->{blog_id}   = $blog_id   if $blog_id;
-    $terms->{parent_id} = $parent_id if $parent_id;
-    my $args = {};
+
     my @items;
     require MT::ListProperty;
 
@@ -188,16 +184,13 @@ sub load_objects {
 sub count_objects {
     my $self      = shift;
     my (%options) = @_;
-    my $blog_id   = $options{blog_id};
+    my ( $terms, $args ) = @options{qw( terms args )};
+    my $blog_id   = $options{terms}{blog_id};
     my $ds        = $self->object_ds;
     my $setting   = MT->registry( listing_screens => $ds ) || {};
     my $obj_type  = $setting->{object_type} || $ds;
     my $class     = MT->model($obj_type);
     my $items     = $self->items;
-    my $terms
-        = $class->can('list_default_terms') ? $class->list_default_terms : {};
-    $terms->{blog_id} = $blog_id if $blog_id;
-    my $args = {};
     require MT::ListProperty;
     my @items;
 
