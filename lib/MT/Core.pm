@@ -785,7 +785,8 @@ BEGIN {
             },
             author => {
                 object_label => 'Author',
-                columns => [qw( status auth_type name nickname created_by entry_count comment_count )],
+                primary => 'name',
+                columns => [qw( name nickname entry_count comment_count created_by )],
             },
             member => {
                 object_label => 'Member',

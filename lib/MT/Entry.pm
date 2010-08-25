@@ -495,6 +495,28 @@ sub list_props {
                 return;
             },
         },
+        author_id => {
+            auto => 1,
+            filter_editable => 0,
+            display => 'none',
+            label => 'Author ID',
+            label_via_param => sub {
+                my $prop = shift;
+                my ( $app ) = @_;
+                my $author_id = $app->param('filter_val');
+                my $author    = MT->model('author')->load($author_id);
+                return MT->translate(
+                    'Entries by [_1]',
+                    $author->nickname,
+                );
+            },
+            args_via_param => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
+        },
+
     };
 }
 

@@ -106,13 +106,35 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 sub list_props {
     return {
-        email => 'Email',
         name => {
             auto => 1,
             label => 'Name',
-            html_link => sub {
+            html => sub {
                 my ( $prop, $obj, $app ) = @_;
-                return $app->uri(
+                my ($status_img, $status_label);
+                if ( $obj->type == MT::Author::AUTHOR() ) {
+                    $status_img = $obj->is_active    ? 'user-enabled.gif'
+                                : $obj->is_banned    ? 'user-disabled.gif'
+                                :                      'user-pending.gif'
+                                ;
+                    $status_label = $obj->is_active    ? 'Enabled'
+                                  : $obj->is_banned    ? 'Disabled'
+                                  :                      'Pending'
+                                  ;
+                }
+                else {
+                    $status_img = $obj->is_trusted   ? 'trusted.gif'
+                                : $obj->is_banned    ? 'banned.gif'
+                                :                      'authenticated.gif'
+                                ;
+                    $status_label = $obj->is_trusted   ? 'Trusted'
+                                  : $obj->is_banned    ? 'Banned'
+                                  :                      'Authenticated'
+                                  ;
+                }
+                $status_img = MT->static_path . 'images/status_icons/' . $status_img;
+                my $lc_status_label = lc $status_label;
+                my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
                         _type => $obj->type == MT::Author::AUTHOR() ? 'author' : 'commenter',
@@ -120,82 +142,88 @@ sub list_props {
                         blog_id => 0,
                     },
                 );
+
+                my $auth_img = MT->static_path;
+                my $auth_label;
+                if ( $obj->auth_type eq 'MT' ) {
+                    $auth_img .= 'images/comment/mt_logo.png';
+                    $auth_label = 'Movable Type';
+                }
+                else {
+                    my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
+                    $auth_img .= $auth->{logo_small};
+                    $auth_label = $auth->{label};
+                    $auth_label = $auth_label->() if ref $auth_label;
+                }
+                my $lc_auth_label = lc $auth_label;
+
+                my $name = $obj->name;
+                my $out = qq{
+                    <img width="16" height="16" src="$auth_img" />
+                    <span class="username"><a href="$edit_link">$name</a></span>
+                    <span class="status $lc_status_label">
+                        <img alt="enabled" src="$status_img" />
+                    </span>
+                };
+                return $out;
             },
         },
-        nickname => 'Nickname',
-        ## TBD
-        #status => {
-        #    base => '__common.single_select',
-        #    label => 'Status',
-        #    col   => 'status',
-        #    html => sub {
-        #        my ( $prop, $obj ) = @_;
-        #        my $status = $obj->status;
-        #        my $img;
-        #        if ( $obj->type == MT::Author::AUTHOR() ) {
-        #            $img = $obj->is_active    ? 'user-enabled.gif'
-        #                 : $obj->is_banned    ? 'user-disabled.gif'
-        #                 :                      'user-pending.gif'
-        #                 ;
-        #        }
-        #        else {
-        #            $img = $obj->is_trusted   ? 'trusted.gif'
-        #                 : $obj->is_banned    ? 'banned.gif'
-        #                 :                      'authenticated.gif'
-        #                 ;
-        #        }
-        #
-        #        return sprintf '<img src="%s" />',
-        #            MT->static_path . 'images/status_icons/' . $img;
-        #    },
-        #    terms => sub {
-        #        my ( $prop, $args, $db_terms, $db_args ) = @_;
-        #        my $filter = $args->{value};
-        #        my ( $join_terms, $join_args ) = ({},{});
-        #        if ( $filter eq 'trusted' ) {
-        #            $join_terms = { permissions => { like => '%comment%' } };
-        #        }
-        #        elsif ( $filter eq 'active' ) {
-        #            $join_terms = [
-        #                { permissions =>  { not_like => '%comment%' } },
-        #                '-and',
-        #                { restrictions => { not_like => '%comment%' } },
-        #            ];
-        #        }
-        #        elsif ( $filter eq 'banned' ) {
-        #            $join_terms->{restrictions} = { like => '%comment%' };
-        #        }
-        #
-        #
-        #        my $orig_join = $db_args->{join};
-        #        $join_args->{join} = $orig_join if $orig_join;
-        #        my $id_term = $db_terms->{id};
-        #        $db_terms->{id} = $id_term && 'ARRAY' eq ref $id_term
-        #                        ? [ @$id_term, \" = permission_author_id" ]
-        #                        : $id_term
-        #                        ? [ '-and', $id_term, \" = permission_author_id" ]
-        #                        : \" = permission_author_id";
-        #        $db_args->{join} = MT->model('permission')->join_on(
-        #            undef, $join_terms, $join_args,
-        #        );
-        #        use YAML;
-        #        print STDERR YAML::Dump $db_terms;
-        #        print STDERR YAML::Dump $db_args;
-        #        return;
-        #    },
-        #    single_select_options => [
-        #        { label => 'Trusted',  value => 'trusted', },
-        #        { label => 'Active',   value => 'active',  },
-        #        { label => 'Banned',   value => 'banned',  },
-        #        { label => 'Pending',  value => 'pending', },
-        #    ],
-        #},
+        nickname => {
+            auto => 1,
+            label => 'Nickname',
+            bulk_html => sub {
+                my ( $prop, $objs, $app ) = @_;
+                # Load userpics
+                my %asset_for_load =
+                    map { $_->userpic_asset_id => 1 }
+                    grep { $_->userpic_asset_id }
+                    @$objs;
+                my @userpics = MT->model('asset.image')->load({ id => [ keys %asset_for_load ]});
+                my %userpic  = map { $_->id => $_ } @userpics;
+                my @results;
+                my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
+                for my $obj ( @$objs ) {
+                    my $userpic_url;
+                    if ( my $userpic = $userpic{ $obj->userpic_asset_id } ) {
+                        ( $userpic_url ) = $userpic->thumbnail_url( Width => 24, Height => 24, Square => 1 );
+                    }
+                    else {
+                        $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
+                    }
+                    my $name = $obj->nickname;
+                    my $out = qq{
+                        <span class="userpic"><img width="24" height="24" src="$userpic_url" /></span>$name
+                    };
+                    if ( my $email = $obj->email ) {
+                        $out .= qq{<a href="mailto:$email"><img src="$mail_icon" /></a>};
+                    }
+                    push @results, $out;
+                }
+                return @results;
+            },
+        },
+        status => {
+            base => '__common.single_select',
+            display => 'none',
+            label => 'Status',
+            col   => 'status',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                return { status => $args->{value} };
+            },
+            single_select_options => [
+                { label => 'Active',   value => '1', },
+                { label => 'Disabled', value => '2', },
+                { label => 'Pending',  value => '3', },
+            ],
+        },
         author_name => {
             base => '__common.author_name',
             label => 'Created by',
         },
         type => {
             base => '__common.single_select',
+            display => 'none',
             label => 'Type',
             col => 'type',
             raw => sub {
@@ -209,6 +237,7 @@ sub list_props {
         },
         url => {
             auto => 1,
+            display => 'none',
             label => 'URL',
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -217,7 +246,9 @@ sub list_props {
         },
         entry_count => {
             label => 'Entries',
+            col_class => 'num',
             count_class => 'entry',
+            filter_type => 'author_id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
                 MT->model( $prop->count_class )->count({ author_id => $obj->id });
@@ -229,7 +260,7 @@ sub list_props {
                     args => {
                         _type      => $prop->count_class,
                         blog_id    => 0,
-                        filter     => 'author_id',
+                        filter     => $prop->filter_type,
                         filter_val => $obj->id,
                     },
                 );
@@ -239,22 +270,16 @@ sub list_props {
             base => 'author.entry_count',
             label => 'Comments',
             count_class => 'comment',
+            filter_type => 'commenter_id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
                 MT->model( $prop->count_class )->count({ commenter_id => $obj->id });
             },
         },
-        userpic => {
-            label => 'Userpic',
-            html => sub {
-                my $prop = shift;
-                my ( $obj ) = @_;
-                return $obj->userpic_html;
-            }
-        },
         auth_type => {
             label => 'Auth',
             auto => 1,
+            display => 'none',
             html => sub {
                 my ( $prop, $obj ) = @_;
                 my $img;
@@ -295,6 +320,7 @@ sub list_props {
                 return;
             },
         },
+        id => { view => [] },
     };
 }
 
