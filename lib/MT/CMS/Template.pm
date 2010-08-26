@@ -204,6 +204,7 @@ sub edit {
                                 : $tag->[1]->{parent} ? $obj->blog ? $obj->blog->website->id : 0
                                 :                        [ $obj->blog_id, 0 ]
                                 ;
+
                 my $mod_id = $mod . "::" . ( ref $inc_blog_id ? $inc_blog_id->[0] : $inc_blog_id );
                 next if exists $seen{$type}{$mod_id};
                 $seen{$type}{$mod_id} = 1;
@@ -241,17 +242,49 @@ sub edit {
                         }
                         $param->{error} .= "</ul>\n";
                     }
+
+                    $include->{include_from} = $other->blog_id eq 0
+                        ? 'global'
+                        : $other->blog_id eq $blog_id
+                            ? 'self'
+                            : $other->blog->is_blog
+                                ? 'blog'
+                                : 'website';
+                    $include->{include_blog_name} = $include->{include_from} eq 'global'
+                        ? $app->translate('Global')
+                        : $other->name;
                 }
                 else {
+                    my $target_blog_id = ref $inc_blog_id ? $inc_blog_id->[0]  : $inc_blog_id;
                     $include->{create_link} = $app->mt_uri(
                         mode => 'view',
                         args => {
-                            blog_id => ref $inc_blog_id ? $inc_blog_id->[0]  : $inc_blog_id,
+                            blog_id => $target_blog_id,
                             '_type' => 'template',
                             type    => $type,
                             name    => $mod,
                         }
                     );
+
+                    my $target_blog;
+                    $target_blog = MT->model('blog')->load($target_blog_id)
+                        if $target_blog_id;
+                    $include->{include_from} = $target_blog_id eq 0
+                        ? 'global'
+                        : $target_blog
+                            ? $target_blog->id eq $blog_id
+                                ? 'self'
+                                : $target_blog->is_blog
+                                    ? 'blog'
+                                    : 'website'
+                            : 'error'
+                    ;
+                    $include->{include_blog_name} = $include->{include_from} eq 'global'
+                        ? $app->translate('Global')
+                        : $target_blog
+                            ? $target_blog->name
+                            : $app->translate('Invalid Blog')
+                    ;
                 }
                 if ($type eq 'widget') {
                     push @widgets, $include;
@@ -282,7 +315,7 @@ sub edit {
                     }
                 );
                 if ( $wset ) {
-                    push @widget_sets, {
+                    my $include = {
                         include_link => $app->mt_uri(
                             mode => 'edit_widget',
                             args => {
@@ -292,6 +325,16 @@ sub edit {
                         ),
                         include_module => $name,
                     };
+                    $include->{include_from} = $wset->blog_id ? 'self' : 'global';
+
+                    my $inc_blog;
+                    $inc_blog = MT->model('blog')->load( $wset->blog_id )
+                        if $wset->blog_id;
+                    $include->{include_blog_name} = $inc_blog
+                        ? $inc_blog->name
+                        : $app->translate('Global')
+                    ;
+                    push @widget_sets, $include;
                 }
                 else {
                     push @widget_sets, {
@@ -303,6 +346,8 @@ sub edit {
                             },
                         ),
                         include_module => $name,
+                        include_from => 'self',
+                        include_blog_name => $blog->name,
                     };
                 }
             }
