@@ -243,16 +243,24 @@ sub edit {
                         $param->{error} .= "</ul>\n";
                     }
 
-                    $include->{include_from} = $other->blog_id eq 0
-                        ? 'global'
-                        : $other->blog_id eq $blog_id
-                            ? 'self'
-                            : $other->blog->is_blog
+                    if ( $other->blog_id ) {
+                        if ( $other->blog_id eq $blog_id ) {
+                            $include->{include_from} = 'self';
+                            $include->{include_blog_name} = 'self';
+                        } else {
+                            $include->{include_from} = $other->blog->is_blog
                                 ? 'blog'
                                 : 'website';
-                    $include->{include_blog_name} = $include->{include_from} eq 'global'
-                        ? $app->translate('Global')
-                        : $other->blog->name;
+                            $include->{include_blog_name} = $other->blog->name;
+                        }
+                    } else {
+                        $include->{include_from} = $blog_id
+                            ? 'global'
+                            : 'self';
+                        $include->{include_blog_name} = $blog_id
+                            ? $app->translate('Global')
+                            : 'self';
+                    }
                 }
                 else {
                     my $target_blog_id = ref $inc_blog_id ? $inc_blog_id->[0]  : $inc_blog_id;
@@ -269,22 +277,28 @@ sub edit {
                     my $target_blog;
                     $target_blog = MT->model('blog')->load($target_blog_id)
                         if $target_blog_id;
-                    $include->{include_from} = $target_blog_id eq 0
-                        ? 'global'
-                        : $target_blog
-                            ? $target_blog->id eq $blog_id
-                                ? 'self'
-                                : $target_blog->is_blog
-                                    ? 'blog'
-                                    : 'website'
-                            : 'error'
-                    ;
-                    $include->{include_blog_name} = $include->{include_from} eq 'global'
-                        ? $app->translate('Global')
-                        : $target_blog
-                            ? $target_blog->name
-                            : $app->translate('Invalid Blog')
-                    ;
+
+                    if ( $target_blog_id ) {
+                        if ( $target_blog ) {
+                            $include->{include_from} =
+                                $target_blog->id eq $blog_id
+                                    ? 'self'
+                                    : $target_blog->is_blog
+                                        ? 'blog'
+                                        : 'website';
+                            $include->{include_blog_name} = $target_blog->name;
+                        } else {
+                            $include->{include_from} = 'error';
+                            $include->{include_blog_name} = $app->translate('Invalid Blog');
+                        }
+                    } else {
+                        $include->{include_from} = $blog_id
+                            ? 'global'
+                            : 'self';
+                        $include->{include_blog_name} = $blog_id
+                            ? $app->translate('Global')
+                            : 'self';
+                    }
                 }
                 if ($type eq 'widget') {
                     push @widgets, $include;
@@ -325,14 +339,20 @@ sub edit {
                         ),
                         include_module => $name,
                     };
-                    $include->{include_from} = $wset->blog_id ? 'self' : 'global';
+                    $include->{include_from} = $wset->blog_id
+                        ? 'self'
+                        : $blog_id
+                            ? 'global'
+                            : 'self';
 
                     my $inc_blog;
                     $inc_blog = MT->model('blog')->load( $wset->blog_id )
                         if $wset->blog_id;
                     $include->{include_blog_name} = $inc_blog
                         ? $inc_blog->name
-                        : $app->translate('Global')
+                        : $blog_id
+                            ? $app->translate('Global')
+                            : 'self'
                     ;
                     push @widget_sets, $include;
                 }
@@ -347,7 +367,7 @@ sub edit {
                         ),
                         include_module => $name,
                         include_from => 'self',
-                        include_blog_name => $blog->name,
+                        include_blog_name => $blog ? $blog->name : '',
                     };
                 }
             }
