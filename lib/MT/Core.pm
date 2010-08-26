@@ -800,7 +800,7 @@ BEGIN {
             },
             tag => {
                 object_label => 'Tag',
-                permission => 'access_to_tag_list';
+                permission => 'access_to_tag_list',
                 columns => [qw( name entry_count page_count asset_count )],
             },
             banlist => {
