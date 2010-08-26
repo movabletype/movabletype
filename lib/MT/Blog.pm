@@ -157,6 +157,7 @@ sub list_props {
         description => 'Description',
         entry_count => {
             label => 'Entries',
+            col_class => 'num',
             count_class => 'entry',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
@@ -172,6 +173,14 @@ sub list_props {
                         no_filter => 1,
                     },
                 );
+            },
+            bulk_html => sub {
+               
+            },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $terms->{joins} ||= [];
             },
         },
         page_count => {
@@ -219,6 +228,7 @@ sub list_props {
         },
         theme_thumbnail => {
             label => 'Theme Thumbnail',
+            display => 'none',
             raw => sub {
                 my ( $prop, $obj ) = @_;
                 my $theme = $obj->theme

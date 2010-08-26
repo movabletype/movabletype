@@ -685,10 +685,10 @@ function filterItem(type) {
       var $node = filterItem(type);
       $node.clone(true)
         .insertAfter($filtertype)
-        .find('.minus').bind('click', function() {
-          jQuery(this).parents('.filtertype').remove();
-        }).end()
         .find('.item-label').addClass('invisible');
+    }).end()
+    .find('.minus').bind('click', function() {
+      jQuery(this).parents('.filtertype').remove();
     }).end()
     .find('.filter-date').each(function() {
         dateOption(jQuery(this));

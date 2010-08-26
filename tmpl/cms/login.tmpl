@@ -65,9 +65,11 @@ if (window.top && (window.top.location != window.location)) {
     // strip any parameters to return them to the main menu,
     // since leaving them will display the modal dialog in the
     // full window.
-    var loc = window.location.href;
-    loc = loc.replace(/\?.+/, '');
-    window.top.location.href = loc;
+    //var loc = window.location.href;
+    //loc = loc.replace(/\?.+/, '');
+    //window.top.location.href = loc;
+
+    jQuery('#username').val( window.top.jQuery('#user .username').val());
 }
 
 jQuery(function() {

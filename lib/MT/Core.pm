@@ -735,7 +735,7 @@ BEGIN {
             blog => {
                 object_label => 'Blog',
                 columns
-                    => [qw( theme_thumbnail name parent_website entry_count page_count comment_count )],
+                    => [qw( name parent_website entry_count page_count comment_count )],
                 default_sort_key => 'created_on',
             },
             entry => {
