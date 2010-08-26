@@ -258,7 +258,7 @@ sub edit {
                             ? 'global'
                             : 'self';
                         $include->{include_blog_name} = $blog_id
-                            ? $app->translate('Global')
+                            ? $app->translate('Global Template')
                             : 'self';
                     }
                 }
@@ -296,7 +296,7 @@ sub edit {
                             ? 'global'
                             : 'self';
                         $include->{include_blog_name} = $blog_id
-                            ? $app->translate('Global')
+                            ? $app->translate('Global Template')
                             : 'self';
                     }
                 }
