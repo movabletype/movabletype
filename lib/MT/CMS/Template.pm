@@ -252,7 +252,7 @@ sub edit {
                                 : 'website';
                     $include->{include_blog_name} = $include->{include_from} eq 'global'
                         ? $app->translate('Global')
-                        : $other->name;
+                        : $other->blog->name;
                 }
                 else {
                     my $target_blog_id = ref $inc_blog_id ? $inc_blog_id->[0]  : $inc_blog_id;
