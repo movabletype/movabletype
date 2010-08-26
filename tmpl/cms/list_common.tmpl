@@ -678,18 +678,6 @@ function filterItem(type) {
     $item.find('select').attr('disabled', 1);
   }
   $item
-    .find('.plus').bind('click', function() {
-      var op = 'and';
-      jQuery(this).parents('.filteritem').addClass(op);
-      var $filtertype = jQuery(this).parents('.filtertype');
-      var $node = filterItem(type);
-      $node.clone(true)
-        .insertAfter($filtertype)
-        .find('.minus').bind('click', function() {
-          jQuery(this).parents('.filtertype').remove();
-        }).end()
-        .find('.item-label').addClass('invisible');
-    }).end()
     .find('.filter-date').each(function() {
         dateOption(jQuery(this));
     }).bind('change', function() {
@@ -954,6 +942,22 @@ jQuery('.actions-bar a.button').click(function() {
   var phrase = messages[mode];
   doForMarked(id, mode, singlar, plural, phrase);
   return false;
+});
+
+jQuery('.filtertype .minus').live('click', function() {
+  jQuery(this).parents('.filtertype').remove();
+});
+
+jQuery('.filtertype .plus').live('click', function() {
+  var op = 'and';
+  jQuery(this).parents('.filteritem').addClass(op);
+  var $filtertype = jQuery(this).parents('.filtertype');
+  $filtertype.attr('class').match(/type-(\w+)/);
+  var type = RegExp.$1;
+  var $node = filterItem(type);
+  $node.clone(true)
+    .insertAfter($filtertype)
+    .find('.item-label').addClass('invisible');
 });
 
 addItems(initial_filter.items);
