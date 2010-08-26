@@ -755,6 +755,7 @@ BEGIN {
                 object_label => 'Asset',
                 primary => 'label',
                 columns => [qw( id label created_on )],
+                permission => 'access_to_asset_list',
             },
             log => {
                 object_label => 'Log',
@@ -778,23 +779,28 @@ BEGIN {
             comment => {
                 object_label => 'Comment',
                 columns => [qw( comment commenter )],
+                permission => 'access_to_comment_list',
             },
             ping => {
                 object_label => 'Trackback',
                 columns => [qw( excerpt target created_on )],
+                permission => 'access_to_trackback_list',
             },
             author => {
                 object_label => 'Author',
                 primary => 'name',
                 columns => [qw( name nickname entry_count comment_count created_by )],
+                permission => 'access_to_member_list',
             },
             member => {
                 object_label => 'Member',
                 object_type => 'author',
                 columns => [qw( name nickname )],
+                permission => 'access_to_blog_member_list',
             },
             tag => {
                 object_label => 'Tag',
+                permission => 'access_to_tag_list';
                 columns => [qw( name entry_count page_count asset_count )],
             },
             banlist => {
@@ -1748,9 +1754,10 @@ sub load_core_permissions {
             'label'            => 'Manage Tags',
             'order'            => 700,
             'permitted_action' => {
-                'edit_tags'  => 1,
-                'remove_tag' => 1,
-                'rename_tag' => 1,
+                'access_to_tag_list' => 1,
+                'edit_tags'          => 1,
+                'remove_tag'         => 1,
+                'rename_tag'         => 1,
             }
         },
         'blog.edit_templates' => {
