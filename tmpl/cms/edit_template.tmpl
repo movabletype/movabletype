@@ -151,13 +151,37 @@
             label="<__trans phrase="Included Templates">">
         <ul>
         <mt:loop name="include_loop">
-            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
+            <li>
+            <mt:if name="include_link">
+                <a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a>
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            <mt:else>
+                <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            </mt:if>
+            </li>
         </mt:loop>
         <mt:loop name="widget_loop">
-            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
+            <li>
+            <mt:if name="include_link">
+                <a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a>
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            <mt:else>
+                <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            </mt:if>
+            </li>
         </mt:loop>
         <mt:loop name="widget_set_loop">
-            <li><mt:if name="include_link"><a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a><mt:else><mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)</mt:if></li>
+            <li>
+            <mt:if name="include_link">
+                <a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a>
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            <mt:else>
+                <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+                <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from"> label"><mt:var name="include_blog_name"></span></mt:if>
+            </mt:if>
+            </li>
         </mt:loop>
         </ul>
         </mtapp:widget>
