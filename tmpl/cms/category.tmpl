@@ -1,110 +1,8 @@
-<mt:setvarblock name="page_title">
-  <__trans phrase="Manage [_1]" params="<mt:var name="object_label">">
-</mt:setvarblock>
+<mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
 <mt:include name="$object_listing">
-
-<style type="text/css">
-.sortable-item,
-.add-form {
-clear: right;
-position: relative;
-background-color: #fff;
-border: 1px solid #adadad;
-border-top-color: #cfd0d0;
-border-left-color: #cfd0d0;
-
-}
-
-.hover { 
-background-color: #f8f4e6;
-}
-
-#root {
-padding: 15px;
-background-color: #dcdddd;
-}
-
-.sort-tab {
-display: block;
-position: absolute;
-top: 0;
-left: 0px;
-width: 20px;
-height: 100%;
-background-color: #f3f3f3;
-cursor: move ! important;
-}
-
-.sortable-header {
-background-color: #adadad;
-}
-
-.label {
-margin-left: 20px;
-}
-
-.label a {
-display: inline-block;
-max-width: 15em;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-
-}
-
-.ui-state-highlight {
-position: relative;
-z-index: 100;
-height: 35px;
-margin: 5px -10px;
-border-top: 2px solid #adadad;
-}
-
-.target {
-position: relative;
-display: inline-block;
-height: 100%;
-}
-
-.marker {
-position: absolute;
-top: -7px;
-right: -20px;
-width: 20px;
-height: 10px;
-background: transparent url(<$mt:var name="static_uri"$>images/arrow-target-mark.png) center bottom no-repeat;
-}
-
-.add-form {
-padding-left: 30px;
-}
-
-.highlight {
-background-color: #f2f2b0;
-}
-
-.from {
-width: auto;
-height: 35px;
-    background-color: #c0c6c9;
-border: 1px solid #f3f3f3;
-border-top-color: #adadad;
-border-left-color: #adadad;
-}
-
-.ui-state-highlight + .from {
-position: relative;
-margin-top: -43px;
-margin-bottom: 5px;
-}
-
-
-
-</style>
-
 
 <div id="msg-block"></div>
 
@@ -131,9 +29,7 @@ margin-bottom: 5px;
         <input type="text" class="text short" placeholder="Category Label"><button type="button" class="add button">Add</button>
       </div>
 
-      <div id="root" class="sortable">
-
-      </div>
+      <div id="root" class="sortable"></div>
 
       <div class="actions-bar">
         <button type="button" class="save action button">Save Changes</button>
@@ -170,7 +66,7 @@ var root_pos = jQuery('#root').position();
 
 function createItem(id, parent, label, number) {
   var line = '<span class="sort-tab"></span>';
-  line += '<span class="label">'+label+'</span>';
+  line += '<span class="item-label">'+label+'</span>';
   line += ' <span class="count fr">'+trans('[_1] <mt:var name="contents_label_plural" escape="js">', number)+'</span>';
   var $item = jQuery('<div id="'+id+'" class="'+parent+'" />').append(line);
   return $item;
@@ -186,7 +82,7 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('mod sortable-item');
   $item.find('.plus, .delete').remove();
-  jQuery('<span class="plus">[+]</span>')
+  jQuery('<span class="plus clickable">[+]</span>')
     .insertBefore($item.find('.count'))
     .bind('click', function() {
       jQuery('.add-form').remove();
@@ -214,7 +110,7 @@ function initItem($item) {
         .appendTo($form);
       jQuery('.button').button();
     });
-  jQuery('<span class="delete">[-]</span>')
+  jQuery('<span class="delete clickable">[-]</span>')
     .insertBefore($item.find('.count'))
     .bind('click', function() {
       var id = jQuery(this).parent('.sortable-item').attr('id');
@@ -269,7 +165,7 @@ function setItemList() {
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
     var id = $item.attr('id');
-    var label = $item.find('.label').text();
+    var label = $item.find('.item-label').text();
     jQuery('#itemlist').append('<option id="opt-'+id+'" value="'+id+'">'+label+'</option>');
     itemlist.push(label);
   });
@@ -300,7 +196,7 @@ function initMoving() {
         var label = (count == 1)
           ? '<mt:var name="object_label" lower_case="1" escape="js">'
           : '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.label'));
+        jQuery('<span class="with"> + '+count+' '+label+' </span>').insertAfter($item.find('.item-label'));
       }
       $item.find('.plus, .delete').hide();
     },
@@ -412,11 +308,11 @@ function initMoving() {
 
 function setHoverAction($elements) {
   $elements.hover(function() {
-    var parent = jQuery(this).addClass('hover on').attr('id');
-    jQuery('.'+parent).addClass('hover');
+    var parent = jQuery(this).addClass('highlight on').attr('id');
+    jQuery('.'+parent).addClass('highlight');
   }, function() {
-    var parent = jQuery(this).removeClass('hover on').attr('id');
-    jQuery('.'+parent).removeClass('hover');
+    var parent = jQuery(this).removeClass('highlight on').attr('id');
+    jQuery('.'+parent).removeClass('highlight');
   });
 }
 
@@ -492,7 +388,7 @@ jQuery('.save').click(function() {
     var myid = $item.attr('id');
     $item.attr('class').match(/^(\w+).*/);
     var parentid = RegExp.$1;
-    items.push({id: myid, parent: parentid, label: $item.find('.label').text()});
+    items.push({id: myid, parent: parentid, label: $item.find('.item-label').text()});
   });
   jQuery.ajax({
     type: 'POST',

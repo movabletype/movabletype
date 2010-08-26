@@ -120,8 +120,8 @@ tfoot .head{
     -moz-border-radius: 5px 5px 0 0;
 }
 .filter-header .toggle-button {
-    -moz-border-radius: 0 5px 0 0;
     border-top-right-radius: 5px;
+    -moz-border-radius: 0 5px 0 0;
 }
 #filter-detail {
     border: solid #c0c6c9;
@@ -139,7 +139,7 @@ tfoot .head{
 .filtertype {
     margin-bottom: 10px;
 }
-.item-label {
+.filteritem .item-label {
   float: left;
   margin-top: 3px;
   margin-right: 10px;
