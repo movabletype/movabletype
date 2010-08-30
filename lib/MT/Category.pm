@@ -59,9 +59,36 @@ sub list_props {
         entry_count => {
             base    => '__common.integer',
             label => 'Entry count',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                return MT->model('placement')->count({ category_id => $obj->id });
+            bulk_html => sub {
+                my ( $prop, $objs, $app ) = @_;
+                my $count_iter = MT->model('placement')->count_group_by({
+                        blog_id => $app->blog->id,
+                    }, {
+                        group => [ 'category_id' ],
+                });
+                my %count;
+                while ( my ( $count, $cat_id ) = $count_iter->() ) {
+                    $count{$cat_id} = $count;
+                }
+                my @out;
+                for my $obj ( @$objs ) {
+                    my $obj_class = $obj->class;
+                    my $uri = $app->uri(
+                        mode => 'list',
+                        args => {
+                            _type      => ($obj_class eq 'category' ? 'entry' : 'page'),
+                            filter     => $obj_class,
+                            filter_val => $obj->id,
+                            blog_id    => $obj->blog_id,
+                        },
+                    );
+                    push @out, sprintf(
+                        '<a href="%s">%s</a>',
+                        $uri,
+                        $count{$obj->id} || '0',
+                    );
+                }
+                return @out;
             },
         },
         custom_sort => {
