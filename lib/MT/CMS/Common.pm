@@ -891,6 +891,7 @@ sub list {
 
     require JSON;
     my $json = JSON->new->utf8(0);
+    $param{common_listing} = 1;
     $param{blog_id} = $blog_id || '0';
     $param{filters}        = $json->encode( \@filters );
     $param{initial_filter} = $json->encode($initial_filter);
