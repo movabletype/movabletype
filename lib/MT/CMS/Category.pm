@@ -618,7 +618,6 @@ sub pre_load_filtered_list {
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
     my $type = $app->param('datasource');
-print STDERR "tyupe[$type]";
     my $meta = $type . '_order';
     my $text = join(
         ':',
