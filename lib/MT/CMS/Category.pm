@@ -315,7 +315,8 @@ sub bulk_update {
         $updated->save;
     }
 
-    $class->remove({ id => [ keys %old_objects ] });
+    $class->remove({ id => [ keys %old_objects ] })
+        if keys %old_objects;
 
     my @ordered_ids = map { $_->id } @objects;
     my $order = join ',', @ordered_ids;
