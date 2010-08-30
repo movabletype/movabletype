@@ -1,10 +1,10 @@
 <mt:unless name="direct_asset_insert"><mt:setvarblock name="screen_type">dialog-screen new-asset</mt:setvarblock></mt:unless>
 <mt:setvarblock name="page_title"><__trans phrase="File Options"></mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
-    <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-    <script type="text/javascript">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+  <script type="text/javascript">
     /* <![CDATA[ */
     var tag_delim = '<mt:var name="auth_pref_tag_delim">';
 
@@ -13,7 +13,7 @@
 
     function tagSplit(str) {
         var delim = RegExp.escape(tag_delim);
-        var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+        var delim_scan = new RegExp('^((([\'])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
         str = str.replace(/(^\s+|\s+$)/g, '');
         var tags = [];
         while (str.length && str.match(delim_scan)) {
@@ -75,97 +75,95 @@
 <mt:include name="dialog/header.tmpl">
 
 <mt:if name="extension_message">
-    <mtapp:statusmsg
-        id="extension-changed"
-        class="success">
-        <mt:var name="extension_message">
-    </mtapp:statusmsg>
+<mtapp:statusmsg
+   id="extension-changed"
+   class="success"
+   camclose="0">
+  <mt:var name="extension_message">
+</mtapp:statusmsg>
 </mt:if>
 
 <form action="<mt:var name="script_url">" method="post" onsubmit="return presubmit(this)">
-    <input type="hidden" name="__mode" value="" />
-    <input type="hidden" name="id" value="<mt:var name="asset_id">" />
-    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
-    <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
-    <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
-    <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <mt:unless name="direct_asset_insert">
-    <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
-    <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
-    </mt:unless>
-    <mt:if name="entry_insert">
-    <input type="hidden" name="new_entry" value="1" />
-    </mt:if>
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="id" value="<mt:var name="asset_id">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+  <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
+  <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:unless name="direct_asset_insert">
+  <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+  <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+</mt:unless>
+<mt:if name="entry_insert">
+  <input type="hidden" name="new_entry" value="1" />
+</mt:if>
 <mt:unless name="is_image">
-    <input type="hidden" name="link" value="1" />
+  <input type="hidden" name="link" value="1" />
 </mt:unless>
 
 <mt:unless name="direct_asset_insert">
-    <div>
-        <div id="asset_details">
+  <div id="asset_details">
     <mtapp:setting
-        id="label"
-        label_class="top-label"
-        label="<__trans phrase="Label">">
-        <input type="text" name="label" id="label" value="<mt:var name="fname" escape="html">" class="larger-text">
+       id="label"
+       label_class="top-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="label" id="label" value="<mt:var name="fname" escape="html">" class="text full">
     </mtapp:setting>
     <mtapp:setting
-        id="description"
-        label_class="top-label"
-        label="<__trans phrase="Description">">
-        <textarea name="description" id="description" cols="" rows="" class="larger-text"></textarea>
+       id="description"
+       label_class="top-label"
+       label="<__trans phrase="Description">">
+      <textarea name="description" id="description" class="text full low"></textarea>
     </mtapp:setting>
     <mtapp:setting
-        id="tags"
-        label_class="top-label"
-        label="<__trans phrase="Tags">">
-        <input type="text" name="tags" id="tags" class="larger-text" value="" mt:watch-change="1" autocomplete="off" />
-        <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
-        <div id="tags-suggestion">
-            <div id="tags_completion"></div>
-        </div>
+       id="tags"
+       label_class="top-label"
+       label="<__trans phrase="Tags">">
+      <input type="text" name="tags" id="tags" class="text full" value="" mt:watch-change="1" autocomplete="off" />
+      <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+      <div id="tags-suggestion">
+        <div id="tags_completion"></div>
+      </div>
     </mtapp:setting>
-        </div>
-    <mt:unless name="asset_select">
-        <mt:unless name="entry_insert">
-            <mt:if name="can_create_post">
-                <mtapp:setting
-                    id="new_entry"
-                    label="<__trans phrase="Create entry using this uploaded file">"
-                    label_class="no-header"
-                    hint=""
-                    show_hint="0"
-                    help_page="file_upload"
-                    help_section="creating_a_new_entry">
-                    <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-                    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
-                </mtapp:setting>
-            </mt:if>
-        </mt:unless>
+  </div>
+
+  <mt:unless name="asset_select">
+    <mt:unless name="entry_insert">
+      <mt:if name="can_create_post">
+  <mtapp:setting
+     id="new_entry"
+     label="<__trans phrase="Create entry using this uploaded file">"
+     label_class="no-header"
+     help_page="file_upload"
+     help_section="creating_a_new_entry">
+    <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+  </mtapp:setting>
+      </mt:if>
     </mt:unless>
+  </mt:unless>
 </mt:unless>
 
 <mt:var name="options_snippet">
-    </div>
-
 
 <mt:setvarblock name="action_buttons">
-        <button
-           type="submit"
-           accesskey="s"
-           title="<__trans phrase="Finish (s)">"
-           class="action primary-button"
-           ><__trans phrase="Finish"></button>
-        <button
-           type="submit"
-           accesskey="x"
-           title="<__trans phrase="Cancel (x)">"
-           class="cancel action mt-close-dialog"
-           ><__trans phrase="Cancel"></button>
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Finish (s)">"
+     class="action primary button">
+    <__trans phrase="Finish"></button>
+  <button
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Cancel (x)">"
+     class="cancel action button mt-close-dialog">
+    <__trans phrase="Cancel"></button>
 </mt:setvarblock>
 <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
 </form>
 
 <mt:include name="dialog/footer.tmpl">

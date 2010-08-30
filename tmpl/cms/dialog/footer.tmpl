@@ -1,12 +1,14 @@
-                <div id="bootstrapper" class="hidden"></div>
-            </div><!-- /content -->
-        </div><!-- /container -->
+        <div id="bootstrapper" class="hidden"></div>
+      <!-- /Content Body --></div>
+    <!-- /Content --></div>
+  <!-- /Container --></div>
 <script type="text/javascript">
 /* <![CDATA[ */
 App.bootstrapInline( false );
 jQuery(function() {
 <mt:var name="jq_js_include">
     jQuery.mtAddEdgeClass();
+    jQuery('button, .button').button();
     jQuery('button.mt-close-dialog').click(function() {
         parent.jQuery.fn.mtDialog.close();
     });
@@ -19,5 +21,5 @@ jQuery(function() {
 });
 /* ]]> */
 </script>
-    </body>
+</body>
 </html>

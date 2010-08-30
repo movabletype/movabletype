@@ -1,4 +1,5 @@
-.listing { 
+.listing, 
+.listing-table { 
     width: 100%;
     margin: 0 auto;
     border: 1px solid #c0c6c9;
@@ -9,7 +10,7 @@
     -moz-border-radius: 0 0 5px 5px;
 }
 
-.actions-bar {
+.actions-bar { 
     margin: 10px 0;
 }
 
@@ -21,24 +22,33 @@
     text-align: left;
     vertical-align: top;
 }
-.col a {
+.col a { 
     color: #036;
 }
-.col.primary {
+.col.primary { 
     width: auto;
     min-width: 15%;
 }
-.col.author {
+.col.author { 
     width: 13%;
 }
-.col.num {
+.col.num { 
     width: 8em;
 }
-.col.id {
+.col.id { 
     width: 5.5em;
 }
+.col.entry { 
+    width: 20%;
+}
+.col.cb, 
+.col.si, 
+.col.view { 
+    width: 2.5em;
+    text-align: center;
+}
 
-.head { 
+.col.head { 
     padding: 0;
     border-width: 0 0 1px 1px;
     background-color: #dcdddd;
@@ -50,10 +60,10 @@
     white-space: nowrap;
     vertical-align: middle;
 }
-tfoot .head{
+tfoot .col.head{
     border-width: 0 0 0 1px;
 }
-.head.first-child {
+.col.head.first-child {
     border-left: 0;
 }
 .sorted { 
@@ -108,6 +118,14 @@ tfoot .head{
 
 .current-row {
     font-weight: bold;
+}
+
+/* - Legacy Listing */ 
+.legacy.listing-table {
+    margin: 0 0 10px;
+}
+.legacy.listing-table .col.head {
+    padding: 7px 8px;
 }
 
 /* - Filter */
