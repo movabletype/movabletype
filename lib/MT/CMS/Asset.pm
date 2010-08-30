@@ -243,6 +243,7 @@ sub list {
             template => $dialog_view
             ? 'dialog/asset_list.tmpl'
             : '',
+            ( $app->param('search') ? ( no_limit => 1 ) : () ),
             params => {
                 (
                     $blog
