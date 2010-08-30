@@ -64,6 +64,45 @@ var isdirty = false;
 var indent = 20;
 var root_pos = jQuery('#root').position();
 
+function loginAgain(fn) {
+  jQuery(window)
+    .unbind('dialogReady.loginAgain')
+    .bind('dialogReady.loginAgain', function(){
+      var dialog = jQuery('#mt-dialog-iframe').contents();
+      dialog
+        .find('#sign-in-button')
+          .text('<__trans phrase="Continue">')
+          .unbind()
+          .click(function(){
+            dialog.find('#msg-block').empty();
+            jQuery.ajax({
+              type: 'POST',
+              async: false,
+              url: '<mt:var name="script_url">',
+              dataType: 'json',
+              data: {
+                __mode: 'login_json',
+                username: dialog.find('#username').val(),
+                password: dialog.find('#password').val(),
+              },
+              success: function(data) {
+                jQuery.fn.mtDialog.close();
+                fn();
+                return false;
+              },
+              error: function(data) {
+                dialog.find('#password').val('');
+                dialog
+                  .find('#msg-block')
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login."></div>');
+              }
+            });
+            return false;
+          });
+    });
+  jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
+}
+
 function createItem(id, parent, label, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
@@ -369,7 +408,13 @@ function renderNestedList() {
       initMoving();
     },
     error: function(xhr, status) {
-      alert('Ajax error: ' + status);
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          renderNestedList();
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
     }
   });
 }
@@ -381,7 +426,9 @@ jQuery('.add').click(function() {
   return false;
 });
 
-jQuery('.save').click(function() {
+jQuery('.save').click( bulkUpdateCategories );
+
+function bulkUpdateCategories() {
   var items = [];
   jQuery('.sortable-item:visible').each(function() {
     var $item = jQuery(this);
@@ -414,11 +461,17 @@ jQuery('.save').click(function() {
       initMoving();
     },
     error: function(xhr, status) {
-      alert('Ajax error: ' + status);
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          bulkUpdateCategories();
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
     }
   });
   return false;
-});
+}
 
 jQuery(window).bind('beforeunload', function() {
   if (isdirty) {

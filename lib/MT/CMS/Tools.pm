@@ -2407,4 +2407,9 @@ sub _log_dirty_restore {
     1;
 }
 
+sub login_json {
+    my $app = shift;
+    return $app->json_result(1);
+}
+
 1;

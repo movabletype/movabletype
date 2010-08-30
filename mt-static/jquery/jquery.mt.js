@@ -581,6 +581,19 @@ $.fn.mtDialog.close = function(url, fn) {
     close_dialog(url, fn);
 };
 
+$.event.special.dialogReady = {
+    setup:function( data, ns ) {
+        return false;
+    },
+    teardown:function( ns ) {
+        return false;
+    },
+};
+
+$.fn.mtDialogReady = function(options) {
+    $(window).trigger('dialogReady');
+};
+
 /*
  * mtRebuild
  *

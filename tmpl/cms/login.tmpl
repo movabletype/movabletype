@@ -8,6 +8,7 @@
 <input type="hidden" name="<mt:var name="name" escape="html">" value="<mt:var name="value" escape="html">" />
 </mt:loop>
 
+<div id="msg-block"></div>
 <mt:if name="logged_out">
     <mt:if name="delegate_auth">
         <mtapp:statusmsg
@@ -46,6 +47,7 @@
         <button
            type="submit"
            accesskey="s"
+           id="sign-in-button"
            title="<__trans phrase="Sign In (s)">"
            class="action primary-button"
            ><__trans phrase="Sign In"></button>
@@ -59,15 +61,13 @@
 
 <script type="text/javascript">
 /* <![CDATA[ */
-// if this loads within our modal dialog iframe, force the user to
-// login from the 'top' of the browser.
 if (window.top && (window.top.location != window.location)) {
-    // strip any parameters to return them to the main menu,
-    // since leaving them will display the modal dialog in the
-    // full window.
-    var loc = window.location.href;
-    loc = loc.replace(/\?.+/, '');
-    window.top.location.href = loc;
+  jQuery('#username')
+    .val( window.top.jQuery('#user .username').text())
+    .attr('disabled','disabled');
+  jQuery('#sign-in-button').click(function(){
+    jQuery('#username').removeAttr('disabled');
+  });
 }
 
 jQuery(function() {

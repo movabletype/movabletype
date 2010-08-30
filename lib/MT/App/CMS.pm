@@ -256,7 +256,10 @@ sub core_methods {
         'update_list_prefs' => "${pkg}Tools::update_list_prefs",
         'js_add_category'   => "${pkg}Category::js_add_category",
         'remove_userpic'    => "${pkg}User::remove_userpic",
-
+        'login_json'        => {
+            code     => "${pkg}Tools::login_json",
+            app_mode => 'JSON',
+        },
         # declared in MT::App
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },

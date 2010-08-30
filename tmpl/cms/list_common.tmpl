@@ -112,8 +112,6 @@
   <p>
 </div>
 
-
-
 <div id="dialog_filter" title="Select Filter">
   <div class="edit-filter button">Edit</div>
 </div>
@@ -144,7 +142,6 @@
 <mt:if name="config.debugmode">
 <pre id="debug-block" style="border: 1px solid #000; background-color: #eee;"></pre>
 </mt:if>
-
 
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('p#indicator')
@@ -189,6 +186,45 @@ var editable_filter_count = <mt:var name="editable_filter_count">;
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
+
+function loginAgain(fn) {
+  jQuery(window)
+    .unbind('dialogReady.loginAgain')
+    .bind('dialogReady.loginAgain', function(){
+      var dialog = jQuery('#mt-dialog-iframe').contents();
+      dialog
+        .find('#sign-in-button')
+          .text('<__trans phrase="Continue">')
+          .unbind()
+          .click(function(){
+            dialog.find('#msg-block').empty();
+            jQuery.ajax({
+              type: 'POST',
+              async: false,
+              url: '<mt:var name="script_url">',
+              dataType: 'json',
+              data: {
+                __mode: 'login_json',
+                username: dialog.find('#username').val(),
+                password: dialog.find('#password').val(),
+              },
+              success: function(data) {
+                jQuery.fn.mtDialog.close();
+                fn();
+                return false;
+              },
+              error: function(data) {
+                dialog.find('#password').val('');
+                dialog
+                  .find('#msg-block')
+                  .append('<div class="msg msg-error"><__trans phrase="Invalid login."></div>');
+              }
+            });
+            return false;
+          });
+    });
+  jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
+}
 
 function renderFilterList() {
   if ( editable_filter_count > 0 )
@@ -290,7 +326,13 @@ function renameFilter(index, fid, name) {
       renderFilterList();
     },
     error: function(xhr, status) {
-      alert('Ajax error: ' + status);
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          renameFilter(index, fid, name);
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
     }
   });
 }
@@ -327,7 +369,13 @@ function removeFilter(element) {
       renderFilterList();
     },
     error: function(xhr, status) {
-      alert('Ajax error: ' + status);
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          removeFilter(element);
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
     }
   });
 }
@@ -507,7 +555,13 @@ function renderList(mode, columns, values, limit, page) {
       }
     },
     error: function(xhr, status) {
-      alert('Ajax error: ' + status);
+      if ( xhr.status == 401 ) {
+        loginAgain(function(){
+          renderList(mode, columns, values, limit, page);
+        });
+      }
+      else
+        alert('Ajax error: ' + status);
     }
   });
 }
