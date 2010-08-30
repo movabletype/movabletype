@@ -102,6 +102,11 @@ sub core_methods {
             code => "${pkg}Category::bulk_update",
             app_mode => 'JSON',
         },
+        'bulk_update_folder' => {
+            code => "${pkg}Category::bulk_update",
+            app_mode => 'JSON',
+        },
+
         ## Blog configuration screens
         'cfg_prefs'        => "${pkg}Blog::cfg_prefs",
         'cfg_feedback'     => "${pkg}Blog::cfg_feedback",
@@ -1059,7 +1064,6 @@ sub core_menus {
             order      => 300,
             mode       => 'list',
             args       => { _type => 'folder' },
-            args       => { filter_key => 'page' },
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
         },

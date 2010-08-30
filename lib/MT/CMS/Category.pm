@@ -218,7 +218,7 @@ sub bulk_update {
 
     my $blog_id = $app->param('blog_id');
     my $blog    = $app->blog;
-    my $model   = $app->param('object_ds') || 'category';
+    my $model   = $app->param('datasource') || 'category';
     my $class   = MT->model($model);
 
     my $objects;
@@ -255,7 +255,10 @@ sub bulk_update {
     require Digest::MD5;
     if ( $app->param('checksum') ne Digest::MD5::md5_hex( $text ) ) {
         return $app->json_error( $app->translate(
-            'Saving category failed: some category was changed after you opened this screen.'))
+            'Failed to update [_1]: some of [_2] were changed after you opened this screen.',
+            $class->class_label_plural,
+            $class->class_label_plural,
+        ))
     }
 
     my %old_objects = map { $_->id => $_ } @old_objects;
@@ -615,6 +618,7 @@ sub pre_load_filtered_list {
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
     my $type = $app->param('datasource');
+print STDERR "tyupe[$type]";
     my $meta = $type . '_order';
     my $text = join(
         ':',
