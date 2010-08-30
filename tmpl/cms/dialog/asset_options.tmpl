@@ -13,7 +13,7 @@
 
     function tagSplit(str) {
         var delim = RegExp.escape(tag_delim);
-        var delim_scan = new RegExp('^((([\'])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+        var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
         str = str.replace(/(^\s+|\s+$)/g, '');
         var tags = [];
         while (str.length && str.match(delim_scan)) {
