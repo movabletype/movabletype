@@ -1,4 +1,3 @@
-.listing, 
 .listing-table { 
     width: 100%;
     margin: 0 auto;
@@ -123,6 +122,13 @@ tfoot .col.head{
 /* - Legacy Listing */ 
 .legacy.listing-table {
     margin: 0 0 10px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.has-filter .legacy.listing-table {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
+    -moz-border-radius: 0 0 5px 5px;
 }
 .legacy.listing-table .col.head {
     padding: 7px 8px;

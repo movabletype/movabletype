@@ -67,15 +67,15 @@
     </mt:if>
     </div>
 
+  <mt:if name="panel_searchable">
     <div id="listing-filter" class="mod filter-block">
-    <mt:if name="panel_searchable">
       <form action="" method="get" id="modal-search">
         <input type="text" class="search-input text med" placeholder="<__trans phrase="Search">"  />
         <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
         <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
       </form>
-    </mt:if>
     </div>
+  </mt:if>
 </mt:unless>
 
 <mt:if name="object_loop">
@@ -105,7 +105,7 @@
     </mt:if>
     </form>
 
-    <div class="selector list-data" id="selector">
+    <div id="selector" class="selector list-data<mt:if name="panel_searchable"> has-filter</mt:if>">
       <form action="" method="get" onsubmit="return false">
         <table class="listing-table legacy list-heading <mt:unless name="edit_blog_id">show-weblog </mt:unless><mt:if name="view_expanded">expanded<mt:else>compact</mt:if>">
 

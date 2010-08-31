@@ -35,17 +35,17 @@ parameters:
   </mt:if>
   </div>
 
+<mt:if name="panel_searchable">
   <div class="mod filter-block">
-  <mt:if name="panel_searchable">
     <form id="modal-search" action="" method="get">
       <input type="text" class="search-input search-query" value="" placeholder="<$mt:var name="search_label"$>" />
       <input type="image" class="search-command search-submit" src="<$mt:var name="static_uri"$>images/search-submit-dialog.png" title="<__trans phrase="Search">" />
       <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
     </form>
-  </mt:if>
   </div>
+</mt:if>
 
-  <div id="selector" class="selector list-data<mt:if name="panel_multi"> list-multi</mt:if>">
+  <div id="selector" class="selector list-data<mt:if name="panel_multi"> list-multi</mt:if><mt:if name="panel_searchable"> has-filter</mt:if>">
     <form action="" method="get" onsubmit="return false">
       <table class="legacy listing-table list-heading">
 
