@@ -547,6 +547,10 @@ function toggleCache(id) {
 <mt:else>
     <$mt:setvar name="template_name" value="<__trans phrase="Template Body">"$>
 </mt:if>
+
+<a onclick="toggleEditor(true);">Syntax Hightlight On</a>
+<a onclick="toggleEditor(false);">Syntax Hightlight Off</a>
+
 <mtapp:setting
     id="template-body"
     label="$template_name"
@@ -794,6 +798,7 @@ if (options.match('lang:css')) {
 } else {
     parsers = ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "parsehtmlmixed.js"];
 }
+
 var editor = CodeMirror.fromTextArea('text', {
     parserfile: parsers,
     stylesheet: ["<$mt:var name="static_uri"$>codemirror/css/xmlcolors.css", "<$mt:var name="static_uri"$>codemirror/css/jscolors.css", "<$mt:var name="static_uri"$>codemirror/css/csscolors.css"],
@@ -806,6 +811,20 @@ var editor = CodeMirror.fromTextArea('text', {
     height: "500px",
     lang: "<mt:var name="language_tag">"
 });
+
+function toggleEditor( state ) {
+    var wrapper = editor.wrapping;
+    if ( state ) {
+        editor.setCode(jQuery('#text').val());
+        jQuery('#text').hide();
+        jQuery(wrapper).show();
+    } else {
+        jQuery('#text').val(editor.getCode());
+        jQuery('#text').show();
+        jQuery(wrapper).hide();
+    }
+}
+
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">

@@ -2360,9 +2360,12 @@ body.preview-screen {
 }
 
 /* -- Template Title */
-.edit-template input[type="text"],
+.edit-template input[type="text"] {
+    width: 100%;
+}
 .edit-template textarea { 
     width: 100%;
+    height: 500px;
 }
 .edit-template #title-field { 
     margin-top: 0;
