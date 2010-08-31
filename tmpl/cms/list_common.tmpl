@@ -92,7 +92,7 @@
       </div>
 
       <div class="listing-block">
-        <table class="listing <mt:var name="object_type">">
+        <table class="listing-table <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
           <tbody></tbody>
@@ -155,7 +155,7 @@ jQuery('p#indicator')
   });
 
 var line = '<th class="col head cb"><input type="checkbox" /></th>';
-var table = jQuery('table.listing')[0];
+var table = jQuery('table.listing-table')[0];
 var col_classes = {};
 <mt:loop name="list_columns">
 line += '<th class="col head <mt:var name="id"><mt:if name="primary"> primary</mt:if><mt:if name="col_class"> <mt:var name="col_class"></mt:if>"><div><a href="#<mt:var name="id">" class="sort-link"><mt:var name="label"></a></div></th>';
