@@ -1,32 +1,36 @@
 <mt:setvarblock name="page_title"><mt:var name="label"></mt:setvarblock>
+
 <mt:setvarblock name="html_head" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js"></script>
 </mt:setvarblock>
+
 <mt:include name="dialog/header.tmpl">
+
 <form name="detail" id="detail" method="post" action="<mt:var name="script_url">">
-<input type="hidden" name="__mode" value="save_theme_detail">
-<input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
-<input type="hidden" name="exporter_id" value="<mt:var name="exporter_id">">
-<div id="content">
-    <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
-    <mt:var name="template" mteval="1" />
-</div>
-<div class="actions-bar actions-bar-bottom">
-        <button
-            type="submit"
-            id="submit-button"
-            title="<__trans phrase="Continue (s)">"
-            class="save action primary-button"
-            ><__trans phrase="Continue"></button>
-        <button
-            type="submit"
-            accesskey="s"
-            title="<__trans phrase="Cancel (x)">"
-            class="cancel action mt-close-dialog"
-            ><__trans phrase="Cancel"></button>
-</div>
+  <input type="hidden" name="__mode" value="save_theme_detail">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">">
+  <input type="hidden" name="exporter_id" value="<mt:var name="exporter_id">">
+  <input type="hidden" value="<mt:var name="exporter_id">" name="changed" />
+
+  <mt:var name="template" mteval="1">
+
+  <div class="actions-bar actions-bar-bottom">
+    <button
+       type="submit"
+       id="submit-button"
+       title="<__trans phrase="Continue (s)">"
+       class="save action button primary">
+      <__trans phrase="Continue"></button>
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Cancel (x)">"
+       class="cancel action button mt-close-dialog">
+      <__trans phrase="Cancel"></button>
+  </div>
 </form>
+
 <script type="text/javascript">
 /* <![CDATA[ */
 function dialog_closed(ok) {
@@ -40,4 +44,5 @@ function dialog_closed(ok) {
 }
 /* ]]> */
 </script>
+
 <mt:include name="dialog/footer.tmpl">

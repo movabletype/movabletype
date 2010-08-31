@@ -1,40 +1,47 @@
 <mtapp:listing id="default_categories" loop="categories" hide_pager="1" show_actions="0" type="category">
-    <mt:if __first__>
-        <thead>
-            <tr>
-                <th class="cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
-                <th class="display-name"><__trans phrase="Category Name"></th>
-                <th class="description primary-col"><__trans phrase="Description"></th>
-            </tr>
-        </thead>
-        <tbody>
-    </mt:if>
-            <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
-                <td class="cb">
-                    <input
-                        type="checkbox"
-                        name="default_category_export_ids"
-                        id="default_category_<mt:var name="category_id">"
-                        class="select category-tree"
-                        value="<mt:var name="category_id">"
-                        <mt:if name="category_parent">category_parent="<mt:var name="category_parent">"</mt:if>
-                        <mt:if name="category_path_ids">category_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
-                        <mt:if checked>checked="checked"</mt:if>
-                    />
-                </td>
-                <td class="display-name">
-                    <span style="margin-left: <mt:var name="category_pixel_depth">px;">
-                        <mt:var name="category_label" escape="html">
-                    <span>
-                </td>
-                <td class="description">
-                    <mt:var name="category_description" escape="html">
-                </td>
-    </mt:if>
-            </tr>
-    <mt:if __last__>
-        </tbody>
-    </mt:if>
+<mt:if name="__first__">
+
+<mt:setvarblock name="table_header">
+  <tr>
+    <th class="col head cb"><input type="checkbox" name="id-head" value="all" class="select" /></th>
+    <th class="col head display-name primary"><__trans phrase="Category Name"></th>
+    <th class="col head description primary"><__trans phrase="Description"></th>
+  </tr>
+</mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tfoot>
+    <mt:var name="table_header">
+  </tfoot>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="col cb">
+        <input
+           type="checkbox"
+           name="default_category_export_ids"
+           id="default_category_<mt:var name="category_id">"
+           class="select category-tree"
+           value="<mt:var name="category_id">"
+           <mt:if name="category_parent">category_parent="<mt:var name="category_parent">"</mt:if>
+           <mt:if name="category_path_ids">category_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+           <mt:if name="checked">checked="checked"</mt:if>
+           />
+      </td>
+      <td class="col display-name">
+        <span style="margin-left: <mt:var name="category_pixel_depth">px;">
+          <mt:var name="category_label" escape="html">
+        </span>
+      </td>
+      <td class="col description">
+        <mt:var name="category_description" escape="html">
+      </td>
+    </tr>
+<mt:if __last__>
+  </tbody>
+</mt:if>
 </mtapp:listing>
 
 <script type="text/javascript">

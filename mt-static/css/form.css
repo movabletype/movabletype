@@ -123,8 +123,7 @@ select {
     background: -moz-linear-gradient(top, #fafafa, #e7e7eb);
 }
 .button:active, 
-.ui-button:active, 
-.ui-state-active {
+.ui-button:active {
     background-color: #bbb;
     background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#dcdddd));
     background: -moz-linear-gradient(top, #bbb, #dcdddd);

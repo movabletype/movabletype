@@ -46,7 +46,7 @@ h3 {
 }
 
 /* -- Form */
-select,
+/* select,
 input,
 textarea {
     font-size: 14px;
@@ -118,6 +118,7 @@ input.smaller-text {
 #change-password #container input { 
     width: 100%;
 }
+*/
 
 /* - Component */
 .ready {
@@ -182,7 +183,7 @@ input.smaller-text {
     text-align: right;
 }
 
-/* -- Buttons */
+/* -- Buttons
 button, 
 a.button { 
     min-width: 7em;
@@ -260,7 +261,7 @@ a.action:hover {
 .chromeless-wide .actions-bar button.goback { 
     position: static;
     margin-left: 12px;
-}
+} */
 
 /* - Layout */
 #container {

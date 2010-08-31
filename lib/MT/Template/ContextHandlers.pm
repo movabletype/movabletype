@@ -2943,7 +2943,7 @@ sub _hdlr_app_listing {
     my $view = $ctx->var('view_expanded') ? ' expanded' : ' compact';
 
     my $table = <<TABLE;
-        <table id="$id-table" class="unit size1of1 listing $listing_class $id-table$view" cellspacing="0">
+        <table id="$id-table" class="legacy listing-table $listing_class $id-table$view" cellspacing="0">
 $insides
         </table>
 TABLE
