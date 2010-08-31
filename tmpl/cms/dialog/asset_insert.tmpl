@@ -7,7 +7,7 @@ window.parent.app.insertHTML( '<mt:var name="upload_html" escape="js">', '<mt:va
 
 // do the following first... asset manager stuff is ONLY for edit entry
 <mt:if name="upload_html">
-    <mt:var name="insert_script">
+  <mt:var name="insert_script">
 </mt:if>
 
 // remove the no assets text if it's there
@@ -77,28 +77,29 @@ if (AssetList) {
     }
 }
 <mt:unless name="extension_message">
-    parent.jQuery.fn.mtDialog.close();
+  parent.jQuery.fn.mtDialog.close();
 </mt:unless>
 /* ]]> */
 </script>
 
 <mt:if name="extension_message">
-    <mtapp:statusmsg
-        id="extension-changed"
-        class="success">
-        <mt:var name="extension_message">
-    </mtapp:statusmsg>
+  <mtapp:statusmsg
+     id="extension-changed"
+     class="success"
+     can_close="0">
+    <mt:var name="extension_message">
+  </mtapp:statusmsg>
 
-    <div class="actions-bar-inner pkg actions">
-        <form action="" method="get" onsubmit="return false">
-            <button
-                type="submit"
-                accesskey="x"
-                class="cancel mt-close-dialog"
-                title="<__trans phrase="Close (x)">"
-                ><__trans phrase="Close"></button>
-        </form>
-    </div>
+  <div class="actions-bar">
+    <form action="" method="get" onsubmit="return false">
+      <button
+         type="submit"
+         accesskey="x"
+         class="cancel button mt-close-dialog"
+         title="<__trans phrase="Close (x)">">
+        <__trans phrase="Close"></button>
+    </form>
+  </div>
 </mt:if>
 
 <mt:include name="dialog/footer.tmpl">

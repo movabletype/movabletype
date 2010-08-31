@@ -971,7 +971,7 @@ fieldset {
 
 .field {
     overflow: hidden;
-    padding: 10px 0;    
+    padding: 0 0 10px;
 }
 
 .field-header {
@@ -3281,14 +3281,6 @@ div.template-group-content.active {
 }
 
 #new_entry_prefs {
-    border: 1px solid #c8c2be;
-    background-color: #dcdddd;
-    padding: 10px;
-    position: relative;
-    -moz-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
 }
 
 .new-asset #new_entry_prefs {
@@ -3299,19 +3291,8 @@ div.template-group-content.active {
     /*font-size: 12px;*/
 }
 
-.dialog .field-no-header {
-    margin-bottom: .75em;
-    border-bottom: none;
-    padding-bottom: 0;
-}
 
 
-.dialog #save_settings-field {
-    position: absolute;
-    right: 10px;
-    bottom: 0;
-    font-style: italic;
-}
 
 
 /* - Footer */

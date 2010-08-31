@@ -66,12 +66,12 @@ tfoot .col.head{
 .col.head.first-child {
     border-left: 0;
 }
-.sorted { 
+.col.sorted { 
     background-color: #f3f3f3;
     background: -webkit-gradient(linear, left top, left bottom, from(#dcdddd), to(#f3f3f3));
     background: -moz-linear-gradient(top, #dcdddd, #f3f3f3);
 }
-.head div {
+.col.head div {
     position: relative;
 }
 .sort-link {
