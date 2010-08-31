@@ -47,18 +47,6 @@ a:active {
     font-style: Italic;
 }
 
-.odd {
-    background-color: #f9f9f9;
-}
-
-.selected {
-    background-color: #dcdddd;
-}
-
-.highlight {
-    background-color: #f8f4e6;
-}
-
 .alert-warning-inline { 
     margin: 5px 0 0;
     color: #f39800;
@@ -66,10 +54,6 @@ a:active {
 
 .alert-warning-inline a { 
     color: #f39800;
-}
-
-.disabled {
-    color: #7b7c7d;
 }
 
 .picture {

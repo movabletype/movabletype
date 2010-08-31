@@ -40,9 +40,9 @@ main_css = mt-static/css/reset.css \
 	mt-static/css/icons.css
 
 simple_css = mt-static/css/reset.css \
-	mt-static/css/messaging.css \
 	mt-static/css/chromeless.css \
 	mt-static/css/form.css \
+	mt-static/css/messaging.css \
 	mt-static/css/utilities.css
 
 all: code

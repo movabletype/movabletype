@@ -1,11 +1,51 @@
-.hidden { display: none !important; }
-.visible { display: block; }
-.invisible { visibility: hidden; }
-.clickable { cursor: pointer; }
-.overflow-auto { overflow: auto; }
-.overflow-hidden { overflow: hidden; }
-.inline { display: inline; }
-.nowrap { white-space: nowrap; }
-.fl { float: left; }
-.fr { float: right; }
+.hidden { 
+    display: none !important;
+}
+.visible { 
+    display: block;
+}
+.invisible { 
+    visibility: hidden;
+}
+
+.clickable { 
+    cursor: pointer;
+}
+
+.overflow-auto { 
+    overflow: auto;
+}
+
+.overflow-hidden { 
+    overflow: hidden;
+}
+
+.inline { 
+    display: inline;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.fl { 
+    float: left;
+}
+.fr { 
+    float: right;
+}
+
+.odd {
+    background-color: #f9f9f9;
+}
+.selected {
+    background-color: #dcdddd;
+}
+.highlight {
+    background-color: #f8f4e6;
+}
+
+.disabled {
+    color: #7b7c7d;
+}
 
