@@ -3,7 +3,6 @@
 /* - Input */
 .text {
     width: 75%;
-    margin-right: 5px;
     padding: 0.2em 0.25em;
     border: 1px solid #dcdddd;
     border-top-color: #adadad;
@@ -13,7 +12,7 @@
     -webkit-box-sizing: border-box;
     border-radius: 3px;
     -moz-border-radius: 3px;
-    background-color: #f9f9f9;
+    background-color: #fbfbfb;
     font-size: 13px;
     vertical-align: middle;
     box-shadow: 0 1px 0 #f3f3f3;
@@ -124,7 +123,8 @@ select {
     background: -moz-linear-gradient(top, #fafafa, #e7e7eb);
 }
 .button:active, 
-.ui-button:active {
+.ui-button:active, 
+.ui-state-active {
     background-color: #bbb;
     background: -webkit-gradient(linear, left top, left bottom, from(#bbb), to(#dcdddd));
     background: -moz-linear-gradient(top, #bbb, #dcdddd);
@@ -201,12 +201,12 @@ select {
 }
 
 /* -- Disable Button */
-.button.disable-button, 
-.button.action.disable-button, 
-.button.primary.disable-button, 
-.ui-button.disable-button, 
-.ui-button.action.disable-button, 
-.ui-button.primary.disable-button {
+.button.disabled, 
+.button.action.disabled, 
+.button.primary.disabled, 
+.ui-button.disabled, 
+.ui-button.action.disabled, 
+.ui-button.primary.disabled {
     border-color: #c0c6c9 ! important;
     cursor: default ! important;
     background: #f3f3f3 ! important;
@@ -239,4 +239,17 @@ select {
 
 .split .detail {
     width: 99%;
+}
+
+.ui-helper-hidden-accessible {
+    position: absolute;
+}
+
+#alignment li {
+    display: inline;
+}
+
+#alignment .ui-button {
+    width: 50px;
+    margin: 0;
 }

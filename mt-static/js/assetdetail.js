@@ -77,9 +77,9 @@ function toggleAssetDetails(id) {
         var panel = window.dlg.panel;
         var button = panel.closeButton;
         if (button_val)
-            TC.addClassName(button, "disabled-button");
+            TC.addClassName(button, "disabled");
         else
-            TC.removeClassName(button, "disabled-button");
+            TC.removeClassName(button, "disabled");
         button.disabled = button_val;
     }
 }

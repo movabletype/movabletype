@@ -210,10 +210,10 @@
         if ((mixer.name == current_theme) && ((!new_layout || !current_layout) || ((new_layout && current_layout) && (new_layout == current_layout)))) {
             // same theme, same layout. don't allow apply design to be enabled
             apply_button.disabled = true;
-            TC.addClassName(apply_button, "disabled-button");
+            TC.addClassName(apply_button, "disabled");
         } else {
             apply_button.disabled = false;
-            TC.removeClassName(apply_button, "disabled-button");
+            TC.removeClassName(apply_button, "disabled");
         }
     }
 
@@ -229,7 +229,7 @@
         var url = mixer.entries[mixer.name].url;
         var tset = mixer.entries[mixer.name].template_set;
 
-        TC.addClassName(btn, "disabled-button");
+        TC.addClassName(btn, "disabled");
         btn.disabled = true;
         btn.value = "<__trans phrase="Applying..." escape="js">";
 
@@ -262,7 +262,7 @@
         }
         if (res && res.error) {
             showMsg("<p><__trans phrase="Error applying theme: " escape="js"></p>" + res.error, "theme-applied", "error");
-            TC.removeClassName(btn, "disabled-button");
+            TC.removeClassName(btn, "disabled");
             btn.disabled = false;
             return;
         }

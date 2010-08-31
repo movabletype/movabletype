@@ -260,16 +260,16 @@ ListingPanel = new Class(Panel, {
             var count = ts.selected().length;
             if (this.nextButton) {
                 if (count == 0)
-                    TC.addClassName(this.nextButton, "disabled-button");
+                    TC.addClassName(this.nextButton, "disabled");
                 else
-                    TC.removeClassName(this.nextButton, "disabled-button");
+                    TC.removeClassName(this.nextButton, "disabled");
                 this.nextButton.disabled = count == 0;
             }
             if (this.closeButton) {
                 if (count == 0)
-                    TC.addClassName(this.closeButton, "disabled-button");
+                    TC.addClassName(this.closeButton, "disabled");
                 else
-                    TC.removeClassName(this.closeButton, "disabled-button");
+                    TC.removeClassName(this.closeButton, "disabled");
                 this.closeButton.disabled = count == 0;
             }
         }
@@ -379,16 +379,16 @@ ListingPanel = new Class(Panel, {
                 var items = sl.items();
                 if (self.nextButton) {
                     if (items.length == 0)
-                        TC.addClassName(self.nextButton, "disabled-button");
+                        TC.addClassName(self.nextButton, "disabled");
                     else
-                        TC.removeClassName(self.nextButton, "disabled-button");
+                        TC.removeClassName(self.nextButton, "disabled");
                     self.nextButton.disabled = items.length == 0;
                 }
                 if (self.closeButton) {
                     if (items.length == 0)
-                        TC.addClassName(self.closeButton, "disabled-button");
+                        TC.addClassName(self.closeButton, "disabled");
                     else
-                        TC.removeClassName(self.closeButton, "disabled-button");
+                        TC.removeClassName(self.closeButton, "disabled");
                     self.closeButton.disabled = items.length == 0;
                 }
             };
