@@ -1037,70 +1037,73 @@ sub filtered_list {
     my $count = $filter->count_objects(%load_options);
     $MT::DebugMode && $debug->{section}->('count objects');
 
-    my @objs = $filter->load_objects(%load_options);
-    $MT::DebugMode && $debug->{section}->('load objects');
+    my (@objs, @data);
+    if ( $count ) {
+        @objs = $filter->load_objects(%load_options);
+        $MT::DebugMode && $debug->{section}->('load objects');
 
-    my %cols = map { $_ => 1 } @cols;
-    require MT::ListProperty;
-    my $props = MT::ListProperty->list_properties($ds);
-    my @results;
+        my %cols = map { $_ => 1 } @cols;
+        require MT::ListProperty;
+        my $props = MT::ListProperty->list_properties($ds);
+        my @results;
 
-    ## FIXME: would like to build MTML if specified, but currently
-    ## many of handlers can't run without blog_id. so commented
-    ## out for these codes until the problem would be resolved.
-    #my $tmpl;
-    #if ( scalar grep { $props->{$_}->has('mtml') } @cols ) {
-    #    $tmpl = MT::Template->new;
-    #    $tmpl->blog_id($blog_id);
-    #    $app->set_default_tmpl_params($tmpl);
-    #    $tmpl->context->{__stash}{blog} = $blog;
-    #    $tmpl->context->{__stash}{blog_id} = $blog_id;
-    #}
-
-    $MT::DebugMode && $debug->{section}->('prepare load cols');
-    for my $col ( @cols ) {
-        my $prop = $props->{$col};
-        my @result;
-        if ( $prop->has('bulk_html') ) {
-            @result = $prop->bulk_html(\@objs, $app);
-        }
-        #elsif ( $prop->has('mtml') ) {
-        #    for my $obj ( @objs ) {
-        #        $tmpl->context->{__stash}{$ds} = $obj;
-        #        my $out = $prop->html($obj, $app);
-        #        $tmpl->text($out);
-        #        $tmpl->reset_tokens;
-        #        $out = $tmpl->output;
-        #        push @result, $out;
-        #    }
+        ## FIXME: would like to build MTML if specified, but currently
+        ## many of handlers can't run without blog_id. so commented
+        ## out for these codes until the problem would be resolved.
+        #my $tmpl;
+        #if ( scalar grep { $props->{$_}->has('mtml') } @cols ) {
+        #    $tmpl = MT::Template->new;
+        #    $tmpl->blog_id($blog_id);
+        #    $app->set_default_tmpl_params($tmpl);
+        #    $tmpl->context->{__stash}{blog} = $blog;
+        #    $tmpl->context->{__stash}{blog_id} = $blog_id;
         #}
-        elsif ( $prop->has('html') ) {
-            for my $obj ( @objs ) {
-                push @result, $prop->html($obj, $app);
+
+        $MT::DebugMode && $debug->{section}->('prepare load cols');
+        for my $col ( @cols ) {
+            my $prop = $props->{$col};
+            my @result;
+            if ( $prop->has('bulk_html') ) {
+                @result = $prop->bulk_html(\@objs, $app);
             }
-        }
-        elsif ( $prop->has('html_link') ) {
-            for my $obj ( @objs ) {
-                my $link = $prop->html_link($obj, $app);
-                my $raw  = $prop->raw($obj);
-                push @result, qq{<a href="$link">$raw</a>};
+            #elsif ( $prop->has('mtml') ) {
+            #    for my $obj ( @objs ) {
+            #        $tmpl->context->{__stash}{$ds} = $obj;
+            #        my $out = $prop->html($obj, $app);
+            #        $tmpl->text($out);
+            #        $tmpl->reset_tokens;
+            #        $out = $tmpl->output;
+            #        push @result, $out;
+            #    }
+            #}
+            elsif ( $prop->has('html') ) {
+                for my $obj ( @objs ) {
+                    push @result, $prop->html($obj, $app);
+                }
             }
-        }
-        elsif ( $prop->has('raw') ) {
-            for my $obj ( @objs ) {
-                my $out = $prop->raw($obj);
-                push @result, remove_html($out);
+            elsif ( $prop->has('html_link') ) {
+                for my $obj ( @objs ) {
+                    my $link = $prop->html_link($obj, $app);
+                    my $raw  = $prop->raw($obj);
+                    push @result, qq{<a href="$link">$raw</a>};
+                }
             }
+            elsif ( $prop->has('raw') ) {
+                for my $obj ( @objs ) {
+                    my $out = $prop->raw($obj);
+                    push @result, remove_html($out);
+                }
+            }
+
+            push @results, \@result;
+            $MT::DebugMode && $debug->{section}->("prepare col $col");
         }
 
-        push @results, \@result;
-        $MT::DebugMode && $debug->{section}->("prepare col $col");
+        for my $i ( 0.. scalar @objs - 1 ) {
+            push @data, [ map { $_->[$i] } @results ];
+        }
     }
 
-    my @data;
-    for my $i ( 0.. scalar @objs - 1 ) {
-        push @data, [ map { $_->[$i] } @results ];
-    }
 
     ## Save user list prefs.
     my $list_prefs = $app->user->list_prefs || {};

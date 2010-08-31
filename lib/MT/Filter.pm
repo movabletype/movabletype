@@ -148,7 +148,8 @@ sub load_objects {
     }
 
     ## It's time to load now.
-    my @objs = $class->load( $terms, $args );
+    my @objs = $class->load( $terms, $args )
+        or return;
 
     for my $item (@grep_items) {
         @objs = grep { $item->{prop}->grep( $item->{args}, $_ ) } @objs;
