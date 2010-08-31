@@ -587,7 +587,7 @@ $.event.special.dialogReady = {
     },
     teardown:function( ns ) {
         return false;
-    },
+    }
 };
 
 $.fn.mtDialogReady = function(options) {
