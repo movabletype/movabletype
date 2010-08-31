@@ -812,14 +812,22 @@ var editor = CodeMirror.fromTextArea('text', {
     lang: "<mt:var name="language_tag">"
 });
 
+function syncEditor() {
+    var wrapper = editor.wrapping;
+    if ( jQuery(wrapper).css('display') == 'none') {
+        editor.setCode(jQuery('#text').val());
+    } else {
+        jQuery('#text').val(editor.getCode());
+    }
+}
+
 function toggleEditor( state ) {
+    syncEditor();
     var wrapper = editor.wrapping;
     if ( state ) {
-        editor.setCode(jQuery('#text').val());
         jQuery('#text').hide();
         jQuery(wrapper).show();
     } else {
-        jQuery('#text').val(editor.getCode());
         jQuery('#text').show();
         jQuery(wrapper).hide();
     }
@@ -829,9 +837,11 @@ function toggleEditor( state ) {
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
     jQuery('button.save, button.publish').click(function() {
+        syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
     });
     jQuery('button.preview').click(function() {
+        syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
     });
     jQuery('input#save_revision').click(function() {
