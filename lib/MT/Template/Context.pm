@@ -396,6 +396,7 @@ sub set_blog_load_context {
         @blogs = MT->model('blog')->load({ parent_id => $website->id });
         $blog_ids = scalar @blogs ? [ map { $_->id } @blogs ] : [];
         push @$blog_ids, $website->id if $attr->{include_with_website};
+        $blog_ids = undef unless scalar @$blog_ids;
         $terms->{$col} = $blog_ids;
     # Blogs are specified in include_blogs so set the terms
     } else {
