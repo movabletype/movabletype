@@ -984,6 +984,17 @@ sub core_menus {
             permission => "administer",
             view       => "system",
         },
+        'user:commenter' => {
+            label      => "Manage Commenter",
+            order      => 151,
+            mode       => "list",
+            args       => { _type => "commenter" },
+            permission => "administer",
+            view       => "system",
+            condition  => sub {
+                return MT->config->SingleCommunity;
+            },
+        },
         'user:create' => {
             label      => "New",
             order      => 200,
@@ -1500,6 +1511,34 @@ sub init_core_callbacks {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
                 delete $terms->{blog_id};
+                $terms->{type} = MT::Author::AUTHOR();
+            },
+            $pkg . 'pre_load_filtered_list.commenter' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                my $args = $opts->{args};
+                delete $terms->{blog_id};
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('permission')->join_on(
+                    undef,
+                    [
+                        { blog_id => 0 },
+                        '-and',
+                        { author_id => \'= author_id', },
+                        '-and',
+                        [
+                            { permissions => { like => '%comment%' } },
+                            '-or',
+                            { restrictions => { like => '%comment%' } },
+                            '-or',
+                            [
+                                { permissions => \'IS NULL' },
+                                '-and',
+                                { restrictions => \'IS NULL' },
+                            ],
+                        ],
+                    ],
+                );
             },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;

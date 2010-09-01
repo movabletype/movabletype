@@ -185,6 +185,7 @@ BEGIN {
                         my $prop = shift;
                         my ( $terms, $args ) = @_;
                         $args->{sort} = $prop->col;
+                        return;
                     },
                 },
                 __legacy => {
@@ -696,34 +697,38 @@ BEGIN {
                         my @object_tags = MT->model('objecttag')->load({
                             object_datasource => $ds,
                             tag_id            => [ map { $_->id } @tags ],
-                            }, {
-                            fetchonly => { object_id => 1 },
+                        }, {
+                            fetchonly         => { object_id => 1 },
                         });
                         return { id => [ map { $_->object_id } @object_tags ] };
                     },
                 },
             },
-            website  => '$Core::MT::Website::list_props',
-            blog     => '$Core::MT::Blog::list_props',
-            entry    => '$Core::MT::Entry::list_props',
-            page     => '$Core::MT::Page::list_props',
-            asset    => '$Core::MT::Asset::list_props',
-            category => '$Core::MT::Category::list_props',
-            folder   => '$Core::MT::Folder::list_props',
-            comment  => '$Core::MT::Comment::list_props',
-            ping     => '$Core::MT::TBPing::list_props',
-            author   => '$Core::MT::Author::list_props',
-            member   => '$Core::MT::Author::member_list_props',
-            tag      => '$Core::MT::Tag::list_props',
-            banlist  => '$Core::MT::IPBanList::list_props',
+            website   => '$Core::MT::Website::list_props',
+            blog      => '$Core::MT::Blog::list_props',
+            entry     => '$Core::MT::Entry::list_props',
+            page      => '$Core::MT::Page::list_props',
+            asset     => '$Core::MT::Asset::list_props',
+            category  => '$Core::MT::Category::list_props',
+            folder    => '$Core::MT::Folder::list_props',
+            comment   => '$Core::MT::Comment::list_props',
+            ping      => '$Core::MT::TBPing::list_props',
+            author    => '$Core::MT::Author::list_props',
+            member    => '$Core::MT::Author::member_list_props',
+            commenter => '$Core::MT::Author::commenter_list_props',
+            tag       => '$Core::MT::Tag::list_props',
+            banlist   => '$Core::MT::IPBanList::list_props',
         },
         system_filters => {
-            entry   => '$Core::MT::Entry::system_filters',
-            page    => '$Core::MT::Page::system_filters',
-            comment => '$Core::MT::Comment::system_filters',
-            ping    => '$Core::MT::TBPing::system_filters',
-            tag     => '$Core::MT::Tag::system_filters',
-            asset   => '$Core::MT::Asset::system_filters',
+            entry     => '$Core::MT::Entry::system_filters',
+            page      => '$Core::MT::Page::system_filters',
+            comment   => '$Core::MT::Comment::system_filters',
+            ping      => '$Core::MT::TBPing::system_filters',
+            tag       => '$Core::MT::Tag::system_filters',
+            asset     => '$Core::MT::Asset::system_filters',
+            author    => '$Core::MT::Author::system_filters',
+            member    => '$Core::MT::Author::member_system_filters',
+            commenter => '$Core::MT::Author::commenter_system_filters',
         },
         listing_screens => {
             website => {
@@ -788,15 +793,26 @@ BEGIN {
             },
             author => {
                 object_label => 'Author',
-                primary => 'name',
-                columns => [qw( name nickname entry_count comment_count created_by )],
-                permission => 'access_to_member_list',
+                primary      => 'name',
+                columns      => [qw( name nickname entry_count comment_count created_by )],
+                permission   => 'access_to_member_list',
+                view         => 'system',
             },
             member => {
                 object_label => 'Member',
-                object_type => 'author',
-                columns => [qw( name nickname )],
-                permission => 'access_to_blog_member_list',
+                object_type  => 'permission',
+                columns      => [qw( name nickname )],
+                permission   => 'access_to_blog_member_list',
+            },
+            commenter => {
+                object_label => 'Commenter',
+                object_type  => 'author',
+                columns      => [qw( name nickname )],
+                permission   => 'access_to_commenter_list',
+                condition => sub {
+                    return MT->config->SingleCommunity;
+                },
+
             },
             tag => {
                 object_label => 'Tag',

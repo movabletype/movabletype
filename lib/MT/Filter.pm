@@ -92,10 +92,11 @@ sub load_objects {
     my $obj_type = $setting->{object_type} || $ds;
     my $class    = MT->model($obj_type);
     my $items    = $self->items;
-
+    my $total    = $options{total} ||= $self->count_objects(@_);
     my @items;
     require MT::ListProperty;
 
+    ## Prepare properties
     for my $item (@$items) {
         my $id = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
@@ -130,26 +131,39 @@ sub load_objects {
 
     my $sort_prop;
     $sort_prop = MT::ListProperty->instance( $ds, $sort ) if $sort;
-    if ( $sort_prop && $sort_prop->has('sort') ) {
-        $args->{direction}
-            = ( $dir && $dir eq 'descend' ) ? 'descend' : 'ascend';
-        $sort_prop->sort( $terms, $args );
-    }
-
-    if (!( scalar @grep_items )
-        && (!$sort_prop
-            || (   !( $sort_prop->has('sort_method') )
-                && !( $sort_prop->has('bulk_sort') ) )
-        )
-        )
-    {
+    my $has_post_process
+        = scalar @grep_items
+        || ( $sort_prop && ( $sort_prop->has('sort_method')
+                             || $sort_prop->has('bulk_sort')));
+    if (!$has_post_process) {
         $args->{limit}  = $limit;
         $args->{offset} = $offset;
     }
 
     ## It's time to load now.
-    my @objs = $class->load( $terms, $args )
-        or return;
+    my @objs;
+    if ( $sort_prop && $sort_prop->has('sort') ) {
+        $args->{direction}
+            = ( $dir && $dir eq 'descend' ) ? 'descend' : 'ascend';
+        my $sort_result = $sort_prop->sort( $terms, $args, \%options );
+        if ( $sort_result && 'ARRAY' eq ref $sort_result ) {
+            return if !scalar @$sort_result;
+            if ( !ref $sort_result->[0] ) {
+                @objs = $class->load({ id => $sort_result });
+            }
+            else {
+                @objs = @$sort_result;
+            }
+        }
+        else {
+            @objs = $class->load( $terms, $args )
+                or return;
+        }
+    }
+    else {
+        @objs = $class->load( $terms, $args )
+            or return;
+    }
 
     for my $item (@grep_items) {
         @objs = grep { $item->{prop}->grep( $item->{args}, $_ ) } @objs;
@@ -166,15 +180,10 @@ sub load_objects {
             if ( $dir && $dir eq 'descend' );
     }
 
-    if ((   scalar @grep_items
-            || ($sort_prop
-                && (   $sort_prop->has('sort_method')
-                    || $sort_prop->has('bulk_sort') )
-            )
-        )
-        && $limit
-        && $limit < scalar @objs
-        )
+    if ( $has_post_process
+         && $limit
+         && $limit < scalar @objs
+       )
     {
         @objs = @objs[ $offset .. $limit + $offset - 1 ];
     }
@@ -226,6 +235,7 @@ sub count_objects {
             $terms = [ $terms, @additional_terms ];
         }
     }
+
     if ( !( scalar @grep_items ) ) {
         return $class->count( $terms, $args );
     }
@@ -236,6 +246,7 @@ sub count_objects {
         my $coderef = $item->{prop}->has('grep') or next;
         @objs = grep { $item->{prop}->grep( $item->{args}, $_ ) } @objs;
     }
+
     return scalar @objs;
 }
 

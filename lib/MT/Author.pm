@@ -113,13 +113,13 @@ sub list_props {
                 my ( $prop, $obj, $app ) = @_;
                 my ($status_img, $status_label);
                 if ( $obj->type == MT::Author::AUTHOR() ) {
-                    $status_img = $obj->is_active    ? 'user-enabled.gif'
-                                : $obj->is_banned    ? 'user-disabled.gif'
-                                :                      'user-pending.gif'
+                    $status_img = $obj->status == ACTIVE()   ? 'user-enabled.gif'
+                                : $obj->status == INACTIVE() ? 'user-disabled.gif'
+                                :                              'user-pending.gif'
                                 ;
-                    $status_label = $obj->is_active    ? 'Enabled'
-                                  : $obj->is_banned    ? 'Disabled'
-                                  :                      'Pending'
+                    $status_label = $obj->status == ACTIVE()   ? 'Enabled'
+                                  : $obj->status == INACTIVE() ? 'Disabled'
+                                  :                              'Pending'
                                   ;
                 }
                 else {
@@ -212,28 +212,15 @@ sub list_props {
                 return { status => $args->{value} };
             },
             single_select_options => [
-                { label => 'Active',   value => '1', },
-                { label => 'Disabled', value => '2', },
-                { label => 'Pending',  value => '3', },
+                { label => 'Active Users',   value => '1', },
+                { label => 'Disabled Users', value => '2', },
+                { label => 'Pending Users',  value => '3', },
             ],
         },
         author_name => {
             base => '__common.author_name',
             label => 'Created by',
-        },
-        type => {
-            base => '__common.single_select',
-            display => 'none',
-            label => 'Type',
-            col => 'type',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                $obj->type == 1 ? 'Author' : 'Commenter';
-            },
-            single_select_options => [
-                { label => 'Author',    value => 1, },
-                { label => 'Commenter', value => 2, },
-            ],
+            view_filter => [],
         },
         url => {
             auto => 1,
@@ -248,6 +235,7 @@ sub list_props {
             label => 'Entries',
             col_class => 'num',
             count_class => 'entry',
+            count_col   => 'author_id',
             filter_type => 'author_id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
@@ -265,33 +253,36 @@ sub list_props {
                     },
                 );
             },
+            bulk_sort => sub {
+                my ( $prop, $objs ) = @_;
+                my $iter = MT->model( $prop->count_class )->count_group_by(
+                    undef, {
+                        sort  => 'cnt',
+                        direction => 'descend',
+                        group => [ $prop->count_col, ],
+                    },
+                );
+                return @$objs unless $iter;
+                my @res;
+                my %obj_map = map { $_->id => $_ } @$objs;
+                while ( my ( $count, $id ) = $iter->() ) {
+                    next unless $id;
+                    push @res, delete $obj_map{$id} if $obj_map{$id};
+
+                }
+                push @res, values %obj_map;
+                return reverse @res;
+            },
         },
         comment_count => {
             base => 'author.entry_count',
             label => 'Comments',
             count_class => 'comment',
+            count_col   => 'commenter_id',
             filter_type => 'commenter_id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
                 MT->model( $prop->count_class )->count({ commenter_id => $obj->id });
-            },
-        },
-        auth_type => {
-            label => 'Auth',
-            auto => 1,
-            display => 'none',
-            html => sub {
-                my ( $prop, $obj ) = @_;
-                my $img;
-                if ( $obj->auth_type eq 'MT' ) {
-                    $img = 'images/comment/mt_logo.png';
-                }
-                else {
-                    my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
-                    $img = $auth->{logo_small};
-                }
-                return sprintf '<img src="%s" />',
-                    MT->static_path . $img;
             },
         },
         privilege => {
@@ -320,7 +311,164 @@ sub list_props {
                 return;
             },
         },
+        email => {
+            auto => 1,
+            label => 'Email',
+            display => 'none',
+        },
         id => { view => [] },
+    };
+}
+
+sub system_filters {
+    return {
+        enabled => {
+            label => 'Enabled Users',
+            items => [
+                { type => 'status', args => { value => '1' }, },
+            ],
+        },
+        disabled => {
+            label => 'Disabled Users',
+            items => [
+                { type => 'status', args => { value => '2' }, },
+            ],
+        },
+        pending => {
+            label => 'Pending Users',
+            items => [
+                { type => 'status', args => { value => '3' }, },
+            ],
+        },
+    };
+}
+
+sub commenter_list_props {
+    return {
+        id => {},
+        name => {
+            auto => 1,
+            label => 'Name',
+            html => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my ($status_img, $status_label);
+                $status_img = $obj->is_trusted   ? 'trusted.gif'
+                            : $obj->is_banned    ? 'banned.gif'
+                            :                      'authenticated.gif'
+                            ;
+                $status_label = $obj->is_trusted   ? 'Trusted'
+                              : $obj->is_banned    ? 'Banned'
+                              :                      'Authenticated'
+                              ;
+                $status_img = MT->static_path . 'images/status_icons/' . $status_img;
+                my $lc_status_label = lc $status_label;
+                my $edit_link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'commenter',
+                        id      => $obj->id,
+                        blog_id => 0,
+                    },
+                );
+
+                my $auth_img = MT->static_path;
+                my $auth_label;
+                if ( $obj->auth_type eq 'MT' ) {
+                    $auth_img .= 'images/comment/mt_logo.png';
+                    $auth_label = 'Movable Type';
+                }
+                else {
+                    my $auth = MT->registry( commenter_authenticators => $obj->auth_type );
+                    $auth_img .= $auth->{logo_small};
+                    $auth_label = $auth->{label};
+                    $auth_label = $auth_label->() if ref $auth_label;
+                }
+                my $lc_auth_label = lc $auth_label;
+
+                my $name = $obj->name;
+                my $out = qq{
+                    <img width="16" height="16" src="$auth_img" />
+                    <span class="username"><a href="$edit_link">$name</a></span>
+                    <span class="status $lc_status_label">
+                        <img alt="enabled" src="$status_img" />
+                    </span>
+                };
+                return $out;
+            },
+        },
+        nickname      => { base => 'author.nickname' },
+        comment_count => { base => 'author.comment_count' },
+        author_name   => { base => 'author.author_name' },
+        email         => { base => 'author.email' },
+        status => {
+            base => '__common.single_select',
+            display => 'none',
+            label => 'Status',
+            col   => 'status',
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $val = $args->{value};
+                $db_args->{joins} ||= [];
+                if ( $val eq 'enabled' ) {
+                    push @{ $db_args->{joins} }, MT->model('permission')->join_on(
+                        undef,
+                        {
+                            permissions => { like => '%\'comment\'%', },
+                            author_id => \'= author_id',
+                        }
+                    );
+                }
+                elsif ( $val eq 'disabled' ) {
+                    push @{ $db_args->{joins} }, MT->model('permission')->join_on(
+                        undef,
+                        {
+                            restrictions => { like => '%\'comment\'%', },
+                            author_id    => \'= author_id',
+                        }
+                    );
+                }
+                elsif ( $val eq 'pending' ) {
+                    push @{ $db_args->{joins} }, MT->model('permission')->join_on(
+                        undef,
+                        {
+                            permissions  => \'IS NULL',
+                            restrictions => \'IS NULL',
+                            author_id    => \'= author_id',
+                        }
+                    );
+                }
+                return;
+
+            },
+            single_select_options => [
+                { label => 'Approved Commenter', value => 'enabled', },
+                { label => 'Banned Commenter',   value => 'disabled', },
+                { label => 'Pending Commenter',  value => 'pending', },
+            ],
+        },
+    };
+}
+
+sub system_filters {
+    return {
+        enabled => {
+            label => 'Enabled Commenters',
+            items => [
+                { type => 'status', args => { value => 'enabled' }, },
+            ],
+        },
+        disabled => {
+            label => 'Disabled Commenters',
+            items => [
+                { type => 'status', args => { value => 'disabled' }, },
+            ],
+        },
+        pending => {
+            label => 'Pending Commenters',
+            items => [
+                { type => 'status', args => { value => 'pending' }, },
+            ],
+        },
     };
 }
 
@@ -369,6 +517,7 @@ sub member_list_props {
                 $terms->{blog_id}   = MT->app->param('blog_id');
                 $terms->{role_id}   = $args->{value} if $args->{value};
                 $terms->{author_id} = \"= author_id";
+                $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} }, MT->model('association')->join_on(
                     undef, $terms, { unique => 1 }
                 );

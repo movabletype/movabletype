@@ -724,6 +724,7 @@ sub list {
             $app->translate('Unknown action [_1]', $list_mode)
         );
 
+    # Condition check
     if ( my $cond = $screen_settings->{condition} ) {
         $cond = MT->handler_to_coderef($cond)
             if 'CODE' ne ref $cond;
@@ -733,6 +734,16 @@ sub list {
                 return $app->error( $app->errstr );
             }
             return $app->return_to_dashboard;
+        }
+    }
+
+    # Validate scope
+    if ( my $view = $screen_settings->{view} ) {
+        $view = [ $view ] unless ref $view;
+        my %view = map { $_ => 1 } @$view;
+        if ( !$view{$scope} ) {
+            return $app->error(
+                MT->translate('Invalid parameters'));
         }
     }
 
@@ -1024,7 +1035,7 @@ sub filtered_list {
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
     my %load_options = (
         terms => {
-            blog_id    => $blog_id,
+            ( $blog_id == 0 ? () : ( blog_id => $blog_id) ),
         },
         args       => {},
         sort_by    => $q->param('sort_by') || '',
@@ -1034,8 +1045,10 @@ sub filtered_list {
     );
 
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
+
     my $count = $filter->count_objects(%load_options);
     $MT::DebugMode && $debug->{section}->('count objects');
+    $load_options{total} = $count;
 
     my (@objs, @data);
     if ( $count ) {
