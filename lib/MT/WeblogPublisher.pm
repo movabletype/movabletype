@@ -1006,7 +1006,6 @@ sub _rebuild_entry_archive_type {
     for my $map (@map) {
         next unless $map->build_type; # ignore disabled template maps
         next if $map->build_type == MT::PublishOption::MANUALLY() && !$force;
-        next if $map->build_type == MT::PublishOption::ASYNC() && !$force;
 
         my $ctx = MT::Template::Context->new;
         $ctx->{current_archive_type} = $at;
