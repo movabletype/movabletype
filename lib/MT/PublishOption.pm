@@ -34,6 +34,20 @@ sub get_throttle {
     $throttle;
 }
 
+
+sub archive_build_is_enable {
+    my ( $blog_id, $at ) = @_;
+    require MT::TemplateMap;
+    local $Data::ObjectDriver::DEBUG = 1;
+    my $map = MT::TemplateMap->load({
+        blog_id => $blog_id,
+        archive_type => $at,
+        build_type => { 'not' => DISABLED() },
+    });
+    $map ? 1 : 0;
+}
+
+
 sub archive_build_type {
     my ( $blog_id, $at ) = @_;
     require MT::TemplateMap;
