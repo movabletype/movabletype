@@ -237,7 +237,7 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 my $class       = $obj->class;
                 my $class_label = $obj->class_label;
-                my $title     = remove_html( $obj->title );
+                my $title     = MT::Util::encode_html( $obj->title );
                 my $excerpt   = remove_html( $obj->excerpt ) || remove_html( $obj->text );
                 ## FIXME: Hard coded
                 my $len = 40;
@@ -273,18 +273,22 @@ sub list_props {
                     :                                    '';
                 my $status_img = MT->static_path . 'images/status_icons/' . $status_file;
                 my $view_img   = MT->static_path . 'images/status_icons/view.gif';
-                my $out = qq{
-                    <span class="status $lc_status_class">
-                      <img alt="$status_class" src="$status_img" />
-                    </span>
-                    <span class="title">
-                      <a href="$edit_url">$title</a>
-                    </span>
+                my $view_link  = $obj->status == MT::Entry::RELEASE() ? qq{
                     <span class="view-link">
                       <a href="$permalink">
                         <img alt="View $class_label" src="$view_img" />
                       </a>
                     </span>
+                } : '';
+
+                my $out = qq{
+                    <span class="status $lc_status_class">
+                      <a href="$edit_url"><img alt="$status_class" src="$status_img" /></a>
+                    </span>
+                    <span class="title">
+                      <a href="$edit_url">$title</a>
+                    </span>
+                    $view_link
                     <p class="$class-excerpt description">$excerpt</p>
                 };
                 return $out;
