@@ -180,7 +180,7 @@ sub _validate_signature {
     $dsa_key = {p=>$p, q=>$q, g=>$g, pub_key=>$pub_key};
     my $valid = dsa_verify(Key => $dsa_key,
                            Signature => $sig,
-                           Message => $msg);
+                           Message => Encode::encode_utf8($msg));
     $timer = time - $timer;
 
     $app->log({
