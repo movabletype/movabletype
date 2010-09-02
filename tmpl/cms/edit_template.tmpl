@@ -154,39 +154,46 @@
    label="<__trans phrase="Included Templates">">
   <ul>
   <mt:loop name="include_loop">
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
   <mt:if name="include_link">
-    <li class="icon-left <mt:var name="include_from">">[<mt:var name="scope_type">] 
+    <li class="icon-left-wide <mt:var name="include_scope_type">">[<mt:var name="include_scope_type">] 
       <a href="<mt:var name="include_link">"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
     </li>
   <mt:else>
-    <li class="icon-left error">[<mt:var name="scope_type">] 
+    <li class="icon-left-wide <mt:var name="include_scope_type"> error">[<mt:var name="include_scope_type">] 
       <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
     </li>
   </mt:if>
   </mt:loop>
   <mt:loop name="widget_loop">
-    <li>
-    <mt:if name="include_link">
-      <a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a>
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+  <mt:if name="include_link">
+    <li class="icon-left-wide <mt:var name="include_scope_type">">
+      <a href="<mt:var name="include_link">" class="icon-left-wide icon-related"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    <mt:else>
+    </li>
+  <mt:else>
+    <li class="icon-left-wide <mt:var name="include_scope_type"> error">
       <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </mt:if>
     </li>
+  </mt:if>
   </mt:loop>
   <mt:loop name="widget_set_loop">
-    <li>
-    <mt:if name="include_link">
-      <a href="<mt:var name="include_link">" class="icon-left icon-related"><mt:var name="include_module"></a>
+  <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+  <mt:if name="include_link">
+    <li class="icon-left-wide <mt:var name="include_scope_type">">
+      <a href="<mt:var name="include_link">" class="icon-left-wide icon-related"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    <mt:else>
+    </li>
+  <mt:else>
+    <li class="icon-left-wide <mt:var name="include_scope_type"> error">
       <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </mt:if>
     </li>
+    </mt:if>
   </mt:loop>
   </ul>
 </mtapp:widget>
@@ -567,7 +574,7 @@ function toggleCache(id) {
      help_page="templates"
      help_section="template_name">
     <div id="template-editor-toolbar" class="template editor-toolbar toolbar">
-      <button type="button" id="syntaxon" class="command-highlight-on toolbar button active">Syntax Hightlight On</button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button">Syntax Hightlight Off</button>
+      <button type="button" id="syntaxon" class="command-highlight-on toolbar button active" title="Syntax Hightlight On">Syntax Hightlight On</button><button type="button" id="syntaxoff" class="command-highlight-off toolbar button" title="Syntax Hightlight Off">Syntax Hightlight Off</button>
     </div>
     <div id="textarea-enclosure" class="editor">
       <textarea name="text" id="text" class="monospace text full" tabindex="3" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:<mt:var name="template_lang"> autocomplete:off" /><mt:var name="text" escape="html"></textarea>
@@ -585,7 +592,7 @@ function toggleCache(id) {
   <div id="template-options"<mt:if name="template_options_active"> class="active"</mt:if>>
     <div id="template-options-header" class="line">
       <div class="unit size3of5">
-        <h3><a href="javascript:void(0);" class="icon-left" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
+        <h3><a href="javascript:void(0);" class="icon-left-wide" onclick="return toggleActive('template-options');"><__trans phrase="Template Options"></a></h3>
       </div>
       <div class="template-options-summary unit size2of5">
       <mt:if name="has_outfile">
