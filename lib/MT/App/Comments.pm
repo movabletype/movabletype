@@ -1048,9 +1048,7 @@ sub post {
 
             $app->_send_comment_notification( $comment, $comment_link, $entry,
                 $blog, $commenter );
-            _expire_sessions( $cfg->CommentSessionTimeout )
-                if ( $commenter
-                && ( $commenter->type ne MT::Author::AUTHOR() ) );
+            _expire_sessions( $cfg->CommentSessionTimeout );
         }
     );
 
