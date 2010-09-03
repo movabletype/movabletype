@@ -1,26 +1,24 @@
 <mt:setvarblock name="page_title"><__trans phrase="Manage [_1]" params="<mt:var name="object_label">"></mt:setvarblock>
 
-<mt:setvar name="show_display_options_link" value="1">
 <mt:setvarblock name="display_options">
+<mt:setvar name="show_display_options_link" value="1">
 <div id="display-options-detail" class="unit size1of1 display-options-detail detail">
 <mtapp:setting
    id="per_page"
    label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
-   label_class="top-label mod"
-   >Show
+   label_class="no-header">
+  Show
   <select id="row" name="limit">
-    <option value="2"<mt:if name="limit_2"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="2"></option>
-    <option value="10"<mt:if name="limit_10"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="10"></option>
-    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="25"></option>
-    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="50"></option>
-    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="100"></option>
-    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="[quant,_1,row,rows]" params="200"></option>
-  </select>raws per page
+    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>>25</option>
+    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>>50</option>
+    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>>100</option>
+    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>>200</option>
+  </select> rows per page
 </mtapp:setting>
 <mtapp:setting
    id="display_columns"
    label="<__trans phrase="Column">"
-   label_class="top-label mod">
+   label_class="top-label">
   <ul class="mod" id="disp_cols">
   <mt:loop name="list_columns">
     <li class="<mt:if name="force_display"> hidden</mt:if>">
