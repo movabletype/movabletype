@@ -517,7 +517,8 @@ sub list_props {
                 return { option => 'equal', value => $app->param('filter_val') };
             },
         },
-
+        id => { base => '__common.id', },
+        modified_on => { base => '__common.modified_on', },
     };
 }
 

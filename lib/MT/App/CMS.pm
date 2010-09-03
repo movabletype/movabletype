@@ -84,8 +84,8 @@ sub core_methods {
         #'list_website'     => "${pkg}Website::list",
         #'list_folder'      => "${pkg}Folder::list",
         #'list_tag'         => "${pkg}Tag::list",
-        'list_association' => "${pkg}User::list_association",
-        'list_role'        => "${pkg}User::list_role",
+        #'list_association' => "${pkg}User::list_association",
+        #'list_role'        => "${pkg}User::list_role",
         'list_theme'       => "${pkg}Theme::list",
 
         'asset_insert'        => "${pkg}Asset::insert",
@@ -1542,14 +1542,19 @@ sub init_core_callbacks {
             },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
                 $filter->append_item({
-                    type => 'permission',
+                    type => 'author_id',
                     args => {
-                        blog_id => $terms->{blog_id} || 0,
+                        option => 'not_equal',
+                        value  => 0,
                     },
                 });
-                delete $terms->{blog_id};
+            },
+            $pkg . 'pre_load_filtered_list.association' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                $filter->append_item({
+                    type => '_type',
+                });
             },
 
             # website callbacks

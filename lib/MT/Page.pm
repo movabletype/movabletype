@@ -31,6 +31,7 @@ __PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisa
 
 sub list_props {
     return {
+        id            => { base => 'entry.id' },
         text          => { base => 'entry.text' },
         text_more     => { base => 'entry.text_more' },
         title         => { base => 'entry.title' },

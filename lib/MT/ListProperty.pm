@@ -231,7 +231,7 @@ sub list_properties {
 sub can_display {
     my $prop = shift;
     return
-           ( $prop->has('html') || $prop->has('raw') )
+           ( $prop->has('bulk_html') || $prop->has('html') || $prop->has('raw') )
         && ( 'none' ne ( $prop->display || 'optional' ) )
         && $prop->_scope_filter( 'column', @_ );
 }

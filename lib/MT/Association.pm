@@ -51,6 +51,202 @@ sub class_label_plural {
     MT->translate("Associations");
 }
 
+sub list_props {
+    return {
+        user_name => {
+            label => 'User/Group',
+            base => '__common.string',
+            col => 'name',  # this looks up author/group table
+            html => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my $type = $obj->type == USER_BLOG_ROLE() ? 'user' : 'group';
+                my $icon_url = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                my $name = $obj->$type->name;
+                my $edit_link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => $type eq 'user' ? 'author' : 'group',
+                        id      => $obj->$type->id,
+                        blog_id => 0,
+                    },
+                );
+                return qq{
+                    <a href="$edit_link">$name</a>
+                    <span class="target-type $type">
+                        <img src="$icon_url" />
+                    </span>
+                };
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $author_terms = $prop->super(@_);
+                my @authors = MT->model('author')->load(
+                    {
+                        %$author_terms,
+                    },
+                );
+                my @groups = MT->model('group')->load(
+                    {
+                        %$author_terms,
+                    },
+                );
+                return [
+                    { author_id => [ map { $_->id } @authors ] },
+                    '-or',
+                    { group_id => [ map { $_->id } @groups ] },
+                ];
+            },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                sort {
+                    ( $a->type == USER_BLOG_ROLE() ? $a->user->name
+                                                   : $a->group->name )
+                    cmp
+                    ( $b->type == USER_BLOG_ROLE() ? $b->user->name
+                                                   : $b->group->name )
+                } @$objs;
+            },
+            sort => 0,
+        },
+        role_name => {
+            label => 'Role',
+            base => '__common.string',
+            col => 'name',  # this looks up role table
+            html => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my $role = $obj->role;
+                my $name = $role->name;
+                my $edit_link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'role',
+                        id      => $role->id,
+                        blog_id => 0,
+                    },
+                );
+                return qq{
+                    <a href="$edit_link">$name</a>
+                };
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $role_terms = $prop->super(@_);
+                my @roles = MT->model('role')->load(
+                    {
+                        %$role_terms,
+                    },
+                );
+                return {
+                    role_id => [ map { $_->id } @roles ],
+                };
+            },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('role')->join_on(
+                    undef,
+                    {
+                        id => \'= association_role_id',
+                    },
+                    {
+                        sort => 'name',
+                    },
+                );
+                return;
+            },
+        },
+        _type => {
+            view => [],
+            terms => sub {
+               return { type => [ 1, 2 ] };
+            }
+        },
+        type => {
+            base => '__common.single_select',
+            col => 'type',
+            label => 'Type',
+            single_select_options => [
+                { label => 'User', value => 1, },
+                { label => 'Group', value => 2, },
+            ],
+        },
+        blog_name => {
+            label => 'Blog/Website',
+            base => '__common.string',
+            col => 'name',  # this looks up mt_blog.blog_nam column
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs, $app ) = @_;
+                my %blog_ids  = map { $_->blog_id => 1 } @$objs;
+                my @blogs = MT->model('blog')->load({
+                    id => [ keys %blog_ids ], },{
+                    fetchonly => {
+                        id   => 1,
+                        name => 1,
+                }});
+                my %names = map { $_->id => $_->name } @blogs;
+                my @outs;
+                for my $obj ( @$objs ) {
+                    my $name = $names{$obj->blog_id};
+                    my $dashboard_url = $app->uri(
+                        mode => 'dashboard',
+                        args => {
+                            blog_id => $obj->blog_id,
+                        },
+                    );
+                    push @outs, qq{
+                        <a href="$dashboard_url">$name</a>
+                    };
+                }
+                @outs;
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $blog_terms = $prop->super(@_);
+                my @blogs = MT->model('blog')->load(
+                    {
+                        class => '*',
+                        %$blog_terms,
+                    },
+                );
+                return {
+                    blog_id => [ map { $_->id } @blogs ],
+                };
+            },
+        },
+        created_on => {
+            display => 'none',
+            base => '__common.created_on',
+        },
+        modified_on => {
+            display => 'none',
+            base => '__common.modified_on',
+        },
+    };
+}
+
+sub system_filters {
+    return {
+        for_user => {
+            label => 'Associations for User',
+            items => [
+                { type => 'type', args => { value => '1' }, },
+            ],
+        },
+        for_group => {
+            label => 'Associations for Group',
+            items => [
+                { type => 'type', args => { value => '2' }, },
+            ],
+        },
+    };
+}
+
 sub save {
     my $assoc = shift;
     my $res = $assoc->SUPER::save(@_) or return;

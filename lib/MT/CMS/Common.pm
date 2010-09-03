@@ -945,7 +945,7 @@ sub filtered_list {
     my $filter_id = $q->param('id') || $forward_params{saved_id};
     my $blog = $blog_id ? $app->blog : undef;
     my $blog_ids = !$blog         ? undef
-                 : $blog->is_blog ? $blog_id
+                 : $blog->is_blog ? [ $blog_id ]
                  :                  [ $blog->id, map { $_->id } @{$blog->blogs} ];
     my $debug = {};
 
@@ -1035,7 +1035,7 @@ sub filtered_list {
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
     my %load_options = (
         terms => {
-            ( $blog_id == 0 ? () : ( blog_id => $blog_id) ),
+            ( !defined $blog_ids || !scalar @$blog_ids ? () : ( blog_id => $blog_ids ) ),
         },
         args       => {},
         sort_by    => $q->param('sort_by') || '',
@@ -1043,7 +1043,6 @@ sub filtered_list {
         limit      => $limit,
         offset     => $offset,
     );
-
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
 
     my $count = $filter->count_objects(%load_options);

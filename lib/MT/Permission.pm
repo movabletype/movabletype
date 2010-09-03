@@ -57,7 +57,6 @@ sub class_label_plural {
     MT->translate("Permissions");
 }
 
-
 sub user {
     my $perm = shift;
 

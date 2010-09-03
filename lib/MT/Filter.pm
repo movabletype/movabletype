@@ -195,6 +195,7 @@ sub count_objects {
     my $self      = shift;
     my (%options) = @_;
     my ( $terms, $args ) = @options{qw( terms args )};
+
     my $blog_id   = $options{terms}{blog_id};
     my $ds        = $self->object_ds;
     my $setting   = MT->registry( listing_screens => $ds ) || {};
@@ -235,7 +236,6 @@ sub count_objects {
             $terms = [ $terms, @additional_terms ];
         }
     }
-
     if ( !( scalar @grep_items ) ) {
         return $class->count( $terms, $args );
     }

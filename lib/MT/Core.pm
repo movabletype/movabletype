@@ -520,24 +520,65 @@ BEGIN {
                         return !$app->blog || !$app->blog->is_blog;
                     },
                 },
+                current_user => {
+                    label => 'My Items',
+                    display => 'none',
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column( 'author_id' );
+                    #},
+                    terms => sub {
+                        my $app = MT->app or return;
+                        return { author_id => $app->user->id };
+                    },
+                    filter_tmpl => '',
+                    singleton => 1,
+
+                },
+                current_context => {
+                    label => 'This Context Only',
+                    display => 'none',
+                    filter_tmpl => '',
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    $prop->datasource->has_column('blog_id') or return;
+                    #    my $app = MT->app or return;
+                    #    return !$app->blog         ? 1
+                    #         : $app->blog->is_blog ? 0
+                    #         :                       1
+                    #         ;
+                    #},
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args, $load_terms, $load_args) = @_;
+                        my $app = MT->app or return;
+                        $load_terms->{blog_id} = $app->param('blog_id');
+                        return;
+                    },
+                    singleton => 1,
+                },
                 id => {
                     auto      => 1,
                     label     => 'ID',
                     display   => 'optional',
                     view_filter => [],
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( $prop->id );
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column( $prop->id );
+                    #},
                 },
                 label => {
                     auto      => 1,
                     label     => 'Label',
                     display   => 'force',
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( $prop->id );
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column( $prop->id );
+                    #},
                     html => sub {
                         my $prop = shift;
                         my ( $obj, $app ) = @_;
@@ -558,71 +599,37 @@ BEGIN {
                         return qq{<a href="$edit_link">$label</a>};
                     },
                 },
-                current_user => {
-                    label => 'My Items',
-                    display => 'none',
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( 'author_id' );
-                    },
-                    terms => sub {
-                        my $app = MT->app or return;
-                        return { author_id => $app->user->id };
-                    },
-                    filter_tmpl => '',
-                    singleton => 1,
-
-                },
-                current_context => {
-                    label => 'This Context Only',
-                    display => 'none',
-                    filter_tmpl => '',
-                    condition => sub {
-                        my $prop = shift;
-                        $prop->datasource->has_column('blog_id') or return;
-                        my $app = MT->app or return;
-                        return !$app->blog         ? 1
-                             : $app->blog->is_blog ? 0
-                             :                       1
-                             ;
-                    },
-                    terms => sub {
-                        my $prop   = shift;
-                        my ($args, $load_terms, $load_args) = @_;
-                        my $app = MT->app or return;
-                        $load_terms->{blog_id} = $app->param('blog_id');
-                        return;
-                    },
-                    singleton => 1,
-                },
                 created_on => {
                     auto      => 1,
                     label     => 'Created on',
                     display   => 'optional',
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( $prop->id );
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column( $prop->id );
+                    #},
                 },
                 modified_on => {
                     auto      => 1,
                     label     => 'Modified',
                     display   => 'optional',
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( $prop->id );
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column( $prop->id );
+                    #},
                 },
                 author_name => {
                     label => 'Author',
                     order => 500,
                     display   => 'default',
                     base  => '__common.string',
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column('author_id')
-                            || $prop->datasource->has_column('created_by');
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    return $prop->datasource->has_column('author_id')
+                    #        || $prop->datasource->has_column('created_by');
+                    #},
                     raw   => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
@@ -669,11 +676,12 @@ BEGIN {
                     base => '__common.string',
                     label => 'Tag',
                     display => 'none',
-                    condition => sub {
-                        my $prop = shift;
-                        my $ds   = $prop->datasource;
-                        return UNIVERSAL::isa( $ds, 'MT::Taggable' );
-                    },
+                    condition => sub {0},
+                    #condition => sub {
+                    #    my $prop = shift;
+                    #    my $ds   = $prop->datasource;
+                    #    return UNIVERSAL::isa( $ds, 'MT::Taggable' );
+                    #},
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $base_terms, $base_args ) = @_;
@@ -703,32 +711,79 @@ BEGIN {
                         return { id => [ map { $_->object_id } @object_tags ] };
                     },
                 },
+                object_count => {
+                    col_class => 'num',
+                    default_sort_order => 'descend',
+                    condition => sub {0},
+                    ## Override us.
+                    # count_class => '',
+                    # count_col   => '',
+                    # filter_type => '',
+                    # list_screen => '',
+                    raw   => sub {
+                        my ( $prop, $obj ) = @_;
+                        MT->model( $prop->count_class )->count({ $prop->count_col => $obj->id });
+                    },
+                    html_link => sub {
+                        my ( $prop, $obj, $app ) = @_;
+                        return $app->uri(
+                            mode => 'list',
+                            args => {
+                                _type      => $prop->list_screen || $prop->count_class,
+                                blog_id    => 0,
+                                filter     => $prop->filter_type,
+                                filter_val => $obj->id,
+                            },
+                        );
+                    },
+                    bulk_sort => sub {
+                        my ( $prop, $objs ) = @_;
+                        my $iter = MT->model( $prop->count_class )->count_group_by(
+                            undef, {
+                                sort  => 'cnt',
+                                direction => 'descend',
+                                group => [ $prop->count_col, ],
+                            },
+                        );
+                        return @$objs unless $iter;
+                        my @res;
+                        my %obj_map = map { $_->id => $_ } @$objs;
+                        while ( my ( $count, $id ) = $iter->() ) {
+                            next unless $id;
+                            push @res, delete $obj_map{$id} if $obj_map{$id};
+                        }
+                        push @res, values %obj_map;
+                        return reverse @res;
+                    },
+                },
             },
-            website   => '$Core::MT::Website::list_props',
-            blog      => '$Core::MT::Blog::list_props',
-            entry     => '$Core::MT::Entry::list_props',
-            page      => '$Core::MT::Page::list_props',
-            asset     => '$Core::MT::Asset::list_props',
-            category  => '$Core::MT::Category::list_props',
-            folder    => '$Core::MT::Folder::list_props',
-            comment   => '$Core::MT::Comment::list_props',
-            ping      => '$Core::MT::TBPing::list_props',
-            author    => '$Core::MT::Author::list_props',
-            member    => '$Core::MT::Author::member_list_props',
-            commenter => '$Core::MT::Author::commenter_list_props',
-            tag       => '$Core::MT::Tag::list_props',
-            banlist   => '$Core::MT::IPBanList::list_props',
+            website     => '$Core::MT::Website::list_props',
+            blog        => '$Core::MT::Blog::list_props',
+            entry       => '$Core::MT::Entry::list_props',
+            page        => '$Core::MT::Page::list_props',
+            asset       => '$Core::MT::Asset::list_props',
+            category    => '$Core::MT::Category::list_props',
+            folder      => '$Core::MT::Folder::list_props',
+            comment     => '$Core::MT::Comment::list_props',
+            ping        => '$Core::MT::TBPing::list_props',
+            author      => '$Core::MT::Author::list_props',
+            member      => '$Core::MT::Author::member_list_props',
+            commenter   => '$Core::MT::Author::commenter_list_props',
+            tag         => '$Core::MT::Tag::list_props',
+            banlist     => '$Core::MT::IPBanList::list_props',
+            association => '$Core::MT::Association::list_props',
         },
         system_filters => {
-            entry     => '$Core::MT::Entry::system_filters',
-            page      => '$Core::MT::Page::system_filters',
-            comment   => '$Core::MT::Comment::system_filters',
-            ping      => '$Core::MT::TBPing::system_filters',
-            tag       => '$Core::MT::Tag::system_filters',
-            asset     => '$Core::MT::Asset::system_filters',
-            author    => '$Core::MT::Author::system_filters',
-            member    => '$Core::MT::Author::member_system_filters',
-            commenter => '$Core::MT::Author::commenter_system_filters',
+            entry       => '$Core::MT::Entry::system_filters',
+            page        => '$Core::MT::Page::system_filters',
+            comment     => '$Core::MT::Comment::system_filters',
+            ping        => '$Core::MT::TBPing::system_filters',
+            tag         => '$Core::MT::Tag::system_filters',
+            asset       => '$Core::MT::Asset::system_filters',
+            author      => '$Core::MT::Author::system_filters',
+            member      => '$Core::MT::Author::member_system_filters',
+            commenter   => '$Core::MT::Author::commenter_system_filters',
+            association => '$Core::MT::Association::system_filters',
         },
         listing_screens => {
             website => {
@@ -798,12 +853,6 @@ BEGIN {
                 permission   => 'access_to_member_list',
                 view         => 'system',
             },
-            member => {
-                object_label => 'Member',
-                object_type  => 'permission',
-                columns      => [qw( name nickname )],
-                permission   => 'access_to_blog_member_list',
-            },
             commenter => {
                 object_label => 'Commenter',
                 object_type  => 'author',
@@ -812,7 +861,13 @@ BEGIN {
                 condition => sub {
                     return MT->config->SingleCommunity;
                 },
-
+            },
+            member => {
+                object_label => 'Member',
+                object_type  => 'permission',
+                columns      => [qw( name nickname )],
+                permission   => 'access_to_blog_member_list',
+                view         => [ 'blog', 'website' ],
             },
             tag => {
                 object_label => 'Tag',
@@ -826,6 +881,12 @@ BEGIN {
                     return 1 if MT->config('ShowIPInformation');
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
+            },
+            association => {
+                object_label => 'Permission',
+                object_type => 'association',
+                permission => 'access_to_permission_list',
+                columns => [qw( user_name role_name )],
             },
         },
         summaries => {

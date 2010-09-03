@@ -46,6 +46,9 @@ sub list_default_terms {{
 
 sub list_props {
     return {
+        id => { base => '__common.id' },
+        created_on => { base => '__common.created_on' },
+        author_name => { base => '__common.author_name' },
         modified_on => {
             base    => '__common.modified_on',
             display => 'none',
