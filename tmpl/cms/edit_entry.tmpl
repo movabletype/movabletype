@@ -1113,6 +1113,7 @@
 <mt:if name="field_html">
   <mtapp:setting
      id="$field_id"
+     class="sort-enabled"
      label="$label_encoded"
      label_class="$label_class"
      hint="$desc_encoded"
@@ -1126,7 +1127,6 @@
   <mt:if name="field_name" eq="title">
   <mtapp:setting
      id="title"
-     class="sort-disabled"
      label="<__trans phrase="Title">"
      label_class="no-header"
      help_page="entries"
@@ -1138,7 +1138,6 @@
      id="permalink"
      label="Permalink"
      label_class="no-header"
-     class="sort-disabled"
      help_page="entries"
      help_section="permalink">
     <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
@@ -1155,7 +1154,7 @@
 
   <mt:else eq="text">
     <mt:section id="text">
-    <div id="text-field" class="mod field sort-disabled">
+    <div id="text-field" class="mod field">
       <div id="editor">
         <div id="editor-header" class="editor-header" mt:delegate="tab-container">
           <div class="tab selected-tab" mt:command="set-editor-content" mt:tab="content">
@@ -1202,6 +1201,7 @@
     </mt:if>
     <mtapp:setting
        id="tags"
+       class="sort-enabled"
        shown="$show_field"
        label="<__trans phrase="Tags">"
        label_class="top-label"
@@ -1218,6 +1218,7 @@
   <mt:else eq="excerpt">
     <mtapp:setting
        id="excerpt"
+       class="sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
@@ -1229,6 +1230,7 @@
   <mt:else eq="keywords">
     <mtapp:setting
        id="keywords"
+       class="sort-enabled"
        shown="$show_field"
        label="$field_label"
        label_class="top-label"
@@ -1294,7 +1296,7 @@
     });
     jQuery('#sortable').sortable({
         placeholder: 'ui-state-highlight', 
-        items: 'div.field:not(.sort-disabled)'
+        items: 'div.field.sort-enabled',
     });
     jQuery('#sortable').disableSelection();
 </mt:setvarblock>
