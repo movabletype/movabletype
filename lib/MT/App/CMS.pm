@@ -1568,6 +1568,12 @@ sub init_core_callbacks {
             $pkg . 'edit.website'        => "${pfx}Website::edit",
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg . 'save_permission_filter.website' => "${pfx}Website::can_save",
+            $pkg . 'pre_load_filtered_list.website' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                delete $terms->{blog_id};
+                $terms->{class} = 'website';
+            },
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",

@@ -523,11 +523,11 @@ BEGIN {
                 current_user => {
                     label => 'My Items',
                     display => 'none',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column( 'author_id' );
-                    #},
+                    filter_editable => 0,
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( 'author_id' );
+                    },
                     terms => sub {
                         my $app = MT->app or return;
                         return { author_id => $app->user->id };
@@ -540,16 +540,16 @@ BEGIN {
                     label => 'This Context Only',
                     display => 'none',
                     filter_tmpl => '',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    $prop->datasource->has_column('blog_id') or return;
-                    #    my $app = MT->app or return;
-                    #    return !$app->blog         ? 1
-                    #         : $app->blog->is_blog ? 0
-                    #         :                       1
-                    #         ;
-                    #},
+                    filter_editable => 0,
+                    condition => sub {
+                        my $prop = shift;
+                        $prop->datasource->has_column('blog_id') or return;
+                        my $app = MT->app or return;
+                        return !$app->blog         ? 1
+                             : $app->blog->is_blog ? 0
+                             :                       1
+                             ;
+                    },
                     terms => sub {
                         my $prop   = shift;
                         my ($args, $load_terms, $load_args) = @_;
@@ -746,8 +746,11 @@ BEGIN {
                             $args = {
                                 _type      => $prop->list_screen || $prop->count_class,
                                 blog_id    => ($app->blog ? $app->blog->id : 0),
-                                filter     => $prop->filter_type,
-                                filter_val => $obj->id,
+                                ( $prop->has('filter_type')
+                                    ? ( filter => $prop->filter_type,
+                                        filter_val => $obj->id,
+                                      )
+                                    : () ),
                             };
                         }
                         return $app->uri(
@@ -840,7 +843,7 @@ BEGIN {
             website => {
                 object_label => 'Website',
                 columns
-                    => [qw( theme_thumbnail name blog_count page_count comment_count )],
+                    => [qw( name blog_count page_count )],
                 default_sort_key => 'created_on',
             },
             blog => {

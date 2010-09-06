@@ -28,98 +28,70 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        name => {
-            auto => 1,
-            label => 'Name',
+        name          => { base => 'blog.name' },
+        description   => { base => 'blog.description' },
+        entry_count   => { view => [] },
+        page_count    => {
+            base => 'blog.page_count',
             html_link => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'dashboard',
-                    args => {
-                        blog_id => $obj->id,
-                    },
-                );
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $link = $prop->super(@_);
+                $link . '&filter=current_context';
             },
         },
-        description => 'Description',
-        blog_count => {
-            label => 'Blogs',
-            raw   => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( 'blog' )->count({ parent_id => $obj->id });
-            },
+        asset_count   => {
+            base => 'blog.asset_count',
             html_link => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $app->uri(
-                    mode => 'list',
-                    args => {
-                        _type     => 'blog',
-                        blog_id   => $obj->id,
-                        no_filter => 1,
-                    },
-                );
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $link = $prop->super(@_);
+                $link . '&filter=current_context';
             },
-        },
-        page_count => {
-            base  => 'blog.entry_count',
-            label => 'Pages',
-            count_class => 'page',
         },
         comment_count => {
-            base  => 'blog.entry_count',
-            label => 'Comments',
-            count_class => 'comment',
-        },
-        member_count => {
-            ## FIXME : bad link
-            base  => 'blog.entry_count',
-            label => 'Members',
-            count_class => 'permission',
-        },
-        asset_count => {
-            base  => 'blog.entry_count',
-            label => 'Assets',
-            raw   => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( $prop->count_class )->count({ blog_id => $obj->id, class => '*' });
-            },
-            count_class => 'asset',
-        },
-        site_url => {
-            auto  => 1,
-            label => 'Site URL',
+            base => 'blog.comment_count',
             html_link => sub {
-                my ( $prop, $obj, $app ) = @_;
-                return $obj->site_url;
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $link = $prop->super(@_);
+                $link . '&filter=current_context';
             },
         },
-        site_path => 'Site Path',
-        theme_id => {
-            label => 'Theme',
-            display => 'none',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                my $theme = $obj->theme
-                    or return '-';
-                return ref $theme->label ? $theme->label->() : $theme->label;
+        member_count  => {
+            base => 'blog.member_count',
+            html_link => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $link = $prop->super(@_);
+                $link . '&filter=current_context';
             },
         },
-        theme_thumbnail => {
-            label => 'Theme Thumbnail',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                my $theme = $obj->theme
-                    or return '-';
-                my ( $url ) = $theme->thumbnail( size => 'small' );
-                return $url;
+        theme_id      => {
+            base => 'blog.theme_id',
+            single_select_options => sub {
+                my $prop = shift;
+                require MT::Theme;
+                my $themes = MT::Theme->load_all_themes;
+                return [
+                    map {{ label => $_->label, value => $_->id }}
+                    sort { $a->label cmp $b->label }
+                    grep { $_->{class} eq 'website' || $_->{class} eq 'both' }
+                    values %$themes
+                ];
             },
-            html => sub {
-                my ( $prop, $obj ) = @_;
-                my $theme = $obj->theme
-                    or return '-';
-                my ( $url ) = $theme->thumbnail( size => 'small' );
-                return sprintf '<img src="%s" />', $url;
-            },
+        },
+        created_on    => { base => 'blog.created_on' },
+        modified_on   => { base => 'blog.modified_on' },
+        site_url      => { base => 'blog.site_url' },
+        site_path     => { base => 'blog.site_path' },
+        blog_count => {
+            label => 'Blogs',
+            base  => '__common.object_count',
+            count_class => 'blog',
+            count_col   => 'parent_id',
+            filter_type => 'blog_id',
+            list_screen => 'blog',
         },
     };
 }
