@@ -635,27 +635,17 @@
       customizable_fields.push('assets');
       var default_fields = [<mt:loop name="disp_prefs_default_fields" glue=",">'<mt:var name="name" escape="js">'</mt:loop>];
       
-      function savedEntryOptions(c) {
-          var message = '<__trans phrase="Your entry screen preferences have been saved." escape="js">';
-          showMsg(message, 'saved-prefs-msg', 'success');
-      }
-      
-      function saveEntryFieldOptions() {
+      function saveEntryFieldOptions(prefs) {
           var mode = jQuery('#entry_prefs').val();
-          var checked = [];
-          jQuery('input[name=custom_prefs]:checked').each(function(i) {
-              checked.push(this.value);
-          });
-          var custom_prefs = checked.join(',');
           var param = '__mode=save_entry_prefs'
               + '&_type=<mt:var name="object_type">'
               + '&blog_id=<mt:var name="blog_id">'
               + '&entry_prefs=' + mode
               + '&magic_token=<mt:var name="magic_token">';
           if (mode == 'Custom') {
-              param += '&custom_prefs=' + custom_prefs;
+              param += '&custom_prefs=' + prefs;
           }
-          var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param, load: savedEntryOptions };
+          var params = { uri: '<mt:var name="script_url">', method: 'POST', arguments: param };
           TC.Client.call(params);
       }
       
@@ -1286,6 +1276,22 @@
     jQuery('#sortable').sortable({
         placeholder: 'ui-state-highlight', 
         items: 'div.field.sort-enabled',
+        update: function () {
+            var rex = RegExp('(.*)-field$');
+            var data = [ 'title', 'text' ];
+            var order = jQuery('#sortable').sortable('toArray');
+            jQuery(order).each( function() {
+                if ( this.match(rex) ) {
+                    data.push(RegExp.$1);
+                else
+                    data.push(this);
+            });
+            jQuery('div#metadata_fields-field input[name=custom_prefs]:checked').each(function() {
+                data.push(this.value);
+            });
+
+            saveEntryFieldOptions(data.toString());
+        },
     });
     jQuery('#sortable').disableSelection();
 </mt:setvarblock>
