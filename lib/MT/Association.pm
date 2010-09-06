@@ -159,6 +159,24 @@ sub list_props {
                 return;
             },
         },
+        role_id => {
+            auto    => 1,
+            label   => 'Role',
+            display => 'none',
+            filter_editable => 0,
+            args_via_param => sub {
+                my ( $prop, $app ) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
+            label_via_param => sub {
+                my ( $prop, $app ) = @_;
+                my $role = MT->model('role')->load( $app->param('filter_val') );
+                return MT->translate(
+                    'Associations with role: [_1]',
+                    $role->name,
+                );
+            },
+        },
         _type => {
             view => [],
             terms => sub {

@@ -712,6 +712,7 @@ BEGIN {
                     },
                 },
                 object_count => {
+                    base => '__common.integer',
                     col_class => 'num',
                     default_sort_order => 'descend',
                     condition => sub {0},
@@ -755,6 +756,32 @@ BEGIN {
                         push @res, values %obj_map;
                         return reverse @res;
                     },
+                    terms => 0,
+                    grep => sub {
+                        my $prop = shift;
+                        my ( $args, $objs ) = @_;
+                        my $iter = MT->model( $prop->count_class )->count_group_by(
+                            undef, {
+                                direction => 'descend',
+                                group => [ $prop->count_col, ],
+                            },
+                        );
+                        my %map;
+                        while ( my ( $count, $id ) = $iter->() ) {
+                            $map{$id} = $count;
+                        }
+                        my $op = $args->{option} eq 'equal'         ? '=='
+                               : $args->{option} eq 'not_equal'     ? '!='
+                               : $args->{option} eq 'greater_than'  ? '>'
+                               : $args->{option} eq 'greater_equal' ? '>='
+                               : $args->{option} eq 'less_than'     ? '<'
+                               : $args->{option} eq 'less_equal'    ? '<='
+                               :                                      '';
+                        return @$objs unless $op;
+                        my $val = $args->{value};
+                        my $sub = eval " sub { $val $op shift } ";
+                        return grep { $sub->($map{$_->id}) } @$objs;
+                    },
                 },
             },
             website     => '$Core::MT::Website::list_props',
@@ -772,6 +799,8 @@ BEGIN {
             tag         => '$Core::MT::Tag::list_props',
             banlist     => '$Core::MT::IPBanList::list_props',
             association => '$Core::MT::Association::list_props',
+            role        => '$Core::MT::Role::list_props',
+
         },
         system_filters => {
             entry       => '$Core::MT::Entry::system_filters',
@@ -887,6 +916,12 @@ BEGIN {
                 object_type => 'association',
                 permission => 'access_to_permission_list',
                 columns => [qw( user_name role_name )],
+            },
+            role => {
+                object_label => 'Role',
+                object_type => 'role',
+                permission => 'access_to_role_list',
+                columns => [qw( name association_conut )],
             },
         },
         summaries => {

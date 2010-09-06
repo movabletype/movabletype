@@ -45,6 +45,41 @@ sub class_label_plural {
     return MT->translate('Roles');
 }
 
+sub list_props {
+    return {
+        name => {
+            auto  => 1,
+            label => 'Name',
+            html_link => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'role',
+                        id      => $obj->id,
+                        blog_id => 0,
+                });
+            },
+        },
+        created_on => {
+            base => '__common.created_on',
+        },
+        association_count => {
+            base        => '__common.object_count',
+            label       => 'Associations',
+            count_class => 'association',
+            count_col   => 'role_id',
+            filter_type => 'role_id',
+        },
+        description => {
+            auto => 1,
+            label => 'Desctription',
+            display => 'none',
+        },
+    };
+}
+
 sub save {
     my $role = shift;
     my $res = $role->SUPER::save(@_) or return;

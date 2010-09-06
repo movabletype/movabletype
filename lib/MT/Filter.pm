@@ -166,7 +166,7 @@ sub load_objects {
     }
 
     for my $item (@grep_items) {
-        @objs = grep { $item->{prop}->grep( $item->{args}, $_ ) } @objs;
+        @objs = $item->{prop}->grep( $item->{args}, \@objs );
     }
 
     if ( $sort_prop && $sort_prop->has('bulk_sort') ) {
@@ -244,7 +244,7 @@ sub count_objects {
 
     for my $item (@items) {
         my $coderef = $item->{prop}->has('grep') or next;
-        @objs = grep { $item->{prop}->grep( $item->{args}, $_ ) } @objs;
+        @objs = $item->{prop}->grep( $item->{args}, \@objs );
     }
 
     return scalar @objs;
