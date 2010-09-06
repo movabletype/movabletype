@@ -2650,7 +2650,7 @@ sub pre_run {
 
     $app->{breadcrumbs} = [];
 
-    if ( $MT::DebugMode && 4 ) {
+    if ( $MT::DebugMode & 4 ) {
         $Data::ObjectDriver::PROFILE = 1;
         Data::ObjectDriver->profiler->reset;
     }
