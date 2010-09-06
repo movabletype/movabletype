@@ -198,3 +198,9 @@ tfoot .col.head{
     right: 5px;
     top: 5px;
 }
+
+/* - Asset Preview */
+.col .asset-preview {
+    display: none;
+    margin-top: 10px;
+}

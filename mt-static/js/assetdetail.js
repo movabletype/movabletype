@@ -127,7 +127,6 @@ function showPage(id) {
     /* display popup panel showing details of selected asset */
     DOM.addClassName( detailRowClass, 'selected' );
     var detail = getByID("asset-" + id + "-preview");
-    var detail_inner = getByID("asset-" + id + "-preview-inner");
     var asset = assets[id];
     if (!asset) {
         var detail_json = getByID("asset-" + id + "-json");
@@ -137,8 +136,6 @@ function showPage(id) {
         assets[id] = asset;
     }
 
-    var close = trans('Close');
-    var close_link = "<a href=\"javascript:void(0)\" onclick=\"toggleAssetDetails('" + id + "'); notOpened('" + id + "');\" class=\"close-preview-link\"><span>" + close + "</span>&nbsp;</a>";
     var preview;
     if (asset.preview_url) {
         preview = "<img src=\"" + asset.preview_url + "\" class=\"preview\" />";
@@ -162,25 +159,21 @@ function showPage(id) {
         + "<a href=\"" + asset.url + "\" target=\"view_uploaded\">" + clickToSee + "</a>"
         + "</div>";
     }
+    var labelDims = trans('Dimensions');
     var metadata;
     if (asset['image_dimensions']) {
-        metadata = "<div class=\"asset-preview-meta\">" + asset['image_dimensions']
-            + ( asset['file_size'] ? " - " + asset['file_size'] : "") + "</div>";
-    } else if (asset['file_size']) {
-        metadata = asset['file_size'];
+        metadata = "<li class=\"asset-preview-meta\"><strong>" + labelDims + "</strong>: "
+            + asset['image_dimensions']
+            + "</li>";
     } else {
         metadata = ""
     };
-    var label;
-    if (asset['Name']) {
-        label = asset['Name'];
-    } else {
-        label = asset['name'];
-    };
-    detail_inner.innerHTML = close_link
-        + "<div class=\"asset-preview-image\">" + preview + "</div>"
-        + "<div class=\"asset-preview-title\">" + label + "</div>"
-        + metadata;
+    var labelFileName = trans('File Name');
+    detail.innerHTML = "<div class=\"asset-preview-image picture small\">" + preview + "</div>"
+        + "<ul>"
+        + "<li class=\"asset-preview-title\"><strong>" + labelFileName + "</strong>: " + asset['file_name'] + "</li>"
+        + metadata
+        + "<ul>";
     show("asset-" + id + "-preview");
     return false;
 }

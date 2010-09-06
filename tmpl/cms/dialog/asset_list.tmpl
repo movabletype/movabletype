@@ -133,14 +133,12 @@
                 <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
               </td>
               <td class="col asset-label primary-col">
-              <mt:if name="has_thumbnail">
-                <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
-              <mt:else>
-                <mt:var name="label" escape="html">
-              </mt:if>
-                <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview">
-                  <div id="asset-<mt:var name="id" escape="html">-preview-inner" class="asset-preview-inner"></div>
-                </div>
+                <mt:if name="has_thumbnail">
+                  <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
+                  <div id="asset-<mt:var name="id" escape="html">-preview" class="asset-preview"></div>
+                <mt:else>
+                  <mt:var name="label" escape="html">
+                </mt:if>
               </td>
               <td class="col info num">
                 <span class="detail">

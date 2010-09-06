@@ -1561,60 +1561,6 @@ fieldset {
     display: none;
 }
 
-.listing .asset-preview {
-    display: none;
-    position: relative;
-    top: -45px;
-    left: 100px;
-}
-
-.listing .asset-preview-inner {
-    margin: 10px auto;
-    overflow: hidden;
-}
-
-.listing tbody tr td .asset-preview,
-.listing tbody tr.selected td .asset-preview {
-    color: #fff;
-}
-
-.listing .asset-preview .asset-preview-inner a:link,
-.listing .asset-preview .asset-preview-inner a:visited,
-.listing .asset-preview .asset-preview-inner a:hover,
-.listing .asset-preview .asset-preview-inner a:active {
-    color: #33789c;
-    text-decoration: none;
-}
-
-.listing .asset-preview .close-preview-link {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: block;
-    width: 9px;
-    height: 9px;
-    margin: 5px 5px 0 0;
-    background: url(../images/status_icons/invert-close-disabled.gif) no-repeat;
-    color: #9ea1a3;
-    text-decoration: none;
-}
-.listing .asset-preview .close-preview-link span {
-    display: none;
-}
-
-.listing .asset-preview-image {
-    overflow: hidden;
-    margin-bottom: 5px;
-}
-
-.listing .asset-preview-title {
-    overflow: hidden;
-    color: #c2e3f3;
-    line-height: 1.3;
-    /*font-size: 16px;*/
-    font-weight: bold;
-}
-
 .asset-icon {
     height: 146px;
     border: 1px solid #d7e3f5;

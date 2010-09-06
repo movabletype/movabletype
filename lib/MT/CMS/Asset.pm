@@ -200,7 +200,7 @@ sub dialog_list_asset {
     }
 
     my $hasher = build_asset_hasher( $app,
-        PreviewWidth => 240, PreviewHeight => 240 );
+        PreviewWidth => 120, PreviewHeight => 120 );
 
     if ($class_filter) {
         my $asset_pkg = MT::Asset->class_handler($class_filter);
@@ -704,6 +704,7 @@ sub build_asset_hasher {
         else {
             $row->{file_is_missing} = 1 if $file_path;
         }
+        $meta->{file_name} = $row->{file_name};
         $row->{file_label} = $row->{label} = $obj->label || $row->{file_name} || $app->translate('Untitled');
 
         if ($obj->has_thumbnail) { 
