@@ -36,7 +36,7 @@
     text-align: center;
 }
 .text.date {
-    width: 8em;
+    width: 7.5em;
 }
 .text.time,
 .text.min {
@@ -74,6 +74,11 @@ select {
     box-shadow: 0 1px 0 #f3f3f3;
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
+}
+
+.multiple-selection li {
+    display: inline-block;
+    margin: 10px 15px 0 0;
 }
 
 #notification-listing-table input[type="text"], 

@@ -2,7 +2,7 @@
 
 <mt:setvarblock name="display_options">
 <mt:setvar name="show_display_options_link" value="1">
-<div id="display-options-detail" class="unit size1of1 display-options-detail detail">
+<div id="display-options-detail" class="display-options-detail detail">
 <mtapp:setting
    id="per_page"
    label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
@@ -19,7 +19,7 @@
    id="display_columns"
    label="<__trans phrase="Column">"
    label_class="top-label">
-  <ul class="mod" id="disp_cols">
+  <ul id="disp_cols" class="multiple-selection">
   <mt:loop name="list_columns">
     <li class="<mt:if name="force_display"> hidden</mt:if>">
       <input

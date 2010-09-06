@@ -3258,36 +3258,32 @@ div.template-group-content.active {
     margin-left: 9em;
 }
 
+
 /* - Display Optins */
-#display-options-widget {
-    clear: both;
-    top: 100px;
-    right: 20px;
-    z-index: 99998;
-    width: 250px;
-    border: 8px solid #7b7c7d;
-    background-color: #fff;
-    text-align: left;
-    -moz-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    -webkit-border-radius: 5px;
+.display-options {
+    margin-top: -20px;
+}
+.display-options .toggle-link {
     border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.display-options.active .toggle-link {
+    background-color: #c0c6c9;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    -moz-border-radius: 5px 5px 0 0;
+    color: #fff;
+    text-decoration: none;
+}
+.display-options-detail {
+    display: none;
+    padding: 10px 10px 0;
+    border: 1px solid #c0c6c9;
+    border-radius: 5px;
+    border-top-right-radius: 0;
+    -moz-border-radius: 5px 0 5px 5px;
 }
 
-#display-options-widget .widget-header {
-    background: transparent;
-    border: 0;
-}
-
-#display-options-widget .widget-header .widget-label { 
-    /*font-size: 12px;*/
-    text-shadow: none;
-}
-
-#display-options-widget .actions-bar { 
-    text-align: right;
-    padding: 0;
-}
 
 /* -- Asset Option */
 #asset_details { 

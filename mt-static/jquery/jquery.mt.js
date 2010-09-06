@@ -379,40 +379,6 @@ $.mtQuickFilter = function() {
 };
 
 /*
- * mtDisplayOptions
- *
- * Usage:
- *   jQuery.mtDisplayOptions();
- *
- */
-$.mtDisplayOptions = function() {
-    $('div#display-options-widget').css('position', 'absolute').hide();
-    // for ie6 tweaks
-    if (!$.support.style && !$.support.objectAll) {
-        if ($.fn.bgiframe) $('div#display-options-widget').bgiframe();
-    }
-
-    $('a.display-options-link').click(function() {
-        $('a.display-options-link').toggleClass('display-options-link-open');
-        $('div#display-options-widget').toggle();
-        return false;
-    });
-
-    $('button.close-display-options').click(function(event) {
-        $('a.display-options-link').removeClass('display-options-link-open');
-        $('div#display-options-widget').hide();
-        return false;
-    });
-
-    $(document).click(function(event) {
-        if ($(event.target).parents('#display-options-widget').length == 0) {
-            $('a.display-options-link').removeClass('display-options-link-open');
-            $('div#display-options-widget').hide();
-        }
-    });
-};
-
-/*
  * mtDialog
  *
  * Usage:
