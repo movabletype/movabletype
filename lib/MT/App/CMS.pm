@@ -1582,7 +1582,7 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.blog' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
-                $terms->{parent_id} = delete $terms->{blog_id};
+                $terms->{parent_id} = delete $terms->{blog_id} if $terms->{blog_id};
             },
 
             # folder callbacks

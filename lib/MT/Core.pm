@@ -723,24 +723,46 @@ BEGIN {
                     # list_screen => '',
                     raw   => sub {
                         my ( $prop, $obj ) = @_;
-                        MT->model( $prop->count_class )->count({ $prop->count_col => $obj->id });
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
+                        MT->model( $prop->count_class )->count(
+                            {
+                                %$count_terms,
+                                $prop->count_col => $obj->id
+                            },
+                            $count_args,
+                        );
                     },
                     html_link => sub {
                         my ( $prop, $obj, $app ) = @_;
-                        return $app->uri(
-                            mode => 'list',
-                            args => {
+                        my $args;
+                        if ( $prop->filter_type eq 'blog_id' ) {
+                            $args = {
                                 _type      => $prop->list_screen || $prop->count_class,
-                                blog_id    => 0,
+                                blog_id    => $obj->id,
+                            };
+                        }
+                        else {
+                            $args = {
+                                _type      => $prop->list_screen || $prop->count_class,
+                                blog_id    => ($app->blog ? $app->blog->id : 0),
                                 filter     => $prop->filter_type,
                                 filter_val => $obj->id,
-                            },
+                            };
+                        }
+                        return $app->uri(
+                            mode => 'list',
+                            args => $args,
                         );
                     },
                     bulk_sort => sub {
                         my ( $prop, $objs ) = @_;
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
                         my $iter = MT->model( $prop->count_class )->count_group_by(
-                            undef, {
+                            $count_terms,
+                            {
+                                %$count_args,
                                 sort  => 'cnt',
                                 direction => 'descend',
                                 group => [ $prop->count_col, ],
@@ -824,7 +846,8 @@ BEGIN {
             blog => {
                 object_label => 'Blog',
                 columns
-                    => [qw( theme_thumbnail name parent_website entry_count page_count comment_count )],
+                    => [qw( name entry_count page_count )],
+                primary => 'name',
                 default_sort_key => 'created_on',
             },
             entry => {
