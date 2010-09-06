@@ -1285,14 +1285,20 @@ sub core_menus {
         'settings:role' => {
             label             => "Roles",
             order             => 300,
-            mode              => "list_role",
+            mode              => "list",
+            args              => {
+                _type => "role",
+            },
             system_permission => 'administer',
             view              => "system",
         },
         'settings:association' => {
             label             => "Permissions",
             order             => 400,
-            mode              => "list_association",
+            mode              => "list",
+            args              => {
+                _type => "association",
+            },
             system_permission => 'administer',
             view              => "system",
         },

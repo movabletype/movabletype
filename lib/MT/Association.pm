@@ -166,9 +166,10 @@ sub list_props {
             }
         },
         type => {
-            base => '__common.single_select',
-            col => 'type',
-            label => 'Type',
+            base    => '__common.single_select',
+            display => 'none',
+            col     => 'type',
+            label   => 'Type',
             single_select_options => [
                 { label => 'User', value => 1, },
                 { label => 'Group', value => 2, },
@@ -220,7 +221,6 @@ sub list_props {
             },
         },
         created_on => {
-            display => 'none',
             base => '__common.created_on',
         },
         modified_on => {
