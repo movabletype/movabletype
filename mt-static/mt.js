@@ -1298,26 +1298,26 @@ Pager = new Class(Object, {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.first(e) };
-                link.className = 'start';
-                link.innerHTML = '<em>&lt;&lt;</em>&nbsp;';
+                link.className = 'pagenav start';
+                link.innerHTML = '&laquo; ' + trans('First');
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.className = 'start-disabled';
-                txt.innerHTML = '<em>&lt;&lt;</em>&nbsp;';
+                txt.className = 'pagenav start disabled';
+                txt.innerHTML = '&laquo; ' + trans('First');
                 this.element.appendChild(txt);
             }
             if (this.previousOffset() != null) {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.previous(e) };
-                link.className = 'to-start';
-                link.innerHTML = '<em>&lt;</em>&nbsp;';
+                link.className = 'pagenav to-start';
+                link.innerHTML = '&lsaquo; ' + trans('Prev');
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.className = 'to-start-disabled';
-                txt.innerHTML = '<em>&lt;</em>&nbsp;';
+                txt.className = 'pagenav to-start disabled';
+                txt.innerHTML = '&lsaquo; ' + trans('Prev');
                 this.element.appendChild(txt);
             }
             var showing = doc.createElement('span');
@@ -1331,26 +1331,26 @@ Pager = new Class(Object, {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.next(e) };
-                link.className = 'to-end';
-                link.innerHTML = '&nbsp;<em>&gt;</em>';
+                link.className = 'pagenav to-end';
+                link.innerHTML = trans('Next') + ' &rsaquo;';
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.className = 'to-end-disabled';
-                txt.innerHTML = '&nbsp;<em>&gt;</em>';
+                txt.className = 'pagenav to-end disabled';
+                txt.innerHTML = trans('Next') + ' &rsaquo;';
                 this.element.appendChild(txt);
             }
             if (this.lastOffset() != null) {
                 var link = doc.createElement('a');
                 link.href = 'javascript:void(0)';
                 link.onclick = function(e) { return self.last(e) };
-                link.className = 'end';
-                link.innerHTML = '&nbsp;<em>&gt;&gt;</em>';
+                link.className = 'pagenav end';
+                link.innerHTML = trans('Last') + ' &raquo;';
                 this.element.appendChild(link);
             } else {
                 var txt = doc.createElement('span');
-                txt.className = 'end-disabled';
-                txt.innerHTML = '&nbsp;<em>&gt;&gt;</em>';
+                txt.className = 'pagenav end disabled';
+                txt.innerHTML = trans('Last') + ' &raquo;';
                 this.element.appendChild(txt);
             }
         } else {

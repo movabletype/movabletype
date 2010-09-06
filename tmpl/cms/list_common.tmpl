@@ -55,9 +55,11 @@
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
     
       <div class="actions-bar">
-        <mt:var name="button_actions">
-        <mt:include name="include/itemset_action_widget.tmpl">
-        <div class="pagenav"></div>
+        <div class="list-actions">
+          <mt:var name="button_actions">
+          <mt:include name="include/itemset_action_widget.tmpl">
+        </div>
+        <div class="pagination"></div>
       </div>
     
       <div id="filter" class="filter-block">
@@ -100,7 +102,7 @@
       <div class="actions-bar">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
-        <div class="pagenav"></div>
+        <div class="pagination"></div>
       </div>
 
     </form>
@@ -397,7 +399,7 @@ function saveChecked(page) {
 }
 
 function renderPagination(count, limit, page, last, total) {
-  var $e = jQuery('.pagenav').empty();
+  var $e = jQuery('.pagination').empty();
   if (count == 0) {
     return;
   }
@@ -416,39 +418,39 @@ function renderPagination(count, limit, page, last, total) {
     }
   }
   if (usefirst) {
-    $e.append('<span class="start"><a href="#" class="first">&lt;&lt;First</a></span> ')
-      .append('<span class="to-start"><a href="#" class="prev">&lt;Prev</a></span> ');
+    $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First"></a>')
+      .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev"></a>');
   } else {
-    $e.append('<span class="start disabled">&lt;&lt;First</span> ')
-      .append('<span class="to-start disabled">&lt;Prev</span> ');
+    $e.append('<span class="pagenav start disabled">&laquo; <__trans phrase="First"></span>')
+      .append('<span class="pagenav to-start disabled">&lsaquo; <__trans phrase="Prev"></span>');
   }
   var end = (page == last) ? total : start+limit-1;
   var page_status = trans('[_1]-[_2] of [_3]', start, end, total);
 
-  $e.append('<span class="current-row">'+page_status+'</span>')
+  $e.append('<span class="current-rows">'+page_status+'</span>')
   if (uselast) {
-    $e.append(' <span class="to-last"><a href="#" class="next">Next&gt;</a></span>')
-      .append(' <span class="last"><a href="#" class="last">Last&gt;&gt;</a></span>');
+    $e.append('<a href="#" class="pagenav to-end"><__trans phrase="Next"> &rsaquo;</a>')
+      .append('<a href="#" class="pagenav end"><__trans phrase="Last"> &raquo;</a>');
   } else {
-    $e.append(' <span class="to-last disabled">Next&gt;</span>')
-      .append(' <span class="last disabled">Last&gt;&gt;</span>');
+    $e.append('<span class="pagenav to-end disabled"><__trans phrase="Next"> &rsaquo;</span>')
+      .append('<span class="pagenav end disabled"><__trans phrase="Last"> &raquo;</span>');
   }
-  jQuery('a.first').click(function() {
+  jQuery('a.start').click(function() {
     saveChecked(page);
     renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
     return false;
   });
-  jQuery('a.prev').click(function() {
+  jQuery('a.to-start').click(function() {
     saveChecked(page);
     renderList('filtered_list', cols, vals, jQuery('#row').val(), page-1);
     return false;
   });
-  jQuery('a.next').click(function() {
+  jQuery('a.to-end').click(function() {
     saveChecked(page);
     renderList('filtered_list', cols, vals, jQuery('#row').val(), page+1);
     return false;
   });
-  jQuery('a.last').click(function() {
+  jQuery('a.end').click(function() {
     saveChecked(page);
     renderList('filtered_list', cols, vals, jQuery('#row').val(), last);
     return false;

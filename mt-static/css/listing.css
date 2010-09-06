@@ -108,14 +108,24 @@ tfoot .col.head{
 }
 
 
-/* -- Page Navigation */
-.pagenav {
-    float: right;
-    display: inline-block;
-    vertical-align: middle;
+/* -- List Actions */ 
+.list-actions {
+    float: left;
 }
 
-.current-row {
+/* -- Page Navigation */
+.pagination {
+    float: right;
+    height: 22px;
+    line-height: 22px;
+    font-family: Arial, sans-serif;
+    vertical-align: middle;
+}
+.pagenav, 
+.current-rows {
+    margin: 0 0.25em;
+}
+.current-rows {
     font-weight: bold;
 }
 

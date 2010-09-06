@@ -129,7 +129,9 @@
           <mt:loop name="object_loop">
             <tr id="asset-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
               <td class="col cb"><input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" /><input type="radio" name="id" value="<mt:var name="id" escape="html">" class="select" id="asset-radio-<mt:var name="id" escape="html">" /></td>
-              <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>"><img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" /></td>
+              <td class="col si status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if>">
+                <img src="<mt:var name="static_uri">images/spacer.gif" <mt:if name="file_is_missing">alt="<__trans phrase="Pending">"<mt:else>alt="<__trans phrase="Published">"</mt:if> width="9" height="9" />
+              </td>
               <td class="col asset-label primary-col">
               <mt:if name="has_thumbnail">
                 <a href="javascript:void(0)" onclick="return toggleAssetDetails('<mt:var name="id" escape="js">');" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
@@ -155,7 +157,9 @@
   <mt:unless name="json">
         </table>
       </form>
-      <div class="pagination"></div>
+      <div class="actions-bar">
+        <div class="pagination"></div>
+      </div>
     </div>
   
     <div class="actions-bar">

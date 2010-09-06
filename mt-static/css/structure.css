@@ -1015,7 +1015,7 @@ fieldset {
 
 /* - Actions Bar */
 .actions-bar { 
-    position: relative;
+    overflow: auto;
 }
 .actions-bar-bottom { 
     margin-top: 50px;
