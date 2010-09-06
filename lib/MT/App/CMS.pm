@@ -3132,27 +3132,28 @@ sub _entry_prefs_from_params {
     my $q        = $app->param;
     my $disp     = $q->param('entry_prefs');
     my %fields;
+    my $prefs = '';
     if ( $disp && lc $disp ne 'custom' ) {
         $fields{$disp} = 1;
     }
-    else {
-        $fields{$_} = 1 foreach $q->param( $prefix . 'custom_prefs' );
-    }
-    if ( my $body_height = $q->param('text_height') ) {
-        $fields{'body'} = $body_height;
-    }
-    my $prefs = '';
-    foreach ( keys %fields ) {
-        $prefs .= ',' if $prefs ne '';
-        $prefs .= $_;
-        $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
-    }
-    if ( $disp && lc $disp eq 'custom' ) {
+    elsif ( $disp && lc $disp eq 'custom' ) {
         my @fields = split /,/, $q->param( $prefix . 'custom_prefs' );
         foreach (@fields) {
             $prefs .= ',' if $prefs ne '';
             $prefs .= $_;
         }
+    }
+    else {
+        $fields{$_} = 1 foreach $q->param( $prefix . 'custom_prefs' );
+    }
+
+    if ( my $body_height = $q->param('text_height') ) {
+        $fields{'body'} = $body_height;
+    }
+    foreach ( keys %fields ) {
+        $prefs .= ',' if $prefs ne '';
+        $prefs .= $_;
+        $prefs .= ':' . $fields{$_} if $fields{$_} > 1;
     }
     $prefs .= '|' . $q->param('bar_position');
     $prefs;

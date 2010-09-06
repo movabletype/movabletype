@@ -718,95 +718,21 @@
       
       function setDefaultFieldGroup() {
           var i, j, selected_fields, disable_fields, field_object;
-       
-          // set checkbox data based on which group was selected
-          selected_fields = default_fields;
-          var bar_position = document.getElementById('bar_position_bottom');
-          if (bar_position) {
-              bar_position.checked = true;
-              setBarPosition(bar_position);
-          }
-      
-          // uncheck all the checkboxes
+
           for (i = 0; i < customizable_fields.length; i++) {
-              field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
-              if (field_object) field_object.checked = false;
-              var div = TC.elementOrId(customizable_fields[i] + '-field');
-              if (div)
-                  TC.addClassName(div, 'hidden');
-          }
-      
-          // check only the checkboxes in the current set
-          if (selected_fields) {
-              for (i = 0; i < selected_fields.length; i++) {
-                  for (j = 0; j < customizable_fields.length; j++) {
-                      if (selected_fields[i] == customizable_fields[j]) {
-                          field_object = TC.elementOrId("custom-prefs-"+customizable_fields[j]);
-                          var hide = true;
-                          if (field_object) {
-                              hide = false;
-                              field_object.checked = true;
-                          }
-                          var div = TC.elementOrId(customizable_fields[j] + '-field');
-                          if (div) {
-                              if (hide)
-                                  TC.addClassName(div, 'hidden');
-                              else
-                                  TC.removeClassName(div, 'hidden');
-                          }
-                      }
-                  }
+              val = customizable_fields[i];
+              if ( jQuery.inArray( val, default_fields ) > -1 ) {
+                  jQuery('#custom-prefs-'+val).attr('checked', true);
+                  jQuery('div#'+val+'-field').removeClass('hidden');
+                  jQuery('div#'+val+'-field').show();
+              } else {
+                  jQuery('#custom-prefs-'+val).attr('checked', false);
+                  jQuery('div#'+val+'-field').addClass('hidden');
+                  jQuery('div#'+val+'-field').hide();
               }
-              setCustomFields();
-          }
-      
-          return false;
-      }
-      
-      var pre_sortable_node;
-      function setCustomFields(args) {
-          var i = 0;
-      
-          if (!pre_sortable_node)
-              pre_sortable_node = TC.elementOrId(customizable_fields[0] + "-field").previousSibling;
-      
-          if (args && args['order']) {
-              var order = args['order'];
-              for (var i = order.length - 1; i >= 0; i--) {
-                  var el = TC.elementOrId(customizable_fields[order[i]] + "-field");
-                  el.parentNode.removeChild(el);
-                  if (pre_sortable_node.nextSibling)
-                      pre_sortable_node.parentNode.insertBefore(el, pre_sortable_node.nextSibling);
-                  else
-                      pre_sortable_node.parentNode.appendChild(el);
-              }
-          }
-      
-          // we loop over all customizable fields here (which includes
-          // all the metadata fields). we want to hide the metadata (or
-          // other fieldset, if we grow another customizable fieldset)
-          // from view if all fields within it are hidden. alternatively,
-          // if the user enables a field, the fieldset should be enabled.
-      
-          // add only the fields which are currently checked and enabled
-          for (i = 0; i < customizable_fields.length; i++) {
-              var hide = true;
-              var field_object = TC.elementOrId("custom-prefs-"+customizable_fields[i]);
-      
-              if (field_object && field_object.checked) {
-                  hide = false;
-              }
-              var div = TC.elementOrId(customizable_fields[i] + '-field');
-              if (div) {
-                  if (hide)
-                      TC.addClassName(div, 'hidden');
-                  else
-                      TC.removeClassName(div, 'hidden');
-              }
-          }
-      
-          var entry_prefs = getByID('entry_prefs');
-          entry_prefs.value = 'Custom';
+          };
+
+          sendEntryPrefs();
       
           return false;
       }
@@ -982,6 +908,26 @@
       function listPreviousPings () {
           window.open('<mt:var name="script_url">?__mode=pinged_urls&entry_id=<mt:var name="id" escape="html">&blog_id=<mt:var name="blog_id" escape="html">', 'urls', 'width=400,height=400,resizable=yes,scrollbars=yes');
       }
+
+      function sendEntryPrefs () {
+          var rex = RegExp('(.*)-field$');
+          var data = [ 'title', 'text' ];
+          var order = jQuery('#sortable').sortable('toArray');
+          jQuery(order).each( function() {
+              if ( jQuery('div#'+this).css('display') != 'none' ) {
+                  if ( this.match(rex) )
+                      data.push(RegExp.$1);
+                  else
+                      data.push(this);
+              }
+          });
+          jQuery('div#metadata_fields-field input[name=custom_prefs]:checked').each(function() {
+              data.push(this.value);
+          });
+
+          saveEntryFieldOptions(data.toString());
+      }
+
     /* ]]> */
   </script>
 </mt:setvarblock>
@@ -1006,7 +952,7 @@
      label_class="display-options">
     <ul id="entry-pref-field-list" class="multiple-selection">
     <mt:loop name="field_loop">
-      <mt:unless name="system_field"><mt:unless name="lock_field"><li class="dbx-box"><label class="dbx-handle"><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><li<mt:if name="use_field"> class="dbx-box"</mt:if>><label<mt:if name="use_field"> class="dbx-handle"</mt:if>><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" onclick="setCustomFields(); return true" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
+      <mt:unless name="system_field"><mt:unless name="lock_field"><li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li><mt:else><label><input type="checkbox" name="custom_prefs" id="custom-prefs-<$mt:var name="field_id" escape="html"$>" value="<$mt:var name="field_name" escape="html"$>" <mt:if name="lock_field"><mt:if name="show_field"> checked="checked"</mt:if> disabled="disabled"<mt:elseif name="show_field"> checked="checked"</mt:if> class="cb" /> <$mt:var name="field_label" escape="html"$></label></li></mt:unless></mt:unless>
     </mt:loop>
     </ul>
   </mtapp:setting>
@@ -1017,10 +963,10 @@
      label_class="display-options">
     <ul class="multiple-selection">
     <mt:if name="object_type" ne="page">
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Categories"></label></li>
+      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-category" value="category"<mt:if name="disp_prefs_show_category"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Categories"></label></li>
     </mt:if>
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></label></li>
-      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets" onclick="setCustomFields(); return true"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
+      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-feedback" value="feedback"<mt:if name="disp_prefs_show_feedback"> checked="checked"</mt:if> class="cb" /> <__trans phrase="Comments"></label></li>
+      <li><label><input type="checkbox" name="custom_prefs" id="custom-prefs-assets" value="assets"<mt:if name="disp_prefs_show_assets"> checked="checked"</mt:if> class="cb" /> <__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></label></li>
     </ul>
   </mtapp:setting>
 
@@ -1277,24 +1223,24 @@
         placeholder: 'ui-state-highlight', 
         items: 'div.field.sort-enabled',
         update: function () {
-            var rex = RegExp('(.*)-field$');
-            var data = [ 'title', 'text' ];
-            var order = jQuery('#sortable').sortable('toArray');
-            jQuery(order).each( function() {
-                if ( this.match(rex) ) {
-                    data.push(RegExp.$1);
-                }
-                else
-                    data.push(this);
-            });
-            jQuery('div#metadata_fields-field input[name=custom_prefs]:checked').each(function() {
-                data.push(this.value);
-            });
-
-            saveEntryFieldOptions(data.toString());
+            sendEntryPrefs();
         },
     });
     jQuery('#sortable').disableSelection();
+
+    jQuery('div#display-options-detail :checkbox').click(function() {
+        var $field_block = jQuery('div#'+this.value+'-field');                 
+        if ( this.checked ) {
+            $field_block.removeClass('hidden');
+            $field_block.show();
+        } else {
+            $field_block.addClass('hidden');
+            $field_block.hide();
+        }
+        jQuery('#entry_prefs').val('Custom');
+        sendEntryPrefs();
+    });
+
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl" id="footer_include">
   
