@@ -33,6 +33,9 @@ sub contents_label_plural {
 
 sub list_props {
     return {
+        label  => {
+            base => 'category.label',
+        },
         parent => {
             base => 'category.parent',
         },
