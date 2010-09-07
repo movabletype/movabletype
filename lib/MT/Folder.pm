@@ -33,6 +33,9 @@ sub contents_label_plural {
 
 sub list_props {
     return {
+        id     => {
+            base => 'category.id',
+        },
         label  => {
             base => 'category.label',
         },

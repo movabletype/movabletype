@@ -53,6 +53,7 @@ __PACKAGE__->install_properties({
 sub list_props {
     return {
         label => { base => '__common.label' },
+        id    => 'ID',
         parent => {
             auto  => 1,
             label => 'Parent',
