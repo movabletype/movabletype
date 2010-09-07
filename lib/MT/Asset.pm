@@ -163,6 +163,7 @@ sub list_props {
             label     => 'Image height',
             meta_type => 'image_height',
         },
+        tag => { base => '__common.tag' },
     };
 }
 

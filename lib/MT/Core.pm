@@ -540,7 +540,7 @@ BEGIN {
                     label => 'This Context Only',
                     display => 'none',
                     filter_tmpl => '',
-                    filter_editable => 0,
+                    filter_editable => 1,
                     condition => sub {
                         my $prop = shift;
                         $prop->datasource->has_column('blog_id') or return;
@@ -842,17 +842,19 @@ BEGIN {
         listing_screens => {
             website => {
                 object_label => 'Website',
+                view => 'system',
                 columns
                     => [qw( name blog_count page_count )],
-                default_sort_key => 'created_on',
+                default_sort_key => 'name',
                 permission => 'access_to_website_list'
             },
             blog => {
                 object_label => 'Blog',
+                view => [qw( system website )],
                 columns
                     => [qw( name entry_count page_count )],
                 primary => 'name',
-                default_sort_key => 'created_on',
+                default_sort_key => 'name',
                 permission => 'access_to_blog_list'
             },
             entry => {
@@ -866,6 +868,7 @@ BEGIN {
             page => {
                 object_label => 'Page',
                 columns => [qw( title created_on )],
+                default_sort_key => 'modified_on',
                 permission => 'access_to_page_list'
             },
             asset => {
@@ -873,10 +876,12 @@ BEGIN {
                 primary => 'label',
                 columns => [qw( id label created_on )],
                 permission => 'access_to_asset_list',
+                default_sort_key => 'created_on',
             },
             log => {
                 object_label => 'Log',
                 columns => [qw( id created_on )],
+                default_sort_key => 'created_on',
                 permission => 'access_to_log_list'
             },
             category => {
@@ -899,11 +904,13 @@ BEGIN {
             comment => {
                 object_label => 'Comment',
                 columns => [qw( comment commenter )],
+                default_sort_key => 'comment',
                 permission => 'access_to_comment_list',
             },
             ping => {
                 object_label => 'Trackback',
                 columns => [qw( excerpt target created_on )],
+                default_sort_key => 'created_on',
                 permission => 'access_to_trackback_list',
             },
             author => {
@@ -911,6 +918,7 @@ BEGIN {
                 primary      => 'name',
                 columns      => [qw( name nickname entry_count comment_count created_by )],
                 permission   => 'access_to_member_list',
+                default_sort_key => 'name',
                 view         => 'system',
             },
             commenter => {
@@ -918,6 +926,7 @@ BEGIN {
                 object_type  => 'author',
                 columns      => [qw( name nickname )],
                 permission   => 'access_to_commenter_list',
+                default_sort_key => 'name',
                 condition => sub {
                     return MT->config->SingleCommunity;
                 },
@@ -927,11 +936,13 @@ BEGIN {
                 object_type  => 'permission',
                 columns      => [qw( name nickname )],
                 permission   => 'access_to_blog_member_list',
+                default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
             },
             tag => {
                 object_label => 'Tag',
                 permission => 'access_to_tag_list',
+                default_sort_key => 'name',
                 columns => [qw( name entry_count page_count asset_count )],
             },
             banlist => {
@@ -941,18 +952,22 @@ BEGIN {
                     return 1 if MT->config('ShowIPInformation');
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
-                permission => 'access_to_banlist'
+                permission => 'access_to_banlist',
+                default_sort_key => 'created_on',
+
             },
             association => {
                 object_label => 'Permission',
                 object_type => 'association',
                 permission => 'access_to_permission_list',
                 columns => [qw( user_name role_name )],
+                default_sort_key => 'created_on',
             },
             role => {
                 object_label => 'Role',
                 object_type => 'role',
                 permission => 'access_to_role_list',
+                default_sort_key => 'name',
                 columns => [qw( name association_conut )],
             },
         },

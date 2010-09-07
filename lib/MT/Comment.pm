@@ -327,7 +327,6 @@ sub list_props {
         },
         comment => {
             label => 'Comment',
-            col  => 'created_on',
             display => 'force',
             html  => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -377,6 +376,13 @@ sub list_props {
                     <p class="comment-text">$text</p>
                 };
             },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                $args->{sort} = 'created_on';
+                return;
+            },
+            default_sort_order => 'descend',
         },
         text => {
             auto => 1,

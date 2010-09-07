@@ -1028,8 +1028,12 @@ else
 
 itemValues()
 renderColumns();
-renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
 renderFilterList();
+<mt:if name="default_sort_key">
+jQuery('table.listing-table thead th.<mt:var name="default_sort_key"> a.sort-link').click();
+<mt:else>
+renderList('filtered_list', cols, vals, jQuery('#row').val(), 1);
+</mt:if>
 
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl">

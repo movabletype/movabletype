@@ -817,7 +817,7 @@ sub list {
         sort {
               !$col_order{$a->id} ? 1
             : !$col_order{$b->id} ? -1
-            : $col_order{$a->id} <=> $col_order{$b->id}
+            :  $col_order{$a->id} <=> $col_order{$b->id}
         }
         grep {
             $_->can_display( $scope )
@@ -843,6 +843,7 @@ sub list {
         $col->{sortable} = $col->can_sort( $scope );
     }
 
+    my $default_sort = $screen_settings->{default_sort_key};
     @list_columns = map {{
         id                 => $_->id,
         type               => $_->type,
@@ -850,6 +851,7 @@ sub list {
         primary            => $_->id eq $primary_col ? 1 : 0,
         col_class          => $_->col_class,
         sortable           => $_->sortable,
+        sorted             => $_->id eq $default_sort ? 1 : 0,
         display            => $_->display,
         force_display      => $_->force_display,
         default_sort_order => $_->default_sort_order,
@@ -908,7 +910,7 @@ sub list {
     $param{initial_filter} = $json->encode($initial_filter);
     $param{filters_raw}    = \@filters;
     $param{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
-
+    $param{default_sort_key} = $default_sort;
     $param{list_columns}    = \@list_columns;
     $param{filter_types}    = \@filter_types;
     $param{object_type}     = $type;

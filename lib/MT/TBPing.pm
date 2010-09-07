@@ -73,6 +73,7 @@ sub class_label_plural {
 sub list_props {
     return {
         id => { view => [] },
+        created_on => { base => '__common.created_on' },
         modified_on => {
             auto    => 1,
             label   => 'Modeified on',
