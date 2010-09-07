@@ -1056,7 +1056,7 @@
      label_class="no-header"
      help_page="entries"
      help_section="entry_title">
-    <input type="text" name="title" id="title" class="text full" value="<$mt:var name="title" escape="html"$>" maxlength="255" mt:watch-change="1" />
+    <input type="text" name="title" id="title" class="text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
   </mtapp:setting>
     <mt:unless name="new_object">
   <mtapp:setting
@@ -1220,11 +1220,17 @@
         phrase: '<__trans phrase="to act upon" escape="js">'
     });
     jQuery('#sortable').sortable({
-        placeholder: 'ui-state-highlight', 
         items: 'div.field.sort-enabled',
+        placeholder: 'placeholder',
+        distance: 3,
+        opacity: 0.8,
+        cursor: 'move',
+        forcePlaceholderSize: true,
+        handle: '.field-header',
+        containment: 'document',
         update: function () {
             sendEntryPrefs();
-        },
+        }
     });
     jQuery('#sortable').disableSelection();
 

@@ -51,7 +51,7 @@
     text-overflow: ellipsis;
 }
 
-.ui-state-highlight {
+#root .ui-state-highlight {
     position: relative;
     z-index: 100;
     height: 35px;
@@ -59,13 +59,13 @@
     border-top: 2px solid #adadad;
 }
 
-.target {
+#root .target {
     position: relative;
     display: inline-block;
     height: 100%;
 }
 
-.marker {
+#root .marker {
     position: absolute;
     top: -7px;
     right: -20px;
