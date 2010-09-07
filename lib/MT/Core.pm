@@ -845,6 +845,7 @@ BEGIN {
                 columns
                     => [qw( name blog_count page_count )],
                 default_sort_key => 'created_on',
+                permission => 'access_to_website_list'
             },
             blog => {
                 object_label => 'Blog',
@@ -852,6 +853,7 @@ BEGIN {
                     => [qw( name entry_count page_count )],
                 primary => 'name',
                 default_sort_key => 'created_on',
+                permission => 'access_to_blog_list'
             },
             entry => {
                 object_label  => 'Entry',
@@ -875,6 +877,7 @@ BEGIN {
             log => {
                 object_label => 'Log',
                 columns => [qw( id created_on )],
+                permission => 'access_to_log_list'
             },
             category => {
                 object_label => 'Category',
@@ -883,6 +886,7 @@ BEGIN {
                 template     => 'category.tmpl',
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
+                permission => 'access_to_category_list',
             },
             folder => {
                 object_label => 'Folder',
@@ -890,6 +894,7 @@ BEGIN {
                 template     => 'category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
+                permission => 'access_to_category_list',
             },
             comment => {
                 object_label => 'Comment',
@@ -936,6 +941,7 @@ BEGIN {
                     return 1 if MT->config('ShowIPInformation');
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
+                permission => 'access_to_banlist'
             },
             association => {
                 object_label => 'Permission',
@@ -1685,6 +1691,7 @@ sub load_core_permissions {
             'order'        => 200,
             'permitted_action' => {
                 'save_all_settings_for_website' => 1,
+                'access_to_website_list'        => 1,
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
             },
@@ -1708,6 +1715,8 @@ sub load_core_permissions {
             'permitted_action' => {
                 'access_to_blog_association_list'  => 1,
                 'access_to_member_list'            => 1,
+                'access_to_blog_list'              => 1,
+                'access_to_log_list'               => 1,
                 'administer_blog'                  => 1,
                 'backup_blog'                      => 1,
                 'backup_download'                  => 1,
@@ -1874,6 +1883,7 @@ sub load_core_permissions {
                 'save_banlist'                 => 1,
                 'save_blog_config'             => 1,
                 'update_welcome_message'       => 1,
+                'access_to_banlist'            => 1,
             }
         },
         'blog.edit_notifications' => {
@@ -2177,6 +2187,8 @@ sub load_core_permissions {
             'label'            => 'Manage Templates',
             'order'            => 250,
             'permitted_action' => {
+                'access_to_website_list'       => 1,
+                'access_to_blog_list'          => 1,
                 'access_to_system_dashboard'   => 1,
                 'use_tools:search'             => 1,
                 'open_blog_listing_screen'     => 1,
