@@ -32,8 +32,6 @@ sub SUPPORT_URL()           { 'http://www.sixapart.com/movabletype/support/' }
 sub NEWS_URL()              { 'http://www.sixapart.com/movabletype/news/' }
 sub NEWSBOX_URL()           { 'http://www.sixapart.com/movabletype/news/mt4_news_widget.html' }
 sub LEARNINGNEWS_URL()      { 'http://learning.movabletype.org/newsbox.html' }
-sub PLUGIN_DIRECTORY_URL()  { 'http://plugins.movabletype.org/' }
-sub THEME_DIRECTORY_URL()   { '' }
 sub CATEGORY_NAME_NODASH()  { 0 }
 sub DEFAULT_TIMEZONE()      { 0 }
 sub MAIL_ENCODING()         { 'ISO-8859-1' }

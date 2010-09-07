@@ -1213,12 +1213,6 @@ BEGIN {
             # 'HackingNewsURL' => {
             #     default => 'http://hacking.movabletype.org/newsbox.html',
             # },
-            'PluginDirectoryURL'    => {
-                default => 'http://plugins.movabletype.org/',
-            },
-            'ThemeDirectoryURL'    => {
-                default => '',
-            },
             'EmailAddressMain'      => undef,
             'EmailReplyTo'          => undef,
             'EmailNotificationBcc'  => { default => 1, },

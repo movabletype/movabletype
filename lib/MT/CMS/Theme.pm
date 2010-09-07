@@ -53,7 +53,6 @@ sub list {
     $param{theme_uninstalled} = $q->param('theme_uninstalled');
     $param{uninstalled_theme_name} = $q->param('uninstalled_theme_name');
     $param{warning_on_apply} = $q->param('warning_on_apply');
-    $param{theme_directory_url} = $app->config->ThemeDirectoryURL;
     $app->load_tmpl( 'list_theme.tmpl', \%param );
 }
 

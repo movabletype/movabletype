@@ -13,7 +13,6 @@ sub cfg_plugins {
     my $q   = $app->param;
     my %param;
     $param{screen_class} = 'settings-screen';
-    $param{plugin_directory_url} = $app->config->PluginDirectoryURL;
     if ( my $blog_id = $q->param('blog_id') ) {
         my $blog = $app->model('blog')->load($blog_id);
         return $app->permission_denied()
