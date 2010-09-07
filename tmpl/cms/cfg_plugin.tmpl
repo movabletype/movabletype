@@ -5,14 +5,8 @@
     <$mt:setvar name="position_actions_top" value="1"$>
     <mt:setvar name="system-plugin-settings" value="1">
 </mt:if>
+
 <mt:setvarblock name="related_content">
-    <mtapp:widget
-        id="useful-links"
-        label="<__trans phrase="Useful links">">
-        <ul>
-            <li><a href="<__trans phrase="http://plugins.movabletype.org/">" target="_blank"><__trans phrase="Find Plugins"></a></li>
-        </ul>
-    </mtapp:widget>
     <mt:unless name="blog_view">
         <mtapp:widget
             id="plugin_system"
@@ -52,6 +46,13 @@
         </mtapp:widget>
     </mt:unless>
 </mt:setvarblock>
+
+<mt:setvarblock name="content_header">
+<ul class="action-link-list">
+  <li><a href="<__trans phrase="_PLUGIN_DIRECTORY_URL">" class="icon-left icon-related" target="_blank"><__trans phrase="Find Plugins"></a></li>
+</ul>
+</mt:setvarblock>
+
 <mt:setvarblock name="plugins"> class="active"</mt:setvarblock>
 <MTSetVarBlock name="system_msg">
     <mt:if name="blog_id">
@@ -116,6 +117,7 @@
         </mt:if>
     </mt:if>
 </MTSetVarBlock>
+
 <mt:setvarblock name="html_head" append="1">
 <script type="text/javascript">
 /* <![CDATA[ */

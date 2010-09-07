@@ -131,6 +131,8 @@ the address you provided is correct and belongs to you.',
     '_LOCALE_WEEK_START' => '0',
     '_SHORT_MAY' => 'May',
     '_MTCOM_URL' => 'http://www.movabletype.com/',
+    '_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+    '_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
     '_CATEGORY_BASENAME' => 'Basename',
 
     '_AUTO' => 1,

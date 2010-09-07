@@ -2772,8 +2772,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/cfg_plugin.tmpl
 	'[_1] Plugin Settings' => '[_1]のプラグイン設定',
+	'_PLUGIN_DIRECTORY_URL' => 'http://communities.movabletype.jp/plugins/',
 	'Useful links' => 'ショートカット',
-	'http://plugins.movabletype.org/' => 'http://www.movabletype.jp/plugins/',
 	'Find Plugins' => 'プラグインを探す',
 	'Plugin System' => 'プラグインシステム',
 	'Enable or disable plugin functionality for the entire Movable Type installation.' => 'プラグインの利用をシステムレベルで設定します。',
@@ -4257,6 +4257,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => '[_1]テーマの一覧',
 	'All Themes' => 'テーマの一覧',
+	'_THEME_DIRECTORY_URL' => 'http://communities.movabletype.jp/themes/',
 	'Theme [_1] has been uninstalled.' => 'テーマ "[_1]"をアンインストールしました。',
 	'Theme [_1] has been applied.' => 'テーマ "[_1]"を適用しました。',
 	'Some error occured while applying theme.' => 'テーマの適用中にエラーがありました。',

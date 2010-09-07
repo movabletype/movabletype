@@ -4,6 +4,12 @@
     <mt:setvar name="system-theme-settings" value="1">
 </mt:unless>
 
+<mt:setvarblock name="content_header">
+<ul class="action-link-list">
+  <li><a href="<__trans phrase="_THEME_DIRECTORY_URL">" class="icon-left icon-related" target="_blank"><__trans phrase="Find Themes"></a></li>
+</ul>
+</mt:setvarblock>
+
 <mt:setvarblock name="system_msg">
     <div id="msg-block">
     <mt:if name="uninstalled_theme_name">
