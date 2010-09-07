@@ -646,7 +646,7 @@ function removeSelectAll($node) {
 
 jQuery('tbody').selectable({
   filter: 'tr',
-  cancel: 'a, .select-all',
+  cancel: 'a, .select-all, input, button',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
     if ($checkboxes.attr('checked')) {

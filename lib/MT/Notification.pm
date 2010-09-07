@@ -37,6 +37,70 @@ sub class_label_plural {
     MT->translate('Contacts');
 }
 
+sub list_props {
+    return {
+        email => {
+            auto => 1,
+            label => 'Email',
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                require MT::Util;
+                my $email = MT::Util::encode_html($obj->email);
+                my $id    = $obj->id;
+                my $title = MT->translate('Click to edit contact');
+                return qq{
+                    <a href="javascript:void(0)" title="$title" class="edit-link" id="note-email-link-$id" onclick="edit_note($id); return false;">$email</a>
+                    <span id="note-email-field-$id" style="display: none">
+                    <input type="text" name="note-email-$id" id="note-email-$id" value="$email" />
+                    </span>
+                };
+            },
+        },
+        url => {
+            auto => 1,
+            label => 'URL',
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                require MT::Util;
+                my $url = MT::Util::encode_html($obj->url);
+                my $id    = $obj->id;
+                my $title = MT->translate('Click to edit contact');
+                my $save_changes_label = MT->translate('Save Changes');
+                my $save_label = MT->translate('Save');
+                my $cancel_label = MT->translate('Cancel');
+                return qq{
+                    <span id="note-url-link-$id"><a href="javascript:void(0)" title="$title" onclick="edit_note($id); return false;">$url</a>}
+                    . ( $url ? qq{&nbsp;<a href="$url">&raquo;</a>} : '' )
+                    . qq{</span>
+                    <span id="note-url-field-$id" style="display: none">
+                      <input type="text" name="note-url-$id" id="note-url-$id" value="$url" />
+                      <span class="buttons">
+                        <button
+                           type="button"
+                           onclick="submit_edit($id); return false;"
+                           title="$save_changes_label"
+                           class="button"
+                           >$save_label</button>
+                        <button
+                           type="button"
+                           onclick="cancel_edit($id); return false;"
+                           class="button"
+                           >$cancel_label</button>
+                      </span>
+                    </span>
+                };
+            },
+        },
+        created_on => { base => '__common.created_on' },
+        modified_on => {
+            base => '__common.modified_on',
+            display => 'none',
+        },
+    };
+}
+
 1;
 __END__
 

@@ -825,7 +825,7 @@ BEGIN {
             banlist     => '$Core::MT::IPBanList::list_props',
             association => '$Core::MT::Association::list_props',
             role        => '$Core::MT::Role::list_props',
-
+            notification => '$Core::MT::Notification::list_props',
         },
         system_filters => {
             entry       => '$Core::MT::Entry::system_filters',
@@ -945,17 +945,6 @@ BEGIN {
                 default_sort_key => 'name',
                 columns => [qw( name entry_count page_count asset_count )],
             },
-            banlist => {
-                object_label => 'IP Ban',
-                condition => sub {
-                    my $app = shift;
-                    return 1 if MT->config('ShowIPInformation');
-                    $app->errtrans('IP Banlist is disabled by system configuration.');
-                },
-                permission => 'access_to_banlist',
-                default_sort_key => 'created_on',
-
-            },
             association => {
                 object_label => 'Permission',
                 object_type => 'association',
@@ -969,6 +958,28 @@ BEGIN {
                 permission => 'access_to_role_list',
                 default_sort_key => 'name',
                 columns => [qw( name association_conut )],
+            },
+            banlist => {
+                object_label => 'IP Ban',
+                condition => sub {
+                    my $app = shift;
+                    return 1 if MT->config('ShowIPInformation');
+                    $app->errtrans('IP Banlist is disabled by system configuration.');
+                },
+                permission => 'access_to_banlist',
+                default_sort_key => 'created_on',
+
+            },
+            notification => {
+                object_label => 'AddressBook',
+                condition => sub {
+                    my $app = shift;
+                    return 1 if MT->config('EnableAddressbook');
+                    $app->errtrans('Address Book is disabled by system configuration.');
+                },
+                columns => [qw( email url )],
+                permission => 'access_to_addressbook',
+                default_sort_key => 'created_on',
             },
         },
         summaries => {
