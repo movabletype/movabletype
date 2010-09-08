@@ -93,9 +93,9 @@ sub list_props {
                 };
             },
         },
-        created_on => { base => '__common.created_on' },
+        created_on => { base => '__virtual.created_on' },
         modified_on => {
-            base => '__common.modified_on',
+            base => '__virtual.modified_on',
             display => 'none',
         },
     };

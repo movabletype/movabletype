@@ -117,7 +117,7 @@ sub list_props {
             bulk_html => \&_nickname_bulk_html,
         },
         status => {
-            base => '__common.single_select',
+            base => '__virtual.single_select',
             display => 'none',
             label => 'Status',
             col   => 'status',
@@ -132,7 +132,7 @@ sub list_props {
             ],
         },
         author_name => {
-            base => '__common.author_name',
+            base => '__virtual.author_name',
             label => 'Created by',
             view_filter => [],
         },
@@ -147,7 +147,7 @@ sub list_props {
         },
         entry_count => {
             label => 'Entries',
-            base => '__common.object_count',
+            base => '__virtual.object_count',
             col_class => 'num',
             count_class => 'entry',
             count_col   => 'author_id',
@@ -165,7 +165,7 @@ sub list_props {
             },
         },
         privilege => {
-            base => '__common.single_select',
+            base => '__virtual.single_select',
             label => 'Privilege',
             display => 'none',
             single_select_options => sub {
@@ -280,7 +280,7 @@ sub commenter_list_props {
         author_name   => { base => 'author.author_name' },
         email         => { base => 'author.email' },
         status => {
-            base => '__common.single_select',
+            base => '__virtual.single_select',
             display => 'none',
             label => 'Status',
             col   => 'status',
@@ -400,7 +400,7 @@ sub member_list_props {
 #            },
 #        },
 #        role          => {
-#            base => '__common.single_select',
+#            base => '__virtual.single_select',
 #            label => 'Role',
 #            display => 'optional',
 #            raw   => sub {

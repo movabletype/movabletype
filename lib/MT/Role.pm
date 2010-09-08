@@ -63,10 +63,10 @@ sub list_props {
             },
         },
         created_on => {
-            base => '__common.created_on',
+            base => '__virtual.created_on',
         },
         association_count => {
-            base        => '__common.object_count',
+            base        => '__virtual.object_count',
             label       => 'Associations',
             count_class => 'association',
             count_col   => 'role_id',

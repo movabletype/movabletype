@@ -70,7 +70,7 @@ sub list_props {
         },
         entry_count => {
             label => 'Entries',
-            base => '__common.integer',
+            base => '__virtual.integer',
             count_class => 'entry',
             col => 'id',
             raw   => sub {

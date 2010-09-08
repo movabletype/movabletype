@@ -52,14 +52,14 @@ __PACKAGE__->install_properties({
 
 sub list_props {
     return {
-        label => { base => '__common.label' },
+        label => { base => '__virtual.label' },
         id    => 'ID',
         parent => {
             auto  => 1,
             label => 'Parent',
         },
         entry_count => {
-            base    => '__common.integer',
+            base    => '__virtual.integer',
             label => 'Entry count',
             bulk_html => sub {
                 my ( $prop, $objs, $app ) = @_;

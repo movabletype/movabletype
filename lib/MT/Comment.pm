@@ -103,7 +103,7 @@ sub list_props {
         },
         status => {
             label => 'Status',
-            base => '__common.single_select',
+            base => '__virtual.single_select',
             col => 'visible',
             display => 'none',
             terms => sub {
@@ -244,7 +244,7 @@ sub list_props {
         },
         entry => {
             label => 'Entry/Page',
-            base => '__common.integer',
+            base => '__virtual.integer',
             col_class => 'string',
             filter_editable => 0,
             sort => sub {
@@ -407,6 +407,7 @@ sub list_props {
         ip => {
             auto  => 1,
             label => 'IP',
+            condition => sub { MT->config->ShowIPInformation },
         },
     };
 }

@@ -55,7 +55,7 @@ sub list_props {
     return {
         user_name => {
             label => 'User/Group',
-            base => '__common.string',
+            base => '__virtual.string',
             col => 'name',  # this looks up author/group table
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -112,7 +112,7 @@ sub list_props {
         },
         role_name => {
             label => 'Role',
-            base => '__common.string',
+            base => '__virtual.string',
             col => 'name',  # this looks up role table
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -184,7 +184,7 @@ sub list_props {
             }
         },
         type => {
-            base    => '__common.single_select',
+            base    => '__virtual.single_select',
             display => 'none',
             col     => 'type',
             label   => 'Type',
@@ -195,7 +195,7 @@ sub list_props {
         },
         blog_name => {
             label => 'Blog/Website',
-            base => '__common.string',
+            base => '__virtual.string',
             col => 'name',  # this looks up mt_blog.blog_nam column
             bulk_html => sub {
                 my $prop = shift;
@@ -239,11 +239,11 @@ sub list_props {
             },
         },
         created_on => {
-            base => '__common.created_on',
+            base => '__virtual.created_on',
         },
         modified_on => {
             display => 'none',
-            base => '__common.modified_on',
+            base => '__virtual.modified_on',
         },
     };
 }

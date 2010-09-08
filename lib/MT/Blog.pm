@@ -161,7 +161,7 @@ sub list_props {
         },
         entry_count => {
             label => 'Entries',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'entry',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -169,7 +169,7 @@ sub list_props {
         },
         page_count => {
             label => 'Pages',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'page',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -177,7 +177,7 @@ sub list_props {
         },
         comment_count => {
             label => 'Comments',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'comment',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -185,7 +185,7 @@ sub list_props {
         },
         member_count => {
             label => 'Members',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'permission',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -194,7 +194,7 @@ sub list_props {
         },
         asset_count => {
             label => 'Assets',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'asset',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
@@ -217,7 +217,7 @@ sub list_props {
         },
         theme_id => {
             label => 'Theme',
-            base  => '__common.single_select',
+            base  => '__virtual.single_select',
             display => 'none',
             col => 'theme_id',
             single_select_options => sub {
@@ -232,7 +232,7 @@ sub list_props {
                 ];
             },
         },
-        id => { base => '__common.id', },
+        id => { base => '__virtual.id', },
         parent_website => {
             view => [ 'system' ],
             label => 'Website',
@@ -242,11 +242,11 @@ sub list_props {
             },
         },
         created_on  => {
-            base    => '__common.created_on',
+            base    => '__virtual.created_on',
         },
         modified_on => {
             display => 'none',
-            base    => '__common.modified_on',
+            base    => '__virtual.modified_on',
         },
     };
 }

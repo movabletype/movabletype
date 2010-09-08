@@ -87,7 +87,7 @@ sub list_props {
         site_path     => { base => 'blog.site_path' },
         blog_count => {
             label => 'Blogs',
-            base  => '__common.object_count',
+            base  => '__virtual.object_count',
             count_class => 'blog',
             count_col   => 'parent_id',
             filter_type => 'blog_id',

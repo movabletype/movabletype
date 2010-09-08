@@ -46,18 +46,18 @@ sub list_default_terms {{
 
 sub list_props {
     return {
-        id => { base => '__common.id' },
-        created_on => { base => '__common.created_on' },
-        author_name => { base => '__common.author_name' },
+        id => { base => '__virtual.id' },
+        created_on => { base => '__virtual.created_on' },
+        author_name => { base => '__virtual.author_name' },
         modified_on => {
-            base    => '__common.modified_on',
+            base    => '__virtual.modified_on',
             display => 'none',
         },
         class => {
             label => 'Class',
             col   => 'class',
             display => 'none',
-            base  => '__common.single_select',
+            base  => '__virtual.single_select',
             terms => sub {
                 my $prop   = shift;
                 my ($args, $db_terms, $db_args) = @_;
@@ -133,7 +133,7 @@ sub list_props {
         },
         image_width => {
             label     => 'Image width',
-            base      => '__common.integer',
+            base      => '__virtual.integer',
             display   => 'none',
             meta_type => 'image_width',
             col       => 'vinteger',
@@ -163,7 +163,7 @@ sub list_props {
             label     => 'Image height',
             meta_type => 'image_height',
         },
-        tag => { base => '__common.tag' },
+        tag => { base => '__virtual.tag' },
     };
 }
 

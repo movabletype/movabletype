@@ -63,12 +63,14 @@ sub _init_core {
 
         # Property is undefined
         die "Can't initialize list property $cls $id" if !$prop;
-        if ( my $condition = $prop->{condition} ) {
-            $condition = MT->handler_to_coderef($condition)
-                if !ref $condition;
-            $condition->($self)
-                or return;
-        }
+    }
+
+    # check condition
+    if ( my $condition = $prop->{condition} ) {
+        $condition = MT->handler_to_coderef($condition)
+            if !ref $condition;
+        $condition->($self)
+            or return;
     }
 
     delete $prop->{plugin};
@@ -185,7 +187,7 @@ sub base {
         my $column_type = $def->{type};
         my $auto_type   = $AUTO{$column_type}
             or die "Failed to load auto prop for $class $id";
-        my $prop = __PACKAGE__->instance( '__common', $auto_type )
+        my $prop = __PACKAGE__->instance( '__virtual', $auto_type )
             or die "Failed to load auto prop for $class $id";
         $orig_obj->{col} = $id;
         $prop;

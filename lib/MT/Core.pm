@@ -172,9 +172,8 @@ BEGIN {
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
         },
         list_properties => {
-            __common => {
-                __virtual => {
-                    condition => sub {0},
+            __virtual => {
+                base => {
                     raw       => sub {
                         my $prop  = shift;
                         my ($obj) = @_;
@@ -188,38 +187,8 @@ BEGIN {
                         return;
                     },
                 },
-                __legacy => {
-                    label => 'Legacy Quick Filter',
-                    priority => 1,
-                    filter_editable => 0,
-                    terms => sub {
-                        my $prop = shift;
-                        my ( $args, $db_terms, $db_args ) = @_;
-                        my $ds         = $args->{ds};
-                        my $filter_key = $args->{filter_key};
-                        my $filter_val = $args->{filter_val};
-                        if ( $filter_val ) {
-                            MT->app->param('filter_val', $filter_val);
-                        }
-                        my $filter = MT->registry( applications => cms => list_filters => $ds => $filter_key )
-                            or die "No regacy filter";
-                        if ( my $code = $filter->{code}
-                            || MT->handler_to_coderef( $filter->{handler} ) )
-                        {
-                            $code->( $db_terms, $db_args );
-                        }
-                        return undef;
-                    },
-                    filter_tmpl => '<mt:var name="filter_form_legacy">',
-                },
-                pack => {
-                    view  => [],
-                    terms => \&MT::Filter::pack_terms,
-                    grep  => \&MT::Filter::pack_grep,
-                },
                 string => {
-                    base      => '__common.__virtual',
-                    condition => sub {0},
+                    base      => '__virtual.base',
                     col_class     => 'string',
                     #sort_method => sub {
                     #    my $prop = shift;
@@ -266,8 +235,7 @@ BEGIN {
                     priority => 7,
                 },
                 integer => {
-                    base        => '__common.__virtual',
-                    condition   => sub {0},
+                    base        => '__virtual.base',
                     col_class       => 'num',
                     #sort_method => sub {
                     #    my $prop = shift;
@@ -311,7 +279,7 @@ BEGIN {
                     priority => 4,
                 },
                 float => {
-                    base      => '__common.integer',
+                    base      => '__virtual.integer',
                     condition => sub {0},
                     col_class     => 'num',
                     html => sub {
@@ -321,8 +289,7 @@ BEGIN {
                     },
                 },
                 date => {
-                    base        => '__common.__virtual',
-                    condition   => sub {0},
+                    base        => '__virtual.base',
                     col_class       => 'date',
                     terms => sub {
                         my $prop   = shift;
@@ -473,8 +440,7 @@ BEGIN {
                     default_sort_order => 'descend',
                 },
                 single_select => {
-                    base      => '__common.__virtual',
-                    condition => sub {0},
+                    base      => '__virtual.base',
                     sort      => 0,
                     terms => sub {
                         my $prop   = shift;
@@ -491,94 +457,16 @@ BEGIN {
                     filter_tmpl => '<mt:Var name="filter_form_single_select">',
                     priority => 2,
                 },
-                blog_name => {
-                    label => 'Blog Name',
-                    display => 'default',
-                    bulk_html => sub {
-                        my $prop = shift;
-                        my ( $objs ) = @_;
-                        my %blog_ids  = map { $_->blog_id => 1 } @$objs;
-                        my @blogs = MT->model('blog')->load({
-                            id => [ keys %blog_ids ], },{
-                            fetchonly => {
-                                id   => 1,
-                                name => 1,
-                        }});
-                        my %names = map { $_->id => $_->name } @blogs;
-                        map { $names{$_->blog_id} } @$objs;
-                    },
-                    raw => sub {
-                        my ( $prop, $obj ) = @_;
-                        my $blog_id = $obj->blog_id;
-                        return $blog_id ? MT->model('blog')->load($blog_id)->name
-                                        : MT->translate('System');
-                    },
-                    condition => sub {
-                        my $prop = shift;
-                        $prop->datasource->has_column('blog_id') or return;
-                        my $app = MT->app or return;
-                        return !$app->blog || !$app->blog->is_blog;
-                    },
-                },
-                current_user => {
-                    label => 'My Items',
-                    display => 'none',
-                    filter_editable => 0,
-                    condition => sub {
-                        my $prop = shift;
-                        return $prop->datasource->has_column( 'author_id' );
-                    },
-                    terms => sub {
-                        my $app = MT->app or return;
-                        return { author_id => $app->user->id };
-                    },
-                    filter_tmpl => '',
-                    singleton => 1,
-
-                },
-                current_context => {
-                    label => 'This Context Only',
-                    display => 'none',
-                    filter_tmpl => '',
-                    filter_editable => 1,
-                    condition => sub {
-                        my $prop = shift;
-                        $prop->datasource->has_column('blog_id') or return;
-                        my $app = MT->app or return;
-                        return !$app->blog         ? 1
-                             : $app->blog->is_blog ? 0
-                             :                       1
-                             ;
-                    },
-                    terms => sub {
-                        my $prop   = shift;
-                        my ($args, $load_terms, $load_args) = @_;
-                        my $app = MT->app or return;
-                        $load_terms->{blog_id} = $app->param('blog_id');
-                        return;
-                    },
-                    singleton => 1,
-                },
                 id => {
                     auto      => 1,
                     label     => 'ID',
                     display   => 'optional',
                     view_filter => [],
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column( $prop->id );
-                    #},
                 },
                 label => {
                     auto      => 1,
                     label     => 'Label',
                     display   => 'force',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column( $prop->id );
-                    #},
                     html => sub {
                         my $prop = shift;
                         my ( $obj, $app ) = @_;
@@ -603,33 +491,17 @@ BEGIN {
                     auto      => 1,
                     label     => 'Created on',
                     display   => 'optional',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column( $prop->id );
-                    #},
                 },
                 modified_on => {
                     auto      => 1,
                     label     => 'Modified',
                     display   => 'optional',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column( $prop->id );
-                    #},
                 },
                 author_name => {
                     label => 'Author',
                     order => 500,
                     display   => 'default',
-                    base  => '__common.string',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    return $prop->datasource->has_column('author_id')
-                    #        || $prop->datasource->has_column('created_by');
-                    #},
+                    base  => '__virtual.string',
                     raw   => sub {
                         my ( $prop, $obj ) = @_;
                         my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
@@ -673,15 +545,9 @@ BEGIN {
                     },
                 },
                 tag => {
-                    base => '__common.string',
+                    base => '__virtual.string',
                     label => 'Tag',
                     display => 'none',
-                    condition => sub {0},
-                    #condition => sub {
-                    #    my $prop = shift;
-                    #    my $ds   = $prop->datasource;
-                    #    return UNIVERSAL::isa( $ds, 'MT::Taggable' );
-                    #},
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $base_terms, $base_args ) = @_;
@@ -712,15 +578,9 @@ BEGIN {
                     },
                 },
                 object_count => {
-                    base => '__common.integer',
+                    base => '__virtual.integer',
                     col_class => 'num',
                     default_sort_order => 'descend',
-                    condition => sub {0},
-                    ## Override us.
-                    # count_class => '',
-                    # count_col   => '',
-                    # filter_type => '',
-                    # list_screen => '',
                     raw   => sub {
                         my ( $prop, $obj ) = @_;
                         my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
@@ -807,6 +667,105 @@ BEGIN {
                         my $sub = eval " sub { $val $op shift } ";
                         return grep { $sub->($map{$_->id}) } @$objs;
                     },
+                },
+            },
+            __common => {
+                __legacy => {
+                    label => 'Legacy Quick Filter',
+                    priority => 1,
+                    filter_editable => 0,
+                    terms => sub {
+                        my $prop = shift;
+                        my ( $args, $db_terms, $db_args ) = @_;
+                        my $ds         = $args->{ds};
+                        my $filter_key = $args->{filter_key};
+                        my $filter_val = $args->{filter_val};
+                        if ( $filter_val ) {
+                            MT->app->param('filter_val', $filter_val);
+                        }
+                        my $filter = MT->registry( applications => cms => list_filters => $ds => $filter_key )
+                            or die "No regacy filter";
+                        if ( my $code = $filter->{code}
+                            || MT->handler_to_coderef( $filter->{handler} ) )
+                        {
+                            $code->( $db_terms, $db_args );
+                        }
+                        return undef;
+                    },
+                    filter_tmpl => '<mt:var name="filter_form_legacy">',
+                },
+                pack => {
+                    view  => [],
+                    terms => \&MT::Filter::pack_terms,
+                    grep  => \&MT::Filter::pack_grep,
+                },
+                blog_name => {
+                    label => 'Blog Name',
+                    display => 'default',
+                    bulk_html => sub {
+                        my $prop = shift;
+                        my ( $objs ) = @_;
+                        my %blog_ids  = map { $_->blog_id => 1 } @$objs;
+                        my @blogs = MT->model('blog')->load({
+                            id => [ keys %blog_ids ], },{
+                            fetchonly => {
+                                id   => 1,
+                                name => 1,
+                        }});
+                        my %names = map { $_->id => $_->name } @blogs;
+                        map { $names{$_->blog_id} } @$objs;
+                    },
+                    raw => sub {
+                        my ( $prop, $obj ) = @_;
+                        my $blog_id = $obj->blog_id;
+                        return $blog_id ? MT->model('blog')->load($blog_id)->name
+                                        : MT->translate('System');
+                    },
+                    condition => sub {
+                        my $prop = shift;
+                        $prop->datasource->has_column('blog_id') or return;
+                        my $app = MT->app or return;
+                        return !$app->blog || !$app->blog->is_blog;
+                    },
+                },
+                current_user => {
+                    label => 'My Items',
+                    display => 'none',
+                    filter_editable => 0,
+                    condition => sub {
+                        my $prop = shift;
+                        return $prop->datasource->has_column( 'author_id' );
+                    },
+                    terms => sub {
+                        my $app = MT->app or return;
+                        return { author_id => $app->user->id };
+                    },
+                    filter_tmpl => '',
+                    singleton => 1,
+
+                },
+                current_context => {
+                    label => 'This Context Only',
+                    display => 'none',
+                    filter_tmpl => '',
+                    filter_editable => 1,
+                    condition => sub {
+                        my $prop = shift;
+                        $prop->datasource->has_column('blog_id') or return;
+                        my $app = MT->app or return;
+                        return !$app->blog         ? 1
+                             : $app->blog->is_blog ? 0
+                             :                       1
+                             ;
+                    },
+                    terms => sub {
+                        my $prop   = shift;
+                        my ($args, $load_terms, $load_args) = @_;
+                        my $app = MT->app or return;
+                        $load_terms->{blog_id} = $app->param('blog_id');
+                        return;
+                    },
+                    singleton => 1,
                 },
             },
             website     => '$Core::MT::Website::list_props',

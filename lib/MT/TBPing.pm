@@ -73,7 +73,7 @@ sub class_label_plural {
 sub list_props {
     return {
         id => { view => [] },
-        created_on => { base => '__common.created_on' },
+        created_on => { base => '__virtual.created_on' },
         modified_on => {
             auto    => 1,
             label   => 'Modeified on',
@@ -145,12 +145,13 @@ sub list_props {
         ip => {
             label => 'IP',
             auto  => 1,
+            condition => sub { MT->config->ShowIPInformation },
         },
         source_blog_name => {
             label => 'Sender blog name',
             col   => 'blog_name',
             display => 'none',
-            base  => '__common.string',
+            base  => '__virtual.string',
         },
         status => {
             base  => 'comment.status',
@@ -162,7 +163,7 @@ sub list_props {
         },
         target => {
             label => 'Target',
-            base  => '__common.string',
+            base  => '__virtual.string',
             bulk_html  => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my %tbs = map { $_->tb_id => 1 } @$objs;
@@ -214,7 +215,7 @@ sub list_props {
             },
         },
         entry_id => {
-            base => '__common.integer',
+            base => '__virtual.integer',
             display => 'none',
             filter_editable => 0,
             terms => sub {
@@ -245,7 +246,7 @@ sub list_props {
             },
         },
         category_id => {
-            base => '__common.integer',
+            base => '__virtual.integer',
             display => 'none',
             filter_editable => 0,
             terms => sub {

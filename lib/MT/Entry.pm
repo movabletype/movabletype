@@ -300,7 +300,7 @@ sub list_props {
             col  => 'status',
             display => 'none',
             col_class => 'icon',
-            base => '__common.single_select',
+            base => '__virtual.single_select',
             single_select_options => [
                 { label => 'Draft',     value => 1, },
                 { label => 'Published', value => 2, },
@@ -310,7 +310,7 @@ sub list_props {
             ],
         },
         created_on => {
-            base => '__common.created_on',
+            base => '__virtual.created_on',
             display   => 'none',
         },
         basename => {
@@ -319,7 +319,7 @@ sub list_props {
             auto  => 1,
         },
         comment_count => {
-            base    => '__common.single_select',
+            base    => '__virtual.single_select',
             col     => 'comment_count',
             col_class => 'num',
             display => 'optional',
@@ -353,7 +353,7 @@ sub list_props {
             label => 'Trackbacks',
         },
         commented_on => {
-            base          => '__common.date',
+            base          => '__virtual.date',
             label         => 'Commented on',
             comment_class => 'comment',
             display       => 'none',
@@ -408,7 +408,7 @@ sub list_props {
             label => 'Category',
             order => 400,
             display   => 'default',
-            base  => '__common.single_select',
+            base  => '__virtual.single_select',
             col_class => 'string',
             view_filter => 'blog',
             category_class => 'category',
@@ -517,8 +517,8 @@ sub list_props {
                 return { option => 'equal', value => $app->param('filter_val') };
             },
         },
-        id => { base => '__common.id', },
-        modified_on => { base => '__common.modified_on', },
+        id => { base => '__virtual.id', },
+        modified_on => { base => '__virtual.modified_on', },
     };
 }
 
