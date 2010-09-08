@@ -460,8 +460,6 @@ BEGIN {
                 id => {
                     auto      => 1,
                     label     => 'ID',
-                    display   => 'optional',
-                    view_filter => [],
                 },
                 label => {
                     auto      => 1,
@@ -693,6 +691,12 @@ BEGIN {
                         return undef;
                     },
                     filter_tmpl => '<mt:var name="filter_form_legacy">',
+                },
+                __id => {
+                    base      => '__virtual.integer',
+                    col       => 'id',
+                    display   => 'none',
+                    view_filter => [],
                 },
                 pack => {
                     view  => [],
@@ -926,6 +930,7 @@ BEGIN {
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
                 permission => 'access_to_banlist',
+                columns => [qw( ip )],
                 default_sort_key => 'created_on',
 
             },

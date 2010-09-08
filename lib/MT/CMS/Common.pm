@@ -1033,7 +1033,7 @@ sub filtered_list {
 
     ## FIXME: take identifical column from column defs.
     my $cols = $q->param('columns');
-    my @cols = ( 'id', split( ',', $cols ) );
+    my @cols = ( '__id', split( ',', $cols ) );
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
     my %load_options = (
         terms => {

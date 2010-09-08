@@ -41,6 +41,7 @@ sub ban_ip {
 sub list_props {
     return {
         ip => 'IP Address',
+        created_on => 'Created on',
     };
 }
 
