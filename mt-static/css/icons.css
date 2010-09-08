@@ -73,6 +73,13 @@
 .icon-share { background-image: url('../images/status_icons/share.gif');}
 .icon-spam { background-image: url('../images/status_icons/warning.gif'); }
 
+.edit-template .global-tmpl { background-image: url(../images/template/global.png); }
+.edit-template .website-tmpl { background-image: url(../images/template/website.png); }
+.edit-template .blog-tmpl { background-image: url(../images/template/blog.png); }
+.edit-template .global-tmpl.error { background-image: url(../images/template/global-error.png); }
+.edit-template .website-tmpl.error { background-image: url(../images/template/website-error.png); }
+.edit-template .blog-tmpl.error { background-image: url(../images/template/blog-error.png); }
+
 .edit-entry .stats-widget .icon-success { background-image: url('../images/status_icons/success-k.gif'); }
 .edit-entry .stats-widget .icon-view { background-image: url('../images/status_icons/view-k.gif'); }
 .edit-entry .stats-widget .icon-draft { background-image: url('../images/status_icons/draft-k.gif'); }

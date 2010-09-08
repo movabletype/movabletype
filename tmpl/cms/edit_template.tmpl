@@ -155,45 +155,39 @@
   <ul>
   <mt:loop name="include_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+    <li>
   <mt:if name="include_link">
-    <li class="icon-left-wide <mt:var name="include_scope_type">">[<mt:var name="include_scope_type">] 
-      <a href="<mt:var name="include_link">"><mt:var name="include_module"></a>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from">(<mt:var name="include_blog_name">)</span></mt:if>
-    </li>
   <mt:else>
-    <li class="icon-left-wide <mt:var name="include_scope_type"> error">[<mt:var name="include_scope_type">] 
-      <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </li>
   </mt:if>
+    </li>
   </mt:loop>
   <mt:loop name="widget_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+    <li>
   <mt:if name="include_link">
-    <li class="icon-left-wide <mt:var name="include_scope_type">">
-      <a href="<mt:var name="include_link">" class="icon-left-wide icon-related"><mt:var name="include_module"></a>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </li>
   <mt:else>
-    <li class="icon-left-wide <mt:var name="include_scope_type"> error">
-      <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </li>
   </mt:if>
+    </li>
   </mt:loop>
   <mt:loop name="widget_set_loop">
   <mt:setvarblock name="include_scope_type"><mt:if name="include_from" eq="self"><mt:var name="scope_type"><mt:else><mt:var name="include_from"></mt:if></mt:setvarblock>
+    <li>
   <mt:if name="include_link">
-    <li class="icon-left-wide <mt:var name="include_scope_type">">
-      <a href="<mt:var name="include_link">" class="icon-left-wide icon-related"><mt:var name="include_module"></a>
+      <a href="<mt:var name="include_link">" class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl"><mt:var name="include_module"></a>
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
-    </li>
   <mt:else>
-    <li class="icon-left-wide <mt:var name="include_scope_type"> error">
-      <mt:var name="include_module"> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
+      <span class="tmpl-label icon-left-xwide <mt:var name="include_scope_type">-tmpl error"><mt:var name="include_module"></span> (<a href="<mt:var name="create_link">"><__trans phrase="create"></a>)
       <mt:if name="include_from" ne="self"><span class="include-from <mt:var name="include_from">">(<mt:var name="include_blog_name">)</span></mt:if>
+  </mt:if>
     </li>
-    </mt:if>
   </mt:loop>
   </ul>
 </mtapp:widget>

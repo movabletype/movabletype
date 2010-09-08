@@ -1401,9 +1401,10 @@ fieldset {
 /* -- Include Templates Widget */
 .include-from {
     display: block;
+    margin-left: 20px;
     font-size: 85%;
 }
-.include-from.error {
+.tmpl-label.error {
     color: #9e3d3f;
 }
 
@@ -1762,12 +1763,15 @@ td.sub-label label {
 .sort-enabled {
     margin-bottom: 15px;
     padding: 0;
+    border: 1px solid #c0c6c9;
     background-color: #fff;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.sort-enabled:hover {
     border: 1px solid #adadad;
     border-top-color: #cfd0d0;
     border-left-color: #cfd0d0; 
-    border-radius: 5px;
-    -moz-border-radius: 5px;
 }
 
 .sort-enabled .field-header {
