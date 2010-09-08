@@ -101,7 +101,20 @@ a:active {
     position: absolute;
     top: 50%;
     left: 50%;
-    margin: -3px 0 0 -4px;
+    margin: -2px 0 0 -4px;
+}
+
+.filter-header .toggle-button {
+    width: 35px;
+}
+
+.menu-nav .toggle-button { 
+    width: 20px;
+}
+
+.filter-header .toggle-button img, 
+.menu-nav .toggle-button img { 
+    margin: -3px 0 0 -5px;    
 }
 
 /* -- Toggle Link */
@@ -126,10 +139,10 @@ a:active {
     padding-bottom: 10px;
 }
 
-.remove { 
+.close-link { 
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 15px;
+    right: 15px;
 }
 
 .rall {
@@ -402,15 +415,6 @@ ul.tabs li a {
     position: relative;
     height: 35px;
 }
-
-.filter-header .toggle-button {
-    width: 35px;
-}
-
-.menu-nav .toggle-button { 
-    width: 19px;
-}
-
 
 /* -- Selector Nav */
 #selector-nav { 
@@ -819,7 +823,7 @@ ul.tabs li a {
 }
 #edit-entry .object-nav, 
 #edit-page .object-nav { 
-    right: 260px;
+    right: 280px;
 }
 .object-nav span { 
     color: #9EA1A3;
@@ -835,44 +839,12 @@ ul.tabs li a {
     text-decoration: none;
     padding: 5px 10px;
     outline: 0;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -khtml-border-radius: 3px;
     border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .object-nav li a:hover { 
     background-color: #dcdddd;
 }
-
-#previous-link a, 
-#previous-link span { 
-    padding-left: 14px;
-    background-image: url(../images/arrow-left-gray.gif);
-    background-repeat: no-repeat;
-    background-position: left center;
-}
-#previous-link a { 
-    background-image: url(../images/arrow-left-blue.gif);
-}
-#previous-link a:hover { 
-    background-image: url(../images/arrow-left-green.gif);
-}
-#next-link a, 
-#next-link span { 
-    padding-right: 14px;
-    background-image: url(../images/arrow-right-gray.gif);
-    background-repeat: no-repeat;
-    background-position: right center;
-}
-#next-link a { 
-    background-image: url(../images/arrow-right-blue.gif);
-}
-#next-link a:hover { 
-    background-image: url(../images/arrow-right-green.gif);
-}
-
-
-
 
 /* - Related Content */
 /* -- Widget */
@@ -2422,7 +2394,7 @@ body.preview-screen {
 }
 
 #template-options #template-options-header h3 a {
-    background: url(../images/arrow-right-gray.gif) no-repeat left center;
+    background: url(../images/arrow/spinner-right.png) no-repeat left center;
     color: #7B7C7D;
     text-decoration: none;
 }
@@ -2430,7 +2402,7 @@ body.preview-screen {
     text-decoration: underline;
 }
 #template-options.active #template-options-header h3 a {
-    background-image: url(../images/arrow-down-gray.gif);
+    background-image: url(../images/arrow/spinner-bottom.png);
 }
 
 #template-options .template-options-summary {

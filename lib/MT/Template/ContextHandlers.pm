@@ -2755,7 +2755,7 @@ sub _hdlr_app_statusmsg {
     $rebuild = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">&prompt=index" class="mt-rebuild">%%</a>">} if $rebuild eq 'index';
     my $close = '';
     if ($id && ($args->{can_close} || (!exists $args->{can_close}))) {
-        $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close" />};
+        $close = qq{<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />};
     }
     $id = defined $id ? qq{ id="$id"} : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";

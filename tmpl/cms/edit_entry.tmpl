@@ -983,8 +983,8 @@
 <mt:unless name="new_object">
 <mt:setvarblock name="object_nav">
   <ul class="object-nav">
-    <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Previous"></a><mt:else><span><__trans phrase="Previous"></span></mt:if></li>
-    <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"></a><mt:else><span><__trans phrase="Next"></span></mt:if></li>
+    <li id="previous-link"><mt:if name="previous_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="previous_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">&lsaquo; <__trans phrase="Previous"></a><mt:else><span>&lsaquo; <__trans phrase="Previous"></span></mt:if></li>
+    <li id="next-link"><mt:if name="next_entry_id"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<$mt:var name="object_type" lower_case="1"$>&amp;id=<$mt:var name="next_entry_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="Next"> &rsaquo;</a><mt:else><span><__trans phrase="Next"> &rsaquo;</span></mt:if></li>
   </ul>
 </mt:setvarblock>
 </mt:unless>

@@ -122,7 +122,7 @@ function initItem($item) {
     .addClass('lv-'+nest.length)
     .addClass('mod sortable-item');
   $item.find('.plus, .delete').remove();
-  jQuery('<span class="plus clickable">[+]</span>')
+  jQuery('<span class="item-action plus clickable">[+]</span>')
     .insertBefore($item.find('.count'))
     .bind('click', function() {
       jQuery('.add-form').remove();

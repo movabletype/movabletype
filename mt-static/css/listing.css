@@ -22,7 +22,7 @@
     vertical-align: top;
 }
 .col a { 
-    color: #036;
+    color: #274a78;
 }
 .col.primary { 
     width: auto;
@@ -43,7 +43,7 @@
 .col.cb, 
 .col.si, 
 .col.view { 
-    width: 2.5em;
+    width: 2.6em;
     text-align: center;
 }
 
@@ -64,6 +64,9 @@ tfoot .col.head{
 }
 .col.head.first-child {
     border-left: 0;
+}
+.col.head a {
+    text-decoration: none;
 }
 .col.sorted { 
     background-color: #f3f3f3;
@@ -88,16 +91,16 @@ tfoot .col.head{
     position: absolute;
     top: 50%;
     right: 8px;
-    width: 10px;
-    height: 10px;
-    margin-top: -5px;
+    width: 8px;
+    height: 8px;
+    margin-top: -4px;
     background: transparent center no-repeat;
 }
 .sm.asc {
-    background-image: url(../images/spinner-big-top.gif);
+    background-image: url(../images/arrow/arrow-sort-top.png);
 }
 .sm.desc {
-    background-image: url(../images/spinner-big-bottom.gif);
+    background-image: url(../images/arrow/arrow-sort-bottom.png);
 }
 
 
@@ -197,6 +200,11 @@ tfoot .col.head{
     position: absolute;
     right: 5px;
     top: 5px;
+}
+
+.item-action {
+    display: inline-block;
+    margin-left: 8px;
 }
 
 /* - Asset Preview */

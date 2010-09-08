@@ -154,7 +154,7 @@
           <mt:if name="__first__">
           <a href="<mt:var name="link">" class="button"><mt:var name="root_label"></a>
           <a hre="#" class="toggle-button button detail-link">
-            <img src="<$mt:var name="static_uri"$>images/menu-arrow-down.gif" />
+            <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-black.png" />
           </a>
           <div id="fav-actions" class="fav-actions detail">
             <ul id="fav-actions-list">
@@ -254,7 +254,7 @@
 
     <div id="main">
 
-      <div class="line" id="content-header">
+      <div id="content-header">
       <mt:if name="object_nav">
         <mt:var name="object_nav">
       </mt:if>
@@ -263,20 +263,20 @@
         </h1>
 
       <mt:if name="show_display_options_link">
-        <div id="display-options" class="unit size1of1 display-options">
+        <div id="display-options" class="display-options">
           <a href="#" class="toggle-link detail-link fr"><__trans phrase="Display Options"></a>
           <mt:var name="display_options">
         </div>
+      </mt:if>
+
+      <mt:if name="content_header">
+        <mt:var name="content_header">
       </mt:if>
 
       <!-- /Content Header --></div>
   
       <mt:if name="system_msg">
         <mt:var name="system_msg">
-      </mt:if>
-  
-      <mt:if name="content_header">
-        <mt:var name="content_header">
       </mt:if>
   
       <div class="line" id="content-body">

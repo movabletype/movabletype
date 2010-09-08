@@ -30,7 +30,7 @@ $.mtAddEdgeClass = function() {
  */
 $.mtMenu = function(options) {
     var defaults = {
-        arrow_image: StaticURI+'images/menu-arrow-down.gif'
+        arrow_image: StaticURI+'images/arrow/arrow-toggle-big.png'
     };
     var opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
@@ -51,7 +51,7 @@ $.mtMenu = function(options) {
  */
 $.mtSelector = function(options) {
     var defaults = {
-        arrow_image: StaticURI+'images/menu-arrow-down.gif'
+        arrow_image: StaticURI+'images/arrow/arrow-toggle.png'
     };
     var opts = $.extend(defaults, options);
     $('#system-overview > em').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');

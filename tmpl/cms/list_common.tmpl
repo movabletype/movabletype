@@ -69,7 +69,7 @@
           <div class="mod filter-header">
             Filter: <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
             <a hre="#" class="toggle-button detail-link">
-              <img src="<$mt:var name="static_uri"$>images/menu-arrow-down.gif" />
+              <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
             </a>
           </div>
         </div>
@@ -171,7 +171,7 @@ jQuery(line).appendTo('thead tr, tfoot tr');
 
 var filter_types = {};
 <mt:loop name="filter_types">
-filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="item-label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="plus clickable">[+]</span><span class="minus clickable">[-]</span></div></div>';
+filter_types['<mt:var name="type">'] = '<div class="filtertype type-<mt:var name="type"><mt:unless name="editable"> no-edit</mt:unless>"><div class="item-label"><mt:var name="label"></div><div class="fields"><mt:var name="field" mteval="1" regex_replace="/\n*/g":""><span class="item-action plus clickable">[+]</span><span class="item-action minus clickable">[-]</span></div></div>';
 </mt:loop>
 
 jQuery('#filter_types').hide();
@@ -755,7 +755,7 @@ jQuery('#additem').click(function() {
     .insertAfter('.selectfilter')
     .wrap('<div class="filteritem" />')
     .find('.minus').hide();
-  jQuery('<span class="close clickable">[x]</span>')
+                              jQuery('<span class="close-link clickable">[x]</span>')
     .insertAfter($item)
     .bind('click', function() {
       jQuery(this).parent('.filteritem').remove();
@@ -867,7 +867,7 @@ function addItems(items, op) {
         .insertAfter('.selectfilter')
         .wrap('<div class="filteritem" />')
         .find('.minus').hide();
-      jQuery('<span class="close clickable">[x]</span>')
+      jQuery('<span class="close-link clickable">[x]</span>')
         .insertAfter($item)
         .bind('click', function() {
           jQuery(this).parent('.filteritem').remove();
