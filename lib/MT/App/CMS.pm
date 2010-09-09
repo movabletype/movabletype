@@ -1383,7 +1383,10 @@ sub core_menus {
         'tools:activity_log' => {
             label             => "Activity Log",
             order             => 800,
-            mode              => "view_log",
+            mode              => "list",
+            args              => {
+                _type => 'log',
+            },
             permission        => "view_blog_log",
             system_permission => "view_log",
             view              => [ "blog", 'website', 'system' ],

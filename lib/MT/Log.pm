@@ -60,6 +60,73 @@ sub class_label_plural {
     return MT->translate('Log messages');
 }
 
+sub list_props {
+    return {
+        created_on => 'Created on',
+        message    => {
+            auto  => 1,
+            label => 'Message',
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $msg = $obj->message;
+                my $meta = $obj->metadata;
+                return $meta ? qq{
+                    <p class="log-messeage">
+                    <a href="#" class="toggle-link">$msg</a>
+                    </p>
+                    <div class="log-metadata detail">
+                      <pre>$meta</pre>
+                    </div>
+                } : qq{
+                    <p class="log-messeage">$msg</p>
+                };
+            },
+        },
+        by         => {
+            base  => '__virtual.string',
+            label => 'By',
+            raw   => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = shift;
+                return $obj->author_id ? MT->model('author')->load($obj->author_id)->name : $obj->ip;
+            },
+        },
+        class => {
+            label => 'Class',
+            auto => 1,
+
+        },
+        level => {
+            label => 'Level',
+            base  => '__virtual.single_select',
+            col   => 'level',
+            terms => sub {
+                my $prop = shift;
+                my ( $args ) = @_;
+                my @types;
+                my $val = $args->{value};
+                for ( 1, 2, 4, 8, 16 ) {
+                    push @types, $_ if $val & $_;
+                }
+                return { level => \@types };
+            },
+            single_select_options => [
+                { label => 'Security',               value => 8 },
+                { label => 'Error',                  value => 4 },
+                { label => 'Warning',                value => 2 },
+                { label => 'Information',            value => 1 },
+                { label => 'Debug',                  value => 16 },
+
+                { label => 'Security or error',      value => 12 },
+                { label => 'Security/error/warning', value => 14 },
+                { label => 'Not debug',              value => 15 },
+                { label => 'Debug/error',            value => 20 },
+            ],
+        },
+    };
+}
+
 sub init {
     my $log = shift;
     $log->SUPER::init(@_);
