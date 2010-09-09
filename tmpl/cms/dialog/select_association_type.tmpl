@@ -1,0 +1,27 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Revoke Permission">"$>
+<$mt:setvar name="screen_type" value="dialog-select-association-type"$>
+
+<mt:include name="dialog/header.tmpl">
+
+<ul>
+    <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=website&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Grant website permission to a user"></a></li>
+    <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=user&amp;type=blog&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Grant blog permission to a user"></a></li>
+<mt:if name="has_group">
+    <__trans_section component="enterprise"><li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=group&amp;type=website&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Grant website permission to a group"></a></li>
+    <li><a href="<mt:var name="script_url">?__mode=dialog_grant_role&amp;_type=group&amp;type=blog&amp;return_args=<mt:var name="return_args" escape="url">" class="icon-left icon-create mt-open-dialog"><__trans phrase="Grant blog permission to a group"></a></li></__trans_section>
+</mt:if>
+</ul>
+
+<div class="actions-bar">
+  <form action="" method="get" onsubmit="return false">
+    <button
+       type="submit"
+       accesskey="x"
+       class="cancel action mt-close-dialog"
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </form>
+</div>
+
+<mt:include name="dialog/footer.tmpl">

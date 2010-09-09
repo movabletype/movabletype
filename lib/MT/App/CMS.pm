@@ -241,16 +241,17 @@ sub core_methods {
         reply_preview => "${pkg}Comment::reply_preview",
 
         ## Dialogs
-        'dialog_restore_upload'  => "${pkg}Tools::dialog_restore_upload",
-        'dialog_adjust_sitepath' => "${pkg}Tools::dialog_adjust_sitepath",
-        'dialog_post_comment'    => "${pkg}Comment::dialog_post_comment",
-        'dialog_select_weblog'   => "${pkg}Blog::dialog_select_weblog",
-        'dialog_select_website'  => "${pkg}Website::dialog_select_website",
-        'dialog_select_theme'    => "${pkg}Theme::dialog_select_theme",
-        'dialog_select_sysadmin' => "${pkg}User::dialog_select_sysadmin",
-        'dialog_grant_role'      => "${pkg}User::dialog_grant_role",
-        'dialog_select_author'   => "${pkg}User::dialog_select_author",
-        'dialog_list_asset'      => "${pkg}Asset::dialog_list_asset",
+        'dialog_restore_upload'    => "${pkg}Tools::dialog_restore_upload",
+        'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
+        'dialog_post_comment'      => "${pkg}Comment::dialog_post_comment",
+        'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
+        'dialog_select_website'    => "${pkg}Website::dialog_select_website",
+        'dialog_select_theme'      => "${pkg}Theme::dialog_select_theme",
+        'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
+        'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
+        'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
+        'dialog_select_author'     => "${pkg}User::dialog_select_author",
+        'dialog_list_asset'        => "${pkg}Asset::dialog_list_asset",
 
         ## AJAX handlers
         'delete_map'        => "${pkg}Template::delete_map",
@@ -476,6 +477,59 @@ sub init_request {
     }
 }
 
+sub core_content_actions {
+    my $app = shift;
+    return {
+        'ping' => {
+            'empty_junk' => {
+                mode => 'empty_junk',
+                class => 'icon-action',
+                label => 'Delete all Spam trackbacks',
+                order => 100,
+            },
+        },
+        'comment' => {
+            'empty_junk' => {
+                mode => 'empty_junk',
+                class => 'icon-action',
+                label => 'Delete all Spam comments',
+                order => 100,
+            },
+        },
+        'role' => {
+            'create_role' => {
+                mode => 'view',
+                class => 'icon-create',
+                label => 'Create Role',
+                order => 100,
+            }
+        },
+        'association' => {
+            'grant_role' => {
+                class => 'icon-create',
+                label      => 'Grant Permission',
+                mode       => 'dialog_select_assoc_type',
+                order      => 100,
+                dialog => 1,
+            },
+        },
+        'log' => {
+            'reset_log' => {
+                class => 'icon-action',
+                label      => 'Clear Activity Log',
+                mode       => 'reset_log',
+                order      => 100,
+            },
+            'download_log' => {
+                class => 'icon-download',
+                label      => 'Download Log (CSV)',
+                mode       => 'export_log',
+                order      => 200,
+            },
+        },
+    };
+}
+
 sub core_list_actions {
     my $app = shift;
     my $pkg = '$Core::MT::CMS::';
@@ -533,9 +587,9 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    $app->param('blog_id')
-                        ? $app->can_do('publish_post') || $app->can_do('rebuild')
-                        : 0;
+                    return 0 unless $app->blog;
+                    return 0 unless $app->blog->site_path;
+                    return 1 if $app->can_do('publish_post') || $app->can_do('rebuild');
                 },
             },
             'delete' => {
@@ -598,9 +652,9 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    $app->param('blog_id')
-                        ? $app->can_do('manage_pages') || $app->can_do('rebuild')
-                        : $app->user->is_superuser;
+                    return 0 unless $app->blog;
+                    return 0 unless $app->blog->site_path;
+                    return 1 if $app->can_do('publish_post') || $app->can_do('rebuild');
                 },
             },
             'delete' => {
@@ -657,15 +711,6 @@ sub core_list_actions {
                     return $app->mode ne 'view';
                 },
             },
-            'empty_spam' => {
-                label      => "Delete all Spam comments",
-                order      => 130,
-                code       => "${pkg}Comment::empty_junk",
-                permit_action => 'edit_all_trackbacks',
-                condition   => sub {
-                    return $app->mode ne 'view';
-                },
-            },
             'unapprove_ping' => {
                 label         => "Unpublish TrackBack(s)",
                 order         => 100,
@@ -713,15 +758,6 @@ sub core_list_actions {
                 order      => 120,
                 code       => "${pkg}Comment::not_junk",
                 permit_action => 'edit_all_comments',
-                condition   => sub {
-                    return $app->mode ne 'view';
-                },
-            },
-            'empty_spam' => {
-                label      => "Delete all Spam comments",
-                order      => 130,
-                code       => "${pkg}Comment::empty_junk",
-                permit_action => 'delete_junk_comments',
                 condition   => sub {
                     return $app->mode ne 'view';
                 },
@@ -794,17 +830,45 @@ sub core_list_actions {
             },
         },
         'commenter' => {
+            'trust' => {
+                label      => "Trust Commenter(s)",
+                order      => 100,
+                code       => "${pkg}Comment::trust_commenter",
+                permit_action => 'edit_commenter_status',
+                condition => sub {
+                    return 0 if $app->blog;
+                    return $app->user->is_superuser ? 1 : 0;
+                },
+           },
             'untrust' => {
                 label      => "Untrust Commenter(s)",
-                order      => 100,
+                order      => 200,
                 code       => "${pkg}Comment::untrust_commenter",
-                permit_action => 'untrust_commenters_via_list',
+                permit_action => 'edit_commenter_status',
+                condition => sub {
+                    return 0 if $app->blog;
+                    return $app->user->is_superuser ? 1 : 0;
+                },
+            },
+            'ban' => {
+                label      => "Ban Commenter(s)",
+                order      => 300,
+                code       => "${pkg}Comment::ban_commenter",
+                permit_action => 'edit_commenter_status',
+                condition => sub {
+                    return 0 if $app->blog;
+                    return $app->user->is_superuser ? 1 : 0;
+                },
             },
             'unban' => {
                 label      => "Unban Commenter(s)",
-                order      => 200,
+                order      => 400,
                 code       => "${pkg}Comment::unban_commenter",
-                permit_action => 'unban_commenters_via_list',
+                permit_action => 'edit_commenter_status',
+                condition => sub {
+                    return 0 if $app->blog;
+                    return $app->user->is_superuser ? 1 : 0;
+                },
             },
         },
         'author' => {
@@ -1002,6 +1066,36 @@ sub core_list_actions {
             },
         },
         'association' => {
+            'delete' => {
+                label      => 'Revoke Permission',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'role' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'tag' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'tag' => {
             'delete' => {
                 label      => 'Delete',
                 code       => "${pkg}Common::delete",

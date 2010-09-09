@@ -1758,6 +1758,19 @@ sub dialog_grant_role {
     }
 }
 
+sub dialog_select_assoc_type {
+    my $app = shift;
+    my $params;
+
+    $params->{return_args} = '__mode=list&_type=association&blog_id=0';
+
+    my $group = MT->registry( 'object_types', 'group' );
+    $params->{has_group} = $group ? 1 : 0;
+
+    $app->load_tmpl( 'dialog/select_association_type.tmpl', $params );
+}
+
+
 sub remove_userpic {
     my $app = shift;
     $app->validate_magic() or return;

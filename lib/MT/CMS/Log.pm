@@ -237,7 +237,7 @@ sub reset {
     $app->validate_magic() or return;
     my $author = $app->user;
     my $log_class = $app->model('log');
-    my $args = { 'reset' => 1 };
+    my $args = { 'reset' => 1, '_type' => 'log' };
     if ( my $blog_id = $app->param('blog_id') ) {
         my $perms = $app->permissions;
         return $app->permission_denied()
@@ -277,7 +277,7 @@ sub reset {
             );
         }
     }
-    my $log_url = $app->uri( mode => 'view_log', args => $args );
+    my $log_url = $app->uri( mode => 'list', args => $args );
     $app->redirect( $log_url );
 }
 

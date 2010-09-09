@@ -1331,6 +1331,7 @@ BEGIN {
                 handler      => 'MT::App::CMS',
                 cgi_base     => 'mt',
                 page_actions => sub { MT->app->core_page_actions(@_) },
+                content_actions => sub { MT->app->core_content_actions(@_) },
                 list_actions => sub { MT->app->core_list_actions(@_) },
                 list_filters => sub { MT->app->core_list_filters(@_) },
                 search_apis  => sub {
@@ -2121,6 +2122,7 @@ sub load_core_permissions {
                 'use_tools:search'               => 1,
                 'open_system_check_screen'       => 1,
                 'use_tools:system_info_menu'     => 1,
+                'edit_commenter_status'          => 1,
             }
         },
         'system.create_blog' => {

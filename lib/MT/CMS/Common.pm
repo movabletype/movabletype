@@ -928,6 +928,7 @@ sub list {
     my $template = $screen_settings->{template} || 'list_common.tmpl';
 
     $app->load_list_actions( $type, \%param );
+    $app->load_content_actions( $type, \%param );
     $app->load_tmpl( $template, \%param );
 }
 
