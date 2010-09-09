@@ -497,7 +497,6 @@ BEGIN {
                 },
                 author_name => {
                     label => 'Author',
-                    order => 500,
                     display   => 'default',
                     base  => '__virtual.string',
                     raw   => sub {
@@ -705,6 +704,7 @@ BEGIN {
                 },
                 blog_name => {
                     label => 'Blog Name',
+                    order => 10000,
                     display => 'default',
                     bulk_html => sub {
                         my $prop = shift;
@@ -734,6 +734,7 @@ BEGIN {
                 },
                 current_user => {
                     label => 'My Items',
+                    order => 20000,
                     display => 'none',
                     filter_editable => 0,
                     condition => sub {
@@ -750,6 +751,7 @@ BEGIN {
                 },
                 current_context => {
                     label => 'This Context Only',
+                    order => 30000,
                     display => 'none',
                     filter_tmpl => '',
                     filter_editable => 1,
@@ -806,17 +808,14 @@ BEGIN {
         listing_screens => {
             website => {
                 object_label => 'Website',
+                primary      => 'name',
                 view => 'system',
-                columns
-                    => [qw( name blog_count page_count )],
                 default_sort_key => 'name',
                 permission => 'access_to_website_list'
             },
             blog => {
                 object_label => 'Blog',
                 view => [qw( system website )],
-                columns
-                    => [qw( name entry_count page_count )],
                 primary => 'name',
                 default_sort_key => 'name',
                 permission => 'access_to_blog_list'
@@ -824,34 +823,28 @@ BEGIN {
             entry => {
                 object_label  => 'Entry',
                 primary       => 'title',
-                columns       =>
-                    [qw( title author_name blog_name category authored_on comment_count )],
                 default_sort_key => 'authored_on',
                 permission    => "access_to_entry_list",
             },
             page => {
                 object_label => 'Page',
-                columns => [qw( title created_on )],
                 default_sort_key => 'modified_on',
                 permission => 'access_to_page_list'
             },
             asset => {
                 object_label => 'Asset',
                 primary => 'label',
-                columns => [qw( id label created_on )],
                 permission => 'access_to_asset_list',
                 default_sort_key => 'created_on',
             },
             log => {
                 object_label => 'Log',
-                columns => [qw( created_on message by )],
                 default_sort_key => 'created_on',
                 primary    => 'message',
                 permission => 'access_to_log_list'
             },
             category => {
                 object_label => 'Category',
-                columns      => [qw( id parent label entry_count )],
                 primary      => 'label',
                 template     => 'category.tmpl',
                 contents_label        => 'Entry',
@@ -860,7 +853,6 @@ BEGIN {
             },
             folder => {
                 object_label => 'Folder',
-                columns      => [qw( parent label entry_count )],
                 template     => 'category.tmpl',
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
@@ -868,20 +860,18 @@ BEGIN {
             },
             comment => {
                 object_label => 'Comment',
-                columns => [qw( comment commenter )],
                 default_sort_key => 'comment',
                 permission => 'access_to_comment_list',
+                primary => 'comment',
             },
             ping => {
                 object_label => 'Trackback',
-                columns => [qw( excerpt target created_on )],
                 default_sort_key => 'created_on',
                 permission => 'access_to_trackback_list',
             },
             author => {
                 object_label => 'Author',
                 primary      => 'name',
-                columns      => [qw( name nickname entry_count comment_count created_by )],
                 permission   => 'access_to_member_list',
                 default_sort_key => 'name',
                 view         => 'system',
@@ -889,7 +879,6 @@ BEGIN {
             commenter => {
                 object_label => 'Commenter',
                 object_type  => 'author',
-                columns      => [qw( name nickname )],
                 permission   => 'access_to_commenter_list',
                 default_sort_key => 'name',
                 condition => sub {
@@ -899,7 +888,6 @@ BEGIN {
             member => {
                 object_label => 'Member',
                 object_type  => 'permission',
-                columns      => [qw( name nickname )],
                 permission   => 'access_to_blog_member_list',
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],
@@ -908,21 +896,19 @@ BEGIN {
                 object_label => 'Tag',
                 permission => 'access_to_tag_list',
                 default_sort_key => 'name',
-                columns => [qw( name entry_count page_count asset_count )],
             },
             association => {
                 object_label => 'Permission',
                 object_type => 'association',
                 permission => 'access_to_permission_list',
-                columns => [qw( user_name role_name )],
                 default_sort_key => 'created_on',
             },
             role => {
                 object_label => 'Role',
                 object_type => 'role',
+                primary    => 'name',
                 permission => 'access_to_role_list',
                 default_sort_key => 'name',
-                columns => [qw( name association_conut )],
             },
             banlist => {
                 object_label => 'IP Ban',
@@ -931,10 +917,9 @@ BEGIN {
                     return 1 if MT->config('ShowIPInformation');
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
+                primary => 'ip',
                 permission => 'access_to_banlist',
-                columns => [qw( ip )],
                 default_sort_key => 'created_on',
-
             },
             notification => {
                 object_label => 'AddressBook',
@@ -943,8 +928,8 @@ BEGIN {
                     return 1 if MT->config('EnableAddressbook');
                     $app->errtrans('Address Book is disabled by system configuration.');
                 },
-                columns => [qw( email url )],
                 permission => 'access_to_addressbook',
+                primary => [ 'email', 'url' ],
                 default_sort_key => 'created_on',
             },
         },

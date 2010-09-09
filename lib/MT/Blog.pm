@@ -141,9 +141,15 @@ sub class_label_plural {
 
 sub list_props {
     return {
+        id => {
+            base  => '__virtual.id',
+            order => 100,
+        },
         name => {
             auto => 1,
             label => 'Name',
+            order => 200,
+            display => 'force',
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $app->uri(
@@ -154,13 +160,9 @@ sub list_props {
                 );
             },
         },
-        description => {
-            auto    => 1,
-            label   => 'Description',
-            display => 'none',
-        },
         entry_count => {
             label => 'Entries',
+            order => 300,
             base  => '__virtual.object_count',
             count_class => 'entry',
             count_col   => 'blog_id',
@@ -169,14 +171,26 @@ sub list_props {
         },
         page_count => {
             label => 'Pages',
+            order => 400,
             base  => '__virtual.object_count',
             count_class => 'page',
             count_col   => 'blog_id',
             filter_type => 'blog_id',
             list_screen => 'page',
         },
+        asset_count => {
+            label => 'Assets',
+            order => 500,
+            base  => '__virtual.object_count',
+            count_class => 'asset',
+            count_col   => 'blog_id',
+            filter_type => 'blog_id',
+            list_screen => 'asset',
+            count_args  => { no_class => 1 },
+        },
         comment_count => {
             label => 'Comments',
+            order => 600,
             base  => '__virtual.object_count',
             count_class => 'comment',
             count_col   => 'blog_id',
@@ -185,6 +199,7 @@ sub list_props {
         },
         member_count => {
             label => 'Members',
+            order => 700,
             base  => '__virtual.object_count',
             count_class => 'permission',
             count_col   => 'blog_id',
@@ -192,14 +207,23 @@ sub list_props {
             list_screen => 'member',
             count_terms => { author_id => { not => 0 } },
         },
-        asset_count => {
-            label => 'Assets',
-            base  => '__virtual.object_count',
-            count_class => 'asset',
-            count_col   => 'blog_id',
-            filter_type => 'blog_id',
-            list_screen => 'asset',
-            count_args  => { no_class => 1 },
+        parent_website => {
+            view => [ 'system' ],
+            label => 'Website',
+            order => 800,
+            raw => sub {
+                my ( $prop, $obj ) = @_;
+                return $obj->website->name;
+            },
+        },
+        created_on  => {
+            base  => '__virtual.created_on',
+            order => 900,
+        },
+        description => {
+            auto    => 1,
+            label   => 'Description',
+            display => 'none',
         },
         site_url => {
             auto  => 1,
@@ -231,18 +255,6 @@ sub list_props {
                     values %$themes
                 ];
             },
-        },
-        id => { base => '__virtual.id', },
-        parent_website => {
-            view => [ 'system' ],
-            label => 'Website',
-            raw => sub {
-                my ( $prop, $obj ) = @_;
-                return $obj->website->name;
-            },
-        },
-        created_on  => {
-            base    => '__virtual.created_on',
         },
         modified_on => {
             display => 'none',

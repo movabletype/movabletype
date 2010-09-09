@@ -72,32 +72,11 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        id => { view => [] },
-        created_on => { base => '__virtual.created_on' },
-        modified_on => {
-            auto    => 1,
-            label   => 'Modeified on',
-            display => 'none' },
-        from => {
-            label => 'From',
-            view_filter => [],
-            sort  => sub {
-                my $prop = shift;
-                my ( $terms, $args ) = @_;
-                my $dir = $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
-                $args->{sort} = [
-                    { column => 'blog_name', desc => $dir },
-                    { column => 'title', desc => $dir },
-                ];
-            },
-        },
-        author_name => {
-            condition => sub {0},
-        },
         excerpt => {
             label => 'Excerpt',
             auto => 1,
             display => 'force',
+            order => 100,
             html  => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $text = MT::Util::remove_html($obj->excerpt);
@@ -145,25 +124,19 @@ sub list_props {
         ip => {
             label => 'IP',
             auto  => 1,
+            order => 200,
             condition => sub { MT->config->ShowIPInformation },
         },
-        source_blog_name => {
-            label => 'Sender blog name',
-            col   => 'blog_name',
-            display => 'none',
-            base  => '__virtual.string',
-        },
-        status => {
-            base  => 'comment.status',
-        },
-        title => {
-            label => 'Sender title',
-            auto  => 1,
-            display => 'none',
+        blog_name => {
+            base    => '__common.blog_name',
+            display => 'default',
+            order   => 300,
         },
         target => {
-            label => 'Target',
-            base  => '__virtual.string',
+            label   => 'Target',
+            display => 'default',
+            order   => 400,
+            base    => '__virtual.string',
             bulk_html  => sub {
                 my ( $prop, $objs, $app ) = @_;
                 my %tbs = map { $_->tb_id => 1 } @$objs;
@@ -213,6 +186,45 @@ sub list_props {
                 }
                 @res;
             },
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'default',
+            order   => 500,
+        },
+        modified_on => {
+            auto    => 1,
+            label   => 'Modeified on',
+            display => 'none' },
+        from => {
+            label => 'From',
+            view_filter => [],
+            sort  => sub {
+                my $prop = shift;
+                my ( $terms, $args ) = @_;
+                my $dir = $args->{direction} eq 'descend' ? 'DESC' : 'ASC';
+                $args->{sort} = [
+                    { column => 'blog_name', desc => $dir },
+                    { column => 'title', desc => $dir },
+                ];
+            },
+        },
+        author_name => {
+            condition => sub {0},
+        },
+        source_blog_name => {
+            label => 'Sender blog name',
+            col   => 'blog_name',
+            display => 'none',
+            base  => '__virtual.string',
+        },
+        status => {
+            base  => 'comment.status',
+        },
+        title => {
+            label => 'Sender title',
+            auto  => 1,
+            display => 'none',
         },
         entry_id => {
             base => '__virtual.integer',

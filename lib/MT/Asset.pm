@@ -46,37 +46,14 @@ sub list_default_terms {{
 
 sub list_props {
     return {
-        id => { base => '__virtual.id' },
-        created_on => { base => '__virtual.created_on' },
-        author_name => { base => '__virtual.author_name' },
-        modified_on => {
-            base    => '__virtual.modified_on',
-            display => 'none',
-        },
-        class => {
-            label => 'Class',
-            col   => 'class',
-            display => 'none',
-            base  => '__virtual.single_select',
-            terms => sub {
-                my $prop   = shift;
-                my ($args, $db_terms, $db_args) = @_;
-                my $col    = $prop->{col} or die;
-                my $value  = $args->{value};
-                $db_args->{no_class} = 1;
-                return { $col => $value };
-            },
-            ## FIXME: Get these values from registry or somewhere...
-            single_select_options => [
-                { label => 'Image', value => 'image', },
-                { label => 'Audio', value => 'audio', },
-                { label => 'Video', value => 'video', },
-                { label => 'File',  value => 'file', },
-            ],
+        id => {
+            base  => '__virtual.id',
+            order => 100,
         },
         label => {
             auto      => 1,
             label     => 'Label',
+            order     => 200,
             display   => 'force',
             html => sub {
                 my $prop = shift;
@@ -110,6 +87,46 @@ sub list_props {
                 };
                 return qq{<a href="$edit_link">$label</a>};
             },
+        },
+        author_name => {
+            base  => '__virtual.author_name',
+            order => 300,
+        },
+        blog_name => {
+            base    => '__virtual.blog_name',
+            order   => 400,
+            display => 'default',
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            order   => 500,
+            display => 'default',
+        },
+
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        class => {
+            label => 'Class',
+            col   => 'class',
+            display => 'none',
+            base  => '__virtual.single_select',
+            terms => sub {
+                my $prop   = shift;
+                my ($args, $db_terms, $db_args) = @_;
+                my $col    = $prop->{col} or die;
+                my $value  = $args->{value};
+                $db_args->{no_class} = 1;
+                return { $col => $value };
+            },
+            ## FIXME: Get these values from registry or somewhere...
+            single_select_options => [
+                { label => 'Image', value => 'image', },
+                { label => 'Audio', value => 'audio', },
+                { label => 'Video', value => 'video', },
+                { label => 'File',  value => 'file', },
+            ],
         },
         description => {
             auto => 1,

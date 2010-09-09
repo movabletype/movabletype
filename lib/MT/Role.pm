@@ -50,6 +50,8 @@ sub list_props {
         name => {
             auto  => 1,
             label => 'Name',
+            display => 'force',
+            order   => 100,
             html_link => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -62,12 +64,11 @@ sub list_props {
                 });
             },
         },
-        created_on => {
-            base => '__virtual.created_on',
-        },
         association_count => {
             base        => '__virtual.object_count',
             label       => 'Associations',
+            display     => 'default',
+            order       => 200,
             count_class => 'association',
             count_col   => 'role_id',
             filter_type => 'role_id',
@@ -76,6 +77,10 @@ sub list_props {
             auto => 1,
             label => 'Desctription',
             display => 'none',
+        },
+        created_on => {
+            base => '__virtual.created_on',
+            order => 300,
         },
     };
 }

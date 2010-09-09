@@ -28,9 +28,21 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        name          => { base => 'blog.name' },
-        description   => { base => 'blog.description' },
-        entry_count   => { view => [] },
+        id            => {
+            base  => 'blog.id',
+        },
+        name          => {
+            base  => 'blog.name',
+        },
+        blog_count => {
+            label => 'Blogs',
+            order => 200,
+            base  => '__virtual.object_count',
+            count_class => 'blog',
+            count_col   => 'parent_id',
+            filter_type => 'blog_id',
+            list_screen => 'blog',
+        },
         page_count    => {
             base => 'blog.page_count',
             html_link => sub {
@@ -40,6 +52,8 @@ sub list_props {
                 $link . '&filter=current_context';
             },
         },
+        description   => { base => 'blog.description' },
+        entry_count   => { view => [] },
         asset_count   => {
             base => 'blog.asset_count',
             html_link => sub {
@@ -85,14 +99,6 @@ sub list_props {
         modified_on   => { base => 'blog.modified_on' },
         site_url      => { base => 'blog.site_url' },
         site_path     => { base => 'blog.site_path' },
-        blog_count => {
-            label => 'Blogs',
-            base  => '__virtual.object_count',
-            count_class => 'blog',
-            count_col   => 'parent_id',
-            filter_type => 'blog_id',
-            list_screen => 'blog',
-        },
     };
 }
 

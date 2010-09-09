@@ -107,15 +107,58 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 sub list_props {
     return {
         name => {
-            auto => 1,
-            label => 'Name',
-            html => \&_author_name_html,
+            auto    => 1,
+            label   => 'Name',
+            display => 'force',
+            order   => 100,
+            html    => \&_author_name_html,
         },
         nickname => {
-            auto => 1,
-            label => 'Nickname',
+            auto      => 1,
+            label     => 'Nickname',
+            display   => 'default',
+            order     => 200,
             bulk_html => \&_nickname_bulk_html,
         },
+        entry_count => {
+            label       => 'Entries',
+            display     => 'default',
+            order       => 300,
+            base        => '__virtual.object_count',
+            col_class   => 'num',
+            count_class => 'entry',
+            count_col   => 'author_id',
+            filter_type => 'author_id',
+        },
+        comment_count => {
+            base => 'author.entry_count',
+            label => 'Comments',
+            display     => 'default',
+            order       => 400,
+            count_class => 'comment',
+            count_col   => 'commenter_id',
+            filter_type => 'commenter_id',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                MT->model( $prop->count_class )->count({ commenter_id => $obj->id });
+            },
+        },
+        author_name => {
+            base => '__virtual.author_name',
+            label => 'Created by',
+            display     => 'default',
+            order       => 500,
+            view_filter => [],
+        },
+        created_on => {
+            base => '__virtual.created_on',
+            order => 600,
+        },
+        modified_on => {
+            base => '__virtual.modified_on',
+            order => 700,
+        },
+
         status => {
             base => '__virtual.single_select',
             display => 'none',
@@ -131,11 +174,6 @@ sub list_props {
                 { label => 'Pending Users',  value => '3', },
             ],
         },
-        author_name => {
-            base => '__virtual.author_name',
-            label => 'Created by',
-            view_filter => [],
-        },
         url => {
             auto => 1,
             display => 'none',
@@ -143,25 +181,6 @@ sub list_props {
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
                 return $obj->url;
-            },
-        },
-        entry_count => {
-            label => 'Entries',
-            base => '__virtual.object_count',
-            col_class => 'num',
-            count_class => 'entry',
-            count_col   => 'author_id',
-            filter_type => 'author_id',
-        },
-        comment_count => {
-            base => 'author.entry_count',
-            label => 'Comments',
-            count_class => 'comment',
-            count_col   => 'commenter_id',
-            filter_type => 'commenter_id',
-            raw   => sub {
-                my ( $prop, $obj ) = @_;
-                MT->model( $prop->count_class )->count({ commenter_id => $obj->id });
             },
         },
         privilege => {
@@ -224,10 +243,11 @@ sub system_filters {
 
 sub commenter_list_props {
     return {
-        id => {},
         name => {
             auto => 1,
             label => 'Name',
+            display => 'force',
+            order => 100,
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my ($status_img, $status_label);
@@ -275,9 +295,27 @@ sub commenter_list_props {
                 return $out;
             },
         },
-        nickname      => { base => 'author.nickname' },
-        comment_count => { base => 'author.comment_count' },
-        author_name   => { base => 'author.author_name' },
+        nickname      => {
+            base  => 'author.nickname',
+            order => 200,
+        },
+        comment_count => {
+            base  => 'author.comment_count',
+            order => 300,
+        },
+        author_name   => {
+            base  => 'author.author_name',
+            order => 400,
+        },
+        created_on => {
+            base  => '__virtual.created_on',
+            order => 500,
+        },
+        modified_on => {
+            base  => '__virtual.modified_on',
+            order => 600,
+        },
+
         email         => { base => 'author.email' },
         status => {
             base => '__virtual.single_select',

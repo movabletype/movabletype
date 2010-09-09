@@ -40,8 +40,22 @@ sub ban_ip {
 
 sub list_props {
     return {
-        ip => 'IP Address',
-        created_on => 'Created on',
+        ip => {
+            auto    => 1,
+            label   => 'IP Address',
+            display => 'force',
+            order   => 100,
+        },
+        blog_name => {
+            base    => '__virtual.blog_name',
+            display => 'default',
+            order   => 200,
+        },
+        created_on => {
+            base    => '__virtual.created_on',
+            display => 'default',
+            order   => 300,
+        },
     };
 }
 

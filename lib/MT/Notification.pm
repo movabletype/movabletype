@@ -42,6 +42,8 @@ sub list_props {
         email => {
             auto => 1,
             label => 'Email',
+            display => 'force',
+            order   => 100,
             html => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -60,6 +62,8 @@ sub list_props {
         url => {
             auto => 1,
             label => 'URL',
+            display => 'default',
+            order   => 200,
             html => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
@@ -93,7 +97,15 @@ sub list_props {
                 };
             },
         },
-        created_on => { base => '__virtual.created_on' },
+        blog_name => {
+            base  => '__common.blog_name',
+            order => 300,
+        },
+        created_on => {
+            base => '__virtual.created_on',
+            display => 'default',
+            order   => 400,
+        },
         modified_on => {
             base => '__virtual.modified_on',
             display => 'none',

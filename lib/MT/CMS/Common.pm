@@ -772,10 +772,6 @@ sub list {
     my $list_pref = $list_prefs->{$type}{$blog_id} || {};
     ## FIXME: Hardcoded
     my $rows = $list_pref->{rows} || 50;
-    my $columns = $list_pref->{columns} || $screen_settings->{columns} || [];
-    my %cols = map { $_ => 1 } @$columns;
-    my $i = 1;
-    my %col_order = map { $_ => $i++ } @$columns;
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
     my $initial_sys_filter = $q->param('filter_key');
@@ -812,50 +808,46 @@ sub list {
         $initial_filter = $filter->to_hash if $filter;
     }
 
-    my @list_columns
-        =
-        sort {
-              !$col_order{$a->id} ? 1
-            : !$col_order{$b->id} ? -1
-            :  $col_order{$a->id} <=> $col_order{$b->id}
-        }
-        grep {
-            $_->can_display( $scope )
-        }
-        values %$list_props;
+    my $columns = $list_pref->{columns} || [];
+    my %cols = map { $_ => 1 } @$columns;
 
-    my $primary_col = $screen_settings->{primary} || [ @{$screen_settings->{columns} || [] } ]->[0];
-    for my $col (@list_columns) {
-        my $display = $col->display || 'optional';
-        if ( $display eq 'force' ) {
-            $col->{force_display} = 1;
-            $col->{display}       = 1;
-        }
-        elsif ( scalar %cols ) {
-            $col->{force_display} = 0;
-            $col->{display} = $cols{$col->id};
-        }
-        else {
-            $col->{force_display} = 0;
-            $col->{display} = 0;
-
-        }
-        $col->{sortable} = $col->can_sort( $scope );
-    }
-
+    my $primary_col = $screen_settings->{primary};
+    $primary_col ||= [ @{$screen_settings->{columns} || [] } ]->[0];
+    $primary_col = [ $primary_col ] unless ref $primary_col;
+    my %primary_col = map { $_ => 1 } @$primary_col;
     my $default_sort = $screen_settings->{default_sort_key};
-    @list_columns = map {{
-        id                 => $_->id,
-        type               => $_->type,
-        label              => $_->label,
-        primary            => $_->id eq $primary_col ? 1 : 0,
-        col_class          => $_->col_class,
-        sortable           => $_->sortable,
-        sorted             => $_->id eq $default_sort ? 1 : 0,
-        display            => $_->display,
-        force_display      => $_->force_display,
-        default_sort_order => $_->default_sort_order,
-    }} @list_columns;
+
+    my @list_columns;
+    for my $prop ( values %$list_props ) {
+        next if !$prop->can_display($scope);
+        my $col;
+        my $id = $prop->id;
+        my $disp = $prop->display || 'optional';
+        my $show = $disp eq 'force'   ? 1
+                 : $disp eq 'none'    ? 0
+                 : scalar %cols       ? $cols{$id}
+                 : $disp eq 'default' ? 1
+                 :                      0;
+        my $force = $disp eq 'force' ? 1 : 0;
+        push @list_columns, {
+            id                 => $prop->id,
+            type               => $prop->type,
+            label              => $prop->label,
+            primary            => $primary_col{$id} ? 1 : 0,
+            col_class          => $prop->col_class,
+            sortable           => $prop->can_sort,
+            sorted             => $prop->id eq $default_sort ? 1 : 0,
+            display            => $show,
+            force_display      => $force,
+            default_sort_order => $prop->default_sort_order || 'ascend',
+            order              => $prop->order,
+        };
+    }
+    @list_columns = sort {
+          !$a->{order}  ?  1
+        : !$b->{order}  ?  -1
+        :                  $a->{order}  <=> $b->{order}
+    } @list_columns;
 
     my @filter_types =
         map {{

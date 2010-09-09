@@ -204,21 +204,15 @@ sub container_label {
 
 sub list_props {
     return {
-        text => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Body',
-        },
-        text_more => {
-            auto    => 1,
-            display => 'none',
-            label   => 'Extended',
+        id => {
+            base  => '__virtual.id',
+            order => 100,
         },
         title => {
             auto  => 1,
             label => 'Title',
             display => 'force',
-            order => 100,
+            order => 200,
             sub_fields => [
                 {
                     id    => 'status',
@@ -294,36 +288,125 @@ sub list_props {
                 return $out;
             },
         },
-        authored_on => 'Created',
-        status => {
-            label => 'Status',
-            col  => 'status',
-            display => 'none',
-            col_class => 'icon',
-            base => '__virtual.single_select',
-            single_select_options => [
-                { label => 'Draft',     value => 1, },
-                { label => 'Published', value => 2, },
-                { label => 'Reviewing', value => 3, },
-                { label => 'Future',    value => 4, },
-                { label => 'Junk',      value => 5, },
-            ],
+        author_name => {
+            base  => '__virtual.author_name',
+            order => 300,
+            display => 'default',
         },
-        created_on => {
-            base => '__virtual.created_on',
-            display   => 'none',
+        blog_name => {
+            base  => '__common.blog_name',
+            display => 'default',
+            order => 400,
         },
-        basename => {
-            label => 'Basename',
-            display => 'none',
+        category => {
+            label => 'Category',
+            order => 500,
+            display   => 'default',
+            base  => '__virtual.single_select',
+            col_class => 'string',
+            view_filter => 'blog',
+            category_class => 'category',
+            zero_state_label => '-',
+            bulk_html => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                my @entry_ids  = map { $_->id } @$objs;
+                my @placements = MT->model('placement')->load({
+                    entry_id   => \@entry_ids,
+                }, {
+                    fetchonly => {
+                        entry_id    => 1,
+                        category_id => 1,
+                }});
+                my %placements = map { $_->entry_id => $_->category_id } @placements;
+                my @cat_ids    = map { $_->category_id } @placements;
+                my @categories = MT->model($prop->category_class)->load({ id => \@cat_ids }, {
+                    fetchonly => {
+                        id    => 1,
+                        label => 1,
+                }});
+                my %categories = map { $_->id => $_->label } @categories;
+                return map { $categories{  $placements{$_->id} } || $prop->zero_state_label } @$objs;
+            },
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                my $cat = $obj->category;
+                return $cat ? $cat->label : '';
+            },
+            #condition => sub {
+            #    my $app = MT->app or return;
+            #    return !$app->blog         ? 0
+            #         : $app->blog->is_blog ? 1
+            #         :                       0
+            #         ;
+            #},
+            single_select_options => sub {
+                my ( $prop ) = shift;
+                my $blog = MT->app->blog;
+                my @categories = MT->model($prop->category_class)->load({
+                    blog_id => $blog->id,
+                });
+                return [
+                    {
+                        label => MT->translate('NONE'),
+                        value => 0,
+                    },
+                    map {{
+                        label => $_->label,
+                        value => $_->id,
+                    }} @categories ];
+            },
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $blog_id = MT->app->blog->id;
+                my $cat_id = $args->{value};
+                $db_args->{joins} ||= [];
+                if ( $cat_id == 0 ) {
+                    push @{ $db_args->{joins} },
+                        MT->model( 'placement' )->join_on(
+                            undef,
+                            {
+                                entry_id    => \'!= entry_id',
+                                blog_id     => $blog_id,
+                            },
+                            {
+                                unique => 1,
+                            },
+                    );
+                    return;
+                }
+                push @{ $db_args->{joins} },
+                    MT->model( 'placement' )->join_on(
+                        undef,
+                        {
+                            category_id => $cat_id,
+                            entry_id    => \'= entry_id',
+                            blog_id     => $blog_id,
+                        },
+                        {
+                            unique => 1,
+                        },
+                );
+                return;
+            },
+        },
+        authored_on => {
             auto  => 1,
+            display => 'default',
+            label => 'Created',
+            order => 600,
+        },
+        modified_on => {
+            base  => '__virtual.modified_on',
+            order => 700,
         },
         comment_count => {
-            base    => '__virtual.single_select',
-            col     => 'comment_count',
+            base      => '__virtual.single_select',
+            col       => 'comment_count',
             col_class => 'num',
-            display => 'optional',
-            label   => 'Comments',
+            display   => 'default',
+            label     => 'Comments',
+            order     => 800,
             terms => sub {
                 my ( $prop, $args ) = @_;
                 my $col = $prop->col;
@@ -348,9 +431,44 @@ sub list_props {
             },
         },
         ping_count => {
-            base  => 'entry.comment_count',
-            col   => 'ping_count',
-            label => 'Trackbacks',
+            base    => 'entry.comment_count',
+            display => 'optional',
+            col     => 'ping_count',
+            label   => 'Trackbacks',
+            order   => 900,
+        },
+        text => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Body',
+        },
+        text_more => {
+            auto    => 1,
+            display => 'none',
+            label   => 'Extended',
+        },
+        status => {
+            label => 'Status',
+            col  => 'status',
+            display => 'none',
+            col_class => 'icon',
+            base => '__virtual.single_select',
+            single_select_options => [
+                { label => 'Draft',     value => 1, },
+                { label => 'Published', value => 2, },
+                { label => 'Reviewing', value => 3, },
+                { label => 'Future',    value => 4, },
+                { label => 'Junk',      value => 5, },
+            ],
+        },
+        created_on => {
+            base => '__virtual.created_on',
+            display   => 'none',
+        },
+        basename => {
+            label => 'Basename',
+            display => 'none',
+            auto  => 1,
         },
         commented_on => {
             base          => '__virtual.date',
@@ -404,98 +522,6 @@ sub list_props {
             },
             sort => 0,
         },
-        category => {
-            label => 'Category',
-            order => 400,
-            display   => 'default',
-            base  => '__virtual.single_select',
-            col_class => 'string',
-            view_filter => 'blog',
-            category_class => 'category',
-            zero_state_label => '-',
-            bulk_html => sub {
-                my $prop = shift;
-                my ( $objs ) = @_;
-                my @entry_ids  = map { $_->id } @$objs;
-                my @placements = MT->model('placement')->load({
-                    entry_id   => \@entry_ids,
-                }, {
-                    fetchonly => {
-                        entry_id    => 1,
-                        category_id => 1,
-                }});
-                my %placements = map { $_->entry_id => $_->category_id } @placements;
-                my @cat_ids    = map { $_->category_id } @placements;
-                my @categories = MT->model($prop->category_class)->load({ id => \@cat_ids }, {
-                    fetchonly => {
-                        id    => 1,
-                        label => 1,
-                }});
-                my %categories = map { $_->id => $_->label } @categories;
-                return map { $categories{  $placements{$_->id} } || $prop->zero_state_label } @$objs;
-            },
-            raw   => sub {
-                my ( $prop, $obj ) = @_;
-                my $cat = $obj->category;
-                return $cat ? $cat->label : '';
-            },
-            condition => sub {
-                my $app = MT->app or return;
-                return !$app->blog         ? 0
-                     : $app->blog->is_blog ? 1
-                     :                       0
-                     ;
-            },
-            single_select_options => sub {
-                my ( $prop ) = shift;
-                my $blog = MT->app->blog;
-                my @categories = MT->model($prop->category_class)->load({
-                    blog_id => $blog->id,
-                });
-                return [
-                    {
-                        label => MT->translate('NONE'),
-                        value => 0,
-                    },
-                    map {{
-                        label => $_->label,
-                        value => $_->id,
-                    }} @categories ];
-            },
-            terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog_id = MT->app->blog->id;
-                my $cat_id = $args->{value};
-                $db_args->{joins} ||= [];
-                if ( $cat_id == 0 ) {
-                    push @{ $db_args->{joins} },
-                        MT->model( 'placement' )->join_on(
-                            undef,
-                            {
-                                entry_id    => \'!= entry_id',
-                                blog_id     => $blog_id,
-                            },
-                            {
-                                unique => 1,
-                            },
-                    );
-                    return;
-                }
-                push @{ $db_args->{joins} },
-                    MT->model( 'placement' )->join_on(
-                        undef,
-                        {
-                            category_id => $cat_id,
-                            entry_id    => \'= entry_id',
-                            blog_id     => $blog_id,
-                        },
-                        {
-                            unique => 1,
-                        },
-                );
-                return;
-            },
-        },
         author_id => {
             auto => 1,
             filter_editable => 0,
@@ -517,8 +543,6 @@ sub list_props {
                 return { option => 'equal', value => $app->param('filter_val') };
             },
         },
-        id => { base => '__virtual.id', },
-        modified_on => { base => '__virtual.modified_on', },
     };
 }
 

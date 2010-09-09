@@ -90,66 +90,71 @@ sub is_not_junk {
 
 sub list_props {
     return {
-        id => { view => [] },
-        modified_on => {
-            auto    => 1,
-            label   => 'Modeified on',
-            display => 'none'
-        },
-        created_on => {
-            auto    => 1,
-            label   => 'Created on',
-            display => 'none'
-        },
-        status => {
-            label => 'Status',
-            base => '__virtual.single_select',
-            col => 'visible',
-            display => 'none',
-            terms => sub {
-                my ( $prop, $args ) = @_;
-                return $args->{value} eq 'approved'  ? { visible => 1, junk_status => NOT_JUNK() }
-                     : $args->{value} eq 'moderated' ? { visible => 0, junk_status => NOT_JUNK() }
-                     : $args->{value} eq 'not_junk'  ? { junk_status => NOT_JUNK() }
-                     :                                 { junk_status => JUNK() }
-                     ;
+        comment => {
+            label => 'Comment',
+            order => 100,
+            display => 'force',
+            html  => sub {
+                my ( $prop, $obj, $app ) = @_;
+                my $text = MT::Util::remove_html($obj->text);
+                ## FIXME: Hard coded...
+                my $len  = 40;
+                if ( $len < length($text) ) {
+                    $text = substr($text, 0, $len);
+                    $text .= '...';
+                }
+                elsif ( !$text ) {
+                    $text = '...';
+                }
+                my $id  = $obj->id;
+                my $link = $app->uri(
+                    mode => 'view',
+                    args => {
+                        _type   => 'comment',
+                        id      => $id,
+                        blog_id => $obj->blog_id,
+                });
+                my $status_img = MT->static_path . 'images/status_icons/';
+                $status_img .= $obj->is_junk      ? 'warning.gif'
+                             : $obj->is_published ? 'success.gif'
+                             :                      'draft.gif';
+                my $status_class = $obj->is_junk      ? 'Junk'
+                                 : $obj->is_published ? 'Approved'
+                                 :                      'Unapproved';
+                my $lc_status_class = lc $status_class;
+
+                my $ts = $obj->created_on;
+                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
+                my $blog = $app ? $app->blog : undef;
+                my $is_relative = 1;
+                ## TBD: should do like this...
+                ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
+                my $date= $is_relative ? MT::Util::relative_date( $ts, time, $blog )
+                        :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
+
+                return qq{
+                    <div class="posted">
+                    <span class="status $lc_status_class">
+                      <img alt="$status_class" src="$status_img" />
+                    </span>
+                    <a href="$link">$date</a>
+                    </div>
+                    <p class="comment-text">$text</p>
+                };
             },
-            single_select_options => [
-                { label => 'Approved',         value => 'approved', },
-                { label => 'Unapproved',       value => 'moderated', },
-                { label => 'Not spam',         value => 'not_junk', },
-                { label => 'Reported as spam', value => 'junk', },
-            ],
-        },
-        ## Hide default author_name.
-        author_name => {
-            view => 'none',
-        },
-        commenter_id => {
-            auto => 1,
-            filter_editable => 0,
-            display => 'none',
-            label => 'Commenter ID',
-            label_via_param => sub {
+            sort => sub {
                 my $prop = shift;
-                my ( $app ) = @_;
-                my $author_id = $app->param('filter_val');
-                my $author    = MT->model('author')->load($author_id);
-                return MT->translate(
-                    'Comments by [_1]',
-                    $author->nickname,
-                );
+                my ( $terms, $args ) = @_;
+                $args->{sort} = 'created_on';
+                return;
             },
-            args_via_param => sub {
-                my $prop  = shift;
-                my ($app) = @_;
-                return { option => 'equal', value => $app->param('filter_val') };
-            },
+            default_sort_order => 'descend',
         },
         author => {
             label => 'Commenter',
+            order => 200,
             auto  => 1,
-            display => 'force',
+            display => 'default',
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my $name = MT::Util::remove_html( $obj->author );
@@ -242,11 +247,23 @@ sub list_props {
                 };
             }
         },
+        ip => {
+            auto  => 1,
+            order => 300,
+            label => 'IP',
+            condition => sub { MT->config->ShowIPInformation },
+        },
+        blog_name => {
+            base  => '__common.blog_name',
+            order => 400,
+        },
         entry => {
             label => 'Entry/Page',
             base => '__virtual.integer',
             col_class => 'string',
             filter_editable => 0,
+            order => 500,
+            display => 'default',
             sort => sub {
                 my $prop = shift;
                 my ( $terms, $args ) = @_;
@@ -325,64 +342,61 @@ sub list_props {
                 );
             },
         },
-        comment => {
-            label => 'Comment',
-            display => 'force',
-            html  => sub {
-                my ( $prop, $obj, $app ) = @_;
-                my $text = MT::Util::remove_html($obj->text);
-                ## FIXME: Hard coded...
-                my $len  = 40;
-                if ( $len < length($text) ) {
-                    $text = substr($text, 0, $len);
-                    $text .= '...';
-                }
-                elsif ( !$text ) {
-                    $text = '...';
-                }
-                my $id  = $obj->id;
-                my $link = $app->uri(
-                    mode => 'view',
-                    args => {
-                        _type   => 'comment',
-                        id      => $id,
-                        blog_id => $obj->blog_id,
-                });
-                my $status_img = MT->static_path . 'images/status_icons/';
-                $status_img .= $obj->is_junk      ? 'warning.gif'
-                             : $obj->is_published ? 'success.gif'
-                             :                      'draft.gif';
-                my $status_class = $obj->is_junk      ? 'Junk'
-                                 : $obj->is_published ? 'Approved'
-                                 :                      'Unapproved';
-                my $lc_status_class = lc $status_class;
 
-                my $ts = $obj->created_on;
-                my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
-                my $blog = $app ? $app->blog : undef;
-                my $is_relative = 1;
-                ## TBD: should do like this...
-                ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
-                my $date= $is_relative ? MT::Util::relative_date( $ts, time, $blog )
-                        :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
-
-                return qq{
-                    <div class="posted">
-                    <span class="status $lc_status_class">
-                      <img alt="$status_class" src="$status_img" />
-                    </span>
-                    <a href="$link">$date</a>
-                    </div>
-                    <p class="comment-text">$text</p>
-                };
+        modified_on => {
+            auto    => 1,
+            label   => 'Modeified on',
+            display => 'none'
+        },
+        created_on => {
+            auto    => 1,
+            label   => 'Created on',
+            display => 'none'
+        },
+        status => {
+            label => 'Status',
+            base => '__virtual.single_select',
+            col => 'visible',
+            display => 'none',
+            terms => sub {
+                my ( $prop, $args ) = @_;
+                return $args->{value} eq 'approved'  ? { visible => 1, junk_status => NOT_JUNK() }
+                     : $args->{value} eq 'moderated' ? { visible => 0, junk_status => NOT_JUNK() }
+                     : $args->{value} eq 'not_junk'  ? { junk_status => NOT_JUNK() }
+                     :                                 { junk_status => JUNK() }
+                     ;
             },
-            sort => sub {
+            single_select_options => [
+                { label => 'Approved',         value => 'approved', },
+                { label => 'Unapproved',       value => 'moderated', },
+                { label => 'Not spam',         value => 'not_junk', },
+                { label => 'Reported as spam', value => 'junk', },
+            ],
+        },
+        ## Hide default author_name.
+        author_name => {
+            view => 'none',
+        },
+        commenter_id => {
+            auto => 1,
+            filter_editable => 0,
+            display => 'none',
+            label => 'Commenter ID',
+            label_via_param => sub {
                 my $prop = shift;
-                my ( $terms, $args ) = @_;
-                $args->{sort} = 'created_on';
-                return;
+                my ( $app ) = @_;
+                my $author_id = $app->param('filter_val');
+                my $author    = MT->model('author')->load($author_id);
+                return MT->translate(
+                    'Comments by [_1]',
+                    $author->nickname,
+                );
             },
-            default_sort_order => 'descend',
+            args_via_param => sub {
+                my $prop  = shift;
+                my ($app) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
         },
         text => {
             auto => 1,
@@ -403,11 +417,6 @@ sub list_props {
                     },
                 );
             },
-        },
-        ip => {
-            auto  => 1,
-            label => 'IP',
-            condition => sub { MT->config->ShowIPInformation },
         },
     };
 }

@@ -56,6 +56,8 @@ sub list_props {
         user_name => {
             label => 'User/Group',
             base => '__virtual.string',
+            display => 'force',
+            order   => 100,
             col => 'name',  # this looks up author/group table
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -112,6 +114,8 @@ sub list_props {
         },
         role_name => {
             label => 'Role',
+            display => 'force',
+            order   => 200,
             base => '__virtual.string',
             col => 'name',  # this looks up role table
             html => sub {
@@ -159,43 +163,11 @@ sub list_props {
                 return;
             },
         },
-        role_id => {
-            auto    => 1,
-            label   => 'Role',
-            display => 'none',
-            filter_editable => 0,
-            args_via_param => sub {
-                my ( $prop, $app ) = @_;
-                return { option => 'equal', value => $app->param('filter_val') };
-            },
-            label_via_param => sub {
-                my ( $prop, $app ) = @_;
-                my $role = MT->model('role')->load( $app->param('filter_val') );
-                return MT->translate(
-                    'Associations with role: [_1]',
-                    $role->name,
-                );
-            },
-        },
-        _type => {
-            view => [],
-            terms => sub {
-               return { type => [ 1, 2 ] };
-            }
-        },
-        type => {
-            base    => '__virtual.single_select',
-            display => 'none',
-            col     => 'type',
-            label   => 'Type',
-            single_select_options => [
-                { label => 'User', value => 1, },
-                { label => 'Group', value => 2, },
-            ],
-        },
         blog_name => {
             label => 'Blog/Website',
             base => '__virtual.string',
+            display => 'default',
+            order   => 300,
             col => 'name',  # this looks up mt_blog.blog_nam column
             bulk_html => sub {
                 my $prop = shift;
@@ -239,7 +211,43 @@ sub list_props {
             },
         },
         created_on => {
-            base => '__virtual.created_on',
+            base  => '__virtual.created_on',
+            order => 400,
+        },
+
+        role_id => {
+            auto    => 1,
+            label   => 'Role',
+            display => 'none',
+            filter_editable => 0,
+            args_via_param => sub {
+                my ( $prop, $app ) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
+            label_via_param => sub {
+                my ( $prop, $app ) = @_;
+                my $role = MT->model('role')->load( $app->param('filter_val') );
+                return MT->translate(
+                    'Associations with role: [_1]',
+                    $role->name,
+                );
+            },
+        },
+        _type => {
+            view => [],
+            terms => sub {
+               return { type => [ 1, 2 ] };
+            }
+        },
+        type => {
+            base    => '__virtual.single_select',
+            display => 'none',
+            col     => 'type',
+            label   => 'Type',
+            single_select_options => [
+                { label => 'User', value => 1, },
+                { label => 'Group', value => 2, },
+            ],
         },
         modified_on => {
             display => 'none',

@@ -31,24 +31,29 @@ __PACKAGE__->add_callback( 'post_remove', 0, MT->component('core'), \&MT::Revisa
 
 sub list_props {
     return {
-        id            => { base => 'entry.id' },
-        text          => { base => 'entry.text' },
-        text_more     => { base => 'entry.text_more' },
-        title         => { base => 'entry.title' },
-        authored_on   => { base => 'entry.authored_on' },
-        status        => { base => 'entry.status' },
-        created_on    => { base => 'entry.created_on' },
-        modified_on   => { base => 'entry.modified_on' },
-        basename      => { base => 'entry.basename' },
-        comment_count => { base => 'entry.comment_count' },
-        ping_count    => { base => 'entry.ping_count' },
-        commented_on  => { base => 'entry.commented_on' },
+        id            => { base => 'entry.id',             order => 100, },
+        title         => { base => 'entry.title',          order => 200, },
+        author_name   => { base => 'entry.author_name',    order => 300, },
+        blog_name     => { base => 'entry.blog_name',      order => 400, },
         folder => {
-            base => 'entry.category',
-            label => 'Folder',
-            category_class => 'folder',
+            base             => 'entry.category',
+            label            => 'Folder',
+            display          => 'default',
+            order            => 500,
+            category_class   => 'folder',
             zero_state_label => '(root)',
         },
+        created_on    => { base => 'entry.created_on',     order => 600, },
+        modified_on   => { base => 'entry.modified_on',    order => 700, },
+        comment_count => { base => 'entry.comment_count',  order => 800, },
+        ping_count    => { base => 'entry.ping_count',     order => 900, },
+
+        text          => { base => 'entry.text' },
+        text_more     => { base => 'entry.text_more' },
+        authored_on   => { base => 'entry.authored_on' },
+        status        => { base => 'entry.status' },
+        basename      => { base => 'entry.basename' },
+        commented_on  => { base => 'entry.commented_on' },
     };
 }
 

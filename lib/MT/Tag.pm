@@ -47,9 +47,10 @@ sub class_label_plural {
 sub list_props {
     return {
         name => {
-            auto  => 1,
-            label => 'Name',
+            auto    => 1,
+            label   => 'Name',
             display => 'force',
+            order   => 100,
         },
         _blog => {
             view  => [],
@@ -72,6 +73,8 @@ sub list_props {
             label => 'Entries',
             base => '__virtual.integer',
             count_class => 'entry',
+            display => 'default',
+            order   => 200,
             col => 'id',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
@@ -148,11 +151,15 @@ sub list_props {
         page_count => {
             base => 'tag.entry_count',
             label => 'Pages',
+            display => 'default',
+            order   => 300,
             count_class => 'page',
         },
         asset_count => {
             base => 'tag.entry_count',
             label => 'Assets',
+            display => 'default',
+            order   => 400,
             count_class => 'asset',
         },
     };
