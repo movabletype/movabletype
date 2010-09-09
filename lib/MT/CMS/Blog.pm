@@ -1642,6 +1642,7 @@ sub post_save {
             level    => MT::Log::INFO(),
             class    => $obj->class,
             blog_id  => $obj->id,
+            category => 'edit',
         });
     }
 
@@ -2406,6 +2407,7 @@ sub _create_dynamiccache_dir {
                 message => $message,
                 level   => MT::Log::ERROR(),
                 class   => 'system',
+                category => 'cache',
             }
         );
     }

@@ -1924,8 +1924,9 @@ sub send_pings {
                     $res->{url},
                     $res->{error}
                 ),
-                class => 'system',
-                level => MT::Log::WARNING()
+                class => 'ping',
+                level => MT::Log::WARNING(),
+                category => 'send_ping',
             }
           ) unless $res->{good};
     }
@@ -2374,7 +2375,7 @@ sub post_delete {
                 $obj->title, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'system',
+            class    => $obj->class,
             category => 'delete'
         }
     );

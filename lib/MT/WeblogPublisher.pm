@@ -184,7 +184,11 @@ sub rebuild {
         my $fcb = $param{FilterCallback};
         while ( my $entry = $iter->() ) {
             if ($cb) {
-                $cb->($entry) || $mt->log( $cb->errstr() );
+                $cb->($entry)
+                    or $mt->log({
+                        message => $cb->errstr(),
+                        category => 'callback',
+                    });
             }
             if ($fcb) {
                 $fcb->($entry) or last;
@@ -1899,7 +1903,8 @@ sub publish_future_posts {
 "An error occurred while publishing scheduled entries: [_1]",
                             $err
                         ),
-                        class   => "system",
+                        class   => "publish",
+                        category => 'rebuild',
                         blog_id => $blog->id,
                         level   => MT::Log::ERROR()
                     }

@@ -517,7 +517,7 @@ sub _edit_entry {
         message => $mt->translate("User '[_1]' (user #[_2]) edited [lc,_4] #[_3]", $author->name, $author->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
         class => $obj_type,
-        category => 'new',
+        category => 'edit',
         metadata => $entry->id
     });
 
@@ -735,8 +735,8 @@ sub _delete_entry {
     $mt->log({
         message => $mt->translate("Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from xml-rpc", $entry->title, $entry->id, $author->name, $author->id, $entry->class_label),
         level => MT::Log::INFO(),
-        class => 'system',
-        category => 'delete' 
+        class => $entry->class,
+        category => 'delete'
     });
 
     SOAP::Data->type(boolean => 1);

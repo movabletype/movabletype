@@ -486,48 +486,56 @@ sub save_commenter_perm {
             && $cmntr->commenter_status($blog_id) != MT::Author::APPROVED() )
         {
             $cmntr->approve($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message => $app->translate(
                     "User '[_1]' trusted commenter '[_2]'.", $author->name,
                     $cmntr->name
-                )
-            );
+                ),
+                class => 'comment',
+                category => 'edit',
+            });
             $acted_on++;
         }
         elsif ($action eq 'ban'
             && $cmntr->commenter_status($blog_id) != MT::Author::BANNED() )
         {
             $cmntr->ban($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message => $app->translate(
                     "User '[_1]' banned commenter '[_2]'.", $author->name,
                     $cmntr->name
-                )
-            );
+                ),
+                class => 'comment',
+                category => 'edit',
+            });
             $acted_on++;
         }
         elsif ($action eq 'unban'
             && $cmntr->commenter_status($blog_id) == MT::Author::BANNED() )
         {
             $cmntr->pending($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message => $app->translate(
                     "User '[_1]' unbanned commenter '[_2]'.", $author->name,
                     $cmntr->name
-                )
-            );
+                ),
+                class => 'comment',
+                category => 'edit',
+            });
             $acted_on++;
         }
         elsif ($action eq 'untrust'
             && $cmntr->commenter_status($blog_id) == MT::Author::APPROVED() )
         {
             $cmntr->pending($blog_id) or return $app->error( $cmntr->errstr );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message => $app->translate(
                     "User '[_1]' untrusted commenter '[_2]'.", $author->name,
                     $cmntr->name
-                )
-            );
+                ),
+                class => 'comment',
+                category => 'edit',
+            });
             $acted_on++;
         }
 
@@ -1143,8 +1151,8 @@ sub post_delete {
                 $obj->id, $obj->author, $app->user->name, $title
             ),
             level    => MT::Log::INFO(),
-            class    => 'system',
-            category => 'delete'
+            class    => 'comment',
+            category => 'delete',
         }
     );
 }

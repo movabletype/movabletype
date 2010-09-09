@@ -681,7 +681,7 @@ sub edit_post {
         message => $app->translate("User '[_1]' (user #[_2]) edited [lc,_4] #[_3]", $app->{user}->name, $app->{user}->id, $entry->id, $entry->class_label),
         level => MT::Log::INFO(),
         class => 'entry',
-        category => 'new',
+        category => 'edit',
         metadata => $entry->id
     });
 
@@ -824,7 +824,7 @@ sub delete_post {
     $app->log({
         message => $app->translate("Entry '[_1]' ([lc,_5] #[_2]) deleted by '[_3]' (user #[_4]) from atom api", $entry->title, $entry->id, $user->name, $user->id, $entry->class_label),
         level => MT::Log::INFO(),
-        class => 'system',
+        class => $entry->class,
         category => 'delete',
     });
 

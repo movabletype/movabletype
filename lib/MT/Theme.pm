@@ -299,8 +299,9 @@ sub apply {
                 ));
                 $log->blog_id($blog->id);
                 $log->author_id( MT->app->user->id );
-                $log->level(2);
-                $log->category('theme');
+                $log->level( MT::Log::WARNING() );
+                $log->category('apply');
+                $log->class('theme');
                 MT->log($log);
             }
         }
@@ -344,7 +345,12 @@ sub install_static_files {
             $fmgr->mkpath( $to );
             my $to_file = File::Spec->catfile( $to, $filename );
             $fmgr->put( $name, $to_file, 'upload')
-                or MT->log("Failed to copy file $name:" . $fmgr->errstr);
+                or MT->log({
+                    message => MT->translate('Failed to copy file [_1]:[_2]', $name, $fmgr->errstr),
+                    level => MT::Log::WARNING(),
+                    class => 'theme',
+                    category => 'apply',
+                });
         }
     };
     File::Find::find( $sub, $src );

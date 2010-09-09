@@ -349,7 +349,7 @@ sub post_delete {
                 $obj->name, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'system',
+            class    => 'tag',
             category => 'delete'
         }
     );

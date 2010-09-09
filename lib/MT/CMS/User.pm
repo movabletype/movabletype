@@ -1901,7 +1901,7 @@ sub save_filter {
             {
                 message  => $error,
                 level    => MT::Log::ERROR(),
-                class    => 'system',
+                class    => 'author',
                 category => 'save_author_profile'
             }
         );
@@ -2027,7 +2027,7 @@ sub post_delete {
                 $obj->name, $obj->id, $app->user->name
             ),
             level    => MT::Log::INFO(),
-            class    => 'system',
+            class    => 'author',
             category => 'delete'
         }
     );

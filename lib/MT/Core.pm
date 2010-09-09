@@ -2264,7 +2264,9 @@ sub PerformanceLoggingPath {
                 require MT::Log;
                 MT->log({  message => $msg, 
                             class => 'system',
-                            level => MT::Log::ERROR() });
+                            level => MT::Log::ERROR(),
+                           category => 'performance-log',
+                       });
             }
             last if $path;
         }

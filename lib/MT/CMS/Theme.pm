@@ -320,9 +320,12 @@ sub element_dialog {
         ($tmpl, %element_param) = $code->( $app, $blog, $setting );
     };
     if ( $@ ) {
-        MT->log(
-            sprintf 'Failed to load theme export template for %s: %s', $exporter_id, $@
-        );
+        MT->log({
+            message => MT->translate('Failed to load theme export template for [_1]: [_2]', $exporter_id, $@),
+            level => MT::Log::WARNING(),
+            class => 'theme',
+            category => 'export',
+        });
         next;
     }
 

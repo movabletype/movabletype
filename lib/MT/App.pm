@@ -1007,6 +1007,8 @@ sub _cb_user_provisioning {
                     ($website_id ? $website_id : '')
                 ),
                 level => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'new',
             }
         );
         return;
@@ -1032,6 +1034,8 @@ sub _cb_user_provisioning {
                         $blog_id
                     ),
                     level => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'new',
                 }
             );
             return;
@@ -1051,6 +1055,8 @@ sub _cb_user_provisioning {
                         $blog->id
                     ),
                     level => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'new',
                 }
             );
             return;
@@ -1082,6 +1088,8 @@ sub _cb_user_provisioning {
                 $user->id, $user->name
             ),
             level => MT::Log::ERROR(),
+            class    => 'system',
+            category => 'new',
         }
         ),
         return;
@@ -1821,8 +1829,9 @@ sub login {
             {   message => $app->translate(
                     "Failed login attempt by unknown user '[_1]'", $user
                 ),
-                level    => MT::Log::WARNING(),
+                level    => MT::Log::SECURITY(),
                 category => 'login_user',
+                class => 'author',
             }
         ) if defined $user;
         MT::Auth->invalidate_credentials( { app => $app } );
@@ -1835,8 +1844,9 @@ sub login {
             {   message => $app->translate(
                     "Failed login attempt by disabled user '[_1]'", $user
                 ),
-                level    => MT::Log::WARNING(),
+                level    => MT::Log::SECURITY(),
                 category => 'login_user',
+                class => 'author',
             }
         );
         return $app->error(
@@ -1864,8 +1874,9 @@ sub login {
             {   message => $app->translate(
                     "Failed login attempt by pending user '[_1]'", $user
                 ),
-                level    => MT::Log::WARNING(),
+                level    => MT::Log::SECURITY(),
                 category => 'login_user',
+                class => 'author',
             }
         );
         return $app->error($message);
@@ -1994,7 +2005,10 @@ sub login {
                 $app->translate(
                     "User '[_1]' (ID:[_2]) logged in successfully",
                     $author->name, $author->id
-                )
+                ),
+                level => MT::Log::INFO(),
+                class => 'author',
+                category => 'login_user',
             );
         }
         else {
@@ -2045,12 +2059,15 @@ sub logout {
             { name => $ctx->{username}, type => MT::Author::AUTHOR() } );
         if ($user) {
             $app->user($user);
-            $app->log(
-                $app->translate(
+            $app->log({
+                message => $app->translate(
                     "User '[_1]' (ID:[_2]) logged out", $user->name,
                     $user->id
-                )
-            );
+                ),
+                level => MT::Log::INFO(),
+                class => 'author',
+                category => 'logout_user',
+            });
         }
     }
 

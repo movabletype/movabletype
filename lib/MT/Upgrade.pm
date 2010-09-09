@@ -824,7 +824,10 @@ sub core_finish {
     if ($cur_schema > $old_schema) {
         $self->progress($self->translate_escape("Database has been upgraded to version [_1].", $cur_schema)) ;
         if ($user && !$DryRun) {
-            MT->log(MT->translate("User '[_1]' upgraded database to version [_2]", $user->name, $cur_schema));
+            MT->log({
+                message => MT->translate("User '[_1]' upgraded database to version [_2]", $user->name, $cur_schema),
+                category => 'upgrade',
+            });
         }
         $cfg->SchemaVersion( $cur_schema, 1 );
     }
@@ -838,12 +841,20 @@ sub core_finish {
         if ($old_plugin_schema && ($ver > $old_plugin_schema)) {
             $self->progress($self->translate_escape("Plugin '[_1]' upgraded successfully to version [_2] (schema version [_3]).", $plugin->label, $plugin->version || '-', $ver));
             if ($user && !$DryRun) {
-                MT->log(MT->translate("User '[_1]' upgraded plugin '[_2]' to version [_3] (schema version [_4]).", $user->name, $plugin->label, $plugin->version || '-', $ver));
+                MT->log({
+                    message => MT->translate("User '[_1]' upgraded plugin '[_2]' to version [_3] (schema version [_4]).", $user->name, $plugin->label, $plugin->version || '-', $ver),
+                    category => 'upgrade',
+                    class => 'plugin',
+                });
             }
         } elsif ($ver && !$old_plugin_schema) {
             $self->progress($self->translate_escape("Plugin '[_1]' installed successfully.", $plugin->label));
             if ($user && !$DryRun) {
-                MT->log(MT->translate("User '[_1]' installed plugin '[_2]', version [_3] (schema version [_4]).", $user->name, $plugin->label, $plugin->version || '-', $ver));
+                MT->log({
+                    message => MT->translate("User '[_1]' installed plugin '[_2]', version [_3] (schema version [_4]).", $user->name, $plugin->label, $plugin->version || '-', $ver),
+                    category => 'install',
+                    class => 'plugin',
+                });
             }
         }
         $plugin_schema->{$plugin->id} = $ver;

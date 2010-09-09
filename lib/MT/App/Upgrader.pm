@@ -680,12 +680,14 @@ sub main {
     }
     elsif ( $app->config->NotifyUpgrade && ( $cur_version > $version ) ) {
         $param->{mt_version_incremented} = 1;
-        MT->log(
-            MT->translate(
+        MT->log({
+            message => MT->translate(
                 "Movable Type has been upgraded to version [_1].",
                 $cur_version
-            )
-        );
+            ),
+            class => 'system',
+            category => 'upgrade',
+        });
         $app->config->MTVersion( $cur_version, 1 );
         $app->config->save_config;
     }

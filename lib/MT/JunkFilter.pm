@@ -98,16 +98,17 @@ sub score {
             if ( my $plugin = $filter->{plugin} ) {
                 $name ||= $plugin->name;
             }
-            MT->instance->log(
-                MT->translate(
+            MT->instance->log({
+                message => MT->translate(
                     "Junk Filter [_1] died with: [_2]",
                     (
                         $name
                           || ( MT->translate("Unnamed Junk Filter") )
                     ),
                     $err
-                )
-            );
+                ),
+                category => 'junk_filter',
+            });
             next;
         }
         if ( $score ne ABSTAIN ) {

@@ -468,6 +468,7 @@ sub cfg_system_general {
             message => $app->translate('Test e-mail was successfully sent to [_1]', $app->param('to_email_address')),
             level    => MT::Log::INFO(),
             class    => 'system',
+            category => 'email',
         });
         $param{test_mail_sent} = 1;
     }
@@ -580,6 +581,7 @@ sub save_cfg_system_general {
             level    => MT::Log::INFO(),
             class    => 'system',
             metadata => $message,
+            category => 'edit',
         });
     }
 
@@ -951,7 +953,7 @@ sub backup {
                                 $asset_files->{$id}->[1],
                                 $tmp, $!
                             ),
-                            level    => MT::Log::INFO(),
+                            level    => MT::Log::WARNING(),
                             class    => 'system',
                             category => 'backup'
                         }

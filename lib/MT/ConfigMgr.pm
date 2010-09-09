@@ -250,7 +250,10 @@ sub save_config {
     if ($data !~ m/^schemaversion/im) {
         if ($config->id && (($config->data || '') =~ m/^schemaversion/im)) {
             require Carp;
-            MT->log(Carp::longmess("Caught attempt to clear SchemaVersion setting. New config settings were:\n$data"));
+            MT->log({
+                message => Carp::longmess("Caught attempt to clear SchemaVersion setting. New config settings were:\n$data"),
+                category => 'config',
+            });
             return;
         }
     }

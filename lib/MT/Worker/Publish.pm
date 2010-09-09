@@ -99,7 +99,7 @@ sub work {
             $rebuilt++;
         } else {
             my $error = $mt->publisher->errstr;
-            my $errmsg = $mt->translate("Error rebuilding file [_1]" . $fi->file_path . ": " . $error);
+            my $errmsg = $mt->translate("Error rebuilding file [_1]:[_2]", $fi->file_path, $error);
             MT::TheSchwartz->debug($errmsg);
             $job->permanent_failure($errmsg);
             require MT::Log;

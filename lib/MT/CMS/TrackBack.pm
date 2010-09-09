@@ -499,7 +499,7 @@ sub post_delete {
         {
             message  => $message,
             level    => MT::Log::INFO(),
-            class    => 'system',
+            class    => 'ping',
             category => 'delete'
         }
     );

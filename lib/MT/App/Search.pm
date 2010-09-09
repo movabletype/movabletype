@@ -225,8 +225,9 @@ sub init_cache_driver {
                     $cache_driver,
                     $e
                 ),
-                level => MT::Log::INFO(),
+                level => MT::Log::WARNING(),
                 class => 'search',
+                category => 'cache',
             }
         );
         return;

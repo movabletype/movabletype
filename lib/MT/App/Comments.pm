@@ -300,8 +300,9 @@ sub do_login {
     }
     $app->log(
         {   message  => $message,
-            level    => MT::Log::WARNING(),
+            level    => MT::Log::SECURITY(),
             category => 'login_commenter',
+            class => 'system',
         }
     );
     $ctx->{app} ||= $app;
@@ -976,13 +977,14 @@ sub post {
             ),
             blog_id => $blog->id,
             class   => 'comment',
-            level   => MT::Log::ERROR()
+            level   => MT::Log::ERROR(),
+            category => 'new',
         }
         );
     if ( $comment->id && !$comment->is_junk ) {
-        
+
         $app->run_callbacks( 'api_post_save.comment', $app, $comment, $commenter );
-        
+
         $app->log(
             {   message => $app->translate(
                     'Comment on "[_1]" by [_2].', $entry->title,

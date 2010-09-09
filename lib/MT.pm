@@ -1374,6 +1374,7 @@ sub _init_plugins_core {
                                         $Plugins{$plugin_sig}{error}
                                     ),
                                     class => 'system',
+                                    category => 'plugin',
                                     level => MT::Log::ERROR()
                                 }
                             );
