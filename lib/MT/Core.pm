@@ -928,7 +928,7 @@ BEGIN {
                     return 1 if MT->config('EnableAddressbook');
                     $app->errtrans('Address Book is disabled by system configuration.');
                 },
-                permission => 'access_to_addressbook',
+                permission => 'access_to_notification_list',
                 primary => [ 'email', 'url' ],
                 default_sort_key => 'created_on',
             },
