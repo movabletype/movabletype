@@ -2491,12 +2491,14 @@ sub delete {
     $app->validate_magic() or return;
     require MT::Blog;
     my $q       = $app->param;
-    my $blog_id = $q->param('blog_id');
-    my $blog    = MT::Blog->load($blog_id)
-        or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+    my $blog;
+    if ( my $blog_id = $q->param('blog_id') ) {
+        $blog = MT::Blog->load($blog_id)
+            or return $app->error($app->translate('Can\'t load blog #[_1].', $blog_id));
+    }
 
     my $can_background =
-        ( $blog->count_static_templates('Individual') == 0
+        ( ( $blog && $blog->count_static_templates('Individual') == 0 )
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
     my %rebuild_recipe;
@@ -2511,7 +2513,7 @@ sub delete {
 
         my %recipe = $app->publisher->rebuild_deleted_entry(
             Entry => $obj,
-            Blog  => $blog);
+            Blog  => $obj->blog);
 
         # Remove object from database
         $obj->remove()
@@ -2521,6 +2523,10 @@ sub delete {
                 $obj->errstr
             );
         $app->run_callbacks( 'cms_post_delete.entry', $app, $obj );
+
+        my $child_hash = $rebuild_recipe{$obj->blog->id} || {};
+        MT::__merge_hash( $child_hash, \%recipe );
+        $rebuild_recipe{$obj->blog->id} = $child_hash;
     }
 
     $app->add_return_arg( saved_deleted => 1 );
@@ -2532,26 +2538,32 @@ sub delete {
         if ($can_background) {
             my $res = MT::Util::start_background_task(
                 sub {
-                    my $res = $app->rebuild_archives(
-                        Blog             => $blog,
-                        Recipe           => \%rebuild_recipe,
-                    ) or return $app->publish_error();
-                    $app->rebuild_indexes( Blog => $blog )
-                        or return $app->publish_error();
-                    $app->run_callbacks( 'rebuild', $blog );
-                    1;
+                    foreach my $b_id ( keys %rebuild_recipe ) {
+                        my $b = MT::Blog->load($b_id);
+                        my $res = $app->rebuild_archives(
+                            Blog   => $b,
+                            Recipe => $rebuild_recipe{$b_id},
+                        ) or return $app->publish_error();
+                        $app->rebuild_indexes( Blog => $b )
+                            or return $app->publish_error();
+                        $app->run_callbacks( 'rebuild', $b );
+                        1;
+                    }
                 }
             );
         }
         else {
-            $app->rebuild_archives(
-                Blog             => $blog,
-                Recipe           => \%rebuild_recipe,
-            ) or return $app->publish_error();
-            $app->rebuild_indexes( Blog => $blog )
-                or return $app->publish_error();
+            foreach my $b_id ( keys %rebuild_recipe ) {
+                my $b = MT::Blog->load($b_id);
+                $app->rebuild_archives(
+                    Blog             => $b,
+                    Recipe           => $rebuild_recipe{$b_id},
+                ) or return $app->publish_error();
+                $app->rebuild_indexes( Blog => $b )
+                    or return $app->publish_error();
 
-            $app->run_callbacks( 'rebuild', $blog );
+                $app->run_callbacks( 'rebuild', $b );
+            }
         }
 
         $app->add_return_arg( no_rebuild => 1 );

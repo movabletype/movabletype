@@ -525,6 +525,27 @@ sub core_list_actions {
                         && $app->can_do('open_batch_entry_editor_via_list');
                 },
             },
+            'publish' => {
+                label      => 'Publish',
+                code       => "${pkg}Blog::rebuild_new_phase",
+                mode       => 'rebuild_new_phase',
+                order      => 100,
+                js_message => 'publish',
+                button     => 1,
+                condition  => sub {
+                    $app->param('blog_id')
+                        ? $app->can_do('publish_post') || $app->can_do('rebuild')
+                        : 0;
+                },
+            },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'page' => {
             'set_draft' => {
@@ -569,6 +590,27 @@ sub core_list_actions {
                         && $app->can_do('open_batch_page_editor_via_list');
                 },
             },
+            'publish' => {
+                label      => 'Publish',
+                code       => "${pkg}Blog::rebuild_new_phase",
+                mode       => 'rebuild_new_phase',
+                order      => 100,
+                js_message => 'publish',
+                button     => 1,
+                condition  => sub {
+                    $app->param('blog_id')
+                        ? $app->can_do('manage_pages') || $app->can_do('rebuild')
+                        : $app->user->is_superuser;
+                },
+            },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'asset' => {
             'add_tags' => {
@@ -587,8 +629,43 @@ sub core_list_actions {
                 input_label => 'Tags to remove from selected assets',
                 permit_action => 'remove_tags_from_assets_via_list',
             },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'ping' => {
+            'spam' => {
+                label      => "Mark as Spam",
+                order      => 110,
+                code       => "${pkg}Comment::handle_junk",
+                permit_action => 'edit_all_trackbacks',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
+            'not_spam' => {
+                label      => "Remove Spam status",
+                order      => 120,
+                code       => "${pkg}Comment::not_junk",
+                permit_action => 'edit_all_trackbacks',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
+            'empty_spam' => {
+                label      => "Delete all Spam comments",
+                order      => 130,
+                code       => "${pkg}Comment::empty_junk",
+                permit_action => 'edit_all_trackbacks',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
             'unapprove_ping' => {
                 label         => "Unpublish TrackBack(s)",
                 order         => 100,
@@ -599,8 +676,56 @@ sub core_list_actions {
                         && $app->can_do('unapprove_trackbacks_via_list');
                 },
             },
+            'publish' => {
+                label      => 'Publish',
+                code       => "${pkg}Comment::approve_item",
+                mode       => 'approve_item',
+                order      => 100,
+                js_message => 'publish',
+                button     => 1,
+                condition  => sub {
+                    $app->param('blog_id')
+                        ? $app->can_do('edit_trackback_status')
+                        : $app->user->is_superuser;
+                },
+            },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'comment' => {
+            'spam' => {
+                label      => "Mark as Spam",
+                order      => 110,
+                code       => "${pkg}Comment::handle_junk",
+                permit_action => 'edit_all_comments',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
+            'not_spam' => {
+                label      => "Remove Spam status",
+                order      => 120,
+                code       => "${pkg}Comment::not_junk",
+                permit_action => 'edit_all_comments',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
+            'empty_spam' => {
+                label      => "Delete all Spam comments",
+                order      => 130,
+                code       => "${pkg}Comment::empty_junk",
+                permit_action => 'delete_junk_comments',
+                condition   => sub {
+                    return $app->mode ne 'view';
+                },
+            },
             'unapprove_comment' => {
                 label      => "Unpublish Comment(s)",
                 order      => 100,
@@ -646,6 +771,27 @@ sub core_list_actions {
                     return $app->mode ne 'view';
                     }
             },
+            'publish' => {
+                label      => 'Publish',
+                code       => "${pkg}Comment::approve_item",
+                mode       => 'approve_item',
+                order      => 100,
+                js_message => 'publish',
+                button     => 1,
+                condition  => sub {
+                    $app->param('blog_id')
+                        ? $app->can_do('edit_comment_status')
+                        : $app->user->is_superuser;
+                },
+            },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'commenter' => {
             'untrust' => {
@@ -685,6 +831,28 @@ sub core_list_actions {
                 code      => "${pkg}Common::delete",
                 permit_action => 'delete_user_via_list',
             },
+            'enable' => {
+                label      => 'Enable',
+                code       => "${pkg}User::enable",
+                mode       => 'enable_object',
+                order      => 100,
+                js_message => 'enable',
+                button     => 1,
+                condition  => sub {
+                    $app->can_do('access_to_system_author_list');
+                },
+            },
+            'disable' => {
+                label      => 'Disable',
+                code       => "${pkg}User::disable",
+                mode       => 'disable_object',
+                order      => 110,
+                js_message => 'disable',
+                button     => 1,
+                condition  => sub {
+                    $app->can_do('access_to_system_author_list');
+                },
+            },
         },
         'blog' => {
             refresh_blog_templates => {
@@ -717,6 +885,14 @@ sub core_list_actions {
                 max => 1,
                 dialog => 1,
             },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
         },
         'website' => {
             refresh_website_templates => {
@@ -730,6 +906,14 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+            },
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
             },
         },
         'template' => {
@@ -795,6 +979,36 @@ sub core_list_actions {
                         :                                    1;
                 },
                 order => 400,
+            },
+        },
+        'banlist' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'notification' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
+            },
+        },
+        'association' => {
+            'delete' => {
+                label      => 'Delete',
+                code       => "${pkg}Common::delete",
+                mode       => 'delete',
+                order      => 110,
+                js_message => 'delete',
+                button     => 1,
             },
         },
     };

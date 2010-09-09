@@ -35,6 +35,22 @@
 </div>
 </mt:setvarblock>
 
+
+<mt:if name="button_actions">
+    <mt:setvarblock name="jq_js_include" append="1">
+var messages = {};
+        <mt:loop name="button_actions">
+messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">" escape="js">';
+        </mt:loop>
+    </mt:setvarblock>
+
+    <mt:setvarblock name="button_actions">
+        <mt:loop name="button_actions">
+  <a href="#<mt:var name="mode">" class="button"><mt:var name="label"></a>
+        </mt:loop>
+    </mt:setvarblock>
+</mt:if>
+
 <mt:include name="include/header.tmpl">
 <mt:include name="include/basic_filter_forms.tmpl">
 <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
@@ -978,13 +994,11 @@ function doForMarked(formid, mode, singlar, plural, phrase) {
     $form.submit();
 }
 
-jQuery('button.mt-<mt:var name="object_type">-listing-form-action').click(function() {
-  var id = '<mt:var name="object_type">-listing-form';
-  var singlar = '<mt:var name="object_label" lower_case="1" escape="js">';
-  var plural = '<mt:var name="object_label_plural" lower_case="1" escape="js">';
-  var phrase = '<__trans phrase="act upon" escape="js">';
-  doForMarked(id, 'itemset_action', singlar, plural, phrase);
-  return false;
+jQuery('button.mt-<mt:var name="object_type">-listing-form-action').mtDoPluginAction({
+    id: '<mt:var name="object_type">-listing-form',
+    plural: '<mt:var name="object_label_plural" escape="js">',
+    args: {},
+    phrase: 'to act upon'
 });
 
 jQuery('.actions-bar a.button').click(function() {

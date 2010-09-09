@@ -13,13 +13,10 @@ function cancelCreateMode () {
     jQuery('#create-ip').show();
     jQuery('#create-inline-ipban').hide();
     jQuery('#actions-bar-top').show();
+    current_edit = 0;
 }
 /* ]]> */
 </script>
-
-<mt:setvarblock name="button_actions">
-  <a href="#delete" class="button">Delete</a>
-</mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
     <mt:if name="error">
@@ -91,6 +88,4 @@ jQuery('#create-inline-ipban-form button.mt-cancel-action').click(function() {
     return false;
 });
 
-var messages = {};
-messages['delete'] = '<__trans phrase="remove" escape="js">';
 </mt:setvarblock>

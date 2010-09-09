@@ -1926,6 +1926,7 @@ sub load_core_permissions {
                 'delete_junk_comments'                  => 1,
                 'delete_junk_feedbacks'                 => 1,
                 'edit_all_comments'                     => 1,
+                'edit_all_trackbacks'                   => 1,
                 'edit_comment_status'                   => 1,
                 'edit_commenter'                        => 1,
                 'edit_trackback_status'                 => 1,
