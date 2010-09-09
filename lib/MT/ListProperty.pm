@@ -65,14 +65,6 @@ sub _init_core {
         die "Can't initialize list property $cls $id" if !$prop;
     }
 
-    # check condition
-    if ( my $condition = $prop->{condition} ) {
-        $condition = MT->handler_to_coderef($condition)
-            if !ref $condition;
-        $condition->($self)
-            or return;
-    }
-
     delete $prop->{plugin};
     for my $key ( keys %$prop ) {
         $self->{$key} = $prop->{$key};
@@ -216,7 +208,11 @@ sub list_properties {
     my $local_props = MT->registry( 'list_properties', $cls );
     if ($local_props) {
         for my $key ( keys %$local_props ) {
-            $props{$key} = MT::ListProperty->instance( $cls, $key );
+            my $prop = MT::ListProperty->instance( $cls, $key );
+            if ( $prop->has('condition') ) {
+                next unless $prop->condition;
+            }
+            $props{$key} = $prop;
         }
     }
     my $common_props = MT->registry( 'list_properties', '__common' );
@@ -224,6 +220,9 @@ sub list_properties {
         for my $key ( keys %$common_props ) {
             next if $props{$key};
             my $prop = MT::ListProperty->instance( $cls, $key );
+            if ( $prop->has('condition') ) {
+                next unless $prop->condition;
+            }
             $props{$key} = $prop if $prop;
         }
     }
