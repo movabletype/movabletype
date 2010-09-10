@@ -2047,6 +2047,14 @@ sub init_core_callbacks {
             $pkg . 'post_save.asset'    => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
+
+            # log
+            $pkg . 'pre_load_filtered_list.log' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $args = $opts->{args};
+                $args->{no_class} = 1;
+            },
+
         }
     );
 }

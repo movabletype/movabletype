@@ -62,48 +62,114 @@ sub class_label_plural {
 
 sub list_props {
     return {
-        created_on => 'Created on',
-        message    => {
-            auto  => 1,
-            label => 'Message',
-            html => sub {
+        created_on => {
+            auto    => 1,
+            label   => 'Created on',
+            order   => 100,
+            display => 'force',
+        },
+        message => {
+            auto    => 1,
+            label   => 'Message',
+            order   => 200,
+            display => 'force',
+            html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $msg = $obj->message;
-                my $meta = $obj->metadata;
-                return $meta ? qq{
+                my $msg  = $obj->message;
+                my $desc = $obj->description;
+                $desc = $desc->() if ref $desc eq 'CODE';
+                return $desc
+                    ? qq{
+                    <div 
                     <p class="log-messeage">
-                    <a href="#" class="toggle-link">$msg</a>
+                    <a href="#" class="toggle-link detail-link">$msg</a>
                     </p>
                     <div class="log-metadata detail">
-                      <pre>$meta</pre>
+                      <pre>$desc</pre>
                     </div>
-                } : qq{
+                }
+                    : qq{
                     <p class="log-messeage">$msg</p>
                 };
             },
         },
-        by         => {
-            base  => '__virtual.string',
-            label => 'By',
-            raw   => sub {
+        blog_name => {
+            base    => '__common.blog_name',
+            order   => 300,
+            display => 'force',
+        },
+        by => {
+            base        => '__virtual.string',
+            label       => 'By',
+            view_filter => [],
+            order       => 400,
+            display     => 'force',
+            raw         => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = shift;
-                return $obj->author_id ? MT->model('author')->load($obj->author_id)->name : $obj->ip;
+                return $obj->author_id
+                    ? MT->model('author')->load( $obj->author_id )->name
+                    : $obj->ip;
             },
         },
         class => {
-            label => 'Class',
-            auto => 1,
-
+            label                 => 'Class',
+            col                   => 'class',
+            display               => 'none',
+            base                  => '__virtual.single_select',
+            single_select_options => sub {
+                my $iter = MT->model('log')->count_group_by(
+                    undef,
+                    {   group    => ['class'],
+                        no_class => 1,
+                    },
+                );
+                my @options;
+                while ( my ( $count, $class ) = $iter->() ) {
+                    push @options,
+                        {
+                        label => MT->translate($class),
+                        value => $class
+                        };
+                }
+                return \@options;
+            },
         },
+
+        #category => {
+        #    label                 => 'Category',
+        #    col                   => 'category',
+        #    base                  => '__virtual.single_select',
+        #    single_select_options => sub {
+        #        my $iter = MT->model('log')->count_group_by(
+        #            undef,
+        #            {   group    => ['category'],
+        #                no_class => 1,
+        #            },
+        #        );
+        #        my @options;
+        #        while ( my ( $count, $cat ) = $iter->() ) {
+        #            next unless $cat;
+        #            my $label = $cat;
+        #            $label =~ s/_/ /g;
+        #            push @options,
+        #                {
+        #                label => MT->translate($cat),
+        #                value => $cat
+        #                };
+        #        }
+        #        return \@options;
+        #    },
+        #},
         level => {
-            label => 'Level',
-            base  => '__virtual.single_select',
-            col   => 'level',
-            terms => sub {
+            label   => 'Level',
+            base    => '__virtual.single_select',
+            display => 'none',
+            col     => 'level',
+            terms   => sub {
                 my $prop = shift;
-                my ( $args ) = @_;
+                my ($args) = @_;
                 my @types;
                 my $val = $args->{value};
                 for ( 1, 2, 4, 8, 16 ) {
@@ -112,16 +178,50 @@ sub list_props {
                 return { level => \@types };
             },
             single_select_options => [
-                { label => 'Security',               value => 8 },
-                { label => 'Error',                  value => 4 },
-                { label => 'Warning',                value => 2 },
-                { label => 'Information',            value => 1 },
-                { label => 'Debug',                  value => 16 },
+                { label => 'Security',    value => SECURITY() },
+                { label => 'Error',       value => ERROR() },
+                { label => 'Warning',     value => WARNING() },
+                { label => 'Information', value => INFO() },
+                { label => 'Debug',       value => DEBUG() },
+                {   label => 'Security or error',
+                    value => SECURITY() | ERROR()
+                },
+                {   label => 'Security/error/warning',
+                    value => SECURITY() | ERROR() | WARNING()
+                },
+                {   label => 'Not debug',
+                    value => SECURITY() | ERROR() | WARNING() | INFO()
+                },
+                { label => 'Debug/error', value => DEBUG() | ERROR() },
+            ],
+        },
+        metadata => {
+            auto    => 1,
+            label   => 'Metadata',
+            display => 'none',
+        },
+        modified_on => {
+            base    => '__virtual.modified_on',
+            display => 'none',
+        },
+        author_name => {
+            base    => '__virtual.author_name',
+            display => 'none',
+        },
+        ip => {
+            auto    => 1,
+            label   => 'IP',
+            display => 'none',
+        },
+    };
+}
 
-                { label => 'Security or error',      value => 12 },
-                { label => 'Security/error/warning', value => 14 },
-                { label => 'Not debug',              value => 15 },
-                { label => 'Debug/error',            value => 20 },
+sub system_filters {
+    return {
+        show_only_errors => {
+            label => 'Show only errors',
+            items => [
+                { type => 'level', args => { value => ERROR() }},
             ],
         },
     };

@@ -717,7 +717,7 @@ BEGIN {
                                 name => 1,
                         }});
                         my %names = map { $_->id => $_->name } @blogs;
-                        map { $names{$_->blog_id} } @$objs;
+                        map { $names{$_->blog_id} || MT->translate('(system)') } @$objs;
                     },
                     raw => sub {
                         my ( $prop, $obj ) = @_;
@@ -804,6 +804,7 @@ BEGIN {
             member      => '$Core::MT::Author::member_system_filters',
             commenter   => '$Core::MT::Author::commenter_system_filters',
             association => '$Core::MT::Association::system_filters',
+            log         => '$Core::MT::Log::system_filters',
         },
         listing_screens => {
             website => {

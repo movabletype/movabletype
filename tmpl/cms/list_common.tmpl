@@ -169,6 +169,15 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
 </mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
+jQuery.event.special.listReady = {
+    setup:function( data, ns ) {
+        return false;
+    },
+    teardown:function( ns ) {
+        return false;
+    }
+};
+
 jQuery('p#indicator')
   .hide()
   .bind('ajaxStart', function() {
@@ -578,6 +587,7 @@ function renderList(mode, columns, values, limit, page) {
           jQuery('#msg-block').hide();
         }
       }
+      jQuery(window).trigger('listReady');
     },
     error: function(xhr, status) {
       if ( xhr.status == 401 ) {
