@@ -150,38 +150,27 @@ sub list_props {
                 my @categories = MT->model('category')->load({ id => [ keys %categories ]})
                     if scalar keys %categories;
                 my %category_map  = map { $_->id => $_ } @categories;
+                my $title_prop = MT::ListProperty->instance( '__virtual.title' );
                 my @res;
                 for my $obj ( @$objs ) {
                     my $tb = $tb_map{$obj->tb_id};
-                    my ( $label, $id, $type, $blog_id );
+                    my $obj;
                     if ( $tb->entry_id ) {
-                        my $entry = $entry_map{$tb->entry_id};
-                        $id      = $entry->id;
-                        $label   = $entry->title;
-                        $type    = $entry->class;
-                        $blog_id = $entry->blog_id;
+                        $obj = $entry_map{$tb->entry_id};
+                        $title_prop->{col} = 'title'; 
                     }
                     elsif ( $tb->category_id ) {
-                        my $cat = $category_map{$tb->category_id};
-                        $id      = $cat->id;
-                        $label   = $cat->label;
-                        $type    = $cat->class;
-                        $blog_id = $cat->blog_id;
+                        $obj = $category_map{$tb->category_id};
+                        $title_prop->{col} = 'label'; 
                     }
-                    my $url = $app->uri(
-                        mode => 'view',
-                        args => {
-                            _type   => $type,
-                            id      => $id,
-                            blog_id => $blog_id,
-                        },
-                    );
+                    my $title_html = $title_prop->html($obj,$app);
+                    my $type = $obj->class_type;
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
                     push @res, qq{
                         <span class="target-type $type">
                           <img src="$img" />
                         </span>
-                        <a href="$url">$label</a>
+                        $title_html
                     };
                 }
                 @res;
