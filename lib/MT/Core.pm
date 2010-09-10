@@ -828,6 +828,7 @@ BEGIN {
             },
             page => {
                 object_label => 'Page',
+                primary       => 'title',
                 default_sort_key => 'modified_on',
                 permission => 'access_to_page_list'
             },
