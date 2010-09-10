@@ -60,7 +60,10 @@ sub load_config {
         next unless defined $key;
         my $value = $settings->{$key};
         next if !defined $value or $value =~ m/\s/ or length($value) > 100;
-        $param->{$key.'_'.$value} = 1;
+        $value = [ $value ] unless ref $value eq 'ARRAY';
+        foreach my $v ( @$value ) {
+            $param->{$key.'_'.$v} = 1;
+        }
     }
 }
 

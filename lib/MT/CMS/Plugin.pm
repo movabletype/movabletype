@@ -68,7 +68,12 @@ sub save_config {
     my @params = $q->param;
     foreach (@params) {
         next if $_ =~ m/^(__mode|return_args|plugin_sig|magic_token|blog_id)$/;
-        $param{$_} = $q->param($_);
+        my @values = $q->param($_);
+        if ($#values > 1) {
+            $param{$_} = \@values;
+        } else {
+            $param{$_} = $values[0];
+        }
     }
     if ( $profile && $profile->{object} ) {
         my $plugin = $profile->{object};
