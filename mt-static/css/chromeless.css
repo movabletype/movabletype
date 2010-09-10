@@ -1,21 +1,19 @@
 /* Chromeless ------------------------------------------------------------ */
 /* - Generic */
 body {
-    background-color: #F8FBF8;
-    font-size: 12px;
+    color: #2b2b2b;
+    background-color: #f3f3f3;
+    font-size: 13px;
     font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
 }
 
 a { 
-    color: #5C909B;
+    color: #5c909b;
 }
 a:hover, 
 a:active { 
-    color: #839B5C;
-}
-
-p { 
-    margin-bottom: 1.8em;
+    color: #839b5c;
+    text-decoration: none;
 }
 
 ul li {
@@ -30,11 +28,9 @@ fieldset {
 /* -- Hn */
 h2 {
     font-weight: bold;
-    font-size: 14px;
 }
 
 h3 {
-    font-size: 14px;
     text-shadow: #fff 0 1px 0;
     margin-bottom: 20px;
 }
@@ -44,81 +40,6 @@ h3 {
     font-size: 18px;
     font-weight: normal;
 }
-
-/* -- Form */
-/* select,
-input,
-textarea {
-    font-size: 14px;
-}
-textarea { 
-    min-height: 5em;
-}
-select { 
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #c8c2be;
-    font-size: 12px;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-}
-.listing-filter select, 
-.actions-bar select { 
-    height: 2em;
-    padding: 2px;
-    font-size: 11px;    
-}
-select#odbcdrivername { 
-    width: 20em;
-}
-input[type="text"], 
-input[type="password"], 
-textarea { 
-    width: 100%;
-    padding: 3px;
-    border: 1px solid #c8c2be;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-}
-input#odbcdriverversion { 
-    width: 5em;
-}
-input[type="password"] { 
-    width: 15em;
-}
-input[readonly="readonly"] { 
-    background-color: #dcdddd ! important;
-    color: #7b7c7d;
-}
-input.extra-path { 
-    width: 12em;
-    margin-left: 5px;
-}
-input.smaller-text { 
-    width: 3.5em;
-}
-.larger-text { 
-    width: 100%;
-}
-
-.actions-bar input[type="image"], 
-.actions-bar input[type="submit"],
-.actions-bar button {
-    float: right;
-    margin-left: 12px;
-}
-
-#change-password #container input { 
-    width: 100%;
-}
-*/
 
 /* - Component */
 .ready {
@@ -137,10 +58,6 @@ input.smaller-text {
 }
 .input-hint {
     color:#999;
-}
-
-.msg .mt-close-msg {
-    display: none;
 }
 
 /* - Field */
@@ -165,11 +82,9 @@ input.smaller-text {
 }
 
 .actions-bar {
-    overflow: hidden;
     position: relative;
     min-height: 30px;
-    margin: 25px 0 5px;
-    text-align: right;
+    margin: 25px 0 0;
 }
 
 #container.show-actions-bar-top .actions-bar-top {
@@ -183,98 +98,16 @@ input.smaller-text {
     text-align: right;
 }
 
-/* -- Buttons
-button, 
-a.button { 
-    min-width: 7em;
-    overflow: visible;
-    display: inline-block;
-    outline: 0;
-    padding: 2px 4px;
-    border: 1px solid #85afc4;
-    border-top-color: #cddee7;
-    border-left-color: #cddee7;
-    border-style: solid;
-    background: #999 url('../images/buttons/button-list.gif') repeat-x 50% 50%;
-    color: #33789c;
-    font-size: 11px;
-    text-shadow: #F8FBF8 0 1px 0;
-    -moz-border-radius: 3px;
-    -khtml-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-}
-a.button { 
-    padding: 3px 6px;
-    text-decoration: none;
-}
-button:hover, 
-a.button:hover {
-    color: #33789c;
-    background-position: 50% 30%;
-}
-button.action, 
-a.action {
-    padding: 3px 8px;
-    border: 0;
-    background: #2b2b2b url('../images/buttons/button.gif') no-repeat 0 center;
-    color: #F3F3F3;
-    font-size: 13px;
-    text-align: center;
-    text-shadow: #2b2b2b 0 -1px 0;
-    cursor: pointer;
-    -moz-border-radius: 5px;
-    -khtml-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border-radius: 5px;
-}
-
-a.action { 
-    padding: 5px 8px;
-}
-
-button.primary-button, 
-a.primary-button {
-    background-image: url(../images/buttons/button-primary.gif);
-}
-button.disabled-button {
-    background-image: url(../images/buttons/button-primary-disabled.gif);
-}
-
-.chromeless-wide .actions-bar button { 
-    min-width: 0px;
-}
-
-button.action:hover,
-a.action:hover {
-    background-color: #666;
-    background-position: -500px center;
-    color: #fff;
-}
-
-.actions-bar button.goback {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-left: 0;
-}
-.chromeless-wide .actions-bar button.goback { 
-    position: static;
-    margin-left: 12px;
-} */
-
 /* - Layout */
 #container {
     position: relative;
     width: 520px;
     margin: 45px auto 30px;
     padding: 30px 30px 25px;
-    border: 1px solid #C8C2BE;
+    border: 1px solid #c0c6c9;
     background-color: #fff;
-    -moz-border-radius: 8px;
-    -khtml-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
 }
 
 /* -- Wide Layout */

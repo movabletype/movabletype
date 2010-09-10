@@ -1,150 +1,149 @@
 <mt:setvarblock name="page_title"><__trans phrase="Mail Configuration"></mt:setvarblock>
 <mt:include name="include/chromeless_header.tmpl">
-
 <form id="optional_form" method="post">
-    <input type="hidden" name="__mode" value="" />
-    <input type="hidden" name="step" value="optional" />
-    <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
-    <input type="hidden" name="default_language" value="<mt:var name="default_language">" />
-    <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
-
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="step" value="optional" />
+  <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
+  <input type="hidden" name="default_language" value="<mt:var name="default_language">" />
+  <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:if name="success">
-    <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
-    <div id="buttons" class="actions-bar">
-        <button
-            name="continue"
-            type="submit"
-            onclick="go('next_step');"
-            class="continue action primary-button"
-            ><__trans phrase="Continue"></button>
-        <button
-            name="back"
-            type="submit"
-            onclick="this.form.reset(); go('previous_step');"
-            class="goback action"
-            ><__trans phrase="Back"></button>
-    </div>
-    <p id="more">
-        <a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a>
-    </p>
+  <p class="intro"><span class="ready"><__trans phrase="Your mail configuration is complete."></span> <__trans phrase="Check your email to confirm receipt of a test email from Movable Type and then proceed to the next step."></p>
+  <div id="buttons" class="actions-bar">
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button">
+      <__trans phrase="Continue">
+    </button>
+    <button
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button">
+      <__trans phrase="Back">
+    </button>
+  </div>
+  <p id="more"><a href="javascript:void(0)" onclick="hideByID('buttons'); hideByID('more'); showByID('settings');"><__trans phrase="Show current mail settings"></a></p>
 </mt:if>
 
-
-    <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
-        <p class="intro">
-            <__trans phrase="Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified.">
-        </p>
-<mt:if name="send_error">
-        <mtapp:statusmsg
-            id="send_error"
-            class="error">
-            <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error">
-        </mtapp:statusmsg>
-<mt:else>
+  <div id="settings"<mt:if name="success"> style="display: none;"</mt:if>>
+    <p class="intro"><__trans phrase="Periodically Movable Type will send email for password recovery, to inform authors of new comments, and other events. If not using Sendmail (default on unix servers), an SMTP Server must be specified."></p>
+  <mt:if name="send_error">
+    <mtapp:statusmsg
+       id="send_error"
+       class="error"
+       can_close="0">
+      <__trans phrase="An error occurred while attempting to send mail: "><mt:var name="error">
+    </mtapp:statusmsg>
+  <mt:else>
     <mt:if name="error">
-        <mtapp:statusmsg
-            id="error"
-            class="error">
-            <mt:var name="error">
-        </mtapp:statusmsg>
+    <mtapp:statusmsg
+       id="error"
+       class="error"
+       can_close="0">
+      <mt:var name="error">
+    </mtapp:statusmsg>
     </mt:if>
-</mt:if>
+  </mt:if>
 
-        <fieldset>
-        <!-- MailTransfer -->
-            <mtapp:setting
-                id="mail_transfer"
-                label="<__trans phrase="Send email via:">"
-                label_class="top-label">
-                <select id="mail_transfer" name="mail_transfer">
-                    <option value=""><__trans phrase="Select One..."></option>
-                <mt:loop name="mail_loop">
-                    <option value="<mt:var name=ID>" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
-                </mt:loop>
-                </select>
-            </mtapp:setting>
+    <fieldset>
+    <!-- MailTransfer -->
+      <mtapp:setting
+         id="mail_transfer"
+         label="<__trans phrase="Send email via:">"
+         label_class="top-label">
+        <select id="mail_transfer" name="mail_transfer">
+          <option value=""><__trans phrase="Select One..."></option>
+        <mt:loop name="mail_loop">
+          <option value="<mt:var name="ID">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="name"></option>
+        </mt:loop>
+        </select>
+      </mtapp:setting>
 
-            <div id="params" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
-            <!-- SendMailPath -->
-                <div id="sendmail_path" <mt:unless name="use_sendmail">style="display: none"</mt:unless>>
-                    <mtapp:setting
-                        id="sendmail_path"
-                        label="<__trans phrase="sendmail Path">"
-                        label_class="top-label"
-                        hint="<__trans phrase="The physical file path for your sendmail binary.">">
-                        <input type="text" id="sendmail_path" class="ti" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
-                    </mtapp:setting>
-                </div>
+      <div id="params" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+      <!-- SendMailPath -->
+        <div id="sendmail_path" <mt:unless name="use_sendmail">style="display: none"</mt:unless>>
+          <mtapp:setting
+             id="sendmail_path"
+             label="<__trans phrase="sendmail Path">"
+             label_class="top-label"
+             hint="<__trans phrase="The physical file path for your sendmail binary.">">
+            <input type="text" id="sendmail_path" class="text full" name="sendmail_path" value="<mt:if name="sendmail_path"><mt:var name="sendmail_path" escape="html"></mt:if>" />
+          </mtapp:setting>
+        </div>
 
-            <!-- SMTPServer -->
-                <div id="smtp_server" <mt:unless name="use_smtp">style="display: none"</mt:unless>>
-                    <mtapp:setting
-                        id="smtp_server"
-                        label="<__trans phrase="Outbound Mail Server (SMTP)">"
-                        label_class="top-label"
-                        hint="<__trans phrase="Address of your SMTP Server.">">
-                        <input type="text" id="smtp_server" class="ti" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
-                    </mtapp:setting>
-                </div>
+      <!-- SMTPServer -->
+        <div id="smtp_server" <mt:unless name="use_smtp">style="display: none"</mt:unless>>
+          <mtapp:setting
+             id="smtp_server"
+             label="<__trans phrase="Outbound Mail Server (SMTP)">"
+             label_class="top-label"
+             hint="<__trans phrase="Address of your SMTP Server.">">
+            <input type="text" id="smtp_server" class="text full" name="smtp_server" value="<mt:if name="smtp_server"><mt:var name="smtp_server" escape="html"></mt:if>" />
+          </mtapp:setting>
+        </div>
 
-            <!-- Test Address -->
-                <mtapp:setting
-                    id="test_email_address"
-                    label="<__trans phrase="Mail address to which test email should be sent">"
-                    label_class="top-label">
-                    <input type="text" id="test_mail_address" class="ti" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
-                </mtapp:setting>
+      <!-- Test Address -->
+        <mtapp:setting
+           id="test_email_address"
+           label="<__trans phrase="Mail address to which test email should be sent">"
+           label_class="top-label">
+          <input type="text" id="test_mail_address" class="text full" name="test_mail_address" value="<mt:if name="test_mail_address"><mt:var name="test_mail_address" escape="html"></mt:if>" />
+        </mtapp:setting>
 
-            <!-- Email Address Main -->
-                <mtapp:setting
-                    id="email_address_main"
-                    label="<__trans phrase="From mail address">"
-                    label_class="top-label">
-                    <input type="text" id="email_address_main" class="ti" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
-                </mtapp:setting>
-            </div>
+      <!-- Email Address Main -->
+        <mtapp:setting
+           id="email_address_main"
+           label="<__trans phrase="From mail address">"
+           label_class="top-label">
+          <input type="text" id="email_address_main" class="text full" name="email_address_main" value="<mt:if name="email_address_main"><mt:var name="email_address_main" escape="html"></mt:if>" />
+        </mtapp:setting>
+      </div>
 
-            <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
-                <button
-                    name="continue"
-                    type="submit"
-                    onclick="go('next_step');"
-                    class="continue action primary-button"
-                    ><__trans phrase="Continue"></button>
+      <div id="goback" class="actions-bar" <mt:if name="mail_transfer">style="display: none"</mt:if>>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button">
+          <__trans phrase="Continue">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
+        </button>
+      </div>
 
-                <button
-                    name="back"
-                    type="submit"
-                    onclick="this.form.reset(); go('previous_step');"
-                    class="goback action"
-                    ><__trans phrase="Back"></button>
-            </div>
-
-            <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
-                <button
-                    name="continue"
-                    type="submit"
-                    onclick="go('next_step');"
-                    class="continue action primary-button"
-                    ><__trans phrase="Continue"></button>
-
-                <button
-                    name="test"
-                    type="submit"
-                    value="1"
-                    onclick="go('test')"
-                    class="test action primary-button"
-                    ><__trans phrase="Send Test Email"></button>
-
-                <button
-                    name="back"
-                    type="submit"
-                    onclick="this.form.reset(); go('previous_step');"
-                    class="goback action"
-                    ><__trans phrase="Back"></button>
-            </div>
-        </fieldset>
-    </div> <!-- settings -->
+      <div id="submit" class="actions-bar" <mt:unless name="mail_transfer">style="display: none"</mt:unless>>
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button">
+          <__trans phrase="Continue">
+        </button>
+        <button
+           name="test"
+           type="submit"
+           value="1"
+           onclick="go('test')"
+           class="test action primary button">
+          <__trans phrase="Send Test Email">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="this.form.reset(); go('previous_step');"
+           class="goback action button">
+          <__trans phrase="Back">
+        </button>
+      </div>
+    </fieldset>
+  </div>
 </form>
 
 <script type="text/javascript">

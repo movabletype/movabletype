@@ -27,7 +27,7 @@
     max-width: 100%;
 }
 .text.short,
-.passwd {
+.password {
     width: 200px;
 }
 .text.num, 
@@ -49,11 +49,11 @@
     width: 12em;
     margin: 0 0.2em;
 }
-.low {
+.text.low {
     height: 5em;
     overflow:auto;
 }
-.high {
+.text.high {
     height: 12em;
     overflow:auto;
 }

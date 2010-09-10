@@ -1,52 +1,49 @@
 <mt:setvarblock name="page_title"><__trans phrase="Temporary Directory Configuration"></mt:setvarblock>
-
 <mt:include name="include/chromeless_header.tmpl">
-
 <form method="post">
-    <input type="hidden" name="__mode" value="" />
-    <input type="hidden" name="step" value="cfg_dir" />
-    <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">">
-    <input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
-    <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="step" value="cfg_dir" />
+  <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">">
+  <input type="hidden" name="default_language" value="<mt:var name="default_language">" />    
+  <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
 <mt:unless name="success">
-    <p><__trans phrase="You should configure you temporary directory settings."></p>
+  <p><__trans phrase="You should configure you temporary directory settings."></p>
 <mt:else>
-    <p><__trans phrase="Your TempDir has been successfully configured. Click 'Continue' below to continue configuration."></p>
+  <p><__trans phrase="Your TempDir has been successfully configured. Click 'Continue' below to continue configuration."></p>
 </mt:unless>
 
 <mt:if name="not_found_error">
-    <mtapp:statusmsg
-        id="not_found_error"
-        class="error">
-        <__trans phrase="[_1] could not be found." params="<mt:var name="temp_dir" escape="html">">
-    </mtapp:statusmsg>
+  <mtapp:statusmsg
+     id="not_found_error"
+     class="error"
+     can_close="0">
+    <__trans phrase="[_1] could not be found." params="<mt:var name="temp_dir" escape="html">">
+  </mtapp:statusmsg>
 </mt:if>
-
 <mt:if name="not_write_error">
-    <mtapp:statusmsg
-        id="not_write_error"
-        class="error">
-        <__trans phrase="[_1] is not writable." params="<mt:var name="temp_dir" escape="html">">
-    </mtapp:statusmsg>
+  <mtapp:statusmsg
+     id="not_write_error"
+     class="error"
+     can_close="0">
+    <__trans phrase="[_1] is not writable." params="<mt:var name="temp_dir" escape="html">">
+  </mtapp:statusmsg>
 </mt:if>
-
 <mt:if name="invalid_error">
-    <mtapp:statusmsg
-        id="invalid_error"
-        class="error">
-        <__trans phrase="TempDir is required.">
-    </mtapp:statusmsg>
+  <mtapp:statusmsg
+     id="invalid_error"
+     class="error"
+     can_close="0">
+    <__trans phrase="TempDir is required.">
+  </mtapp:statusmsg>
 </mt:if>
-
-    <fieldset>
-    <!-- TempDir -->
-        <mtapp:setting
-            id="temp_dir"
-            label="<__trans phrase="TempDir">"
-            label_class="top-label"
-            hint="<__trans phrase="The physical path for temporary directory.">">
-            <input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
-        </mtapp:setting>
+  <!-- TempDir -->
+  <mtapp:setting
+     id="temp_dir"
+     label="<__trans phrase="TempDir">"
+     label_class="top-label"
+     hint="<__trans phrase="The physical path for temporary directory.">">
+    <input type="text" id="temp_dir" class="ti" name="temp_dir" value="<mt:if name="temp_dir"><mt:var name="temp_dir" escape="html"></mt:if>" />
+  </mtapp:setting>
 
         <div id="goback" class="actions-bar" <mt:unless name="success">style="display: none"</mt:unless>>
             <button
