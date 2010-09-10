@@ -209,7 +209,7 @@ sub list_props {
             order => 100,
         },
         title => {
-            auto  => 1,
+            base  => '__virtual.title',
             label => 'Title',
             display => 'force',
             order => 200,
@@ -228,10 +228,11 @@ sub list_props {
                 },
             ],
             html => sub {
-                my ( $prop, $obj ) = @_;
+                my $prop = shift;
+                my ( $obj ) = @_;
                 my $class       = $obj->class;
                 my $class_label = $obj->class_label;
-                my $title     = MT::Util::encode_html( $obj->title );
+                my $title     = $prop->super(@_);
                 my $excerpt   = remove_html( $obj->excerpt ) || remove_html( $obj->text );
                 ## FIXME: Hard coded
                 my $len = 40;
@@ -280,7 +281,7 @@ sub list_props {
                       <a href="$edit_url"><img alt="$status_class" src="$status_img" /></a>
                     </span>
                     <span class="title">
-                      <a href="$edit_url">$title</a>
+                      $title
                     </span>
                     $view_link
                     <p class="$class-excerpt description">$excerpt</p>

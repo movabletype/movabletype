@@ -294,33 +294,23 @@ sub list_props {
                 my ( $objs, $app ) = @_;
                 my %entry_ids  = map { $_->entry_id => 1 } @$objs;
                 my @entries = MT->model('entry')->load({
-                    id => [ keys %entry_ids ], },{
-                    fetchonly => {
-                        id    => 1,
-                        class => 1,
-                        title => 1,
-                }});
-                my %names   = map { $_->id => $_->title } @entries;
-                my %classes = map { $_->id => $_->class } @entries;
+                    id => [ keys %entry_ids ],
+                });
+                my %entries   = map { $_->id => $_ } @entries;
+                my $title_prop = MT::ListProperty->instance( '__virtual.title' );
+                $title_prop->{col} = 'title';
                 my @result;
                 for my $obj ( @$objs ) {
-                    my $id   = $obj->entry_id;
-                    my $type = $classes{$id};
-                    my $name = $names{$id};
-                    my $uri = $app->uri(
-                        mode => 'view',
-                        args => {
-                            _type  => $type,
-                           id      => $id,
-                           blog_id => $obj->blog_id,
-                        },
-                    );
+                    my $id    = $obj->entry_id;
+                    my $entry = $entries{$id};
+                    my $type  = $entry->class_type;
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
+                    my $title_html = $title_prop->html($entry,$app);
                     push @result, qq{
                         <span class="target-type $type">
                           <img src="$img" />
                         </span>
-                        <a href="$uri">$name</a>
+                        $title_html
                     };
                 }
                 return @result;
