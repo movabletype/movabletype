@@ -104,6 +104,32 @@ function loginAgain(fn) {
   jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dashboard');
 }
 
+function handleMessages( data ) {
+  jQuery('#msg-block').empty();
+  if ( data.error ) {
+    jQuery('#msg-block').append(
+      '<div class="msg msg-error">'
+      + data.error
+      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</div>');
+    return false;
+  }
+  if ( !data.result ) return false;
+  var messages = data.result.messages;
+  if ( !data.result.messages ) return true;
+  for ( var i=0; i < messages.length; i++ ) {
+    var msg   = messages[i];
+    var text  = msg.msg;
+    var class = msg.class;
+    jQuery('#msg-block').append(
+      '<div class="msg msg-' + class + '">'
+      + text
+      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</div>');
+  }
+  return true;
+}
+
 function createItem(id, parent, label, number) {
   var line = '<span class="sort-tab"></span>';
   line += '<span class="item-label">'+label+'</span>';
@@ -395,14 +421,12 @@ function renderNestedList() {
     dataType: 'json',
     data: params,
     success: function(data) {
+      if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
         jQuery('#debug-block').text(data.result.debug);
       }
 </mt:if>
-      if (data.error) {
-        jQuery('#msg-block').append('<div id="ajax_error" class="msg msg-error">'+data.error+'</div>');
-      }
       renderItems(data);
     },
     complete: function() {
@@ -450,11 +474,7 @@ function bulkUpdateCategories() {
       objects: jQuery.toJSON(items)
     },
     success: function(data) {
-      jQuery('#msg-block').empty();
-      if (data.error) {
-        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
-        return;
-      }
+      if ( !handleMessages(data) ) return;
       renderItems(data);
       isdirty = false;
     },

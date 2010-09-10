@@ -958,7 +958,7 @@ sub filtered_list {
                  : $blog->is_blog ? [ $blog_id ]
                  :                  [ $blog->id, map { $_->id } @{$blog->blogs} ];
     my $debug = {};
-
+    my @messages = @{ $forward_params{messages} || [] };
     if ( $MT::DebugMode ) {
         require Time::HiRes;
         $debug->{original_prof} = $Data::ObjectDriver::PROFILE;
@@ -1157,6 +1157,7 @@ sub filtered_list {
     $res{label}    = $forward_params{saved_label} if $forward_params{saved_label};
     $res{filters}  = \@filters;
     $res{editable_filter_count} = $editable_filter_count;
+    $res{messages} = \@messages;
     $MT::DebugMode && $debug->{section}->('finalize');
     MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, \@objs );
     if ( $MT::DebugMode ) {

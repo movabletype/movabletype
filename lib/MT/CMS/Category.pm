@@ -220,7 +220,7 @@ sub bulk_update {
     my $blog    = $app->blog;
     my $model   = $app->param('datasource') || 'category';
     my $class   = MT->model($model);
-
+    my @messages; 
     my $objects;
     if ( my $json = $app->param('objects') ) {
         if ( $json =~ /^".*"$/ ) {
@@ -299,12 +299,14 @@ sub bulk_update {
         }
     }
     my %TEMP_MAP;
+    my ( $creates, $updates, $deletes ) = (0,0,0);
     for my $create ( @creates ) {
         if ( $create->parent =~ /^x(\d+)/ ) {
             my $tmp_id = $1;
             $create->parent( $TEMP_MAP{$tmp_id} );
         }
         $create->save;
+        $creates++;
         $TEMP_MAP{ $create->{tmp_id} } = $create->id;
     }
     for my $updated ( @updated ) {
@@ -313,17 +315,29 @@ sub bulk_update {
             $updated->parent( $TEMP_MAP{$tmp_id} );
         }
         $updated->save;
+        $updates++;
     }
     for my $obj ( values %old_objects ) {
         $obj->remove;
+        $deletes++;
     }
-
+    push @messages, {
+        class => 'info',
+        msg   => MT->translate(
+            'Successed to updated [_1] ( [_2] new, [_3] updates and [_4] deletes.)',
+            $class->class_label_plural,
+            $creates,
+            $updates,
+            $deletes,
+        ),
+    };
+    
     my @ordered_ids = map { $_->id } @objects;
     my $order = join ',', @ordered_ids;
     my $meta = $model . '_order';
     $blog->$meta($order);
     $blog->save;
-    $app->forward( 'filtered_list' );
+    $app->forward( 'filtered_list', messages => \@messages );
 }
 
 sub category_add {

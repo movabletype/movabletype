@@ -233,6 +233,32 @@ var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
 
+function handleMessages( data ) {
+  jQuery('#msg-block').empty();
+  if ( data.error ) {
+    jQuery('#msg-block').append(
+      '<div class="msg msg-error">'
+      + data.error
+      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</div>');
+    return false;
+  }
+  if ( !data.result ) return false;
+  var messages = data.result.messages;
+  if ( !data.result.messages ) return true;
+  for ( var i=0; i < messages.length; i++ ) {
+    var msg   = messages[i];
+    var text  = msg.msg;
+    var class = msg.class;
+    jQuery('#msg-block').append(
+      '<div class="msg msg-' + class + '">'
+      + text
+      + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
+      + '</div>');
+  }
+  return true;
+}
+
 function loginAgain(fn) {
   jQuery(window)
     .unbind('dialogReady.loginAgain')
@@ -358,10 +384,7 @@ function renameFilter(index, fid, name) {
       list: 0
     },
     success: function(data) {
-      if (data.error) {
-        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
-        return;
-      }
+      if ( !handleMessages(data) ) return;
       editable_filter_count = data.result.editable_filter_count;
       filters = data.result.filters;
     },
@@ -399,10 +422,7 @@ function removeFilter(element) {
       blog_id: <mt:var name="blog_id">
     },
     success: function(data) {
-      if (data.error) {
-        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
-        return;
-      }
+      if ( !handleMessages(data) ) return;
       editable_filter_count = data.result.editable_filter_count;
       filters = data.result.filters;
       if ( remove_current ) {
@@ -539,10 +559,7 @@ function renderList(mode, columns, values, limit, page) {
     dataType: 'json',
     data: params,
     success: function(data) {
-      if (data.error) {
-        jQuery('#msg-block').append('<div class="msg msg-error">'+data.error+'</div>');
-        return;
-      }
+      if ( !handleMessages(data) ) return;
 <mt:if name="config.debugmode">
       if (data.result.debug) {
         jQuery('#debug-block').text(data.result.debug);
