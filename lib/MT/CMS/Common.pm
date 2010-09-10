@@ -833,6 +833,16 @@ sub list {
                  : $disp eq 'default' ? 1
                  :                      0;
         my $force = $disp eq 'force' ? 1 : 0;
+        my @subfields;
+        if ( my $subfields = $prop->sub_fields ) {
+            for my $sub ( @$subfields ) {
+                push @subfields, {
+                    display => $cols{ $id . '.' . $sub->{class} },
+                    class   => $sub->{class},
+                    label   => $sub->{label},
+                }
+            }
+        }
         push @list_columns, {
             id                 => $prop->id,
             type               => $prop->type,
@@ -845,6 +855,7 @@ sub list {
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,
+            sub_fields         => \@subfields,
         };
     }
     @list_columns = sort {
@@ -1030,7 +1041,8 @@ sub filtered_list {
 
     ## FIXME: take identifical column from column defs.
     my $cols = $q->param('columns');
-    my @cols = ( '__id', split( ',', $cols ) );
+    my @cols = ( '__id', grep { /^[^\.]+$/ } split( ',', $cols ) );
+    my @subcols = ( '__id', grep { /\./ } split( ',', $cols ) );
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
     my %load_options = (
         terms => {

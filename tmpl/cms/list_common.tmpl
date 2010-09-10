@@ -26,9 +26,21 @@
 	     type="checkbox"
 	     value="<mt:var name="id" escape="html">"
 	     name="custom_prefs"
+         class="main"
 	     id="custom-prefs-<$mt:var name="id" escape="html"$>"
 	     <mt:if name="display">checked="checked"</mt:if> />
       <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
+    <mt:loop name="sub_fields">
+      <li class="sub-field">
+      <input
+	     type="checkbox"
+	     value="<mt:var name="class">"
+	     name="custom_prefs"
+         class="sub"
+	     id="custom-prefs-<$mt:var name="id" escape="html"$>.<mt:var name="class">"
+	     <mt:if name="display">checked="checked"</mt:if> />
+      <label for="custom-prefs-<$mt:var name="id" escape="html"$>"><mt:var name="label"></label></li>
+    </mt:loop>
   </mt:loop>
   </ul>
 </mtapp:setting>
@@ -418,8 +430,12 @@ function renderColumns() {
   cols = [];
   jQuery('thead th, tfoot th').hide().filter('.cb').show();
   jQuery('ul#disp_cols input:checked').each(function() {
+    jQuery(this).attr('id').match(/custom-prefs-(.*)/);
+    var id = RegExp.$1;
+    cols.push(id);
+  });
+  jQuery('ul#disp_cols input.main:checked').each(function() {
     var id = jQuery(this).val();
-    cols.push(id)
     jQuery('th.'+id).show();
   });
 }
@@ -493,6 +509,7 @@ function renderPagination(count, limit, page, last, total) {
 
 function renderList(mode, columns, values, limit, page) {
   limit = parseInt(limit);
+
   var params = {
     __mode: mode,
     datasource: '<mt:var name="list_type">',
@@ -635,11 +652,22 @@ function itemValues() {
   });
 }
 
-jQuery('ul#disp_cols :checkbox').click(function() {
+jQuery('ul#disp_cols .main:checkbox').click(function() {
   jQuery('tbody').empty();
   renderColumns();
   renderList('filtered_list', cols, vals, jQuery('#row').val(), parseInt(jQuery('#current_page').val()));
 });
+
+jQuery('ul#disp_cols .sub:checkbox').click(function() {
+    toggleSubField(this);
+});
+
+function toggleSubField (obj) {
+  if ( jQuery(obj).attr('checked') )
+    jQuery( '.' + jQuery(obj).val() ).show();
+  else
+    jQuery( '.' + jQuery(obj).val() ).hide();
+}
 
 jQuery('#row').change(function() {
   jQuery('tbody').empty();
@@ -1046,6 +1074,12 @@ jQuery('.filtertype .plus').live('click', function() {
     .insertAfter($filtertype)
     .find('.item-label').addClass('invisible');
 });
+
+jQuery(window).bind('listReady', function(){
+  jQuery('ul#disp_cols .sub:checkbox').each(function () {
+    toggleSubField(this);
+})});
+
 
 addItems(initial_filter.items);
 jQuery('#opener').text(initial_filter.label);
