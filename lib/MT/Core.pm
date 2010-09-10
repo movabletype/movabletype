@@ -853,6 +853,7 @@ BEGIN {
                 permission => 'access_to_category_list',
             },
             folder => {
+                primary      => 'label',
                 object_label => 'Folder',
                 template     => 'category.tmpl',
                 contents_label        => 'Page',
@@ -866,6 +867,7 @@ BEGIN {
                 primary => 'comment',
             },
             ping => {
+                primary => 'excerpt',
                 object_label => 'Trackback',
                 default_sort_key => 'created_on',
                 permission => 'access_to_trackback_list',
@@ -878,6 +880,7 @@ BEGIN {
                 view         => 'system',
             },
             commenter => {
+                primary      => 'name',
                 object_label => 'Commenter',
                 object_type  => 'author',
                 permission   => 'access_to_commenter_list',
@@ -887,6 +890,7 @@ BEGIN {
                 },
             },
             member => {
+                primary      => 'name',
                 object_label => 'Member',
                 object_type  => 'permission',
                 permission   => 'access_to_blog_member_list',
@@ -894,6 +898,7 @@ BEGIN {
                 view         => [ 'blog', 'website' ],
             },
             tag => {
+                primary      => 'name',
                 object_label => 'Tag',
                 permission => 'access_to_tag_list',
                 default_sort_key => 'name',
@@ -903,6 +908,7 @@ BEGIN {
                 object_type => 'association',
                 permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
+                primary => 'user_name',
             },
             role => {
                 object_label => 'Role',

@@ -393,6 +393,7 @@ sub member_list_props {
     return {
         name => {
             label => 'Name',
+            display => 'force',
             html => sub {
                 my $prop = shift;
                 my $obj  = shift;
@@ -401,7 +402,6 @@ sub member_list_props {
         },
         nickname => {
             label => 'Nickname',
-            display => 'force',
             bulk_html => sub {
                 my $prop = shift;
                 my $objs = shift;
