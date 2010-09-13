@@ -553,7 +553,8 @@ sub encode_url {
 sub decode_url {
     my($str, $enc) = @_;
     $enc ||= MT->config->PublishCharset;
-    $str = Encode::encode('Latin-1', $str);
+    my $from_enc = MT::I18N::guess_encoding($str) || 'utf8';
+    $str = Encode::encode($from_enc, $str);
     $str =~ s!%([0-9a-fA-F][0-9a-fA-F])!pack("H*",$1)!eg;
     Encode::decode($enc, $str);
 }

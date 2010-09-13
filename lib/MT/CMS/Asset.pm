@@ -240,6 +240,7 @@ sub dialog_list_asset {
             type     => 'asset',
             code     => $hasher,
             template => 'dialog/asset_list.tmpl',
+            ( $app->param('search') ? ( no_limit => 1 ) : () ),
             params => {
                 (
                     $blog
