@@ -253,32 +253,33 @@
     </mt:if>
 
     <div id="main">
-
       <div id="content-header">
-      <mt:if name="object_nav">
-        <mt:var name="object_nav">
-      </mt:if>
+
         <h1 id="page-title" class="title page">
           <mt:var name="page_title"><mt:if name="loaded_revision">: <em><__trans phrase="from Revision History"></em></mt:if>
         </h1>
-
-      <mt:if name="show_display_options_link">
-        <div id="display-options" class="display-options">
-          <a href="#" class="toggle-link detail-link fr"><__trans phrase="Display Options"></a>
-          <mt:var name="display_options">
-        </div>
-      </mt:if>
 
       <mt:if name="content_header">
         <mt:var name="content_header">
       </mt:if>
 
-      <!-- /Content Header --></div>
-  
       <mt:if name="system_msg">
         <mt:var name="system_msg">
       </mt:if>
-  
+
+      <mt:if name="object_nav">
+        <mt:var name="object_nav">
+      </mt:if>
+
+      <!-- /Content Header --></div>
+
+      <mt:if name="show_display_options_link">
+        <div id="display-options" class="display-options">
+          <a href="#" class="toggle-link detail-link"><__trans phrase="Display Options"></a>
+          <mt:var name="display_options">
+        </div>
+      </mt:if>
+
       <div class="line" id="content-body">
         <div class="unit size1of1" id="main-content">
 

@@ -120,12 +120,16 @@ a:active {
 /* -- Toggle Link */
 .toggle-link { 
     display: inline-block;
-    padding: 0.5em 0.8em;
+    padding: 0.3em 0.5em;
     background: transparent;
+    text-decoration: none;
 }
-.toggle-link:hover, 
+.toggle-link:hover {
+    text-decoration: underline;
+}
 .active .toggle-link {
-    background-color: #f3f3f2;
+    background-color: #f3f3f3;
+    
 }
 
 .detail {
@@ -431,10 +435,13 @@ ul.tabs li a {
     overflow: hidden;
 }
 .blog .scope {
-    max-width: 45%;
+    max-width: 65%;
 }
 .scope.website { 
     background-color: #839b5c;
+}
+.blog .scope.website {
+    max-width: 25%;
 }
 .scope.blog { 
     margin-left: -5px;
@@ -807,7 +814,7 @@ ul.tabs li a {
 /* - Content Header */
 #content-header {
     position: relative;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 .title.page { 
     font-size: 185%;
@@ -819,31 +826,31 @@ ul.tabs li a {
 /* -- Object Nav */
 .object-nav { 
     position: absolute;
+    top: 5px;
     right: 0;
-}
-#edit-entry .object-nav, 
-#edit-page .object-nav { 
-    right: 280px;
+    font-family: Arial, sans-serif;
 }
 .object-nav span { 
     color: #9EA1A3;
 }
 .object-nav li { 
     display: inline-block;
-    line-height: 1.2;
+    line-height: 1;
+    margin: 0;
 }
 
 .object-nav li a, 
 .object-nav li span { 
     display: inline-block;
     text-decoration: none;
-    padding: 5px 10px;
+    padding: 0.3em 0.5em;
+    background-color: #f3f3f3;
     outline: 0;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
 .object-nav li a:hover { 
-    background-color: #dcdddd;
+    text-decoration: underline;
 }
 
 /* - Related Content */
@@ -3052,7 +3059,6 @@ div.template-group-content.active {
 .search-replace .search-bar {
     border-bottom: 1px solid #c8c2be;
     padding: 30px 0;
-    /*font-size: 11px;*/
     background-color: #fff;
 }
 
@@ -3158,27 +3164,29 @@ div.template-group-content.active {
 
 /* - Display Optins */
 .display-options {
-    margin-top: -20px;
+    margin-bottom: 15px;
+    text-align: right;
 }
 .display-options .toggle-link {
-    border-radius: 5px;
-    -moz-border-radius: 5px;
+    background-color: #f3f3f3;
+    border-radius: 3px;
+    -moz-border-radius: 3px;
 }
 .display-options.active .toggle-link {
     background-color: #c0c6c9;
+    color: #fff;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    -moz-border-radius: 5px 5px 0 0;
-    color: #fff;
-    text-decoration: none;
+    -moz-border-radius: 3px 3px 0 0;
 }
 .display-options-detail {
     display: none;
     padding: 10px 10px 0;
     border: 1px solid #c0c6c9;
-    border-radius: 5px;
+    border-radius: 3px;
     border-top-right-radius: 0;
-    -moz-border-radius: 5px 0 5px 5px;
+    -moz-border-radius: 3px 0 3px 3px;
+    text-align: left;
 }
 
 
