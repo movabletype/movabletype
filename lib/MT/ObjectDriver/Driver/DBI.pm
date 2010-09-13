@@ -374,38 +374,15 @@ sub _decorate_column_name {
     return $driver->dbd->db_column_name($class->datasource, $col);
 }
 
-sub _create_join_arg {
-    my ( $args, $joins ) = @_;
-    if ( my $args_join = delete $args->{join} ) {
-        unshift @$joins, $args_join if $args_join;
-    }
-
-    my $join = shift @$joins;
-    return unless $join && @$join;
-    my $next = $join->[3];
-    if ( defined $next ) {
-        if ( exists $next->{'join'} ) {
-            $next = $next->{'join'}->[3];
-        }
-    }
-    else {
-        $next = {};
-        $join->[3] = $next;
-    }
-    _create_join_arg( $next, $joins );
-    $args->{'join'} = $join;
-}
-
 sub prepare_statement {
     my $driver = shift;
     my($class, $terms, $orig_args) = @_;
     my $args = defined $orig_args ? { %$orig_args } : {};
 
-    my $joins = delete $args->{joins} if $args->{joins};
-    if ( $joins ) {
-        _create_join_arg( $args, $joins );
-    }
-
+    my @joins = (
+        ( $args->{join}  ? $args->{join}       : () ),
+        ( $args->{joins} ? @{ $args->{joins} } : () ),
+    );
     my %stmt_args;
 
     ## Statements don't know anything about table/column name decoration,
@@ -414,7 +391,7 @@ sub prepare_statement {
 
     for my $arg (qw( transform range range_incl not null not_null like binary count_distinct )) {
         if(exists $args->{$arg}) {
-            my %stmt_data = %{ delete $args->{$arg} };
+            my %stmt_data = %{ $args->{$arg} };
             $driver->_decorate_column_names_in(\%stmt_data, $class);
             $stmt_args{$arg} = \%stmt_data;
         }
@@ -436,7 +413,7 @@ sub prepare_statement {
         $stmt_args{lob_columns} = \%lob_columns_hash;
     }
 
-    my $join = delete $args->{join};
+    my $join = $args->{join};
 
     ## Convert fetchonly args from legacy hashes to Data::ObjectDriver's
     ## expected arrays.
@@ -472,7 +449,7 @@ sub prepare_statement {
         }
     }
 
-    my $start_val = $args->{sort} ? delete $args->{start_val} : undef;
+    my $start_val = $args->{sort} ? $args->{start_val} : undef;
 
     my $stmt = $driver->dbd->sql_class->new(%stmt_args);
 
@@ -548,7 +525,7 @@ sub prepare_statement {
             }
         }
 
-        if ( my $ft_arg = delete $args->{'freetext'} ) {
+        if ( my $ft_arg = $args->{'freetext'} ) {
             my @columns = map { $dbd->db_column_name($tbl, $_) } @{ $ft_arg->{'columns'} };
             $stmt->add_freetext_where( \@columns, $ft_arg->{'search_string'} );
         }
@@ -568,10 +545,10 @@ sub prepare_statement {
     my $major_stmt = $stmt;
 
     ## Implement `join` arg like MT::ObjectDriver, for compatibility.
-    if($join) {
+    while ( my $join = shift @joins ) {
         my ($j_class, $j_col, $j_terms, $j_args) = @$join;
         my $j_unique;
-        if($j_unique = delete $j_args->{unique}) {
+        if($j_unique = $j_args->{unique}) {
             $stmt->distinct(1);
         }
 
