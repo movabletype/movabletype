@@ -322,9 +322,9 @@ sub bulk_update {
         $deletes++;
     }
     push @messages, {
-        class => 'info',
-        msg   => MT->translate(
-            'Successed to updated [_1] ( [_2] new, [_3] updates and [_4] deletes.)',
+        cls => 'info',
+        msg => MT->translate(
+            '[_1] has been successfully updated. ( [_2] new, [_3] updates and [_4] deletes.)',
             $class->class_label_plural,
             $creates,
             $updates,

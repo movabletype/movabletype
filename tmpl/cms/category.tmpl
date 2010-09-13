@@ -120,9 +120,9 @@ function handleMessages( data ) {
   for ( var i=0; i < messages.length; i++ ) {
     var msg   = messages[i];
     var text  = msg.msg;
-    var class = msg.class;
+    var cls   = msg.cls;
     jQuery('#msg-block').append(
-      '<div class="msg msg-' + class + '">'
+      '<div class="msg msg-' + cls + '">'
       + text
       + '<img alt="<__trans phrase="Close">" src="<mt:var name="static_uri">images/icon_close.png" class="mt-close-msg close-link clickable" />'
       + '</div>');
