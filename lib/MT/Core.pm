@@ -461,10 +461,14 @@ BEGIN {
                     auto      => 1,
                     label     => 'ID',
                 },
+                ## translate('No Title')
+                ## translate('No Name')
+                ## translate('No Label')
                 label => {
                     auto      => 1,
                     label     => 'Label',
                     display   => 'force',
+                    alternative_label => 'No label',
                     html => sub {
                         my $prop = shift;
                         my ( $obj, $app ) = @_;
@@ -488,27 +492,17 @@ BEGIN {
                             return qq{<a href="$edit_link">$label</a>};
                         }
                         else {
-                            my $date_col = $obj->has_column('authored_on') ? 'authored_on' : 'created_on';
-                            my $ts = $obj->$date_col;
-                            my $date_format = MT::App::CMS::LISTING_DATE_FORMAT();
-                            my $blog = $app ? $app->blog : undef;
-                            my $is_relative = 1;
-                            ## TBD: should do like this...
-                            ## my $is_relative = $app->user->date_type eq 'relative' ? 1 : 0;
-                            my $date_str = $is_relative ? MT::Util::relative_date( $ts, time, $blog )
-                                                        : MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
                             return MT->translate(
-				qq{[_1] created on [_2] (<a href="[_3]">id:[_4]</a>)},
-                                $obj->class_label,
-                                $date_str,
+				qq{[_1] (<a href="[_2]">id:[_3]</a>)},
+                                $prop->has('alternative_label') ? $prop->alternative_label : 'No ' . $prop->label,
                                 $edit_link,
                                 $id,
                             )
                         }
                     },
                 },
-                title => { base => '__virtual.label', },
-                name  => { base => '__virtual.label', },
+                title => { base => '__virtual.label', alternative_label => 'No Title', },
+                name  => { base => '__virtual.label', alternative_label => 'No Name', },
                 created_on => {
                     auto      => 1,
                     label     => 'Created on',
