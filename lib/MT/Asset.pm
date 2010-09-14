@@ -84,7 +84,17 @@ sub list_props {
                             <img src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
                         </div>
                     };
-                };
+                }
+                else {
+                    my $type = $obj->class_type;
+                    my $img = MT->static_path . 'images/asset/' . $type . '.gif';
+                    return qq{
+                        <span class="title"><a href="$edit_link">$label</a></span>
+                        <div class="thumbnail">
+                            <img class="asset-type-icon asset-type-$type" src="$img" />
+                        </div>
+                    };
+                }
                 return qq{<a href="$edit_link">$label</a>};
             },
         },
