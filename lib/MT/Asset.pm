@@ -95,7 +95,6 @@ sub list_props {
                         </div>
                     };
                 }
-                return qq{<a href="$edit_link">$label</a>};
             },
         },
         author_name => {
