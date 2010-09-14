@@ -329,6 +329,24 @@ sub init_core_registry {
                 },
             },
         },
+        image_drivers => {
+            magick => {
+                order => 100,
+                driver => 'ImageMagick',
+            },
+            gd => {
+                order => 200,
+                driver => 'GD',
+            },
+            netpbm => {
+                order => 300,
+                driver => 'NetPBM',
+            },
+            imager => {
+                order => 400,
+                driver => 'Imager',
+            },
+        },
     };
 }
 
@@ -1041,6 +1059,26 @@ sub seed {
                 my $key = $param_name{$id};
                 $param{$key} = $param{$id}
                     if $param{$id};
+            }
+        }
+    }
+
+    # look for image driver
+    my $image_drivers = $app->registry('image_drivers') || {};
+    eval { require MT::Image };
+    if ( !$@ ) {
+        my @image_drivers
+            = map { $_->{driver} }
+            sort { $a->{order} <=> $b->{order} }
+            values %$image_drivers;
+        IMAGEDRIVER:
+        for my $driver ( @image_drivers ) {
+            my $driver_class = 'MT::Image::' . $driver;
+            eval "require $driver_class";
+            next IMAGEDRIVER if $@;
+            if ( $driver_class->load_driver ) {
+                $param{image_driver} = "$driver";
+                last IMAGEDRIVER;
             }
         }
     }

@@ -45,6 +45,8 @@ SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="t
 
 TempDir <mt:var name="temp_dir"></mt:if><mt:if name="default_language">
     
-DefaultLanguage <mt:var name="default_language"></mt:if><mt:loop name="tmpl_loop">
+DefaultLanguage <mt:var name="default_language"></mt:if><mt:if name="image_driver">
+
+ImageDriver <mt:var name="image_driver"></mt:if><mt:loop name="tmpl_loop">
 
 <mt:var name="tmpl_code"></mt:loop>
