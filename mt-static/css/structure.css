@@ -1413,10 +1413,9 @@ fieldset {
 
 
 /* -- Create Inline */
-.list-notification .create-inline,
-.edit-template .create-inline,
-.list-banlist .create-inline {
+.create-inline {
     display: none;
+    margin-bottom: 10px;
     padding: 8px 10px;
     background-color: #dcdddd;
     -moz-border-radius: 5px;

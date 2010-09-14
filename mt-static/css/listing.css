@@ -31,10 +31,15 @@
 .col.num { 
     width: 8em;
 }
+.col.num a {
+    display: inline-block;
+    width: 100%;
+}
 .col.id { 
     width: 5.5em;
 }
-.col.entry { 
+.col.entry, 
+.col.target { 
     width: 25%;
 }
 .col.cb, 
@@ -100,18 +105,13 @@ tfoot .col.head{
     background-image: url(../images/arrow/arrow-sort-bottom.png);
 }
 
-/* -- Record Column */
+/* -- Sub Column */
 .col .description {
     margin: 0.75em 0 0;
     font-size: 95%;
 }
 .col .status {
     margin-right: 3px;
-}
-
-td.col.num a {
-    display: inline-block;
-    width: 100%;
 }
 
 /* -- List Actions */ 
