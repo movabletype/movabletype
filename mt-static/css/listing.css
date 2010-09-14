@@ -109,6 +109,11 @@ tfoot .col.head{
     margin-right: 3px;
 }
 
+td.col.num a {
+    display: inline-block;
+    width: 100%;
+}
+
 /* -- List Actions */ 
 .list-actions {
     float: left;
