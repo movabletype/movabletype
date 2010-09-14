@@ -133,13 +133,11 @@ sub list_props {
                         :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
 
                 return qq{
-                    <div class="posted">
                     <span class="status $lc_status_class">
                       <img alt="$status_class" src="$status_img" />
                     </span>
                     <a href="$link">$date</a>
-                    </div>
-                    <p class="comment-text">$text</p>
+                    <p class="comment-text description">$text</p>
                 };
             },
             sort => sub {
