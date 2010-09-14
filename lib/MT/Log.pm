@@ -80,17 +80,16 @@ sub list_props {
                 my $desc = $obj->description;
                 $desc = $desc->() if ref $desc eq 'CODE';
                 return $desc
-                    ? qq{
-                    <div 
-                    <p class="log-messeage">
-                    <a href="#" class="toggle-link detail-link">$msg</a>
-                    </p>
-                    <div class="log-metadata detail">
-                      <pre>$desc</pre>
+                  ? qq{
+                    <div class="log-messeage">
+                      <a href="#" class="toggle-link detail-link">$msg</a>
+                      <div class="log-metadata detail">
+                        <pre>$desc</pre>
+                      </div>
                     </div>
                 }
-                    : qq{
-                    <p class="log-messeage">$msg</p>
+                  : qq{
+                    $msg
                 };
             },
         },

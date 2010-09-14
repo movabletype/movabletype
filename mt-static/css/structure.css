@@ -38,6 +38,12 @@ a:active {
 }
 */
 
+pre {
+    margin: 10px 0 0;
+    border: 1px solid #c0c6c9;
+    background-color: #f3f3f3;
+    color: #7b7c7d;
+}
 
 /* - Component */
 .hint { 
@@ -120,18 +126,17 @@ a:active {
 /* -- Toggle Link */
 .toggle-link { 
     display: inline-block;
-    padding: 0.3em 0.5em;
+    padding-left: 15px;
     background: transparent;
     text-decoration: none;
+    background: transparent url(../images/arrow/spinner-right.png) no-repeat left center;
 }
 .toggle-link:hover {
     text-decoration: underline;
 }
 .active .toggle-link {
-    background-color: #f3f3f3;
-    
+    background-image: url(../images/arrow/spinner-bottom.png);
 }
-
 .detail {
     clear: both;
 }
@@ -1569,43 +1574,6 @@ fieldset {
     width: 50%;
 }
 
-/* -- List Log */
-#log-listing-table .blog { 
-    width: 18%;
-}
-
-#log-listing-table .action-by,
-#log-listing-table .datetime { 
-    width: 12%;
-}
-.log-detail-parent:hover { 
-    cursor: pointer;
-}
-.log-detail-parent .toggle-button { 
-    margin-right: 5px;
-    background: transparent url(../images/spinner-big-right.gif) center no-repeat;
-}
-.log-detail-parent .toggle-button img { 
-    visibility: hidden;
-}
-.log-detail-parent.active .toggle-button { 
-    background: none;
-}
-.log-detail-parent.active .toggle-button img { 
-    visibility: visible;
-}
-.log-detail-parent.active td { 
-    border-bottom: 0;
-}
-.log-detail td { 
-    padding-top: 0;
-}
-.log-detail td pre { 
-    margin: 0 0 0 30px;
-    border: 1px solid #c8c2be;
-    background-color: #f8fbf8;
-    color: #7b7c7d;
-}
 
 /* -- List Association */
 #association-listing-table .blog { 
@@ -3168,12 +3136,13 @@ div.template-group-content.active {
     text-align: right;
 }
 .display-options .toggle-link {
-    background-color: #f3f3f3;
+    padding: 0.3em 0.5em;
+    background: #f3f3f3;
     border-radius: 3px;
     -moz-border-radius: 3px;
 }
 .display-options.active .toggle-link {
-    background-color: #c0c6c9;
+    background: #c0c6c9;
     color: #fff;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;

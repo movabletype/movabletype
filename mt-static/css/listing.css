@@ -103,13 +103,14 @@ tfoot .col.head{
     background-image: url(../images/arrow/arrow-sort-bottom.png);
 }
 
-
 /* -- Record Column */
 .col .description {
     margin: 0.75em 0 0;
     font-size: 95%;
 }
-
+.col .status {
+    margin-right: 5px;
+}
 
 /* -- List Actions */ 
 .list-actions {

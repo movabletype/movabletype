@@ -18,7 +18,7 @@ p {
 pre { 
     overflow: auto;
     max-height: 500px;
-    margin: 1.5em auto;
+    margin: 0 auto;
     padding: 0.8em;
     font-size: 95%;
 }
