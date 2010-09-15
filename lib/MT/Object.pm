@@ -414,22 +414,38 @@ sub _pre_search_scope_terms_to_class {
             unless $no_class;
     }
     elsif (ref $terms eq 'ARRAY') {
-        if (my @class_terms = grep { ref $_ eq 'HASH' && exists $_->{$col} } @$terms) {
+        if (my @class_terms = grep { ref $_ eq 'HASH' && $_->{$col} } @$terms) {
             # Filter out any unlimiting class terms (class = *).
-            for my $term ( @$terms ) {
-                if ( ref $term eq 'HASH' && exists $term->{$col} && $term->{$col} eq '*' ) {
-                    delete $term->{$col};
+            my $new_terms;
+            foreach my $term ( @$terms ) {
+                if ( ref $term ne 'HASH' || !$term->{$col} ) {
+                    push @$new_terms, $term;
+                } else {
+                    if ( 1 != keys %$term ) {
+                        my $array;
+                        foreach my $t ( keys %$term ) {
+                            push @$array, { $t => $term->{$t} }
+                                if lc $t ne lc $col || ( lc $t eq lc $col && !$no_class && $term->{$t} ne '*' );
+                        }
+                        push @$new_terms, $array;
+                    } else {
+                        push @$new_terms, $term
+                            if ( $no_class && !$term->{$col} ) || ( !$no_class && $term->{$col} ne '*');
+                    }
                 }
             }
+            @$terms = $new_terms;
+
             # Remove empty hashrefs.
             @$terms = grep { ref $_ ne 'HASH' || scalar keys %$_ } @$terms;
+
             # The class column has been explicitly given or removed, so don't
             # add one.
             return;
         }
         @$terms = ( { $col => $props->{class_type} } => 'AND' => [ @$terms ] )
             unless $no_class;
-    }
+      }
 }
 
 sub class_label {

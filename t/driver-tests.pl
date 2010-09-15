@@ -895,6 +895,116 @@ sub sock_array_combined_terms : Tests(9) {
     is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
 }
 
+sub sock_array_combined_terms_ex : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load(
+        [
+            {
+                class => '*',
+            },
+            '-and',
+            {
+                class => '*',
+            },
+            '-and',
+            {
+                text => 'ABC',
+            },
+        ]
+    );
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_array_combined_terms_args : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    my @socks = Sock->load(
+        [
+            {
+                class => '*',
+            },
+            '-and',
+            {
+                text => 'ABC',
+            },
+        ], {
+            no_class => 1,
+        },
+
+    );
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
+sub sock_array_combined_terms_args_ex : Tests(9) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    # hope to remove class condition.
+    my @socks = Sock->load(
+        [
+            {
+                class => 'Monkey',
+            },
+            '-and',
+            {
+                text => 'ABC',
+            },
+        ], {
+            no_class => 1,
+        },
+
+    );
+    is(scalar @socks, 2, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+}
+
 sub sock_array_no_class_terms : Tests(12) {
     my $monkey = Sock::Monkey->new();
     $monkey->text('ABC');
@@ -919,6 +1029,49 @@ sub sock_array_no_class_terms : Tests(12) {
     my @socks = Sock->load(
         [
             {
+                class => 'Monkey',
+                text => 'DEF',
+            },
+            '-or',
+            {
+                text => 'ABC',
+            },
+        ], {
+            no_class => 1,
+        },
+    );
+    is(scalar @socks, 3, 'Search for all Socks finds a pair of socks');
+    @socks = sort { ref($a) cmp ref($b) } @socks;
+    is(ref $socks[0], 'Sock::Fish', 'One of the discovered Socks is a fish');
+    is(ref $socks[1], 'Sock::Monkey', 'The other discovered Sock is a monkey');
+    is(ref $socks[2], 'Sock::Monkey', 'The other discovered Sock is a monkey (2)');
+}
+
+sub sock_array_no_class_terms_ex : Tests(12) {
+    my $monkey = Sock::Monkey->new();
+    $monkey->text('ABC');
+    ok($monkey->save(), 'A sock monkey could be saved');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey});
+
+    $monkey = Sock::Monkey->new();
+    $monkey->text('DEF');
+    ok($monkey->save(), 'A sock monkey could be saved (2)');
+    is($monkey->class, 'monkey', q{A sock monkey's class is monkey (2)});
+
+    my $fish = Sock::Fish->new();
+    $fish->text('ABC');
+    ok($fish->save(), 'A sock fish could be saved');
+    is($fish->class, 'fish', q{A sock fish's class is fish});
+
+    $fish = Sock::Fish->new();
+    $fish->text('GHI');
+    ok($fish->save(), 'A sock fish could be saved (2)');
+    is($fish->class, 'fish', q{A sock fish's class is fish (2)});
+
+    my @socks = Sock->load(
+        [
+            {
+                class => '*',
                 text => 'DEF',
             },
             '-or',
