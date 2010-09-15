@@ -14,7 +14,7 @@
     display: none;
     width: 100%;
     min-width: 960px;
-    height: 100%;
+    height: 200%;
     z-index: 1001;
 }
 
@@ -127,8 +127,11 @@
     overflow: auto;
 }
 
-.dialog.actions-bar {
-    margin: 20px 0 0;
+.dialog .actions-bar {
+    overflow: auto;
+}
+.dialog .actions-bar-bottom {
+    margin: 50px 0 0;
 }
 
 /* - File Option */

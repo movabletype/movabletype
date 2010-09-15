@@ -67,6 +67,7 @@
     </mt:if>
     </div>
 
+<mt:if name="object_loop">
   <mt:if name="panel_searchable">
     <div id="listing-filter" class="mod filter-block">
       <form action="" method="get" id="modal-search">
@@ -76,6 +77,7 @@
       </form>
     </div>
   </mt:if>
+</mt:if>
 </mt:unless>
 
 <mt:if name="object_loop">
@@ -160,7 +162,7 @@
       </div>
     </div>
   
-    <div class="actions-bar">
+    <div class="actions-bar actions-bar-bottom">
       <form action="" method="get" onsubmit="return false">
         <button
            type="submit"

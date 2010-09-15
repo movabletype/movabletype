@@ -9,10 +9,6 @@
     -moz-border-radius: 0 0 5px 5px;
 }
 
-.actions-bar { 
-    margin: 10px 0;
-}
-
 .col { 
     width: 13%;
     padding: 7px 8px;
@@ -126,6 +122,8 @@ tfoot .col.head{
     line-height: 22px;
     font-family: Arial, sans-serif;
     vertical-align: middle;
+    text-align: right;
+    overflow: auto;
 }
 .pagenav, 
 .current-rows {
@@ -214,4 +212,30 @@ tfoot .col.head{
 .col .asset-preview {
     display: none;
     margin-top: 10px;
+}
+
+/* - Listing Panel */
+.panel-header {
+    position: relative;
+    padding: 10px 0;
+}
+.selected-items {
+    min-height: 30px;
+}
+.selected-items .sticky-label {
+    padding: 0 0 0 0.3em;
+    margin: 0 0.2em 0.5em 0;
+    background-color: #dcdddd;
+    text-decoration: none;
+}
+.selected-items .sticky-label .remove {
+    border-left: 1px solid #adadad;
+    padding: 0 0.3em;
+    margin-left: 0.3em;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.selected-items .sticky-label .remove:hover {
+    background-color: #adadad;
+    color: white;
 }

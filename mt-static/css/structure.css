@@ -79,6 +79,13 @@ pre {
     border: 1px solid #c8c2be;
 }
 
+.sticky-label {
+    display: inline-block;
+    padding: 0.2em 0.3em;
+    background-color: #f3f3f3;
+    border-radius: 3px;
+}
+
 /* -- Toggle Button */
 .toggle-button {
     cursor: pointer;
@@ -140,7 +147,6 @@ pre {
 .detail {
     clear: both;
 }
-
 
 #progress-bar, 
 .progress-bar {
@@ -825,6 +831,9 @@ ul.tabs li a {
     font-size: 185%;
     font-weight: normal;
 }
+.title.panel { 
+    margin-bottom: 10px;
+}
 
 
 
@@ -982,6 +991,7 @@ fieldset {
 /* - Actions Bar */
 .actions-bar { 
     position: relative;
+    margin: 10px 0; 
 }
 .actions-bar-bottom { 
     margin-top: 50px;
@@ -995,26 +1005,6 @@ fieldset {
     margin-top: 15px;
     text-align: right;
 }
-.listing .plugin-actions { 
-    margin: 0;
-}
-
-.listing-screen .actions-bar { 
-    padding: 8px 0;
-    height: 25px;
-}
-.listing-screen .actions-bar-bottom { 
-    margin-top: 0;
-}
-.system .listing-screen .actions-bar { 
-    border-color: #C8C2BE;
-}
-
-.welcome-widget .actions-bar { 
-    clear: both;
-    text-align: right;
-}
-
 
 /* -- Auto save message */
 .autosave-notification { 
@@ -1439,11 +1429,6 @@ fieldset {
     margin-bottom: 0;
 }
 
-#list-template .actions-bar-bottom, 
-#list-widget-set .actions-bar-bottom { 
-    display: none;
-}
-
 /* -- List Tag */
 .list-tag td .field { 
     margin: 0;
@@ -1571,17 +1556,6 @@ fieldset {
 
 .list-revision-dialog .note { 
     width: 50%;
-}
-
-
-/* -- List Association */
-#association-listing-table .blog { 
-    width: 30%; 
-}
-
-/* -- List on Dialog */
-td.sub-label label { 
-    margin-left: 2em;
 }
 
 /* - Edit Comment, Ping, Author & Entry */
@@ -2302,10 +2276,6 @@ body.preview-screen {
     border: 1px solid #c8c2be;
     border-bottom: none;
     background: #f3f3f3;
-}
-
-.edit-template .actions-bar-top {
-    margin-bottom: .75em;
 }
 
 .edit-template th.archive-delete div {

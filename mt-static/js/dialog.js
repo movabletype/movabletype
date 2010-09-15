@@ -158,11 +158,11 @@ SelectionList = new Class(Object, {
             var d = this.itemHash[p];
             var l = d.label;
             l.replace(/\s/g, '&nbsp;');
-            var link = doc.createElement("a");
-            link.setAttribute("href","javascript:void(0);");
+            var link = doc.createElement("span");
             link.setAttribute("id","selected-"+p);
+            link.setAttribute("class","sticky-label selected-item");
             link.onclick = makeclosure(p);
-            link.innerHTML = l + "&nbsp;<span class='remove'>x</span>";
+            link.innerHTML = l + "&nbsp;<span class='remove clickable'>x</span>";
             this.container.appendChild(link);
             this.container.appendChild(doc.createTextNode(' '));
         }
