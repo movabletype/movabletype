@@ -866,6 +866,9 @@ sub query_parse {
     my $filter_types = $reg->{'filter_types'};
     foreach my $type ( keys %$filter_types ) {
         if ( my $filter = $app->param($type) ) {
+             if ( $filter =~ m/\s/ ) {
+                 $filter = '"' . $filter . '"';
+            }
             $search .= " $type:$filter";
         }
     }
@@ -1026,12 +1029,10 @@ sub _query_parse_core {
 # add category filter to entry search
 sub _join_category {
     my ( $app, $term ) = @_;
-
     my $query = $term->{term};
     if ( 'PHRASE' eq $term->{query} ) {
         $query =~ s/'/"/g;
     }
-
     my $lucene_struct = Lucene::QueryParser::parse_query($query);
     if ( 'PROHIBITED' eq $term->{type} ) {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
