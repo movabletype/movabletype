@@ -114,8 +114,8 @@ sub load_objects {
     for my $item (@items) {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
-        my $filter_terms = $prop->terms( $item->{args}, $terms, $args );
-        if ($filter_terms) {
+        my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
+        if ( $filter_terms && 'HASH' eq ref $filter_terms && scalar %$filter_terms ) {
             push @additional_terms, ( '-and', $filter_terms );
         }
     }
@@ -166,11 +166,11 @@ sub load_objects {
     }
 
     for my $item (@grep_items) {
-        @objs = $item->{prop}->grep( $item->{args}, \@objs );
+        @objs = $item->{prop}->grep( $item->{args}, \@objs, \%options );
     }
 
     if ( $sort_prop && $sort_prop->has('bulk_sort') ) {
-        @objs = $sort_prop->bulk_sort( \@objs );
+        @objs = $sort_prop->bulk_sort( \@objs, \%options );
         @objs = reverse @objs
             if ( $dir && $dir eq 'descend' );
     }
@@ -222,8 +222,8 @@ sub count_objects {
     for my $item (@items) {
         my $prop         = $item->{prop};
         my $code         = $prop->has('terms') or next;
-        my $filter_terms = $prop->terms( $item->{args}, $terms, $args );
-        if ($filter_terms) {
+        my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
+        if ( $filter_terms && 'HASH' eq ref $filter_terms && scalar %$filter_terms ) {
             push @additional_terms, ( '-and', $filter_terms );
         }
     }
@@ -244,7 +244,7 @@ sub count_objects {
 
     for my $item (@items) {
         my $coderef = $item->{prop}->has('grep') or next;
-        @objs = $item->{prop}->grep( $item->{args}, \@objs );
+        @objs = $item->{prop}->grep( $item->{args}, \@objs, \%options );
     }
 
     return scalar @objs;
@@ -252,7 +252,7 @@ sub count_objects {
 
 sub pack_terms {
     my $prop = shift;
-    my ( $args, $load_terms, $load_args ) = @_;
+    my ( $args, $load_terms, $load_args, $options ) = @_;
     my $op = $args->{op} || 'and';
     $op = '-' . $op;
     my $items = $args->{items};
@@ -276,7 +276,7 @@ sub pack_terms {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
         my $filter_terms
-            = $prop->terms( $item->{args}, $load_terms, $load_args );
+            = $prop->terms( $item->{args}, $load_terms, $load_args, $options );
         push @terms, $filter_terms if $filter_terms;
     }
     unshift @terms, $op;

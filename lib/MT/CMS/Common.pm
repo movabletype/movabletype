@@ -1054,6 +1054,7 @@ sub filtered_list {
         sort_order => $q->param('sort_order') || '',
         limit      => $limit,
         offset     => $offset,
+        blog_ids   => $blog_ids,
     );
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
 
@@ -1088,7 +1089,7 @@ sub filtered_list {
             my $prop = $props->{$col};
             my @result;
             if ( $prop->has('bulk_html') ) {
-                @result = $prop->bulk_html(\@objs, $app);
+                @result = $prop->bulk_html( \@objs, $app, \%load_options );
             }
             #elsif ( $prop->has('mtml') ) {
             #    for my $obj ( @objs ) {
@@ -1102,19 +1103,19 @@ sub filtered_list {
             #}
             elsif ( $prop->has('html') ) {
                 for my $obj ( @objs ) {
-                    push @result, $prop->html($obj, $app);
+                    push @result, $prop->html( $obj, $app, \%load_options );
                 }
             }
             elsif ( $prop->has('html_link') ) {
                 for my $obj ( @objs ) {
-                    my $link = $prop->html_link($obj, $app);
-                    my $raw  = $prop->raw($obj);
+                    my $link = $prop->html_link( $obj, $app, \%load_options );
+                    my $raw  = $prop->raw( $obj, $app, \%load_options );
                     push @result, qq{<a href="$link">$raw</a>};
                 }
             }
             elsif ( $prop->has('raw') ) {
                 for my $obj ( @objs ) {
-                    my $out = $prop->raw($obj);
+                    my $out = $prop->raw( $obj, $app, \%load_options );
                     push @result, remove_html($out);
                 }
             }
