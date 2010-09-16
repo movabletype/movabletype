@@ -109,6 +109,17 @@ tfoot .col.head{
 .col .status {
     margin-right: 3px;
 }
+.col .picture {
+    margin-bottom: 0;
+    width: 45px;
+    height: 45px;
+}
+.col .picture img {
+    border: 0;
+}
+.col .thumbnail {
+    border: 1px solid #c0c6c9;
+}
 
 /* -- List Actions */ 
 .list-actions {

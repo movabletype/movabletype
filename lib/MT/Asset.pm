@@ -51,19 +51,23 @@ sub list_props {
             order => 100,
         },
         label => {
-            auto      => 1,
-            label     => 'Label',
-            order     => 200,
-            display   => 'force',
-            html => sub {
+            auto    => 1,
+            label   => 'Label',
+            order   => 200,
+            display => 'force',
+            html    => sub {
                 my $prop = shift;
                 my ( $obj, $app ) = @_;
-                my $id      = $obj->id;
-                my $label   = MT::Util::remove_html($obj->label || $obj->file_name || 'Untitled' );
-                my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id
-                            : $app->blog                  ? $app->blog->id
-                            :                               0;
-                my $type    = $prop->object_type;
+                my $id = $obj->id;
+                my $label =
+                  MT::Util::remove_html( $obj->label
+                      || $obj->file_name
+                      || 'Untitled' );
+                my $blog_id =
+                    $obj->has_column('blog_id') ? $obj->blog_id
+                  : $app->blog                  ? $app->blog->id
+                  :                               0;
+                my $type      = $prop->object_type;
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
@@ -72,26 +76,33 @@ sub list_props {
                         blog_id => $blog_id,
                     },
                 );
+                my $class_type = $obj->class_type;
+                my $img =
+                  MT->static_path . 'images/asset/' . $class_type . '.gif';
 
-                if ($obj->has_thumbnail) {
-                    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height )
-                      = $obj->thumbnail_url( Height => 75, Width => 75 , Square => 1 );
-                    my $thumbnail_width_offset = int((75 - $thumbnail_width)  / 2);
-                    my $thumbnail_height_offset = int((75 - $thumbnail_height)  / 2);
+                if ( $obj->has_thumbnail ) {
+                    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                      $obj->thumbnail_url(
+                        Height => 45,
+                        Width  => 45,
+                        Square => 1
+                      );
+                    my $thumbnail_width_offset =
+                      int( ( 45 - $thumbnail_width ) / 2 );
+                    my $thumbnail_height_offset =
+                      int( ( 45 - $thumbnail_height ) / 2 );
                     return qq{
                         <span class="title"><a href="$edit_link">$label</a></span>
-                        <div class="thumbnail">
-                            <img src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                        <div class="thumbnail picture small">
+                          <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
                         </div>
                     };
                 }
                 else {
-                    my $type = $obj->class_type;
-                    my $img = MT->static_path . 'images/asset/' . $type . '.gif';
                     return qq{
                         <span class="title"><a href="$edit_link">$label</a></span>
-                        <div class="thumbnail">
-                            <img class="asset-type-icon asset-type-$type" src="$img" />
+                        <div class="file-type picture small">
+                          <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                         </div>
                     };
                 }
@@ -117,15 +128,15 @@ sub list_props {
             display => 'none',
         },
         class => {
-            label => 'Class',
-            col   => 'class',
+            label   => 'Class',
+            col     => 'class',
             display => 'none',
-            base  => '__virtual.single_select',
-            terms => sub {
-                my $prop   = shift;
-                my ($args, $db_terms, $db_args) = @_;
-                my $col    = $prop->{col} or die;
-                my $value  = $args->{value};
+            base    => '__virtual.single_select',
+            terms   => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args ) = @_;
+                my $col = $prop->{col} or die;
+                my $value = $args->{value};
                 $db_args->{no_class} = 1;
                 return { $col => $value };
             },
@@ -138,24 +149,24 @@ sub list_props {
             ],
         },
         description => {
-            auto => 1,
+            auto    => 1,
             display => 'none',
-            label => 'Description',
+            label   => 'Description',
         },
         file_path => {
-            auto => 1,
+            auto    => 1,
             display => 'none',
-            label => 'File path',
+            label   => 'File path',
         },
         file_name => {
-            auto => 1,
+            auto    => 1,
             display => 'none',
-            label => 'Filename',
+            label   => 'Filename',
         },
         file_ext => {
-            auto => 1,
+            auto    => 1,
             display => 'none',
-            label => 'Suffix',
+            label   => 'Suffix',
         },
         image_width => {
             label     => 'Image width',
@@ -163,10 +174,10 @@ sub list_props {
             display   => 'none',
             meta_type => 'image_width',
             col       => 'vinteger',
-            raw   => sub {
+            raw       => sub {
                 my ( $prop, $asset ) = @_;
                 my $meta = $prop->meta_type;
-                $asset->has_meta($prop->meta_type) or return;
+                $asset->has_meta( $prop->meta_type ) or return;
                 return $asset->$meta;
             },
             terms => sub {
@@ -174,14 +185,15 @@ sub list_props {
                 my ( $args, $db_terms, $db_args ) = @_;
                 my $super_terms = $prop->super(@_);
                 $db_args->{joins} ||= [];
-                push @{$db_args->{joins}}, MT->model('asset')->meta_pkg->join_on(
+                push @{ $db_args->{joins} },
+                  MT->model('asset')->meta_pkg->join_on(
                     undef,
                     {
-                        type => $prop->meta_type,
+                        type     => $prop->meta_type,
                         asset_id => \"= asset_id",
                         %$super_terms,
                     },
-                );
+                  );
             },
         },
         image_height => {
