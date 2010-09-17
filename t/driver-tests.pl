@@ -388,6 +388,31 @@ sub joins : Tests(1) {
         }
     );
     are_objects(\@data, [ $vista ], 'Has bar_status = 3, bar_status = 4, baz_status = 3 (only joins)');
+
+}
+
+sub count_with_joins: Tests(2) {
+    my $self = shift;
+    $self->make_pc_data();
+
+    my $count_args1 = {
+        joins => [
+            [ 'Baz', undef, { bar_id => \'= bar_id', status => 1 }, { unique => 1 } ],
+        ],
+    };
+    my $count_args2 = {
+        joins => [
+            [ 'Baz', undef, { bar_id => \'= bar_id', status => 1 }, { unique => 1 } ],
+        ],
+    };
+    my $count_args3 = {
+        joins => [
+            [ 'Baz', undef, { bar_id => \'= bar_id', status => 1 }, { unique => 1 } ],
+        ],
+    };
+    is( Bar->count( undef, $count_args1 ), 2, 'count method must looks up unique options of joins.' );
+    my @bars = Bar->load(undef, $count_args2 );
+    is( Bar->count( undef, $count_args3 ), scalar @bars, 'count method must returns same as number of objects that load method returns.' );
 }
 
 sub joins_with_join : Tests(1) {

@@ -110,17 +110,19 @@ sub count {
     my $driver = shift;
     my($class, $terms, $args) = @_;
 
-    my $join = $args->{join};
+    my @joins = ( $args->{join}, @{$args->{joins} || []} );
     my $select = 'COUNT(*)';
-    if ($join && $join->[3]->{unique}) {
-        my $col;
-        if ($join->[3]{unique} =~ m/\D/) {
-            $col = $args->{join}[3]{unique};
-        } else {
-            $col = $class->properties->{primary_key};
+    for my $join ( @joins ) {
+        if ($join && $join->[3]->{unique}) {
+            my $col;
+            if ($join->[3]{unique} =~ m/\D/) {
+                $col = $args->{join}[3]{unique};
+            } else {
+                $col = $class->properties->{primary_key};
+            }
+            my $dbcol = $driver->dbd->db_column_name($class->datasource, $col);
+            $select = "COUNT(DISTINCT $dbcol)";
         }
-        my $dbcol = $driver->dbd->db_column_name($class->datasource, $col);
-        $select = "COUNT(DISTINCT $dbcol)";
     }
 
     return $driver->_select_aggregate(
