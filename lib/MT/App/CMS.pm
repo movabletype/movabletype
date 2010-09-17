@@ -2020,15 +2020,20 @@ sub init_core_callbacks {
             $pkg . 'pre_load_filtered_list.tag' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
                 my $terms = $opts->{terms};
+                my $args = $opts->{args};
+                my $blog_ids = $opts->{blog_ids};
                 if ( exists $terms->{blog_id} ) {
-                    $filter->append_item({
-                        type => '_blog',
-                        args => {
-                            blog_id => $terms->{blog_id},
-                        },
-                    });
                     delete $terms->{blog_id};
                 }
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('objecttag')->join_on(
+                    undef, {
+                        blog_id => $blog_ids,
+                        tag_id  => \'= tag_id',
+                    },
+                    {
+                        unique  => 1,
+                    });
                 return;
             },
 

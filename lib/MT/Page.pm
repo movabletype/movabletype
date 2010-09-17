@@ -54,6 +54,7 @@ sub list_props {
         status        => { base => 'entry.status' },
         basename      => { base => 'entry.basename' },
         commented_on  => { base => 'entry.commented_on' },
+        tag           => { base => 'entry.tag' },
     };
 }
 

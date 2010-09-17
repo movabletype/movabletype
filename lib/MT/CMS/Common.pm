@@ -1056,14 +1056,22 @@ sub filtered_list {
         offset     => $offset,
         blog_ids   => $blog_ids,
     );
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
+    my %count_options = (
+        terms => {
+            ( !defined $blog_ids || !scalar @$blog_ids ? () : ( blog_id => $blog_ids ) ),
+        },
+        args       => {},
+        blog_ids   => $blog_ids,
+    );
 
-    my $count = $filter->count_objects(%load_options);
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%count_options, \@cols );
+    my $count = $filter->count_objects(%count_options);
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
 
     my (@objs, @data);
     if ( $count ) {
+        MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
         @objs = $filter->load_objects(%load_options);
         $MT::DebugMode && $debug->{section}->('load objects');
 

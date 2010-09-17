@@ -415,6 +415,70 @@ sub count_with_joins: Tests(2) {
     is( Bar->count( undef, $count_args3 ), scalar @bars, 'count method must returns same as number of objects that load method returns.' );
 }
 
+sub count_group_by_with_joins: Tests(3) {
+    my $self = shift;
+    $self->make_objects(
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'Snow Leopard',
+          status  => 1,        },
+        { __class => 'Foo',
+          name    => 'Apple',
+          text    => 'iOS',
+          status  => 1,        },
+        { __class => 'Foo',
+          name    => 'Microsoft',
+          text    => 'Windows7',
+          status  => 1,          },
+
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Silverlight',
+          status  => 1,
+          foo_id  => 1,             },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'IronPython',
+          status  => 3,
+          foo_id  => 1,            },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'IronRuby',
+          status  => 1,
+          foo_id  => 2,          },
+        { __class => 'Bar',
+          __wait   => 1,
+          name    => 'Visual C++',
+          status  => 1,
+          foo_id  => 3,          },
+    );
+    my $args = {
+        joins => [
+            [
+                'Bar',
+                undef,
+                { foo_id => \'= foo_id', status => 1 },
+                { unique => 1, limit => 2, offset => 1, },
+            ],
+        ],
+        group => ['name'],
+        sort => 'cnt',
+        direction => 'ascend',
+        limit => 1,
+        offset => 0,
+    };
+    my $iter = Foo->count_group_by( undef, $args );
+    my @counts;
+    my @names;
+    while ( my ( $cnt, $name ) = $iter->() ) {
+        push @counts, $cnt;
+        push @names, $name;
+    }
+    is( scalar @counts, 1 );
+    is( $counts[0], 2 );
+    is( $names[0], 'Apple' );
+}
+
 sub joins_with_join : Tests(1) {
     my $self = shift;
     $self->make_pc_data();

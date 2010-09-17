@@ -231,8 +231,8 @@ sub _do_group_by {
         }
         $order = \@new_order if @new_order;
     }
-    my $limit = exists $args->{limit} ? delete $args->{limit} : undef;
-    my $offset = exists $args->{offset} ? delete $args->{offset} : undef;
+    my $limit  = exists $args->{limit}  ? $args->{limit}  : undef;
+    my $offset = exists $args->{offset} ? $args->{offset} : undef;
     my $stmt = $driver->prepare_statement($class, $terms, $args);
 
     ## Ugly. Maybe we need a clear_select method in D::OD::SQL?
@@ -287,14 +287,6 @@ sub _do_group_by {
     }
     $sth->bind_columns(undef, \my($count), @bindvars);
 
-    if ($offset) {
-        while ($offset--) {
-            unless ($sth->fetch) {
-                $driver->end_query($sth);
-                return;
-            }
-        }
-    }
     my $i = 0;
     my $finish = sub {
         return unless $sth;

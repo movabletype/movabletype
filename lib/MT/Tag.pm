@@ -55,8 +55,8 @@ sub list_props {
         _blog => {
             view  => [],
             terms => sub {
-                my ( $prop, $args, $db_terms, $db_args ) = @_;
-                my $blog_id = $args->{blog_id};
+                my ( $prop, $args, $db_terms, $db_args, $opts ) = @_;
+                my $blog_id = $opts->{blog_ids};
                 $db_args->{joins} ||= [];
                 push @{ $db_args->{joins} }, MT->model('objecttag')->join_on(
                     undef,
@@ -87,52 +87,30 @@ sub list_props {
             },
             terms => sub {
                 my $prop = shift;
-                my ( $args, $db_terms, $db_args ) = @_;
+                my ( $args, $db_terms, $db_args, $options ) = @_;
                 my $option = $args->{option};
                 my $value  = $args->{value};
-                my $blog_id = MT->app->param('blog_id');
+                my $blog_id = $options->{blog_ids};
+                my $having = 'equal'         eq $option ? \"= $value"
+                           : 'not_equal'     eq $option ? \"!= $value"
+                           : 'greater_than'  eq $option ? \"> $value"
+                           : 'greater_equal' eq $option ? \">= $value"
+                           : 'less_than'     eq $option ? \"< $value"
+                           :                              \"<= $value";
+
                 my $iter = MT->model('objecttag')->count_group_by({
                     object_datasource => $prop->count_class,
                     blog_id           => $blog_id,
                 }, {
                     group => [ 'tag_id' ],
+                    having => { cnt => $having },
+                    unique => 1,
                 });
                 my @ids;
-                if ( $option eq 'equal' && $value == 0 ) {
-                    $option = 'equal_zero';
-                }
-                if ( $option eq 'not_equal' && $value == 0 ) {
-                    $option = 'not_equal_zero';
-                }
                 while ( my ( $count, $id ) = $iter->() ) {
-                    if ( 'equal' eq $option ) {
-                        push @ids, $id if $value == $count;
-                    }
-                    elsif ('not_equal' eq $option) {
-                        push @ids, $id if $value == $count;
-                    }
-                    elsif ('greater_than' eq $option) {
-                        push @ids, $id if $value < $count;
-                    }
-                    elsif ('greater_equal' eq $option) {
-                        push @ids, $id if $value <= $count;
-                    }
-                    elsif ('less_than' eq $option) {
-                        push @ids, $id if $value <= $count;
-                    }
-                    elsif ('less_equal' eq $option) {
-                        push @ids, $id if $value < $count;
-                    }
-                    else {
-                        push @ids, $id;
-                    }
+                    push @ids, $id;
                 }
-                if ( $option eq 'equal' || $option eq 'greater_than' || $option eq 'greater_equal' || $option eq 'not_equal_zero' ) {
-                    return { id => \@ids };
-                }
-                else {
-                    return { id => { "not" => \@ids } };
-                };
+                return { id => \@ids };
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;
@@ -146,7 +124,45 @@ sub list_props {
                     },
                 );
             },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args, $options ) = @_;
+                my @j_terms = 'HASH'  eq ref $terms && scalar %$terms ? ( '-and', $terms )
+                            : 'ARRAY' eq ref $terms && scalar @$terms ? ( '-and', @$terms )
+                            :                                           ();
 
+                my $c_args = {
+                    sort  => 'cnt',
+                    direction => $args->{direction} || 'ascend',
+                    limit     => $args->{limit} || 50,
+                    offset    => $args->{offset} || 0,
+                    group => [ 'tag_id' ],
+                    join  => MT->model('tag')->join_on(
+                        undef,
+                        [
+                            { id => \'= objecttag_tag_id' },
+                            @j_terms,
+                        ],
+                        {
+                            %$args,
+                        },
+                    ),
+                };
+
+                my $iter = MT->model('objecttag')->count_group_by(
+                    {
+                        object_datasource => 'entry',
+                    },
+                    $c_args,
+                );
+                my @ids;
+                while ( my ( $cnt, $id ) = $iter->() ) {
+                    push @ids, $id;
+                }
+                my @tags = MT->model('tag')->load({ id => \@ids });
+                my %tags = map { $_->id => $_ } @tags;
+                return [ map { $tags{$_} } @ids ];
+            },
         },
         page_count => {
             base => 'tag.entry_count',
