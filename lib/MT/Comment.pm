@@ -169,7 +169,7 @@ sub list_props {
                             is_limited  => 1,
                             do_search   => 1,
                             search      => $name,
-                            blog_id     => $app->blog->id,
+                            blog_id     => $app->blog ? $app->blog->id : 0,
                     });
                     $status_img = '';
                     $status_class = 'Anonymous';
