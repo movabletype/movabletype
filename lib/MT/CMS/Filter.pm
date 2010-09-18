@@ -85,6 +85,10 @@ sub save {
             items => [],
         };
         unshift @filters, $allpass_filter;
+        for my $filter ( @filters ) {
+            $filter->{label} = MT::Util::encode_html($filter->{label});
+        };
+
         $res{id} = $filter->id;
         $res{filters} = \@filters;
         $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
@@ -125,6 +129,10 @@ sub delete {
         items => [],
     };
     unshift @filters, $allpass_filter;
+    for my $filter ( @filters ) {
+        $filter->{label} = MT::Util::encode_html($filter->{label});
+    };
+
     $res{id} = $filter->id;
     $res{filters} = \@filters;
     $res{editable_filter_count} = scalar grep { $_->{can_edit} } @filters;
