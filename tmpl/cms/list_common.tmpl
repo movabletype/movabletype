@@ -233,6 +233,7 @@ var editable_filter_count = <mt:var name="editable_filter_count">;
 var filters = <mt:var name="filters">;
 var initial_filter = <mt:var name="initial_filter">;
 var current_id = initial_filter.id;
+var currentPage = 1;
 
 function handleMessages( data ) {
   jQuery('#msg-block').empty();
@@ -327,6 +328,7 @@ function renderFilterList() {
     jQuery('input[name=filter_name]').val('<__trans phrase="New Filter">');
     jQuery('#opener').text('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
+    jQuery('#item_list option').show();
     jQuery('#dialog_filter').dialog('close');
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
@@ -488,6 +490,8 @@ function renderPagination(count, limit, page, last, total) {
       uselast = true;
     }
   }
+  currentPage = page;
+
   if (usefirst) {
     $e.append('<a href="#" class="pagenav start">&laquo; <__trans phrase="First"></a>')
       .append('<a href="#" class="pagenav to-start">&lsaquo; <__trans phrase="Prev"></a>');
@@ -673,7 +677,7 @@ function itemValues() {
 jQuery('ul#disp_cols .main:checkbox').click(function() {
   jQuery('tbody').empty();
   renderColumns();
-  renderList('filtered_list', cols, vals, jQuery('#row').val(), parseInt(jQuery('#current_page').val()));
+  renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
 });
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
@@ -836,12 +840,14 @@ jQuery('#additem').click(function() {
     .insertAfter('.selectfilter')
     .wrap('<div class="filteritem" />')
     .find('.minus').hide();
-                              jQuery('<span class="close-link clickable">[x]</span>')
+  jQuery('#item_list').attr('selectedIndex', 0);
+  jQuery('<span class="close-link clickable">[x]</span>')
     .insertAfter($item)
     .bind('click', function() {
+      jQuery('#item_list option[value=' + type + ']').show();
       jQuery(this).parent('.filteritem').remove();
     });
-  jQuery('#item_list option:selected').hide();
+  jQuery('#item_list option[value=' + type + ']').hide();
 });
 
 jQuery('#apply').click(function() {
@@ -930,6 +936,8 @@ function addItems(items, op) {
     if (type == 'pack') {
       addItems(items[i].args.items, items[i].args.op);
     }
+    jQuery('#item_list option[value=' + type + ']').hide();
+
     var $filteritem = jQuery('.filteritem:first');
     var $filtertype;
     var prev_type;
@@ -986,6 +994,7 @@ function applyFilter(index) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
   jQuery('.filteritem').remove();
+  jQuery('#item_list option').show();
   if (index >= 0 && filters[index].items) {
     var filter = filters[index];
     var name = filter.label;
