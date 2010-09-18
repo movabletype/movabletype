@@ -115,7 +115,7 @@ sub load_objects {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
         my $filter_terms = $prop->terms( $item->{args}, $terms, $args, \%options );
-        if ( $filter_terms && 'HASH' eq ref $filter_terms && scalar %$filter_terms ) {
+        if ( $filter_terms && ( 'HASH' eq ref $filter_terms && scalar %$filter_terms ) || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) ) {
             push @additional_terms, ( '-and', $filter_terms );
         }
     }
@@ -275,16 +275,17 @@ sub pack_terms {
     for my $item (@items) {
         my $prop = $item->{prop};
         $prop->has('terms') or next;
-        my $filter_terms
-            = $prop->terms( $item->{args}, $load_terms, $load_args, $options );
-        push @terms, $filter_terms if $filter_terms;
+        my $filter_terms = $prop->terms( $item->{args}, $load_terms, $load_args, $options );
+        if ( $filter_terms && ( 'HASH' eq ref $filter_terms && scalar %$filter_terms ) || ( 'ARRAY' eq ref $filter_terms && scalar @$filter_terms ) ) {
+            push @terms, $op if scalar @terms > 0;
+            push @terms, $filter_terms;
+        }
     }
-    unshift @terms, $op;
-    return \@terms;
+
+    return scalar @terms ? \@terms : undef;
 }
 
 sub pack_grep {
-
     # TBD
     1;
 }

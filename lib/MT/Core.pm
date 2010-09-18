@@ -174,7 +174,7 @@ BEGIN {
         list_properties => {
             __virtual => {
                 base => {
-                    raw       => sub {
+                    raw => sub {
                         my $prop  = shift;
                         my ($obj) = @_;
                         my $col   = $prop->col;
@@ -718,7 +718,7 @@ BEGIN {
                 pack => {
                     view  => [],
                     terms => \&MT::Filter::pack_terms,
-                    grep  => \&MT::Filter::pack_grep,
+                    #grep  => \&MT::Filter::pack_grep,
                 },
                 blog_name => {
                     label => 'Blog Name',
