@@ -326,7 +326,7 @@ function renderFilterList() {
     jQuery('#item_list').attr('selectedIndex', 0);
     jQuery('.filteritem').remove();
     jQuery('input[name=filter_name]').val('<__trans phrase="New Filter">');
-    jQuery('#opener').text('<__trans phrase="New Filter">');
+    jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
     jQuery('#item_list option').show();
     jQuery('#dialog_filter').dialog('close');
@@ -598,7 +598,7 @@ function renderList(mode, columns, values, limit, page) {
       renderPagination(count, limit, page, last, total);
       filters = data.result.filters;
       if ( data.result.label ) {
-        jQuery('#opener').text(data.result.label);
+        jQuery('#opener').html(data.result.label);
       }
       if ( data.result.id ) {
         current_id = data.result.id;
@@ -999,7 +999,7 @@ function applyFilter(index) {
     var filter = filters[index];
     var name = filter.label;
     addItems(filter.items);
-    jQuery('#opener').text(name);
+    jQuery('#opener').html(name);
     jQuery('#filter_name').val(name);
     jQuery('#filter_id').val(filter.id);
     current_id = filter.id;
@@ -1109,7 +1109,7 @@ jQuery(window).bind('listReady', function(){
 
 
 addItems(initial_filter.items);
-jQuery('#opener').text(initial_filter.label);
+jQuery('#opener').html(initial_filter.label);
 jQuery('#filter_name').val(initial_filter.label);
 jQuery('#filter_id').val(initial_filter.id);
 jQuery('input[name=filter_id]').val(initial_filter.id);

@@ -908,6 +908,9 @@ sub list {
     unshift @filters, $allpass_filter;
     $initial_filter = $allpass_filter
         unless $initial_filter;
+    for my $filter ( @filters, $initial_filter ) {
+        $filter->{label} = MT::Util::encode_html($filter->{label});
+    };
 
     require JSON;
     my $json = JSON->new->utf8(0);
@@ -1158,6 +1161,9 @@ sub filtered_list {
         type  => '_allpass',
     };
     unshift @filters, $allpass_filter;
+    for my $filter ( @filters ) {
+        $filter->{label} = MT::Util::encode_html($filter->{label});
+    }
 
     require POSIX;
     my %res;
@@ -1166,7 +1172,7 @@ sub filtered_list {
     $res{page}     = $page;
     $res{page_max} = POSIX::ceil( $count / $limit );
     $res{id}       = $filter_id;
-    $res{label}    = $forward_params{saved_label} if $forward_params{saved_label};
+    $res{label}    = MT::Util::encode_html( $forward_params{saved_label} ) if $forward_params{saved_label};
     $res{filters}  = \@filters;
     $res{editable_filter_count} = $editable_filter_count;
     $res{messages} = \@messages;
