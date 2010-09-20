@@ -42,6 +42,7 @@ sub save {
     if (my $dupe = $filter_class->load(
             {   label     => $label,
                 object_ds => $ds,
+                author_id => $app->user->id,
                 ( $id ? ( id => { not => $id } ) : () ),
             },
             {   limit      => 1,

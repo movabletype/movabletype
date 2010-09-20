@@ -355,9 +355,13 @@ function renderFilterList() {
       .appendTo($label);
     $this.hide().next('.delete-link').hide();
     jQuery('<a href=#'+fid+' class="tool-link save button"><__trans phrase="Save"></a>').bind('click', function() {
-       var name = jQuery('#filter_'+fid).val();
-       renameFilter(index, fid, name);
-       return false;
+      var name = jQuery('#filter_'+fid).val();
+      if ( !validateFilterName(name) ) {
+          alert(trans('label "[_1]" is already in use.', name));
+          return false;
+      }
+      renameFilter(index, fid, name);
+      return false;
     }).appendTo($handle);
     jQuery('<a href=#'+fid+' class="tool-link cancel button"><__trans phrase="Cancel"></a>').bind('click', function() {
        $label
@@ -917,6 +921,11 @@ jQuery('#dialog_save_filter').dialog({
 });
 
 jQuery('#save-filter').click(function() {
+  var name = jQuery('input[name=filter_name]').val();
+  if ( !validateFilterName(name) ) {
+    alert(trans('label "[_1]" is already in use.', name));
+    return false;
+  }
   itemValues();
   renderList('save_filter', cols, vals, jQuery('#row').val(), 1);    
 });
@@ -925,6 +934,14 @@ jQuery('#cancel-save-filter').click(function() {
   jQuery(this).parents().dialog('close');
 });
 
+function validateFilterName (name) {
+  var res = true;
+  jQuery('a.apply-link').each( function() {
+      if ( jQuery(this).text() == name )
+          res = false;
+  });
+  return res;
+}
 
 function addItems(items, op) {
   var type;
