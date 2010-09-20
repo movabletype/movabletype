@@ -830,7 +830,7 @@ BEGIN {
                 primary      => 'name',
                 view => 'system',
                 default_sort_key => 'name',
-                permission => 'access_to_website_list'
+                permission => 'access_to_website_list',
             },
             blog => {
                 object_label => 'Blog',

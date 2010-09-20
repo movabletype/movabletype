@@ -2961,4 +2961,50 @@ sub _progress {
     $app->request('progress_ids', $ids);
 }
 
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $terms = $load_options->{terms};
+    $terms->{parent_id} = delete $terms->{blog_id}
+        if $terms->{blog_id} && $app->blog;
+    $terms->{class} = 'blog';
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        [
+            {
+                author_id => $user->id,
+            },
+            '-and',
+            [
+                {
+                    blog_id => 0,
+                    permissions => { like => '%edit_templates%' },
+                },
+                '-or',
+                {
+                    permissions => { like => '%administer_blog%' },
+                },
+            ],
+        ],
+    );
+
+    my $blog_ids;
+    while ( my $perm = $iter->() ) {
+        if ( !$perm->blog_id ) {
+            # User has system.edit_template
+            $blog_ids = undef;
+            last;
+        }
+        push @$blog_ids, $perm->blog_id;
+    }
+
+    $terms->{id} = $blog_ids
+        if $blog_ids;
+    $load_options->{terms} = $terms;
+}
+
 1;

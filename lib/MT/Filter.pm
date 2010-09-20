@@ -196,7 +196,7 @@ sub count_objects {
     my (%options) = @_;
     my ( $terms, $args ) = @options{qw( terms args )};
 
-    my $blog_id   = $options{terms}{blog_id};
+#    my $blog_id   = $options{terms}{blog_id};
     my $ds        = $self->object_ds;
     my $setting   = MT->registry( listing_screens => $ds ) || {};
     my $obj_type  = $setting->{object_type} || $ds;

@@ -764,7 +764,7 @@ sub list {
         }
         foreach my $p ( @act ) {
             $allowed = 1, last
-                if $app->user->can_do($p, at_least_one => 1, blog_id => $blog_ids );
+                if $app->user->can_do($p, at_least_one => 1, ( $blog_ids ? ( blog_id => $blog_ids ) : () ) );
         }
         return $app->permission_denied()
             unless $allowed;
@@ -1059,6 +1059,7 @@ sub filtered_list {
         offset     => $offset,
         blog_ids   => $blog_ids,
     );
+
     my %count_options = (
         terms => {
             ( !defined $blog_ids || !scalar @$blog_ids ? () : ( blog_id => $blog_ids ) ),
@@ -1068,6 +1069,7 @@ sub filtered_list {
     );
 
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%count_options, \@cols );
+
     my $count = $filter->count_objects(%count_options);
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
@@ -1075,6 +1077,7 @@ sub filtered_list {
     my (@objs, @data);
     if ( $count ) {
         MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%load_options, \@cols );
+
         @objs = $filter->load_objects(%load_options);
         $MT::DebugMode && $debug->{section}->('load objects');
 

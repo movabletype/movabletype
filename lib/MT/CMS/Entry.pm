@@ -2580,4 +2580,49 @@ sub delete {
     return $app->call_return();
 }
 
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    my $blog_id = $app->param('blog_id') || 0;
+    my $blog = $blog_id ? $app->blog : undef;
+    my $blog_ids = !$blog         ? undef
+                 : $blog->is_blog ? [ $blog_id ]
+                 :                  [ map { $_->id } @{$blog->blogs} ];
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        {
+            author_id => $user->id,
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+        }
+    );
+
+    my $filters;
+    while ( my $perm = $iter->() ) {
+        my $user_filter;
+        $user_filter->{blog_id} = $perm->blog_id;
+        if ( !$perm->can_do('publish_post') &&
+             !$perm->can_do('edit_all_entries')
+         ) {
+            $user_filter->{author_id} = $user->id;
+        }
+        push @$filters, ( '-or', $user_filter );
+    }
+
+    my $terms = $load_options->{terms} || {};
+    delete $terms->{blog_id}
+        if exists $terms->{blog_id};
+    delete $terms->{author_id}
+        if exists $terms->{author_id};
+
+    my $new_terms;
+    push @$new_terms, ( $terms )
+        if ( keys %$terms );
+    push @$new_terms, ( '-and', $filters );
+    $load_options->{terms} = $new_terms;
+}
+
 1;

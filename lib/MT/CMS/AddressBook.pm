@@ -282,4 +282,31 @@ sub post_delete {
     );
 }
 
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    require MT::Permission;
+    my $blog_ids = $load_options->{blog_ids} || undef;
+    my $iter = MT::Permission->load_iter(
+        {
+            author_id => $user->id,
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 }) ),
+        },
+    );
+
+    my $blog_ids;
+    while ( my $perm = $iter->() ) {
+        push @$blog_ids, $perm->blog_id
+            if $perm->can_do('access_to_notification_list');
+    }
+
+    my $terms = $load_options->{terms};
+    $terms->{blog_id} = $blog_ids
+        if $blog_ids;
+    $load_options->{terms} = $terms;
+}
+
 1;

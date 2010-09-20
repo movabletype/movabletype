@@ -427,4 +427,32 @@ sub apply_log_filter {
     \%arg;
 }
 
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $args = $load_options->{args};
+    $args->{no_class} = 1;
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        {
+            author_id => $user->id,
+            permissions => { like => '%administer_blog%' },
+        },
+    );
+
+    my $blog_ids;
+    while ( my $perm = $iter->() ) {
+        push @$blog_ids, $perm->blog_id;
+    }
+
+    my $terms = $load_options->{terms};
+    $terms->{blog_id} = $blog_ids
+        if $blog_ids;
+    $load_options->{terms} = $terms;
+}
+
 1;

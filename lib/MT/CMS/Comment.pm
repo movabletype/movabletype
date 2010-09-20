@@ -1578,4 +1578,51 @@ sub build_comment_table {
     \@data;
 }
 
+sub cms_pre_load_filtered_list {
+    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+
+    my $user = $app->user;
+    return if $user->is_superuser;
+
+    my $blog_id = $app->param('blog_id') || 0;
+    my $blog = $blog_id ? $app->blog : undef;
+    my $blog_ids = !$blog         ? undef
+                 : $blog->is_blog ? [ $blog_id ]
+                 :                  [ map { $_->id } @{$blog->blogs} ];
+
+    require MT::Permission;
+    my $iter = MT::Permission->load_iter(
+        {
+            author_id => $user->id,
+            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { 'not' => 0 } ) ),
+        }
+    );
+
+    my $args = $load_options->{args};
+    my $filters;
+    while ( my $perm = $iter->() ) {
+        if ( $perm->can_do('manage_feedback') || $perm->can_do('manage_pages')) {
+            push @$filters, ( '-or', { blog_id => $perm->blog_id } );
+        } elsif ( $perm->can_do('create_post') ) {
+            push @$filters, ( '-or', {
+                blog_id => $perm->blog_id,
+                author_id => $user->id,
+            } );
+        }
+    }
+
+    $args->{joins} ||= [];
+    push @{ $args->{joins} }, MT->model('entry')->join_on(
+        undef, [
+             { id => \'=comment_entry_id', },
+             '-and',
+             $filters,
+        ],
+    );
+
+    my $terms = $load_options->{terms} || {};
+    delete $terms->{blog_id}
+        if exists $terms->{blog_id};
+}
+
 1;

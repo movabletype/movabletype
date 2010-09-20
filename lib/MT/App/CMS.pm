@@ -1801,12 +1801,14 @@ sub init_core_callbacks {
             $pkg
                 . 'post_delete.notification' =>
                 "${pfx}AddressBook::post_delete",
+            $pkg . 'pre_load_filtered_list.notification' => "${pfx}AddressBook::cms_pre_load_filtered_list",
 
             # banlist callbacks
             $pkg
                 . 'save_permission_filter.banlist' =>
                 "${pfx}BanList::can_save",
             $pkg . 'save_filter.banlist' => "${pfx}BanList::save_filter",
+            $pkg . 'pre_load_filtered_list.banlist' => "${pfx}BanList::cms_pre_load_filtered_list",
 
             # associations
             $pkg
@@ -1879,12 +1881,7 @@ sub init_core_callbacks {
             $pkg . 'edit.website'        => "${pfx}Website::edit",
             $pkg . 'post_delete.website' => "${pfx}Website::post_delete",
             $pkg . 'save_permission_filter.website' => "${pfx}Website::can_save",
-            $pkg . 'pre_load_filtered_list.website' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                delete $terms->{blog_id};
-                $terms->{class} = 'website';
-            },
+            $pkg . 'pre_load_filtered_list.website' => "${pfx}Website::cms_pre_load_filtered_list",
 
             # blog callbacks
             $pkg . 'edit.blog'                   => "${pfx}Blog::edit",
@@ -1896,11 +1893,7 @@ sub init_core_callbacks {
             $pkg . 'post_save.blog'   => "${pfx}Blog::post_save",
             $pkg . 'save_filter.blog' => "${pfx}Blog::save_filter",
             $pkg . 'post_delete.blog' => "${pfx}Blog::post_delete",
-            $pkg . 'pre_load_filtered_list.blog' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $terms = $opts->{terms};
-                $terms->{parent_id} = delete $terms->{blog_id} if $terms->{blog_id};
-            },
+            $pkg . 'pre_load_filtered_list.blog' => "${pfx}Blog::cms_pre_load_filtered_list",
 
             # folder callbacks
             $pkg . 'edit.folder' => "${pfx}Folder::edit",
@@ -1954,6 +1947,8 @@ sub init_core_callbacks {
             $pkg . 'pre_save.comment'    => "${pfx}Comment::pre_save",
             $pkg . 'post_save.comment'   => "${pfx}Comment::post_save",
             $pkg . 'post_delete.comment' => "${pfx}Comment::post_delete",
+            $pkg . 'pre_load_filtered_list.comment'
+                => "${pfx}Comment::cms_pre_load_filtered_list",
 
             # commenter callbacks
             $pkg . 'edit.commenter' => "${pfx}Comment::edit_commenter",
@@ -1973,6 +1968,8 @@ sub init_core_callbacks {
             $pkg . 'pre_save.entry'    => "${pfx}Entry::pre_save",
             $pkg . 'post_save.entry'   => "${pfx}Entry::post_save",
             $pkg . 'post_delete.entry' => "${pfx}Entry::post_delete",
+            $pkg . 'pre_load_filtered_list.entry'
+                => "${pfx}Entry::cms_pre_load_filtered_list",
 
             # page callbacks
             $pkg . 'edit.page'                   => "${pfx}Page::edit",
@@ -1982,6 +1979,8 @@ sub init_core_callbacks {
             $pkg . 'pre_save.page'    => "${pfx}Page::pre_save",
             $pkg . 'post_save.page'   => "${pfx}Page::post_save",
             $pkg . 'post_delete.page' => "${pfx}Page::post_delete",
+            $pkg . 'pre_load_filtered_list.page'
+                => "${pfx}Page::cms_pre_load_filtered_list",
 
             # ping callbacks
             $pkg . 'edit.ping' => "${pfx}TrackBack::edit",
@@ -1997,6 +1996,8 @@ sub init_core_callbacks {
             $pkg . 'pre_save.ping'    => "${pfx}TrackBack::pre_save",
             $pkg . 'post_save.ping'   => "${pfx}TrackBack::post_save",
             $pkg . 'post_delete.ping' => "${pfx}TrackBack::post_delete",
+            $pkg . 'pre_load_filtered_list.ping'
+                => "${pfx}TrackBack::cms_pre_load_filtered_list",
 
             # template callbacks
             $pkg . 'edit.template' => "${pfx}Template::edit",
@@ -2052,18 +2053,11 @@ sub init_core_callbacks {
             $pkg . 'post_save.asset'    => "${pfx}Asset::post_save",
             $pkg . 'post_delete.asset'  => "${pfx}Asset::post_delete",
             'template_param.edit_asset' => "${pfx}Asset::template_param_edit",
-            $pkg . 'pre_load_filtered_list.asset' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $args = $opts->{args};
-                $args->{no_class} = 1;
-            },
+            $pkg . 'pre_load_filtered_list.asset'
+                => "${pfx}Asset::cms_pre_load_filtered_list",
 
             # log
-            $pkg . 'pre_load_filtered_list.log' => sub {
-                my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                my $args = $opts->{args};
-                $args->{no_class} = 1;
-            },
+            $pkg . 'pre_load_filtered_list.log' => "${pfx}Log::cms_pre_load_filtered_list",
 
         }
     );
