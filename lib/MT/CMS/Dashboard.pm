@@ -19,7 +19,7 @@ sub dashboard {
     $param->{saved}      ||= $app->param('saved');
 
     $param->{system_overview_nav} =
-        defined $app->param('blog_id') && $app->param('blog_id') == 0 ? 1 : 0;
+        defined $app->param('blog_id') && ($app->param('blog_id') || 0) eq 0 ? 1 : 0;
     $param->{quick_search}        = 0;
     $param->{no_breadcrumbs}      = 1;
     $param->{screen_class}        = "dashboard";

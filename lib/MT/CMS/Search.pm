@@ -434,7 +434,7 @@ sub search_replace {
     $param->{search_tabs}  = $app->search_apis($blog_id ? 'blog' : 'system');
     $param->{entry_type}  = $app->param('entry_type');
 
-    if ($app->param('_type') =~ /entry|page|comment|template/) {
+    if ($app->param('_type') && $app->param('_type') =~ /entry|page|comment|template/) {
         if ($app->param('blog_id')) {
             my $perms = $app->permissions;
             $param->{can_republish} = $perms->can_rebuild || $app->user->is_superuser;
@@ -476,6 +476,7 @@ sub do_search_replace {
         qw( search replace do_replace case is_regex is_limited _type is_junk is_dateranged replace_ids datefrom_year datefrom_month datefrom_day dateto_year dateto_month dateto_day from to show_all do_search orig_search quicksearch publish_status my_posts search_type filter filter_val );
 
     # trim 'search' parameter
+    $search = '' unless defined($search);
     $search =~ s/(^\s+|\s+$)//g;
     $app->param('search', $search);
 
@@ -956,7 +957,7 @@ sub do_search_replace {
         : $q->param('search')) || '',
         searched => (
             $do_replace ? $q->param('orig_search')
-            : ( $do_search && $q->param('search') ne '' )
+            : ( $do_search && $q->param('search') && $q->param('search') ne '' )
           )
           || $show_all || defined $publish_status || $my_posts || ( $filter && $filter_val ),
         replace            => $replace,

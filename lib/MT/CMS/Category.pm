@@ -334,7 +334,6 @@ sub bulk_update {
     
     my @ordered_ids = map { $_->id } @objects;
     my $order = join ',', @ordered_ids;
-    my $meta = $model . '_order';
     $blog->$meta($order);
     $blog->save;
     $app->forward( 'filtered_list', messages => \@messages );
@@ -634,9 +633,11 @@ sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
     my $type = $app->param('datasource');
     my $meta = $type . '_order';
+    my $blog_meta_value = $app->blog->$meta;
+    $blog_meta_value = '' unless defined($blog_meta_value);
     my $text = join(
         ':',
-        $app->blog->$meta,
+        $blog_meta_value,
         map {
             join(
                 ':',

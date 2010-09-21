@@ -1732,7 +1732,7 @@ sub dialog_grant_role {
                                 my $data = $panel_params->{object_loop}
                                     ||= [];
                                 unshift @$data, $pseudo_user_row;
-                                splice( @$data, $limit );
+                                splice( @$data, $limit ) if scalar(@$data) > $limit;
                                 $count = 1;
                             }
                         }

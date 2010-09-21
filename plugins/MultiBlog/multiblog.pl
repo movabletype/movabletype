@@ -166,7 +166,7 @@ sub add_trigger {
                             'Select to apply this trigger to all websites and blogs in this system.'
                         ),
                         };
-                    splice( @$loop, $limit );
+                    splice( @$loop, $limit ) if scalar(@$loop) > $limit;
                 }
             }
             return $count;

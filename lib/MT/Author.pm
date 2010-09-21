@@ -600,7 +600,7 @@ sub _nickname_bulk_html {
     my $mail_icon = MT->static_path . 'images/status_icons/email.gif';
     for my $obj ( @$objs ) {
         my $userpic_url;
-        if ( my $userpic = $userpic{ $obj->userpic_asset_id } ) {
+        if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
             ( $userpic_url ) = $userpic->thumbnail_url( Width => 24, Height => 24, Square => 1 );
         }
         else {

@@ -2947,17 +2947,20 @@ sub build_menus {
                 }
                 next unless $cond->();
             }
+
+            my $app_param_type = $app->param('_type') || '';
             if ( $sub->{args} ) {
                 foreach my $arg (qw(_type filter_key)) {
                     next if !$sub->{args}->{$arg};
                     if (   $sub->{mode} eq $mode
+                        && defined($app->param($arg))
                         && $sub->{args}->{$arg} eq $app->param($arg) )
                     {
                         $param->{screen_group} = $id;
                         if ( $app->param('id') ) {
                             $sub->{current} = 1
-                              if ( $app->param('_type') eq 'blog' )
-                              || ( $app->param('_type') eq 'website' );
+                              if ( $app_param_type eq 'blog' )
+                              || ( $app_param_type eq 'website' );
                         }
                         else {
                             $sub->{current} = 1;
@@ -2970,8 +2973,8 @@ sub build_menus {
                     $param->{screen_group} = $id;
                     if ( $app->param('id') ) {
                         $sub->{current} = 1
-                          if ( $app->param('_type') eq 'blog' )
-                          || ( $app->param('_type') eq 'website' );
+                          if ( $app_param_type eq 'blog' )
+                          || ( $app_param_type eq 'website' );
                     }
                     else {
                         $sub->{current} = 1;
@@ -3183,7 +3186,7 @@ sub return_to_dashboard {
     my (%param) = @_;
     $param{redirect} = 1 unless %param;
     my $blog_id = $app->param('blog_id');
-    $param{blog_id} = $blog_id if $blog_id || $blog_id == 0;
+    $param{blog_id} = $blog_id if defined($blog_id) && $blog_id ne '';
     return $app->redirect(
         $app->uri( mode => 'dashboard', args => \%param ) );
 }
@@ -3362,10 +3365,10 @@ sub show_error {
     my ($param) = @_;
 
     # handle legacy scalar error string signature
-    $param = { error => $param } unless ref($param) eq 'HASH';
+    $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
     my $mode = $app->mode;
-    if ( $method_info->{app_mode} eq 'JSON' ) {
+    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
         return $app->json_error( $param->{error}, $param->{status} );
     }
     elsif ( $mode eq 'rebuild' ) {
@@ -3428,7 +3431,7 @@ sub show_error {
 sub show_login {
     my $app   = shift;
     my $method_info = MT->request('method_info') || {};
-    if ( $method_info->{app_mode} eq 'JSON' ) {
+    if ( $method_info->{app_mode} && $method_info->{app_mode} eq 'JSON' ) {
         $app->{login_again} = 1;
         return $app->show_error({ error => 'Unauthorized', status => 401 });
     }

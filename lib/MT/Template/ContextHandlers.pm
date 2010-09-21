@@ -2914,7 +2914,7 @@ sub _hdlr_app_listing {
     $hide_pager = 1 if ($ctx->var('screen_class') || '') eq 'search-replace';
     my $show_actions = exists $args->{show_actions} ? $args->{show_actions} : 1;
     my $return_args = $ctx->var('return_args') || '';
-    my $search_options = ( $ctx->var('search_options') || '' ) if MT->app->param('__mode') eq 'search_replace';
+    my $search_options = MT->app->param('__mode') eq 'search_replace' ? ($ctx->var('search_options') || '') : '';
     $return_args = encode_html( $return_args . $search_options );
     $return_args = qq{\n        <input type="hidden" name="return_args" value="$return_args" />} if $return_args;
     my $blog_id = $ctx->var('blog_id') || '';

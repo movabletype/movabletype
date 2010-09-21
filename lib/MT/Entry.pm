@@ -328,7 +328,7 @@ sub list_props {
                         label => 1,
                 }});
                 my %categories = map { $_->id => $_->label } @categories;
-                return map { $categories{  $placements{$_->id} } || $prop->zero_state_label } @$objs;
+                return map { $categories{  $placements{$_->id} || 0 } || $prop->zero_state_label } @$objs;
             },
             raw   => sub {
                 my ( $prop, $obj ) = @_;
@@ -1417,12 +1417,15 @@ sub gather_changed_cols {
         }
 
         unless ($cat_changed) {
-            if ((   @category_ids && ( $category_ids[0] != $primary_cat_id )
-                    || ( !$primary_cat_id && @category_ids )
-                    || ( $primary_cat_id  && !@category_ids )
-                    || ( $category_ids[0] != $primary_cat_id )
+            if (
+                (
+                       @category_ids
+                    && $primary_cat_id
+                    && ( $category_ids[0] != $primary_cat_id )
                 )
-                )
+                || ( !$primary_cat_id && @category_ids )
+                || ( $primary_cat_id  && !@category_ids )
+              )
             {
 
                 # primary category was changed

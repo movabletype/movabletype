@@ -357,7 +357,7 @@ sub asset_userpic {
 
 sub start_upload {
     my $app = shift;
-    my $dialog = $app->param('dialog');
+    my $dialog = defined($app->param('dialog')) ? $app->param('dialog') : '';
     $dialog =~ s/\D//g;
     return $app->return_to_dashboard( redirect => 1 )
         if !$app->blog && !$dialog;
@@ -975,7 +975,7 @@ sub _set_start_upload_params {
         $param->{local_site_path}      = '';
         $param->{local_archive_path}   = '';
     }
-    my $require_type = $param->{require_type};
+    my $require_type = defined($param->{require_type}) ? $param->{require_type} : '';
     $require_type =~ s/\W//g;
     $param->{require_type} = $require_type;
 

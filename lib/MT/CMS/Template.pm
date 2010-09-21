@@ -2577,7 +2577,7 @@ sub edit_widget {
           _get_schedule( $wtmpl->cache_expire_interval );
         $param->{cache_expire_period}   = $period   if defined $period;
         $param->{cache_expire_interval} = $interval if defined $interval;
-        my @events = split ',', $wtmpl->cache_expire_event;
+        my @events = split ',', $wtmpl->cache_expire_event || '';
         foreach my $name (@events) {
             $param->{ 'cache_expire_event_' . $name } = 1;
         }

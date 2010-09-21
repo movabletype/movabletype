@@ -41,7 +41,7 @@ sub edit {
         if ( $blog->use_revision ) {
             $original_revision = $obj->revision;
             my $rn = $q->param('r');
-            if ( $rn != $obj->current_revision ) {
+            if ( defined($rn) && $rn != $obj->current_revision ) {
                 my $status_text = MT::Entry::status_text( $obj->status );
                 $param->{current_status_text} = $status_text;
                 $param->{current_status_label} = $app->translate( $status_text );

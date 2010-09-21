@@ -819,7 +819,7 @@ sub list {
     $primary_col ||= [ @{$screen_settings->{columns} || [] } ]->[0];
     $primary_col = [ $primary_col ] unless ref $primary_col;
     my %primary_col = map { $_ => 1 } @$primary_col;
-    my $default_sort = $screen_settings->{default_sort_key};
+    my $default_sort = defined($screen_settings->{default_sort_key}) ? $screen_settings->{default_sort_key} : '';
 
     my @list_columns;
     for my $prop ( values %$list_props ) {
@@ -1044,7 +1044,7 @@ sub filtered_list {
     $MT::DebugMode && $debug->{section}->('initialize');
 
     ## FIXME: take identifical column from column defs.
-    my $cols = $q->param('columns');
+    my $cols = defined($q->param('columns')) ? $q->param('columns') : '';
     my @cols = ( '__id', grep { /^[^\.]+$/ } split( ',', $cols ) );
     my @subcols = ( '__id', grep { /\./ } split( ',', $cols ) );
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
@@ -1070,7 +1070,7 @@ sub filtered_list {
 
     MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds, $app, $filter, \%count_options, \@cols );
 
-    my $count = $filter->count_objects(%count_options);
+    my $count = $filter->count_objects(%count_options) || 0;
     $MT::DebugMode && $debug->{section}->('count objects');
     $load_options{total} = $count;
 
@@ -1186,7 +1186,7 @@ sub filtered_list {
         my $out   = $debug->{out};
         for my $section ( @{ $debug->{sections} } ) {
             $out .= sprintf(
-                "%s  : %0.2f ms ( %0.2f \% )\n%s\n",
+                "%s  : %0.2f ms ( %0.2f %% )\n%s\n",
                 $section->[0],
                 $section->[1] * 1000,
                 $section->[1] / $total * 100,
@@ -1760,7 +1760,7 @@ sub build_revision_table {
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
             source => $type,
-            params => { dialog => $q->param('dialog'), },
+            params => { dialog => scalar $q->param('dialog'), },
             %$param
         }
     );

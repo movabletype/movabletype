@@ -519,7 +519,7 @@ sub _hdlr_sub_categories {
     #
     # sort_method takes precedence
     my $sort_order  = $args->{sort_order} || 'ascend';
-    my $sort_by     = $args->{sort_by};
+    my $sort_by     = $args->{sort_by} || 'label';
     my $sort_method = $args->{sort_method};
 
     return $ctx->error( MT->translate(
@@ -532,7 +532,6 @@ sub _hdlr_sub_categories {
         $custom_order = 1;
     }
     $sort_by = 'label' unless $class->has_column($sort_by);
-    $sort_by ||= 'label';
 
     # Store the tokens for recursion
     $ctx->stash('subCatTokens', $tokens);
