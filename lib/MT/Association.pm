@@ -233,6 +233,25 @@ sub list_props {
                 );
             },
         },
+        author_id => {
+            auto    => 1,
+            label   => 'Author',
+            display => 'none',
+            filter_editable => 0,
+            args_via_param => sub {
+                my ( $prop, $app ) = @_;
+                return { option => 'equal', value => $app->param('filter_val') };
+            },
+            label_via_param => sub {
+                my ( $prop, $app ) = @_;
+                my $author = MT->model('author')->load( $app->param('filter_val') );
+                return MT->translate(
+                    'Associations of author: [_1]',
+                    $author->nickname,
+                );
+            },
+        },
+
         _type => {
             view => [],
             terms => sub {

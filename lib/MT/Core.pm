@@ -910,6 +910,7 @@ BEGIN {
                 condition => sub {
                     return MT->config->SingleCommunity;
                 },
+                view         => 'system',
             },
             member => {
                 primary      => 'name',

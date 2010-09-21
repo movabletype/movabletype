@@ -396,13 +396,55 @@ sub member_list_props {
             label   => 'Name',
             display => 'force',
             html    => \&_author_name_html,
+            order   => 100,
         },
         nickname => {
             label     => 'Nickname',
             auto      => 1,
             bulk_html => \&_nickname_bulk_html,
+            order     => 200,
         },
-        entry_count => {
+        role => {
+            base    => '__virtual.single_select',
+            label   => 'Role',
+            order   => 300,
+            display => 'optional',
+            raw     => sub {
+                my ( $prop, $obj ) = @_;
+                my $blog_id = MT->app->blog->id;
+                my @roles = MT->model('role')->load(
+                    undef,
+                    {
+                        join => MT->model('association')->join_on(
+                            'role_id',
+                            {
+                                blog_id   => $blog_id,
+                                author_id => $obj->id,
+                            },
+                        ),
+                    },
+                );
+                return join ', ', map { $_->name } @roles;
+            },
+            terms => sub {
+                my ( $prop, $args, $db_terms, $db_args ) = @_;
+                my $terms = {};
+                $terms->{blog_id}   = MT->app->param('blog_id');
+                $terms->{role_id}   = $args->{value} if $args->{value};
+                $terms->{author_id} = \"= author_id";
+                $db_args->{joins} ||= [];
+                push @{ $db_args->{joins} }, MT->model('association')->join_on(
+                    undef, $terms, { unique => 1 }
+                );
+                return;
+            },
+            single_select_options => sub {
+                my $prop = shift;
+                my @roles = MT->model('role')->load;
+                return [ map {{ label => $_->name, value => $_->id }} @roles ];
+            },
+        },
+         entry_count => {
             base        => '__virtual.object_count',
             view        => 'blog',
             label       => 'Entries',
@@ -418,6 +460,7 @@ sub member_list_props {
             count_args  => {
                 unique => 1,
             },
+            order => 400,
         },
         comment_count => {
             base        => '__virtual.object_count',
@@ -434,60 +477,37 @@ sub member_list_props {
             count_args  => {
                 unique => 1,
             },
+            order       => 500,
         },
-
-#        #status        => { base => 'author.status' },
-#        author_name   => { base => 'author.author_name' },
-#        type          => { base => 'author.type' },
-#        url           => { base => 'author.url' },
-#        entry_count   => { base => 'author.entry_count' },
-#        comment_count => { base => 'author.comment_count' },
-#        auth_type     => { base => 'author.auth_type' },
-#        permission    => {
-#            label   => 'Permission',
-#            display => 'none',
-#
-#            ## FIXME
-#            terms => sub {
-#                my ( $prop, $args, $db_terms, $db_args ) = @_;
-#                $db_args->{joins} ||= [];
-#                my $terms = {
-#                    author_id => \'= author_id',
-#                };
-#                push @{$db_args->{joins}}, MT->model('permission')->join_on(
-#                    undef, $terms, { unique => 1 },
-#                );
-#                return;
-#            },
-#        },
-#        role          => {
-#            base => '__virtual.single_select',
-#            label => 'Role',
-#            display => 'optional',
-#            raw   => sub {
-#                my ( $prop, $obj ) = @_;
-#                my @roles = MT->model('role')->load({
-#                    
-#                });
-#            },
-#            terms => sub {
-#                my ( $prop, $args, $db_terms, $db_args ) = @_;
-#                my $terms = {};
-#                $terms->{blog_id}   = MT->app->param('blog_id');
-#                $terms->{role_id}   = $args->{value} if $args->{value};
-#                $terms->{author_id} = \"= author_id";
-#                $db_args->{joins} ||= [];
-#                push @{ $db_args->{joins} }, MT->model('association')->join_on(
-#                    undef, $terms, { unique => 1 }
-#                );
-#                return;
-#            },
-#            single_select_options => sub {
-#                my $prop = shift;
-#                my @roles = MT->model('role')->load;
-#                return [ map {{ label => $_->name, value => $_->id }} @roles ];
-#            },
-#        },
+        type => {
+            label   => 'Type',
+            base    => '__virtual.single_select',
+            col     => 'type',
+            display => 'none',
+            condition => sub {
+                MT->config->SingleCommunity ? 0 : 1;
+            },
+            single_select_options => [
+                { label => 'MT Users', value => AUTHOR(), },
+                { label => 'Commenters', value => COMMENTER(), },
+            ],
+        },
+        status => {
+            base => 'author.status',
+        },
+        created_on => {
+            base => '__virtual.created_on',
+            display => 'none',
+        },
+        modified_on => {
+            base => '__virtual.modified_on',
+            display => 'none',
+        },
+        email => {
+            auto => 1,
+            label => 'Email',
+            display => 'none',
+        },
     };
 }
 

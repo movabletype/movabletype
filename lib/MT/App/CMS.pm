@@ -1970,19 +1970,40 @@ sub init_core_callbacks {
                 delete $terms->{blog_id};
                 my $args = $opts->{args};
                 $args->{joins} ||= [];
-                push @{ $args->{joins} }, MT->model('permission')->join_on(
-                    undef,
-                    [
-                        {
-                            blog_id => $opts->{blog_ids},
-                            author_id => { not => 0 },
-                        },
-                        'and',
-                        {
-                            author_id => \'= author_id',
-                        },
-                    ],
-                );
+                if ( MT->config->SingleCommunity ) {
+                    $terms->{type} = 1;
+                    push @{ $args->{joins} }, MT->model('association')->join_on(
+                        undef,
+                        [
+                            {
+                                blog_id => $opts->{blog_ids},
+                                author_id => { not => 0 },
+                            },
+                            'and',
+                            {
+                                author_id => \'= author_id',
+                            },
+                        ],
+                        { unique => 1, },
+                    );
+                }
+                else {
+                    push @{ $args->{joins} }, MT->model('permission')->join_on(
+                        undef,
+                        [
+                            {
+                                blog_id => $opts->{blog_ids},
+                                author_id => { not => 0 },
+                            },
+                            'and',
+                            {
+                                author_id => \'= author_id',
+                            },
+                        ],
+                        { unique => 1, },
+                    );
+                }
+
             },
             $pkg . 'pre_load_filtered_list.association' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
