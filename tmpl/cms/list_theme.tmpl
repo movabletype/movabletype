@@ -65,12 +65,11 @@
         </mt:if>
     </mt:unless>
     <mt:if name="blog_id">
-        <mt:unless name="current">
-            <mt:unless name="errors">
+        <mt:unless name="errors">
+        <mt:if name="current">
+        <a href="<mt:var name="mt_url" />?__mode=dialog_refresh_templates&amp;blog_id=<mt:var name="blog_id">&amp;magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">" class="button apply-theme-link mt-open-dialog"><__trans phrase="Refresh Templates"></a>
+        </mt:if>
         <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">" class="button apply-theme-link"><__trans phrase="Apply"></a>
-            </mt:unless>
-        <mt:else>
-        <span class="icon-left icon-success"><__trans phrase="Current Theme"></span>
         </mt:unless>
     <mt:else>
         <mt:unless name="blog_id">

@@ -378,7 +378,7 @@ sub core_page_actions {
                 label     => "Refresh Templates",
                 mode      => 'dialog_refresh_templates',
                 condition => sub {
-                    MT->app->blog,;
+                    MT->app->blog;
                 },
                 order => 1000,
                 dialog    => 1
@@ -387,7 +387,7 @@ sub core_page_actions {
                 label     => "Refresh Templates",
                 mode      => 'dialog_refresh_templates',
                 condition => sub {
-                    !MT->app->blog,;
+                    !MT->app->blog;
                 },
                 order => 1000,
                 dialog    => 1
@@ -396,7 +396,7 @@ sub core_page_actions {
                 label     => "Use Publishing Profile",
                 mode      => 'dialog_publishing_profile',
                 condition => sub {
-                    MT->app->blog,;
+                    MT->app->blog;
                 },
                 order => 1100,
                 dialog    => 1
