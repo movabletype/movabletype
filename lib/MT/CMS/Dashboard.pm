@@ -83,7 +83,7 @@ sub dashboard {
         } else {
             my $ids;
             push @$ids, $blog->id;
-            push @$ids, [ map { $_->id } @{$blog->blogs} ];
+            push @$ids, ( map { $_->id } @{$blog->blogs} );
             foreach my $b ( @$ids ) {
                 $trust = $user->has_perm($b);
                 last if $trust;

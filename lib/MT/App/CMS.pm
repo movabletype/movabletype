@@ -539,11 +539,34 @@ sub core_list_actions {
                 label      => "Unpublish Entries",
                 order      => 200,
                 code       => "${pkg}Entry::draft_entries",
-                permit_action => 'set_entry_draft_via_list',
                 condition  => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->blog && $app->blog->site_path ? 1 : 0;
-                    }
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next if !$p->blog->is_blog;
+
+                        $cond = 0, last
+                            if !$p->can_do('set_entry_draft_via_list')
+                        }
+                    return $cond;
+                },
             },
             'add_tags' => {
                 label       => "Add Tags...",
@@ -551,10 +574,32 @@ sub core_list_actions {
                 code        => "${pkg}Tag::add_tags_to_entries",
                 input       => 1,
                 input_label => 'Tags to add to selected entries',
-                permit_action => 'add_tags_to_entry_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('add_tags_to_entry_via_list')
+                        }
+                    return $cond;
+                },
             },
             'remove_tags' => {
                 label       => "Remove Tags...",
@@ -562,10 +607,32 @@ sub core_list_actions {
                 code        => "${pkg}Tag::remove_tags_from_entries",
                 input       => 1,
                 input_label => 'Tags to remove from selected entries',
-                permit_action => 'remove_tags_from_entry_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
-                    }
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('remove_tags_from_entry_via_list')
+                        }
+                    return $cond;
+                }
             },
             'open_batch_editor' => {
                 label     => "Batch Edit Entries",
@@ -575,8 +642,30 @@ sub core_list_actions {
                     return 0 if $app->mode eq 'view';
                     return 0 if $app->param('filter_key')
                         && $app->param('filter_key') eq 'spam_entries';
-                    $app->param('blog_id')
-                        && $app->can_do('open_batch_entry_editor_via_list');
+                    return 0 unless $app->param('blog_id');
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('open_batch_entry_editor_via_list')
+                        }
+                    return $cond;
                 },
             },
             'publish' => {
@@ -587,9 +676,29 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    return 0 unless $app->blog;
-                    return 0 unless $app->blog->site_path;
-                    return 1 if $app->can_do('publish_post') || $app->can_do('rebuild');
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('publish_entry_via_list')
+                        }
+                    return $cond;
                 },
             },
             'delete' => {
@@ -606,10 +715,33 @@ sub core_list_actions {
                 label      => "Unpublish Pages",
                 order      => 200,
                 code       => "${pkg}Entry::draft_entries",
-                permit_action => 'set_page_draft_via_list',
                 condition  => sub {
                     return 0 if $app->mode eq 'view';
-                    return $app->blog && $app->blog->site_path ? 1 : 0;
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next if !$p->blog->is_blog;
+
+                        $cond = 0, last
+                            if !$p->can_do('set_page_draft_via_list')
+                        }
+                    return $cond;
                 },
             },
             'add_tags' => {
@@ -618,9 +750,31 @@ sub core_list_actions {
                 code        => "${pkg}Tag::add_tags_to_entries",
                 input       => 1,
                 input_label => 'Tags to add to selected pages',
-                permit_action => 'add_tags_to_pages_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('add_tags_to_pages_via_list')
+                        }
+                    return $cond;
                 },
             },
             'remove_tags' => {
@@ -629,9 +783,31 @@ sub core_list_actions {
                 code        => "${pkg}Tag::remove_tags_from_entries",
                 input       => 1,
                 input_label => 'Tags to remove from selected pages',
-                permit_action => 'remove_tags_from_pages_via_list',
                 condition   => sub {
-                    return $app->mode ne 'view';
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('remove_tags_from_pages_via_list')
+                        }
+                    return $cond;
                 },
             },
             'open_batch_editor' => {
@@ -640,8 +816,32 @@ sub core_list_actions {
                 order     => 500,
                 condition => sub {
                     return 0 if $app->mode eq 'view';
-                    $app->param('blog_id')
-                        && $app->can_do('open_batch_page_editor_via_list');
+                    return 0 if $app->param('filter_key')
+                        && $app->param('filter_key') eq 'spam_entries';
+                    return 0 unless $app->param('blog_id');
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('open_batch_page_editor_via_list')
+                        }
+                    return $cond;
                 },
             },
             'publish' => {
@@ -652,9 +852,29 @@ sub core_list_actions {
                 js_message => 'publish',
                 button     => 1,
                 condition  => sub {
-                    return 0 unless $app->blog;
-                    return 0 unless $app->blog->site_path;
-                    return 1 if $app->can_do('publish_post') || $app->can_do('rebuild');
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        $cond = 0, last
+                            if !$p->can_do('publish_page_via_list')
+                        }
+                    return $cond;
                 },
             },
             'delete' => {
@@ -930,6 +1150,33 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+                condition   => sub {
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next unless $p->blog->is_blog;
+                        $cond = 0, last
+                            if !$p->can_do('refresh_template_via_list')
+                        }
+                    return $cond;
+                },
             },
             move_blogs => {
                 label         => "Move blog(s) ",
@@ -938,6 +1185,8 @@ sub core_list_actions {
                 permit_action => 'move_blogs',
                 dialog        => 1,
                 condition     => sub {
+                    return 0 if $app->mode eq 'view';
+
                     my $count = MT->model('website')->count();
                     $count > 1 ? 1 : 0;
                 }
@@ -956,6 +1205,33 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                condition   => sub {
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    my $blog = $app->blog;
+                    my $blog_ids = !$blog
+                        ? undef
+                        : $blog->is_blog
+                            ? [ $blog->id ]
+                            : [ map { $_->id } @{$blog->blogs} ];
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next unless $p->blog->is_blog;
+                        $cond = 0, last
+                            if !$p->can_do('delete_blog')
+                        }
+                    return $cond;
+                },
             },
         },
         'website' => {
@@ -970,6 +1246,26 @@ sub core_list_actions {
                     require MT::CMS::Template;
                     MT::CMS::Template::refresh_all_templates( $app, @_ );
                 },
+                condition   => sub {
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next if $p->blog->is_blog;
+                        $cond = 0, last
+                            if !$p->can_do('refresh_template_via_list')
+                        }
+                    return $cond;
+                },
             },
             'delete' => {
                 label      => 'Delete',
@@ -978,6 +1274,26 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                condition   => sub {
+                    return 0 if $app->mode eq 'view';
+                    return 1 if $app->user->is_superuser;
+
+                    require MT::Permission;
+                    my $iter = MT::Permission->load_iter(
+                        {
+                            author_id => $app->user->id,
+                            blog_id => { not => 0 },
+                        }
+                    );
+
+                    my $cond = 1;
+                    while ( my $p = $iter->() ) {
+                        next if $p->blog->is_blog;
+                        $cond = 0, last
+                            if !$p->can_do('delete_website')
+                        }
+                    return $cond;
+                },
             },
         },
         'template' => {

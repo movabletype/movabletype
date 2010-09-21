@@ -1697,6 +1697,7 @@ sub load_core_permissions {
                 'access_to_website_list'        => 1,
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
+                'delete_website'                => 1,
             },
         },
         'blog.administer_blog' => {
@@ -2001,6 +2002,7 @@ sub load_core_permissions {
                 'set_page_draft_via_list'         => 1,
                 'use_tools:search'                => 1,
                 'open_blog_listing_screen'        => 1,
+                'publish_page_via_list'           => 1,
             }
         },
         'blog.manage_users' => {
@@ -2035,6 +2037,7 @@ sub load_core_permissions {
             'label'            => 'Publish Entries',
             'order'            => 200,
             'permitted_action' => {
+                'publish_entry_via_list'                => 1,
                 'approve_own_entry_comment'             => 1,
                 'approve_own_entry_trackback'           => 1,
                 'bulk_edit_own_entry_comments'          => 1,
@@ -2067,7 +2070,10 @@ sub load_core_permissions {
             'group'            => 'auth_pub',
             'label'            => 'Publish Site',
             'order'            => 600,
-            'permitted_action' => { 'rebuild' => 1 }
+            'permitted_action' => {
+                'rebuild'                => 1,
+                'publish_entry_via_list' => 1,
+            }
         },
         'blog.save_image_defaults' => {
             'group'            => 'blog_upload',
