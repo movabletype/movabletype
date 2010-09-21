@@ -8,40 +8,40 @@
 <mt:SetVarTemplate name="filter_form_string">
     <input type="text" class="prop-string <mt:var name="type">-string text med" value="" />
     <select class="<mt:var name="type">-option">
-        <option value="contains">Contains</option>
-        <option value="not_contains">Not contains</option>
-        <option value="equal">equals</option>
-        <option value="beginning">begin with</option>
-        <option value="end">end with</option>
+        <option value="contains"><__trans phrase="Contains"></option>
+        <option value="not_contains"><__trans phrase="Not contains"></option>
+        <option value="equal"><__trans phrase="equals"></option>
+        <option value="beginning"><__trans phrase="begin with"></option>
+        <option value="end"><__trans phrase="end with"></option>
     </select>
 </mt:SetVarTemplate>
 
 <mt:SetVarTemplate name="filter_form_integer">
     <input type="text" class="prop-integer <mt:var name="type">-value text num" value="" />
     <select class="<mt:var name="type">-option">
-        <option value="equal">Equal</option>
-        <option value="not_equal">Not equal</option>
-        <option value="greater_than">Greater than</option>
-        <option value="greater_equal">Greater equal</option>
-        <option value="less_than">Less than</option>
-        <option value="less_equal">Less equal</option>
+        <option value="equal"><__trans phrase="Equal"></option>
+        <option value="not_equal"><__trans phrase="Not equal"></option>
+        <option value="greater_than"><__trans phrase="Greater than"></option>
+        <option value="greater_equal"><__trans phrase="Greater equal"></option>
+        <option value="less_than"><__trans phrase="Less than"></option>
+        <option value="less_equal"><__trans phrase="Less equal"></option>
     </select>
 </mt:SetVarTemplate>
 
 <mt:SetVarTemplate name="filter_form_date">
     <select class="<mt:var name="type">-option filter-date">
-        <option value="range">Range</option>
-        <option value="days">Days</option>
-        <option value="before">Before</option>
-        <option value="after">After</option>
-        <option value="future">Future</option>
-        <option value="past">Past</option>
+        <option value="range"><__trans phrase="Range"></option>
+        <option value="days"><__trans phrase="Days"></option>
+        <option value="before"><__trans phrase="Before"></option>
+        <option value="after"><__trans phrase="After"></option>
+        <option value="future"><__trans phrase="Future"></option>
+        <option value="past"><__trans phrase="Past"></option>
     </select>
     <span class="date-option">
-    <label class="date">Origin <input type="text" class="<mt:var name="type">-origin text datetime" /></label>
-    <label class="range">From <input type="text" class="<mt:var name="type">-from text datetime" /></label>
-    <label class="range">To <input type="text" class="<mt:var name="type">-to text datetime" /></label>
-    <label class="days">Days <input type="text" class="<mt:var name="type">-days text days" /></label>
+    <label class="date"><__trans phrase="Origin "><input type="text" class="<mt:var name="type">-origin text datetime" /></label>
+    <label class="range"><__trans phrase="From "><input type="text" class="<mt:var name="type">-from text datetime" /></label>
+    <label class="range"><__trans phrase="To "><input type="text" class="<mt:var name="type">-to text datetime" /></label>
+    <label class="days"><__trans phrase="Days "><input type="text" class="<mt:var name="type">-days text days" /></label>
     </span>
 </mt:SetVarTemplate>
 

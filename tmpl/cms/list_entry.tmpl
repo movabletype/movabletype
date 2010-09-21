@@ -242,7 +242,7 @@ function init()
                 <span id="filter-<mt:var name="filter" escape="html">" style="display: none">
         <mt:if name="type" eq="select">
                         <select id="<mt:var name="filter">-val" name="filter_val" onchange="enableFilterButton(this)">
-                            <option value="">Select...</option>
+                            <option value=""><__trans phrase="Select..."></option>
             <mt:loop name="options">
                             <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
             </mt:loop>

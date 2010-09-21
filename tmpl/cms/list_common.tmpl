@@ -17,13 +17,13 @@
    id="per_page"
    label="<__trans phrase="_DISPLAY_OPTIONS_SHOW">"
    label_class="no-header">
-  Show
+  <__trans phrase="Show">
   <select id="row" name="limit">
-    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>>25</option>
-    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>>50</option>
-    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>>100</option>
-    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>>200</option>
-  </select> rows per page
+    <option value="25"<mt:if name="limit_25"> selected="selected"</mt:if>><__trans phrase="25 rows"></option>
+    <option value="50"<mt:if name="limit_50"> selected="selected"</mt:if>><__trans phrase="50 rows"></option>
+    <option value="100"<mt:if name="limit_100"> selected="selected"</mt:if>><__trans phrase="100 rows"></option>
+    <option value="200"<mt:if name="limit_200"> selected="selected"</mt:if>><__trans phrase="200 rows"></option>
+  </select>
 </mtapp:setting>
 <mtapp:setting
    id="display_columns"
@@ -105,7 +105,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
           <input type="hidden" id="filter_name" value="" />
           <input type="hidden" id="filter_id" value="" />
           <div class="mod filter-header">
-            Filter: <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
+            <__trans phrase="Filter:"> <a href="#" id="opener"><__trans phrase="Select Filter..."></a>
             <a hre="#" class="toggle-button detail-link">
               <img src="<$mt:var name="static_uri"$>images/arrow/arrow-toggle-big.png" />
             </a>
@@ -119,12 +119,12 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
               <mt:if name="editable"><option value="<mt:var name="type">"><mt:var name="label"></option></mt:if>
             </mt:loop>
             </select>
-            <button type="button" id="additem" class="button">Add</button>
+            <button type="button" id="additem" class="button"><__trans phrase="Add"></button>
           </div>
           <div id="filter-action" class="mod">
-            <button type="submit" id="apply" class="button action">Apply</button>
-            <button type="button" id="save" class="button action">Save</button>
-            <button type="button" id="saveas" class="button action">Save As</button>
+            <button type="submit" id="apply" class="button action"><__trans phrase="Apply"></button>
+            <button type="button" id="save" class="button action"><__trans phrase="Save"></button>
+            <button type="button" id="saveas" class="button action"><__trans phrase="Save As"></button>
           </div>
         </div>
       </div>
@@ -151,12 +151,12 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
 </div>
 
 <div id="dialog_filter" title="Select Filter">
-  <div class="edit-filter button">Edit</div>
+  <div class="edit-filter button"><__trans phrase="Edit"></div>
 </div>
 
 <div id="dialog_save_filter">
   <div id="filter_label" title="Filter Label">
-    <div class="item-label">Label: </div>
+    <div class="item-label"><__trans phrase="Label:"> </div>
     <div><input type="text" class="text full" name="filter_name" value="" /></div>
     <div><input type="hidden" name="filter_id" value="" /></div>
   </div>
