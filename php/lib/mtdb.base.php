@@ -1089,11 +1089,11 @@ abstract class MTDatabase {
 
         if (count($fields)) {
             $meta_join_num = 1;
-            $entry_meta_info = Entry::get_meta_info();
+            $entry_meta_info = Entry::get_meta_info('entry');
             if (!empty($entry_meta_info)) {
                 foreach ($fields as $name => $value) {
-                    if (isset($entry_meta_info[$name])) {
-                        $meta_col = $entry_meta_info[$name];
+                    if (isset($entry_meta_info['field.'.$name])) {
+                        $meta_col = $entry_meta_info['field.'.$name];
                         $value = $this->escape($value);
                         $table = "mt_entry_meta entry_meta$meta_join_num";
                         $extras['join'][$table] = array(
