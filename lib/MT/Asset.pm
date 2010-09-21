@@ -87,12 +87,33 @@ sub list_props {
                     my $img =
                         MT->static_path . 'images/asset/' . $class_type . '-45.png';
                     if ( $obj->has_thumbnail ) {
-                        my ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
-                          $obj->thumbnail_url(
-                            Height => $thumb_size,
-                            Width  => $thumb_size,
-                            Square => 1
-                          );
+                        my ( $orig_width, $orig_height ) = ( $obj->image_width, $obj->image_height );
+                        my ( $thumbnail_url, $thumbnail_width, $thumbnail_height );
+                        if ( $orig_width > $thumb_size && $orig_height > $thumb_size ) {
+                            ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                                $obj->thumbnail_url(
+                                    Height => $thumb_size,
+                                    Width  => $thumb_size,
+                                    Square => 1
+                                );
+                        }
+                        elsif ( $orig_width > $thumb_size ) {
+                            ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                                $obj->thumbnail_url(
+                                    Width  => $thumb_size,
+                                );
+                        }
+                        elsif ( $orig_height > $thumb_size ) {
+                            ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                                $obj->thumbnail_url(
+                                    Height  => $thumb_size,
+                                );
+                        }
+                        else {
+                            ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                                ( $obj->url, $orig_width, $orig_height );
+                        }
+
                         my $thumbnail_width_offset =
                           int( ( $thumb_size - $thumbnail_width ) / 2 );
                         my $thumbnail_height_offset =
