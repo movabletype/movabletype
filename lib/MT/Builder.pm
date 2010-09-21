@@ -314,7 +314,7 @@ sub build {
     if ($cond) {
         my %lcond;
         # lowercase condtional keys since we're storing tags in lowercase now
-        # When both the lowercase key and he CamelCase key exist,
+        # When both the lowercase key and the CamelCase key exist,
         # the value will be overwrited in the CamelCase key's value.
         $lcond{lc $_} = $cond->{$_} for reverse sort keys %$cond;
         $cond = \%lcond;
