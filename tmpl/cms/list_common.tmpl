@@ -309,7 +309,7 @@ function renderFilterList() {
   jQuery('#filter_list').empty();
   jQuery('<ul id="filter_list" />').appendTo('#dialog_filter');
 
-  var line = '<span class="filter-label unit size3of5"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></span>';
+  var line = '<span class="filter-label unit size3of5"><a href="#" id="new_filter" class="apply-link"><__trans phrase="New Filter"></a></span>';
   jQuery('<li class="filter line" />').append(line).appendTo('#filter_list');
   for (var i = 0, length = filters.length; i < length; i++) {
     var filter = filters[i];
