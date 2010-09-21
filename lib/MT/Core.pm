@@ -841,7 +841,6 @@ BEGIN {
                 view => [qw( system website )],
                 primary => 'name',
                 default_sort_key => 'name',
-                permission => 'access_to_blog_list'
             },
             entry => {
                 object_label  => 'Entry',

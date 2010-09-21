@@ -1264,7 +1264,7 @@ sub core_menus {
             order => 100,
             mode  => "list",
             args  => { _type => "blog" },
-            view  => "website",
+            view  => [ "system", "website" ],
         },
         'blog:create' => {
             label         => "New",
@@ -1326,8 +1326,32 @@ sub core_menus {
             order         => 100,
             mode          => 'list',
             args          => { _type => 'entry' },
-            permit_action => 'use_entry:manage_menu',
-            view          => [ "blog", "website" ],
+            view          => [ "system", "blog", "website" ],
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids = !$blog
+                    ? undef
+                    : $blog->is_blog
+                        ? [ $blog->id ]
+                        : [ map { $_->id } @{$blog->blogs} ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {
+                        author_id => $app->user->id,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('use_entry:manage_menu')
+                }
+                return $cond ? 1 : 0;
+            },
         },
         'entry:create' => {
             label      => "New",
@@ -1367,8 +1391,32 @@ sub core_menus {
             order      => 100,
             mode       => 'list',
             args       => { _type => 'page' },
-            permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view       => [ "system", "blog", 'website' ],
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids = !$blog
+                    ? undef
+                    : $blog->is_blog
+                        ? [ $blog->id ]
+                        : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {
+                        author_id => $app->user->id,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('manage_pages')
+                }
+                return $cond ? 1 : 0;
+            },
         },
         'page:create' => {
             label      => "New",
@@ -1408,8 +1456,33 @@ sub core_menus {
             order      => 100,
             mode       => 'list',
             args       => { _type => 'asset' },
-            permission => 'edit_assets',
-            view       => [ "blog", 'website' ],
+            permission => '',
+            view       => [ "system", "blog", 'website' ],
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids = !$blog
+                    ? undef
+                    : $blog->is_blog
+                        ? [ $blog->id ]
+                        : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {
+                        author_id => $app->user->id,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('edit_assets')
+                }
+                return $cond ? 1 : 0;
+            },
         },
         'asset:upload' => {
             label      => "New",
@@ -1448,30 +1521,62 @@ sub core_menus {
             args      => { _type => 'comment' },
             condition => sub {
                 return 1 if $app->user->is_superuser;
-                if ( $app->param('blog_id') ) {
-                    my $perms =
-                      $app->user->permissions( $app->param('blog_id') );
-                    return 1
-                      if $perms && $perms->can_view_feedback;
+
+                my $blog = $app->blog;
+                my $blog_ids = !$blog
+                    ? undef
+                    : $blog->is_blog
+                        ? [ $blog->id ]
+                        : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {
+                        author_id => $app->user->id,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('view_feedback')
                 }
-                else {
-                    require MT::Permission;
-                    my @blogs = map { $_->blog_id }
-                      grep { $_->can_view_feedback }
-                      MT::Permission->load( { author_id => $app->user->id } );
-                    return 1 if @blogs;
-                }
-                return 0;
+                return $cond ? 1 : 0;
             },
-            view => [ "blog", 'website' ],
+            view => [ "system", "blog", 'website' ],
         },
         'feedback:ping' => {
             label      => "TrackBacks",
             order      => 200,
             mode       => 'list',
             args       => { _type => 'ping' },
-            permission => 'create_post,edit_all_posts,manage_feedback',
-            view       => [ "blog", 'website' ],
+            view       => [ "system", "blog", 'website' ],
+            condition => sub {
+                return 1 if $app->user->is_superuser;
+
+                my $blog = $app->blog;
+                my $blog_ids = !$blog
+                    ? undef
+                    : $blog->is_blog
+                        ? [ $blog->id ]
+                        : [ $blog->id, map { $_->id } @{$blog->blogs} ];
+
+                require MT::Permission;
+                my $iter = MT::Permission->load_iter(
+                    {
+                        author_id => $app->user->id,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : ( blog_id => { not => 0 } ) ),
+                    }
+                );
+
+                my $cond;
+                while ( my $p = $iter->() ) {
+                    $cond = 1, last
+                        if $p->can_do('view_feedback')
+                }
+                return $cond ? 1 : 0;
+            },
         },
         'feedback:view_comment' => {
             order      => 10000,
@@ -2314,29 +2419,34 @@ sub build_blog_selector {
 
     # Load favorites or all websites
     my @fav_websites = @{ $auth->favorite_websites || [] };
+    my @websites;
+    @websites = $website_class->load({ id => \@fav_websites })
+        if scalar @fav_websites;
 
-    # How many websites that the user can access?
     my $max_load = $blog && $blog->is_blog ? 3 : 4;
-    %args = ();
-    %terms = ();
-    $args{join} = MT::Permission->join_on( 'blog_id',
-        { author_id => $auth->id, permissions => { not => "'comment'" } }
-    ) if !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates');
-    $terms{class} = 'website';
-    $terms{id} = { not => $blog->website->id } if $blog && $blog->is_blog;
-    $args{limit} = $max_load; # Don't load over 3 ~ 4 websites.
-    my @websites = $website_class->load( \%terms, \%args );
+    if ( scalar @fav_websites < $max_load ) {
+        # Load more accessible websites
+        %args = ();
+        %terms = ();
+
+        $args{join} = MT::Permission->join_on( 'blog_id',
+            { author_id => $auth->id, permissions => { not => "'comment'" } }
+        ) if !$auth->is_superuser && !$auth->permissions(0)->can_do('edit_templates');
+        $terms{class} = 'website';
+        my $not_ids;
+        push @$not_ids, @fav_websites;
+        push @$not_ids, $blog->website->id if $blog && $blog->is_blog;
+        $terms{id} = { not => $not_ids };
+        $args{limit} = $max_load - ( scalar @fav_websites ); # Don't load over 3 ~ 4 websites.
+        my @sites = $website_class->load( \%terms, \%args );
+        push @websites, @sites;
+    }
     unshift @websites, $blog->website if $blog && $blog->is_blog;
 
     # Special case. If this user can access 3 websites or smaller then load those websites.
     $param->{selector_hide_website_chooser} = 1;
     if ( @websites && scalar @websites == 4 ) {
-        # This user can access over 4 websites.
-        if ( @fav_websites ) {
-            @websites = $website_class->load( { id => \@fav_websites } ) if @fav_websites;
-        } else {
-            @websites = ();
-        }
+        pop @websites;
         $param->{selector_hide_website_chooser} = 0;
     }
 
@@ -2346,10 +2456,15 @@ sub build_blog_selector {
         for my $ws (@websites) {
             next unless $ws;
 
+            my $blog_ids;
+            push @$blog_ids, $ws->id;
+            push @$blog_ids, ( map { $_->id } @{$ws->blogs} )
+               if $ws->blogs;
+
             my @perms = MT::Permission->load(
                 {
                     author_id => $auth->id,
-                    blog_id   => $ws->id,
+                    blog_id   => $blog_ids,
                 }
             );
 
@@ -2379,7 +2494,7 @@ sub build_blog_selector {
         if ( $ws ) {
             $param->{curr_website_id} = $ws->id;
             $param->{curr_website_name} = $ws->name;
-            $param->{curr_website_can_link} = 0;
+            $param->{curr_website_can_link} = 1;
         }
     }
 
@@ -2412,7 +2527,7 @@ sub build_blog_selector {
     $param->{load_selector_data} = 1;
     $param->{can_create_blog} = $auth->can_do('create_blog') && $blog;
     $param->{can_create_website} = $auth->can_do('create_website');
-    $param->{can_access_overview} = $auth->can_do('access_to_system_dashboard');
+    $param->{can_access_overview} = 1;
 }
 
 sub build_menus {
@@ -3433,7 +3548,20 @@ sub add_to_favorite_websites {
     my $auth = $app->user;
     return unless $auth;
 
-    return unless $auth->has_perm($fav)
+    my $trust;
+    my $blog_ids;
+    push @$blog_ids, $fav;
+
+    my @blogs = MT->model('blog')->load({ parent_id => $fav });
+    push @$blog_ids, ( map { $_->id } @blogs )
+        if @blogs;
+
+    foreach my $id ( @$blog_ids ) {
+        $trust = 1, last
+            if $auth->has_perm($id);
+    }
+
+    return unless $trust
         || $auth->is_superuser
         || $auth->permissions(0)->can_do('edit_templates');
 

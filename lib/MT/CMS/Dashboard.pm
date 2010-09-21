@@ -75,18 +75,33 @@ sub dashboard {
 
     my $user = $app->user;
     my $blog_id = $app->param('blog_id');
-    if ( defined $blog_id && !$user->has_perm($blog_id) ) {
-        # Remove blog_id if it was found.
-        if ( $blog && $blog->is_blog ) {
-            my @current = grep { $_ != $blog_id } @{ $user->favorite_blogs || [] };
-            $user->favorite_blogs( \@current );
-        } elsif ( $blog && !$blog->is_blog ) {
-            my @current = grep { $_ != $blog_id } @{ $user->favorite_websites || [] };
-            $user->favorite_websites( \@current );
+    if ( defined $blog_id && $blog_id ) {
+        my $blog = MT->model('blog')->load($blog_id);
+        my $trust;
+        if ( $blog->is_blog ) {
+            $trust = $user->has_perm($blog->id);
+        } else {
+            my $ids;
+            push @$ids, $blog->id;
+            push @$ids, [ map { $_->id } @{$blog->blogs} ];
+            foreach my $b ( @$ids ) {
+                $trust = $user->has_perm($b);
+                last if $trust;
+            }
         }
-        $user->save;
+        if ( !$trust ) {
+            # Remove blog_id if it was found.
+            if ( $blog && $blog->is_blog ) {
+                my @current = grep { $_ != $blog_id } @{ $user->favorite_blogs || [] };
+                $user->favorite_blogs( \@current );
+            } elsif ( $blog && !$blog->is_blog ) {
+                my @current = grep { $_ != $blog_id } @{ $user->favorite_websites || [] };
+                $user->favorite_websites( \@current );
+            }
+            $user->save;
 
-        return $app->return_to_user_dashboard( redirect => 1, permission => 1);
+            return $app->return_to_user_dashboard( redirect => 1, permission => 1);
+        }
     }
 
     require MT::FileMgr;
