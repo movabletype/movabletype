@@ -61,52 +61,24 @@ sub get_syscheck_content {
         . '&session_id=' . $sess_id
         . '&language=' . MT->current_language
         ;
-    if ( $syscheck_url && $syscheck_url ne 'disable' ) {
-        my $SYSCHECKCACHE_TIMEOUT = 60 * 60 * 24;
-        my $sess_class        = $app->model('session');
-        my ($syscheck_object)     = ("");
-        my $retries           = 0;
-        $syscheck_object = $sess_class->load( { id => 'SC' } );
-        if ( $syscheck_object
-            && ( $syscheck_object->start() < ( time - $SYSCHECKCACHE_TIMEOUT ) ) )
-        {
-            $syscheck_object->remove;
-            $syscheck_object = undef;
-        }
-        if ( $syscheck_object ) {
-            my $data = $syscheck_object->data();
-            MT::I18N::utf8_off($data) if MT::I18N::is_utf8($data);
-            return Encode::decode_utf8($data);
-        }
 
-        my $ua = $app->new_ua({ timeout => 20 });
-        return unless $ua;
-        $ua->max_size(undef) if $ua->can('max_size');
+    my $ua = $app->new_ua({ timeout => 20 });
+    return unless $ua;
+    $ua->max_size(undef) if $ua->can('max_size');
 
-        my $req = new HTTP::Request( GET => $syscheck_url );
-        my $resp = $ua->request($req);
-        return unless $resp->is_success();
-        my $result = $resp->content();
-        if ($result) {
-            require MT::Sanitize;
+    my $req = new HTTP::Request( GET => $syscheck_url );
+    my $resp = $ua->request($req);
+    return unless $resp->is_success();
+    my $result = $resp->content();
+    if ($result) {
+        require MT::Sanitize;
 
-            # allowed html
-            my $spec = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
-            $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
-            $result = MT::Sanitize->sanitize( $result, $spec );
-            $syscheck_object = MT::Session->new();
-            $syscheck_object->set_values(
-                {
-                    id    => 'SC',
-                    kind  => 'SC',
-                    start => time(),
-                    data  => $result
-                }
-            );
-            $syscheck_object->save();
-        }
-        return $result;
+        # allowed html
+        my $spec = '* style class id,ul,li,div,span,br,h2,h3,strong,code,blockquote,p';
+        $result = Encode::decode_utf8($result) if !Encode::is_utf8($result);
+        $result = MT::Sanitize->sanitize( $result, $spec );
     }
+    return $result;
 }
 
 sub start_recover {
