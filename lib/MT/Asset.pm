@@ -77,31 +77,48 @@ sub list_props {
                     },
                 );
                 my $class_type = $obj->class_type;
-                my $img =
-                  MT->static_path . 'images/asset/' . $class_type . '.gif';
 
-                if ( $obj->has_thumbnail ) {
-                    my ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
-                      $obj->thumbnail_url(
-                        Height => 45,
-                        Width  => 45,
-                        Square => 1
-                      );
-                    my $thumbnail_width_offset =
-                      int( ( 45 - $thumbnail_width ) / 2 );
-                    my $thumbnail_height_offset =
-                      int( ( 45 - $thumbnail_height ) / 2 );
-                    return qq{
-                        <span class="title"><a href="$edit_link">$label</a></span>
-                        <div class="thumbnail picture small">
-                          <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
-                        </div>
-                    };
+                require MT::FileMgr;
+                my $fmgr = MT::FileMgr->new('Local');
+                my $file_path = $obj->file_path;
+                ## FIXME: Hardcoded
+                my $thumb_size = 45;
+                if ( $file_path && $fmgr->exists( $file_path ) ) {
+                    my $img =
+                        MT->static_path . 'images/asset/' . $class_type . '-45.png';
+                    if ( $obj->has_thumbnail ) {
+                        my ( $thumbnail_url, $thumbnail_width, $thumbnail_height ) =
+                          $obj->thumbnail_url(
+                            Height => $thumb_size,
+                            Width  => $thumb_size,
+                            Square => 1
+                          );
+                        my $thumbnail_width_offset =
+                          int( ( $thumb_size - $thumbnail_width ) / 2 );
+                        my $thumbnail_height_offset =
+                          int( ( $thumb_size - $thumbnail_height ) / 2 );
+                        return qq{
+                            <span class="title"><a href="$edit_link">$label</a></span>
+                            <div class="thumbnail picture small">
+                              <img alt="" src="$thumbnail_url" style="padding: ${thumbnail_height_offset}px ${thumbnail_width_offset}px" />
+                            </div>
+                        };
+                    }
+                    else {
+                        return qq{
+                            <span class="title"><a href="$edit_link">$label</a></span>
+                            <div class="file-type $class_type small">
+                              <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
+                            </div>
+                        };
+                    }
                 }
                 else {
+                    my $img =
+                        MT->static_path . 'images/asset/' . $class_type . '-warning-45.png';
                     return qq{
                         <span class="title"><a href="$edit_link">$label</a></span>
-                        <div class="file-type picture small">
+                        <div class="file-type missing small">
                           <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                         </div>
                     };
