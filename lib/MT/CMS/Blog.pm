@@ -2974,22 +2974,11 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        [
-            {
-                author_id => $user->id,
-            },
-            '-and',
-            [
-                {
-                    blog_id => 0,
-                    permissions => { like => '%edit_templates%' },
-                },
-                '-or',
-                {
-                    permissions => { like => '%administer_blog%' },
-                },
-            ],
-        ],
+        {
+            author_id => $user->id,
+            blog_id => { not => 0 },
+            permissions => { not => 'comment' },
+        },
     );
 
     my $blog_ids;
