@@ -107,7 +107,7 @@ sub list_props {
                     else {
                         return qq{
                             <span class="title"><a href="$edit_link">$label</a></span>
-                            <div class="file-type $class_type small">
+                            <div class="file-type $class_type picture small">
                               <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                             </div>
                         };
@@ -118,7 +118,7 @@ sub list_props {
                         MT->static_path . 'images/asset/' . $class_type . '-warning-45.png';
                     return qq{
                         <span class="title"><a href="$edit_link">$label</a></span>
-                        <div class="file-type missing small">
+                        <div class="file-type missing picture small">
                           <img alt="$class_type" src="$img" class="asset-type-icon asset-type-$class_type" />
                         </div>
                     };
