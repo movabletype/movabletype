@@ -17,12 +17,9 @@ sub dated_group_entries {
     my $blog = $ctx->stash('blog');
     my ( $start, $end );
     if ($ts) {
-        my $archiver = MT->publisher->archiver($at);
-        if ( $archiver ) {
-            ( $start, $end ) = $archiver->date_range($ts);
-            $ctx->{current_timestamp}     = $start;
-            $ctx->{current_timestamp_end} = $end;
-        }
+        ( $start, $end ) = $obj->date_range($ts);
+        $ctx->{current_timestamp}     = $start;
+        $ctx->{current_timestamp_end} = $end;
     }
     else {
         $start = $ctx->{current_timestamp};
@@ -50,10 +47,9 @@ sub dated_category_entries {
     my ( $ctx, $at, $cat, $ts ) = @_;
 
     my $blog     = $ctx->stash('blog');
-    my $archiver = MT->publisher->archiver($at);
     my ( $start, $end );
     if ($ts) {
-        ( $start, $end ) = $archiver->date_range($ts);
+        ( $start, $end ) = $obj->date_range($ts);
     }
     else {
         $start = $ctx->{current_timestamp};
@@ -81,10 +77,9 @@ sub dated_author_entries {
     my ( $ctx, $at, $author, $ts ) = @_;
 
     my $blog     = $ctx->stash('blog');
-    my $archiver = MT->publisher->archiver($at);
     my ( $start, $end );
     if ($ts) {
-        ( $start, $end ) = $archiver->date_range($ts);
+        ( $start, $end ) = $obj->date_range($ts);
     }
     else {
         $start = $ctx->{current_timestamp};

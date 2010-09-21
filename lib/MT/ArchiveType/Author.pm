@@ -185,33 +185,4 @@ sub group_based {
     return 1;
 }
 
-sub date_based_author_entries {
-    my $obj = shift;
-    my ( $ctx, $at, $author, $ts ) = @_;
-
-    my $blog     = $ctx->stash('blog');
-    my ( $start, $end );
-    if ($ts) {
-        ( $start, $end ) = $obj->date_range($ts);
-    }
-    else {
-        $start = $ctx->{current_timestamp};
-        $end   = $ctx->{current_timestamp_end};
-    }
-    my @entries = MT::Entry->load(
-        {
-            blog_id     => $blog->id,
-            author_id   => $author->id,
-            status      => MT::Entry::RELEASE(),
-            authored_on => [ $start, $end ]
-        },
-        {
-            range => { authored_on => 1 },
-            'sort' => 'authored_on',
-            'direction' => 'descend',
-        }
-    ) or return $ctx->error("Couldn't get $at archive list");
-    \@entries;
-}
-
 1;

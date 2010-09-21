@@ -35,7 +35,7 @@ sub default_archive_templates {
 }
 
 sub dynamic_template {
-    return 'section/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
+    return 'category/<$MTCategoryID$>/week/<$MTArchiveDate format="%Y%m%d"$>';
 }
 
 sub template_params {

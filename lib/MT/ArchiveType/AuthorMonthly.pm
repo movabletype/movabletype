@@ -72,7 +72,6 @@ sub archive_file {
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {
-        return "" unless $this_author;
         my $name = $this_author->basename;
         my ($start) = start_end_month($timestamp);
         my ( $year, $month ) = unpack 'A4A2', $start;
@@ -99,8 +98,8 @@ sub archive_group_iter {
     my @data  = ();
     my $count = 0;
 
-    my $at       = $ctx->{archive_type};
-    my $archiver = MT->publisher->archiver($at);
+    # my $at       = $ctx->{archive_type};
+    # my $archiver = MT->publisher->archiver($at);
     my $author;
 
     my $ts    = $ctx->{current_timestamp};

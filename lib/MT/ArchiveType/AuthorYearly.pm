@@ -100,8 +100,8 @@ sub archive_group_iter {
     my @data  = ();
     my $count = 0;
 
-    my $at       = $ctx->{archive_type};
-    my $archiver = MT->publisher->archiver($at);
+    # my $at       = $ctx->{archive_type};
+    # my $archiver = MT->publisher->archiver($at);
     my $author;
 
     # if (($tmpl && $tmpl->type ne 'index') &&
@@ -199,7 +199,7 @@ sub archive_group_entries {
         : $ctx->stash('current_timestamp');
     my $author = $param{author} || $ctx->stash('author');
     my $limit = $param{limit};
-    $obj->date_based_author_entries( $ctx, 'Author-Yearly', $author, $ts, $limit );
+    $obj->dated_author_entries( $ctx, 'Author-Yearly', $author, $ts, $limit );
 }
 
 sub archive_entries_count {

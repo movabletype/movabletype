@@ -74,7 +74,6 @@ sub archive_file {
     return "" unless $this_author;
 
     if ( !$file_tmpl ) {
-        return "" unless $this_author;
         my $name = $this_author->basename;
         my $start = start_end_week($timestamp);
         my ( $year, $month, $day ) = unpack 'A4A2A2', $start;
@@ -105,8 +104,8 @@ sub archive_group_iter {
     my $ts    = $ctx->{current_timestamp};
     my $tsend = $ctx->{current_timestamp_end};
 
-    my $at       = $ctx->{archive_type};
-    my $archiver = MT->publisher->archiver($at);
+    # my $at       = $ctx->{archive_type};
+    # my $archiver = MT->publisher->archiver($at);
     my $author;
 
     # if (($tmpl && $tmpl->type ne 'index') &&
