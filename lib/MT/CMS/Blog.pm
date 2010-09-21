@@ -2994,7 +2994,6 @@ sub cms_pre_load_filtered_list {
 
     my $blog_ids;
     while ( my $perm = $iter->() ) {
-        print STDERR $perm->blog_id;
         if ( !$perm->blog_id ) {
             # User has system.edit_template
             $blog_ids = undef;
