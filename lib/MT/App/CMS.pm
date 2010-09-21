@@ -1966,13 +1966,23 @@ sub init_core_callbacks {
             },
             $pkg . 'pre_load_filtered_list.member' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;
-                $filter->append_item({
-                    type => 'author_id',
-                    args => {
-                        option => 'not_equal',
-                        value  => 0,
-                    },
-                });
+                my $terms = $opts->{terms};
+                delete $terms->{blog_id};
+                my $args = $opts->{args};
+                $args->{joins} ||= [];
+                push @{ $args->{joins} }, MT->model('permission')->join_on(
+                    undef,
+                    [
+                        {
+                            blog_id => $opts->{blog_ids},
+                            author_id => { not => 0 },
+                        },
+                        'and',
+                        {
+                            author_id => \'= author_id',
+                        },
+                    ],
+                );
             },
             $pkg . 'pre_load_filtered_list.association' => sub {
                 my ( $cb, $app, $filter, $opts, $cols ) = @_;

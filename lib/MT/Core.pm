@@ -914,7 +914,8 @@ BEGIN {
             member => {
                 primary      => 'name',
                 object_label => 'Member',
-                object_type  => 'permission',
+                object_label_plural => 'Members',
+                object_type  => 'author',
                 permission   => 'access_to_blog_member_list',
                 default_sort_key => 'name',
                 view         => [ 'blog', 'website' ],

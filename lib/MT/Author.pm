@@ -392,26 +392,49 @@ sub commenter_system_filters {
 sub member_list_props {
     return {
         name => {
-            label => 'Name',
+            auto    => 1,
+            label   => 'Name',
             display => 'force',
-            html => sub {
-                my $prop = shift;
-                my $obj  = shift;
-                return _author_name_html( $prop, $obj->user, @_ );
-            },
+            html    => \&_author_name_html,
         },
         nickname => {
-            label => 'Nickname',
-            bulk_html => sub {
+            label     => 'Nickname',
+            auto      => 1,
+            bulk_html => \&_nickname_bulk_html,
+        },
+        entry_count => {
+            base        => '__virtual.object_count',
+            view        => 'blog',
+            label       => 'Entries',
+            count_class => 'entry',
+            count_col   => 'author_id',
+            filter_type => 'author_id',
+            list_screen => 'entry',
+            count_terms => sub {
                 my $prop = shift;
-                my $objs = shift;
-                my @author_ids = map { $_->author_id } @$objs;
-                my @authors    = MT->model('author')->load({ id => \@author_ids });
-                return _nickname_bulk_html( $prop, \@authors, @_ );
+                my $blog_id = MT->app ? MT->app->param('blog_id') : undef;
+                return $blog_id ? { blog_id => $blog_id } : {};
+            },
+            count_args  => {
+                unique => 1,
             },
         },
-
-        author_id => 'AuthorID',
+        comment_count => {
+            base        => '__virtual.object_count',
+            label       => 'Comments',
+            count_class => 'comment',
+            count_col   => 'commenter_id',
+            filter_type => 'commenter_id',
+            list_screen => 'comment',
+            count_terms => sub {
+                my $prop = shift;
+                my $blog_id = MT->app ? MT->app->param('blog_id') : undef;
+                return $blog_id ? { blog_id => $blog_id } : {};
+            },
+            count_args  => {
+                unique => 1,
+            },
+        },
 
 #        #status        => { base => 'author.status' },
 #        author_name   => { base => 'author.author_name' },
