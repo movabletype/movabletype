@@ -580,11 +580,23 @@ sub cms_pre_load_filtered_list {
 
     require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            blog_id => { not => 0 },
-            permissions => { not => 'comment' },
-        },
+        [
+            {
+                author_id => $user->id,
+            },
+            '-and',
+            [
+                {
+                    blog_id => 0,
+                    permissions => { like => '%edit_templates%' },
+                },
+                '-or',
+                {
+                    blog_id => { not => 0 },
+                    permissions => { not => 'comment' },
+                }
+            ]
+        ],
     );
 
     my $blog_ids;
@@ -594,7 +606,12 @@ sub cms_pre_load_filtered_list {
             $blog_ids = undef;
             last;
         }
-        push @$blog_ids, $perm->blog_id;
+        my $website = MT->model('website')->load($perm->blog_id);
+        if ( $website && $website->class eq 'website' ) {
+            push @$blog_ids, $perm->blog_id
+        } elsif ( $website && $website->class eq 'blog' ) {
+            push @$blog_ids, $website->website->id;
+        }
     }
 
     $terms->{id} = $blog_ids

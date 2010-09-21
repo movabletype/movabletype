@@ -2972,23 +2972,37 @@ sub cms_pre_load_filtered_list {
     my $user = $app->user;
     return if $user->is_superuser;
 
-    require MT::Permission;
     my $iter = MT::Permission->load_iter(
-        {
-            author_id => $user->id,
-            blog_id => { not => 0 },
-            permissions => { not => 'comment' },
-        },
+        [
+            {
+                author_id => $user->id,
+            },
+            '-and',
+            [
+                {
+                    blog_id => 0,
+                    permissions => { like => '%edit_templates%' },
+                },
+                '-or',
+                {
+                    blog_id => { not => 0 },
+                    permissions => { not => 'comment' },
+                }
+            ]
+        ],
     );
 
     my $blog_ids;
     while ( my $perm = $iter->() ) {
+        print STDERR $perm->blog_id;
         if ( !$perm->blog_id ) {
             # User has system.edit_template
             $blog_ids = undef;
             last;
         }
-        push @$blog_ids, $perm->blog_id;
+        my $website = MT->model('blog')->load($perm->blog_id);
+        push @$blog_ids, $perm->blog_id
+            if $website && $website->class eq 'blog';
     }
 
     $terms->{id} = $blog_ids
