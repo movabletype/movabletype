@@ -328,7 +328,7 @@ function renderFilterList() {
     jQuery('input[name=filter_name]').val('<__trans phrase="New Filter">');
     jQuery('#opener').html('<__trans phrase="New Filter">');
     jQuery('#filter_id').val('');
-    jQuery('#item_list option').show();
+    updateItemList();
     jQuery('#dialog_filter').dialog('close');
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
@@ -848,10 +848,10 @@ jQuery('#additem').click(function() {
   jQuery('<span class="close-link clickable">[x]</span>')
     .insertAfter($item)
     .bind('click', function() {
-      jQuery('#item_list option[value=' + type + ']').show();
       jQuery(this).parent('.filteritem').remove();
+      updateItemList();
     });
-  jQuery('#item_list option[value=' + type + ']').hide();
+  updateItemList();
 });
 
 jQuery('#apply').click(function() {
@@ -953,8 +953,6 @@ function addItems(items, op) {
     if (type == 'pack') {
       addItems(items[i].args.items, items[i].args.op);
     }
-    jQuery('#item_list option[value=' + type + ']').hide();
-
     var $filteritem = jQuery('.filteritem:first');
     var $filtertype;
     var prev_type;
@@ -977,6 +975,7 @@ function addItems(items, op) {
         .insertAfter($item)
         .bind('click', function() {
           jQuery(this).parent('.filteritem').remove();
+          updateItemList();
         });
     }
     args = items[i].args;
@@ -988,6 +987,7 @@ function addItems(items, op) {
       dateOption($node);
     }
   }
+  updateItemList();
 }
 
 jQuery('#dialog_filter .edit-filter').click(function() {
@@ -1011,7 +1011,6 @@ function applyFilter(index) {
   jQuery('#filter_name').val('');
   jQuery('#filter_id').val('');
   jQuery('.filteritem').remove();
-  jQuery('#item_list option').show();
   if (index >= 0 && filters[index].items) {
     var filter = filters[index];
     var name = filter.label;
@@ -1124,6 +1123,15 @@ jQuery(window).bind('listReady', function(){
     toggleSubField(this);
 })});
 
+function updateItemList () {
+  var list = jQuery('#item_list');
+  list.find('option').removeAttr('disabled');
+  jQuery('#filter-detail').find('.filtertype').each( function() {
+    jQuery(this).attr('class').match(/type-(\w+)/);
+    var type = RegExp.$1;
+    list.find('option[value=' + type + ']').attr('disabled','disabled');
+  });
+}
 
 addItems(initial_filter.items);
 jQuery('#opener').html(initial_filter.label);
@@ -1135,7 +1143,6 @@ if ( initial_filter.can_save )
   jQuery('#save').show();
 else
   jQuery('#save').hide();
-
 
 itemValues()
 renderColumns();
