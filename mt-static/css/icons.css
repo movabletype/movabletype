@@ -2,7 +2,7 @@
 /* Icon Links ---------------------------------------------------------------------------------- */
 
 .icon16 {
-    dsiplay: inline-block;
+    display: inline-block;
     width: 0px;
     height: 17px;
     padding-left: 17px;
@@ -77,6 +77,7 @@
 .edit-template .website-tmpl { background-image: url(../images/template/website.png); }
 .edit-template .blog-tmpl { background-image: url(../images/template/blog.png); }
 .edit-template .global-tmpl.error { background-image: url(../images/template/global-error.png); }
+.edit-template .error-tmpl.error { background-image: url(../images/template/global-error.png); }
 .edit-template .website-tmpl.error { background-image: url(../images/template/website-error.png); }
 .edit-template .blog-tmpl.error { background-image: url(../images/template/blog-error.png); }
 
