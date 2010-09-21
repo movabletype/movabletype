@@ -1009,11 +1009,11 @@ sub dialog_post_comment {
           . $app->config('CommentScript'),
         return_url => $app->base
           . $app->mt_uri
-          . $app->uri_params(
+          . ( $app->param('return_args') || $app->uri_params(
               mode => 'list_comment',
               args => {
                   blog_id => $blog->id,
-              }),
+              }) ),
     };
 
     $app->load_tmpl( 'dialog/comment_reply.tmpl', $param );

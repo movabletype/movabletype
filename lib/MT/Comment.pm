@@ -132,11 +132,30 @@ sub list_props {
                 my $date= $is_relative ? MT::Util::relative_date( $ts, time, $blog )
                         :                MT::Util::format_ts( $date_format, $ts, $blog, $app->user ? $app->user->preferred_language : undef );
 
+                my $reply_link;
+                my $return_arg = $app->uri_params(
+                    mode => 'list',
+                    args => {
+                        _type => 'comment',
+                        blog_id => $app->blog ? $app->blog->id : 0,
+                });
+                my $reply_url  = $app->uri(
+                    mode => 'dialog_post_comment',
+                    args => {
+                        reply_to    => $id,
+                        blog_id     => $obj->blog_id,
+                        return_args => $return_arg,
+                        magic_token => $app->current_magic,
+                    },
+                );
+                $reply_link = qq{<span class="reply-link"><a href="$reply_url" class="mt-open-dialog">Reply</a></span>};
+
                 return qq{
                     <span class="status $lc_status_class">
                       <img alt="$status_class" src="$status_img" />
                     </span>
                     <a href="$link">$date</a>
+                    $reply_link
                     <p class="comment-text description">$text</p>
                 };
             },
