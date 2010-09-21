@@ -660,8 +660,12 @@ BEGIN {
                     grep => sub {
                         my $prop = shift;
                         my ( $args, $objs ) = @_;
+                        my $count_terms = $prop->has('count_terms') ? $prop->count_terms : {};
+                        my $count_args  = $prop->has('count_args')  ? $prop->count_args  : {};
                         my $iter = MT->model( $prop->count_class )->count_group_by(
-                            undef, {
+                            $count_terms,
+                            {
+                                %$count_args,
                                 direction => 'descend',
                                 group => [ $prop->count_col, ],
                             },
@@ -672,15 +676,15 @@ BEGIN {
                         }
                         my $op = $args->{option} eq 'equal'         ? '=='
                                : $args->{option} eq 'not_equal'     ? '!='
-                               : $args->{option} eq 'greater_than'  ? '>'
-                               : $args->{option} eq 'greater_equal' ? '>='
-                               : $args->{option} eq 'less_than'     ? '<'
-                               : $args->{option} eq 'less_equal'    ? '<='
+                               : $args->{option} eq 'greater_than'  ? '<'
+                               : $args->{option} eq 'greater_equal' ? '<='
+                               : $args->{option} eq 'less_than'     ? '>'
+                               : $args->{option} eq 'less_equal'    ? '>='
                                :                                      '';
                         return @$objs unless $op;
                         my $val = $args->{value};
-                        my $sub = eval " sub { $val $op shift } ";
-                        return grep { $sub->($map{$_->id}) } @$objs;
+                        my $sub = eval "sub { $val $op shift }";
+                        return grep { $sub->( $map{$_->id} || 0 ) } @$objs;
                     },
                 },
             },
