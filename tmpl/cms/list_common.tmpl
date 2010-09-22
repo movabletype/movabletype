@@ -584,10 +584,6 @@ function renderList(mode, columns, values, limit, page) {
   if (jQuery('input[name=filter_name]').val()) {
     params['label'] = jQuery('input[name=filter_name]').val();
   }
-  var main_cols = [];
-  jQuery('#disp_cols input.main.checkbox:checked').each(function() {
-    main_cols.push( jQuery(this).val() );
-  });
 
   jQuery.ajax({
     type: 'POST',
@@ -607,6 +603,10 @@ function renderList(mode, columns, values, limit, page) {
       var count = objs.length;
       var last = data.result.page_max;
       total = parseInt(data.result.count);
+      var main_cols = [];
+      jQuery('#disp_cols input.main.checkbox:checked').each(function() {
+        main_cols.push( jQuery(this).val() );
+      });
       for (var row = 0; row < count; row++) {
         var id = objs[row][0];
         var line;
