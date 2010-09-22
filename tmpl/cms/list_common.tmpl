@@ -584,6 +584,10 @@ function renderList(mode, columns, values, limit, page) {
   if (jQuery('input[name=filter_name]').val()) {
     params['label'] = jQuery('input[name=filter_name]').val();
   }
+  var main_cols = [];
+  jQuery('#disp_cols input.main.checkbox:checked').each(function() {
+    main_cols.push( jQuery(this).val() );
+  });
 
   jQuery.ajax({
     type: 'POST',
@@ -612,7 +616,8 @@ function renderList(mode, columns, values, limit, page) {
           line = '<td class="cb col"><input type="checkbox" name="id" value="'+id+'" /></td>';
         }
         for (var col = 1, col_length = objs[row].length; col < col_length; col++) {
-          line += '<td class="col '+columns[col-1]+' '+col_classes[columns[col-1]]+'">' + objs[row][col] + '</td>';
+          var col_id = main_cols[ col - 1 ];
+          line += '<td class="col '+col_id+' '+col_classes[col_id]+'">' + objs[row][col] + '</td>';
         }
         jQuery('<tr id="'+id+'">'+line+'</tr>').appendTo('tbody');
       }
