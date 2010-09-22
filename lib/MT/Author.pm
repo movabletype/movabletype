@@ -106,19 +106,19 @@ use vars qw(@EXPORT_OK %EXPORT_TAGS);
 
 sub list_props {
     return {
-        name => {
-            auto    => 1,
-            label   => 'Name',
-            display => 'force',
-            order   => 100,
-            html    => \&_author_name_html,
-        },
         nickname => {
             auto      => 1,
             label     => 'Nickname',
             display   => 'default',
-            order     => 200,
+            order     => 100,
             bulk_html => \&_nickname_bulk_html,
+        },
+        name => {
+            auto    => 1,
+            label   => 'Name',
+            display => 'force',
+            order   => 200,
+            html    => \&_author_name_html,
         },
         entry_count => {
             label       => 'Entries',
@@ -243,11 +243,15 @@ sub system_filters {
 
 sub commenter_list_props {
     return {
+        nickname      => {
+            base  => 'author.nickname',
+            order => 100,
+        },
         name => {
             auto => 1,
             label => 'Name',
             display => 'force',
-            order => 100,
+            order => 200,
             html => sub {
                 my ( $prop, $obj, $app ) = @_;
                 my ($status_img, $status_label);
@@ -294,10 +298,6 @@ sub commenter_list_props {
                 };
                 return $out;
             },
-        },
-        nickname      => {
-            base  => 'author.nickname',
-            order => 200,
         },
         comment_count => {
             base  => 'author.comment_count',
@@ -391,25 +391,25 @@ sub commenter_system_filters {
 
 sub member_list_props {
     return {
+        nickname => {
+            label     => 'Nickname',
+            auto      => 1,
+            bulk_html => \&_nickname_bulk_html,
+            order     => 100,
+        },
         name => {
             auto    => 1,
             label   => 'Name',
             display => 'force',
             html    => \&_author_name_html,
-            order   => 100,
-        },
-        nickname => {
-            label     => 'Nickname',
-            auto      => 1,
-            bulk_html => \&_nickname_bulk_html,
-            order     => 200,
+            order   => 200,
         },
         role => {
             base    => '__virtual.single_select',
             label   => 'Role',
             order   => 300,
             display => 'optional',
-            raw     => sub {
+            html    => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->blog->id;
                 my @roles = MT->model('role')->load(
@@ -424,7 +424,11 @@ sub member_list_props {
                         ),
                     },
                 );
-                return join ', ', map { $_->name } @roles;
+                return '' unless scalar @roles;
+                return
+                    '<ul>'
+                    . join( '', map { qq(<li class="role-item">$_</li>) } sort map { $_->name } @roles )
+                    . '</ul>';
             },
             terms => sub {
                 my ( $prop, $args, $db_terms, $db_args ) = @_;
@@ -601,14 +605,14 @@ sub _nickname_bulk_html {
     for my $obj ( @$objs ) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
-            ( $userpic_url ) = $userpic->thumbnail_url( Width => 24, Height => 24, Square => 1 );
+            ( $userpic_url ) = $userpic->thumbnail_url( Width => 16, Height => 16, Square => 1 );
         }
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';
         }
         my $name = $obj->nickname;
         my $out = qq{
-            <span class="userpic"><img width="24" height="24" src="$userpic_url" /></span>$name
+            <span class="userpic"><img width="16" height="16" src="$userpic_url" /></span>$name
         };
         if ( my $email = $obj->email ) {
             $out .= qq{<a href="mailto:$email"><img src="$mail_icon" /></a>};
