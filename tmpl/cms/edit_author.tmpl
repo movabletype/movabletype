@@ -261,7 +261,7 @@ TC.attachLoadEvent(init);
                     id="old_pass"
                     label="<__trans phrase="Current Password">"
                     hint="<__trans phrase="Existing password required to create a new password.">">
-                    <input type="password" name="old_pass" value="" id="old_pass" />
+                    <input type="password" name="old_pass" id="old_pass" class="text password" value="" />
                 </mtapp:setting>
             </mt:if>
         </mt:unless>
@@ -280,14 +280,14 @@ TC.attachLoadEvent(init);
             label="$password_prompt"
             required="$password_required"
             hint="$password_hint">
-            <input type="password" name="pass" id="pass" value="" />
+            <input type="password" name="pass" id="pass" class="text password" value="" />
         </mtapp:setting>
         <mtapp:setting
             id="pass_verify"
             label="<__trans phrase="Confirm Password">"
             required="$password_required"
             hint="<__trans phrase="Repeat the password for confirmation.">">
-            <input type="password" name="pass_verify" id="pass_verify" value="" />
+            <input type="password" name="pass_verify" id="pass_verify" class="text password" value="" />
         </mtapp:setting>
         <mt:unless name="new_object">
             <mt:if name="hint">
@@ -346,7 +346,7 @@ TC.attachLoadEvent(init);
         id="api_password"
         label="<__trans phrase="Web Services Password">"
         hint="<__trans phrase="For use by Activity feeds and with XML-RPC and Atom-enabled clients.">">
-        <input type="password" name="api_password" id="api_password" class="full-width" value="<mt:var name="api_password" escape="html">" />
+        <input type="password" name="api_password" id="api_password" class="text password" value="<mt:var name="api_password" escape="html">" />
         <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
     </mtapp:setting>
 </mt:if>
@@ -388,14 +388,14 @@ TC.attachLoadEvent(init);
         type="submit"
         accesskey="s"
         title="<__trans phrase="Create User (s)">"
-        class="create action primary-button"
+        class="create action primary button"
         ><__trans phrase="Create User"></button>
     <mt:else>
     <button
         type="submit"
         accesskey="s"
         title="<__trans phrase="Save changes to this author (s)">"
-        class="save action primary-button"
+        class="save action primary button"
         ><__trans phrase="Save Changes"></button>
     </mt:if>
 </mt:setvarblock>
@@ -426,7 +426,7 @@ TC.attachLoadEvent(init);
 <mt:setvarblock name="jq_js_include" append="1">
 <mt:unless name="new_object">
     jQuery('#change-password-link').click(function(event) {
-        jQuery(this).parents('#show_password-field').next('#password-fields').toggle();
+        jQuery(this).parents('#show_password-field').next('#password-fields').show().focus();
         jQuery(this).parents('#show_password-field').hide();
         event.preventDefault();
     });
