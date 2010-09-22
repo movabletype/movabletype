@@ -76,6 +76,131 @@ sub list_props {
             display => 'default',
             order   => 200,
             col => 'id',
+            entry_class => 'entry',
+            raw   => sub {
+                my ( $prop, $obj ) = @_;
+                my $blog_id = MT->app->param('blog_id') || 0;
+                MT->model( 'objecttag' )->count({
+                        blog_id           => $blog_id,
+                        tag_id            => $obj->id,
+                        object_datasource => 'entry',
+                    },
+                    {
+                        join => MT::Entry->join_on(
+                            undef,
+                            {
+                                class => $prop->entry_class,
+                                id    => \'= objecttag_object_id',
+                        }),
+                });
+            },
+            terms => sub {
+                my $prop = shift;
+                my ( $args, $db_terms, $db_args, $options ) = @_;
+                my $option = $args->{option};
+                my $value  = $args->{value};
+                my $blog_id = $options->{blog_ids};
+                my $having = 'equal'         eq $option ? \"= $value"
+                           : 'not_equal'     eq $option ? \"!= $value"
+                           : 'greater_than'  eq $option ? \"> $value"
+                           : 'greater_equal' eq $option ? \">= $value"
+                           : 'less_than'     eq $option ? \"< $value"
+                           :                              \"<= $value";
+
+                my $iter = MT->model('objecttag')->count_group_by({
+                    object_datasource => $prop->count_class,
+                }, {
+                    group => [ 'tag_id' ],
+                    having => { cnt => $having },
+                    unique => 1,
+                    join => MT::Entry->join_on(
+                        undef,
+                        {
+                            class => $prop->entry_class,
+                            id    => \'= objecttag_object_id',
+                            blog_id => $blog_id,
+                    }),
+                });
+                my @ids;
+                while ( my ( $count, $id ) = $iter->() ) {
+                    push @ids, $id;
+                }
+                return { id => \@ids };
+            },
+            html_link => sub {
+                my ( $prop, $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => $prop->count_class,
+                        blog_id    => $app->param('blog_id') || 0,
+                        filter     => 'tag',
+                        filter_val => $obj->name,
+                    },
+                );
+            },
+            sort => sub {
+                my $prop = shift;
+                my ( $terms, $args, $options ) = @_;
+                my @j_terms = 'HASH'  eq ref $terms && scalar %$terms ? ( '-and', $terms )
+                            : 'ARRAY' eq ref $terms && scalar @$terms ? ( '-and', @$terms )
+                            :                                           ();
+
+                my $c_args = {
+                    sort  => 'cnt',
+                    direction => $args->{direction} || 'ascend',
+                    limit     => $args->{limit} || 50,
+                    offset    => $args->{offset} || 0,
+                    group => [ 'tag_id' ],
+                    joins  => [
+                        MT->model('tag')->join_on(
+                            undef,
+                            [
+                                { id => \'= objecttag_tag_id' },
+                                @j_terms,
+                            ],
+                            {
+                                %$args,
+                            },
+                        ),
+                        MT::Entry->join_on(
+                            undef,
+                            {
+                                class => $prop->entry_class,
+                                id    => \'= objecttag_object_id',
+                        }),
+                    ],
+                };
+
+                my $iter = MT->model('objecttag')->count_group_by(
+                    {
+                        object_datasource => 'entry',
+                    },
+                    $c_args,
+                );
+                my @ids;
+                while ( my ( $cnt, $id ) = $iter->() ) {
+                    push @ids, $id;
+                }
+                my @tags = MT->model('tag')->load({ id => \@ids });
+                my %tags = map { $_->id => $_ } @tags;
+                return [ map { $tags{$_} } @ids ];
+            },
+        },
+        page_count => {
+            base => 'tag.entry_count',
+            label => 'Pages',
+            display => 'default',
+            order   => 300,
+            count_class => 'page',
+            entry_class => 'page',
+        },
+        asset_count => {
+            base => 'tag.entry_count',
+            label => 'Assets',
+            display => 'default',
+            order   => 400,
+            count_class => 'asset',
             raw   => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
@@ -163,20 +288,6 @@ sub list_props {
                 my %tags = map { $_->id => $_ } @tags;
                 return [ map { $tags{$_} } @ids ];
             },
-        },
-        page_count => {
-            base => 'tag.entry_count',
-            label => 'Pages',
-            display => 'default',
-            order   => 300,
-            count_class => 'page',
-        },
-        asset_count => {
-            base => 'tag.entry_count',
-            label => 'Assets',
-            display => 'default',
-            order   => 400,
-            count_class => 'asset',
         },
     };
 }

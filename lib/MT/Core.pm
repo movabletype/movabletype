@@ -565,9 +565,10 @@ BEGIN {
                     display => 'none',
                     terms => sub {
                         my $prop = shift;
-                        my ( $args, $base_terms, $base_args ) = @_;
+                        my ( $args, $base_terms, $base_args, $opts ) = @_;
                         my $option = $args->{option};
                         my $query  = $args->{string};
+                        my $blog_id = $opts->{blog_ids};
                         if ( 'contains' eq $option ) {
                             $query = { like => "%$query%" };
                         }
@@ -580,16 +581,46 @@ BEGIN {
                         elsif ( 'end' eq $option ) {
                             $query = { like => "%$query" };
                         }
-                        ## FIXME: use join...
-                        my $ds       = $prop->object_type;
-                        my @tags     = MT->model('tag')->load({ name => $query }, { fetchonly => { id => 1 } });
-                        my @object_tags = MT->model('objecttag')->load({
-                            object_datasource => $ds,
-                            tag_id            => [ map { $_->id } @tags ],
-                        }, {
-                            fetchonly         => { object_id => 1 },
-                        });
-                        return { id => [ map { $_->object_id } @object_tags ] };
+                        my $ds = $prop->object_type;
+
+                        my $ds_join = MT->model($ds)->join_on(
+                            undef,
+                            {
+                                id => \'= objecttag_object_id',
+                                blog_id => $blog_id,
+                                class => $ds,
+                            },
+                            {
+                                unique => 1,
+                            }
+                        );
+
+                        ## FIXME FIXME FIXME ASAP!!!!
+                        ## WE NEED TO KNOW DATASOURCE OF TAGS ONLY VIA OBJECTTAG TABLE.
+                        if ( $ds eq 'page' || $ds eq 'entry' ) {
+                            $ds = 'entry';
+                        }
+
+                        $base_args->{joins} ||= [];
+                        push @{ $base_args->{joins} }, MT->model('objecttag')->join_on(
+                            undef,
+                            {
+                                object_datasource => $ds,
+                            }, {
+                                fetchonly => { object_id => 1 },
+                                unique    => 1,
+                                joins => [
+                                    MT->model('tag')->join_on(
+                                        undef,
+                                        {
+                                            name => $query,
+                                            id   => \'= objecttag_tag_id',
+                                        },
+                                    ),
+                                    $ds_join,
+                                ],
+                            }
+                        );
                     },
                 },
                 object_count => {
