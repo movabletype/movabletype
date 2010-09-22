@@ -896,13 +896,13 @@ BEGIN {
             },
             author => {
                 object_label => 'Author',
-                primary      => 'name',
+                primary      => [ 'name', 'nickname' ],
                 permission   => 'access_to_member_list',
                 default_sort_key => 'name',
                 view         => 'system',
             },
             commenter => {
-                primary      => 'name',
+                primary      => [ 'name', 'nickname' ],
                 object_label => 'Commenter',
                 object_type  => 'author',
                 permission   => 'access_to_commenter_list',
@@ -913,7 +913,7 @@ BEGIN {
                 view         => 'system',
             },
             member => {
-                primary      => 'name',
+                primary      => [ 'name', 'nickname' ],
                 object_label => 'Member',
                 object_label_plural => 'Members',
                 object_type  => 'author',
