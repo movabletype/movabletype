@@ -1208,16 +1208,12 @@ sub remove_user_assoc {
     foreach my $id (@ids) {
         next unless $id;
         my $perm = MT::Permission->load({ blog_id => $blog_id, author_id => $id });
-        next if !$can_remove_administrator && $perm->can_administer_blog;
-        if ( $id =~ /PSEUDO-/ ) {
-            _delete_pseudo_association($app, $id);
-            next;
-        }
+        next if !$can_remove_administrator && $perm && $perm->can_administer_blog;
 
         MT::Association->remove({ blog_id => $blog_id, author_id => $id });
         # these too, just in case there are no real associations
         # (ie, commenters)
-        $perm->remove;
+        $perm->remove if $perm;
     }
 
     $app->add_return_arg( saved => 1 );

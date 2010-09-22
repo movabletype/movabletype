@@ -253,14 +253,23 @@ sub list_actions {
 sub content_actions {
     my $app = shift;
     my ( $type, @param ) = @_;
-
     my $actions = $app->registry( "content_actions", $type ) or return;
     my @actions;
-    foreach my $a ( keys %$actions ) {
-        $actions->{$a}{key}  = $a;
-        $actions->{$a}{label} = $actions->{$a}{label}->()
-            if ref $actions->{$a}{label} eq 'CODE';
-        push @actions, $actions->{$a};
+    for my $key ( keys %$actions ) {
+        my $action = $actions->{$key};
+        $action->{key} = $key;
+        my %args = %{ $action->{args} || {} };
+        $args{_type} ||= $type;
+        $args{return_args} = $app->make_return_args if $action->{return_args};
+        $action->{url} = $app->uri(
+            mode => $action->{mode},
+            args => {
+                %args,
+                blog_id     => ( $app->blog ? $app->blog->id : 0 ),
+                magic_token => $app->current_magic,
+            },
+        );
+        push @actions, $action;
     }
     $actions = $app->filter_conditional_list( \@actions, @param );
     no warnings;

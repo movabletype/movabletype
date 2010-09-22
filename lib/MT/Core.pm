@@ -1698,6 +1698,7 @@ sub load_core_permissions {
                 'administer_website'            => 1,
                 'clone_blog'                    => 1,
                 'delete_website'                => 1,
+                'remove_user_assoc'             => 1,
             },
         },
         'blog.administer_blog' => {
@@ -1743,6 +1744,7 @@ sub load_core_permissions {
                 'start_backup'                     => 1,
                 'start_restore'                    => 1,
                 'use_tools:search'                 => 1,
+                'remove_user_assoc'                => 1,
             },
         },
         'blog.manage_member_blogs' => {

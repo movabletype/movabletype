@@ -4,7 +4,7 @@
 <mt:setvarblock name="content_header">
 <ul class="action-link-list">
 <mt:loop name-"content_actions">
-  <li><a href="<mt:if name="url"><mt:var name="url"><mt:else><mt:var name="script_url">?__mode=<mt:var name="mode">&amp;blog_id=<mt:var name="blog_id">&amp;_type=<mt:var name="object_type">&amp;magic_token=<mt:var name="magic_token"></mt:if>" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"><mt:var name="label"></a></li>
+  <li><a href="<mt:var name="url">" class="icon-left<mt:if name"class"> <mt:var name="class"></mt:if><mt:if name="dialog"> mt-open-dialog</mt:if>"><mt:var name="label"></a></li>
 </mt:loop>
 </ul>
 </mt:setvarblock>

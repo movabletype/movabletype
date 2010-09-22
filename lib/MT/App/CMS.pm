@@ -485,6 +485,7 @@ sub core_content_actions {
                 mode => 'empty_junk',
                 class => 'icon-action',
                 label => 'Delete all Spam trackbacks',
+                return_args => 1,
                 order => 100,
             },
         },
@@ -493,6 +494,7 @@ sub core_content_actions {
                 mode => 'empty_junk',
                 class => 'icon-action',
                 label => 'Delete all Spam comments',
+                return_args => 1,
                 order => 100,
             },
         },
@@ -510,6 +512,20 @@ sub core_content_actions {
                 label      => 'Grant Permission',
                 mode       => 'dialog_select_assoc_type',
                 order      => 100,
+                dialog => 1,
+            },
+        },
+        'member' => {
+            'grant_role' => {
+                class  => 'icon-create',
+                label  => 'Add a user to this blog',
+                mode   => 'dialog_grant_role',
+                args   => {
+                    type  => 'blog',
+                    _type => 'user',
+                },
+                return_args => 1,
+                order  => 100,
                 dialog => 1,
             },
         },
@@ -1136,6 +1152,20 @@ sub core_list_actions {
                 condition  => sub {
                     $app->can_do('access_to_system_author_list');
                 },
+            },
+        },
+        'member' => {
+            'remove_user_assoc' => {
+                label                   => "Remove",
+                order                   => 100,
+                code      => "${pkg}User::remove_user_assoc",
+                mode      => 'remove_user_assoc',
+                button    => 1,
+                condition => sub {
+                    my $app = MT->app;
+                    return $app->can_do('remove_user_assoc');
+                },
+                permit_action => 'remove_user_assoc',
             },
         },
         'blog' => {
