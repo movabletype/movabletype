@@ -470,7 +470,7 @@ function removeFilter(element) {
   });
 }
 
-function renderColumns() {
+function renderColumns( col, chk ) {
   cols = [];
   jQuery('thead th, tfoot th').hide().filter('.cb').show();
   jQuery('ul#disp_cols input:checked').each(function() {
@@ -482,6 +482,16 @@ function renderColumns() {
     var id = jQuery(this).val();
     jQuery('th.'+id).show();
   });
+  if ( col && chk ) {
+    var header = jQuery('thead th.' + col);
+    var idx = jQuery('thead th:visible').index(header) - 1;
+    jQuery('table.listing-table tr').each( function() {
+      jQuery(this).find('td:eq(' + idx + ')').after( '<td class="col"> </td>' );
+    });
+  }
+  else if ( col && !chk ) {
+    jQuery('table.listing-table td.' + col).remove();
+  }
 }
 
 function saveChecked(page) {
@@ -696,9 +706,11 @@ function itemValues() {
 }
 
 jQuery('ul#disp_cols .main:checkbox').click(function() {
-  jQuery('tbody').empty();
-  renderColumns();
-  renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
+  var col = jQuery(this).val();
+  var checked = jQuery(this).is(':checked');
+  renderColumns(col, checked);
+  if (checked)
+    renderList('filtered_list', cols, vals, jQuery('#row').val(), currentPage);
 });
 
 jQuery('ul#disp_cols .sub:checkbox').click(function() {
