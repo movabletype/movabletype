@@ -97,6 +97,9 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
           <mt:var name="button_actions">
           <mt:include name="include/itemset_action_widget.tmpl">
         </div>
+        <p class="indicator">
+          <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
+        <p>
         <div class="pagination"></div>
       </div>
     
@@ -130,6 +133,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
       </div>
 
       <div class="listing-block">
+        <div id="list-cover" class=""></div>
         <table class="listing-table <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
@@ -140,14 +144,14 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
       <div class="actions-bar">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
+        <p class="indicator">
+          <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
+        <p>
         <div class="pagination"></div>
       </div>
 
     </form>
   </div>
-  <p id="indicator">
-    <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
-  <p>
 </div>
 
 <div id="dialog_filter" title="Select Filter">
@@ -182,6 +186,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
 </mt:if>
 
 <mt:setvarblock name="jq_js_include" append="1">
+
 jQuery.event.special.listReady = {
     setup:function( data, ns ) {
         return false;
@@ -191,14 +196,26 @@ jQuery.event.special.listReady = {
     }
 };
 
-jQuery('p#indicator')
+jQuery(window).bind( 'ajaxStart', function() {
+    jQuery('.msg-error').remove();
+  });
+
+jQuery('p.indicator, #list-cover')
   .hide()
   .bind('ajaxStart', function() {
-    jQuery('.msg-error').remove();
     jQuery(this).show();
   })
   .bind('ajaxStop', function() {
     jQuery(this).hide();
+  });
+
+jQuery('div.pagination')
+  .hide()
+  .bind('ajaxStart', function() {
+    jQuery(this).hide();
+  })
+  .bind('ajaxStop', function() {
+    jQuery(this).show();
   });
 
 var line = '<th class="col head cb"><input type="checkbox" /></th>';
@@ -1121,7 +1138,8 @@ jQuery('.filtertype .plus').live('click', function() {
 jQuery(window).bind('listReady', function(){
   jQuery('ul#disp_cols .sub:checkbox').each(function () {
     toggleSubField(this);
-})});
+  });
+});
 
 function updateItemList () {
   var list = jQuery('#item_list');
