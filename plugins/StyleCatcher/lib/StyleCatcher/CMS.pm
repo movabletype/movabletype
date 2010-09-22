@@ -169,7 +169,7 @@ sub js {
     # format of 'key: value' in comment-space
     # The remixer only uses name, author, description at the moment.
     my $app = shift;
-    return $app->json_error( 'Permission Denied.' )
+    return $app->json_error( $app->translate('Permission Denied.') )
         unless $app->can_do('edit_templates');
     return $app->json_error( $app->errstr ) unless $app->validate_magic;
 
