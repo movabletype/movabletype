@@ -1,21 +1,10 @@
 /* - Modal Overlay */
-.mt-dialog-overlay, 
-.ui-widget-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    background-color: #9ea1a3;
-    -moz-opacity: 0.5;
-    opacity: 0.5;
-    filter: alpha(opacity=30);
-}
-
 .mt-dialog-overlay {
     display: none;
+    z-index: 1001;
     width: 100%;
     min-width: 960px;
     height: 200%;
-    z-index: 1001;
 }
 
 /* - Dialog Block */

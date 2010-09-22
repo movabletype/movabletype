@@ -58,7 +58,7 @@
   <mt:loop name="fav_website_loop">
     <mt:if name="__first__">
     <div id="fav-website-list" class="scope-list website">
-      <span class="scope-level website"><__trans phrase="Websites"></span>
+      <span class="sticky-label scope-level website"><__trans phrase="Websites"></span>
       <ul>
     </mt:if>
         <li>
@@ -81,7 +81,7 @@
   <mt:else>
     <mt:unless name="selector_hide_website_chooser">
     <div id="fav-website-list" class="scope-list website">
-      <span class="scope-level website"><__trans phrase="Websites"></span>
+      <span class="sticky-label scope-level website"><__trans phrase="Websites"></span>
       <ul>
         <li id="select-website" class="select-website">
           <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;select_favorites=1&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog scope-link"><__trans phrase="Select another website..."></a>
@@ -95,7 +95,7 @@
   <mt:loop name="fav_blog_loop">
     <mt:if name="__first__">
     <div id="fav-blog-list" class="scope-list blog">
-      <span class="scope-level blog"><__trans phrase="Blogs"></span>
+      <span class="sticky-label scope-level blog"><__trans phrase="Blogs"></span>
       <ul>
     </mt:if>
         <li>

@@ -86,6 +86,18 @@ pre {
     border-radius: 3px;
 }
 
+/* -- Overlay */
+.overlay, 
+.ui-widget-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #9ea1a3;
+    -moz-opacity: 0.5;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
 /* -- Toggle Button */
 .toggle-button {
     cursor: pointer;
@@ -509,6 +521,9 @@ ul.tabs li a {
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     -moz-border-radius: 0 0 5px 5px;
+    box-shadow: 1px 1px 2px #666;
+    -webkit-box-shadow: 1px 1px 2px #666;
+    -moz-box-shadow: 1px 1px 2px #666;
 }
 
 .show-selector .scope-selector { 
@@ -520,13 +535,25 @@ ul.tabs li a {
     border-top: 1px solid #9EA1A3;
 }
 
+.scope-level {
+    margin: 5px 0;
+    padding: 0.3em 10px;
+    color: #fff;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;    
+}
+.scope-level.website {
+    background-color: #839b5c;
+}
+.scope-level.blog {
+    background-color: #5c909b;
+}
+
 .scope-selector li { 
     margin: 0;
     font-weight: normal;
 }
-
-.scope-selector a,
-.scope-scope-level { 
+.scope-selector a { 
     display: block;
     padding: 5px 15px;
     color: #fff;
@@ -545,10 +572,6 @@ ul.tabs li a {
 }
 .scope-list.blog a:hover { 
     background-color: #5C909B;
-}
-.scope-list.website a, 
-.scope-list.blog a {
-    padding-left: 30px;
 }
 
 .parent { 
@@ -3091,14 +3114,6 @@ div.template-group-content.active {
     text-align: right;
 }
 
-.dialog .field-left-label .field-header { 
-    width: 8em;
-}
-.dialog .field-left-label .field-content { 
-    margin-left: 9em;
-}
-
-
 /* - Display Optins */
 .display-options {
     margin-bottom: 15px;
@@ -3133,9 +3148,6 @@ div.template-group-content.active {
     margin-bottom: 30px;
 }
 
-#new_entry_prefs {
-}
-
 .new-asset #new_entry_prefs {
     margin-bottom: 20px;
 }
@@ -3143,9 +3155,6 @@ div.template-group-content.active {
 #new_entry_prefs input {
     /*font-size: 12px;*/
 }
-
-
-
 
 
 /* - Footer */
@@ -3229,14 +3238,6 @@ div.template-group-content.active {
 #text-field { 
     position: static;
 }
-
-
-
-
-
-
-
-
 
 /* - beta */
 .mt-beta #brand { 

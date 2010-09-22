@@ -1,3 +1,7 @@
+.listing-block {
+    position: relative;
+}
+
 .listing-table { 
     width: 100%;
     margin: 0 auto;
@@ -9,20 +13,13 @@
     -moz-border-radius: 0 0 5px 5px;
 }
 
-#list-cover {
+#list-overlay {
+    z-index: 1001;
     width: 100%;
     height: 100%;
-    background-color: #eee;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 3000;
-}
-
-.listing-block {
-    position: relative;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
 }
 
 .col { 
@@ -41,14 +38,10 @@
     min-width: 15%;
 }
 .col.num { 
-    width: 8em;
-}
-.col.num a {
-    display: inline-block;
-    width: 100%;
+    width: 7em;
 }
 .col.id { 
-    width: 5.5em;
+    width: 4.5em;
 }
 .col.entry, 
 .col.target { 
@@ -100,6 +93,7 @@ tfoot .col.head{
 }
 .sorted .sort-link {
     width: auto;
+    padding-right: 0;
 }
 .sm {
     position: absolute;
@@ -143,6 +137,7 @@ tfoot .col.head{
 }
 
 /* -- Page Navigation */
+.indicator,
 .pagination {
     float: right;
     height: 22px;

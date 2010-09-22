@@ -97,9 +97,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
           <mt:var name="button_actions">
           <mt:include name="include/itemset_action_widget.tmpl">
         </div>
-        <p class="indicator">
-          <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
-        <p>
+        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
     
@@ -133,7 +131,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
       </div>
 
       <div class="listing-block">
-        <div id="list-cover" class=""></div>
+        <div id="list-overlay" class="overlay"></div>
         <table class="listing-table <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
@@ -144,9 +142,7 @@ messages['<mt:var name="mode">'] = '<__trans phrase="<mt:var name="js_message">"
       <div class="actions-bar">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
-        <p class="indicator">
-          <img src="<mt:var name="static_uri">images/indicator-login.gif" alt="<__trans phrase="Indicator">" />
-        <p>
+        <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
 
@@ -200,7 +196,7 @@ jQuery(window).bind( 'ajaxStart', function() {
     jQuery('.msg-error').remove();
   });
 
-jQuery('p.indicator, #list-cover')
+jQuery('.indicator, #list-overlay')
   .hide()
   .bind('ajaxStart', function() {
     jQuery(this).show();
