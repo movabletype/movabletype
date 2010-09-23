@@ -1094,8 +1094,8 @@ function doForMarked(formid, mode, singlar, plural, phrase) {
       alert(trans('You did not select any [_1] to [_2].', plural, phrase));
       return;
     }
-    if ($form.find('input[name=itemset_action_imput]').val()) {
-      $form.find('input[name=itemset_action_imput]').val('');
+    if ($form.find('input[name=itemset_action_input]').val()) {
+      $form.find('input[name=itemset_action_input]').val('');
     }
     if (vals.length) {
       $form.find('input[name=items]').val(jQuery.toJSON(vals));
