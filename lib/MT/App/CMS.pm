@@ -2541,6 +2541,15 @@ sub init_core_callbacks {
             # log
             $pkg . 'pre_load_filtered_list.log' => "${pfx}Log::cms_pre_load_filtered_list",
 
+            # filter
+            $pkg . 'pre_load_filtered_list.filter' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                my $terms = $opts->{terms};
+                if ( exists $terms->{blog_id} ) {
+                    delete $terms->{blog_id};
+                }
+            },
+
         }
     );
 }

@@ -61,6 +61,105 @@ sub class_label_plural {
     }
 }
 
+sub list_props {
+    return {
+        id => {
+            base  => '__virtual.id',
+            order => 100,
+            view_filter => 'none',
+        },
+        label => {
+            auto  => 1,
+            label => 'Label',
+            order => 200,
+            display => 'force',
+            raw => sub {
+                MT::Util::encode_html( $_[1]->label );
+            },
+            html_link => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                return $app->uri(
+                    mode => 'list',
+                    args => {
+                        _type      => $obj->object_ds,
+                        blog_id    => $obj->blog_id,
+                        filter_key => $obj->id,
+                    }
+                );
+            },
+        },
+        author_name => {
+            base    => '__virtual.author_name',
+            label   => 'Author Name',
+            display => 'default',
+            order   => 300,
+        },
+        object_ds => {
+            base    => '__virtual.single_select',
+            label   => 'For',
+            display => 'force',
+            order   => 400,
+            screen_name => sub {
+                my $prop = shift;
+                my ( $screen_id ) = @_;
+                my $reg = MT->registry( listing_screens => $screen_id );
+                my $label = $reg->{label} || $reg->{object_label};
+                if ( !$label ) {
+                    my $class = $reg->{object_type} || $screen_id;
+                    $label = MT->model($class)->class_label;
+                }
+                return ref $label ? $label->() : $label;
+            },
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                $prop->screen_name( $obj->object_ds );
+            },
+            bulk_sort => sub {
+                my $prop = shift;
+                my ( $objs ) = @_;
+                return sort { $prop->html($a) cmp $prop->html($b) } @$objs;
+            },
+            single_select_options => sub {
+                my $prop = shift;
+                my $app = MT->app;
+                my $lists = MT->registry( 'listing_screens' );
+                my @lists;
+                for my $key ( keys %$lists ) {
+                    my $list = $lists->{$key};
+                    my $cond = $list->{condition};
+                    if ( $cond ) {
+                        $cond = MT->handler_to_coderef($cond) unless ref $cond;
+                        $cond->($app) or next;
+                    }
+                    push @lists, $key;
+                }
+                $app->error(undef);
+                return [
+                    sort {
+                        $a->{label} cmp $b->{label}
+                    }
+                    map {{
+                        label => $prop->screen_name($_), value => $_,
+                    }}
+                    @lists
+                ];
+            },
+        },
+        created_on => {
+            base  => '__virtual.created_on',
+            order => 500,
+        },
+        modified_on => {
+            base  => '__virtual.modified_on',
+            order => 600,
+        },
+        blog_name => { view => 0 },
+        current_context => { view => 0 },
+    };
+}
+
 sub append_item {
     my $self  = shift;
     my $item  = shift;
@@ -120,7 +219,8 @@ sub load_objects {
         }
     }
     if ( scalar @additional_terms ) {
-        if ( !scalar %$terms ) {
+        if ( !$terms || ( 'HASH' eq ref $terms && !scalar %$terms )
+                 || ( 'ARRAY' eq ref $terms && !scalar @$terms ) ) {
             shift @additional_terms;
             $terms = [@additional_terms];
         }
@@ -228,7 +328,9 @@ sub count_objects {
         }
     }
     if ( scalar @additional_terms ) {
-        if ( !scalar %$terms ) {
+        if ( !$terms || ( 'HASH' eq ref $terms && !scalar %$terms )
+            || ( 'ARRAY' eq ref $terms && !scalar @$terms ) )
+        {
             shift @additional_terms;
             $terms = \@additional_terms;
         }

@@ -147,7 +147,16 @@ sub filter {
     my ( $app, $type, $id ) = @_;
     if ( $id && $id !~ /\D/ ) {
         my $filter = MT->model('filter')->load($id) or return;
-        return $filter->to_hash;
+        my $hash = $filter->to_hash;
+        if ( $app->user->id != $filter->author_id ) {
+            return if !$app->user->is_superuser;
+            my $owner = MT->model('author')->load( $filter->author_id );
+            $hash->{label} = MT->translate(
+                '[_1] ( created by [_2] )',
+                $hash->{label},
+                $owner->name, );
+        }
+        return $hash;
     }
     return system_filter( $app, $type, $id )
         || legacy_filter( $app, $type, $id );

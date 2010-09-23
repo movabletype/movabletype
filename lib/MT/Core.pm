@@ -445,7 +445,7 @@ BEGIN {
                     terms => sub {
                         my $prop   = shift;
                         my ($args) = @_;
-                        my $col    = $prop->col or die;
+                        my $col    = $prop->col || $prop->type or die;
                         my $value  = $args->{value};
                         return { $col => $value };
                     },
@@ -541,22 +541,14 @@ BEGIN {
                         my @authors = MT->model('author')->load({ nickname => $query }, { fetch_only => { id => 1 } });
                         return { $col => [ map { $_->id } @authors ] };
                     },
-                    sort_method => sub {
-                        my ( $prop, $obj_a, $obj_b ) = @_;
-                        my $name_method;
-                        if ( $obj_a->has_column('author_id') ) {
-                            $name_method = sub {
-                                my $author = $_[0]->author;
-                                return $author ? $author->nickname : '';
-                            }
-                        }
-                        else {
-                            $name_method = sub {
-                                my $author = MT->model('author')->load( $_[0]->created_by );
-                                $author ? $author->nickname : '';
-                            }
-                        }
-                        return ( $name_method->($obj_a) cmp $name_method->($obj_b) );
+                    bulk_sort => sub {
+                        my $prop = shift;
+                        my ( $objs ) = @_;
+                        my $col = $prop->datasource->has_column('author_id') ? 'author_id' : 'created_by';
+                        my %author_id = map { $_->$col => 1 } @$objs;
+                        my @authors = MT->model('author')->load({ id => [ keys %author_id ] });
+                        my %nickname = map { $_->id => $_->nickname } @authors;
+                        return sort { $nickname{ $a->$col } cmp $nickname{ $b->$col } } @$objs;
                     },
                 },
                 tag => {
@@ -845,6 +837,7 @@ BEGIN {
             role         => '$Core::MT::Role::list_props',
             notification => '$Core::MT::Notification::list_props',
             log          => '$Core::MT::Log::list_props',
+            filter       => '$Core::MT::Filter::list_props',
         },
         system_filters => {
             entry       => '$Core::MT::Entry::system_filters',
@@ -976,7 +969,7 @@ BEGIN {
                 object_label => 'IP Ban',
                 condition => sub {
                     my $app = shift;
-                    return 1 if MT->config('ShowIPInformation');
+                    return 1 if MT->config->ShowIPInformation;
                     $app->errtrans('IP Banlist is disabled by system configuration.');
                 },
                 primary => 'ip',
@@ -987,11 +980,18 @@ BEGIN {
                 object_label => 'AddressBook',
                 condition => sub {
                     my $app = shift;
-                    return 1 if MT->config('EnableAddressbook');
+                    return 1 if MT->config->EnableAddressbook;
                     $app->errtrans('Address Book is disabled by system configuration.');
                 },
                 permission => 'access_to_notification_list',
                 primary => [ 'email', 'url' ],
+                default_sort_key => 'created_on',
+            },
+            filter => {
+                object_label => 'Filter',
+                view => 'system',
+                permission => 'access_to_filter_list',
+                primary => 'label',
                 default_sort_key => 'created_on',
             },
         },
