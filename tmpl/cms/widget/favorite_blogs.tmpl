@@ -97,7 +97,7 @@
             <div id="blog-<mt:var name="blog_id">-meta" class="blog-meta">
                 <h4 id="blog-<mt:var name="blog_id">-name" class="blog-name">
                     <a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a>
-                    <span class="parent-website">(<mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html"></mt:if>)</span>
+                    <span class="parent">(<mt:if name="can_access_to_website"><a href="<mt:var name="script_url">?__mode=dashboard&amp;blog_id=<mt:var name="website_id">"><mt:var name="website_name" escape="html"></a><mt:else><mt:var name="website_name" escape="html"></mt:if>)</span>
                 </h4>
                 <p id="blog-<mt:var name="blog_id">-link" class="blog-link"><a href="<mt:var name="blog_url">"><mt:var name="blog_url"></a></p>
     <mt:if name="blog_description">
@@ -169,7 +169,7 @@
 /* <![CDATA[ */
 var index = <mt:if name="tab" eq="website">0<mt:else>1</mt:if>
 var updateTabPrefTimeout;
-jQuery('#favorite-blogs-tabs').tabs({
+jQuery('#favorite_blogs').tabs({
     select: function (event, ui) {
         index = ui.index == 0 ? 'website' : 'blog';
         if (updateTabPrefTimeout) {

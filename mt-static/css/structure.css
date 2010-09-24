@@ -76,7 +76,7 @@ pre {
 .picture img { 
     margin: 0 auto;
     height: auto;
-    border: 1px solid #c8c2be;
+    border: 1px solid #c0c6c9;
 }
 
 .sticky-label {
@@ -215,12 +215,13 @@ ul.tabs {
 .ui-tabs-nav li, 
 ul.tabs li {
     display: inline-block;
-    border: 1px solid #c8c2be;
     margin: 0 0 -1px 5px;
+    border: 1px solid #c0c6c9;
     background-color: #f3f3f3;
-    -moz-border-radius: 3px 3px 0 0;
+    font-size: 85%;
     border-top-right-radius: 3px;
     border-top-left-radius: 3px;
+    -moz-border-radius: 3px 3px 0 0;
 }
 .ui-tabs-nav li.first-child, 
 ul.tabs li.first-child { 
@@ -576,6 +577,7 @@ ul.tabs li a {
 
 .parent { 
     display: inline;
+    margin-left: 5px;
     font-size: 85%;
     font-weight: normal;
 }
@@ -911,16 +913,11 @@ ul.tabs li a {
     border-top-left-radius: 5px;
     -moz-border-radius: 5px 5px 0 0;
 }
-.widget-header a { 
-    color: #7b7c7d;
-}
-
 .widget-label { 
     margin: 0;
     color: #2b2b2b;
-    font-size: 110%;
+    font-weight: bold;
 }
-
 .widget-close-link { 
     position: absolute;
     top: 0;
@@ -937,7 +934,6 @@ ul.tabs li a {
 .widget-close-link span { 
     display: none;
 }
-
 .widget-content { 
     padding: 0 10px 10px;
 }
@@ -1128,94 +1124,63 @@ fieldset {
     padding-bottom: 0;
     border-bottom: 0;
 }
-
 #favorite_blogs .widget-label { 
     display: none;
 }
-
 #favorite_blogs #favorite-blogs-tabs { 
     margin: 0 -10px;
 }
-
 #favorite_blogs #favorite-blogs-tabs ul.tabs { 
     margin-bottom: 0;
     width: 100%;
 }
 
 /* --- on System, Website Dashboard --- */
-.favorite-blogs-widget .widget-content { 
-    margin-top: 20px;
-}
-
 .favorite-blogs-widget .blog-container { 
-    height: 355px;
+    max-height: 455px;
     margin-right: -10px;
     overflow: auto;
 }
-
 .favorite-blogs-widget .blog-content { 
     position: relative;
     margin-bottom: 30px;
     overflow: hidden;
 }
-
 .favorite-blogs-widget .blog-theme-thumbnail img { 
     width: 100px;
     height: 75px;
 }
-
 .favorite-blogs-widget .blog-meta { 
-    margin-right: 110px;
+    margin-right: 120px;
     margin-left: 110px;
+    font-size: 90%;
 }
-
-.favorite-blogs-widget .blog-name { 
-    padding-top: 3px;
-    /*font-size: 16px;*/
+.favorite-blogs-widget .blog-name {
+    margin-bottom: 3px;
+    font-size: 13px;
 }
 .favorite-blogs-widget .blog-name a { 
     color: #2b2b2b;
-    text-decoration: underline;
 }
-.favorite-blogs-widget .blog-name a:hover { 
-    text-decoration: none;
-}
-
-.favorite-blogs-widget .blog-name span.parent-website { 
-    margin-left: 5px;
+.favorite-blogs-widget .blog-name .parent, 
+.favorite-blogs-widget .blog-name .parent a { 
     color: #7b7c7d;
-    /*font-size: 11px;*/
-    font-weight: normal;
 }
-.favorite-blogs-widget .blog-name span.parent-website a { 
-    color: #7b7c7d;
-    text-decoration: none;
-}
-.favorite-blogs-widget .blog-name span.parent-website a:hover {  
+.favorite-blogs-widget .blog-name .parent a:hover {  
     color: #2b2b2b;
-    text-decoration: underline;
 }
-
 .favorite-blogs-widget .blog-link { 
     margin-bottom: 10px;
     overflow: hidden;
 }
-.favorite-blogs-widget .blog-link a { 
-    text-decoration: none;
-}
-.favorite-blogs-widget .blog-link a:hover { 
-    text-decoration: underline;
-}
-
 .favorite-blogs-widget .blog-description { 
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
-
 .favorite-blogs-widget .blog-control li { 
     display: inline;
     margin-left: 5px;
     padding-right: 5px;
-    border-right: 2px solid #C8C2BE;
+    border-right: 1px solid #c0c6c9;
 }
 .favorite-blogs-widget .blog-control li.first-child { 
     margin-left: 0;
@@ -1224,31 +1189,25 @@ fieldset {
     padding: 0;
     border: 0;
 }
-
 .favorite-blogs-widget .blog-action {
     position: absolute;
     top: 5px;
     right: 10px;
 }
-
-.favorite-blogs-widget .blog-action li {
-    line-height: 1.1;
-}
-
 .favorite-blogs-widget .blog-action a.button {
     width: 80px;
     text-align: center;
 }
-
 .favorite-blogs-widget .select-website, 
 .favorite-blogs-widget .select-blog { 
-    margin-top: 15px;
+    margin-top: 10px;
     text-align: right;
 }
 .favorite-blogs-widget .select-website a, 
 .favorite-blogs-widget .select-blog a { 
-    margin-right: 15px;
+    margin-right: 10px;
 }
+
 
 /* -- Blog Stats Widget */
 .blog-stats-widget { 
@@ -3048,7 +3007,7 @@ div.template-group-content.active {
 .search-replace input#search-alt,
 .search-replace input#replace {
     width: 100%;
-    /*font-size: 18px;*/
+    font-size: 18px;
 }
 
 .search-replace textarea#replace { 
