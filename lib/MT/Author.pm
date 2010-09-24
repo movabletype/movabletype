@@ -290,7 +290,10 @@ sub commenter_list_props {
 
                 my $name = $obj->name;
                 my $out = qq{
-                    <img width="16" height="16" src="$auth_img" />
+                    <span class="icon auth-type">
+                        <img alt="$auth_label" src="$auth_img" width="12" height="12" />
+                    </span>
+                    <img alt="$auth_label" src="$auth_img" width="12" height="12" />
                     <span class="username"><a href="$edit_link">$name</a></span>
                     <span class="status $lc_status_label">
                         <img alt="enabled" src="$status_img" />
@@ -607,7 +610,7 @@ sub _nickname_bulk_html {
     for my $obj ( @$objs ) {
         my $userpic_url;
         if ( my $userpic = $userpic{ $obj->userpic_asset_id || 0 } ) {
-            ( $userpic_url ) = $userpic->thumbnail_url( Width => 16, Height => 16, Square => 1 );
+            ( $userpic_url ) = $userpic->thumbnail_url( Width => 12, Height => 12, Square => 1 );
         }
         else {
             $userpic_url = MT->static_path . 'images/default-userpic-36.jpg';

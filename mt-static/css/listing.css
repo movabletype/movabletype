@@ -113,6 +113,11 @@ tfoot .col.head{
 }
 
 /* -- Sub Column */
+.col .role-item {
+    list-style-type: disc;
+    margin: 0 0 0 1.2em;
+    font-size: 90%;
+}
 .col .description {
     margin: 0.75em 0 0;
     font-size: 95%;
