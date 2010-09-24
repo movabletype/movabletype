@@ -277,7 +277,7 @@ sub list_props {
                 } : '';
 
                 my $out = qq{
-                    <span class="status $lc_status_class">
+                    <span class="icon status $lc_status_class">
                       <a href="$edit_url"><img alt="$status_class" src="$status_img" /></a>
                     </span>
                     <span class="title">

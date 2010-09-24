@@ -420,7 +420,7 @@ function init_dialog() {
     var $dialog = $('.mt-dialog');
     if (!$dialog.length) {
         $('body').append('<div class="mt-dialog"><span>Close</span></div>');
-        $('.mt-dialog').after('<div class="mt-dialog-overlay"></div>');
+        $('.mt-dialog').after('<div class="mt-dialog-overlay overlay"></div>');
         $(".mt-dialog > div > span").click(function() {
             close_dialog();
         });

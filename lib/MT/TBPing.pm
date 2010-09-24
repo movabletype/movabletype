@@ -112,7 +112,7 @@ sub list_props {
 
                 return qq{
                     <div class="ping-from">
-                        <span class="status $lc_status">
+                        <span class="icon status $lc_status">
                             <img als="$status" src="$status_img" />
                         </span>
                         $blog_name - <a href="$url">$title</a>
@@ -167,7 +167,7 @@ sub list_props {
                     my $type = $obj->class_type;
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
                     push @res, qq{
-                        <span class="target-type $type">
+                        <span class="icon target-type $type">
                           <img src="$img" />
                         </span>
                         $title_html

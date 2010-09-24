@@ -148,10 +148,10 @@ sub list_props {
                         magic_token => $app->current_magic,
                     },
                 );
-                $reply_link = qq{<span class="reply-link"><a href="$reply_url" class="mt-open-dialog">Reply</a></span>};
+                $reply_link = qq{<a href="$reply_url" class="reply-link mt-open-dialog">Reply</a>};
 
                 return qq{
-                    <span class="status $lc_status_class">
+                    <span class="icon status $lc_status_class">
                       <img alt="$status_class" src="$status_img" />
                     </span>
                     <a href="$link">$date</a>
@@ -324,7 +324,7 @@ sub list_props {
                     my $img = MT->static_path . 'images/nav_icons/color/' . $type . '.gif';
                     my $title_html = $title_prop->html($entry,$app);
                     push @result, qq{
-                        <span class="target-type $type">
+                        <span class="icon target-type $type">
                           <img src="$img" />
                         </span>
                         $title_html

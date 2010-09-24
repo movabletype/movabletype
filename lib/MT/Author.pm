@@ -582,7 +582,9 @@ sub _author_name_html {
 
     my $name = $obj->name;
     my $out = qq{
-        <img width="16" height="16" src="$auth_img" />
+        <span class="icon auth-type">
+          <img alt="$auth_label" src="$auth_img" width="12" height="12" />
+        </span>
         <span class="username"><a href="$edit_link">$name</a></span>
         <span class="status $lc_status_label">
             <img alt="enabled" src="$status_img" />
@@ -612,7 +614,8 @@ sub _nickname_bulk_html {
         }
         my $name = $obj->nickname;
         my $out = qq{
-            <span class="userpic"><img width="16" height="16" src="$userpic_url" /></span>$name
+            <span class="icon userpic"><img src="$userpic_url" width="12" height="12" /></span>
+            <span class="displayname">$name</span>
         };
         if ( my $email = $obj->email ) {
             $out .= qq{<a href="mailto:$email"><img src="$mail_icon" /></a>};
