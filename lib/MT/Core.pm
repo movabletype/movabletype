@@ -579,7 +579,7 @@ BEGIN {
                             undef,
                             {
                                 id => \'= objecttag_object_id',
-                                blog_id => $blog_id,
+                                ( $blog_id ? ( blog_id => $blog_id ) : () ),
                                 class => $ds,
                             },
                             {

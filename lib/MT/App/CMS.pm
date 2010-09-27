@@ -2511,7 +2511,7 @@ sub init_core_callbacks {
                 $args->{joins} ||= [];
                 push @{ $args->{joins} }, MT->model('objecttag')->join_on(
                     undef, {
-                        blog_id => $blog_ids,
+                        ( $blog_ids ? ( blog_id => $blog_ids ) : () ),
                         tag_id  => \'= tag_id',
                     },
                     {

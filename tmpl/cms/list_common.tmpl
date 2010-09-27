@@ -559,7 +559,29 @@ function renderPagination(count, limit, page, last, total) {
   });
 }
 
-function renderList(mode, columns, values, limit, page) {
+function renderList(mode, columns, values, limit, page ) {
+  // If the first arg is Object, it's Hash style call
+  var args = {};
+  if ( typeof mode == 'object' ) {
+    args = mode;
+    var defaults = {
+      mode: 'filtered_list',
+      columns: cols,
+      values:  vals,
+      limit: jQuery('#row').val(),
+      page: currentPage
+    };
+    mode    = ( 'mode' in args )    ? args['mode']    : defaults['mode'];
+    columns = ( 'columns' in args ) ? args['columns'] : defaults['columns'];
+    values  = ( 'values' in args )  ? args['values']  : defaults['values'];
+    limit   = ( 'limit' in args )   ? args['limit']   : defaults['limit'];
+    page    = ( 'page' in args )    ? args['page']    : defaults['page'];
+    delete args['mode'];
+    delete args['columns'];
+    delete args['values'];
+    delete args['limit'];
+    delete args['page'];
+  }
   limit = parseInt(limit);
 
   var params = {
@@ -570,6 +592,8 @@ function renderList(mode, columns, values, limit, page) {
     limit: limit,
     page: page
   };
+  params = jQuery.extend( params, args );
+
   if (values.length) {
     params['items'] = jQuery.toJSON(values);
   }
@@ -765,7 +789,7 @@ function removeSelectAll($node) {
 
 jQuery('tbody').selectable({
   filter: 'tr',
-  cancel: 'a, .select-all, .text, button, pre',
+  cancel: 'a, .select-all, .text, button, pre, input',
   selected: function(event, ui) {
     var $checkboxes = jQuery(ui.selected).find(':checkbox');
     if ($checkboxes.attr('checked')) {

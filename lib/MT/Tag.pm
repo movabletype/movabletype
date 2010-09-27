@@ -51,6 +51,13 @@ sub list_props {
             label   => 'Name',
             display => 'force',
             order   => 100,
+            html => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $name = $obj->name;
+                my $id   = $obj->id;
+                return qq{<a href="#tagid-$id" class="edit-tag">$name</a>};
+            },
         },
         _blog => {
             view  => [],
@@ -81,7 +88,7 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
                 MT->model( 'objecttag' )->count({
-                        blog_id           => $blog_id,
+                        ( $blog_id ? ( blog_id => $blog_id ) : () ),
                         tag_id            => $obj->id,
                         object_datasource => 'entry',
                     },
@@ -118,7 +125,7 @@ sub list_props {
                         {
                             class => $prop->entry_class,
                             id    => \'= objecttag_object_id',
-                            blog_id => $blog_id,
+                            ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     }),
                 });
                 my @ids;
@@ -205,7 +212,7 @@ sub list_props {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
                 MT->model( 'objecttag' )->count({
-                    blog_id => $blog_id,
+                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
                     tag_id => $obj->id,
                     object_datasource => $prop->count_class,
                 });
@@ -225,7 +232,7 @@ sub list_props {
 
                 my $iter = MT->model('objecttag')->count_group_by({
                     object_datasource => $prop->count_class,
-                    blog_id           => $blog_id,
+                    ( $blog_id ? ( blog_id => $blog_id ) : () ),
                 }, {
                     group => [ 'tag_id' ],
                     having => { cnt => $having },

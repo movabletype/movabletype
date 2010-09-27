@@ -109,6 +109,13 @@ sub rename_tag {
     else {
         $app->add_return_arg( renamed => 1 );
     }
+    if ( $app->param('xhr') ) {
+        return $app->forward('filtered_list', { messages => 
+            [{ cls => 'success', msg => MT->translate(
+              'Tag name was successfully renamed',
+            )}],
+        })
+    }
     $app->call_return;
 }
 
@@ -134,7 +141,7 @@ sub js_tag_check {
         );
         undef $tag unless $exist;
     }
-    return $app->json_result( { exists => $tag ? 'true' : 'false' } );
+    return $app->json_result( { exists => $tag ? 1 : 0 } );
 }
 
 sub js_tag_list {
