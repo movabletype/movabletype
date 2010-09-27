@@ -222,7 +222,8 @@ select {
 }
 
 /* -- Sign-in Button */
-.button.sign-in {
+.actions-bar-login .button, 
+.actions-bar-login .ui-button {
     margin: 0 0 0 5px;
 }
 
