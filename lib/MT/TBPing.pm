@@ -93,7 +93,7 @@ sub list_props {
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
-                        _type   => 'tbping',
+                        _type   => 'ping',
                         id      => $id,
                         blog_id => $obj->blog_id,
                 });
