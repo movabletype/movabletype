@@ -29,7 +29,6 @@ fieldset {
 h2 {
     font-weight: bold;
 }
-
 h3 {
     text-shadow: #fff 0 1px 0;
     margin-bottom: 20px;
@@ -171,52 +170,38 @@ h3 {
 
 /* - Sign in Screen */
 #sign-in #container { 
-    width: 340px;
+    width: 320px;
 }
-
-#sign-in #username, 
-#sign-in #password { 
-    font-size: 22px;
-    width: 100%;
-    color: #2b2b2b;
-}
-
 #sign-in #page-title { 
     display: none;
 }
-
-#forget-password { 
-    position: absolute;
-    top: 5px;
-    left: 0;
-    margin: 0;
+#sign-in .text { 
+    font-size: 22px;
 }
-
-#sign-up { 
-    clear: both;
-    margin: 15px 0 0;
-    text-align: right;
-}
-
-#sign-in dl { 
-    margin: 0;
-}
-
-#sign-in dd { 
-    margin-left: 0;
-}
-
 #sign-in .has-auth-icon input { 
     padding-left: 22px;
-    background-color: #fff;
     background-repeat: no-repeat;
     background-position: 3px center;
+}
+#forget-password { 
+    position: absolute;
+    bottom: 0;
+    margin: 0 0 3px;
+}
+#sign-up { 
+    clear: both;
+    margin: 20px 0 0;
+    text-align: right;
+}
+.auth-option-info {
+    margin-top: 20px;
+    font-size: 90%;
 }
 
 /* -- Reset Password, Change Password */
 #reset-password #container, 
 #change-password #container { 
-    width: 340px;
+    width: 320px;
 }
 
 /* - Upgrade */

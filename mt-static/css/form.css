@@ -19,16 +19,16 @@
     -webkit-box-shadow: 0 1px 0 #f3f3f3;
     -moz-box-shadow: 0 1px 0 #f3f3f3;
 }
-.text.med {
-    width: 50%;
-}
-.text.full {
-    width: 100%;
-    max-width: 100%;
-}
-.text.short,
+.short,
 .password {
     width: 200px;
+}
+.med {
+    width: 50%;
+}
+.full {
+    width: 100%;
+    max-width: 100%;
 }
 .text.num, 
 .text.days {
@@ -219,6 +219,11 @@ select {
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
+}
+
+/* -- Sign-in Button */
+.button.sign-in {
+    margin: 0 0 0 5px;
 }
 
 /* -- Edit Field Button */
