@@ -797,17 +797,13 @@ BEGIN {
                 current_context => {
                     label => 'This Context Only',
                     order => 30000,
+                    view => 'website',
                     display => 'none',
                     filter_tmpl => '',
                     filter_editable => 1,
                     condition => sub {
                         my $prop = shift;
-                        $prop->datasource->has_column('blog_id') or return;
-                        my $app = MT->app or return;
-                        return !$app->blog         ? 1
-                             : $app->blog->is_blog ? 0
-                             :                       1
-                             ;
+                        $prop->datasource->has_column('blog_id');
                     },
                     terms => sub {
                         my $prop   = shift;
