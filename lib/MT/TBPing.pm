@@ -90,13 +90,14 @@ sub list_props {
                     $text = '...';
                 }
                 my $id  = $obj->id;
-                my $link = $app->uri(
+                my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
-                        _type   => 'comment',
+                        _type   => 'tbping',
                         id      => $id,
                         blog_id => $obj->blog_id,
                 });
+                my $edit_label = MT->translate('Edit');
                 my $status = $obj->is_junk      ? 'Junk'
                            : $obj->is_published ? 'Published'
                            :                      'Moderated';
@@ -115,7 +116,7 @@ sub list_props {
                         <span class="icon status $lc_status">
                             <img als="$status" src="$status_img" />
                         </span>
-                        $blog_name - <a href="$url">$title</a>
+                        $blog_name - <a href="$url">$title</a><span class="edit-link"><a href="$edit_link">$edit_label</a></span>
                     </div>
                     <p class="ping-excerpt description">$text</p>
                 };
