@@ -1307,7 +1307,6 @@ fieldset {
     display: inline;
     padding-right: 10px;
 }
-
 .blog-stats-widget .tag-1 { 
     font-size: 24px;
 }
@@ -1365,16 +1364,6 @@ fieldset {
 }
 
 
-/* -- Checkboxes, Status Icons */
-.listing .cb, 
-.listing .si, 
-.listing .view { 
-    width: 2.5em;
-    padding-right: 0;
-    padding-left: 0;
-    text-align: center;
-}
-.listing .view, 
 .listing .linked-template { 
     width: 4em;
 }
@@ -1396,8 +1385,6 @@ fieldset {
     border-radius: 5px;
 }
 
-
-
 /* -- List Template */
 #list-template .listing-header p, 
 #list-widget-set .listing-header p { 
@@ -1411,23 +1398,7 @@ fieldset {
     margin-bottom: 0;
 }
 
-/* -- List Tag */
-.list-tag td .field { 
-    margin: 0;
-}
-.list-tag td .field-content input { 
-    width: 50%;
-}
-
-
 /* -- List Asset */
-#asset-listing-table .si { 
-    width: 90px;
-}
-#asset-listing-table .file-status .asset-thumb { 
-    margin: 0 auto;
-}
-
 #asset-listing-table .asset-thumb {
     height: 75px;
     width: 75px;

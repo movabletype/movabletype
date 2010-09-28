@@ -1,5 +1,15 @@
-.listing-block {
+.listing-table-block {
     position: relative;
+}
+
+#listing-table-overlay {
+    z-index: 1001;
+    width: 100%;
+    height: 100%;
+    background-color: #fbfbfb;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius: 0 0 5px 5px;
 }
 
 .listing-table { 
@@ -8,16 +18,6 @@
     border: 1px solid #c0c6c9;
     table-layout: fixed;
     background-color: #fff;
-    border-bottom-right-radius: 5px;
-    border-bottom-left-radius: 5px;
-    -moz-border-radius: 0 0 5px 5px;
-}
-
-#list-overlay {
-    z-index: 1001;
-    width: 100%;
-    height: 100%;
-    background-color: #fbfbfb;
     border-bottom-right-radius: 5px;
     border-bottom-left-radius: 5px;
     -moz-border-radius: 0 0 5px 5px;
@@ -113,14 +113,9 @@ tfoot .col.head{
 }
 
 /* -- Sub Column */
-.col .role-item {
-    list-style-type: disc;
-    margin: 0 0 0 1.2em;
-    font-size: 90%;
-}
 .col .description {
     margin: 0.75em 0 0;
-    font-size: 95%;
+    font-size: 90%;
 }
 .col .icon {
     display: inline-block;
@@ -144,6 +139,11 @@ tfoot .col.head{
 .col .reply-link {
     margin-left: 15px;
     color: #2b2b2b;
+}
+.col .role-item {
+    list-style-type: disc;
+    margin: 0 0 0 1.2em;
+    font-size: 90%;
 }
 
 /* -- List Actions */ 
@@ -275,4 +275,17 @@ tfoot .col.head{
 .selected-items .sticky-label .remove:hover {
     background-color: #adadad;
     color: white;
+}
+
+/* - Lisiting Footer */
+#listing-footer {
+    margin-top: 30px;
+    border: 1px solid #c0c6c9;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+.footer-link-item {
+    display: inline-block;
+    margin: 0 15px 0 0;
 }

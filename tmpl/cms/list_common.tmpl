@@ -10,6 +10,14 @@
 </mt:setvarblock>
 </mt:if>
 
+<mt:setvarblock name="listing_footer_content">
+<mt:if name="feed_url">
+  <mt:if name="object_type_feed">
+  <li class="footer-link-item"><a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>"><$mt:var name="object_type_feed"$></a></li>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
 <mt:setvarblock name="display_options">
 <mt:setvar name="show_display_options_link" value="1">
 <div id="display-options-detail" class="display-options-detail detail">
@@ -74,13 +82,14 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
 </mt:if>
 
 <mt:include name="include/header.tmpl">
+
 <mt:include name="include/basic_filter_forms.tmpl">
 <mt:setvarblock name="object_listing">listing/<mt:var name="object_type">.tmpl</mt:setvarblock>
 <mt:include name="$object_listing">
 
 <div id="msg-block"></div>
 
-<div class="line">
+<div id="listing" class="line">
   <div class="unit size1of1">
     <form id="<mt:var name="object_type">-listing-form" method="POST">
       <input type="hidden" name="__mode" value="" />
@@ -92,7 +101,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
       <mt:if name="return_args"><input type="hidden" name="return_args" value="<mt:var name="return_args">" /></mt:if>
       <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" /></mt:if>
     
-      <div class="actions-bar line">
+      <div id="actions-bar-top" class="actions-bar line">
         <div class="list-actions">
           <mt:var name="button_actions">
           <mt:include name="include/itemset_action_widget.tmpl">
@@ -112,6 +121,7 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
             </a>
           </div>
         </div>
+
         <div id="filter-detail" class="detail">
           <div id="filter-panel" class="mod selectfilter">
             <select id="item_list">
@@ -129,24 +139,33 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
           </div>
         </div>
       </div>
-
-      <div class="listing-block">
-        <div id="list-overlay" class="overlay"></div>
-        <table class="listing-table <mt:var name="object_type">">
+  
+      <div id="listing-table" class="listing-table-block">
+        <div id="listtable-overlay" class="overlay"></div>
+        <table id="<mt:var name="object_type">-table" class="listing-table <mt:var name="object_type">">
           <thead></thead>
           <tfoot></tfoot>
           <tbody></tbody>
         </table>
       </div>
-
-      <div class="actions-bar">
+  
+      <div id="actions-bar-bottom" class="actions-bar line">
         <mt:var name="button_actions">
         <mt:include name="include/itemset_action_widget.tmpl">
         <div class="indicator"><__trans phrase="Loading..."> <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/indicator.white.gif" /></div>
         <div class="pagination"></div>
       </div>
-
+  
     </form>
+
+  <mt:if name="listing_footer_content">
+    <div id="listing-footer" class="footer-links mod">
+      <ul>
+        <mt:var name="listing_footer_content">
+      </ul>
+    </div>
+  </mt:if>
+
   </div>
 </div>
 
@@ -165,13 +184,15 @@ messages['<mt:var name="key">'] = '<__trans phrase="<mt:var name="js_message">" 
     <button
        type="button"
        id="save-filter"
-       class="action button primary"
-       ><__trans phrase="Save"></button>
+       class="action primary button">
+      <__trans phrase="Save">
+    </button>
     <button
        type="button"
        id="cancel-save-filter"
-       class="action button"
-       ><__trans phrase="Cancel"></button>
+       class="action button">
+      <__trans phrase="Cancel">
+    </button>
   </div>
 </div>
 
