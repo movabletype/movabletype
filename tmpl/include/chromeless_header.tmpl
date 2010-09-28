@@ -25,7 +25,6 @@
   <mt:if name="local_lang_id" ne="en-us">
   <link rel="stylesheet" href="<$mt:var name="static_uri"$>styles_<$mt:var name="local_lang_id"$>.css?v=<mt:var name="mt_version_id" escape="url">" />
   </mt:if>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:unless>
 <mt:unless name="optimize_ui">
@@ -36,6 +35,9 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.mt.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:unless>
+<mt:unless name="cfg_exists">
+  <script type="text/javascript" src="<$mt:var name="static_uri"$>js/common/Core.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:unless>
 </mt:setvarblock>
 
