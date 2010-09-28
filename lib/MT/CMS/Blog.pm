@@ -2895,8 +2895,11 @@ HTML
     }
     else {
         my $return_url   = $app->base . $app->uri(
-            mode => 'list_blog',
-            args => { blog_id => $new_blog->website->id }
+            mode => 'list',
+            args => {
+                '_type' => 'blog',
+                blog_id => $new_blog->website->id
+            }
         );
         my $setting_url = $app->uri(
             mode => 'view',

@@ -69,9 +69,9 @@
         &lt;ul&gt;
         &lt;strong&gt;<__trans phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
 
-        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_comments&amp;blog_id=<mt:var name="log.comment.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
 
-        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="log.comment.entry_id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;filter_key=_comments_by_entry&amp;filter_val=<mt:var name="log.comment.entry_id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
         <mt:if name="log.comment.author.authenticated">
         &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="log.comment.author.id">&amp;blog_id=<mt:var name="log.comment.blog_id">&amp;tab=comments"&gt;<__trans phrase="By commenter identity">&lt;/a&gt;&lt;/li&gt;

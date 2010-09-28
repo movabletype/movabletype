@@ -364,9 +364,12 @@ sub _feed_ping {
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_pings',
-        args => { $blog ? ( blog_id => $blog_id ) : () }
-        );
+        mode => 'list',
+        args => {
+            '_type' => 'ping',
+            ( $blog ? ( blog_id => $blog_id ) : () ),
+        }
+    );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -422,9 +425,12 @@ sub _feed_comment {
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_comments',
-        args => { $blog ? ( blog_id => $blog_id ) : () }
-        );
+        mode => 'list',
+        args => {
+            _type => 'comment',
+            ( $blog ? ( blog_id => $blog_id ) : () )
+        }
+    );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -477,9 +483,12 @@ sub _feed_entry {
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_entry',
-        args => { $blog ? ( blog_id => $blog_id ) : () }
-        );
+        mode => 'list',
+        args => {
+            '_type' => 'entry',
+            ( $blog ? ( blog_id => $blog_id ) : () )
+        }
+    );
     my $param = {
         feed_link  => $link,
         feed_title => $blog
@@ -654,9 +663,12 @@ sub _feed_page {
 
     my $link = $app->base
         . $app->mt_uri(
-        mode => 'list_page',
-        args => { $blog ? ( blog_id => $blog_id ) : () }
-        );
+        mode => 'list',
+        args => {
+            '_type' => 'page',
+            ( $blog ? ( blog_id => $blog_id ) : () )
+        }
+    );
     my $param = {
         feed_link  => $link,
         feed_title => $blog

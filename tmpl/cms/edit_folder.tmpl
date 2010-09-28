@@ -22,8 +22,8 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_category&amp;_type=folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
-            <li><a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage pages in this folder"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type==folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage pages in this folder"></a></li>
         </ul>
     </mtapp:widget>
 </mt:setvarblock>

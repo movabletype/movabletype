@@ -143,7 +143,7 @@
     </mt:if>
     <mt:include name="include/list_associations/table_role_view.tmpl" id="table_role_view">
     <mt:unless name="blog_view">
-        <td><a href="<mt:var name="script_url">?__mode=list_association&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+        <td><a href="<mt:var name="script_url">?__mode=list&amp;_type=association&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
     <mt:else>
         <td><mt:var name="created_by" escape="html"></td>
     </mt:unless>

@@ -99,7 +99,7 @@
                     clean_range = trans("[_1] [_2]", from_month, from.substr(6, 2));
                 }
             }
-            var search_url = '<mt:var name="script_url">?__mode=list_' + activeStatsPanel + '&filter_key=_by_date<mt:if name="blog_id">&blog_id=<mt:var name="blog_id"></mt:if>&filter_val=' + from + '-' + to;
+            var search_url = '<mt:var name="script_url">?__mode=list&amp;_type=' + activeStatsPanel + '&filter_key=_by_date<mt:if name="blog_id">&blog_id=<mt:var name="blog_id"></mt:if>&filter_val=' + from + '-' + to;
             if (activeStatsPanel == 'comment') {
                 str = trans("You have <a href='[_3]'>[quant,_1,comment,comments] from [_2]</a>", total_count, clean_range, search_url);
             } else if (activeStatsPanel == 'entry') {

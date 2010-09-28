@@ -31,12 +31,12 @@
             </td>
             <td class="col head flag <mt:if name="commenter_approved">status-trusted<mt:else><mt:if name="commenter_banned">status-banned<mt:else>status-authenticated</mt:if></mt:if>">
         <mt:if name="commenter_approved">
-            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show trusted commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Trusted">" width="13" height="9" /></a>
+            <a href="<mt:var name="script_url">?__mode=list&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=approved" title="<__trans phrase="Only show trusted commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Trusted">" width="13" height="9" /></a>
         <mt:else>
             <mt:if name="commenter_banned">
-            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=banned" title="<__trans phrase="Only show banned commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Banned">" width="13" height="9" /></a>
+            <a href="<mt:var name="script_url">?__mode=list&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=banned" title="<__trans phrase="Only show banned commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Banned">" width="13" height="9" /></a>
             <mt:else>
-            <a href="<mt:var name="script_url">?__mode=list_commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=neutral" title="<__trans phrase="Only show neutral commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Authenticated">" width="7" height="9" /></a>
+            <a href="<mt:var name="script_url">?__mode=list&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=neutral" title="<__trans phrase="Only show neutral commenters">"><img src="<mt:var name="static_uri">images/spacer.gif" alt="<__trans phrase="Authenticated">" width="7" height="9" /></a>
             </mt:if>
         </mt:if>
             </td>

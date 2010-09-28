@@ -24,8 +24,11 @@ sub edit {
         $app->add_breadcrumb(
             $app->translate('Comments'),
             $app->uri(
-                'mode' => 'list_comment',
-                args   => { blog_id => $blog_id }
+                'mode' => 'list',
+                args   => {
+                    '_type' => 'comment',
+                    blog_id => $blog_id
+                }
             )
         );
         $app->add_breadcrumb( $app->translate('Edit Comment') );
@@ -1010,8 +1013,9 @@ sub dialog_post_comment {
         return_url => $app->base
           . $app->mt_uri
           . ( $app->param('return_args') || $app->uri_params(
-              mode => 'list_comment',
+              mode => 'list',
               args => {
+                  '_type' => 'comment',
                   blog_id => $blog->id,
               }) ),
     };

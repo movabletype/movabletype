@@ -64,14 +64,8 @@ sub core_methods {
         'view_widget' => "${pkg}Template::edit_widget",
 
         ## Listing methods
-        #'list_ping'     => "${pkg}TrackBack::list",
         'list_template' => "${pkg}Template::list",
         'list_widget'   => "${pkg}Template::list_widget",
-        #'list_page'     => "${pkg}Page::list",
-        #'list_comment'  => "${pkg}Comment::list",
-        #'list_member'      => "${pkg}User::list_member",
-        #'list_user'        => "${pkg}User::list",
-        #'list_author'      => "${pkg}User::list",
         'list_asset'       => {
             code => "${pkg}Asset::dialog_list_asset",
             condition => sub {
@@ -80,12 +74,6 @@ sub core_methods {
                 return 1;
             }
         },
-        #'list_blog'        => "${pkg}Blog::list",
-        #'list_website'     => "${pkg}Website::list",
-        #'list_folder'      => "${pkg}Folder::list",
-        #'list_tag'         => "${pkg}Tag::list",
-        #'list_association' => "${pkg}User::list_association",
-        #'list_role'        => "${pkg}User::list_role",
         'list_theme'       => "${pkg}Theme::list",
 
         'asset_insert'        => "${pkg}Asset::insert",
@@ -176,7 +164,6 @@ sub core_methods {
         'start_move_blogs'     => "${pkg}Website::move_blogs",
         'view_rpt_log'         => "${pkg}RptLog::view",
         'view_log'             => "${pkg}Log::view",
-#        'list_log'             => "${pkg}Log::view",
         'reset_rpt_log'        => "${pkg}RptLog::reset",
         'reset_log'            => "${pkg}Log::reset",
         'export_log'           => "${pkg}Log::export",

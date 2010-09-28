@@ -31,7 +31,7 @@
         class="save action primary-button"
         ><__trans phrase="Save Changes"></button>
     <button
-        onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list_comment&amp;blog_id=<mt:var name="blog_id">'})"
+        onclick="doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
         type="submit"
         accesskey="x"
         title="<__trans phrase="Delete this comment (x)">"
@@ -51,7 +51,7 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Manage Comments"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">"><__trans phrase="Manage Comments"></a></li>
             <li><mt:if name="entry_permalink"><a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">"><__trans phrase="View [_1] comment was left on" params="<mt:var name="entry_class_label" lower_case="1">"></a></mt:if></li>
         <mt:if name="comment_approved">
             <li><a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog"><__trans phrase="Reply to this comment"></a></li>
@@ -119,7 +119,7 @@
             </mt:if>
         </mt:if>
         </mt:if>
-        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
+        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>"><img alt="" src="<mt:var name="static_uri">images/filter.gif" width="8" height="8" border="0" /></a>
 
         <mt:if name="junk_log_loop">
         <div class="comment-spam-info">

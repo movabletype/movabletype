@@ -53,19 +53,19 @@
             <mt:setvarblock name="entry_author"><$MTEntryAuthorUsername escape="html"$></mt:setvarblock>
     </mt:if>
     <mt:if tag="entrycategory">
-            <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html"$></a><MTElse><$MTCategoryLabel escape="html"$></MTIf></MTEntryCategories>">
+            <__trans phrase="Posted by [_1] [_2] in [_3]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>%%<MTEntryCategories glue=", "><MTIf name="editable"><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<$MTBlogID$>&amp;filter=category_id&amp;filter_val=<$MTCategoryID$>"><$MTCategoryLabel escape="html"$></a><MTElse><$MTCategoryLabel escape="html"$></MTIf></MTEntryCategories>">
     <mt:else>
             <__trans phrase="Posted by [_1] [_2]" params="<$mt:var name="entry_author"$>%%<$MTEntryDate relative="1"$>">
     </mt:if>
     <mt:entryiftagged>
-            <mt:setvarblock name="tags"><mt:entrytags glue=", "><mt:if name="editable"><a href="<$mt:var name="script_url"$>?__mode=list_entry<mt:if tag="blogid">&amp;blog_id=<$mt:blogid$></mt:if>&amp;filter=exacttag&amp;filter_val=<$mt:tagname escape="url"$>" rel="tag"><mt:tagname escape="html"$></a><mt:else><mt:tagname escape="html"></mt:if></mt:entrytags></mt:setvarblock>
+            <mt:setvarblock name="tags"><mt:entrytags glue=", "><mt:if name="editable"><a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=entry<mt:if tag="blogid">&amp;blog_id=<$mt:blogid$></mt:if>&amp;filter=exacttag&amp;filter_val=<$mt:tagname escape="url"$>" rel="tag"><mt:tagname escape="html"$></a><mt:else><mt:tagname escape="html"></mt:if></mt:entrytags></mt:setvarblock>
             <__trans phrase="Tagged: [_1]" params="<mt:var name="tags">">
     </mt:entryiftagged>
         </div>
     </div>
     <mt:if name="__last__">
         <mt:if name="editable">
-    <div class="view-all"><a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all entries"></a></div>
+    <div class="view-all"><a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>"><__trans phrase="View all entries"></a></div>
         </mt:if>
     </mt:if>
     <mt:else>

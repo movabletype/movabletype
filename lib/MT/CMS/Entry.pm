@@ -70,8 +70,11 @@ sub edit {
             $app->add_breadcrumb(
                 $app->translate('Entries'),
                 $app->uri(
-                    'mode' => 'list_entry',
-                    args   => { blog_id => $blog_id }
+                    'mode' => 'list',
+                    args   => {
+                        '_type' => 'entry',
+                        blog_id => $blog_id
+                    }
                 )
             );
         }
@@ -79,8 +82,11 @@ sub edit {
             $app->add_breadcrumb(
                 $app->translate('Pages'),
                 $app->uri(
-                    'mode' => 'list_page',
-                    args   => { blog_id => $blog_id }
+                    'mode' => 'list',
+                    args   => {
+                        '_type' => 'page',
+                        blog_id => $blog_id
+                    }
                 )
             );
         }
@@ -164,8 +170,11 @@ sub edit {
                 $app->add_breadcrumb(
                     $app->translate('Entries'),
                     $app->uri(
-                        'mode' => 'list_entry',
-                        args   => { blog_id => $blog_id }
+                        'mode' => 'list',
+                        args   => {
+                            '_type' => 'entry',
+                            blog_id => $blog_id
+                        }
                     )
                 );
                 $app->add_breadcrumb( $app->translate('New Entry') );
@@ -175,8 +184,11 @@ sub edit {
                 $app->add_breadcrumb(
                     $app->translate('Pages'),
                     $app->uri(
-                        'mode' => 'list_page',
-                        args   => { blog_id => $blog_id }
+                        'mode' => 'list',
+                        args   => {
+                            '_type' => 'page',
+                            blog_id => $blog_id
+                        }
                     )
                 );
                 $app->add_breadcrumb( $app->translate('New Page') );
@@ -1229,25 +1241,34 @@ sub _build_entry_preview {
     my $list_title;
     if ( $type eq 'page' ) {
         $list_title = 'Pages';
-        $list_mode  = 'list_page';
+        $list_mode  = 'page';
     }
     else {
         $list_title = 'Entries';
-        $list_mode  = 'list_entry';
+        $list_mode  = 'entry';
     }
     if ($id) {
         $app->add_breadcrumb(
             $app->translate($list_title),
             $app->uri(
-                'mode' => $list_mode,
-                args   => { blog_id => $blog_id }
+                'mode' => 'list',
+                args   => {
+                    '_type' => $list_mode,
+                    blog_id => $blog_id
+                }
             )
         );
         $app->add_breadcrumb( $entry->title || $app->translate('(untitled)') );
     }
     else {
         $app->add_breadcrumb( $app->translate($list_title),
-            $app->uri( 'mode' => $list_mode, args => { blog_id => $blog_id } )
+            $app->uri(
+                'mode' => 'list',
+                args => {
+                    '_type' => $list_mode,
+                    blog_id => $blog_id
+                }
+            )
         );
         $app->add_breadcrumb(
             $app->translate( 'New [_1]', $entry_class->class_label ) );

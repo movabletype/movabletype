@@ -103,7 +103,12 @@ sub edit {
 
     $app->add_breadcrumb( $app->translate("Users"),
           $app->user->is_superuser
-        ? $app->uri( mode => 'list_author' )
+        ? $app->uri(
+            mode => 'list',
+            args => {
+                '_type' => 'author',
+            }
+        )
         : undef );
     my $auth_prefs;
     if ($obj) {
@@ -263,7 +268,13 @@ sub edit_role {
     $param{saved}          = $q->param('saved');
     $param{nav_privileges} = 1;
     $app->add_breadcrumb( $app->translate('Roles'),
-        $app->uri( mode => 'list_role' ) );
+        $app->uri(
+            mode => 'list',
+            args => {
+                '_type' => 'role',
+            }
+        )
+    );
     if ($id) {
         $app->add_breadcrumb( $role->name );
     }
@@ -577,7 +588,12 @@ sub list_association {
     if ($author_id) {
         $app->add_breadcrumb( $app->translate('Users'),
               $app->user->is_superuser
-            ? $app->uri( mode => 'list_author' )
+            ? $app->uri(
+                mode => 'list',
+                args => {
+                    '_type' => 'author',
+                }
+            )
             : undef );
         if ( 'PSEUDO' ne $author_id ) {
             my $author_class = $app->model('author');
@@ -600,7 +616,13 @@ sub list_association {
         my $role_class = $app->model('role') or return;
         $role = $role_class->load($role_id);
         $app->add_breadcrumb( $app->translate("Roles"),
-            $app->uri( mode => "list_role" ) );
+            $app->uri(
+                mode => "list",
+                args => {
+                    '_type' => 'role',
+                }
+            )
+        );
         $app->add_breadcrumb(
             $role->name,
             $app->uri(

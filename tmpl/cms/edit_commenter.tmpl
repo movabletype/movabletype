@@ -28,7 +28,7 @@
         id="useful-links"
         label="<__trans phrase="Useful links">">
         <ul>
-            <li><a href="<mt:var name="script_url">?__mode=list_comments&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html" escape="html">"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter_key=_comments_by_user&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html" escape="html">"></a></li>
         </ul>
     </mtapp:widget>
     <$mtapp:PageActions$>
@@ -168,7 +168,7 @@ TC.attachLoadEvent(init);
             <span class="icon-left-wide icon-authenticated"><__trans phrase="Authenticated"></span>
                 </mt:if>
             </mt:if>
-            <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list_member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
+            <a title="<__trans phrase="View all commenters">" href="<mt:var name="script_url">?__mode=list&_type=member&amp;blog_id=<mt:var name="blog_id">&amp;filter_key=commenter"><img src="<mt:var name="static_uri">images/filter.gif" alt="" width="8" height="8" /></a>
         </mtapp:setting>
     
         <mt:if name="position_actions_bottom">

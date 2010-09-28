@@ -66,9 +66,9 @@
 
         &lt;ul&gt;
         &lt;strong&gt;<__trans phrase="More like this">:&lt;/strong&gt;&lt;br /&gt;
-        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="log.tbping.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">"&gt;<__trans phrase="From this blog">&lt;/a&gt;&lt;/li&gt;
 
-        <mt:if name="log.tbping.entry.id">&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list_pings&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;filter=entry_id&amp;filter_val=<mt:var name="log.tbping.entry.id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
+        <mt:if name="log.tbping.entry.id">&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;filter=entry_id&amp;filter_val=<mt:var name="log.tbping.entry.id">"&gt;<__trans phrase="On this entry">&lt;/a&gt;&lt;/li&gt;
 
         </mt:if>&lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=search_replace&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;_type=ping&amp;search=<mt:var name="log.tbping.blog_name" escape="url">&amp;do_search=1"&gt;<__trans phrase="By source blog">&lt;/a&gt;&lt;/li&gt;
 

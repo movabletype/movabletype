@@ -24,8 +24,11 @@ sub edit {
         $app->add_breadcrumb(
             $app->translate('TrackBacks'),
             $app->uri(
-                'mode' => 'list_pings',
-                args   => { blog_id => $blog_id }
+                'mode' => 'list',
+                args   => {
+                    '_type' => 'ping',
+                    blog_id => $blog_id
+                }
             )
         );
         $app->add_breadcrumb( $app->translate('Edit TrackBack') );

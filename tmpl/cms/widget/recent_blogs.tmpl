@@ -21,21 +21,21 @@
                 <ul id="blog-<mt:var name="blog_id">-control" class="blog-control">
                     <li>
     <mt:if name="can_access_to_entry_list">
-                        <a href="<mt:var name="script_url">?__mode=list_entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=entry&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,entry,entries]" params="<mt:var name="blog_entry_count">">
     </mt:if>
                     </li>
                     <li>
     <mt:if name="can_access_to_page_list">
-                        <a href="<mt:var name="script_url">?__mode=list_page&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,page,pages]" params="<mt:var name="blog_page_count">">
     </mt:if>
                     </li>
                     <li>
     <mt:if name="can_access_to_comment_list">
-                        <a href="<mt:var name="script_url">?__mode=list_comment&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
+                        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">"><__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">"></a>
     <mt:else>
                         <__trans phrase="[quant,_1,comment,comments]" params="<mt:var name="blog_comment_count">">
     </mt:if>
