@@ -97,7 +97,6 @@ sub list_props {
                         id      => $id,
                         blog_id => $obj->blog_id,
                 });
-                my $edit_label = MT->translate('Edit');
                 my $status = $obj->is_junk      ? 'Junk'
                            : $obj->is_published ? 'Published'
                            :                      'Moderated';
@@ -110,14 +109,21 @@ sub list_props {
                 my $blog_name = $obj->blog_name  || '';
                 my $title     = $obj->title      || '';
                 my $url       = $obj->source_url || '';
+                my $view_img = MT->static_path . 'images/status_icons/view.gif';
+                my $ping_from =
+                  MT->translate( '<a href="[_1]">Ping from: [_2] - [_3]</a>',
+                    $edit_link, $blog_name, $title );
 
                 return qq{
-                    <div class="ping-from">
-                        <span class="icon status $lc_status">
-                            <img als="$status" src="$status_img" />
-                        </span>
-                        $blog_name - <a href="$url">$title</a><span class="edit-link"><a href="$edit_link">$edit_label</a></span>
-                    </div>
+                    <span class="icon status $lc_status">
+                        <img als="$status" src="$status_img" />
+                    </span>
+                    <span class="ping-from">$ping_from</span>
+                    <span class="view-link">
+                      <a href="$url">
+                        <img alt="View" src="$view_img" />
+                      </a>
+                    </span>
                     <p class="ping-excerpt description">$text</p>
                 };
             },
