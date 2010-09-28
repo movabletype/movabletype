@@ -746,8 +746,9 @@ sub list {
         $view = [ $view ] unless ref $view;
         my %view = map { $_ => 1 } @$view;
         if ( !$view{$scope} ) {
-            return $app->error(
-                MT->translate('Invalid parameters'));
+            return $app->return_to_dashboard(
+                redirect => 1,
+            );
         }
     }
 

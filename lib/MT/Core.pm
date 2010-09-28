@@ -893,6 +893,7 @@ BEGIN {
                 contents_label        => 'Entry',
                 contents_label_plural => 'Entries',
                 permission => 'access_to_category_list',
+                view => 'blog',
             },
             folder => {
                 primary      => 'label',
@@ -901,6 +902,7 @@ BEGIN {
                 contents_label        => 'Page',
                 contents_label_plural => 'Pages',
                 permission => 'access_to_category_list',
+                view => [ 'website', 'blog' ],
             },
             comment => {
                 object_label => 'Comment',
@@ -946,6 +948,7 @@ BEGIN {
                 object_label => 'Tag',
                 permission => 'access_to_tag_list',
                 default_sort_key => 'name',
+                view         => [ 'blog', 'website' ],
             },
             association => {
                 object_label => 'Permission',
@@ -953,6 +956,7 @@ BEGIN {
                 permission => 'access_to_permission_list',
                 default_sort_key => 'created_on',
                 primary => 'user_name',
+                view => 'system',
             },
             role => {
                 object_label => 'Role',
@@ -960,6 +964,7 @@ BEGIN {
                 primary    => 'name',
                 permission => 'access_to_role_list',
                 default_sort_key => 'name',
+                view => 'system',
             },
             banlist => {
                 object_label => 'IP Ban',

@@ -2554,6 +2554,14 @@ sub init_core_callbacks {
     );
 }
 
+sub permission_denied {
+    my $app = shift;
+
+    $app->return_to_dashboard(
+        permission => 1,
+    );
+}
+
 ## TBD: This should be removed.
 sub user_can_admin_commenters {
     my $app   = shift;
