@@ -148,7 +148,8 @@ sub list_props {
                         magic_token => $app->current_magic,
                     },
                 );
-                $reply_link = qq{<a href="$reply_url" class="reply-link mt-open-dialog">Reply</a>};
+                my $reply_str = MT->translate('Reply');
+                $reply_link = qq{<a href="$reply_url" class="reply-link mt-open-dialog">$reply_str</a>};
 
                 return qq{
                     <span class="icon status $lc_status_class">
