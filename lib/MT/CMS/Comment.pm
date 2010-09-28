@@ -1010,14 +1010,13 @@ sub dialog_post_comment {
         comment_text       => MT::Sanitize->sanitize($parent->text, $spec),
         comment_script_url => $app->config('CGIPath')
           . $app->config('CommentScript'),
-        return_url => $app->base
-          . $app->mt_uri
-          . ( $app->param('return_args') || $app->uri_params(
-              mode => 'list',
-              args => {
+        return_url => $app->uri(
+            mode => 'list',
+            args => {
                   '_type' => 'comment',
                   blog_id => $blog->id,
-              }) ),
+              }
+        ),
     };
 
     $app->load_tmpl( 'dialog/comment_reply.tmpl', $param );
