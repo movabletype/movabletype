@@ -2727,7 +2727,6 @@ input#system_performance_logging_threshold {
 #list-themes .theme-group { 
     margin-bottom: 45px;
 }
-
 #list-themes .theme { 
     position: relative;
     clear: both;
@@ -2749,44 +2748,32 @@ input#system_performance_logging_threshold {
     top: 10px;
     right: 10px;
 }
-
-#list-themes .theme-status span, 
-#list-themes .theme-status a.button {
-    margin: 0 0 0 5px;
-    text-align: center;
-}
-
 #list-themes .theme-status .alert-warning a { 
     color: #2b2b2b;
 }
-
 #list-themes .theme .picture.small { 
     margin-bottom: 0;
 }
-
 #list-themes .theme-meta { 
     margin-left: 135px;
+    font-size: 90%;
 }
-
 #list-themes .theme-title { 
-    /*font-size: 18px;*/
+    margin-bottom: 3px;
+    font-size: 13px;
 }
 #list-themes .theme-title a { 
     color: #2b2b2b;
-    text-decoration: underline;
-    text-shadow: none;
 }
 #list-themes .disabled .theme-title a { 
     color: #7b7c7d;
 }
-#list-themes .theme-title a:hover { 
-    text-decoration: none;
+#list-themes .theme-author {
+    margin-bottom: 10px;
 }
-
 #list-themes .description { 
     margin: 0;
 }
-
 #list-themes .theme-tabs-list li {
     border: 0;
     margin: 0 0 2px;
@@ -2800,11 +2787,9 @@ input#system_performance_logging_threshold {
     padding: 0 10px;
     background-position: 10px center;
 }
-
 #list-themes .error-text { 
     margin: 10px 0 0;
 }
-
 #list-themes .theme-details { 
     display: none;
     clear: both;
@@ -2814,15 +2799,12 @@ input#system_performance_logging_threshold {
 #list-themes .theme-expanded .theme-details {
     display: block;
 }
-
 #list-themes .theme-info ul { 
     margin: 10px 0 10px 1.5em;
 }
-
 #list-themes .theme-info li { 
     list-style-type: disc;
 }
-
 #list-themes .error-text a,
 #list-themes .theme-errors li { 
     color: #f39800;
